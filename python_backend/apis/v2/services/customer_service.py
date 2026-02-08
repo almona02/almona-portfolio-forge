@@ -689,7 +689,7 @@ class CustomerService:
         try:
             comm_type_enum = CommunicationType(comm_type)
         except ValueError:
-            comm_type_enum = CommunicationType.note
+            comm_type_enum = CommunicationType.NOTE
 
         return CustomerCommunicationResponse(
             id=str(row["id"]),
@@ -774,7 +774,7 @@ class CustomerService:
             data: Dict[str, Any] = {
                 "customer_id": str(customer_id),
                 "user_id": str(user_id),
-                "type": request.type.value,
+                "type": request.type.value if hasattr(request.type, 'value') else request.type,
                 "subject": request.subject,
                 "message": request.message,
                 "metadata": request.metadata or {},

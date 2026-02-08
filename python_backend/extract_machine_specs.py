@@ -19,11 +19,11 @@ if sys.platform == "win32":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 try:
-    import PyPDF2  # type: ignore
+    import pypdf  # type: ignore
 
-    HAS_PYPDF2 = True
+    HAS_PYPDF = True
 except ImportError:
-    HAS_PYPDF2 = False
+    HAS_PYPDF = False
     try:
         import pdfplumber  # type: ignore
 
@@ -31,7 +31,7 @@ except ImportError:
     except ImportError:
         HAS_PDFPLUMBER = False
         print(
-            "Warning: PyPDF2 and pdfplumber not available. Install one: pip install PyPDF2 or pip install pdfplumber"
+            "Warning: pypdf and pdfplumber not available. Install one: pip install pypdf or pip install pdfplumber"
         )
 
 
@@ -42,9 +42,9 @@ def extract_text_from_pdf(pdf_path: str) -> str:
 
     full_text = ""
     try:
-        if HAS_PYPDF2:
+        if HAS_PYPDF:
             with open(pdf_path, "rb") as file:
-                pdf_reader = PyPDF2.PdfReader(file)
+                pdf_reader = pypdf.PdfReader(file)
                 for page in pdf_reader.pages:
                     full_text += page.extract_text() + "\n"
         elif HAS_PDFPLUMBER:

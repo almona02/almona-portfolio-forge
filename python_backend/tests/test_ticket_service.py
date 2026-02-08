@@ -108,7 +108,7 @@ def build_payload():
     return type("P", (), {
         "title": "Issue",
         "description": "Desc",
-        "priority": TicketPriority.medium,
+        "priority": TicketPriority.MEDIUM,
         "machine_id": None,
         "machine_serial_number": None,
     })()
@@ -119,9 +119,9 @@ def test_ticket_service_create_and_list():
     svc = TicketService(supabase)  # type: ignore
     user_id = uuid4()
 
-    created = svc.create_ticket(TicketCategory.support, build_payload(), user_id)
+    created = svc.create_ticket(TicketCategory.SUPPORT, build_payload(), user_id)
     assert created.id is not None
-    assert created.status == TicketStatus.open
+    assert created.status == TicketStatus.OPEN
 
     tickets = svc.get_user_tickets(user_id)
     assert len(tickets) == 1
@@ -132,14 +132,14 @@ def test_ticket_service_update_and_assign():
     supabase = DummySupabase()
     svc = TicketService(supabase)  # type: ignore
     user_id = uuid4()
-    t = svc.create_ticket(TicketCategory.support, build_payload(), user_id)
+    t = svc.create_ticket(TicketCategory.SUPPORT, build_payload(), user_id)
 
-    updated = svc.update_ticket_status(t.id, TicketStatus.in_progress)
+    updated = svc.update_ticket_status(t.id, TicketStatus.IN_PROGRESS)
     assert updated is not None
-    assert updated.status == TicketStatus.in_progress
+    assert updated.status == TicketStatus.IN_PROGRESS
 
     assigned = svc.assign_ticket(t.id, uuid4(), user_id)
     assert assigned is not None
-    assert assigned.status == TicketStatus.in_progress
+    assert assigned.status == TicketStatus.IN_PROGRESS
 
 

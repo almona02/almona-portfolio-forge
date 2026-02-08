@@ -6,10 +6,11 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { ThemeProvider } from "next-themes";
 import React, { Suspense, lazy, memo, useEffect } from "react";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import SEO from "./components/SEO";
 import { ABTestProvider } from "./components/analytics/ABTestProvider";
 import { WelcomeToast } from "./components/auth/WelcomeToast";
+import { FabricatorCutoverListener } from "./components/fabricator/FabricatorCutoverListener";
 import { ConstitutionalStatusListener } from "./components/fabricator/constitutional/ConstitutionalStatusListener";
 import RegionAwareLayout from "./components/layout/RegionAwareLayout";
 import { ChunkLoadingErrorBoundary } from "./components/ui/ChunkLoadingErrorBoundary";
@@ -24,6 +25,7 @@ import { LanguageProvider } from "./context/LanguageContext.tsx";
 import { LoadingProvider } from "./context/LoadingContext.tsx";
 import { QuoteProvider } from "./context/QuoteContext.tsx";
 import { useRoutePrefetching } from "./hooks/useRoutePrefetching";
+import { fabricatorRoutes } from "./lib/fabricator/routes";
 import { lazyRetry } from "./utils/lazyImport";
 // Lazy load PerformanceDashboard to avoid loading it in production
 const PerformanceDashboard = lazy(() => import("./components/dev/PerformanceDashboard").then(m => ({ default: m.PerformanceDashboard })));
@@ -73,57 +75,30 @@ const WorkflowBuilderPage = lazyRetry(() => import("./pages/WorkflowBuilderPage.
 const FabricationWorkflowDetail = lazyRetry(() => import("./pages/FabricationWorkflowDetail.tsx"), "FabricationWorkflowDetail");
 const FabricationServices = lazyRetry(() => import("./pages/FabricationServices.tsx"), "FabricationServices");
 const _FabricatorWorkflow = lazyRetry(() => import("./pages/FabricatorWorkflow.tsx"), "FabricatorWorkflow");
-const FabricatorWorkflowPro = lazyRetry(() => import("./components/fabricator/FabricatorWorkflowPro.tsx"), "FabricatorWorkflowPro");
 const _FabricatorDashboard = lazyRetry(() => import("./pages/FabricatorDashboard.tsx"), "FabricatorDashboard");
-const FabricatorPricingConfiguration = lazy(() =>
-  import("./components/fabricator/PricingConfiguration.tsx").then((m) => ({
-    default: m.PricingConfiguration,
-  })),
-);
-const FabricatorBrandingSettings = lazy(() => import("./pages/FabricatorBrandingSettings.tsx"));
-const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const InventoryPage = lazy(() => import("./pages/Inventory.tsx"));
 const FabricatorReportsPage = lazy(() => import("./pages/FabricatorReports.tsx"));
 const ProjectsPage = lazy(() => import("./pages/Projects.tsx"));
-const ProfilesPage = lazy(() => import("./pages/Profiles.tsx"));
 const PublicOptimizer = lazy(() => import("./pages/PublicOptimizer.tsx"));
-const MasterLayout = lazy(() => import("./components/fabricator/MasterLayout.tsx").then(m => ({ default: m.MasterLayout })));
 const EngineeringBayWrapper = lazy(() => import("./components/fabricator/EngineeringBayWrapper").then(m => ({ default: m.EngineeringBayWrapper })));
 // const DesignWorkflowWrapper = lazy(() => import("./components/fabricator/workflow/DesignWorkflowWrapper.tsx").then(m => ({ default: m.DesignWorkflowWrapper })));
 const _DraftingWorkbench = lazy(() => import("./components/fabricator/drafting/DraftingWorkbench.tsx").then(m => ({ default: m.DraftingWorkbench })));
-const QualityControlPage = lazy(() => import("./pages/QualityControlPage.tsx"));
 const ProfileStudioLite = lazy(() => import("./components/fabricator/tuning/ProfileStudioLite.tsx").then(m => ({ default: m.ProfileStudioLite })));
-const TurkishProfileGallery = lazy(() => import("./components/fabricator/TurkishProfileGallery.tsx").then(m => ({ default: m.TurkishProfileGallery })));
 const SystemPackTuningStudio = lazy(() => import("./components/fabricator/SystemPackTuningStudio.tsx").then(m => ({ default: m.SystemPackTuningStudio })));
 const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuningStudio.tsx").then(m => ({ default: m.NoDXFTuningStudio })));
 const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx"));
 const SystemPacksPage = lazy(() => import("./pages/SystemPacksPage.tsx").then(m => ({ default: m.SystemPacksPage })));
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 const ProductionDashboard = lazy(() => import("./components/fabricator/ProductionDashboard.tsx").then(m => ({ default: m.ProductionDashboard })));
+const ProjectStudioWrapper = lazy(() => import("./pages/fabricator/ProjectStudioWrapper"));
 
 // NEW: Workflow Page Components - Route-Based Architecture
-const FabricatorLayout = lazy(() => import("./layouts/FabricatorLayout").then(m => ({ default: m.FabricatorLayout })));
 const _UnifiedDesignPage = lazy(() => import("./pages/fabricator/workflow/UnifiedDesignPage").then(m => ({ default: m.UnifiedDesignPage })));
-const MeasuringPage = lazy(() => import("./pages/fabricator/workflow/MeasuringPage").then(m => ({ default: m.MeasuringPage })));
-const DesignPage = lazy(() => import("./pages/fabricator/workflow/DesignPage").then(m => ({ default: m.DesignPage })));
-const Preview3DPage = lazy(() => import("./pages/fabricator/workflow/Preview3DPage").then(m => ({ default: m.Preview3DPage })));
 const OptimizationPage = lazy(() => import("./pages/fabricator/workflow/OptimizationPage").then(m => ({ default: m.OptimizationPage })));
 const _InventoryWorkflowPage = lazy(() => import("./pages/fabricator/workflow/InventoryPage").then(m => ({ default: m.InventoryPage })));
 const ProductionPage = lazy(() => import("./pages/fabricator/workflow/ProductionPage").then(m => ({ default: m.ProductionPage })));
 const _QualityControlWorkflowPage = lazy(() => import("./pages/fabricator/workflow/QualityControlPage").then(m => ({ default: m.QualityControlPage })));
 const _DebugWorkflowPage = lazy(() => import("./pages/DebugWorkflowPage").then(m => ({ default: m.DebugWorkflowPage })));
-
-// Gold Tier Foundation Components - Lazy loaded
-const ActivityTimeline = lazy(() => import("./core/activity/ActivityTimeline.tsx").then(m => ({ default: m.ActivityTimeline })));
-const PaymentForm = lazy(() => import("./components/commercial/PaymentForm.tsx").then(m => ({ default: m.PaymentForm })));
-const ReportingDashboard = lazy(() => import("./components/commercial/ReportingDashboard.tsx").then(m => ({ default: m.ReportingDashboard })));
-
-// Strategic Transformation Features - lazy loaded
-const SmartWizardPage = lazy(() => import("./pages/SmartWizardPage.tsx"));
-const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
-const MachineTestingPage = lazy(() => import("./pages/MachineTestingPage.tsx"));
-const ValidationDashboardPage = lazy(() => import("./pages/ValidationDashboardPage.tsx"));
-const BentProfileDesignerPage = lazy(() => import("./pages/BentProfileDesignerPage.tsx"));
 
 // Phase 5: Pre-Pilot Hardening - lazy loaded
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage.tsx"));
@@ -157,6 +132,7 @@ const RegisterMachinePage = lazyRetry(() => import("./pages/RegisterMachinePage.
 const CustomerSupport = lazyRetry(() => import("./pages/CustomerSupport.tsx"), "CustomerSupport");
 const RegionalFeaturesDemo = lazyRetry(() => import("./pages/RegionalFeaturesDemo.tsx"), "RegionalFeaturesDemo");
 const AIRecommendationDemo = lazyRetry(() => import("./pages/AIRecommendationDemo.tsx"), "AIRecommendationDemo");
+const BatchCutListDemo = lazyRetry(() => import("./pages/BatchCutListDemo.tsx"), "BatchCutListDemo");
 
 // Ticket Details - lazy loaded
 const TicketDetailPage = lazy(() => import("./pages/TicketDetailPage.tsx"));
@@ -181,174 +157,58 @@ const DesignStudioLayout = lazy(() => import("./layouts/studio/DesignStudioLayou
 const ProductionStudioLayout = lazy(() => import("./layouts/studio/ProductionStudioLayout.tsx"));
 const DataStudioLayout = lazy(() => import("./layouts/studio/DataStudioLayout.tsx"));
 
-// Redirect component for /fabricator-workflow with hash handling
+// Redirect component for /fabricator-workflow: canonical target is studio (Fabricator Pro consolidation).
 const FabricatorWorkflowRedirect: React.FC = () => {
   const location = useLocation();
-  const hash = location.hash.replace('#', '');
   const searchParams = new URLSearchParams(location.search);
   const isNewProject = searchParams.get('new') === 'true';
-
-  // If new=true query parameter, render FabricatorWorkflow component which has wizard logic
-  // This allows the wizard to open properly when user clicks "New Project"
-  if (isNewProject) {
-    return (
-      <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div></div>}>
-        <_FabricatorWorkflow />
-      </Suspense>
-    );
-  }
-
-  // Special case: inventory hash should go to inventory page
-  if (hash === 'inventory') {
-    return <Navigate to="/fabricator/inventory" replace />;
-  }
-
-  // Other hashes: redirect to engineering-bay with hash preserved
-  if (hash) {
-    return <Navigate to={`/fabricator/workflow/engineering-bay${location.hash}`} replace />;
-  }
-
-  // No hash: default to engineering-bay
-  return <Navigate to="/fabricator/workflow/engineering-bay" replace />;
+  const target = isNewProject ? fabricatorRoutes.newProjectWizard() : fabricatorRoutes.studioProjects();
+  return <Navigate to={target + location.search} replace />;
 };
 
-// Gold Tier Demo/Test Components
-const ActivityTimelineDemo: React.FC = () => {
-  const [entityType, setEntityType] = React.useState<string>('customer');
-  const [entityId, setEntityId] = React.useState<string>('');
-
-  return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="bg-slate-900/90 border border-amber-600/30 rounded-lg p-6">
-          <h1 className="text-2xl font-semibold text-amber-200 mb-4">Activity Timeline Demo</h1>
-          <p className="text-slate-400 mb-6">
-            Test the Activity Timeline component with different entity types and IDs.
-          </p>
-
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-amber-300 mb-2">Entity Type</label>
-              <select
-                value={entityType}
-                onChange={(e) => setEntityType(e.target.value)}
-                className="w-full bg-slate-800 border border-amber-600/30 rounded px-3 py-2 text-white"
-              >
-                <option value="customer">Customer</option>
-                <option value="project">Project</option>
-                <option value="invoice">Invoice</option>
-                <option value="quote">Quote</option>
-                <option value="workflow">Workflow</option>
-                <option value="production">Production</option>
-                <option value="inventory">Inventory</option>
-                <option value="profile">Profile</option>
-                <option value="payment">Payment</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-amber-300 mb-2">Entity ID</label>
-              <input
-                type="text"
-                value={entityId}
-                onChange={(e) => setEntityId(e.target.value)}
-                placeholder="Enter entity ID or leave empty for demo"
-                className="w-full bg-slate-800 border border-amber-600/30 rounded px-3 py-2 text-white"
-              />
-            </div>
-          </div>
-
-          {entityId && (
-            <Suspense fallback={<div className="text-slate-400">Loading timeline...</div>}>
-              <ActivityTimeline
-                entityType={entityType}
-                entityId={entityId}
-                limit={50}
-                showHeader={true}
-              />
-            </Suspense>
-          )}
-          {!entityId && (
-            <div className="bg-slate-800/50 border border-amber-600/20 rounded p-4 text-slate-400">
-              Enter an entity ID to view the activity timeline. The timeline will show all activities logged for that entity.
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+/**
+ * Redirect legacy /fabricator/engineering-bay (with ID, query param, or bare).
+ * Handles:
+ *   /fabricator/engineering-bay/:id
+ *   /fabricator/engineering-bay?id=xxx
+ *   /fabricator/engineering-bay?jobId=xxx
+ *   /fabricator/engineering-bay           (bare → projects list)
+ */
+const LegacyEngineeringBayRedirect: React.FC = () => {
+  const location = useLocation();
+  const params = useParams<{ id?: string }>();
+  const searchParams = new URLSearchParams(location.search);
+  const poseId = params.id || searchParams.get('id') || searchParams.get('jobId') || searchParams.get('poseId');
+  if (poseId) {
+    return <Navigate to={fabricatorRoutes.poseDesign(poseId, poseId)} replace />;
+  }
+  return <Navigate to={fabricatorRoutes.studioProjects()} replace />;
 };
 
-const PaymentTestPage: React.FC = () => {
-  const [invoiceId, setInvoiceId] = React.useState<string>('');
-  const [amount, setAmount] = React.useState<string>('100.00');
-  const [currency, setCurrency] = React.useState<string>('USD');
-
-  return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="bg-slate-900/90 border border-amber-600/30 rounded-lg p-6">
-          <h1 className="text-2xl font-semibold text-amber-200 mb-4">Payment Form Test</h1>
-          <p className="text-slate-400 mb-6">
-            Test the Payment Form component with Stripe integration.
-          </p>
-
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-amber-300 mb-2">Invoice ID (optional)</label>
-              <input
-                type="text"
-                value={invoiceId}
-                onChange={(e) => setInvoiceId(e.target.value)}
-                placeholder="invoice_123"
-                className="w-full bg-slate-800 border border-amber-600/30 rounded px-3 py-2 text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-amber-300 mb-2">Amount</label>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                step="0.01"
-                className="w-full bg-slate-800 border border-amber-600/30 rounded px-3 py-2 text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-amber-300 mb-2">Currency</label>
-              <select
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-                className="w-full bg-slate-800 border border-amber-600/30 rounded px-3 py-2 text-white"
-              >
-                <option value="USD">USD</option>
-                <option value="EGP">EGP</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="bg-slate-800/50 border border-amber-600/20 rounded p-6">
-            <Suspense fallback={<div className="text-slate-400">Loading payment form...</div>}>
-              <PaymentForm
-                invoiceId={invoiceId || undefined}
-                amount={parseFloat(amount) || 0}
-                currency={currency as 'USD' | 'EGP' | 'EUR' | 'GBP'}
-                onSuccess={(paymentId) => {
-                  console.log('Payment successful:', paymentId);
-                  alert(`Payment successful! Payment ID: ${paymentId}`);
-                }}
-                onError={(error) => {
-                  console.error('Payment failed:', error);
-                  alert(`Payment failed: ${error.message}`);
-                }}
-              />
-            </Suspense>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+// Redirect /fabricator/workflow/* to canonical studio pose-centric routes.
+const FabricatorWorkflowToStudioRedirect: React.FC = () => {
+  const location = useLocation();
+  const path = location.pathname;
+  const rest = path.replace(/^\/fabricator\/workflow\/?/, '') || '';
+  const parts = rest.split('/').filter(Boolean);
+  // design/:projectId, optimization/:projectId, engineering-bay/:jobId (jobId = poseId), etc.
+  if (parts[0] === 'design' && parts[1]) {
+    const projectId = parts[1];
+    return <Navigate to={fabricatorRoutes.poseDesign(projectId, projectId)} replace />;
+  }
+  if (parts[0] === 'optimization' && parts[1]) {
+    const projectId = parts[1];
+    return <Navigate to={fabricatorRoutes.poseOptimization(projectId, projectId)} replace />;
+  }
+  if (parts[0] === 'production' && parts[1]) {
+    const projectId = parts[1];
+    return <Navigate to={fabricatorRoutes.poseProduction(projectId, projectId)} replace />;
+  }
+  if (parts[0] === 'engineering-bay' && parts[1]) {
+    const poseId = parts[1];
+    return <Navigate to={fabricatorRoutes.poseDesign(poseId, poseId)} replace />;
+  }
+  return <Navigate to={fabricatorRoutes.studioProjects()} replace />;
 };
 
 const queryClient = new QueryClient();
@@ -388,8 +248,8 @@ const RoutePrefetchingHelper = () => {
     // Wait for initial render to complete before prefetching
     const timer = setTimeout(() => {
       const criticalRoutes = [
-        '/fabricator-workflow',
-        '/fabricator/tuning-studio-no-dxf',
+        '/fabricator/studio/projects',
+        '/fabricator/studio/data/tuning-no-dxf',
         '/egyptian-project-wizard'
       ];
 
@@ -432,7 +292,7 @@ const App = memo(() => {
   return (
     <ChunkLoadingErrorBoundary>
       <ErrorBoundary>
-        <Prestige3DLoader show3DAnimation={true}>
+        <Prestige3DLoader show3DAnimation={false}>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
               <TooltipProvider>
@@ -453,6 +313,7 @@ const App = memo(() => {
                             >
                               <GlobalDynamicImportGuard />
                               <RoutePrefetchingHelper />
+                              <FabricatorCutoverListener />
                               <WelcomeToast />
                               <ConstitutionalStatusListener />
                               {/* Phase 2: Global Keyboard Shortcuts Handler - Replaced with KeyboardManager */}
@@ -537,24 +398,32 @@ const App = memo(() => {
                                     path="/fabricator-workflow"
                                     element={<FabricatorWorkflowRedirect />}
                                   />
-                                  {/* Legacy fabricator routes - redirect to new structure */}
-                                  <Route path="/fabricator-workflow/pro" element={<Navigate to="/fabricator/workflow/pro" replace />} />
-                                  <Route path="/fabricator" element={<Navigate to="/fabricator/projects" replace />} />
+                                  {/* Legacy fabricator routes - redirect to studio (canonical) */}
+                                  <Route path="/fabricator-workflow/pro" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
+                                  <Route path="/fabricator" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
 
-                                  {/* NEW STUDIO ARCHITECTURE - PHASE 1 REFACTOR */}
+                                  {/* Canonical Fabricator: studio-only hierarchy */}
                                   <Route path="/fabricator/studio" element={<Suspense fallback={getLoadingComponent('Studio Layout')}><StudioLayout /></Suspense>}>
                                     <Route index element={<Navigate to="command" replace />} />
 
                                     {/* 1. Command Center */}
                                     <Route path="command" element={<Suspense fallback={getLoadingComponent('Command Center')}><_FabricatorDashboard /></Suspense>} />
 
-                                    {/* 2. Project Studio */}
-                                    <Route path="project/*" element={<Suspense fallback={getLoadingComponent('Project Studio')}><ProjectStudioLayout /></Suspense>}>
+                                    {/* 2. Project Studio List (canonical path: projects) */}
+                                    <Route path="projects" element={<Suspense fallback={getLoadingComponent('Project Studio')}><ProjectStudioLayout /></Suspense>}>
                                       <Route index element={<ProjectsPage />} />
-                                      <Route path=":projectId" element={<Navigate to="/fabricator/workflow/engineering-bay" replace />} />
                                     </Route>
 
-                                    {/* 3. Design Studio */}
+                                    {/* 2b. Project Studio Workspace (Full Screen) */}
+                                    <Route path="projects/:projectId" element={<Suspense fallback={getLoadingComponent('Project Workspace')}><ProjectStudioWrapper /></Suspense>} />
+
+                                    {/* 2c. Pose-centric: design, optimization, commercial, production */}
+                                    <Route path="projects/:projectId/positions/:poseId/design" element={<Suspense fallback={getLoadingComponent('Engineering Bay')}><EngineeringBayWrapper /></Suspense>} />
+                                    <Route path="projects/:projectId/positions/:poseId/optimization" element={<Suspense fallback={getLoadingComponent('Optimization')}><OptimizationPage /></Suspense>} />
+                                    <Route path="projects/:projectId/positions/:poseId/commercial" element={<Suspense fallback={getLoadingComponent('Commercial')}><CommercialPage /></Suspense>} />
+                                    <Route path="projects/:projectId/positions/:poseId/production" element={<Suspense fallback={getLoadingComponent('Production')}><ProductionPage /></Suspense>} />
+
+                                    {/* 3. Design Studio (legacy flat design - redirect from old nav) */}
                                     <Route path="design/*" element={<Suspense fallback={getLoadingComponent('Design Studio')}><DesignStudioLayout /></Suspense>}>
                                       <Route index element={<Suspense fallback={getLoadingComponent('Engineering Bay')}><EngineeringBayWrapper /></Suspense>} />
                                       <Route path=":projectId" element={<Suspense fallback={getLoadingComponent('Engineering Bay')}><EngineeringBayWrapper /></Suspense>} />
@@ -572,309 +441,48 @@ const App = memo(() => {
                                       <Route path="tuning-no-dxf" element={<Suspense fallback={getLoadingComponent('Tuning Studio')}><NoDXFTuningStudio /></Suspense>} />
                                       <Route path="profiles" element={<Suspense fallback={getLoadingComponent('Profile Studio')}><ProfileStudioLite /></Suspense>} />
                                     </Route>
+                                    {/* 6. Reports */}
+                                    <Route path="reports" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
+                                    <Route path="reports/*" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
                                   </Route>
 
-                                  {/* NEW: Workflow Pages with FabricatorLayout (Bosphorus Bridge Pattern) */}
-                                  <Route
-                                    path="/fabricator/workflow/*"
-                                    element={
-                                      <Suspense fallback={<PageLoadingWrapper message="Loading Workflow..." variant="fullscreen"><div /></PageLoadingWrapper>}>
-                                        <FabricatorLayout />
-                                      </Suspense>
-                                    }
-                                  >
-                                    {/* 1. Measuring - Smart Measuring Interface */}
-                                    <Route
-                                      path="measuring/:projectId?"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/workflow/measuring')}>
-                                          <MeasuringPage />
-                                        </Suspense>
-                                      }
-                                    />
+                                  {/* Legacy /fabricator/workflow/* → studio (canonical) */}
+                                  <Route path="/fabricator/workflow" element={<FabricatorWorkflowToStudioRedirect />} />
+                                  <Route path="/fabricator/workflow/*" element={<FabricatorWorkflowToStudioRedirect />} />
 
-                                    {/* 2. Design - Engineering Bay */}
-                                    <Route
-                                      path="design/:projectId?"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/workflow/design')}>
-                                          <DesignPage />
-                                        </Suspense>
-                                      }
-                                    />
+                                  {/* Legacy /fabricator/* (non-studio) → studio equivalents (301-style redirects) */}
+                                  <Route path="/fabricator/projects" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
+                                  <Route path="/fabricator/customers" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/inventory" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/profiles" element={<Navigate to={fabricatorRoutes.studioData('profiles')} replace />} />
+                                  <Route path="/fabricator/commercial" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
+                                  <Route path="/fabricator/system-packs" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/pricing" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/fabricator/settings/branding" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
+                                  <Route path="/fabricator/profile-studio" element={<Navigate to={fabricatorRoutes.studioData('profiles')} replace />} />
+                                  <Route path="/fabricator/system-pack-studio" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/turkish-gallery" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/tuning-studio" element={<Navigate to={fabricatorRoutes.studioData('tuning')} replace />} />
+                                  <Route path="/fabricator/tuning-studio-no-dxf" element={<Navigate to={fabricatorRoutes.studioData('tuning-no-dxf')} replace />} />
+                                  <Route path="/fabricator/smart-wizard" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
+                                  <Route path="/fabricator/pattern-library" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/machine-testing" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/validation" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
+                                  <Route path="/fabricator/bent-profile-designer" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/onboarding" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
+                                  <Route path="/fabricator/activity-timeline" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
+                                  <Route path="/fabricator/payment-test" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
+                                  <Route path="/fabricator/reports-dashboard" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
 
-                                    {/* 3. 3D Preview - Window3DGenerator */}
-                                    <Route
-                                      path="preview3d/:projectId?"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/workflow/preview3d')}>
-                                          <Preview3DPage />
-                                        </Suspense>
-                                      }
-                                    />
+                                  {/* Legacy Engineering Bay & Positions — critical for old bookmarks */}
+                                  <Route path="/fabricator/engineering-bay/:id" element={<LegacyEngineeringBayRedirect />} />
+                                  <Route path="/fabricator/engineering-bay" element={<LegacyEngineeringBayRedirect />} />
+                                  <Route path="/fabricator/positions/:id" element={<LegacyEngineeringBayRedirect />} />
+                                  <Route path="/fabricator/positions" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
 
-                                    {/* 4. Optimization - Cutting Plan */}
-                                    <Route
-                                      path="optimization/:projectId?"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/workflow/optimization')}>
-                                          <OptimizationPage />
-                                        </Suspense>
-                                      }
-                                    />
-
-                                    {/* 5. Inventory - Stock Check */}
-                                    <Route
-                                      path="inventory/:projectId?"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/workflow/inventory')}>
-                                          <InventoryPage />
-                                        </Suspense>
-                                      }
-                                    />
-
-                                    {/* 6. Production - CNC Commands */}
-                                    <Route
-                                      path="production/:projectId?"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/workflow/production')}>
-                                          <ProductionPage />
-                                        </Suspense>
-                                      }
-                                    />
-
-                                    {/* 7. Quality Control - Final Verification */}
-                                    <Route
-                                      path="quality-control/:projectId?"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/workflow/quality-control')}>
-                                          <QualityControlPage />
-                                        </Suspense>
-                                      }
-                                    />
-
-                                    {/* Legacy routes for backward compatibility */}
-                                    <Route path="engineering-bay/:projectId?" element={<Navigate to="../design" replace />} />
-                                    <Route path="pro" element={<Suspense fallback={getLoadingComponent('/fabricator/workflow/pro')}><FabricatorWorkflowPro /></Suspense>} />
-
-                                    {/* Default: redirect to measuring */}
-                                    <Route index element={<Navigate to="measuring" replace />} />
-                                  </Route>
-
-                                  {/* General Workspace Pages with MasterLayout (Dark Gold Prestige) */}
-                                  <Route
-                                    path="/fabricator/*"
-                                    element={
-                                      <Suspense fallback={<PageLoadingWrapper message="Loading Prestige Workspace..." variant="fullscreen"><div /></PageLoadingWrapper>}>
-                                        <MasterLayout currentPhase="design" />
-                                      </Suspense>
-                                    }
-                                  >
-                                    <Route index element={<Navigate to="/fabricator/projects" replace />} />
-                                    <Route
-                                      path="projects"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/projects')}>
-                                          <ProjectsPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="customers"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/customers')}>
-                                          <ProtectedRoute>
-                                            <CustomersPage />
-                                          </ProtectedRoute>
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="inventory"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/inventory')}>
-                                          <ProtectedRoute>
-                                            <InventoryPage />
-                                          </ProtectedRoute>
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="profiles"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/profiles')}>
-                                          <ProtectedRoute>
-                                            <ProfilesPage />
-                                          </ProtectedRoute>
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="commercial"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/commercial')}>
-                                          <CommercialPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="system-packs"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/system-packs')}>
-                                          <SystemPacksPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="pricing"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/pricing')}>
-                                          <ProtectedRoute>
-                                            <FabricatorPricingConfiguration />
-                                          </ProtectedRoute>
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="reports"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/reports')}>
-                                          <ProtectedRoute>
-                                            <FabricatorReportsPage />
-                                          </ProtectedRoute>
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="settings/branding"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/settings/branding')}>
-                                          <ProtectedRoute>
-                                            <FabricatorBrandingSettings />
-                                          </ProtectedRoute>
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="profile-studio"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/profile-studio')}>
-                                          <ProfileStudioLite />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="system-pack-studio"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/system-pack-studio')}>
-                                          <SystemPacksPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="turkish-gallery"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/turkish-gallery')}>
-                                          <TurkishProfileGallery />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="tuning-studio"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/tuning-studio')}>
-                                          <SystemPackTuningStudio />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="tuning-studio-no-dxf"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/tuning-studio-no-dxf')}>
-                                          <NoDXFTuningStudio />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="smart-wizard"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/smart-wizard')}>
-                                          <SmartWizardPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="pattern-library"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/pattern-library')}>
-                                          <PatternLibraryPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="machine-testing"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/machine-testing')}>
-                                          <MachineTestingPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="validation"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/validation')}>
-                                          <ValidationDashboardPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="bent-profile-designer"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/bent-profile-designer')}>
-                                          <BentProfileDesignerPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="onboarding"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/onboarding')}>
-                                          <OnboardingPage />
-                                        </Suspense>
-                                      }
-                                    />
-                                    {/* Gold Tier Foundation - Test/Demo Routes */}
-                                    <Route
-                                      path="activity-timeline"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/activity-timeline')}>
-                                          <ProtectedRoute>
-                                            <ActivityTimelineDemo />
-                                          </ProtectedRoute>
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="payment-test"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/payment-test')}>
-                                          <ProtectedRoute>
-                                            <PaymentTestPage />
-                                          </ProtectedRoute>
-                                        </Suspense>
-                                      }
-                                    />
-                                    <Route
-                                      path="reports-dashboard"
-                                      element={
-                                        <Suspense fallback={getLoadingComponent('/fabricator/reports-dashboard')}>
-                                          <ProtectedRoute>
-                                            <ReportingDashboard />
-                                          </ProtectedRoute>
-                                        </Suspense>
-                                      }
-                                    />
-                                  </Route>
+                                  {/* Catch-all: any remaining /fabricator/* goes to command center */}
+                                  <Route path="/fabricator/*" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
 
                                   {/* Production Dashboard - Kiosk Mode & Supervisor View */}
                                   <Route
@@ -1007,11 +615,11 @@ const App = memo(() => {
                                   <Route path="/executive/trust" element={<Suspense fallback={getLoadingComponent('/executive')}><ProtectedRoute><ExecutiveTrustDashboard /></ProtectedRoute></Suspense>} />
                                   <Route path="/trust-dashboard" element={<Suspense fallback={getLoadingComponent('/trust')}><ProtectedRoute><ExecutiveTrustDashboard /></ProtectedRoute></Suspense>} />
 
-                                  {/* Regional Features Demo */}
+                                  {/* Demo routes – batch cut list must be registered for /demo/batch-cut-list to work */}
                                   <Route path="/demo/regional-features" element={<Suspense fallback={getLoadingComponent('/demo')}><RegionalFeaturesDemo /></Suspense>} />
-
-                                  {/* AI Recommendation Demo */}
                                   <Route path="/demo/ai-recommendations" element={<Suspense fallback={getLoadingComponent('/demo')}><AIRecommendationDemo /></Suspense>} />
+                                  <Route path="/demo/batch-cut-list" element={<Suspense fallback={getLoadingComponent('/demo')}><BatchCutListDemo /></Suspense>} />
+                                  <Route path="/batch-cut-list-demo" element={<Suspense fallback={getLoadingComponent('/demo')}><BatchCutListDemo /></Suspense>} />
 
                                   {/* YDT Agent */}
                                   <Route path="/prestige-agent" element={<Suspense fallback={getLoadingComponent('/prestige-agent')}><AlmonaPrestigeChatbot /></Suspense>} />

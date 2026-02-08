@@ -28,7 +28,7 @@ export class RealityOSCache {
       .from('reality_events')
       .select('*')
       .eq('entity_id', entityId)
-      .order('timestamp', { ascending: false })
+      .order('recorded_at', { ascending: false })
       .limit(limit);
 
     if (error) throw error;
@@ -134,7 +134,7 @@ export class RealityOSCache {
       .select('*')
       .eq('entity_id', entityId)
       .eq('event_type', eventType)
-      .order('timestamp', { ascending: false })
+      .order('recorded_at', { ascending: false })
       .limit(limit);
 
     if (error) throw error;

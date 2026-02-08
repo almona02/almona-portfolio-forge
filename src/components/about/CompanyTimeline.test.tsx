@@ -37,9 +37,8 @@ describe('CompanyTimeline Component', () => {
 
   it('handles media content', () => {
     render(<CompanyTimeline />);
-    const mediaItems = screen.getAllByRole('presentation');
-
-    expect(mediaItems.length).toBeGreaterThan(0);
+    // First milestone has no media, so "Media coming soon" placeholder is rendered
+    expect(screen.getByText(/Media coming soon/i)).toBeInTheDocument();
   });
 
   it('supports keyboard navigation', () => {

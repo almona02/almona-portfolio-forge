@@ -1,0 +1,18 @@
+Terminate batch job (Y/N)? Terminate batch job (Y/N)? [1A[2K[2m[WebServer] [22m[31m(!) Failed to run dependency scan. Skipping dependency pre-bundling. Error: [31m  Failed to scan for dependencies from entries:
+[2m[WebServer] [22m  C:/projects/almona-portfolio-forge/index.html
+[2m[WebServer] [22m
+[2m[WebServer] [22m  [31mThe service was stopped: write EPIPE
+[2m[WebServer] [22m    at C:\projects\almona-portfolio-forge\node_modules\vite\node_modules\esbuild\lib\main.js:974:26
+[2m[WebServer] [22m    at responseCallbacks.<computed> (C:\projects\almona-portfolio-forge\node_modules\vite\node_modules\esbuild\lib\main.js:603:9)
+[2m[WebServer] [22m    at afterClose (C:\projects\almona-portfolio-forge\node_modules\vite\node_modules\esbuild\lib\main.js:594:28)
+[2m[WebServer] [22m    at C:\projects\almona-portfolio-forge\node_modules\vite\node_modules\esbuild\lib\main.js:1986:18
+[2m[WebServer] [22m    at onwriteError (node:internal/streams/writable:605:3)
+[2m[WebServer] [22m    at process.processTicksAndRejections (node:internal/process/task_queues:92:21)[39m
+
+Error: Process from config.webServer was not able to start. Exit code: 1
+
+[1A[2K
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

@@ -64,6 +64,9 @@
     "test:verification:load": "vitest run tests/verification/comprehensive-verification.test.ts -t 'Load Test'",
     "test:verification:recovery": "vitest run tests/verification/comprehensive-verification.test.ts -t 'Recovery Test'",
     "test:full": "npm run test:api && npm run test:react && npm run test:security && npm run test:performance",
+    "test:almona-cut": "vitest run src/lib/fabricator/__tests__/AlmonaCuttingEngine.test.ts",
+    "benchmark:almona-cut": "tsx scripts/benchmark-almona-cut.ts",
+    "upgrade:cutting": "tsx scripts/benchmark-almona-cut.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "build:ci": "vite build --mode production",
@@ -178,6 +181,7 @@
     "antd": "^5.29.1",
     "axios": "^1.10.0",
     "chart.js": "^4.5.0",
+    "chrome-remote-interface": "^0.33.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
@@ -207,6 +211,7 @@
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.4.449",
     "pg": "^8.16.3",
+    "puppeteer-core": "^24.36.1",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
@@ -271,6 +276,7 @@
     "lovable-tagger": "^1.1.7",
     "playwright": "^1.54.1",
     "postcss": "^8.4.47",
+    "puppeteer": "^24.36.1",
     "rollup-plugin-visualizer": "^6.0.5",
     "sharp": "^0.34.5",
     "storybook": "^9.0.16",
@@ -284,6 +290,7 @@
     "vite-imagetools": "^7.1.0",
     "vite-plugin-gltf": "^4.0.0",
     "vite-plugin-pwa": "^1.0.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "ws": "^8.19.0"
   }
 }

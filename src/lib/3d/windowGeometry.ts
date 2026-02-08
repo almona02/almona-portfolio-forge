@@ -1225,6 +1225,37 @@ export function generatePresetAwareGeometries(
 }
 
 /**
+ * Smart position resolver for mullion placement.
+ * Handles three position modes:
+ *   - Column index (integer 0..cols-2): places mullion at right edge of that column
+ *   - Proportional (0 < value < 1, non-integer): fraction of total width from left
+ *   - Absolute mm (value > 20): millimeter offset from left edge
+ *
+ * @returns X coordinate in meters (model space), or null if invalid
+ */
+function resolveSmartMullionPosition(
+  position: number,
+  totalWidth: number,
+  colStarts: number[],
+  colSizes: number[],
+  cols: number
+): number | null {
+  // Case A: Column index (integer, 0 to cols-2) — primary mode for existing patterns
+  if (Number.isInteger(position) && position >= 0 && position < cols - 1) {
+    return colStarts[position] + colSizes[position];
+  }
+  // Case B: Proportional (0 < val < 1, non-integer)
+  if (position > 0 && position < 1) {
+    return (-totalWidth / 2) + (totalWidth * position);
+  }
+  // Case C: Absolute mm (> 20, clearly not a valid column index)
+  if (position > 20) {
+    return (-totalWidth / 2) + (position / 1000);
+  }
+  return null;
+}
+
+/**
  * Helper function to create mullion geometry from pattern specifications
  */
 function createMullionsFromSpec(
@@ -1267,16 +1298,13 @@ function createMullionsFromSpec(
       currentX += w;
     });
     
-    // Create mullions at pattern-specified positions
-    // position: 0 = between col 0 and 1, 1 = between col 1 and 2, etc.
-    // Mullion should be at the right edge of column[position]
+    // Create mullions at pattern-specified positions using smart resolver
+    // Supports column index (int), proportional (0-1), and absolute mm (>20)
     mullions.forEach(mullion => {
-      if (mullion.position >= 0 && mullion.position < cols - 1) {
-        // Mullion is between column[mullion.position] and column[mullion.position + 1]
-        const leftColStart = colStarts[mullion.position];
-        const leftColWidth = colSizes[mullion.position];
-        const x = leftColStart + leftColWidth; // Right edge of left column = mullion position
-        
+      const x = resolveSmartMullionPosition(
+        mullion.position, width, colStarts, colSizes, cols
+      );
+      if (x !== null) {
         const mullionWidth = mullion.width ? mullion.width / 1000 : mullionGap;
         // Mullion height should fit between top and bottom frame bars
         const mullionHeight = height - frameProfile.width * 2;
