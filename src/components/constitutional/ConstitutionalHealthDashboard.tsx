@@ -3,9 +3,11 @@
  * Real-time monitoring of AICS-001 compliance
  */
 
+import { MigrationModeService } from '@/lib/fabricator/migration/MigrationModeService';
 import {
     getSnapshots
 } from '@/lib/fabricator/wiring/snapshot/AdvisorySnapshot';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/shared/ui/ui/button';
 import { Activity, AlertTriangle, CheckCircle, RefreshCw, Shield } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -90,12 +92,25 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
     ]);
 
     const [lastRefresh, setLastRefresh] = useState(new Date());
+    const [migrationMode, setMigrationMode] = useState<{
+        mode: string;
+        readSource: string;
+        allowsWritesToV1: boolean;
+        allowsWritesToV2: boolean;
+        derivedFromEventHash: string;
+    } | null>(null);
+    const [drift, setDrift] = useState<{
+        drift_rate: number;
+        mismatch_count: number;
+        sample_size: number;
+        created_at: string;
+    } | null>(null);
 
     useEffect(() => {
-        loadData();
+        void loadData();
     }, []);
 
-    const loadData = () => {
+    const loadData = async () => {
         try {
             const snapshots = getSnapshots();
             const tier1 = snapshots.filter(s => s.tier === 'tier1');
@@ -110,6 +125,33 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
                 tier2: tier2.length,
                 avgConfidence: Math.round(avgConf * 100)
             });
+
+            // Migration mode (event-derived)
+            try {
+                const mode = await MigrationModeService.getInstance().getCurrentMode();
+                setMigrationMode({
+                    mode: mode.mode,
+                    readSource: mode.readSource,
+                    allowsWritesToV1: mode.allowsWritesToV1,
+                    allowsWritesToV2: mode.allowsWritesToV2,
+                    derivedFromEventHash: mode.derivedFromEventHash
+                });
+            } catch (e) {
+                console.warn('[ConstitutionalHealthDashboard] Failed to derive migration mode:', e);
+            }
+
+            // Latest drift report (if monitor is running)
+            try {
+                const { data } = await (supabase as any)
+                    .from('fabricator_dual_write_consistency_reports')
+                    .select('drift_rate,mismatch_count,sample_size,created_at')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+                if (data) setDrift(data);
+            } catch (e) {
+                console.warn('[ConstitutionalHealthDashboard] Failed to load drift report:', e);
+            }
 
             setLastRefresh(new Date());
         } catch (error) {
@@ -193,6 +235,57 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
                             <span className="text-xs text-slate-500">{metric.reference}</span>
                         </div>
                     ))}
+                </div>
+            </section>
+
+            {/* Migration Health */}
+            <section className="mb-8">
+                <h2 className="text-lg font-semibold text-amber-300 mb-4">🔗 Fabricator Migration Health</h2>
+                <div className="bg-slate-800/50 rounded-lg p-5 border border-amber-600/20">
+                    {migrationMode ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <div className="text-xs text-slate-400 uppercase tracking-wider">Mode</div>
+                                <div className="text-amber-200 font-semibold">{migrationMode.mode}</div>
+                                <div className="text-xs text-slate-500 mt-1">Read source: {migrationMode.readSource}</div>
+                            </div>
+                            <div>
+                                <div className="text-xs text-slate-400 uppercase tracking-wider">Writes</div>
+                                <div className="text-slate-200">
+                                    v1:{' '}
+                                    <span className={migrationMode.allowsWritesToV1 ? 'text-emerald-400' : 'text-red-400'}>
+                                        {migrationMode.allowsWritesToV1 ? 'allowed' : 'blocked'}
+                                    </span>
+                                    {'  '}| v2:{' '}
+                                    <span className={migrationMode.allowsWritesToV2 ? 'text-emerald-400' : 'text-red-400'}>
+                                        {migrationMode.allowsWritesToV2 ? 'allowed' : 'blocked'}
+                                    </span>
+                                </div>
+                                <div className="text-xs text-slate-500 mt-1 font-mono truncate">
+                                    event: {migrationMode.derivedFromEventHash}
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-slate-400 text-sm">Migration mode not available.</div>
+                    )}
+
+                    <div className="mt-4 border-t border-slate-700 pt-4">
+                        {drift ? (
+                            <div className="flex items-center justify-between text-sm">
+                                <div className="text-slate-200">
+                                    Drift:{' '}
+                                    <span className={drift.drift_rate <= 0.001 ? 'text-emerald-400' : 'text-amber-400'}>
+                                        {(drift.drift_rate * 100).toFixed(3)}%
+                                    </span>
+                                    {'  '}({drift.mismatch_count}/{drift.sample_size})
+                                </div>
+                                <div className="text-xs text-slate-500">{new Date(drift.created_at).toLocaleString()}</div>
+                            </div>
+                        ) : (
+                            <div className="text-slate-500 text-sm">No drift report found (monitor not running yet).</div>
+                        )}
+                    </div>
                 </div>
             </section>
 

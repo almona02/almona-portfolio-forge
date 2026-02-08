@@ -339,7 +339,7 @@ export class OptimizedCanvasManager {
         }
     } else {
         // Iterate Scene Graph
-        const { rectangles } = this.geometry;
+        const { rectangles, lines, arcs, circles, polygons, splines } = this.geometry;
         
         // 1. Render Rectangles (Egyptian Windows/Doors)
         rectangles.forEach(rect => {
@@ -351,16 +351,118 @@ export class OptimizedCanvasManager {
                  // Use global template for now, but in future use rect.type mapping
                  this.renderEgyptianTemplate(ctx, this.templateId, rect, this.currentLOD);
             } else {
-                // Standard CAD Rendering (Simple Lines)
-                ctx.strokeStyle = '#000';
+                // Standard CAD Rendering — use light color for dark background
+                ctx.strokeStyle = '#e2e8f0';
                 ctx.lineWidth = 2;
                 ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
             }
         });
+
+        // 2. Render Lines
+        if (lines && lines.length > 0) {
+            lines.forEach(line => {
+                ctx.beginPath();
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1.5;
+
+                // Set dash pattern based on line type
+                if (line.type === 'dashed') {
+                    ctx.setLineDash([8, 4]);
+                } else if (line.type === 'dotted') {
+                    ctx.setLineDash([2, 4]);
+                } else {
+                    ctx.setLineDash([]);
+                }
+
+                ctx.moveTo(line.start.x, line.start.y);
+                ctx.lineTo(line.end.x, line.end.y);
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset
+            });
+        }
+
+        // 3. Render Circles
+        if (circles && circles.length > 0) {
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([]);
+            circles.forEach(circle => {
+                ctx.beginPath();
+                ctx.arc(circle.cx, circle.cy, circle.r, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+        }
+
+        // 4. Render Arcs
+        if (arcs && arcs.length > 0) {
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([]);
+            arcs.forEach(arc => {
+                ctx.beginPath();
+                ctx.arc(arc.cx, arc.cy, arc.r, arc.startAngle, arc.endAngle);
+                ctx.stroke();
+            });
+        }
+
+        // 5. Render Polygons
+        if (polygons && polygons.length > 0) {
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([]);
+            polygons.forEach(polygon => {
+                if (polygon.points.length < 2) return;
+                ctx.beginPath();
+                ctx.moveTo(polygon.points[0].x, polygon.points[0].y);
+                for (let i = 1; i < polygon.points.length; i++) {
+                    ctx.lineTo(polygon.points[i].x, polygon.points[i].y);
+                }
+                if (polygon.closed) {
+                    ctx.closePath();
+                }
+                ctx.stroke();
+            });
+        }
+
+        // 6. Render Splines (quadratic Bézier through control points)
+        if (splines && splines.length > 0) {
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([]);
+            splines.forEach(spline => {
+                const pts = spline.controlPoints;
+                if (pts.length < 2) return;
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+
+                if (pts.length === 2) {
+                    // Straight line fallback
+                    ctx.lineTo(pts[1].x, pts[1].y);
+                } else {
+                    // Quadratic Bézier through midpoints
+                    for (let i = 0; i < pts.length - 1; i++) {
+                        const cp = pts[i];
+                        const next = pts[i + 1];
+                        const midX = (cp.x + next.x) / 2;
+                        const midY = (cp.y + next.y) / 2;
+                        ctx.quadraticCurveTo(cp.x, cp.y, midX, midY);
+                    }
+                    // Final segment to last point
+                    const last = pts[pts.length - 1];
+                    ctx.lineTo(last.x, last.y);
+                }
+
+                if (spline.closed) {
+                    ctx.closePath();
+                }
+                ctx.stroke();
+            });
+        }
     }
 
     ctx.restore();
   }
+
   
   /**
    * Viewport Culling Check

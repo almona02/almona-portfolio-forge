@@ -1,7 +1,10 @@
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { useDeletePose, usePositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { trackError } from '@/lib/performance-monitoring';
+import { mapPositionRowToWindowUnit } from '@/lib/supabase/fabricatorClientV2';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -26,7 +29,7 @@ import {
 } from '@/shared/ui/ui/dialog';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { ScrollArea } from '@/shared/ui/ui/scroll-area';
+// ScrollArea replaced by TanStack Virtual
 import {
     Select,
     SelectContent,
@@ -42,11 +45,12 @@ import {
     TableHeader,
     TableRow,
 } from '@/shared/ui/ui/table';
-import { useJobsStore } from '@/store/jobsStore';
 import type { WindowUnit } from '@/types/fabricator';
-import { ArrowLeft, ArrowRight, CheckSquare, Eye, Layers, MapPin, Pencil, Search, Trash2, X } from 'lucide-react';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { CheckSquare, Eye, Layers, MapPin, Pencil, Search, Trash2, X } from 'lucide-react';
+import React, { memo, useCallback, useDeferredValue, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PoseQuickEditModal } from './PoseQuickEditModal';
 
 interface PositionsGridProps {
   currentProject: WindowUnit | null;
@@ -62,15 +66,24 @@ interface PositionsGridProps {
  * - Supports quick filtering by current project and text search
  */
 const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }) => {
-  const { jobs, setSelectedJob, deleteJob, addOrUpdateJob, bulkUpdateJobs, bulkDeleteJobs } = useJobsStore();
+  // V2 only — React Query as single source of truth (useJobsStore removed)
+  const { data: positionsRaw = [] } = usePositions(null);
+  const deletePoseMutation = useDeletePose();
+  const upsertPose = useUpsertPose();
   const { dispatch: workspaceDispatch } = useFabricatorWorkspace();
   const navigate = useNavigate();
-  const [page, setPage] = useState(1);
-  const [pageSize] = useState(100);
+
+  const jobs = useMemo(() => {
+    return positionsRaw.map((row: any) => mapPositionRowToWindowUnit(row)).filter((u): u is WindowUnit => u != null);
+  }, [positionsRaw]);
   const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearchTerm = useDeferredValue(searchTerm);
   const [limitToCurrentProject, setLimitToCurrentProject] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<WindowUnit | null>(null);
+  // Inline edit via PoseQuickEditModal
+  const [editingPose, setEditingPose] = useState<WindowUnit | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   // Bulk Actions State
   const [selectedJobIds, setSelectedJobIds] = useState<Set<string>>(new Set());
@@ -95,8 +108,8 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
       list = list.filter((job) => job.orderNumber === currentProject.orderNumber);
     }
 
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
+    if (deferredSearchTerm.trim()) {
+      const term = deferredSearchTerm.toLowerCase();
       list = list.filter((job) => {
         const meta = job.positionMeta || {};
         return (
@@ -112,56 +125,50 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
     }
 
     return list;
-  }, [jobs, currentProject, limitToCurrentProject, searchTerm]);
+  }, [jobs, currentProject, limitToCurrentProject, deferredSearchTerm]);
 
   const totalRows = filteredJobs.length;
-  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
-  const currentPage = Math.min(page, totalPages);
-
-  const pageSlice = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    const end = start + pageSize;
-    return filteredJobs.slice(start, end);
-  }, [filteredJobs, currentPage, pageSize]);
 
   const totalPoses = useMemo(
     () => filteredJobs.reduce((sum, job) => sum + (job.quantity || 1), 0),
     [filteredJobs],
   );
 
-  // ✅ PERFORMANCE: Memoize handlers to prevent unnecessary re-renders
+  // ─── TanStack Virtual ──────────────────────────────────────────
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const ROW_HEIGHT = 36; // h-9 = 36px
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredJobs.length,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 15,
+  });
+
   const handleViewJob = useCallback((job: WindowUnit) => {
     try {
-      // Persist any active project changes before switching focus
-      if (currentProject) {
-        addOrUpdateJob(currentProject);
-      }
-      setSelectedJob(job.id);
-      workspaceDispatch({
-        type: 'SET_CURRENT_PROJECT',
-        payload: job,
-      });
-      navigate(`/fabricator/workflow/engineering-bay/${job.id}`, {
-        state: { jobId: job.id, startTab: 'design' },
-      });
+      // Save current project state before navigating away
+      if (currentProject) void upsertPose.mutateAsync({ windowUnit: currentProject });
+      workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: job });
+      const projectKey = (job as WindowUnit & { projectId?: string }).projectId ?? job.projectCode ?? job.orderNumber;
+      navigate(fabricatorRoutes.poseDesign(projectKey, job.id), { state: { jobId: job.id, startTab: 'design' } });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       trackError('PositionsGrid', 'view_job', err.message);
     }
-  }, [currentProject, addOrUpdateJob, setSelectedJob, workspaceDispatch, navigate]);
+  }, [currentProject, upsertPose, workspaceDispatch, navigate]);
 
   const handleDeleteClick = useCallback((job: WindowUnit) => {
     setJobToDelete(job);
     setDeleteConfirmOpen(true);
   }, []);
 
-  const handleConfirmDelete = useCallback(() => {
+  const handleConfirmDelete = useCallback(async () => {
     try {
       if (jobToDelete) {
-        deleteJob(jobToDelete.id);
+        await deletePoseMutation.mutateAsync(jobToDelete.id);
         setJobToDelete(null);
         setDeleteConfirmOpen(false);
-        // Remove from selection if it was selected
         if (selectedJobIds.has(jobToDelete.id)) {
           const next = new Set(selectedJobIds);
           next.delete(jobToDelete.id);
@@ -172,7 +179,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
       const err = error instanceof Error ? error : new Error(String(error));
       trackError('PositionsGrid', 'delete_job', err.message);
     }
-  }, [jobToDelete, deleteJob, selectedJobIds]);
+  }, [jobToDelete, deletePoseMutation, selectedJobIds]);
 
   // Bulk Action Handlers
   const handleSelectAll = useCallback((checked: boolean) => {
@@ -198,40 +205,33 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
 
   const handleBulkUpdate = useCallback(async () => {
     if (selectedJobIds.size === 0) return;
-    
     try {
       const updates: Partial<WindowUnit> = {};
-      
       switch (bulkEditField) {
-        case 'status':
-          updates.status = bulkEditValue as any;
-          break;
-        case 'systemPack':
-          updates.systemPackId = bulkEditValue;
-          break;
-        case 'color':
-          updates.color = bulkEditValue;
-          break;
+        case 'status': updates.status = bulkEditValue as WindowUnit['status']; break;
+        case 'systemPack': updates.systemPackId = bulkEditValue; break;
+        case 'color': updates.color = bulkEditValue; break;
       }
-      
-      await bulkUpdateJobs(Array.from(selectedJobIds), updates);
+      for (const id of selectedJobIds) {
+        const job = jobs.find((j) => j.id === id);
+        if (job) await upsertPose.mutateAsync({ windowUnit: { ...job, ...updates } });
+      }
       setBulkEditOpen(false);
-      setSelectedJobIds(new Set()); // Clear selection after update
-      
+      setSelectedJobIds(new Set());
     } catch (error) {
-       console.error("Bulk Update Failed", error);
+      console.error('Bulk Update Failed', error);
     }
-  }, [selectedJobIds, bulkEditField, bulkEditValue, bulkUpdateJobs]);
+  }, [selectedJobIds, bulkEditField, bulkEditValue, jobs, upsertPose]);
 
   const handleBulkDelete = useCallback(async () => {
     setIsBulkDeleting(true);
     try {
-       await bulkDeleteJobs(Array.from(selectedJobIds));
-       setSelectedJobIds(new Set());
+      for (const id of selectedJobIds) await deletePoseMutation.mutateAsync(id);
+      setSelectedJobIds(new Set());
     } finally {
-       setIsBulkDeleting(false);
+      setIsBulkDeleting(false);
     }
-  }, [selectedJobIds, bulkDeleteJobs]);
+  }, [selectedJobIds, deletePoseMutation]);
 
   if (jobs.length === 0) {
     return null;
@@ -318,38 +318,18 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between text-[11px] text-amber-600/70">
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-7 w-7"
-              disabled={currentPage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              <ArrowLeft className="h-3 w-3" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-7 w-7"
-              disabled={currentPage >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            >
-              <ArrowRight className="h-3 w-3" />
-            </Button>
-          </div>
+          <span>{totalRows} positions</span>
         </div>
 
-        <ScrollArea className="h-[260px] rounded-md border border-amber-600/30">
+        {/* Virtualized Table */}
+        <div className="rounded-md border border-amber-600/30 overflow-hidden">
+          {/* Sticky Header */}
           <Table className="min-w-[950px] text-[10px]">
             <TableHeader>
               <TableRow className="bg-[#0f0f0f]/80 h-8">
                 <TableHead className="w-8 px-2 py-1.5">
                   <Checkbox 
-                    checked={pageSlice.length > 0 && pageSlice.every(j => selectedJobIds.has(j.id))}
+                    checked={filteredJobs.length > 0 && filteredJobs.every(j => selectedJobIds.has(j.id))}
                     onCheckedChange={(checked) => handleSelectAll(checked === true)}
                     className="border-amber-600/50 data-[state=checked]:bg-amber-500 data-[state=checked]:text-black"
                   />
@@ -371,144 +351,180 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                 <TableHead className="w-20 px-2 py-1.5 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {pageSlice.map((job) => {
-                const meta = job.positionMeta || {};
-                const packLabel =
-                  (job.systemPackId && packLabelById.get(job.systemPackId)) || job.systemPackId;
-                const isSelected = selectedJobIds.has(job.id);
-                
-                return (
-                  <TableRow key={job.id} className={`h-9 ${isSelected ? 'bg-amber-900/20' : ''}`}>
-                    <TableCell className="px-2 py-1">
-                      <Checkbox 
-                        checked={isSelected}
-                        onCheckedChange={(checked) => handleSelectRow(job.id, checked === true)}
-                        className="border-amber-600/50 data-[state=checked]:bg-amber-500 data-[state=checked]:text-black"
-                      />
-                    </TableCell>
-                    <TableCell className="px-2 py-1">
-                      <div className="flex flex-col gap-0">
-                        <span className="font-mono text-[9px] text-amber-200 leading-tight">
-                          {job.orderNumber}
-                        </span>
-                        <span className="text-[9px] text-amber-600/70 leading-tight">{job.posNumber}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-2 py-1">
-                      <div className="flex flex-col gap-0">
-                        {job.projectCode && (
-                          <span className="text-[9px] text-amber-300 truncate leading-tight">
-                            {job.projectCode}
-                          </span>
-                        )}
-                        {job.positionCode && (
-                          <span className="text-[9px] text-amber-600/70 truncate leading-tight">
-                            {job.positionCode}
-                          </span>
-                        )}
-                        {!job.projectCode && !job.positionCode && (
-                          <span className="text-[9px] text-amber-600/70 italic">—</span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-2 py-1">
-                      {packLabel ? (
-                        <span className="text-[9px] text-amber-200 truncate leading-tight">{packLabel}</span>
-                      ) : (
-                        <span className="text-[9px] text-amber-600/70 italic">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="px-2 py-1 text-amber-200 truncate text-[9px] leading-tight">
-                      {job.type.replace('_', ' ').substring(0, 12)}
-                    </TableCell>
-                    <TableCell className="px-2 py-1 text-[9px] leading-tight">
-                      {job.overallWidth}×{job.overallHeight}
-                    </TableCell>
-                    <TableCell className="px-2 py-1">
-                      <div className="flex flex-col gap-0">
-                        <span className="text-[9px] text-amber-200 leading-tight truncate">
-                          {String(job.glazing?.type || '—')}
-                        </span>
-                        <span className="text-[8px] text-amber-600/70 leading-tight truncate">
-                          {job.flyScreenType || 'none'}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-2 py-1 text-right">
-                      <span className="font-mono text-[9px]">{job.quantity || 1}</span>
-                    </TableCell>
-                    <TableCell className="px-2 py-1">
-                      <div className="space-y-0">
-                        <div className="flex flex-wrap gap-0.5">
-                          {meta.flatNumber && (
-                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight">
-                              F{meta.flatNumber}
-                            </Badge>
-                          )}
-                          {meta.floor && (
-                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight">
-                              {meta.floor}
-                            </Badge>
-                          )}
-                          {meta.buildingBlock && (
-                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight">
-                              B{meta.buildingBlock}
-                            </Badge>
-                          )}
-                          {meta.roomOrZone && (
-                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight truncate max-w-[40px]">
-                              {String(meta.roomOrZone).substring(0, 4)}
-                            </Badge>
-                          )}
-                        </div>
-                        {meta.remarks && (
-                          <div className="text-[8px] text-amber-600/70 truncate mt-0.5 max-w-[120px]">
-                            {meta.remarks}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-2 py-1">
-                      <Badge className="text-[8px] capitalize bg-[#0f0f0f]/60 text-amber-200 border border-amber-600/30 px-1.5 py-0 h-4 leading-tight">
-                        {job.status.substring(0, 6)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-2 py-1 text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 w-6 p-0 text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10"
-                          onClick={() => handleViewJob(job)}
-                          title="Focus on this position"
-                        >
-                          <Eye className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 w-6 p-0 text-red-400 hover:text-red-300 hover:bg-red-900/40"
-                          onClick={() => handleDeleteClick(job)}
-                          title="Delete position"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              {pageSlice.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={11} className="text-center text-[10px] text-amber-600/70 py-4">
-                    No positions found for the current filters.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
           </Table>
-        </ScrollArea>
+
+          {/* Virtualized Body */}
+          <div
+            ref={scrollContainerRef}
+            className="h-[260px] overflow-auto"
+          >
+            <div
+              style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}
+            >
+              <Table className="min-w-[950px] text-[10px]">
+                <TableBody>
+                  {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    const job = filteredJobs[virtualRow.index];
+                    if (!job) return null;
+                    const meta = job.positionMeta || {};
+                    const packLabel =
+                      (job.systemPackId && packLabelById.get(job.systemPackId)) || job.systemPackId;
+                    const isSelected = selectedJobIds.has(job.id);
+                    
+                    return (
+                      <TableRow
+                        key={job.id}
+                        data-index={virtualRow.index}
+                        className={`h-9 ${isSelected ? 'bg-amber-900/20' : ''}`}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: `${virtualRow.size}px`,
+                          transform: `translateY(${virtualRow.start}px)`,
+                        }}
+                      >
+                        <TableCell className="w-8 px-2 py-1">
+                          <Checkbox 
+                            checked={isSelected}
+                            onCheckedChange={(checked) => handleSelectRow(job.id, checked === true)}
+                            className="border-amber-600/50 data-[state=checked]:bg-amber-500 data-[state=checked]:text-black"
+                          />
+                        </TableCell>
+                        <TableCell className="w-20 px-2 py-1">
+                          <div className="flex flex-col gap-0">
+                            <span className="font-mono text-[9px] text-amber-200 leading-tight">
+                              {job.orderNumber}
+                            </span>
+                            <span className="text-[9px] text-amber-600/70 leading-tight">{job.posNumber}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-20 px-2 py-1">
+                          <div className="flex flex-col gap-0">
+                            {job.projectCode && (
+                              <span className="text-[9px] text-amber-300 truncate leading-tight">
+                                {job.projectCode}
+                              </span>
+                            )}
+                            {job.positionCode && (
+                              <span className="text-[9px] text-amber-600/70 truncate leading-tight">
+                                {job.positionCode}
+                              </span>
+                            )}
+                            {!job.projectCode && !job.positionCode && (
+                              <span className="text-[9px] text-amber-600/70 italic">--</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-24 px-2 py-1">
+                          {packLabel ? (
+                            <span className="text-[9px] text-amber-200 truncate leading-tight">{packLabel}</span>
+                          ) : (
+                            <span className="text-[9px] text-amber-600/70 italic">--</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="w-20 px-2 py-1 text-amber-200 truncate text-[9px] leading-tight">
+                          {job.type.replace('_', ' ').substring(0, 12)}
+                        </TableCell>
+                        <TableCell className="w-20 px-2 py-1 text-[9px] leading-tight">
+                          {job.overallWidth}x{job.overallHeight}
+                        </TableCell>
+                        <TableCell className="w-24 px-2 py-1">
+                          <div className="flex flex-col gap-0">
+                            <span className="text-[9px] text-amber-200 leading-tight truncate">
+                              {String(job.glazing?.type || '--')}
+                            </span>
+                            <span className="text-[8px] text-amber-600/70 leading-tight truncate">
+                              {job.flyScreenType || 'none'}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-12 px-2 py-1 text-right">
+                          <span className="font-mono text-[9px]">{job.quantity || 1}</span>
+                        </TableCell>
+                        <TableCell className="w-40 px-2 py-1">
+                          <div className="space-y-0">
+                            <div className="flex flex-wrap gap-0.5">
+                              {meta.flatNumber && (
+                                <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight">
+                                  F{meta.flatNumber}
+                                </Badge>
+                              )}
+                              {meta.floor && (
+                                <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight">
+                                  {meta.floor}
+                                </Badge>
+                              )}
+                              {meta.buildingBlock && (
+                                <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight">
+                                  B{meta.buildingBlock}
+                                </Badge>
+                              )}
+                              {meta.roomOrZone && (
+                                <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight truncate max-w-[40px]">
+                                  {String(meta.roomOrZone).substring(0, 4)}
+                                </Badge>
+                              )}
+                            </div>
+                            {meta.remarks && (
+                              <div className="text-[8px] text-amber-600/70 truncate mt-0.5 max-w-[120px]">
+                                {meta.remarks}
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-16 px-2 py-1">
+                          <Badge className="text-[8px] capitalize bg-[#0f0f0f]/60 text-amber-200 border border-amber-600/30 px-1.5 py-0 h-4 leading-tight">
+                            {job.status.substring(0, 6)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="w-20 px-2 py-1 text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10"
+                              onClick={() => { setEditingPose(job); setEditModalOpen(true); }}
+                              title="Quick edit metadata"
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10"
+                              onClick={() => handleViewJob(job)}
+                              title="Focus on this position"
+                            >
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 text-red-400 hover:text-red-300 hover:bg-red-900/40"
+                              onClick={() => handleDeleteClick(job)}
+                              title="Delete position"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  {filteredJobs.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={11} className="text-center text-[10px] text-amber-600/70 py-4">
+                        No positions found for the current filters.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </div>
 
         {/* Bulk Edit Dialog */}
         <Dialog open={bulkEditOpen} onOpenChange={setBulkEditOpen}>
@@ -604,6 +620,13 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Inline Edit Modal */}
+        <PoseQuickEditModal
+          pose={editingPose}
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+        />
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>

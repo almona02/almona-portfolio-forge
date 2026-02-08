@@ -1079,6 +1079,150 @@ export interface Database {
           updated_at?: string
         }
       }
+      fabricator_projects_v2: {
+        Row: {
+          id: string
+          owner_user_id: string
+          project_code: string
+          project_name: string
+          client_name: string
+          site_name: string | null
+          currency: string
+          region: string
+          system_pack_id: string
+          status: string
+          meta: Record<string, unknown> | null
+          tier: string
+          deterministic: boolean
+          constitutional_hash: string | null
+          audit_trail: unknown
+          last_validated_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_user_id: string
+          project_code: string
+          project_name: string
+          client_name: string
+          site_name?: string | null
+          currency?: string
+          region?: string
+          system_pack_id: string
+          status?: string
+          meta?: Record<string, unknown> | null
+          tier?: string
+          deterministic?: boolean
+          constitutional_hash?: string | null
+          audit_trail?: unknown
+          last_validated_at?: string | null
+        }
+        Update: {
+          project_code?: string
+          project_name?: string
+          client_name?: string
+          site_name?: string | null
+          currency?: string
+          region?: string
+          system_pack_id?: string
+          status?: string
+          meta?: Record<string, unknown> | null
+          tier?: string
+          deterministic?: boolean
+          constitutional_hash?: string | null
+          audit_trail?: unknown
+          last_validated_at?: string | null
+          updated_at?: string
+        }
+      }
+      fabricator_positions_v2: {
+        Row: {
+          id: string
+          project_id: string | null
+          owner_user_id: string
+          order_number: string | null
+          pos_number: string | null
+          type: string | null
+          overall_width_mm: number | null
+          overall_height_mm: number | null
+          color: string | null
+          glazing: Record<string, unknown> | null
+          system_pack_id: string | null
+          status: string
+          quantity: number
+          position_meta: Record<string, unknown> | null
+          meta: Record<string, unknown> | null
+          optimization: Record<string, unknown> | null
+          grid: Record<string, unknown> | null
+          components: unknown
+          hardware: Record<string, unknown> | null
+          selected_preset: string | null
+          window_unit: Record<string, unknown> | null
+          tier: string
+          deterministic: boolean
+          constitutional_hash: string | null
+          audit_trail: unknown
+          last_validated_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          project_id?: string | null
+          owner_user_id: string
+          order_number?: string | null
+          pos_number?: string | null
+          type?: string | null
+          overall_width_mm?: number | null
+          overall_height_mm?: number | null
+          color?: string | null
+          glazing?: Record<string, unknown> | null
+          system_pack_id?: string | null
+          status?: string
+          quantity?: number
+          position_meta?: Record<string, unknown> | null
+          meta?: Record<string, unknown> | null
+          optimization?: Record<string, unknown> | null
+          grid?: Record<string, unknown> | null
+          components?: unknown
+          hardware?: Record<string, unknown> | null
+          selected_preset?: string | null
+          window_unit?: Record<string, unknown> | null
+          tier?: string
+          deterministic?: boolean
+          constitutional_hash?: string | null
+          audit_trail?: unknown
+          last_validated_at?: string | null
+        }
+        Update: {
+          project_id?: string | null
+          order_number?: string | null
+          pos_number?: string | null
+          type?: string | null
+          overall_width_mm?: number | null
+          overall_height_mm?: number | null
+          color?: string | null
+          glazing?: Record<string, unknown> | null
+          system_pack_id?: string | null
+          status?: string
+          quantity?: number
+          position_meta?: Record<string, unknown> | null
+          meta?: Record<string, unknown> | null
+          optimization?: Record<string, unknown> | null
+          grid?: Record<string, unknown> | null
+          components?: unknown
+          hardware?: Record<string, unknown> | null
+          selected_preset?: string | null
+          window_unit?: Record<string, unknown> | null
+          tier?: string
+          deterministic?: boolean
+          constitutional_hash?: string | null
+          audit_trail?: unknown
+          last_validated_at?: string | null
+          updated_at?: string
+        }
+      }
       fabricator_customers: {
         Row: {
           id: string

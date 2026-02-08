@@ -29,7 +29,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
 import { AlertCircle, Box, ChevronDown, ChevronRight, Command, Cpu, Keyboard, Layers, Menu, Ruler, Settings, Sparkles, Wand2 } from 'lucide-react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -59,6 +59,18 @@ import { MacroRecorderPanel } from './MacroRecorderPanel';
 import { BOMSidebar } from './bom/BOMSidebar';
 import { WizardModeWrapper } from './wizard/WizardModeWrapper';
 
+/**
+ * Swappable component interfaces.
+ *
+ * Every visual subsystem (canvas, preview) can be replaced by passing
+ * a component that satisfies the corresponding interface. If omitted,
+ * the defaults (SmartDrawCanvas, Window3DGenerator) are used.
+ *
+ * @see src/lib/fabricator/interfaces/ for the full contracts
+ */
+import type { DesignCanvasComponent } from '@/lib/fabricator/interfaces/IDesignCanvas';
+import type { PreviewPanelComponent } from '@/lib/fabricator/interfaces/IPreviewPanel';
+
 interface EngineeringBayProps {
     project: WindowUnit | null;
     onDesignComplete: (components: WindowComponent[]) => void;
@@ -69,6 +81,10 @@ interface EngineeringBayProps {
     onBackToMeasuring?: () => void;
     onAddNewPose?: () => void;
     mode?: 'expert' | 'wizard';
+    /** Swappable design canvas (default: SmartDrawCanvas) */
+    CanvasComponent?: DesignCanvasComponent;
+    /** Swappable preview panel (default: Window3DGenerator via React.lazy) */
+    PreviewComponent?: PreviewPanelComponent;
 }
 
 export const EngineeringBay: React.FC<EngineeringBayProps> = ({
@@ -80,12 +96,14 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     onBackToMeasuring,
     onAddNewPose,
     mode = 'expert',
+    CanvasComponent,
+    PreviewComponent,
 }) => {
     const { t } = useTranslation('fabricator');
 
     // --- Logic Hook ---
     const {
-        liveProject,
+        liveProject: liveProjectImmediate,
         currentGrid,
         activeSystemPackId,
         bomData,
@@ -96,6 +114,11 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         profiles,
         onDesignComplete
     });
+
+    // Defer the heavy 3D preview input so grid edits stay snappy.
+    // The 3D preview will update on the next idle frame instead of
+    // blocking the SmartDrawCanvas interaction.
+    const liveProject = useDeferredValue(liveProjectImmediate);
 
     // --- UI State Management (move designMode first for hooks) ---
     const [designMode, setDesignMode] = useState<'smartdraw' | 'drafting'>('smartdraw');
@@ -378,6 +401,34 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                         <CardTitle className="flex items-center gap-3">
                             <Cpu className="h-6 w-6 text-orange-400" />
                             <span className="text-xl">{t('engineering_bay.title', 'Engineering Bay')}</span>
+                            {/* ─── Pose Switcher ─────────────────────────────── */}
+                            {relatedPositions && relatedPositions.length > 0 && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-7 px-2 text-xs border-gray-700 text-gray-300 hover:border-orange-500 hover:text-orange-300"
+                                        >
+                                            {project?.posNumber || 'Pose'} <ChevronDown className="h-3 w-3 ml-1" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="start" className="w-56 bg-gray-900 border-gray-700 text-gray-200">
+                                        {relatedPositions.map((pos) => (
+                                            <DropdownMenuItem
+                                                key={pos.id}
+                                                onClick={() => onSelectPosition?.(pos.id)}
+                                                className="focus:bg-gray-800 cursor-pointer"
+                                            >
+                                                <div className="flex justify-between w-full">
+                                                    <span className="font-mono text-xs">{pos.posNumber}</span>
+                                                    <span className="text-[10px] text-gray-500">{pos.overallWidth}x{pos.overallHeight}</span>
+                                                </div>
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -682,12 +733,22 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             <Card className="bg-gray-900/50">
                                 <CardHeader><CardTitle className="text-base">{t('engineering_bay.structure', 'Structure')}</CardTitle></CardHeader>
                                 <CardContent>
-                                    <SmartDrawCanvas
-                                        width={project.overallWidth}
-                                        height={project.overallHeight}
-                                        grid={currentGrid}
-                                        onGridChange={actions.updateGrid}
-                                    />
+                                    {CanvasComponent ? (
+                                        <CanvasComponent
+                                            width={project.overallWidth}
+                                            height={project.overallHeight}
+                                            grid={currentGrid}
+                                            onGridChange={actions.updateGrid}
+                                            systemPackId={activeSystemPackId}
+                                        />
+                                    ) : (
+                                        <SmartDrawCanvas
+                                            width={project.overallWidth}
+                                            height={project.overallHeight}
+                                            grid={currentGrid}
+                                            onGridChange={actions.updateGrid}
+                                        />
+                                    )}
                                 </CardContent>
                             </Card>
 
@@ -717,21 +778,28 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <CardContent>
                                     <div className="w-full h-[350px] lg:h-[600px] rounded-lg overflow-hidden border border-gray-800">
                                         {liveProject && (
-                                            <React.Suspense fallback={
-                                                <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
-                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-                                                    <span className="ml-3 text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
-                                                </div>
-                                            }>
-                                                <Window3DGenerator
+                                            PreviewComponent ? (
+                                                <PreviewComponent
                                                     windowUnit={liveProject}
-                                                    profiles={profiles}
-                                                    showControls={true}
-                                                    presentationMode={false}
-                                                    showErrorDetection={true}
-                                                    mode={isPro3D ? 'pro' : 'standard'}
+                                                    mode="operator"
                                                 />
-                                            </React.Suspense>
+                                            ) : (
+                                                <React.Suspense fallback={
+                                                    <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
+                                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+                                                        <span className="ml-3 text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
+                                                    </div>
+                                                }>
+                                                    <Window3DGenerator
+                                                        windowUnit={liveProject}
+                                                        profiles={profiles}
+                                                        showControls={true}
+                                                        presentationMode={false}
+                                                        showErrorDetection={true}
+                                                        mode={isPro3D ? 'pro' : 'standard'}
+                                                    />
+                                                </React.Suspense>
+                                            )
                                         )}
                                     </div>
                                 </CardContent>
