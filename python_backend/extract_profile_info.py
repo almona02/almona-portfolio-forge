@@ -32,16 +32,16 @@ except ImportError:
         print("Warning: pyodbc not available. MDB extraction may not work.")
 
 try:
-    import PyPDF2
-    HAS_PYPDF2 = True
+    import pypdf
+    HAS_PYPDF = True
 except ImportError:
-    HAS_PYPDF2 = False
+    HAS_PYPDF = False
     try:
         import pdfplumber
         HAS_PDFPLUMBER = True
     except ImportError:
         HAS_PDFPLUMBER = False
-        print("Warning: PyPDF2 and pdfplumber not available. PDF extraction may not work.")
+        print("Warning: pypdf and pdfplumber not available. PDF extraction may not work.")
 
 
 def extract_mdb_info(mdb_path: str) -> Dict[str, Any]:
@@ -144,9 +144,9 @@ def extract_pdf_info(pdf_path: str) -> Dict[str, Any]:
         return result
     
     try:
-        if HAS_PYPDF2:
+        if HAS_PYPDF:
             with open(pdf_path, 'rb') as file:
-                pdf_reader = PyPDF2.PdfReader(file)
+                pdf_reader = pypdf.PdfReader(file)
                 
                 result["metadata"] = {
                     "num_pages": len(pdf_reader.pages),
@@ -187,7 +187,7 @@ def extract_pdf_info(pdf_path: str) -> Dict[str, Any]:
                 
                 result["text"] = full_text
         else:
-            result["error"] = "No PDF library available. Install PyPDF2 or pdfplumber."
+            result["error"] = "No PDF library available. Install pypdf or pdfplumber."
             
     except Exception as e:
         result["error"] = str(e)
