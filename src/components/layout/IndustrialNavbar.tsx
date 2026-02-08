@@ -120,7 +120,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
   const businessNav = [
     // Prefer fabricator‑scoped aliases so operators stay inside the cockpit
     { name: t('fabricator:navbar.business_nav.customers', 'Customers'), path: "/fabricator/customers", icon: <Users className="h-4 w-4" /> },
-    { name: t('fabricator:navbar.business_nav.projects', 'Projects'), path: "/fabricator/projects", icon: <Factory className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.projects', 'Projects'), path: "/fabricator/studio/projects", icon: <Factory className="h-4 w-4" /> },
     { name: t('fabricator:navbar.business_nav.inventory', 'Inventory'), path: "/fabricator/inventory", icon: <Package className="h-4 w-4" /> },
     { name: t('fabricator:navbar.business_nav.profiles', 'Profiles & Accessories'), path: "/fabricator-workflow#inventory", icon: <Scissors className="h-4 w-4" /> },
     { name: t('fabricator:navbar.business_nav.quick_reports', 'Quick Reports'), path: "/reports", icon: <FileText className="h-4 w-4" /> },
@@ -171,7 +171,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       id: 'projects',
       label: 'Projects',
       icon: Factory,
-      path: '/fabricator/projects',
+      path: '/fabricator/studio/projects',
       description: 'Manage all window units and positions'
     },
     {
