@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { remnantMLPredictor } from '@/future/advisory/RemnantUsagePredictor';
+import { remnantMLPredictor } from '@/lib/ml/RemnantUsagePredictor';
 import type { Remnant } from '@/lib/inventory/RemnantManager';
 import { WorkspaceSyncService } from '@/lib/workspace/WorkspaceSyncService';
 import { RemnantManager } from '@/lib/inventory/RemnantManager';

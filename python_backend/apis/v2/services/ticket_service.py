@@ -60,7 +60,7 @@ class TicketService:
                 "machine_id": payload.machine_id,
                 "machine_serial_number": payload.machine_serial_number,
                 "user_id": str(user_id),
-                "status": TicketStatus.open.value,
+                "status": TicketStatus.OPEN.value,
                 "created_at": utcnow_iso(),
                 "updated_at": utcnow_iso(),
             }
@@ -142,7 +142,7 @@ class TicketService:
             "status": status.value,
             "updated_at": utcnow_iso(),
         }
-        if status in {TicketStatus.resolved, TicketStatus.closed}:
+        if status in {TicketStatus.RESOLVED, TicketStatus.CLOSED}:
             update["resolved_at"] = utcnow_iso()
             if resolution_summary:
                 update["resolution_summary"] = resolution_summary
@@ -158,7 +158,7 @@ class TicketService:
                 "assigned_to": str(assignee_id),
                 "assigned_by": str(assigned_by),
                 "assigned_at": utcnow_iso(),
-                "status": TicketStatus.in_progress.value,
+                "status": TicketStatus.IN_PROGRESS.value,
                 "updated_at": utcnow_iso(),
             }
             
