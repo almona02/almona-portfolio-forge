@@ -9,9 +9,12 @@
  */
 
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { usePose as usePoseV2, useProjectPositions } from '@/hooks/useFabricatorQueries';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { FeatureFlags } from '@/lib/featureFlags';
 import { useJobsStore } from '@/store/jobsStore';
 import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { EngineeringBay } from './EngineeringBay';
 
@@ -23,35 +26,38 @@ interface EngineeringBayWrapperProps {
 }
 
 export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () => {
-  const { projectId } = useParams<{ projectId?: string }>();
+  const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
+  const useV2 = FeatureFlags.FABRICATOR_READ_V2;
   const { state, dispatch } = useFabricatorWorkspace();
   const { jobs, setSelectedJob } = useJobsStore();
+  const effectivePoseId = poseId ?? projectId;
+  const { data: poseV2, isLoading: loadingPoseV2 } = usePoseV2(effectivePoseId ?? undefined);
 
-  // Get current project from context or find by ID
+  // Pose-centric: when v2 and route has poseId, load from usePose(poseId); else jobs + context
   const currentProject = useMemo<WindowUnit | null>(() => {
-    // If projectId is in route, try to find it in jobs
-    if (projectId) {
-      const foundJob = jobs.find(job => job.id === projectId);
-      if (foundJob) {
-        return foundJob;
-      }
+    if (useV2 && effectivePoseId && poseV2) return poseV2;
+    if (effectivePoseId) {
+      const foundJob = jobs.find((job) => job.id === effectivePoseId);
+      if (foundJob) return foundJob;
     }
-    
-    // Otherwise, use currentProject from context
     return state.currentProject;
-  }, [projectId, jobs, state.currentProject]);
+  }, [useV2, effectivePoseId, poseV2, jobs, state.currentProject]);
 
-  // Update context when projectId changes (in useEffect to avoid render-phase updates)
   useEffect(() => {
-    if (projectId) {
-      const foundJob = jobs.find(job => job.id === projectId);
-      if (foundJob) {
-        dispatch({ type: 'SET_CURRENT_PROJECT', payload: foundJob });
-        setSelectedJob(projectId);
+    if (effectivePoseId) {
+      if (useV2 && poseV2) {
+        dispatch({ type: 'SET_CURRENT_PROJECT', payload: poseV2 });
+        setSelectedJob(effectivePoseId);
+      } else {
+        const foundJob = jobs.find((job) => job.id === effectivePoseId);
+        if (foundJob) {
+          dispatch({ type: 'SET_CURRENT_PROJECT', payload: foundJob });
+          setSelectedJob(effectivePoseId);
+        }
       }
     }
-  }, [projectId, jobs, dispatch, setSelectedJob]);
+  }, [useV2, effectivePoseId, poseV2, jobs, dispatch, setSelectedJob]);
 
   // Get profiles from project or use empty array
   // Note: WindowUnit doesn't have a profiles property - profiles come from context or props
@@ -61,14 +67,21 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     return [];
   }, []);
 
-  // Get related positions (other units in the same project)
+  // Get related positions (sibling poses within the same project)
+  const resolvedProjectId = useMemo<string | undefined>(() => {
+    if (projectId) return projectId;
+    // Derive from the loaded pose when the route only has poseId
+    const cp = currentProject as WindowUnit & { projectId?: string } | null;
+    return cp?.projectId ?? cp?.projectCode ?? undefined;
+  }, [projectId, currentProject]);
+
+  const allSiblingPositions = useProjectPositions(resolvedProjectId);
+
   const relatedPositions = useMemo<WindowUnit[]>(() => {
     if (!currentProject) return [];
-    
-    // Find other jobs that might be related (same customer, same project group, etc.)
-    // For now, return empty array - can be enhanced later
-    return [];
-  }, [currentProject]);
+    // Filter out the currently-active pose
+    return allSiblingPositions.filter((wu) => wu.id !== currentProject.id);
+  }, [currentProject, allSiblingPositions]);
 
   // Handle design completion
   const handleDesignComplete = (components: WindowComponent[]) => {
@@ -84,26 +97,40 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     dispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });
     dispatch({ type: 'UPDATE_PROJECT_COMPONENTS', payload: components });
 
-    // Navigate to next step in workflow: Design
-    navigate('/fabricator/workflow/design');
+    // Navigate to next step (studio projects list)
+    navigate(fabricatorRoutes.studioProjects());
   };
 
-  // Handle back to measuring - navigate to new project wizard to start measurement
   const handleBackToMeasuring = () => {
-    // Navigate to workflow wizard to start a new measurement
-    // Note: There's no way to edit existing measurements, so we start a new one
-    navigate('/fabricator-workflow?new=true');
+    navigate(fabricatorRoutes.newProjectWizard());
   };
 
-  // Handle position selection
-  const handleSelectPosition = (id: string) => {
-    const foundJob = jobs.find(job => job.id === id);
-    if (foundJob) {
-      dispatch({ type: 'SET_CURRENT_PROJECT', payload: foundJob });
-      setSelectedJob(id);
-      navigate(`/fabricator/workflow/engineering-bay/${id}`);
+  const handleSelectPosition = useCallback((id: string) => {
+    if (useV2) {
+      // V2: navigate directly; usePoseV2 will load it from Supabase
+      const projKey = resolvedProjectId ?? 'default';
+      navigate(fabricatorRoutes.poseDesign(projKey, id));
+    } else {
+      const foundJob = jobs.find((job) => job.id === id);
+      if (foundJob) {
+        dispatch({ type: 'SET_CURRENT_PROJECT', payload: foundJob });
+        setSelectedJob(id);
+        const projectKey = (foundJob as WindowUnit & { projectId?: string }).projectId ?? foundJob.projectCode ?? foundJob.orderNumber;
+        navigate(fabricatorRoutes.poseDesign(projectKey, id));
+      }
     }
-  };
+  }, [useV2, resolvedProjectId, jobs, navigate, dispatch, setSelectedJob]);
+
+  if (useV2 && effectivePoseId && loadingPoseV2) {
+    return (
+      <div className="h-full w-full flex items-center justify-center bg-[#0a0a0a]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-500" />
+          <span className="text-amber-500 font-mono text-sm">Loading pose...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full w-full flex flex-col overflow-hidden">

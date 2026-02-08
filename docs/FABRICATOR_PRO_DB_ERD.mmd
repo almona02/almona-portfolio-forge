@@ -1,0 +1,107 @@
+%% Fabricator Pro core ERD (from migrations + src/types/database.ts)
+erDiagram
+  FABRICATOR_PROJECTS {
+    uuid id PK
+    uuid owner_user_id
+    text project_code
+    text project_name
+    text client_name
+    text system_pack_id
+    text status
+    jsonb meta
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  FABRICATOR_POSITIONS {
+    uuid id PK
+    uuid project_id FK
+    uuid owner_user_id
+    text order_number
+    text pos_number
+    text type
+    int overall_width_mm
+    int overall_height_mm
+    text color
+    jsonb glazing
+    text system_pack_id
+    text status
+    int quantity
+    jsonb position_meta
+    jsonb optimization
+    %% Extended columns expected by persistence/services (migration 059)
+    jsonb components
+    jsonb grid
+    jsonb hardware
+    text selected_preset
+    text project_code
+    text customer
+    jsonb meta
+    %% Alias columns for compatibility (migration 059)
+    text window_type
+    int overall_width
+    int overall_height
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  FABRICATOR_CUSTOMERS {
+    uuid id PK
+    uuid owner_user_id
+    text name
+    text contact_person
+    text email
+    text phone
+    text sector
+    jsonb billing_info
+    jsonb shipping_info
+    text notes
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  FABRICATOR_TEAM_MEMBERS {
+    uuid id PK
+    uuid owner_user_id
+    uuid member_profile_id
+    text role
+    bool is_active
+    jsonb permissions
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  FABRICATOR_PROJECT_MEMBERS {
+    uuid id PK
+    uuid project_id FK
+    uuid member_profile_id
+    text role
+    jsonb permissions
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  WORKSPACE_SNAPSHOTS {
+    uuid user_id PK
+    jsonb workspace_data
+    timestamptz last_modified
+  }
+
+  AUDIT_LOGS {
+    uuid id PK
+    uuid user_id
+    text action
+    text table_name
+    text record_id
+    jsonb old_values
+    jsonb new_values
+    text ip_address
+    text user_agent
+    timestamptz created_at
+  }
+
+  %% Relationships
+  FABRICATOR_PROJECTS ||--o{ FABRICATOR_POSITIONS : contains
+  FABRICATOR_PROJECTS ||--o{ FABRICATOR_PROJECT_MEMBERS : membership
+  FABRICATOR_TEAM_MEMBERS ||--o{ FABRICATOR_PROJECT_MEMBERS : can_join
+

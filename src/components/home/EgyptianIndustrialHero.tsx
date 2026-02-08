@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { ResponsiveImage } from '@/components/ui/ResponsiveImage';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface EgyptianIndustrialHeroProps {
   children: React.ReactNode;
@@ -16,20 +16,13 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hologramRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-  
-  // LCP FIX: Progressive image loading - don't block LCP
-  const [shouldLoadImage, setShouldLoadImage] = useState(false);
+
+  // LCP FIX: Progressive image loading - use native priority instead of artificial delay
+  const shouldLoadImage = true;
   const [imageLoaded, setImageLoaded] = useState(false);
-  
-  // Defer image loading until after LCP is determined (non-blocking)
-  useEffect(() => {
-    // Wait for LCP to be determined (typically 2-3 seconds after initial render)
-    // This ensures the hero content text is the LCP element, not the image
-    const timer = setTimeout(() => {
-      setShouldLoadImage(true);
-    }, 2500); // 2.5 seconds - after LCP window
-    return () => clearTimeout(timer);
-  }, []);
+
+  // No artificial delay needed - browser handles priority better
+
 
   // Debug: Log component mount (remove in production)
   useEffect(() => {
@@ -65,12 +58,12 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
       };
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
-      
+
       // Force initial render on mobile
       if (isMobileDevice) {
         setTimeout(() => resizeCanvas(), 100);
       }
-      
+
       const particleCount = isMobileDevice ? 8 : 20; // Fewer particles on mobile
       const hieroglyphCount = isMobileDevice ? 2 : 3; // Fewer hieroglyphs on mobile
       const arabesqueCount = isMobileDevice ? 1 : 3; // Fewer arabesque patterns on mobile
@@ -83,7 +76,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
 
       const drawHolographicElements = () => {
         frameCount++;
-      
+
         // Mobile: Skip frames for better performance (render every 2nd frame)
         // But ensure we always render at least something
         if (isMobileDevice && frameCount % 2 !== 0 && frameCount > 2) {
@@ -144,9 +137,9 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
         ctx.strokeStyle = '#00BCD4'; // Egyptian blue
         ctx.lineWidth = isMobileDevice ? 1 : 2;
         ctx.globalAlpha = isMobileDevice ? 0.3 : (0.4 + Math.sin(time) * 0.2);
-        
+
         const nodeCount = isMobileDevice ? 3 : 4;
-        const nodes = [];
+        const nodes: { x: number, y: number }[] = [];
         for (let i = 0; i < nodeCount; i++) {
           nodes.push({
             x: canvas.width * (0.2 + (i * 0.2)),
@@ -238,7 +231,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
   return (
     <div className="btn-secondary" data-hero-bg="egyptian-industrial">
       {/* IMMEDIATE: CSS Gradient Background - Never blocks LCP, shows instantly */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           background: `
@@ -260,7 +253,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
           backgroundPosition: 'center',
         }}
       />
-      
+
       {/* PROGRESSIVE: Load image only after LCP is determined (non-blocking) */}
       {shouldLoadImage && (
         <motion.div
@@ -286,15 +279,15 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
             width={1920}
             height={1080}
             sizes="100vw"
-            priority={false}
+            priority={true}
             fallback="/images/egyptian-industrial-hero-bg.webp"
             onImageLoad={() => setImageLoaded(true)}
           />
         </motion.div>
       )}
-      
+
       {/* Dark overlay to blend image with background - Ensures text readability on left */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           background: `
@@ -312,7 +305,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
       />
 
       {/* Base gradient - Egyptian sandstone + Ottoman Iznik tiles fusion with industrial dark - Always visible */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           background: `
@@ -325,7 +318,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
       />
 
       {/* Egyptian Sandstone texture overlay - Temple pillars - Visible on mobile */}
-      <div 
+      <div
         className="absolute inset-0 z-0 opacity-15 sm:opacity-20"
         style={{
           backgroundImage: `
@@ -349,7 +342,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
       />
 
       {/* Ottoman Iznik tile pattern overlay - Elegant arabesque patterns - Hidden on mobile */}
-      <div 
+      <div
         className="absolute inset-0 opacity-0 sm:opacity-15"
         style={{
           backgroundImage: `
@@ -503,7 +496,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
                   left: `${x}%`,
                   top: `${y}%`,
                   transform: 'translate(-50%, -50%)',
-                  boxShadow: isMobile 
+                  boxShadow: isMobile
                     ? '0 0 10px rgba(255, 140, 0, 0.7), 0 0 20px rgba(255, 140, 0, 0.4)'
                     : '0 0 15px rgba(255, 140, 0, 0.9), 0 0 30px rgba(255, 140, 0, 0.5)'
                 }}
@@ -583,7 +576,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
                 className="w-14 h-14 border-2"
                 style={{
                   borderColor: i % 2 === 0 ? 'rgba(255, 140, 0, 0.5)' : 'rgba(192, 192, 192, 0.5)',
-                  background: i % 2 === 0 
+                  background: i % 2 === 0
                     ? 'linear-gradient(135deg, rgba(255, 140, 0, 0.2) 0%, rgba(255, 140, 0, 0.05) 100%)'
                     : 'linear-gradient(135deg, rgba(192, 192, 192, 0.2) 0%, rgba(192, 192, 192, 0.05) 100%)',
                   boxShadow: i % 2 === 0
@@ -651,7 +644,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
             >
               <div className="w-2 h-2 bg-amber-400 rounded-full" />
             </motion.div>
-            
+
             {/* Arrow */}
             <div className="flex-1 h-px bg-cyan-400/30 mx-2 relative">
               <motion.div
