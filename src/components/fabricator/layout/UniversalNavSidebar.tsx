@@ -53,7 +53,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       id: 'project',
       label: 'Project Studio',
       icon: <Folder size={20} />,
-      href: '/fabricator/studio/project',
+      href: '/fabricator/studio/projects',
       badge: 12,
     },
     {
@@ -92,7 +92,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
   ], []);
   
   const isActive = useCallback((href: string, id: string, subItems?: Array<{ href: string }>) => {
-    if (activeStudio && id === activeStudio) return true;
+    if (activeStudio && (id === activeStudio || (id === 'project' && activeStudio === 'projects'))) return true;
     if (location.pathname === href) return true;
     if (location.pathname.startsWith(href + '/')) return true;
     if (subItems?.some(item => location.pathname === item.href || location.pathname.startsWith(item.href + '/'))) return true;

@@ -17,6 +17,96 @@ import type { AlmonaRealityOSEventMapping } from './types';
  * Maps ALMONA-specific events to RealityOS core event types.
  */
 export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
+  // ==========================================================================
+  // Fabricator constitutional migration events (v1 -> v2 consolidation)
+  // ==========================================================================
+  {
+    almonaEvent: 'FabricatorMigrationInitiated',
+    realityOSEventType: 'ON',
+    entityId: (payload: any) => `fabricator_migration_${payload.migrationId || payload.id || 'unknown'}`,
+    humanVerificationRequired: true,
+    proofRequirements: {
+      timestamp: true,
+      photo: false,
+      gps: false,
+      qr: false,
+    },
+  },
+  {
+    almonaEvent: 'FabricatorMigrationCompleted',
+    realityOSEventType: 'ON',
+    entityId: (payload: any) => {
+      const head = String(payload.chainHeadHash || payload.migrationChainHead || '').slice(0, 16);
+      return `fabricator_migration_complete_${head || payload.migrationId || 'unknown'}`;
+    },
+    humanVerificationRequired: true,
+    proofRequirements: {
+      timestamp: true,
+      photo: true, // photo/screenshot proof of human verification of completion
+      gps: false,
+      qr: false,
+    },
+  },
+  {
+    almonaEvent: 'FabricatorRollbackInitiated',
+    realityOSEventType: 'ON',
+    entityId: (payload: any) => `fabricator_migration_rollback_${payload.migrationId || payload.id || 'unknown'}`,
+    humanVerificationRequired: true,
+    proofRequirements: {
+      timestamp: true,
+      photo: false,
+      gps: false,
+      qr: false,
+    },
+  },
+  {
+    almonaEvent: 'FabricatorRollbackCompleted',
+    realityOSEventType: 'ON',
+    entityId: (payload: any) => `fabricator_migration_rollback_complete_${payload.migrationId || payload.id || 'unknown'}`,
+    humanVerificationRequired: true,
+    proofRequirements: {
+      timestamp: true,
+      photo: true, // proof of verification for rollback completion
+      gps: false,
+      qr: false,
+    },
+  },
+  {
+    almonaEvent: 'FabricatorDualWriteDriftDetected',
+    realityOSEventType: 'FAULT',
+    entityId: (_payload: any) => `fabricator_dual_write_drift`,
+    humanVerificationRequired: true,
+    proofRequirements: {
+      timestamp: true,
+      photo: false,
+      gps: false,
+      qr: false,
+    },
+  },
+  {
+    almonaEvent: 'FabricatorCutoverExecuted',
+    realityOSEventType: 'ON',
+    entityId: (payload: any) => `fabricator_cutover_${payload.cutoverId || payload.timestamp || 'unknown'}`,
+    humanVerificationRequired: false,
+    proofRequirements: {
+      timestamp: true,
+      photo: false,
+      gps: false,
+      qr: false,
+    },
+  },
+  {
+    almonaEvent: 'FabricatorRollbackExecuted',
+    realityOSEventType: 'ON',
+    entityId: (payload: any) => `fabricator_rollback_${payload.rollbackId || payload.timestamp || 'unknown'}`,
+    humanVerificationRequired: true,
+    proofRequirements: {
+      timestamp: true,
+      photo: false,
+      gps: false,
+      qr: false,
+    },
+  },
   {
     almonaEvent: 'FabricationIntentCreated',
     realityOSEventType: 'ON',

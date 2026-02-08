@@ -1,79 +1,144 @@
-import React, { useEffect, useMemo, useState, lazy, Suspense, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import SEO from '@/components/SEO';
+import {
+    useDeleteProject as useDeleteProjectV2,
+    usePositions as usePositionsV2,
+    useProjects as useProjectsV2,
+    useUpdateProject,
+} from '@/hooks/useFabricatorQueries';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { FeatureFlags } from '@/lib/featureFlags';
+import { supabase } from '@/lib/supabase';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/shared/ui/ui/alert-dialog';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
-import { useTranslation } from 'react-i18next';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Input } from '@/shared/ui/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { useJobsStore } from '@/store/jobsStore';
-import { Plus, Trash2 } from 'lucide-react';
-import SEO from '@/components/SEO';
+import { Check, Pencil, Plus, Trash2, X } from 'lucide-react';
+import React, { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 // Lazy load heavy component for better performance
 const PositionsGrid = lazy(() => import('@/components/fabricator/PositionsGrid'));
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/ui/ui/alert-dialog';
-import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
+
+type ProjectSummaryItem = {
+  key: string;
+  orderNumber: string;
+  projectCode?: string | null;
+  customer?: string | null;
+  poses: number;
+  qty: number;
+  projectId?: string;
+  firstPoseId?: string;
+};
 
 const ProjectsPage: React.FC = () => {
   const { t } = useTranslation('fabricator');
   const navigate = useNavigate();
   const location = useLocation();
+  const useV2 = FeatureFlags.FABRICATOR_READ_V2;
   const { jobs, isLoading, loadJobs, deleteJob } = useJobsStore();
+  const { data: projectsV2 = [], isLoading: loadingProjectsV2 } = useProjectsV2();
+  const { data: positionsV2 = [], isLoading: loadingPositionsV2 } = usePositionsV2(null);
+  const deleteProjectV2 = useDeleteProjectV2();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [projectToDelete, setProjectToDelete] = useState<{
-    key: string;
-    orderNumber: string;
-    projectCode?: string | null;
-    customer?: string | null;
-    poses: number;
-  } | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<ProjectSummaryItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Defer data loading to avoid blocking initial render (improves LCP and TBT)
+  // Inline project header editing
+  const updateProjectMutation = useUpdateProject();
+  const [editingProjectKey, setEditingProjectKey] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editClient, setEditClient] = useState('');
+
+  const startEditing = useCallback((p: ProjectSummaryItem) => {
+    setEditingProjectKey(p.key);
+    setEditName(p.orderNumber);
+    setEditClient(p.customer ?? '');
+  }, []);
+
+  const cancelEditing = useCallback(() => {
+    setEditingProjectKey(null);
+  }, []);
+
+  const saveEditing = useCallback(async (p: ProjectSummaryItem) => {
+    if (!p.projectId) {
+      toast.error('Cannot edit legacy projects without a V2 project ID');
+      setEditingProjectKey(null);
+      return;
+    }
+    try {
+      await updateProjectMutation.mutateAsync({
+        projectId: p.projectId,
+        updates: {
+          project_name: editName || p.orderNumber,
+          client_name: editClient || undefined,
+        },
+      });
+      toast.success('Project updated');
+    } catch (err) {
+      toast.error(`Update failed: ${err}`);
+    }
+    setEditingProjectKey(null);
+  }, [editName, editClient, updateProjectMutation]);
+
+  // Defer v1 data loading
   useEffect(() => {
-    if (!jobs.length) {
-      const loadData = () => {
-        void loadJobs();
-      };
-      // Defer loading to idle time to improve initial render performance
+    if (!useV2 && !jobs.length) {
+      const loadData = () => void loadJobs();
       if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
         (window as any).requestIdleCallback(loadData, { timeout: 1000 });
       } else {
         setTimeout(loadData, 0);
       }
     }
-  }, [jobs.length, loadJobs]);
+  }, [useV2, jobs.length, loadJobs]);
 
-  // Memoize calculations to avoid recalculating on every render
-  const { totalUnits, totalPoses } = useMemo(() => {
+  const { totalUnits, totalPoses, projectsSummary } = useMemo(() => {
+    if (useV2) {
+      const positionsByProject = new Map<string, typeof positionsV2>();
+      positionsV2.forEach((p: { project_id: string | null; id: string; quantity?: number }) => {
+        const pid = p.project_id ?? 'unassigned';
+        if (!positionsByProject.has(pid)) positionsByProject.set(pid, []);
+        positionsByProject.get(pid)!.push(p);
+      });
+      const summary: ProjectSummaryItem[] = projectsV2.map((proj) => {
+        const positions = positionsByProject.get(proj.id) ?? [];
+        const poses = positions.length;
+        const qty = positions.reduce((s, p) => s + (p.quantity ?? 1), 0);
+        const first = positions[0];
+        return {
+          key: proj.project_code,
+          orderNumber: proj.project_name,
+          projectCode: proj.project_code,
+          customer: proj.client_name ?? null,
+          poses,
+          qty,
+          projectId: proj.id,
+          firstPoseId: first?.id,
+        };
+      });
+      return {
+        totalUnits: positionsV2.length,
+        totalPoses: positionsV2.reduce((s, p) => s + (p.quantity ?? 1), 0),
+        projectsSummary: summary,
+      };
+    }
     const units = jobs.length;
     const poses = jobs.reduce((sum, job) => sum + (job.quantity || 1), 0);
-    return { totalUnits: units, totalPoses: poses };
-  }, [jobs]);
-
-  const projectsSummary = useMemo(() => {
-    const map = new Map<
-      string,
-      {
-        key: string;
-        orderNumber: string;
-        projectCode?: string | null;
-        customer?: string | null;
-        poses: number;
-        qty: number;
-      }
-    >();
-
+    const map = new Map<string, ProjectSummaryItem>();
     jobs.forEach((job) => {
       const key = job.projectCode || job.orderNumber;
       const prev = map.get(key);
@@ -91,33 +156,43 @@ const ProjectsPage: React.FC = () => {
         prev.qty += job.quantity || 1;
       }
     });
+    return {
+      totalUnits: units,
+      totalPoses: poses,
+      projectsSummary: Array.from(map.values()),
+    };
+  }, [useV2, jobs, projectsV2, positionsV2]);
 
-    return Array.from(map.values());
-  }, [jobs]);
+  const isLoadingList = useV2 ? (loadingProjectsV2 || loadingPositionsV2) : isLoading;
 
   const handleDeleteProject = useCallback(async () => {
     if (!projectToDelete) return;
 
     setDeleting(true);
     try {
-      // Get all jobs that belong to this project
+      if (useV2 && projectToDelete.projectId) {
+        await deleteProjectV2.mutateAsync(projectToDelete.projectId);
+        toast.success(
+          `Project ${projectToDelete.orderNumber}${projectToDelete.projectCode ? ` (${projectToDelete.projectCode})` : ''} deleted successfully.`
+        );
+        setDeleteConfirmOpen(false);
+        setProjectToDelete(null);
+        setDeleting(false);
+        return;
+      }
+
       const jobsToDelete = jobs.filter(
         (job) => (job.projectCode || job.orderNumber) === projectToDelete.key
       );
-
-      // Delete from Supabase
       const {
         data: { user },
         error: authError,
       } = await supabase.auth.getUser();
-
       if (authError || !user) {
         toast.error('You must be logged in to delete projects.');
         setDeleting(false);
         return;
       }
-
-      // Delete all positions for this project from database
       const positionIds = jobsToDelete.map((job) => job.id);
       if (positionIds.length > 0) {
         const { error: deleteError } = await supabase
@@ -125,7 +200,6 @@ const ProjectsPage: React.FC = () => {
           .delete()
           .in('id', positionIds)
           .eq('owner_user_id', user.id);
-
         if (deleteError) {
           console.error('Failed to delete positions from database:', deleteError);
           toast.error('Failed to delete project from database.');
@@ -133,12 +207,7 @@ const ProjectsPage: React.FC = () => {
           return;
         }
       }
-
-      // Delete from local store
-      jobsToDelete.forEach((job) => {
-        deleteJob(job.id);
-      });
-
+      jobsToDelete.forEach((job) => deleteJob(job.id));
       toast.success(
         `Project ${projectToDelete.orderNumber}${projectToDelete.projectCode ? ` (${projectToDelete.projectCode})` : ''} deleted successfully.`
       );
@@ -150,12 +219,12 @@ const ProjectsPage: React.FC = () => {
     } finally {
       setDeleting(false);
     }
-  }, [projectToDelete, jobs, deleteJob]);
+  }, [useV2, projectToDelete, jobs, deleteJob, deleteProjectV2]);
 
   // Memoize currentUrl to avoid recalculating on every render
   const currentUrl = useMemo(() => `https://www.almona02.com${location.pathname}`, [location.pathname]);
 
-  if (isLoading && !jobs.length) {
+  if (isLoadingList && !projectsSummary.length) {
     return (
       <>
         <SEO
@@ -240,7 +309,7 @@ const ProjectsPage: React.FC = () => {
                   </CardDescription>
                 </div>
                 <Button
-                  onClick={() => navigate('/fabricator-workflow?new=true')}
+                  onClick={() => navigate(fabricatorRoutes.newProjectWizard())}
                   size="default"
                   className="btn-bronze text-sm px-6"
                 >
@@ -250,7 +319,7 @@ const ProjectsPage: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="px-8 pb-8 space-y-4 text-sm">
-              {projectsSummary.length === 0 && !isLoading ? (
+              {projectsSummary.length === 0 && !isLoadingList ? (
                 <div className="py-12 text-center space-y-6">
                   <div className="space-y-3">
                     <p className="text-amber-300/90 text-base font-semibold">
@@ -261,7 +330,7 @@ const ProjectsPage: React.FC = () => {
                     </p>
                   </div>
                   <Button
-                    onClick={() => navigate('/fabricator-workflow?new=true')}
+                    onClick={() => navigate(fabricatorRoutes.newProjectWizard())}
                     size="default"
                     className="btn-bronze text-sm px-8 py-6 h-auto"
                   >
@@ -269,7 +338,7 @@ const ProjectsPage: React.FC = () => {
                     {t('projects.projects_tab.create_first_project', 'Create First Project')}
                   </Button>
                 </div>
-              ) : projectsSummary.length === 0 && isLoading ? (
+              ) : projectsSummary.length === 0 && isLoadingList ? (
                 <div className="py-8">
                   <div className="h-12 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
                 </div>
@@ -277,34 +346,95 @@ const ProjectsPage: React.FC = () => {
                 <div className="divide-y divide-amber-600/30 space-y-1">
                   {projectsSummary.map((p) => {
                     const handleProjectClick = () => {
-                      // Find first job for this project
+                      if (useV2 && p.projectId && p.firstPoseId) {
+                        navigate(fabricatorRoutes.poseDesign(p.projectId, p.firstPoseId), {
+                          state: { jobId: p.firstPoseId, startTab: 'design' },
+                        });
+                        return;
+                      }
                       const firstJob = jobs.find((job) => (job.projectCode || job.orderNumber) === p.key);
                       if (firstJob) {
-                        navigate(`/fabricator/workflow/engineering-bay/${firstJob.id}`, {
+                        navigate(fabricatorRoutes.poseDesign(p.key, firstJob.id), {
                           state: { jobId: firstJob.id, startTab: 'design' },
                         });
                       }
                     };
                     
+                    const isEditing = editingProjectKey === p.key;
+
                     return (
                     <div 
                       key={p.key} 
                       className="py-4 px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 group hover:bg-[#0f0f0f]/40 transition-all duration-200 rounded-lg cursor-pointer border border-transparent hover:border-amber-600/20"
-                      onClick={handleProjectClick}
+                      onClick={isEditing ? undefined : handleProjectClick}
                     >
                       <div className="space-y-1.5 flex-1">
-                        <div className="flex items-center gap-3">
-                          <span className="font-mono text-base text-amber-200 font-semibold">{p.orderNumber}</span>
-                          {p.projectCode && (
-                            <Badge variant="outline" className="text-xs">
-                              {p.projectCode}
-                            </Badge>
-                          )}
-                        </div>
-                        {p.customer && (
-                          <div className="text-xs text-amber-600/70">
-                            {t('projects.projects_tab.customer', 'Customer')}: <span className="text-amber-300 font-medium">{p.customer}</span>
+                        {isEditing ? (
+                          <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                className="h-8 text-sm bg-[#0f0f0f] border-amber-600/30 text-amber-200 w-64"
+                                placeholder="Project name"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') void saveEditing(p);
+                                  if (e.key === 'Escape') cancelEditing();
+                                }}
+                              />
+                              {p.projectCode && (
+                                <Badge variant="outline" className="text-xs">
+                                  {p.projectCode}
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-amber-600/70 w-16">Customer:</span>
+                              <Input
+                                value={editClient}
+                                onChange={(e) => setEditClient(e.target.value)}
+                                className="h-7 text-xs bg-[#0f0f0f] border-amber-600/30 text-amber-200 w-48"
+                                placeholder="Client name"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') void saveEditing(p);
+                                  if (e.key === 'Escape') cancelEditing();
+                                }}
+                              />
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-green-500/10"
+                                onClick={() => void saveEditing(p)}
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 w-7 p-0 text-gray-400 hover:text-gray-300 hover:bg-gray-500/10"
+                                onClick={cancelEditing}
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
                           </div>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-3">
+                              <span className="font-mono text-base text-amber-200 font-semibold">{p.orderNumber}</span>
+                              {p.projectCode && (
+                                <Badge variant="outline" className="text-xs">
+                                  {p.projectCode}
+                                </Badge>
+                              )}
+                            </div>
+                            {p.customer && (
+                              <div className="text-xs text-amber-600/70">
+                                {t('projects.projects_tab.customer', 'Customer')}: <span className="text-amber-300 font-medium">{p.customer}</span>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                       <div className="flex items-center gap-4 text-xs text-amber-600/70">
@@ -315,6 +445,20 @@ const ProjectsPage: React.FC = () => {
                           {t('projects.projects_tab.total_qty', 'Total qty')}:{' '}
                           <span className="text-amber-200 font-semibold text-sm">{p.qty}</span>
                         </span>
+                        {useV2 && p.projectId && !isEditing && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              startEditing(p);
+                            }}
+                            className="h-8 w-8 p-0 text-amber-500/70 hover:text-amber-400 hover:bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Edit project"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="ghost"

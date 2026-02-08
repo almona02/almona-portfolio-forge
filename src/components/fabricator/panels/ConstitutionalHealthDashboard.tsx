@@ -10,12 +10,14 @@
  */
 
 import { getAuditTrailService } from '@/core/authority/certification';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { MigrationModeService } from '@/lib/fabricator/migration/MigrationModeService';
+import { supabase } from '@/lib/supabase';
 import { Badge } from '@/shared/ui/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Progress } from '@/shared/ui/ui/progress';
-import { Shield, CheckCircle2, XCircle, AlertTriangle, TrendingUp, Activity } from 'lucide-react';
-import React, { useEffect, useState, useMemo } from 'react';
 import { format } from 'date-fns';
+import { Activity, AlertTriangle, CheckCircle2, Shield, TrendingUp, XCircle } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface ConstitutionalHealthDashboardProps {
   className?: string;
@@ -67,6 +69,19 @@ const MetricCard: React.FC<{
 export const ConstitutionalHealthDashboard: React.FC<ConstitutionalHealthDashboardProps> = ({ className }) => {
   const [anchors, setAnchors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [migrationMode, setMigrationMode] = useState<{
+    mode: string;
+    readSource: string;
+    allowsWritesToV1: boolean;
+    allowsWritesToV2: boolean;
+    derivedFromEventHash: string;
+  } | null>(null);
+  const [drift, setDrift] = useState<{
+    drift_rate: number;
+    mismatch_count: number;
+    sample_size: number;
+    created_at: string;
+  } | null>(null);
 
   useEffect(() => {
     loadData();
@@ -79,6 +94,33 @@ export const ConstitutionalHealthDashboard: React.FC<ConstitutionalHealthDashboa
       await auditService.initialize();
       const chain = auditService.getChain();
       setAnchors(Array.from(chain));
+
+      // Migration mode (event-derived)
+      try {
+        const mode = await MigrationModeService.getInstance().getCurrentMode();
+        setMigrationMode({
+          mode: mode.mode,
+          readSource: mode.readSource,
+          allowsWritesToV1: mode.allowsWritesToV1,
+          allowsWritesToV2: mode.allowsWritesToV2,
+          derivedFromEventHash: mode.derivedFromEventHash,
+        });
+      } catch (e) {
+        console.warn('[FabricatorConstitutionalHealthDashboard] Failed to derive migration mode:', e);
+      }
+
+      // Latest drift report (if monitor is running)
+      try {
+        const { data } = await (supabase as any)
+          .from('fabricator_dual_write_consistency_reports')
+          .select('drift_rate,mismatch_count,sample_size,created_at')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (data) setDrift(data);
+      } catch (e) {
+        console.warn('[FabricatorConstitutionalHealthDashboard] Failed to load drift report:', e);
+      }
     } catch (error) {
       console.error('Failed to load constitutional health data:', error);
     } finally {
@@ -196,6 +238,66 @@ export const ConstitutionalHealthDashboard: React.FC<ConstitutionalHealthDashboa
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Migration Health (v1 <-> v2) */}
+          <Card className="bg-slate-800/30 border-amber-500/20">
+            <CardHeader>
+              <CardTitle className="text-sm text-amber-300 flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Fabricator Migration Health
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                Event-derived mode and dual-write drift (30-day window)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {migrationMode ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  <div className="bg-slate-900/40 border border-slate-700 rounded p-3">
+                    <div className="text-slate-400 text-xs uppercase tracking-wider">Mode</div>
+                    <div className="text-amber-200 font-semibold">{migrationMode.mode}</div>
+                    <div className="text-slate-500 text-xs mt-1">Read source: {migrationMode.readSource}</div>
+                  </div>
+                  <div className="bg-slate-900/40 border border-slate-700 rounded p-3">
+                    <div className="text-slate-400 text-xs uppercase tracking-wider">Writes</div>
+                    <div className="text-slate-200">
+                      v1:{' '}
+                      <span className={migrationMode.allowsWritesToV1 ? 'text-emerald-400' : 'text-red-400'}>
+                        {migrationMode.allowsWritesToV1 ? 'allowed' : 'blocked'}
+                      </span>
+                      {'  '}| v2:{' '}
+                      <span className={migrationMode.allowsWritesToV2 ? 'text-emerald-400' : 'text-red-400'}>
+                        {migrationMode.allowsWritesToV2 ? 'allowed' : 'blocked'}
+                      </span>
+                    </div>
+                    <div className="text-slate-500 text-xs mt-1 font-mono truncate">
+                      event: {migrationMode.derivedFromEventHash}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-slate-500 text-sm">Migration mode not available.</div>
+              )}
+
+              {drift ? (
+                <div className="bg-slate-900/40 border border-slate-700 rounded p-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="text-slate-400 text-xs uppercase tracking-wider">Latest drift</div>
+                    <div className="text-slate-500 text-xs">{new Date(drift.created_at).toLocaleString()}</div>
+                  </div>
+                  <div className="text-slate-200 mt-1">
+                    Drift:{' '}
+                    <span className={drift.drift_rate <= 0.001 ? 'text-emerald-400' : 'text-amber-400'}>
+                      {(drift.drift_rate * 100).toFixed(3)}%
+                    </span>
+                    {'  '}({drift.mismatch_count}/{drift.sample_size})
+                  </div>
+                </div>
+              ) : (
+                <div className="text-slate-500 text-sm">No drift report found (monitor not running yet).</div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Overall Health Score */}
           <Card className={`${status.bg} ${status.border} border-2`}>
             <CardContent className="p-6">

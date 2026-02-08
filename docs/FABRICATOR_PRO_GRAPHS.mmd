@@ -1,0 +1,62 @@
+%% Fabricator Pro primary workflow + persistence graph (single Mermaid diagram).
+flowchart LR
+  subgraph UI["UI"]
+    PPage["ProjectsPage\n(src/pages/Projects.tsx)"]
+    EB["EngineeringBay\n(src/components/fabricator/EngineeringBay.tsx)"]
+    SDC["SmartDrawCanvas (SVG)\n(src/components/fabricator/SmartDrawCanvas.tsx)"]
+    OptUI["Optimization UI\n(ProjectOptimizer / workflow pages)"]
+    CommUI["CommercialPage\n(src/pages/CommercialPage.tsx)"]
+  end
+
+  subgraph State["State / Services"]
+    Jobs["useJobsStore (zustand)\n(src/store/jobsStore.ts)"]
+    WS["FabricatorWorkspaceContext\n(src/context/FabricatorWorkspaceContext.tsx)"]
+    WSSync["WorkspaceSyncService\n(src/lib/workspace/WorkspaceSyncService.ts)"]
+    PosePersist["ProjectPersistenceService\n(src/lib/fabricator/ProjectPersistenceService.ts)"]
+    QuoteEngine["QuotingEngine\n(src/modules/commercial/QuotingEngine.ts)"]
+    Apex["ApexEngineV6\n(src/lib/fabricator/goldTier/ApexEngineV6)"]
+  end
+
+  subgraph DB["Supabase Postgres"]
+    FP["fabricator_projects"]
+    FPos["fabricator_positions"]
+    Snap["workspace_snapshots"]
+    Logs["audit_logs"]
+  end
+
+  %% List + selection
+  FP --> Jobs
+  FPos --> Jobs
+  Jobs --> PPage
+
+  %% Selecting a pose into the workspace context
+  PPage -->|navigate to workflow design| EB
+  Jobs -->|job/pose lookup| EB
+  WS -->|currentProject| EB
+
+  %% Designing
+  EB --> SDC
+  SDC -->|WindowGrid| EB
+  EB -->|components/grid updates| WS
+
+  %% Pose persistence (explicit service path)
+  EB -->|save pose snapshot| PosePersist
+  PosePersist --> FP
+  PosePersist --> FPos
+
+  %% Optimization (Project Studio path shown; workflow path uses WS.currentProject.optimization)
+  EB -->|validate → optimize| Apex
+  Apex --> OptUI
+
+  %% Commercial
+  WS --> CommUI
+  CommUI -->|if currentProject.optimization| QuoteEngine
+  QuoteEngine --> CommUI
+
+  %% Workspace persistence
+  WS --> WSSync
+  WSSync --> Snap
+  WSSync -->|fallback| Local["localStorage (compressed)"]
+
+  %% Audit logging (FabricatorClient)
+  Logs --> FabricatorClient["FabricatorClient\n(src/lib/supabase/fabricatorClient.ts)"]

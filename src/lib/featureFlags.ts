@@ -39,6 +39,12 @@ export const FeatureFlags = {
   // Gold Tier System
   GOLD_TIER_ENABLED: getEnvVar('VITE_GOLD_TIER_ENABLED') === 'true' || getEnvVar('NEXT_PUBLIC_GOLD_TIER_ENABLED') === 'true',
   
+  /** Fabricator consolidation: read from v2 tables (true) or v1 (rollback within 30-day window). */
+  FABRICATOR_READ_V2: (() => {
+    const v = getEnvVar('VITE_FABRICATOR_READ_V2') || getEnvVar('NEXT_PUBLIC_FABRICATOR_READ_V2');
+    return v !== 'false'; // default true (v2)
+  })(),
+
   // Week 1: Opening Mechanisms & Proportional Grid
   ENABLE_OPENING_MECHANISMS: (() => {
     const viteValue = getEnvVar('VITE_ENABLE_OPENING_MECHANISMS');

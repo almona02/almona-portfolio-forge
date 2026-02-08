@@ -286,6 +286,136 @@ export class RealityOSEventEmitter {
   }
 
   /**
+   * Emit FabricatorCutoverExecuted event (one-time cutover to studio-only routes / v2 source).
+   * Call on first navigation into /fabricator for append-only governance.
+   */
+  async emitFabricatorCutoverExecuted(
+    payload: { cutoverId?: string; timestamp?: string; [key: string]: any } = {}
+  ): Promise<EventEmissionResult> {
+    const proof: RealityProof = {
+      verifiedBy: 'system',
+      timestamp: new Date().toISOString(),
+      location: null,
+      photoHashes: [],
+      metadata: { constitutional_role: 'cutover_anchor' },
+    };
+    const p = { ...payload, cutoverId: payload.cutoverId ?? `cutover_${Date.now()}`, timestamp: proof.timestamp };
+    return this.emitEvent('FabricatorCutoverExecuted', p, proof, { skipRetroactiveCheck: true });
+  }
+
+  /**
+   * Emit FabricatorRollbackExecuted event (when flipping read source back to v1 within 30-day window).
+   */
+  async emitFabricatorRollbackExecuted(
+    payload: { rollbackId?: string; reason?: string; [key: string]: any },
+    operatorId: string
+  ): Promise<EventEmissionResult> {
+    const proof: RealityProof = {
+      verifiedBy: operatorId,
+      timestamp: new Date().toISOString(),
+      location: null,
+      photoHashes: [],
+      metadata: { constitutional_role: 'rollback_executed' },
+    };
+    return this.emitEvent('FabricatorRollbackExecuted', payload, proof);
+  }
+
+  /**
+   * Emit FabricatorMigrationInitiated event
+   *
+   * Constitutional guidance:
+   * - Emits in real-time only (no retroactive emission)
+   * - Serves as the governance anchor for event-derived migration mode
+   */
+  async emitFabricatorMigrationInitiated(
+    payload: { migrationId: string; note?: string; [key: string]: any },
+    operatorId: string
+  ): Promise<EventEmissionResult> {
+    const proof: RealityProof = {
+      verifiedBy: operatorId,
+      timestamp: new Date().toISOString(),
+      location: null,
+      photoHashes: [],
+      metadata: {
+        constitutional_role: 'migration_initiation',
+      },
+    };
+
+    return this.emitEvent('FabricatorMigrationInitiated', payload, proof);
+  }
+
+  /**
+   * Emit FabricatorMigrationCompleted event
+   *
+   * Includes chain head hash + certificate hash (optional) to bind migration
+   * evidence to the append-only RealityOS ledger.
+   */
+  async emitFabricatorMigrationCompleted(
+    payload: { migrationId: string; chainHeadHash: string; certificateHash?: string; [key: string]: any },
+    operatorId: string,
+    completionProofPhotoHash: string
+  ): Promise<EventEmissionResult> {
+    const proof: RealityProof = {
+      verifiedBy: operatorId,
+      timestamp: new Date().toISOString(),
+      location: null,
+      photoHashes: [completionProofPhotoHash],
+      metadata: {
+        migrationId: payload.migrationId,
+        chainHeadHash: payload.chainHeadHash,
+        certificateHash: payload.certificateHash,
+        constitutional_role: 'migration_completion',
+      },
+    };
+
+    return this.emitEvent('FabricatorMigrationCompleted', payload, proof);
+  }
+
+  /**
+   * Emit FabricatorRollbackInitiated event
+   */
+  async emitFabricatorRollbackInitiated(
+    payload: { migrationId: string; reason?: string; [key: string]: any },
+    operatorId: string
+  ): Promise<EventEmissionResult> {
+    const proof: RealityProof = {
+      verifiedBy: operatorId,
+      timestamp: new Date().toISOString(),
+      location: null,
+      photoHashes: [],
+      metadata: {
+        constitutional_role: 'rollback_initiation',
+      },
+    };
+
+    return this.emitEvent('FabricatorRollbackInitiated', payload, proof);
+  }
+
+  /**
+   * Emit FabricatorRollbackCompleted event
+   */
+  async emitFabricatorRollbackCompleted(
+    payload: { migrationId: string; chainHeadHash?: string; certificateHash?: string; [key: string]: any },
+    operatorId: string,
+    completionProofPhotoHash: string
+  ): Promise<EventEmissionResult> {
+    const proof: RealityProof = {
+      verifiedBy: operatorId,
+      timestamp: new Date().toISOString(),
+      location: null,
+      photoHashes: [completionProofPhotoHash],
+      metadata: {
+        migrationId: payload.migrationId,
+        chainHeadHash: payload.chainHeadHash,
+        certificateHash: payload.certificateHash,
+        constitutional_role: 'rollback_completion',
+      },
+    };
+
+    return this.emitEvent('FabricatorRollbackCompleted', payload, proof);
+  }
+
+  /**
    * Emit FabricationIntentCreated event
    */
   async emitFabricationIntentCreated(

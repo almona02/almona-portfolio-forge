@@ -20,8 +20,11 @@ import { DualOutputGenerator, type DualOutputResult } from '@/lib/fabricator/Dua
 import { ConstraintValidator, type ValidationResult } from '@/lib/fabricator/constraintValidator';
 import { PerformanceOptimizer } from '@/lib/fabricator/performanceOptimizer';
 import { getPatternById } from '@/lib/fabricator/presetUtils';
+import type { TransferStatus } from '@/lib/machines/core';
+import { quickMachineCheck } from '@/lib/machines/core';
+import { createYilmazDriver } from '@/lib/machines/yilmaz';
 import type { FabricationData, WindowUnit } from '@/types/fabricator';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Window3DGenerator from './Window3DGenerator';
 
 // UI Components - ES6 imports
@@ -34,22 +37,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Icons - lucide-react
 import {
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  Download,
-  Eye,
-  Factory,
-  Info,
-  Loader2,
-  Printer,
-  Ruler,
-  Scissors,
-  Settings,
-  Share2,
-  Wrench,
-  XCircle,
-  Zap
+    AlertCircle,
+    AlertTriangle,
+    CheckCircle,
+    Download,
+    Eye,
+    Factory,
+    Info,
+    Loader2,
+    Printer,
+    Ruler,
+    Scissors,
+    Send,
+    Settings,
+    Share2,
+    Wrench,
+    XCircle,
+    Zap
 } from 'lucide-react';
 
 interface Enhanced3DPreviewProps {
@@ -99,20 +103,158 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [visualizationMode, setVisualizationMode] = useState<'customer' | 'production'>('customer');
 
-  // ========== DEBOUNCED GENERATION ==========
-  useEffect(() => {
-    const debouncedGenerate = PerformanceOptimizer.debounce(generateDualOutput, 500);
-
-    if (windowUnit && windowUnit.overallWidth > 0 && windowUnit.overallHeight > 0) {
-      debouncedGenerate();
+  // ========== MACHINE COMPATIBILITY CHECK ==========
+  // Runs synchronously on every windowUnit change — no async needed.
+  // This is the "Nano Banana" logic: machine-aware constraint checking.
+  const machineCheck = useMemo(() => {
+    if (!windowUnit || windowUnit.overallWidth <= 0 || windowUnit.overallHeight <= 0) {
+      return null;
     }
-
-    return () => {
-      // Cleanup on unmount
-      PerformanceOptimizer.optimizeMemoryUsage();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return quickMachineCheck(windowUnit);
   }, [windowUnit]);
+
+  // ========== YILMAZ MACHINE DRIVER ==========
+  // Create a driver for the best-matching machine.
+  // The driver provides: validate → generateProductionFile → sendToMachine
+  const machineDriver = useMemo(() => {
+    if (!machineCheck?.bestMachine) return null;
+    // Map model name back to YilmazMachineModel format
+    const modelMap: Record<string, string> = {
+      'ALM 6510': 'ALM-6510',
+      'PIM 6509': 'PIM-6509',
+      'AIM 3410': 'AIM-3410',
+      'DC-421-PBS': 'DC-421-PBS',
+    };
+    const modelKey = modelMap[machineCheck.bestMachine.machineModel];
+    if (!modelKey) return null;
+    return createYilmazDriver(modelKey as any);
+  }, [machineCheck?.bestMachine]);
+
+  // Export / send state
+  const [exportStatus, setExportStatus] = useState<'idle' | 'exporting' | 'done' | 'error'>('idle');
+  const [sendStatus, setSendStatus] = useState<TransferStatus | null>(null);
+  const lastExportedFile = useRef<Blob | null>(null);
+
+  // ========== ONE-CLICK EXPORT ==========
+  const handleExportProductionFile = useCallback(async () => {
+    if (!machineDriver || !windowUnit) return;
+    setExportStatus('exporting');
+    try {
+      const blob = await machineDriver.generateProductionFile(windowUnit);
+      lastExportedFile.current = blob;
+
+      // Trigger browser download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const ext = blob.type.includes('csv') ? 'csv' : 'mdb';
+      a.download = `almona_${machineDriver.getModel()}_${Date.now()}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setExportStatus('done');
+      playSuccessTone();
+      // Reset after 3s
+      setTimeout(() => setExportStatus('idle'), 3000);
+    } catch (err) {
+      console.error('Export failed:', err);
+      setExportStatus('error');
+      playErrorTone();
+      setTimeout(() => setExportStatus('idle'), 3000);
+    }
+  }, [machineDriver, windowUnit, playSuccessTone, playErrorTone]);
+
+  // ========== WORKSHOP AUDIO FEEDBACK ==========
+  // In a loud workshop, visual-only feedback gets missed.
+  // A short confirmation tone tells the operator "the machine got the file"
+  // without requiring them to stare at the screen.
+  const playSuccessTone = useCallback(() => {
+    try {
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      // Two-tone "ding" — C5 then E5 (major third = success)
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, ctx.currentTime);        // C5
+      osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.15); // E5
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    } catch {
+      // AudioContext not available (e.g. SSR, blocked by browser) — skip silently
+    }
+  }, []);
+
+  const playErrorTone = useCallback(() => {
+    try {
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      // Low buzz — signals "something went wrong"
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(220, ctx.currentTime); // A3
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.5);
+    } catch {
+      // AudioContext not available — skip silently
+    }
+  }, []);
+
+  // ========== SEND TO MACHINE ==========
+  const [sendInProgress, setSendInProgress] = useState(false);
+
+  const handleSendToMachine = useCallback(async () => {
+    if (!machineDriver) return;
+    setSendStatus(null);
+    setSendInProgress(true);
+    try {
+      // Generate file if not already exported
+      const blob = lastExportedFile.current || await machineDriver.generateProductionFile(windowUnit);
+      lastExportedFile.current = blob;
+      const result = await machineDriver.sendToMachine(blob);
+      setSendStatus(result);
+
+      // Workshop haptic feedback
+      if (result.success) {
+        playSuccessTone();
+      } else {
+        playErrorTone();
+      }
+    } catch (err) {
+      const errorResult: TransferStatus = { success: false, error: String(err) };
+      setSendStatus(errorResult);
+      playErrorTone();
+    } finally {
+      setSendInProgress(false);
+    }
+  }, [machineDriver, windowUnit, playSuccessTone, playErrorTone]);
+
+  // ========== DEBOUNCED GENERATION ==========
+  // CRITICAL: Debounce wrapper must be stable across renders to avoid
+  // re-creating the timer on every render (which causes loop/duplication).
+  const generateRef = useRef<((...args: any[]) => any) | null>(null);
+
+  const debouncedGenerateRef = useRef(
+    PerformanceOptimizer.debounce(() => {
+      if (generateRef.current) generateRef.current();
+    }, 500)
+  );
+
+  // generateRef is updated after generateDualOutput is declared below
+  // (see assignment after useCallback)
 
   // ========== MAIN GENERATION FUNCTION ==========
   const generateDualOutput = useCallback(async () => {
@@ -221,7 +363,107 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
     }
   }, [windowUnit, onValidationChange]);
 
+  // Keep ref in sync with latest generateDualOutput (declared above)
+  generateRef.current = generateDualOutput;
+
+  useEffect(() => {
+    if (windowUnit && windowUnit.overallWidth > 0 && windowUnit.overallHeight > 0) {
+      debouncedGenerateRef.current();
+    }
+
+    return () => {
+      PerformanceOptimizer.optimizeMemoryUsage();
+    };
+  }, [windowUnit]);
+
   // ========== UI COMPONENTS ==========
+
+  const renderMachineCompatibilityBadge = () => {
+    if (!machineCheck || !machineCheck.bestMachine) return null;
+
+    const { anyCompatible, bestMachine, allResults } = machineCheck;
+    const compatibleCount = allResults.filter(r => r.compatible).length;
+
+    return (
+      <Card className={`mb-4 border ${anyCompatible ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              {anyCompatible ? (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="font-semibold text-green-800">
+                      Yilmaz Ready
+                    </span>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                    {bestMachine.machineModel}
+                  </Badge>
+                  {compatibleCount > 1 && (
+                    <span className="text-sm text-green-600">
+                      +{compatibleCount - 1} more machine{compatibleCount > 2 ? 's' : ''}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <XCircle className="h-5 w-5 text-red-600" />
+                    <span className="font-semibold text-red-800">
+                      Machine Conflict
+                    </span>
+                  </div>
+                  <span className="text-sm text-red-700">
+                    {bestMachine.summary}
+                  </span>
+                </>
+              )}
+            </div>
+
+            {/* Violation details (collapsed) */}
+            {bestMachine.violations.length > 0 && (
+              <div className="flex items-center space-x-2">
+                {bestMachine.violations.filter(v => v.severity === 'error').length > 0 && (
+                  <Badge variant="destructive" className="text-xs">
+                    {bestMachine.violations.filter(v => v.severity === 'error').length} error{bestMachine.violations.filter(v => v.severity === 'error').length > 1 ? 's' : ''}
+                  </Badge>
+                )}
+                {bestMachine.violations.filter(v => v.severity === 'warning').length > 0 && (
+                  <Badge variant="outline" className="text-xs border-amber-300 text-amber-700">
+                    {bestMachine.violations.filter(v => v.severity === 'warning').length} warning{bestMachine.violations.filter(v => v.severity === 'warning').length > 1 ? 's' : ''}
+                  </Badge>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Show violations in production mode */}
+          {visualizationMode === 'production' && bestMachine.violations.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
+              {bestMachine.violations.map((v, i) => (
+                <div key={i} className={`flex items-start text-sm ${
+                  v.severity === 'error' ? 'text-red-700' : 'text-amber-700'
+                }`}>
+                  {v.severity === 'error' ? (
+                    <AlertCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                  ) : (
+                    <AlertTriangle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                  )}
+                  <div>
+                    <span className="font-medium">{v.constraint}</span>
+                    {v.suggestion && (
+                      <span className="text-gray-600 ml-1">— {v.suggestion}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   const renderBetaBanner = () => (
     <Card className="mb-4 border-amber-200 bg-amber-50">
@@ -292,7 +534,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
                 size="sm"
                 onClick={() => setVisualizationMode('production')}
               >
-                Production View
+                Operator View
               </Button>
             </div>
           </div>
@@ -454,21 +696,97 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-3 gap-2 mt-4">
-          <Button className="flex items-center">
-            <Download className="h-4 w-4 mr-2" />
-            Export All
-          </Button>
-          <Button variant="outline" className="flex items-center">
-            <Printer className="h-4 w-4 mr-2" />
-            Print
-          </Button>
-          <Button variant="outline" className="flex items-center">
-            <Share2 className="h-4 w-4 mr-2" />
-            Share
-          </Button>
-        </div>
+        {/* Action Buttons — Machine-aware in Operator View */}
+        {visualizationMode === 'production' && machineDriver ? (
+          <div className="space-y-3 mt-4">
+            {/* Primary: One-Click Export */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                className="flex items-center justify-center"
+                onClick={handleExportProductionFile}
+                disabled={exportStatus === 'exporting' || !machineCheck?.anyCompatible}
+              >
+                {exportStatus === 'exporting' ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : exportStatus === 'done' ? (
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                ) : (
+                  <Download className="h-4 w-4 mr-2" />
+                )}
+                {exportStatus === 'exporting'
+                  ? 'Generating...'
+                  : exportStatus === 'done'
+                    ? 'Exported!'
+                    : `Export for ${machineDriver.machineName}`}
+              </Button>
+              <Button
+                variant="outline"
+                className="flex items-center justify-center"
+                onClick={handleSendToMachine}
+                disabled={!machineCheck?.anyCompatible || sendInProgress}
+              >
+                {sendInProgress ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 mr-2" />
+                )}
+                {sendInProgress ? 'Sending...' : 'Send to Machine'}
+              </Button>
+            </div>
+
+            {/* Transfer status feedback — BIG for workshop visibility */}
+            {sendStatus && (
+              sendStatus.success ? (
+                <div className="p-6 rounded-xl border-2 border-green-400 bg-green-100 text-center animate-in fade-in duration-300">
+                  <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-2" />
+                  <div className="text-xl font-bold text-green-800">
+                    Sent to {machineDriver?.machineName}
+                  </div>
+                  <div className="text-sm text-green-700 mt-1">
+                    {sendStatus.filename} ({(sendStatus.bytesTransferred / 1024).toFixed(1)} KB)
+                  </div>
+                </div>
+              ) : (
+                <div className="p-6 rounded-xl border-2 border-red-400 bg-red-100 text-center animate-in fade-in duration-300">
+                  <XCircle className="h-12 w-12 text-red-600 mx-auto mb-2" />
+                  <div className="text-xl font-bold text-red-800">
+                    Transfer Failed
+                  </div>
+                  <div className="text-sm text-red-700 mt-1">
+                    {sendStatus.error}
+                  </div>
+                </div>
+              )
+            )}
+
+            {/* Secondary actions */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="outline" size="sm" className="flex items-center justify-center">
+                <Printer className="h-4 w-4 mr-2" />
+                Print Cut List
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center justify-center">
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-2 mt-4">
+            <Button className="flex items-center">
+              <Download className="h-4 w-4 mr-2" />
+              Export All
+            </Button>
+            <Button variant="outline" className="flex items-center">
+              <Printer className="h-4 w-4 mr-2" />
+              Print
+            </Button>
+            <Button variant="outline" className="flex items-center">
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -508,6 +826,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
   return (
     <div className="enhanced-3d-preview space-y-4">
       {renderBetaBanner()}
+      {renderMachineCompatibilityBadge()}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {renderVisualizationPanel()}

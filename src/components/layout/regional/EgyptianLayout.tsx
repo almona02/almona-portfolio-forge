@@ -27,6 +27,7 @@ export const EgyptianLayout: React.FC<EgyptianLayoutProps> = ({
   const { i18n } = useTranslation();
   const location = useLocation();
   const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
+  const isBatchCutListDemo = location.pathname === '/demo/batch-cut-list' || location.pathname === '/batch-cut-list-demo';
   const _rtl = isRTL(i18n.language);
   
   return (
@@ -40,8 +41,8 @@ export const EgyptianLayout: React.FC<EgyptianLayoutProps> = ({
         {children}
       </div>
 
-      {/* Footer - Hidden for fabricator routes (they have their own minimal footer) */}
-      {!isFabricatorRoute && <Footer />}
+      {/* Footer - Hidden for fabricator routes and batch cut list demo */}
+      {!isFabricatorRoute && !isBatchCutListDemo && <Footer />}
     </div>
   );
 };

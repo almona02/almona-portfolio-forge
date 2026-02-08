@@ -14,11 +14,11 @@
 
 import { Button as GoldTierButton } from '@/components/ui/button-gold-tier';
 import {
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  GoldTierCard
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+    GoldTierCard
 } from '@/components/ui/card-gold-tier';
 import type { SystemPack as SystemPackType } from '@/data/systemPacks';
 import { systemPricingService } from '@/lib/pricing';
@@ -77,7 +77,7 @@ export interface BOMSidebarProps {
   className?: string;
 }
 
-export const BOMSidebar: React.FC<BOMSidebarProps> = ({
+const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
   bomData,
   liveProject,
   profiles,
@@ -532,3 +532,6 @@ export const BOMSidebar: React.FC<BOMSidebarProps> = ({
     </div>
   );
 };
+
+export const BOMSidebar = React.memo(BOMSidebarInner);
+BOMSidebar.displayName = 'BOMSidebar';
