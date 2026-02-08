@@ -97,7 +97,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
       return [
         {
           name: 'Projects',
-          path: "/fabricator/projects",
+          path: "/fabricator/studio/projects",
           type: "link",
           icon: "Factory"
         },

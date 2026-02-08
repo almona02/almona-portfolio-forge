@@ -7,23 +7,11 @@ const CACHE_NAME = `almona-egypt-${APP_VERSION}`;
 
 // Egypt-specific critical assets to cache immediately
 // NOTE: We don't cache index.html to prevent white page issues
+// NOTE: Only list assets that ACTUALLY exist in public/ — Vite bundles
+//       CSS/JS/fonts into /assets/ at build time, so those are cached
+//       dynamically by the fetch handler's EGYPT_DYNAMIC_PATTERNS instead.
 const EGYPT_CRITICAL_ASSETS = [
-  '/offline.html',
-  '/manifest.json',
-  
-  // Critical CSS (already inlined in index.html, but cache for offline)
-  '/src/index.css',
-  
-  // Critical images for Egypt workflow
-  '/images/egyptian-industrial-hero-bg.webp',
-  '/images/logo-almona.svg',
-  '/favicon.ico',
-  '/pwa-192x192.png',
-  '/pwa-512x512.png',
-  
-  // Critical fonts
-  '/fonts/inter-latin-var.woff2',
-  '/fonts/tajawal-arabic-var.woff2'
+  '/offline.html'
 ];
 
 // Patterns to cache dynamically (Egypt workflow specific)

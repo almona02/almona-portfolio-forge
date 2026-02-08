@@ -12,7 +12,7 @@ export const QualityControlPage: React.FC = () => {
     const handleQualityApproved = () => {
         completeStep('quality-control');
         // Workflow complete - navigate to projects or show success
-        navigate('/fabricator/projects');
+        navigate('/fabricator/studio/projects');
     };
 
     const handleStartNew = () => {

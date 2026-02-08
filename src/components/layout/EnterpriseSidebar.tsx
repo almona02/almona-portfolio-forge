@@ -205,7 +205,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   // Business navigation (kept for potential future use)
   const _businessNav = [
     { name: t('fabricator:navbar.business_nav.customers', 'Customers'), path: "/fabricator/customers", icon: Users },
-    { name: t('fabricator:navbar.business_nav.projects', 'Projects'), path: "/fabricator/projects", icon: Factory },
+    { name: t('fabricator:navbar.business_nav.projects', 'Projects'), path: "/fabricator/studio/projects", icon: Factory },
     { name: t('fabricator:navbar.business_nav.inventory', 'Inventory'), path: "/fabricator/inventory", icon: Package },
     { name: t('fabricator:navbar.business_nav.profiles', 'Profiles & Accessories'), path: "/fabricator-workflow#inventory", icon: Scissors },
     { name: t('fabricator:navbar.business_nav.quick_reports', 'Quick Reports'), path: "/reports", icon: FileText },
@@ -252,7 +252,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           id: 'projects',
           label: 'Projects',
           icon: FileText,
-          path: '/fabricator/projects',
+          path: '/fabricator/studio/projects',
           description: 'Window units & positions'
         },
         {
@@ -310,7 +310,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         id: 'projects',
         label: 'Projects',
         icon: FileText,
-        path: '/fabricator/projects',
+        path: '/fabricator/studio/projects',
         description: 'Window units & positions'
       },
       {
@@ -499,7 +499,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 // Set timeout for single click detection
                 logoClickTimeoutRef.current = setTimeout(() => {
                   // Single click - navigate to projects
-                  navigate('/fabricator/projects');
+                  navigate('/fabricator/studio/projects');
                   logoClickTimeoutRef.current = null;
                 }, 300); // 300ms delay to detect double click
               }

@@ -174,12 +174,13 @@ export class WiringValidator {
       'advisoryWiring.ts',
       'AdvisoryGate.tsx',
       'App.tsx',
-      'RemnantUsagePredictor.ts', // Re-export proxy in @/lib/ml/
     ];
 
     for (const file of files) {
       const basename = path.basename(file);
       if (allowedImporters.includes(basename)) continue;
+      // Test files are allowed to import from /future/ for testing purposes
+      if (basename.endsWith('.test.ts') || basename.endsWith('.test.tsx') || file.includes('__tests__')) continue;
       
       const content = fs.readFileSync(file, 'utf-8');
       const futureImports = content.match(/from\s+['"]@\/future\/[^'"]+['"]/g);

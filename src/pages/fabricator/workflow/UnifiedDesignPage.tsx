@@ -289,7 +289,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate('/fabricator/projects')}
+                                    onClick={() => navigate('/fabricator/studio/projects')}
                                 >
                                     Cancel
                                 </Button>
@@ -483,7 +483,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                                 <DraftingWorkbench
                                                     onDesignValidated={handleDraftingComplete}
                                                     initialTemplate={undefined}
-                                                    onExit={() => navigate('/fabricator/projects')}
+                                                    onExit={() => navigate('/fabricator/studio/projects')}
                                                 />
                                             </div>
                                         )}
@@ -513,7 +513,7 @@ export const UnifiedDesignPage: React.FC = () => {
                             variant="outline"
                             onClick={() => {
                                 if (window.confirm('Save draft and exit?')) {
-                                    navigate('/fabricator/projects');
+                                    navigate('/fabricator/studio/projects');
                                 }
                             }}
                         >
