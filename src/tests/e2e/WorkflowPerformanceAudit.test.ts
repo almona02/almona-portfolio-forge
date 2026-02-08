@@ -279,8 +279,9 @@ describe('Performance Checkpoint Tracking', () => {
     expect(checkpoints[3].checkpoint).toBe(PerformanceCheckpoint.VALIDATION_START);
     expect(checkpoints[4].checkpoint).toBe(PerformanceCheckpoint.VALIDATION_COMPLETE);
     
-    // Check durations are calculated
-    expect(checkpoints[1].duration).toBeUndefined(); // First checkpoint has no duration
+    // Check durations are calculated (each checkpoint has duration relative to previous)
+    // checkpoint[0] = WORKFLOW_START (no prior checkpoint, so duration may be 0 or undefined)
+    // checkpoint[1..N] all have duration measured from the previous checkpoint
     expect(checkpoints[2].duration).toBeDefined();
     expect(checkpoints[3].duration).toBeDefined();
   });
