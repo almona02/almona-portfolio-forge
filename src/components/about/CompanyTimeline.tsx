@@ -24,6 +24,7 @@ interface Milestone {
 }
 
 import { MILESTONES } from './timelineData';
+export { MILESTONES } from './timelineData';
 
 const TimelineNode = ({ milestone, active, onClick }: { milestone: Milestone; active: boolean; onClick: () => void }) => {
   const meshRef = useRef<THREE.Mesh>(null);

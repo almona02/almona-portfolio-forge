@@ -1,0 +1,47 @@
+%% Fabricator Pro routing/layout graph (from src/App.tsx)
+flowchart TB
+  subgraph App["src/App.tsx"]
+    Providers["Providers:\nReact Query + Theme + Auth/Loading/ABTest/Language/Quote\n+ FabricatorWorkspaceProvider"] --> Router["BrowserRouter + Routes"]
+  end
+
+  subgraph Studio["/fabricator/studio/*  (StudioLayout)"]
+    StudioLayout["StudioLayout"] --> StudioCommand["command → FabricatorDashboard"]
+    StudioLayout --> StudioProjectList["project → ProjectStudioLayout → ProjectsPage"]
+    StudioLayout --> StudioProjectWS["project/:projectId → ProjectStudioWrapper"]
+    StudioLayout --> StudioDesign["design/* → DesignStudioLayout → EngineeringBayWrapper"]
+    StudioLayout --> StudioProd["production/* → ProductionStudioLayout → ProductionDashboard"]
+    StudioLayout --> StudioData["data/* → DataStudioLayout → SystemPacks/Tuning/ProfileStudio"]
+  end
+
+  subgraph WorkflowPages["/fabricator/workflow/*  (FabricatorLayout)"]
+    FLayout["FabricatorLayout (BosphorusWorkflowRibbon)"] --> Measuring["measuring/:id?"]
+    FLayout --> Design["design/:id?"]
+    FLayout --> Preview3D["preview3d/:id?"]
+    FLayout --> Opt["optimization/:id?"]
+    FLayout --> Inv["inventory/:id?"]
+    FLayout --> Prod["production/:id?"]
+    FLayout --> QC["quality-control/:id?"]
+    FLayout --> Pro["pro → FabricatorWorkflowPro"]
+    EngAlias["engineering-bay/:id? (alias)"] -.redirect.-> Design
+  end
+
+  subgraph Workspace["/fabricator/*  (MasterLayout)"]
+    Master["MasterLayout (Prestige Workspace Shell)"] --> Projects["projects → ProjectsPage"]
+    Master --> Customers["customers (Protected)"]
+    Master --> Inventory["inventory (Protected)"]
+    Master --> Profiles["profiles (Protected)"]
+    Master --> Commercial["commercial → CommercialPage"]
+    Master --> Packs["system-packs → SystemPacksPage"]
+  end
+
+  subgraph Legacy["/fabricator-workflow  (Redirect)"]
+    Redirect["FabricatorWorkflowRedirect"] -->|?new=true| LegacyWizard["FabricatorWorkflow (tabbed)"]
+    Redirect -->|#inventory| LegacyInv["/fabricator/inventory"]
+    Redirect -->|default| LegacyAlias["/fabricator/workflow/engineering-bay"]
+  end
+
+  Router --> Studio
+  Router --> WorkflowPages
+  Router --> Workspace
+  Router --> Legacy
+

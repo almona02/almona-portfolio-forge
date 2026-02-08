@@ -1,6 +1,7 @@
 # CI-friendly requirements (CPU-only, no heavy GPU/ML wheels)
 # Base: production deps to stay aligned with runtime, then CI/test tooling.
 # NOTE: Using requirements-prod.txt as base (newer versions) instead of requirements-production.txt
+# IMPORTANT: Do NOT re-pin packages already in requirements-prod.txt to avoid version conflicts.
 
 -r requirements-prod.txt
 
@@ -14,43 +15,24 @@
 torch==2.8.0+cpu
 torchvision==0.23.0+cpu
 
-# Testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
-pytest-timeout==2.2.0
+# Testing (only CI-specific packages not in prod)
+# pytest, pytest-asyncio, pytest-timeout are already in requirements-prod.txt
 pytest-mock==3.12.0
 locust==2.24.0  # pinned to avoid requests>=2.32.2 conflict with resend 0.6.0
-respx==0.21.1
-psutil==5.9.6
 
-# Linting/formatting
-black==24.10.0
-isort==5.12.0
-flake8==6.1.0
-mypy==1.7.1
+# Linting/formatting (black, isort, flake8, mypy already in requirements-prod.txt via dev deps)
 
-# Security tools
-bandit==1.7.10
+# Security tools (bandit already in requirements-prod.txt)
 pip-audit==2.10.0
 
-# Background tasks (needed for imports in tests)
-celery==5.3.4
-
-# Redis (needed for cache imports in tests)
-redis[hiredis]==5.0.1
+# Redis hiredis extension (redis already in requirements-prod.txt)
 hiredis==2.3.2
 
-# Flask limiter (needed for part_detection imports in tests)
-flask-limiter==3.7.0
-
-# JWT (needed for part_detection imports in tests)
-PyJWT==2.9.0
-
-# CAD / image processing (lightweight; inherits ezdxf pin from production)
-albumentations==1.4.18
+# CNC security module requires python-magic for file type validation
+# GitHub Actions Ubuntu runners have libmagic pre-installed (via 'file' package)
+python-magic==0.4.27
 
 # Industry Watchdog / Research Agent dependencies
 feedparser>=6.0.10
 httpx>=0.25.0
 python-dateutil>=2.8.2
-

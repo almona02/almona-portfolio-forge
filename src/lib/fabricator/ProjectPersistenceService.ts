@@ -7,6 +7,7 @@
  * Constitutional Tier: Tier 3 (Protected Determinism)
  */
 
+import { MigrationModeService } from '@/lib/fabricator/migration/MigrationModeService';
 import { supabase } from '@/lib/supabase';
 import { WindowUnit } from '@/types/fabricator';
 
@@ -66,9 +67,12 @@ export class ProjectPersistenceService {
       }
 
       const projectCode = project.orderNumber || project.projectCode || project.id || `project-${Date.now()}`;
-      const poseId = project.positionMeta?.posNumber 
-        ? `${projectCode}-pose-${project.positionMeta.posNumber}`
-        : `${projectCode}-pose-${Date.now()}`;
+      // Standardize poseId to UUID.
+      // If the WindowUnit already carries a UUID-shaped id, reuse it (idempotent saves).
+      // Otherwise, generate a new UUID. This replaces the legacy composite-string format
+      // (e.g. "ORD-123-pose-1") which was fragile and non-portable.
+      const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const poseId = UUID_RE.test(project.id) ? project.id : crypto.randomUUID();
 
       const snapshot: Omit<ProjectSnapshot, 'id' | 'timestamp' | 'userId'> = {
         projectId: project.id || projectCode,
@@ -84,6 +88,56 @@ export class ProjectPersistenceService {
           designMode: metadata?.designMode || 'drafting',
         },
       };
+
+      // Migration-mode aware persistence:
+      // - v1_legacy: write v1 only (current behavior)
+      // - dual_write / v2_canonical: write v2 (v2->v1 mirroring handled by DB triggers)
+      let mode:
+        | {
+            allowsWritesToV1: boolean;
+            allowsWritesToV2: boolean;
+            readSource: 'v1' | 'v2' | 'both';
+          }
+        | null = null;
+      try {
+        mode = await MigrationModeService.getInstance().getCurrentMode();
+      } catch (e) {
+        console.warn('[ProjectPersistenceService] Failed to derive migration mode; defaulting to v1:', e);
+      }
+
+      const shouldWriteV2 = mode?.allowsWritesToV2 === true;
+      const shouldWriteV1 = mode?.allowsWritesToV1 !== false; // default true when mode missing
+
+      if (shouldWriteV2) {
+        try {
+          const result = await constitutionalSavePose(
+            project,
+            { verifiedBy: user.id, timestamp: new Date().toISOString(), ...metadata },
+            { grid, selectedPreset, localBackup: false, emitRealityOS: true }
+          );
+          const v2Snapshot: ProjectSnapshot = {
+            id: result.poseId,
+            projectId: result.projectId,
+            projectCode,
+            poseId,
+            poseNumber: project.positionMeta?.posNumber,
+            windowUnit: project,
+            grid: grid ?? {},
+            systemPackId,
+            selectedPreset,
+            timestamp: new Date(),
+            userId: user.id,
+            metadata: { ...metadata, designMode: metadata?.designMode || 'drafting' },
+          };
+          this.saveToLocalStorage(v2Snapshot);
+          return v2Snapshot;
+        } catch (e) {
+          console.warn('[ProjectPersistenceService] v2 save failed; falling back to v1 if allowed:', e);
+          if (!shouldWriteV1) {
+            throw e;
+          }
+        }
+      }
 
       // CRITICAL: Find or create project in fabricator_projects table to get project_id UUID
       // The fabricator_positions table requires project_id (UUID NOT NULL), not just project_code
@@ -272,6 +326,15 @@ export class ProjectPersistenceService {
         return [];
       }
 
+      // Prefer v2 if mode says v2/both; fallback to v1.
+      const mode = await MigrationModeService.getInstance().getCurrentMode().catch(() => null);
+      const readSource = mode?.readSource || 'v1';
+
+      if (readSource === 'v2' || readSource === 'both') {
+        const v2 = await this.loadProjectPosesFromV2(projectCode, user.id).catch(() => []);
+        if (v2.length > 0 || readSource === 'v2') return v2;
+      }
+
       const { data, error } = await supabase
         .from('fabricator_positions')
         .select('*')
@@ -387,7 +450,16 @@ export class ProjectPersistenceService {
       return null;
     }
 
-    // Query by poseId stored in meta (since id is UUID, not poseId)
+    // Prefer v2 if mode says v2/both; fallback to v1.
+    const mode = await MigrationModeService.getInstance().getCurrentMode().catch(() => null);
+    const readSource = mode?.readSource || 'v1';
+
+    if (readSource === 'v2' || readSource === 'both') {
+      const v2 = await this.loadFromSupabaseV2(poseId, user.id).catch(() => null);
+      if (v2 || readSource === 'v2') return v2;
+    }
+
+    // v1 query by poseId stored in meta (since id is UUID, not poseId)
     const { data, error } = await supabase
       .from('fabricator_positions')
       .select('*')
@@ -395,13 +467,221 @@ export class ProjectPersistenceService {
       .eq('owner_user_id', user.id)
       .maybeSingle() as any;
 
-    if (error || !data) {
-      return null;
-    }
+    if (error || !data) return null;
 
     const snapshot = this.mapDbRowToSnapshot(data);
     this.saveToLocalStorage(snapshot);
     return snapshot;
+  }
+
+  /**
+   * v2 write path (canonical when migration mode allowsWritesToV2 = true)
+   */
+  private async saveProjectPoseToV2(args: {
+    userId: string;
+    project: WindowUnit;
+    grid: any;
+    systemPackId: string | null;
+    selectedPreset: string | null;
+    projectCode: string;
+    poseId: string;
+    metadata?: ProjectSnapshot['metadata'];
+  }): Promise<ProjectSnapshot> {
+    const { userId, project, grid, systemPackId, selectedPreset, projectCode, poseId, metadata } = args;
+
+    type FabricatorProjectV2Insert = {
+      owner_user_id: string;
+      project_code: string;
+      project_name: string;
+      client_name: string;
+      site_name?: string | null;
+      currency?: string;
+      region?: string;
+      system_pack_id: string;
+      status?: string;
+      meta?: Record<string, unknown> | null;
+    };
+
+    const baseProject: FabricatorProjectV2Insert = {
+      owner_user_id: userId,
+      project_code: projectCode,
+      project_name: projectCode,
+      client_name: project.positionMeta?.customer || project.customer || 'Fabricator Client',
+      site_name: project.positionMeta?.elevation || null,
+      currency: 'EGP',
+      region: 'global',
+      system_pack_id: systemPackId || 'rock60',
+      status: project.status || 'draft',
+      meta: {},
+    };
+
+    // Find or create v2 project (unique per tenant)
+    const { data: existingProject } = await (supabase as any)
+      .from('fabricator_projects_v2')
+      .select('id')
+      .eq('project_code', projectCode)
+      .eq('owner_user_id', userId)
+      .maybeSingle();
+
+    let projectId: string;
+    if (existingProject?.id) {
+      projectId = existingProject.id;
+    } else {
+      const { data: newProject, error: projError } = await (supabase as any)
+        .from('fabricator_projects_v2')
+        .insert(baseProject)
+        .select('id')
+        .single();
+
+      if (projError || !newProject?.id) {
+        throw new Error(`Failed to create v2 project: ${projError?.message || 'Unknown error'}`);
+      }
+      projectId = newProject.id;
+    }
+
+    // Find existing v2 position via meta.poseId (stable key independent of UUID id)
+    const { data: existingPos } = await (supabase as any)
+      .from('fabricator_positions_v2')
+      .select('id')
+      .eq('meta->>poseId', poseId)
+      .eq('owner_user_id', userId)
+      .maybeSingle();
+
+    const nowIso = new Date().toISOString();
+    const positionData: any = {
+      project_id: projectId,
+      owner_user_id: userId,
+      order_number: project.orderNumber,
+      pos_number: project.positionMeta?.posNumber,
+      type: project.type,
+      overall_width_mm: project.overallWidth,
+      overall_height_mm: project.overallHeight,
+      color: project.color,
+      glazing: project.glazing || {},
+      system_pack_id: systemPackId,
+      status: project.status || 'draft',
+      quantity: project.quantity || 1,
+      position_meta: project.positionMeta || {},
+      meta: {
+        ...(metadata || {}),
+        saved_at: nowIso,
+        poseId,
+      },
+      optimization: project.optimization || null,
+      grid: grid || {},
+      components: project.components || [],
+      hardware: project.hardware || {},
+      selected_preset: selectedPreset,
+      window_unit: {
+        ...project,
+        // ensure we retain pose metadata fields that callers rely on
+        projectCode,
+        projectId,
+      },
+      updated_at: nowIso,
+    };
+
+    if (existingPos?.id) {
+      const { error } = await (supabase as any)
+        .from('fabricator_positions_v2')
+        .update(positionData)
+        .eq('id', existingPos.id);
+      if (error) throw error;
+    } else {
+      const { error } = await (supabase as any)
+        .from('fabricator_positions_v2')
+        .insert(positionData);
+      if (error) throw error;
+    }
+
+    const snapshot: ProjectSnapshot = {
+      id: poseId,
+      projectId: projectId,
+      projectCode,
+      poseId,
+      poseNumber: project.positionMeta?.posNumber,
+      windowUnit: project,
+      grid,
+      systemPackId,
+      selectedPreset,
+      timestamp: new Date(),
+      userId,
+      metadata: metadata || {},
+    };
+
+    return snapshot;
+  }
+
+  private async loadFromSupabaseV2(poseId: string, userId: string): Promise<ProjectSnapshot | null> {
+    const { data, error } = await (supabase as any)
+      .from('fabricator_positions_v2')
+      .select('*')
+      .eq('meta->>poseId', poseId)
+      .eq('owner_user_id', userId)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    const snapshot = this.mapDbRowToSnapshotV2(data);
+    this.saveToLocalStorage(snapshot);
+    return snapshot;
+  }
+
+  private async loadProjectPosesFromV2(projectCode: string, userId: string): Promise<ProjectSnapshot[]> {
+    const { data: proj } = await (supabase as any)
+      .from('fabricator_projects_v2')
+      .select('id')
+      .eq('project_code', projectCode)
+      .eq('owner_user_id', userId)
+      .maybeSingle();
+
+    if (!proj?.id) return [];
+
+    const { data, error } = await (supabase as any)
+      .from('fabricator_positions_v2')
+      .select('*')
+      .eq('project_id', proj.id)
+      .eq('owner_user_id', userId)
+      .order('updated_at', { ascending: false });
+
+    if (error) return [];
+    return (data || []).map((row: any) => this.mapDbRowToSnapshotV2(row));
+  }
+
+  private mapDbRowToSnapshotV2(row: any): ProjectSnapshot {
+    const poseId = row.meta?.poseId || row.id;
+    const unit = row.window_unit || {};
+    return {
+      id: poseId,
+      projectId: row.project_id,
+      projectCode: unit.projectCode || unit.project_code || row.meta?.projectCode || row.meta?.project_code || row.project_id,
+      poseId,
+      poseNumber: row.pos_number,
+      windowUnit: (unit && Object.keys(unit).length > 0
+        ? unit
+        : {
+            id: row.id,
+            orderNumber: row.order_number,
+            overallWidth: row.overall_width_mm,
+            overallHeight: row.overall_height_mm,
+            color: row.color,
+            glazing: row.glazing,
+            hardware: row.hardware,
+            components: row.components,
+            grid: row.grid,
+            systemPackId: row.system_pack_id,
+            type: row.type,
+            status: row.status,
+            quantity: row.quantity,
+            positionMeta: row.position_meta || {},
+            optimization: row.optimization,
+          }) as WindowUnit,
+      grid: row.grid,
+      systemPackId: row.system_pack_id,
+      selectedPreset: row.selected_preset,
+      timestamp: new Date(row.updated_at || row.created_at),
+      userId: row.owner_user_id,
+      metadata: row.meta || {},
+    };
   }
 
   private mapDbRowToSnapshot(row: any): ProjectSnapshot {

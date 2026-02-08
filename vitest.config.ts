@@ -32,6 +32,18 @@ export default defineConfig({
         runScripts: 'dangerously'
       }
     },
+    // Exclude Playwright e2e tests (run via Playwright CLI, not vitest)
+    // Exclude React Native mobile tests (incompatible with jsdom)
+    // Exclude empty / non-test files that vitest picks up incorrectly
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      'tests/e2e/**',
+      'fabricator-mobile/**',
+      'src/pages/Services.test.tsx',
+      'src/integration/presets/Phase1Integration.test.ts',
+      'src/tests/e2e/SpecialPresets.e2e.test.ts',
+    ],
     // Isolate environment for each test file
     isolate: true,
     ...(enableStorybookBrowser ? {

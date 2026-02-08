@@ -16,8 +16,7 @@
  */
 
 import { downloadCSV, exportCutListToCSV, printCutList } from '@/lib/fabricator/CutListExport';
-import { CutListItem, OptimizedCutList } from '@/lib/fabricator/UPVCCuttingEngine';
-import { Badge } from '@/shared/ui/ui/badge';
+import { OptimizedCutList } from '@/lib/fabricator/UPVCCuttingEngine';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import {
@@ -29,7 +28,8 @@ import {
     Printer,
     Scissors
 } from 'lucide-react';
-import React, { useMemo } from 'react';
+import React from 'react';
+import { VisualCuttingPlan } from './VisualCuttingPlan';
 
 interface CutListViewerProps {
   cutList: OptimizedCutList;
@@ -43,7 +43,7 @@ interface CutListViewerProps {
   };
 }
 
-export const CutListViewer: React.FC<CutListViewerProps> = ({
+const CutListViewerInner: React.FC<CutListViewerProps> = ({
   cutList,
   barLengthMm = 6000,
   showRemnants = true,
@@ -54,7 +54,6 @@ export const CutListViewer: React.FC<CutListViewerProps> = ({
     systemPack: 'Katra PRO RED'
   },
 }) => {
-  // Export handlers
   const handleExportCSV = () => {
     const csvContent = exportCutListToCSV(cutList, projectInfo.name);
     const filename = `${projectInfo.name.replace(/\s+/g, '-')}-cut-list.csv`;
@@ -64,18 +63,7 @@ export const CutListViewer: React.FC<CutListViewerProps> = ({
   const handlePrint = () => {
     printCutList(cutList, projectInfo);
   };
-  // Group cuts by bar number
-  const barGroups = useMemo(() => {
-    const groups: Record<number, CutListItem[]> = {};
-    cutList.items.forEach((item) => {
-      for (let i = 0; i < item.quantity; i++) {
-        const barNum = item.barNumber;
-        if (!groups[barNum]) groups[barNum] = [];
-        groups[barNum].push(item);
-      }
-    });
-    return groups;
-  }, [cutList.items]);
+  // Waste indicator color
 
   // Waste indicator color
   const getWasteColor = (percentage: number): string => {
@@ -169,154 +157,7 @@ export const CutListViewer: React.FC<CutListViewerProps> = ({
         </CardContent>
       </Card>
 
-      {/* Visual Bar Representation */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Visual Cutting Plan</h3>
-        {Object.entries(barGroups).map(([barNum, cuts]) => {
-          const barNumber = parseInt(barNum);
-          const totalUsed = cuts.reduce((sum, cut) => sum + cut.cutLengthMm + 3, 0); // +3mm kerf
-          const wasteMm = barLengthMm - totalUsed;
-          const wastePercent = (wasteMm / barLengthMm) * 100;
-
-          return (
-            <Card key={barNumber}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-base px-3 py-1">
-                      Bar {barNumber}
-                    </Badge>
-                    <span className="text-sm text-slate-600 dark:text-slate-400">
-                      {cuts[0].profileName}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-sm">
-                      <span className="text-slate-600 dark:text-slate-400">Used: </span>
-                      <span className="font-mono font-semibold">
-                        {(totalUsed / 1000).toFixed(2)}m
-                      </span>
-                    </div>
-                    <div className={`text-sm px-2 py-1 rounded ${
-                      wastePercent < 5 ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
-                      wastePercent < 10 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
-                      'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-                    }`}>
-                      <span className="font-mono font-semibold">
-                        {wastePercent.toFixed(1)}%
-                      </span> waste
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {/* Visual Bar with Cuts */}
-                <div className="mb-4">
-                  <div className="relative h-16 bg-slate-200 dark:bg-slate-800 rounded-lg overflow-hidden">
-                    {/* 6m scale markers */}
-                    <div className="absolute inset-x-0 bottom-0 h-2 flex justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
-                      <span>0m</span>
-                      <span>1m</span>
-                      <span>2m</span>
-                      <span>3m</span>
-                      <span>4m</span>
-                      <span>5m</span>
-                      <span>6m</span>
-                    </div>
-
-                    {/* Cuts visualization */}
-                    {cuts.map((cut, idx) => {
-                      const startPercent = (cut.positionOnBarMm / barLengthMm) * 100;
-                      const widthPercent = ((cut.cutLengthMm + 3) / barLengthMm) * 100; // +3mm kerf
-
-                      return (
-                        <div
-                          key={idx}
-                          className="absolute top-2 h-10 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 border-2 border-blue-700 dark:border-blue-500 rounded flex items-center justify-center text-white text-xs font-semibold shadow-lg hover:scale-105 transition-transform cursor-pointer group"
-                          style={{
-                            left: `${startPercent}%`,
-                            width: `${widthPercent}%`,
-                          }}
-                          title={`${cut.cutLengthMm}mm @ ${cut.cuttingAngle}°`}
-                        >
-                          <div className="text-center px-1 truncate">
-                            <div className="font-mono">{cut.cutLengthMm}mm</div>
-                            <div className="text-[10px] opacity-75">45°</div>
-                          </div>
-                          
-                          {/* Tooltip on hover */}
-                          <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
-                            Cut: {cut.cutLengthMm}mm @ {cut.cuttingAngle}°
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {/* Waste visualization */}
-                    {wasteMm > 100 && (
-                      <div
-                        className="absolute top-2 h-10 bg-gradient-to-r from-slate-300 to-slate-400 dark:from-slate-700 dark:to-slate-600 border-2 border-dashed border-slate-500 rounded flex items-center justify-center text-slate-700 dark:text-slate-300 text-xs font-semibold"
-                        style={{
-                          left: `${((barLengthMm - wasteMm) / barLengthMm) * 100}%`,
-                          width: `${(wasteMm / barLengthMm) * 100}%`,
-                        }}
-                      >
-                        <div className="text-center px-1 truncate">
-                          <div className="font-mono">{wasteMm.toFixed(0)}mm</div>
-                          <div className="text-[10px]">remnant</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Cutting Instructions Table */}
-                <div className="space-y-2">
-                  {cuts.map((cut, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700"
-                    >
-                      <div className="flex items-center gap-4">
-                        <Badge variant="secondary" className="font-mono">
-                          #{idx + 1}
-                        </Badge>
-                        <div>
-                          <div className="font-semibold text-sm">
-                            {cut.role.toUpperCase()} - {cut.profileName}
-                          </div>
-                          <div className="text-xs text-slate-600 dark:text-slate-400">
-                            Position: {cut.positionOnBarMm}mm from start
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-6">
-                        <div className="text-right">
-                          <div className="text-xs text-slate-600 dark:text-slate-400">
-                            Cut Length
-                          </div>
-                          <div className="text-lg font-mono font-bold">
-                            {cut.cutLengthMm}mm
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-slate-600 dark:text-slate-400">
-                            Angle
-                          </div>
-                          <div className="text-lg font-mono font-bold">
-                            {cut.cuttingAngle}°
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <VisualCuttingPlan cutList={cutList} barLengthMm={barLengthMm} />
 
       {/* Cutting Sequence (for single-head machine) */}
       <Card>
@@ -345,3 +186,6 @@ export const CutListViewer: React.FC<CutListViewerProps> = ({
     </div>
   );
 };
+
+export const CutListViewer = React.memo(CutListViewerInner);
+CutListViewer.displayName = 'CutListViewer';

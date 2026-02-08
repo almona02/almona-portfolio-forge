@@ -360,8 +360,194 @@ export function generateOptimizedCutList(
     )
   );
 
+  // 4b. Flatten all placed cuts from bars (corrected logic)
+  // detailedItems will contain every single cut with its specific position and bar
+  const detailedItems = bars.flatMap(bar => bar.cuts.map(c => ({...c, quantity: 1})));
+
   return {
-    items,
+    items: detailedItems,
+    totalBarsUsed: bars.length,
+    totalWasteMm,
+    wastePercentage,
+    cuttingSequence,
+  };
+}
+
+/**
+ * Window spec for batch cut list (multiple sizes × quantities)
+ */
+export interface BatchWindowSpec {
+  overallWidth: number;
+  overallHeight: number;
+  quantity: number;
+}
+
+/**
+ * Generate optimized cut list for a batch of windows (e.g. 12×1300×2600).
+ * Aggregates frame + sash cuts, then runs bar packing once for best utilization.
+ * Sash outer = frame outer − 2×frame width (clearance).
+ */
+export function generateOptimizedCutListForBatch(
+  specs: BatchWindowSpec[],
+  profiles: Profile[],
+  welding: { burnOffMm: number; coolingFactorPercent: number },
+  barLengthMm: number = 6000,
+  sawKerfMm: number = 3
+): OptimizedCutList {
+  const items: CutListItem[] = [];
+  const frameProfile = profiles.find((p) => p.profileRole === 'frame');
+  const sashProfile = profiles.find((p) => p.profileRole === 'sash' || p.profileRole === 'sash_casement');
+  if (!frameProfile) {
+    return {
+      items: [],
+      totalBarsUsed: 0,
+      totalWasteMm: 0,
+      wastePercentage: 0,
+      cuttingSequence: [],
+    };
+  }
+
+  const frameWidthMm = frameProfile.width;
+  const sashWidthMm = sashProfile?.width ?? Math.max(50, frameWidthMm - 6);
+
+  for (const spec of specs) {
+    const { overallWidth, overallHeight, quantity } = spec;
+    if (!overallWidth || !overallHeight || quantity < 1) continue;
+
+    // Frame: horizontal (top + bottom) and vertical (left + right)
+    const frameHorz = calculateUPVCCutLength({
+      finishedDimensionMm: overallWidth,
+      profile: { widthMm: frameWidthMm, wallThicknessMm: frameProfile.thickness || 2.5, role: 'frame' },
+      welding,
+      cutting: { miterAngleDegrees: 45, kerfWidthMm: 3 },
+      cornerCount: 4,
+    });
+    const frameVert = calculateUPVCCutLength({
+      finishedDimensionMm: overallHeight,
+      profile: { widthMm: frameWidthMm, wallThicknessMm: frameProfile.thickness || 2.5, role: 'frame' },
+      welding,
+      cutting: { miterAngleDegrees: 45, kerfWidthMm: 3 },
+      cornerCount: 4,
+    });
+
+    items.push({
+      profileId: frameProfile.id,
+      profileName: `${frameProfile.name} (Horizontal)`,
+      role: 'frame',
+      cutLengthMm: frameHorz.cutLengthMm,
+      quantity: 2 * quantity,
+      cuttingAngle: 45,
+      barNumber: 0,
+      positionOnBarMm: 0,
+      wasteAfterMm: 0,
+    });
+    items.push({
+      profileId: frameProfile.id,
+      profileName: `${frameProfile.name} (Vertical)`,
+      role: 'frame',
+      cutLengthMm: frameVert.cutLengthMm,
+      quantity: 2 * quantity,
+      cuttingAngle: 45,
+      barNumber: 0,
+      positionOnBarMm: 0,
+      wasteAfterMm: 0,
+    });
+
+    // Sash: outer = frame outer − 2×frame width (clearance)
+    if (sashProfile) {
+      const sashOuterW = overallWidth - 2 * frameWidthMm;
+      const sashOuterH = overallHeight - 2 * frameWidthMm;
+      if (sashOuterW > 0 && sashOuterH > 0) {
+        const sashHorz = calculateUPVCCutLength({
+          finishedDimensionMm: sashOuterW,
+          profile: { widthMm: sashWidthMm, wallThicknessMm: sashProfile.thickness || 2.5, role: 'sash' },
+          welding,
+          cutting: { miterAngleDegrees: 45, kerfWidthMm: 3 },
+          cornerCount: 4,
+        });
+        const sashVert = calculateUPVCCutLength({
+          finishedDimensionMm: sashOuterH,
+          profile: { widthMm: sashWidthMm, wallThicknessMm: sashProfile.thickness || 2.5, role: 'sash' },
+          welding,
+          cutting: { miterAngleDegrees: 45, kerfWidthMm: 3 },
+          cornerCount: 4,
+        });
+        items.push({
+          profileId: sashProfile.id,
+          profileName: `${sashProfile.name} (Horizontal)`,
+          role: 'sash',
+          cutLengthMm: sashHorz.cutLengthMm,
+          quantity: 2 * quantity,
+          cuttingAngle: 45,
+          barNumber: 0,
+          positionOnBarMm: 0,
+          wasteAfterMm: 0,
+        });
+        items.push({
+          profileId: sashProfile.id,
+          profileName: `${sashProfile.name} (Vertical)`,
+          role: 'sash',
+          cutLengthMm: sashVert.cutLengthMm,
+          quantity: 2 * quantity,
+          cuttingAngle: 45,
+          barNumber: 0,
+          positionOnBarMm: 0,
+          wasteAfterMm: 0,
+        });
+      }
+    }
+  }
+
+  // Same bar packing as single-unit
+  const bars: { profileId: string; usedMm: number; cuts: CutListItem[] }[] = [];
+  const sortedItems = [...items].sort((a, b) => b.cutLengthMm - a.cutLengthMm);
+  let currentBar: (typeof bars)[0] | null = null;
+  let barIndex = 0;
+
+  for (const item of sortedItems) {
+    for (let i = 0; i < item.quantity; i++) {
+      const requiredLength = item.cutLengthMm + sawKerfMm;
+      if (
+        currentBar &&
+        currentBar.profileId === item.profileId &&
+        currentBar.usedMm + requiredLength <= barLengthMm
+      ) {
+        item.barNumber = barIndex;
+        item.positionOnBarMm = currentBar.usedMm;
+        item.wasteAfterMm = barLengthMm - (currentBar.usedMm + requiredLength);
+        currentBar.usedMm += requiredLength;
+        currentBar.cuts.push({ ...item });
+      } else {
+        barIndex++;
+        currentBar = {
+          profileId: item.profileId,
+          usedMm: requiredLength,
+          cuts: [{ ...item, barNumber: barIndex, positionOnBarMm: 0 }],
+        };
+        bars.push(currentBar);
+        item.barNumber = barIndex;
+        item.positionOnBarMm = 0;
+        item.wasteAfterMm = barLengthMm - requiredLength;
+      }
+    }
+  }
+
+  const totalUsedMm = bars.reduce((sum, bar) => sum + bar.usedMm, 0);
+  const totalAvailableMm = bars.length * barLengthMm;
+  const totalWasteMm = totalAvailableMm - totalUsedMm;
+  const wastePercentage = totalAvailableMm > 0 ? (totalWasteMm / totalAvailableMm) * 100 : 0;
+  const cuttingSequence = bars.flatMap((bar) =>
+    bar.cuts.map(
+      (cut) =>
+        `Bar ${cut.barNumber}: ${cut.profileName} @ ${cut.cutLengthMm}mm (${cut.cuttingAngle}°)`
+    )
+  );
+
+  // Flatten placed cuts
+  const detailedItems = bars.flatMap(bar => bar.cuts.map(c => ({...c, quantity: 1})));
+
+  return {
+    items: detailedItems,
     totalBarsUsed: bars.length,
     totalWasteMm,
     wastePercentage,

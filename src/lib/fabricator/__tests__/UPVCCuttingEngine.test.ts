@@ -159,10 +159,10 @@ describe('UPVC Cutting Engine - Domain Expert Validation', () => {
         6000
       );
 
-      // Should have 4 cuts: 2 horizontal + 2 vertical
-      expect(result.items.length).toBe(2); // 2 groups (horizontal, vertical)
-      expect(result.items[0].quantity).toBe(2); // 2 horizontal
-      expect(result.items[1].quantity).toBe(2); // 2 vertical
+      // Should have 4 individual cuts: 2 horizontal + 2 vertical
+      // Engine returns flattened individual cuts (each with quantity: 1)
+      expect(result.items.length).toBe(4);
+      expect(result.items.every(i => i.quantity === 1)).toBe(true);
 
       // Should use 6000mm bars
       expect(result.totalBarsUsed).toBeGreaterThan(0);

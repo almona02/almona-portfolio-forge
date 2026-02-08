@@ -233,31 +233,44 @@ class SectorType(str, Enum):
 class CustomerResponse(BaseModel):
     id: str
     name: str
+    owner_user_id: Optional[str] = None
+    contact_person: Optional[str] = None
     sector: Optional[SectorType] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
+    billing_info: Optional[Dict[str, Any]] = None
+    shipping_info: Optional[Dict[str, Any]] = None
     notes: Optional[str] = None
     tags: List[CustomerTagResponse] = []
+    total_revenue: Optional[float] = None
+    order_count: Optional[int] = None
+    last_order_date: Optional[str] = None
     created_at: str
     updated_at: str
 
 
 class CustomerCreateRequest(BaseModel):
     name: str
+    contact_person: Optional[str] = None
     sector: Optional[SectorType] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
+    billing_info: Optional[Dict[str, Any]] = None
+    shipping_info: Optional[Dict[str, Any]] = None
     notes: Optional[str] = None
 
 
 class CustomerUpdateRequest(BaseModel):
     name: Optional[str] = None
+    contact_person: Optional[str] = None
     sector: Optional[SectorType] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
+    billing_info: Optional[Dict[str, Any]] = None
+    shipping_info: Optional[Dict[str, Any]] = None
     notes: Optional[str] = None
 
 
@@ -286,21 +299,30 @@ class CustomerCommunicationResponse(BaseModel):
     id: str
     customer_id: str
     type: str  # email, phone, meeting, etc.
-    content: str
-    date: str
+    content: Optional[str] = None
+    subject: Optional[str] = None
+    message: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+    date: Optional[str] = None
     user_id: str
     created_at: str
+    updated_at: Optional[str] = None
 
 
 class CustomerCommunicationCreateRequest(BaseModel):
-    type: str
-    content: str
+    type: str  # CommunicationType value (email, phone, note, meeting, other)
+    content: Optional[str] = None
+    subject: Optional[str] = None
+    message: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
     date: Optional[str] = None
 
 
 class CustomerCommunicationUpdateRequest(BaseModel):
     type: Optional[str] = None
     content: Optional[str] = None
+    subject: Optional[str] = None
+    message: Optional[str] = None
     date: Optional[str] = None
 
 
@@ -313,20 +335,28 @@ class CustomerCommunicationListResponse(BaseModel):
 
 class CustomerSegmentResponse(BaseModel):
     id: str
+    user_id: Optional[str] = None
     name: str
+    description: Optional[str] = None
     criteria: Dict[str, Any]
-    count: int
+    is_dynamic: bool = True
+    customer_count: int = 0
     created_at: str
+    updated_at: Optional[str] = None
 
 
 class CustomerSegmentCreateRequest(BaseModel):
     name: str
+    description: Optional[str] = None
     criteria: Dict[str, Any]
+    is_dynamic: bool = False
 
 
 class CustomerSegmentUpdateRequest(BaseModel):
     name: Optional[str] = None
+    description: Optional[str] = None
     criteria: Optional[Dict[str, Any]] = None
+    is_dynamic: Optional[bool] = None
 
 
 class CustomerSegmentListResponse(BaseModel):
@@ -342,21 +372,31 @@ class CustomerSegmentCustomersResponse(BaseModel):
 class CustomerReminderResponse(BaseModel):
     id: str
     customer_id: str
+    user_id: Optional[str] = None
     title: str
-    due_date: str
-    completed: bool
+    description: Optional[str] = None
+    reminder_date: Optional[str] = None
+    due_date: Optional[str] = None
+    is_completed: bool = False
+    completed_at: Optional[str] = None
     created_at: str
+    updated_at: Optional[str] = None
 
 
 class CustomerReminderCreateRequest(BaseModel):
     title: str
-    due_date: str
+    description: Optional[str] = None
+    reminder_date: Optional[str] = None
+    due_date: Optional[str] = None
+    is_completed: bool = False
 
 
 class CustomerReminderUpdateRequest(BaseModel):
     title: Optional[str] = None
+    description: Optional[str] = None
+    reminder_date: Optional[str] = None
     due_date: Optional[str] = None
-    completed: Optional[bool] = None
+    is_completed: Optional[bool] = None
 
 
 class CustomerReminderListResponse(BaseModel):

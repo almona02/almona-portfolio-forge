@@ -5,8 +5,9 @@
  * Tests WebSocket connectivity and sensor data processing
  */
 
-const WebSocket = require('ws');
-const https = require('https');
+import https from 'https';
+import { fileURLToPath } from 'url';
+import WebSocket from 'ws';
 
 // Configuration
 const config = {
@@ -288,9 +289,10 @@ class IoTConnectionTester {
 }
 
 // Execute tests
-if (require.main === module) {
+// Execute tests
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const tester = new IoTConnectionTester();
   tester.runTests().catch(console.error);
 }
 
-module.exports = IoTConnectionTester;
+export default IoTConnectionTester;

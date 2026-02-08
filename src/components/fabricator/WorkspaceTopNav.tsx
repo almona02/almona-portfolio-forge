@@ -1,36 +1,58 @@
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { isRTL } from '@/lib/i18n';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Boxes, Calculator, FileText, Library, Package, Users } from 'lucide-react';
+import { Boxes, Calculator, ChevronRight, FileText, Library, Package, Users } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 const workspaceTabs = [
-  { id: 'projects', icon: FileText, path: '/fabricator/projects', key: 'projects' },
-  { id: 'customers', icon: Users, path: '/fabricator/customers', key: 'customers' },
-  { id: 'inventory', icon: Package, path: '/fabricator/inventory', key: 'inventory' },
-  { id: 'profiles', icon: Library, path: '/fabricator/profiles', key: 'profiles' },
-  { id: 'system-packs', icon: Boxes, path: '/fabricator/system-packs', key: 'systemPacks' },
-  { id: 'commercial', icon: Calculator, path: '/fabricator/commercial', key: 'commercial' },
+  { id: 'projects', icon: FileText, path: () => fabricatorRoutes.studioProjects(), key: 'projects' },
+  { id: 'customers', icon: Users, path: () => fabricatorRoutes.studioData(), key: 'customers' },
+  { id: 'inventory', icon: Package, path: () => fabricatorRoutes.studioData(), key: 'inventory' },
+  { id: 'profiles', icon: Library, path: () => fabricatorRoutes.studioData('profiles'), key: 'profiles' },
+  { id: 'system-packs', icon: Boxes, path: () => fabricatorRoutes.studioData(), key: 'systemPacks' },
+  { id: 'commercial', icon: Calculator, path: () => fabricatorRoutes.studioProjects(), key: 'commercial' },
 ] as const;
 
 export const WorkspaceTopNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { projectId: routeProjectId, poseId: routePoseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { state, dispatch } = useFabricatorWorkspace();
   const { t, i18n } = useTranslation('fabricator');
   const isRTLMode = isRTL(i18n.language);
 
+  // Build breadcrumb segments from route context
+  const breadcrumbs = React.useMemo(() => {
+    const crumbs: { label: string; path?: string }[] = [];
+    if (routeProjectId || state.currentProject) {
+      crumbs.push({ label: t('workspace.breadcrumb.projects', 'Projects'), path: fabricatorRoutes.studioProjects() });
+      if (routeProjectId) {
+        const projectLabel = state.currentProject?.projectCode || state.currentProject?.orderNumber || routeProjectId;
+        crumbs.push({
+          label: String(projectLabel).substring(0, 20),
+          path: fabricatorRoutes.studioProjects(), // TODO: deep-link to project detail
+        });
+      }
+      if (routePoseId) {
+        const poseLabel = state.currentProject?.posNumber || routePoseId.substring(0, 8);
+        crumbs.push({ label: String(poseLabel) });
+      }
+    }
+    return crumbs;
+  }, [routeProjectId, routePoseId, state.currentProject, t]);
+
   const activeTab =
-    workspaceTabs.find((tab) => location.pathname.startsWith(tab.path))?.id || 'projects';
+    workspaceTabs.find((tab) => location.pathname.startsWith(tab.path()))?.id || 'projects';
 
   const handleTabChange = (tabId: string) => {
     const tab = workspaceTabs.find((t) => t.id === tabId);
     if (!tab) return;
     dispatch({ type: 'SET_ACTIVE_TAB', payload: tabId as any });
-    navigate(tab.path);
+    navigate(tab.path());
   };
 
   return (
@@ -81,6 +103,26 @@ export const WorkspaceTopNav: React.FC = () => {
             </TabsList>
           </Tabs>
         </div>
+        {/* ─── Breadcrumbs ─────────────────────────────────────── */}
+        {breadcrumbs.length > 0 && (
+          <div className="flex items-center gap-1 px-1 pb-2 text-[11px] text-slate-400">
+            {breadcrumbs.map((crumb, idx) => (
+              <React.Fragment key={idx}>
+                {idx > 0 && <ChevronRight className="h-3 w-3 text-slate-600" />}
+                {crumb.path ? (
+                  <button
+                    onClick={() => navigate(crumb.path!)}
+                    className="hover:text-amber-400 transition-colors"
+                  >
+                    {crumb.label}
+                  </button>
+                ) : (
+                  <span className="text-amber-300 font-medium">{crumb.label}</span>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

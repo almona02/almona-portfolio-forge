@@ -546,6 +546,15 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
   // Get geometry for zoom handlers
   const geometry = useMemo(() => drafting.getGeometry(), [drafting]);
 
+  // CRITICAL FIX: Sync geometry from drafting engine to canvas manager.
+  // Without this, the OptimizedCanvasManager's this.geometry stays null
+  // and renderGeometry() draws nothing.
+  useEffect(() => {
+    if (managerRef.current) {
+      managerRef.current.setGeometry(geometry);
+    }
+  }, [geometry]);
+
   // Memoize element count calculation
   // Memoize element count calculation (removed unused)
 

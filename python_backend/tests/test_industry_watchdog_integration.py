@@ -200,16 +200,14 @@ class TestIndustryWatchdogIntegration:
         assert "date" in brief, "Brief should have date"
         assert "summary" in brief, "Brief should have summary"
         assert "alerts" in brief, "Brief should have alerts"
-        assert "price_updates" in brief, "Brief should have price updates"
-        assert "tech_news" in brief, "Brief should have tech news"
-        assert "total_articles" in brief, "Brief should have total articles"
+        assert "priceUpdates" in brief, "Brief should have price updates"
+        assert "totalArticles" in brief, "Brief should have total articles"
         
         print(f"✅ Morning brief generated:")
         print(f"   Summary: {brief['summary']}")
-        print(f"   Total articles: {brief['total_articles']}")
-        print(f"   Critical alerts: {brief.get('critical_alerts', 0)}")
-        print(f"   Price updates: {len(brief.get('price_updates', []))}")
-        print(f"   Tech news: {len(brief.get('tech_news', []))}")
+        print(f"   Total articles: {brief['totalArticles']}")
+        print(f"   Critical alerts: {brief.get('criticalAlerts', 0)}")
+        print(f"   Price updates: {len(brief.get('priceUpdates', []))}")
         
         return brief
     
@@ -270,10 +268,9 @@ class TestIndustryWatchdogIntegration:
         print("\n4️⃣ Morning Brief: Generating summary...")
         brief = watchdog.get_morning_brief()
         print(f"   ✅ Brief generated:")
-        print(f"      Total articles: {brief['total_articles']}")
+        print(f"      Total articles: {brief['totalArticles']}")
         print(f"      Alerts: {len(brief.get('alerts', []))}")
-        print(f"      Price updates: {len(brief.get('price_updates', []))}")
-        print(f"      Tech news: {len(brief.get('tech_news', []))}")
+        print(f"      Price updates: {len(brief.get('priceUpdates', []))}")
         
         # Step 5: Get trends
         print("\n5️⃣ Trends: Retrieving latest trends...")

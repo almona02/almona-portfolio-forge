@@ -20,7 +20,7 @@ const LazyBackground = () => {
       startTransition(() => {
         setShouldLoad(true);
       });
-    }, 200);
+    }, 0);
     return () => clearTimeout(timer);
   }, []);
 
@@ -78,10 +78,10 @@ const Hero = () => {
   // Enhanced slide transition with smooth animation control
   const goToSlide = useCallback((index: number) => {
     if (index === activeSlide || isTransitioning) return;
-    
+
     setIsTransitioning(true);
     setActiveSlide(index);
-    
+
     // Reset transitioning state after animation completes
     setTimeout(() => setIsTransitioning(false), 700);
   }, [activeSlide, isTransitioning]);
@@ -89,7 +89,7 @@ const Hero = () => {
   // Auto-advance slides with pause on hover
   useEffect(() => {
     if (isTransitioning || isPaused) return;
-    
+
     const interval = setInterval(() => {
       goToSlide(activeSlide === slides.length - 1 ? 0 : activeSlide + 1);
     }, 6000);
@@ -160,12 +160,12 @@ const Hero = () => {
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const minSwipeDistance = 50;
-    
+
     if (Math.abs(distance) < minSwipeDistance) return;
-    
+
     if (distance > 0) {
       // Swipe left - next slide
       goToSlide(activeSlide === slides.length - 1 ? 0 : activeSlide + 1);
@@ -188,7 +188,7 @@ const Hero = () => {
   const heroContent = (
     <>
       {/* Enhanced gradient overlay - Egyptian desert gold + industrial dark - Theme-aware */}
-      <div 
+      <div
         className="absolute inset-0 z-[5] dark:opacity-100 opacity-90"
         style={gradientOverlayStyle}
       />
@@ -203,23 +203,21 @@ const Hero = () => {
               initial="hidden"
               animate={activeSlide === index ? "visible" : "hidden"}
               variants={FADE_IN}
-              className={`${
-                activeSlide === index
+              className={`${activeSlide === index
                   ? "block"
                   : "absolute pointer-events-none opacity-0"
-              }`}
+                }`}
             >
               {activeSlide === index && (
                 <div className="max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
                   {/* Official Partner Badge / National Badge */}
                   {slide.badge && (
-                    <motion.div 
+                    <motion.div
                       variants={SLIDE_UP}
-                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 backdrop-blur-sm ${
-                      slide.nationalFocus 
-                        ? "bg-green-500/20 border border-green-500/40 text-green-400"
-                        : "bg-amber-500/20 border border-amber-500/40 text-amber-400"
-                    }`}>
+                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 backdrop-blur-sm ${slide.nationalFocus
+                          ? "bg-green-500/20 border border-green-500/40 text-green-400"
+                          : "bg-amber-500/20 border border-amber-500/40 text-amber-400"
+                        }`}>
                       {slide.nationalFocus ? (
                         <>
                           <CheckCircle className="w-4 h-4" />
@@ -235,7 +233,7 @@ const Hero = () => {
                   )}
 
                   {/* Badge/Description - Optimized for mobile - Theme-aware colors */}
-                  <motion.span 
+                  <motion.span
                     variants={SLIDE_UP}
                     className="block mb-3 sm:mb-4 md:mb-5 text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-wider text-amber-400 dark:text-amber-400"
                     style={{
@@ -246,9 +244,9 @@ const Hero = () => {
                   >
                     {slide.description}
                   </motion.span>
-                  
+
                   {/* Main Title - Better mobile scaling - Theme-aware text colors */}
-                  <motion.h1 
+                  <motion.h1
                     variants={SLIDE_UP}
                     className="typography-h1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-foreground dark:text-white leading-[1.1] sm:leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] dark:drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]"
                   >
@@ -256,15 +254,15 @@ const Hero = () => {
                       {slide.title}
                     </span>
                   </motion.h1>
-                  
+
                   {/* Subtitle - Better mobile scaling - Theme-aware text colors */}
-                  <motion.h2 
+                  <motion.h2
                     variants={SLIDE_UP}
                     className="typography-h2 text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-foreground dark:text-white mb-4 sm:mb-5 md:mb-6 lg:mb-8 leading-[1.2] sm:leading-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)] dark:drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]"
                   >
                     {slide.subtitle}
                   </motion.h2>
-                  
+
                   {/* Action Buttons - Optimized for mobile - Better spacing on large screens */}
                   <motion.div
                     variants={SLIDE_UP}
@@ -280,7 +278,7 @@ const Hero = () => {
                         {slide.nationalFocus ? t('hero.slides.fabricator_pro.cta_primary') : slide.id === 2 ? t('hero.slides.yilmaz_machines.cta_primary') : t('hero.slides.almona_co.cta_primary')}
                       </Button>
                     </Link>
-                    
+
                     <Link to="/contact" className="w-full sm:w-auto">
                       <Button
                         variant="outline"
@@ -314,23 +312,22 @@ const Hero = () => {
                     <button
                       key={index}
                       onClick={() => goToSlide(index)}
-                      className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-background dark:focus:ring-offset-gray-900 ${
-                        activeSlide === index
+                      className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-background dark:focus:ring-offset-gray-900 ${activeSlide === index
                           ? "bg-almona-orange w-6 sm:w-8 shadow-lg shadow-amber-500/25"
                           : "bg-foreground/30 dark:bg-white/30 hover:bg-foreground/50 dark:hover:bg-white/50"
-                      }`}
+                        }`}
                       aria-label={`Go to slide ${index + 1}`}
                       aria-selected={activeSlide === index}
                       role="tab"
                     />
                   ))}
                 </div>
-                
+
                 {/* Progress Indicator - Optimized for mobile - Theme-aware */}
                 <div className="w-full sm:w-32 bg-foreground/15 dark:bg-white/15 sm:bg-foreground/20 dark:sm:bg-white/20 h-0.5 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="bg-almona-orange h-full rounded-full"
-                    style={{ 
+                    style={{
                       width: isPaused ? '0%' : '100%',
                       transition: isPaused ? 'none' : 'width 6s linear'
                     }}
@@ -348,7 +345,7 @@ const Hero = () => {
   );
 
   return (
-    <section 
+    <section
       className="relative bg-background dark:bg-[#0a0a0a]"
       style={{ minHeight: '-webkit-fill-available' }}
       role="region"
@@ -375,11 +372,11 @@ const Hero = () => {
       {/* Loading indicator for transition states - Theme-aware */}
       {isTransitioning && (
         <div className="absolute inset-0 z-[110] flex items-center justify-center bg-background/35 dark:bg-black/35 backdrop-blur-[2px] transition-opacity duration-300">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-foreground/10 dark:bg-white/10 border border-foreground/15 dark:border-white/15 shadow-xl shadow-amber-500/10">
-              <div className="flex flex-col gap-1">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/80 dark:text-white/80">
-                  {t('hero.transition.preparing')}
-                </span>
+          <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-foreground/10 dark:bg-white/10 border border-foreground/15 dark:border-white/15 shadow-xl shadow-amber-500/10">
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/80 dark:text-white/80">
+                {t('hero.transition.preparing')}
+              </span>
               <div className="w-28 h-1.5 bg-foreground/15 dark:bg-white/15 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 transition-all duration-500 ease-out"
