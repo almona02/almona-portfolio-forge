@@ -169,10 +169,12 @@ export class WiringValidator {
     const files = this.scanFiles(srcDir);
     
     // Allowed files that can import from /future/
+    // These are gateway/proxy files that provide stable import paths
     const allowedImporters = [
       'advisoryWiring.ts',
       'AdvisoryGate.tsx',
-      'App.tsx'
+      'App.tsx',
+      'RemnantUsagePredictor.ts', // Re-export proxy in @/lib/ml/
     ];
 
     for (const file of files) {

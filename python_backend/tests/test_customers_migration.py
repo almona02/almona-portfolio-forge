@@ -11,16 +11,16 @@ import sys
 
 def test_migration_file_exists():
     """Test that the migration file exists."""
-    migration_file = (
-        "python_backend/migrations/062_customers_enhancements.sql"
+    migration_file = os.path.join(
+        os.path.dirname(__file__), "..", "migrations", "062_customers_enhancements.sql"
     )
     assert os.path.exists(migration_file), f"Migration file not found: {migration_file}"
 
 
 def test_migration_file_readable():
     """Test that the migration file is readable."""
-    migration_file = (
-        "python_backend/migrations/062_customers_enhancements.sql"
+    migration_file = os.path.join(
+        os.path.dirname(__file__), "..", "migrations", "062_customers_enhancements.sql"
     )
     with open(migration_file, "r", encoding="utf-8") as f:
         content = f.read()
@@ -29,8 +29,8 @@ def test_migration_file_readable():
 
 def test_migration_contains_tables():
     """Test that the migration creates all required tables."""
-    migration_file = (
-        "python_backend/migrations/062_customers_enhancements.sql"
+    migration_file = os.path.join(
+        os.path.dirname(__file__), "..", "migrations", "062_customers_enhancements.sql"
     )
     with open(migration_file, "r", encoding="utf-8") as f:
         content = f.read()
@@ -54,8 +54,8 @@ def test_migration_contains_tables():
 
 def test_migration_contains_indexes():
     """Test that the migration creates indexes."""
-    migration_file = (
-        "python_backend/migrations/062_customers_enhancements.sql"
+    migration_file = os.path.join(
+        os.path.dirname(__file__), "..", "migrations", "062_customers_enhancements.sql"
     )
     with open(migration_file, "r", encoding="utf-8") as f:
         content = f.read()
@@ -64,8 +64,8 @@ def test_migration_contains_indexes():
 
 def test_migration_contains_rls_policies():
     """Test that the migration creates RLS policies."""
-    migration_file = (
-        "python_backend/migrations/062_customers_enhancements.sql"
+    migration_file = os.path.join(
+        os.path.dirname(__file__), "..", "migrations", "062_customers_enhancements.sql"
     )
     with open(migration_file, "r", encoding="utf-8") as f:
         content = f.read()
@@ -75,8 +75,8 @@ def test_migration_contains_rls_policies():
 
 def test_migration_contains_triggers():
     """Test that the migration creates updated_at triggers."""
-    migration_file = (
-        "python_backend/migrations/062_customers_enhancements.sql"
+    migration_file = os.path.join(
+        os.path.dirname(__file__), "..", "migrations", "062_customers_enhancements.sql"
     )
     with open(migration_file, "r", encoding="utf-8") as f:
         content = f.read()
