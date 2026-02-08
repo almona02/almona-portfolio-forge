@@ -45,7 +45,9 @@ distro==1.9.0
 dnspython==2.8.0
 docker==7.1.0
 easyocr==1.7.2
-ecdsa==0.19.1
+# ecdsa removed: no patched version for CVE-2024-23342 (Minerva timing attack).
+# It is still installed transitively by python-jose, but python-jose[cryptography]
+# uses the cryptography backend for all ECDSA operations, avoiding the vulnerable code path.
 email_validator==2.2.0
 et_xmlfile==2.0.0
 ezdxf==1.4.3
