@@ -29,8 +29,8 @@ pip-audit==2.10.0
 hiredis==2.3.2
 
 # CNC security module requires python-magic for file type validation
-# Using python-magic-bin which bundles libmagic (no apt-get needed in CI)
-python-magic-bin==0.4.14
+# GitHub Actions Ubuntu runners have libmagic pre-installed (via 'file' package)
+python-magic==0.4.27
 
 # Industry Watchdog / Research Agent dependencies
 feedparser>=6.0.10
