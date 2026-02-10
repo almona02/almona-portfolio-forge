@@ -1,16 +1,12 @@
-import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { generateFabricationReport, compareMachines } from '@/lib/reports/generateReport';
+import { compareMachines, generateFabricationReport } from '@/lib/reports/generateReport';
+import { useCallback, useMemo, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 // Lazy import file-saver to avoid adding to initial bundle
 let saveAsFn: ((data: Blob | File, filename?: string, opts?: unknown) => void) | null = null;
-
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function FabricationReportGenerator() {
   const [materialType, setMaterialType] = useState<'aluminum' | 'upvc'>('aluminum');
@@ -87,24 +83,16 @@ export default function FabricationReportGenerator() {
     }
   };
 
-  const chartData = {
-    labels: ['Profile', 'Locks', 'Handles', 'Espanglites', 'Rails'],
-    datasets: [
-      {
-        label: 'Cost Breakdown (EGP)',
-        data: [
-          customPrices.profile,
-          customPrices.accessories.locks,
-          customPrices.accessories.handles,
-          customPrices.accessories.espanglites,
-          customPrices.accessories.rails
-        ],
-        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      }
-    ]
-  };
+  const chartData = useMemo(
+    () => [
+      { name: 'Profile', value: customPrices.profile },
+      { name: 'Locks', value: customPrices.accessories.locks },
+      { name: 'Handles', value: customPrices.accessories.handles },
+      { name: 'Espanglites', value: customPrices.accessories.espanglites },
+      { name: 'Rails', value: customPrices.accessories.rails },
+    ],
+    [customPrices]
+  );
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -180,18 +168,30 @@ export default function FabricationReportGenerator() {
       </div>
 
       <div className="h-96 mb-8">
-        <Bar 
-          data={chartData}
-          options={{
-            responsive: true,
-            plugins: {
-              title: {
-                display: true,
-                text: 'Material Cost Breakdown'
-              }
-            }
-          }}
-        />
+        <h3 className="text-lg font-semibold mb-4">Material Cost Breakdown</h3>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(156, 163, 175, 0.1)" />
+            <XAxis dataKey="name" tick={{ fill: '#9ca3af' }} stroke="#9ca3af" />
+            <YAxis tick={{ fill: '#9ca3af' }} stroke="#9ca3af" tickFormatter={(v) => `EGP ${v}`} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#1f2937',
+                border: '1px solid #374151',
+                borderRadius: '0.5rem',
+              }}
+              formatter={(value: number) => [`EGP ${value.toLocaleString()}`, 'Cost']}
+            />
+            <Bar
+              dataKey="value"
+              name="Cost Breakdown (EGP)"
+              fill="rgba(54, 162, 235, 0.6)"
+              stroke="rgba(54, 162, 235, 1)"
+              radius={[4, 4, 0, 0]}
+              isAnimationActive={false}
+            />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

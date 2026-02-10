@@ -297,6 +297,9 @@ window.addEventListener('unhandledrejection', (event) => {
     // Don't auto-reload - let user decide or use manual retry
     // Auto-reload was causing double page loads on first visit
     // The lazyRetry utility in lazyImport.ts handles retries more gracefully
+
+    // Check if we should suggest a reload to the user via a toast or prompt
+    // For now, we just rely on ChunkLoadingErrorBoundary to show the UI
     event.preventDefault();
     return;
   }

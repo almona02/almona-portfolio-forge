@@ -1,33 +1,23 @@
 /**
  * Performance Benchmark Chart
  * Visualizes algorithm performance over time
+ * Migrated from Chart.js to Recharts (Phase 2.2)
  */
 
-import React, { useState, useEffect } from 'react';
+import { performanceBenchmarker } from '@/lib/analytics/PerformanceBenchmarker';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { performanceBenchmarker } from '@/lib/analytics/PerformanceBenchmarker';
+import React, { useEffect, useState } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+    CartesianGrid,
+    ComposedChart,
+    Legend,
+    Line,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
 
 interface PerformanceBenchmarkChartProps {
   userId?: string;
@@ -49,75 +39,12 @@ export const PerformanceBenchmarkChart: React.FC<PerformanceBenchmarkChartProps>
     loadTrends();
   }, [selectedAlgorithm, userId]);
 
-  const chartData = {
-    labels: trends.map(t => new Date(t.date).toLocaleDateString()),
-    datasets: [
-      {
-        label: 'Average Duration (ms)',
-        data: trends.map(t => t.averageDuration),
-        borderColor: 'rgb(249, 115, 22)',
-        backgroundColor: 'rgba(249, 115, 22, 0.1)',
-        yAxisID: 'y',
-      },
-      {
-        label: 'Average Waste (%)',
-        data: trends.map(t => t.averageWaste),
-        borderColor: 'rgb(239, 68, 68)',
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        yAxisID: 'y1',
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Performance Trends',
-        color: '#fff',
-      },
-    },
-    scales: {
-      y: {
-        type: 'linear' as const,
-        display: true,
-        position: 'left' as const,
-        ticks: {
-          color: '#9ca3af',
-        },
-        grid: {
-          color: 'rgba(156, 163, 175, 0.1)',
-        },
-      },
-      y1: {
-        type: 'linear' as const,
-        display: true,
-        position: 'right' as const,
-        ticks: {
-          color: '#9ca3af',
-        },
-        grid: {
-          drawOnChartArea: false,
-        },
-      },
-      x: {
-        ticks: {
-          color: '#9ca3af',
-        },
-        grid: {
-          color: 'rgba(156, 163, 175, 0.1)',
-        },
-      },
-    },
-  };
+  const chartData = trends.map((t) => ({
+    name: new Date(t.date).toLocaleDateString(),
+    date: t.date,
+    averageDuration: t.averageDuration,
+    averageWaste: t.averageWaste,
+  }));
 
   return (
     <Card className="bg-gray-900 border-gray-700 card-dark">
@@ -143,10 +70,63 @@ export const PerformanceBenchmarkChart: React.FC<PerformanceBenchmarkChartProps>
         ) : trends.length === 0 ? (
           <div className="text-center text-gray-500 py-8">No benchmark data available</div>
         ) : (
-          <Line data={chartData} options={chartOptions} />
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={chartData} margin={{ top: 20, right: 60, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(156, 163, 175, 0.1)" />
+                <XAxis dataKey="name" tick={{ fill: '#9ca3af' }} stroke="#9ca3af" />
+                <YAxis
+                  yAxisId="left"
+                  orientation="left"
+                  stroke="rgb(249, 115, 22)"
+                  tick={{ fill: '#9ca3af' }}
+                />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  stroke="rgb(239, 68, 68)"
+                  tick={{ fill: '#9ca3af' }}
+                  domain={[0, 100]}
+                  tickFormatter={(v) => `${v}%`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1f2937',
+                    border: '1px solid #374151',
+                    borderRadius: '0.5rem',
+                  }}
+                  formatter={(value: number, name: string) => {
+                    if (name === 'Average Duration (ms)') return [value, name];
+                    return [`${value}%`, name];
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{ paddingTop: '0.5rem' }}
+                  formatter={(value) => <span style={{ color: '#9ca3af' }}>{value}</span>}
+                />
+                <Line
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="averageDuration"
+                  name="Average Duration (ms)"
+                  stroke="rgb(249, 115, 22)"
+                  strokeWidth={2}
+                  dot={{ fill: 'rgb(249, 115, 22)', strokeWidth: 2 }}
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="averageWaste"
+                  name="Average Waste (%)"
+                  stroke="rgb(239, 68, 68)"
+                  strokeWidth={2}
+                  dot={{ fill: 'rgb(239, 68, 68)', strokeWidth: 2 }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
         )}
       </CardContent>
     </Card>
   );
 };
-

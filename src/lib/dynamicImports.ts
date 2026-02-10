@@ -6,7 +6,6 @@
 // AI/ML Services
 export const loadTensorFlow = () => import('@tensorflow/tfjs');
 export const loadGoogleAI = () => import('@google/generative-ai');
-export const loadHuggingFace = () => import('@huggingface/inference');
 
 // Document Processing
 export const loadExcelJS = () => import('exceljs');

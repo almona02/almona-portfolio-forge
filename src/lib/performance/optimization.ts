@@ -441,7 +441,7 @@ class PerformanceOptimizer {
             size: 256000,
             gzippedSize: 64000,
             modules: [
-              { name: 'chart.js', size: 120000, gzippedSize: 30000, type: 'js' },
+              { name: 'recharts', size: 80000, gzippedSize: 20000, type: 'js' },
               { name: 'three.js', size: 136000, gzippedSize: 34000, type: 'js' }
             ]
           }

@@ -20,7 +20,14 @@ import {
 ```tsx
 import React, { useState } from 'react';
 import { TechChecklist, YilmazExpertAdvisory } from '@/services/ticketing/yilmaz';
-import { Button, Modal } from 'antd';
+import { Button } from '@/shared/ui/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/shared/ui/ui/dialog';
 
 export const YilmazServicePage: React.FC = () => {
   const [advisory, setAdvisory] = useState<YilmazExpertAdvisory | null>(null);
@@ -70,35 +77,38 @@ export const YilmazServicePage: React.FC = () => {
         onAdvisoryGenerated={handleAdvisoryGenerated}
       />
 
-      <Modal
-        title="Advisory Approval Required"
-        open={approvalModalVisible}
-        onOk={handleApprove}
-        onCancel={() => setApprovalModalVisible(false)}
-        width={800}
-      >
-        {advisory && (
-          <div>
-            <p><strong>Confidence:</strong> {(advisory.confidence * 100).toFixed(0)}%</p>
-            <p><strong>Urgency:</strong> {advisory.urgency.toUpperCase()}</p>
-            <p><strong>Total Cost:</strong> {advisory.totalCostEGP.toLocaleString('en-EG')} EGP</p>
-            <p><strong>Downtime:</strong> {advisory.estimatedDowntimeHours} hours</p>
-            
-            <h3>Parts Required:</h3>
-            <ul>
-              {advisory.recommendedParts.map(part => (
-                <li key={part.partNumber}>
-                  {part.nameEn} ({part.partNumber}) — {part.priceEGP.toLocaleString('en-EG')} EGP
-                </li>
-              ))}
-            </ul>
+      <Dialog open={approvalModalVisible} onOpenChange={(open) => !open && setApprovalModalVisible(false)}>
+        <DialogContent className="max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Advisory Approval Required</DialogTitle>
+          </DialogHeader>
+          {advisory && (
+            <div className="space-y-4">
+              <p><strong>Confidence:</strong> {(advisory.confidence * 100).toFixed(0)}%</p>
+              <p><strong>Urgency:</strong> {advisory.urgency.toUpperCase()}</p>
+              <p><strong>Total Cost:</strong> {advisory.totalCostEGP.toLocaleString('en-EG')} EGP</p>
+              <p><strong>Downtime:</strong> {advisory.estimatedDowntimeHours} hours</p>
+              
+              <h3>Parts Required:</h3>
+              <ul>
+                {advisory.recommendedParts.map(part => (
+                  <li key={part.partNumber}>
+                    {part.nameEn} ({part.partNumber}) — {part.priceEGP.toLocaleString('en-EG')} EGP
+                  </li>
+                ))}
+              </ul>
 
-            <p style={{ fontSize: 11, color: '#888', marginTop: 16 }}>
-              {advisory.constitutionalDisclaimer}
-            </p>
-          </div>
-        )}
-      </Modal>
+              <p className="text-xs text-muted-foreground mt-4">
+                {advisory.constitutionalDisclaimer}
+              </p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApprovalModalVisible(false)}>Cancel</Button>
+            <Button onClick={handleApprove}>Approve</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
