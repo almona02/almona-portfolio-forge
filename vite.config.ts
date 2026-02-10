@@ -464,16 +464,9 @@ export default defineConfig(({ mode }) => {
             // STANDALONE ENGINES (No React deps)
             // ========================================
             
-            // ========================================
-            // 3D ENGINE (React Three Fiber + Three.js)
-            // ========================================
-            if (
-              id.includes('node_modules/three/') || 
-              id.includes('node_modules/@react-three/') ||
-              id.includes('node_modules/react-three-fiber/')
-            ) {
-              return 'vendor-3d';
-            }
+            // NOTE: Three.js + @react-three/fiber/drei MUST stay in react-vendor - splitting
+            // into vendor-3d causes "Cannot access 'X3' before initialization" (TDZ/circular dep)
+            // in production. Same pattern as DEPLOYMENT_FIX_COMPLETE.md for ml-vendor.
             
             if (id.includes('node_modules/ammo.js/')) {
               return 'physics-engine';
