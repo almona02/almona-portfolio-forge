@@ -48,6 +48,14 @@ export interface FutureIntelligence {
   articles: IndustryArticle[];
   alerts: MarketAlert[];
   trends: TrendData[];
+  priceUpdates: {
+    title: string;
+    publishedAt: string;
+    maalemSummary: string;
+  }[];
+  summary: string;
+  totalArticles: number;
+  criticalAlerts: number;
   lastUpdated: string;
 }
 

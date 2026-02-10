@@ -1,22 +1,23 @@
 import SEO from '@/components/SEO';
+import { ProjectCreationManager } from '@/components/fabricator/project/ProjectCreationManager';
 import {
-    useDeleteProject as useDeleteProjectV2,
-    usePositions as usePositionsV2,
-    useProjects as useProjectsV2,
-    useUpdateProject,
+  useDeleteProject as useDeleteProjectV2,
+  usePositions as usePositionsV2,
+  useProjects as useProjectsV2,
+  useUpdateProject,
 } from '@/hooks/useFabricatorQueries';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { supabase } from '@/lib/supabase';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from '@/shared/ui/ui/alert-dialog';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -108,16 +109,16 @@ const ProjectsPage: React.FC = () => {
 
   const { totalUnits, totalPoses, projectsSummary } = useMemo(() => {
     if (useV2) {
-      const positionsByProject = new Map<string, typeof positionsV2>();
-      positionsV2.forEach((p: { project_id: string | null; id: string; quantity?: number }) => {
+      const positionsByProject = new Map<string, any[]>();
+      positionsV2.forEach((p: any) => {
         const pid = p.project_id ?? 'unassigned';
         if (!positionsByProject.has(pid)) positionsByProject.set(pid, []);
-        positionsByProject.get(pid)!.push(p);
+        positionsByProject.get(pid)?.push(p);
       });
       const summary: ProjectSummaryItem[] = projectsV2.map((proj) => {
         const positions = positionsByProject.get(proj.id) ?? [];
         const poses = positions.length;
-        const qty = positions.reduce((s, p) => s + (p.quantity ?? 1), 0);
+        const qty = positions.reduce((s: number, p: any) => s + (p.quantity ?? 1), 0);
         const first = positions[0];
         return {
           key: proj.project_code,
@@ -132,7 +133,7 @@ const ProjectsPage: React.FC = () => {
       });
       return {
         totalUnits: positionsV2.length,
-        totalPoses: positionsV2.reduce((s, p) => s + (p.quantity ?? 1), 0),
+        totalPoses: positionsV2.reduce((s: number, p: any) => s + (p.quantity ?? 1), 0),
         projectsSummary: summary,
       };
     }
@@ -257,286 +258,288 @@ const ProjectsPage: React.FC = () => {
         url={currentUrl}
       />
       <main className="container mx-auto px-4 py-8 space-y-6">
-      {/* Summary Stats Card - Smaller, less prominent */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-xl">{t('projects.title', 'Projects & Positions')}</CardTitle>
-          <CardDescription className="text-sm text-amber-600/70">
-            {t('projects.description', 'High-level projects view with quick access to all poses. Use the Projects tab to see orders, and the Positions tab to drill into individual poses/flats.')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-4 text-xs text-amber-300">
-          <div>
-            <span className="text-amber-600/70">{t('projects.stats.distinct_units', 'Distinct units')}:</span>{' '}
-            <span className="font-semibold text-amber-200">{totalUnits}</span>
-          </div>
-          <div>
-            <span className="text-amber-600/70">{t('projects.stats.total_poses', 'Total poses')}:</span>{' '}
-            <span className="font-semibold text-amber-200">{totalPoses}</span>
-          </div>
-          <div>
-            <span className="text-amber-600/70">{t('projects.stats.projects', 'Projects')}:</span>{' '}
-            <span className="font-semibold text-amber-200">{projectsSummary.length}</span>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Summary Stats Card - Smaller, less prominent */}
+        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xl">{t('projects.title', 'Projects & Positions')}</CardTitle>
+            <CardDescription className="text-sm text-amber-600/70">
+              {t('projects.description', 'High-level projects view with quick access to all poses. Use the Projects tab to see orders, and the Positions tab to drill into individual poses/flats.')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-4 text-xs text-amber-300">
+            <div>
+              <span className="text-amber-600/70">{t('projects.stats.distinct_units', 'Distinct units')}:</span>{' '}
+              <span className="font-semibold text-amber-200">{totalUnits}</span>
+            </div>
+            <div>
+              <span className="text-amber-600/70">{t('projects.stats.total_poses', 'Total poses')}:</span>{' '}
+              <span className="font-semibold text-amber-200">{totalPoses}</span>
+            </div>
+            <div>
+              <span className="text-amber-600/70">{t('projects.stats.projects', 'Projects')}:</span>{' '}
+              <span className="font-semibold text-amber-200">{projectsSummary.length}</span>
+            </div>
+          </CardContent>
+        </Card>
 
-      <Tabs defaultValue="projects" className="space-y-6">
-        <TabsList className="bg-[#0f0f0f]/80 border border-amber-600/30 rounded-xl p-1 card-glass-dark">
-          <TabsTrigger
-            value="projects"
-            className="data-[state=active]:btn-bronze data-[state=inactive]:bg-[#0f0f0f]/60 data-[state=inactive]:text-amber-600/70 data-[state=inactive]:border-amber-600/20 data-[state=inactive]:hover:bg-[#0f0f0f]/80 data-[state=inactive]:hover:text-amber-500"
-          >
-            {t('projects.tabs.projects', 'Projects')}
-          </TabsTrigger>
-          <TabsTrigger
-            value="positions"
-            className="data-[state=active]:btn-bronze data-[state=inactive]:bg-[#0f0f0f]/60 data-[state=inactive]:text-amber-600/70 data-[state=inactive]:border-amber-600/20 data-[state=inactive]:hover:bg-[#0f0f0f]/80 data-[state=inactive]:hover:text-amber-500"
-          >
-            {t('projects.tabs.positions', 'Recent Poses')}
-          </TabsTrigger>
-        </TabsList>
+        <Tabs defaultValue="projects" className="space-y-6">
+          <TabsList className="bg-[#0f0f0f]/80 border border-amber-600/30 rounded-xl p-1 card-glass-dark">
+            <TabsTrigger
+              value="projects"
+              className="data-[state=active]:btn-bronze data-[state=inactive]:bg-[#0f0f0f]/60 data-[state=inactive]:text-amber-600/70 data-[state=inactive]:border-amber-600/20 data-[state=inactive]:hover:bg-[#0f0f0f]/80 data-[state=inactive]:hover:text-amber-500"
+            >
+              {t('projects.tabs.projects', 'Projects')}
+            </TabsTrigger>
+            <TabsTrigger
+              value="positions"
+              className="data-[state=active]:btn-bronze data-[state=inactive]:bg-[#0f0f0f]/60 data-[state=inactive]:text-amber-600/70 data-[state=inactive]:border-amber-600/20 data-[state=inactive]:hover:bg-[#0f0f0f]/80 data-[state=inactive]:hover:text-amber-500"
+            >
+              {t('projects.tabs.positions', 'Recent Poses')}
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="projects" className="space-y-4">
-          {/* Main Projects Card - Enhanced size and prominence */}
-          <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark shadow-glow-strong">
-            <CardHeader className="pb-4 px-8 pt-8">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <CardTitle className="text-lg font-semibold text-amber-200 mb-2">{t('projects.projects_tab.title', 'Projects')}</CardTitle>
-                  <CardDescription className="text-sm text-amber-600/70">
-                    {t('projects.projects_tab.description', 'Each row groups all poses that share the same project code / order number.')}
-                  </CardDescription>
-                </div>
-                <Button
-                  onClick={() => navigate(fabricatorRoutes.newProjectWizard())}
-                  size="default"
-                  className="btn-bronze text-sm px-6"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  {t('projects.projects_tab.new_project', 'New Project')}
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="px-8 pb-8 space-y-4 text-sm">
-              {projectsSummary.length === 0 && !isLoadingList ? (
-                <div className="py-12 text-center space-y-6">
-                  <div className="space-y-3">
-                    <p className="text-amber-300/90 text-base font-semibold">
-                      {t('projects.projects_tab.no_projects', 'No projects yet')}
-                    </p>
-                    <p className="text-amber-600/70 text-sm max-w-lg mx-auto leading-relaxed">
-                      {t('projects.projects_tab.no_projects_description', 'Create your first project by completing the measurement phase in the Fabricator workflow. Each project can contain multiple poses (window units).')}
-                    </p>
+          <TabsContent value="projects" className="space-y-4">
+            {/* Main Projects Card - Enhanced size and prominence */}
+            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark shadow-glow-strong">
+              <CardHeader className="pb-4 px-8 pt-8">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg font-semibold text-amber-200 mb-2">{t('projects.projects_tab.title', 'Projects')}</CardTitle>
+                    <CardDescription className="text-sm text-amber-600/70">
+                      {t('projects.projects_tab.description', 'Each row groups all poses that share the same project code / order number.')}
+                    </CardDescription>
                   </div>
                   <Button
                     onClick={() => navigate(fabricatorRoutes.newProjectWizard())}
                     size="default"
-                    className="btn-bronze text-sm px-8 py-6 h-auto"
+                    className="btn-bronze text-sm px-6"
                   >
-                    <Plus className="h-5 w-5 mr-2" />
-                    {t('projects.projects_tab.create_first_project', 'Create First Project')}
+                    <Plus className="h-4 w-4 mr-2" />
+                    {t('projects.projects_tab.new_project', 'New Project')}
                   </Button>
                 </div>
-              ) : projectsSummary.length === 0 && isLoadingList ? (
-                <div className="py-8">
-                  <div className="h-12 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
-                </div>
-              ) : (
-                <div className="divide-y divide-amber-600/30 space-y-1">
-                  {projectsSummary.map((p) => {
-                    const handleProjectClick = () => {
-                      if (useV2 && p.projectId && p.firstPoseId) {
-                        navigate(fabricatorRoutes.poseDesign(p.projectId, p.firstPoseId), {
-                          state: { jobId: p.firstPoseId, startTab: 'design' },
-                        });
-                        return;
-                      }
-                      const firstJob = jobs.find((job) => (job.projectCode || job.orderNumber) === p.key);
-                      if (firstJob) {
-                        navigate(fabricatorRoutes.poseDesign(p.key, firstJob.id), {
-                          state: { jobId: firstJob.id, startTab: 'design' },
-                        });
-                      }
-                    };
-                    
-                    const isEditing = editingProjectKey === p.key;
-
-                    return (
-                    <div 
-                      key={p.key} 
-                      className="py-4 px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 group hover:bg-[#0f0f0f]/40 transition-all duration-200 rounded-lg cursor-pointer border border-transparent hover:border-amber-600/20"
-                      onClick={isEditing ? undefined : handleProjectClick}
-                    >
-                      <div className="space-y-1.5 flex-1">
-                        {isEditing ? (
-                          <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                value={editName}
-                                onChange={(e) => setEditName(e.target.value)}
-                                className="h-8 text-sm bg-[#0f0f0f] border-amber-600/30 text-amber-200 w-64"
-                                placeholder="Project name"
-                                autoFocus
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') void saveEditing(p);
-                                  if (e.key === 'Escape') cancelEditing();
-                                }}
-                              />
-                              {p.projectCode && (
-                                <Badge variant="outline" className="text-xs">
-                                  {p.projectCode}
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] text-amber-600/70 w-16">Customer:</span>
-                              <Input
-                                value={editClient}
-                                onChange={(e) => setEditClient(e.target.value)}
-                                className="h-7 text-xs bg-[#0f0f0f] border-amber-600/30 text-amber-200 w-48"
-                                placeholder="Client name"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') void saveEditing(p);
-                                  if (e.key === 'Escape') cancelEditing();
-                                }}
-                              />
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-green-500/10"
-                                onClick={() => void saveEditing(p)}
-                              >
-                                <Check className="h-3.5 w-3.5" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-7 w-7 p-0 text-gray-400 hover:text-gray-300 hover:bg-gray-500/10"
-                                onClick={cancelEditing}
-                              >
-                                <X className="h-3.5 w-3.5" />
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="flex items-center gap-3">
-                              <span className="font-mono text-base text-amber-200 font-semibold">{p.orderNumber}</span>
-                              {p.projectCode && (
-                                <Badge variant="outline" className="text-xs">
-                                  {p.projectCode}
-                                </Badge>
-                              )}
-                            </div>
-                            {p.customer && (
-                              <div className="text-xs text-amber-600/70">
-                                {t('projects.projects_tab.customer', 'Customer')}: <span className="text-amber-300 font-medium">{p.customer}</span>
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-amber-600/70">
-                        <span>
-                          {t('projects.projects_tab.poses', 'Poses')}: <span className="text-amber-200 font-semibold text-sm">{p.poses}</span>
-                        </span>
-                        <span>
-                          {t('projects.projects_tab.total_qty', 'Total qty')}:{' '}
-                          <span className="text-amber-200 font-semibold text-sm">{p.qty}</span>
-                        </span>
-                        {useV2 && p.projectId && !isEditing && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              startEditing(p);
-                            }}
-                            className="h-8 w-8 p-0 text-amber-500/70 hover:text-amber-400 hover:bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                            title="Edit project"
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setProjectToDelete(p);
-                            setDeleteConfirmOpen(true);
-                          }}
-                          className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Delete project"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+              </CardHeader>
+              <CardContent className="px-8 pb-8 space-y-4 text-sm">
+                {projectsSummary.length === 0 && !isLoadingList ? (
+                  <div className="py-12 text-center space-y-6">
+                    <div className="space-y-3">
+                      <p className="text-amber-300/90 text-base font-semibold">
+                        {t('projects.projects_tab.no_projects', 'No projects yet')}
+                      </p>
+                      <p className="text-amber-600/70 text-sm max-w-lg mx-auto leading-relaxed">
+                        {t('projects.projects_tab.no_projects_description', 'Create your first project by completing the measurement phase in the Fabricator workflow. Each project can contain multiple poses (window units).')}
+                      </p>
                     </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                    <Button
+                      onClick={() => navigate(fabricatorRoutes.newProjectWizard())}
+                      size="default"
+                      className="btn-bronze text-sm px-8 py-6 h-auto"
+                    >
+                      <Plus className="h-5 w-5 mr-2" />
+                      {t('projects.projects_tab.create_first_project', 'Create First Project')}
+                    </Button>
+                  </div>
+                ) : projectsSummary.length === 0 && isLoadingList ? (
+                  <div className="py-8">
+                    <div className="h-12 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
+                  </div>
+                ) : (
+                  <div className="divide-y divide-amber-600/30 space-y-1">
+                    {projectsSummary.map((p) => {
+                      const handleProjectClick = () => {
+                        if (useV2 && p.projectId && p.firstPoseId) {
+                          navigate(fabricatorRoutes.poseDesign(p.projectId, p.firstPoseId), {
+                            state: { jobId: p.firstPoseId, startTab: 'design' },
+                          });
+                          return;
+                        }
+                        const firstJob = jobs.find((job) => (job.projectCode || job.orderNumber) === p.key);
+                        if (firstJob) {
+                          navigate(fabricatorRoutes.poseDesign(p.key, firstJob.id), {
+                            state: { jobId: firstJob.id, startTab: 'design' },
+                          });
+                        }
+                      };
 
-        <TabsContent value="positions">
-          <Suspense fallback={
-            <div className="h-64 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
-          }>
-            <PositionsGrid currentProject={null} />
-          </Suspense>
-        </TabsContent>
-      </Tabs>
+                      const isEditing = editingProjectKey === p.key;
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent className="bg-[#0f0f0f] border-amber-600/30 card-glass-dark">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-amber-200">Delete Project?</AlertDialogTitle>
-            <AlertDialogDescription className="text-amber-600/70">
-              Are you sure you want to delete project{' '}
-              <span className="font-mono text-amber-400">
-                {projectToDelete?.orderNumber}
-                {projectToDelete?.projectCode ? ` (${projectToDelete.projectCode})` : ''}
-              </span>
-              ?
-              <br />
-              <br />
-              This will permanently delete:
-              <ul className="list-disc list-inside mt-2 space-y-1">
-                <li>
-                  <span className="font-semibold">{projectToDelete?.poses || 0}</span> pose(s)
-                </li>
-                <li>
-                  <span className="font-semibold">{projectToDelete?.qty || 0}</span> total quantity
-                </li>
-                {projectToDelete?.customer && (
-                  <li>
-                    Customer: <span className="font-semibold">{projectToDelete.customer}</span>
-                  </li>
+                      return (
+                        <div
+                          key={p.key}
+                          className="py-4 px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 group hover:bg-[#0f0f0f]/40 transition-all duration-200 rounded-lg cursor-pointer border border-transparent hover:border-amber-600/20"
+                          onClick={isEditing ? undefined : handleProjectClick}
+                        >
+                          <div className="space-y-1.5 flex-1">
+                            {isEditing ? (
+                              <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    className="h-8 text-sm bg-[#0f0f0f] border-amber-600/30 text-amber-200 w-64"
+                                    placeholder="Project name"
+                                    autoFocus
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') void saveEditing(p);
+                                      if (e.key === 'Escape') cancelEditing();
+                                    }}
+                                  />
+                                  {p.projectCode && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {p.projectCode}
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-amber-600/70 w-16">Customer:</span>
+                                  <Input
+                                    value={editClient}
+                                    onChange={(e) => setEditClient(e.target.value)}
+                                    className="h-7 text-xs bg-[#0f0f0f] border-amber-600/30 text-amber-200 w-48"
+                                    placeholder="Client name"
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') void saveEditing(p);
+                                      if (e.key === 'Escape') cancelEditing();
+                                    }}
+                                  />
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-green-500/10"
+                                    onClick={() => void saveEditing(p)}
+                                  >
+                                    <Check className="h-3.5 w-3.5" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-7 w-7 p-0 text-gray-400 hover:text-gray-300 hover:bg-gray-500/10"
+                                    onClick={cancelEditing}
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="flex items-center gap-3">
+                                  <span className="font-mono text-base text-amber-200 font-semibold">{p.orderNumber}</span>
+                                  {p.projectCode && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {p.projectCode}
+                                    </Badge>
+                                  )}
+                                </div>
+                                {p.customer && (
+                                  <div className="text-xs text-amber-600/70">
+                                    {t('projects.projects_tab.customer', 'Customer')}: <span className="text-amber-300 font-medium">{p.customer}</span>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-4 text-xs text-amber-600/70">
+                            <span>
+                              {t('projects.projects_tab.poses', 'Poses')}: <span className="text-amber-200 font-semibold text-sm">{p.poses}</span>
+                            </span>
+                            <span>
+                              {t('projects.projects_tab.total_qty', 'Total qty')}:{' '}
+                              <span className="text-amber-200 font-semibold text-sm">{p.qty}</span>
+                            </span>
+                            {useV2 && p.projectId && !isEditing && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  startEditing(p);
+                                }}
+                                className="h-8 w-8 p-0 text-amber-500/70 hover:text-amber-400 hover:bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Edit project"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setProjectToDelete(p);
+                                setDeleteConfirmOpen(true);
+                              }}
+                              className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Delete project"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
-              </ul>
-              <br />
-              This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-[#0f0f0f] border-amber-600/30 text-amber-300 hover:bg-[#1a1a1a]">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white"
-              onClick={handleDeleteProject}
-              disabled={deleting}
-            >
-              {deleting ? 'Deleting...' : 'Delete Project'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="positions">
+            <Suspense fallback={
+              <div className="h-64 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
+            }>
+              <PositionsGrid currentProject={null} />
+            </Suspense>
+          </TabsContent>
+        </Tabs>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+          <AlertDialogContent className="bg-[#0f0f0f] border-amber-600/30 card-glass-dark">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-amber-200">Delete Project?</AlertDialogTitle>
+              <AlertDialogDescription className="text-amber-600/70">
+                Are you sure you want to delete project{' '}
+                <span className="font-mono text-amber-400">
+                  {projectToDelete?.orderNumber}
+                  {projectToDelete?.projectCode ? ` (${projectToDelete.projectCode})` : ''}
+                </span>
+                ?
+                <br />
+                <br />
+                This will permanently delete:
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>
+                    <span className="font-semibold">{projectToDelete?.poses || 0}</span> pose(s)
+                  </li>
+                  <li>
+                    <span className="font-semibold">{projectToDelete?.qty || 0}</span> total quantity
+                  </li>
+                  {projectToDelete?.customer && (
+                    <li>
+                      Customer: <span className="font-semibold">{projectToDelete.customer}</span>
+                    </li>
+                  )}
+                </ul>
+                <br />
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="bg-[#0f0f0f] border-amber-600/30 text-amber-300 hover:bg-[#1a1a1a]">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-600 hover:bg-red-700 text-white"
+                onClick={handleDeleteProject}
+                disabled={deleting}
+              >
+                {deleting ? 'Deleting...' : 'Delete Project'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        {/* Project Creation Manager - Handles ?new=true flows */}
+        <ProjectCreationManager />
       </main>
     </>
   );
