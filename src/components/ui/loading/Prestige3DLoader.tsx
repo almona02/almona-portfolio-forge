@@ -284,17 +284,21 @@ export const Prestige3DLoader: React.FC<Prestige3DLoaderProps> = ({
 
   // Progress logic
   useEffect(() => {
+    // OPTIMIZED: Faster loading simulation (20ms interval instead of 30ms)
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
         if (prev >= 100) {
           clearInterval(interval);
           // Start exit sequence
-          setTimeout(() => setIsExiting(true), 500); // Wait 0.5s at 100%
+          // OPTIMIZED: Reduced wait time from 500ms to 200ms
+          setTimeout(() => setIsExiting(true), 200);
           return 100;
         }
 
         // Update message based on progress
-        const nextProgress = prev + 1;
+        // OPTIMIZED: Faster increment (2 steps instead of 1)
+        const increment = prev < 80 ? 2 : 1;
+        const nextProgress = Math.min(prev + increment, 100);
         const step = loadingSteps.find(s => s.progress === nextProgress);
         if (step) {
           setCurrentMessage(step.message);

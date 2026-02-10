@@ -3,44 +3,66 @@
  * @constitutional_compliance AICS-001 §7 (Presentation layer, no execution)
  * @authority None - Data collection only, triggers Tier 2 advisory
  * @region Egypt-specific YILMAZ technician workflow
- * 
+ *
  * GOVERNANCE:
  * - This is a Tier 1 component: presentation/data collection only
  * - Collects manual sensor readings from technician ("Human-as-a-Sensor")
  * - On submit, triggers Tier 2 Advisory Gate for validation
  * - Does NOT create tickets or parts orders directly
  * - Mobile-optimized for Arabic/English bilingual technicians
+ * Migrated from Ant Design to Shadcn (Phase 3.1)
  */
 
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import {
-  AudioOutlined,
-  CameraOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  ExperimentOutlined,
-  FireOutlined,
-  ThunderboltOutlined,
-  ToolOutlined,
-  WarningOutlined
-} from '@ant-design/icons';
-import { Alert, Badge, Button, Card, Col, Divider, Form, Input, InputNumber, Radio, Row, Select, Slider, Space, Tag, Typography, Upload, message } from 'antd';
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/shared/ui/ui/form';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/shared/ui/ui/radio-group';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/shared/ui/ui/select';
+import { Separator } from '@/shared/ui/ui/separator';
+import { Slider } from '@/shared/ui/ui/slider';
+import { Textarea } from '@/shared/ui/ui/textarea';
+import {
+    AlertTriangle,
+    Camera,
+    CheckCircle,
+    Clock,
+    Flame,
+    FlaskConical,
+    Mic,
+    Wrench,
+    Zap,
+} from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import {
-  YilmazExpertAdvisory,
-  yilmazExpertAdvisor
+    YilmazExpertAdvisory,
+    yilmazExpertAdvisor,
 } from '../../../../services/ticketing/yilmaz/advisory/YilmazExpertAdvisor';
 import {
-  YilmazMachineModel,
-  YilmazTechnicianInput
+    YilmazMachineModel,
+    YilmazTechnicianInput,
 } from '../../../../services/ticketing/yilmaz/rules/YilmazEgyptRules';
 
-const { Title, Text, Paragraph } = Typography;
-const { TextArea } = Input;
-const { Option } = Select;
-
-/**
- * Props
- */
 interface TechChecklistProps {
   machineSerial?: string;
   machineModel?: YilmazMachineModel;
@@ -48,43 +70,62 @@ interface TechChecklistProps {
   language?: 'en' | 'ar';
 }
 
-/**
- * YILMAZ Technician Checklist Component (Tier 1)
- * 
- * Mobile-optimized form for YILMAZ technicians to input manual sensor readings
- * and observed symptoms. Triggers Tier 2 advisory validation on submit.
- */
+interface FormValues {
+  machineModel: string;
+  machineSerial: string;
+  installationYear: number;
+  operatingHours?: number;
+  location: string;
+  hydraulicPressureBar?: number;
+  spindleTempCelsius?: number;
+  inputVoltage?: number;
+  ambientTempCelsius?: number;
+  dustLevel: number;
+  symptoms?: string;
+}
+
 export const TechChecklist: React.FC<TechChecklistProps> = ({
   machineSerial: initialSerial,
   machineModel: initialModel,
   onAdvisoryGenerated,
-  language = 'en'
+  language = 'en',
 }) => {
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [advisory, setAdvisory] = useState<YilmazExpertAdvisory | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'ar'>(language);
-  const [dustLevel, setDustLevel] = useState<number>(1);
-  const [fileList, setFileList] = useState<any[]>([]);
+  const [fileList, setFileList] = useState<File[]>([]);
   const [isRecording, setIsRecording] = useState(false);
 
-  // Initialize form with props
+  const form = useForm<FormValues>({
+    defaultValues: {
+      dustLevel: 1,
+      location: 'cairo',
+      installationYear: new Date().getFullYear(),
+      machineModel: '',
+      machineSerial: '',
+      operatingHours: undefined,
+      hydraulicPressureBar: undefined,
+      spindleTempCelsius: undefined,
+      inputVoltage: undefined,
+      ambientTempCelsius: undefined,
+      symptoms: '',
+    },
+  });
+
+  const dustLevel = form.watch('dustLevel');
+
   useEffect(() => {
-    if (initialSerial) form.setFieldValue('machineSerial', initialSerial);
-    if (initialModel) form.setFieldValue('machineModel', initialModel);
+    if (initialSerial) form.setValue('machineSerial', initialSerial);
+    if (initialModel) form.setValue('machineModel', initialModel);
   }, [initialSerial, initialModel, form]);
 
-  /**
-   * Handle form submission
-   */
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     setLoading(true);
     setError(null);
     setAdvisory(null);
 
     try {
-      // Build technician input
       const technicianInput: YilmazTechnicianInput = {
         machineModel: values.machineModel,
         machineSerial: values.machineSerial,
@@ -94,556 +135,575 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
         inputVoltage: values.inputVoltage,
         dustLevel: values.dustLevel || 1,
         ambientTempCelsius: values.ambientTempCelsius,
-        symptoms: values.symptoms ? values.symptoms.split(',').map((s: string) => s.trim()).filter((s: string) => s) : [],
+        symptoms: values.symptoms
+          ? values.symptoms
+              .split(',')
+              .map((s) => s.trim())
+              .filter((s) => s)
+          : [],
         currentMonth: new Date().getMonth(),
         location: values.location || 'cairo',
-        lastMaintenanceDate: values.lastMaintenanceDate ? new Date(values.lastMaintenanceDate) : undefined,
-        operatingHours: values.operatingHours
+        lastMaintenanceDate: undefined,
+        operatingHours: values.operatingHours,
       };
 
-      // Trigger Tier 2 advisory
       const generatedAdvisory = await yilmazExpertAdvisor.generateAdvisory(technicianInput);
-
       setAdvisory(generatedAdvisory);
-
-      // Callback for parent component (e.g., to open advisory gate)
-      if (onAdvisoryGenerated) {
-        onAdvisoryGenerated(generatedAdvisory);
-      }
-
-    } catch (err: any) {
-      setError(err.message || 'Failed to generate advisory');
+      if (onAdvisoryGenerated) onAdvisoryGenerated(generatedAdvisory);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to generate advisory');
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Get translations
-   */
-  const t = (en: string, ar: string) => selectedLanguage === 'ar' ? ar : en;
+  const t = (en: string, ar: string) => (selectedLanguage === 'ar' ? ar : en);
 
-  /**
-   * Render dust level marks
-   */
-  const dustLevelMarks = {
+  const dustLevelMarks: Record<number, string> = {
     1: t('Clean', 'نظيف'),
     2: t('Light', 'خفيف'),
     3: t('⚠️ Moderate', '⚠️ متوسط'),
     4: t('⚠️ Heavy', '⚠️ ثقيل'),
-    5: t('🚨 Severe', '🚨 شديد')
+    5: t('🚨 Severe', '🚨 شديد'),
   };
 
-  /**
-   * Render urgency badge
-   */
   const renderUrgencyBadge = (urgency: string) => {
-    const colors: Record<string, string> = {
-      low: 'green',
-      medium: 'blue',
-      high: 'orange',
-      critical: 'red'
-    };
-    return <Tag color={colors[urgency] || 'default'}>{urgency.toUpperCase()}</Tag>;
+    const variant = urgency === 'critical' ? 'destructive' : urgency === 'high' ? 'default' : 'secondary';
+    return <Badge variant={variant}>{urgency.toUpperCase()}</Badge>;
   };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: (accepted) => setFileList((prev) => [...prev, ...accepted].slice(0, 3)),
+    accept: { 'image/*': [] },
+    maxFiles: 3,
+  });
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: '16px' }}>
+    <div className="max-w-[600px] mx-auto p-4">
       {/* Header */}
-      <Card
-        style={{ marginBottom: 16 }}
-        bodyStyle={{
-          background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-          color: 'white'
-        }}
-      >
-        <Space direction="vertical" size="small" style={{ width: '100%' }}>
-          <Space>
-            <ToolOutlined style={{ fontSize: 24 }} />
-            <Title level={3} style={{ margin: 0, color: 'white' }}>
-              {t('YILMAZ Tech Checklist', 'قائمة فحص فني YILMAZ')}
-            </Title>
-          </Space>
-          <Text style={{ color: 'rgba(255,255,255,0.9)' }}>
-            {t('Human-as-a-Sensor Data Collection', 'جمع البيانات من الإنسان كمستشعر')}
-          </Text>
-          <Space>
-            <Badge status="processing" />
-            <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 12 }}>
+      <Card className="mb-4 overflow-hidden">
+        <CardContent className="pt-6 bg-gradient-to-br from-blue-900 to-blue-600 text-white">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <Wrench className="w-6 h-6" />
+              <h3 className="text-lg font-semibold">
+                {t('YILMAZ Tech Checklist', 'قائمة فحص فني YILMAZ')}
+              </h3>
+            </div>
+            <p className="text-white/90 text-sm">
+              {t('Human-as-a-Sensor Data Collection', 'جمع البيانات من الإنسان كمستشعر')}
+            </p>
+            <div className="flex items-center gap-2 text-xs text-white/90">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+              </span>
               {t('Tier 1 Presentation → Tier 2 Advisory', 'الطبقة 1 عرض ← الطبقة 2 استشارة')}
-            </Text>
-          </Space>
-        </Space>
+            </div>
+          </div>
+        </CardContent>
       </Card>
 
       {/* Language Toggle */}
-      <Card size="small" style={{ marginBottom: 16 }}>
-        <Row justify="space-between" align="middle">
-          <Col>
-            <Text strong>{t('Language / اللغة:', 'Language / اللغة:')}</Text>
-          </Col>
-          <Col>
-            <Radio.Group
+      <Card className="mb-4">
+        <CardContent className="pt-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <Label className="font-medium">{t('Language / اللغة:', 'Language / اللغة:')}</Label>
+            <RadioGroup
               value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
-              buttonStyle="solid"
+              onValueChange={(v) => setSelectedLanguage(v as 'en' | 'ar')}
+              className="flex gap-2"
             >
-              <Radio.Button value="en">English</Radio.Button>
-              <Radio.Button value="ar">العربية</Radio.Button>
-            </Radio.Group>
-          </Col>
-        </Row>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="en" id="lang-en" />
+                <Label htmlFor="lang-en" className="cursor-pointer">English</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="ar" id="lang-ar" />
+                <Label htmlFor="lang-ar" className="cursor-pointer">العربية</Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </CardContent>
       </Card>
 
       {/* Form */}
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        initialValues={{
-          dustLevel: 1,
-          location: 'cairo',
-          installationYear: new Date().getFullYear()
-        }}
-      >
-        {/* Machine Information */}
-        <Card
-          title={
-            <Space>
-              <ExperimentOutlined />
-              <span>{t('Machine Information', 'معلومات الآلة')}</span>
-            </Space>
-          }
-          size="small"
-          style={{ marginBottom: 16 }}
-        >
-          <Form.Item
-            name="machineModel"
-            label={t('Machine Model', 'طراز الآلة')}
-            rules={[{ required: true, message: t('Please select machine model', 'يرجى اختيار طراز الآلة') }]}
-          >
-            <Select placeholder={t('Select Model', 'اختر الطراز')} size="large">
-              <Option value="AIM_4410">YILMAZ AIM 4410</Option>
-              <Option value="AIM_7510">YILMAZ AIM 7510</Option>
-              <Option value="ALM_6510">YILMAZ ALM 6510</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="machineSerial"
-            label={t('Serial Number', 'الرقم التسلسلي')}
-            rules={[{ required: true, message: t('Please enter serial number', 'يرجى إدخال الرقم التسلسلي') }]}
-          >
-            <Input placeholder={t('e.g., YIL-2024-12345', 'مثال: YIL-2024-12345')} size="large" />
-          </Form.Item>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="installationYear"
-                label={t('Installation Year', 'سنة التركيب')}
-              >
-                <InputNumber
-                  min={2000}
-                  max={new Date().getFullYear()}
-                  style={{ width: '100%' }}
-                  placeholder="2024"
-                  size="large"
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          {/* Machine Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <FlaskConical className="w-4 h-4" />
+                {t('Machine Information', 'معلومات الآلة')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="machineModel"
+                rules={{ required: t('Please select machine model', 'يرجى اختيار طراز الآلة') }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Machine Model', 'طراز الآلة')}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('Select Model', 'اختر الطراز')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="AIM_4410">YILMAZ AIM 4410</SelectItem>
+                        <SelectItem value="AIM_7510">YILMAZ AIM 7510</SelectItem>
+                        <SelectItem value="ALM_6510">YILMAZ ALM 6510</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="machineSerial"
+                rules={{ required: t('Please enter serial number', 'يرجى إدخال الرقم التسلسلي') }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Serial Number', 'الرقم التسلسلي')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('e.g., YIL-2024-12345', 'مثال: YIL-2024-12345')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="installationYear"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Installation Year', 'سنة التركيب')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={2000}
+                          max={new Date().getFullYear()}
+                          placeholder="2024"
+                          {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value, 10) || undefined)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
                 />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="operatingHours"
-                label={t('Operating Hours', 'ساعات التشغيل')}
-              >
-                <InputNumber
-                  min={0}
-                  style={{ width: '100%' }}
-                  placeholder="12000"
-                  size="large"
+                <FormField
+                  control={form.control}
+                  name="operatingHours"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Operating Hours', 'ساعات التشغيل')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          placeholder="12000"
+                          {...field}
+                          value={field.value ?? ''}
+                          onChange={(e) => field.onChange(parseInt(e.target.value, 10) || undefined)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
                 />
-              </Form.Item>
-            </Col>
-          </Row>
+              </div>
+              <FormField
+                control={form.control}
+                name="location"
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Location', 'الموقع')}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('Select Location', 'اختر الموقع')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="cairo">{t('Cairo', 'القاهرة')}</SelectItem>
+                        <SelectItem value="giza">{t('Giza', 'الجيزة')}</SelectItem>
+                        <SelectItem value="alexandria">{t('Alexandria', 'الإسكندرية')}</SelectItem>
+                        <SelectItem value="suez">{t('Suez', 'السويس')}</SelectItem>
+                        <SelectItem value="port_said">{t('Port Said', 'بورسعيد')}</SelectItem>
+                        <SelectItem value="other">{t('Other', 'آخر')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
 
-          <Form.Item
-            name="location"
-            label={t('Location', 'الموقع')}
-            rules={[{ required: true }]}
-          >
-            <Select placeholder={t('Select Location', 'اختر الموقع')} size="large">
-              <Option value="cairo">{t('Cairo', 'القاهرة')}</Option>
-              <Option value="giza">{t('Giza', 'الجيزة')}</Option>
-              <Option value="alexandria">{t('Alexandria', 'الإسكندرية')}</Option>
-              <Option value="suez">{t('Suez', 'السويس')}</Option>
-              <Option value="port_said">{t('Port Said', 'بورسعيد')}</Option>
-              <Option value="other">{t('Other', 'آخر')}</Option>
-            </Select>
-          </Form.Item>
-        </Card>
+          {/* Manual Sensor Readings */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Zap className="w-4 h-4" />
+                {t('Manual Sensor Readings', 'قراءات المستشعرات اليدوية')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert variant="destructive" className="border-amber-500 bg-amber-500/10">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>{t('Take readings with machine STOPPED and SAFE', 'خذ القراءات مع الآلة متوقفة وآمنة')}</AlertTitle>
+              </Alert>
+              <FormField
+                control={form.control}
+                name="hydraulicPressureBar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      {t('Hydraulic Pressure (bar)', 'الضغط الهيدروليكي (بار)')}
+                      <Badge variant="secondary">{t('Normal: 140-160', 'عادي: 140-160')}</Badge>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={200}
+                        placeholder="150"
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="spindleTempCelsius"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Flame className="w-4 h-4" />
+                      {t('Spindle Temperature (°C)', 'درجة حرارة المحور (°م)')}
+                      <Badge variant="secondary">{t('Normal: <70', 'عادي: <70')}</Badge>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={150}
+                        placeholder="65"
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="inputVoltage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Zap className="w-4 h-4" />
+                      {t('Input Voltage (V)', 'جهد الدخل (فولت)')}
+                      <Badge variant="secondary">{t('Normal: 220±10', 'عادي: 220±10')}</Badge>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={150}
+                        max={300}
+                        placeholder="220"
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="ambientTempCelsius"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Ambient Temperature (°C)', 'درجة الحرارة المحيطة (°م)')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={60}
+                        placeholder="30"
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dustLevel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4" />
+                      {t('Dust Level (Visual Assessment)', 'مستوى الغبار (تقييم بصري)')}
+                    </FormLabel>
+                    <FormControl>
+                      <Slider
+                        min={1}
+                        max={5}
+                        step={1}
+                        value={[field.value]}
+                        onValueChange={([v]) => field.onChange(v)}
+                      />
+                    </FormControl>
+                    <p className="text-xs text-muted-foreground">{dustLevelMarks[dustLevel]}</p>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
 
-        {/* Manual Sensor Readings */}
-        <Card
-          title={
-            <Space>
-              <ThunderboltOutlined />
-              <span>{t('Manual Sensor Readings', 'قراءات المستشعرات اليدوية')}</span>
-            </Space>
-          }
-          size="small"
-          style={{ marginBottom: 16 }}
-        >
-          <Alert
-            message={t(
-              'Take readings with machine STOPPED and SAFE',
-              'خذ القراءات مع الآلة متوقفة وآمنة'
-            )}
-            type="warning"
-            showIcon
-            style={{ marginBottom: 16 }}
-          />
+          {/* Observed Symptoms */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <AlertTriangle className="w-4 h-4" />
+                {t('Observed Symptoms', 'الأعراض الملحوظة')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={form.control}
+                name="symptoms"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Symptoms (comma-separated)', 'الأعراض (مفصولة بفواصل)')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        rows={4}
+                        placeholder={t(
+                          'vibration increase, thermal shutdown, positioning error',
+                          'زيادة الاهتزاز، إيقاف حراري، خطأ في الموضع'
+                        )}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'e.g., vibration increase, thermal shutdown, positioning error',
+                        'مثال: زيادة الاهتزاز، إيقاف حراري، خطأ في الموضع'
+                      )}
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
 
-          <Form.Item
-            name="hydraulicPressureBar"
-            label={
-              <Space>
-                <span>{t('Hydraulic Pressure (bar)', 'الضغط الهيدروليكي (بار)')}</span>
-                <Tag color="blue">{t('Normal: 140-160', 'عادي: 140-160')}</Tag>
-              </Space>
-            }
-          >
-            <InputNumber
-              min={0}
-              max={200}
-              style={{ width: '100%' }}
-              placeholder="150"
-              size="large"
-              suffix="bar"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="spindleTempCelsius"
-            label={
-              <Space>
-                <FireOutlined />
-                <span>{t('Spindle Temperature (°C)', 'درجة حرارة المحور (°م)')}</span>
-                <Tag color="orange">{t('Normal: <70', 'عادي: <70')}</Tag>
-              </Space>
-            }
-          >
-            <InputNumber
-              min={0}
-              max={150}
-              style={{ width: '100%' }}
-              placeholder="65"
-              size="large"
-              suffix="°C"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="inputVoltage"
-            label={
-              <Space>
-                <ThunderboltOutlined />
-                <span>{t('Input Voltage (V)', 'جهد الدخل (فولت)')}</span>
-                <Tag color="green">{t('Normal: 220±10', 'عادي: 220±10')}</Tag>
-              </Space>
-            }
-          >
-            <InputNumber
-              min={150}
-              max={300}
-              style={{ width: '100%' }}
-              placeholder="220"
-              size="large"
-              suffix="V"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="ambientTempCelsius"
-            label={t('Ambient Temperature (°C)', 'درجة الحرارة المحيطة (°م)')}
-          >
-            <InputNumber
-              min={0}
-              max={60}
-              style={{ width: '100%' }}
-              placeholder="30"
-              size="large"
-              suffix="°C"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="dustLevel"
-            label={
-              <Space>
-                <WarningOutlined />
-                <span>{t('Dust Level (Visual Assessment)', 'مستوى الغبار (تقييم بصري)')}</span>
-              </Space>
-            }
-          >
-            <Slider
-              min={1}
-              max={5}
-              marks={dustLevelMarks}
-              step={1}
-              value={dustLevel}
-              onChange={setDustLevel}
-            />
-          </Form.Item>
-        </Card>
-
-        {/* Observed Symptoms */}
-        <Card
-          title={
-            <Space>
-              <WarningOutlined />
-              <span>{t('Observed Symptoms', 'الأعراض الملحوظة')}</span>
-            </Space>
-          }
-          size="small"
-          style={{ marginBottom: 16 }}
-        >
-          <Form.Item
-            name="symptoms"
-            label={t('Symptoms (comma-separated)', 'الأعراض (مفصولة بفواصل)')}
-            extra={t(
-              'e.g., vibration increase, thermal shutdown, positioning error',
-              'مثال: زيادة الاهتزاز، إيقاف حراري، خطأ في الموضع'
-            )}
-          >
-            <TextArea
-              rows={4}
-              placeholder={t(
-                'vibration increase, thermal shutdown, positioning error',
-                'زيادة الاهتزاز، إيقاف حراري، خطأ في الموضع'
-              )}
-            />
-          </Form.Item>
-        </Card>
-
-        {/* Evidence Collection */}
-        <Card
-          title={
-            <Space>
-              <CameraOutlined />
-              <span>{t('Evidence Collection', 'جمع الأدلة')}</span>
-            </Space>
-          }
-          size="small"
-          style={{ marginBottom: 16 }}
-        >
-          <Form.Item
-            label={t('Photo Evidence', 'أدلة الصور')}
-            extra={t('Upload photos of the issue. Saved locally first.', 'حمل صور للمشكلة. تحفظ محليا أولا.')}
-          >
-            <Upload
-              listType="picture-card"
-              fileList={fileList}
-              onChange={({ fileList }) => setFileList(fileList)}
-              beforeUpload={() => false} // Prevent auto upload, keep local
-            >
-              {fileList.length < 3 && (
-                <div>
-                  <CameraOutlined />
-                  <div style={{ marginTop: 8 }}>{t('Upload', 'تحميل')}</div>
+          {/* Evidence Collection */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Camera className="w-4 h-4" />
+                {t('Evidence Collection', 'جمع الأدلة')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormItem>
+                <FormLabel>{t('Photo Evidence', 'أدلة الصور')}</FormLabel>
+                <p className="text-sm text-muted-foreground">
+                  {t('Upload photos of the issue. Saved locally first.', 'حمل صور للمشكلة. تحفظ محليا أولا.')}
+                </p>
+                <div
+                  {...getRootProps()}
+                  className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                    isDragActive ? 'border-primary bg-primary/10' : 'border-muted-foreground/25 hover:border-primary'
+                  }`}
+                >
+                  <input {...getInputProps()} />
+                  <Camera className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm">
+                    {fileList.length < 3
+                      ? t('Drag & drop or click to upload (max 3)', 'اسحب وأفلت أو انقر للتحميل (حد أقصى 3)')
+                      : `${fileList.length} ${t('files', 'ملفات')}`}
+                  </p>
                 </div>
-              )}
-            </Upload>
-          </Form.Item>
+              </FormItem>
+              <Separator />
+              <FormItem>
+                <FormLabel>{t('Voice Note', 'ملاحظة صوتية')}</FormLabel>
+                <p className="text-sm text-muted-foreground">
+                  {t('Record a brief description of the noise or issue.', 'سجل وصفا موجزا للضوضاء أو المشكلة.')}
+                </p>
+                <Button
+                  type="button"
+                  variant={isRecording ? 'destructive' : 'outline'}
+                  onClick={() => {
+                    if (isRecording) {
+                      setIsRecording(false);
+                      toast.success(t('Voice note saved locally', 'تم حفظ الملاحظة الصوتية محليا'));
+                    } else {
+                      setIsRecording(true);
+                      toast.info(t('Recording... Click to stop', 'جاري التسجيل... انقر للإيقاف'));
+                    }
+                  }}
+                >
+                  <Mic className="w-4 h-4 mr-2" />
+                  {isRecording ? t('Stop Recording', 'إيقاف التسجيل') : t('Record Voice Note', 'تسجيل ملاحظة صوتية')}
+                </Button>
+              </FormItem>
+            </CardContent>
+          </Card>
 
-          <Divider dashed />
-
-          <Form.Item
-            label={t('Voice Note', 'ملاحظة صوتية')}
-            extra={t('Record a brief description of the noise or issue.', 'سجل وصفا موجزا للضوضاء أو المشكلة.')}
-          >
-            <Button
-              icon={<AudioOutlined />}
-              danger={isRecording}
-              onClick={() => {
-                if (isRecording) {
-                  setIsRecording(false);
-                  message.success(t('Voice note saved locally', 'تم حفظ الملاحظة الصوتية محليا'));
-                } else {
-                  setIsRecording(true);
-                  message.info(t('Recording... Click to stop', 'جاري التسجيل... انقر للإيقاف'));
-                }
-              }}
-            >
-              {isRecording ? t('Stop Recording', 'إيقاف التسجيل') : t('Record Voice Note', 'تسجيل ملاحظة صوتية')}
-            </Button>
-            {/* Visual indicator for recorded note */}
-            {!isRecording && Math.random() > 0.9 && ( // Just a placeholder state for demo
-              <span style={{ marginLeft: 12 }}>
-                <CheckCircleOutlined style={{ color: '#52c41a' }} /> 1 {t('note saved', 'ملاحظة محفوظة')}
-              </span>
-            )}
-          </Form.Item>
-        </Card>
-
-        {/* Submit Button */}
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            size="large"
-            block
-            loading={loading}
-            icon={<CheckCircleOutlined />}
-            style={{ height: 56 }}
-          >
-            {t('Generate Advisory (Tier 2 Validation)', 'توليد استشارة (التحقق من الطبقة 2)')}
+          {/* Submit */}
+          <Button type="submit" size="lg" className="w-full h-14" disabled={loading}>
+            <CheckCircle className="w-5 h-5 mr-2" />
+            {loading ? t('Generating...', 'جاري التوليد...') : t('Generate Advisory (Tier 2 Validation)', 'توليد استشارة (التحقق من الطبقة 2)')}
           </Button>
-        </Form.Item>
+        </form>
       </Form>
 
-      {/* Error Display */}
+      {/* Error */}
       {error && (
-        <Alert
-          message={t('Error', 'خطأ')}
-          description={error}
-          type="error"
-          showIcon
-          closable
-          style={{ marginBottom: 16 }}
-        />
+        <Alert variant="destructive" className="mt-4">
+          <AlertTitle>{t('Error', 'خطأ')}</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
       {/* Advisory Display */}
       {advisory && (
-        <Card
-          title={
-            <Space>
-              <CheckCircleOutlined style={{ color: '#52c41a' }} />
-              <span>{t('Advisory Generated', 'تم توليد الاستشارة')}</span>
-            </Space>
-          }
-          extra={renderUrgencyBadge(advisory.urgency)}
-          style={{ marginTop: 16 }}
-        >
-          {/* Constitutional Disclaimer */}
-          <Alert
-            message={t('AICS-001 Advisory Disclaimer', 'إخلاء مسؤولية AICS-001')}
-            description={advisory.constitutionalDisclaimer}
-            type="info"
-            showIcon
-            style={{ marginBottom: 16, fontSize: 11 }}
-          />
-
-          {/* Confidence & Metadata */}
-          <Row gutter={16} style={{ marginBottom: 16 }}>
-            <Col span={12}>
-              <Text strong>{t('Confidence:', 'الثقة:')}</Text> {(advisory.confidence * 100).toFixed(0)}%
-            </Col>
-            <Col span={12}>
-              <Text strong>{t('Downtime:', 'وقت التوقف:')}</Text> {advisory.estimatedDowntimeHours}h
-            </Col>
-          </Row>
-
-          {/* Suggestion */}
-          <Divider orientation="left">{t('Suggestion', 'الاقتراح')}</Divider>
-          <Paragraph style={{ whiteSpace: 'pre-wrap', direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}>
-            {selectedLanguage === 'ar' ? advisory.suggestionAr : advisory.suggestionEn}
-          </Paragraph>
-
-          {/* Preventive Actions */}
-          {(selectedLanguage === 'ar' ? advisory.preventiveActionsAr : advisory.preventiveActionsEn).length > 0 && (
-            <>
-              <Divider orientation="left">{t('Preventive Actions', 'الإجراءات الوقائية')}</Divider>
-              <ul style={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}>
-                {(selectedLanguage === 'ar' ? advisory.preventiveActionsAr : advisory.preventiveActionsEn).map((action, index) => (
-                  <li key={index}>{action}</li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          {/* Recommended Parts */}
-          {advisory.recommendedParts.length > 0 && (
-            <>
-              <Divider orientation="left">{t('Required Parts', 'القطع المطلوبة')}</Divider>
-              <Space direction="vertical" style={{ width: '100%' }}>
-                {advisory.recommendedParts.map((part, index) => (
-                  <Card key={index} size="small" style={{ background: '#f5f5f5' }}>
-                    <Row justify="space-between" align="middle">
-                      <Col>
-                        <Text strong style={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}>
-                          {selectedLanguage === 'ar' ? part.nameAr : part.nameEn}
-                        </Text>
-                        <br />
-                        <Text type="secondary">{part.partNumber}</Text>
-                        {part.critical && <Tag color="red" style={{ marginLeft: 8 }}>{t('CRITICAL', 'حرج')}</Tag>}
-                      </Col>
-                      <Col>
-                        <Text strong style={{ fontSize: 16 }}>
-                          {part.priceEGP.toLocaleString(selectedLanguage === 'ar' ? 'ar-EG' : 'en-EG')} {t('EGP', 'جنيه')}
-                        </Text>
-                        <br />
-                        <Text type="secondary">
-                          <ClockCircleOutlined /> {part.leadTimeDays} {t('days', 'أيام')}
-                        </Text>
-                      </Col>
-                    </Row>
-                  </Card>
-                ))}
-                <Card size="small" style={{ background: '#e6f7ff', borderColor: '#1890ff' }}>
-                  <Row justify="space-between">
-                    <Col>
-                      <Text strong>{t('Total Cost:', 'التكلفة الإجمالية:')}</Text>
-                    </Col>
-                    <Col>
-                      <Text strong style={{ fontSize: 18, color: '#1890ff' }}>
-                        {advisory.totalCostEGP.toLocaleString(selectedLanguage === 'ar' ? 'ar-EG' : 'en-EG')} {t('EGP', 'جنيه')}
-                      </Text>
-                    </Col>
-                  </Row>
-                </Card>
-              </Space>
-            </>
-          )}
-
-          {/* Seasonal Warning */}
-          {advisory.seasonalWarningEn && (
-            <Alert
-              message={t('Seasonal Alert', 'تنبيه موسمي')}
-              description={selectedLanguage === 'ar' ? advisory.seasonalWarningAr : advisory.seasonalWarningEn}
-              type="warning"
-              showIcon
-              style={{ marginTop: 16 }}
-            />
-          )}
-
-          {/* Advisory Metadata */}
-          <Divider />
-          <Row gutter={16} style={{ fontSize: 11, color: '#888' }}>
-            <Col span={12}>
-              <Text type="secondary">{t('Advisory ID:', 'معرف الاستشارة:')}</Text>
-              <br />
-              <Text code>{advisory.advisoryId}</Text>
-            </Col>
-            <Col span={12}>
-              <Text type="secondary">{t('Timestamp:', 'الطابع الزمني:')}</Text>
-              <br />
-              <Text code>{new Date(advisory.advisoryTimestamp).toLocaleString()}</Text>
-            </Col>
-          </Row>
-
-          {/* Next Steps */}
-          <Divider />
-          <Alert
-            message={t('Next Steps', 'الخطوات التالية')}
-            description={t(
-              'This advisory requires human validation. A YILMAZ-certified technician must review and approve before creating a service ticket or ordering parts.',
-              'تتطلب هذه الاستشارة التحقق من صحة الإنسان. يجب على فني معتمد من YILMAZ المراجعة والموافقة قبل إنشاء تذكرة خدمة أو طلب قطع.'
+        <Card className="mt-4">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              {t('Advisory Generated', 'تم توليد الاستشارة')}
+            </CardTitle>
+            {renderUrgencyBadge(advisory.urgency)}
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Alert>
+              <AlertTitle>{t('AICS-001 Advisory Disclaimer', 'إخلاء مسؤولية AICS-001')}</AlertTitle>
+              <AlertDescription className="text-xs">{advisory.constitutionalDisclaimer}</AlertDescription>
+            </Alert>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium">{t('Confidence:', 'الثقة:')}</span> {(advisory.confidence * 100).toFixed(0)}%
+              </div>
+              <div>
+                <span className="font-medium">{t('Downtime:', 'وقت التوقف:')}</span> {advisory.estimatedDowntimeHours}h
+              </div>
+            </div>
+            <Separator />
+            <div>
+              <h4 className="font-medium mb-2">{t('Suggestion', 'الاقتراح')}</h4>
+              <p
+                className="text-sm whitespace-pre-wrap"
+                style={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+              >
+                {selectedLanguage === 'ar' ? advisory.suggestionAr : advisory.suggestionEn}
+              </p>
+            </div>
+            {(selectedLanguage === 'ar' ? advisory.preventiveActionsAr : advisory.preventiveActionsEn).length > 0 && (
+              <>
+                <Separator />
+                <div>
+                  <h4 className="font-medium mb-2">{t('Preventive Actions', 'الإجراءات الوقائية')}</h4>
+                  <ul className="list-disc pl-6 space-y-1" style={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}>
+                    {(selectedLanguage === 'ar' ? advisory.preventiveActionsAr : advisory.preventiveActionsEn).map(
+                      (action, index) => (
+                        <li key={index}>{action}</li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              </>
             )}
-            type="info"
-            showIcon
-          />
+            {advisory.recommendedParts.length > 0 && (
+              <>
+                <Separator />
+                <div>
+                  <h4 className="font-medium mb-2">{t('Required Parts', 'القطع المطلوبة')}</h4>
+                  <div className="space-y-2">
+                    {advisory.recommendedParts.map((part, index) => (
+                      <Card key={index} className="bg-muted/50">
+                        <CardContent className="pt-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-medium" style={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}>
+                                {selectedLanguage === 'ar' ? part.nameAr : part.nameEn}
+                              </p>
+                              <p className="text-xs text-muted-foreground">{part.partNumber}</p>
+                              {part.critical && <Badge variant="destructive" className="mt-1">{t('CRITICAL', 'حرج')}</Badge>}
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold">
+                                {part.priceEGP.toLocaleString(selectedLanguage === 'ar' ? 'ar-EG' : 'en-EG')} {t('EGP', 'جنيه')}
+                              </p>
+                              <p className="text-xs text-muted-foreground flex items-center justify-end gap-1">
+                                <Clock className="w-3 h-3" />
+                                {part.leadTimeDays} {t('days', 'أيام')}
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200">
+                      <CardContent className="pt-4 flex justify-between">
+                        <span className="font-medium">{t('Total Cost:', 'التكلفة الإجمالية:')}</span>
+                        <span className="font-bold text-blue-600">
+                          {advisory.totalCostEGP.toLocaleString(selectedLanguage === 'ar' ? 'ar-EG' : 'en-EG')} {t('EGP', 'جنيه')}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </>
+            )}
+            {advisory.seasonalWarningEn && (
+              <Alert className="border-amber-500 bg-amber-500/10">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>{t('Seasonal Alert', 'تنبيه موسمي')}</AlertTitle>
+                <AlertDescription>
+                  {selectedLanguage === 'ar' ? advisory.seasonalWarningAr : advisory.seasonalWarningEn}
+                </AlertDescription>
+              </Alert>
+            )}
+            <Separator />
+            <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
+              <div>
+                <p>{t('Advisory ID:', 'معرف الاستشارة:')}</p>
+                <code className="text-xs">{advisory.advisoryId}</code>
+              </div>
+              <div>
+                <p>{t('Timestamp:', 'الطابع الزمني:')}</p>
+                <code className="text-xs">{new Date(advisory.advisoryTimestamp).toLocaleString()}</code>
+              </div>
+            </div>
+            <Separator />
+            <Alert>
+              <AlertTitle>{t('Next Steps', 'الخطوات التالية')}</AlertTitle>
+              <AlertDescription>
+                {t(
+                  'This advisory requires human validation. A YILMAZ-certified technician must review and approve before creating a service ticket or ordering parts.',
+                  'تتطلب هذه الاستشارة التحقق من صحة الإنسان. يجب على فني معتمد من YILMAZ المراجعة والموافقة قبل إنشاء تذكرة خدمة أو طلب قطع.'
+                )}
+              </AlertDescription>
+            </Alert>
+          </CardContent>
         </Card>
       )}
     </div>
