@@ -305,3 +305,34 @@ async def trigger_manual_scan(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error triggering scan: {str(e)}")
+
+
+class FeedbackRequest(BaseModel):
+    item_id: str
+    feedback: str  # "useful" or "not_useful"
+    workshop_id: Optional[str] = None
+
+
+@router.post("/feedback")
+async def submit_feedback(
+    request: FeedbackRequest,
+    workshop_id: Optional[str] = Header(None, alias="X-Workshop-ID"),
+):
+    """
+    Submit feedback on intelligence items
+    """
+    try:
+        # Just log for now
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(
+            f"Feedback received: {request.feedback} for {request.item_id} (Workshop: {workshop_id or request.workshop_id})"
+        )
+
+        return {"status": "success", "message": "Feedback received"}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error submitting feedback: {str(e)}"
+        )
