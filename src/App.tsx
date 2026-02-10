@@ -292,7 +292,7 @@ const App = memo(() => {
   return (
     <ChunkLoadingErrorBoundary>
       <ErrorBoundary>
-        <Prestige3DLoader show3DAnimation={false}>
+        <Prestige3DLoader show3DAnimation={true}>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
               <TooltipProvider>

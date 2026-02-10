@@ -1,8 +1,8 @@
 import react from "@vitejs/plugin-react";
 import path from "path";
-import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig, loadEnv } from "vite";
 /// <reference types="vitest" />
+import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
@@ -260,12 +260,11 @@ export default defineConfig(({ mode }) => {
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
-              filename: "dist/bundle-analysis.html",
               open: false,
               gzipSize: true,
               brotliSize: true,
-              template: "treemap", // Use treemap for visual HTML output
-              sourcemap: false,
+              filename: "stats.json",
+              template: "raw-data"
             }),
           ]
         : []),
@@ -299,7 +298,7 @@ export default defineConfig(({ mode }) => {
       extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
       // CRITICAL: Deduplicate React to prevent multiple instances
       // This prevents "unstable_now" errors from duplicate React bundles
-      dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"]
+      dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "three"]
     },
 
     css: {
@@ -318,35 +317,28 @@ export default defineConfig(({ mode }) => {
       }
     },
 
+    // Optimized build configuration
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
-      // PHASE 5C: Modern build target (ES2022) - removes heavy polyfills
-      // Free bundle size reduction without refactoring
-      // Expected: ~9KB reduction, removes Babel transforms for modern features
+      // PHASE 5C: Modern build target (ES2022)
       target: "es2022",
       minify: isProduction ? "esbuild" : false,
       sourcemap: false,
-      chunkSizeWarningLimit: 3000,
+      chunkSizeWarningLimit: 1000,
       assetsInlineLimit: 2048,
-      reportCompressedSize: true, // Show bundle sizes
-      // PHASE 5A: CSS code splitting ensures CSS is extracted separately
+      reportCompressedSize: false, // Use analyzer instead
       cssCodeSplit: true,
-      // Disable automatic preloading of assets to prevent warnings
       modulePreload: {
-        polyfill: false, // Disable module preload polyfill
-        resolveDependencies: () => [], // Don't auto-preload any modules
+        polyfill: false,
+        resolveDependencies: () => [],
       },
-      // Ensure proper module resolution for React and CommonJS packages like 'long'
       commonjsOptions: {
         include: [/node_modules/, /long/],
         transformMixedEsModules: true,
-        // Properly handle CommonJS requires for packages like 'long'
         requireReturnsDefault: 'auto',
-        // Ensure long package is properly transformed
         esmExternals: (id) => !id.includes('long')
       },
-      // PERFORMANCE OPTIMIZATIONS
       rollupOptions: {
         maxParallelFileOps: 5,
         treeshake: {
@@ -354,53 +346,22 @@ export default defineConfig(({ mode }) => {
           propertyReadSideEffects: false,
           tryCatchDeoptimization: false
         },
-        // Suppress known false-positive warnings
         onwarn(warning, warn) {
-          // Suppress manualChunks warning (false positive in newer Vite)
-          if (warning.code === 'UNKNOWN_OPTION' && warning.message?.includes('manualChunks')) {
-            return;
-          }
-          // Suppress manualChunks warning from Vite input validation
-          if (warning.message?.includes('Unknown input options: manualChunks')) {
-            return;
-          }
-          // Suppress dynamic import warnings (they're just informational)
-          if (warning.code === 'MODULE_LEVEL_DIRECTIVE' || warning.message?.includes('dynamically imported')) {
-            return;
-          }
-          // Suppress Workbox globbing warnings
-          if (warning.plugin === 'workbox' && warning.message?.includes('globbing')) {
-            return;
-          }
-          // Suppress Workbox sync errors (known compatibility issue)
-          if (warning.message?.includes('Cannot read properties of undefined') || 
-              warning.message?.includes('reading \'sync\'')) {
-            return;
-          }
-          // Suppress PDF.js worker warnings (resolved at runtime)
-          if (warning.message?.includes('pdfjs-dist/build/pdf.worker.min.js') ||
-              warning.message?.includes('doesn\'t exist at build time') ||
-              warning.message?.includes('pdf.worker.min.js')) {
-            return;
-          }
-          // Suppress ammo.js Node.js module externalization warnings (expected for browser compatibility)
-          // These are handled by polyfills in resolve.alias
-          if (warning.plugin === 'vite:resolve' && 
-              (warning.message?.includes('Module "fs" has been externalized') ||
-               warning.message?.includes('Module "path" has been externalized')) &&
-              (warning.message?.includes('ammo.js') || warning.message?.includes('ammo'))) {
-            return;
-          }
+          if (warning.code === 'UNKNOWN_OPTION' && warning.message?.includes('manualChunks')) return;
+          if (warning.message?.includes('Unknown input options: manualChunks')) return;
+          if (warning.code === 'MODULE_LEVEL_DIRECTIVE' || warning.message?.includes('dynamically imported')) return;
+          if (warning.plugin === 'workbox' && warning.message?.includes('globbing')) return;
+          if (warning.message?.includes('Cannot read properties of undefined') || warning.message?.includes('reading \'sync\'')) return;
+          if (warning.message?.includes('pdfjs-dist/build/pdf.worker.min.js') || warning.message?.includes('pdf.worker.min.js')) return;
+          if (warning.plugin === 'vite:resolve' && (warning.message?.includes('Module "fs" has been externalized') || warning.message?.includes('Module "path" has been externalized'))) return;
           warn(warning);
         },
         input: "index.html",
         external: [],
-        // Exclude markdown editor CSS from main bundle
         plugins: [
           {
             name: 'exclude-md-editor-css',
             generateBundle(options, bundle) {
-              // Remove markdown editor CSS imports and emitted files from @uiw/react-md-editor only
               Object.keys(bundle).forEach(fileName => {
                 const asset = bundle[fileName];
                 if ((asset as any).type === 'chunk' && (asset as any).code) {
@@ -415,115 +376,120 @@ export default defineConfig(({ mode }) => {
               });
             }
           },
-          {
-            name: 'remove-md-editor-css',
-            generateBundle(options, bundle) {
-              // Drop emitted vendor-uiw CSS assets entirely to avoid extra CSS chunk
-              Object.keys(bundle).forEach(fileName => {
-                const asset = bundle[fileName];
-                if ((asset as any).type === 'asset' && fileName.endsWith('.css')) {
-                  if (fileName.includes('vendor-uiw') || fileName.includes('@uiw')) {
-                    delete (bundle as any)[fileName];
-                  }
-                }
-              });
-            }
-          },
         ],
         output: {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
-          // Week 1 Task 1.4: Web Worker file naming
           workerFileNames: `assets/[name]-[hash].worker.js`,
-          // OPTIMIZED CHUNK SPLITTING: Conservative split with proper loading order
-          // CRITICAL: React core MUST load first before all React-dependent chunks
-          // Strategy: Split only large, independent libraries; keep small React deps together
+          
+          // STRATEGIC BUNDLE SPLITTING
           manualChunks: (id) => {
-            // Exclude app code
-            if (id.includes('/src/') || id.includes('\\src\\')) {
-              return undefined;
-            }
-            
-            if (!id.includes('node_modules')) {
-              return undefined;
+             // Exclude app code
+             if (id.includes('/src/') || id.includes('\\src\\')) {
+               return undefined;
+             }
+             
+             if (!id.includes('node_modules')) {
+               return undefined;
+             }
+ 
+             // 1. React Core (Critical for init)
+             if (
+               id.includes('node_modules/react/') ||
+               id.includes('node_modules/react-dom/') ||
+               id.includes('node_modules/scheduler/') ||
+               id.includes('node_modules/react-router')
+             ) {
+               return 'react-core';
+             }
+ 
+             // 2. Three.js Ecosystem
+            // Now safe to split as they are lazy-loaded via Prestige3DScene
+            if (
+              id.includes('node_modules/three/')
+            ) {
+              return 'vendor-3d-core';
             }
 
-            // ========================================
-            // CRITICAL: React Core MUST load first
-            // ========================================
             if (
-              id.includes('node_modules/react/') ||
-              id.includes('node_modules/react-dom/') ||
-              id.includes('node_modules/scheduler/')
+              id.includes('node_modules/@react-three/') ||
+              id.includes('node_modules/drei/') ||
+              id.includes('node_modules/react-reconciler')
             ) {
-              return 'react-core';
+              return 'vendor-3d-react';
+            }
+ 
+             // 3. UI Libraries (Shadcn/Radix/Antd/Lucide)
+             if (
+               id.includes('node_modules/@radix-ui') ||
+               id.includes('node_modules/lucide-react') ||
+               id.includes('node_modules/class-variance-authority') ||
+               id.includes('node_modules/clsx') ||
+               id.includes('node_modules/tailwind-merge') ||
+               id.includes('node_modules/antd') ||
+               id.includes('node_modules/@ant-design') ||
+               id.includes('node_modules/framer-motion') ||
+               id.includes('node_modules/motion-dom') ||
+               id.includes('node_modules/motion-utils') ||
+               id.includes('node_modules/cmdk') ||
+               id.includes('node_modules/vaul') ||
+               id.includes('node_modules/sonner')
+             ) {
+               return 'vendor-ui';
+             }
+ 
+             // 4. Charts
+             if (
+               id.includes('node_modules/recharts') ||
+               id.includes('node_modules/chart.js') ||
+               id.includes('node_modules/react-chartjs-2')
+             ) {
+               return 'vendor-charts';
+             }
+ 
+             // 5. Heavy Documents (PDF/Excel) - SPLIT into separate chunks
+            if (
+              id.includes('node_modules/jspdf') || // ~470KB
+              id.includes('node_modules/html2canvas') || // ~340KB
+              id.includes('node_modules/pdf-lib') || 
+              id.includes('node_modules/pdfjs-dist') || // ~750KB
+              id.includes('node_modules/dxf-writer')
+            ) {
+              return 'vendor-pdf';
             }
 
-            // ========================================
-            // STANDALONE ENGINES (No React deps)
-            // ========================================
-            
-            // NOTE: Three.js + @react-three/fiber/drei MUST stay in react-vendor - splitting
-            // into vendor-3d causes "Cannot access 'X3' before initialization" (TDZ/circular dep)
-            // in production. Same pattern as DEPLOYMENT_FIX_COMPLETE.md for ml-vendor.
-            
-            if (id.includes('node_modules/ammo.js/')) {
-              return 'physics-engine';
-            }
-            
             if (
-              id.includes('node_modules/@tensorflow/') ||
-              id.includes('node_modules/tfjs/') ||
-              id.includes('node_modules/onnx/') ||
-              id.includes('node_modules/@google/generative-ai/')
+              id.includes('node_modules/exceljs') // ~1.3MB
             ) {
-              return 'ml-engine';
+              return 'vendor-excel';
             }
-            
-            if (
-              id.includes('node_modules/jspdf/') ||
-              id.includes('node_modules/html2canvas/') ||
-              id.includes('node_modules/exceljs/') ||
-              id.includes('node_modules/pdfjs-dist/') ||
-              id.includes('node_modules/@pdf-lib/') ||
-              id.includes('node_modules/pdf-lib/') ||
-              id.includes('node_modules/dxf-writer/')
-            ) {
-              return 'document-vendor';
-            }
-
-            // ========================================
-            // REACT ECOSYSTEM - CONSERVATIVE SPLIT
-            // Only split libraries that don't immediately use React on module load
-            // Keep Ant Design and other immediate-React-deps in react-vendor
-            // ========================================
-            
-            // NOTE: Ant Design MUST stay in react-vendor because it uses React.createContext
-            // immediately when the module loads, so it can't be in a separate chunk
-            
-            // Radix UI (500 KB - can be split, uses React but not immediately)
-            if (id.includes('node_modules/@radix-ui/')) {
-              return 'ui-radix';
-            }
-            
-            // Framer Motion (500 KB - can be split, lazy-loaded)
-            if (
-              id.includes('node_modules/framer-motion/') ||
-              id.includes('node_modules/motion-dom/') ||
-              id.includes('node_modules/motion-utils/')
-            ) {
-              return 'animation';
-            }
-            
-            // NOTE: Charts MUST stay in react-vendor - has initialization order issues
-            // NOTE: Markdown MUST stay in react-vendor - has initialization order issues
-            
-            // Everything else stays together (including Ant Design, Charts, Markdown, 
-            // state-mgmt, forms, router, etc.) to prevent loading order issues
-            return 'react-vendor';
-          },
-
+ 
+             // 6. TensorFlow / ML
+             if (
+               id.includes('node_modules/@tensorflow') ||
+               id.includes('node_modules/@google/generative-ai') ||
+               id.includes('node_modules/tfjs') ||
+               id.includes('node_modules/onnx')
+             ) {
+               return 'vendor-ml';
+             }
+             
+             // 7. Utilities
+             if (
+               id.includes('node_modules/date-fns') ||
+               id.includes('node_modules/axios') ||
+               id.includes('node_modules/zod') ||
+               id.includes('node_modules/react-hook-form') ||
+               id.includes('node_modules/i18next') ||
+               id.includes('node_modules/zustand') ||
+               id.includes('node_modules/@tanstack')
+             ) {
+               return 'vendor-utils';
+             }
+             
+             // Everything else falls into the default chunk (usually just index or small deps)
+           },
         },
       },
     },
@@ -537,33 +503,38 @@ export default defineConfig(({ mode }) => {
         "react/jsx-dev-runtime",
         "react-router-dom",
         "exceljs",
-        "long", // Explicitly include long package for TensorFlow.js
-        "seedrandom", // Include seedrandom to fix require errors
-        "pako" // Include pako for PDF compression (must load before pdfjs)
+        "long",
+        "seedrandom",
+        "pako",
+        "clsx",
+        "tailwind-merge",
+        "react-reconciler"
       ],
-      exclude: ["@google/generative-ai","@tensorflow/tfjs","three","hls.js"],
-      // Only force re-optimization in production builds, not in dev for faster startup
+      // Exclude heavy ML libs from pre-optimization to speed up dev start
+      // and align with manualChunks strategy. 
+      // NOTE: 3D libs (three, @react-three/*) MUST be optimized to ensure proper CJS/ESM interop
+      exclude: [
+        "@google/generative-ai",
+        "@tensorflow/tfjs", 
+        "hls.js"
+      ],
       force: isProduction,
       esbuildOptions: {
         define: {
           global: "globalThis",
         },
-        // PHASE 5C: Match build target for consistency
         target: "es2022",
-        // Ensure CommonJS modules are properly transformed
         format: 'esm'
       }
     },
 
     esbuild: {
       drop: isProduction ? ["console", "debugger"] : [],
-      // PHASE 5C: Match build target for consistency
       target: "es2022",
-      // Improved minification for production
       minifyIdentifiers: isProduction,
       minifySyntax: isProduction,
       minifyWhitespace: isProduction,
-      legalComments: 'none', // Remove comments in production
+      legalComments: 'none',
       treeShaking: true,
     },
 
@@ -575,8 +546,6 @@ export default defineConfig(({ mode }) => {
           return { relative: true };
         }
       },
-      // Hint to split heavy libs dynamically when possible
-      // Consumers should import('three') / import('exceljs') lazily where feasible.
     },
   };
 });

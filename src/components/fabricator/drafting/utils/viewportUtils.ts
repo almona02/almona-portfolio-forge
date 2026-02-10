@@ -23,7 +23,7 @@ export interface ViewportBounds {
 export const DEFAULT_VIEWPORT: Viewport = {
   centerX: 5000,
   centerY: 5000,
-  zoom: 1.0,
+  zoom: 0.1,
   width: 10000,
   height: 10000
 };

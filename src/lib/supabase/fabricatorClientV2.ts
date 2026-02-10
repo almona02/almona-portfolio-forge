@@ -73,6 +73,11 @@ export function mapPositionRowToWindowUnit(row: PositionV2Row): WindowUnit | nul
   } as WindowUnit;
 }
 
+// Helper to validate UUID format
+const isUuid = (id: string): boolean => {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+};
+
 export const fabricatorClientV2 = {
   async getUserId(): Promise<string> {
     const { data: { user }, error } = await supabase.auth.getUser();
@@ -91,6 +96,9 @@ export const fabricatorClientV2 = {
   },
 
   async getProject(projectId: string, ownerUserId: string): Promise<FabricatorProjectV2 | null> {
+    // Validate UUID to prevent 400 Bad Request
+    if (!isUuid(projectId)) return null;
+
     const { data, error } = await supabase
       .from('fabricator_projects_v2')
       .select('*')
@@ -107,13 +115,22 @@ export const fabricatorClientV2 = {
       .select('*')
       .eq('owner_user_id', ownerUserId)
       .order('updated_at', { ascending: false });
-    if (projectId) q = q.eq('project_id', projectId);
+    
+    if (projectId) {
+      // If projectId provided but not UUID, return empty (or ignore filter? safer to return empty for strict correctness)
+      if (!isUuid(projectId)) return [];
+      q = q.eq('project_id', projectId);
+    }
+    
     const { data, error } = await q;
     if (error) throw error;
     return (data ?? []) as PositionV2Row[];
   },
 
   async getPose(poseId: string, ownerUserId: string): Promise<WindowUnit | null> {
+    // Validate UUID
+    if (!isUuid(poseId)) return null;
+
     const { data, error } = await supabase
       .from('fabricator_positions_v2')
       .select('*')
@@ -145,6 +162,7 @@ export const fabricatorClientV2 = {
       meta: {},
     };
 
+    // Look up project by CODE (not ID) to avoid UUID issues
     const { data: existingProject } = await supabase
       .from('fabricator_projects_v2')
       .select('id')
@@ -194,34 +212,67 @@ export const fabricatorClientV2 = {
       updated_at: now,
     };
 
-    const { data: existingPos } = await supabase
-      .from('fabricator_positions_v2')
-      .select('id')
-      .eq('id', windowUnit.id)
-      .eq('owner_user_id', ownerUserId)
-      .maybeSingle();
-
-    if (existingPos?.id) {
-      const { error: upErr } = await supabase
+    // Only update if ID is UUID
+    if (isUuid(windowUnit.id)) {
+        const { data: existingPos } = await supabase
         .from('fabricator_positions_v2')
-        .update(positionPayload)
+        .select('id')
         .eq('id', windowUnit.id)
-        .eq('owner_user_id', ownerUserId);
-      if (upErr) throw upErr;
-      return { projectId, poseId: windowUnit.id };
-    }
+        .eq('owner_user_id', ownerUserId)
+        .maybeSingle();
 
-    const { error: insErr } = await supabase
+        if (existingPos?.id) {
+        const { error: upErr } = await supabase
+            .from('fabricator_positions_v2')
+            .update(positionPayload)
+            .eq('id', windowUnit.id)
+            .eq('owner_user_id', ownerUserId);
+        if (upErr) throw upErr;
+        return { projectId, poseId: windowUnit.id };
+        }
+    }
+    
+    // Fallback or Insert logic: If ID is legacy, we might need a new UUID or force insert if we want to migrate?
+    // For now, if it's not a UUID, we likely want a new UUID. 
+    // However, the interface expects `windowUnit.id` to be the ID.
+    // If windowUnit.id is NOT a UUID, we should probably generate a new one for V2
+    // But then we lose the link. 
+    // Let's assume for now we try to insert. If it fails due to UUID constraint, it throws.
+    // But `windowUnit` usually comes from the app state.
+    
+    // Safer: check if windowUnit.id is UUID. If not, generate one?
+    // But wait, the previous code just inserted it.
+    // If windowUnit.id is 'project-123', insert will fail if col is uuid.
+    
+    const insertPayload = { ...positionPayload };
+    if (isUuid(windowUnit.id)) {
+        (insertPayload as PositionV2Insert).id = windowUnit.id;
+    } else {
+        // omit ID to let postgres generate it? Or generate one here?
+        // If we omit, supabase/postgres generates it. We return the new ID.
+        // But we need to return `poseId`.
+        // Let's rely on Postgres generation if invalid.
+        // BUT `windowUnit.id` is required in the object we return?
+        // Actually the return type is { projectId, poseId }.
+        
+        // If we don't pass ID, we need to capture it from insert response.
+    }
+    
+    // We'll trust that if it's not a valid UUID, we shouldn't force it into the ID column.
+    
+    const { data: insertedPos, error: insErr } = await supabase
       .from('fabricator_positions_v2')
-      .insert({
-        ...positionPayload,
-        id: windowUnit.id,
-      } as PositionV2Insert);
+      .insert(insertPayload as PositionV2Insert)
+      .select('id')
+      .single();
+      
     if (insErr) throw insErr;
-    return { projectId, poseId: windowUnit.id };
+    return { projectId, poseId: insertedPos.id };
   },
 
   async deletePose(poseId: string, ownerUserId: string): Promise<void> {
+    if (!isUuid(poseId)) return; // Can't delete non-existent UUID
+
     const { error } = await supabase
       .from('fabricator_positions_v2')
       .delete()
@@ -242,6 +293,8 @@ export const fabricatorClientV2 = {
       meta?: Record<string, unknown>;
     },
   ): Promise<FabricatorProjectV2 | null> {
+    if (!isUuid(projectId)) return null;
+
     const { data, error } = await supabase
       .from('fabricator_projects_v2')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -254,6 +307,8 @@ export const fabricatorClientV2 = {
   },
 
   async deleteProject(projectId: string, ownerUserId: string): Promise<void> {
+    if (!isUuid(projectId)) return;
+
     const { error } = await supabase
       .from('fabricator_projects_v2')
       .delete()
