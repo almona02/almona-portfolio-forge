@@ -134,10 +134,10 @@ CardTitle.displayName = "CardTitle";
 
 // Card description component
 const CardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <p
+  <div
     ref={ref}
     className={cn("text-sm text-slate-600", className)}
     {...props}
@@ -349,11 +349,8 @@ export {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
-  cardVariants,
-  Card as GoldTierCard,
-  StatsCard,
-  type ActionCardProps,
+  CardTitle, Card as GoldTierCard,
+  StatsCard, cardVariants, type ActionCardProps,
   type CardContentProps,
   type CardFooterProps,
   type CardHeaderProps,

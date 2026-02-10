@@ -353,7 +353,8 @@ export class OptimizedCanvasManager {
             } else {
                 // Standard CAD Rendering — use light color for dark background
                 ctx.strokeStyle = '#e2e8f0';
-                ctx.lineWidth = 2;
+                // Use scale-invariant line width (2px on screen)
+                ctx.lineWidth = 2 / this.viewport.scale;
                 ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
             }
         });
@@ -363,7 +364,8 @@ export class OptimizedCanvasManager {
             lines.forEach(line => {
                 ctx.beginPath();
                 ctx.strokeStyle = '#e2e8f0';
-                ctx.lineWidth = 1.5;
+                // Scale-invariant (1.5px on screen)
+                ctx.lineWidth = 1.5 / this.viewport.scale;
 
                 // Set dash pattern based on line type
                 if (line.type === 'dashed') {
@@ -384,7 +386,7 @@ export class OptimizedCanvasManager {
         // 3. Render Circles
         if (circles && circles.length > 0) {
             ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 1.5 / this.viewport.scale;
             ctx.setLineDash([]);
             circles.forEach(circle => {
                 ctx.beginPath();
@@ -396,7 +398,7 @@ export class OptimizedCanvasManager {
         // 4. Render Arcs
         if (arcs && arcs.length > 0) {
             ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 1.5 / this.viewport.scale;
             ctx.setLineDash([]);
             arcs.forEach(arc => {
                 ctx.beginPath();
@@ -408,7 +410,7 @@ export class OptimizedCanvasManager {
         // 5. Render Polygons
         if (polygons && polygons.length > 0) {
             ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 1.5 / this.viewport.scale;
             ctx.setLineDash([]);
             polygons.forEach(polygon => {
                 if (polygon.points.length < 2) return;
@@ -427,7 +429,7 @@ export class OptimizedCanvasManager {
         // 6. Render Splines (quadratic Bézier through control points)
         if (splines && splines.length > 0) {
             ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 1.5 / this.viewport.scale;
             ctx.setLineDash([]);
             splines.forEach(spline => {
                 const pts = spline.controlPoints;
@@ -469,9 +471,12 @@ export class OptimizedCanvasManager {
    * Returns true if rectangle intersects with current visible viewport area
    */
   private isVisible(rect: Rectangle): boolean {
-      // Calculate viewport bounds in world space
-      const vX = -this.viewport.x / this.viewport.scale;
-      const vY = -this.viewport.y / this.viewport.scale;
+      // Calculate viewport bounds in world space (Viewport Center Logic)
+      const halfWidthWorld = (this.viewport.width / 2) / this.viewport.scale;
+      const halfHeightWorld = (this.viewport.height / 2) / this.viewport.scale;
+
+      const vX = this.viewport.x - halfWidthWorld;
+      const vY = this.viewport.y - halfHeightWorld;
       const vW = this.viewport.width / this.viewport.scale;
       const vH = this.viewport.height / this.viewport.scale;
       
@@ -550,6 +555,8 @@ export class OptimizedCanvasManager {
           // Render at rectangle position
           ctx.save();
           ctx.translate(rect.x, rect.y);
+          // Ensure profile outlines are visible (1px cosmetic width)
+          ctx.lineWidth = 1 / this.viewport.scale;
 
           // Render the paths returned by the worker
           response.paths.forEach((path: { d: string; fill?: string; stroke?: string }) => {
@@ -643,8 +650,19 @@ export class OptimizedCanvasManager {
   }
 
   private applyTransform(ctx: CanvasRenderingContext2D) {
-    ctx.translate(this.viewport.x, this.viewport.y);
+    // 1. Move to center of screen (in pixels)
+    // Note: viewport.width/height here are pixel dimensions of the canvas
+    const halfScreenWidth = this.viewport.width / 2;
+    const halfScreenHeight = this.viewport.height / 2;
+
+    ctx.translate(halfScreenWidth, halfScreenHeight);
+    
+    // 2. Apply Scale
     ctx.scale(this.viewport.scale, this.viewport.scale);
+    
+    // 3. Move camera to world position (negative translation)
+    // this.viewport.x/y are the world coordinates if the center
+    ctx.translate(-this.viewport.x, -this.viewport.y);
   }
   
   private clearLayer(layer: CanvasLayer) {

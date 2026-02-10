@@ -8,24 +8,24 @@
  * - Critical alerts
  */
 
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { 
-  AlertTriangle, 
-  Lightbulb, 
-  DollarSign,
-  RefreshCw,
-  ExternalLink,
-  Clock,
-  ThumbsUp,
-  ThumbsDown
-} from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { futureKnowledgeGraph } from '@/lib/learning/FutureKnowledgeGraph';
 import type { FutureIntelligence } from '@/lib/learning/types';
 import { cn } from '@/lib/utils';
+import {
+  AlertTriangle,
+  Clock,
+  DollarSign,
+  ExternalLink,
+  Lightbulb,
+  RefreshCw,
+  ThumbsDown,
+  ThumbsUp
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface MorningBriefWidgetProps {
   workshopId?: string;
@@ -61,10 +61,10 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
 
   const handleFeedback = async (itemId: string, feedback: 'useful' | 'not_useful') => {
     if (feedbackSubmitting.has(itemId)) return;
-    
+
     try {
       setFeedbackSubmitting(prev => new Set(prev).add(itemId));
-      
+
       // Send feedback to API
       const response = await fetch('/api/v2/ydt/future-intelligence/feedback', {
         method: 'POST',
@@ -77,17 +77,17 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
           workshop_id: workshopId,
         }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to submit feedback');
       }
-      
+
       // Visual feedback
       const button = document.querySelector(`[data-feedback-id="${itemId}"]`);
       if (button) {
         button.classList.add('opacity-50');
       }
-      
+
     } catch (err) {
       console.error('Error submitting feedback:', err);
     } finally {
@@ -195,7 +195,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle className="flex items-center justify-between">
                   <span>{alert.title}</span>
-                  <div className="flex gap-1">
+                  <span className="flex gap-1">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -220,7 +220,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                     >
                       <ThumbsDown className="h-3 w-3 text-red-500" />
                     </Button>
-                  </div>
+                  </span>
                 </AlertTitle>
                 <AlertDescription>
                   <p className="font-medium">{alert.messageArabic}</p>
@@ -245,7 +245,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
               <Alert key={idx} variant="default">
                 <AlertTitle className="text-sm flex items-center justify-between">
                   <span>{alert.title}</span>
-                  <div className="flex gap-1">
+                  <span className="flex gap-1">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -272,7 +272,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                     >
                       <ThumbsDown className="h-3 w-3 text-red-500" />
                     </Button>
-                  </div>
+                  </span>
                 </AlertTitle>
                 <AlertDescription className="text-sm">
                   {alert.messageArabic}
@@ -283,14 +283,14 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
         )}
 
         {/* Price Updates */}
-        {brief.price_updates && brief.price_updates.length > 0 && (
+        {brief.priceUpdates && brief.priceUpdates.length > 0 && (
           <div className="space-y-2">
             <h3 className="typography-h3 text-sm flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
               Price Updates
             </h3>
             <div className="space-y-2">
-              {brief.price_updates.slice(0, compact ? 2 : 3).map((article: any, idx: number) => (
+              {brief.priceUpdates.slice(0, compact ? 2 : 3).map((article: any, idx: number) => (
                 <div
                   key={idx}
                   className="p-3 border rounded-lg hover:bg-accent transition-colors"
@@ -319,15 +319,15 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
           </div>
         )}
 
-        {/* Technology News */}
-        {brief.tech_news && brief.tech_news.length > 0 && (
+        {/* Technology News (Trends) */}
+        {brief.trends && brief.trends.length > 0 && (
           <div className="space-y-2">
             <h3 className="typography-h3 text-sm flex items-center gap-2">
               <Lightbulb className="h-4 w-4" />
               Technology News
             </h3>
             <div className="space-y-2">
-              {brief.tech_news.slice(0, compact ? 2 : 3).map((article: any, idx: number) => (
+              {brief.trends.slice(0, compact ? 2 : 3).map((article: any, idx: number) => (
                 <div
                   key={idx}
                   className="p-3 border rounded-lg hover:bg-accent transition-colors"
@@ -376,7 +376,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
               </div>
               <div>
                 <p className="text-2xl font-bold text-destructive">
-                  {brief.critical_alerts || 0}
+                  {brief.criticalAlerts || 0}
                 </p>
                 <p className="text-xs text-muted-foreground">Critical</p>
               </div>

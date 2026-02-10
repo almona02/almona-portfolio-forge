@@ -21,7 +21,7 @@ import {
   Sparkles,
   Terminal
 } from 'lucide-react';
-import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 
 // --- Helper Components ---
 
@@ -91,154 +91,10 @@ const SystemConsole: React.FC<{ progress: number }> = ({ progress }) => {
 };
 
 
-// Lazy load Three.js scene to avoid blocking initial page load
-const Lazy3DScene = lazy(() =>
-  Promise.all([
-    import('@react-three/fiber'),
-    import('@react-three/drei'),
-    import('three')
-  ]).then(([fiber, drei, three]) => {
-    const { Canvas, useFrame } = fiber;
-    const { OrbitControls, Environment, Float } = drei;
-    const { MeshStandardMaterial, MathUtils } = three;
 
-    // Materials
-    const frameMaterial = new MeshStandardMaterial({
-      color: 0xE8D5B7, // Shiny beige/champagne
-      metalness: 0.9,
-      roughness: 0.15,
-      emissive: 0xD4B483,
-      emissiveIntensity: 0.1,
-    });
+// Lazy load 3D Scene
+const Prestige3DScene = React.lazy(() => import('./Prestige3DScene'));
 
-    const glassMaterial = new MeshStandardMaterial({
-      color: 0xA5D8FF,
-      transparent: true,
-      opacity: 0.25,
-      metalness: 0.8,
-      roughness: 0.05,
-    });
-
-    const hardwareMaterial = new MeshStandardMaterial({
-      color: 0xF59E0B, // Gold
-      metalness: 1.0,
-      roughness: 0.2,
-    });
-
-    // Self-Assembling Window
-    const WindowFrame3D = ({ progress }: { progress: number }) => {
-      // Animation Refs
-      const groupRef = useRef<any>(null);
-      // We use a ref for the smoothed progress to decouple render loop from state updates
-      const smoothedProgress = useRef(0);
-
-      // Frame Dimensions - Defined at top level scale
-      const W = 2;
-      const H = 3;
-      const T = 0.15;
-      const explodeDist = 2; // Defined but used in calculations
-
-      useFrame((state, delta) => {
-        // Smoothly interpolate progress
-        smoothedProgress.current = MathUtils.damp(smoothedProgress.current, progress, 2, delta);
-
-        // Use smoothed progress for rotation
-        const p = Math.min(1, Math.max(0, smoothedProgress.current / 100));
-
-        if (groupRef.current) {
-          // Smooth Rotation: Continuous slow spin + smoothed progress spin
-          groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.2) * 0.1 + (p * Math.PI * 2);
-        }
-      });
-
-      // Calculate positions based on RAW progress for now (to avoid re-render loop issues with ref-based positioning without extensive refactoring)
-      // Note: Rotation stroke issue is fixed by the useFrame above.
-      // Position stutter (if any) is less noticeable than rotation stutter.
-
-      const p = Math.min(1, Math.max(0, progress / 100));
-      const frameAssembly = MathUtils.smoothstep(p, 0.1, 0.5);
-      const glassAssembly = MathUtils.smoothstep(p, 0.4, 0.7);
-      const hardwareAssembly = MathUtils.smoothstep(p, 0.6, 0.8);
-
-      const topY = MathUtils.lerp(H / 2 + explodeDist, H / 2, frameAssembly);
-      const botY = MathUtils.lerp(-H / 2 - explodeDist, -H / 2, frameAssembly);
-      const leftX = MathUtils.lerp(-W / 2 - explodeDist, -W / 2, frameAssembly);
-      const rightX = MathUtils.lerp(W / 2 + explodeDist, W / 2, frameAssembly);
-
-      const glassScale = glassAssembly;
-
-      return (
-        <group ref={groupRef} rotation={[0, -0.5, 0]}>
-          <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
-            {/* Top Frame */}
-            <mesh position={[0, topY, 0]} material={frameMaterial}>
-              <boxGeometry args={[W + T, T, T]} />
-            </mesh>
-            {/* Bottom Frame */}
-            <mesh position={[0, botY, 0]} material={frameMaterial}>
-              <boxGeometry args={[W + T, T, T]} />
-            </mesh>
-            {/* Left Frame */}
-            <mesh position={[leftX, 0, 0]} material={frameMaterial}>
-              <boxGeometry args={[T, H, T]} />
-            </mesh>
-            {/* Right Frame */}
-            <mesh position={[rightX, 0, 0]} material={frameMaterial}>
-              <boxGeometry args={[T, H, T]} />
-            </mesh>
-            {/* Glass Panel */}
-            <group scale={[glassScale, glassScale, 1]}>
-              <mesh material={glassMaterial}>
-                <boxGeometry args={[W - T, H - T, 0.02]} />
-              </mesh>
-            </group>
-            {/* Hardware */}
-            <group visible={progress > 60}>
-              <mesh position={[MathUtils.lerp(rightX + 1, rightX - T / 2 - 0.05, hardwareAssembly), 0, 0.1]} material={hardwareMaterial}>
-                <cylinderGeometry args={[0.02, 0.02, 0.15]} />
-              </mesh>
-              <mesh position={[MathUtils.lerp(rightX + 1, rightX - T / 2 - 0.05, hardwareAssembly), 0, 0.15]} rotation={[0, 0, Math.PI / 2]} material={hardwareMaterial}>
-                <boxGeometry args={[0.04, 0.12, 0.02]} />
-              </mesh>
-            </group>
-          </Float>
-        </group>
-      );
-    };
-
-    // Scene
-    const LoadingScene = ({ progress }: { progress: number }) => (
-      <>
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} />
-        <Environment preset="city" />
-
-        <WindowFrame3D progress={progress} />
-
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          autoRotate
-          autoRotateSpeed={0.5}
-        />
-      </>
-    );
-
-    // Return the Canvas component
-    return {
-      default: ({ progress }: { progress: number }) => (
-        <Canvas
-          camera={{ position: [0, 0, 6], fov: 45 }}
-          gl={{ antialias: true, alpha: true }}
-          dpr={[1, 2]}
-        >
-          <LoadingScene progress={progress} />
-        </Canvas>
-      )
-    };
-  })
-);
 
 interface Prestige3DLoaderProps {
   children: React.ReactNode;
@@ -277,16 +133,26 @@ export const Prestige3DLoader: React.FC<Prestige3DLoaderProps> = ({
 
   // Load 3D logic - Fast load for performance
   useEffect(() => {
-    if (show3DAnimation && variant === 'fullscreen') {
+    if (show3DAnimation) {
+      console.log('Prestige3DLoader: Initializing 3D Scene...');
       setShouldLoad3D(true);
+    } else {
+      console.log('Prestige3DLoader: 3D Animation disabled');
     }
   }, [show3DAnimation, variant]);
+
+  const [is3DReady, setIs3DReady] = useState(false);
 
   // Progress logic
   useEffect(() => {
     // OPTIMIZED: Faster loading simulation (20ms interval instead of 30ms)
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
+        // Pause at 85% if 3D animation is enabled but not ready yet
+        if (show3DAnimation && !is3DReady && prev >= 85) {
+          return 85;
+        }
+
         if (prev >= 100) {
           clearInterval(interval);
           // Start exit sequence
@@ -308,7 +174,7 @@ export const Prestige3DLoader: React.FC<Prestige3DLoaderProps> = ({
     }, 30); // Fast simulation
 
     return () => clearInterval(interval);
-  }, [loadingSteps]);
+  }, [loadingSteps, show3DAnimation, is3DReady]);
 
   const handleExitComplete = () => {
     setIsAnimationComplete(true);
@@ -408,12 +274,21 @@ export const Prestige3DLoader: React.FC<Prestige3DLoaderProps> = ({
               {/* 3D Scene Area */}
               <div className="w-full h-64 sm:h-80 relative mb-8">
                 {shouldLoad3D ? (
-                  <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-amber-500/30">Loading Visuals...</div>}>
-                    <Lazy3DScene progress={loadingProgress} />
+                  <Suspense fallback={
+                    <div className="w-full h-full flex flex-col items-center justify-center text-amber-500/50">
+                      <div className="w-12 h-12 border-4 border-amber-500/20 rounded-full animate-spin border-t-amber-500 mb-2" />
+                      <span className="text-xs font-mono">LOADING_ASSETS...</span>
+                    </div>
+                  }>
+                    <Prestige3DScene progress={loadingProgress} onReady={() => {
+                      console.log('Prestige3DLoader: 3D Scene Ready');
+                      setIs3DReady(true);
+                    }} />
                   </Suspense>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="w-32 h-32 border-4 border-amber-500/20 rounded-full animate-spin border-t-amber-500" />
+                    <p className="absolute mt-40 text-amber-500/40 text-xs">3D DISABLED</p>
                   </div>
                 )}
               </div>
