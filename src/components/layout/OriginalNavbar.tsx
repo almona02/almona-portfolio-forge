@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { 
-  Menu, 
-  X, 
-  ChevronDown, 
-  ShoppingCart, 
-  User, 
-  LogOut,
-  Globe,
-  Shield
+import {
+    ChevronDown,
+    Globe,
+    LogOut,
+    Menu,
+    Shield,
+    ShoppingCart,
+    User,
+    X
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 interface NavbarProps {
   user?: {
@@ -88,7 +88,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
       setIsScrolled(scrolled);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
