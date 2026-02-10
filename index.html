@@ -109,7 +109,7 @@
             "url": "https://www.almona02.com",
             "telephone": "+20-100-309-7177",
             "address": {
-              "@id": "https://almona02.com/#organization/address"
+              "@id": "https://www.almona02.com/#organization/address"
             },
             "priceRange": "$$$",
             "openingHours": "Mo-Fr 09:00-17:00",
@@ -145,7 +145,9 @@
       // Initialize dataLayer and gtag function immediately (for code that calls it)
       window.dataLayer = window.dataLayer || [];
       function gtag() {
-        dataLayer.push(arguments);
+        if (window.dataLayer) {
+          window.dataLayer.push(arguments);
+        }
       }
       window.gtag = gtag;
 
@@ -154,14 +156,25 @@
           // TBT OPTIMIZATION: Load GTM after 4 seconds OR on first user interaction
           // This reduces initial JavaScript execution time by ~300-400ms
           const loadGTM = function () {
+            // Check if GTM script is already present
+            if (document.querySelector('script[src*="googletagmanager"]'))
+              return;
+
             var script = document.createElement("script");
             script.async = true;
             script.src =
               "https://www.googletagmanager.com/gtag/js?id=G-321C22X7E3";
-            script.onerror = function () {
+
+            // Add error handling for blocking extensions
+            script.onerror = function (e) {
               // Silently fail - analytics blocked by privacy extensions is expected
-              // Don't log to console to reduce noise
+              console.debug(
+                "Analytics blocked by client - this is expected behavior.",
+              );
+              // Ensure gtag is still a function to prevent app crashes
+              window.gtag = function () {};
             };
+
             document.head.appendChild(script);
 
             gtag("js", new Date());
@@ -169,6 +182,7 @@
               // Disable advertising features for privacy
               allow_ad_features: false,
               allow_ad_personalization_signals: false,
+              cookie_flags: "SameSite=None;Secure",
             });
           };
 
@@ -181,6 +195,7 @@
             window.removeEventListener("scroll", interactionListener);
             window.removeEventListener("click", interactionListener);
             window.removeEventListener("keydown", interactionListener);
+            window.removeEventListener("touchstart", interactionListener);
           };
 
           window.addEventListener("scroll", interactionListener, {
@@ -191,8 +206,14 @@
           window.addEventListener("keydown", interactionListener, {
             once: true,
           });
+          window.addEventListener("touchstart", interactionListener, {
+            once: true,
+            passive: true,
+          });
         } catch (error) {
           console.warn("Google Analytics initialization failed:", error);
+          // Fallback to no-op
+          window.gtag = function () {};
         }
       } else {
         // Provide a no-op gtag function for code that expects it
@@ -408,18 +429,10 @@
     <!-- Note: Prefetching routes as "document" doesn't work for SPAs (they're client-side routes) -->
     <!-- Route prefetching is handled by useRoutePrefetching hook in App.tsx -->
 
-    <!-- 3. Preconnect to critical origins (max 4 to avoid warning) -->
-    <link
-      rel="preconnect"
-      href="https://shfsebdncjnncqqnewfj.supabase.co"
-      crossorigin
-    />
-    <!-- Removed unused preconnects: storage.supabase.co, cdn.jsdelivr.net (not used on initial load) -->
-
-    <!-- 4. DNS prefetch for external resources -->
+    <!-- 3. Preconnect to critical origins only (max 4 per Lighthouse - fonts are LCP-critical) -->
+    <!-- Supabase: dns-prefetch only - not needed for first paint -->
+    <link rel="dns-prefetch" href="https://shfsebdncjnncqqnewfj.supabase.co" />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 
     <!-- Note: Resource hints for TypeScript source files removed - they don't work in production.
          Vite handles code splitting and module preloading automatically. -->

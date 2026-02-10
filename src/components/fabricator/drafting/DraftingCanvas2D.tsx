@@ -116,17 +116,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
   }, []); // Run once on mount
 
   // Sync Viewport Changes
-  useEffect(() => {
-    if (managerRef.current && externalViewport) {
-      managerRef.current.setViewport({
-        x: externalViewport.centerX,
-        y: externalViewport.centerY,
-        scale: externalViewport.zoom,
-        width: containerRef.current?.clientWidth || 800,
-        height: containerRef.current?.clientHeight || 600
-      });
-    }
-  }, [externalViewport]);
+
 
   // Sync Egyptian Template (Placeholder for state)
   useEffect(() => {
@@ -238,6 +228,19 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
       prevExternalViewportRef.current = undefined;
     }
   }, [externalViewport]);
+
+  // Sync Viewport Changes
+  useEffect(() => {
+    if (managerRef.current) {
+      managerRef.current.setViewport({
+        x: viewport.centerX,
+        y: viewport.centerY,
+        scale: viewport.zoom,
+        width: containerRef.current?.clientWidth || 800,
+        height: containerRef.current?.clientHeight || 600
+      });
+    }
+  }, [viewport]);
 
   const drafting = useDraftingContext();
 
@@ -648,11 +651,14 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
           />
         </div>
 
-        {/* Tool Preview Overlay (Mullion/Transom Ghosts) */}
+        {/* Tool Preview Overlay (Mullion/Transom Ghosts + Drawing Preview) */}
         <ToolPreviewOverlay
           tool={externalSelectedTool || 'select'}
           mousePosition={mousePosition}
           viewport={viewport}
+          isDrawing={isDrawing}
+          startPoint={startPoint}
+          currentPoint={currentPoint || mousePosition}
         />
 
         {/* Context Menu Trigger Area */}
