@@ -1,35 +1,35 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Factory, 
-  Cpu, 
-  Sparkles, 
-  CircuitBoard,
-  Brain,
-  Menu,
-  X,
-  ChevronDown,
-  BarChart3,
-  Settings,
-  Zap,
-  Ruler,
-  Scissors,
-  Package,
-  User,
-  Bell,
-  Search,
-  Workflow,
-  Users,
-  FileText,
-  Calculator,
-  Coins,
-  Box
-} from 'lucide-react';
-import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
-import { useTranslation } from 'react-i18next';
 import { AlmonaNavbarLogo } from '@/components/ui/AlmonaNavbarLogo';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    BarChart3,
+    Bell,
+    Box,
+    Brain,
+    Calculator,
+    ChevronDown,
+    CircuitBoard,
+    Coins,
+    Cpu,
+    Factory,
+    FileText,
+    Menu,
+    Package,
+    Ruler,
+    Scissors,
+    Search,
+    Settings,
+    Sparkles,
+    User,
+    Users,
+    Workflow,
+    X,
+    Zap
+} from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface IndustrialNavbarProps {
   user?: {
