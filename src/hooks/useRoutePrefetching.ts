@@ -4,7 +4,7 @@
  * Phase 1.5: Component-Level Code Splitting
  */
 
-import { useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 // Egypt-specific prefetching patterns based on workshop workflow

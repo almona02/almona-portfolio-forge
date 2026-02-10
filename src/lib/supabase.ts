@@ -1,7 +1,7 @@
 // NOTE: This file has been slimmed; domain-specific helpers live under src/lib/data/* and
 // pricing helpers under src/lib/pricing.ts. Remaining helpers here are legacy/general.
-import { createClient } from '@supabase/supabase-js'
 import { Database } from '@/types/database'
+import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
 // IMPORTANT: Only use ANON_KEY in browser - never use service role key (VITE_SUPABASE_KEY)
@@ -76,15 +76,26 @@ export const supabase = createClient<Database>(
 )
 
 // Utility function to handle auth errors and clear invalid sessions
+// Utility function to handle auth errors and clear invalid sessions
 export const handleAuthError = async (error: any) => {
   if (error?.message?.includes('refresh_token') || 
       error?.message?.includes('Invalid Refresh Token') ||
       error?.message?.includes('Refresh Token Not Found')) {
     console.warn('[Supabase] Invalid refresh token detected, clearing session');
     try {
-      await supabase.auth.signOut();
+      // Force non-blocking signout if it takes too long (2s timeout)
+      const signOutPromise = supabase.auth.signOut();
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Sign out timeout')), 2000));
+      await Promise.race([signOutPromise, timeoutPromise]);
     } catch (signOutError) {
-      console.error('[Supabase] Error during sign out:', signOutError);
+      console.warn('[Supabase] Error during sign out (or timeout), clearing local storage manually:', signOutError);
+      // Fallback: Clear local storage manually to unblock user
+      // Iterate keys to find supabase auth tokens (usually start with sb- or supabase-)
+      Object.keys(localStorage).forEach(key => {
+        if (key.includes('supabase') || key.includes('sb-')) {
+            localStorage.removeItem(key);
+        }
+      });
     }
   }
 }
@@ -114,23 +125,20 @@ export const getUser = async () => {
 }
 
 // Deprecated (moved to domain clients). Re-export for backward compatibility.
-export { getUserProfile, updateUserProfile } from './clients/profiles';
+export { getUserProfile, updateUserProfile } from './clients/profiles'
 
 // Deprecated product/category helpers (moved). Re-export for backward compatibility.
-export { getProducts, getProduct, getProductVariants } from './clients/products';
-export { getCategories } from './clients/categories';
+export { getCategories } from './clients/categories'
+export { getProduct, getProductVariants, getProducts } from './clients/products'
 
 // Product reviews helper functions
 
 // Deprecated warranty helpers (moved). Re-export for backward compatibility.
 export {
-  createWarrantyRegistration,
-  confirmWarrantySale,
-  validateWarranty,
-  listMyWarranties,
-  listWarranties,
-} from './clients/warranties';
-export type { ValidatedWarranty } from './clients/warranties';
+    confirmWarrantySale, createWarrantyRegistration, listMyWarranties,
+    listWarranties, validateWarranty
+} from './clients/warranties'
+export type { ValidatedWarranty } from './clients/warranties'
 
 
 

@@ -327,7 +327,7 @@ export default defineConfig(({ mode }) => {
       target: "es2022",
       minify: isProduction ? "esbuild" : false,
       sourcemap: false,
-      chunkSizeWarningLimit: 3000, // Increased to accommodate ui-antd chunk (~1.5 MB)
+      chunkSizeWarningLimit: 3000,
       assetsInlineLimit: 2048,
       reportCompressedSize: true, // Show bundle sizes
       // PHASE 5A: CSS code splitting ensures CSS is extracted separately
@@ -464,8 +464,15 @@ export default defineConfig(({ mode }) => {
             // STANDALONE ENGINES (No React deps)
             // ========================================
             
-            if (id.includes('node_modules/three/') && !id.includes('@react-three')) {
-              return 'three-engine';
+            // ========================================
+            // 3D ENGINE (React Three Fiber + Three.js)
+            // ========================================
+            if (
+              id.includes('node_modules/three/') || 
+              id.includes('node_modules/@react-three/') ||
+              id.includes('node_modules/react-three-fiber/')
+            ) {
+              return 'vendor-3d';
             }
             
             if (id.includes('node_modules/ammo.js/')) {
@@ -518,9 +525,8 @@ export default defineConfig(({ mode }) => {
             
             // NOTE: Charts MUST stay in react-vendor - has initialization order issues
             // NOTE: Markdown MUST stay in react-vendor - has initialization order issues
-            // NOTE: React Three Fiber MUST stay in react-vendor - depends on React immediately
             
-            // Everything else stays together (including Ant Design, Charts, Markdown, React Three, 
+            // Everything else stays together (including Ant Design, Charts, Markdown, 
             // state-mgmt, forms, router, etc.) to prevent loading order issues
             return 'react-vendor';
           },
@@ -542,7 +548,7 @@ export default defineConfig(({ mode }) => {
         "seedrandom", // Include seedrandom to fix require errors
         "pako" // Include pako for PDF compression (must load before pdfjs)
       ],
-      exclude: ["@google/generative-ai","@huggingface/inference","@tensorflow/tfjs","three","hls.js"],
+      exclude: ["@google/generative-ai","@tensorflow/tfjs","three","hls.js"],
       // Only force re-optimization in production builds, not in dev for faster startup
       force: isProduction,
       esbuildOptions: {
