@@ -57,7 +57,7 @@ export function generateConfirmationMessage(data: ConfirmationData): Notificatio
       
       body += `سيتم التواصل معك خلال 24 ساعة لتقديم عرض السعر النهائي.\n\n`;
       body += `شكراً لاختيارك خدماتنا.\n`;
-      body += `فريق العمل - المونة الصناعية`;
+      body += `فريق العمل - المُنى الصناعية`;
       
       // HTML version
       htmlBody = `
@@ -91,7 +91,7 @@ export function generateConfirmationMessage(data: ConfirmationData): Notificatio
           
           <p>سيتم التواصل معك خلال 24 ساعة لتقديم عرض السعر النهائي.</p>
           <p>شكراً لاختيارك خدماتنا.</p>
-          <p><strong>فريق العمل - المونة الصناعية</strong></p>
+          <p><strong>فريق العمل - المُنى الصناعية</strong></p>
         </div>
       `;
       break;
@@ -112,7 +112,7 @@ export function generateConfirmationMessage(data: ConfirmationData): Notificatio
       
       body += `سيتم التواصل معك قريباً لتأكيد تفاصيل التسليم.\n\n`;
       body += `شكراً لاختيارك خدماتنا.\n`;
-      body += `فريق العمل - المونة الصناعية`;
+      body += `فريق العمل - المُنى الصناعية`;
       break;
 
     case 'service_ticket':
@@ -127,7 +127,7 @@ export function generateConfirmationMessage(data: ConfirmationData): Notificatio
       
       body += `سيتم التواصل معك خلال 4 ساعات لتأكيد موعد الخدمة.\n\n`;
       body += `شكراً لاختيارك خدماتنا.\n`;
-      body += `فريق العمل - المونة الصناعية`;
+      body += `فريق العمل - المُنى الصناعية`;
       break;
   }
 

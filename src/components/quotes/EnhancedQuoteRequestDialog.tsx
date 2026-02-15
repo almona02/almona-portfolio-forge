@@ -13,6 +13,7 @@ import { Textarea } from '@/shared/ui/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { useToast } from '@/hooks/useToast';
 import { useAuth } from '@/context/AuthContext';
+import { getApiBase } from '@/lib/apiBase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { LazyMotionDiv } from '@/utils/lazyMotion';
 
@@ -72,8 +73,6 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
   const [selectedProducts, setSelectedProducts] = useState<Product[]>(initialProducts);
   const [selectedServices, setSelectedServices] = useState<Service[]>(initialServices);
 
-  const apiBase = (import.meta as any).env?.VITE_API_BASE || '';
-
   const handleSubmit = async () => {
     if (!user) {
       toast({
@@ -87,6 +86,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
     setSubmitting(true);
     try {
       const payload = {
+        user_id: user.id,
         contact_name: contactInfo.name,
         contact_email: contactInfo.email,
         contact_phone: contactInfo.phone,
@@ -108,7 +108,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
         related_service_ticket_id: relatedServiceTicketId,
       };
 
-      const resp = await fetch(`${apiBase}/api/v2/quotes/create`, {
+      const resp = await fetch(`${getApiBase()}/api/v2/quotes/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

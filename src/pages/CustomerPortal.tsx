@@ -18,7 +18,8 @@ import {
   Search,
   Plus,
   User,
-  Activity
+  Activity,
+  Receipt
 } from 'lucide-react';
 import { TicketCard } from '@/components/support/TicketCard';
 import { useReducedMotionPref } from '@/hooks/useReducedMotionPref';
@@ -26,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import TicketWizardDialog from '@/components/support/TicketWizardDialog';
 import { QuoteTwinSearchPanel } from '@/components/quotes/QuoteTwinSearchPanel';
+import { CommercialPDFService } from '@/services/commercial/CommercialPDFService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 // import { MachineHealthDashboard } from '@/components/portal/MachineHealthDashboard'; // Temporarily disabled for deployment
@@ -69,6 +71,16 @@ interface Document {
   url: string;
 }
 
+interface Quote {
+  id: string;
+  quote_number?: string | null;
+  status: string;
+  total_amount?: number | null;
+  digital_twin_code?: string | null;
+  portal_reference?: string | null;
+  created_at: string;
+}
+
 const CustomerPortal = () => {
   const { user, loading: authLoading, stableDisplayEmail } = useAuth();
   const { t, language } = useLanguage();
@@ -99,6 +111,15 @@ const CustomerPortal = () => {
     retry: 1,
   });
 
+  const { data: quotes = [], isLoading: isLoadingQuotes, isFetching: _isFetchingQuotes, error: quotesError } = useQuery({
+    queryKey: ['quotes', user?.id],
+    queryFn: () => user ? api.fetchUserQuotes(user.id) as Promise<Quote[]> : Promise.resolve([]),
+    enabled: !!user,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+
   const { 
     data: documents = [], 
     isLoading: isLoadingDocuments, 
@@ -119,10 +140,10 @@ const CustomerPortal = () => {
   // Mark bootstrap complete once first load of all queries finishes (success or error)
   useEffect(() => {
     if (bootstrapped) return;
-    if (!authLoading && !isLoadingMachines && !isLoadingTickets && !isLoadingDocuments) {
+    if (!authLoading && !isLoadingMachines && !isLoadingTickets && !isLoadingQuotes && !isLoadingDocuments) {
       setBootstrapped(true);
     }
-  }, [authLoading, isLoadingMachines, isLoadingTickets, isLoadingDocuments, bootstrapped]);
+  }, [authLoading, isLoadingMachines, isLoadingTickets, isLoadingQuotes, isLoadingDocuments, bootstrapped]);
 
   useEffect(() => {
     if (machinesError) {
@@ -141,6 +162,44 @@ const CustomerPortal = () => {
       toast.error('Failed to fetch documents: ' + (documentsError as Error).message);
     }
   }, [documentsError]);
+
+  useEffect(() => {
+    if (quotesError) {
+      toast.error('Failed to fetch quotes: ' + (quotesError as Error).message);
+    }
+  }, [quotesError]);
+
+  const handlePrintQuote = async (quote: Quote) => {
+    try {
+      const draftQuote = {
+        id: quote.id,
+        customerName: (quote as any).contact_name || (quote as any).contact_email || 'Customer',
+        projectTitle: quote.quote_number || 'Quote Request',
+        status: quote.status,
+        amount: quote.total_amount ?? 0,
+        createdAt: quote.created_at,
+        validUntil: undefined,
+        items: [],
+        payload: quote,
+      };
+      const pdfBlob = await CommercialPDFService.generateQuotePDF(draftQuote as any);
+      const url = URL.createObjectURL(pdfBlob);
+      const win = window.open(url, '_blank');
+      if (win) {
+        win.onload = () => win.print();
+      } else {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `quote-${quote.quote_number || quote.id.slice(0, 8)}.pdf`;
+        a.click();
+      }
+      URL.revokeObjectURL(url);
+      toast.success('Quote ready for print');
+    } catch (error) {
+      console.error('Failed to generate quote PDF:', error);
+      toast.error('Failed to generate PDF');
+    }
+  };
 
   // Removed getStatusBadge (now handled inside TicketCard component)
 
@@ -232,7 +291,7 @@ const CustomerPortal = () => {
           </div>
 
           <Tabs defaultValue="health" className="mb-8">
-            <TabsList className="grid w-full grid-cols-4 bg-almona-dark/80 rounded-lg p-1 mb-6">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 bg-almona-dark/80 rounded-lg p-1 mb-6">
               <TabsTrigger value="health" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
                 <Activity className="h-4 w-4 mr-2" /> {t('portal.health_dashboard')}
               </TabsTrigger>
@@ -241,6 +300,9 @@ const CustomerPortal = () => {
               </TabsTrigger>
               <TabsTrigger value="support" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
                 <FileText className="h-4 w-4 mr-2" /> {t('portal.support_tickets')}
+              </TabsTrigger>
+              <TabsTrigger value="quotes" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
+                <Receipt className="h-4 w-4 mr-2" /> {t('portal.my_quotes')}
               </TabsTrigger>
               <TabsTrigger value="documents" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
                 <Download className="h-4 w-4 mr-2" /> {t('portal.documents')}
@@ -423,6 +485,86 @@ const CustomerPortal = () => {
                     >
                       <Plus className="h-4 w-4 mr-2" /> {t('portal.create_ticket')}
                     </Button>
+                  </motion.div>
+                )}
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="quotes">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-6"
+              >
+                <motion.div variants={itemVariants}>
+                  <h3 className="typography-h3 text-lg mb-2 text-almona-orange">{t('portal.my_quotes')}</h3>
+                  <p className="text-sm text-gray-400 mb-4">{t('portal.quote_requests_description')}</p>
+                  <QuoteTwinSearchPanel onSelect={(quoteId) => navigate(`/portal/quotes/${quoteId}`)} />
+                </motion.div>
+                {quotes && quotes.length > 0 ? (
+                  <div className="space-y-4">
+                    {quotes.map((quote, index) => (
+                      <motion.div
+                        key={quote.id}
+                        variants={itemVariants}
+                        initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors">
+                          <CardContent className="p-6">
+                            <div className="flex justify-between items-start mb-4">
+                              <div>
+                                <h3 className="typography-h3 text-lg group-hover:text-almona-orange transition-colors">
+                                  {quote.quote_number || `#${quote.id.slice(-8).toUpperCase()}`}
+                                </h3>
+                                <p className="text-gray-400 text-sm">
+                                  {quote.digital_twin_code || quote.portal_reference || '—'}
+                                </p>
+                              </div>
+                              <Badge variant="secondary" className="capitalize bg-almona-orange/20 text-almona-orange border-almona-orange/30">
+                                {quote.status}
+                              </Badge>
+                            </div>
+                            <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
+                              <span>
+                                {quote.total_amount != null
+                                  ? new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP' }).format(quote.total_amount)
+                                  : '—'}
+                              </span>
+                              <span>{new Date(quote.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex gap-2 pt-4 border-t border-almona-light/10">
+                              <Button
+                                size="sm"
+                                className="bg-almona-orange/20 text-almona-orange hover:bg-almona-orange/30 border-almona-orange/30"
+                                onClick={() => handlePrintQuote(quote)}
+                              >
+                                <FileText className="h-4 w-4 mr-2" /> {t('portal.print_po')}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-almona-light/30 text-almona-light hover:bg-almona-light/10"
+                                onClick={() => navigate(`/portal/quotes/${quote.id}`)}
+                              >
+                                View Details
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <motion.div
+                    variants={itemVariants}
+                    className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
+                  >
+                    <Receipt className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
+                    <h3 className="typography-h3 text-lg font-medium text-gray-400 mb-2">{t('portal.no_quotes_found')}</h3>
+                    <p className="text-gray-500">{t('portal.quote_requests_description')}</p>
                   </motion.div>
                 )}
               </motion.div>
