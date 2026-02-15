@@ -148,7 +148,7 @@ export const SettingsPage: React.FC = () => {
                                         onClick={() => setTheme('dark')}
                                         className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${theme === 'dark' ? 'border-amber-500 bg-amber-500/10' : 'border-slate-800 hover:border-slate-700'}`}
                                     >
-                                        <Moon className="h-8 w-8 text-purple-400" />
+                                        <Moon className="h-8 w-8 text-amber-400" />
                                         <span className="font-medium">Dark</span>
                                     </button>
                                     <button 
@@ -304,7 +304,7 @@ export const SettingsPage: React.FC = () => {
                             <CardContent className="space-y-4">
                                 <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-lg border border-slate-700">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-lg bg-purple-900/20 flex items-center justify-center font-bold text-purple-400">O</div>
+                                        <div className="h-10 w-10 rounded-lg bg-amber-900/20 flex items-center justify-center font-bold text-amber-400">O</div>
                                         <div>
                                             <div className="font-medium">Odoo ERP</div>
                                             <div className="text-sm text-slate-400">Sync Inventory & Invoices</div>

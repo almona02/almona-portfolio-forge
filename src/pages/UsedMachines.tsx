@@ -242,7 +242,7 @@ const UsedMachines = () => {
                         {machineTypeFilter !== 'all' && (
                           <div className="flex items-center justify-between">
                             <span>Type:</span>
-                            <span className="text-purple-400">{machineTypes.find(t => t.value === machineTypeFilter)?.label}</span>
+                            <span className="text-amber-400">{machineTypes.find(t => t.value === machineTypeFilter)?.label}</span>
                           </div>
                         )}
                         {parsedQuery?.expandedTerms && parsedQuery.expandedTerms.length > 1 && (

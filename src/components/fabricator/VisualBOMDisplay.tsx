@@ -96,7 +96,7 @@ const CATEGORY_COLORS = {
   frame: 'rgba(59, 130, 246, 0.2)', // Blue
   sash: 'rgba(34, 197, 94, 0.2)', // Green
   structural: 'rgba(234, 179, 8, 0.2)', // Yellow
-  glazing: 'rgba(147, 51, 234, 0.2)', // Purple
+  glazing: 'rgba(245, 158, 11, 0.2)', // Amber
   accessory: 'rgba(236, 72, 153, 0.2)', // Pink
   other: 'rgba(107, 114, 128, 0.2)', // Gray
 };
@@ -105,7 +105,7 @@ const CATEGORY_BORDER_COLORS = {
   frame: '#3b82f6',
   sash: '#22c55e',
   structural: '#eab308',
-  glazing: '#9333ea',
+  glazing: '#f59e0b',
   accessory: '#ec4899',
   other: '#6b7280',
 };
@@ -188,7 +188,7 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
       total: totalCost,
       breakdown: [
         { name: 'Materials', value: materialCost, color: '#3b82f6' },
-        { name: 'Glass', value: glassCost, color: '#9333ea' },
+        { name: 'Glass', value: glassCost, color: '#f59e0b' },
         { name: 'Hardware', value: hardwareCost, color: '#eab308' },
         { name: 'Labor', value: laborCost, color: '#22c55e' },
       ].filter(item => item.value > 0),
@@ -493,7 +493,7 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                         {glass.area.toFixed(2)}m²
                       </div>
                     </div>
-                    <Badge variant="outline" className="bg-purple-950/30 border-purple-500/40 text-purple-300">
+                    <Badge variant="outline" className="bg-amber-950/30 border-amber-500/40 text-amber-300">
                       {glass.type}
                     </Badge>
                   </div>

@@ -65,7 +65,7 @@ export class PrestigeMicroInteractions {
         <div className="flex border-l border-gray-200">
           <button
             onClick={() => toast.dismiss(t)}
-            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-amber-600 hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
           >
             Dismiss
           </button>
@@ -120,7 +120,7 @@ export class PrestigeMicroInteractions {
         className="flex items-center space-x-3 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-gray-200/50"
         style={{ zIndex: 9999 }}
       >
-        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-amber-500 flex items-center justify-center">
           <PersonaIcon className="w-5 h-5 text-white" />
         </div>
         <div>

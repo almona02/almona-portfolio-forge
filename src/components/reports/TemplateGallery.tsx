@@ -133,11 +133,11 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
   const getTypeColor = (type: ExportTemplate['type']): string => {
     const colors: Record<ExportTemplate['type'], string> = {
       basic: 'bg-blue-100 text-blue-800',
-      premium: 'bg-purple-100 text-purple-800',
+      premium: 'bg-amber-100 text-amber-800',
       minimal: 'bg-gray-100 text-gray-800',
       'client-facing': 'bg-green-100 text-green-800',
       workshop: 'bg-amber-100 text-amber-800',
-      'multi-language': 'bg-indigo-100 text-indigo-800'
+      'multi-language': 'bg-cyan-100 text-cyan-800'
     };
     return colors[type] || 'bg-gray-100 text-gray-800';
   };

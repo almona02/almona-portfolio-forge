@@ -308,7 +308,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
                     />
                     <Legend wrapperStyle={{ color: '#d97706' }} />
                     <Bar dataKey="taxableAmount" name="Taxable Amount" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="taxAmount" name="Tax Amount" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="taxAmount" name="Tax Amount" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>

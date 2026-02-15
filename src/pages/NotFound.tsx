@@ -99,7 +99,7 @@ const NotFound = () => {
           </p>
           <button
             onClick={handleGoHome}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
           >
             Return to Home
           </button>
@@ -133,7 +133,7 @@ const NotFound = () => {
             <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.8} />
           </Canvas>
         ) : (
-          <div className="h-64 mb-6 relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center">
+          <div className="h-64 mb-6 relative bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg flex items-center justify-center">
             <h1 className="typography-h1 text-8xl text-blue-600">404</h1>
           </div>
         )}
@@ -146,7 +146,7 @@ const NotFound = () => {
             {canRender3D ? (
               <Canvas 
                 camera={{ position: [0, 0, 5], fov: 50 }} 
-                className="rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50"
+                className="rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50"
                 onCreated={() => console.log('Canvas created successfully')}
                 onError={(e) => {
                   console.error("Canvas error:", e);
@@ -160,7 +160,7 @@ const NotFound = () => {
                 <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.8} />
               </Canvas>
             ) : (
-              <div className="h-64 mb-6 relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center">
+              <div className="h-64 mb-6 relative bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg flex items-center justify-center">
                 <h1 className="typography-h1 text-8xl text-blue-600">404</h1>
               </div>
             )}
@@ -183,7 +183,7 @@ const NotFound = () => {
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <button
               onClick={handleGoHome}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               // onMouseEnter={() => setIsHovered(true)}
               // onMouseLeave={() => setIsHovered(false)}
             >
@@ -212,7 +212,7 @@ const NotFound = () => {
                 <button
                   key={page.path}
                   onClick={() => navigate(page.path)}
-                  className="text-sm bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-primary hover:text-primary/80 px-3 py-2 rounded-lg transition-all duration-200 border border-white shadow-sm hover:shadow-md"
+                  className="text-sm bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 text-primary hover:text-primary/80 px-3 py-2 rounded-lg transition-all duration-200 border border-white shadow-sm hover:shadow-md"
                 >
                   {page.name}
                 </button>
@@ -230,8 +230,8 @@ const NotFound = () => {
       {/* Animated background elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute top-0 left-0 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-0 right-0 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-4000"></div>
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob"></div>
+        <div className="absolute top-0 right-0 w-72 h-72 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-4000"></div>
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-amber-300 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob"></div>
       </div>
 
       <style>{`

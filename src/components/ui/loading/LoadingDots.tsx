@@ -17,7 +17,7 @@ const variantClasses = {
   default: 'bg-gray-600',
   primary: 'bg-blue-600',
   secondary: 'bg-gray-400',
-  accent: 'bg-purple-600'
+  accent: 'bg-amber-600'
 };
 
 export const LoadingDots: React.FC<LoadingDotsProps> = ({

@@ -587,8 +587,8 @@ export const NoDXFTuningStudio: React.FC = () => {
 
           {/* Cutting Rules Tab */}
           <TabsContent value="cutting" className="space-y-4">
-            <Alert className="bg-purple-900/20 border-purple-500/50">
-              <AlertCircle className="h-4 w-4 text-purple-400" />
+            <Alert className="bg-amber-900/20 border-amber-500/50">
+              <AlertCircle className="h-4 w-4 text-amber-400" />
               <AlertDescription>
                 Cutting allowances and rules applied to all cuts in the optimization engine.
               </AlertDescription>

@@ -53,7 +53,7 @@ export const WorkshopPerformanceWidget: React.FC<WorkshopPerformanceWidgetProps>
 
   if (!metrics) {
     return (
-      <Card className="bg-gradient-to-br from-blue-900/20 to-purple-900/20">
+      <Card className="bg-gradient-to-br from-blue-900/20 to-amber-900/20">
         <CardContent className="p-4">
           <div className="text-sm text-gray-400">Loading metrics...</div>
         </CardContent>
@@ -71,7 +71,7 @@ export const WorkshopPerformanceWidget: React.FC<WorkshopPerformanceWidgetProps>
   };
 
   return (
-    <Card className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 border-blue-800/50">
+    <Card className="bg-gradient-to-br from-blue-900/20 to-amber-900/20 border-blue-800/50">
       <CardContent className="p-4">
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">

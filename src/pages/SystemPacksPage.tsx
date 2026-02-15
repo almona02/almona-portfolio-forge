@@ -140,8 +140,8 @@ export const SystemPacksPage: React.FC = () => {
     }
     
     return isHovered
-      ? 'from-blue-600/20 via-blue-500/15 to-indigo-600/20'
-      : 'from-blue-700/30 via-blue-600/20 to-indigo-700/30';
+      ? 'from-blue-600/20 via-blue-500/15 to-cyan-600/20'
+      : 'from-blue-700/30 via-blue-600/20 to-cyan-700/30';
   };
 
   const getCardBorder = (system: any) => {

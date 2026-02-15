@@ -276,7 +276,7 @@ const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ regio
         {region === 'EG' && (
           <>
             {config.compliance.documentation.templates.length > 0 && (
-              <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
+              <div className="p-2 bg-amber-50 dark:bg-amber-900/20 rounded">
                 <EgyptianComplianceDocs />
               </div>
             )}

@@ -1509,7 +1509,7 @@ const CommercialPageComponent: React.FC = () => {
                           <div className="flex flex-col items-end gap-1">
                             <Badge
                               variant="outline"
-                              className="bg-purple-500/20 text-purple-200 border-purple-500/40 text-[11px]"
+                              className="bg-amber-500/20 text-amber-200 border-amber-500/40 text-[11px]"
                             >
                               {invoice.amount != null 
                                 ? formatCurrency(invoice.amount, 'en', invoice.currency || 'EGP')

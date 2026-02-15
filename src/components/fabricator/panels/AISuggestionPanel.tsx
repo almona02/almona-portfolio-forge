@@ -183,7 +183,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
       : 'text-amber-400';
 
   return (
-    <Card className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 border-blue-500/30">
+    <Card className="bg-gradient-to-br from-blue-900/20 to-amber-900/20 border-blue-500/30">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Sparkles className="h-5 w-5 text-blue-400" />

@@ -3035,7 +3035,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                                 const isLatest = idx === 0;
                                 const changeTypeColors = {
                                   update: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
-                                  bulk_update: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
+                                  bulk_update: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
                                   rollback: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
                                   initial_setup: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
                                 };
