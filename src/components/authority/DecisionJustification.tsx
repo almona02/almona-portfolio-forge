@@ -62,7 +62,7 @@ export const DecisionJustification: React.FC<DecisionJustificationProps> = ({
 
   const sourceConfig = {
     system: { label: 'System', icon: CheckCircle2, color: 'text-blue-400' },
-    ydt: { label: 'YDT Intelligence', icon: Lightbulb, color: 'text-purple-400' },
+    ydt: { label: 'YDT Intelligence', icon: Lightbulb, color: 'text-amber-400' },
     market: { label: 'Market Data', icon: TrendingUp, color: 'text-green-400' },
     historical: { label: 'Historical', icon: Database, color: 'text-gray-400' },
   }[data.source || 'system'];

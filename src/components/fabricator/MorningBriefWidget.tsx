@@ -66,7 +66,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
       setFeedbackSubmitting(prev => new Set(prev).add(itemId));
 
       // Send feedback to API
-      const response = await fetch('/api/v2/ydt/future-intelligence/feedback', {
+      const { getApiBase } = await import('@/lib/apiBase');
+      const response = await fetch(`${getApiBase()}/api/v2/ydt/future-intelligence/feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

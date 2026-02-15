@@ -1915,7 +1915,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                       <Card className="bg-gray-900/80 border-gray-700 card-dark">
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
-                            <Sparkles className="h-4 w-4 text-purple-300" />
+                            <Sparkles className="h-4 w-4 text-amber-300" />
                             {t('profile_tuning_studio.geometry.title', 'Geometry & Shape')}
                           </CardTitle>
                           <CardDescription className="text-xs text-gray-400">
@@ -1932,7 +1932,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                                 size="sm"
                                 onClick={startScan}
                                 disabled={savingStatus}
-                                className="bg-purple-500 hover:bg-purple-600 text-white"
+                                className="bg-amber-500 hover:bg-amber-600 text-white"
                               >
                                 {t('profile_tuning_studio.geometry.scan_button', 'Scan from Catalog Drawing')}
                               </Button>
@@ -2005,7 +2005,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                                     type="button"
                                     onClick={() => setGeometryConfig((prev) => ({ ...prev, archetype: type }))}
                                     className={`p-2 rounded border text-center text-xs transition-all ${geometryConfig.archetype === type
-                                      ? 'bg-purple-500/20 border-purple-500 text-purple-200'
+                                      ? 'bg-amber-500/20 border-amber-500 text-amber-200'
                                       : 'bg-gray-950 border-gray-800 text-gray-400 hover:border-gray-600'
                                       }`}
                                   >
@@ -2286,7 +2286,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                                 }
                               }}
                               disabled={savingStatus}
-                              className="bg-purple-500 hover:bg-purple-600 text-white"
+                              className="bg-amber-500 hover:bg-amber-600 text-white"
                             >
                               {t('profile_tuning_studio.geometry.save', 'Save Geometry')}
                             </Button>

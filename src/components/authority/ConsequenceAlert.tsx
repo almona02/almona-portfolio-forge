@@ -52,9 +52,9 @@ const CONSEQUENCE_COLORS: Record<ConsequenceType, { bg: string; border: string; 
     text: 'text-yellow-300',
   },
   legal: {
-    bg: 'bg-purple-950/90',
-    border: 'border-purple-500/50',
-    text: 'text-purple-300',
+    bg: 'bg-amber-950/90',
+    border: 'border-amber-500/50',
+    text: 'text-amber-300',
   },
   financial: {
     bg: 'bg-blue-950/90',

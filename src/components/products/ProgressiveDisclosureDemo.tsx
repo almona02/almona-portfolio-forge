@@ -77,7 +77,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
                     <Badge variant="secondary" className="text-xs">6 machines</Badge>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-purple-400">🏭</span>
+                    <span className="text-amber-400">🏭</span>
                     <span>Fabrication Equipment</span>
                     <Badge variant="secondary" className="text-xs">4 machines</Badge>
                   </li>
@@ -132,7 +132,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
                 <span className="text-sm">Category filter dropdown</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
                 <span className="text-sm">Machine count badges</span>
               </div>
             </CardContent>
@@ -156,7 +156,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
                 <span className="text-sm">Clear visual hierarchy</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
                 <span className="text-sm">Mobile responsive</span>
               </div>
             </CardContent>

@@ -181,7 +181,7 @@ export const OperatorTrainingSection = () => {
           </Button>
           <Button
             variant={selectedMaterial === "upvc" ? "default" : "outline"}
-            className={`px-8 py-3 text-lg ${selectedMaterial === "upvc" ? 'bg-gradient-to-br from-blue-500 to-purple-500' : ''}`}
+            className={`px-8 py-3 text-lg ${selectedMaterial === "upvc" ? 'bg-gradient-to-br from-blue-500 to-amber-500' : ''}`}
             onClick={() => setSelectedMaterial("upvc")}
           >
             UPVC Fabrication

@@ -197,53 +197,32 @@ const initializeDeferredAnalytics = () => {
 };
 
 // PHASE 1.7: Background tasks for Egypt workflow
+// Uses getApiBase() - never /api/* directly (404 on Vercel)
 const initializeBackgroundTasks = () => {
-  // Pre-fetch next likely Egypt workflow data
-  setTimeout(() => {
-    const userId = localStorage.getItem('almona_user_id');
-    if (userId) {
-      // Pre-fetch user's recent projects (low priority)
-      // Note: priority API not widely supported, using headers instead
-      fetch(`/api/egypt/users/${userId}/recent-projects`, {
-        headers: { 'X-Prefetch': 'true' }
-      }).catch(() => {
-        // Ignore prefetch errors
-      });
-
-      // Pre-fetch common materials for Egypt (low priority)
-      fetch('/api/egypt/materials/common', {
-        headers: { 'X-Prefetch': 'true' }
-      }).catch(() => {
-        // Ignore prefetch errors
-      });
-    }
-  }, 10000); // Wait 10 seconds
+  import('./lib/apiBase').then(({ getApiBase, isApiAvailable }) => {
+    if (!isApiAvailable()) return;
+    setTimeout(() => {
+      const base = getApiBase();
+      const userId = localStorage.getItem('almona_user_id');
+      if (userId) {
+        fetch(`${base}/egypt/users/${userId}/recent-projects`, {
+          headers: { 'X-Prefetch': 'true' }
+        }).catch(() => {});
+        fetch(`${base}/egypt/materials/common`, {
+          headers: { 'X-Prefetch': 'true' }
+        }).catch(() => {});
+      }
+    }, 10000);
+  });
 };
 
-// PHASE 1.7: Cache warming for Egypt-specific assets
+// PHASE 1.7: Cache warming - only preconnect (no image prefetch; many refs 404)
 const initializeCacheWarming = () => {
-  // Warm cache for Egypt workflow images (lazy loading)
-  const imagesToWarm = [
-    '/images/egypt-workflow-step1.webp',
-    '/images/egypt-workflow-step2.webp',
-    '/images/katra-pro-red-logo.webp',
-    '/images/foxywin-logo.webp',
-    '/images/caluminium-ps-logo.webp'
-  ];
-
-  imagesToWarm.forEach(src => {
-    const img = new Image();
-    img.src = src;
-    img.loading = 'lazy';
-    img.decoding = 'async';
-  });
-
-  // Pre-connect to likely next origins
+  // Pre-connect to likely next origins (no image prefetch - refs caused 404 spam)
   const origins = [
     'https://storage.supabase.co',
     'https://fonts.gstatic.com'
   ];
-
   origins.forEach(origin => {
     const link = document.createElement('link');
     link.rel = 'preconnect';

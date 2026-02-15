@@ -636,7 +636,7 @@ export const PredictiveInsights: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="typography-h2 tracking-tight flex items-center gap-2">
-            <Brain className="h-8 w-8 text-purple-600" />
+            <Brain className="h-8 w-8 text-amber-600" />
             Predictive Insights
           </h2>
           <p className="text-muted-foreground">

@@ -130,10 +130,10 @@ export const AIDesignDemo: React.FC = () => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-purple-900/20 to-purple-800/20 border-purple-500/30">
+    <Card className="bg-gradient-to-br from-amber-900/20 to-amber-800/20 border-amber-500/30">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Sparkles className="h-5 w-5 text-purple-400" />
+          <Sparkles className="h-5 w-5 text-amber-400" />
           AI Design Assistant Demo
         </CardTitle>
       </CardHeader>
@@ -145,22 +145,22 @@ export const AIDesignDemo: React.FC = () => {
         <Button
           onClick={handleGetSuggestions}
           disabled={loading || suggestions.length > 0}
-          className="w-full bg-purple-600 hover:bg-purple-700"
+          className="w-full bg-amber-600 hover:bg-amber-700"
         >
           {loading ? 'Analyzing...' : suggestions.length > 0 ? 'Suggestions Generated' : 'Get AI Suggestions'}
         </Button>
 
         {suggestions.length > 0 && (
           <div className="space-y-2">
-            <h4 className="typography-h4 text-sm text-purple-300">AI Suggestions:</h4>
+            <h4 className="typography-h4 text-sm text-amber-300">AI Suggestions:</h4>
             {suggestions.map((suggestion, i) => (
               <div
                 key={i}
-                className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg animate-in fade-in slide-in-from-left"
+                className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg animate-in fade-in slide-in-from-left"
                 style={{ animationDelay: `${i * 200}ms` }}
               >
                 <div className="flex items-start gap-2">
-                  <Sparkles className="h-4 w-4 text-purple-400 mt-0.5 flex-shrink-0" />
+                  <Sparkles className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-200">{suggestion}</span>
                 </div>
               </div>

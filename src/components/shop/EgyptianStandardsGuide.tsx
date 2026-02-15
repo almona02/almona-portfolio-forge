@@ -238,7 +238,7 @@ const EgyptianStandardsGuide = () => {
           </Card>
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400">24/7</div>
+              <div className="text-2xl font-bold text-amber-400">24/7</div>
               <div className="text-sm text-gray-400">Support</div>
             </CardContent>
           </Card>

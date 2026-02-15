@@ -129,7 +129,7 @@ const getFileTypeColor = (type: SupportedFileType): string => {
   const colors: Record<SupportedFileType, string> = {
     pdf: 'bg-red-500/10 text-red-300 border-red-500/40',
     dxf: 'bg-blue-500/10 text-blue-300 border-blue-500/40',
-    dwg: 'bg-purple-500/10 text-purple-300 border-purple-500/40',
+    dwg: 'bg-amber-500/10 text-amber-300 border-amber-500/40',
     svg: 'bg-green-500/10 text-green-300 border-green-500/40',
     png: 'bg-amber-500/10 text-amber-300 border-amber-500/40',
     jpg: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/40',
@@ -1054,7 +1054,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
   return (
     <div className="space-y-4">
       {/* Header Card */}
-      <Card className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border-blue-500/30">
+      <Card className="bg-gradient-to-r from-blue-900/40 to-amber-900/40 border-blue-500/30">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Sparkles className="h-5 w-5 text-yellow-400" />
@@ -1224,8 +1224,8 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                             {profile.kFactorSuggestion && (
                               <div className="mt-2 p-2 bg-gray-700/50 rounded text-[11px]">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <Brain className="h-3 w-3 text-purple-400" />
-                                  <span className="text-purple-300 font-medium">
+                                  <Brain className="h-3 w-3 text-amber-400" />
+                                  <span className="text-amber-300 font-medium">
                                     {t('profile_import_tool.upload.k_factor_suggestion', 'K-Factor Suggestion')}
                                   </span>
                                 </div>
@@ -1291,7 +1291,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
           <Card className="bg-gray-900/60 border-gray-700 card-dark">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
-                <Brain className="h-4 w-4 text-purple-400" />
+                <Brain className="h-4 w-4 text-amber-400" />
                 {t('profile_import_tool.kfactor.title', 'Smart K-Factor Learning')}
               </CardTitle>
               <CardDescription className="text-xs">
@@ -1461,7 +1461,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                   variant={kFactorLearningEnabled ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setKFactorLearningEnabled(!kFactorLearningEnabled)}
-                  className={kFactorLearningEnabled ? 'bg-purple-500 hover:bg-purple-600' : ''}
+                  className={kFactorLearningEnabled ? 'bg-amber-500 hover:bg-amber-600' : ''}
                 >
                   {kFactorLearningEnabled ? t('profile_import_tool.settings.import.enabled', 'Enabled') : t('profile_import_tool.settings.import.disabled', 'Disabled')}
                 </Button>

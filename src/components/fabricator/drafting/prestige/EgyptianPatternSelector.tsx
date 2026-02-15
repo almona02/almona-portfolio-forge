@@ -296,7 +296,7 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
     switch (type) {
       case 'sliding': return 'cyan';
       case 'casement': return 'blue';
-      case 'tilt_turn': return 'purple';
+      case 'tilt_turn': return 'amber';
       case 'door': return 'amber';
       case 'fixed': return 'slate';
       case 'curtain_wall': return 'emerald';
@@ -420,7 +420,7 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
                         "shadow-md text-xs",
                         typeColor === 'cyan' && "bg-cyan-500/20 border-cyan-500/50 text-cyan-300",
                         typeColor === 'blue' && "bg-blue-500/20 border-blue-500/50 text-blue-300",
-                        typeColor === 'purple' && "bg-purple-500/20 border-purple-500/50 text-purple-300",
+                        typeColor === 'amber' && "bg-amber-500/20 border-amber-500/50 text-amber-300",
                         typeColor === 'amber' && "bg-amber-500/20 border-amber-500/50 text-amber-300",
                         typeColor === 'emerald' && "bg-emerald-500/20 border-emerald-500/50 text-emerald-300",
                         typeColor === 'slate' && "bg-slate-500/20 border-slate-500/50 text-slate-300"
@@ -499,7 +499,7 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
                             complexity === 'Basic' && "border-emerald-500/50 text-emerald-300",
                             complexity === 'Moderate' && "border-blue-500/50 text-blue-300",
                             complexity === 'Advanced' && "border-amber-500/50 text-amber-300",
-                            complexity === 'Expert' && "border-purple-500/50 text-purple-300"
+                            complexity === 'Expert' && "border-amber-500/50 text-amber-300"
                           )}
                         >
                           {complexity}

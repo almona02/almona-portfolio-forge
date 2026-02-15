@@ -170,7 +170,7 @@ function getActivityColor(type: ActivityType): string {
     case 'status_changed':
       return 'text-amber-400';
     case 'file_uploaded':
-      return 'text-purple-400';
+      return 'text-amber-400';
     case 'comment_added':
       return 'text-cyan-400';
     case 'bulk_operation':

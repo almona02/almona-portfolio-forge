@@ -20,11 +20,11 @@ const palette = {
     text: 'text-green-700 dark:text-green-300',
     border: 'border-green-300 dark:border-green-700'
   },
-  purple: {
-    soft: 'bg-purple-50 dark:bg-purple-900/25',
-    solid: 'bg-purple-500',
-    text: 'text-purple-700 dark:text-purple-300',
-    border: 'border-purple-300 dark:border-purple-700'
+  amber: {
+    soft: 'bg-amber-50 dark:bg-amber-900/25',
+    solid: 'bg-amber-500',
+    text: 'text-amber-700 dark:text-amber-300',
+    border: 'border-amber-300 dark:border-amber-700'
   },
   yellow: {
     soft: 'bg-yellow-50 dark:bg-yellow-900/25',
@@ -61,11 +61,11 @@ interface StyleConfig {
 
 const statusMap: Record<TicketStatus, StyleConfig> = {
   open: { badge: `${palette.blue.soft} ${palette.blue.text} border ${palette.blue.border}` },
-  assigned: { badge: `${palette.purple.soft} ${palette.purple.text} border ${palette.purple.border}` },
+  assigned: { badge: `${palette.amber.soft} ${palette.amber.text} border ${palette.amber.border}` },
   in_progress: { badge: `${palette.yellow.soft} ${palette.yellow.text} border ${palette.yellow.border}`, rowAccent: 'border-l-2 border-yellow-400' },
   awaiting_parts: { badge: `${palette.orange.soft} ${palette.orange.text} border ${palette.orange.border}` },
   awaiting_customer: { badge: `${palette.orange.soft} ${palette.orange.text} border ${palette.orange.border}` },
-  pending_approval: { badge: `${palette.purple.soft} ${palette.purple.text} border ${palette.purple.border}` },
+  pending_approval: { badge: `${palette.amber.soft} ${palette.amber.text} border ${palette.amber.border}` },
   resolved: { badge: `${palette.green.soft} ${palette.green.text} border ${palette.green.border}`, subdued: true },
   closed: { badge: `${palette.gray.soft} ${palette.gray.text} border ${palette.gray.border}`, subdued: true },
   cancelled: { badge: `${palette.red.soft} ${palette.red.text} border ${palette.red.border}`, subdued: true }

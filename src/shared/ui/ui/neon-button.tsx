@@ -15,7 +15,7 @@ const neonButtonVariants = cva(
         egyptian:
           "bg-gradient-to-r from-yellow-500 to-amber-500 text-black shadow-[0_0_20px_rgba(245,158,11,0.5)] hover:shadow-[0_0_30px_rgba(245,158,11,0.8)] border border-yellow-400/50 hover:border-yellow-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-yellow-400/20 before:to-amber-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         ar:
-          "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] border border-purple-400/50 hover:border-purple-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-400/20 before:to-pink-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
+          "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_0_20px_rgba(245,158,11,0.5)] hover:shadow-[0_0_30px_rgba(245,158,11,0.8)] border border-amber-400/50 hover:border-amber-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-amber-400/20 before:to-orange-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         success:
           "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.5)] hover:shadow-[0_0_30px_rgba(34,197,94,0.8)] border border-green-400/50 hover:border-green-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-green-400/20 before:to-emerald-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         outline:
@@ -38,7 +38,7 @@ const neonButtonVariants = cva(
         none: "",
         subtle: "hover:animate-pulse",
         intense: "animate-pulse hover:animate-bounce",
-        rainbow: "before:animate-pulse hover:animate-bounce bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 via-indigo-500 to-purple-500 bg-size-200 animate-gradient-x",
+        rainbow: "before:animate-pulse hover:animate-bounce bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 via-cyan-500 to-amber-500 bg-size-200 animate-gradient-x",
         industrialGlow: "animate-pulse hover:animate-ping",
       },
     },

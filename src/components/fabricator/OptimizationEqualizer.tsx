@@ -214,7 +214,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Settings className={`${UI_DIMENSIONS.ICON_LARGE} text-purple-400`} /> {t('optimization_equalizer.title', 'Optimization Strategy Equalizer')}
+          <Settings className={`${UI_DIMENSIONS.ICON_LARGE} text-amber-400`} /> {t('optimization_equalizer.title', 'Optimization Strategy Equalizer')}
         </CardTitle>
         <CardDescription className="text-gray-400">
           {t('optimization_equalizer.description', 'Fine-tune optimization parameters to match your production needs')}
@@ -320,10 +320,10 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
           <div>
             <div className="flex items-center justify-between mb-2">
               <Label className="typography-label text-gray-300 flex items-center gap-2">
-                <Clock className={`${UI_DIMENSIONS.ICON_MEDIUM} text-purple-400`} />
+                <Clock className={`${UI_DIMENSIONS.ICON_MEDIUM} text-amber-400`} />
                 {t('optimization_equalizer.production_speed', 'Production Speed')}
               </Label>
-              <Badge variant="outline" className="text-purple-400 border-purple-500/30">
+              <Badge variant="outline" className="text-amber-400 border-amber-500/30">
                 {strategy.productionSpeedWeight}%
               </Badge>
             </div>

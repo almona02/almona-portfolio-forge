@@ -174,7 +174,7 @@ export const AccessoryLibrary: React.FC<AccessoryLibraryProps> = ({
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
       hinge: 'bg-blue-500/20 text-blue-400',
-      lock: 'bg-purple-500/20 text-purple-400',
+      lock: 'bg-amber-500/20 text-amber-400',
       handle: 'bg-green-500/20 text-green-400',
       seal: 'bg-yellow-500/20 text-yellow-400',
       spacer: 'bg-amber-500/20 text-amber-400',
