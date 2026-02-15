@@ -811,7 +811,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               <div className="text-xs text-gray-600">Validation</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-amber-600">
                 {state.performance.totalTime.toFixed(0)}ms
               </div>
               <div className="text-xs text-gray-600">Total</div>

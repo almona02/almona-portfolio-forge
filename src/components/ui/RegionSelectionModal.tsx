@@ -52,7 +52,7 @@ const regionConfigs = {
     compliance: ['CE Marking', 'ISO 9001', 'International Standards'],
     workingHours: '09:00 - 17:00',
     paymentMethods: ['Credit Card', 'Bank Transfer'],
-    color: 'from-blue-500 to-indigo-500',
+    color: 'from-blue-500 to-cyan-500',
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/30'
   }
@@ -99,7 +99,7 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
         isAnimating ? "scale-105" : "scale-100"
       )}>
         {/* Animated background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-amber-600/20 rounded-2xl blur-xl animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-amber-600/20 to-amber-600/20 rounded-2xl blur-xl animate-pulse" />
         
         <Card className="relative bg-almona-dark border-gray-700 shadow-2xl overflow-hidden">
           <CardHeader className="text-center pb-4">

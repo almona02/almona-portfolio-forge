@@ -312,9 +312,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
       case "AI":
         return `${baseStyles} text-white bg-gradient-to-r from-cyan-500 to-blue-500`;
       case "PRO":
-        return `${baseStyles} text-white bg-gradient-to-r from-purple-500 to-pink-500`;
+        return `${baseStyles} text-white bg-gradient-to-r from-amber-500 to-orange-500`;
       case "BETA":
-        return `${baseStyles} text-white bg-gradient-to-r from-purple-500 to-pink-500`;
+        return `${baseStyles} text-white bg-gradient-to-r from-amber-500 to-orange-500`;
       case "SOON":
         return `${baseStyles} text-white bg-gradient-to-r from-amber-500 to-amber-500`;
       case "NEW":

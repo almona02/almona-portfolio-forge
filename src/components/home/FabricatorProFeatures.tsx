@@ -79,7 +79,7 @@ export const FabricatorProFeatures: React.FC = () => {
           </div>
           <h2 className="typography-h2 text-4xl md:text-5xl text-white mb-4">
             Built for Fabricators,{' '}
-            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-400 to-amber-400 bg-clip-text text-transparent">
               Powered by Intelligence
             </span>
           </h2>
@@ -107,7 +107,7 @@ export const FabricatorProFeatures: React.FC = () => {
                     <div
                       className={`p-3 rounded-lg ${
                         feature.highlight
-                          ? 'bg-gradient-to-br from-blue-500/20 to-purple-500/20'
+                          ? 'bg-gradient-to-br from-blue-500/20 to-amber-500/20'
                           : 'bg-gray-700/50'
                       }`}
                     >
@@ -140,7 +140,7 @@ export const FabricatorProFeatures: React.FC = () => {
 
         {/* Call to Action */}
         <div className="text-center">
-          <Card className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border-blue-500/30 max-w-2xl mx-auto">
+          <Card className="bg-gradient-to-r from-blue-900/30 to-amber-900/30 border-blue-500/30 max-w-2xl mx-auto">
             <CardContent className="p-8">
               <div className="flex items-center justify-center gap-3 mb-4">
                 <Shield className="h-8 w-8 text-blue-400" />

@@ -224,7 +224,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
       case 'hinge_slot':
         return 'bg-blue-500/30 border-blue-400';
       case 'lock_pocket':
-        return 'bg-purple-500/30 border-purple-400';
+        return 'bg-amber-500/30 border-amber-400';
       case 'drainage':
         return 'bg-cyan-500/30 border-cyan-400';
       case 'anchor':
@@ -240,7 +240,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="typography-h3 text-lg text-white flex items-center gap-2">
-            <Target className="h-5 w-5 text-purple-400" />
+            <Target className="h-5 w-5 text-amber-400" />
             Interactive Zone Calibration
           </h3>
           <p className="text-sm text-gray-400 mt-1">
@@ -276,7 +276,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
           <Card className="bg-gray-900/80 border-gray-700 card-dark">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
-                <Grid className="h-4 w-4 text-purple-400" />
+                <Grid className="h-4 w-4 text-amber-400" />
                 Visual Zone Editor
               </CardTitle>
               <CardDescription className="text-xs text-gray-400">
@@ -342,7 +342,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                         exit={{ opacity: 0, scale: 0.8 }}
                         className={`absolute cursor-move border-2 rounded ${
                           getZoneColor(zone.zoneType)
-                        } ${isSelected ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900' : ''}`}
+                        } ${isSelected ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-gray-900' : ''}`}
                         style={{
                           width: `${canvas.width}px`,
                           height: `${canvas.height}px`,
@@ -368,7 +368,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
 
                         {/* Resize Handle */}
                         <div
-                          className="absolute bottom-0 right-0 w-4 h-4 bg-purple-400 rounded-tl-lg cursor-nwse-resize hover:bg-purple-300 transition-colors"
+                          className="absolute bottom-0 right-0 w-4 h-4 bg-amber-400 rounded-tl-lg cursor-nwse-resize hover:bg-amber-300 transition-colors"
                           onPointerDown={(e) => {
                             e.stopPropagation();
                             handlePointerDown(e, zone, 'resize');
@@ -382,7 +382,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                           <LazyMotionDiv
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="absolute -top-2 -left-2 w-6 h-6 bg-purple-500 rounded-full border-2 border-white flex items-center justify-center"
+                            className="absolute -top-2 -left-2 w-6 h-6 bg-amber-500 rounded-full border-2 border-white flex items-center justify-center"
                           >
                             <Move className="w-3 h-3 text-white" />
                           </LazyMotionDiv>
@@ -397,7 +397,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                           <LazyMotionDiv
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="absolute top-4 right-4 bg-purple-500/90 text-white px-3 py-2 rounded-lg text-xs font-semibold backdrop-blur-sm"
+                    className="absolute top-4 right-4 bg-amber-500/90 text-white px-3 py-2 rounded-lg text-xs font-semibold backdrop-blur-sm"
                   >
                     {joystickState.dragType === 'position' ? (
                       <>
@@ -435,7 +435,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                     key={zone.id}
                     className={`p-2 rounded border cursor-pointer transition-colors ${
                       selectedZone?.id === zone.id
-                        ? 'bg-purple-500/20 border-purple-400'
+                        ? 'bg-amber-500/20 border-amber-400'
                         : 'bg-gray-800/50 border-gray-700 hover:border-gray-600'
                     }`}
                     onClick={() => {
@@ -579,7 +579,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
 
                 <Button
                   onClick={handleSaveZone}
-                  className="w-full h-8 text-xs bg-purple-500 hover:bg-purple-600 text-white"
+                  className="w-full h-8 text-xs bg-amber-500 hover:bg-amber-600 text-white"
                 >
                   Save Changes
                 </Button>
@@ -590,8 +590,8 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
       </div>
 
       {/* Info Alert */}
-      <Alert className="bg-purple-500/10 border-purple-500/30">
-        <Info className="h-4 w-4 text-purple-400" />
+      <Alert className="bg-amber-500/10 border-amber-500/30">
+        <Info className="h-4 w-4 text-amber-400" />
         <AlertDescription className="text-xs text-gray-300">
           <strong>Joystick Controls:</strong> Click and drag zones to move them, drag the corner handle to resize.
           Adjust sensitivity for fine-tuning. Changes are applied in real-time.

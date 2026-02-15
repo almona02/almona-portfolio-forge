@@ -32,7 +32,7 @@ interface AdvisorySidebarProps {
 }
 
 const ADVISOR_ICONS: Record<string, React.ReactNode> = {
-    AISuggestionPanel: <Brain className="w-4 h-4" />,
+    AISuggestionPanel: <Brain className="w-4 h-4 text-[var(--fabricator-text-accent)]" />,
     DesignModeComparison: <Layout className="w-4 h-4" />,
     OptimizationJobMonitor: <BarChart3 className="w-4 h-4" />,
     JobRiskIndicator: <AlertTriangle className="w-4 h-4" />,
@@ -88,7 +88,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
             <div className="flex items-center justify-between p-3 border-b border-slate-700">
                 {isExpanded && (
                     <div className="flex items-center gap-2">
-                        <Brain className="w-5 h-5 text-amber-400" />
+                        <Brain className="w-5 h-5 text-[var(--fabricator-text-accent)]" />
                         <h3 className="text-sm font-semibold text-amber-200">Advisory Intelligence</h3>
                         <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-xs rounded-full">
                             Tier 2
@@ -122,7 +122,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
                                             : 'border-slate-600 text-slate-300 hover:border-amber-500'
                                         }`}
                                 >
-                                    {ADVISOR_ICONS[key] || <Brain className="w-4 h-4" />}
+                                    {ADVISOR_ICONS[key] || <Brain className="w-4 h-4 text-[var(--fabricator-text-accent)]" />}
                                     <span className="truncate">{ADVISOR_LABELS[key] || key}</span>
                                 </Button>
                             ))}
@@ -141,7 +141,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
                     {/* No Advisor Selected */}
                     {!activeAdvisor && (
                         <div className="p-6 text-center text-slate-500">
-                            <Brain className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                            <Brain className="w-12 h-12 mx-auto mb-3 opacity-30 text-[var(--fabricator-text-accent)]" />
                             <p className="text-sm">Select an advisor above to get AI-powered suggestions</p>
                             <p className="text-xs mt-2 text-amber-500/70">
                                 All advisors are Tier 2 - suggestions only, no execution authority
@@ -166,7 +166,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
                             className="w-full p-2 text-slate-400 hover:text-amber-400"
                             title={ADVISOR_LABELS[key]}
                         >
-                            {ADVISOR_ICONS[key] || <Brain className="w-4 h-4" />}
+                            {ADVISOR_ICONS[key] || <Brain className="w-4 h-4 text-[var(--fabricator-text-accent)]" />}
                         </Button>
                     ))}
                 </div>

@@ -124,7 +124,7 @@ const DigitalEgypt = () => {
 
       <main className="pt-24 pb-16 min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white py-20 overflow-hidden">
+        <section className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-cyan-900 text-white py-20 overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-10">
             <div className="absolute inset-0 bg-[url('/pattern.svg')] bg-repeat" />
           </div>
@@ -258,7 +258,7 @@ const DigitalEgypt = () => {
                     <Card className="h-full">
                       <CardHeader>
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+                          <div className="p-2 bg-cyan-100 dark:bg-cyan-900/30 rounded-lg text-cyan-600 dark:text-cyan-400">
                             {pillar.icon}
                           </div>
                           <CardTitle className="text-xl">{pillar.title}</CardTitle>
@@ -490,7 +490,7 @@ const DigitalEgypt = () => {
         </section>
 
         {/* Call to Action */}
-        <section className="py-16 bg-gradient-to-r from-blue-900 to-indigo-900 text-white">
+        <section className="py-16 bg-gradient-to-r from-blue-900 to-cyan-900 text-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <motion.div

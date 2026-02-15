@@ -141,7 +141,7 @@ function generateBlockThumbnail(block: BlockDefinition): string {
   // Draw arcs (simplified as circles)
   geometry.arcs.forEach(a => {
     svg += `<circle cx="${a.cx}" cy="${a.cy}" r="${a.r}" 
-      fill="none" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="2,2" transform="${transform}"/>`;
+      fill="none" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,2" transform="${transform}"/>`;
   });
   
   // Draw polygons

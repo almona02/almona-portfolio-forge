@@ -20,7 +20,7 @@ export const WorkshopSwitcherSidebar: React.FC = () => {
       <Card className="bg-gray-900/95 border-gray-700 card-dark">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
-            <Factory className="h-5 w-5 text-purple-400" />
+            <Factory className="h-5 w-5 text-amber-400" />
             Workshops
           </CardTitle>
         </CardHeader>

@@ -322,7 +322,7 @@ export const EnterpriseClientActivation: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <Users className="h-8 w-8 text-purple-600" />
+              <Users className="h-8 w-8 text-amber-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Decision Makers</p>
                 <p className="text-xl font-bold">{client.decisionMakers.length}</p>

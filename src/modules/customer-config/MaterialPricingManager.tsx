@@ -121,7 +121,7 @@ export const MaterialPricingManager: React.FC<MaterialPricingManagerProps> = ({
       aluminum: 'text-blue-400',
       upvc: 'text-green-400',
       wood: 'text-amber-400',
-      composite: 'text-purple-400',
+      composite: 'text-amber-400',
     };
     return colors[material] || 'text-gray-400';
   };

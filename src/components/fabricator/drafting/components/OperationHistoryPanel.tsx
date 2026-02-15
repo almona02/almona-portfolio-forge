@@ -122,7 +122,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
   const getOperationColor = (type: string, isCheckpoint?: boolean) => {
     if (isCheckpoint) return 'text-amber-400';
     if (type.includes('undo')) return 'text-blue-400';
-    if (type.includes('redo')) return 'text-purple-400';
+    if (type.includes('redo')) return 'text-amber-400';
     return 'text-slate-400';
   };
 
@@ -277,7 +277,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
+                                className="h-6 w-6 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
                                 onClick={onRedo}
                                 title="Redo to this point"
                               >

@@ -1087,11 +1087,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">{t('inventory_dashboard.total_value', 'Total Value')}</p>
-                <p className="text-2xl font-bold text-purple-400">
+                <p className="text-2xl font-bold text-amber-400">
                   ${totalValue.toFixed(2)}
                 </p>
               </div>
-              <DollarSign className="h-8 w-8 text-purple-400 opacity-50" />
+              <DollarSign className="h-8 w-8 text-amber-400 opacity-50" />
             </div>
           </CardContent>
         </Card>
@@ -2053,7 +2053,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             <Card className="bg-gray-700/50 border-gray-600">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-purple-400" />
+                  <BarChart3 className="h-5 w-5 text-amber-400" />
                   Remnant Statistics
                 </CardTitle>
               </CardHeader>

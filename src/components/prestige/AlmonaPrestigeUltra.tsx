@@ -33,7 +33,7 @@ interface BOMItem {
   category: string;
   qty: string;
   value: string;
-  color: 'blue' | 'cyan' | 'purple' | 'amber' | 'emerald';
+  color: 'blue' | 'cyan' | 'amber' | 'amber' | 'emerald';
 }
 
 interface ValidationItem {
@@ -80,7 +80,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
     () => [
       { category: 'Profiles', qty: '17.6m', value: '€890', color: 'blue' },
       { category: 'Glass', qty: '3.84m²', value: '€768', color: 'cyan' },
-      { category: 'Hardware', qty: '12 pcs', value: '€456', color: 'purple' },
+      { category: 'Hardware', qty: '12 pcs', value: '€456', color: 'amber' },
       { category: 'Accessories', qty: '8 pcs', value: '€124', color: 'amber' },
     ],
     []
@@ -98,7 +98,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
 
   const profileMatrix = [
     { role: 'Frame', code: 'CAL-FR-001', color: 'blue' },
-    { role: 'Sash', code: 'CAL-SA-002', color: 'purple' },
+    { role: 'Sash', code: 'CAL-SA-002', color: 'amber' },
     { role: 'Mullion', code: 'CAL-MU-003', color: 'emerald' },
     { role: 'Transom', code: 'CAL-TR-004', color: 'amber' },
   ];
@@ -109,7 +109,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
     const colorMap: Record<string, { bg: string; border: string; text: string }> = {
       blue: { bg: 'from-blue-500/10 to-blue-600/5', border: 'border-blue-500/20', text: 'text-blue-300' },
       cyan: { bg: 'from-cyan-500/10 to-cyan-600/5', border: 'border-cyan-500/20', text: 'text-cyan-300' },
-      purple: { bg: 'from-purple-500/10 to-purple-600/5', border: 'border-purple-500/20', text: 'text-purple-300' },
+      amber: { bg: 'from-amber-500/10 to-amber-600/5', border: 'border-amber-500/20', text: 'text-amber-300' },
       amber: { bg: 'from-amber-500/10 to-amber-600/5', border: 'border-amber-500/20', text: 'text-amber-300' },
       emerald: { bg: 'from-emerald-500/10 to-emerald-600/5', border: 'border-emerald-500/20', text: 'text-emerald-300' },
     };
@@ -237,9 +237,9 @@ const AlmonaPrestigeUltra: React.FC = () => {
                 <div className="text-xs text-blue-300 mb-1">Total Units</div>
                 <div className="text-2xl font-bold text-blue-400">{projectStats.totalUnits}</div>
               </div>
-              <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-xl p-3">
-                <div className="text-xs text-purple-300 mb-1">Openings</div>
-                <div className="text-2xl font-bold text-purple-400">{projectStats.openings}</div>
+              <div className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 rounded-xl p-3">
+                <div className="text-xs text-amber-300 mb-1">Openings</div>
+                <div className="text-2xl font-bold text-amber-400">{projectStats.openings}</div>
               </div>
               <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-xl p-3">
                 <div className="text-xs text-emerald-300 mb-1">Area</div>
