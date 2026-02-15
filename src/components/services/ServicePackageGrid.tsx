@@ -55,7 +55,7 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
             <span className="text-lg">{t('services.twenty_four_seven_support')}</span>
           </div>
           <div className="flex items-center justify-center space-x-3">
-            <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-bold">📊</span>
             </div>
             <span className="text-lg">{t('services.performance_tracking')}</span>

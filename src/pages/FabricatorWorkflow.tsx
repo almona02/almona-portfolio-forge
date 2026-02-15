@@ -2138,8 +2138,8 @@ export const FabricatorWorkflow: React.FC = () => {
                 <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-2xl">
-                      <div className="p-2 bg-purple-500/20 rounded-lg">
-                        <BarChart3 className="h-6 w-6 text-purple-400" />
+                      <div className="p-2 bg-amber-500/20 rounded-lg">
+                        <BarChart3 className="h-6 w-6 text-amber-400" />
                       </div>
                       <div>
                         Personal Analytics

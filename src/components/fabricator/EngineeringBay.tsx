@@ -466,7 +466,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     <Button
                                         variant="secondary"
                                         onClick={() => setEngineeringMode('wizard')}
-                                        className="bg-purple-600 hover:bg-purple-700 text-white border-purple-400"
+                                        className="bg-amber-600 hover:bg-amber-700 text-white border-amber-400"
                                     >
                                         <Wand2 className="h-4 w-4 mr-2" />
                                         Wizard Mode
@@ -609,7 +609,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         <Dialog open={showPresetSelector} onOpenChange={setShowPresetSelector}>
                                             <Button
                                                 onClick={() => setShowPresetSelector(true)}
-                                                className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg transition-all duration-300 hover:shadow-xl"
+                                                className="w-full h-12 bg-gradient-to-r from-amber-600 to-blue-600 hover:from-amber-700 hover:to-blue-700 text-white shadow-lg transition-all duration-300 hover:shadow-xl"
                                             >
                                                 <Sparkles className="w-5 h-5 mr-2" />
                                                 <span className="text-base font-semibold">
@@ -806,10 +806,10 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             </Card>
 
                             {/* --- ENGINEERING PHYSICS PANEL --- */}
-                            <Card className="bg-gray-900/50 mt-6 border-l-4 border-l-purple-500">
+                            <Card className="bg-gray-900/50 mt-6 border-l-4 border-l-amber-500">
                                 <CardHeader>
                                     <CardTitle className="text-base flex items-center gap-2">
-                                        <Cpu className="h-4 w-4 text-purple-400" />
+                                        <Cpu className="h-4 w-4 text-amber-400" />
                                         {t('engineering_bay.physics_engine', 'Engineering Physics')}
                                     </CardTitle>
                                     <CardDescription className="text-xs text-gray-400">

@@ -59,7 +59,7 @@ export const PrestigeSystemPackSelector: React.FC<PrestigeSystemPackSelectorProp
       case 'Local': return 'blue';
       case 'Standard': return 'emerald';
       case 'Premium': return 'amber';
-      case 'Enterprise': return 'purple';
+      case 'Enterprise': return 'amber';
       default: return 'slate';
     }
   };
@@ -132,7 +132,7 @@ export const PrestigeSystemPackSelector: React.FC<PrestigeSystemPackSelectorProp
                   tierColor === 'blue' && "bg-blue-500",
                   tierColor === 'emerald' && "bg-emerald-500",
                   tierColor === 'amber' && "bg-amber-500",
-                  tierColor === 'purple' && "bg-purple-500"
+                  tierColor === 'amber' && "bg-amber-500"
                 )} />
               </div>
 

@@ -191,7 +191,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
                                   className={`text-xs ${
                                     item.category === 'tool' ? 'border-blue-500/30 text-blue-400' :
                                     item.category === 'action' ? 'border-green-500/30 text-green-400' :
-                                    item.category === 'viewport' ? 'border-purple-500/30 text-purple-400' :
+                                    item.category === 'viewport' ? 'border-amber-500/30 text-amber-400' :
                                     'border-slate-600/30 text-slate-400'
                                   }`}
                                 >
@@ -237,7 +237,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
                           className={`${
                             selectedItemContent.category === 'tool' ? 'border-blue-500/30 text-blue-400' :
                             selectedItemContent.category === 'action' ? 'border-green-500/30 text-green-400' :
-                            selectedItemContent.category === 'viewport' ? 'border-purple-500/30 text-purple-400' :
+                            selectedItemContent.category === 'viewport' ? 'border-amber-500/30 text-amber-400' :
                             'border-slate-600/30 text-slate-400'
                           }`}
                         >

@@ -151,13 +151,13 @@ export const DesignModeComparison: React.FC = () => {
               Advanced CAD tools for custom designs with precision control.
             </p>
             <div className="space-y-2">
-              <Badge variant="outline" className="border-purple-500/30 text-purple-400 bg-purple-500/10 text-xs">
+              <Badge variant="outline" className="border-amber-500/30 text-amber-400 bg-amber-500/10 text-xs">
                 🎯 CAD precision
               </Badge>
-              <Badge variant="outline" className="border-purple-500/30 text-purple-400 bg-purple-500/10 text-xs">
+              <Badge variant="outline" className="border-amber-500/30 text-amber-400 bg-amber-500/10 text-xs">
                 ⌨️ Keyboard shortcuts
               </Badge>
-              <Badge variant="outline" className="border-purple-500/30 text-purple-400 bg-purple-500/10 text-xs">
+              <Badge variant="outline" className="border-amber-500/30 text-amber-400 bg-amber-500/10 text-xs">
                 🔧 Advanced tools
               </Badge>
             </div>

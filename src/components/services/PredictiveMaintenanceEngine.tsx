@@ -51,7 +51,7 @@ export const PredictiveMaintenanceEngine = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-gradient-to-r from-amber-500/10 to-purple-500/10 border-amber-500/20">
+      <Card className="bg-gradient-to-r from-amber-500/10 to-amber-500/10 border-amber-500/20">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -467,8 +467,8 @@ export const PredictiveMaintenanceEngine = () => {
                   <p className="text-sm text-gray-400">{alerts[0]?.confidence || 87}% prediction accuracy</p>
                 </div>
                 <div className="text-center">
-                  <div className="p-3 bg-purple-500/20 rounded-lg inline-block mb-2">
-                    <AlertTriangle className="h-6 w-6 text-purple-400" />
+                  <div className="p-3 bg-amber-500/20 rounded-lg inline-block mb-2">
+                    <AlertTriangle className="h-6 w-6 text-amber-400" />
                   </div>
                   <h4 className="typography-h4 mb-2">Failure Mode Detection</h4>
                   <p className="text-sm text-gray-400">Early identification of specific component failures</p>
@@ -527,7 +527,7 @@ export const PredictiveMaintenanceEngine = () => {
                 </div>
               </div>
 
-              <div className="mt-8 p-4 bg-gradient-to-r from-amber-500/10 to-purple-500/10 rounded-lg border border-amber-500/20">
+              <div className="mt-8 p-4 bg-gradient-to-r from-amber-500/10 to-amber-500/10 rounded-lg border border-amber-500/20">
                 <h4 className="typography-h4 mb-3 text-amber-400">Implementation Cost Breakdown</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   {[

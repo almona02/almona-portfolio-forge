@@ -69,7 +69,7 @@ export function useCollaborativeDrafting({
       '#10b981', // green
       '#f59e0b', // amber
       '#ef4444', // red
-      '#8b5cf6', // purple
+      '#f59e0b', // amber
       '#ec4899', // pink
       '#06b6d4', // cyan
       '#84cc16'  // lime

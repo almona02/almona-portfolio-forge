@@ -218,7 +218,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                         preset.pricingTier === 'Local' && "bg-blue-500 text-white",
                         preset.pricingTier === 'Standard' && "bg-green-500 text-white",
                         preset.pricingTier === 'Premium' && "bg-amber-500 text-white",
-                        preset.pricingTier === 'Enterprise' && "bg-purple-500 text-white",
+                        preset.pricingTier === 'Enterprise' && "bg-amber-500 text-white",
                         preset.pricingTier === 'Bespoke' && "bg-gray-900 text-white"
                       )}
                     >

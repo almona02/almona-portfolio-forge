@@ -97,7 +97,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 700;
   letter-spacing: -0.025em;
-  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  background: linear-gradient(to right, #3b82f6, #f59e0b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -151,7 +151,7 @@
   right: -2px;
   bottom: -2px;
   border-radius: inherit;
-  background: linear-gradient(45deg, #10b981, #3b82f6, #8b5cf6);
+  background: linear-gradient(45deg, #10b981, #3b82f6, #f59e0b);
   z-index: -1;
   animation: confidence-rotate 2s linear infinite;
   opacity: 0.3;

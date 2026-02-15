@@ -18,7 +18,7 @@ const variantClasses = {
   default: 'text-gray-600',
   primary: 'text-blue-600',
   secondary: 'text-gray-400',
-  accent: 'text-purple-600'
+  accent: 'text-amber-600'
 };
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({

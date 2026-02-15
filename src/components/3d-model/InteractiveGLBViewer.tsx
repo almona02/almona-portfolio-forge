@@ -461,7 +461,7 @@ export function InteractiveGLBViewer({
                 {enableWebXR && xrSupported && (
                   <button
                     onClick={enterWebXR}
-                    className="px-3 py-2 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+                    className="px-3 py-2 bg-amber-500 text-white rounded text-sm hover:bg-amber-600"
                   >
                     WebXR AR
                   </button>

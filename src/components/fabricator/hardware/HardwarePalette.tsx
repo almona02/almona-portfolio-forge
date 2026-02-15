@@ -263,7 +263,7 @@ export const HardwarePalette: React.FC<HardwarePaletteProps> = ({
       case 'hinge':
         return 'bg-blue-900/20 border-blue-500/30 text-blue-400';
       case 'roller':
-        return 'bg-purple-900/20 border-purple-500/30 text-purple-400';
+        return 'bg-amber-900/20 border-amber-500/30 text-amber-400';
       case 'gasket':
         return 'bg-amber-900/20 border-amber-500/30 text-amber-400';
       case 'reinforcement':

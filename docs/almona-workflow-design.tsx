@@ -110,9 +110,9 @@ const AlmonaPrestigeUltra = () => {
                 <div className="text-xs text-blue-300 mb-1">Total Units</div>
                 <div className="text-2xl font-bold text-blue-400">24</div>
               </div>
-              <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-xl p-3">
-                <div className="text-xs text-purple-300 mb-1">Openings</div>
-                <div className="text-2xl font-bold text-purple-400">6</div>
+              <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 border border-cyan-500/20 rounded-xl p-3">
+                <div className="text-xs text-cyan-300 mb-1">Openings</div>
+                <div className="text-2xl font-bold text-cyan-400">6</div>
               </div>
               <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-xl p-3">
                 <div className="text-xs text-emerald-300 mb-1">Area</div>
@@ -155,7 +155,7 @@ const AlmonaPrestigeUltra = () => {
             <div className="space-y-2">
               {[
                 { role: 'Frame', code: 'CAL-FR-001', color: 'blue' },
-                { role: 'Sash', code: 'CAL-SA-002', color: 'purple' },
+                { role: 'Sash', code: 'CAL-SA-002', color: 'cyan' },
                 { role: 'Mullion', code: 'CAL-MU-003', color: 'emerald' },
                 { role: 'Transom', code: 'CAL-TR-004', color: 'amber' }
               ].map(profile => (
@@ -392,7 +392,7 @@ const AlmonaPrestigeUltra = () => {
               {[
                 { category: 'Profiles', qty: '17.6m', value: '€890', color: 'blue' },
                 { category: 'Glass', qty: '3.84m²', value: '€768', color: 'cyan' },
-                { category: 'Hardware', qty: '12 pcs', value: '€456', color: 'purple' },
+                { category: 'Hardware', qty: '12 pcs', value: '€456', color: 'cyan' },
                 { category: 'Accessories', qty: '8 pcs', value: '€124', color: 'amber' }
               ].map(item => (
                 <div key={item.category} className={`bg-gradient-to-r from-${item.color}-500/5 to-transparent border border-${item.color}-500/20 rounded-xl p-4`}>

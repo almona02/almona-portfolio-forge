@@ -618,7 +618,7 @@ ${data.notes}
 
                         <div className="flex items-center justify-between">
                           <Label htmlFor="includeSoftwareUpdate" className="typography-label flex items-center">
-                            <Cpu className="h-4 w-4 mr-2 text-purple-400" />
+                            <Cpu className="h-4 w-4 mr-2 text-amber-400" />
                             تحديث برمجي | Software Update
                           </Label>
                           <Switch

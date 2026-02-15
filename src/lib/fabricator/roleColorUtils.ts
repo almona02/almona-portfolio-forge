@@ -17,14 +17,14 @@ import { getRoleCategory } from './profileRoleUtils';
  * - Frame: Blue (primary structural element)
  * - Sash: Green (operable element)
  * - Structural: Orange (supporting elements)
- * - Glazing: Purple (glazing-related)
+ * - Glazing: Cyan (glazing-related)
  * - Accessory: Gray (secondary elements)
  */
 export const ROLE_CATEGORY_COLORS = {
   frame: '#3B82F6',      // Blue-500
   sash: '#10B981',       // Green-500
   structural: '#F59E0B', // Orange-500
-  glazing: '#8B5CF6',    // Purple-500
+  glazing: '#06B6D4',    // Cyan-500
   accessory: '#6B7280', // Gray-500
 } as const;
 

@@ -60,7 +60,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
 
   // Color mapping for stages
   const stageColors: Record<string, string> = {
-    'Lead': '#8b5cf6', // Purple
+    'Lead': '#f59e0b', // Amber
     'Qualified': '#3b82f6', // Blue
     'Quoted': '#06b6d4', // Cyan
     'Negotiation': '#f59e0b', // Amber
@@ -175,9 +175,9 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
               <YAxis
                 yAxisId="count"
                 orientation="right"
-                stroke="#8b5cf6"
+                stroke="#f59e0b"
                 style={{ fontSize: '12px' }}
-                label={{ value: 'Count', angle: 90, position: 'insideRight', style: { fill: '#8b5cf6' } }}
+                label={{ value: 'Count', angle: 90, position: 'insideRight', style: { fill: '#f59e0b' } }}
               />
               <Tooltip
                 contentStyle={{
@@ -223,7 +223,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
                 yAxisId="value"
                 dataKey="weightedValue"
                 name="weightedValue"
-                fill="#8b5cf6"
+                fill="#f59e0b"
                 radius={[4, 4, 0, 0]}
               />
               <Bar
