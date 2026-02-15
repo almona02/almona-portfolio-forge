@@ -54,7 +54,7 @@ interface PersonaConfig {
 const personas: Record<PersonaType, PersonaConfig> = {
   professor: {
     icon: GraduationCap,
-    color: 'bg-purple-600',
+    color: 'bg-amber-600',
     title: 'Professor Mode',
     subtitle: 'University-grade instruction',
     animation: 'gentle-pulse'
@@ -82,7 +82,7 @@ const personas: Record<PersonaType, PersonaConfig> = {
   },
   nervousSystem: {
     icon: BrainCircuit,
-    color: 'bg-indigo-600',
+    color: 'bg-amber-600',
     title: 'Nervous System',
     subtitle: 'Real-time monitoring',
     animation: 'circuit-flow'
@@ -306,7 +306,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
             
             <div>
               <h1 className="typography-h1 text-gray-900">
-                YDT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Agent</span>
+                YDT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-amber-600">Agent</span>
               </h1>
               <p className="text-gray-600 flex items-center gap-2">
                 <Shield className="w-4 h-4  status-valid" />
@@ -485,7 +485,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || typing}
-                className="px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                className="px-6 py-4 bg-gradient-to-r from-blue-600 to-amber-600 text-white rounded-2xl font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
               >
                 <div className="flex items-center space-x-2">
                   <Send className="w-5 h-5" />
@@ -544,8 +544,8 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
           <div className="bg-white p-4 rounded-2xl shadow">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-600">Languages</span>
-              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                <Languages className="w-4 h-4 text-purple-600" />
+              <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                <Languages className="w-4 h-4 text-amber-600" />
               </div>
             </div>
             <div className="mt-2">

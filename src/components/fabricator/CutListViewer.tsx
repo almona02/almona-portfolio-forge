@@ -138,17 +138,17 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
 
             {/* Remnants */}
             {showRemnants && (
-              <div className="bg-purple-50 dark:bg-purple-950 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+              <div className="bg-amber-50 dark:bg-amber-950 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
                 <div className="flex items-center justify-between mb-1">
-                  <div className="text-sm text-purple-600 dark:text-purple-400">
+                  <div className="text-sm text-amber-600 dark:text-amber-400">
                     Remnants
                   </div>
-                  <PackageOpen className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  <PackageOpen className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 </div>
-                <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                <div className="text-2xl font-bold text-amber-900 dark:text-amber-100">
                   {cutList.totalBarsUsed}
                 </div>
-                <div className="text-xs mt-1 text-purple-600 dark:text-purple-400">
+                <div className="text-xs mt-1 text-amber-600 dark:text-amber-400">
                   For marketplace
                 </div>
               </div>

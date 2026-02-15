@@ -76,7 +76,7 @@ interface MasterLayoutProps {
   profiles?: Array<{
     role: string;
     code: string;
-    color: 'blue' | 'purple' | 'emerald' | 'amber' | 'cyan';
+    color: 'blue' | 'amber' | 'emerald' | 'cyan';
   }>;
   // Right panel data
   _show3DPreview?: boolean; // Reserved for future use
@@ -89,7 +89,7 @@ interface MasterLayoutProps {
     category: string;
     qty: string;
     value: string;
-    color: 'blue' | 'cyan' | 'purple' | 'amber';
+    color: 'blue' | 'cyan' | 'amber';
   }>;
   totalProjectValue?: string;
   // Canvas toolbar
@@ -144,7 +144,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
   },
   _profiles = [
     { role: 'Frame', code: 'CAL-FR-001', color: 'blue' },
-    { role: 'Sash', code: 'CAL-SA-002', color: 'purple' },
+    { role: 'Sash', code: 'CAL-SA-002', color: 'amber' },
     { role: 'Mullion', code: 'CAL-MU-003', color: 'emerald' },
     { role: 'Transom', code: 'CAL-TR-004', color: 'amber' }
   ],
@@ -159,7 +159,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
   bomItems = [
     { category: 'Profiles', qty: '17.6m', value: '€890', color: 'blue' },
     { category: 'Glass', qty: '3.84m²', value: '€768', color: 'cyan' },
-    { category: 'Hardware', qty: '12 pcs', value: '€456', color: 'purple' },
+    { category: 'Hardware', qty: '12 pcs', value: '€456', color: 'amber' },
     { category: 'Accessories', qty: '8 pcs', value: '€124', color: 'amber' }
   ],
   totalProjectValue = '€2,438',

@@ -623,8 +623,8 @@ export const PartnerOnboarding: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Key className="h-6 w-6 text-purple-600" />
+              <div className="p-2 bg-amber-100 rounded-lg">
+                <Key className="h-6 w-6 text-amber-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">API Access</p>

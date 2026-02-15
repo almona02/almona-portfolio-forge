@@ -340,7 +340,7 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                     {/* Required Profile */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <Wrench className="h-4 w-4 text-purple-500" />
+                        <Wrench className="h-4 w-4 text-amber-500" />
                         <p className="text-sm font-medium text-gray-300">Required Profile</p>
                       </div>
                       <div className="bg-gray-800/50 p-3 rounded space-y-2 text-sm">

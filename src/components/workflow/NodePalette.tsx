@@ -73,7 +73,7 @@ const NODE_TYPES: NodeTypeDefinition[] = [
         description: 'Conditional branching',
         icon: GitBranch,
         category: 'logic',
-        color: 'text-purple-500',
+        color: 'text-amber-500',
     },
     {
         type: 'automation',

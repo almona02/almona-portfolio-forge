@@ -125,7 +125,7 @@ const JobSummaryPanelComponent: React.FC<JobSummaryPanelProps> = ({ project }) =
         )}
 
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-purple-400" />
+          <Calendar className="h-4 w-4 text-amber-400" />
           <span>
             {project.createdAt
               ? new Date(project.createdAt).toLocaleDateString()

@@ -88,9 +88,9 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
   const getSystemColor = (systemType: string): string => {
     const colors: Record<string, string> = {
       sliding: "bg-blue-100 text-blue-800 border-blue-300",
-      casement: "bg-purple-100 text-purple-800 border-purple-300",
+      casement: "bg-amber-100 text-amber-800 border-amber-300",
       fixed: "bg-gray-100 text-gray-800 border-gray-300",
-      tilt_turn: "bg-indigo-100 text-indigo-800 border-indigo-300",
+      tilt_turn: "bg-cyan-100 text-cyan-800 border-cyan-300",
       unknown: "bg-gray-100 text-gray-800 border-gray-300",
     };
     return colors[systemType] || colors.unknown;

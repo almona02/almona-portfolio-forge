@@ -311,7 +311,8 @@ const App = memo(() => {
   return (
     <ChunkLoadingErrorBoundary>
       <ErrorBoundary>
-        <Prestige3DLoader show3DAnimation={true}>
+        {/* Disable 3D loader in dev: Three.js/R3F adds ~100s to first load (9612 modules). Prod keeps cinematic experience. */}
+        <Prestige3DLoader show3DAnimation={import.meta.env.PROD}>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
               <TooltipProvider>

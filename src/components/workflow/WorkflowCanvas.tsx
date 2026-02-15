@@ -199,7 +199,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                             start: '#10b981',
                             end: '#ef4444',
                             task: '#3b82f6',
-                            decision: '#8b5cf6',
+                            decision: '#f59e0b',
                             automation: '#f59e0b',
                             approval: '#f97316',
                             notification: '#06b6d4',

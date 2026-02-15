@@ -44,7 +44,7 @@ interface ServiceROIAnalyticsProps {
   onTimeRangeChange?: (range: string) => void
 }
 
-const COLORS = ['#ff6b35', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+const COLORS = ['#ff6b35', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#f59e0b']
 
 export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
   timeRange = '1y',
@@ -211,7 +211,7 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
             <CardTitle className="text-sm font-medium text-gray-600">Response Time Reduction</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">
+            <div className="text-2xl font-bold text-amber-600">
               {formatPercentage(metrics.responseTimeReduction)}
             </div>
             <Progress value={metrics.responseTimeReduction} className="mt-2" />

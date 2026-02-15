@@ -57,7 +57,7 @@ const emergencyTypes = [
     icon: Wrench,
     description: "Critical mechanical component failure",
     responseTime: "60-120 minutes",
-    color: "from-blue-500 to-purple-500"
+    color: "from-blue-500 to-amber-500"
   },
   {
     id: "software-crash",

@@ -552,7 +552,7 @@ const TemplateDetails: React.FC<TemplateDetailsProps> = ({ template }) => {
                   cellType === 'empty' ? 'bg-slate-700/50 text-slate-500' :
                   cellType === 'fixed' ? 'bg-blue-600/30 text-blue-300 border border-blue-600/30' :
                   cellType === 'casement' ? 'bg-green-600/30 text-green-300 border border-green-600/30' :
-                  cellType === 'sliding' ? 'bg-purple-600/30 text-purple-300 border border-purple-600/30' :
+                  cellType === 'sliding' ? 'bg-amber-600/30 text-amber-300 border border-amber-600/30' :
                   'bg-slate-600/50 text-slate-400'
                 }`}
                 title={cellType}

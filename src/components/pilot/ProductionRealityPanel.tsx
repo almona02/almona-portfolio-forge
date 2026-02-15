@@ -35,7 +35,7 @@ export const ProductionRealityPanel: React.FC<{
           <div className="mt-2 pt-2 border-t border-amber-200">
             <div className="flex justify-between">
               <span className="text-gray-700">هدر اللحام الحراري:</span>
-              <span className="font-mono font-bold text-purple-700">٣ مم/زاوية</span>
+              <span className="font-mono font-bold text-amber-700">٣ مم/زاوية</span>
             </div>
             <div className="text-xs text-amber-600 mt-1">⚙️ يتم خصم ٣ مم من كل زاوية عند اللحام</div>
           </div>

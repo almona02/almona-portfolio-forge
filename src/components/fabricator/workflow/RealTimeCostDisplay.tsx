@@ -111,12 +111,12 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
               </div>
             </div>
 
-            <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
-              <div className="text-xs text-purple-300 mb-1">Hardware</div>
-              <div className="text-lg font-bold text-purple-400">
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+              <div className="text-xs text-amber-300 mb-1">Hardware</div>
+              <div className="text-lg font-bold text-amber-400">
                 {formatCost(costBreakdown.hardwareCost, costBreakdown.currency)}
               </div>
-              <div className="text-[10px] text-purple-400/60 mt-1">
+              <div className="text-[10px] text-amber-400/60 mt-1">
                 {costDetails.hardwareCosts.length} items
               </div>
             </div>
@@ -225,7 +225,7 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm text-purple-400">
+                <span className="font-mono text-sm text-amber-400">
                   {formatCost(costBreakdown.hardwareCost, costBreakdown.currency)}
                 </span>
                 <ChevronDown className="h-4 w-4 text-slate-500 transition-transform data-[state=open]:rotate-180" />

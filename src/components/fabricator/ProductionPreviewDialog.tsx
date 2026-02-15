@@ -246,13 +246,13 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
               </p>
             </div>
             
-            <div className="relative p-4 bg-gradient-to-br from-purple-500/10 to-purple-600/5 rounded-lg border border-purple-500/30 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 group">
-              <div className="absolute top-2 right-2 w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-              <p className="text-xs font-semibold text-purple-300/80 uppercase tracking-wider mb-2">Est. Bars</p>
-              <p className="text-3xl font-bold text-purple-400 group-hover:text-purple-300 transition-colors">
+            <div className="relative p-4 bg-gradient-to-br from-amber-500/10 to-amber-600/5 rounded-lg border border-amber-500/30 shadow-lg hover:shadow-amber-500/20 transition-all duration-300 group">
+              <div className="absolute top-2 right-2 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
+              <p className="text-xs font-semibold text-amber-300/80 uppercase tracking-wider mb-2">Est. Bars</p>
+              <p className="text-3xl font-bold text-amber-400 group-hover:text-amber-300 transition-colors">
                 {summary.estimatedBars}
               </p>
-              <p className="text-[10px] text-purple-400/60 mt-1">
+              <p className="text-[10px] text-amber-400/60 mt-1">
                 {summary.efficiency > 0 
                   ? `${summary.efficiency.toFixed(1)}% efficiency`
                   : 'Stock bars needed'}

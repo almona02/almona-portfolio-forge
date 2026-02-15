@@ -235,7 +235,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
       >
-        <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500/10 to-purple-500/10 border border-amber-500/20">
+        <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500/10 to-amber-500/10 border border-amber-500/20">
           <Award className="h-6 w-6 text-amber-400" />
           <span className="text-amber-400 font-semibold">{t('services.success_stories')}</span>
         </div>
@@ -329,10 +329,10 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
                             <div className="text-xs text-blue-400">vs {story.metrics.before.downtime}</div>
                           </div>
                           <div className="btn-secondary">
-                            <Factory className="h-6 w-6 text-purple-400 mx-auto mb-2" />
+                            <Factory className="h-6 w-6 text-amber-400 mx-auto mb-2" />
                             <div className="text-2xl font-bold text-white">{story.metrics.after.efficiency}</div>
                             <div className="text-sm text-gray-400">{t('services.efficiency')}</div>
-                            <div className="text-xs text-purple-400">vs {story.metrics.before.efficiency}</div>
+                            <div className="text-xs text-amber-400">vs {story.metrics.before.efficiency}</div>
                           </div>
                         </div>
 
@@ -453,7 +453,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
         transition={{ delay: 0.3 }}
         className="text-center"
       >
-        <div className="bg-gradient-to-r from-amber-500/10 to-purple-500/10 rounded-2xl p-8 border border-white/10">
+        <div className="bg-gradient-to-r from-amber-500/10 to-amber-500/10 rounded-2xl p-8 border border-white/10">
           <h3 className="typography-h3 text-white mb-4">
             {t('services.ready_write_success_story')}
           </h3>

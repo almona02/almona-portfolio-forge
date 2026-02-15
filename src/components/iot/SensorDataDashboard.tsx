@@ -437,7 +437,7 @@ export const SensorDataDashboard: React.FC<{
                     <div className="text-sm text-gray-400">Status</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-purple-400">
+                    <div className="text-lg font-bold text-amber-400">
                       {digitalTwinData.alerts.length}
                     </div>
                     <div className="text-sm text-gray-400">Active Alerts</div>

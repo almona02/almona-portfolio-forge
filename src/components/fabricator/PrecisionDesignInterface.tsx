@@ -858,7 +858,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
               if (isHovered) return "#f0f9ff"; // Very light blue on hover
               if (cell.type === 'sash') return "#fef3c7"; // Light yellow for sash
               if (cell.type === 'sliding') return "#dbeafe"; // Light blue for sliding
-              if (cell.type === 'panel') return "#f3e8ff"; // Light purple for panel
+              if (cell.type === 'panel') return "#fef3c7"; // Light amber for panel
               return "white"; // White for fixed/empty
             };
 

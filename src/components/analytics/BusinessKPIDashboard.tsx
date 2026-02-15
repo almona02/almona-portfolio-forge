@@ -263,7 +263,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
           value={`${metrics.conversion.rate}%`}
           change={0.8}
           icon={<Target className="h-4 w-4" />}
-          color="text-purple-600"
+          color="text-amber-600"
           subtitle="Visitor to customer"
         />
         <MetricCard
