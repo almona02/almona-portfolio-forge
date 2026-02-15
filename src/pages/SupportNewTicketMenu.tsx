@@ -74,7 +74,7 @@ const SupportNewTicketMenu = () => {
   action: () => create({ source: 'training', type: 'other', priority: 'low' })
     },
     {
-      icon: <FilePlus2 className="h-6 w-6 text-purple-400" />,
+      icon: <FilePlus2 className="h-6 w-6 text-amber-400" />,
       title: 'Other / General',
       desc: 'Anything else not covered by the categories above',
   action: () => create({ source: 'services', type: 'general', priority: 'medium' })

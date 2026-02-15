@@ -24,7 +24,7 @@ const YilmazDealer = () => {
       description: "Comprehensive operator training to ensure maximum efficiency and safety in your workshop."
     },
     {
-      icon: <Check className="w-8 h-8 text-purple-500" />,
+      icon: <Check className="w-8 h-8 text-amber-500" />,
       title: "Genuine Parts",
       description: "Direct access to original spare parts inventory in Cairo for minimal downtime."
     }

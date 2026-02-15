@@ -101,7 +101,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     {
       name: t('fabricator:navbar.fabrication_modules.quality_control_ai.name', 'Quality Control AI'),
       path: "/fabricator/quality",
-      icon: <Brain className="h-4 w-4" />,
+      icon: <Brain className="h-4 w-4 text-[var(--fabricator-text-accent)]" />,
       status: "monitoring",
       efficiency: "96.3%",
       description: t('fabricator:navbar.fabrication_modules.quality_control_ai.description', 'Computer vision inspection')
@@ -267,7 +267,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     const statusConfig = {
       optimal: { color: 'text-green-400', bg: 'bg-green-400/20', border: 'border-green-400/30' },
       running: { color: 'text-blue-400', bg: 'bg-blue-400/20', border: 'border-blue-400/30' },
-      monitoring: { color: 'text-purple-400', bg: 'bg-purple-400/20', border: 'border-purple-400/30' },
+      monitoring: { color: 'text-amber-400', bg: 'bg-amber-400/20', border: 'border-amber-400/30' },
       active: { color: 'text-amber-400', bg: 'bg-amber-400/20', border: 'border-amber-400/30' },
       pending: { color: 'text-yellow-400', bg: 'bg-yellow-400/20', border: 'border-yellow-400/30' }
     };

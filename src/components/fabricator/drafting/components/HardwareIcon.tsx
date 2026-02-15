@@ -27,7 +27,7 @@ export const HardwareIcon: React.FC<HardwareIconProps> = ({ hardware, scale = 1 
       case 'lock':
         return { color: '#dc2626', symbol: 'L' }; // Red
       case 'roller':
-        return { color: '#9333ea', symbol: 'R' }; // Purple
+        return { color: '#f59e0b', symbol: 'R' }; // Amber
       default:
         return { color: '#6b7280', symbol: '?' }; // Gray
     }

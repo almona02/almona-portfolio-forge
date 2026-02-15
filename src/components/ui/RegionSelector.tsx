@@ -32,7 +32,7 @@ const regionConfigs = {
     name: 'International',
     flag: '🌍',
     currency: '$',
-    color: 'from-blue-500 to-indigo-500',
+    color: 'from-blue-500 to-cyan-500',
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/30'
   }

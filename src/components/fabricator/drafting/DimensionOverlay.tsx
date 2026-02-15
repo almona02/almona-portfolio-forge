@@ -20,7 +20,7 @@ export const DimensionOverlay: React.FC = () => {
       : dim.mode === 'area' 
       ? '#f59e0b' // Orange for area
       : dim.mode === 'perimeter'
-      ? '#8b5cf6' // Purple for perimeter
+      ? '#f59e0b' // Amber for perimeter
       : dim.mode === 'radius'
       ? '#ef4444' // Red for radius
       : '#3b82f6'; // Blue for distance

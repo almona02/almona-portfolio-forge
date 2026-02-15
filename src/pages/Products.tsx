@@ -74,6 +74,7 @@ const Products = function ProductsPage() {
   const { toast } = useToast();
   const { user: _user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
 
   // SINGLE SOURCE OF TRUTH for filters
   const [filters, setFilters] = useState({
@@ -84,7 +85,9 @@ const Products = function ProductsPage() {
 
   // Refs for scrolling to results
   const resultsRef = useRef<HTMLDivElement>(null);
+  const productsSectionRef = useRef<HTMLDivElement>(null);
   const hasScrolledToResults = useRef(false);
+  const hasScrolledToProducts = useRef(false);
 
   // Update filters when URL params change
   useEffect(() => {
@@ -129,6 +132,19 @@ const Products = function ProductsPage() {
       return () => clearTimeout(scrollTimer);
     }
   }, [searchParams, setSearchParams]);
+
+  // When visiting /products/machines, scroll to products section (skip hero)
+  useEffect(() => {
+    if (location.pathname === '/products/machines' && !hasScrolledToProducts.current && productsSectionRef.current) {
+      const timer = setTimeout(() => {
+        if (productsSectionRef.current) {
+          productsSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          hasScrolledToProducts.current = true;
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname]);
 
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
@@ -369,7 +385,7 @@ const Products = function ProductsPage() {
       icon: "🔗",
       title: t('industry40.features.iot.title'),
       description: t('industry40.features.iot.description'),
-      color: "text-purple-400"
+      color: "text-amber-400"
     },
     {
       icon: "⚡",
@@ -449,7 +465,6 @@ const Products = function ProductsPage() {
     }
   ], [t]);
 
-  const location = useLocation();
   const currentUrl = `https://www.almona02.com${location.pathname}${location.search}`;
 
   return (
@@ -549,7 +564,7 @@ const Products = function ProductsPage() {
           <div className="absolute inset-0 -z-10">
             <div className="btn-primary"></div>
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl animate-bounce"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl animate-bounce"></div>
           </div>
         </div>
 
@@ -566,8 +581,8 @@ const Products = function ProductsPage() {
             <div className="text-3xl font-bold text-green-400 mb-2">45%</div>
             <div className="text-sm text-gray-300">{t('industry40.stats.energySavings')}</div>
           </div>
-          <div className="text-center bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 rounded-lg p-6">
-            <div className="text-3xl font-bold text-purple-400 mb-2">24/7</div>
+          <div className="text-center bg-gradient-to-br from-amber-500/10 to-amber-600/10 border border-amber-500/20 rounded-lg p-6">
+            <div className="text-3xl font-bold text-amber-400 mb-2">24/7</div>
             <div className="text-sm text-gray-300">{t('industry40.stats.monitoring')}</div>
           </div>
           <div className="btn-primary-gradient">
@@ -601,7 +616,7 @@ const Products = function ProductsPage() {
         </div>
 
         {/* Existing Products page content */}
-        <div className="mb-12 text-center">
+        <div ref={productsSectionRef} id="products-section" className="scroll-mt-24 mb-12 text-center">
           <h2 className="typography-h2 mb-4">
             <span className="text-gradient-orange">{t('machines.title')}</span>
           </h2>
@@ -772,10 +787,10 @@ const Products = function ProductsPage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎯</span>
               </div>
-              <h3 className="typography-h3 mb-2 text-purple-400">{t('technology.digitalTwins.title')}</h3>
+              <h3 className="typography-h3 mb-2 text-amber-400">{t('technology.digitalTwins.title')}</h3>
               <p className="text-gray-400">
                 {t('technology.digitalTwins.description')}
               </p>

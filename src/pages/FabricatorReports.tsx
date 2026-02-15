@@ -281,7 +281,7 @@ export const FabricatorReports: React.FC = () => {
             </div>
             <div className="bg-slate-900/70 rounded-lg p-4 border border-slate-700/60 hidden lg:block">
               <div className="text-xs text-slate-400 mb-1">OEE (Mock Summary)</div>
-              <div className="text-2xl font-semibold text-purple-300">
+              <div className="text-2xl font-semibold text-amber-300">
                 {oeeSummary.oee.toFixed(1)}%
               </div>
             </div>
@@ -693,7 +693,7 @@ export const FabricatorReports: React.FC = () => {
                     <div className="pt-2 border-t border-slate-700/60 mt-2">
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-[11px] text-slate-400">Overall OEE</span>
-                        <span className="text-sm font-semibold text-purple-300">
+                        <span className="text-sm font-semibold text-amber-300">
                           {oeeSummary.oee.toFixed(1)}%
                         </span>
                       </div>

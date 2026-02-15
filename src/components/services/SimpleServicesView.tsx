@@ -94,7 +94,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
 
       {/* Premium Services Hero (top of page) */}
       <section className="py-20 px-4 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-amber-500/10" />
         <div className="relative max-w-7xl mx-auto text-center">
           <LazyMotion component="h1" 
             initial={{ opacity: 0, y: 20 }}

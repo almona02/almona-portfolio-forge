@@ -30,7 +30,7 @@ const variantStyles = {
     text: 'text-gray-600 dark:text-gray-300'
   },
   detailed: {
-    container: 'bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900',
+    container: 'bg-gradient-to-br from-amber-900 via-blue-900 to-cyan-900',
     icon: 'text-cyan-400',
     text: 'text-gray-200'
   }

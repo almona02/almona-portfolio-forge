@@ -87,18 +87,18 @@
   --fabricator-border-accent: rgba(180, 83, 9, 0.35);
   --fabricator-border-strong: rgba(180, 83, 9, 0.5);
   
-  /* Amber Accent Colors (darker variants for light theme) */
-  --fabricator-amber-50: #78350f;
-  --fabricator-amber-100: #92400e;
-  --fabricator-amber-200: #b45309;
-  --fabricator-amber-300: #d97706;
-  --fabricator-amber-400: #f59e0b;
-  --fabricator-amber-500: #d97706;
-  --fabricator-amber-600: #b45309;
-  --fabricator-amber-700: #92400e;
-  --fabricator-amber-800: #78350f;
-  --fabricator-amber-900: #451a03;
-  --fabricator-amber-950: #292524;
+  /* Amber Accent Colors (same palette as dark; borders use amber-700 for light-bg contrast) */
+  --fabricator-amber-50: #fffbeb;
+  --fabricator-amber-100: #fef3c7;
+  --fabricator-amber-200: #fde68a;
+  --fabricator-amber-300: #fcd34d;
+  --fabricator-amber-400: #fbbf24;
+  --fabricator-amber-500: #f59e0b;
+  --fabricator-amber-600: #d97706;
+  --fabricator-amber-700: #b45309;
+  --fabricator-amber-800: #92400e;
+  --fabricator-amber-900: #78350f;
+  --fabricator-amber-950: #451a03;
   
   /* Shadow/Glow Effects (lighter, more subtle for light theme) */
   --fabricator-shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.05);

@@ -88,14 +88,14 @@ export const EgyptianDefaultsPreview: React.FC<EgyptianDefaultsPreviewProps> = (
         {/* Market Tier */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-3 w-3 text-purple-400" />
+            <TrendingUp className="h-3 w-3 text-amber-400" />
             <span className="text-xs text-gray-300">{defaults.marketTier.useCase}</span>
           </div>
           <Badge 
             variant="outline" 
             className={`text-[10px] ${
               (defaults.marketTier as any).profiles === 'chinese_local' ? 'bg-green-900/30 border-green-800 text-green-400' :
-              (defaults.marketTier as any).profiles === 'german' ? 'bg-purple-900/30 border-purple-800 text-purple-400' :
+              (defaults.marketTier as any).profiles === 'german' ? 'bg-amber-900/30 border-amber-800 text-amber-400' :
               'bg-gray-800/50 border-gray-700'
             }`}
           >

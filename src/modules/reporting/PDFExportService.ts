@@ -1073,7 +1073,7 @@ export class PDFExportService {
     let currentPosition = 0;
     const cutColors = [
       rgb(0.23, 0.51, 0.96), // Blue
-      rgb(0.55, 0.36, 0.96), // Purple
+      rgb(0.02, 0.71, 0.83), // Cyan #06B6D4
       rgb(0.06, 0.73, 0.51), // Green
       rgb(0.96, 0.62, 0.04), // Amber
       rgb(0.94, 0.27, 0.27), // Red

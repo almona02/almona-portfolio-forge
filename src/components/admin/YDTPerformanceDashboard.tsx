@@ -167,12 +167,12 @@ export function YDTPerformanceDashboard({
         <Card className="bg-gray-700/50 border-gray-600">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-              <Zap className="h-4 w-4 text-purple-400" />
+              <Zap className="h-4 w-4 text-amber-400" />
               Success Rate
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-400">
+            <div className="text-2xl font-bold text-amber-400">
               {successRate.toFixed(1)}%
             </div>
             <Progress 

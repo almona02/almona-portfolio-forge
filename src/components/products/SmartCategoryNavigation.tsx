@@ -199,7 +199,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
     const colors = {
       aluminum: 'border-blue-500/50 text-blue-400',
       upvc: 'border-green-500/50 text-green-400',
-      both: 'border-purple-500/50 text-purple-400',
+      both: 'border-amber-500/50 text-amber-400',
       unknown: 'border-gray-500/50 text-gray-400'
     };
     

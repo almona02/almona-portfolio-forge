@@ -185,7 +185,7 @@ export class CuttingListGenerator {
       '#10B981', // Green
       '#F59E0B', // Amber
       '#EF4444', // Red
-      '#8B5CF6', // Purple
+      '#F59E0B', // Amber
       '#EC4899', // Pink
       '#06B6D4', // Cyan
       '#F97316', // Orange

@@ -125,7 +125,7 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
                     </span>
                   ))}
                   {sys.certifications.iso?.map((cert, i) => (
-                    <span key={i} className="px-2 py-0.5 bg-purple-50 text-purple-700 text-[10px] rounded border border-purple-100">
+                    <span key={i} className="px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] rounded border border-amber-100">
                       {cert}
                     </span>
                   ))}

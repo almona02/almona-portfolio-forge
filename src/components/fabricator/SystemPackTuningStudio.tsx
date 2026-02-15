@@ -729,11 +729,11 @@ export const SystemPackTuningStudio: React.FC = () => {
                             <div className="flex items-center gap-3">
                               <div className={`p-2 rounded-lg ${profile.type === 'frame' ? 'bg-blue-500/20' :
                                 profile.type === 'sash' ? 'bg-green-500/20' :
-                                  'bg-purple-500/20'
+                                  'bg-amber-500/20'
                                 }`}>
                                 <IconComponent className={`h-5 w-5 ${profile.type === 'frame' ? 'text-blue-400' :
                                   profile.type === 'sash' ? 'text-green-400' :
-                                    'text-purple-400'
+                                    'text-amber-400'
                                   }`} />
                               </div>
                               <div>

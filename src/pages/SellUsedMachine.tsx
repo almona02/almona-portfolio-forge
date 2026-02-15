@@ -56,7 +56,7 @@ const SellUsedMachine = () => {
         owner_id: user.id
       });
       toast.success('Your machine has been listed for sale!');
-      navigate('/usedmachines');
+      navigate('/used-machines');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to list your machine.';
       toast.error(errorMessage);
@@ -146,7 +146,7 @@ const SellUsedMachine = () => {
                     </Button>
                     <Button 
                       type="button" 
-                      onClick={() => navigate('/usedmachines')}
+                      onClick={() => navigate('/used-machines')}
                       className="bg-almona-light/20 hover:bg-almona-light/30 text-white border border-almona-light/30"
                     >
                       Cancel

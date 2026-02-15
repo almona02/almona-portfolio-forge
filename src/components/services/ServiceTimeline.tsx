@@ -25,7 +25,7 @@ const getEventIcon = (type: TimelineEvent['type']) => {
         case 'installation': return <CheckCircle2 className="w-5 h-5 text-green-400" />;
         case 'maintenance': return <Wrench className="w-5 h-5 text-blue-400" />;
         case 'repair': return <AlertCircle className="w-5 h-5 text-red-400" />;
-        case 'audit': return <Calendar className="w-5 h-5 text-purple-400" />;
+        case 'audit': return <Calendar className="w-5 h-5 text-amber-400" />;
         case 'alert': return <AlertCircle className="w-5 h-5 text-amber-400" />;
         default: return <Clock className="w-5 h-5 text-gray-400" />;
     }

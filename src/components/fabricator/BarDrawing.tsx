@@ -77,7 +77,7 @@ const SCALE_FACTOR = 0.1; // mm to pixels (1mm = 0.1px, so 6000mm = 600px)
 // Color palette for different cut types
 const CUT_COLORS = {
   frame: '#3B82F6', // Blue
-  sash: '#8B5CF6', // Purple
+  sash: '#F59E0B', // Amber
   mullion: '#10B981', // Green
   transom: '#F59E0B', // Amber
   bead: '#EF4444', // Red

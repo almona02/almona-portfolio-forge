@@ -111,7 +111,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <BarChart3 className="h-6 w-6 text-purple-400" /> {t('personal_analytics.title', 'Personal Analytics Dashboard')}
+                <BarChart3 className="h-6 w-6 text-amber-400" /> {t('personal_analytics.title', 'Personal Analytics Dashboard')}
               </CardTitle>
               <CardDescription className="text-gray-400 mt-1">
                 {t('personal_analytics.description', 'Insights from your calibration data to improve accuracy and efficiency')}

@@ -172,7 +172,7 @@ export const DesignModeSelector: React.FC<DesignModeSelectorProps> = ({
                 </Badge>
               )}
               {mode !== 'drafting' && (
-                <Badge variant="outline" className="border-purple-500/50 text-purple-400 bg-purple-500/10">
+                <Badge variant="outline" className="border-amber-500/50 text-amber-400 bg-amber-500/10">
                   Premium
                 </Badge>
               )}

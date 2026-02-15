@@ -63,7 +63,7 @@ const TrainingServicesPage: React.FC = () => {
         {/* Material Toggle */}
         <div className="flex flex-wrap gap-4 mb-10">
           <Button onClick={() => setMaterial('aluminium')} className={`px-6 ${material==='aluminium' ? 'bg-gradient-to-r from-amber-500 to-red-500' : 'bg-almona-dark border border-almona-light/20'}`}>Aluminium Process</Button>
-          <Button onClick={() => setMaterial('upvc')} className={`px-6 ${material==='upvc' ? 'bg-gradient-to-br from-blue-500 to-purple-600' : 'bg-almona-dark border border-almona-light/20'}`}>UPVC Process</Button>
+          <Button onClick={() => setMaterial('upvc')} className={`px-6 ${material==='upvc' ? 'bg-gradient-to-br from-blue-500 to-amber-600' : 'bg-almona-dark border border-almona-light/20'}`}>UPVC Process</Button>
         </div>
 
         {/* Fabrication Stages */}

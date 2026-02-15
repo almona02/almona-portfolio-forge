@@ -578,7 +578,7 @@ export const WhiteLabelPortal: React.FC = () => {
                       <span className="text-sm font-medium">8 / {tenantConfig.limits.customReports}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-purple-600 h-2 rounded-full" style={{ width: '32%' }}></div>
+                      <div className="bg-amber-600 h-2 rounded-full" style={{ width: '32%' }}></div>
                     </div>
                   </div>
                 </CardContent>

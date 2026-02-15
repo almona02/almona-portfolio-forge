@@ -73,7 +73,7 @@ export const DEFAULT_LAYERS: Layer[] = [
   {
     id: 'dimensions',
     name: 'Dimensions',
-    color: '#8b5cf6', // Purple
+    color: '#f59e0b', // Amber
     lineType: 'solid',
     lineWeight: 0.5,
     visible: true,
@@ -99,7 +99,7 @@ export const DEFAULT_LAYERS: Layer[] = [
   {
     id: 'structural',
     name: 'Structural',
-    color: '#6366f1', // Indigo
+    color: '#06b6d4', // Cyan
     lineType: 'solid',
     lineWeight: 2.5,
     visible: true,

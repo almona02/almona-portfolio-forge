@@ -53,7 +53,7 @@ export const FacadeGridEditor: React.FC<FacadeGridEditorProps> = ({
       {/* LEFT: Controls */}
       <Card className="md:col-span-1 bg-gray-900 border-gray-800">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-indigo-400">
+          <CardTitle className="flex items-center gap-2 text-amber-400">
             <Grid className="w-5 h-5" />
             Facade Grid Spec
           </CardTitle>
@@ -123,7 +123,7 @@ export const FacadeGridEditor: React.FC<FacadeGridEditorProps> = ({
             <div className="space-y-3">
               <div className="flex justify-between text-xs text-gray-500">
                 <span>Columns (Verticals)</span>
-                <span className="text-indigo-400 font-mono">{cols}</span>
+                <span className="text-amber-400 font-mono">{cols}</span>
               </div>
               <Slider 
                 value={[cols]} 
@@ -138,7 +138,7 @@ export const FacadeGridEditor: React.FC<FacadeGridEditorProps> = ({
             <div className="space-y-3">
               <div className="flex justify-between text-xs text-gray-500">
                 <span>Rows (Horizontals)</span>
-                <span className="text-indigo-400 font-mono">{rows}</span>
+                <span className="text-amber-400 font-mono">{rows}</span>
               </div>
               <Slider 
                 value={[rows]} 
@@ -156,7 +156,7 @@ export const FacadeGridEditor: React.FC<FacadeGridEditorProps> = ({
           {/* Statistics */}
           {model && (
             <div className="bg-gray-800_50 rounded-lg p-3 space-y-2">
-              <div className="flex items-center gap-2 text-xs text-indigo-300 mb-2">
+              <div className="flex items-center gap-2 text-xs text-amber-300 mb-2">
                 <Calculator className="w-3 h-3" /> Calculated Metrics
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
@@ -188,7 +188,7 @@ export const FacadeGridEditor: React.FC<FacadeGridEditorProps> = ({
          <CardHeader>
            <div className="flex justify-between items-center">
              <CardTitle className="text-gray-200 text-sm">Drafting Preview</CardTitle>
-             <Badge variant="outline" className="border-indigo-500 text-indigo-400">Stick System</Badge>
+             <Badge variant="outline" className="border-amber-500 text-amber-400">Stick System</Badge>
            </div>
          </CardHeader>
          <CardContent className="h-[500px] flex items-center justify-center relative overflow-hidden bg-gray-900/50 m-4 rounded-xl border border-gray-800 border-dashed">

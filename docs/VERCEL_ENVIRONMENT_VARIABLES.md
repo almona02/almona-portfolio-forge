@@ -9,7 +9,7 @@
 ### Supabase (Critical)
 ```bash
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_KEY=your_supabase_anon_key
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 **How to get:**
@@ -17,7 +17,7 @@ VITE_SUPABASE_KEY=your_supabase_anon_key
 2. Select your project
 3. Settings → API
 4. Copy "Project URL" → `VITE_SUPABASE_URL`
-5. Copy "anon public" key → `VITE_SUPABASE_KEY`
+5. Copy "anon public" key → `VITE_SUPABASE_ANON_KEY` (use anon key, NOT service_role)
 
 ### Backend API (Critical)
 ```bash
@@ -164,7 +164,7 @@ After setting variables:
 ### Issue: Supabase connection fails
 **Solution:**
 - Verify `VITE_SUPABASE_URL` format (must include `https://`)
-- Check `VITE_SUPABASE_KEY` is the anon key (not service role)
+- Check `VITE_SUPABASE_ANON_KEY` is the anon key (not service role)
 - Verify Supabase project is active
 
 ---
@@ -178,7 +178,7 @@ After setting variables:
 
 # REQUIRED - Supabase
 VITE_SUPABASE_URL=
-VITE_SUPABASE_KEY=
+VITE_SUPABASE_ANON_KEY=
 
 # REQUIRED - Backend API
 VITE_API_URL=

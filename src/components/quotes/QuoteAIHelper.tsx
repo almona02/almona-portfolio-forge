@@ -70,7 +70,7 @@ export const QuoteAIHelper: React.FC<QuoteAIHelperProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <span className="text-gradient-orange">AI Suggestions</span>
-          <Badge variant="outline" className="border-purple-500 text-purple-500">
+          <Badge variant="outline" className="border-amber-500 text-amber-500">
             Beta
           </Badge>
         </CardTitle>
