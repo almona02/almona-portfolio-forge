@@ -211,6 +211,25 @@ const FabricatorWorkflowToStudioRedirect: React.FC = () => {
   return <Navigate to={fabricatorRoutes.studioProjects()} replace />;
 };
 
+/** Redirect /machines to /products/machines, preserving all query params (e.g. ?search=DC+421+PBS:1) */
+const MachinesRedirect: React.FC = () => {
+  const location = useLocation();
+  const to = `/products/machines${location.search || ''}`;
+  return <Navigate to={to} replace />;
+};
+
+/** Redirect /usedmachines/:id to /used-machines/:id (canonical) */
+const UsedMachineDetailRedirect: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={id ? `/used-machines/${id}` : '/used-machines'} replace />;
+};
+
+/** Redirect to target path, preserving query string (e.g. /reports?project=123) */
+const RedirectWithQuery: React.FC<{ to: string }> = ({ to }) => {
+  const location = useLocation();
+  return <Navigate to={to + (location.search || '')} replace />;
+};
+
 const queryClient = new QueryClient();
 const isProd = import.meta.env.PROD;
 // Only enable Vercel Analytics/Speed Insights when actually deployed on Vercel
@@ -229,7 +248,7 @@ const LoadingSpinner = ({ message = "Loading..." }: { message?: string }) => (
 
 const getLoadingComponent = (path: string) => {
   if (path.includes('/admin')) return <LoadingSpinner message="Loading admin dashboard..." />;
-  if (path.includes('/shop') || path.includes('/products') || path.includes('/usedmachines'))
+  if (path.includes('/shop') || path.includes('/products') || path.includes('/usedmachines') || path.includes('/used-machines'))
     return <LoadingSpinner message="Loading shop..." />;
   if (path.includes('/3d') || path.includes('/quote') || path.includes('/model'))
     return <LoadingSpinner message="Loading 3D models..." />;
@@ -367,7 +386,7 @@ const App = memo(() => {
                                   <Route path="/products/profiles/:profileId" element={<Suspense fallback={getLoadingComponent('/products')}><ProfileDetail /></Suspense>} />
                                   
                                   {/* Redirect /machines (without ID) to /products/machines - preserves query params */}
-                                  <Route path="/machines" element={<Navigate to="/products/machines" replace />} />
+                                  <Route path="/machines" element={<MachinesRedirect />} />
                                   <Route path="/machines/:machineId" element={<Suspense fallback={getLoadingComponent('/machines')}><DigitalTwinDashboard /></Suspense>} />
 
                                   {/* Egyptian Market Routes */}
@@ -564,9 +583,13 @@ const App = memo(() => {
                                   {/* Shop & E-commerce */}
                                   <Route path="/shop" element={<Suspense fallback={getLoadingComponent('/shop')}><Shop /></Suspense>} />
                                   <Route path="/optimizer" element={<Suspense fallback={getLoadingComponent('/optimizer')}><PublicOptimizer /></Suspense>} />
-                                  <Route path="/usedmachines" element={<Suspense fallback={getLoadingComponent('/usedmachines')}><UsedMachines /></Suspense>} />
-                                  <Route path="/usedmachines/:id" element={<Suspense fallback={getLoadingComponent('/usedmachines')}><UsedMachineDetailPage /></Suspense>} />
-                                  <Route path="/usedmachines/sell" element={<Suspense fallback={getLoadingComponent('/usedmachines')}><ProtectedRoute><SellUsedMachine /></ProtectedRoute></Suspense>} />
+                                  {/* Canonical: /used-machines (SEO); /usedmachines redirects for legacy */}
+                                  <Route path="/used-machines" element={<Suspense fallback={getLoadingComponent('/used-machines')}><UsedMachines /></Suspense>} />
+                                  <Route path="/used-machines/:id" element={<Suspense fallback={getLoadingComponent('/used-machines')}><UsedMachineDetailPage /></Suspense>} />
+                                  <Route path="/used-machines/sell" element={<Suspense fallback={getLoadingComponent('/used-machines')}><ProtectedRoute><SellUsedMachine /></ProtectedRoute></Suspense>} />
+                                  <Route path="/usedmachines" element={<Navigate to="/used-machines" replace />} />
+                                  <Route path="/usedmachines/:id" element={<UsedMachineDetailRedirect />} />
+                                  <Route path="/usedmachines/sell" element={<Navigate to="/used-machines/sell" replace />} />
                                   <Route path="/spare-parts" element={<Suspense fallback={getLoadingComponent('/spare-parts')}><SpareParts /></Suspense>} />
                                   <Route
                                     path="/inventory"
@@ -623,6 +646,15 @@ const App = memo(() => {
                                   <Route path="/demo/ai-recommendations" element={<Suspense fallback={getLoadingComponent('/demo')}><AIRecommendationDemo /></Suspense>} />
                                   <Route path="/demo/batch-cut-list" element={<Suspense fallback={getLoadingComponent('/demo')}><BatchCutListDemo /></Suspense>} />
                                   <Route path="/batch-cut-list-demo" element={<Suspense fallback={getLoadingComponent('/demo')}><BatchCutListDemo /></Suspense>} />
+
+                                  {/* Nav links without dedicated pages - redirect to canonical studio/shop (preserves query) */}
+                                  <Route path="/reports" element={<RedirectWithQuery to={fabricatorRoutes.studioReports()} />} />
+                                  <Route path="/machine-status" element={<RedirectWithQuery to={fabricatorRoutes.studioCommand()} />} />
+                                  <Route path="/quality-reports" element={<RedirectWithQuery to={fabricatorRoutes.studioReports()} />} />
+                                  <Route path="/pricing-settings" element={<RedirectWithQuery to="/settings" />} />
+                                  <Route path="/offers" element={<RedirectWithQuery to="/shop" />} />
+                                  <Route path="/cost-reports" element={<RedirectWithQuery to={fabricatorRoutes.studioReports()} />} />
+                                  <Route path="/accounting" element={<RedirectWithQuery to={fabricatorRoutes.studioReports()} />} />
 
                                   {/* YDT Agent */}
                                   <Route path="/prestige-agent" element={<Suspense fallback={getLoadingComponent('/prestige-agent')}><AlmonaPrestigeChatbot /></Suspense>} />

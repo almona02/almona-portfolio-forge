@@ -5,12 +5,35 @@ import SEO from "../components/SEO";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { FloatingNumbers } from "../components/NotFound3DComponents";
+import { useAuth } from "@/context/AuthContext";
+
+/** 404 reporter - logs pathname, referrer, auth, source for incident tracking */
+function report404(payload: {
+  pathname: string;
+  search: string;
+  referrer: string;
+  isAuthed: boolean;
+  fromNavbar: boolean;
+}) {
+  if (import.meta.env.DEV) {
+    console.error('[404]', payload);
+  }
+  if (typeof window !== 'undefined' && window.gtag && import.meta.env.VITE_ENABLE_ANALYTICS === 'true') {
+    window.gtag('event', 'page_not_found', {
+      page_path: payload.pathname,
+      page_title: '404 - Page Not Found',
+      referrer: payload.referrer,
+      is_authed: payload.isAuthed,
+      from_navbar: payload.fromNavbar,
+    });
+  }
+}
 
 const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [countdown, setCountdown] = useState(10);
-  // const [isHovered, setIsHovered] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [canRender3D, setCanRender3D] = useState(true);
   const lastPathRef = useRef<string | null>(null);
@@ -21,19 +44,19 @@ const NotFound = () => {
 
   useEffect(() => {
     if (lastPathRef.current !== location.pathname) {
-      if (import.meta.env.DEV) {
-        // Only log in dev
-        console.error('404 Error: User attempted to access non-existent route:', location.pathname);
-      }
       lastPathRef.current = location.pathname;
-      if (typeof window !== 'undefined' && window.gtag && import.meta.env.VITE_ENABLE_ANALYTICS === 'true') {
-        window.gtag('event', 'page_not_found', {
-          page_path: location.pathname,
-          page_title: '404 - Page Not Found'
-        });
-      }
+      const referrer = typeof document !== 'undefined' ? document.referrer || '' : '';
+      const knownNavPaths = ['/reports', '/machine-status', '/quality-reports', '/pricing-settings', '/offers', '/cost-reports', '/accounting'];
+      const fromNavbar = knownNavPaths.includes(location.pathname);
+      report404({
+        pathname: location.pathname,
+        search: location.search,
+        referrer,
+        isAuthed: !!user,
+        fromNavbar,
+      });
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.search, user]);
 
   useEffect(() => {
     const timer = setInterval(() => {
