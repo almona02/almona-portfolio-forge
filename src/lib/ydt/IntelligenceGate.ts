@@ -280,7 +280,7 @@ export class IntelligenceGate {
 
     // Deterministic operations
     const deterministicPatterns = [
-      'optimi', // Matches both 'optimize' and 'optimization'
+      'optim', // Matches 'optimize', 'optimization', 'optimal'
       'calculate',
       'geometry',
       'cnc.*generat',
