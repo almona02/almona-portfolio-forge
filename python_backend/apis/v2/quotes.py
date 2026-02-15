@@ -127,6 +127,11 @@ class QuoteCreateRequest(BaseModel):
         description="ID of the machine this quote is related to",
         example="550e8400-e29b-41d4-a716-446655440000",
     )
+    user_id: Optional[str] = Field(
+        None,
+        description="Authenticated user ID for portal visibility (auth.uid())",
+        example="550e8400-e29b-41d4-a716-446655440002",
+    )
     dispatch_to_erp: bool = Field(
         default=False,
         description="If true, enqueue ERP invoice dispatch after creation",
@@ -339,6 +344,7 @@ def create_quote(
                 "special_requirements": payload.special_requirements,
                 "related_service_ticket_id": payload.related_service_ticket_id,
                 "machine_id": payload.machine_id,
+                "user_id": payload.user_id,
             }
         )
     except (QuoteValidationError, QuoteAlreadyExistsError):

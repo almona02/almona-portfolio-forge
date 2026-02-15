@@ -9,6 +9,8 @@ import {
 import { QuoteRequestStepper } from './QuoteRequestStepper';
 import { useToast } from '@/hooks/useToast';
 import { useClipboard } from '@/hooks/useClipboard';
+import { getApiBase } from '@/lib/apiBase';
+import { useAuth } from '@/context/AuthContext';
 import { Copy, Check } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 
@@ -42,6 +44,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
   relatedServiceTicketId,
 }) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const quoteClipboard = useClipboard({ label: 'quote number' });
   const twinClipboard = useClipboard({ label: 'digital twin code' });
   const [submitting, setSubmitting] = useState(false);
@@ -51,8 +54,6 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
     portal_reference?: string | null;
     id: string;
   }>(null);
-
-  const apiBase = (import.meta as any).env?.VITE_API_BASE || '';
 
   interface SubmitPayloadProduct { id: string; price?: number }
   interface SubmitPayloadService { id?: string; price?: number }
@@ -74,6 +75,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
     setSubmitting(true);
     try {
       const payload = {
+        ...(user?.id && { user_id: user.id }),
         contact_name: quoteData.name || quoteData.email || 'Customer',
         contact_email: quoteData.email,
         contact_phone: quoteData.phone,
@@ -88,7 +90,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
         related_service_ticket_id: relatedServiceTicketId,
       };
 
-      const resp = await fetch(`${apiBase}/api/v2/quotes/create`, {
+      const resp = await fetch(`${getApiBase()}/api/v2/quotes/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

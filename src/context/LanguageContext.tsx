@@ -409,6 +409,22 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Support Tickets',
     ar: 'تذاكر الدعم'
   },
+  'portal.my_quotes': {
+    en: 'My Quotes',
+    ar: 'عروض الأسعار'
+  },
+  'portal.no_quotes_found': {
+    en: 'No quote requests yet',
+    ar: 'لا توجد طلبات عروض أسعار'
+  },
+  'portal.quote_requests_description': {
+    en: 'Your quote requests and pricing inquiries',
+    ar: 'طلبات عروض الأسعار واستفسارات التسعير'
+  },
+  'portal.print_po': {
+    en: 'Print / PDF',
+    ar: 'طباعة / PDF'
+  },
   'portal.documents': {
     en: 'Documents',
     ar: 'المستندات'
