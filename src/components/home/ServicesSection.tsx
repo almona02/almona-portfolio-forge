@@ -36,7 +36,7 @@ const ServicesSection = () => {
           <path d="M15 16h.01"></path>
         </svg>
       ),
-      path: "/usedmachines#top"
+      path: "/used-machines#top"
     },
     {
       title: t('services.items.maintenance_support.title'),

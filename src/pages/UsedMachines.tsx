@@ -50,7 +50,7 @@ const UsedMachines = () => {
    */
   const handleSellClick = () => {
     if (user) {
-      navigate('/usedmachines/sell');
+      navigate('/used-machines/sell');
     } else {
       navigate('/login');
     }

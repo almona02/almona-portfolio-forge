@@ -160,7 +160,8 @@ export const AdvisoryDashboard: React.FC = () => {
     const handleValidation = async (advisoryId: string, decision: ValidationDecision, rationale: string) => {
         try {
             // Send validation to backend
-            await fetch('/api/v2/advisories/validate', {
+            const { getApiBase } = await import('@/lib/apiBase');
+            await fetch(`${getApiBase()}/api/v2/advisories/validate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ advisoryId, decision, rationale })
