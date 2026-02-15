@@ -1,7 +1,7 @@
 # Vision & Image Processing
 opencv-python-headless>=4.8.0
 numpy>=1.24.0
-pillow>=10.0.0
+pillow>=12.1.1
 
 # Vectorization
 potracer>=0.0.4

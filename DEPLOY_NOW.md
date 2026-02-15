@@ -37,7 +37,7 @@ Go to: **Vercel Dashboard → Project → Settings → Environment Variables**
 Add:
 ```bash
 VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_KEY=your_supabase_anon_key
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 VITE_API_URL=https://your-backend.railway.app  # ← Your backend URL from Step 1
 ```
 
@@ -109,6 +109,7 @@ LC_ALL=ar_EG.UTF-8
 
 ## 📚 Full Documentation
 
+- **Vercel via Git:** `docs/VERCEL_GIT_DEPLOYMENT.md`
 - **Complete Guide:** `docs/DEPLOYMENT_CHECKLIST.md`
 - **Backend Options:** `docs/BACKEND_DEPLOYMENT_OPTIONS.md`
 - **Environment Variables:** `docs/VERCEL_ENVIRONMENT_VARIABLES.md`

@@ -6,7 +6,7 @@ tensorflow==2.20.0  # Stable for Python 3.11/3.12
 # OCR and image processing
 easyocr==1.7.1
 opencv-python==4.10.0.84
-Pillow==10.4.0
+Pillow>=12.1.1
 numpy==1.26.4
 scikit-image==0.23.2
 

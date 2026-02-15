@@ -20,6 +20,7 @@
     { "source": "/ydt/", "destination": "/index.html" },
     { "source": "/ydt/(.*)", "destination": "/index.html" },
     { "source": "/machines", "destination": "/index.html" },
+    { "source": "/machines/:path*", "destination": "/index.html" },
     { "source": "/products/machines/(.*)", "destination": "/index.html" },
     { "source": "/products/machines", "destination": "/index.html" },
     { "source": "/products/profiles/(.*)", "destination": "/index.html" },
@@ -40,6 +41,8 @@
     { "source": "/fabricator/projects", "destination": "/index.html" },
     { "source": "/fabricator/(.*)", "destination": "/index.html" },
     { "source": "/egyptian-project-wizard", "destination": "/index.html" },
+    { "source": "/used-machines", "destination": "/index.html" },
+    { "source": "/used-machines/:path*", "destination": "/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

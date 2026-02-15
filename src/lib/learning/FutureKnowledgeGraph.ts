@@ -5,6 +5,7 @@
  * This is the vector store for industry intelligence gathered by the Industry Watchdog.
  */
 
+import { getApiBase } from '@/lib/apiBase';
 import type { FutureIntelligence, IndustryArticle, MarketAlert, TrendData, TrendQuery } from './types';
 
 export class FutureKnowledgeGraph {
@@ -12,8 +13,8 @@ export class FutureKnowledgeGraph {
   private cache: Map<string, { data: any; timestamp: number }> = new Map();
   private cacheTTL = 5 * 60 * 1000; // 5 minutes
 
-  constructor(apiBaseUrl: string = '/api/v2') {
-    this.apiBaseUrl = apiBaseUrl;
+  constructor(apiBaseUrl?: string) {
+    this.apiBaseUrl = apiBaseUrl ?? `${getApiBase()}/api/v2`;
   }
 
   /**
