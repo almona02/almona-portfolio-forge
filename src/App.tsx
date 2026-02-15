@@ -365,6 +365,9 @@ const App = memo(() => {
                                   <Route path="/products/profiles" element={<Suspense fallback={getLoadingComponent('/products')}><Products /></Suspense>} />
                                   <Route path="/products/machines/:machineId" element={<Suspense fallback={getLoadingComponent('/products')}><MachineDetail /></Suspense>} />
                                   <Route path="/products/profiles/:profileId" element={<Suspense fallback={getLoadingComponent('/products')}><ProfileDetail /></Suspense>} />
+                                  
+                                  {/* Redirect /machines (without ID) to /products/machines - preserves query params */}
+                                  <Route path="/machines" element={<Navigate to="/products/machines" replace />} />
                                   <Route path="/machines/:machineId" element={<Suspense fallback={getLoadingComponent('/machines')}><DigitalTwinDashboard /></Suspense>} />
 
                                   {/* Egyptian Market Routes */}

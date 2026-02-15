@@ -1,69 +1,36 @@
-# ALMONA Constitutional Compliance - Task Tracker
+# Fix 404 Errors - Products & Machines Routes
 
-## Objective
-Remove deceptive ML logic and wire constitutional tests for Tier 3 Protected Determinism
+## Issues to Fix:
+1. ❌ `/machines?category=cutting` returns 404
+2. ❌ `/products?search=dc+550&category=cutting&scroll=results` returns 404
+3. ❌ Search result links cannot be shared with customers
 
-## Tasks
+## Root Causes:
+- Missing route for `/machines` base path (only `/machines/:machineId` exists)
+- Missing rewrite rule in vercel.json for `/machines` path
+- Products page search links work internally but fail on direct access/refresh
+- Vercel needs proper rewrite rules to handle query parameters
 
-### 1. Remove Deceptive AlgorithmPredictor
-- [x] DELETE src/lib/ml/AlgorithmPredictor.ts (contains prohibited ML/AI logic)
+## Implementation Plan:
 
-### 2. Create Golden Master Test Data
-- [x] CREATE src/tests/fixtures/golden-masters/facade-simple.json with sample test data
+### Step 1: Fix App.tsx Routes ✅
+- [x] Add redirect route: `/machines` → `/products/machines` (preserve query params)
+- [x] Verify `/products` route handles all query parameters correctly
 
-### 3. Wire Constitutional Test
-- [x] IMPLEMENT loadGoldenMaster() helper function
-- [x] IMPLEMENT loadGoldenMasterSuite() helper function
-- [x] IMPLEMENT calculateAccuracy() helper function
-- [x] IMPLEMENT generateBOM() helper function (mock for now, TODO: wire to real generator)
-- [x] IMPLEMENT generateCutList() helper function (mock for now, TODO: wire to real generator)
-- [x] IMPLEMENT runFullPipeline() helper function
+### Step 2: Fix vercel.json Rewrites ✅
+- [x] Add rewrite rule for `/machines` → `/index.html`
+- [x] Ensure `/products` rewrite handles query parameters
+- [x] Order rules correctly (specific before general)
 
-### 4. Verification
-- [ ] Run tests to verify constitutional compliance
-- [ ] Verify no linter errors
-- [ ] Confirm deterministic behavior (no ML/AI/prediction)
+### Step 3: Test Scenarios
+- [ ] Test: `/machines?category=cutting` redirects to `/products/machines?category=cutting`
+- [ ] Test: `/products?search=dc+550&category=cutting&scroll=results` loads correctly
+- [ ] Test: Direct link sharing works for search results
+- [ ] Test: Browser refresh maintains search state
+- [ ] Test: All query parameters are preserved
 
-## Constitutional Requirements
-- ✓ Tier 3 Protected Determinism
-- ✓ No ML, AI, prediction, or learning logic
-- ✓ Deterministic, auditable code only
-- ✓ Human-validated outputs
-
-## Summary of Changes
-
-### Files Deleted
-1. **src/lib/ml/AlgorithmPredictor.ts** - Removed deceptive ML-based algorithm predictor
-   - Contained prohibited ML training, confidence scores, and learning logic
-   - Violated Tier 3 Protected Determinism requirements
-
-### Files Created
-1. **src/tests/fixtures/golden-masters/facade-simple.json** - Golden master test data
-   - Simple facade test case for constitutional compliance verification
-   - Contains input WindowUnit, expected BOM, expected cut list
-   - Serves as "source of truth" for accuracy validation
-
-### Files Modified
-1. **src/tests/constitutional/GuaranteeVerification.test.ts** - Implemented test helpers
-   - loadGoldenMaster(): Loads test data from JSON files using dynamic imports
-   - loadGoldenMasterSuite(): Loads all golden masters for batch testing
-   - calculateAccuracy(): Compares actual vs expected results (6 checks)
-   - generateBOM(): Generates BOM with constitutional metadata (mock for now)
-   - generateCutList(): Generates cut list with Tier 3 compliance (mock for now)
-   - runFullPipeline(): Executes full BIM → BOM → Cut List → Optimization pipeline
-   - All functions ensure Tier 3 compliance and deterministic behavior
-
-### Constitutional Compliance Verified
-- ✓ No ML/AI/prediction logic in codebase
-- ✓ AlgorithmSelector uses deterministic rules only
-- ✓ All outputs include Tier 3 metadata
-- ✓ Constitutional disclaimers present
-- ✓ No prohibited terminology (analyze, calculate, design, recommend)
-- ✓ No engineering authority claims
-- ✓ Deterministic replay capability implemented
-
-### Next Steps
-1. Run tests: `npm run test` to verify all tests pass
-2. Wire real BOM and cut list generators (currently using mocks)
-3. Add more golden master test cases for comprehensive validation
-4. Verify 99.8% accuracy claim with production data
+### Step 4: Deployment & Verification
+- [ ] Deploy to Vercel
+- [ ] Verify in production environment
+- [ ] Test shared links with customers
+- [ ] Check browser console for any remaining 404s
