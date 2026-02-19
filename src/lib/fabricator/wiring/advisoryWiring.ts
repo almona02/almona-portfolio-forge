@@ -97,7 +97,7 @@ export type AdvisoryComponentKey = keyof typeof ADVISORY_WIRING;
 /**
  * Get a wired advisory component by key
  */
-export function getAdvisoryComponent(key: AdvisoryComponentKey): React.FC<any> {
+export function getAdvisoryComponent(key: AdvisoryComponentKey): React.FC<Record<string, unknown>> {
   const component = ADVISORY_WIRING[key];
   if (!component) {
     throw new Error(`Unknown advisory component: ${key}`);

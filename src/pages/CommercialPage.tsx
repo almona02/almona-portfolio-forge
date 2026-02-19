@@ -41,7 +41,7 @@ import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import type { DraftInvoice, DraftQuote, OptimizationResult, WindowUnit } from '@/types/fabricator';
+import type { DraftInvoice, DraftQuote } from '@/types/fabricator';
 import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Receipt, Search, Send, Trash2, X } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -97,14 +97,14 @@ const CommercialPageComponent: React.FC = () => {
   const [downloadingPDF, setDownloadingPDF] = useState<{ type: 'quote' | 'invoice'; id: string } | null>(null);
 
   const _handleCreateDraftQuote = () => {
-    const project = state.currentProject as WindowUnit | null;
+    const project = state.currentProject;
     let amount = 0;
     let currency: string = 'EGP'; // Default to EGP
     let coreQuote: ReturnType<QuotingEngine['generateQuote']> | null = null;
 
     if (project && project.optimization) {
       const engine = new QuotingEngine();
-      coreQuote = engine.generateQuote(project, project.optimization as OptimizationResult);
+      coreQuote = engine.generateQuote(project, project.optimization);
       amount = coreQuote.total;
 
       // Infer currency from system pack regions where possible
@@ -118,7 +118,7 @@ const CommercialPageComponent: React.FC = () => {
 
     const newQuote: DraftQuote = {
       id: `quote_${Date.now()}`,
-      customerName: (state.currentCustomer as any)?.name || 'New Customer',
+      customerName: (state.currentCustomer)?.name || 'New Customer',
       projectTitle: project?.projectCode || project?.orderNumber || 'New Project',
       amount,
       currency,

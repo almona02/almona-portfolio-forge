@@ -23,7 +23,7 @@ const IconRenderer: React.FC<{ name: IconName }> = ({ name }) => {
 
 const TrainingServicesPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialMaterial = (searchParams.get('material') === 'upvc' ? 'upvc' : 'aluminium') as 'aluminium' | 'upvc';
+  const initialMaterial = (searchParams.get('material') === 'upvc' ? 'upvc' : 'aluminium');
   const [material, setMaterial] = useState<'aluminium' | 'upvc'>(initialMaterial);
   const cohorts = useMemo(() => generateUpcomingCohorts(), []);
   const [enrollOpen, setEnrollOpen] = useState(false);

@@ -50,7 +50,7 @@ export interface RealityProof {
   /** GPS coordinates (optional) */
   location?: GPSPoint;
   /** Additional metadata for cryptographic provenance (optional) */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -68,7 +68,7 @@ export interface RealityOSEvent {
   /** Proof bundle (human verification) */
   proof: RealityProof;
   /** Payload (vertical-specific data) */
-  payload: Record<string, any>;
+  payload: Record<string, unknown>;
 }
 
 /**
@@ -100,7 +100,7 @@ export interface AlmonaRealityOSEventMapping {
   /** RealityOS event type */
   realityOSEventType: CoreEventType;
   /** Entity ID generator function */
-  entityId: (entity: any) => string;
+  entityId: (entity: Record<string, unknown>) => string;
   /** Human verification required */
   humanVerificationRequired: boolean;
   /** Proof requirements */

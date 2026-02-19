@@ -1,27 +1,23 @@
 /**
  * DraftingPreview3D - Deterministic 3D Preview Component
- * 
- * Replaced "Gold-Tier" generator with explicit, deterministic Three.js implementation
- * to ensure "No AI Hype" accuracy.
- * 
- * Features:
- * - Renders 2D rectangles as 3D extruded aluminum frames
- * - Uses real profile dimensions from ProfileRegistry
- * - Deterministic, no "hallucinations"
+ *
+ * When drafting has a defined frame (materialAwareWindows + grid), uses Window3DGenerator
+ * (single source of truth for 3D). Otherwise falls back to DraftingCanvas3D for plain rectangles.
  */
 
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import type { Profile } from '@/types/fabricator';
 import { AlertCircle, Box } from 'lucide-react';
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import { useDraftingContext } from './DraftingContext';
+import { DraftingCanvas3D } from './canvas/DraftingCanvas3D';
 import { DraftingErrorBoundary } from './components/DraftingErrorBoundary';
 import { EmptyState } from './components/EmptyState';
 import { LoadingState } from './components/LoadingState';
 import type { MaterialType } from './types/materialAware';
+import { draftingToWindowUnit } from './utils/draftingToWindowUnit';
 
-// Lazy load the actual Canvas component
-const DraftingCanvas3D = lazy(() => import('./canvas/DraftingCanvas3D').then(m => ({ default: m.DraftingCanvas3D })));
+const Window3DGenerator = lazy(() => import('../Window3DGenerator').then(m => ({ default: m.Window3DGenerator })));
 
 export interface DraftingPreview3DProps {
   selectedMaterial?: MaterialType;
@@ -35,9 +31,13 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
 }) => {
   const drafting = useDraftingContext();
   const geometry = drafting.getGeometry();
+  const windowUnit = useMemo(() => draftingToWindowUnit(drafting), [drafting]);
 
-  // Check if we have anything to render
   const hasGeometry = geometry.rectangles.length > 0;
+  // Use Window3DGenerator only when we have a grid with cells (sashes/mullions).
+  // Single rectangle or single defined frame with no grid uses DraftingCanvas3D to avoid corrupted preview.
+  const hasGridWithCells = (windowUnit?.grid?.cells?.length ?? 0) > 0;
+  const useFullFidelity = windowUnit != null && hasGridWithCells;
 
   if (!hasGeometry) {
     return (
@@ -67,12 +67,16 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
         </div>
       }
     >
-      <Suspense fallback={<LoadingState message="Loading 3D Engine..." size="lg" overlay />}>
+      {useFullFidelity && windowUnit ? (
+        <Suspense fallback={<LoadingState message="Loading 3D Engine..." size="lg" overlay />}>
+          <Window3DGenerator windowUnit={windowUnit} showControls={false} />
+        </Suspense>
+      ) : (
         <DraftingCanvas3D
           rectangles={geometry.rectangles}
           systemId={selectedSystemPackId}
         />
-      </Suspense>
+      )}
     </DraftingErrorBoundary>
   );
 };

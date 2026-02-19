@@ -145,7 +145,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'user_profile',
       header: 'Customer',
       cell: ({ row }) => {
-        const profile = row.getValue('user_profile') as TicketWithDetails['user_profile']
+        const profile = row.getValue('user_profile')
         return (
           <div className="text-sm">
             <div className="font-medium">{profile?.full_name || 'Unknown'}</div>
@@ -163,7 +163,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'priority',
       header: 'Priority',
       cell: ({ row }) => {
-        const priority = row.getValue('priority') as TicketPriority
+        const priority = row.getValue('priority')
         return (
           <Badge 
             variant="outline" 
@@ -186,7 +186,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'type',
       header: 'Type',
       cell: ({ row }) => {
-        const type = row.getValue('type') as TicketType
+        const type = row.getValue('type')
         return (
           <Badge variant="secondary">
             {type.replace('_', ' ').charAt(0).toUpperCase() + type.replace('_', ' ').slice(1)}
@@ -198,7 +198,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'assigned_user',
       header: 'Assigned To',
       cell: ({ row }) => {
-        const assignedUser = row.getValue('assigned_user') as TicketWithDetails['assigned_user']
+        const assignedUser = row.getValue('assigned_user')
         return assignedUser ? (
           <div className="text-sm">
             <div className="font-medium">{assignedUser.full_name}</div>

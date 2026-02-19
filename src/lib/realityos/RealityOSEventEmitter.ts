@@ -43,7 +43,7 @@ export class RealityOSEventEmitter {
    */
   async emitEvent(
     eventType: string,
-    entity: any,
+    entity: Record<string, unknown>,
     proof: RealityProof,
     options: EventEmissionOptions = {}
   ): Promise<EventEmissionResult> {
@@ -56,7 +56,7 @@ export class RealityOSEventEmitter {
           const faultEvent: FaultEvent = {
             faultType: 'MISSED_EVENT',
             originalEventType: eventType,
-            entityId: entity.id || entity.unitId || 'unknown',
+            entityId: String(entity.id ?? entity.unitId ?? 'unknown'),
             detectedAt: new Date(),
             reason: retroactiveCheck.reason,
             requiresHumanInvestigation: true,
@@ -79,7 +79,7 @@ export class RealityOSEventEmitter {
         const faultEvent: FaultEvent = {
           faultType: 'PROOF_INVALID',
           originalEventType: eventType,
-          entityId: entity.id || 'unknown',
+          entityId: String(entity.id ?? 'unknown'),
           detectedAt: new Date(),
           reason: `Proof validation failed: ${validation.errors.join(', ')}`,
           requiresHumanInvestigation: true,
@@ -221,7 +221,7 @@ export class RealityOSEventEmitter {
    */
   private mapToRealityOSEvent(
     eventType: string,
-    entity: any,
+    entity: Record<string, unknown>,
     proof: RealityProof,
     mapping: ReturnType<typeof getEventMapping>
   ): RealityOSEvent {
@@ -290,7 +290,7 @@ export class RealityOSEventEmitter {
    * Call on first navigation into /fabricator for append-only governance.
    */
   async emitFabricatorCutoverExecuted(
-    payload: { cutoverId?: string; timestamp?: string; [key: string]: any } = {}
+    payload: { cutoverId?: string; timestamp?: string; [key: string]: unknown } = {}
   ): Promise<EventEmissionResult> {
     const proof: RealityProof = {
       verifiedBy: 'system',
@@ -307,7 +307,7 @@ export class RealityOSEventEmitter {
    * Emit FabricatorRollbackExecuted event (when flipping read source back to v1 within 30-day window).
    */
   async emitFabricatorRollbackExecuted(
-    payload: { rollbackId?: string; reason?: string; [key: string]: any },
+    payload: { rollbackId?: string; reason?: string; [key: string]: unknown },
     operatorId: string
   ): Promise<EventEmissionResult> {
     const proof: RealityProof = {
@@ -328,7 +328,7 @@ export class RealityOSEventEmitter {
    * - Serves as the governance anchor for event-derived migration mode
    */
   async emitFabricatorMigrationInitiated(
-    payload: { migrationId: string; note?: string; [key: string]: any },
+    payload: { migrationId: string; note?: string; [key: string]: unknown },
     operatorId: string
   ): Promise<EventEmissionResult> {
     const proof: RealityProof = {
@@ -351,7 +351,7 @@ export class RealityOSEventEmitter {
    * evidence to the append-only RealityOS ledger.
    */
   async emitFabricatorMigrationCompleted(
-    payload: { migrationId: string; chainHeadHash: string; certificateHash?: string; [key: string]: any },
+    payload: { migrationId: string; chainHeadHash: string; certificateHash?: string; [key: string]: unknown },
     operatorId: string,
     completionProofPhotoHash: string
   ): Promise<EventEmissionResult> {
@@ -375,7 +375,7 @@ export class RealityOSEventEmitter {
    * Emit FabricatorRollbackInitiated event
    */
   async emitFabricatorRollbackInitiated(
-    payload: { migrationId: string; reason?: string; [key: string]: any },
+    payload: { migrationId: string; reason?: string; [key: string]: unknown },
     operatorId: string
   ): Promise<EventEmissionResult> {
     const proof: RealityProof = {
@@ -395,7 +395,7 @@ export class RealityOSEventEmitter {
    * Emit FabricatorRollbackCompleted event
    */
   async emitFabricatorRollbackCompleted(
-    payload: { migrationId: string; chainHeadHash?: string; certificateHash?: string; [key: string]: any },
+    payload: { migrationId: string; chainHeadHash?: string; certificateHash?: string; [key: string]: unknown },
     operatorId: string,
     completionProofPhotoHash: string
   ): Promise<EventEmissionResult> {
@@ -436,7 +436,7 @@ export class RealityOSEventEmitter {
    * Emit CutListAuthorized event
    */
   async emitCutListAuthorized(
-    cutList: any,
+    cutList: Record<string, unknown>,
     operatorId: string,
     screenshotHash?: string
   ): Promise<EventEmissionResult> {
@@ -454,7 +454,7 @@ export class RealityOSEventEmitter {
    * Emit CNCFileReleased event
    */
   async emitCNCFileReleased(
-    cncFile: any,
+    cncFile: Record<string, unknown>,
     operatorId: string,
     fileHash: string,
     qrCode?: string
@@ -474,7 +474,7 @@ export class RealityOSEventEmitter {
    * Emit ProductionStarted event
    */
   async emitProductionStarted(
-    production: any,
+    production: Record<string, unknown>,
     operatorId: string,
     machineQR: string,
     workshopGPS?: { latitude: number; longitude: number; accuracyMeters?: number }
@@ -494,7 +494,7 @@ export class RealityOSEventEmitter {
    * Emit ProductionCompleted event
    */
   async emitProductionCompleted(
-    production: any,
+    production: Record<string, unknown>,
     operatorId: string,
     productPhotoHash: string,
     productQR: string,
@@ -515,7 +515,7 @@ export class RealityOSEventEmitter {
    * Emit QualityPassed event
    */
   async emitQualityPassed(
-    qualityResult: any,
+    qualityResult: Record<string, unknown>,
     operatorId: string,
     productPhotoHash: string,
     productQR: string
@@ -535,7 +535,7 @@ export class RealityOSEventEmitter {
    * Emit QualityFailed event
    */
   async emitQualityFailed(
-    qualityResult: any,
+    qualityResult: Record<string, unknown>,
     operatorId: string,
     defectPhotoHashes: string[],
     productQR: string
@@ -555,7 +555,7 @@ export class RealityOSEventEmitter {
    * Emit ProductDelivered event
    */
   async emitProductDelivered(
-    delivery: any,
+    delivery: Record<string, unknown>,
     operatorId: string,
     deliveryPhotoHash: string,
     productQR: string,
@@ -584,7 +584,7 @@ export class RealityOSEventEmitter {
    * Binds remnant to original BOM + cut list with cryptographic provenance
    */
   async emitRemnantCreated(
-    remnant: any,
+    remnant: Record<string, unknown>,
     operatorId: string,
     remnantPhotoHash: string,
     sourceProjectId?: string,

@@ -8,6 +8,7 @@
  * @constitutional_compliance AICS-001 §9.3
  */
 
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { Badge } from '@/shared/ui/ui/badge';
 import type { WindowUnit } from '@/types/fabricator';
 import { Circle, MapPin, Shield } from 'lucide-react';
@@ -16,6 +17,12 @@ import React from 'react';
 export interface ConstitutionalTopBarProps {
     /** Current window unit/pose */
     project: WindowUnit | null;
+
+    /** When set (e.g. from drafting canvas), overrides project size for the Size badge so it stays in sync with current design */
+    liveSize?: { width: number; height: number } | null;
+
+    /** When set (e.g. from drafting first defined frame), overrides project.systemPackId for system pack branding display */
+    liveSystemPackId?: string | null;
 
     /** Current design mode */
     mode: 'smartdraw' | 'drafting';
@@ -44,6 +51,8 @@ export interface ConstitutionalTopBarProps {
  */
 export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
     project,
+    liveSize,
+    liveSystemPackId,
     mode,
     hasUnsavedChanges = false,
     constitutionalStatus,
@@ -52,6 +61,13 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
     if (!project) return null;
 
     const modeLabel = mode === 'drafting' ? 'Drafting' : 'SmartDraw';
+    const widthMm = liveSize?.width ?? project.overallWidth;
+    const heightMm = liveSize?.height ?? project.overallHeight;
+    const effectivePackId = liveSystemPackId ?? project.systemPackId;
+    const systemPack = effectivePackId
+      ? SYSTEM_PACKS.find((p) => p.meta?.id === effectivePackId)
+      : null;
+    const systemPackName = systemPack?.meta?.name ?? null;
 
     return (
         <div
@@ -74,9 +90,15 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
                     <span className="font-mono text-amber-300 font-semibold tracking-tight">
                         #{project.posNumber}
                     </span>
-
+                    {systemPackName && (
+                        <span
+                            className="ml-1.5 text-amber-400/90 font-medium"
+                            title={systemPackName}
+                        >
+                            — {systemPackName}
+                        </span>
+                    )}
                     <span className="text-slate-600 mx-1">of</span>
-
                     <span className="text-slate-400">Project</span>
                     <span className="font-mono text-blue-300 font-semibold tracking-tight">
                         #{project.orderNumber}
@@ -131,7 +153,7 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
                 )}
             </div>
 
-            {/* Right: Dimensions */}
+            {/* Right: Size & Dimensions */}
             <div className="flex items-center gap-2">
                 <Badge
                     variant="outline"
@@ -139,8 +161,9 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
             text-xs font-mono
             bg-slate-800/50 text-slate-300 border-slate-600/50
           "
+                    title="Frame size (width × height)"
                 >
-                    {project.overallWidth.toFixed(0)} × {project.overallHeight.toFixed(0)} mm
+                    Size: {Number(widthMm).toFixed(0)} × {Number(heightMm).toFixed(0)} mm
                 </Badge>
             </div>
         </div>
@@ -152,10 +175,17 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
  */
 export const ConstitutionalTopBarCompact: React.FC<ConstitutionalTopBarProps> = ({
     project,
+    liveSystemPackId,
     hasUnsavedChanges = false,
     className = ''
 }) => {
     if (!project) return null;
+
+    const effectivePackId = liveSystemPackId ?? project.systemPackId;
+    const systemPack = effectivePackId
+      ? SYSTEM_PACKS.find((p) => p.meta?.id === effectivePackId)
+      : null;
+    const systemPackName = systemPack?.meta?.name ?? null;
 
     return (
         <div
@@ -168,6 +198,9 @@ export const ConstitutionalTopBarCompact: React.FC<ConstitutionalTopBarProps> = 
             <MapPin className="h-3 w-3" />
             <span>
                 Pos <span className="font-mono text-amber-300">#{project.posNumber}</span>
+                {systemPackName && (
+                    <span className="text-amber-400/90 font-medium ml-1">— {systemPackName}</span>
+                )}
                 {' '}of{' '}
                 <span className="font-mono text-blue-300">#{project.orderNumber}</span>
             </span>

@@ -16,7 +16,7 @@ export interface Certificate {
   expiryDate?: Date;
   status: 'active' | 'expired' | 'revoked';
   documentUrl?: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export interface CertificateTemplate {

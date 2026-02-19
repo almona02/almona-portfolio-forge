@@ -128,8 +128,8 @@ export class ProfileBOMCalculator {
           role: 'sash',
           length: sashLength * sashCount,
           quantity: sashCount,
-          cuttingLengths: Array(sashCount).fill(sashLength),
-          angles: Array(sashCount * GEOMETRIC_CONSTANTS.CORNERS_PER_SASH).fill(MITER_ANGLES.CORNER_MITER),
+          cuttingLengths: Array.from<number>({ length: sashCount }, () => sashLength),
+          angles: Array.from<number>({ length: sashCount * GEOMETRIC_CONSTANTS.CORNERS_PER_SASH }, () => MITER_ANGLES.CORNER_MITER),
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
           wasteLength: ProductionUtils.calculateWaste(sashLength * sashCount, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: [],
@@ -240,8 +240,8 @@ export class ProfileBOMCalculator {
             if (slatCount > 0) {
                  profiles.push(this.createProfileEntry(
                     systemPackId, slatProfile, 'shutter_slat',
-                    slatLengthKV * slatCount, slatCount, Array(slatCount).fill(slatLength), 
-                    Array(slatCount).fill(MITER_ANGLES.STRAIGHT_CUT),
+                    slatLengthKV * slatCount, slatCount, Array.from<number>({ length: slatCount }, () => slatLength),
+                    Array.from<number>({ length: slatCount }, () => MITER_ANGLES.STRAIGHT_CUT),
                     ProductionUtils
                 ));
             }
@@ -272,7 +272,7 @@ export class ProfileBOMCalculator {
   private createProfileEntry(
     systemPackId: string, profile: Profile, role: string, 
     totalLength: number, quantity: number, cutLengths: number[], angles: number[],
-    prodUtils: any // Typed as any here because it's a dynamic import, but could be safer
+    prodUtils: { calculateWaste: (len: number, stock: number) => number; calculateProfileWeight: (len: number, spec: unknown) => number; calculateMaterialCost: (len: number, spec: unknown) => number }
   ): FabricationData['profiles'][0] {
       return {
           id: `${role}-${systemPackId}`,
@@ -350,7 +350,7 @@ export class ProfileBOMCalculator {
       stockQuantity: 0,
       minStockLevel: 0,
       supplier: 'default',
-      profileRole: role as any, // Cast to any to satisfy specific string literal types if needed
+      profileRole: role as FabricationData['profiles'][0]['role'],
     };
   }
 }

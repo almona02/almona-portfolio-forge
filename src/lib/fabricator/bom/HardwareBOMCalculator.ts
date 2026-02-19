@@ -14,8 +14,8 @@
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { hardenerSelector } from '@/lib/fabricator/hardener';
+import { ProductionUtils } from '@/lib/fabricator/productionUtils';
 import type { FabricationData, SystemPack, WindowUnit } from '@/types/fabricator';
-// import type { HardenerSelectionResult } from '@/lib/fabricator/hardener';
 import {
     HARDWARE_POSITIONING,
     HARDWARE_QUANTITY,
@@ -41,31 +41,52 @@ export class HardwareBOMCalculator {
     pattern: EgyptianPattern,
     systemPack: SystemPack
   ): Promise<FabricationData['hardware']> {
+    await Promise.resolve(); // Satisfy require-await; calculation is sync
     const hardware: FabricationData['hardware'] = [];
-    const { ProductionUtils } = await import('../productionUtils');
-    const patternAny = pattern as any;
+
+    /** Extended pattern with accessories array (objects with hardware fields) */
+    type PatternWithAccessories = EgyptianPattern & {
+      accessories?: Array<{
+        id?: string;
+        supplierCode?: string;
+        name?: string;
+        category?: string;
+        type?: string;
+        position?: string;
+        installationNotes?: string | string[];
+        torqueSpec?: unknown;
+        alternatives?: string[];
+        estimatedInstallationTime?: number;
+        purchaseLink?: string;
+      }>;
+    };
+    const patternWithAccessories = pattern as PatternWithAccessories;
 
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
 
     // Get hardware from pattern.accessories
-    if (patternAny.accessories && Array.isArray(patternAny.accessories)) {
-      for (const [index, accessory] of patternAny.accessories.entries()) {
+    if (patternWithAccessories.accessories && Array.isArray(patternWithAccessories.accessories)) {
+      for (const [index, accessory] of patternWithAccessories.accessories.entries()) {
         const quantity = ProductionUtils.calculateHardwareQuantity(accessory, windowUnit, pattern);
 
-        hardware.push({
-          id: accessory.id || `hardware-${pattern.id || 'pattern'}-${index}`,
-          supplierCode: accessory.supplierCode || accessory.id || 'UNKNOWN',
-          name: accessory.name || 'Hardware Item',
-          category: this.mapCategory(accessory.category || accessory.type),
-          quantity,
-          positionSpec: accessory.position || this.getDefaultPosition(accessory.category),
-          installationNotes: accessory.installationNotes || this.getDefaultInstallationNotes(accessory.category),
-          torqueSpec: accessory.torqueSpec,
-          alternatives: accessory.alternatives || [],
-          estimatedTime: accessory.estimatedInstallationTime || this.getDefaultInstallationTime(accessory.category),
-          supplierLink: accessory.purchaseLink
-        });
+        const cat = String(accessory.category ?? accessory.type ?? '');
+        /* eslint-disable @typescript-eslint/no-unsafe-assignment -- accessory from extended EgyptianPattern; fields validated at runtime */
+        const item: FabricationData['hardware'][0] = {
+          id: String(accessory.id ?? `hardware-${pattern.id ?? 'pattern'}-${index}`),
+          supplierCode: String(accessory.supplierCode ?? accessory.id ?? 'UNKNOWN'),
+          name: String(accessory.name ?? 'Hardware Item'),
+          category: this.mapCategory(cat),
+          quantity: typeof quantity === 'number' ? quantity : 0,
+          positionSpec: String(accessory.position ?? this.getDefaultPosition(cat)),
+          installationNotes: accessory.installationNotes ?? this.getDefaultInstallationNotes(cat),
+          torqueSpec: accessory.torqueSpec ?? undefined,
+          alternatives: Array.isArray(accessory.alternatives) ? (accessory.alternatives as string[]) : [],
+          estimatedTime: typeof accessory.estimatedInstallationTime === 'number' ? accessory.estimatedInstallationTime : this.getDefaultInstallationTime(cat),
+          supplierLink: accessory.purchaseLink as string | undefined
+        };
+        /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+        hardware.push(item);
       }
     }
 
@@ -118,7 +139,7 @@ export class HardwareBOMCalculator {
 
     // Handles (standard: 1 per operable sash)
     const hasCells = pattern.gridSpec?.cells && Array.isArray(pattern.gridSpec.cells);
-    const sashCount = hasCells ? pattern.gridSpec!.cells.filter(c => 
+    const sashCount = hasCells ? pattern.gridSpec.cells.filter(c => 
       c.type === 'sash' || c.type === 'sliding'
     ).length : HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
 

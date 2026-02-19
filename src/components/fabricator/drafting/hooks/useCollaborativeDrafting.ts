@@ -377,7 +377,7 @@ export function useCollaborativeDrafting({
   }, [userId]);
 
   // Send geometry change (with validation and rate limiting)
-  const broadcastGeometryChange = useCallback((type: 'geometry_add' | 'geometry_update' | 'geometry_delete', data: any) => {
+  const broadcastGeometryChange = useCallback((type: 'geometry_add' | 'geometry_update' | 'geometry_delete', data: unknown) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       // Check rate limit
       if (!rateLimiter.current.checkLimit(userId)) {

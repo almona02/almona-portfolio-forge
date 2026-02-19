@@ -175,11 +175,11 @@ export const getTicketMetrics = async (): Promise<{
   const overdueTickets = tickets.filter(t => t.sla_resolution_due && new Date(t.sla_resolution_due) < now && !['resolved','closed'].includes(t.status)).length
   const ticketsWithResponse = tickets.filter(t => t.first_response_at)
   const avgResponseTime = ticketsWithResponse.length
-    ? ticketsWithResponse.reduce((acc, t) => acc + ((new Date(t.first_response_at!).getTime() - new Date(t.created_at).getTime()) / 36e5), 0) / ticketsWithResponse.length
+    ? ticketsWithResponse.reduce((acc, t) => acc + ((new Date(t.first_response_at).getTime() - new Date(t.created_at).getTime()) / 36e5), 0) / ticketsWithResponse.length
     : 0
   const resolvedList = tickets.filter(t => t.resolved_at)
   const avgResolutionTime = resolvedList.length
-    ? resolvedList.reduce((acc, t) => acc + ((new Date(t.resolved_at!).getTime() - new Date(t.created_at).getTime()) / 36e5), 0) / resolvedList.length
+    ? resolvedList.reduce((acc, t) => acc + ((new Date(t.resolved_at).getTime() - new Date(t.created_at).getTime()) / 36e5), 0) / resolvedList.length
     : 0
   const slaBreachedCount = tickets.filter(t => t.sla_breached).length
   const slaBreachRate = totalTickets ? (slaBreachedCount / totalTickets) * 100 : 0
@@ -223,7 +223,7 @@ export const subscribeToTicketUpdates = (callback: (payload: {
       },
       (payload) => {
         callback({
-          eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+          eventType: payload.eventType,
           new: payload.new,
           old: payload.old
         })

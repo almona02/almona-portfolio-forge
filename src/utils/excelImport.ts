@@ -187,7 +187,7 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
         category: item.category ?? item.Category ?? null,
         subcategory: item.subcategory ?? item.Subcategory ?? null,
         compatible_machines: typeof item.compatible_machines === 'string'
-          ? (item.compatible_machines as string).split(',').map((s: string) => s.trim()).filter(Boolean)
+          ? (item.compatible_machines).split(',').map((s: string) => s.trim()).filter(Boolean)
           : Array.isArray(item.compatible_machines) ? item.compatible_machines : [],
   price: toFloat(item.price),
   original_price: toFloat(item.original_price),
@@ -252,7 +252,7 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
         const { error } = await (supabase as any)
           .from('spare_parts')
           .upsert({
-            part_number: payload.part_number!,
+            part_number: payload.part_number,
             name: payload.name!,
             description: payload.description,
             compatible_machines: [] as string[],

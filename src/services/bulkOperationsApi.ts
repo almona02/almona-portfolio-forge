@@ -15,8 +15,8 @@ import type {
 } from "./BulkOperationServiceTypes";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl) {
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
+  if (typeof envUrl === 'string' && envUrl) {
     return envUrl.replace(/\/$/, '');
   }
   if (import.meta.env.DEV) {
@@ -48,15 +48,29 @@ export interface BulkJobProgress {
 }
 
 /**
+ * Backend result shape (may vary from BulkJobResult)
+ */
+interface BulkJobResultBackend {
+  errors?: BulkJobError[];
+  summary?: { errors?: BulkJobError[]; succeeded?: number; failed?: number } & Record<string, unknown>;
+  downloadUrl?: string;
+  fileSize?: number;
+  expiresAt?: string;
+  downloadExpiresAt?: string;
+  succeeded?: number;
+  failed?: number;
+}
+
+/**
  * Bulk job response from backend
  */
 export interface BulkJobResponse {
   jobId: string;
   status: BulkJobStatus;
-  operation: Record<string, any>;
+  operation: Record<string, unknown>;
   itemCount: number;
   progress: BulkJobProgress;
-  result?: BulkJobResult;
+  result?: BulkJobResultBackend;
   createdAt: string;
   startedAt?: string;
   completedAt?: string;
@@ -84,7 +98,7 @@ export interface BulkJobListResponse {
 /**
  * Convert frontend BulkOperation to backend format
  */
-function convertBulkOperationToBackend(operation: BulkOperation): Record<string, any> {
+function convertBulkOperationToBackend(operation: BulkOperation): Record<string, unknown> {
   if (operation.op === 'edit') {
     return {
       type: 'edit',
@@ -115,7 +129,7 @@ function convertBulkOperationToBackend(operation: BulkOperation): Record<string,
       },
     };
   }
-  throw new Error(`Unsupported operation type: ${(operation as any).op}`);
+  throw new Error(`Unsupported operation type: ${'op' in operation ? operation.op : 'unknown'}`);
 }
 
 /**
@@ -143,17 +157,16 @@ export async function startBulkOperation(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
     if (response.status === 429) {
-      throw new Error(errorData.detail || "Too many concurrent jobs");
+      throw new Error(errorData.detail ?? "Too many concurrent jobs");
     }
-    throw new Error(errorData.detail || "Failed to start bulk operation");
+    throw new Error(errorData.detail ?? "Failed to start bulk operation");
   }
 
-  return await response.json();
+  return (await response.json()) as BulkJobResponse;
 }
 
 /**
@@ -175,13 +188,13 @@ export async function getBulkOperationStatus(jobId: string): Promise<BulkJobResp
     if (response.status === 404) {
       throw new Error(`Bulk operation job ${jobId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to get bulk operation status");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to get bulk operation status");
   }
 
-  return await response.json();
+  return (await response.json()) as BulkJobResponse;
 }
 
 /**
@@ -200,13 +213,13 @@ export async function cancelBulkOperation(jobId: string): Promise<BulkJobRespons
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to cancel bulk operation");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to cancel bulk operation");
   }
 
-  return await response.json();
+  return (await response.json()) as BulkJobResponse;
 }
 
 /**
@@ -229,13 +242,13 @@ export async function retryBulkOperation(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to retry bulk operation");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to retry bulk operation");
   }
 
-  return await response.json();
+  return (await response.json()) as BulkJobResponse;
 }
 
 /**
@@ -265,49 +278,46 @@ export async function listBulkOperations(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to list bulk operations");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to list bulk operations");
   }
 
-  return await response.json();
+  return (await response.json()) as BulkJobListResponse;
 }
 
 /**
  * Convert backend response to frontend BulkJob
  */
 export function convertToBulkJob(response: BulkJobResponse): BulkJob {
+  const res = response.result;
   // Extract errors from result if present
   const errors: BulkJobError[] = [];
-  if (response.result) {
-    // Backend may structure errors differently
-    const resultErrors = (response.result as any).errors;
+  if (res) {
+    const resultErrors = res.errors;
     if (Array.isArray(resultErrors)) {
       errors.push(...resultErrors);
     }
-    // Also check summary.errors if present
-    const summaryErrors = (response.result as any).summary?.errors;
+    const summaryErrors = res.summary?.errors;
     if (Array.isArray(summaryErrors)) {
       errors.push(...summaryErrors);
     }
   }
 
   // Extract result data
-  const result: BulkJobResult | undefined = response.result
+  const result: BulkJobResult | undefined = res
     ? {
-        downloadUrl: (response.result as any).downloadUrl,
-        fileSize: (response.result as any).fileSize,
-        expiresAt: (response.result as any).expiresAt || (response.result as any).downloadExpiresAt,
-        summary: (response.result as any).summary || {},
+        downloadUrl: res.downloadUrl,
+        fileSize: res.fileSize,
+        expiresAt: res.expiresAt ?? res.downloadExpiresAt,
+        summary: (res.summary as Record<string, unknown>) ?? {},
       }
     : undefined;
 
   // Calculate successful/failed from result or progress
-  const successfulItems =
-    (response.result as any)?.summary?.succeeded ?? (response.result as any)?.succeeded ?? 0;
-  const failedItems =
-    (response.result as any)?.summary?.failed ?? (response.result as any)?.failed ?? 0;
+  const successfulItems = res?.summary?.succeeded ?? res?.succeeded ?? 0;
+  const failedItems = res?.summary?.failed ?? res?.failed ?? 0;
 
   return {
     jobId: response.jobId,

@@ -156,13 +156,13 @@ export class TriggerDetector {
       switch (triggerConfig.trigger_type) {
         case 'event':
           return this.detectEventTrigger(
-            triggerConfig as EventTriggerConfig,
+            triggerConfig,
             event
           );
 
         case 'schedule':
           return this.detectScheduleTrigger(
-            triggerConfig as ScheduleTriggerConfig
+            triggerConfig
           );
 
         case 'manual':

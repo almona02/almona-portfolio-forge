@@ -92,7 +92,7 @@ export class PersonalAnalytics {
       // Calculate average adjustment
       const adjustments = data
         .map((row) => {
-          const eventData = row.event_data as any;
+          const eventData = row.event_data;
           return eventData.new_k_factor - eventData.previous_k_factor;
         })
         .filter((adj) => !isNaN(adj));
@@ -396,7 +396,7 @@ export class PersonalAnalytics {
 
       // Group by profile
       const grouped = data.reduce((acc, row) => {
-        const profileId = row.profile_id || (row.event_data as any)?.profile_id;
+        const profileId = row.profile_id || (row.event_data)?.profile_id;
         if (!profileId) return acc;
 
         if (!acc[profileId]) {
@@ -464,7 +464,7 @@ export class PersonalAnalytics {
 
       const tests = data
         .map((row) => {
-          const eventData = row.event_data as any;
+          const eventData = row.event_data;
           return eventData.difference ? Math.abs(eventData.difference) : null;
         })
         .filter((diff): diff is number => diff !== null);

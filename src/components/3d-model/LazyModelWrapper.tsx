@@ -25,7 +25,7 @@ interface LazyModelWrapperProps {
   height?: string;
   onLoaded?: () => void;
   autoLoad?: boolean;
-  [key: string]: any; // Allow other props to pass through
+  [key: string]: unknown; // Allow other props to pass through
 }
 
 /**

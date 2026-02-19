@@ -45,7 +45,7 @@ export function useJobStatus(jobId: string | null) {
         (payload) => {
           if (!isMounted) return;
 
-          const newStatus = payload.new as any;
+          const newStatus = payload.new;
           setJobStatus({
             job_id: newStatus.job_id,
             status: newStatus.status,

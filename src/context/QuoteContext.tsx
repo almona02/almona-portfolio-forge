@@ -126,7 +126,10 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     const savedItems = localStorage.getItem('almona_quote_items');
     if (savedItems) {
       try {
-        setQuoteItems(JSON.parse(savedItems));
+        const parsed = JSON.parse(savedItems) as unknown;
+        if (Array.isArray(parsed) && parsed.every(isQuoteItemShape)) {
+          setQuoteItems(parsed);
+        }
       } catch (error) {
         console.error('Error loading saved quote items:', error);
       }
@@ -139,6 +142,12 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   }, [quoteItems]);
 
   // ShopProductInput is imported from '@/types/shopProduct'
+
+  const isQuoteItemShape = (v: unknown): v is QuoteItem => {
+    if (!v || typeof v !== 'object') return false;
+    const o = v as Record<string, unknown>;
+    return typeof o.id === 'string' && typeof o.product_id === 'string' && typeof o.quantity === 'number';
+  };
 
   const isDbProduct = (p: unknown): p is Database['public']['Tables']['products']['Row'] => {
     if (typeof p !== 'object' || p === null) return false;
@@ -170,8 +179,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
       notes: item.notes ?? null,
     };
 
-    const { error } = await (supabase
-      .from('quote_items') as any)
+    const { error } = await supabase
+      .from('quote_items')
       .insert(insertData);
 
     if (error) throw error;
@@ -189,12 +198,12 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
       const product = isDbProduct(productInput)
         ? productInput
         : (() => {
-            const p = productInput as ShopProductInput;
+            const p = productInput;
             const now = new Date().toISOString();
             const allowed: ProductCategory[] = ['machine', 'spare_part', 'raw_material', 'tool', 'accessory'];
             const category = (allowed as string[]).includes(p.category) ? (p.category as ProductCategory) : 'machine';
             const price = ('pricing' in p && p.pricing?.basePrice !== undefined)
-              ? p.pricing!.basePrice!
+              ? p.pricing.basePrice
               : ('price' in p ? p.price ?? null : null);
             const specifications: Record<string, string | number | boolean> = {};
             if ('specifications' in p && Array.isArray(p.specifications)) {
@@ -430,8 +439,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
         updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await (supabase
-        .from('quotes') as any)
+      const { data, error } = await supabase
+        .from('quotes')
         .update(updateData)
         .eq('id', currentQuote.id)
         .select()
@@ -487,14 +496,18 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
           )
         `)
         .eq('id', quoteId)
-        .single() as { data: (Database['public']['Tables']['quotes']['Row'] & { quote_items: Array<Database['public']['Tables']['quote_items']['Row'] & { products: Database['public']['Tables']['products']['Row'] }> }) | null; error: any };
+        .single();
 
       if (quoteError || !quote) throw quoteError || new Error('Quote not found');
 
-      setCurrentQuote(quote as Database['public']['Tables']['quotes']['Row']);
+      type QuoteWithItems = Database['public']['Tables']['quotes']['Row'] & {
+        quote_items?: Array<Database['public']['Tables']['quote_items']['Row'] & { products?: Database['public']['Tables']['products']['Row'] }>;
+      };
+      const q = quote as QuoteWithItems;
+      setCurrentQuote(q);
 
       // Convert database quote items to local format
-      const items: QuoteItem[] = ((quote as any).quote_items || []).map((item: any) => ({
+      const items: QuoteItem[] = (q.quote_items ?? []).map((item) => ({
         id: item.id,
     product_id: item.product_id!,
         product_name_ar: item.product_name_ar,
@@ -546,7 +559,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
 
     const { error } = await supabase
       .from('quote_items')
-      .insert(itemsToInsert as any);
+      .insert(itemsToInsert as Database['public']['Tables']['quote_items']['Insert'][]);
 
     if (error) throw error;
   };

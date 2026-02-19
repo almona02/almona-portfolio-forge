@@ -8,14 +8,16 @@
  * - Manages profile data from context or props
  */
 
+import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { usePose as usePoseV2, useProjectPositions } from '@/hooks/useFabricatorQueries';
+import { usePose as usePoseV2, useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { useJobsStore } from '@/store/jobsStore';
 import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { EngineeringBay } from './EngineeringBay';
 
 // Optional: If projectId is provided in route, we can load it
@@ -31,6 +33,8 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
   const useV2 = FeatureFlags.FABRICATOR_READ_V2;
   const { state, dispatch } = useFabricatorWorkspace();
   const { jobs, setSelectedJob } = useJobsStore();
+  const upsertPose = useUpsertPose();
+  const { user } = useAuth();
   const effectivePoseId = poseId ?? projectId;
   const { data: poseV2, isLoading: loadingPoseV2 } = usePoseV2(effectivePoseId ?? undefined);
 
@@ -78,9 +82,11 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
   const allSiblingPositions = useProjectPositions(resolvedProjectId);
 
   const relatedPositions = useMemo<WindowUnit[]>(() => {
-    if (!currentProject) return [];
-    // Filter out the currently-active pose
-    return allSiblingPositions.filter((wu) => wu.id !== currentProject.id);
+    if (!currentProject) return allSiblingPositions;
+    const others = allSiblingPositions.filter((wu) => wu.id !== currentProject.id);
+    const currentInList = allSiblingPositions.some((wu) => wu.id === currentProject.id);
+    if (currentInList) return allSiblingPositions;
+    return [currentProject, ...others];
   }, [currentProject, allSiblingPositions]);
 
   // Handle design completion
@@ -121,6 +127,32 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     }
   }, [useV2, resolvedProjectId, jobs, navigate, dispatch, setSelectedJob]);
 
+  const handleAddNewPose = useCallback(async () => {
+    if (!currentProject || !useV2 || !resolvedProjectId || !user?.id) return;
+    const nextPosNum = allSiblingPositions.length + 1;
+    const newUnit: WindowUnit = {
+      ...currentProject,
+      id: crypto.randomUUID(),
+      orderNumber: currentProject.orderNumber ?? '1',
+      posNumber: String(nextPosNum),
+      status: 'draft',
+      quantity: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      components: [],
+      grid: { rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }] },
+      glazing: {},
+      hardware: [],
+    } as WindowUnit;
+    try {
+      const result = await upsertPose.mutateAsync({ windowUnit: newUnit });
+      toast.success('New pose added');
+      navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
+    } catch (err) {
+      toast.error(`Failed to add pose: ${err}`);
+    }
+  }, [currentProject, useV2, resolvedProjectId, user?.id, allSiblingPositions.length, upsertPose, navigate]);
+
   if (useV2 && effectivePoseId && loadingPoseV2) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-[#0a0a0a]">
@@ -141,6 +173,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
         relatedPositions={relatedPositions}
         onSelectPosition={handleSelectPosition}
         onBackToMeasuring={handleBackToMeasuring}
+        onAddNewPose={useV2 && resolvedProjectId && user?.id ? handleAddNewPose : undefined}
       />
     </div>
   );

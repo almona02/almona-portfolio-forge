@@ -10,9 +10,9 @@
 export class EventBatcher {
   private rafId: number | null = null;
   private latestEvent: React.MouseEvent | WheelEvent | null = null;
-  private callback: (e: any) => void;
+  private callback: (e: unknown) => void;
 
-  constructor(callback: (e: any) => void) {
+  constructor(callback: (e: unknown) => void) {
     this.callback = callback;
   }
 

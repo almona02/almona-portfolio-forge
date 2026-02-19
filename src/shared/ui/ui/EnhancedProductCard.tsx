@@ -5,6 +5,7 @@ import { Button } from "@/shared/ui/ui/button";
 import { Eye, ShoppingCart, GitCompare, Play, Pause, Download } from "lucide-react";
 import { OptimizedImage } from "@/components/optimized/OptimizedImage";
 import { ProductVideoPlayer } from "@/components/ui/ProductVideoPlayer";
+import { machinePricingService } from '@/lib/pricing/MachinePricingService';
 // ProductHoverPreview removed to avoid duplicate info popup
 import type { Machine } from "@/constants/yilmazMachines";
 
@@ -109,6 +110,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
   show3DBadge = true
 }) => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const priceInfo = machinePricingService.getMachinePrice(machine.id);
 
   const handleSelect = () => {
     onSelect?.(machine, !isSelected);
@@ -302,6 +304,20 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             {machine.description}
           </p>
         </div>
+
+        {/* Price Display */}
+        {priceInfo && (
+          <LazyMotionDiv
+            className="bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/30 rounded-lg p-3"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="text-gray-400 text-xs mb-1">Price</div>
+            <div className="text-amber-400 font-bold text-xl">
+              {machinePricingService.formatPrice(priceInfo.basePrice, priceInfo.currency)}
+            </div>
+          </LazyMotionDiv>
+        )}
 
         {/* Specifications */}
         <div className="grid grid-cols-2 gap-2 text-xs">

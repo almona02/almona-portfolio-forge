@@ -7,6 +7,8 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { FenestrationSystem } from '@/types/fenestration';
+import { createValidSystem } from './testFixtures';
 import { FenestrationSystemValidator } from '../FenestrationSystemValidator';
 import { PatternMigrationService } from '../PatternMigrationService';
 import {
@@ -63,7 +65,7 @@ describe('Top Patterns Migration', () => {
     vi.clearAllMocks();
     
     // Mock successful migration
-    (PatternMigrationService.migrate as any).mockImplementation((pattern: any) => {
+    vi.mocked(PatternMigrationService).migrate.mockImplementation((pattern: { id: string; name: string }) => {
       return {
         success: true,
         system: {
@@ -87,7 +89,7 @@ describe('Top Patterns Migration', () => {
     });
     
     // Mock successful validation
-    (FenestrationSystemValidator.validate as any).mockReturnValue({
+    vi.mocked(FenestrationSystemValidator).validate.mockReturnValue({
       isValid: true,
       errors: [],
       warnings: [],
@@ -105,7 +107,7 @@ describe('Top Patterns Migration', () => {
     });
 
     it('should handle migration errors gracefully', async () => {
-      (PatternMigrationService.migrate as any).mockImplementationOnce(() => ({
+      vi.mocked(PatternMigrationService).migrate.mockImplementationOnce(() => ({
         success: false,
         errors: ['Migration failed'],
         warnings: [],
@@ -278,14 +280,9 @@ describe('Top Patterns Migration', () => {
 
   describe('exportMigratedSystems', () => {
     it('should export systems to JSON', () => {
-      const systems = [
-        {
-          id: 'TEST-1',
-          name: 'Test System',
-          region: 'EGY',
-          material: 'aluminum',
-        },
-      ] as any[];
+      const systems: FenestrationSystem[] = [
+        { ...createValidSystem(), id: 'TEST-1', name: 'Test System' },
+      ];
 
       const json = exportMigratedSystems(systems);
 

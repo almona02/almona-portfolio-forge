@@ -11,7 +11,7 @@ export interface PerformanceMetric {
   operation: string;
   durationMs: number;
   timestamp: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   success?: boolean;
   error?: string;
 }
@@ -44,7 +44,7 @@ export class GoldTierPerformanceMonitor {
   static record(
     operation: string,
     durationMs: number,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     success: boolean = true,
     error?: string
   ): void {

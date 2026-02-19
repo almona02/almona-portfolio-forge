@@ -6,7 +6,7 @@ import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { cn } from '@/lib/utils';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { GridCell, Profile, WindowGrid, WindowUnit } from '@/types/fabricator';
+import { GridCell, isGlazingSpecFlat, Profile, WindowGrid, WindowUnit } from '@/types/fabricator';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   CALCULATION_MULTIPLIERS,
@@ -210,11 +210,12 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
   // Get glass info
   const glassInfo = useMemo(() => {
     if (!project?.glazing) return 'N/A';
-    const glazing = project.glazing as any;
-    if (glazing.thickness && glazing.spacer) {
+    const glazing = project.glazing;
+    if (isGlazingSpecFlat(glazing) && glazing.thickness && glazing.spacer) {
       return `${glazing.thickness}mm+${glazing.spacer}+${glazing.thickness}mm`;
     }
-    return glazing.type || 'N/A';
+    if (isGlazingSpecFlat(glazing)) return glazing.type || 'N/A';
+    return 'N/A';
   }, [project?.glazing]);
 
   // Get color info

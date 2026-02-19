@@ -204,6 +204,7 @@ import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { useJobsStore } from '@/store/jobsStore';
 import {
     AdaptiveSolverConfig,
+    isGlazingSpecFlat,
     MeasurementData,
     OptimizationResult,
     Profile,
@@ -256,7 +257,7 @@ export const FabricatorWorkflow: React.FC = () => {
       }, 100);
     }
   }, [location.hash]);
-  const currentProject = (workspaceState.currentProject as WindowUnit | null) || null;
+  const currentProject = (workspaceState.currentProject) || null;
   const [projects, setProjects] = useState<WindowUnit[]>([]);
   const [inventory, setInventory] = useState<Profile[]>([]);
   const optimizationResults: OptimizationResult | null =
@@ -280,8 +281,8 @@ export const FabricatorWorkflow: React.FC = () => {
 
   // Check for system tuned message from navigation state
   useEffect(() => {
-    if (location.state && (location.state as any).systemTuned) {
-      const message = (location.state as any).systemTunedMessage;
+    if (location.state && (location.state).systemTuned) {
+      const message = (location.state).systemTunedMessage;
       if (message) {
         setSystemTunedMessage(message);
         // Clear after 5 seconds
@@ -556,7 +557,7 @@ export const FabricatorWorkflow: React.FC = () => {
     if (activeId) {
       const job = jobs.find((j) => j.id === activeId);
       if (job) {
-        workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: job as WindowUnit });
+        workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: job });
       }
     }
   }, [jobs, navState, selectedJobId, setSelectedJob, workspaceDispatch]);
@@ -1968,8 +1969,8 @@ export const FabricatorWorkflow: React.FC = () => {
                                     type: 'aluminum',
                                     systemPackId: currentProject.systemPackId || projectMeta?.systemPackId || 'panda-50'
                                   }}
-                                  glazing={currentProject.glazing ? {
-                                    type: currentProject.glazing.type as any,
+                                  glazing={currentProject.glazing && isGlazingSpecFlat(currentProject.glazing) ? {
+                                    type: currentProject.glazing.type ?? 'double',
                                     thickness: currentProject.glazing.thickness || 24,
                                     segments: []
                                   } : undefined}

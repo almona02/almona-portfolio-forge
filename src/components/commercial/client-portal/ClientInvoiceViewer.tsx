@@ -79,7 +79,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
 
   const handleDownloadPDF = async (invoice: any) => {
     try {
-      const pdfBlob = await CommercialPDFService.generateInvoicePDF(invoice as any);
+      const pdfBlob = await CommercialPDFService.generateInvoicePDF(invoice);
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = url;

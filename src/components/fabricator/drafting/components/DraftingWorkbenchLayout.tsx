@@ -45,7 +45,7 @@ export const DraftingWorkbenchLayout: React.FC<DraftingWorkbenchLayoutProps> = (
   }, [actions]);
 
   const handleValidate = useCallback(() => {
-    handlers.handleValidateForExecution();
+    void handlers.handleValidateForExecution();
   }, [handlers]);
 
   // Calculate element count
@@ -91,7 +91,7 @@ export const DraftingWorkbenchLayout: React.FC<DraftingWorkbenchLayoutProps> = (
           gridVisible={state.preferences.gridVisible}
           snapEnabled={state.preferences.snapEnabled}
           onValidate={handleValidate}
-          onOptimize={handlers.handleOptimize}
+          onOptimize={() => void handlers.handleOptimize()}
           isOptimizing={state.operations.isOptimizing}
           onRecoveryRestore={handlers.handleRecoveryRestore}
           onRecoveryDiscard={handlers.handleRecoveryDiscard}
