@@ -46,7 +46,7 @@ export interface FabricatorPositionV2 {
 
 /** Map v2 position row to WindowUnit for UI (exported for use in hooks/components). */
 export function mapPositionRowToWindowUnit(row: PositionV2Row): WindowUnit | null {
-  const wu = row.window_unit as Record<string, unknown> | null;
+  const wu = row.window_unit;
   if (!wu) return null;
   const components = (row.components ?? wu.components ?? []) as WindowUnit['components'];
   return {

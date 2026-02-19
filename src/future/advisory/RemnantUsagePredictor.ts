@@ -159,7 +159,7 @@ export class RemnantUsagePredictor {
     const input = tfModule.tensor2d([normalizedFeatures], [1, 8]);
 
     // Predict
-    const prediction = this.model.predict(input) as any; // tf.Tensor
+    const prediction = this.model.predict(input); // tf.Tensor
     const predictionValue = await prediction.data();
 
     // Clean up tensors

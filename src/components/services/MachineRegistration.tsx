@@ -138,7 +138,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       };
 
       const cacheKey = ['machines', user.id];
-      const previous = queryClient.getQueryData(cacheKey) as unknown[] | undefined;
+      const previous = queryClient.getQueryData(cacheKey);
       queryClient.setQueryData(cacheKey, (old: unknown[] | undefined) => [optimisticMachine, ...(old || [])]);
 
       const _hadExistingQuery = !!previous;

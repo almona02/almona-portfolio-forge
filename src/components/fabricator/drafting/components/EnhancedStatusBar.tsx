@@ -211,11 +211,12 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
       {/* Right Section - Coordinates & Settings */}
       <div className="flex items-center gap-2 flex-shrink-0">
         {validatedCoordinates && (
-          <div className="flex items-center gap-1 font-mono text-[10px]">
-            <span className="text-slate-500 font-medium">X:</span>
-            <span className="text-amber-300 font-semibold">{validatedCoordinates.x.toFixed(2)}</span>
-            <span className="text-slate-500 font-medium ml-1">Y:</span>
-            <span className="text-amber-300 font-semibold">{validatedCoordinates.y.toFixed(2)}</span>
+          <div className="flex items-center gap-1 font-mono text-[10px]" title="Cursor location (world mm)">
+            <span className="text-slate-500 font-medium">Location:</span>
+            <span className="text-amber-300 font-semibold">{validatedCoordinates.x.toFixed(1)}</span>
+            <span className="text-slate-400">×</span>
+            <span className="text-amber-300 font-semibold">{validatedCoordinates.y.toFixed(1)}</span>
+            <span className="text-slate-500 font-medium">mm</span>
           </div>
         )}
         {zoomLevel && (

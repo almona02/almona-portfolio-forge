@@ -136,7 +136,7 @@ export const OrdersPanel: React.FC = () => {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
-        const item = row.original as Order
+        const item = row.original
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -186,7 +186,7 @@ export const OrdersPanel: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Bulk payment:</span>
-            <Select value={bulkPaymentValue} onValueChange={(v: string) => { setBulkPaymentValue(v as Order['payment_status']); if (hasSelection) { setPendingAction({ type: 'payment', value: v as Order['payment_status'] }); setConfirmOpen(true) } }}>
+            <Select value={bulkPaymentValue} onValueChange={(v: string) => { setBulkPaymentValue(v); if (hasSelection) { setPendingAction({ type: 'payment', value: v }); setConfirmOpen(true) } }}>
               <SelectTrigger>
                 <SelectValue placeholder={hasSelection ? 'Select payment' : 'Select rows first'} />
               </SelectTrigger>

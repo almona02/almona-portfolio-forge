@@ -51,6 +51,15 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function getMetaString(metadata: Record<string, unknown> | null | undefined, key: string): string | null {
+  const v = metadata?.[key];
+  return typeof v === 'string' ? v : null;
+}
+
+function isUserShape(v: unknown): v is User {
+  return v !== null && typeof v === 'object' && 'id' in v && typeof (v as User).id === 'string';
+}
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -123,9 +132,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sessionStorage.setItem(cacheKey, now.toString());
         sessionStorage.setItem(`${cacheKey}-data`, JSON.stringify(profile));
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle RLS infinite recursion error - don't retry
-      if (error?.code === '42P17') {
+      const err = error as { code?: string };
+      if (err?.code === '42P17') {
         console.error(
           'RLS Policy Error: Cannot fetch profile due to infinite recursion in RLS policy.',
           'This is a Supabase database configuration issue. The profile may have been saved but cannot be read.',
@@ -148,8 +158,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const cachedData = sessionStorage.getItem(`${cacheKey}-data`);
       if (cachedData) {
         try {
-          const cachedProfile = JSON.parse(cachedData);
-          setUser(cachedProfile);
+          const parsed = JSON.parse(cachedData) as unknown;
+          if (isUserShape(parsed)) {
+            setUser(parsed);
+          }
           return;
         } catch {
           // Ignore parse errors
@@ -158,14 +170,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Build immediate placeholder instead of null to avoid portal flicker
       if (supabaseUser) {
+        const meta = supabaseUser.user_metadata as Record<string, unknown> | null | undefined;
         setUser({
           id: supabaseUser.id,
           email: supabaseUser.email || undefined,
           username: null,
-          full_name: supabaseUser.user_metadata?.full_name || null,
-          avatar_url: supabaseUser.user_metadata?.avatar_url || null,
-          company_name: supabaseUser.user_metadata?.company_name || null,
-          phone: supabaseUser.user_metadata?.phone || null,
+          full_name: getMetaString(meta, 'full_name'),
+          avatar_url: getMetaString(meta, 'avatar_url'),
+          company_name: getMetaString(meta, 'company_name'),
+          phone: getMetaString(meta, 'phone'),
           sector: null as unknown as User['sector'],
           workshop_location: null,
           governorate: null,
@@ -197,7 +210,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let authChangeTimeout: NodeJS.Timeout;
 
     // Only set up auth listener if Supabase is properly configured
-    let subscription: any = null;
+    let subscription: { unsubscribe: () => void } | null = null;
 
     // Capture ref value at effect start for cleanup (fixes ESLint warning)
     const ongoingFetchesRef = ongoingFetches;
@@ -249,8 +262,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             app_metadata: { provider: 'email' },
             aud: 'authenticated',
             created_at: new Date().toISOString(),
-          } as any);
-          setUser(mockUser as any);
+          } as SupabaseUser);
+          setUser(mockUser as User);
           setLoading(false);
           return;
         }
@@ -326,12 +339,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    getInitialSession();
+    void getInitialSession();
 
     if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY) {
       const {
         data: { subscription: authSubscription },
-      } = supabase.auth.onAuthStateChange(async (event, session) => {
+      } = supabase.auth.onAuthStateChange((event, session) => {
         // Clear any pending auth change
         if (authChangeTimeout) {
           clearTimeout(authChangeTimeout);
@@ -365,15 +378,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             // Use startTransition for non-urgent updates to improve INP
             startTransition(() => {
               setSupabaseUser(session.user);
+              const meta = session.user.user_metadata as Record<string, unknown> | null | undefined;
               // Immediate optimistic placeholder if user object not yet built
               setUser(prev => prev || {
-                id: session.user!.id,
-                email: session.user!.email || undefined,
+                id: session.user.id,
+                email: session.user.email || undefined,
                 username: null,
-                full_name: session.user!.user_metadata?.full_name || null,
-                avatar_url: session.user!.user_metadata?.avatar_url || null,
-                company_name: session.user!.user_metadata?.company_name || null,
-                phone: session.user!.user_metadata?.phone || null,
+                full_name: getMetaString(meta, 'full_name'),
+                avatar_url: getMetaString(meta, 'avatar_url'),
+                company_name: getMetaString(meta, 'company_name'),
+                phone: getMetaString(meta, 'phone'),
                 sector: null as unknown as User['sector'],
                 workshop_location: null,
                 governorate: null,
@@ -447,11 +461,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Removed delayed fallback; placeholder now applied immediately on profile fetch failure.
 
   // Helper function to parse Supabase auth errors into polished, prestigious user messages
-  const parseAuthError = (error: any): string => {
+  const parseAuthError = (error: unknown): string => {
     if (!error) return 'We encountered an unexpected issue. Please try again, and if the problem persists, our support team is here to assist you.';
 
-    const errorMessage = error.message || '';
-    const status = error.status || error.statusCode || 0;
+    const err = error as { message?: string; status?: number; statusCode?: number };
+    const errorMessage = err.message || '';
+    const status = err.status ?? err.statusCode ?? 0;
 
     // Handle specific error cases with refined messaging
     if (errorMessage.includes('Invalid login credentials') ||
@@ -526,7 +541,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           app_metadata: { provider: 'email' },
           aud: 'authenticated',
           created_at: new Date().toISOString(),
-        } as any;
+        } as SupabaseUser;
 
         setSupabaseUser(mockSupabaseUser);
 
@@ -575,7 +590,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const errorMessage = parseAuthError(error);
         const enhancedError = new Error(errorMessage);
         // Preserve original error for debugging
-        (enhancedError as any).originalError = error;
+        (enhancedError as Error & { originalError?: unknown }).originalError = error;
         throw enhancedError;
       }
 
@@ -583,15 +598,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (data?.user && !data.user.email_confirmed_at) {
         throw new Error('Your account requires email verification to ensure the highest level of security. Please check your inbox for our confirmation message. If you don\'t see it, please check your spam or junk folder. Our support team is available if you need assistance.');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign in error:', error);
       // If it's already a parsed error, just throw it
-      if (error.message && error.originalError) {
+      const err = error as { message?: string; originalError?: unknown };
+      if (err.message && err.originalError) {
         throw error;
       }
       // Otherwise, try to parse it
-      if (error?.message) {
-        const parsedMessage = parseAuthError(error);
+      if (err?.message) {
+        const parsedMessage = parseAuthError(err);
         throw new Error(parsedMessage);
       }
       throw error;
@@ -632,14 +648,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // Wait a moment for the trigger to create the profile, then ensure it's complete
         // Use a ref to prevent multiple simultaneous checks
-        const profileCheckKey = `profile-check-${authData.user!.id}`;
+        const profileCheckKey = `profile-check-${authData.user.id}`;
         if (sessionStorage.getItem(profileCheckKey)) {
           // Already checking or checked, skip
           return;
         }
         sessionStorage.setItem(profileCheckKey, 'true');
 
-        setTimeout(async () => {
+        setTimeout(() => {
+          void (async () => {
           try {
             // First, check if profile exists - use getProfileById which has caching
             const existingProfile = await getProfileById(authData.user!.id);
@@ -656,9 +673,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 sector: (userData.sector || 'GENERAL') as Database['public']['Tables']['profiles']['Row']['sector'],
               };
 
-              // Use type assertion to fix TypeScript inference issue
-              const { error: insertError } = await (supabase
-                .from('profiles') as any)
+              const { error: insertError } = await supabase
+                .from('profiles')
                 .insert(profileInsert);
 
               if (insertError) {
@@ -673,9 +689,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               if (userData.sector) profileUpdates.sector = userData.sector as Database['public']['Tables']['profiles']['Row']['sector'];
 
               if (Object.keys(profileUpdates).length > 0) {
-                // Use type assertion to fix TypeScript inference issue
-                const { error: updateError } = await (supabase
-                  .from('profiles') as any)
+                const { error: updateError } = await supabase
+                  .from('profiles')
                   .update(profileUpdates)
                   .eq('id', authData.user!.id);
 
@@ -698,20 +713,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               sessionStorage.removeItem(profileCheckKey);
             }, 10000); // Allow retry after 10 seconds if needed
           }
+          })();
         }, 1500); // Increased delay to give trigger more time
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign up error:', error);
+      const err = error as { message?: string };
       // Provide more helpful error messages
-      if (error?.message) {
+      if (err?.message) {
         // Check for common database errors
-        if (error.message.includes('duplicate key') || error.message.includes('already exists')) {
+        if (err.message.includes('duplicate key') || err.message.includes('already exists')) {
           throw new Error('An account with this email already exists. Please try logging in instead.');
         }
-        if (error.message.includes('violates row-level security') || error.message.includes('RLS')) {
+        if (err.message.includes('violates row-level security') || err.message.includes('RLS')) {
           throw new Error('Registration failed due to security policy. Please contact support.');
         }
-        if (error.message.includes('trigger') || error.message.includes('function')) {
+        if (err.message.includes('trigger') || err.message.includes('function')) {
           throw new Error('Registration completed, but profile setup encountered an issue. Please try logging in.');
         }
       }

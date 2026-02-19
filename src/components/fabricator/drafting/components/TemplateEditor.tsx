@@ -277,7 +277,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="flex-1 flex flex-col min-h-0">
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="flex-1 flex flex-col min-h-0">
         <TabsList className="mx-4 mt-4 bg-slate-800/50 border border-amber-600/20">
           <TabsTrigger 
             value="extract"
@@ -330,7 +330,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               className="pl-10 bg-slate-800/50 border-slate-700/50 text-slate-200 placeholder:text-slate-500 focus:border-amber-600/50 focus:ring-amber-600/20"
             />
           </div>
-          <Select value={filterMaterial} onValueChange={(v) => setFilterMaterial(v as any)}>
+          <Select value={filterMaterial} onValueChange={(v) => setFilterMaterial(v as typeof filterMaterial)}>
             <SelectTrigger className="w-40 bg-slate-800/50 border-slate-700/50 text-slate-200 focus:border-amber-600/50">
               <Filter className="w-4 h-4 mr-2" />
               <SelectValue />

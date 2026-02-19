@@ -16,7 +16,7 @@ export type BulkOperationType = 'edit' | 'export' | 'delete' | 'status';
  */
 export interface BulkEditOperation {
   op: 'edit';
-  fields: Record<string, any>;  // field → value mapping
+  fields: Record<string, unknown>;  // field → value mapping
 }
 
 /**
@@ -80,7 +80,7 @@ export interface BulkJobResult {
   downloadUrl?: string;
   fileSize?: number;
   expiresAt?: string;
-  summary?: Record<string, any>;
+  summary?: Record<string, unknown>;
 }
 
 /**

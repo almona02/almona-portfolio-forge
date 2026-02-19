@@ -28,14 +28,14 @@ interface WorkspaceSnapshot {
 export interface FabricatorWorkspaceState {
   // Current active context
   currentProject: WindowUnit | null;
-  currentCustomer: any | null;
+  currentCustomer: unknown;
   currentMeasurement: MeasurementData | null;
 
   // Draft states
   draftQuotes: DraftQuote[];
   draftInvoices: DraftInvoice[];
   profileEdits: Record<string, Partial<Profile>>;
-  inventoryEdits: Record<string, any>;
+  inventoryEdits: Record<string, unknown>;
 
   // UI state
   activeWorkspaceTab: WorkspaceTabId;
@@ -49,11 +49,11 @@ export interface FabricatorWorkspaceState {
   // Constitutional: Position draft states (AICS-001 §9.3)
   projectDraftStates: Record<string, {  // key = pose ID (WindowUnit.id)
     smartdraw?: {
-      state: any;
+      state: unknown;
       metadata: ConstitutionalMetadata;
     };
     drafting?: {
-      state: any;
+      state: unknown;
       metadata: ConstitutionalMetadata;
     };
   }>;
@@ -73,18 +73,18 @@ export interface ConstitutionalAuditEntry {
 
 type FabricatorWorkspaceAction =
   | { type: 'SET_CURRENT_PROJECT'; payload: WindowUnit | null }
-  | { type: 'SET_CURRENT_CUSTOMER'; payload: any | null }
+  | { type: 'SET_CURRENT_CUSTOMER'; payload: unknown }
   | { type: 'SET_MEASUREMENT_DATA'; payload: MeasurementData | null }
   | { type: 'UPDATE_DRAFT_QUOTE'; payload: DraftQuote }
   | { type: 'UPDATE_DRAFT_INVOICE'; payload: DraftInvoice }
   | { type: 'ADD_DRAFT_INVOICE'; payload: DraftInvoice }
   | { type: 'REMOVE_DRAFT_QUOTE'; payload: string }
   | { type: 'REMOVE_DRAFT_INVOICE'; payload: string }
-  | { type: 'SET_OPTIMIZATION_RESULT'; payload: any | null }
-  | { type: 'UPDATE_PROJECT_COMPONENTS'; payload: any[] }
-  | { type: 'UPDATE_PROJECT_GRID'; payload: any }
+  | { type: 'SET_OPTIMIZATION_RESULT'; payload: unknown }
+  | { type: 'UPDATE_PROJECT_COMPONENTS'; payload: WindowUnit['components'] }
+  | { type: 'UPDATE_PROJECT_GRID'; payload: Record<string, unknown> }
   | { type: 'UPDATE_PROFILE_EDIT'; payload: { profileId: string; edits: Partial<Profile> } }
-  | { type: 'UPDATE_INVENTORY_EDIT'; payload: { key: string; value: any } }
+  | { type: 'UPDATE_INVENTORY_EDIT'; payload: { key: string; value: unknown } }
   | { type: 'CLEAR_PROFILE_EDIT'; payload: { profileId: string } }
   | { type: 'CLEAR_PROFILE_EDITS' }
   | { type: 'SAVE_SNAPSHOT'; payload: { label: string; description?: string } }
@@ -95,7 +95,7 @@ type FabricatorWorkspaceAction =
   | { type: 'HYDRATE_FROM_STORAGE'; payload: FabricatorWorkspaceState }
   | { type: 'MARK_SAVED'; payload: string }
   // Constitutional actions (AICS-001 §9.3)
-  | { type: 'UPDATE_POSE_DRAFT_STATE'; payload: { poseId: string; mode: 'smartdraw' | 'drafting'; state: any; metadata: ConstitutionalMetadata } }
+  | { type: 'UPDATE_POSE_DRAFT_STATE'; payload: { poseId: string; mode: 'smartdraw' | 'drafting'; state: unknown; metadata: ConstitutionalMetadata } }
   | { type: 'CLEAR_POSE_DRAFT_STATE'; payload: { poseId: string; mode?: 'smartdraw' | 'drafting' } }
   | { type: 'APPEND_CONSTITUTIONAL_AUDIT'; payload: ConstitutionalAuditEntry };
 
@@ -359,7 +359,7 @@ export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    let serviceInstance: any = null;
+    let serviceInstance: InstanceType<typeof import('@/lib/workspace/WorkspaceSyncService').WorkspaceSyncService> | null = null;
 
     void import('@/lib/workspace/WorkspaceSyncService')
       .then(({ WorkspaceSyncService }) => {
@@ -367,13 +367,13 @@ export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({
 
         // Use debounced save method (3-second delay built-in)
         serviceInstance.saveWorkspaceSnapshotDebounced(state, 3000)
-          .then((result: any) => {
+          .then((result) => {
             // Optional: could surface sync status in UI later; for now just log failures.
             if (!result?.success) {
               console.warn('[WorkspaceContext] Workspace sync reported failure status', result);
             }
           })
-          .catch((error: any) => {
+          .catch((error: unknown) => {
             console.warn('[WorkspaceContext] Failed to persist fabricator workspace via sync service:', error);
           });
       })

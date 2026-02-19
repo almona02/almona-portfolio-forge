@@ -147,25 +147,25 @@ const CustomerPortal = () => {
 
   useEffect(() => {
     if (machinesError) {
-      toast.error('Failed to fetch machines: ' + (machinesError as Error).message);
+      toast.error('Failed to fetch machines: ' + (machinesError).message);
     }
   }, [machinesError]);
 
   useEffect(() => {
     if (ticketsError) {
-      toast.error('Failed to fetch tickets: ' + (ticketsError as Error).message);
+      toast.error('Failed to fetch tickets: ' + (ticketsError).message);
     }
   }, [ticketsError]);
 
   useEffect(() => {
     if (documentsError) {
-      toast.error('Failed to fetch documents: ' + (documentsError as Error).message);
+      toast.error('Failed to fetch documents: ' + (documentsError).message);
     }
   }, [documentsError]);
 
   useEffect(() => {
     if (quotesError) {
-      toast.error('Failed to fetch quotes: ' + (quotesError as Error).message);
+      toast.error('Failed to fetch quotes: ' + (quotesError).message);
     }
   }, [quotesError]);
 

@@ -40,7 +40,7 @@ interface ToolGroup {
   label?: string; // Optional label for future use
   tools: {
     id: DraftingTool;
-    iconComponent: any; // Relaxed type to handle Lucide forwardRef components
+    iconComponent: React.ComponentType<{ className?: string }>;
     iconProps?: string;
     label: string;
   }[];

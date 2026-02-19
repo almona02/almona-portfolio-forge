@@ -52,7 +52,11 @@ export const DraftingWorkbench: React.FC<{
   onOptimizeRequest?: (windowUnit: WindowUnit) => void; // Optional callback for optimization
   onExit?: () => void;
   project?: WindowUnit; // Add project prop for constitutional display
-}> = ({ onDesignValidated, initialTemplate, profiles = [], onOptimizeRequest, onExit, project }) => {
+  /** Save current design and advance to next pose (quick entry). */
+  onMoveToNext?: () => void;
+  /** Open pose quick-edit modal (profile color, quantity). */
+  onOpenPoseQuickEdit?: () => void;
+}> = ({ onDesignValidated, initialTemplate, profiles = [], onOptimizeRequest, onExit, project, onMoveToNext, onOpenPoseQuickEdit }) => {
   const { user } = useAuth();
   const { isCompactMode } = useOutletContext<{ isCompactMode?: boolean }>() || {};
 
@@ -133,7 +137,7 @@ export const DraftingWorkbench: React.FC<{
         components: [],
         hardware: [],
         glazing: []
-      } as any;
+      } as unknown as WindowUnit;
 
       const blob = await FacadeReportService.generateFacadeReport(mockUnit, facadeModel);
       const { saveAs } = await import('file-saver');
@@ -157,6 +161,31 @@ export const DraftingWorkbench: React.FC<{
     onViewportNavigate: handlers.handleViewportNavigate,
   });
 
+  // Live system pack from first defined frame or selected pack (gold-tier: system pack branding next to Pose No)
+  const liveSystemPackId = (() => {
+    const mw = draftingEngine.getMaterialAwareWindows?.() ?? [];
+    if (mw.length > 0) {
+      const packId = (mw[0] as { systemPackId?: string }).systemPackId;
+      if (packId) return packId;
+    }
+    return state.preferences.selectedSystemPackId || project?.systemPackId || undefined;
+  })();
+
+  // Live size from current drafting design (first frame or first rect) so top bar Size badge stays in sync
+  const liveSize = (() => {
+    const mw = draftingEngine.getMaterialAwareWindows?.() ?? [];
+    if (mw.length > 0) {
+      const first = mw[0] as { width?: number; height?: number };
+      if (first.width != null && first.height != null) return { width: first.width, height: first.height };
+    }
+    const geom = draftingEngine.getGeometry();
+    const rects = (geom?.rectangles ?? []) as { width?: number; height?: number }[];
+    if (rects.length > 0 && rects[0]?.width != null && rects[0]?.height != null) {
+      return { width: rects[0].width, height: rects[0].height };
+    }
+    return undefined;
+  })();
+
   // Main content (tabs) and right panel content are now handled by extracted components
   const mainContent = React.useMemo(() => (
     <>
@@ -174,12 +203,15 @@ export const DraftingWorkbench: React.FC<{
           {isCompactMode ? (
             <ConstitutionalTopBarCompact
               project={project}
+              liveSystemPackId={liveSystemPackId}
               mode="drafting"
               hasUnsavedChanges={hasUnsavedChanges}
             />
           ) : (
             <ConstitutionalTopBar
               project={project}
+              liveSize={liveSize}
+              liveSystemPackId={liveSystemPackId}
               mode="drafting"
               hasUnsavedChanges={hasUnsavedChanges}
               constitutionalStatus={{
@@ -260,6 +292,8 @@ export const DraftingWorkbench: React.FC<{
               draftingEngine={draftingEngine}
               profiles={profiles}
               collaboration={collaboration}
+              onMoveToNext={onMoveToNext}
+              onOpenPoseQuickEdit={onOpenPoseQuickEdit}
               handlers={{
                 handleCursorMove: handlers.handleCursorMove,
                 handleGridToggle: handlers.handleGridToggle,
@@ -277,7 +311,7 @@ export const DraftingWorkbench: React.FC<{
         )}
       </div>
     </>
-  ), [state, actions, draftingEngine, profiles, collaboration, handlers, mode, facadeModel, handleFacadeReport, onExit, project, hasUnsavedChanges, metadata, isCompactMode]);
+  ), [state, actions, draftingEngine, profiles, collaboration, handlers, mode, facadeModel, handleFacadeReport, onExit, project, hasUnsavedChanges, metadata, isCompactMode, onMoveToNext, onOpenPoseQuickEdit, liveSize, liveSystemPackId]);
 
   // Right panel content
   const rightPanelContent = React.useMemo(() => (
@@ -337,8 +371,8 @@ export const DraftingWorkbench: React.FC<{
         <ImportDialog
           open={state.ui.importDialogOpen}
           onOpenChange={actions.setImportDialogOpen}
-          onImport={handlers.handleImport as any}
-          supportedFormats={['json', 'dxf'] as any}
+          onImport={handlers.handleImport as (file: File, format: 'json' | 'dxf' | 'dwg') => Promise<void>}
+          supportedFormats={['json', 'dxf']}
         />
       </Suspense>
 

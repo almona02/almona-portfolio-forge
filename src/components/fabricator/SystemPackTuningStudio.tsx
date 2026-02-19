@@ -295,7 +295,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                 height: profileData.height ?? p.height,
                 thickness: profileData.thickness ?? p.thickness,
                 specifications: profileData.specifications ?? p.specifications,
-                tuningStatus: (profileData.specifications as any)?.tuningStatus ?? p.tuningStatus,
+                tuningStatus: (profileData.specifications)?.tuningStatus ?? p.tuningStatus,
               };
             }
             return p;
@@ -1094,7 +1094,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                       // Update specifications
                       specifications: profileData.specifications ?? p.specifications,
                       // Update tuning status from specs
-                      tuningStatus: (profileData.specifications as any)?.tuningStatus ?? p.tuningStatus,
+                      tuningStatus: (profileData.specifications)?.tuningStatus ?? p.tuningStatus,
                     };
                   }
                   return p;

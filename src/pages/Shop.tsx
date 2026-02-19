@@ -5,6 +5,7 @@ import { useQuote } from "@/context/QuoteContext";
 import { inventory } from "@/data/inventory";
 import { useToast } from "@/hooks/useToast";
 import i18n from "@/lib/i18n";
+import { machinePricingService } from '@/lib/pricing/MachinePricingService';
 import {
   Grid,
   List,
@@ -291,8 +292,8 @@ const ProductGrid = ({
               features={isMachine(product) ? product.specifications.slice(0, 3).map(s => `${s.key}: ${s.value}`) : []}
               badges={[
                 ...('tags' in product ? product.tags : []),
-                ...('isNew' in product && (product as Machine).isNew ? ['New'] : []),
-                ...('discount' in product && (product as Machine).discount ? [`${(product as Machine).discount}% Off`] : [])
+                ...('isNew' in product && (product).isNew ? ['New'] : []),
+                ...('discount' in product && (product).discount ? [`${(product).discount}% Off`] : [])
               ].filter((badge, index, array) => array.indexOf(badge) === index)}
               egyptCertifications={isMachine(product) ? product.certifications.map(c => c.standard) : []}
               stock={'stock' in product ? product.stock : 0}
@@ -373,6 +374,7 @@ const Shop = () => {
     return yilmazMachines.map(product => {
       const machineSpecs = yilmazMachinesSpecs.find(spec => spec.id === product.id);
       const stock = inventory[product.id] ?? 0;
+      const priceInfo = machinePricingService.getMachinePrice(product.id);
 
       const parsedSpecifications = (machineSpecs?.specifications || product.specifications || []).map(spec => {
         if (typeof spec === 'string') {
@@ -395,6 +397,7 @@ const Shop = () => {
         ...product,
         specifications: parsedSpecifications,
         certifications: parsedCertifications,
+        pricing: priceInfo ? { basePrice: priceInfo.basePrice } : product.pricing,
         stock,
         rating: Math.random() * 2 + 3, // Random rating between 3-5
         reviewCount: Math.floor(Math.random() * 50) + 5,

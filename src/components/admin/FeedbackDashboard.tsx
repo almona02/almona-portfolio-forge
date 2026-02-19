@@ -72,7 +72,7 @@ export const FeedbackDashboard: React.FC<FeedbackDashboardProps> = ({
                         <div className="text-2xl font-bold">
                           {filteredData.length > 0
                             ? (filteredData.reduce((sum, d) => {
-                                const ratings = Object.values(d.responses).filter(v => typeof v === 'number') as number[];
+                                const ratings = Object.values(d.responses).filter(v => typeof v === 'number');
                                 return sum + (ratings.reduce((s, r) => s + r, 0) / ratings.length);
                               }, 0) / filteredData.length).toFixed(1)
                             : 'N/A'}

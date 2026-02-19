@@ -184,6 +184,7 @@ export async function performanceTest1000Selections(): Promise<{
   p95Time: number;
   results: HardenerSelectionResult[];
 }> {
+  await Promise.resolve(); // Satisfy require-await (sync logic, async for future I/O)
   const engine = new HardenerRuleEngine();
   const contexts: HardenerSelectionContext[] = [];
 

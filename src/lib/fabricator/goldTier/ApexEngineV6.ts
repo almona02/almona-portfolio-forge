@@ -14,13 +14,14 @@
  * @tier Gold
  */
 
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import { OptimizationResult, optimizeLinearCuts } from '@/lib/algorithms/LinearOptimizer';
 import { logFabricatorAudit } from '@/lib/audit/fabricatorAudit';
 import type { WindowUnit } from '@/types/fabricator';
 import type { FenestrationSystem, ProfileSpec } from '@/types/fenestration';
 import { GoldTierPerformanceMonitor } from './PerformanceMonitor';
-import { CutResult, FabricationStrategy, getFabricationStrategy } from './strategies/FabricationStrategies';
+import type { Profile } from '@/types/fabricator';
+import { CutResult, type FabricationContext, FabricationStrategy, getFabricationStrategy } from './strategies/FabricationStrategies';
 
 // --- Types ---
 export interface ApexV6Output {
@@ -77,11 +78,11 @@ export class ApexEngineV6 {
   private adaptSystemToGoldTier(input: FenestrationSystem | SystemPack): FenestrationSystem {
     // 1. If it's already a full Gold Tier system, return it.
     if ('profiles' in input && 'fabricationRules' in input && 'regionalPhysics' in input) {
-        return input as FenestrationSystem;
+        return input;
     }
 
-    const pack = input as SystemPack;
-    
+    const pack = input as SystemPack & { meta?: { id?: string; name?: string } };
+
     // 2. Extract specific profile data from SystemPack if available, or use defaults
     // Attempting to find frame/sash from profiles array or windowSystemSpec
     const defaultProfile: ProfileSpec = {
@@ -203,7 +204,7 @@ export class ApexEngineV6 {
       // Only log audit for persistent records (valid UUIDs), skip drafts
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(this.unit.id);
       if (isUuid) {
-        logFabricatorAudit({
+        void logFabricatorAudit({
           action: 'VALIDATE',
           tableName: 'ApexV6',
           recordId: this.unit.id,
@@ -239,43 +240,56 @@ export class ApexEngineV6 {
   }
 
   private calculateManufacturing() {
-    // Context needed for strategy
-    const ctx = {
+    // Context needed for strategy (ProfileSpec adapted to Profile for strategy compatibility)
+    const frameSpec = this.system.profiles.frame;
+    const profile: Profile = {
+      id: frameSpec.code,
+      name: frameSpec.name,
+      material: frameSpec.material,
+      width: frameSpec.dimensions?.width ?? 60,
+      color: '',
+      costPerMeter: frameSpec.costPerMeter,
+      cuttingAllowance: 0,
+      stockQuantity: 0,
+      minStockLevel: 0,
+      supplier: '',
+    };
+    const ctx: FabricationContext = {
       width: this.unit.overallWidth * 1000, // mm -> microns
       height: this.unit.overallHeight * 1000,
-      profile: this.system.profiles.frame as unknown as any, // Temporary Cast for MVP
+      profile,
       miterAllowance: this.system.fabricationRules.cutting.miterAllowance || 0,
       weldingBurnOff: this.system.fabricationRules.welding?.burnOff || 0,
     };
 
     // Calculate Frame
-    const frameCuts = this.strategy.calculateFrameCuts(ctx as any);
+    const frameCuts = this.strategy.calculateFrameCuts(ctx);
 
     // Calculate Sash
     const clearance = (this.system.fabricationRules.assembly.frameClearance || 5) * 1000;
-    const sashCtx = { ...ctx, width: ctx.width - (clearance * 2), height: ctx.height - (clearance * 2) };
-    const sashCuts = this.strategy.calculateSashCuts(sashCtx as any);
+    const sashCtx: FabricationContext = { ...ctx, width: ctx.width - (clearance * 2), height: ctx.height - (clearance * 2) };
+    const sashCuts = this.strategy.calculateSashCuts(sashCtx);
 
     return { frame: frameCuts, sash: sashCuts };
   }
 
   private runOptimizer(manufacturing: { frame: CutResult, sash: CutResult }) {
-    // 1. Prepare Frame Requests
-    // Convert microns back to mm for optimizer (standard stock is in mm)
+    // 1. Prepare Frame Requests (quantity-aware: multiply by unit.quantity for cut list)
     const toMm = (micron: number) => micron / 1000;
-    
+    const unitQty = Math.max(1, this.unit.quantity ?? 1);
+
     const frameRequests = [
-      { id: 'f-top', length: toMm(manufacturing.frame.topLength), label: 'Frame Top', quantity: 1 },
-      { id: 'f-btm', length: toMm(manufacturing.frame.bottomLength), label: 'Frame Bottom', quantity: 1 },
-      { id: 'f-left', length: toMm(manufacturing.frame.leftLength), label: 'Frame Left', quantity: 1 },
-      { id: 'f-right', length: toMm(manufacturing.frame.rightLength), label: 'Frame Right', quantity: 1 },
+      { id: 'f-top', length: toMm(manufacturing.frame.topLength), label: 'Frame Top', quantity: unitQty },
+      { id: 'f-btm', length: toMm(manufacturing.frame.bottomLength), label: 'Frame Bottom', quantity: unitQty },
+      { id: 'f-left', length: toMm(manufacturing.frame.leftLength), label: 'Frame Left', quantity: unitQty },
+      { id: 'f-right', length: toMm(manufacturing.frame.rightLength), label: 'Frame Right', quantity: unitQty },
     ];
 
     const sashRequests = [
-      { id: 's-top', length: toMm(manufacturing.sash.topLength), label: 'Sash Top', quantity: 1 },
-      { id: 's-btm', length: toMm(manufacturing.sash.bottomLength), label: 'Sash Bottom', quantity: 1 },
-      { id: 's-left', length: toMm(manufacturing.sash.leftLength), label: 'Sash Left', quantity: 1 },
-      { id: 's-right', length: toMm(manufacturing.sash.rightLength), label: 'Sash Right', quantity: 1 },
+      { id: 's-top', length: toMm(manufacturing.sash.topLength), label: 'Sash Top', quantity: unitQty },
+      { id: 's-btm', length: toMm(manufacturing.sash.bottomLength), label: 'Sash Bottom', quantity: unitQty },
+      { id: 's-left', length: toMm(manufacturing.sash.leftLength), label: 'Sash Left', quantity: unitQty },
+      { id: 's-right', length: toMm(manufacturing.sash.rightLength), label: 'Sash Right', quantity: unitQty },
     ];
 
     // 2. Optimize
@@ -287,24 +301,19 @@ export class ApexEngineV6 {
   }
 
   private calculateFinancials(opt: { frameStock: OptimizationResult, sashStock: OptimizationResult }) {
-    // Costing Logic
-    const frameCostPerMeter = this.system.profiles.frame.costPerMeter || 10; // Fallback $10/m
+    const unitQty = Math.max(1, this.unit.quantity ?? 1);
+    const frameCostPerMeter = this.system.profiles.frame.costPerMeter || 10;
     const sashCostPerMeter = this.system.profiles.sash.costPerMeter || 12;
 
-    const profileCost = 
+    const profileCost =
       (opt.frameStock.totalStockLength / 1000 * frameCostPerMeter) +
       (opt.sashStock.totalStockLength / 1000 * sashCostPerMeter);
-      
-    // Hardware Cost (Mocked for V6 MVP, would fetch from HardwareLibrary)
-    const hardwareCost = 50.00; 
 
-    // Glass Cost
-    const glassArea = (this.unit.overallWidth * this.unit.overallHeight) / 1000000; // m2
-    const glassRate = 45.00; // $45/m2
-    const glassCost = glassArea * glassRate;
+    const hardwareCost = 50.00 * unitQty;
+    const glassArea = (this.unit.overallWidth * this.unit.overallHeight) / 1000000;
+    const glassRate = 45.00;
+    const glassCost = glassArea * glassRate * unitQty;
 
-    // Waste Cost (Cost of unused material)
-    // We already paid for the full bar in profileCost, but let's calculate the "Loss" value
     const wasteCost = (opt.frameStock.totalWaste / 1000 * frameCostPerMeter) + (opt.sashStock.totalWaste / 1000 * sashCostPerMeter);
 
     return {
@@ -314,7 +323,7 @@ export class ApexEngineV6 {
         profiles: profileCost,
         hardware: hardwareCost,
         glass: glassCost,
-        waste: wasteCost // Informational
+        waste: wasteCost
       }
     };
   }

@@ -108,7 +108,7 @@ export class ExecutionService {
 
     const { data, error } = await supabase
       .from('execution_stages')
-      .update(updates as any)
+      .update(updates)
       .eq('id', stageId)
       .select()
       .single();

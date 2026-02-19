@@ -120,7 +120,7 @@ describe('AuditTrailService Constraint Integration', () => {
     expect(anchor.decisionContext.validationResults).toHaveProperty('constraintResultsHash');
     
     // Verify constraint results structure
-    const validationResults = anchor.decisionContext.validationResults as Record<string, unknown>;
+    const validationResults = anchor.decisionContext.validationResults;
     const validationEnvelopeData = validationResults.validationEnvelope as Record<string, unknown>;
     
     expect(validationEnvelopeData.complies).toBe(validationResult.complies);
@@ -163,7 +163,7 @@ describe('AuditTrailService Constraint Integration', () => {
     const anchor = await auditTrailService.recordAuditTrail(request);
     
     // Verify category results are serialized (converted from Map to object)
-    const validationResults = anchor.decisionContext.validationResults as Record<string, unknown>;
+    const validationResults = anchor.decisionContext.validationResults;
     const validationEnvelopeData = validationResults.validationEnvelope as Record<string, unknown>;
     const categoryResults = validationEnvelopeData.categoryResults as Record<string, unknown>;
     
@@ -218,7 +218,7 @@ describe('AuditTrailService Constraint Integration', () => {
     const anchor = await auditTrailService.recordAuditTrail(request);
     
     // Verify hash is present
-    const validationResults = anchor.decisionContext.validationResults as Record<string, unknown>;
+    const validationResults = anchor.decisionContext.validationResults;
     const hash = validationResults.constraintResultsHash as string;
     
     expect(hash).toBeDefined();
@@ -227,7 +227,7 @@ describe('AuditTrailService Constraint Integration', () => {
     
     // Verify hash is consistent (same constraint results = same hash)
     const anchor2 = await auditTrailService.recordAuditTrail(request);
-    const validationResults2 = anchor2.decisionContext.validationResults as Record<string, unknown>;
+    const validationResults2 = anchor2.decisionContext.validationResults;
     const hash2 = validationResults2.constraintResultsHash as string;
     
     expect(hash).toBe(hash2);
@@ -266,7 +266,7 @@ describe('AuditTrailService Constraint Integration', () => {
     const anchor = await auditTrailService.recordAuditTrail(request);
     
     // Verify audit record contains failed constraint results
-    const validationResults = anchor.decisionContext.validationResults as Record<string, unknown>;
+    const validationResults = anchor.decisionContext.validationResults;
     const validationEnvelopeData = validationResults.validationEnvelope as Record<string, unknown>;
     
     expect(validationEnvelopeData.complies).toBe(false);
@@ -326,7 +326,7 @@ describe('AuditTrailService Constraint Integration', () => {
     };
     
     const anchor1 = await auditTrailService.recordAuditTrail(request1);
-    const hash1 = (anchor1.decisionContext.validationResults as Record<string, unknown>).constraintResultsHash as string;
+    const hash1 = (anchor1.decisionContext.validationResults).constraintResultsHash as string;
     
     // Create second validation context with different dimensions
     const context2 = createDesignContext(2000, 2500);
@@ -348,7 +348,7 @@ describe('AuditTrailService Constraint Integration', () => {
     };
     
     const anchor2 = await auditTrailService.recordAuditTrail(request2);
-    const hash2 = (anchor2.decisionContext.validationResults as Record<string, unknown>).constraintResultsHash as string;
+    const hash2 = (anchor2.decisionContext.validationResults).constraintResultsHash as string;
     
     // Verify hashes are different (different constraint results = different hash)
     expect(hash1).toBeDefined();

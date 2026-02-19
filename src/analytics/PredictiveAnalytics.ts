@@ -216,8 +216,8 @@ export class PredictiveAnalytics {
     // Simple seasonality detection
     if (historicalData.length < 12) return false;
 
-    const monthlyValues: number[] = new Array(12).fill(0);
-    const monthlyCounts: number[] = new Array(12).fill(0);
+    const monthlyValues: number[] = Array.from({ length: 12 }, () => 0);
+    const monthlyCounts: number[] = Array.from({ length: 12 }, () => 0);
 
     for (const data of historicalData) {
       const month = parseInt(data.period.split('-')[1]) - 1;

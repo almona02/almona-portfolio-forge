@@ -68,8 +68,8 @@ export const ProfileConfigurator: React.FC<ProfileConfiguratorProps> = ({
 
     const newProfile: CustomProfile = {
       id: `profile_${Date.now()}`,
-      name: formData.name!,
-      material: formData.material!,
+      name: formData.name,
+      material: formData.material,
       width: formData.width || 50,
       height: formData.height || 25,
       thickness: formData.thickness || 1.4,

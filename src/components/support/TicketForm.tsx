@@ -113,7 +113,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
         description: data.description,
         type: data.type as TicketType,
         priority: data.priority as TicketPriority,
-  maintenance_type: data.maintenance_type as ('preventive' | 'corrective' | 'predictive' | 'emergency' | undefined),
+  maintenance_type: data.maintenance_type,
         contact_phone: data.contact_phone || undefined,
         contact_email: data.contact_email || undefined,
         preferred_contact_method: data.preferred_contact_method,

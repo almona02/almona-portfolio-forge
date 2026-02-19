@@ -93,7 +93,7 @@ export const SystemPacksPage: React.FC = () => {
     if (filterType !== 'all') {
       filtered = filtered.filter(system => {
         const status = getSystemPackTuningStatus(system);
-        const isUPVC = !!(system as any).upvcSpec;
+        const isUPVC = !!(system).upvcSpec;
         
         if (filterType === 'tuned') return status.isTuned;
         if (filterType === 'untuned') return status.needsTuning;
@@ -124,7 +124,7 @@ export const SystemPacksPage: React.FC = () => {
   };
 
   const getCardGradient = (system: any, isHovered: boolean) => {
-    const isUPVC = !!(system as any).upvcSpec;
+    const isUPVC = !!(system).upvcSpec;
     const tuningStatus = getSystemPackTuningStatus(system);
     
     if (tuningStatus.isTuned) {
@@ -256,7 +256,7 @@ export const SystemPacksPage: React.FC = () => {
                       : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
                   }`}
                 >
-                  UPVC ({allSystems.filter(s => !!(s as any).upvcSpec).length})
+                  UPVC ({allSystems.filter(s => !!(s).upvcSpec).length})
                 </Button>
                 <Button
                   variant={filterType === 'aluminum' ? 'default' : 'outline'}
@@ -268,7 +268,7 @@ export const SystemPacksPage: React.FC = () => {
                       : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
                   }`}
                 >
-                  Aluminum ({allSystems.filter(s => !(s as any).upvcSpec).length})
+                  Aluminum ({allSystems.filter(s => !(s).upvcSpec).length})
                 </Button>
               </div>
             </div>
@@ -286,8 +286,8 @@ export const SystemPacksPage: React.FC = () => {
           >
             {filteredSystems.map((system, index) => {
               const tuningStatus = getSystemPackTuningStatus(system);
-              const isUPVC = !!(system as any).upvcSpec;
-              const profiles = (system as any).profiles || [];
+              const isUPVC = !!(system).upvcSpec;
+              const profiles = (system).profiles || [];
               const frameProfiles = profiles.filter((p: any) => 
                 p.profileRole === 'frame' || p.type === 'frame'
               );

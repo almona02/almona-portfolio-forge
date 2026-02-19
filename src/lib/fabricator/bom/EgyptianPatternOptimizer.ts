@@ -75,7 +75,7 @@ export class EgyptianPatternOptimizer {
     const topIsFixed = row0Cells.every(c => c.type === 'fixed' || c.type === 'empty');
     
     // Row 1 should have at least one sash
-    const bottomHasSash = row1Cells.some(c => c.type === 'sash' || c.type === 'casement' as any); // cast for safety if type mismatch
+    const bottomHasSash = row1Cells.some(c => c.type === 'sash' || c.type === 'casement');
 
     return topIsFixed && bottomHasSash;
   }
@@ -93,7 +93,7 @@ export class EgyptianPatternOptimizer {
     // Usually 1 row, multiple cols
     if (grid.rows !== 1) return false;
     // Cells are sliding sashes
-    return grid.cells.every(c => c.type === 'sliding' || c.type === 'sash_sliding' as any);
+    return grid.cells.every(c => c.type === 'sliding' || c.type === 'sash_sliding');
   }
 
   private static isFixedMullionGrid(grid: WindowGrid): boolean {
@@ -107,7 +107,8 @@ export class EgyptianPatternOptimizer {
    * In a real implementation, this would load from a JSON or cache
    */
   static async getPrecomputedPlan(patternId: EgyptianPatternType, _inputs: BOMInputs): Promise<OptimizedBOMResult | null> {
-      // Stub implementation
+      // Stub implementation - await for future async load from cache/asset
+      await Promise.resolve();
       return {
           patternId,
           isPrecomputed: true,

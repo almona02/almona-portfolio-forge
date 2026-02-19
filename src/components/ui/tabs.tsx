@@ -28,7 +28,7 @@ export const Tabs = ({ defaultValue, value, onValueChange, className = "", child
   }, [isControlled, onValueChange]);
 
   return (
-    <TabsContext.Provider value={{ value: activeValue!, onValueChange: handleValueChange }}>
+    <TabsContext.Provider value={{ value: activeValue, onValueChange: handleValueChange }}>
       <div className={`tabs ${className}`} data-value={activeValue}>
         {children}
       </div>

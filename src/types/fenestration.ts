@@ -57,7 +57,7 @@ export interface HardwareRule {
     notes?: string;
   }>;
   /** Quantity calculation function */
-  quantityCalculator: (windowUnit: any) => number;
+  quantityCalculator: (windowUnit: { grid?: { cells?: Array<{ type?: string }> } }) => number;
   /** Installation specifications */
   installationSpec?: {
     position: string;        // e.g., "200mm from bottom"

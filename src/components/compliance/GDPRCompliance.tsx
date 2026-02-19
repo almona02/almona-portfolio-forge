@@ -8,6 +8,19 @@ interface CookiePreferences {
   marketing: boolean;
 }
 
+function isCookiePreferences(val: unknown): val is CookiePreferences {
+  return (
+    val !== null &&
+    typeof val === 'object' &&
+    'necessary' in val &&
+    typeof (val as CookiePreferences).necessary === 'boolean' &&
+    'analytics' in val &&
+    typeof (val as CookiePreferences).analytics === 'boolean' &&
+    'marketing' in val &&
+    typeof (val as CookiePreferences).marketing === 'boolean'
+  );
+}
+
 interface GDPRComplianceProps {
   onConsentChange?: (consent: CookiePreferences) => void;
 }
@@ -28,8 +41,10 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
     if (!consent) {
       setShowBanner(true);
     } else {
-      const savedPreferences = JSON.parse(consent);
-      setPreferences(savedPreferences);
+      const parsed = JSON.parse(consent) as unknown;
+      if (isCookiePreferences(parsed)) {
+        setPreferences(parsed);
+      }
     }
   }, []);
 
@@ -65,6 +80,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
   };
 
   const handleDataExport = async () => {
+    await Promise.resolve(); // Placeholder for future API call
     try {
       // In a real implementation, this would call your API
       const userData = {
@@ -87,6 +103,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
   };
 
   const handleDataDeletion = async () => {
+    await Promise.resolve(); // Placeholder for future API call
     const confirmed = window.confirm(t('gdpr.confirmDeletion', 'Are you sure you want to delete all your data? This action cannot be undone.'));
     if (confirmed) {
       try {
@@ -257,7 +274,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
         </button>
         
         <button
-          onClick={handleDataExport}
+          onClick={() => void handleDataExport()}
           className="flex items-center gap-2 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
         >
           <Download className="w-5 h-5 text-green-600" />
@@ -265,7 +282,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
         </button>
         
         <button
-          onClick={handleDataDeletion}
+          onClick={() => void handleDataDeletion()}
           className="flex items-center gap-2 p-4 border border-gray-200 rounded-lg hover:bg-red-50 transition-colors"
         >
           <Trash2 className="w-5 h-5 text-red-600" />

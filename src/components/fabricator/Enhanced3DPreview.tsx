@@ -1102,7 +1102,7 @@ function convertCutListToFabrication(cutList: any): FabricationData {
       id: comp.id || `profile-${Date.now()}`,
       systemPack: comp.systemPack || 'unknown',
       profileCode: comp.profileCode || 'UNKNOWN',
-      role: (comp.role || 'frame') as any,
+      role: (comp.role || 'frame'),
       length: comp.length || 0,
       quantity: comp.quantity || 1,
       cuttingLengths: comp.cuttingLengths || [],

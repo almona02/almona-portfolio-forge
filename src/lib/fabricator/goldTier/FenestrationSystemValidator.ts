@@ -37,7 +37,7 @@ export interface ValidationError {
   field: string;
   message: string;
   severity: 'error' | 'critical';
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   recovery?: {
     action: string;
     suggestion: string;
@@ -444,7 +444,7 @@ export class FenestrationSystemValidator {
    * Validate profile specification
    */
   private static validateProfileSpec(
-    profile: any,
+    profile: { code?: unknown; dimensions?: { width?: number }; standardStockLength?: number },
     fieldPath: string,
     errors: ValidationError[]
   ): void {
@@ -594,7 +594,7 @@ export class FenestrationSystemValidator {
       errors.push({
         code: 'VAL-505',
         field: 'constraints.requiresReinforcement',
-        message: `requiresReinforcement function threw an error: ${error}`,
+        message: `requiresReinforcement function threw an error: ${String(error)}`,
         severity: 'error',
       });
     }

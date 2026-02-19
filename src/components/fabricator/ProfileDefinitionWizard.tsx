@@ -240,14 +240,14 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
       const validRole: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory' = 
         (roleValue === 'casement' || roleValue === 'tilt' || roleValue === 'turn') ? 'sash' :
         (roleValue === 'fixed' || roleValue === 'ventilator') ? 'frame' :
-        (roleValue === 'frame' || roleValue === 'sash' || roleValue === 'mullion' || roleValue === 'transom' || roleValue === 'glazing_bead' || roleValue === 'interlock' || roleValue === 'accessory') ? roleValue as 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory' :
+        (roleValue === 'frame' || roleValue === 'sash' || roleValue === 'mullion' || roleValue === 'transom' || roleValue === 'glazing_bead' || roleValue === 'interlock' || roleValue === 'accessory') ? roleValue :
         'frame'; // Default fallback
 
       // Map material to valid ProfileDefinitionInput material (remove 'steel')
       const materialValue: string = formData.material;
       const validMaterial: 'aluminum' | 'upvc' | 'wood' = 
         materialValue === 'steel' ? 'aluminum' :
-        (materialValue === 'aluminum' || materialValue === 'upvc' || materialValue === 'wood') ? materialValue as 'aluminum' | 'upvc' | 'wood' :
+        (materialValue === 'aluminum' || materialValue === 'upvc' || materialValue === 'wood') ? materialValue :
         'aluminum'; // Default fallback
 
       // Create profile
@@ -556,7 +556,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   const mat: string = formData.material;
                   if (mat === 'steel') return 'aluminum' as const;
                   if (mat === 'aluminum' || mat === 'upvc' || mat === 'wood') {
-                    return mat as 'aluminum' | 'upvc' | 'wood';
+                    return mat;
                   }
                   return 'aluminum' as const;
                 })(),

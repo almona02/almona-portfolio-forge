@@ -315,7 +315,7 @@ export class FilterService implements IFilterService {
     const sortField = params.get('sort.field');
     const sortDir = params.get('sort.dir');
     if (sortField && sortDir && (sortDir === 'asc' || sortDir === 'desc')) {
-      filterSet.sort = { field: sortField, dir: sortDir as 'asc' | 'desc' };
+      filterSet.sort = { field: sortField, dir: sortDir };
     }
 
     this.validateFilters(filterSet);

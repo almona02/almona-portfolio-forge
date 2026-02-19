@@ -11,10 +11,11 @@ import type {
     BulkEditOperation,
     BulkJob,
 } from '../BulkOperationServiceTypes';
+import type { BulkJobResponse } from '../bulkOperationsApi';
 
 // Mock bulkOperationsApi
 vi.mock('../bulkOperationsApi', async () => {
-  const actual = await vi.importActual('../bulkOperationsApi');
+  const actual = await vi.importActual<typeof import('../bulkOperationsApi')>('../bulkOperationsApi');
   return {
     ...actual,
     startBulkOperation: vi.fn(),
@@ -22,16 +23,16 @@ vi.mock('../bulkOperationsApi', async () => {
     cancelBulkOperation: vi.fn(),
     retryBulkOperation: vi.fn(),
     listBulkOperations: vi.fn(),
-    convertToBulkJob: vi.fn((job: any) => ({
+    convertToBulkJob: vi.fn((job: BulkJobResponse): BulkJob => ({
       jobId: job.jobId,
       status: job.status,
       progress: job.progress.percentage,
       totalItems: job.itemCount,
       processedItems: job.progress.completed,
-      successfulItems: job.result?.succeeded || 0,
-      failedItems: job.result?.failed || 0,
+      successfulItems: (job.result as { succeeded?: number })?.succeeded ?? 0,
+      failedItems: (job.result as { failed?: number })?.failed ?? 0,
       createdAt: job.createdAt,
-      updatedAt: job.completedAt || job.startedAt || job.createdAt,
+      updatedAt: job.completedAt ?? job.startedAt ?? job.createdAt,
     })),
   };
 });
@@ -47,11 +48,11 @@ vi.mock('@/lib/supabase', () => ({
 
 describe('BulkOperationServiceApi - API Integration', () => {
   let service: BulkOperationServiceApi;
-  let mockStart: any;
-  let mockGetStatus: any;
-  let mockCancel: any;
-  let mockRetry: any;
-  let mockList: any;
+  let mockStart: ReturnType<typeof vi.fn>;
+  let mockGetStatus: ReturnType<typeof vi.fn>;
+  let mockCancel: ReturnType<typeof vi.fn>;
+  let mockRetry: ReturnType<typeof vi.fn>;
+  let mockList: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     service = new BulkOperationServiceApi();

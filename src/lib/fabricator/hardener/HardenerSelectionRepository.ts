@@ -31,7 +31,7 @@ export interface HardenerSelectionRow {
   validation_status: 'PASS' | 'FAIL' | 'WARNING';
   system_stop_required: boolean;
   requires_human_intervention: boolean;
-  validation_details: Record<string, any>;
+  validation_details: Record<string, unknown>;
   justification?: string | null;
   constitutional_disclaimer?: string | null;
   system_mode: 'sandbox' | 'production' | 'certified';
@@ -55,6 +55,12 @@ export interface HardenerAuditLogRow {
   user_agent?: string | null;
   created_at: string;
 }
+
+/** Supabase table builder for tables not in generated schema (insert/update chains) */
+type SupabaseTableBuilder<T> = {
+  insert: (v: unknown) => { select: () => { single: () => Promise<{ data: T | null; error: { message?: string } | null }> } };
+  update: (v: unknown) => { eq: (col: string, val: string) => { select: () => { single: () => Promise<{ data: T | null; error: { message?: string } | null }> } } };
+};
 
 /**
  * Hardener Selection Repository
@@ -105,8 +111,8 @@ export class HardenerSelectionRepository {
       system_mode: mode,
     };
 
-    const { data, error } = await (supabase
-      .from(this.SELECTIONS_TABLE) as any)
+    // hardener_selections not in generated Database schema - cast needed for insert chain
+    const { data, error } = await (supabase.from(this.SELECTIONS_TABLE) as unknown as SupabaseTableBuilder<HardenerSelectionRow>)
       .insert([selectionData])
       .select()
       .single();
@@ -199,8 +205,7 @@ export class HardenerSelectionRepository {
     selectionId: string,
     updates: Partial<Omit<HardenerSelectionRow, 'id' | 'created_at' | 'updated_at'>>
   ): Promise<HardenerSelectionRow> {
-    const { data, error } = await (supabase
-      .from(this.SELECTIONS_TABLE) as any)
+    const { data, error } = await (supabase.from(this.SELECTIONS_TABLE) as unknown as SupabaseTableBuilder<HardenerSelectionRow>)
       .update(updates)
       .eq('id', selectionId)
       .select()
@@ -239,8 +244,7 @@ export class HardenerSelectionRepository {
       user_agent: userAgent || null,
     };
 
-    const { data, error } = await (supabase
-      .from(this.AUDIT_LOG_TABLE) as any)
+    const { data, error } = await (supabase.from(this.AUDIT_LOG_TABLE) as unknown as SupabaseTableBuilder<HardenerAuditLogRow>)
       .insert([auditData])
       .select()
       .single();

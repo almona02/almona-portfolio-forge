@@ -140,7 +140,7 @@ export class Template3DAccuracyValidator {
     generated3DModel.traverse((child) => {
       if (child instanceof Mesh) {
         meshCount++;
-        if (child.name.toLowerCase().includes('glass') || (child.material && (child.material as any).transparent)) {
+        if (child.name.toLowerCase().includes('glass') || (child.material && (child.material as { transparent?: boolean }).transparent)) {
           glassCount++;
         }
       }

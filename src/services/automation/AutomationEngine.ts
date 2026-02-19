@@ -98,7 +98,7 @@ export class AutomationEngine {
   ): void {
     // Register trigger listener if event-based
     if (triggerConfig.trigger_type === 'event') {
-      const eventConfig = triggerConfig as Extract<TriggerConfig, { trigger_type: 'event' }>;
+      const eventConfig = triggerConfig;
       this.triggerDetector.on(eventConfig.event_name, (event) => {
         void this.executeWorkflow(workflowId, workflowDefinition, event);
       });

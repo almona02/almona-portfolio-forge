@@ -15,9 +15,10 @@ import {
   type ValidationResult,
 } from '@/lib/fabricatorValidation';
 import type { Profile, WindowComponent, WindowGrid, WindowUnit } from '@/types/fabricator';
+import { isGlazingSpecFlat } from '@/types/fabricator';
 import { generateGlazingBeads } from './utils/glazingBeadUtils';
 import { generateInternalDividers } from './utils/slidingSystemUtils';
-import { getReinforcementDeduction, requiresUPVCReinforcement } from './utils/upvcReinforcementUtils';
+import { getReinforcementDeduction, requiresUPVCReinforcement, type UPVCReinforcementSpec } from './utils/upvcReinforcementUtils';
 
 // ---------------------------------------------------------------------------
 // Equal Spacing
@@ -284,7 +285,7 @@ export function generateMullionComponentsFromLayout(
       cuttingLengths: [cutLength],
       angles: [90],
       machiningOperations: [],
-      glazingType: String((project as any).glazing?.type ?? 'double'),
+      glazingType: String(project.glazing && isGlazingSpecFlat(project.glazing) ? project.glazing.type ?? 'double' : 'double'),
       hardware: [],
     };
 
@@ -303,14 +304,14 @@ export function generateComponentsFromGrid(
   grid: WindowGrid,
   profiles: Profile[],
   systemPackId: string | null,
-  systemPack?: any | null // Gold Tier: System pack for glass allowances and hardware
-): { components: WindowComponent[]; hardware: any[] } {
+  systemPack?: { upvcSpec?: unknown; glassAllowances?: unknown; profiles?: unknown[] } | null // Gold Tier: System pack for glass allowances and hardware
+): { components: WindowComponent[]; hardware: unknown[] } {
   if (!project || !grid) {
     return { components: [], hardware: [] };
   }
 
   const components: WindowComponent[] = [];
-  const hardware: any[] = [];
+  const hardware: unknown[] = [];
 
   // Gold Tier: Use systemProfileSelections if available
   const systemProfileSelections = project.systemProfileSelections || {};
@@ -390,10 +391,11 @@ export function generateComponentsFromGrid(
     ) || profiles.find(p => p.profileRole === 'glazing_bead' || p.profileRole === 'glazing_bead_inner' || p.profileRole === 'glazing_bead_outer') || null;
 
   // Get UPVC-specific hardware (reinforcement bars)
-  const upvcSpec = systemPack && 'upvcSpec' in systemPack ? (systemPack as any).upvcSpec : null;
+  type UPVCSpecWithReinforcement = { reinforcement?: UPVCReinforcementSpec & { profileCode?: string }; edgeClearanceMm?: number };
+  const upvcSpec = (systemPack && 'upvcSpec' in systemPack ? systemPack.upvcSpec : null) as UPVCSpecWithReinforcement | null;
   
   // Gold Tier: Get glass allowances from system pack
-  const glassAllowances = systemPack?.glassAllowances;
+  const glassAllowances = systemPack?.glassAllowances as { edgeClearanceMm?: number } | undefined;
 
   if (!frameProfile) {
       return { components: [], hardware: [] };
@@ -612,8 +614,8 @@ export function generateComponentsFromGrid(
           // If glazing type is not explicitly set, assume double glazing (standard for UPVC)
           // CRITICAL: Glazing bead length = glass size (inside sash frame), not sash opening
           const hasGlazing = project.glazing && (
-            (typeof project.glazing === 'object' && 'type' in project.glazing && project.glazing.type !== 'none') ||
-            (typeof project.glazing === 'string' && project.glazing !== 'none')
+            (isGlazingSpecFlat(project.glazing) && project.glazing.type !== 'none') ||
+            (typeof project.glazing === 'object' && !isGlazingSpecFlat(project.glazing))
           );
           if (beadProfile && (hasGlazing || !project.glazing)) {
             // Gold Tier: Glass dimensions using system pack glassAllowances
@@ -631,9 +633,9 @@ export function generateComponentsFromGrid(
               glassHeight = cellH - (2 * sashProfile.width);
             }
             
-            const glazingType = (typeof project.glazing === 'object' && 'type' in project.glazing) 
-              ? project.glazing.type 
-              : (project.glazing || 'double');
+            const glazingType = isGlazingSpecFlat(project.glazing)
+              ? project.glazing.type ?? 'double'
+              : 'double';
             
             const glazingBeads = generateGlazingBeads({
               cellId: cell.id,

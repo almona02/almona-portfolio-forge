@@ -10,7 +10,7 @@
  * - Error detection and recovery
  */
 
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import { trackAccuracyCheckpoint } from '@/lib/fabricator/AccuracyTracker';
 import type { Cut } from '@/lib/fabricator/OptimizationEngine';
 import { getBaselineTracker } from '@/lib/performance/BaselineTracker';
@@ -183,7 +183,7 @@ export class HardenedCuttingListGenerator {
     systemPack: SystemPack,
     width: number,
     height: number,
-    options?: any
+    options?: Record<string, unknown>
   ): CalculationResult {
     // Used imported generator
     const cuts = generateCuttingListFromSystemPack(
@@ -217,7 +217,7 @@ export class HardenedCuttingListGenerator {
     systemPack: SystemPack,
     width: number,
     height: number,
-    options?: any
+    options?: Record<string, unknown>
   ): CalculationResult {
     // Use alternative calculation method for verification
     // This could use a different algorithm or simplified calculation
@@ -296,7 +296,7 @@ export class HardenedCuttingListGenerator {
   ): {
     match: boolean;
     difference: number; // in mm
-    details: Record<string, any>;
+    details: Record<string, unknown>;
   } {
     // Compare total lengths
     const lengthDifference = Math.abs(primary.totalLength - secondary.totalLength);

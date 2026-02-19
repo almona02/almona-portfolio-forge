@@ -66,7 +66,7 @@ export function createOptimizedStateUpdate<_T extends keyof DraftingState>(
       if (value !== undefined) {
         // For geometry, use shallow clone if it's the same reference
         if (typedKey === 'geometry' && value === prevState.geometry) {
-          (newState as any)[typedKey] = shallowCloneGeometry(value as Geometry2D);
+          (newState as any)[typedKey] = shallowCloneGeometry(value);
         } else if (Array.isArray(value)) {
           // Shallow clone arrays
           (newState as any)[typedKey] = [...value];

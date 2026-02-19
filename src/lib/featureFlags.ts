@@ -77,7 +77,7 @@ export class FeatureFlagManager {
     // Check workshop-specific access
     if (feature === 'WORKSHOP_BETA_ACCESS') {
       const workshopId = this.getCurrentWorkshopId();
-      return (FeatureFlags.WORKSHOP_BETA_ACCESS as string[]).includes(workshopId);
+      return (FeatureFlags.WORKSHOP_BETA_ACCESS).includes(workshopId);
     }
     
     // Check workshop-specific overrides
@@ -89,7 +89,7 @@ export class FeatureFlagManager {
       }
     }
     
-    return FeatureFlags[feature] as boolean;
+    return FeatureFlags[feature];
   }
   
   /**
@@ -137,7 +137,7 @@ export class FeatureFlagManager {
    */
   static hasBetaAccess(workshopId?: string): boolean {
     const id = workshopId || this.getCurrentWorkshopId();
-    return (FeatureFlags.WORKSHOP_BETA_ACCESS as string[]).includes(id) || 
+    return (FeatureFlags.WORKSHOP_BETA_ACCESS).includes(id) || 
            this.workshopOverrides.has(id);
   }
   

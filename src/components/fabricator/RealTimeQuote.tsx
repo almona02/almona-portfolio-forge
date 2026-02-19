@@ -188,7 +188,7 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
             recommendedPaymentTerms: (ydtResult.quoteCard?.paymentTerms.recommendation === 'cash' || 
                                       ydtResult.quoteCard?.paymentTerms.recommendation === 'credit30' || 
                                       ydtResult.quoteCard?.paymentTerms.recommendation === 'credit90')
-                                      ? ydtResult.quoteCard.paymentTerms.recommendation as 'cash' | 'credit30' | 'credit90'
+                                      ? ydtResult.quoteCard.paymentTerms.recommendation
                                       : 'cash',
             recommendationReason: ydtResult.quoteCard?.paymentTerms.recommendation || 'Best price with cash payment',
             recommendationReasonArabic: ydtResult.quoteCard?.paymentTerms.recommendation === 'cash' 

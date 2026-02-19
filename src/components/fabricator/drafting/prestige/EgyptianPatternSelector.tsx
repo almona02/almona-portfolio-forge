@@ -359,7 +359,7 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
       </div>
 
       {/* Category Tabs */}
-      <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as any)}>
+      <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as typeof activeCategory)}>
         <TabsList className="bg-slate-900/60 -sm border border-slate-700/50 card-glass-dark">
           <TabsTrigger value="all" className="btn-primary">
             <Layers className="w-4 h-4" />

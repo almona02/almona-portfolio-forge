@@ -188,7 +188,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
     if (userInteractedRef.current) return;
     const prev = prevInitialRef.current;
     const changed = !prev || (Object.keys(initialValues) as (keyof UnifiedTicketFormData)[])
-      .some(key => prev[key as keyof UnifiedTicketFormData] !== initialValues[key as keyof UnifiedTicketFormData]);
+      .some(key => prev[key] !== initialValues[key]);
     if (!changed) return; // skip re-applying identical values
     (Object.entries(initialValues) as Array<[keyof UnifiedTicketFormData, UnifiedTicketFormData[keyof UnifiedTicketFormData]]>).forEach(([k,v]) => {
       if (typeof v !== 'undefined') setValue(k, v, { shouldDirty: false, shouldTouch: false });
@@ -295,7 +295,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         // focus first invalid field
         const firstErrorName = Object.keys(errors)[0];
         if (firstErrorName) {
-          const el = document.querySelector(`[name="${firstErrorName}"]`) as HTMLElement | null;
+          const el = document.querySelector(`[name="${firstErrorName}"]`);
           el?.focus();
         }
         return;

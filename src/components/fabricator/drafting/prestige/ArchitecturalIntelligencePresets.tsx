@@ -168,7 +168,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
       </div>
 
       {/* Category Tabs */}
-      <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as any)}>
+      <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as typeof activeCategory)}>
         <TabsList>
           <TabsTrigger value="residential" className="flex items-center gap-2">
             <Home className="w-4 h-4" />

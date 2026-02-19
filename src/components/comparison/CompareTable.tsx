@@ -13,11 +13,11 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
     
     switch (key) {
       case 'name':
-        return m.name as string;
+        return m.name;
       case 'type':
-        return m.type as string;
+        return m.type;
       case 'releaseDate':
-        return m.releaseDate as string;
+        return m.releaseDate;
       case 'power':
         return m.powerSpec?.consumption ?? '-';
       case 'voltage':

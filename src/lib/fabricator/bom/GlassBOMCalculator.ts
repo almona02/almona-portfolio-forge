@@ -11,7 +11,7 @@
  */
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
-import type { FabricationData, WindowUnit } from '@/types/fabricator';
+import type { FabricationData, GlazingSpec, GlazingSpecFlat, GlazingSpecPerCell, WindowUnit } from '@/types/fabricator';
 import { ProductionUtils } from '../productionUtils';
 import {
     GLASS_EDGE_CLEARANCE,
@@ -21,17 +21,6 @@ import {
 /**
  * GlassBOMCalculator - Glass quantity calculation engine
  */
-/**
- * Local interface for Glazing specification to valid windowUnit.glazing which is typed as 'any' in core
- */
-interface GlazingSpec {
-  type?: 'single' | 'double' | 'triple';
-  thickness?: number;
-  uValue?: number;
-  safetyRating?: 'annealed' | 'tempered' | 'laminated';
-  glassCode?: string;
-}
-
 export class GlassBOMCalculator {
   /**
    * Calculate glass BOM from pattern
@@ -40,13 +29,14 @@ export class GlassBOMCalculator {
     windowUnit: WindowUnit,
     pattern: EgyptianPattern
   ): Promise<FabricationData['glazing']> {
+    await Promise.resolve(); // Satisfy require-await; calculation is sync
     const glazing: FabricationData['glazing'] = [];
 
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
     
     // Safely access glazing spec
-    const patternGlazing = (pattern as any).glazingSpec;
+    const patternGlazing = (pattern as { glazingSpec?: { edgeClearance?: number } }).glazingSpec;
     const edgeClearance = patternGlazing?.edgeClearance || GLASS_EDGE_CLEARANCE.STANDARD_MM;
     const grid = windowUnit.grid || pattern.gridSpec; // Fallback to pattern.gridSpec if windowUnit.grid is missing
 
@@ -55,8 +45,18 @@ export class GlassBOMCalculator {
       return glazing;
     }
 
-    // Cast glazing to expected shape once
-    const glazingSpec = (windowUnit.glazing || {}) as GlazingSpec;
+    // Supports per-cell (Record<cellId, {type, color?}>) from drafting or flat GlazingSpec
+    const rawGlazing: GlazingSpec = windowUnit.glazing || {};
+    const getCellGlazingType = (cell: { id?: string }): 'single' | 'double' | 'triple' => {
+      if (cell.id && typeof rawGlazing === 'object' && rawGlazing !== null && !('thickness' in rawGlazing)) {
+        const cellSpec = (rawGlazing as GlazingSpecPerCell)[cell.id];
+        if (cellSpec?.type === 'single' || cellSpec?.type === 'double' || cellSpec?.type === 'triple') {
+          return cellSpec.type;
+        }
+      }
+      const flat = rawGlazing as GlazingSpecFlat;
+      return (flat.type as 'single' | 'double' | 'triple') || 'double';
+    };
 
     // Calculate glass for each cell in grid
     grid.cells.forEach((cell, index) => {
@@ -71,16 +71,20 @@ export class GlassBOMCalculator {
         const glassWidth = Math.max(0, colWidth - edgeClearance * 2);
         const glassHeight = Math.max(0, rowHeight - edgeClearance * 2);
 
-        // Get glass thickness from user selection or default
-        const glazingType = glazingSpec.type || 'double';
+        // Get glass thickness from user selection or default (per-cell or flat)
+        const glazingType = getCellGlazingType(cell);
+        const glazingSpec = rawGlazing as GlazingSpecFlat;
         const defaultThickness = glazingType === 'single'
           ? GLASS_THICKNESS.SINGLE_GLAZING_MM
           : GLASS_THICKNESS.MULTI_GLAZING_PANE_MM;
-        const glassThickness = glazingSpec.thickness || defaultThickness;
+        const glassThickness = (glazingSpec && typeof glazingSpec === 'object' && 'thickness' in glazingSpec)
+          ? (glazingSpec.thickness ?? defaultThickness)
+          : defaultThickness;
 
         // Calculate weight
         const weight = ProductionUtils.calculateGlassWeight(glassWidth, glassHeight, glassThickness);
 
+        const flatSpec = rawGlazing as GlazingSpecFlat;
         glazing.push({
           paneId: `pane-${index}-${cell.type}`,
           type: cell.type === 'fixed' ? 'fixed' : 'sash',
@@ -91,9 +95,9 @@ export class GlassBOMCalculator {
           },
           edgeClearance,
           weight,
-          uValue: glazingSpec.uValue,
-          safetyRating: glazingSpec.safetyRating || 'annealed',
-          glassCode: glazingSpec.glassCode
+          uValue: flatSpec?.uValue,
+          safetyRating: flatSpec?.safetyRating || 'annealed',
+          glassCode: flatSpec?.glassCode
         });
       }
     });
