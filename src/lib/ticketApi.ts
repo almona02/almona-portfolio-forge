@@ -171,7 +171,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     .single()
   // No retry needed; first attempt already minimal
   if (error) {
-    console.error('[tickets.createTicket] insert error (after retry)', { message: error.message, details: (error as any).details, hint: (error as any).hint })
+    console.error('[tickets.createTicket] insert error (after retry)', { message: error.message, details: (error).details, hint: (error).hint })
     throw new Error(error.message)
   }
   
@@ -378,7 +378,7 @@ export const getTicketStats = async (userId: string) => {
     .select('id,status,priority,type,resolved_at')
     .eq('user_id', userId)
   if (error) throw new Error(error.message)
-  const tickets: ServiceTicket[] = (data || []) as any
+  const tickets: ServiceTicket[] = (data || [])
   const total = tickets.length
   const open = tickets.filter(t => ['open','assigned','in_progress'].includes(t.status)).length
   const resolved = tickets.filter(t => t.status === 'resolved').length

@@ -25,6 +25,9 @@ import {
   TARGET_UTILIZATION,
 } from './productionOptimizerConstants';
 
+/** Cut with optional plannedLength (production format) */
+type CutWithLength = Cut & { plannedLength?: number };
+
 export interface ProductionOptimizationOptions {
   strategy?: 'fast' | 'balanced' | 'optimal';
   deterministic?: boolean; // For testing consistency
@@ -72,7 +75,7 @@ export class ProductionOptimizer {
   optimize(
     cuts: Cut[],
     stockLength: number = DEFAULT_STOCK_LENGTH_MM,
-    options: ProductionOptimizationOptions & { ydtStrategy?: { strategy: string; constraints?: Record<string, any>; priorities?: string[] } } = {}
+    options: ProductionOptimizationOptions & { ydtStrategy?: { strategy: string; constraints?: Record<string, unknown>; priorities?: string[] } } = {}
   ): ProductionOptimizationResult {
     const {
       strategy = 'balanced',
@@ -231,8 +234,8 @@ export class ProductionOptimizer {
   ): OptimizationResult {
     // Sort cuts by length (descending) for best-fit
     const sortedCuts = [...cuts].sort((a, b) => {
-      const lengthA = (a as any).plannedLength || a.length || 0;
-      const lengthB = (b as any).plannedLength || b.length || 0;
+      const lengthA = (a as CutWithLength).plannedLength ?? a.length ?? 0;
+      const lengthB = (b as CutWithLength).plannedLength ?? b.length ?? 0;
       return lengthB - lengthA;
     });
 
@@ -250,7 +253,7 @@ export class ProductionOptimizer {
 
     // Simple first-fit decreasing algorithm
     for (const cut of sortedCuts) {
-      const cutLength = (cut as any).plannedLength || cut.length || 0;
+      const cutLength = (cut as CutWithLength).plannedLength ?? cut.length ?? 0;
       // Note: Cut interface doesn't have quantity, so we process each cut once
       // If quantity is needed, cuts should be duplicated before calling this method
 
@@ -412,7 +415,7 @@ export class ProductionOptimizer {
   ): number {
     // Calculate total planned length
     const totalPlanned = originalCuts.reduce((sum, cut) => {
-      const length = (cut as any).plannedLength || cut.length || 0;
+      const length = (cut as CutWithLength).plannedLength ?? cut.length ?? 0;
       return sum + length; // Cut doesn't have quantity property
     }, 0);
 

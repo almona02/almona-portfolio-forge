@@ -111,8 +111,8 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
       scanData.technical_data?.profile_name ||
       standardMatch?.name ||
       `${baseName} PROFILE`;
-    const finalMaterial = (material || ocrMaterial || standardMatch?.material || "aluminum") as "aluminum" | "upvc" | "wood";
-    const finalRole = (profileRole || scanData.suggestions?.likely_role || "frame") as "frame" | "sash" | "mullion" | "transom";
+    const finalMaterial = (material || ocrMaterial || standardMatch?.material || "aluminum");
+    const finalRole = (profileRole || scanData.suggestions?.likely_role || "frame");
 
     return {
       name: finalName,

@@ -377,9 +377,9 @@ export class ReportingService {
         
         const customerId = order.user_id as string;
         const profile = profileMap.get(customerId);
-        const customerName = (profile as any)?.company_name || 
-                            (profile as any)?.full_name || 
-                            (profile as any)?.username || 
+        const customerName = (profile)?.company_name || 
+                            (profile)?.full_name || 
+                            (profile)?.username || 
                             `Customer ${customerId.slice(0, 8)}`;
 
         if (!customerMap.has(customerId)) {
@@ -556,9 +556,9 @@ export class ReportingService {
 
           const userId = order.user_id as string;
           const profile = profileMap.get(userId);
-          const customerName = (profile as any)?.company_name || 
-                              (profile as any)?.full_name || 
-                              (profile as any)?.username || 
+          const customerName = (profile)?.company_name || 
+                              (profile)?.full_name || 
+                              (profile)?.username || 
                               `Customer ${userId.slice(0, 8)}`;
 
           // Determine aging bucket
@@ -655,9 +655,9 @@ export class ReportingService {
             if (!order || !order.user_id) return false;
             
             const profile = profileMap.get(order.user_id);
-            const customerName = (profile as any)?.company_name || 
-                                (profile as any)?.full_name || 
-                                (profile as any)?.username || '';
+            const customerName = (profile)?.company_name || 
+                                (profile)?.full_name || 
+                                (profile)?.username || '';
             
             // Match by client name (case-insensitive, partial match)
             const projectClient = (project.client_name || '').toLowerCase();
@@ -679,7 +679,7 @@ export class ReportingService {
 
           // Estimate costs (30% of revenue as default, or from meta if available)
           // In a real system, costs would come from inventory, labor, overhead tracking
-          const meta = project.meta as any;
+          const meta = project.meta;
           const costPercentage = (meta && typeof meta === 'object' && meta.estimatedCostPercentage) 
             ? parseFloat(meta.estimatedCostPercentage) 
             : 0.30;

@@ -3,22 +3,26 @@
 // Optimization: Offloads 850+ vertex calculations from Main Thread
 
 // Types for Worker Messages
+export type PathLayer = 'frame' | 'sash' | 'glass' | 'hardware' | 'annotation';
+
+export type PathItem = {
+  d: string;
+  fill: string;
+  stroke: string;
+  layer: PathLayer;
+};
+
 export type EgyptianPathRequest = {
   templateId: string;
   width: number;
   height: number;
-  params: Record<string, any>;
+  params: Record<string, unknown>;
   quality: 'low' | 'medium' | 'high'; // LOD Support
 };
 
 export type EgyptianPathResponse = {
   templateId: string;
-  paths: Array<{
-    d: string;
-    fill: string;
-    stroke: string;
-    layer: 'frame' | 'sash' | 'glass' | 'hardware' | 'annotation';
-  }>;
+  paths: PathItem[];
   metrics: {
     vertexCount: number;
     calcTimeMs: number;
@@ -29,11 +33,34 @@ export type EgyptianPathResponse = {
  * GENERATOR: Sliding 1x2 Window (The "Cairo Standard")
  * Features: 2 Tracks, 50% opening, Interlock overlap
  */
-const generateSlidingWindowPaths = (width: number, height: number, quality: string, params: Record<string, any> = {}) => {
+const getNum = (params: Record<string, unknown>, key: string, def: number): number => {
+  const v = params[key];
+  return typeof v === 'number' ? v : def;
+};
+
+interface HardwareItem {
+  type: string;
+  position: { x: number; y: number };
+}
+
+function isHardwareItem(v: unknown): v is HardwareItem {
+  return (
+    v !== null &&
+    typeof v === 'object' &&
+    'type' in v &&
+    'position' in v &&
+    typeof (v as HardwareItem).position === 'object' &&
+    (v as HardwareItem).position !== null &&
+    typeof (v as HardwareItem).position.x === 'number' &&
+    typeof (v as HardwareItem).position.y === 'number'
+  );
+}
+
+const generateSlidingWindowPaths = (width: number, height: number, quality: string, params: Record<string, unknown> = {}): PathItem[] => {
     // const frameDepth = 100; // Unused in 2D View
-    const frameFace = params.frameFace || 45;   // 4.5cm default
-    const sashFace = params.sashFace || 75;    // 7.5cm default
-    const interlock = params.interlock || 32;   // 32mm default
+    const frameFace = getNum(params, 'frameFace', 45);   // 4.5cm default
+    const sashFace = getNum(params, 'sashFace', 75);    // 7.5cm default
+    const interlock = getNum(params, 'interlock', 32);   // 32mm default
     // const glassGap = 12;    // Unused in simplified view
 
     // Calculate Geometry
@@ -72,7 +99,7 @@ const generateSlidingWindowPaths = (width: number, height: number, quality: stri
     }
 
     // --- MEDIUM LOD (+Glass, Basic Tracks) ---
-    const paths: any[] = [];
+    const paths: PathItem[] = [];
     
     // 1. Frame
     paths.push({
@@ -118,8 +145,10 @@ const generateSlidingWindowPaths = (width: number, height: number, quality: stri
          });
 
          // Render Hardware from Params (if available)
-         if (params.hardware && Array.isArray(params.hardware)) {
-             params.hardware.forEach((item: any) => {
+         const hardware = params.hardware;
+         if (hardware && Array.isArray(hardware)) {
+             hardware.forEach((item: unknown) => {
+                 if (!isHardwareItem(item)) return;
                  const { x, y } = item.position;
                  if (item.type === 'handle') {
                       paths.push({
@@ -158,7 +187,7 @@ self.onmessage = (e: MessageEvent<EgyptianPathRequest>) => {
   const start = performance.now();
   const { templateId, width, height, quality, params } = e.data;
 
-  let paths: any[] = [];
+  let paths: PathItem[] = [];
   
   try {
       if (templateId === 'sliding_1x2_window') {
@@ -172,7 +201,7 @@ self.onmessage = (e: MessageEvent<EgyptianPathRequest>) => {
       
       const response: EgyptianPathResponse = {
         templateId,
-        paths: paths as any,
+        paths,
         metrics: {
             // Estimate vertex count (approx 12 points per rect command * avg commands)
             vertexCount: paths.length * 12, 

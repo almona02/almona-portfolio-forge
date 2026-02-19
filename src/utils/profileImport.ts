@@ -92,7 +92,7 @@ export async function saveScannedProfile(
       }
     }
 
-    return profile.id as string;
+    return profile.id;
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error saving profile";

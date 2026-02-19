@@ -326,7 +326,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                               onArchive={() => setCustomSystems(loadCustomSystems())}
                               onDuplicate={() => setCustomSystems(loadCustomSystems())}
                               onEdit={() => {
-                                setTuningInitialSystem(pack as any);
+                                setTuningInitialSystem(pack);
                                 setShowTuningStudio(true);
                               }}
                             />

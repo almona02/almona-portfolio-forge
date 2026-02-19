@@ -123,7 +123,7 @@ export class PaymentService {
         throw new Error('Failed to create payment record');
       }
 
-      const paymentData = payment as any;
+      const paymentData = payment;
 
       // Log activity
       if (invoiceId) {
@@ -224,7 +224,7 @@ export class PaymentService {
       try {
         await (supabase.from('payment_webhooks') as any).insert({
           event_type: event.type,
-          payload: event as any,
+          payload: event,
           processed: false
         });
       } catch {
@@ -234,11 +234,11 @@ export class PaymentService {
 
       // Process webhook based on type
       if (event.type === 'payment_intent.succeeded') {
-        await this.handlePaymentSuccess(event.data.object as any);
+        await this.handlePaymentSuccess(event.data.object);
       } else if (event.type === 'payment_intent.payment_failed') {
-        await this.handlePaymentFailure(event.data.object as any);
+        await this.handlePaymentFailure(event.data.object);
       } else if (event.type === 'payment_intent.canceled') {
-        await this.handlePaymentCancellation(event.data.object as any);
+        await this.handlePaymentCancellation(event.data.object);
       }
 
       // Mark webhook as processed (table may not exist in types)
@@ -278,7 +278,7 @@ export class PaymentService {
       .single());
 
     if (payment && typeof payment === 'object' && 'id' in payment) {
-      const paymentData = payment as any;
+      const paymentData = payment;
       // Log activity for invoice
       if (invoiceId) {
         await ActivityLogger.log({
@@ -323,7 +323,7 @@ export class PaymentService {
       .single();
 
     if (payment && typeof payment === 'object' && 'id' in payment) {
-      const paymentData = payment as any;
+      const paymentData = payment;
       await ActivityLogger.log({
         entityType: 'payment',
         entityId: paymentData.id,
@@ -353,7 +353,7 @@ export class PaymentService {
       .single());
 
     if (payment && typeof payment === 'object' && 'id' in payment) {
-      const paymentData = payment as any;
+      const paymentData = payment;
       await ActivityLogger.log({
         entityType: 'payment',
         entityId: paymentData.id,

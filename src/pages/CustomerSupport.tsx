@@ -65,7 +65,7 @@ const CustomerSupport: React.FC = () => {
       const current = (prev[key] as string[] | undefined) || []
       const exists = current.includes(value)
       const next = exists ? current.filter(v => v !== value) : [...current, value]
-      return { ...prev, [key]: (next as string[]).length ? (next as string[]) : undefined }
+      return { ...prev, [key]: (next).length ? (next) : undefined }
     })
   }
 

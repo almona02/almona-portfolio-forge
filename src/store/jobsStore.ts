@@ -108,11 +108,11 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         }
 
         if (projError || !upsertedProjects || upsertedProjects.length === 0) {
-          const status = (projError as any)?.status || (projError as any)?.code;
+          const status = (projError)?.status || (projError)?.code;
           const isExpectedError = status === 403 || status === 404 || 
-                                  (projError as any)?.code === 'PGRST116' ||
-                                  (projError as any)?.message?.includes('permission') ||
-                                  (projError as any)?.message?.includes('RLS');
+                                  (projError)?.code === 'PGRST116' ||
+                                  (projError)?.message?.includes('permission') ||
+                                  (projError)?.message?.includes('RLS');
           if (!isExpectedError && process.env.NODE_ENV === 'development') {
             console.warn('Failed to upsert fabricator project for job sync:', projError);
           }
@@ -186,11 +186,11 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         }
 
         if (posError) {
-          const status = (posError as any)?.status || (posError as any)?.code;
+          const status = (posError)?.status || (posError)?.code;
           const isExpectedError = status === 403 || status === 404 || 
-                                  (posError as any)?.code === 'PGRST116' ||
-                                  (posError as any)?.message?.includes('permission') ||
-                                  (posError as any)?.message?.includes('RLS');
+                                  (posError)?.code === 'PGRST116' ||
+                                  (posError)?.message?.includes('permission') ||
+                                  (posError)?.message?.includes('RLS');
           if (!isExpectedError && process.env.NODE_ENV === 'development') {
             console.warn('Failed to upsert fabricator position for job sync:', posError);
           }
@@ -330,10 +330,10 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         ]);
 
       if (projError) {
-        console.error('Failed to load fabricator projects:', projError as any);
+        console.error('Failed to load fabricator projects:', projError);
       }
       if (posError) {
-        console.error('Failed to load fabricator positions:', posError as any);
+        console.error('Failed to load fabricator positions:', posError);
       }
 
       const projectById = new Map<string, FabricatorProjectRow>();
@@ -355,15 +355,15 @@ export const useJobsStore = create<JobsState>((set, get) => ({
           glazing: row.glazing || {},
           hardware: [],
           status: row.status as WindowUnit['status'],
-          optimization: (row.optimization as any) || null,
+          optimization: (row.optimization) || null,
           createdAt: new Date(row.created_at),
           updatedAt: new Date(row.updated_at),
           customer: p?.client_name,
           projectCode: p?.project_code,
           systemPackId: row.system_pack_id || p?.system_pack_id,
           quantity: row.quantity || 1,
-          positionMeta: (row.position_meta as any) || undefined,
-          grid: (row.grid as any) || undefined, 
+          positionMeta: (row.position_meta) || undefined,
+          grid: (row.grid) || undefined, 
         };
       });
 

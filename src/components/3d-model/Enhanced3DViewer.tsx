@@ -111,7 +111,7 @@ function FittedGLBModel({
   useEffect(() => {
     if (autoPlayAnimations && actions && Object.keys(actions).length > 0) {
       try {
-        Object.values(actions).forEach((a: any) => {
+        Object.values(actions).forEach((a: THREE.AnimationAction | null) => {
           if (a && typeof a.play === 'function') {
             a.play();
           }
@@ -123,7 +123,7 @@ function FittedGLBModel({
     return () => {
       if (actions && Object.keys(actions).length > 0) {
         try {
-          Object.values(actions).forEach((a: any) => {
+          Object.values(actions).forEach((a: THREE.AnimationAction | null) => {
             if (a && typeof a.stop === 'function') {
               a.stop();
             }
@@ -141,7 +141,7 @@ function FittedGLBModel({
 
 
 // Main Enhanced3DViewer Component
-export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
+export const Enhanced3DViewer = forwardRef<{ resetCamera: () => void; startWindowAnimation: () => void; stopWindowAnimation: () => void }, Enhanced3DViewerProps>(({
   modelPath,
   windowUnit,
   usdzPath = '/models/model.usdz',
@@ -180,7 +180,7 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
   const [swiftXRInstalled, setSwiftXRInstalled] = useState<boolean | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const modelGroupRef = useRef<THREE.Group | null>(null);
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<{ object: THREE.Camera; target: THREE.Vector3; addEventListener: (type: string, listener: () => void) => void; removeEventListener: (type: string, listener: () => void) => void; reset: () => void; update: () => void } | null>(null);
   const windowModelRef = useRef<THREE.Group | null>(null);
 
   // Window animation state
@@ -245,7 +245,7 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
   useEffect(() => {
     let cancelled = false;
     if (enableWebXR && 'xr' in navigator) {
-      (async () => {
+      void (async () => {
         try {
           const navXR = (navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean> } }).xr;
           const supported = await navXR?.isSessionSupported?.('immersive-ar');
@@ -259,7 +259,7 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
     
     // Check for SwiftXR app on iOS
     if (isIOS) {
-      detectSwiftXR().then(result => {
+      void detectSwiftXR().then(result => {
         if (!cancelled) setSwiftXRInstalled(result.isInstalled);
       });
     }
@@ -380,54 +380,53 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
             <div className="flex gap-2">
               {isIOS && (
                 <button
-                  onClick={async () => {
-                    if (isWindowMode) {
-                      toast({
-                        title: "iOS AR",
-                        description: "Window AR requires model export. Feature coming soon.",
-                      });
-                      return;
-                    }
-                    
-                    // Try native SwiftXR first if installed
-                    if (swiftXRInstalled) {
-                      const modelName = modelPath!.split('/').pop()?.replace(/\.(glb|gltf)$/i, '') || title;
-                      const fullModelUrl = modelPath!.startsWith('http') 
-                        ? modelPath! 
-                        : `${window.location.origin}${modelPath}`;
-                      
-                      const success = await launchSwiftXR({
-                        modelName,
-                        modelUrl: fullModelUrl,
-                        fallbackToWebXR: true,
-                        onSuccess: () => {
+                  onClick={() => {
+                    void (async () => {
+                      if (isWindowMode) {
+                        toast({
+                          title: "iOS AR",
+                          description: "Window AR requires model export. Feature coming soon.",
+                        });
+                        return;
+                      }
+                      // Try native SwiftXR first if installed
+                      if (swiftXRInstalled) {
+                        const modelName = modelPath!.split('/').pop()?.replace(/\.(glb|gltf)$/i, '') || title;
+                        const fullModelUrl = modelPath!.startsWith('http') 
+                          ? modelPath! 
+                          : `${window.location.origin}${modelPath}`;
+                        const success = await launchSwiftXR({
+                          modelName,
+                          modelUrl: fullModelUrl,
+                          fallbackToWebXR: true,
+                          onSuccess: () => {
                           toast({
                             title: "SwiftXR Launched",
                             description: "Opening native AR experience",
                           });
                         },
-                        onFallback: () => {
-                          const link = document.createElement('a');
-                          link.href = usdzPath;
-                          link.rel = 'ar';
-                          link.style.display = 'none';
-                          document.body.appendChild(link);
-                          link.click();
-                          document.body.removeChild(link);
-                        }
-                      });
+                          onFallback: () => {
+                            const link = document.createElement('a');
+                            link.href = usdzPath;
+                            link.rel = 'ar';
+                            link.style.display = 'none';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }
+                        });
                       
-                      if (success) return;
-                    }
-                    
-                    // Fallback to Quick Look
-                    const link = document.createElement('a');
-                    link.href = usdzPath;
-                    link.rel = 'ar';
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                        if (success) return;
+                      }
+                      // Fallback to Quick Look
+                      const link = document.createElement('a');
+                      link.href = usdzPath;
+                      link.rel = 'ar';
+                      link.style.display = 'none';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    })();
                   }}
                   className="swiftxr-ar-button"
                 >
@@ -443,12 +442,12 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
               {enableWebXR && xrSupported && (
                 !isXRSession ? (
                   <button
-                    onClick={enterWebXR}
+                    onClick={() => void enterWebXR()}
                     className="swiftxr-ar-button"
                   >SwiftXR AR</button>
                 ) : (
                   <button
-                    onClick={exitWebXR}
+                    onClick={() => void exitWebXR()}
                     className="swiftxr-ar-button"
                     style={{ background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' }}
                   >Exit SwiftXR</button>

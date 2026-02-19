@@ -221,7 +221,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
           </Button>
           <Button
             type="button"
-            onClick={handleImport}
+            onClick={() => void handleImport()}
             disabled={!selectedFile || isImporting}
             className="bg-amber-600 hover:bg-amber-700 text-white"
           >

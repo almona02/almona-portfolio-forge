@@ -42,20 +42,20 @@ export class CostCalculator {
    * Calculate accurate cost from BOM components
    * Enhanced to use system_pricing when available
    */
-  async calculateAccurateCost(
+  calculateAccurateCost(
     profiles: FabricationData['profiles'],
     hardware: FabricationData['hardware'],
     glazing: FabricationData['glazing'],
     accessories: AccessoryItem[],
     windowUnit: WindowUnit
-  ): Promise<{
+  ): {
     materialCost: number;
     laborCost: number;
     hardwareCost: number;
     glazingCost: number;
     accessoriesCost: number;
     totalCost: number;
-  }> {
+  } {
     // Material cost (profiles) - profiles already have cost calculated
     // Note: Profile costs could be recalculated using system_pricing here if needed
     // For now, we use the existing cost from profiles (backward compatibility)
@@ -71,14 +71,14 @@ export class CostCalculator {
     }
 
     // Hardware cost - enhanced to use system_pricing if available
-    const hardwareCost = await this.pricingEngine.calculateHardwareCost(
+    const hardwareCost = this.pricingEngine.calculateHardwareCost(
       hardware,
       windowUnit.positionMeta?.buildingBlock,
       systemPricingContext
     );
 
     // Glazing cost - enhanced to use system_pricing if available
-    const glazingCost = await this.pricingEngine.calculateGlazingCost(
+    const glazingCost = this.pricingEngine.calculateGlazingCost(
       glazing,
       windowUnit.positionMeta?.buildingBlock,
       systemPricingContext
@@ -89,7 +89,7 @@ export class CostCalculator {
 
     // Labor cost (based on assembly time)
     const totalAssemblyTime = this.estimateTotalAssemblyTime(profiles, hardware, glazing);
-    const laborCost = await this.pricingEngine.calculateLaborCost(
+    const laborCost = this.pricingEngine.calculateLaborCost(
       totalAssemblyTime,
       windowUnit.positionMeta?.buildingBlock
     );

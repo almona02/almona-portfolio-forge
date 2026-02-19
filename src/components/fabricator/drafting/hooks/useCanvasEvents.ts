@@ -1,8 +1,20 @@
 
 import React, { useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
-import type { Arc, DraftingTool, Geometry2D, Line, Point, Polygon, Rectangle, Viewport } from '../types/drafting';
+import type { Arc, DraftingContextType, DraftingTool, Geometry2D, Line, Point, Polygon, Rectangle, Spline, Viewport } from '../types/drafting';
 import type { MaterialAwareRectangle, MaterialType } from '../types/materialAware';
+
+/** Context menu target: id, type, and optional rect/material-window indices or sash cell. */
+export interface ContextMenuTarget {
+  id: string;
+  type: 'line' | 'rectangle' | 'polygon' | 'arc';
+  rectIndex?: number;
+  materialWindowIndex?: number;
+  isMaterialAware?: boolean;
+  /** When right-click is on a sash cell (grid cell with type 'sash'). */
+  targetType?: 'sash';
+  cellId?: string;
+}
 import { elementRefsToIndices, findElementsInBox } from '../utils/boxSelectionUtils';
 import { calculateCircleFromThreePoints } from '../utils/geometryUtils';
 import { validatePoint } from '../utils/inputValidator';
@@ -102,13 +114,13 @@ interface UseCanvasEventsProps {
   onMousePositionChange?: (point: Point) => void;
 
   // Context/API
-  drafting: any; 
-  
+  drafting: DraftingContextType;
+
   // Utils/Helpers
   getSVGPoint: (x: number, y: number) => Point;
   handleHardwarePlacement: (point: Point, tool: DraftingTool) => void;
   handleStructuralPlacement: (point: Point, tool: DraftingTool) => void;
-  logToolOperation: (tool: DraftingTool, operation: string, params: any, result?: any) => void;
+  logToolOperation: (tool: DraftingTool, operation: string, params: Record<string, unknown>, result?: Record<string, unknown>) => void;
   
   // Refs
   svgRef: React.RefObject<HTMLElement>;
@@ -202,24 +214,86 @@ export const useCanvasEvents = ({
     
     for (const arr of allArrays) {
         for (let i = 0; i < arr.length; i++) {
-            if ((arr[i] as any).id === elementRef.id) return globalIndex;
+            if ((arr[i] as { id?: string }).id === elementRef.id) return globalIndex;
             globalIndex++;
         }
     }
     return null;
   }, []);
 
-  const findElementAtPoint = useCallback((point: Point, geometry: Geometry2D): { id: string; type: 'line' | 'rectangle' | 'polygon' | 'arc' } | null => {
+  const findElementAtPoint = useCallback((point: Point, geometry: Geometry2D): ContextMenuTarget | null => {
+    // Check material-aware windows first (defined frames) — same bounds as rectangles; resolve sash cell if grid exists
+    try {
+      const materialAware = drafting.getMaterialAwareWindows?.();
+      const grids = drafting.getMaterialWindowGrids?.() ?? {};
+      if (materialAware?.length) {
+        for (let i = 0; i < materialAware.length; i++) {
+          const r = materialAware[i];
+          if (point.x < r.x || point.x > r.x + r.width || point.y < r.y || point.y > r.y + r.height) continue;
+          const grid = r.id ? grids[r.id] : undefined;
+          if (grid?.cells?.length) {
+            const cols = grid.cols ?? 1;
+            const rows = grid.rows ?? 1;
+            const colWidths = (grid.colWidths && grid.colWidths.length === cols ? grid.colWidths : Array(cols).fill(1)) as number[];
+            const rowHeights = (grid.rowHeights && grid.rowHeights.length === rows ? grid.rowHeights : Array(rows).fill(1)) as number[];
+            const totalCol = colWidths.reduce((a, b) => a + b, 0) || 1;
+            const totalRow = rowHeights.reduce((a, b) => a + b, 0) || 1;
+            const relX = (point.x - r.x) / (r.width || 1);
+            const relY = (point.y - r.y) / (r.height || 1);
+            let colIndex = 0;
+            let acc = 0;
+            for (let c = 0; c < colWidths.length; c++) {
+              acc += colWidths[c] / totalCol;
+              if (relX <= acc) { colIndex = c; break; }
+              colIndex = c;
+            }
+            let rowIndex = 0;
+            acc = 0;
+            for (let row = 0; row < rowHeights.length; row++) {
+              acc += rowHeights[row] / totalRow;
+              if (relY <= acc) { rowIndex = row; break; }
+              rowIndex = row;
+            }
+            const cell = grid.cells.find((c: { row: number; col: number; type: string }) => c.row === rowIndex && c.col === colIndex);
+            if (cell && (cell as { type: string }).type === 'sash') {
+              const rects = (geometry.rectangles ?? []) as { id?: string }[];
+              const rectIndex = r.id ? rects.findIndex((rect) => rect.id === r.id) : -1;
+              return {
+                id: r.id || '',
+                type: 'rectangle',
+                rectIndex: rectIndex >= 0 ? rectIndex : undefined,
+                materialWindowIndex: i,
+                isMaterialAware: true,
+                targetType: 'sash',
+                cellId: (cell as { id: string }).id,
+              };
+            }
+          }
+          const rects = (geometry.rectangles ?? []) as { id?: string }[];
+          const rectIndex = r.id ? rects.findIndex((rect) => rect.id === r.id) : -1;
+          return {
+            id: r.id || '',
+            type: 'rectangle',
+            rectIndex: rectIndex >= 0 ? rectIndex : undefined,
+            materialWindowIndex: i,
+            isMaterialAware: true,
+          };
+        }
+      }
+    } catch (_) {
+      // getMaterialAwareWindows / getMaterialWindowGrids may not exist on older drafting API
+    }
     // Check lines
     for (const line of geometry.lines) {
       const dist = Math.sqrt(Math.pow(point.x - line.start.x, 2) + Math.pow(point.y - line.start.y, 2)) + Math.sqrt(Math.pow(point.x - line.end.x, 2) + Math.pow(point.y - line.end.y, 2));
       const lineLength = Math.sqrt(Math.pow(line.end.x - line.start.x, 2) + Math.pow(line.end.y - line.start.y, 2));
       if (dist < lineLength * 1.1) return { id: line.id || '', type: 'line' };
     }
-    // Check rectangles
-    for (const rect of geometry.rectangles) {
+    // Check rectangles (plain, not material-aware)
+    for (let i = 0; i < geometry.rectangles.length; i++) {
+      const rect = geometry.rectangles[i];
       if (point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height) {
-        return { id: rect.id || '', type: 'rectangle' };
+        return { id: rect.id || '', type: 'rectangle', rectIndex: i, isMaterialAware: false };
       }
     }
     // Check polygons
@@ -239,7 +313,7 @@ export const useCanvasEvents = ({
       if (Math.abs(dist - arc.r) < 5) return { id: arc.id || '', type: 'arc' };
     }
     return null;
-  }, []);
+  }, [drafting]);
 
 
   // --- Wheel Handler ---
@@ -276,11 +350,13 @@ export const useCanvasEvents = ({
   }, [canvasSize, setViewport, svgRef]);
 
   useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    svg.addEventListener('wheel', handleWheel, { passive: false });
+    const el = svgRef.current;
+    if (!el) return;
+    // Capture phase + non-passive so we can preventDefault (Ctrl+wheel zoom) before React's passive listener runs
+    const opts: AddEventListenerOptions = { passive: false, capture: true };
+    el.addEventListener('wheel', handleWheel, opts);
     return () => {
-      svg.removeEventListener('wheel', handleWheel);
+      el.removeEventListener('wheel', handleWheel, opts);
     };
   }, [handleWheel, svgRef]);
 
@@ -295,7 +371,7 @@ export const useCanvasEvents = ({
     }
 
     if (selectedTool === 'select' && e.target instanceof SVGElement) {
-      const target = e.target as SVGElement;
+      const target = e.target;
       if (target.getAttribute('data-handle-type') === 'rotation') {
         e.preventDefault();
         e.stopPropagation();
@@ -434,12 +510,12 @@ export const useCanvasEvents = ({
         break;
 
       case 'select':
-        const placingBlockId = (drafting as any).getPlacingBlockId?.() || null;
+        const placingBlockId = (drafting).getPlacingBlockId?.() || null;
         if (placingBlockId) {
              // Block Placement Logic
              let validatedPoint: Point;
               try { validatedPoint = validatePoint(point); } catch (_error) { toast.error('Invalid placement position'); return; }
-              const block = (drafting as any).getBlockDefinitions?.()?.find((b: any) => b.id === placingBlockId);
+              const block = drafting.getBlockDefinitions?.()?.find((b) => b.id === placingBlockId);
               if (!block) { toast.error('Block not found'); return; }
     
               const validatedScale = isFinite(blockPlacementScale) && blockPlacementScale > 0 ? blockPlacementScale : 1.0;
@@ -447,9 +523,9 @@ export const useCanvasEvents = ({
               
               try {
                 const rotationRad = (validatedRotation * Math.PI) / 180;
-                (drafting as any).insertBlock?.(placingBlockId, validatedPoint, { x: validatedScale, y: validatedScale }, rotationRad);
+                (drafting).insertBlock?.(placingBlockId, validatedPoint, { x: validatedScale, y: validatedScale }, rotationRad);
                 toast.success('Block placed');
-                (drafting as any).cancelPlacingBlock?.();
+                (drafting).cancelPlacingBlock?.();
                 setBlockPlacementScale(1.0); setBlockPlacementRotation(0);
               } catch (_error) { toast.error('Failed to place block'); }
               return;
@@ -466,8 +542,8 @@ export const useCanvasEvents = ({
              const current = drafting.getSelectedElements();
              const elementIndex = getElementGlobalIndex(elementAtPoint, geometry);
              if (elementIndex !== null) {
-               if (current.includes(elementIndex)) (drafting as any).selectElements?.(current.filter((i:any) => i !== elementIndex));
-               else (drafting as any).selectElements?.([...current, elementIndex]);
+               if (current.includes(elementIndex)) drafting.selectElements(current.filter((i) => i !== elementIndex));
+               else (drafting).selectElements?.([...current, elementIndex]);
              }
            } else {
              drafting.selectElementAt(point);
@@ -645,7 +721,7 @@ export const useCanvasEvents = ({
          // Throttling for hover is less critical if the array is small, 
          // but for large geometry we might miss the throttle. 
          // For surgical split, this is acceptable.
-         const hoveredIndex = drafting.getGeometry().rectangles.findIndex((rect: any) =>
+         const hoveredIndex = drafting.getGeometry().rectangles.findIndex((rect) =>
           point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height
         );
         setHoveredElementIndex(hoveredIndex >= 0 ? hoveredIndex : null);
@@ -702,8 +778,8 @@ export const useCanvasEvents = ({
           const validated = drafting.validateAgainstTemplates(snapped);
           
           if (validated.width > 10 && validated.height > 10) {
-             if (selectedMaterial && selectedSystemPackId && ['aluminum', 'upvc'].includes(selectedMaterial)) {
-                 const spec = getMaterialSpec(selectedSystemPackId) || getDefaultMaterialSpec(selectedMaterial as any);
+             if (selectedMaterial && selectedSystemPackId && (selectedMaterial === 'aluminum' || selectedMaterial === 'upvc')) {
+                 const spec = getMaterialSpec(selectedSystemPackId) ?? getDefaultMaterialSpec(selectedMaterial);
                  const matRect: MaterialAwareRectangle = {
                      ...validated, material: selectedMaterial, systemPackId: selectedSystemPackId,
                      profileDepth: spec.profileDepth, glazingPocket: spec.glazingPocket, thermalBreak: spec.thermalBreak,
@@ -744,7 +820,7 @@ export const useCanvasEvents = ({
     // Spline Enter (Finish Spline)
     if (selectedTool === 'spline' && splinePoints.length >= 2 && e.key === 'Enter') {
       e.preventDefault();
-      const spline: any = { // Spline type might need specific import or loose type
+      const spline: Spline = {
         controlPoints: splinePoints,
         closed: false
       };
@@ -786,6 +862,7 @@ export const useCanvasEvents = ({
     handleMouseUp,
     handleKeyDown,
     handleWheel,
-    mousePosition: cursorPosition || { x: 0, y: 0 } 
+    mousePosition: cursorPosition || { x: 0, y: 0 },
+    findElementAtPoint,
   };
 };

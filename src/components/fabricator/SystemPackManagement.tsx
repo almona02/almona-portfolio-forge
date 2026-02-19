@@ -178,8 +178,8 @@ export const SystemPackManagement: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredSystems.map((system) => {
             const tuningStatus = getSystemPackTuningStatus(system);
-            const isUPVC = !!(system as any).upvcSpec;
-            const profiles = (system as any).profiles || [];
+            const isUPVC = !!(system).upvcSpec;
+            const profiles = (system).profiles || [];
             const frameProfiles = profiles.filter((p: any) => 
               p.profileRole === 'frame' || p.type === 'frame'
             );

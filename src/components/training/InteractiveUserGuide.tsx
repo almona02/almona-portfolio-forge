@@ -535,13 +535,13 @@ export const InteractiveUserGuide: React.FC<{
                           {selectedModule.steps[currentStep].media && (
                             <div className="mt-4">
                               <img
-                                src={selectedModule.steps[currentStep].media!.url}
-                                alt={selectedModule.steps[currentStep].media!.caption}
+                                src={selectedModule.steps[currentStep].media.url}
+                                alt={selectedModule.steps[currentStep].media.caption}
                                 className="rounded-lg border border-almona-light/20"
                               />
-                              {selectedModule.steps[currentStep].media!.caption && (
+                              {selectedModule.steps[currentStep].media.caption && (
                                 <p className="text-xs text-gray-500 mt-2 text-center">
-                                  {selectedModule.steps[currentStep].media!.caption}
+                                  {selectedModule.steps[currentStep].media.caption}
                                 </p>
                               )}
                             </div>
@@ -555,7 +555,7 @@ export const InteractiveUserGuide: React.FC<{
                                 <span className="text-sm font-medium text-blue-300">Hints</span>
                               </div>
                               <ul className="text-xs text-blue-200 space-y-1">
-                                {selectedModule.steps[currentStep].hints!.map((hint, index) => (
+                                {selectedModule.steps[currentStep].hints.map((hint, index) => (
                                   <li key={index}>• {hint}</li>
                                 ))}
                               </ul>

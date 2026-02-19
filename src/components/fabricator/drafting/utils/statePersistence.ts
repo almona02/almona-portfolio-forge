@@ -16,7 +16,7 @@ export interface DraftVersion {
   /** Timestamp */
   timestamp: number;
   /** State snapshot */
-  state: any;
+  state: unknown;
   /** Version label (user-defined or auto) */
   label?: string;
   /** Is this a checkpoint (major save) */
@@ -49,6 +49,15 @@ const DEFAULT_CONFIG: Required<PersistenceConfig> = {
   enableRecovery: true,
 };
 
+/** Version metadata stored in versions list (state loaded on demand) */
+interface StoredVersionMetadata {
+  id: string;
+  timestamp: number;
+  label?: string;
+  isCheckpoint: boolean;
+  size: number;
+}
+
 const STORAGE_KEYS = {
   CURRENT_DRAFT: 'draft-current',
   VERSIONS: 'draft-versions',
@@ -65,7 +74,7 @@ export class StatePersistenceManager {
   private versions: DraftVersion[] = [];
   private currentVersionId: string | null = null;
   private autoSaveTimer: NodeJS.Timeout | null = null;
-  private debouncedSave: (state: any) => void;
+  private debouncedSave: (state: unknown) => void;
   private sessionId: string;
 
   constructor(config: PersistenceConfig = {}) {
@@ -74,7 +83,7 @@ export class StatePersistenceManager {
     
     // Create debounced save function
     this.debouncedSave = debounceWithMaxWait(
-      (state: any) => this.saveVersion(state, false),
+      (state: unknown) => this.saveVersion(state, false),
       this.config.debounceDelay,
       this.config.maxWait
     );
@@ -96,7 +105,7 @@ export class StatePersistenceManager {
   /**
    * Save state (debounced for frequent changes, immediate for checkpoints)
    */
-  saveState(state: any, isCheckpoint: boolean = false): void {
+  saveState(state: unknown, isCheckpoint: boolean = false): void {
     if (isCheckpoint) {
       // Immediate save for checkpoints
       this.saveVersion(state, true);
@@ -109,7 +118,7 @@ export class StatePersistenceManager {
   /**
    * Save a version
    */
-  private saveVersion(state: any, isCheckpoint: boolean): void {
+  private saveVersion(state: unknown, isCheckpoint: boolean): void {
     try {
       const stateString = JSON.stringify(state);
       const size = new Blob([stateString]).size;
@@ -160,12 +169,12 @@ export class StatePersistenceManager {
   /**
    * Load current draft
    */
-  loadCurrentDraft(): any | null {
+  loadCurrentDraft(): unknown {
     try {
       const stateString = SafeLocalStorage.getItem(STORAGE_KEYS.CURRENT_DRAFT);
       if (!stateString) return null;
       
-      return safeJsonParse<any>(stateString);
+      return safeJsonParse<unknown>(stateString);
     } catch (error) {
       // Clear corrupted data if prototype pollution detected
       if (error instanceof Error && error.message === 'Prototype pollution detected') {
@@ -180,7 +189,7 @@ export class StatePersistenceManager {
   /**
    * Load a specific version
    */
-  loadVersion(versionId: string): any | null {
+  loadVersion(versionId: string): unknown {
     try {
       const version = this.versions.find(v => v.id === versionId);
       if (!version) return null;
@@ -188,7 +197,7 @@ export class StatePersistenceManager {
       if (this.config.enableVersioning) {
         const stateString = SafeLocalStorage.getItem(`version-${versionId}`);
         if (stateString) {
-          return safeJsonParse<any>(stateString);
+          return safeJsonParse<unknown>(stateString);
         }
       }
 
@@ -210,12 +219,12 @@ export class StatePersistenceManager {
   /**
    * Get recovery point
    */
-  getRecoveryPoint(): any | null {
+  getRecoveryPoint(): { state: unknown; timestamp?: number; sessionId?: string } | null {
     try {
       const recoveryString = SafeLocalStorage.getItem(STORAGE_KEYS.RECOVERY);
       if (!recoveryString) return null;
       
-      return safeJsonParse<any>(recoveryString);
+      return safeJsonParse<{ state: unknown; timestamp?: number; sessionId?: string }>(recoveryString);
     } catch (error) {
       // Clear corrupted data if prototype pollution detected
       if (error instanceof Error && error.message === 'Prototype pollution detected') {
@@ -239,6 +248,28 @@ export class StatePersistenceManager {
    */
   clearRecoveryPoint(): void {
     SafeLocalStorage.removeItem(STORAGE_KEYS.RECOVERY);
+  }
+
+  /**
+   * Restore from recovery point: get state, clear recovery, return for application
+   */
+  restoreFromRecovery(): unknown {
+    const recovery = this.getRecoveryPoint();
+    if (!recovery || typeof recovery !== 'object' || !('state' in recovery)) return null;
+    this.clearRecoveryPoint();
+    return (recovery as { state: unknown }).state;
+  }
+
+  /** Alias for clearRecoveryPoint (discard without restoring) */
+  discardRecoveryPoint(): void {
+    this.clearRecoveryPoint();
+  }
+
+  /**
+   * Create a user checkpoint (immediate save with label)
+   */
+  createCheckpoint(state: unknown, _label: string): void {
+    this.saveState(state, true);
   }
 
   /**
@@ -274,8 +305,8 @@ export class StatePersistenceManager {
         return;
       }
 
-      const metadata = safeJsonParse<{ versions: DraftVersion[], currentVersionId: string | null }>(metadataString);
-      this.versions = metadata.versions || [];
+      const metadata = safeJsonParse<{ versions: StoredVersionMetadata[]; currentVersionId: string | null }>(metadataString);
+      this.versions = (metadata.versions || []).map(v => ({ ...v, state: undefined as unknown }));
       this.currentVersionId = metadata.currentVersionId || null;
     } catch (error) {
       // Clear corrupted data if prototype pollution detected
@@ -314,7 +345,7 @@ export class StatePersistenceManager {
   /**
    * Save recovery point
    */
-  private saveRecoveryPoint(state: any): void {
+  private saveRecoveryPoint(state: unknown): void {
     try {
       const recoveryData = {
         state,

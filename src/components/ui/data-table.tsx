@@ -115,7 +115,7 @@ export function DataTable<TData, TValue>({
 
   React.useEffect(() => {
     if (!onSelectionChange) return
-    const rows = table.getSelectedRowModel().rows.map((r) => r.original as TData)
+    const rows = table.getSelectedRowModel().rows.map((r) => r.original)
     onSelectionChange(rows)
   }, [rowSelection, onSelectionChange, table])
 

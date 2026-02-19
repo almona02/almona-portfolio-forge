@@ -79,7 +79,7 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
               setMotionComponent(() => motionElement);
             } else {
               // Fallback if motion element doesn't exist
-              setMotionComponent(() => ((props: any) => React.createElement(component as keyof JSX.IntrinsicElements, props)) as ComponentType<any>);
+              setMotionComponent(() => ((props: any) => React.createElement(component, props)) as ComponentType<any>);
             }
           } else if (motion && component) {
             // For component references
@@ -87,7 +87,7 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
           } else {
             // Fallback to regular element
             if (typeof component === 'string') {
-              setMotionComponent(() => ((props: any) => React.createElement(component as keyof JSX.IntrinsicElements, props)) as ComponentType<any>);
+              setMotionComponent(() => ((props: any) => React.createElement(component, props)) as ComponentType<any>);
             } else {
               setMotionComponent(() => component as ComponentType<any>);
             }
@@ -139,7 +139,7 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
       }
       
       if (typeof component === 'string') {
-        const Element = component as keyof JSX.IntrinsicElements;
+        const Element = component;
         return React.createElement(Element, safeProps, children);
       }
       return React.createElement(component as ComponentType<any>, safeProps, children);
@@ -147,7 +147,7 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
       console.error('Error rendering LazyMotion fallback:', error);
       // Ultimate fallback - just render children in a div
       if (typeof component === 'string') {
-        const Element = component as keyof JSX.IntrinsicElements;
+        const Element = component;
         return React.createElement(Element, {}, children);
       }
       return React.createElement(component as ComponentType<any>, {}, children);

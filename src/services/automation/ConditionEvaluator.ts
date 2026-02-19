@@ -165,7 +165,7 @@ export class ConditionEvaluator {
       if ('operator' in condition && 'conditions' in condition) {
         // Nested group
         const nestedResult = this.evaluateConditionGroup(
-          condition as ConditionGroup,
+          condition,
           context
         );
         result = nestedResult.result;
@@ -175,7 +175,7 @@ export class ConditionEvaluator {
         });
       } else {
         // Single condition
-        result = this.evaluateCondition(condition as Condition, context);
+        result = this.evaluateCondition(condition, context);
         evaluatedConditions.push({
           condition,
           result,
@@ -211,12 +211,12 @@ export class ConditionEvaluator {
       if ('operator' in conditionOrGroup && 'conditions' in conditionOrGroup) {
         // Condition group
         return this.evaluateConditionGroup(
-          conditionOrGroup as ConditionGroup,
+          conditionOrGroup,
           context
         );
       } else {
         // Single condition
-        const condition = conditionOrGroup as Condition;
+        const condition = conditionOrGroup;
         const result = this.evaluateCondition(condition, context);
         return {
           result,

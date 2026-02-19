@@ -98,7 +98,7 @@ const getPackWeightPerMeter = (profile: Profile | null, role: string): number | 
   const specs: any = profile.specifications || {};
   const systemLabel: string =
     (specs.window_system as string | undefined) ||
-    (profile.systemBrand as string | undefined) ||
+    (profile.systemBrand) ||
     '';
 
   if (!systemLabel) return undefined;
@@ -258,7 +258,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         .select(`
           *,
           fabricator_profiles (id, name)
-        `) as any)
+        `))
         .eq('user_id', userId)
         .eq('is_resolved', false)
         .order('severity', { ascending: false })
@@ -297,7 +297,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         .select(`
           *,
           fabricator_profiles (id, name)
-        `) as any)
+        `))
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -332,7 +332,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       const { data, error } = await (db
         .from('inventory_locations')
-        .select('*') as any)
+        .select('*'))
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('is_default', { ascending: false })
@@ -527,14 +527,14 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         }
 
         const db = supabase as any;
-        const { error } = await (db.from('stock_movements') as any).insert(inserts as any);
+        const { error } = await (db.from('stock_movements')).insert(inserts as any);
         if (error) throw error;
 
         // Update profile stock quantities
         for (const [profileId, addedLength] of stockUpdates.entries()) {
           const profile = inventory.find((p) => p.id === profileId);
           if (profile) {
-            await (db.from('fabricator_profiles') as any)
+            await (db.from('fabricator_profiles'))
               .update({ 
                 stock_quantity: (profile.stockQuantity || 0) + addedLength,
                 updated_at: new Date().toISOString()
@@ -591,7 +591,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       const db = supabase as any;
 
-      const { error } = await (db.from('stock_movements') as any).insert({
+      const { error } = await (db.from('stock_movements')).insert({
         user_id: userId,
         profile_id: invoiceProfileId,
         movement_type: 'in', // 'in' is the correct type for stock intake/purchases
@@ -603,7 +603,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       if (error) throw error;
 
       // Update profile stock quantity
-      const { error: updateError } = await (db.from('fabricator_profiles') as any)
+      const { error: updateError } = await (db.from('fabricator_profiles'))
         .update({ 
           stock_quantity: (invoiceSelectedProfile.stockQuantity || 0) + lengthM,
           updated_at: new Date().toISOString()
@@ -717,7 +717,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           is_resolved: true,
           resolved_at: new Date().toISOString(),
           resolved_by: userId,
-        }) as any)
+        }))
         .eq('id', alertId);
 
       if (error) throw error;
@@ -740,7 +740,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         const specs: any = profile.specifications || {};
         const systemLabel =
           (specs.window_system as string | undefined) ||
-          (profile.systemBrand as string | undefined) ||
+          (profile.systemBrand) ||
           '';
 
         if (!systemLabel) return false;
@@ -806,7 +806,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         const specs: any = profile.specifications || {};
         const systemLabel =
           (specs.window_system as string | undefined) ||
-          (profile.systemBrand as string | undefined) ||
+          (profile.systemBrand) ||
           '';
         const label = systemLabel.toLowerCase();
         if (!label.includes(filterSystemPackId.toLowerCase())) {
@@ -833,7 +833,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         const specs: any = remnant.profile?.specifications || {};
         const systemLabel =
           (specs.window_system as string | undefined) ||
-          (remnant.profile?.systemBrand as string | undefined) ||
+          (remnant.profile?.systemBrand) ||
           '';
         const label = systemLabel.toLowerCase();
         if (!label.includes(filterSystemPackId.toLowerCase())) {
@@ -866,7 +866,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   );
 
   const invoiceProfileSystemPack =
-    (invoiceSelectedProfile?.systemBrand as string | undefined) ||
+    (invoiceSelectedProfile?.systemBrand) ||
     ((invoiceSelectedProfile?.specifications as any)?.window_system as string | undefined) ||
     'Standard';
 
@@ -889,7 +889,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
   const invoiceWeightPerMeter =
     typeof invoiceSelectedProfile?.weightPerMeter === 'number'
-      ? (invoiceSelectedProfile.weightPerMeter as number)
+      ? (invoiceSelectedProfile.weightPerMeter)
       : typeof (invoiceSelectedProfile?.specifications as any)?.weightPerMeterKg === 'number'
         ? ((invoiceSelectedProfile?.specifications as any).weightPerMeterKg as number)
         : typeof packWeightPerMeter === 'number'
@@ -912,7 +912,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     return inventory.filter((p) => {
       const specs: any = p.specifications || {};
       const packLabel: string =
-        (p.systemBrand as string | undefined) ||
+        (p.systemBrand) ||
         (specs.window_system as string | undefined) ||
         '';
 
@@ -1678,7 +1678,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       {invoiceProfileOptions.map((p) => {
                         const specs: any = p.specifications || {};
                         const packLabel: string =
-                          (p.systemBrand as string | undefined) ||
+                          (p.systemBrand) ||
                           (specs.window_system as string | undefined) ||
                           'Standard';
                         const roleLabel: string =

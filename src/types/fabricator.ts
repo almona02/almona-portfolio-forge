@@ -55,6 +55,47 @@ export interface FacadeModel {
 }
 // ------------------------------
 
+/**
+ * Glazing specification types — Gold Tier precision typing
+ * Replaces legacy `any` for type safety across workflow, PDF, drafting, hardener.
+ *
+ * Flat spec: workflow/PDF/precision design (type, thickness, spacer, gasFill, uValue)
+ * Per-cell spec: drafting (Record<cellId, { type, color? }>)
+ */
+export interface GlazingSpecFlat {
+  type?: string;
+  thickness?: number;
+  spacer?: string;
+  gasFill?: string;
+  color?: string;
+  uValue?: number;
+  safetyRating?: 'annealed' | 'tempered' | 'laminated';
+  glassCode?: string;
+}
+
+/** Per-cell glazing from drafting (frameId -> cellId -> spec) */
+export type GlazingSpecPerCell = Record<string, { type?: 'single' | 'double' | 'triple'; color?: string; georgianBars?: boolean }>;
+
+export type GlazingSpec = GlazingSpecFlat | GlazingSpecPerCell;
+
+/** Type guard: flat spec (workflow/PDF) vs per-cell (drafting) */
+export function isGlazingSpecFlat(g: GlazingSpec): g is GlazingSpecFlat {
+  return typeof g === 'object' && g !== null && ('type' in g || 'thickness' in g || 'spacer' in g || 'gasFill' in g || 'uValue' in g);
+}
+
+/**
+ * Minimal hardware item for WindowUnit/WindowComponent — PDF, BOM, workflow iteration.
+ * Drafting uses HardwarePlacement (materialAware); this covers legacy/flat usage.
+ */
+export interface HardwareItemMinimal {
+  id?: string;
+  name?: string;
+  type?: string;
+  quantity?: number;
+  supplierCode?: string;
+  category?: string;
+}
+
 export interface WindowUnit {
   id: string;
   orderNumber: string;
@@ -64,8 +105,8 @@ export interface WindowUnit {
   overallWidth: number;
   overallHeight: number;
   color: string;
-  glazing: any;
-  hardware: any[];
+  glazing: GlazingSpec;
+  hardware: HardwareItemMinimal[];
   status: WindowUnitStatus;
   optimization: OptimizationResult | null;
   createdAt: Date;
@@ -153,11 +194,11 @@ export interface WindowUnit {
     id: string;
     name: string;
     type: string;
-    gridSpec: any;
-    mullions: any[];
-    transoms: any[];
-    constraints: any;
-    openingMechanism: any;
+    gridSpec: unknown;
+    mullions: unknown[];
+    transoms: unknown[];
+    constraints: unknown;
+    openingMechanism: unknown;
   }>;
   /**
    * Facade Model Data (Phase 2)
@@ -176,8 +217,12 @@ export interface ManualMullion {
   id: string;
   type: 'horizontal' | 'vertical';
   level: 'frame' | 'sash';
-  position: number; // Position in mm from left (vertical) or top (horizontal)
+  position: number; // Absolute: mm from left (vertical) or top (horizontal). Proportional: 0–100 (percent).
   sashId?: string; // Optional: For sash-level mullions, the ID of the sash cell
+  /** Bar thickness in mm; when set, overrides system pack mullion profile width for 3D/2D */
+  widthMm?: number;
+  /** Absolute (mm) | Proportional (%) — stays centered on resize when proportional */
+  splitType?: 'absolute' | 'proportional' | 'clearance-based';
 }
 
 export interface WindowGrid {
@@ -209,9 +254,9 @@ export interface WindowComponent {
   quantity: number;
   cuttingLengths: number[];
   angles: number[];
-  machiningOperations: any[];
+  machiningOperations: unknown[];
   glazingType: string;
-  hardware: any[];
+  hardware: HardwareItemMinimal[];
 }
 
 /**
@@ -383,7 +428,7 @@ export interface Profile {
     markupPercentage?: number;
     cuttingType?: string;
     optimizedFor45Degree?: boolean;
-    [key: string]: any; // ... other specifications
+    [key: string]: unknown; // ... other specifications
   };
   /** Optional calibrations for this profile */
   calibrations?: CuttingCalibration[];
@@ -420,7 +465,7 @@ export interface FabricatorAccessory {
   compatibleMaterials: string[]; // ['aluminum', 'upvc']
   region: string[]; // ['turkey', 'egypt', 'global']
   imageUrl?: string;
-  specifications?: Record<string, any>;
+  specifications?: Record<string, unknown>;
   userId?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -500,7 +545,7 @@ export interface AccessorySpecs {
   weight?: number;
   loadCapacity?: number;
   certifications?: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -530,7 +575,7 @@ export interface SystemPack {
    * Raw specification object that will be embedded into profile.specifications
    * Replaces legacy top-level fields
    */
-  windowSystemSpec: Record<string, any>;
+  windowSystemSpec: Record<string, unknown>;
   
   // Legacy fields kept for compatibility during migration
   id?: string;
@@ -543,9 +588,9 @@ export interface SystemPack {
   description?: string;
   technicalData?: SystemTechnicalData;
   /** Optional Smart Draw presets used by facade tools */
-  smartDrawPreset?: any;
+  smartDrawPreset?: unknown;
   /** Optional glass sizing rules used for glazing and 2D glass optimisation. */
-  glassAllowances?: any;
+  glassAllowances?: unknown;
   /** Optional default grid layout to apply when this pack is selected */
   defaultGrid?: WindowGrid;
   /** Optional profiles array for BOM generation with accurate dimensions */
@@ -562,7 +607,7 @@ export interface SystemTechnicalData {
   windLoad?: string;
   soundReduction?: number;
   certifications?: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface OptimizationResult {
@@ -716,9 +761,9 @@ export interface DraftQuote {
   projectTitle?: string;
   amount?: number;
   currency?: string;
-  items?: any[];
+  items?: unknown[];
   validUntil?: Date;
-  payload: Record<string, any>;
+  payload: Record<string, unknown>;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -734,7 +779,7 @@ export interface DraftInvoice {
   currency?: string;
   dueDate?: Date;
   type?: string;
-  payload: Record<string, any>;
+  payload: Record<string, unknown>;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -753,8 +798,8 @@ export interface FabricatorAuditLog {
   tableName: string;
   recordId: string | null;
   recordIds?: string[];
-  oldValues?: Record<string, any>;
-  newValues?: Record<string, any>;
+  oldValues?: Record<string, unknown>;
+  newValues?: Record<string, unknown>;
   changedFields?: string[];
   operationType?: string;
   operationSource?: 'web' | 'api' | 'bulk_import' | 'scheduled' | 'system';
@@ -779,7 +824,7 @@ export interface FabricatorBackupSnapshot {
   snapshotType: 'full' | 'incremental' | 'manual' | 'scheduled';
   description?: string;
   tablesIncluded: string[];
-  snapshotData: Record<string, any[]>;
+  snapshotData: Record<string, unknown[]>;
   recordCount: number;
   dataSizeBytes?: number;
   compressionRatio?: number;
@@ -825,7 +870,7 @@ export interface FabricatorQueryMetric {
   rowsAffected?: number;
   rowsReturned?: number;
   queryText?: string;
-  queryParams?: Record<string, any>;
+  queryParams?: Record<string, unknown>;
   isSlowQuery: boolean;
   slowQueryThresholdMs: number;
   status: 'success' | 'error' | 'timeout';
@@ -883,7 +928,7 @@ export interface FabricatorProfileRow {
   min_stock_level: number;
   max_stock_level?: number;
   system_brand?: string;
-  specifications: Record<string, any>;
+  specifications: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -906,7 +951,7 @@ export interface FabricatorAccessoryRow {
   compatible_materials: string[];
   region: string[];
   image_url?: string;
-  specifications: Record<string, any>;
+  specifications: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -970,7 +1015,7 @@ export interface FabricationData {
     alternatives: string[];  // Compatible alternatives
     estimatedTime: number;   // Minutes for installation
     supplierLink?: string;   // URL to purchase
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }>;
   
   // === GLAZING CALCULATIONS ===

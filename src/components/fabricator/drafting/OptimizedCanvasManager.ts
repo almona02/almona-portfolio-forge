@@ -6,11 +6,13 @@
  */
 
 
+import type { WindowGrid } from '@/types/fabricator';
 import type { EgyptianPathResponse } from '@/workers/egyptian-path-generator.worker';
 import { HardwareLogic } from './services/HardwareLogic';
 import { ProfileRegistry } from './services/ProfileRegistry';
 import { SmartMeasureLogic, type MeasureMode } from './tools/SmartMeasureLogic';
 import type { Geometry2D, Rectangle } from './types/drafting';
+import type { MaterialAwareRectangle } from './types/materialAware';
 import { PathWorkerPool } from './workers/PathWorkerPool';
 
 // ...
@@ -47,6 +49,8 @@ export class OptimizedCanvasManager {
 
   // Scene Graph
   private geometry: Geometry2D | null = null;
+  private materialAwareWindows: MaterialAwareRectangle[] = [];
+  private materialWindowGrids: Record<string, WindowGrid> = {};
   
   // Egyptian Market "Realism" Flags
   private templateId: string | null = null;
@@ -205,6 +209,12 @@ export class OptimizedCanvasManager {
       this.requestRender('GEOMETRY_UPDATE');
   }
 
+  public setMaterialWindowData(materialAwareWindows: MaterialAwareRectangle[], materialWindowGrids: Record<string, WindowGrid>) {
+      this.materialAwareWindows = materialAwareWindows ?? [];
+      this.materialWindowGrids = materialWindowGrids ?? {};
+      this.requestRender('GEOMETRY_UPDATE');
+  }
+
   public setEgyptianTemplate(templateId: string | null) {
       if (this.templateId !== templateId) {
           this.templateId = templateId;
@@ -358,6 +368,83 @@ export class OptimizedCanvasManager {
                 ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
             }
         });
+
+        // 1b. Render sash grid layer (cell boundaries) and manual mullions for material-aware windows
+        if (this.materialAwareWindows.length > 0 && Object.keys(this.materialWindowGrids).length > 0) {
+            ctx.setLineDash([]);
+            this.materialAwareWindows.forEach((frame) => {
+                const grid = this.materialWindowGrids[frame.id ?? ''];
+                if (!grid?.cells?.length) return;
+                const { x, y, width, height } = frame;
+                const cols = Math.max(1, grid.cols ?? 1);
+                const rows = Math.max(1, grid.rows ?? 1);
+                const colWidths = grid.colWidths?.length === cols
+                    ? grid.colWidths
+                    : Array(cols).fill(1);
+                const rowHeights = grid.rowHeights?.length === rows
+                    ? grid.rowHeights
+                    : Array(rows).fill(1);
+                const colTotal = colWidths.reduce((a: number, b: number) => a + b, 0) || 1;
+                const rowTotal = rowHeights.reduce((a: number, b: number) => a + b, 0) || 1;
+
+                // 1b-i. Sash grid layer: draw cell boundaries (vertical and horizontal dividers)
+                if (cols > 1 || rows > 1) {
+                    ctx.strokeStyle = '#06b6d4';
+                    ctx.lineWidth = Math.max(1.5, 3 / this.viewport.scale);
+                    let acc = 0;
+                    for (let c = 0; c < cols - 1; c++) {
+                        acc += colWidths[c] / colTotal;
+                        const px = x + acc * width;
+                        if (px >= x && px <= x + width) {
+                            ctx.beginPath();
+                            ctx.moveTo(px, y);
+                            ctx.lineTo(px, y + height);
+                            ctx.stroke();
+                        }
+                    }
+                    acc = 0;
+                    for (let r = 0; r < rows - 1; r++) {
+                        acc += rowHeights[r] / rowTotal;
+                        const py = y + acc * height;
+                        if (py >= y && py <= y + height) {
+                            ctx.beginPath();
+                            ctx.moveTo(x, py);
+                            ctx.lineTo(x + width, py);
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                // 1b-ii. Manual mullions (user-added, orange)
+                const mullions = grid.manualMullions?.filter((m) => m.level === 'frame') ?? [];
+                if (mullions.length > 0) {
+                    ctx.strokeStyle = '#f97316';
+                    ctx.lineWidth = Math.max(2, 4 / this.viewport.scale);
+                    mullions.forEach((m) => {
+                        const posMm = (m as { splitType?: string }).splitType === 'proportional'
+                            ? ((m.position / 100) * (m.type === 'vertical' ? width : height))
+                            : m.position;
+                        if (m.type === 'vertical') {
+                            const px = x + posMm;
+                            if (px >= x && px <= x + width) {
+                                ctx.beginPath();
+                                ctx.moveTo(px, y);
+                                ctx.lineTo(px, y + height);
+                                ctx.stroke();
+                            }
+                        } else {
+                            const py = y + posMm;
+                            if (py >= y && py <= y + height) {
+                                ctx.beginPath();
+                                ctx.moveTo(x, py);
+                                ctx.lineTo(x + width, py);
+                                ctx.stroke();
+                            }
+                        }
+                    });
+                }
+            });
+        }
 
         // 2. Render Lines
         if (lines && lines.length > 0) {

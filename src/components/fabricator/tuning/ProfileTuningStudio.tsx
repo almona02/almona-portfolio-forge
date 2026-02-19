@@ -324,7 +324,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   }, [tuningStatus, t]);
 
   useEffect(() => {
-    if (location.state && (location.state as any).highlightGeometry) {
+    if (location.state && (location.state).highlightGeometry) {
       setActiveTab('geometry');
       setShowImportBanner(true);
       const timer = setTimeout(() => setShowImportBanner(false), TIMEOUT_CONSTANTS.IMPORT_BANNER_TIMEOUT_MS);
@@ -392,64 +392,64 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
         machiningZones: zones,
         // Cutting config
         borderExtraAllowanceMm: cuttingConfig.borderExtraAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.borderExtraAllowanceMm as any)
+          ? parseFloat(cuttingConfig.borderExtraAllowanceMm)
           : undefined,
         preferredBarLengthMm: cuttingConfig.preferredBarLengthMm !== ''
-          ? parseFloat(cuttingConfig.preferredBarLengthMm as any)
+          ? parseFloat(cuttingConfig.preferredBarLengthMm)
           : undefined,
         minOffcutMm: cuttingConfig.minOffcutMm !== ''
-          ? parseFloat(cuttingConfig.minOffcutMm as any)
+          ? parseFloat(cuttingConfig.minOffcutMm)
           : undefined,
         roundToNearestMm: cuttingConfig.roundToNearestMm !== ''
-          ? parseFloat(cuttingConfig.roundToNearestMm as any)
+          ? parseFloat(cuttingConfig.roundToNearestMm)
           : undefined,
         cornerTechnology: cuttingConfig.cornerTechnology,
         miter45JointAllowanceMm: cuttingConfig.miter45JointAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.miter45JointAllowanceMm as any)
+          ? parseFloat(cuttingConfig.miter45JointAllowanceMm)
           : undefined,
         butt90JointAllowanceMm: cuttingConfig.butt90JointAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.butt90JointAllowanceMm as any)
+          ? parseFloat(cuttingConfig.butt90JointAllowanceMm)
           : undefined,
         tJointAllowanceMm: cuttingConfig.tJointAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.tJointAllowanceMm as any)
+          ? parseFloat(cuttingConfig.tJointAllowanceMm)
           : undefined,
         mullionJointAllowanceMm: cuttingConfig.mullionJointAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.mullionJointAllowanceMm as any)
+          ? parseFloat(cuttingConfig.mullionJointAllowanceMm)
           : undefined,
         // Glazing config
         glazingMinMm: glazingConfig.glazingMinMm !== ''
-          ? parseFloat(glazingConfig.glazingMinMm as any)
+          ? parseFloat(glazingConfig.glazingMinMm)
           : undefined,
         glazingMaxMm: glazingConfig.glazingMaxMm !== ''
-          ? parseFloat(glazingConfig.glazingMaxMm as any)
+          ? parseFloat(glazingConfig.glazingMaxMm)
           : undefined,
         gasketCompressionTargetMm: glazingConfig.gasketCompressionTargetMm !== ''
-          ? parseFloat(glazingConfig.gasketCompressionTargetMm as any)
+          ? parseFloat(glazingConfig.gasketCompressionTargetMm)
           : undefined,
         allowedGlassPackages: glazingConfig.allowedGlassPackagesText
           ? glazingConfig.allowedGlassPackagesText.split(',').map(s => s.trim()).filter(Boolean)
           : undefined,
         // Structural config
         maxFrameSpanMm: structuralConfig.maxFrameSpanMm !== ''
-          ? parseFloat(structuralConfig.maxFrameSpanMm as any)
+          ? parseFloat(structuralConfig.maxFrameSpanMm)
           : undefined,
         maxMullionSpanMm: structuralConfig.maxMullionSpanMm !== ''
-          ? parseFloat(structuralConfig.maxMullionSpanMm as any)
+          ? parseFloat(structuralConfig.maxMullionSpanMm)
           : undefined,
         maxSashWidthMm: structuralConfig.maxSashWidthMm !== ''
-          ? parseFloat(structuralConfig.maxSashWidthMm as any)
+          ? parseFloat(structuralConfig.maxSashWidthMm)
           : undefined,
         maxSashHeightMm: structuralConfig.maxSashHeightMm !== ''
-          ? parseFloat(structuralConfig.maxSashHeightMm as any)
+          ? parseFloat(structuralConfig.maxSashHeightMm)
           : undefined,
         maxSashWeightKg: structuralConfig.maxSashWeightKg !== ''
-          ? parseFloat(structuralConfig.maxSashWeightKg as any)
+          ? parseFloat(structuralConfig.maxSashWeightKg)
           : undefined,
         maxUnitWidthMm: structuralConfig.maxUnitWidthMm !== ''
-          ? parseFloat(structuralConfig.maxUnitWidthMm as any)
+          ? parseFloat(structuralConfig.maxUnitWidthMm)
           : undefined,
         maxUnitHeightMm: structuralConfig.maxUnitHeightMm !== ''
-          ? parseFloat(structuralConfig.maxUnitHeightMm as any)
+          ? parseFloat(structuralConfig.maxUnitHeightMm)
           : undefined,
         structuralNotes: structuralConfig.structuralNotes,
         physicsStiffnessClass: structuralConfig.physicsStiffnessClass,
@@ -462,25 +462,25 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
           : undefined,
         // Cost config
         aluminumPricePerKg: costConfig.aluminumPricePerKg !== ''
-          ? parseFloat(costConfig.aluminumPricePerKg as any)
+          ? parseFloat(costConfig.aluminumPricePerKg)
           : undefined,
         machiningCostPerOp: costConfig.machiningCostPerOp !== ''
-          ? parseFloat(costConfig.machiningCostPerOp as any)
+          ? parseFloat(costConfig.machiningCostPerOp)
           : undefined,
         coatingCostPerSqm: costConfig.coatingCostPerSqm !== ''
-          ? parseFloat(costConfig.coatingCostPerSqm as any)
+          ? parseFloat(costConfig.coatingCostPerSqm)
           : undefined,
         scrapCostPerKg: costConfig.scrapCostPerKg !== ''
-          ? parseFloat(costConfig.scrapCostPerKg as any)
+          ? parseFloat(costConfig.scrapCostPerKg)
           : undefined,
         erpItemCode: costConfig.erpItemCode,
         warehouseLocation: costConfig.warehouseLocation,
         // QA config
         cutToleranceMm: qaConfig.cutToleranceMm !== ''
-          ? parseFloat(qaConfig.cutToleranceMm as any)
+          ? parseFloat(qaConfig.cutToleranceMm)
           : undefined,
         assemblyToleranceMm: qaConfig.assemblyToleranceMm !== ''
-          ? parseFloat(qaConfig.assemblyToleranceMm as any)
+          ? parseFloat(qaConfig.assemblyToleranceMm)
           : undefined,
         qaNotes: qaConfig.qaNotes,
       };
@@ -711,29 +711,29 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
       const nextSpecs = {
         ...(profile.specifications || {}),
         borderExtraAllowanceMm: cuttingConfig.borderExtraAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.borderExtraAllowanceMm as any)
+          ? parseFloat(cuttingConfig.borderExtraAllowanceMm)
           : undefined,
         preferredBarLengthMm: cuttingConfig.preferredBarLengthMm !== ''
-          ? parseFloat(cuttingConfig.preferredBarLengthMm as any)
+          ? parseFloat(cuttingConfig.preferredBarLengthMm)
           : undefined,
         minOffcutMm: cuttingConfig.minOffcutMm !== ''
-          ? parseFloat(cuttingConfig.minOffcutMm as any)
+          ? parseFloat(cuttingConfig.minOffcutMm)
           : undefined,
         roundToNearestMm: cuttingConfig.roundToNearestMm !== ''
-          ? parseFloat(cuttingConfig.roundToNearestMm as any)
+          ? parseFloat(cuttingConfig.roundToNearestMm)
           : undefined,
         cornerTechnology: cuttingConfig.cornerTechnology,
         miter45JointAllowanceMm: cuttingConfig.miter45JointAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.miter45JointAllowanceMm as any)
+          ? parseFloat(cuttingConfig.miter45JointAllowanceMm)
           : undefined,
         butt90JointAllowanceMm: cuttingConfig.butt90JointAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.butt90JointAllowanceMm as any)
+          ? parseFloat(cuttingConfig.butt90JointAllowanceMm)
           : undefined,
         tJointAllowanceMm: cuttingConfig.tJointAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.tJointAllowanceMm as any)
+          ? parseFloat(cuttingConfig.tJointAllowanceMm)
           : undefined,
         mullionJointAllowanceMm: cuttingConfig.mullionJointAllowanceMm !== ''
-          ? parseFloat(cuttingConfig.mullionJointAllowanceMm as any)
+          ? parseFloat(cuttingConfig.mullionJointAllowanceMm)
           : undefined,
       };
 
@@ -771,13 +771,13 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
       const nextSpecs = {
         ...(profile.specifications || {}),
         glazingMinMm: glazingConfig.glazingMinMm !== ''
-          ? parseFloat(glazingConfig.glazingMinMm as any)
+          ? parseFloat(glazingConfig.glazingMinMm)
           : undefined,
         glazingMaxMm: glazingConfig.glazingMaxMm !== ''
-          ? parseFloat(glazingConfig.glazingMaxMm as any)
+          ? parseFloat(glazingConfig.glazingMaxMm)
           : undefined,
         gasketCompressionTargetMm: glazingConfig.gasketCompressionTargetMm !== ''
-          ? parseFloat(glazingConfig.gasketCompressionTargetMm as any)
+          ? parseFloat(glazingConfig.gasketCompressionTargetMm)
           : undefined,
         allowedGlassPackages,
       };
@@ -811,31 +811,31 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
         ...(profile.specifications || {}),
         maxFrameSpanMm:
           structuralConfig.maxFrameSpanMm !== ''
-            ? parseFloat(structuralConfig.maxFrameSpanMm as any)
+            ? parseFloat(structuralConfig.maxFrameSpanMm)
             : undefined,
         maxMullionSpanMm:
           structuralConfig.maxMullionSpanMm !== ''
-            ? parseFloat(structuralConfig.maxMullionSpanMm as any)
+            ? parseFloat(structuralConfig.maxMullionSpanMm)
             : undefined,
         maxSashWidthMm:
           structuralConfig.maxSashWidthMm !== ''
-            ? parseFloat(structuralConfig.maxSashWidthMm as any)
+            ? parseFloat(structuralConfig.maxSashWidthMm)
             : undefined,
         maxSashHeightMm:
           structuralConfig.maxSashHeightMm !== ''
-            ? parseFloat(structuralConfig.maxSashHeightMm as any)
+            ? parseFloat(structuralConfig.maxSashHeightMm)
             : undefined,
         maxSashWeightKg:
           structuralConfig.maxSashWeightKg !== ''
-            ? parseFloat(structuralConfig.maxSashWeightKg as any)
+            ? parseFloat(structuralConfig.maxSashWeightKg)
             : undefined,
         maxUnitWidthMm:
           structuralConfig.maxUnitWidthMm !== ''
-            ? parseFloat(structuralConfig.maxUnitWidthMm as any)
+            ? parseFloat(structuralConfig.maxUnitWidthMm)
             : undefined,
         maxUnitHeightMm:
           structuralConfig.maxUnitHeightMm !== ''
-            ? parseFloat(structuralConfig.maxUnitHeightMm as any)
+            ? parseFloat(structuralConfig.maxUnitHeightMm)
             : undefined,
         structuralNotes: structuralConfig.structuralNotes || undefined,
         physicsStiffnessClass: structuralConfig.physicsStiffnessClass,
@@ -910,19 +910,19 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
         ...(profile.specifications || {}),
         aluminumPricePerKg:
           costConfig.aluminumPricePerKg !== ''
-            ? parseFloat(costConfig.aluminumPricePerKg as any)
+            ? parseFloat(costConfig.aluminumPricePerKg)
             : undefined,
         machiningCostPerOp:
           costConfig.machiningCostPerOp !== ''
-            ? parseFloat(costConfig.machiningCostPerOp as any)
+            ? parseFloat(costConfig.machiningCostPerOp)
             : undefined,
         coatingCostPerSqm:
           costConfig.coatingCostPerSqm !== ''
-            ? parseFloat(costConfig.coatingCostPerSqm as any)
+            ? parseFloat(costConfig.coatingCostPerSqm)
             : undefined,
         scrapCostPerKg:
           costConfig.scrapCostPerKg !== ''
-            ? parseFloat(costConfig.scrapCostPerKg as any)
+            ? parseFloat(costConfig.scrapCostPerKg)
             : undefined,
         erpItemCode: costConfig.erpItemCode || undefined,
         warehouseLocation: costConfig.warehouseLocation || undefined,
@@ -957,11 +957,11 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
         ...(profile.specifications || {}),
         cutToleranceMm:
           qaConfig.cutToleranceMm !== ''
-            ? parseFloat(qaConfig.cutToleranceMm as any)
+            ? parseFloat(qaConfig.cutToleranceMm)
             : undefined,
         assemblyToleranceMm:
           qaConfig.assemblyToleranceMm !== ''
-            ? parseFloat(qaConfig.assemblyToleranceMm as any)
+            ? parseFloat(qaConfig.assemblyToleranceMm)
             : undefined,
         qaNotes: qaConfig.qaNotes || undefined,
       };
