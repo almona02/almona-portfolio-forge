@@ -47,7 +47,7 @@ export class WorkspaceSynchronizer {
         },
         (payload: any) => {
           const event: SyncEvent = {
-            type: payload.eventType as any,
+            type: payload.eventType,
             entity: 'project',
             data: payload.new || payload.old,
             userId: payload.new?.user_id || userId,
@@ -105,7 +105,7 @@ export class WorkspaceSynchronizer {
         },
         (payload: any) => {
           const event: SyncEvent = {
-            type: payload.eventType as any,
+            type: payload.eventType,
             entity: 'profile',
             data: payload.new || payload.old,
             userId,

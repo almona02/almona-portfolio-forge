@@ -10,17 +10,24 @@
 import { loadDraft } from '@/lib/api/drafts';
 import { generateDigitalTwinCode } from '@/lib/confirmation';
 import { trackError } from '@/lib/performance-monitoring';
-import type { WindowUnit } from '@/types/fabricator';
+import type { Profile, WindowUnit } from '@/types/fabricator';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
-import type { DraftingOutput, Geometry2D } from '../types/drafting';
+import type { Arc, Circle, Dimension, DraftingContextType, DraftingOutput, Geometry2D, Line, Polygon, Rectangle, Spline } from '../types/drafting';
 import { convertDraftingToWindowGrid } from '../utils/draftingToWindowGrid';
-import { exportToDXF, exportToJSON, importFromDXF, importFromJSON } from '../utils/dxfExporter';
+import { exportToJSON, generateDXFContent, importFromDXF, importFromJSON } from '../utils/dxfExporter';
 import { exportToPDF } from '../utils/pdfExporter';
 import { throttle } from '../utils/performanceUtils';
 import { sanitizeFilename } from '../utils/securityUtils';
 import { zoomIn, zoomOut, zoomToFit, zoomToSelection } from '../utils/viewportUtils';
+import type { StatePersistenceManager } from '../utils/statePersistence';
 import type { DraftingWorkbenchState, DraftingWorkbenchStateActions } from './useDraftingWorkbenchState';
+
+/** Minimal collaboration API used by handlers */
+interface CollaborationAPI {
+  userId?: string;
+  broadcastCursor?: (pos: { x: number; y: number }) => void;
+}
 
 // Dynamic import for generateComponentsFromGrid
 const generateComponentsFromGrid = async () => {
@@ -31,12 +38,12 @@ const generateComponentsFromGrid = async () => {
 export interface UseDraftingWorkbenchHandlersProps {
   state: DraftingWorkbenchState;
   actions: DraftingWorkbenchStateActions;
-  draftingEngine: any; // TODO: Add proper type
+  draftingEngine: DraftingContextType;
   onDesignValidated: (output: DraftingOutput) => void;
   onOptimizeRequest?: (windowUnit: WindowUnit) => void;
-  profiles: any[]; // TODO: Add proper type
-  persistenceManager: any; // TODO: Add proper type
-  collaboration: any; // TODO: Add proper type
+  profiles: Profile[];
+  persistenceManager: StatePersistenceManager;
+  collaboration: CollaborationAPI | null;
 }
 
 export interface DraftingWorkbenchHandlers {
@@ -112,9 +119,7 @@ export function useDraftingWorkbenchHandlers({
     throttledMouseMove(pos);
 
     // Broadcast cursor for collaboration (not throttled for real-time feel)
-    if (collaboration) {
-      collaboration.broadcastCursor(pos);
-    }
+    collaboration?.broadcastCursor?.(pos);
   }, [collaboration, throttledMouseMove]);
 
   // Viewport navigation handler
@@ -196,7 +201,7 @@ export function useDraftingWorkbenchHandlers({
       geometry.arcs.forEach(() => allIndices.push(index++));
       geometry.polygons.forEach(() => allIndices.push(index++));
       if (allIndices.length > 0) {
-        draftingEngine.selectElements?.(allIndices);
+        draftingEngine.selectElements(allIndices);
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -278,29 +283,29 @@ export function useDraftingWorkbenchHandlers({
         draftingEngine.clearSelection();
         
         // Load geometry elements
-        draftState.geometry.rectangles?.forEach((rect: any) => {
+        draftState.geometry.rectangles?.forEach((rect: Rectangle) => {
           draftingEngine.addRectangle(rect);
         });
-        draftState.geometry.circles?.forEach((circle: any) => {
+        draftState.geometry.circles?.forEach((circle: Circle) => {
           draftingEngine.addCircle(circle);
         });
-        draftState.geometry.lines?.forEach((line: any) => {
+        draftState.geometry.lines?.forEach((line: Line) => {
           draftingEngine.addLine(line);
         });
-        draftState.geometry.arcs?.forEach((arc: any) => {
+        draftState.geometry.arcs?.forEach((arc: Arc) => {
           draftingEngine.addArc(arc);
         });
-        draftState.geometry.polygons?.forEach((polygon: any) => {
+        draftState.geometry.polygons?.forEach((polygon: Polygon) => {
           draftingEngine.addPolygon(polygon);
         });
-        draftState.geometry.splines?.forEach((spline: any) => {
+        draftState.geometry.splines?.forEach((spline: Spline) => {
           draftingEngine.addSpline(spline);
         });
       }
 
       // Load dimensions
       if (draftState.dimensions) {
-        draftState.dimensions.forEach((dim: any) => {
+        draftState.dimensions.forEach((dim: Dimension) => {
           if (dim.start && dim.end) {
             draftingEngine.addMeasurement(dim.start, dim.end, dim.mode || 'distance');
           }
@@ -333,10 +338,10 @@ export function useDraftingWorkbenchHandlers({
   }, [draftingEngine, actions, collaboration]);
 
   // Export handlers
-  const handleExportDXF = useCallback(async () => {
+  const handleExportDXF = useCallback(() => {
     try {
       const geometry = draftingEngine.getGeometry();
-      const dxfContent = exportToDXF(geometry);
+      const dxfContent = generateDXFContent(geometry);
       const filename = sanitizeFilename(`drafting-${Date.now()}.dxf`);
 
       const blob = new Blob([dxfContent], { type: 'application/x-dxf' });
@@ -371,7 +376,7 @@ export function useDraftingWorkbenchHandlers({
     }
   }, [draftingEngine, actions]);
 
-  const handleExportJSON = useCallback(async () => {
+  const handleExportJSON = useCallback(() => {
     try {
       const geometry = draftingEngine.getGeometry();
       const jsonContent = exportToJSON(geometry);
@@ -439,90 +444,75 @@ export function useDraftingWorkbenchHandlers({
   // Import handler
   const handleImport = useCallback(async (file: File, format: 'json' | 'dxf') => {
     try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const content = e.target?.result as string;
-          if (!content) throw new Error('No content read from file');
+      const content = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result;
+          if (typeof result === 'string') resolve(result);
+          else reject(new Error('Failed to read file as text'));
+        };
+        reader.onerror = () => reject(reader.error ?? new Error('File read failed'));
+        reader.readAsText(file);
+      });
 
-          let parsedGeometry: Geometry2D;
+      if (!content) throw new Error('No content read from file');
 
-          if (format === 'json') {
-            const data = JSON.parse(content);
-            parsedGeometry = importFromJSON(data);
-          } else {
-            parsedGeometry = importFromDXF(content);
-          }
+      let parsedGeometry: Geometry2D;
+      if (format === 'json') {
+        const result = await importFromJSON(content);
+        parsedGeometry = result.geometry;
+      } else {
+        parsedGeometry = importFromDXF(content);
+      }
 
-          // Add geometry to drafting engine
-          let addedCount = 0;
-          parsedGeometry.rectangles.forEach(rect => {
-            draftingEngine.addRectangle(rect);
-            addedCount++;
-          });
-          parsedGeometry.circles.forEach(circle => {
-            draftingEngine.addCircle(circle);
-            addedCount++;
-          });
-          parsedGeometry.lines.forEach(line => {
-            draftingEngine.addLine(line);
-            addedCount++;
-          });
-          parsedGeometry.arcs.forEach(arc => {
-            draftingEngine.addArc(arc);
-            addedCount++;
-          });
-          parsedGeometry.polygons.forEach(polygon => {
-            draftingEngine.addPolygon(polygon);
-            addedCount++;
-          });
-          parsedGeometry.splines.forEach(spline => {
-            draftingEngine.addSpline(spline);
-            addedCount++;
-          });
+      // Add geometry to drafting engine
+      let addedCount = 0;
+      parsedGeometry.rectangles.forEach(rect => {
+        draftingEngine.addRectangle(rect);
+        addedCount++;
+      });
+      parsedGeometry.circles.forEach(circle => {
+        draftingEngine.addCircle(circle);
+        addedCount++;
+      });
+      parsedGeometry.lines.forEach(line => {
+        draftingEngine.addLine(line);
+        addedCount++;
+      });
+      parsedGeometry.arcs.forEach(arc => {
+        draftingEngine.addArc(arc);
+        addedCount++;
+      });
+      parsedGeometry.polygons.forEach(polygon => {
+        draftingEngine.addPolygon(polygon);
+        addedCount++;
+      });
+      parsedGeometry.splines.forEach(spline => {
+        draftingEngine.addSpline(spline);
+        addedCount++;
+      });
 
-          toast.success(`Imported ${addedCount} elements from ${format.toUpperCase()} file`);
-          actions.setStatusMessages(prev => [...prev, {
-            id: `import-success-${Date.now()}`,
-            type: 'success' as const,
-            message: `Successfully imported ${addedCount} elements from ${file.name}`,
-            timestamp: Date.now(),
-            dismissible: true
-          }].slice(-10));
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          trackError('DraftingWorkbench', 'import_file', err.message);
-          const errorMessage = err.message || 'Failed to import file';
-          toast.error(errorMessage);
-          actions.setStatusMessages(prev => [...prev, {
-            id: `import-error-${Date.now()}`,
-            type: 'error' as const,
-            message: errorMessage,
-            timestamp: Date.now(),
-            dismissible: true
-          }].slice(-10));
-          throw error; // Re-throw to let dialog handle it
-        }
-      };
-
-      reader.onerror = () => {
-        const errorMessage = 'Failed to read file';
-        trackError('DraftingWorkbench', 'load_file', errorMessage);
-        toast.error(errorMessage);
-        actions.setStatusMessages(prev => [...prev, {
-          id: `load-error-${Date.now()}`,
-          type: 'error' as const,
-          message: errorMessage,
-          timestamp: Date.now(),
-          dismissible: true
-        }].slice(-10));
-      };
-
-      reader.readAsText(file);
+      toast.success(`Imported ${addedCount} elements from ${format.toUpperCase()} file`);
+      actions.setStatusMessages(prev => [...prev, {
+        id: `import-success-${Date.now()}`,
+        type: 'success' as const,
+        message: `Successfully imported ${addedCount} elements from ${file.name}`,
+        timestamp: Date.now(),
+        dismissible: true
+      }].slice(-10));
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       trackError('DraftingWorkbench', 'import_file', err.message);
-      toast.error('Failed to import file');
+      const errorMessage = err.message || 'Failed to import file';
+      toast.error(errorMessage);
+      actions.setStatusMessages(prev => [...prev, {
+        id: `import-error-${Date.now()}`,
+        type: 'error' as const,
+        message: errorMessage,
+        timestamp: Date.now(),
+        dismissible: true
+      }].slice(-10));
+      throw error;
     }
   }, [draftingEngine, actions]);
 
@@ -684,7 +674,7 @@ export function useDraftingWorkbenchHandlers({
 
       actions.setStatusMessages(prev => [...prev, {
         id: `validation-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-        type: (status === 'error' ? 'error' : status === 'warning' ? 'warning' : 'success') as 'error' | 'warning' | 'success',
+        type: (status === 'error' ? 'error' : status === 'warning' ? 'warning' : 'success'),
         message: statusMessage,
         timestamp: Date.now(),
         dismissible: true

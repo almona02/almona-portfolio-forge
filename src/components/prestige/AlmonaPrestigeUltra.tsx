@@ -33,7 +33,7 @@ interface BOMItem {
   category: string;
   qty: string;
   value: string;
-  color: 'blue' | 'cyan' | 'amber' | 'amber' | 'emerald';
+  color: 'blue' | 'cyan' | 'amber'   | 'emerald';
 }
 
 interface ValidationItem {

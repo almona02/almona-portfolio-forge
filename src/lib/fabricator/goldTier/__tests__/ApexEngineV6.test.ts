@@ -1,30 +1,58 @@
 import { optimizeLinearCuts } from '@/lib/algorithms/LinearOptimizer';
+import type { FenestrationSystem, ProfileSpec } from '@/types/fenestration';
+import type { WindowUnit } from '@/types/fabricator';
 import { describe, expect, it } from 'vitest';
 import { ApexEngineV6 } from '../ApexEngineV6';
 
 // Mock Data
-const mockProfile = {
-  id: 'p1', name: 'Frame', width: 50, height: 50, 
-  costPerMeter: 10, material: 'aluminum', cuttingAllowance: 0,
-  stockQuantity: 100, minStockLevel: 10, supplier: 'AluCorp'
+const mockProfile: ProfileSpec = {
+  code: 'p1',
+  name: 'Frame',
+  role: 'frame',
+  dimensions: { width: 50 },
+  material: 'aluminum',
+  standardStockLength: 6000,
+  weightPerMeter: 0,
+  costPerMeter: 10,
 };
 
-const mockSystem: any = {
+const mockSystem: FenestrationSystem = {
   id: 'sys-1',
+  name: 'Test System',
+  manufacturer: 'Test',
+  version: '1.0',
+  region: 'EGY',
+  material: 'aluminum',
+  category: 'window',
   profiles: { frame: mockProfile, sash: mockProfile },
   fabricationRules: {
-    cutting: { miterAllowance: 0 },
-    welding: { burnOff: 0 },
-    assembly: { frameClearance: 5 }
+    connectionType: 'miter',
+    cutting: { sawKerf: 0, miterAllowance: 0, barEndTrim: 0, cuttingTolerance: 0 },
+    welding: { burnOff: 0, coolingFactor: 0, temperature: 0 },
+    assembly: { frameClearance: 5, mullionDeduction: 0, glazingClearance: 0 },
   },
-  regionalPhysics: { thermalExpansionCoefficient: 0.000023 } // Required to bypass adapter fallback
+  hardwareKit: { hinges: {} as FenestrationSystem['hardwareKit']['hinges'], lockingSystem: {} as FenestrationSystem['hardwareKit']['lockingSystem'], handle: {} as FenestrationSystem['hardwareKit']['handle'], gaskets: { glazingGasket: {} as FenestrationSystem['hardwareKit']['gaskets']['glazingGasket'], weatherSeal: {} as FenestrationSystem['hardwareKit']['gaskets']['weatherSeal'] }, cornerKeys: [], drainageCaps: [] },
+  constraints: { maxWidth: 3000, maxHeight: 2600, maxSashArea: 6, maxSashWeight: 150, minSashWidth: 400, aspectRatio: { min: 0.3, max: 3 }, windLoadClass: 'C3', requiresReinforcement: () => false },
+  regionalPhysics: { thermalExpansionCoefficient: 0.000023 },
+  metadata: { createdAt: '', updatedAt: '', validationStatus: 'validated' },
 };
 
-const mockUnit: any = {
+const mockUnit: WindowUnit = {
   id: 'u-1',
-  overallWidth: 1000, // 1 meter
+  orderNumber: 'O1',
+  posNumber: 'P1',
+  type: 'window',
+  components: [],
+  overallWidth: 1000,
   overallHeight: 1000,
-  grid: { cells: [] }
+  color: 'white',
+  glazing: {},
+  hardware: [],
+  status: 'design',
+  optimization: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  grid: { rows: 1, cols: 1, cells: [] },
 };
 
 describe('ApexEngineV6', () => {
@@ -69,7 +97,7 @@ describe('ApexEngineV6', () => {
     expect(result.financials.breakdown.profiles).toBeGreaterThan(0);
   });
 
-  it('should use caching for sub-1ms repeats', async () => {
+  it('should use caching for sub-1ms repeats', () => {
     const engine = new ApexEngineV6(mockSystem, mockUnit);
     
     const _t0 = performance.now();

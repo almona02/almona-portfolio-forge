@@ -66,6 +66,11 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
         acc + (r.optimization.frameStock.barsCount + r.optimization.sashStock.barsCount), 0
     );
 
+    const totalProjectCost = project.units.reduce((acc, unit) => {
+        const res = results.unitResults.get(unit.id);
+        return acc + (res ? res.financials.totalCost : 0);
+    }, 0);
+
     return (
         <div className="h-full flex flex-col bg-gray-900 p-6 overflow-hidden">
 
@@ -95,18 +100,31 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                     </CardContent>
                 </Card>
 
-                <Card className="bg-emerald-900/20 border-emerald-500/30 col-span-2">
+                <Card className="bg-emerald-900/20 border-emerald-500/30">
+                    <CardContent className="p-4 flex items-center gap-4">
+                        <div className="p-3 bg-emerald-500/20 rounded-full text-emerald-400">
+                            <BarChart className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <div className="text-xs text-emerald-300 uppercase font-bold">Optimization Efficiency</div>
+                            <div className="text-2xl font-bold text-white">94.2% <span className="text-sm font-normal text-gray-400">Global Average</span></div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="bg-amber-900/20 border-amber-500/30">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-emerald-500/20 rounded-full text-emerald-400">
-                                <BarChart className="h-6 w-6" />
+                            <div className="p-3 bg-amber-500/20 rounded-full text-amber-400">
+                                <Layers className="h-6 w-6" />
                             </div>
                             <div>
-                                <div className="text-xs text-emerald-300 uppercase font-bold">Optimization Efficiency</div>
-                                <div className="text-2xl font-bold text-white">94.2% <span className="text-sm font-normal text-gray-400">Global Average</span></div>
+                                <div className="text-xs text-amber-300 uppercase font-bold">Project BOM Total</div>
+                                <div className="text-2xl font-bold text-white">{project.units.length} poses</div>
+                                <div className="text-sm text-amber-200/80">${totalProjectCost.toFixed(2)} total value</div>
                             </div>
                         </div>
-                        <Button onClick={onReoptimize} variant="outline" size="sm" className="border-emerald-500/50 text-emerald-400 hover:bg-emerald-900/30">
+                        <Button onClick={onReoptimize} variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-900/30">
                             <RefreshCw className="h-3 w-3 mr-2" /> Re-Run
                         </Button>
                     </CardContent>

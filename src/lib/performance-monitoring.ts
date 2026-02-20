@@ -189,7 +189,7 @@ class PerformanceMonitoringService {
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
       const startTime = performance.now();
-      const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request | URL).toString();
+      const url = typeof args[0] === 'string' ? args[0] : (args[0]).toString();
       
       // Skip monitoring for non-critical endpoints that may not exist
       const isNonCriticalEndpoint = url.includes('feature_usage_metrics') || url.includes('user_satisfaction_metrics');

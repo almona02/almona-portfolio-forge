@@ -10,6 +10,7 @@
  * @since Gold Tier Phase 1, Task 3.1
  */
 
+import type { FenestrationSystem } from '@/types/fenestration';
 import type { WindowUnit } from '@/types/fabricator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DualOutputGenerator } from '../../DualOutputGenerator';
@@ -43,7 +44,7 @@ vi.mock('../PatternMigrationService', () => ({
         fabricationRules: {},
         regionalPhysics: {},
         metadata: { validationStatus: 'validated' }
-      } as any,
+      } as FenestrationSystem,
       errors: [],
       warnings: [],
     }),
@@ -118,7 +119,7 @@ describe('GoldTierOrchestrator', () => {
     };
 
     // Mock ApexEngineV2
-    (ApexEngineV2 as any).mockImplementation(() => ({
+    vi.mocked(ApexEngineV2).mockImplementation(() => ({
       generateAssembly: vi.fn().mockReturnValue({ // Synchronous return
         visualGeometry: {
           frame: { outline: [], corners: [] },
@@ -144,7 +145,7 @@ describe('GoldTierOrchestrator', () => {
     }));
 
     // Mock DualOutputGenerator
-    (DualOutputGenerator as any).mockImplementation(() => ({
+    vi.mocked(DualOutputGenerator).mockImplementation(() => ({
       generateForWindowUnit: vi.fn().mockResolvedValue({
         geometry: {
           frame: { outline: [], corners: [] },
@@ -220,7 +221,7 @@ describe('GoldTierOrchestrator', () => {
       mockWindowUnit.presetId = 'sliding-2s';
 
       // Mock error in ApexEngineV2
-      (ApexEngineV2 as any).mockImplementation(() => {
+      vi.mocked(ApexEngineV2).mockImplementation(() => {
         throw new Error('Test error');
       });
 
@@ -279,7 +280,7 @@ describe('GoldTierOrchestrator', () => {
       mockWindowUnit.presetId = 'sliding-2s';
 
       // Mock validation failure
-      (ApexEngineV2 as any).mockImplementation(() => ({
+      vi.mocked(ApexEngineV2).mockImplementation(() => ({
         generateAssembly: vi.fn().mockReturnValue({
           visualGeometry: {
             frame: { outline: [], corners: [] },
@@ -305,7 +306,7 @@ describe('GoldTierOrchestrator', () => {
       }));
 
       // Mock legacy with different result
-      (DualOutputGenerator as any).mockImplementation(() => ({
+      vi.mocked(DualOutputGenerator).mockImplementation(() => ({
         generateForWindowUnit: vi.fn().mockResolvedValue({
           geometry: {
             frame: { outline: [], corners: [] },

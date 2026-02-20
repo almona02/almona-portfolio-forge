@@ -36,7 +36,7 @@ export function findMatchingTemplate(
       const row = Math.floor(index / grid.cols);
       const col = index % grid.cols;
       const cell = grid.cells.find((c) => c.row === row && c.col === col);
-      return cell ? cell.type === (expectedType as any) : false;
+      return cell ? cell.type === expectedType : false;
     });
   });
 

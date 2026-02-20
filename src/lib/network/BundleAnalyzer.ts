@@ -117,7 +117,7 @@ export class BundleAnalyzer {
    * Estimates bundle size by checking script tags in DOM.
    */
   static analyzeCurrentBundle(): BundleAnalysisResult {
-    const scripts = Array.from(document.querySelectorAll('script[src]')) as HTMLScriptElement[];
+    const scripts = Array.from(document.querySelectorAll('script[src]'));
     const chunks: BundleChunk[] = [];
     const totalSize = 0;
 

@@ -76,7 +76,7 @@ export class ButtJointStrategy implements FabricationStrategy {
     // IMPORTANT: Profile dimensions in context should be used
     // Assuming profile.width is the "face width" (height) of the bar in the frame context
     // Support both direct width property and dimensions object
-    const width = (ctx.profile as any).dimensions?.width ?? ctx.profile.width ?? 0;
+    const width = (ctx.profile as { dimensions?: { width?: number }; width?: number }).dimensions?.width ?? ctx.profile.width ?? 0;
     const profileThickness = width * 1000; // convert mm to microns if needed
     
     const verticalLength = ctx.height - (profileThickness * 2);

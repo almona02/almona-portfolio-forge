@@ -457,7 +457,7 @@ export class PerformanceMonitor {
     // Estimate bundle size from performance timing
     // In a real implementation, this would analyze the actual bundle
     try {
-      const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+      const resources = performance.getEntriesByType('resource');
       let totalSize = 0;
 
       resources.forEach(resource => {

@@ -40,9 +40,9 @@ export function isSystemPackTuned(systemPack: SystemPack | UPVCSystemPack | null
         
         // Check if profiles have specifications with tuning data
         const frameTuned = frameProfile?.specifications && 
-          (frameProfile.specifications as any).tuningStatus === 'tuned';
+          (frameProfile.specifications).tuningStatus === 'tuned';
         const sashTuned = sashProfile?.specifications && 
-          (sashProfile.specifications as any).tuningStatus === 'tuned';
+          (sashProfile.specifications).tuningStatus === 'tuned';
         
         // If both are explicitly tuned, return true
         // Otherwise, if profiles exist with roles, consider it ready for tuning

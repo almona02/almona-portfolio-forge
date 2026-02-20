@@ -21,6 +21,7 @@ export function useMemoizedHardenerSelection(
   return useMemo(() => {
     if (!context) return null;
     return selectHardener(context);
+    // Granular context fields avoid re-runs when other props change; selectHardener stable from parent
   }, [ // eslint-disable-line react-hooks/exhaustive-deps
     context?.profileSystem,
     context?.material,

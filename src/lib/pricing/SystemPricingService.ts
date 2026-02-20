@@ -166,7 +166,7 @@ export class SystemPricingService {
 
       return {
         price,
-        currency: (targetCurrency || 'EGP') as Currency,
+        currency: (targetCurrency || 'EGP'),
         source: 'default',
         profileCode,
         systemName,
@@ -176,7 +176,7 @@ export class SystemPricingService {
     // Last resort: return 0
     return {
       price: 0,
-      currency: (targetCurrency || 'EGP') as Currency,
+      currency: (targetCurrency || 'EGP'),
       source: 'default',
       profileCode,
       systemName,
@@ -235,7 +235,7 @@ export class SystemPricingService {
 
     return {
       price: price * quantity,
-      currency: (targetCurrency || 'EGP') as Currency,
+      currency: (targetCurrency || 'EGP'),
       source: 'constants',
       hardwareCode,
     };
@@ -296,7 +296,7 @@ export class SystemPricingService {
 
     return {
       pricePerSquareMeter: pricePerM2,
-      currency: (targetCurrency || 'EGP') as Currency,
+      currency: (targetCurrency || 'EGP'),
       source: 'constants',
       glazingTypeId,
     };

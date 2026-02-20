@@ -11,7 +11,7 @@ import {
   Profile,
   MassProductionOptimizationRequest,
 } from '@/types/fabricator';
-import { remnantManager, RemnantMatch } from '@/lib/inventory/RemnantManager';
+import { remnantManager, type Remnant, type RemnantMatch } from '@/lib/inventory/RemnantManager';
 import { GeneticOptimizer } from './geneticOptimization';
 
 export interface HybridOptimizationResult {
@@ -112,9 +112,10 @@ export class HybridMassOptimizer {
    */
   private async getAvailableRemnants(
     _crossProject: boolean
-  ): Promise<Map<string, any[]>> {
+  ): Promise<Map<string, Remnant[]>> {
     // TODO: Implement actual remnant fetching from database
     // For now, return empty map
+    await Promise.resolve();
     return new Map();
   }
 
@@ -123,7 +124,7 @@ export class HybridMassOptimizer {
    */
   private async matchRemnantsToCuts(
     cutsByProfile: Map<string, { profile: Profile; cuts: Cut[] }>,
-    availableRemnants: Map<string, any[]>,
+    availableRemnants: Map<string, Remnant[]>,
     _request: MassProductionOptimizationRequest
   ): Promise<RemnantMatch[]> {
     const matches: RemnantMatch[] = [];
@@ -185,6 +186,7 @@ export class HybridMassOptimizer {
     remainingCuts: Map<string, { profile: Profile; cuts: Cut[] }>,
     request: MassProductionOptimizationRequest
   ): Promise<CuttingPlan[]> {
+    await Promise.resolve();
     const allPlans: CuttingPlan[] = [];
 
     for (const [_profileId, { profile, cuts }] of remainingCuts.entries()) {

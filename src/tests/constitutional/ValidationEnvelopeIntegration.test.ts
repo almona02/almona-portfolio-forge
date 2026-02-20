@@ -45,7 +45,7 @@ function createSimpleWindowGrid(rows: number = 1, cols: number = 1): WindowGrid 
         id: `cell-${row}-${col}`,
         row,
         col,
-        type: (col === 0 ? 'sash' : 'fixed') as 'sash' | 'fixed',
+        type: (col === 0 ? 'sash' : 'fixed'),
       });
     }
   }

@@ -529,8 +529,8 @@ export function generateProfileCrossSection(profile: Profile): ProfileCrossSecti
     const depth = (profile.height || 50) / 1000;
     const thickness = (profile.thickness || 1.5) / 1000;
     
-    const profileRole = (profile as any).profileRole as 'frame' | 'sash' | 'mullion' | 'transom' || 'frame';
-    const profileMaterial = ((profile as any).material === 'upvc' || (profile as any).material === 'aluminum' || (profile as any).material === 'steel') ? (profile as any).material : 'aluminum';
+    const profileRole = (profile.profileRole ?? 'frame') as 'frame' | 'sash' | 'mullion' | 'transom';
+    const profileMaterial = (profile.material === 'upvc' || profile.material === 'aluminum' || profile.material === 'wood') ? profile.material : 'aluminum';
     
     const goldTierResult = createGoldTierProfileShape(width, depth, thickness, profileRole, profileMaterial, true);
     
@@ -1465,14 +1465,14 @@ function resolveSystemProfiles(
     profiles.find(profile => profile.profileRole === 'glazing_bead_outer');
 
   const supportsFlyScreen = Boolean(
-    (sashProfile.specifications as any)?.supportsFlyScreen ||
+    (sashProfile.specifications as { supportsFlyScreen?: boolean } | undefined)?.supportsFlyScreen ||
     frameProfile.supportsScreenSash ||
     screenSashProfile
   );
 
   const isThreeTrack =
-    (sashProfile.specifications as any)?.trackType === '3-track' ||
-    (sashProfile.specifications as any)?.trackCount === 3;
+    (sashProfile.specifications as { trackType?: string; trackCount?: number } | undefined)?.trackType === '3-track' ||
+    (sashProfile.specifications as { trackType?: string; trackCount?: number } | undefined)?.trackCount === 3;
 
   return {
     frameProfile,
@@ -1661,21 +1661,21 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
         // 1. Automatic Grid Mullions (Predictive Grid)
         // Only if NO preset is used, to avoid conflicts
         if (!windowUnit.presetId && !windowUnit.presetData) {
-            if (cols > 1) {
+            if (cols > 1 && colStarts.length >= cols) {
                 for (let c = 1; c < cols; c++) {
                     const x = colStarts[c];
-                    // Use actual frame dimension for 3D realism
-                    const mullionW = frameProfile.width; 
+                    if (x === undefined || !Number.isFinite(x)) continue;
+                    const mullionW = frameProfile.width;
                     const mullionD = frameProfile.depth;
-                    // Properly sized mullion
                     const bar = new BoxGeometry(mullionW, height - frameProfile.width * 2, mullionD);
                     bar.translate(x, 0, 0);
                     muntins.push(bar);
                 }
             }
-            if (rows > 1) {
+            if (rows > 1 && rowStarts.length >= rows) {
                 for (let r = 1; r < rows; r++) {
                     const y = rowStarts[r];
+                    if (y === undefined || !Number.isFinite(y)) continue;
                     const transomH = frameProfile.width;
                     const transomD = frameProfile.depth;
                     const bar = new BoxGeometry(width - frameProfile.width * 2, transomH, transomD);
@@ -1693,9 +1693,11 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
 
         cells.forEach(cell => {
             if (cell.type === 'empty') return;
+            if (cell.col < 0 || cell.col >= cols || cell.row < 0 || cell.row >= rows) return;
 
             const cellW = colSizes[cell.col];
             const cellH = rowSizes[cell.row];
+            if (cellW <= 0 || cellH <= 0 || !Number.isFinite(cellW) || !Number.isFinite(cellH)) return;
             // Cell X center: column start + half column width
             const cellX = colStarts[cell.col] + cellW / 2;
             // Cell Y center: row start (top edge) - half row height (going down from top)

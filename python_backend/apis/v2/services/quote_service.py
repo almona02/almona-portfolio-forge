@@ -62,6 +62,8 @@ class QuoteService:
                 "machine_id": payload.get("machine_id"),
                 "total_amount": header_estimated_total or None,
             }
+            if payload.get("user_id"):
+                insert_data["user_id"] = payload.get("user_id")
 
             # 2) Insert header
             try:

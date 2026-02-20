@@ -365,7 +365,7 @@ export class ReportScheduler {
             ? 'monthly' 
             : template.period;
           reportData = await ReportingService.getRevenueByPeriod(
-            revenuePeriod as 'daily' | 'weekly' | 'monthly',
+            revenuePeriod,
             dateRange
           );
           reportTitle = `${template.name} - ${format(dateRange.start, 'MMM d')} to ${format(dateRange.end, 'MMM d, yyyy')}`;
