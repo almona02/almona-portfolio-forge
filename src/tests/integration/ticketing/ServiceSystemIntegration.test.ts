@@ -79,7 +79,7 @@ describe('Service System Integration', () => {
       
       // This should throw if someone tries to use advisory as execution
       expect(() => {
-        (advisory as any).execute(); 
+        (advisory).execute(); 
       }).toThrow();
     });
     

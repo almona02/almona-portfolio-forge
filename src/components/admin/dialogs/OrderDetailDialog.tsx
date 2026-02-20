@@ -43,7 +43,7 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({ open, onOp
     if (!order) return
     setSaving(true)
     const patch: Database['public']['Tables']['orders']['Update'] = {
-      status: (status || order.status) as OrderStatus,
+      status: (status || order.status),
       payment_status: payment || order.payment_status,
     }
     type EqClient = { update: (v: unknown) => { eq: (col: string, val: string) => Promise<{ error: unknown }> } }

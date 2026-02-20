@@ -357,14 +357,14 @@ function createValidSystem(): FenestrationSystem {
   };
 }
 
-function createInvalidSystem(type: string): any {
+function createInvalidSystem(type: string): FenestrationSystem {
   const valid = createValidSystem();
   
   switch (type) {
     case 'missingId':
-      return { ...valid, id: undefined };
+      return { ...valid, id: undefined } as FenestrationSystem;
     case 'invalidRegion':
-      return { ...valid, region: 'INVALID' };
+      return { ...valid, region: 'INVALID' as FenestrationSystem['region'] };
     case 'upvcNoWelding':
       return {
         ...valid,

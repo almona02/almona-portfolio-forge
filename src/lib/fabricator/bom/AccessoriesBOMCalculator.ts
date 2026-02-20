@@ -35,11 +35,11 @@ export class AccessoriesBOMCalculator {
   /**
    * Calculate accessories BOM from pattern
    */
-  async calculateAccessoriesBOM(
+  calculateAccessoriesBOM(
     windowUnit: WindowUnit,
     pattern: EgyptianPattern,
     _systemPack: SystemPack
-  ): Promise<AccessoryItem[]> {
+  ): AccessoryItem[] {
     const accessories: AccessoryItem[] = [];
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
@@ -58,8 +58,8 @@ export class AccessoriesBOMCalculator {
     });
 
     // Seals and gaskets (from pattern requirements)
-    const patternAny = pattern as any;
-    if (patternAny.requiresSeals) {
+    const requiresSeals = 'requiresSeals' in pattern && (pattern as Record<string, unknown>).requiresSeals === true;
+    if (requiresSeals) {
       accessories.push({
         id: 'seal-primary',
         name: 'Primary Seal (EPDM)',

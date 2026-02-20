@@ -103,7 +103,7 @@ export class HardwareModelLibrary {
    * Places hardware at appropriate positions based on window type and dimensions
    */
   generateHardwareModels(
-    windowUnit: any,
+    windowUnit: import('@/types/fabricator').WindowUnit,
     windowType: string
   ): {
     hardware: HardwareModel[];

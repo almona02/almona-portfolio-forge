@@ -3,10 +3,10 @@
 import { Database } from '@/types/database'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 // IMPORTANT: Only use ANON_KEY in browser - never use service role key (VITE_SUPABASE_KEY)
 // Service role keys are secret and will cause "Forbidden use of secret API key in browser" error
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 // Provide fallback values for development/production to prevent black screen
 const fallbackUrl = 'https://placeholder.supabase.co'
@@ -52,7 +52,7 @@ const supabaseOptions = {
     headers: {
       'X-Client-Info': 'almona-industrial@2.0.0',
       // Ensure PostgREST sees an API key header for browser requests
-      apikey: (supabaseKey || fallbackKey) as string,
+      apikey: (supabaseKey || fallbackKey),
     },
   },
   db: {

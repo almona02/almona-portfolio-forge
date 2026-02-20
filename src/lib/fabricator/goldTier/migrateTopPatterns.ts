@@ -17,7 +17,8 @@
  */
 
 import { EGYPTIAN_PATTERNS, type EgyptianPattern } from '@/data/egyptian-window-patterns';
-import { SYSTEM_PACKS, type SystemPack } from '@/data/systemPacks';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import { logFabricatorAudit } from '@/lib/audit/fabricatorAudit';
 import type { FenestrationSystem } from '@/types/fenestration';
 import { FenestrationSystemValidator } from './FenestrationSystemValidator';
@@ -134,6 +135,7 @@ async function migratePattern(
   pattern: EgyptianPattern,
   systemPack: SystemPack
 ): Promise<MigrationResult> {
+  await Promise.resolve(); // Satisfy require-await (sync migration logic)
   const startTime = performance.now();
   
   try {

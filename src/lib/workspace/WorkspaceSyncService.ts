@@ -204,9 +204,9 @@ export class WorkspaceSyncService {
 
         if (supabaseError) {
           // Only log unexpected errors
-          const status = (supabaseError as any)?.status;
-          const code = (supabaseError as any)?.code;
-          const message = (supabaseError as any)?.message || '';
+          const status = (supabaseError)?.status;
+          const code = (supabaseError)?.code;
+          const message = (supabaseError)?.message || '';
           const isExpectedError = status === 403 || status === 404 || status === 406 || 
                                   code === 42501 || code === '42501' ||
                                   message.includes('row-level security') ||
@@ -250,9 +250,9 @@ export class WorkspaceSyncService {
 
       if (supabaseError) {
         // Only log if it's not a permission/RLS error (403, 404, 406, 42501 are expected)
-        const status = (supabaseError as any)?.status;
-        const code = (supabaseError as any)?.code;
-        const message = (supabaseError as any)?.message || '';
+        const status = (supabaseError)?.status;
+        const code = (supabaseError)?.code;
+        const message = (supabaseError)?.message || '';
         const isExpectedError = status === 403 || status === 404 || status === 406 || 
                                 code === 42501 || // PostgreSQL permission denied (RLS policy violation)
                                 code === '42501' || // String version
@@ -322,20 +322,20 @@ export class WorkspaceSyncService {
           .eq('user_id', user.id)
           .single();
 
-        if (!error && supabaseData && (supabaseData as any).workspace_data) {
+        if (!error && supabaseData && (supabaseData).workspace_data) {
           // Also update localStorage cache (with compression)
           if (this.hasWindow()) {
-            const compressed = quickPerformanceWins.compressWorkspaceData((supabaseData as any).workspace_data);
+            const compressed = quickPerformanceWins.compressWorkspaceData((supabaseData).workspace_data);
             window.localStorage.setItem(this.storageKey, compressed);
           }
-          return { data: (supabaseData as any).workspace_data, source: 'supabase' };
+          return { data: (supabaseData).workspace_data, source: 'supabase' };
         }
         
         // Check if error is expected (RLS/permission issues)
         if (error) {
-          const status = (error as any)?.status;
-          const code = (error as any)?.code;
-          const message = (error as any)?.message || '';
+          const status = (error)?.status;
+          const code = (error)?.code;
+          const message = (error)?.message || '';
           const isExpectedError = status === 403 || status === 404 || status === 406 ||
                                   code === 42501 || code === '42501' ||
                                   code === 'PGRST116' ||

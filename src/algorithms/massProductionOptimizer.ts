@@ -211,7 +211,10 @@ export class MassProductionOptimizer extends BaseOptimizer<OptimizationOptions> 
 
     if (typeof config.userId === 'string') {
       const uid = config.userId;
-      this.getUserId = async () => uid;
+      this.getUserId = async () => {
+        await Promise.resolve();
+        return uid;
+      };
     } else {
       this.getUserId = config.userId;
     }

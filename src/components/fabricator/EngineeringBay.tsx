@@ -44,6 +44,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { StructuralValidator } from '@/lib/physics/StructuralValidator';
 import { ThermalEngine } from '@/lib/physics/ThermalEngine';
+import { PoseQuickEditModal } from './PoseQuickEditModal';
 import { SmartDrawCanvas } from './SmartDrawCanvas';
 import { DraftingWorkbench } from './drafting/DraftingWorkbench';
 import { ArchitecturalPresetSelector, SIMPLE_PRESETS } from './drafting/prestige';
@@ -140,6 +141,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     const [showShortcuts, setShowShortcuts] = useState(false);
     const [engineeringMode, setEngineeringMode] = useState<'expert' | 'wizard'>(mode);
     const [mobileTab, setMobileTab] = useState<'design' | '3d'>('design');
+    const [showQuickEditModal, setShowQuickEditModal] = useState(false);
 
     // Sync internal mode with prop change
     useEffect(() => {
@@ -251,8 +253,8 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         if (result.recommendedSystem) {
             // Try to find matching system pack
             const matchingPack = SYSTEM_PACKS.find(p =>
-                p.meta.id.toLowerCase().includes(result.recommendedSystem!.toLowerCase()) ||
-                p.meta.name.toLowerCase().includes(result.recommendedSystem!.toLowerCase())
+                p.meta.id.toLowerCase().includes(result.recommendedSystem.toLowerCase()) ||
+                p.meta.name.toLowerCase().includes(result.recommendedSystem.toLowerCase())
             );
             if (matchingPack) {
                 actions.setActiveSystemPackId(matchingPack.meta.id);
@@ -307,6 +309,31 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             onSelectPosition(next.id);
         }
     }, [actions, onAddNewPose, project, relatedPositions, onSelectPosition]);
+
+    /** Stable callback for Drafting Workbench "Save & Move to Next" (context menu / quick entry). */
+    const handleMoveToNextForDrafting = useCallback(() => {
+        if (onAddNewPose) {
+            onAddNewPose();
+            toast.success(t('engineering_bay.save_and_next', 'Save & Next Pose'));
+            return;
+        }
+        if (!project || !relatedPositions?.length || !onSelectPosition) return;
+        const idx = relatedPositions.findIndex((u) => u.id === project.id);
+        const next = idx >= 0 ? relatedPositions[idx + 1] : null;
+        if (next) {
+            onSelectPosition(next.id);
+            toast.success(t('engineering_bay.save_and_next', 'Save & Next Pose'));
+        }
+    }, [onAddNewPose, project, relatedPositions, onSelectPosition, t]);
+
+    /** Only expose Move to Next when actionable (add new pose or select next). */
+    const moveToNextForDrafting = useMemo(() => {
+        if (onAddNewPose) return handleMoveToNextForDrafting;
+        if (!project || !relatedPositions?.length || !onSelectPosition) return undefined;
+        const idx = relatedPositions.findIndex((u) => u.id === project.id);
+        const hasNext = idx >= 0 && idx < relatedPositions.length - 1;
+        return hasNext ? handleMoveToNextForDrafting : undefined;
+    }, [onAddNewPose, project, relatedPositions, onSelectPosition, handleMoveToNextForDrafting]);
 
     // --- Keyboard Shortcuts ---
     useEffect(() => {
@@ -387,7 +414,16 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     initialTemplate={activeSystemPackId || undefined}
                     onExit={() => switchMode('smartdraw')}
                     project={project}
+                    onMoveToNext={moveToNextForDrafting}
+                    onOpenPoseQuickEdit={project ? () => setShowQuickEditModal(true) : undefined}
                 />
+                {project && (
+                    <PoseQuickEditModal
+                        pose={project}
+                        open={showQuickEditModal}
+                        onOpenChange={setShowQuickEditModal}
+                    />
+                )}
             </div>
         );
     }
@@ -410,7 +446,16 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             size="sm"
                                             className="h-7 px-2 text-xs border-gray-700 text-gray-300 hover:border-orange-500 hover:text-orange-300"
                                         >
-                                            {project?.posNumber || 'Pose'} <ChevronDown className="h-3 w-3 ml-1" />
+                                            {project?.posNumber || 'Pose'}
+                                            {activeSystemPackId && (() => {
+                                                const pack = SYSTEM_PACKS.find((p) => p.meta?.id === activeSystemPackId);
+                                                return pack?.meta?.name ? (
+                                                    <span className="ml-2 text-amber-400 font-medium" title={pack.meta.name}>
+                                                        — {pack.meta.name}
+                                                    </span>
+                                                ) : null;
+                                            })()}
+                                            <ChevronDown className="h-3 w-3 ml-1" />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="start" className="w-56 bg-gray-900 border-gray-700 text-gray-200">

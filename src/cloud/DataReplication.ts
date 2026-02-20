@@ -8,7 +8,7 @@ export interface ReplicationRecord {
   entityType: string;
   entityId: string;
   operation: 'create' | 'update' | 'delete';
-  data: any;
+  data: unknown;
   timestamp: Date;
   synced: boolean;
   syncTimestamp?: Date;
@@ -28,7 +28,7 @@ export interface ConflictResolution {
   localVersion: ReplicationRecord;
   remoteVersion: ReplicationRecord;
   resolution: 'local' | 'remote' | 'merge';
-  mergedData?: any;
+  mergedData?: unknown;
 }
 
 export class DataReplication {
@@ -42,8 +42,8 @@ export class DataReplication {
   setOnlineStatus(online: boolean): void {
     this.isOnline = online;
     if (online) {
-      // Attempt to sync pending records
-      this.syncPendingRecords();
+      // Attempt to sync pending records (fire-and-forget)
+      void this.syncPendingRecords();
     }
   }
 
@@ -60,9 +60,9 @@ export class DataReplication {
   queueRecord(record: ReplicationRecord): void {
     this.pendingRecords.set(record.id, record);
 
-    // If online, attempt immediate sync
+    // If online, attempt immediate sync (fire-and-forget)
     if (this.isOnline) {
-      this.syncRecord(record);
+      void this.syncRecord(record);
     }
   }
 
@@ -155,7 +155,7 @@ export class DataReplication {
     }
 
     record.conflictResolution = resolution.resolution;
-    this.syncRecord(record);
+    void this.syncRecord(record);
   }
 
   /**

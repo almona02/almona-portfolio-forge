@@ -16,10 +16,24 @@ export interface WorkflowCheckpoint {
   stage: string;
   stageName: string;
   progress: number; // 0-100
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   timestamp: number;
   lastModified: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
+}
+
+/** Database row shape for workflow_checkpoints table */
+interface DbWorkflowCheckpoint {
+  id: string;
+  user_id: string;
+  workflow_id: string;
+  stage: string;
+  stage_name: string;
+  progress: number;
+  data: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+  timestamp: string;
+  last_modified: string;
 }
 
 export interface CheckpointResumeInfo {
@@ -66,8 +80,8 @@ export class CheckpointManager {
     stage: string,
     stageName: string,
     progress: number,
-    data: Record<string, any>,
-    metadata?: Record<string, any>,
+    data: Record<string, unknown>,
+    metadata?: Record<string, unknown>,
     syncToCloud: boolean = true
   ): Promise<CheckpointSyncStatus> {
     const checkpoint: WorkflowCheckpoint = {
@@ -123,10 +137,9 @@ export class CheckpointManager {
       }
 
       // Set new timer (2 second debounce)
-      const timer = setTimeout(async () => {
+      const timer = setTimeout(() => {
         this.debounceTimers.delete(timerKey);
-        const result = await this.syncToCloud(checkpoint);
-        resolve(result);
+        void this.syncToCloud(checkpoint).then(resolve);
       }, 2000);
 
       this.debounceTimers.set(timerKey, timer);
@@ -145,9 +158,9 @@ export class CheckpointManager {
         return { synced: false, syncedAt: null, usedFallback: true };
       }
 
-      // Try Supabase
-      const { error: supabaseError } = await (supabase
-        .from(this.cloudTable) as any)
+      // Try Supabase (table not in generated types; use generic)
+      const { error: supabaseError } = await supabase
+        .from(this.cloudTable)
         .upsert({
           id: checkpoint.id,
           user_id: user.id,
@@ -163,8 +176,8 @@ export class CheckpointManager {
 
       if (supabaseError) {
         // Check if it's an expected error (RLS, permissions, etc.)
-        const status = (supabaseError as any)?.status;
-        const code = (supabaseError as any)?.code;
+        const status = (supabaseError as { status?: number }).status;
+        const code = (supabaseError as { code?: string | number }).code;
         const isExpectedError = status === 403 || status === 404 || status === 406 ||
                                 code === 42501 || code === '42501' || code === 'PGRST116';
 
@@ -192,7 +205,7 @@ export class CheckpointManager {
     const localCheckpoint = this.loadFromLocalStorage(checkpointId);
     if (localCheckpoint) {
       // Also try to load from cloud in background (for conflict resolution)
-      this.loadFromCloud(checkpointId).then((cloudCheckpoint) => {
+      void this.loadFromCloud(checkpointId).then((cloudCheckpoint) => {
         if (cloudCheckpoint && cloudCheckpoint.lastModified > localCheckpoint.lastModified) {
           // Cloud is newer, update LocalStorage
           this.saveToLocalStorage(cloudCheckpoint);
@@ -247,8 +260,8 @@ export class CheckpointManager {
         return null;
       }
 
-      const { data, error } = await (supabase
-        .from(this.cloudTable) as any)
+      const { data, error } = await supabase
+        .from(this.cloudTable)
         .select('*')
         .eq('id', checkpointId)
         .eq('user_id', user.id)
@@ -258,17 +271,17 @@ export class CheckpointManager {
         return null;
       }
 
-      // Convert from database format to WorkflowCheckpoint
+      const row = data as unknown as DbWorkflowCheckpoint;
       return {
-        id: data.id,
-        workflowId: data.workflow_id,
-        stage: data.stage,
-        stageName: data.stage_name,
-        progress: data.progress,
-        data: data.data,
-        timestamp: new Date(data.timestamp).getTime(),
-        lastModified: new Date(data.last_modified).getTime(),
-        metadata: data.metadata || {},
+        id: row.id,
+        workflowId: row.workflow_id,
+        stage: row.stage,
+        stageName: row.stage_name,
+        progress: row.progress,
+        data: row.data ?? {},
+        timestamp: new Date(row.timestamp).getTime(),
+        lastModified: new Date(row.last_modified).getTime(),
+        metadata: row.metadata ?? {},
       };
     } catch (error) {
       console.warn('Failed to load checkpoint from cloud:', error);
@@ -330,16 +343,16 @@ export class CheckpointManager {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
 
       if (!authError && user) {
-        const { data, error } = await (supabase
-          .from(this.cloudTable) as any)
+        const { data, error } = await supabase
+          .from(this.cloudTable)
           .select('*')
           .eq('workflow_id', workflowId)
           .eq('user_id', user.id)
           .order('last_modified', { ascending: false });
 
         if (!error && data) {
-          // Merge with LocalStorage checkpoints (prefer newer)
-          data.forEach((dbCheckpoint: any) => {
+          const rows = data as unknown as DbWorkflowCheckpoint[];
+          rows.forEach((dbCheckpoint) => {
             const checkpoint: WorkflowCheckpoint = {
               id: dbCheckpoint.id,
               workflowId: dbCheckpoint.workflow_id,
@@ -393,8 +406,8 @@ export class CheckpointManager {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
 
       if (!authError && user) {
-        await (supabase
-          .from(this.cloudTable) as any)
+        await supabase
+          .from(this.cloudTable)
           .delete()
           .eq('id', checkpointId)
           .eq('user_id', user.id);

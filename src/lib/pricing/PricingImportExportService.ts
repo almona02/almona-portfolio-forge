@@ -290,7 +290,7 @@ export class PricingImportExportService {
             if (key && value) {
               const price = parseFloat(value);
               if (!isNaN(price)) {
-                pricing.profilePrices![key] = price;
+                pricing.profilePrices[key] = price;
               }
             }
             break;
@@ -299,7 +299,7 @@ export class PricingImportExportService {
             if (key && value) {
               const price = parseFloat(value);
               if (!isNaN(price)) {
-                pricing.hardware![key] = price;
+                pricing.hardware[key] = price;
               }
             }
             break;
@@ -308,7 +308,7 @@ export class PricingImportExportService {
             if (key && value) {
               const price = parseFloat(value);
               if (!isNaN(price)) {
-                pricing.gaskets![key] = price;
+                pricing.gaskets[key] = price;
               }
             }
             break;
@@ -317,7 +317,7 @@ export class PricingImportExportService {
             if (key && value && parts[3]) {
               const price = parseFloat(parts[3]);
               if (!isNaN(price)) {
-                pricing.glazingTypes!.push({
+                pricing.glazingTypes.push({
                   id: key,
                   name: value,
                   pricePerSquareMeter: price,

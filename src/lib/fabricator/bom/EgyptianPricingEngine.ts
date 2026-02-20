@@ -72,11 +72,11 @@ export class EgyptianPricingEngine {
    * Calculate hardware cost
    * Enhanced to use system_pricing when available
    */
-  async calculateHardwareCost(
+  calculateHardwareCost(
     hardware: FabricationData['hardware'],
     location?: string,
     systemPricingContext?: SystemPricingContext
-  ): Promise<number> {
+  ): number {
     let totalCost = 0;
 
     // Check if system_pricing is available
@@ -119,11 +119,11 @@ export class EgyptianPricingEngine {
    * Calculate glazing cost
    * Enhanced to use system_pricing when available
    */
-  async calculateGlazingCost(
+  calculateGlazingCost(
     glazing: FabricationData['glazing'],
     location?: string,
     systemPricingContext?: SystemPricingContext
-  ): Promise<number> {
+  ): number {
     let totalCost = 0;
 
     // Check if system_pricing is available
@@ -163,10 +163,10 @@ export class EgyptianPricingEngine {
   /**
    * Calculate labor cost
    */
-  async calculateLaborCost(
+  calculateLaborCost(
     timeMinutes: number,
     location?: string
-  ): Promise<number> {
+  ): number {
     const locationKey = this.getLocationKey(location);
     const hourlyRate = this.LABOR_RATES[locationKey] || this.LABOR_RATES['default'];
     const hours = timeMinutes / TIME_CONVERSION.MINUTES_PER_HOUR;

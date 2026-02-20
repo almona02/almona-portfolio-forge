@@ -123,7 +123,7 @@ export class EmailService {
               template_type: options.template,
               recipient_email: recipientEmail,
               recipient_name: (options.templateData?.customerName || options.templateData?.senderName || '') as string,
-              subject: (subject || template.subject) as string,
+              subject: (subject || template.subject),
               html_body: processedHtmlBody,
               text_body: processedTextBody,
               status: 'pending',

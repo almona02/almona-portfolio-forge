@@ -290,7 +290,8 @@ const RoutePrefetchingHelper = () => {
 const GlobalDynamicImportGuard = () => {
   useEffect(() => {
     const handler = (ev: PromiseRejectionEvent) => {
-      const msg = String(ev.reason?.message || ev.reason || '').toLowerCase();
+      const r = ev.reason as unknown;
+      const msg = String(r instanceof Error ? r.message : (r && typeof r === 'object' && 'message' in r ? (r as { message: unknown }).message : r) ?? '').toLowerCase();
       // Only handle specific chunk/module loading errors, not all rejections
       if (msg.includes('failed to fetch dynamically imported module') ||
         (msg.includes('loading chunk') && msg.includes('failed'))) {

@@ -95,7 +95,7 @@ export interface LazyUniversalARViewerProps {
 }
 
 // Lazy wrapper components
-export const LazyEnhancedGLBViewer = forwardRef<any, LazyEnhancedGLBViewerProps>((props, ref) => (
+export const LazyEnhancedGLBViewer = forwardRef<{ resetCamera: () => void }, LazyEnhancedGLBViewerProps>((props, ref) => (
   <ModelErrorBoundary>
     <Suspense fallback={<ModelLoadingFallback message="Loading enhanced 3D viewer..." variant="detailed" />}>
       <EnhancedGLBViewer {...props} ref={ref} />

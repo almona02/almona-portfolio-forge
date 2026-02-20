@@ -24,9 +24,11 @@ interface DraftingWorkbenchTabsProps {
   draftingEngine: DraftingEngine;
   profiles: Profile[];
   collaboration: {
-    users: any[];
-    broadcastSelection: (selection: any) => void;
+    users: Array<{ id: string; name?: string }>;
+    broadcastSelection: (selection: unknown) => void;
   };
+  onMoveToNext?: () => void;
+  onOpenPoseQuickEdit?: () => void;
   handlers: {
     handleCursorMove: (pos: { x: number; y: number }) => void;
     handleGridToggle: () => void;
@@ -40,6 +42,8 @@ export const DraftingWorkbenchTabs: React.FC<DraftingWorkbenchTabsProps> = ({
   draftingEngine,
   profiles,
   collaboration,
+  onMoveToNext,
+  onOpenPoseQuickEdit,
   handlers,
 }) => {
   return (
@@ -105,6 +109,8 @@ export const DraftingWorkbenchTabs: React.FC<DraftingWorkbenchTabsProps> = ({
           snapEnabled={state.preferences.snapEnabled}
           onGridToggle={handlers.handleGridToggle}
           onSnapToggle={handlers.handleSnapToggle}
+          onMoveToNext={onMoveToNext}
+          onOpenPoseQuickEdit={onOpenPoseQuickEdit}
         />
       </TabsContent>
 

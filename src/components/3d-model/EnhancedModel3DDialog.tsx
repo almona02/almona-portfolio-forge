@@ -87,7 +87,7 @@ export function EnhancedModel3DDialog({
   const [_rightCamera, _setRightCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
   const [sharedMeasurements, setSharedMeasurements] = useState<Array<{ id: string; distance: number; unit: 'mm' | 'cm' | 'm' | 'in' | 'ft' }>>([]);
   
-  const viewerRef = useRef<any>(null);
+  const viewerRef = useRef<{ resetCamera?: () => void } | null>(null);
   const { toast } = useToast();
 
   // Simulate realistic loading progress
@@ -147,7 +147,7 @@ export function EnhancedModel3DDialog({
       setIsARSupported(supported);
     };
     
-    checkARSupport();
+    void checkARSupport();
   }, []);
 
   const handleError = useCallback((error: Error) => {

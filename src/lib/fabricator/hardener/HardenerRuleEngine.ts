@@ -102,10 +102,10 @@ export class HardenerRuleEngine {
   private validateInputs(context: HardenerSelectionContext): { isValid: boolean; reason?: string } {
     // Check for forbidden supplier data dependencies
     const forbiddenFields = ['supplierId', 'supplierPrice', 'supplierAvailability', 'supplierPackId'];
-    const contextAny = context as any;
-    
+    const contextRecord = context as Record<string, unknown>;
+
     for (const field of forbiddenFields) {
-      if (field in contextAny && contextAny[field] !== undefined) {
+      if (field in contextRecord && contextRecord[field] !== undefined) {
         return {
           isValid: false,
           reason: `CONSTITUTIONAL_VIOLATION: Hardener rules may not depend on supplier pack data (${field}). This violates AICS-001 §5.2 (Principle of Subordination).`,

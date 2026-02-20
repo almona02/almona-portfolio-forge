@@ -95,7 +95,7 @@ export const detectFaults = async (
     try {
       const model = await loadFaultDetectionModel();
       const features = await extractAudioFeatures(audioBuffer);
-      const prediction = model.predict(features) as any;
+      const prediction = model.predict(features);
       const predictionValue = (await prediction.data())[0];
       
       audioDiagnosis = predictionValue > AUDIO_FAULT_THRESHOLD 

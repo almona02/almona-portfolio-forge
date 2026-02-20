@@ -10,7 +10,7 @@ type DiscoveredNamespaces = Record<string, Record<string, TranslationTree>>;
 const discoveredResources: DiscoveredNamespaces = {};
 try {
   // Pattern: ../../locales/<lang>/<namespace>.json (from src/lib directory)
-  const modules = import.meta.glob('../../locales/*/*.json', { eager: true }) as Record<string, { default: TranslationTree }>;
+  const modules = import.meta.glob('../../locales/*/*.json', { eager: true });
   for (const path in modules) {
     const parts = path.split('/');
     const lang = parts[parts.length - 2];
@@ -30,14 +30,14 @@ function deepMerge<T extends TranslationTree, S extends TranslationTree>(target:
   const result: TranslationTree = { ...(target as object) };
   for (const key of Object.keys(source)) {
     const sVal = (source as TranslationTree)[key];
-    const tVal = (result as TranslationTree)[key];
+    const tVal = (result)[key];
     if (sVal && typeof sVal === 'object' && !Array.isArray(sVal)) {
-      (result as TranslationTree)[key] = deepMerge(
+      (result)[key] = deepMerge(
         (tVal && typeof tVal === 'object' && !Array.isArray(tVal) ? tVal : {}) as TranslationTree,
         sVal as TranslationTree
       );
     } else {
-      (result as TranslationTree)[key] = sVal;
+      (result)[key] = sVal;
     }
   }
   return result as T & S;
@@ -209,7 +209,7 @@ const arTranslations = {
   
   // E-commerce specific translations
   shop: {
-    title: 'متجر المونة الصناعي',
+    title: 'متجر المُنى الصناعي',
     subtitle: 'أحدث الآلات الصناعية وقطع الغيار',
     categories: {
       all: 'جميع الفئات',
@@ -332,11 +332,11 @@ const arTranslations = {
   
   // Company and services
   company: {
-    name: 'شركة المونة للآلات الصناعية',
+    name: 'شركة المُنى للآلات الصناعية',
     tagline: 'شريكك الموثوق في الحلول الصناعية',
     about: {
-      title: 'عن شركة المونة',
-      description: 'شركة المونة هي الوكيل الحصري والمعتمد لآلات يلماز منذ عام 2000، وقد بنينا سمعة متميزة في التميز في كل من المنتجات والخدمات.',
+      title: 'عن شركة المُنى',
+      description: 'شركة المُنى هي الوكيل الحصري والمعتمد لآلات يلماز منذ عام 2000، وقد بنينا سمعة متميزة في التميز في كل من المنتجات والخدمات.',
       mission: 'مهمتنا',
       vision: 'رؤيتنا',
       values: 'قيمنا',

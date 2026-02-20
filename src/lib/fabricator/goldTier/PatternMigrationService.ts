@@ -14,11 +14,54 @@
  */
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
-import { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import { logFabricatorAudit } from '@/lib/audit/fabricatorAudit';
+import type { Profile } from '@/types/fabricator';
 import { FenestrationSystem, HardwareRule, HardwareSpec, ProfileSpec } from '@/types/fenestration';
 import { FenestrationSystemValidator } from './FenestrationSystemValidator';
 import { GoldTierPerformanceMonitor } from './PerformanceMonitor';
+
+/** Accessory item from windowSystemSpec.accessories_list */
+interface AccessoryItem {
+  accessory_number?: string;
+  quantity?: number | string;
+  description?: string;
+}
+
+/** Profile cutting list item */
+interface ProfileCuttingItem {
+  profile_number?: string;
+  description?: string;
+  cutting_length?: string;
+}
+
+/** Frame/sash/bead profile in rock60 config */
+interface ConfigProfile {
+  profile_code?: string;
+  weight_kg_m?: number;
+}
+
+/** Rock60 45° config structure */
+interface Rock60Config {
+  cut_angle?: string;
+  frame_profiles?: { main_frame?: ConfigProfile };
+  sash_profiles?: { main_sash?: ConfigProfile };
+  glazing_beads?: { bead_profile?: ConfigProfile };
+  accessories_list?: AccessoryItem[];
+}
+
+/** Parsed windowSystemSpec shape (SystemPack uses Record<string, unknown>) */
+interface WindowSystemSpecParsed {
+  profiles_cutting_list?: ProfileCuttingItem[];
+  stockLengthMm?: number;
+  rock60_45_degree_config?: Rock60Config;
+  accessories_list?: AccessoryItem[];
+}
+
+/** Type guard for parsed spec */
+function asWindowSystemSpec(spec: Record<string, unknown>): WindowSystemSpecParsed {
+  return spec as WindowSystemSpecParsed;
+}
 
 export interface MigrationResult {
   success: boolean;
@@ -44,7 +87,7 @@ export class PatternMigrationService {
     systemPack: SystemPack
   ): MigrationResult {
     const startTime = performance.now();
-    const rollbackData = JSON.parse(JSON.stringify(pattern)); // Deep clone for rollback
+    const rollbackData = JSON.parse(JSON.stringify(pattern)) as EgyptianPattern; // Deep clone for rollback
     
     try {
       // 1. Extract profile specifications from systemPack
@@ -118,7 +161,7 @@ export class PatternMigrationService {
       );
       
       // Audit log
-      logFabricatorAudit({
+      void logFabricatorAudit({
         action: 'MIGRATE',
         tableName: 'fenestration_systems',
         recordId: system.id,
@@ -155,8 +198,8 @@ export class PatternMigrationService {
         error instanceof Error ? error.message : String(error)
       );
       
-      // Audit log
-      logFabricatorAudit({
+      // Audit log (fire-and-forget)
+      void logFabricatorAudit({
         action: 'MIGRATE',
         tableName: 'fenestration_systems',
         recordId: pattern.id,
@@ -165,8 +208,6 @@ export class PatternMigrationService {
         operationType: 'pattern_migration',
         errorMessage: error instanceof Error ? error.message : String(error),
         errorCode: 'MIGRATION_ERROR',
-      }).catch(auditError => {
-        console.error('[PatternMigrationService] Audit logging failed:', auditError);
       });
       
       return {
@@ -185,14 +226,14 @@ export class PatternMigrationService {
    * Extract profiles from SystemPack using multiple methods
    */
   private static extractProfiles(systemPack: SystemPack): FenestrationSystem['profiles'] {
-    const spec = systemPack.windowSystemSpec;
+    const spec = asWindowSystemSpec(systemPack.windowSystemSpec);
     const profiles: Partial<FenestrationSystem['profiles']> = {};
     
     // Method 1: Extract from profiles_cutting_list
     if (spec.profiles_cutting_list && Array.isArray(spec.profiles_cutting_list)) {
       for (const item of spec.profiles_cutting_list) {
-        const profileCode = item.profile_number;
-        const description = item.description || '';
+        const profileCode = item.profile_number ?? '';
+        const description = item.description ?? '';
         
         // Infer role from description
         let role: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazingBead' | undefined;
@@ -286,8 +327,8 @@ export class PatternMigrationService {
     if (systemPack.profiles && Array.isArray(systemPack.profiles)) {
       for (const profile of systemPack.profiles) {
         const role = profile.profileRole || this.inferRoleFromProfile(profile);
-        if (role && !(profiles as any)[role]) {
-          (profiles as any)[role] = {
+        if (role && !profiles[role]) {
+          (profiles as Record<string, unknown>)[role] = {
             code: profile.id || profile.name,
             name: profile.name,
             role,
@@ -349,7 +390,7 @@ export class PatternMigrationService {
     systemPack: SystemPack,
     _pattern: EgyptianPattern
   ): FenestrationSystem['fabricationRules'] {
-    const spec = systemPack.windowSystemSpec;
+    const spec = asWindowSystemSpec(systemPack.windowSystemSpec);
     
     // Extract from cutting formulas (e.g., "L + 60" means 60mm miter allowance)
     let miterAllowance = 2000; // Default 2mm in microns
@@ -375,7 +416,7 @@ export class PatternMigrationService {
     let connectionType: 'miter' | 'butt' | 'crimp' | 'screw' = 'miter';
     if (spec.rock60_45_degree_config?.cut_angle === '45°') {
       connectionType = 'miter';
-    } else if (spec.accessories_list?.some((a: any) => a.description?.toLowerCase().includes('corner joint'))) {
+    } else if (spec.accessories_list?.some((a: AccessoryItem) => (a.description ?? '').toLowerCase().includes('corner joint'))) {
       connectionType = 'crimp';
     }
     
@@ -411,22 +452,23 @@ export class PatternMigrationService {
     _pattern: EgyptianPattern,
     systemPack: SystemPack
   ): FenestrationSystem['hardwareKit'] {
-    const spec = systemPack.windowSystemSpec;
-    const accessories = spec.accessories_list || [];
+    const spec = asWindowSystemSpec(systemPack.windowSystemSpec);
+    const accessories: AccessoryItem[] = spec.accessories_list ?? [];
     
     // Extract hinges
-    const hingeAccessories = accessories.filter((a: any) => 
-      a.description?.toLowerCase().includes('hinge') ||
-      a.accessory_number?.match(/^0[0-9]{3}$/) // Common hinge numbering
+    const hingeAccessories = accessories.filter((a: AccessoryItem) => 
+      (a.description ?? '').toLowerCase().includes('hinge') ||
+      (a.accessory_number ?? '').match(/^0[0-9]{3}$/) // Common hinge numbering
     );
     
     const hinges: HardwareRule = {
       category: 'hinge',
-      defaultId: hingeAccessories[0]?.accessory_number || 'DEFAULT-HINGE',
+      defaultId: hingeAccessories[0]?.accessory_number ?? 'DEFAULT-HINGE',
       selectionRules: [],
-      quantityCalculator: (windowUnit: any) => {
+      quantityCalculator: (windowUnit) => {
         // Standard: 2 hinges per sash
-        const sashCount = windowUnit.grid?.cells.filter((c: any) => c.type === 'sash').length || 1;
+        const cells = windowUnit.grid?.cells ?? [];
+        const sashCount = cells.filter((c): c is { type: string } => c.type === 'sash').length || 1;
         return sashCount * 2;
       },
       installationSpec: {
@@ -437,14 +479,14 @@ export class PatternMigrationService {
     };
     
     // Extract locking system
-    const lockAccessories = accessories.filter((a: any) =>
-      a.description?.toLowerCase().includes('lock') ||
-      a.description?.toLowerCase().includes('locking kit')
+    const lockAccessories = accessories.filter((a: AccessoryItem) =>
+      (a.description ?? '').toLowerCase().includes('lock') ||
+      (a.description ?? '').toLowerCase().includes('locking kit')
     );
     
     const lockingSystem: HardwareRule = {
       category: 'lock',
-      defaultId: lockAccessories[0]?.accessory_number || 'DEFAULT-LOCK',
+      defaultId: lockAccessories[0]?.accessory_number ?? 'DEFAULT-LOCK',
       selectionRules: [],
       quantityCalculator: () => 1, // One locking system per window
       installationSpec: {
@@ -454,13 +496,13 @@ export class PatternMigrationService {
     };
     
     // Extract handle
-    const handleAccessories = accessories.filter((a: any) =>
-      a.description?.toLowerCase().includes('handle')
+    const handleAccessories = accessories.filter((a: AccessoryItem) =>
+      (a.description ?? '').toLowerCase().includes('handle')
     );
     
     const handle: HardwareRule = {
       category: 'handle',
-      defaultId: handleAccessories[0]?.accessory_number || 'DEFAULT-HANDLE',
+      defaultId: handleAccessories[0]?.accessory_number ?? 'DEFAULT-HANDLE',
       selectionRules: [],
       quantityCalculator: () => 1, // One handle per window
       installationSpec: {
@@ -470,24 +512,24 @@ export class PatternMigrationService {
     };
     
     // Extract gaskets
-    const gasketAccessories = accessories.filter((a: any) =>
-      a.description?.toLowerCase().includes('gasket') ||
-      a.accessory_number?.startsWith('GT ')
+    const gasketAccessories = accessories.filter((a: AccessoryItem) =>
+      (a.description ?? '').toLowerCase().includes('gasket') ||
+      (a.accessory_number ?? '').startsWith('GT ')
     );
     
-    const glazingGasket = gasketAccessories.find((a: any) =>
-      a.description?.toLowerCase().includes('glass gasket')
-    ) || gasketAccessories[0];
+    const glazingGasket = gasketAccessories.find((a: AccessoryItem) =>
+      (a.description ?? '').toLowerCase().includes('glass gasket')
+    ) ?? gasketAccessories[0];
     
-    const weatherSeal = gasketAccessories.find((a: any) =>
-      a.description?.toLowerCase().includes('weather') ||
-      a.description?.toLowerCase().includes('striker')
-    ) || gasketAccessories[1] || gasketAccessories[0];
+    const weatherSeal = gasketAccessories.find((a: AccessoryItem) =>
+      (a.description ?? '').toLowerCase().includes('weather') ||
+      (a.description ?? '').toLowerCase().includes('striker')
+    ) ?? gasketAccessories[1] ?? gasketAccessories[0];
     
     // Extract corner keys
     const cornerKeys = accessories
-      .filter((a: any) => a.description?.toLowerCase().includes('corner'))
-      .map((a: any): HardwareSpec => ({
+      .filter((a: AccessoryItem) => (a.description ?? '').toLowerCase().includes('corner'))
+      .map((a: AccessoryItem): HardwareSpec => ({
         id: a.accessory_number || 'DEFAULT-CORNER-KEY',
         supplierCode: a.accessory_number || '',
         name: a.description || 'Corner Key',
@@ -583,9 +625,10 @@ export class PatternMigrationService {
   }
   
   private static inferMaterial(systemPack: SystemPack): FenestrationSystem['material'] {
-    const category = (systemPack.meta as any).category || '';
-    if (category.includes('upvc')) return 'upvc';
-    if (category.includes('steel')) return 'steel';
+    const category = systemPack.category ?? systemPack.meta?.name ?? '';
+    const cat = String(category).toLowerCase();
+    if (cat.includes('upvc')) return 'upvc';
+    if (cat.includes('steel')) return 'steel';
     return 'aluminum';
   }
   
@@ -607,7 +650,7 @@ export class PatternMigrationService {
     return 60; // Default 60mm width
   }
   
-  private static extractWeightPerMeter(profileCode: string, spec: any): number {
+  private static extractWeightPerMeter(profileCode: string, spec: WindowSystemSpecParsed): number {
     // Try to extract from rock60_45_degree_config
     if (spec.rock60_45_degree_config) {
       const config = spec.rock60_45_degree_config;
@@ -625,12 +668,27 @@ export class PatternMigrationService {
     return 0; // Will be filled from profile database
   }
   
-  private static inferRoleFromProfile(profile: any): ProfileSpec['role'] | undefined {
+  private static inferRoleFromProfile(profile: Profile): ProfileSpec['role'] | undefined {
     const role = profile.profileRole;
-    if (role && ['frame', 'sash', 'mullion', 'transom', 'glazingBead', 'reinforcement', 'thermalBreak'].includes(role)) {
-      return role as ProfileSpec['role'];
-    }
-    return undefined;
+    if (!role || typeof role !== 'string') return undefined;
+    const roleMap: Record<string, ProfileSpec['role']> = {
+      frame: 'frame',
+      frame_architrave: 'frame',
+      sash: 'sash',
+      sash_sliding: 'sash',
+      sash_door: 'sash',
+      sash_flyscreen: 'sash',
+      sash_casement: 'sash',
+      mullion: 'mullion',
+      mullion_false: 'mullion',
+      transom: 'transom',
+      glazing_bead: 'glazingBead',
+      glazing_bead_inner: 'glazingBead',
+      glazing_bead_outer: 'glazingBead',
+      reinforcement: 'reinforcement',
+      thermalBreak: 'thermalBreak',
+    };
+    return roleMap[role];
   }
 }
 

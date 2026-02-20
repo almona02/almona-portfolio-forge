@@ -144,7 +144,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
   const [isAddingAnnotation, setIsAddingAnnotation] = useState(false)
   const [clickPosition, setClickPosition] = useState<Vector3 | null>(null)
   
-  const controlsRef = useRef<any>()
+  const controlsRef = useRef<{ object: { position: { x: number; y: number; z: number } }; target: { x: number; y: number; z: number } } | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   // Initialize collaboration session
@@ -209,7 +209,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
       }
     }
 
-    initializeSession()
+    void initializeSession()
   }, [user, modelPath])
 
   // Handle canvas clicks for annotations

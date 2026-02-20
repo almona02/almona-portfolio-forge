@@ -126,7 +126,7 @@ export function createFastenerMaterial(
  * Generate fasteners for Egyptian window unit
  */
 export function generateFastenersForWindow(
-    windowUnit: any,
+    windowUnit: import('@/types/fabricator').WindowUnit,
     _quality: 'standard' | 'premium' | 'ultra' = 'premium'
 ): FastenerPlacement[] {
     const placements: FastenerPlacement[] = [];

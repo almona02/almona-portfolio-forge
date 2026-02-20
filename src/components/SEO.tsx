@@ -22,16 +22,16 @@ interface SEOProps {
 }
 
 const SEO = ({
-  title = 'Yilmaz Machines Egypt | Authorized Dealer | ALMONA Co.',
-  description = 'Official authorized dealer of Yilmaz industrial machinery in Egypt. Industry 4.0 solutions including Fabricator Pro AI platform, CNC integration, smart manufacturing, and digital services for aluminium/UPVC fabricators.',
+  title = 'Almona — Precision at the Heart of Industry',
+  description = 'Smart fabrication. Egyptian excellence. YILMAZ machinery, Fabricator Pro AI, Industry 4.0.',
   keywords = 'Yilmaz Egypt, Yilmaz authorized dealer, Yilmaz machines Egypt, Yilmaz CNC, industrial machinery Egypt, aluminium fabrication Egypt, smart manufacturing Egypt, Industry 4.0 Egypt',
   image = '/logo.svg',
   url = import.meta.env.VITE_APP_URL || 'https://www.almona02.com',
   type = 'website',
   productData
 }: SEOProps) => {
-  const siteTitle = 'ALMONA Co. - Authorized Yilmaz Dealer';
-  const fullTitle = title.includes(siteTitle) ? title : `${title} | ${siteTitle}`;
+  const siteTitle = 'Almona';
+  const fullTitle = title.includes('Almona') ? title : `${title} | ${siteTitle}`;
   
   // Prioritize specific product image for social sharing, fallback to provided image or default logo
   const socialImage = productData?.image || image;

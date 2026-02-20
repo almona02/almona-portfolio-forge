@@ -339,7 +339,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
                 onPresetSelect={(preset) => {
                   if (preset !== 'custom') {
                     const newViewport = getViewportPreset(
-                      preset as 'fit' | '1:1' | 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
+                      preset,
                       draftingEngine.getGeometry(),
                       2000,
                       1000,

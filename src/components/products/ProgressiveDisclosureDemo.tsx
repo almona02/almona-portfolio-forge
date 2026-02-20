@@ -35,7 +35,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
                 "NCR 300", "TK 505", "KM 215 S", "CRM 250 S", "ST 264", "SDT 275",
                 "MK 450", "RYK 420 W", "SCM 420 L4", "CK 412", "DK 540", "CNC 608",
                 "KD 305", "KD 350 PS", "KD 350 M", "FR 223", "FR 223 S", "FR 222",
-                "KM 211 S", "SA 250", "SA 260"
+                "KM 211 S"
               ].map((machine, index) => (
                 <div key={index} className="text-gray-400 truncate">
                   {machine}
@@ -43,7 +43,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
               ))}
             </div>
             <p className="text-red-300 text-sm mt-2">
-              ❌ 33 machines shown at once - cognitive overload
+              ❌ 31 machines shown at once - cognitive overload
             </p>
           </div>
         </div>

@@ -232,12 +232,12 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
               {isEditing ? (
                 <Input
                   value={editingLayer?.name || ''}
-                  onChange={(e) => setEditingLayer({ ...editingLayer!, name: e.target.value })}
+                  onChange={(e) => setEditingLayer({ ...editingLayer, name: e.target.value })}
                   className="flex-1 h-7 text-xs bg-slate-700 border-slate-700/50 text-slate-200"
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      handleUpdateLayer(layer.id, { name: editingLayer!.name });
+                      handleUpdateLayer(layer.id, { name: editingLayer.name });
                     } else if (e.key === 'Escape') {
                       setEditingLayer(null);
                     }
@@ -315,7 +315,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                       size="sm"
                       variant="ghost"
                       className="h-6 w-6 p-0 hover:bg-green-500/10"
-                      onClick={() => handleUpdateLayer(layer.id, { name: editingLayer!.name })}
+                      onClick={() => handleUpdateLayer(layer.id, { name: editingLayer.name })}
                       title="Save"
                     >
                       <Check className="h-3.5 w-3.5 text-green-400" />

@@ -276,7 +276,7 @@ export const CNCExportDemo: React.FC = () => {
 
   const handleExport = (formatId: string) => {
     const validFormat: 'dxf' | 'csv' | 'pdf' = (formatId === 'dxf' || formatId === 'csv' || formatId === 'pdf') 
-      ? formatId as 'dxf' | 'csv' | 'pdf'
+      ? formatId
       : 'dxf';
     setFormat(validFormat);
     setExporting(true);

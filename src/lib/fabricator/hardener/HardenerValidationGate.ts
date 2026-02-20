@@ -24,7 +24,7 @@ export class HardenerValidationGate {
    */
   validateHardenerSelection(
     selection: HardenerSelectionResult,
-    _windowUnit: any // WindowUnit type (unused but kept for API consistency)
+    _windowUnit: import('@/types/fabricator').WindowUnit // Unused but kept for API consistency
   ): ValidationResult {
     // Check if selection failed
     if (selection.validation === 'FAIL' || !selection.hardenerCode) {

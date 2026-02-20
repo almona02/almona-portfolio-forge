@@ -8,7 +8,7 @@ import { sanitizeFilename } from './securityUtils';
  * This implementation creates a basic DXF file compatible with AutoCAD and other CAD software
  */
 export function exportToDXF(geometry: Geometry2D, filename: string = 'drafting.dxf'): void {
-  const dxfContent = generateDXF(geometry);
+  const dxfContent = generateDXFContent(geometry);
   
   // Sanitize filename
   const sanitizedFilename = sanitizeFilename(filename, 'drafting');
@@ -32,9 +32,9 @@ export function exportToDXF(geometry: Geometry2D, filename: string = 'drafting.d
 }
 
 /**
- * Generate DXF file content from geometry
+ * Generate DXF file content from geometry (exported for handlers that need string for custom download)
  */
-function generateDXF(geometry: Geometry2D): string {
+export function generateDXFContent(geometry: Geometry2D): string {
   const lines: string[] = [];
   
   // DXF Header
@@ -303,7 +303,7 @@ function generateDXF(geometry: Geometry2D): string {
 /**
  * Export to JSON format (for ALMONA internal use)
  */
-export function exportToJSON(geometry: Geometry2D, metadata?: any): string {
+export function exportToJSON(geometry: Geometry2D, metadata?: Record<string, unknown>): string {
   const exportData = {
     version: '1.0',
     timestamp: new Date().toISOString(),
@@ -320,10 +320,16 @@ export function exportToJSON(geometry: Geometry2D, metadata?: any): string {
  */
 export { importFromDXF } from './dxfImporter';
 
+/** Parsed JSON draft structure */
+interface ParsedDraftJson {
+  geometry?: unknown;
+  metadata?: Record<string, unknown>;
+}
+
 /**
  * Import from JSON format with validation
  */
-export async function importFromJSON(jsonString: string): Promise<{ geometry: Geometry2D; metadata?: any }> {
+export async function importFromJSON(jsonString: string): Promise<{ geometry: Geometry2D; metadata?: Record<string, unknown> }> {
   if (!jsonString || typeof jsonString !== 'string') {
     throw new Error('JSON string is required');
   }
@@ -332,9 +338,9 @@ export async function importFromJSON(jsonString: string): Promise<{ geometry: Ge
     throw new Error('File is too large (maximum 50MB)');
   }
 
-  let data: any;
+  let data: ParsedDraftJson;
   try {
-    data = JSON.parse(jsonString);
+    data = JSON.parse(jsonString) as ParsedDraftJson;
   } catch (error) {
     throw new Error(`Invalid JSON format: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -347,20 +353,23 @@ export async function importFromJSON(jsonString: string): Promise<{ geometry: Ge
     throw new Error('Invalid file structure: geometry is required');
   }
 
+  const geometry = data.geometry as Geometry2D;
+  const metadata = data.metadata;
+
   // Import validation function (will be used if available)
   try {
     const { validateGeometry } = await import('./inputValidator');
-    const validatedGeometry = validateGeometry(data.geometry);
+    const validatedGeometry = validateGeometry(geometry);
     return {
       geometry: validatedGeometry,
-      metadata: data.metadata
+      metadata
     };
   } catch (validationError) {
     // If validation fails, still return but log warning
     console.warn('Geometry validation failed:', validationError);
     return {
-      geometry: data.geometry,
-      metadata: data.metadata
+      geometry,
+      metadata
     };
   }
 }

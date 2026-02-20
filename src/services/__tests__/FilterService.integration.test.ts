@@ -6,18 +6,21 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { FilterSet } from '../FilterService';
+import type { FilterPreset, FilterSet } from '../FilterService';
 import { FilterService } from '../FilterService';
+import type { FilterPresetResponse } from '../filterPresetsApi';
 
 // Mock filterPresetsApi
 vi.mock('../filterPresetsApi', async () => {
-  const actual = await vi.importActual('../filterPresetsApi');
+  const actual = await vi.importActual<typeof import('../filterPresetsApi')>('../filterPresetsApi');
   return {
     ...actual,
     listFilterPresets: vi.fn(),
     createFilterPreset: vi.fn(),
     deleteFilterPreset: vi.fn(),
-    convertToFilterPreset: vi.fn((preset: any) => preset),
+    convertToFilterPreset: vi.fn((preset: FilterPresetResponse) =>
+      ({ id: preset.id, name: preset.name, domain: preset.domain, filters: preset.filters, createdAt: preset.createdAt, updatedAt: preset.updatedAt })
+    ),
   };
 });
 
@@ -32,9 +35,9 @@ vi.mock('@/lib/supabase', () => ({
 
 describe('FilterService - API Integration', () => {
   let filterService: FilterService;
-  let mockListPresets: any;
-  let mockCreatePreset: any;
-  let mockDeletePreset: any;
+  let mockListPresets: ReturnType<typeof vi.fn>;
+  let mockCreatePreset: ReturnType<typeof vi.fn>;
+  let mockDeletePreset: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     filterService = new FilterService('projects');
@@ -99,7 +102,7 @@ describe('FilterService - API Integration', () => {
       // Verify localStorage was used
       const stored = localStorage.getItem('almona_filter_state_presets');
       expect(stored).toBeTruthy();
-      const presets = JSON.parse(stored!);
+      const presets = JSON.parse(stored!) as FilterPreset[];
       expect(presets.length).toBeGreaterThan(0);
     });
   });
@@ -214,7 +217,7 @@ describe('FilterService - API Integration', () => {
 
       // Verify preset was removed from localStorage
       const stored = localStorage.getItem('almona_filter_state_presets');
-      const updatedPresets = JSON.parse(stored!);
+      const updatedPresets = JSON.parse(stored!) as FilterPreset[];
       expect(updatedPresets).toHaveLength(1);
       expect(updatedPresets[0].id).toBe('preset-2');
     });

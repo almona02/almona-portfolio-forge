@@ -65,7 +65,7 @@ export function GLBViewer({
   const gltfResult = useGLTF(isGLBMode && modelPath ? modelPath : '')
   const scene = isGLBMode ? gltfResult.scene : null
   const animations = useMemo(() => isGLBMode ? gltfResult.animations : [], [isGLBMode, gltfResult.animations])
-  const { actions } = useAnimations(animations, scene || groupRef.current || ({} as any))
+  const { actions } = useAnimations(animations, scene ?? groupRef.current ?? (null as unknown as THREE.Object3D))
 
   const [arSupported, setArSupported] = useState(false)
   const [isARSession, setIsARSession] = useState(false)
@@ -75,7 +75,7 @@ export function GLBViewer({
   useEffect(() => {
     if (checkingRef.current) return
     checkingRef.current = true
-    ;(async () => {
+    void (async () => {
       if ('xr' in navigator) {
         try {
           const navXR = (navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean> } }).xr

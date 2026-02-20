@@ -33,7 +33,7 @@ interface YDTContextType {
   getMachineKnowledge: (model: string) => Promise<MachineKnowledge | null>;
   
   // Maalem Judgment (Predictive Logic)
-  analyzeMachineStatus: (telemetry: any) => { status: 'healthy' | 'warning' | 'critical'; advice: string };
+  analyzeMachineStatus: (telemetry: { spindleTemp?: number; vibration?: number } | null) => { status: 'healthy' | 'warning' | 'critical'; advice: string };
   
   // Connection Status of the Brain
   isConnected: boolean;
@@ -95,14 +95,14 @@ export function YDTProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // "Maalem Judgment" - simple rule engine for now
-  const analyzeMachineStatus = useCallback((telemetry: any) => {
+  const analyzeMachineStatus = useCallback((telemetry: { spindleTemp?: number; vibration?: number } | null) => {
     if (!telemetry) return { status: 'healthy' as const, advice: 'No data available.' };
     
     // Example Logic
-    if (telemetry.spindleTemp > 70) {
+    if ((telemetry.spindleTemp ?? 0) > 70) {
       return { status: 'critical' as const, advice: 'Spindle overheating! Check cooling system immediately.' };
     }
-    if (telemetry.vibration > 5) {
+    if ((telemetry.vibration ?? 0) > 5) {
       return { status: 'warning' as const, advice: 'High vibration detected. Check blade balance or loose clamps.' };
     }
     

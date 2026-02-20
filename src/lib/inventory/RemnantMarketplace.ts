@@ -285,7 +285,7 @@ export class RemnantMarketplace {
 
       // Update listing status
       if (data) {
-        const transactionData = data as any;
+        const transactionData = data;
         await (supabase
           .from('remnant_marketplace_listings') as any)
           .update({ status: 'sold' })

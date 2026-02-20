@@ -1,0 +1,48 @@
+diff --git a/src/components/3d-model/Collaborative3DViewer.tsx b/src/components/3d-model/Collaborative3DViewer.tsx
+--- a/src/components/3d-model/Collaborative3DViewer.tsx
++++ b/src/components/3d-model/Collaborative3DViewer.tsx
+@@ -175,11 +175,12 @@
+             )
+           },
+           onCameraUpdate: (participantId, camera) => {
+-            setParticipants(prev => 
+-              prev.map(p => 
+-                p.id === participantId 
+-                  ? { ...p, camera_position: camera }
++            const cam = camera as Participant['camera_position']
++            setParticipants(prev =>
++              prev.map(p =>
++                p.id === participantId
++                  ? { ...p, camera_position: cam }
+                   : p
+               )
+             )
+@@ -349,7 +350,7 @@
+                     variant="outline"
+                     onClick={() => {
+-                      navigator.clipboard.writeText(`${window.location.origin}/collaborate/${sessionId}`)
++                      void navigator.clipboard.writeText(`${window.location.origin}/collaborate/${sessionId}`)
+                       track('collaboration_link_shared', { sessionId })
+                     }}
+                   >
+diff --git a/src/components/3d-model/GLBViewer.tsx b/src/components/3d-model/GLBViewer.tsx
+--- a/src/components/3d-model/GLBViewer.tsx
++++ b/src/components/3d-model/GLBViewer.tsx
+@@ -191,13 +191,13 @@
+           {!isARSession ? (
+             <button
+               type="button"
+-              onClick={enterAR}
++              onClick={() => void enterAR()}
+               className="swiftxr-ar-button"
+             >
+               SwiftXR AR
+             </button>
+           ) : (
+             <button
+               type="button"
+-              onClick={exitAR}
++              onClick={() => void exitAR()}
+               className="swiftxr-ar-button"
+               style={{ background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' }}
+             >

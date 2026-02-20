@@ -79,7 +79,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
 
   const handleDownloadPDF = async (quote: any) => {
     try {
-      const pdfBlob = await CommercialPDFService.generateQuotePDF(quote as any);
+      const pdfBlob = await CommercialPDFService.generateQuotePDF(quote);
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = url;

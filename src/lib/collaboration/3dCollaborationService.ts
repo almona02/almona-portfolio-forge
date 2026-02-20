@@ -100,7 +100,7 @@ class Collaboration3DService {
       onParticipantJoin?: (participant: Participant) => void
       onParticipantLeave?: (participantId: string) => void
       onCursorUpdate?: (participantId: string, position: any) => void
-      onCameraUpdate?: (participantId: string, camera: any) => void
+      onCameraUpdate?: (participantId: string, camera: { position: { x: number; y: number; z: number }; target: { x: number; y: number; z: number } }) => void
       onAnnotationAdd?: (annotation: Annotation) => void
       onAnnotationUpdate?: (annotation: Annotation) => void
       onAnnotationRemove?: (annotationId: string) => void

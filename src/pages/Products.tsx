@@ -23,6 +23,7 @@ import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { useToast } from "@/hooks/useToast";
 import { useVirtualizedMachines } from "@/hooks/useVirtualizedMachines";
 import { loadComparisons, saveComparison } from "@/lib/comparisonStorage";
+import { machinePricingService } from '@/lib/pricing/MachinePricingService';
 import { debounce } from "@/lib/utils";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
@@ -46,28 +47,32 @@ interface SourceMachineLike {
 }
 
 // UI wrapper union ensures compatibility with comparison + quote components expecting UiMachine shape
-const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
-  id: m.id,
-  name: m.name,
-  description: m.description || '',
-  imageUrl: m.imageUrl || m.image_url || '',
-  category: m.category || 'general',
-  releaseDate: m.releaseDate || m.release_date || new Date().toISOString(),
-  type: m.type || 'machine',
-  tags: m.tags || [],
-  certifications: m.certifications || [],
-  powerSpec: {
-    consumption: m.powerSpec?.consumption || m.power || '0 kW',
-    voltage: m.powerSpec?.voltage || '380V',
-    frequency: m.powerSpec?.frequency || '50Hz',
-    phase: m.powerSpec?.phase || '3'
-  },
-  dimensions: m.dimensions || { length: '', width: '', height: '' },
-  airSpec: m.airSpec || { consumption: '0 L/min', pressure: '0 bar' },
-  safetyFeatures: (m.safetyFeatures || []).filter((s): s is 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop' =>
-    ['TwoHandOperation','AutomaticGuards','EmergencyStop'].includes(s as 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop')
-  ),
-});
+const mapToUiMachine = (m: SourceMachineLike): UiMachine => {
+  const priceInfo = machinePricingService.getMachinePrice(m.id);
+  return {
+    id: m.id,
+    name: m.name,
+    description: m.description || '',
+    imageUrl: m.imageUrl || m.image_url || '',
+    category: m.category || 'general',
+    releaseDate: m.releaseDate || m.release_date || new Date().toISOString(),
+    type: m.type || 'machine',
+    tags: m.tags || [],
+    certifications: m.certifications || [],
+    powerSpec: {
+      consumption: m.powerSpec?.consumption || m.power || '0 kW',
+      voltage: m.powerSpec?.voltage || '380V',
+      frequency: m.powerSpec?.frequency || '50Hz',
+      phase: m.powerSpec?.phase || '3'
+    },
+    dimensions: m.dimensions || { length: '', width: '', height: '' },
+    airSpec: m.airSpec || { consumption: '0 L/min', pressure: '0 bar' },
+    safetyFeatures: (m.safetyFeatures || []).filter((s): s is 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop' =>
+      ['TwoHandOperation','AutomaticGuards','EmergencyStop'].includes(s as 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop')
+    ),
+    price: priceInfo?.basePrice,
+  };
+};
 
 const Products = function ProductsPage() {
   const { t } = useTranslation('products');
@@ -726,7 +731,7 @@ const Products = function ProductsPage() {
                       onSelectMachine={handleSelectMachine}
                       onQuoteRequest={handleQuoteRequest}
                       on3DView={handle3DView}
-                      onQuickPreview={handleQuickPreview}
+                      onQuickPreview={undefined}
                       hasMore={hasMore}
                       onLoadMore={loadMore}
                       isLoading={isLoadingMore}
@@ -741,7 +746,7 @@ const Products = function ProductsPage() {
                       onSelectMachine={handleSelectMachine}
                       onQuoteRequest={handleQuoteRequest}
                       on3DView={handle3DView}
-                      onQuickPreview={handleQuickPreview}
+                      onQuickPreview={undefined}
                       hasMore={hasMore}
                       onLoadMore={loadMore}
                       isLoading={isLoadingMore}

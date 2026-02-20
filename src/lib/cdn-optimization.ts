@@ -165,7 +165,7 @@ export class GlobalPerformanceOptimizer {
     
     // Generate srcSet for responsive images
     const srcSet = this.config.imageOptimization.sizes
-      .filter(size => size <= (optimalWidth! * 2)) // Up to 2x for retina
+      .filter(size => size <= (optimalWidth * 2)) // Up to 2x for retina
       .map(size => `${baseUrl}?format=${optimalFormat}&quality=${imageQuality}&width=${size} ${size}w`)
       .join(', ');
 

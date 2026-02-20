@@ -24,7 +24,7 @@ export const DesignWorkflowWrapper: React.FC = () => {
   // Get mode from URL or localStorage
   const urlMode = new URLSearchParams(search).get('mode') as DesignMode | null;
   const savedMode = localStorage.getItem('almona-design-mode') as DesignMode | null;
-  const initialMode = (urlMode || savedMode || 'smartdraw') as DesignMode;
+  const initialMode = (urlMode || savedMode || 'smartdraw');
 
   const [mode, setMode] = useState<DesignMode>(initialMode);
 

@@ -353,7 +353,7 @@ export class ProductionMonitor {
 
     return {
       currentBaseline: latestBaseline || null,
-      trend: trend as 'improving' | 'degrading' | 'stable',
+      trend: trend,
       regressions,
       improvements,
     };

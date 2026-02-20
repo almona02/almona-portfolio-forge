@@ -200,7 +200,7 @@ export function monitorBundleSize(): BundleInfo[] {
     return [];
   }
 
-  const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+  const resources = performance.getEntriesByType('resource');
   const jsResources = resources.filter(r => 
     r.name.includes('.js') && 
     (r.transferSize > 0 || r.decodedBodySize > 0)

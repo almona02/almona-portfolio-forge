@@ -74,8 +74,8 @@ export const AccessoryLibrary: React.FC<AccessoryLibraryProps> = ({
 
     const newAccessory: Accessory = {
       id: `acc_${Date.now()}`,
-      name: formData.name!,
-      type: formData.type!,
+      name: formData.name,
+      type: formData.type,
       category: formData.category || '',
       unitPrice: finalPrice,
       markup: formData.markup || 30,

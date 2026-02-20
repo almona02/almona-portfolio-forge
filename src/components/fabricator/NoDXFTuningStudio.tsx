@@ -323,7 +323,7 @@ export const NoDXFTuningStudio: React.FC = () => {
     );
   }
 
-  const isUPVC = !!(systemPack as any).upvcSpec;
+  const isUPVC = !!(systemPack).upvcSpec;
   const frameProfile = profiles.find(p => p.role === 'frame');
   const sashProfile = profiles.find(p => p.role === 'sash');
 

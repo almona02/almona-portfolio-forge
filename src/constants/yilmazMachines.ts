@@ -597,7 +597,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/KM-212.pdf",
     youtubeUrl: "https://youtu.be/1iiAfHwLhsQ?si=UQYOLQVwQq5N9143",
     category: "end-milling",
-    featured: true,
+    featured: false,
     releaseDate: "2012-05-10",
     type: "Portable End Milling",
     powerSpec: {
@@ -659,7 +659,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/KD-402-S.pdf",
     youtubeUrl: "https://youtu.be/3GTWyawzxMw?si=6E8Xa5UsjBEcoUYG",
     category: "cutting-machines",
-    featured: true,
+    featured: false,
     releaseDate: "2023-05-15",
     type: "Double Head Mitre Saw",
     powerSpec: {
@@ -741,13 +741,13 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/FR-221-S.pdf",
     youtubeUrl: "https://youtu.be/T-yF2tKITb8?si=TuuxsTJYm23LaMHp",
     category: "copy-routers",
-    featured: true,
+    featured: false,
     releaseDate: "2023-05-15",
     type: "Template Copy Router",
     powerSpec: {
-      voltage: '400V AC',
+      voltage: '230V AC',
       frequency: '50-60Hz',
-      phase: '3',
+      phase: '1',
       consumption: '750 W'
     },
     airSpec: {
@@ -813,7 +813,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/PIM-6509.pdf",
     youtubeUrl: "https://youtu.be/lQlX-jXfegU?si=_N5SbMJyFHa1obiG",
     category: "processing-centers",
-    featured: true,
+    featured: false,
     releaseDate: "2023-01-01",
     type: "PVC Profile Machining Center",
     powerSpec: {
@@ -913,7 +913,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/CCL-1661.pdf",
     youtubeUrl: "https://youtu.be/feWx5BXMSn0?si=1b5AP3moNi37475i",
     category: "fabrication-equipment",
-    featured: true,
+    featured: false,
     releaseDate: "2023-01-01",
     type: "PVC Welding and Corner Cleaning Line",
     powerSpec: {
@@ -1003,7 +1003,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/CDC-600.pdf",
     youtubeUrl: "https://youtu.be/GywonVe7yMk?si=WBR_PUqDDJB6f8Bb",
     category: "cutting-machines",
-    featured: true,
+    featured: false,
     releaseDate: "2022-01-01",
     type: "Double Head Compound Cutting",
     powerSpec: {
@@ -1093,7 +1093,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/DC-421-PSD.pdf",
     youtubeUrl: "https://youtu.be/5pluTvKsQs4?si=YwmMnIQDV_g9kLH6",
     category: "cutting-machines",
-    featured: true,
+    featured: false,
     releaseDate: "2022-01-01",
     type: "Full Automatic Double Head Mitre Saw",
     powerSpec: {
@@ -1175,9 +1175,9 @@ export const yilmazMachines: Machine[] = [
     releaseDate: "2021-01-01",
     type: "Cutting Machine",
     powerSpec: {
-      voltage: '400V',
+      voltage: '230V',
       frequency: '50Hz',
-      phase: '3',
+      phase: '1',
       consumption: '2.2 kW'
     },
     airSpec: {
@@ -1212,9 +1212,9 @@ export const yilmazMachines: Machine[] = [
     releaseDate: "2023-01-01",
     type: "Routing Machine",
     powerSpec: {
-      voltage: '400V',
+      voltage: '230V',
       frequency: '50Hz',
-      phase: '3',
+      phase: '1',
       consumption: '1.5 kW'
     },
     airSpec: {
@@ -1327,7 +1327,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/TK-505.pdf",
     youtubeUrl: "https://youtu.be/SDWJKEaAB8Y?si=X4drWLgi_Sgwmonf",
     category: "welding-machines",
-    featured: false,
+    featured: true,
     releaseDate: "2022-01-01",
     type: "Welding Machine",
     powerSpec: {
@@ -1365,7 +1365,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/KM-215-S.pdf",
     youtubeUrl: "https://youtu.be/VThz1mkR7o8?si=yv7IHffK1lGY4w7G",
     category: "processing-centers",
-    featured: false,
+    featured: true,
     releaseDate: "2023-01-01",
     type: "End Milling Machine",
     powerSpec: {
@@ -1509,7 +1509,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/SDT-275.pdf",
     youtubeUrl: "https://youtu.be/i3A8_92iNjA?si=LjXpb1R_nUuJT9qE",
     category: "cutting-machines",
-    featured: false,
+    featured: true,
     releaseDate: "2021-01-01",
     type: "Cutting Machine",
     powerSpec: {
@@ -1545,7 +1545,7 @@ export const yilmazMachines: Machine[] = [
   specPdf: "/documents/specs/MK-450.pdf",
   youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "cutting-machines",
-  featured: false,
+  featured: true,
   releaseDate: "2021-01-01",
   type: "Cutting Machine",
   powerSpec: {
@@ -1617,7 +1617,7 @@ export const yilmazMachines: Machine[] = [
   specPdf: "/documents/specs/SCM_420_L4-L7_TR_EN.pdf",
   youtubeUrl: "https://youtu.be/OzPLbizCU0Y?si=0nkKACiAtVQnWgoh",
   category: "cutting-machines",
-  featured: true,
+  featured: false,
   releaseDate: "2022-01-01",
   type: "Servo Controlled Serial Cutting Machine",
   powerSpec: {
@@ -1700,13 +1700,13 @@ export const yilmazMachines: Machine[] = [
   specPdf: "/documents/specs/CK-412.pdf",
   youtubeUrl: "https://youtu.be/xXFc1Jc8m6U?si=gNbbV-Y-03xfo5Bk",
   category: "cutting-machines",
-  featured: false,
+  featured: true,
   releaseDate: "2021-01-01",
   type: "Glazing Bead Saw",
   powerSpec: {
-    voltage: '400V',
+    voltage: '230V',
     frequency: '50Hz',
-    phase: '3',
+    phase: '1',
     consumption: '0.24 kW'
   },
   airSpec: {
@@ -1736,7 +1736,7 @@ export const yilmazMachines: Machine[] = [
   specPdf: "/documents/specs/DK 540.pdf",
   youtubeUrl: "https://youtu.be/gGwtxmf1_9k?si=9EWSs9j1FeCVSiRi",
   category: "welding-machines",
-  featured: true,
+  featured: false,
   releaseDate: "2022-01-01",
   type: "Four Corner PVC Welding",
   powerSpec: {
@@ -1880,7 +1880,7 @@ export const yilmazMachines: Machine[] = [
   specPdf: "/documents/specs/KD-305.pdf",
   youtubeUrl: "https://youtu.be/zaLEsyS-fo8?si=Ole803MbU5SXmBbT",
   category: "cutting-machines",
-  featured: false,
+  featured: true,
   releaseDate: "2020-01-01",
   type: "Mitre Saw",
   powerSpec: {
@@ -1989,7 +1989,7 @@ export const yilmazMachines: Machine[] = [
   youtubeUrl: "https://youtu.be/nMbHEJgK5Jg?si=VvBWWNUAnJqJNwmt",
   modelPath: "/models/demo-machine.glb",
   category: "processing-centers",
-  featured: false,
+  featured: true,
   releaseDate: "2021-01-01",
   type: "Copy Router",
   powerSpec: {
@@ -2063,7 +2063,7 @@ export const yilmazMachines: Machine[] = [
   youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   modelPath: "/models/FR-222.glb",
   category: "processing-centers",
-  featured: false,
+  featured: true,
   releaseDate: "2020-01-01",
   type: "Copy Router",
   powerSpec: {
@@ -2128,92 +2128,20 @@ export const yilmazMachines: Machine[] = [
   safetyFeatures: ['EmergencyStop']
 },
 {
-  id: "ym-032",
-  name: "SA 250",
-  description: "Cooling Unit for welding systems",
-  imageUrl: "/images/machines/SA-250.jpg",
-  specPdf: "/documents/specs/SA-250.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
-  category: "accessories",
-  featured: false,
-  releaseDate: "2021-01-01",
-  type: "Cooling Unit",
-  powerSpec: {
-    voltage: '400V',
-    frequency: '50Hz',
-    phase: '3',
-    consumption: '0.5 kW'
-  },
-  airSpec: {
-    consumption: '30 L/min',
-    pressure: '2 bar'
-  },
-  dimensions: {
-    length: '1000mm',
-    width: '800mm',
-    height: '1200mm'
-  },
-  tags: ["Cooling", "Welding"],
-  specifications: [
-    "For use with welding systems",
-    "Integrated in production lines",
-    "Automatic operation",
-    "Low maintenance"
-  ],
-  certifications: ['CE'],
-  safetyFeatures: []
-},
-{
-  id: "ym-033",
-  name: "SA 260",
-  description: "Robot Unit for profile transfer",
-  imageUrl: "/images/machines/SA-260.jpg",
-  specPdf: "/documents/specs/SA-260.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
-  category: "accessories",
-  featured: false,
-  releaseDate: "2021-01-01",
-  type: "Robot Unit",
-  powerSpec: {
-    voltage: '400V',
-    frequency: '50Hz',
-    phase: '3',
-    consumption: '0.85 kW'
-  },
-  airSpec: {
-    consumption: '50 L/min',
-    pressure: '3 bar'
-  },
-  dimensions: {
-    length: '1500mm',
-    width: '1200mm',
-    height: '1800mm'
-  },
-  tags: ["Automation", "Transfer"],
-  specifications: [
-    "Max transfer frame size: 2200mm × 2200mm",
-    "Max profile height: 130mm",
-    "Min profile height: 30mm",
-    "Automatic operation"
-  ],
-  certifications: ['CE', 'ISO9001'],
-  safetyFeatures: ['EmergencyStop']
-},
-{
   id: "ym-034",
   name: "KD 400 D / KD 400 PS",
   description: "Single Head Mitre Saw Machine - Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
   imageUrl: "/images/machines/KD-400-D.jpg",
   specPdf: "/documents/specs/KD 400 D - 400 PS.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  youtubeUrl: "https://www.youtube.com/watch?v=OgssPtF1Jr4",
   category: "cutting-machines",
-  featured: false,
+  featured: true,
   releaseDate: "2020-01-01",
   type: "Single Head Mitre Saw",
   powerSpec: {
-    voltage: '400V AC',
+    voltage: '230V AC',
     frequency: '50-60Hz',
-    phase: '3',
+    phase: '1',
     consumption: '2.2 kW'
   },
   airSpec: {
@@ -2275,7 +2203,7 @@ export const yilmazMachines: Machine[] = [
   specPdf: "/documents/specs/MK 420 - 420 PS - 450 (1).pdf",
   youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "cutting-machines",
-  featured: false,
+  featured: true,
   releaseDate: "2021-01-01",
   type: "Manual Up-Cutting Saw",
   powerSpec: {
@@ -2347,7 +2275,7 @@ export const yilmazMachines: Machine[] = [
   specPdf: "/documents/specs/TK 503.pdf",
   youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "welding-machines",
-  featured: false,
+  featured: true,
   releaseDate: "2022-01-01",
   type: "Single Corner PVC Welding",
   powerSpec: {
@@ -2479,13 +2407,13 @@ export const yilmazMachines: Machine[] = [
   specPdf: "/documents/specs/CA 601.pdf",
   youtubeUrl: "https://youtu.be/qnCphTUy0qs?si=K81XL4fG81yDbsZk",
   category: "cleaning-machines",
-  featured: false,
+  featured: true,
   releaseDate: "2022-01-01",
   type: "Semi-Automatic Corner Cleaning",
   powerSpec: {
-    voltage: '400V AC',
+    voltage: '230V AC',
     frequency: '50-60Hz',
-    phase: '3',
+    phase: '1',
     consumption: '1 kW'
   },
   airSpec: {

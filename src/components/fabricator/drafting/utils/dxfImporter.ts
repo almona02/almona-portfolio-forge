@@ -402,7 +402,7 @@ function parsePolyline(lines: string[], startIndex: number, entityType: string):
           if (currentPoint.x !== null) {
             points.push({
               x: normalizeCoordinate(currentPoint.x),
-              y: normalizeCoordinate(currentPoint.y!)
+              y: normalizeCoordinate(currentPoint.y)
             });
             currentPoint = { x: null, y: null };
           }

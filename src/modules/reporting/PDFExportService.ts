@@ -8,7 +8,7 @@ let PDFDocument: any, rgb: any, StandardFonts: any;
 import { generatePatternVisualization, generateWindowUnitsRow } from '@/lib/exports/windowSnapshotGenerator';
 import { supabase } from '@/lib/supabase';
 import { Quote } from '@/modules/commercial/QuotingEngine';
-import { CuttingPlan, OptimizationResult, WindowUnit } from '@/types/fabricator';
+import { CuttingPlan, isGlazingSpecFlat, OptimizationResult, WindowUnit } from '@/types/fabricator';
 
 export interface CompanyBranding {
   logo?: string; // Base64 or URL
@@ -478,8 +478,8 @@ export class PDFExportService {
       await this.addHardwareList(project.hardware);
     }
 
-    // Glass & Glazing
-    if (options.includeGlazing && project.glazing) {
+    // Glass & Glazing (flat spec only; per-cell drafting glazing not exported)
+    if (options.includeGlazing && project.glazing && isGlazingSpecFlat(project.glazing)) {
       await this.addPageBreak();
       await this.addSectionTitle('Glass & Glazing Report');
       await this.addGlazingInfo(project.glazing);
@@ -1198,7 +1198,7 @@ export class PDFExportService {
     });
   }
 
-  private async addHardwareList(hardware: any[]) {
+  private async addHardwareList(hardware: import('@/types/fabricator').HardwareItemMinimal[]) {
     hardware.forEach((item) => {
       if (this.currentY > this.pageHeight - 50) {
         this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
@@ -1217,8 +1217,8 @@ export class PDFExportService {
     });
   }
 
-  private async addGlazingInfo(glazing: any) {
-    const info: Array<[string, string]> = [['Type:', glazing.type]];
+  private async addGlazingInfo(glazing: import('@/types/fabricator').GlazingSpecFlat) {
+    const info: Array<[string, string]> = [['Type:', glazing.type ?? 'N/A']];
     if (glazing.thickness) info.push(['Thickness:', `${glazing.thickness}mm`]);
     if (glazing.spacer) info.push(['Spacer:', `${glazing.spacer}mm`]);
     if (glazing.gasFill) info.push(['Gas Fill:', glazing.gasFill]);

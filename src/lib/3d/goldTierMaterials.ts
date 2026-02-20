@@ -300,7 +300,7 @@ export class GoldTierMaterialFactory {
             }
         }
         
-        return this.createMaterial(materialType as any, variant, quality);
+        return this.createMaterial(materialType, variant, quality);
     }
     
     /**

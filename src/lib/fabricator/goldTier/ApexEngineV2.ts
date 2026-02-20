@@ -228,8 +228,8 @@ export class ApexEngineV2 {
       const calculationTime = performance.now() - startTime;
       GoldTierPerformanceMonitor.record('apex_engine_v2_generate', calculationTime, undefined, true);
 
-      // Audit log
-      logFabricatorAudit({
+      // Audit log (fire-and-forget)
+      void logFabricatorAudit({
         action: 'VALIDATE',
         tableName: 'fenestration_systems',
         recordId: this.system.id,
@@ -255,8 +255,8 @@ export class ApexEngineV2 {
       const calculationTime = performance.now() - startTime;
       GoldTierPerformanceMonitor.record('apex_engine_v2_generate', calculationTime, undefined, false, error instanceof Error ? error.message : String(error));
 
-      // Audit log error
-      logFabricatorAudit({
+      // Audit log error (fire-and-forget)
+      void logFabricatorAudit({
         action: 'VALIDATE',
         tableName: 'fenestration_systems',
         recordId: this.system.id,

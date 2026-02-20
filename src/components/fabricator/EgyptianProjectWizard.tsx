@@ -223,7 +223,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
     
     // Filter by material preference first
     const materialFiltered = allSystems.filter(pack => {
-      const isUPVC = (pack as any).upvcSpec !== undefined;
+      const isUPVC = (pack).upvcSpec !== undefined;
       if (materialPreference === 'aluminum' && isUPVC) return false;
       if (materialPreference === 'upvc' && !isUPVC) return false;
       return true;
@@ -684,7 +684,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                                 onArchive={() => setCustomSystems(loadCustomSystems())}
                                 onDuplicate={() => setCustomSystems(loadCustomSystems())}
                                 onEdit={() => {
-                                  setTuningInitialSystem(pack as any);
+                                  setTuningInitialSystem(pack);
                                   setShowTuningStudio(true);
                                 }}
                               />

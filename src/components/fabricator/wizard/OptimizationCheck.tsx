@@ -242,7 +242,7 @@ export function OptimizationCheck({ wizardData, profiles = [] }: OptimizationChe
             {(() => {
               // Generate optimized cut list
               const cutList = generateOptimizedCutList(
-                draftProject as any,
+                draftProject,
                 profiles,
                 {
                   burnOffMm: 3.0, // Egyptian workshop standard
