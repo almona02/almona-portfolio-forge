@@ -5,48 +5,48 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/shared/ui/ui/button';
 import { Label } from '@/shared/ui/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/shared/ui/ui/select';
 import { Toggle } from '@/shared/ui/ui/toggle';
 import { GridCell, ManualMullion, WindowGrid } from '@/types/fabricator';
 import {
-  ChevronDown,
-  ChevronUp,
-  ClipboardPaste,
-  Columns,
-  Copy,
-  FlipHorizontal,
-  FlipVertical,
-  Layers,
-  List,
-  Minus,
-  Move,
-  Plus,
-  Redo,
-  Rows,
-  Ruler,
-  Sparkles,
-  Square,
-  Undo,
-  X,
+    ChevronDown,
+    ChevronUp,
+    ClipboardPaste,
+    Columns,
+    Copy,
+    FlipHorizontal,
+    FlipVertical,
+    Layers,
+    List,
+    Minus,
+    Move,
+    Plus,
+    Redo,
+    Rows,
+    Ruler,
+    Sparkles,
+    Square,
+    Undo,
+    X,
 } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MullionDeleteButton } from './SmartDrawCanvas/MullionDeleteButton';
 import { GridMeasurementOverlay } from './SmartDrawCanvas/components';
 import { useGridMultiSelect } from './SmartDrawCanvas/hooks';
 import {
-  GridUndoRedoManager,
-  copyCellsToClipboard,
-  getCellsByIds,
-  getGridClipboardData,
-  hasGridClipboardData,
-  mirrorGridHorizontally,
-  mirrorGridVertically,
-  pasteCellsIntoGrid
+    GridUndoRedoManager,
+    copyCellsToClipboard,
+    getCellsByIds,
+    getGridClipboardData,
+    hasGridClipboardData,
+    mirrorGridHorizontally,
+    mirrorGridVertically,
+    pasteCellsIntoGrid
 } from './SmartDrawCanvas/utils';
 
 interface TouchGestureCallbacks {
@@ -396,7 +396,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
             : cell.type === 'sash'
               ? 'sash-left'
               : (cell.type as any);
-        const currentIndex = cycle.indexOf(currentKey as any);
+        const currentIndex = cycle.indexOf(currentKey);
         const nextKey = cycle[(currentIndex + 1) % cycle.length];
 
         if (nextKey === 'sash-left') {
@@ -1307,11 +1307,14 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
               />
             ))}
 
-            {/* Render Manual Mullions */}
+            {/* Render Manual Mullions — supports absolute (mm) and proportional (%) positioning */}
             {grid.manualMullions?.map((mullion) => {
               if (mullion.level === 'frame') {
+                const isProportional = (mullion as { splitType?: string }).splitType === 'proportional';
+                const ratioH = isProportional ? mullion.position / 100 : mullion.position / height;
+                const ratioV = isProportional ? mullion.position / 100 : mullion.position / width;
                 if (mullion.type === 'horizontal') {
-                  const y = (mullion.position / height) * svgHeight;
+                  const y = ratioH * svgHeight;
                   return (
                     <g
                       key={mullion.id}
@@ -1351,7 +1354,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                     </g>
                   );
                 } else {
-                  const x = (mullion.position / width) * svgWidth;
+                  const x = ratioV * svgWidth;
                   return (
                     <g
                       key={mullion.id}

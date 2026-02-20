@@ -14,7 +14,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PatternMigrationService } from '../PatternMigrationService';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import { FenestrationSystemValidator } from '../FenestrationSystemValidator';
 
 // Mock validator
@@ -115,7 +115,7 @@ describe('PatternMigrationService', () => {
     } as SystemPack;
 
     // Mock successful validation
-    (FenestrationSystemValidator.validate as any).mockReturnValue({
+    vi.mocked(FenestrationSystemValidator).validate.mockReturnValue({
       isValid: true,
       errors: [],
       warnings: [],
@@ -188,7 +188,7 @@ describe('PatternMigrationService', () => {
     });
 
     it('should handle validation failures', () => {
-      (FenestrationSystemValidator.validate as any).mockReturnValue({
+      vi.mocked(FenestrationSystemValidator).validate.mockReturnValue({
         isValid: false,
         errors: [{ code: 'VAL-001', field: 'id', message: 'Invalid ID', severity: 'error' }],
         warnings: [],
@@ -255,13 +255,10 @@ describe('PatternMigrationService', () => {
     });
 
     it('should handle UPVC material with welding rules', () => {
-      const upvcPack = {
+      const upvcPack: SystemPack = {
         ...mockSystemPack,
-        meta: {
-          ...mockSystemPack.meta,
-          category: 'upvc_windows',
-        },
-      } as SystemPack;
+        category: 'upvc_windows',
+      };
 
       const result = PatternMigrationService.migrate(mockPattern, upvcPack);
 
@@ -270,13 +267,13 @@ describe('PatternMigrationService', () => {
     });
 
     it('should handle GCC region with thermal expansion', () => {
-      const gccPack = {
+      const gccPack: SystemPack = {
         ...mockSystemPack,
         meta: {
           ...mockSystemPack.meta,
           regions: ['gcc'],
         },
-      } as SystemPack;
+      };
 
       const result = PatternMigrationService.migrate(mockPattern, gccPack);
 

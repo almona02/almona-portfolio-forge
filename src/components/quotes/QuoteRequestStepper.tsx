@@ -200,17 +200,11 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
                   {selectedProducts.map((product) => (
                     <div key={product.id} className="flex justify-between items-center p-3 bg-almona-dark rounded">
                       <span>{product.name}</span>
-                      <Badge variant="outline" className="border-green-500  status-valid">
-                        {product.price ? `${product.price.toLocaleString()} EGP` : "Price on request"}
-                      </Badge>
                     </div>
                   ))}
                   {selectedServices.map((service) => (
                     <div key={service.id} className="flex justify-between items-center p-3 bg-almona-dark rounded">
                       <span>{service.name}</span>
-                      <Badge variant="outline" className="border-blue-500 text-blue-500">
-                        {service.price ? `${service.price.toLocaleString()} EGP` : "Price on request"}
-                      </Badge>
                     </div>
                   ))}
                 </div>

@@ -77,7 +77,7 @@ export class FabricatorClient {
   private userId: string | null = null;
 
   constructor(config: FabricatorClientConfig = {}) {
-    this.client = supabase as SupabaseClient<Database>;
+    this.client = supabase;
     this.config = {
       enableRealtime: config.enableRealtime ?? true,
       enableAuditLogging: config.enableAuditLogging ?? true,
@@ -371,7 +371,7 @@ export class FabricatorClient {
         table_name: 'fabricator_profiles',
         record_id: id,
         old_values: oldProfile as any,
-        new_values: data as any,
+        new_values: data,
       });
 
       return this.mapProfileFromDB(data);
@@ -542,7 +542,7 @@ export class FabricatorClient {
         table_name: 'fabricator_accessories',
         record_id: id,
         old_values: oldAccessory as any,
-        new_values: data as any,
+        new_values: data,
       });
 
       return this.mapAccessoryFromDB(data);
@@ -738,7 +738,7 @@ export class FabricatorClient {
         },
         (payload) => {
           callback({
-            eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+            eventType: payload.eventType,
             new: payload.new ? this.mapProfileFromDB(payload.new as any) : undefined,
             old: payload.old ? this.mapProfileFromDB(payload.old as any) : undefined,
           });
@@ -773,7 +773,7 @@ export class FabricatorClient {
         },
         (payload) => {
           callback({
-            eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+            eventType: payload.eventType,
             new: payload.new ? this.mapAccessoryFromDB(payload.new as any) : undefined,
             old: payload.old ? this.mapAccessoryFromDB(payload.old as any) : undefined,
           });

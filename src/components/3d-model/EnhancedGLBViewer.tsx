@@ -1,6 +1,7 @@
 import React, { Suspense, useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useGLTF, Environment, OrbitControls, Bounds, useBounds, useAnimations } from '@react-three/drei';
+import * as THREE from 'three';
 import { initCompressedModelDecoders } from '@/lib/three-optimized';
 import { launchSwiftXR, detectSwiftXR } from '@/utils/swiftXRIntegration';
 import { useToast } from '@/hooks/useToast';
@@ -57,7 +58,7 @@ function FittedModel({ modelPath, onLoaded, onError: _onError, autoPlayAnimation
   useEffect(() => {
     if (autoPlayAnimations && actions && Object.keys(actions).length > 0) {
       try {
-        Object.values(actions).forEach((a: any) => {
+        Object.values(actions).forEach((a: THREE.AnimationAction | null) => {
           if (a && typeof a.play === 'function') {
             a.play();
           }
@@ -69,7 +70,7 @@ function FittedModel({ modelPath, onLoaded, onError: _onError, autoPlayAnimation
     return () => {
       if (actions && Object.keys(actions).length > 0) {
         try {
-          Object.values(actions).forEach((a: any) => {
+          Object.values(actions).forEach((a: THREE.AnimationAction | null) => {
             if (a && typeof a.stop === 'function') {
               a.stop();
             }
@@ -85,7 +86,7 @@ function FittedModel({ modelPath, onLoaded, onError: _onError, autoPlayAnimation
   return <group ref={groupRef}><primitive object={scene} /></group>;
 }
 
-export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
+export const EnhancedGLBViewer = forwardRef<{ resetCamera: () => void }, EnhancedGLBViewerProps>(({
   modelPath,
   usdzPath = '/models/model.usdz',
   enableAR = true,
@@ -112,7 +113,7 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
   const [swiftXRInstalled, setSwiftXRInstalled] = useState<boolean | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const modelGroupRef = useRef<THREE.Group | null>(null);
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<{ object: THREE.Camera; target: THREE.Vector3; addEventListener: (type: string, listener: () => void) => void; removeEventListener: (type: string, listener: () => void) => void; reset: () => void; update: () => void } | null>(null);
   // Propagate camera changes for synchronization
   React.useEffect(() => {
     if (!controlsRef.current || !onCameraChange) return;
@@ -156,7 +157,7 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
   useEffect(() => {
     let cancelled = false;
     if (enableWebXR && 'xr' in navigator) {
-      (async () => {
+      void (async () => {
         try {
           const navXR = (navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean> } }).xr;
           const supported = await navXR?.isSessionSupported?.('immersive-ar');
@@ -170,7 +171,7 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
     
     // Check for SwiftXR app on iOS
     if (isIOS) {
-      detectSwiftXR().then(result => {
+      void detectSwiftXR().then(result => {
         if (!cancelled) setSwiftXRInstalled(result.isInstalled);
       });
     }
@@ -235,7 +236,8 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
             <div className="flex gap-2">
               {isIOS && (
                 <button
-                  onClick={async () => {
+                  onClick={() => {
+                    void (async () => {
                     // Try native SwiftXR first if installed
                     if (swiftXRInstalled) {
                       const modelName = modelPath.split('/').pop()?.replace(/\.(glb|gltf)$/i, '') || title;
@@ -276,6 +278,7 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+                    })();
                   }}
                   className="swiftxr-ar-button"
                 >
@@ -291,12 +294,12 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
               {enableWebXR && xrSupported && (
                 !isXRSession ? (
                   <button
-                    onClick={enterWebXR}
+                    onClick={() => void enterWebXR()}
                     className="swiftxr-ar-button"
                   >SwiftXR AR</button>
                 ) : (
                   <button
-                    onClick={exitWebXR}
+                    onClick={() => void exitWebXR()}
                     className="swiftxr-ar-button"
                     style={{ background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' }}
                   >Exit SwiftXR</button>

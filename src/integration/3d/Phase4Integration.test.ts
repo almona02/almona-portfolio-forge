@@ -72,7 +72,7 @@ describe('Phase 4 Integration Tests - 3D Visual Upgrade', () => {
       const profile = profileGenerator.generateAdvancedProfile(mockProfile, config);
 
       expect(profile.glassPocket).toBeDefined();
-      expect(profile.glassPocket!.width).toBeGreaterThan(0);
+      expect(profile.glassPocket.width).toBeGreaterThan(0);
     });
   });
 

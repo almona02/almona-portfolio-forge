@@ -3,7 +3,7 @@ import type { EgyptianPathRequest, EgyptianPathResponse } from '@/workers/egypti
 // Worker Wrapper Class
 class WorkerWrapper {
   private worker: Worker;
-  private activeRequest: { resolve: (val: any) => void; reject: (err: any) => void } | null = null;
+  private activeRequest: { resolve: (val: unknown) => void; reject: (err: unknown) => void } | null = null;
   public busy: boolean = false;
 
   constructor() {
@@ -54,8 +54,8 @@ export class PathWorkerPool {
   private workers: WorkerWrapper[] = [];
   private queue: Array<{ 
     request: EgyptianPathRequest; 
-    resolve: (val: any) => void; 
-    reject: (err: any) => void 
+    resolve: (val: unknown) => void; 
+    reject: (err: unknown) => void 
   }> = [];
   private maxWorkers = navigator.hardwareConcurrency || 4;
 

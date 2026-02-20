@@ -125,6 +125,7 @@ export interface Viewport {
 
 // Import material-aware types
 import type { HardwarePlacement, MaterialAwareRectangle, StructuralElement } from './materialAware';
+import type { WindowGrid } from '@/types/fabricator';
 
 // Import layer types
 import type { Layer } from './layers';
@@ -145,6 +146,10 @@ export interface DraftingState {
   hardware: HardwarePlacement[];
   structuralElements: StructuralElement[];
   materialAwareWindows: MaterialAwareRectangle[];
+  /** Grid per material window (frame) id — rows, cols, cells for Add Sash / Quick Add 2 Sashes */
+  materialWindowGrids?: Record<string, WindowGrid>;
+  /** Per-cell glazing: frameId -> cellId -> { type, color?, georgianBars? } for BOM and 3D */
+  materialWindowGlazing?: Record<string, Record<string, { type: 'single' | 'double'; color?: string; georgianBars?: boolean }>>;
   // Layers system
   layers: Layer[];
   activeLayerId: string | null;
@@ -184,7 +189,7 @@ export interface DraftingOutput {
     validationId: string;
     constitutionalNote: string;
   };
-  components?: any[];
+  components?: unknown[];
 }
 
 // Tools
@@ -269,9 +274,19 @@ export interface DraftingContextType {
   addHardware: (hardware: HardwarePlacement) => void;
   addStructuralElement: (element: StructuralElement) => void;
   addMaterialAwareWindow: (window: MaterialAwareRectangle) => void;
+  convertRectangleToMaterialAware: (rectIndex: number, systemPackId: string) => void;
+  resizeFrame: (rectIndex: number, widthMm: number, heightMm: number) => void;
+  addSashToFrame: (materialWindowId: string) => void;
+  quickAddTwoSashes: (materialWindowId: string, orientation?: 'horizontal' | 'vertical') => void;
+  addMullionToFrame: (materialWindowId: string, mullion: { type: 'vertical' | 'horizontal'; positionMm: number; positionPercent?: number; widthMm?: number; splitType?: 'absolute' | 'proportional' | 'clearance-based' }) => void;
+  assignGlazingToSash: (materialWindowId: string, cellId: string, glazing: { type: 'single' | 'double'; color?: string; georgianBars?: boolean }) => void;
+  duplicateRectangle: (rectIndex: number) => void;
+  duplicateMaterialAwareFrame: (materialWindowId: string) => void;
   getHardware: () => HardwarePlacement[];
   getStructuralElements: () => StructuralElement[];
   getMaterialAwareWindows: () => MaterialAwareRectangle[];
+  getMaterialWindowGrids: () => Record<string, WindowGrid>;
+  getMaterialWindowGlazing: () => Record<string, Record<string, { type: 'single' | 'double'; color?: string; georgianBars?: boolean }>>;
   // Transform methods
   mirrorSelected: (axis: 'horizontal' | 'vertical') => void;
   rotateSelected: (angle: number) => void;
@@ -284,11 +299,11 @@ export interface DraftingContextType {
   createLinearArray: (startPoint: Point, endPoint: Point, count: number) => PatternResult | null;
   createOffsetPattern: (offsetX: number, offsetY: number, count: number) => PatternResult | null;
   // Trim/Extend methods
-  trimLine: (lineToTrim: Line, cuttingLine: Line) => any;
-  extendLine: (lineToExtend: Line, targetLine: Line) => any;
+  trimLine: (lineToTrim: Line, cuttingLine: Line) => void;
+  extendLine: (lineToExtend: Line, targetLine: Line) => void;
   // Fillet/Chamfer methods
-  applyFilletToLines: (line1: Line, line2: Line, radius: number) => any;
-  applyChamferToLines: (line1: Line, line2: Line, distance1: number, distance2?: number) => any;
+  applyFilletToLines: (line1: Line, line2: Line, radius: number) => void;
+  applyChamferToLines: (line1: Line, line2: Line, distance1: number, distance2?: number) => void;
   // Offset method
   offsetGeometry: (elementId: string, elementType: 'line' | 'rectangle' | 'polygon' | 'arc', distance: number) => void;
   getAccuracyMetrics: () => { precision: number; tolerance: number; minSpacing: number; maxElements: number; standards: string };

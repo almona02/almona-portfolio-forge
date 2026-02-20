@@ -12,7 +12,7 @@ export interface Backup {
   status: 'pending' | 'in_progress' | 'completed' | 'failed';
   location: string; // storage location
   entities: string[]; // entity types backed up
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export interface BackupSchedule {

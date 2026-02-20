@@ -21,7 +21,7 @@ export class AssemblySequenceGenerator {
   /**
    * Generate assembly sequence from pattern and BOM
    */
-  async generateAssemblySequence(
+  generateAssemblySequence(
     windowUnit: WindowUnit,
     pattern: EgyptianPattern,
     bom: {
@@ -29,7 +29,7 @@ export class AssemblySequenceGenerator {
       hardware: FabricationData['hardware'];
       glazing: FabricationData['glazing'];
     }
-  ): Promise<FabricationData['productionSequence']> {
+  ): FabricationData['productionSequence'] {
     const sequence: FabricationData['productionSequence'] = [];
     let stepNumber = 1;
 

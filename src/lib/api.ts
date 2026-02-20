@@ -42,6 +42,18 @@ export interface Document {
   upload_date: string;
 }
 
+export interface Quote {
+  id: string;
+  quote_number: string;
+  status: string;
+  total_amount?: number | null;
+  digital_twin_code?: string | null;
+  portal_reference?: string | null;
+  created_at: string;
+  contact_name?: string | null;
+  contact_email?: string | null;
+}
+
 // =================================
 // Auth API
 // =================================
@@ -111,6 +123,32 @@ export const api = {
       }
       console.error('Error fetching machines:', error);
       throw new Error(err.message || 'Failed to fetch machines');
+    }
+  },
+
+  // Fetch user-specific quotes (for customer portal)
+  fetchUserQuotes: async (userId: string): Promise<Quote[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('quotes')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    } catch (error: unknown) {
+      const err = error as { message?: string; code?: string };
+      const msg = err.message?.toLowerCase() || '';
+      if (err.code === '42P01' || (msg.includes('relation') && msg.includes('quotes'))) {
+        console.warn('[api.fetchUserQuotes] quotes table missing; returning empty list');
+        return [];
+      }
+      if (msg.includes('permission denied') || msg.includes('rls')) {
+        console.warn('[api.fetchUserQuotes] RLS prevented access; returning empty list');
+        return [];
+      }
+      console.error('Error fetching quotes:', error);
+      throw new Error(err.message || 'Failed to fetch quotes');
     }
   },
 

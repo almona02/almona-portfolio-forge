@@ -36,15 +36,17 @@ const FrameMember3D = ({
 const WindowUnit3D = ({ rect, systemId }: { rect: Rectangle, systemId: string }) => {
     const profileSpec = useMemo(() => ProfileRegistry.getInstance().getSpecs(systemId) || {}, [systemId]);
 
-    // Dimensions
-    const width = rect.width;
-    const height = rect.height;
+    // Dimensions (guard against invalid/zero so single-rectangle preview isn't corrupted)
+    const width = typeof rect.width === 'number' && rect.width > 0 ? rect.width : 600;
+    const height = typeof rect.height === 'number' && rect.height > 0 ? rect.height : 1200;
     const frameWidth = (profileSpec as any).frameWidth || (profileSpec as any).profileDepth || 50; // default if missing (profileDepth is roughly frame width/depth depending on perspective, using depth as fallback)
     const frameDepth = (profileSpec as any).frameDepth || (profileSpec as any).profileDepth || 60;
 
-    // Center the unit
-    const x = rect.x + width / 2;
-    const y = -(rect.y + height / 2); // Flip Y to match screen coords logic (Top-Down vs 3D Up)
+    // Center the unit (use safe numeric coords)
+    const rx = typeof rect.x === 'number' ? rect.x : 0;
+    const ry = typeof rect.y === 'number' ? rect.y : 0;
+    const x = rx + width / 2;
+    const y = -(ry + height / 2); // Flip Y to match screen coords logic (Top-Down vs 3D Up)
 
     // Members
     // Top (Full width for simple box)
@@ -98,8 +100,13 @@ export const DraftingCanvas3D: React.FC<DraftingCanvas3DProps> = ({
     rectangles,
     systemId
 }) => {
-    // Determine bounds to center camera
-    // For now Stage handles centering
+    // Only render rectangles with valid dimensions so single-rectangle 3D preview isn't corrupted
+    const validRects = useMemo(() =>
+        rectangles.filter(
+            r => typeof r.width === 'number' && r.width > 0 && typeof r.height === 'number' && r.height > 0
+        ),
+        [rectangles]
+    );
 
     return (
         <div className="w-full h-full bg-slate-900">
@@ -108,8 +115,8 @@ export const DraftingCanvas3D: React.FC<DraftingCanvas3DProps> = ({
                 <Environment preset="city" />
 
                 <Stage adjustCamera={1.2} intensity={0.5} shadows="contact">
-                    {rectangles.map(rect => (
-                        <WindowUnit3D key={rect.id} rect={rect} systemId={systemId} />
+                    {validRects.map((rect, index) => (
+                        <WindowUnit3D key={rect.id ?? `rect-${index}`} rect={rect} systemId={systemId} />
                     ))}
                 </Stage>
 

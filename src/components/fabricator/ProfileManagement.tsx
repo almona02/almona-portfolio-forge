@@ -343,7 +343,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         setTimeout(() => reject(new Error('Query timeout: Request took too long')), 30000)
       );
 
-      const { data, error: fetchError } = await Promise.race([queryPromise, timeoutPromise]) as any;
+      const { data, error: fetchError } = await Promise.race([queryPromise, timeoutPromise]);
 
       if (fetchError) {
         // Check for auth errors
@@ -457,7 +457,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           supplier: p.supplier || '',
           systemBrand: p.system_brand,
           grainDirection: p.grain_direction,
-          thumbnailUrl: p.thumbnail_url || (specs as any).thumbnailUrl || undefined,
+          thumbnailUrl: p.thumbnail_url || (specs).thumbnailUrl || undefined,
           weightPerMeter:
             typeof specs.weightPerMeterKg === 'number'
               ? specs.weightPerMeterKg
@@ -686,7 +686,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       const { error } = await storage.upload(path, file, { upsert: true });
       if (error) throw error;
       const { data: pub } = storage.getPublicUrl(path);
-      const url = (pub.publicUrl || (pub as any).publicURL) as string;
+      const url = (pub.publicUrl || (pub).publicURL) as string;
 
       const nextSpecs = {
         ...(profile.specifications || {}),
@@ -1067,8 +1067,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       // Support both a raw array and an object wrapper like { profiles: [...] }
       const imported: Profile[] = Array.isArray(raw)
         ? raw
-        : Array.isArray((raw as any)?.profiles)
-          ? (raw as any).profiles
+        : Array.isArray((raw)?.profiles)
+          ? (raw).profiles
           : (() => {
             throw new Error('Invalid JSON format. Expected an array of profiles or { "profiles": [...] }.');
           })();

@@ -146,6 +146,7 @@ export class BulkOperationService {
     projects: WindowUnit[],
     options: BulkValidationOptions = {}
   ): Promise<BulkValidationResponse> {
+    await Promise.resolve();
     const startTime = performance.now();
     const results: BulkValidationResult[] = [];
     const errors: Array<{ itemId: string; error: string }> = [];
@@ -251,6 +252,7 @@ export class BulkOperationService {
         const result = await DeterministicReplayEngine.replayComputation(
           request,
           async () => {
+            await Promise.resolve();
             throw new Error('Computation function not provided for batch verification');
           }
         ).catch(() => ({

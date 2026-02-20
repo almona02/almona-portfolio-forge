@@ -71,18 +71,19 @@ export function renderFrameLevelMullions(
   }, height / 2);
 
   frameMullions.forEach(mullion => {
+    const positionMm = (mullion as { splitType?: string }).splitType === 'proportional'
+      ? (mullion.position / 100) * (mullion.type === 'vertical' ? width * 1000 : height * 1000)
+      : mullion.position;
     if (mullion.type === 'vertical') {
       // Vertical mullion: position from left edge
-      const positionMm = mullion.position;
       const positionM = positionMm / 1000;
-      
+
       // Convert absolute position to relative position
-      // Position is in mm from left, convert to meters and center
       const x = positionM - width / 2;
       
       // Mullion spans full height minus frame bars
       const mullionHeight = height - frameProfile.width * 2;
-      const mullionW = mullionProfile.width / 1000;
+      const mullionW = (mullion.widthMm != null ? mullion.widthMm : mullionProfile.width) / 1000;
       
       const bar = new BoxGeometry(mullionW, mullionHeight, mullionDepth);
       bar.translate(x, 0, 0);
@@ -90,7 +91,6 @@ export function renderFrameLevelMullions(
       
     } else if (mullion.type === 'horizontal') {
       // Horizontal mullion (transom): position from top edge
-      const positionMm = mullion.position;
       const positionM = positionMm / 1000;
       
       // Convert absolute position to relative position
@@ -99,7 +99,7 @@ export function renderFrameLevelMullions(
       
       // Mullion spans full width minus frame bars
       const mullionWidth = width - frameProfile.width * 2;
-      const mullionH = mullionProfile.width / 1000;
+      const mullionH = (mullion.widthMm != null ? mullion.widthMm : mullionProfile.width) / 1000;
       
       const bar = new BoxGeometry(mullionWidth, mullionH, mullionDepth);
       bar.translate(0, y, 0);

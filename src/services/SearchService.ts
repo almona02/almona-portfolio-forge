@@ -16,7 +16,10 @@
  */
 
 import { getAuditTrailService } from '@/core/authority/certification';
-import { ConstraintCategory } from '@/core/authority/validation_envelopes';
+import {
+  ConstraintCategory,
+  type ValidationEnvelopeResult,
+} from '@/core/authority/validation_envelopes';
 import { validateDesignWithEnvelope } from '@/lib/fabricator/ConstraintEngine';
 import type { WindowUnit } from '@/types/fabricator';
 
@@ -124,7 +127,7 @@ export interface SearchResultItem {
   subtitle?: string;
   score?: number;
   highlights?: Array<{ field: string; snippet: string }>;
-  meta?: Record<string, any>;
+  meta?: Record<string, unknown>;
   constraintCompliance?: {
     compliant: boolean;
     failedCategories: ConstraintCategory[];
@@ -354,15 +357,15 @@ export class SearchService {
   /**
    * Extract AICS-001 section references from validation result
    */
-  private extractAICS001Sections(envelopeResult?: any): string[] {
+  private extractAICS001Sections(envelopeResult?: ValidationEnvelopeResult): string[] {
     if (!envelopeResult) return [];
     
     const sections: string[] = [];
-    const constraintResults = envelopeResult.allConstraintResults || [];
+    const constraintResults = envelopeResult.allConstraintResults ?? [];
     
     for (const result of constraintResults) {
       // Extract section from constraint ID (e.g., "AICS-001-4.3.1-1" -> "4.3.1")
-      const match = result.constraintId?.match(/AICS-001-(4\.3\.\d+)/);
+      const match = result.constraintId.match(/AICS-001-(4\.3\.\d+)/);
       if (match) {
         sections.push(match[1]);
       }
@@ -402,8 +405,8 @@ export class SearchService {
     const sorted = [...projects];
     
     sorted.sort((a, b) => {
-      let aValue: any;
-      let bValue: any;
+      let aValue: number | string;
+      let bValue: number | string;
       
       switch (sort.field) {
         case 'updatedAt':
@@ -436,6 +439,7 @@ export class SearchService {
   private async projectToSearchResult(
     project: WindowUnit
   ): Promise<SearchResultItem> {
+    await Promise.resolve();
     // Validate to get constraint compliance info
     const validation = validateDesignWithEnvelope(
       project.overallWidth,

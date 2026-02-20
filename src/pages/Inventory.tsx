@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import type { Profile, WindowUnit } from '@/types/fabricator';
+import type { Profile } from '@/types/fabricator';
 import { useQuery } from '@tanstack/react-query';
 import {
     AlertTriangle,
@@ -518,7 +518,7 @@ const InventoryPage: React.FC = () => {
         {activeTab === 'dashboard' && (
           <InventoryDashboard
             inventory={filteredInventory}
-            project={workspaceState.currentProject as WindowUnit | null}
+            project={workspaceState.currentProject}
             userId={user.id}
             viewMode={viewMode}
           />

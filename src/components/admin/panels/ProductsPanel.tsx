@@ -220,7 +220,7 @@ export const ProductsPanel: React.FC = () => {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
-        const item = row.original as Product
+        const item = row.original
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

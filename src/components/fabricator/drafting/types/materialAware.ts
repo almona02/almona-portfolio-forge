@@ -5,6 +5,7 @@
  * Extends basic drafting types with material and system pack awareness
  */
 
+import type { WindowGrid } from '@/types/fabricator';
 import type { Point, Rectangle } from './drafting';
 
 export type MaterialType = 'aluminum' | 'upvc' | 'wood';
@@ -29,6 +30,8 @@ export interface MaterialAwareRectangle extends Rectangle {
     maxHeight: number;
     maxArea?: number; // m²
   };
+  /** Per-frame grid (sash layout, mullions); when present, overrides template-derived grid */
+  grid?: WindowGrid;
 }
 
 export interface HardwarePlacement {

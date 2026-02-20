@@ -55,7 +55,7 @@ const ProfilesPage: React.FC = () => {
         setTimeout(() => reject(new Error('Query timeout: Request took too long')), 30000)
       );
       
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
       
       if (error) {
         // Check for auth errors

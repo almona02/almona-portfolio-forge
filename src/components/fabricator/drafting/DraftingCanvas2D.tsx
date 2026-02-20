@@ -1,23 +1,23 @@
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { ConstitutionalProfiler } from '@/lib/performance/ConstitutionalProfiler';
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from '@/shared/ui/ui/context-menu';
+import { DraftingContextMenu } from './components/DraftingContextMenu';
+import { AddMullionDialog } from './components/AddMullionDialog';
+import { AssignGlazingDialog } from './components/AssignGlazingDialog';
+import { AssignSystemPackDialog } from './components/AssignSystemPackDialog';
+import { SizeDialog } from './components/SizeDialog';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDraftingContext } from './DraftingContext';
 import { OptimizedCanvasManager } from './OptimizedCanvasManager';
 import { type OperationInfo, type StatusMessage } from './components/EnhancedStatusBar';
 import { ToolPreviewOverlay } from './components/ToolPreviewOverlay';
 import { ZoomControls } from './components/ZoomControls';
+import type { ContextMenuTarget } from './hooks/useCanvasEvents';
 import { useCanvasEvents } from './hooks/useCanvasEvents';
 import { EventBatcher } from './performance/EventBatcher';
 import { PredictivePreloader } from './performance/PredictivePreloader';
 import type { DraftingTool, Line, Point, Viewport } from './types/drafting';
 import type { MaterialType } from './types/materialAware';
+import { getAddSashWarning as getAddSashWarningMsg, getDefineAsFrameWarning as getDefineAsFrameWarningMsg } from './utils/defineAsFrameValidation';
 import { validatePoint } from './utils/inputValidator';
 import type { PatternType } from './utils/patternUtils';
 import { logToolOperation } from './utils/toolAuditTrail';
@@ -57,6 +57,10 @@ interface DraftingCanvas2DProps {
   snapSpacing?: number;
   gridVisible?: boolean;
   snapEnabled?: boolean;
+  /** Save current design and advance to next pose (quick entry). */
+  onMoveToNext?: () => void;
+  /** Open pose quick-edit modal (profile color, quantity). */
+  onOpenPoseQuickEdit?: () => void;
 }
 
 
@@ -77,7 +81,9 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
   gridVisible: _gridVisibleProp = true,
   snapEnabled: _snapEnabledProp = true,
   onGridToggle: _onGridToggle,
-  onSnapToggle: _onSnapToggle
+  onSnapToggle: _onSnapToggle,
+  onMoveToNext,
+  onOpenPoseQuickEdit,
 }) => {
   // TIER 0 OPTIMIZATION: Multi-Canvas Manager
   const containerRef = useRef<HTMLDivElement>(null);
@@ -202,6 +208,40 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState<Point | null>(null);
 
+  /** Context-sensitive right-click: target element (or null for empty space). */
+  const [contextMenuState, setContextMenuState] = useState<{
+    open: boolean;
+    clientX: number;
+    clientY: number;
+    target: ContextMenuTarget | null;
+  }>({ open: false, clientX: 0, clientY: 0, target: null });
+
+  /** Size dialog: open state and target rect index + current dimensions. */
+  const [sizeDialogState, setSizeDialogState] = useState<{
+    open: boolean;
+    rectIndex: number | null;
+    widthMm: number;
+    heightMm: number;
+  }>({ open: false, rectIndex: null, widthMm: 600, heightMm: 1200 });
+
+  /** Assign System Pack dialog: open state and target rect index. */
+  const [assignPackDialogOpen, setAssignPackDialogOpen] = useState(false);
+  const [assignPackRectIndex, setAssignPackRectIndex] = useState<number | null>(null);
+
+  /** Add Mullion dialog: open state and target frame id + dimensions. */
+  const [addMullionOpen, setAddMullionOpen] = useState(false);
+  const [addMullionFrameId, setAddMullionFrameId] = useState<string | null>(null);
+  const [addMullionFrameWidthMm, setAddMullionFrameWidthMm] = useState(600);
+  const [addMullionFrameHeightMm, setAddMullionFrameHeightMm] = useState(1200);
+
+  /** Assign Glazing dialog (sash cell). */
+  const [glazingDialogOpen, setGlazingDialogOpen] = useState(false);
+  const [glazingFrameId, setGlazingFrameId] = useState<string | null>(null);
+  const [glazingCellId, setGlazingCellId] = useState<string | null>(null);
+  const [glazingInitialType, setGlazingInitialType] = useState<'single' | 'double'>('double');
+  const [glazingInitialGeorgianBars, setGlazingInitialGeorgianBars] = useState(false);
+  const [glazingInitialColor, setGlazingInitialColor] = useState('');
+
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 1000, height: 1000 });
 
   // Track previous externalViewport to prevent infinite loops
@@ -316,7 +356,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
     return () => window.removeEventListener('resize', updateCanvasSize);
   }, [externalViewport, onViewportChange]);
 
-  // Convert mouse to SVG coordinates
+  // Convert mouse to world coordinates (use actual container size so cursor location is accurate)
   const getSVGPoint = useCallback((clientX: number, clientY: number): Point => {
     try {
       if (!containerRef.current) {
@@ -331,13 +371,20 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
         return { x: 0, y: 0 };
       }
 
-      const worldPoint = screenToWorld(screenX, screenY, viewport, canvasSize.width, canvasSize.height);
+      // Use actual container pixel size so conversion matches the rendered viewport
+      const w = rect.width;
+      const h = rect.height;
+      if (!(w > 0 && h > 0)) {
+        return validatePoint({ x: viewport.centerX, y: viewport.centerY });
+      }
+      const effectiveViewport = { ...viewport, width: w, height: h };
+      const worldPoint = screenToWorld(screenX, screenY, effectiveViewport, w, h);
       return validatePoint(worldPoint);
     } catch (error) {
       console.error('Error converting mouse to SVG coordinates:', error);
       return { x: 0, y: 0 };
     }
-  }, [viewport, canvasSize]);
+  }, [viewport]);
 
 
 
@@ -380,7 +427,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
         id: `hardware-${Date.now()}-${Math.random()}`,
         type: tool as 'hinge' | 'handle' | 'lock' | 'roller',
         position,
-        orientation: (tool === 'hinge' ? 'vertical' : 'horizontal') as 'horizontal' | 'vertical',
+        orientation: (tool === 'hinge' ? 'vertical' : 'horizontal'),
         specifications: {
           model: getDefaultHardwareModel(tool),
           egyptianStandard: true,
@@ -442,7 +489,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
       position,
       dimensions,
       structuralType: (needsReinforcement ? 'structural' : 'standard') as 'structural' | 'standard' | 'corner' | 'thermal_break',
-      reinforcement: needsReinforcement ? { type: (material === 'aluminum' ? 'aluminum' : 'steel') as 'aluminum' | 'steel', dimensions: { width: 20, height: 20 } } : undefined
+      reinforcement: needsReinforcement ? { type: (material === 'aluminum' ? 'aluminum' : 'steel'), dimensions: { width: 20, height: 20 } } : undefined
     };
 
     drafting.addStructuralElement(element);
@@ -465,7 +512,8 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
     handleMouseMove: handleMouseMoveEvent,
     handleMouseUp,
     handleWheel: originalHandleWheel,
-    mousePosition // NEW: Destructure mousePosition
+    mousePosition,
+    findElementAtPoint,
   } = useCanvasEvents({
     viewport: externalViewport || DEFAULT_VIEWPORT,
     setViewport: (v) => onViewportChange?.(typeof v === 'function' ? v(externalViewport || DEFAULT_VIEWPORT) : v),
@@ -528,7 +576,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
 
     // Delegate to standard handler (which expects native WheelEvent, but React wraps it)
     if (originalHandleWheel) {
-      originalHandleWheel(e.nativeEvent as WheelEvent);
+      originalHandleWheel(e.nativeEvent);
     }
   }, [originalHandleWheel, externalViewport?.zoom]);
 
@@ -549,14 +597,14 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
   // Get geometry for zoom handlers
   const geometry = useMemo(() => drafting.getGeometry(), [drafting]);
 
-  // CRITICAL FIX: Sync geometry from drafting engine to canvas manager.
-  // Without this, the OptimizedCanvasManager's this.geometry stays null
-  // and renderGeometry() draws nothing.
+  // CRITICAL FIX: Sync geometry and material window data (mullions, sash grids) to canvas manager.
+  const materialAwareWindows = useMemo(() => drafting.getMaterialAwareWindows?.() ?? [], [drafting]);
+  const materialWindowGrids = useMemo(() => drafting.getMaterialWindowGrids?.() ?? {}, [drafting]);
   useEffect(() => {
-    if (managerRef.current) {
-      managerRef.current.setGeometry(geometry);
-    }
-  }, [geometry]);
+    if (!managerRef.current) return;
+    managerRef.current.setGeometry(geometry);
+    managerRef.current.setMaterialWindowData(materialAwareWindows, materialWindowGrids);
+  }, [geometry, materialAwareWindows, materialWindowGrids]);
 
   // Memoize element count calculation
   // Memoize element count calculation (removed unused)
@@ -589,6 +637,214 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
   const handleResetViewport = useCallback(() => {
     setViewport(resetViewport(canvasSize.width, canvasSize.height));
   }, [canvasSize, setViewport]);
+
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      try {
+        const point = getSVGPoint(e.clientX, e.clientY);
+        const geom = drafting.getGeometry();
+        const hitTarget = findElementAtPoint(point, geom);
+        setContextMenuState({
+          open: true,
+          clientX: e.clientX,
+          clientY: e.clientY,
+          target: hitTarget,
+        });
+      } catch {
+        setContextMenuState({
+          open: true,
+          clientX: e.clientX,
+          clientY: e.clientY,
+          target: null,
+        });
+      }
+    },
+    [getSVGPoint, drafting, findElementAtPoint]
+  );
+
+  const draftingApi = useMemo(
+    () => ({
+      getGeometry: drafting.getGeometry,
+      getMaterialAwareWindows: drafting.getMaterialAwareWindows,
+      deleteSelected: drafting.deleteSelected,
+      clearSelection: drafting.clearSelection,
+      selectElement: drafting.selectElement,
+    }),
+    [
+      drafting.getGeometry,
+      drafting.getMaterialAwareWindows,
+      drafting.deleteSelected,
+      drafting.clearSelection,
+      drafting.selectElement,
+    ]
+  );
+
+  const handleDefineAsFrame = useMemo(() => {
+    if (!selectedSystemPackId || !drafting.convertRectangleToMaterialAware) return undefined;
+    return (t: ContextMenuTarget) => {
+      if (t.type === 'rectangle' && t.rectIndex !== undefined) {
+        drafting.convertRectangleToMaterialAware(t.rectIndex, selectedSystemPackId);
+      }
+    };
+  }, [selectedSystemPackId, drafting]);
+
+  const handleContextMenuOpenChange = useCallback((open: boolean) => {
+    setContextMenuState((prev) => ({ ...prev, open }));
+  }, []);
+
+  const getRectIndexForTarget = useCallback(
+    (target: ContextMenuTarget | null): number | null => {
+      if (!target || target.type !== 'rectangle') return null;
+      if (target.rectIndex !== undefined) return target.rectIndex;
+      if (target.materialWindowIndex !== undefined && drafting.getMaterialAwareWindows) {
+        const mwList = drafting.getMaterialAwareWindows();
+        const mw = mwList[target.materialWindowIndex] as { id?: string } | undefined;
+        if (!mw?.id) return null;
+        const geom = drafting.getGeometry();
+        const rects = (geom.rectangles ?? []) as { id?: string }[];
+        const idx = rects.findIndex((r) => r.id === mw.id);
+        return idx >= 0 ? idx : null;
+      }
+      return null;
+    },
+    [drafting]
+  );
+
+  const getDefineAsFrameWarning = useCallback(
+    (t: ContextMenuTarget | null): string | null => {
+      if (!t || !selectedSystemPackId) return null;
+      const rectIndex = getRectIndexForTarget(t);
+      if (rectIndex === null) return null;
+      const geom = drafting.getGeometry();
+      const rects = geom.rectangles ?? [];
+      const rect = rects[rectIndex] as { width?: number; height?: number } | undefined;
+      const w = rect?.width ?? 0;
+      const h = rect?.height ?? 0;
+      return getDefineAsFrameWarningMsg(w, h, selectedSystemPackId);
+    },
+    [selectedSystemPackId, getRectIndexForTarget, drafting]
+  );
+
+  const getAddSashWarning = useCallback(
+    (t: ContextMenuTarget | null): string | null => {
+      if (!t?.id || !drafting.getMaterialAwareWindows) return null;
+      const mwList = drafting.getMaterialAwareWindows();
+      const frame = mwList.find((w: { id?: string }) => w.id === t.id) as { width?: number; height?: number } | undefined;
+      if (!frame) return null;
+      return getAddSashWarningMsg(frame.width ?? 0, frame.height ?? 0);
+    },
+    [drafting]
+  );
+
+  const handleDuplicate = useCallback(
+    (target: ContextMenuTarget) => {
+      if (!target) return;
+      if (target.isMaterialAware && target.id) {
+        drafting.duplicateMaterialAwareFrame?.(target.id);
+      } else if (target.rectIndex !== undefined) {
+        drafting.duplicateRectangle?.(target.rectIndex);
+      } else if (target.materialWindowIndex !== undefined && drafting.getMaterialAwareWindows) {
+        const mwList = drafting.getMaterialAwareWindows();
+        const mw = mwList[target.materialWindowIndex] as { id?: string } | undefined;
+        if (mw?.id) drafting.duplicateMaterialAwareFrame?.(mw.id);
+      }
+    },
+    [drafting]
+  );
+
+  const handleSizeClick = useCallback(
+    (target: ContextMenuTarget) => {
+      const rectIndex = getRectIndexForTarget(target);
+      if (rectIndex === null) return;
+      const geom = drafting.getGeometry();
+      const rects = geom.rectangles ?? [];
+      const rect = rects[rectIndex] as { width?: number; height?: number } | undefined;
+      const w = rect?.width ?? 600;
+      const h = rect?.height ?? 1200;
+      setSizeDialogState({ open: true, rectIndex, widthMm: w, heightMm: h });
+    },
+    [getRectIndexForTarget, drafting]
+  );
+
+  const handleSizeApply = useCallback(
+    (widthMm: number, heightMm: number) => {
+      const { rectIndex } = sizeDialogState;
+      if (rectIndex === null || !drafting.resizeFrame) return;
+      drafting.resizeFrame(rectIndex, widthMm, heightMm);
+      setSizeDialogState((prev) => ({ ...prev, open: false, rectIndex: null }));
+    },
+    [sizeDialogState, drafting]
+  );
+
+  const handleAssignSystemPackClick = useCallback(
+    (target: ContextMenuTarget) => {
+      const rectIndex = getRectIndexForTarget(target);
+      if (rectIndex === null) return;
+      setAssignPackRectIndex(rectIndex);
+      setAssignPackDialogOpen(true);
+    },
+    [getRectIndexForTarget]
+  );
+
+  const handleAssignSystemPackSelect = useCallback(
+    (systemPackId: string) => {
+      if (assignPackRectIndex === null || !drafting.convertRectangleToMaterialAware) return;
+      drafting.convertRectangleToMaterialAware(assignPackRectIndex, systemPackId);
+      setAssignPackRectIndex(null);
+      setAssignPackDialogOpen(false);
+    },
+    [assignPackRectIndex, drafting]
+  );
+
+  const handleAddMullionClick = useCallback(
+    (target: ContextMenuTarget) => {
+      if (!target?.id || !drafting.getMaterialAwareWindows) return;
+      const mwList = drafting.getMaterialAwareWindows();
+      const frame = mwList.find((w: { id?: string }) => w.id === target.id) as { width: number; height: number } | undefined;
+      if (!frame) return;
+      setAddMullionFrameId(target.id);
+      setAddMullionFrameWidthMm(frame.width ?? 600);
+      setAddMullionFrameHeightMm(frame.height ?? 1200);
+      setAddMullionOpen(true);
+    },
+    [drafting]
+  );
+
+  const handleAddMullionApply = useCallback(
+    (params: { type: 'vertical' | 'horizontal'; positionMm: number; positionPercent?: number; widthMm?: number; splitType?: 'absolute' | 'proportional' | 'clearance-based' }) => {
+      if (addMullionFrameId && drafting.addMullionToFrame) {
+        drafting.addMullionToFrame(addMullionFrameId, params);
+      }
+      setAddMullionFrameId(null);
+      setAddMullionOpen(false);
+    },
+    [addMullionFrameId, drafting]
+  );
+
+  const handleAssignGlazingClick = useCallback((target: ContextMenuTarget) => {
+    if (target?.targetType !== 'sash' || !target.cellId) return;
+    setGlazingFrameId(target.id);
+    setGlazingCellId(target.cellId);
+    const glazingByFrame = drafting.getMaterialWindowGlazing?.() ?? {};
+    const cellGlazing = target.id ? glazingByFrame[target.id]?.[target.cellId] : undefined;
+    setGlazingInitialType(cellGlazing?.type ?? 'double');
+    setGlazingInitialColor(cellGlazing?.color ?? '');
+    setGlazingInitialGeorgianBars(cellGlazing?.georgianBars ?? false);
+    setGlazingDialogOpen(true);
+  }, [drafting]);
+
+  const handleAssignGlazingApply = useCallback(
+    (params: { type: 'single' | 'double'; color?: string; georgianBars?: boolean }) => {
+      if (glazingFrameId && glazingCellId && drafting.assignGlazingToSash) {
+        drafting.assignGlazingToSash(glazingFrameId, glazingCellId, params);
+      }
+      setGlazingFrameId(null);
+      setGlazingCellId(null);
+      setGlazingDialogOpen(false);
+    },
+    [glazingFrameId, glazingCellId, drafting]
+  );
 
   // Filters omitted as rendering is handled by the Multi-Canvas Manager
 
@@ -627,6 +883,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
         onMouseDown={handleMouseDown}
         onMouseMove={(e) => mouseBatcher && mouseBatcher.schedule(e)}
         onMouseUp={handleMouseUp}
+        onContextMenu={handleContextMenu}
         onMouseLeave={() => {
           setIsDrawing(false);
           setIsPanning(false);
@@ -661,16 +918,61 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
           currentPoint={currentPoint || mousePosition}
         />
 
-        {/* Context Menu Trigger Area */}
-        <ContextMenu>
-          <ContextMenuTrigger className="absolute inset-0 w-full h-full" />
-          <ContextMenuContent>
-            <ContextMenuItem>Properties</ContextMenuItem>
-            <ContextMenuItem>Reset View</ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem>Egyptian Standards...</ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
+        {/* Context-sensitive right-click menu (gold-tier: memoized, guarded, a11y) */}
+        <DraftingContextMenu
+          open={contextMenuState.open}
+          clientX={contextMenuState.clientX}
+          clientY={contextMenuState.clientY}
+          target={contextMenuState.target}
+          onOpenChange={handleContextMenuOpenChange}
+          drafting={draftingApi}
+          selectedSystemPackId={selectedSystemPackId}
+          onResetView={handleResetViewport}
+          onZoomToFit={handleZoomToFit}
+          onMoveToNext={onMoveToNext}
+          onOpenPoseQuickEdit={onOpenPoseQuickEdit}
+          onSize={handleSizeClick}
+          onDefineAsFrame={handleDefineAsFrame}
+          getDefineAsFrameWarning={getDefineAsFrameWarning}
+          onAssignSystemPack={handleAssignSystemPackClick}
+          onAddSash={drafting.addSashToFrame ? (t) => { if (t?.id) drafting.addSashToFrame?.(t.id); } : undefined}
+          onQuickAddTwoSashes={drafting.quickAddTwoSashes ? (t) => { if (t?.id) drafting.quickAddTwoSashes?.(t.id); } : undefined}
+          getAddSashWarning={getAddSashWarning}
+          onAddMullion={drafting.addMullionToFrame ? handleAddMullionClick : undefined}
+          onAssignGlazing={handleAssignGlazingClick}
+          onGlassColor={handleAssignGlazingClick}
+          onGlassType={handleAssignGlazingClick}
+          onDuplicate={handleDuplicate}
+          onProperties={() => {}}
+          onEgyptianStandards={() => {}}
+        />
+        <SizeDialog
+          open={sizeDialogState.open}
+          onOpenChange={(open) => setSizeDialogState((prev) => ({ ...prev, open, rectIndex: open ? prev.rectIndex : null }))}
+          widthMm={sizeDialogState.widthMm}
+          heightMm={sizeDialogState.heightMm}
+          onApply={handleSizeApply}
+        />
+        <AssignSystemPackDialog
+          open={assignPackDialogOpen}
+          onOpenChange={(open) => { setAssignPackDialogOpen(open); if (!open) setAssignPackRectIndex(null); }}
+          onSelect={handleAssignSystemPackSelect}
+        />
+        <AddMullionDialog
+          open={addMullionOpen}
+          onOpenChange={(open) => { setAddMullionOpen(open); if (!open) setAddMullionFrameId(null); }}
+          frameWidthMm={addMullionFrameWidthMm}
+          frameHeightMm={addMullionFrameHeightMm}
+          onApply={handleAddMullionApply}
+        />
+        <AssignGlazingDialog
+          open={glazingDialogOpen}
+          onOpenChange={(open) => { setGlazingDialogOpen(open); if (!open) { setGlazingFrameId(null); setGlazingCellId(null); } }}
+          initialType={glazingInitialType}
+          initialColor={glazingInitialColor}
+          initialGeorgianBars={glazingInitialGeorgianBars}
+          onApply={handleAssignGlazingApply}
+        />
       </div>
     </ConstitutionalProfiler >
   );

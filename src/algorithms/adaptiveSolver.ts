@@ -188,6 +188,7 @@ export class AdaptiveSolver {
     algorithm: 'greedy' | 'linear' | 'genetic',
     _complexity: JobComplexity
   ): Promise<CuttingPlan[]> {
+    await Promise.resolve();
     const allPlans: CuttingPlan[] = [];
 
     // Group components by profile for optimization
@@ -210,9 +211,8 @@ export class AdaptiveSolver {
       const cuts: Cut[] = [];
       
       // Get system pack ID from job or from profile
-      const systemPackId = job.systemPackId || 
-                          (profile.specifications as any)?.systemPackId || 
-                          '';
+      const specs = profile.specifications as { systemPackId?: string } | undefined;
+      const systemPackId = job.systemPackId || specs?.systemPackId || '';
 
       // Get active calibration for this profile and system pack
       const calibration = systemPackId 
@@ -363,6 +363,7 @@ export class AdaptiveSolver {
     profiles: Profile[],
     durationMs: number
   ): Promise<OptimizationResult> {
+    await Promise.resolve();
     const allPlans: CuttingPlan[] = [];
 
     for (const component of job.components) {
@@ -399,8 +400,9 @@ export class AdaptiveSolver {
   private getStockLength(profile: Profile, defaultStockLength?: number): number {
     const MAX_STOCK_LENGTH_MM = 8000;
     
-    if (typeof (profile.specifications as any)?.stockLengthMm === 'number') {
-      return Math.min((profile.specifications as any).stockLengthMm, MAX_STOCK_LENGTH_MM);
+    const specs = profile.specifications as { stockLengthMm?: number } | undefined;
+    if (typeof specs?.stockLengthMm === 'number') {
+      return Math.min(specs.stockLengthMm, MAX_STOCK_LENGTH_MM);
     }
     
     return defaultStockLength || 6000;
