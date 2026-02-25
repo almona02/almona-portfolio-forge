@@ -57,7 +57,7 @@ export const BOMReviewPanel: React.FC = () => {
 
   useEffect(() => {
     if (!bom && currentProject && systemPack && pattern) {
-      generateBOM();
+      void generateBOM();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -106,7 +106,7 @@ export const BOMReviewPanel: React.FC = () => {
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
           <h2 className="text-xl font-bold text-red-200">BOM Generation Failed</h2>
           <p className="text-slate-400 text-sm">{error}</p>
-          <Button onClick={generateBOM} className="bg-amber-500 hover:bg-amber-600">
+          <Button onClick={() => void generateBOM()} className="bg-amber-500 hover:bg-amber-600">
             Retry
           </Button>
         </div>
@@ -205,7 +205,7 @@ export const BOMReviewPanel: React.FC = () => {
 
       {/* Continue Button */}
       <div className="fixed bottom-8 right-8 z-50 flex gap-3">
-        <Button variant="outline" onClick={generateBOM} className="border-amber-600/30 text-amber-300">
+        <Button variant="outline" onClick={() => void generateBOM()} className="border-amber-600/30 text-amber-300">
           Regenerate BOM
         </Button>
         <button

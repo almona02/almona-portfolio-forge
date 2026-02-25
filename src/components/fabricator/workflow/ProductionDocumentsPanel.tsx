@@ -41,6 +41,16 @@ export const ProductionDocumentsPanel: React.FC = () => {
     return LabelGenerator.generate(cutSheets, projectCode);
   }, [cutSheets, productionDocuments?.labels, currentProject]);
 
+  const barGroups = useMemo(() => {
+    const groups = new Map<string, CutSheetItem[]>();
+    for (const cs of cutSheets) {
+      const existing = groups.get(cs.stockBarId) || [];
+      existing.push(cs);
+      groups.set(cs.stockBarId, existing);
+    }
+    return groups;
+  }, [cutSheets]);
+
   useEffect(() => {
     if (cutSheets.length > 0 && !productionDocuments) {
       setProductionDocuments({
@@ -60,16 +70,6 @@ export const ProductionDocumentsPanel: React.FC = () => {
       </Card>
     );
   }
-
-  const barGroups = useMemo(() => {
-    const groups = new Map<string, CutSheetItem[]>();
-    for (const cs of cutSheets) {
-      const existing = groups.get(cs.stockBarId) || [];
-      existing.push(cs);
-      groups.set(cs.stockBarId, existing);
-    }
-    return groups;
-  }, [cutSheets]);
 
   return (
     <div className="space-y-4">
