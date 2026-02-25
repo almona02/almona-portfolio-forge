@@ -223,18 +223,6 @@ const MachinesRedirect: React.FC = () => {
   return <Navigate to={to} replace />;
 };
 
-/** Redirect /usedmachines/:id to /used-machines/:id (canonical) */
-const UsedMachineDetailRedirect: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  return <Navigate to={id ? `/used-machines/${id}` : '/used-machines'} replace />;
-};
-
-/** Redirect to target path, preserving query string (e.g. /reports?project=123) */
-const RedirectWithQuery: React.FC<{ to: string }> = ({ to }) => {
-  const location = useLocation();
-  return <Navigate to={to + (location.search || '')} replace />;
-};
-
 const queryClient = new QueryClient();
 const isProd = import.meta.env.PROD;
 // Only enable Vercel Analytics/Speed Insights when actually deployed on Vercel
@@ -482,42 +470,13 @@ const App = memo(() => {
                                     <Route path="reports/*" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
                                   </Route>
 
-                                  {/* Legacy /fabricator/workflow/* → studio (canonical) */}
-                                  <Route path="/fabricator/workflow" element={<FabricatorWorkflowToStudioRedirect />} />
+                                  {/* Legacy fabricator routes — single catch-all redirect to studio.
+                                     Previously 30+ individual redirects; consolidated since the catch-all
+                                     handles all cases and none of the old paths were public/indexed. */}
                                   <Route path="/fabricator/workflow/*" element={<FabricatorWorkflowToStudioRedirect />} />
-
-                                  {/* Legacy /fabricator/* (non-studio) → studio equivalents (301-style redirects) */}
-                                  <Route path="/fabricator/projects" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
-                                  <Route path="/fabricator/customers" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/inventory" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/profiles" element={<Navigate to={fabricatorRoutes.studioData('profiles')} replace />} />
-                                  <Route path="/fabricator/commercial" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
-                                  <Route path="/fabricator/system-packs" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/pricing" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
-                                  <Route path="/fabricator/settings/branding" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
-                                  <Route path="/fabricator/profile-studio" element={<Navigate to={fabricatorRoutes.studioData('profiles')} replace />} />
-                                  <Route path="/fabricator/system-pack-studio" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/turkish-gallery" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/tuning-studio" element={<Navigate to={fabricatorRoutes.studioData('tuning')} replace />} />
-                                  <Route path="/fabricator/tuning-studio-no-dxf" element={<Navigate to={fabricatorRoutes.studioData('tuning-no-dxf')} replace />} />
-                                  <Route path="/fabricator/smart-wizard" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
-                                  <Route path="/fabricator/pattern-library" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/machine-testing" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/validation" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
-                                  <Route path="/fabricator/bent-profile-designer" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/onboarding" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
-                                  <Route path="/fabricator/activity-timeline" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
-                                  <Route path="/fabricator/payment-test" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
-                                  <Route path="/fabricator/reports-dashboard" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
-
-                                  {/* Legacy Engineering Bay & Positions — critical for old bookmarks */}
                                   <Route path="/fabricator/engineering-bay/:id" element={<LegacyEngineeringBayRedirect />} />
                                   <Route path="/fabricator/engineering-bay" element={<LegacyEngineeringBayRedirect />} />
                                   <Route path="/fabricator/positions/:id" element={<LegacyEngineeringBayRedirect />} />
-                                  <Route path="/fabricator/positions" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
-
-                                  {/* Catch-all: any remaining /fabricator/* goes to command center */}
                                   <Route path="/fabricator/*" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
 
                                   {/* Production Dashboard - Kiosk Mode & Supervisor View */}
@@ -601,9 +560,7 @@ const App = memo(() => {
                                   <Route path="/used-machines" element={<Suspense fallback={getLoadingComponent('/used-machines')}><UsedMachines /></Suspense>} />
                                   <Route path="/used-machines/:id" element={<Suspense fallback={getLoadingComponent('/used-machines')}><UsedMachineDetailPage /></Suspense>} />
                                   <Route path="/used-machines/sell" element={<Suspense fallback={getLoadingComponent('/used-machines')}><ProtectedRoute><SellUsedMachine /></ProtectedRoute></Suspense>} />
-                                  <Route path="/usedmachines" element={<Navigate to="/used-machines" replace />} />
-                                  <Route path="/usedmachines/:id" element={<UsedMachineDetailRedirect />} />
-                                  <Route path="/usedmachines/sell" element={<Navigate to="/used-machines/sell" replace />} />
+                                  <Route path="/usedmachines/*" element={<Navigate to="/used-machines" replace />} />
                                   <Route path="/spare-parts" element={<Suspense fallback={getLoadingComponent('/spare-parts')}><SpareParts /></Suspense>} />
                                   <Route
                                     path="/inventory"
@@ -643,41 +600,36 @@ const App = memo(() => {
                                   <Route path="/support" element={<Suspense fallback={getLoadingComponent('/support')}><ProtectedRoute><CustomerSupport /></ProtectedRoute></Suspense>} />
                                   <Route path="/support/tickets/new" element={<Suspense fallback={getLoadingComponent('/support')}><ProtectedRoute><CreateTicketPage /></ProtectedRoute></Suspense>} />
                                   <Route path="/support/new" element={<Navigate to="/support/tickets/new" replace />} />
-                                  <Route path="/portal/create-ticket" element={<Navigate to="/support/tickets/new" replace />} />
                                   <Route path="/portal/register-machine" element={<Suspense fallback={getLoadingComponent('/portal')}><ProtectedRoute><RegisterMachinePage /></ProtectedRoute></Suspense>} />
 
                                   {/* Admin */}
                                   <Route path="/admin" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
-                                  <Route path="/admin/dashboard" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
-                                  <Route path="/admin/demo" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
+                                  <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
+                                  <Route path="/admin/demo" element={<Navigate to="/admin" replace />} />
 
-                                  {/* Executive Trust Dashboard - Phase 4: Precision Upgrade Plan */}
+                                  {/* Executive Trust Dashboard */}
                                   <Route path="/executive/trust" element={<Suspense fallback={getLoadingComponent('/executive')}><ProtectedRoute><ExecutiveTrustDashboard /></ProtectedRoute></Suspense>} />
-                                  <Route path="/trust-dashboard" element={<Suspense fallback={getLoadingComponent('/trust')}><ProtectedRoute><ExecutiveTrustDashboard /></ProtectedRoute></Suspense>} />
+                                  <Route path="/trust-dashboard" element={<Navigate to="/executive/trust" replace />} />
 
-                                  {/* Demo routes – batch cut list must be registered for /demo/batch-cut-list to work */}
+                                  {/* Demo routes */}
                                   <Route path="/demo/regional-features" element={<Suspense fallback={getLoadingComponent('/demo')}><RegionalFeaturesDemo /></Suspense>} />
                                   <Route path="/demo/ai-recommendations" element={<Suspense fallback={getLoadingComponent('/demo')}><AIRecommendationDemo /></Suspense>} />
                                   <Route path="/demo/batch-cut-list" element={<Suspense fallback={getLoadingComponent('/demo')}><BatchCutListDemo /></Suspense>} />
-                                  <Route path="/batch-cut-list-demo" element={<Suspense fallback={getLoadingComponent('/demo')}><BatchCutListDemo /></Suspense>} />
+                                  <Route path="/batch-cut-list-demo" element={<Navigate to="/demo/batch-cut-list" replace />} />
 
-                                  {/* Nav links without dedicated pages - redirect to canonical studio/shop (preserves query) */}
-                                  <Route path="/reports" element={<RedirectWithQuery to={fabricatorRoutes.studioReports()} />} />
-                                  <Route path="/machine-status" element={<RedirectWithQuery to={fabricatorRoutes.studioCommand()} />} />
-                                  <Route path="/quality-reports" element={<RedirectWithQuery to={fabricatorRoutes.studioReports()} />} />
-                                  <Route path="/pricing-settings" element={<RedirectWithQuery to="/settings" />} />
-                                  <Route path="/offers" element={<RedirectWithQuery to="/shop" />} />
-                                  <Route path="/cost-reports" element={<RedirectWithQuery to={fabricatorRoutes.studioReports()} />} />
-                                  <Route path="/accounting" element={<RedirectWithQuery to={fabricatorRoutes.studioReports()} />} />
+                                  {/* Legacy top-level redirects to canonical routes */}
+                                  <Route path="/reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/machine-status" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
+                                  <Route path="/offers" element={<Navigate to="/shop" replace />} />
 
                                   {/* YDT Agent */}
                                   <Route path="/prestige-agent" element={<Suspense fallback={getLoadingComponent('/prestige-agent')}><AlmonaPrestigeChatbot /></Suspense>} />
                                   <Route path="/ydt" element={<Suspense fallback={getLoadingComponent('/ydt')}><AlmonaPrestigeChatbot /></Suspense>} />
 
-                                  {/* National Service Dashboard - Egypt Vision 2030 (Public for Demo) */}
+                                  {/* National Service Dashboard - Egypt Vision 2030 */}
                                   <Route path="/national-dashboard" element={<Suspense fallback={getLoadingComponent('/national-dashboard')}><NationalDashboard /></Suspense>} />
-                                  <Route path="/government/dashboard" element={<Suspense fallback={getLoadingComponent('/government')}><NationalDashboard /></Suspense>} />
-                                  <Route path="/egypt-vision-2030" element={<Suspense fallback={getLoadingComponent('/egypt-vision-2030')}><NationalDashboard /></Suspense>} />
+                                  <Route path="/government/dashboard" element={<Navigate to="/national-dashboard" replace />} />
+                                  <Route path="/egypt-vision-2030" element={<Navigate to="/national-dashboard" replace />} />
 
                                   {/* 404 */}
                                   <Route path="*" element={<Suspense fallback={getLoadingComponent('/404')}><NotFound /></Suspense>} />
