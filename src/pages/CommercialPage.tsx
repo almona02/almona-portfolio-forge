@@ -8,6 +8,7 @@ import { TaxSettingsPanel } from '@/components/commercial/TaxSettingsPanel';
 import { FabricatorWorkspaceLayout } from '@/components/fabricator/layout/FabricatorWorkspaceLayout';
 import { ReportGenerator } from '@/components/ui/ReportGenerator';
 import { ReportTemplateEditor } from '@/components/ui/ReportTemplateEditor';
+import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { FabricatorSectionProvider } from '@/contexts/FabricatorSectionContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
@@ -17,6 +18,7 @@ import { QuotingEngine } from '@/modules/commercial/QuotingEngine';
 import { CommercialExportService } from '@/services/commercial/CommercialExportService';
 import { CommercialPDFService } from '@/services/commercial/CommercialPDFService';
 import { BulkEmailService } from '@/services/email/BulkEmailService';
+import { supabase } from '@/lib/supabase';
 import { useWorkflowStore } from '@/store/workflowStore';
 import {
     AlertDialog,
@@ -43,7 +45,7 @@ import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import type { DraftInvoice, DraftQuote } from '@/types/fabricator';
-import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Receipt, Search, Send, Trash2, X } from 'lucide-react';
+import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Package, Receipt, Search, Send, Trash2, X } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -55,6 +57,7 @@ import { toast } from 'sonner';
  */
 const CommercialPageComponent: React.FC = () => {
   const { state, dispatch } = useFabricatorWorkspace();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { t } = useTranslation('fabricator');
@@ -158,6 +161,36 @@ const CommercialPageComponent: React.FC = () => {
 
     dispatch({ type: 'ADD_DRAFT_INVOICE', payload: invoice });
     dispatch({ type: 'REMOVE_DRAFT_QUOTE', payload: quoteId });
+  };
+
+  const handleConvertToOrder = async (quoteId: string) => {
+    const quote = state.draftQuotes.find((q) => q.id === quoteId);
+    if (!quote || !user?.id) return;
+
+    try {
+      const amount = quote.amount || 0;
+      const tax = amount * 0.14;
+      const { error } = await supabase.from('orders').insert({
+        user_id: user.id,
+        status: 'pending' as const,
+        subtotal: amount,
+        tax_amount: Number(tax.toFixed(2)),
+        discount_amount: 0,
+        shipping_cost: 0,
+        total_amount: Number((amount + tax).toFixed(2)),
+        currency: quote.currency || 'EGP',
+        payment_status: 'pending',
+        customer_notes: `From quote: ${quote.projectTitle || quoteId}`,
+        billing_address: {},
+        shipping_address: {},
+      });
+      if (error) throw error;
+      dispatch({ type: 'UPDATE_DRAFT_QUOTE', payload: { ...quote, status: 'accepted' } });
+      toast.success('Order created from quote');
+    } catch (err) {
+      console.error('Failed to create order:', err);
+      toast.error('Failed to create order');
+    }
   };
 
   const handleDeleteDraft = (id: string, type: 'quote' | 'invoice') => {
@@ -1352,6 +1385,14 @@ const CommercialPageComponent: React.FC = () => {
                           className="flex-1 bg-green-500 hover:bg-green-600 text-xs"
                         >
                           {t('commercial.draft_quotes.convert_to_invoice', 'Convert to Invoice')}
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => void handleConvertToOrder(quote.id)}
+                          className="bg-blue-500 hover:bg-blue-600 text-xs"
+                        >
+                          <Package className="h-3 w-3 mr-1" />
+                          Order
                         </Button>
                         <Button
                           size="sm"
