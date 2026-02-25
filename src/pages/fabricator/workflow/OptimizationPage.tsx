@@ -27,7 +27,7 @@ const OptimizationEqualizer = lazyRetry(
  * - System pack profile resolution
  */
 export const OptimizationPage: React.FC = () => {
-    const { projectId } = useParams<{ projectId?: string }>();
+    const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
     const navigate = useNavigate();
     const { user } = useAuth();
     const {
@@ -57,13 +57,12 @@ export const OptimizationPage: React.FC = () => {
         setOptimizationResult(result);
         completeStep('optimization');
 
-        // Smooth transition delay for visual feedback
         setTimeout(() => {
-            navigate(
-                projectId
-                    ? `/fabricator/workflow/inventory/${projectId}`
-                    : '/fabricator/workflow/inventory'
-            );
+            if (projectId && poseId) {
+                navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/commercial`);
+            } else {
+                navigate('/fabricator/studio/projects');
+            }
         }, 100);
     };
 
@@ -166,6 +165,26 @@ export const OptimizationPage: React.FC = () => {
                         onComplete={handleOptimizationComplete}
                     />
                 </div>
+
+                {/* Continue to Commercial CTA */}
+                {optimizationResult && projectId && poseId && (
+                    <div className="fixed bottom-8 right-8 z-50">
+                        <button
+                            onClick={() => {
+                                completeStep('optimization');
+                                navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/commercial`);
+                            }}
+                            className="group relative px-8 py-4 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                        >
+                            <span className="relative z-10 flex items-center gap-2">
+                                Continue to Quote
+                                <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                )}
             </Suspense>
         </div>
     );
