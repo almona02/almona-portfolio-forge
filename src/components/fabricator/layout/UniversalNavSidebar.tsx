@@ -75,6 +75,13 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       label: 'Data Studio',
       icon: <BarChart size={20} />,
       href: '/fabricator/studio/data',
+      subItems: [
+        { label: 'System Packs', href: '/fabricator/studio/data' },
+        { label: 'Profiles', href: '/fabricator/studio/data/profiles' },
+        { label: 'Tuning', href: '/fabricator/studio/data/tuning' },
+        { label: 'Customers', href: '/fabricator/studio/data/customers' },
+        { label: 'Pattern Library', href: '/fabricator/studio/data/patterns' },
+      ],
     },
     {
       id: 'settings',
