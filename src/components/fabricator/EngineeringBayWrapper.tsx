@@ -14,6 +14,7 @@ import { usePose as usePoseV2, useProjectPositions, useUpsertPose } from '@/hook
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { useJobsStore } from '@/store/jobsStore';
+import { useWorkflowStore } from '@/store/workflowStore';
 import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -89,22 +90,26 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     return [currentProject, ...others];
   }, [currentProject, allSiblingPositions]);
 
-  // Handle design completion
+  const { setCurrentProject: setWorkflowProject, setDesignData, completeStep } = useWorkflowStore();
+
   const handleDesignComplete = (components: WindowComponent[]) => {
     if (!currentProject) return;
 
-    // Update project with new components
     const updatedProject: WindowUnit = {
       ...currentProject,
       components: components,
     };
 
-    // Update context
     dispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });
     dispatch({ type: 'UPDATE_PROJECT_COMPONENTS', payload: components });
 
-    // Navigate to next step (studio projects list)
-    navigate(fabricatorRoutes.studioProjects());
+    setWorkflowProject(updatedProject);
+    setDesignData(updatedProject);
+    completeStep('design');
+
+    const projKey = resolvedProjectId ?? projectId ?? 'default';
+    const poseKey = effectivePoseId ?? currentProject.id;
+    navigate(fabricatorRoutes.poseBOM(projKey, poseKey));
   };
 
   const handleBackToMeasuring = () => {
