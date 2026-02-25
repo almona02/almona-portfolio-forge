@@ -74,7 +74,7 @@ const WorkflowDetail = lazyRetry(() => import("./pages/workflows/WorkflowDetail.
 const WorkflowBuilderPage = lazyRetry(() => import("./pages/WorkflowBuilderPage.tsx"), "WorkflowBuilderPage");
 const FabricationWorkflowDetail = lazyRetry(() => import("./pages/FabricationWorkflowDetail.tsx"), "FabricationWorkflowDetail");
 const FabricationServices = lazyRetry(() => import("./pages/FabricationServices.tsx"), "FabricationServices");
-const _FabricatorWorkflow = lazyRetry(() => import("./pages/FabricatorWorkflow.tsx"), "FabricatorWorkflow");
+// _FabricatorWorkflow removed — superseded by studio routes
 const _FabricatorDashboard = lazyRetry(() => import("./pages/FabricatorDashboard.tsx"), "FabricatorDashboard");
 const InventoryPage = lazy(() => import("./pages/Inventory.tsx"));
 const FabricatorReportsPage = lazy(() => import("./pages/FabricatorReports.tsx"));
@@ -82,7 +82,7 @@ const ProjectsPage = lazy(() => import("./pages/Projects.tsx"));
 const PublicOptimizer = lazy(() => import("./pages/PublicOptimizer.tsx"));
 const EngineeringBayWrapper = lazy(() => import("./components/fabricator/EngineeringBayWrapper").then(m => ({ default: m.EngineeringBayWrapper })));
 // const DesignWorkflowWrapper = lazy(() => import("./components/fabricator/workflow/DesignWorkflowWrapper.tsx").then(m => ({ default: m.DesignWorkflowWrapper })));
-const _DraftingWorkbench = lazy(() => import("./components/fabricator/drafting/DraftingWorkbench.tsx").then(m => ({ default: m.DraftingWorkbench })));
+// _DraftingWorkbench removed — used internally by EngineeringBay
 const ProfileStudioLite = lazy(() => import("./components/fabricator/tuning/ProfileStudioLite.tsx").then(m => ({ default: m.ProfileStudioLite })));
 const SystemPackTuningStudio = lazy(() => import("./components/fabricator/SystemPackTuningStudio.tsx").then(m => ({ default: m.SystemPackTuningStudio })));
 const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuningStudio.tsx").then(m => ({ default: m.NoDXFTuningStudio })));
@@ -93,13 +93,13 @@ const ProductionDashboard = lazy(() => import("./components/fabricator/Productio
 const ProjectStudioWrapper = lazy(() => import("./pages/fabricator/ProjectStudioWrapper"));
 
 // NEW: Workflow Page Components - Route-Based Architecture
-const _UnifiedDesignPage = lazy(() => import("./pages/fabricator/workflow/UnifiedDesignPage").then(m => ({ default: m.UnifiedDesignPage })));
+// _UnifiedDesignPage removed — design uses EngineeringBayWrapper
 const OptimizationPage = lazy(() => import("./pages/fabricator/workflow/OptimizationPage").then(m => ({ default: m.OptimizationPage })));
-const _InventoryWorkflowPage = lazy(() => import("./pages/fabricator/workflow/InventoryPage").then(m => ({ default: m.InventoryPage })));
+// _InventoryWorkflowPage removed — inventory integrated into Data Studio
 const ProductionPage = lazy(() => import("./pages/fabricator/workflow/ProductionPage").then(m => ({ default: m.ProductionPage })));
 const QualityControlWorkflowPage = lazy(() => import("./pages/fabricator/workflow/QualityControlPage").then(m => ({ default: m.QualityControlPage })));
 const DeliveryTrackingPage = lazy(() => import("./pages/DeliveryTrackingPage").then(m => ({ default: m.DeliveryTrackingPage })));
-const _DebugWorkflowPage = lazy(() => import("./pages/DebugWorkflowPage").then(m => ({ default: m.DebugWorkflowPage })));
+// _DebugWorkflowPage removed — debug page not needed in production
 const BOMReviewPanel = lazy(() => import("./components/fabricator/workflow/BOMReviewPanel").then(m => ({ default: m.BOMReviewPanel })));
 const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const OrderManagementPage = lazy(() => import("./components/fabricator/orders/OrderManagement").then(m => ({ default: m.OrderManagement })));
@@ -469,9 +469,9 @@ const App = memo(() => {
                                     {/* 6. Orders */}
                                     <Route path="orders" element={<Suspense fallback={getLoadingComponent('Orders')}><OrderManagementPage /></Suspense>} />
 
-                                    {/* 7. Reports */}
-                                    <Route path="reports" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
-                                    <Route path="reports/*" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
+                                    {/* 7. Reports (no ProtectedRoute — studio layout already requires auth) */}
+                                    <Route path="reports" element={<Suspense fallback={getLoadingComponent('Reports')}><FabricatorReportsPage /></Suspense>} />
+                                    <Route path="reports/*" element={<Suspense fallback={getLoadingComponent('Reports')}><FabricatorReportsPage /></Suspense>} />
                                   </Route>
 
                                   {/* Legacy fabricator routes — single catch-all redirect to studio.
