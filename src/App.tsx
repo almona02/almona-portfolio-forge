@@ -100,6 +100,8 @@ const ProductionPage = lazy(() => import("./pages/fabricator/workflow/Production
 const _QualityControlWorkflowPage = lazy(() => import("./pages/fabricator/workflow/QualityControlPage").then(m => ({ default: m.QualityControlPage })));
 const _DebugWorkflowPage = lazy(() => import("./pages/DebugWorkflowPage").then(m => ({ default: m.DebugWorkflowPage })));
 const BOMReviewPanel = lazy(() => import("./components/fabricator/workflow/BOMReviewPanel").then(m => ({ default: m.BOMReviewPanel })));
+const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
+const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
 
 // Phase 5: Pre-Pilot Hardening - lazy loaded
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage.tsx"));
@@ -157,6 +159,7 @@ const ProjectStudioLayout = lazy(() => import("./layouts/studio/ProjectStudioLay
 const DesignStudioLayout = lazy(() => import("./layouts/studio/DesignStudioLayout.tsx"));
 const ProductionStudioLayout = lazy(() => import("./layouts/studio/ProductionStudioLayout.tsx"));
 const DataStudioLayout = lazy(() => import("./layouts/studio/DataStudioLayout.tsx"));
+const PoseWorkflowLayout = lazy(() => import("./layouts/studio/PoseWorkflowLayout.tsx"));
 
 // Redirect component for /fabricator-workflow: canonical target is studio (Fabricator Pro consolidation).
 const FabricatorWorkflowRedirect: React.FC = () => {
@@ -442,12 +445,14 @@ const App = memo(() => {
                                     {/* 2b. Project Studio Workspace (Full Screen) */}
                                     <Route path="projects/:projectId" element={<Suspense fallback={getLoadingComponent('Project Workspace')}><ProjectStudioWrapper /></Suspense>} />
 
-                                    {/* 2c. Pose-centric: design, bom, optimization, commercial, production */}
-                                    <Route path="projects/:projectId/positions/:poseId/design" element={<Suspense fallback={getLoadingComponent('Engineering Bay')}><EngineeringBayWrapper /></Suspense>} />
-                                    <Route path="projects/:projectId/positions/:poseId/bom" element={<Suspense fallback={getLoadingComponent('BOM Review')}><BOMReviewPanel /></Suspense>} />
-                                    <Route path="projects/:projectId/positions/:poseId/optimization" element={<Suspense fallback={getLoadingComponent('Optimization')}><OptimizationPage /></Suspense>} />
-                                    <Route path="projects/:projectId/positions/:poseId/commercial" element={<Suspense fallback={getLoadingComponent('Commercial')}><CommercialPage /></Suspense>} />
-                                    <Route path="projects/:projectId/positions/:poseId/production" element={<Suspense fallback={getLoadingComponent('Production')}><ProductionPage /></Suspense>} />
+                                    {/* 2c. Pose-centric workflow with persistent step navigator */}
+                                    <Route path="projects/:projectId/positions/:poseId" element={<Suspense fallback={getLoadingComponent('Workflow')}><PoseWorkflowLayout /></Suspense>}>
+                                      <Route path="design" element={<Suspense fallback={getLoadingComponent('Engineering Bay')}><EngineeringBayWrapper /></Suspense>} />
+                                      <Route path="bom" element={<Suspense fallback={getLoadingComponent('BOM Review')}><BOMReviewPanel /></Suspense>} />
+                                      <Route path="optimization" element={<Suspense fallback={getLoadingComponent('Optimization')}><OptimizationPage /></Suspense>} />
+                                      <Route path="commercial" element={<Suspense fallback={getLoadingComponent('Commercial')}><CommercialPage /></Suspense>} />
+                                      <Route path="production" element={<Suspense fallback={getLoadingComponent('Production')}><ProductionPage /></Suspense>} />
+                                    </Route>
 
                                     {/* 3. Design Studio (legacy flat design - redirect from old nav) */}
                                     <Route path="design/*" element={<Suspense fallback={getLoadingComponent('Design Studio')}><DesignStudioLayout /></Suspense>}>
@@ -466,6 +471,8 @@ const App = memo(() => {
                                       <Route path="tuning" element={<Suspense fallback={getLoadingComponent('Tuning Studio')}><SystemPackTuningStudio /></Suspense>} />
                                       <Route path="tuning-no-dxf" element={<Suspense fallback={getLoadingComponent('Tuning Studio')}><NoDXFTuningStudio /></Suspense>} />
                                       <Route path="profiles" element={<Suspense fallback={getLoadingComponent('Profile Studio')}><ProfileStudioLite /></Suspense>} />
+                                      <Route path="customers" element={<Suspense fallback={getLoadingComponent('Customers')}><CustomersPage /></Suspense>} />
+                                      <Route path="patterns" element={<Suspense fallback={getLoadingComponent('Pattern Library')}><PatternLibraryPage /></Suspense>} />
                                     </Route>
                                     {/* 6. Reports */}
                                     <Route path="reports" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
