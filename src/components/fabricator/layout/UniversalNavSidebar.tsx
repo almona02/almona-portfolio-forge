@@ -57,9 +57,15 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       badge: 12,
     },
     {
+      id: 'orders',
+      label: 'Orders',
+      icon: <Box size={20} />,
+      href: '/fabricator/studio/orders',
+    },
+    {
       id: 'design',
       label: 'Design Studio',
-      icon: <Settings size={20} />, // Using Settings as placeholder for Design/Drafting
+      icon: <Settings size={20} />,
       href: '/fabricator/studio/design',
     },
     {
