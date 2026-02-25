@@ -102,6 +102,7 @@ const DeliveryTrackingPage = lazy(() => import("./pages/DeliveryTrackingPage").t
 const _DebugWorkflowPage = lazy(() => import("./pages/DebugWorkflowPage").then(m => ({ default: m.DebugWorkflowPage })));
 const BOMReviewPanel = lazy(() => import("./components/fabricator/workflow/BOMReviewPanel").then(m => ({ default: m.BOMReviewPanel })));
 const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
+const OrderManagementPage = lazy(() => import("./components/fabricator/orders/OrderManagement").then(m => ({ default: m.OrderManagement })));
 const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
 
 // Phase 5: Pre-Pilot Hardening - lazy loaded
@@ -465,7 +466,10 @@ const App = memo(() => {
                                       <Route path="customers" element={<Suspense fallback={getLoadingComponent('Customers')}><CustomersPage /></Suspense>} />
                                       <Route path="patterns" element={<Suspense fallback={getLoadingComponent('Pattern Library')}><PatternLibraryPage /></Suspense>} />
                                     </Route>
-                                    {/* 6. Reports */}
+                                    {/* 6. Orders */}
+                                    <Route path="orders" element={<Suspense fallback={getLoadingComponent('Orders')}><OrderManagementPage /></Suspense>} />
+
+                                    {/* 7. Reports */}
                                     <Route path="reports" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
                                     <Route path="reports/*" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
                                   </Route>
