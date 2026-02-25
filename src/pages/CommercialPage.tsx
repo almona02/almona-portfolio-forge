@@ -46,7 +46,7 @@ import type { DraftInvoice, DraftQuote } from '@/types/fabricator';
 import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Receipt, Search, Send, Trash2, X } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 /**
