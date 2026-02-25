@@ -99,6 +99,7 @@ const _InventoryWorkflowPage = lazy(() => import("./pages/fabricator/workflow/In
 const ProductionPage = lazy(() => import("./pages/fabricator/workflow/ProductionPage").then(m => ({ default: m.ProductionPage })));
 const _QualityControlWorkflowPage = lazy(() => import("./pages/fabricator/workflow/QualityControlPage").then(m => ({ default: m.QualityControlPage })));
 const _DebugWorkflowPage = lazy(() => import("./pages/DebugWorkflowPage").then(m => ({ default: m.DebugWorkflowPage })));
+const BOMReviewPanel = lazy(() => import("./components/fabricator/workflow/BOMReviewPanel").then(m => ({ default: m.BOMReviewPanel })));
 
 // Phase 5: Pre-Pilot Hardening - lazy loaded
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage.tsx"));
@@ -441,8 +442,9 @@ const App = memo(() => {
                                     {/* 2b. Project Studio Workspace (Full Screen) */}
                                     <Route path="projects/:projectId" element={<Suspense fallback={getLoadingComponent('Project Workspace')}><ProjectStudioWrapper /></Suspense>} />
 
-                                    {/* 2c. Pose-centric: design, optimization, commercial, production */}
+                                    {/* 2c. Pose-centric: design, bom, optimization, commercial, production */}
                                     <Route path="projects/:projectId/positions/:poseId/design" element={<Suspense fallback={getLoadingComponent('Engineering Bay')}><EngineeringBayWrapper /></Suspense>} />
+                                    <Route path="projects/:projectId/positions/:poseId/bom" element={<Suspense fallback={getLoadingComponent('BOM Review')}><BOMReviewPanel /></Suspense>} />
                                     <Route path="projects/:projectId/positions/:poseId/optimization" element={<Suspense fallback={getLoadingComponent('Optimization')}><OptimizationPage /></Suspense>} />
                                     <Route path="projects/:projectId/positions/:poseId/commercial" element={<Suspense fallback={getLoadingComponent('Commercial')}><CommercialPage /></Suspense>} />
                                     <Route path="projects/:projectId/positions/:poseId/production" element={<Suspense fallback={getLoadingComponent('Production')}><ProductionPage /></Suspense>} />
