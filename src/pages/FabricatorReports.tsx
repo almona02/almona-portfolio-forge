@@ -1,3 +1,6 @@
+import { CostOptimizationInsights } from '@/components/analytics/CostOptimizationInsights';
+import { MaterialEfficiencyDashboard } from '@/components/analytics/MaterialEfficiencyDashboard';
+import { WasteComparisonReport } from '@/components/analytics/WasteComparisonReport';
 import { InventoryDashboard } from '@/components/fabricator/InventoryDashboard';
 import { PricingTuningStudio } from '@/components/fabricator/PricingTuningStudio';
 import { useAuth } from '@/context/AuthContext';
@@ -51,7 +54,7 @@ const getTuningStatus = (profile: Profile): 'untuned' | 'in_progress' | 'tuned' 
 export const FabricatorReports: React.FC = () => {
   const { t } = useTranslation('fabricator');
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'material' | 'quotes' | 'production'>('material');
+  const [activeTab, setActiveTab] = useState<'material' | 'quotes' | 'production' | 'analytics'>('material');
   const [showPricingStudio, setShowPricingStudio] = useState(false);
   const [pricingStudioSystemPackId, setPricingStudioSystemPackId] = useState<string | undefined>();
   const [pricingStudioProfileId, setPricingStudioProfileId] = useState<string | undefined>();
@@ -309,6 +312,10 @@ export const FabricatorReports: React.FC = () => {
               <TabsTrigger value="production">
                 <Activity className="h-4 w-4 mr-2" />
                 Production & Quality
+              </TabsTrigger>
+              <TabsTrigger value="analytics">
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Analytics
               </TabsTrigger>
             </TabsList>
 
@@ -726,6 +733,17 @@ export const FabricatorReports: React.FC = () => {
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            {/* Analytics Tab */}
+            <TabsContent value="analytics" className="space-y-6">
+              <Suspense fallback={<div className="text-center py-8 text-slate-500">Loading analytics...</div>}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <WasteComparisonReport />
+                  <CostOptimizationInsights />
+                </div>
+                <MaterialEfficiencyDashboard />
+              </Suspense>
             </TabsContent>
           </Tabs>
         </CardContent>

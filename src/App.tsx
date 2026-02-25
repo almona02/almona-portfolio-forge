@@ -97,7 +97,8 @@ const _UnifiedDesignPage = lazy(() => import("./pages/fabricator/workflow/Unifie
 const OptimizationPage = lazy(() => import("./pages/fabricator/workflow/OptimizationPage").then(m => ({ default: m.OptimizationPage })));
 const _InventoryWorkflowPage = lazy(() => import("./pages/fabricator/workflow/InventoryPage").then(m => ({ default: m.InventoryPage })));
 const ProductionPage = lazy(() => import("./pages/fabricator/workflow/ProductionPage").then(m => ({ default: m.ProductionPage })));
-const _QualityControlWorkflowPage = lazy(() => import("./pages/fabricator/workflow/QualityControlPage").then(m => ({ default: m.QualityControlPage })));
+const QualityControlWorkflowPage = lazy(() => import("./pages/fabricator/workflow/QualityControlPage").then(m => ({ default: m.QualityControlPage })));
+const DeliveryTrackingPage = lazy(() => import("./pages/DeliveryTrackingPage").then(m => ({ default: m.DeliveryTrackingPage })));
 const _DebugWorkflowPage = lazy(() => import("./pages/DebugWorkflowPage").then(m => ({ default: m.DebugWorkflowPage })));
 const BOMReviewPanel = lazy(() => import("./components/fabricator/workflow/BOMReviewPanel").then(m => ({ default: m.BOMReviewPanel })));
 const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
@@ -463,6 +464,8 @@ const App = memo(() => {
                                     {/* 4. Production Studio */}
                                     <Route path="production/*" element={<Suspense fallback={getLoadingComponent('Production Studio')}><ProductionStudioLayout /></Suspense>}>
                                       <Route index element={<Suspense fallback={getLoadingComponent('Production Dashboard')}><ProductionDashboard /></Suspense>} />
+                                      <Route path="quality" element={<Suspense fallback={getLoadingComponent('Quality Control')}><QualityControlWorkflowPage /></Suspense>} />
+                                      <Route path="delivery" element={<Suspense fallback={getLoadingComponent('Delivery Tracking')}><DeliveryTrackingPage /></Suspense>} />
                                     </Route>
 
                                     {/* 5. Data Studio */}
