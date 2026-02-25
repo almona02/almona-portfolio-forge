@@ -1,6 +1,61 @@
+import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fabricator';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
+export interface WorkflowQuote {
+  id: string;
+  bomCost: {
+    materialCost: number;
+    laborCost: number;
+    hardwareCost: number;
+    glazingCost: number;
+    accessoriesCost: number;
+    totalCost: number;
+  };
+  markupPercentage: number;
+  markup: number;
+  subtotal: number;
+  taxPercentage: number;
+  tax: number;
+  discountPercentage: number;
+  discount: number;
+  finalPrice: number;
+  currency: string;
+  customerName?: string;
+  projectTitle?: string;
+  createdAt: string;
+  validUntil: string;
+}
+
+export interface CutSheetItem {
+  id: string;
+  profileRole: string;
+  profileName: string;
+  length: number;
+  angle: number;
+  quantity: number;
+  stockBarId: string;
+  stockBarLength: number;
+  positionOnBar: number;
+}
+
+export interface LabelData {
+  id: string;
+  positionCode: string;
+  profileRole: string;
+  length: number;
+  angle: number;
+  stockBarId: string;
+  projectCode: string;
+  qrPayload: string;
+}
+
+export interface ProductionDocuments {
+  cutSheets: CutSheetItem[];
+  labels: LabelData[];
+  generatedAt: string;
+}
 
 interface WorkflowState {
   // Project data
@@ -8,6 +63,9 @@ interface WorkflowState {
   measurementData: MeasurementData | null;
   designData: WindowUnit | null;
   optimizationResult: OptimizationResult | null;
+  bom: CompleteBOM | null;
+  quote: WorkflowQuote | null;
+  productionDocuments: ProductionDocuments | null;
   
   // Progress tracking
   completedSteps: Set<string>;
@@ -17,6 +75,9 @@ interface WorkflowState {
   setMeasurementData: (data: MeasurementData) => void;
   setDesignData: (data: WindowUnit) => void;
   setOptimizationResult: (result: OptimizationResult) => void;
+  setBOM: (bom: CompleteBOM | null) => void;
+  setQuote: (quote: WorkflowQuote | null) => void;
+  setProductionDocuments: (docs: ProductionDocuments | null) => void;
   completeStep: (step: string) => void;
   setActiveStep: (step: string) => void;
   canAccessStep: (step: string) => boolean;
@@ -28,8 +89,9 @@ const WORKFLOW_STEPS = [
   'measuring',
   'design', 
   'preview3d',
+  'bom',
   'optimization',
-  'inventory',
+  'commercial',
   'production',
   'quality-control'
 ];
@@ -42,6 +104,9 @@ export const useWorkflowStore = create<WorkflowState>()(
       measurementData: null,
       designData: null,
       optimizationResult: null,
+      bom: null,
+      quote: null,
+      productionDocuments: null,
       completedSteps: new Set(),
       activeStep: 'measuring',
       
@@ -79,6 +144,18 @@ export const useWorkflowStore = create<WorkflowState>()(
         set({ optimizationResult: result });
       },
       
+      setBOM: (bom) => {
+        set({ bom });
+      },
+      
+      setQuote: (quote) => {
+        set({ quote });
+      },
+      
+      setProductionDocuments: (docs) => {
+        set({ productionDocuments: docs });
+      },
+      
       completeStep: (step) => {
         set((state) => ({
           completedSteps: new Set([...state.completedSteps, step]),
@@ -107,6 +184,9 @@ export const useWorkflowStore = create<WorkflowState>()(
           measurementData: null,
           designData: null,
           optimizationResult: null,
+          bom: null,
+          quote: null,
+          productionDocuments: null,
           completedSteps: new Set(),
           activeStep: 'measuring',
         });
