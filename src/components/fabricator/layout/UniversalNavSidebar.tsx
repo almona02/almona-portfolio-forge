@@ -69,6 +69,11 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       href: '/fabricator/studio/production',
       badge: 3,
       badgeType: 'warning',
+      subItems: [
+        { label: 'Dashboard', href: '/fabricator/studio/production' },
+        { label: 'Quality Control', href: '/fabricator/studio/production/quality' },
+        { label: 'Delivery Tracking', href: '/fabricator/studio/production/delivery' },
+      ],
     },
     {
       id: 'data',
