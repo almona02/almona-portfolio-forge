@@ -21,6 +21,9 @@ export const fabricatorRoutes = {
   /** Pose-centric: design studio */
   poseDesign: (projectId: string, poseId: string) =>
     `${STUDIO_BASE}/projects/${projectId}/positions/${poseId}/design`,
+  /** Pose-centric: BOM review */
+  poseBOM: (projectId: string, poseId: string) =>
+    `${STUDIO_BASE}/projects/${projectId}/positions/${poseId}/bom`,
   /** Pose-centric: optimization */
   poseOptimization: (projectId: string, poseId: string) =>
     `${STUDIO_BASE}/projects/${projectId}/positions/${poseId}/optimization`,
