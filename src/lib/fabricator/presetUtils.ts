@@ -44,7 +44,9 @@ export function patternToWindowGrid(pattern: EgyptianPattern): WindowGrid {
       row: cell.row,
       col: cell.col,
       type: cell.type,
-      openingDirection: cell.openingDirection
+      openingDirection: cell.openingDirection,
+      rowSpan: cell.rowSpan,
+      colSpan: cell.colSpan,
     })),
     colWidths: pattern.gridSpec.colWidths,
     rowHeights: pattern.gridSpec.rowHeights
@@ -138,5 +140,129 @@ export function findBestMatchingPattern(
   return matches.length > 0 && matches[0].confidence >= PATTERN_MATCHING_THRESHOLDS.MIN_BEST_MATCH_CONFIDENCE
     ? matches[0]
     : null;
+}
+
+export interface PatternSuggestionContext {
+  overallWidth?: number;
+  overallHeight?: number;
+  systemPackId?: string | null;
+  preferredType?: EgyptianPattern['type'] | null;
+  existingGrid?: WindowGrid | null;
+}
+
+export interface PatternSuggestionResult {
+  pattern: EgyptianPattern;
+  score: number;
+  rationale: string[];
+}
+
+function scoreRangeFit(value: number, min: number, max: number, inRangeScore: number, nearRangeScore: number): number {
+  if (!Number.isFinite(value)) return 0;
+  if (value >= min && value <= max) return inRangeScore;
+
+  const nearest = value < min ? min : max;
+  const deviation = Math.abs(value - nearest) / Math.max(nearest, 1);
+  if (deviation <= 0.15) return nearRangeScore;
+  if (deviation <= 0.30) return Math.floor(nearRangeScore / 2);
+  return 0;
+}
+
+function getDominantGridType(grid: WindowGrid | null | undefined): string | null {
+  if (!grid || !grid.cells || grid.cells.length === 0) return null;
+  const counts = grid.cells.reduce<Record<string, number>>((acc, cell) => {
+    acc[cell.type] = (acc[cell.type] || 0) + 1;
+    return acc;
+  }, {});
+
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  return sorted[0]?.[0] || null;
+}
+
+export function inferPreferredPatternTypeFromGrid(grid?: WindowGrid | null): EgyptianPattern['type'] | null {
+  const dominantType = getDominantGridType(grid);
+  if (!dominantType) return null;
+  if (dominantType === 'sliding') return 'sliding';
+  if (dominantType === 'sash') return 'casement';
+  if (dominantType === 'fixed' || dominantType === 'panel') return 'fixed';
+  return null;
+}
+
+export function suggestBestPatternForContext(
+  context: PatternSuggestionContext,
+): PatternSuggestionResult | null {
+  const preferredType = context.preferredType ?? inferPreferredPatternTypeFromGrid(context.existingGrid);
+  const candidates = context.systemPackId
+    ? getPatternsForSystem(context.systemPackId)
+    : EGYPTIAN_PATTERNS;
+
+  const fallbackCandidates = candidates.length > 0 ? candidates : EGYPTIAN_PATTERNS;
+  if (fallbackCandidates.length === 0) return null;
+
+  let best: PatternSuggestionResult | null = null;
+  const targetAspect = (
+    context.overallWidth && context.overallHeight && context.overallHeight > 0
+      ? context.overallWidth / context.overallHeight
+      : null
+  );
+  const dominantType = getDominantGridType(context.existingGrid);
+
+  for (const pattern of fallbackCandidates) {
+    let score = 0;
+    const rationale: string[] = [];
+
+    if (preferredType && (pattern.type === preferredType || pattern.type === 'mixed')) {
+      score += pattern.type === preferredType ? 24 : 12;
+      rationale.push('opening mechanism');
+    }
+
+    if (context.overallWidth) {
+      score += scoreRangeFit(
+        context.overallWidth,
+        pattern.typicalWidthMm[0],
+        pattern.typicalWidthMm[1],
+        28,
+        14,
+      );
+    }
+
+    if (context.overallHeight) {
+      score += scoreRangeFit(
+        context.overallHeight,
+        pattern.typicalHeightMm[0],
+        pattern.typicalHeightMm[1],
+        28,
+        14,
+      );
+    }
+
+    if (targetAspect) {
+      const patternAspect = pattern.typicalWidthMm[1] / Math.max(pattern.typicalHeightMm[1], 1);
+      const aspectDiff = Math.abs(patternAspect - targetAspect);
+      if (aspectDiff <= 0.20) {
+        score += 12;
+        rationale.push('aspect ratio');
+      } else if (aspectDiff <= 0.40) {
+        score += 6;
+      }
+    }
+
+    if (dominantType) {
+      const patternTypeCount = pattern.gridSpec.cells.filter((cell) => cell.type === dominantType).length;
+      if (patternTypeCount > 0) {
+        score += 8;
+      }
+    }
+
+    if (context.existingGrid) {
+      if (context.existingGrid.rows === pattern.gridSpec.rows) score += 4;
+      if (context.existingGrid.cols === pattern.gridSpec.cols) score += 4;
+    }
+
+    if (!best || score > best.score) {
+      best = { pattern, score, rationale };
+    }
+  }
+
+  return best;
 }
 

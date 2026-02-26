@@ -37,6 +37,7 @@ import { toast } from 'sonner';
 const Window3DGenerator = React.lazy(() => import('./Window3DGenerator'));
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { patternToWindowGrid, suggestBestPatternForContext, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/shared/ui/ui/select';
@@ -279,16 +280,48 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
     const handleSuggestLayout = useCallback(() => {
         actions.setError(null);
+        const type = project?.type?.toLowerCase() ?? '';
+        const preferredType: EgyptianPattern['type'] | null =
+            type.includes('sliding') ? 'sliding'
+                : (type.includes('casement') ? 'casement'
+                    : (type.includes('tilt') ? 'tilt_turn'
+                        : (type.includes('door') ? 'door'
+                            : (type.includes('fixed') ? 'fixed' : null))));
+
+        const suggestion = suggestBestPatternForContext({
+            overallWidth: project?.overallWidth,
+            overallHeight: project?.overallHeight,
+            systemPackId: activeSystemPackId,
+            preferredType,
+            existingGrid: currentGrid,
+        });
+
+        if (suggestion) {
+            actions.updateGrid(patternToWindowGrid(suggestion.pattern));
+
+            // If system pack is not selected yet, align to pattern's first compatible pack.
+            if (!activeSystemPackId && suggestion.pattern.compatibleSystems.length > 0) {
+                actions.setActiveSystemPackId(suggestion.pattern.compatibleSystems[0]);
+            }
+
+            toast.success(
+                t('engineering_bay.layout_suggested', 'Layout suggested from Egyptian pattern database'),
+                { description: suggestion.pattern.name }
+            );
+            return;
+        }
+
+        // Safe deterministic fallback when no pattern matches.
         actions.updateGrid({
-            rows: 2, cols: 2,
+            rows: 1, cols: 2,
             cells: [
                 { id: '0-0', row: 0, col: 0, type: 'fixed' },
-                { id: '0-1', row: 0, col: 1, type: 'fixed' },
-                { id: '1-0', row: 1, col: 0, type: 'sash' },
-                { id: '1-1', row: 1, col: 1, type: 'sash' },
-            ]
+                { id: '0-1', row: 0, col: 1, type: 'sash' },
+            ],
+            colWidths: [1, 1],
+            rowHeights: [1]
         });
-    }, [actions]);
+    }, [actions, activeSystemPackId, currentGrid, project, t]);
 
     const handleSaveAndNext = useCallback(() => {
         const ok = actions.validate();

@@ -17,6 +17,12 @@
  */
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import {
+  buildGridTrackMetrics,
+  computeActiveDividerBoundaries,
+  getCellBoundsFromTracks,
+  getRenderableGridCells,
+} from '@/lib/fabricator/gridGeometry';
 import { getPatternById, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
 import { FabricationData, Profile, WindowUnit } from '@/types/fabricator';
 import { FeatureFlagManager } from '../featureFlags';
@@ -1628,14 +1634,12 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
 
     if (windowUnit.grid && windowUnit.grid.cells.length > 0) {
         // Handle Grid Mode with proportional widths/heights from SmartDrawCanvas
-        const { rows, cols, cells, colWidths, rowHeights } = windowUnit.grid;
-
-        const colVals = colWidths && colWidths.length === cols ? colWidths : Array(cols).fill(1);
-        const rowVals = rowHeights && rowHeights.length === rows ? rowHeights : Array(rows).fill(1);
-        const colTotal = colVals.reduce((a, b) => a + b, 0) || cols;
-        const rowTotal = rowVals.reduce((a, b) => a + b, 0) || rows;
-        const colSizes = colVals.map((v) => (v / colTotal) * width);
-        const rowSizes = rowVals.map((v) => (v / rowTotal) * height);
+        const { rows, cols } = windowUnit.grid;
+        const tracks = buildGridTrackMetrics(windowUnit.grid, width, height);
+        const colSizes = tracks.colSizes;
+        const rowSizes = tracks.rowSizes;
+        const renderableCells = getRenderableGridCells(windowUnit.grid);
+        const { verticalBoundaries, horizontalBoundaries } = computeActiveDividerBoundaries(windowUnit.grid);
 
         const colStarts: number[] = [];
         const rowStarts: number[] = [];
@@ -1661,9 +1665,9 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
         // 1. Automatic Grid Mullions (Predictive Grid)
         // Only if NO preset is used, to avoid conflicts
         if (!windowUnit.presetId && !windowUnit.presetData) {
-            if (cols > 1 && colStarts.length >= cols) {
-                for (let c = 1; c < cols; c++) {
-                    const x = colStarts[c];
+            if (verticalBoundaries.length > 0 && colStarts.length >= cols) {
+                for (const boundary of verticalBoundaries) {
+                    const x = colStarts[boundary];
                     if (x === undefined || !Number.isFinite(x)) continue;
                     const mullionW = frameProfile.width;
                     const mullionD = frameProfile.depth;
@@ -1672,9 +1676,9 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     muntins.push(bar);
                 }
             }
-            if (rows > 1 && rowStarts.length >= rows) {
-                for (let r = 1; r < rows; r++) {
-                    const y = rowStarts[r];
+            if (horizontalBoundaries.length > 0 && rowStarts.length >= rows) {
+                for (const boundary of horizontalBoundaries) {
+                    const y = rowStarts[boundary];
                     if (y === undefined || !Number.isFinite(y)) continue;
                     const transomH = frameProfile.width;
                     const transomD = frameProfile.depth;
@@ -1691,17 +1695,18 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
              muntins.push(...manualParts);
         }
 
-        cells.forEach(cell => {
+        renderableCells.forEach(cell => {
             if (cell.type === 'empty') return;
             if (cell.col < 0 || cell.col >= cols || cell.row < 0 || cell.row >= rows) return;
 
-            const cellW = colSizes[cell.col];
-            const cellH = rowSizes[cell.row];
+            const cellBounds = getCellBoundsFromTracks(cell, tracks, windowUnit.grid!);
+            if (!cellBounds) return;
+            const cellW = cellBounds.width;
+            const cellH = cellBounds.height;
             if (cellW <= 0 || cellH <= 0 || !Number.isFinite(cellW) || !Number.isFinite(cellH)) return;
-            // Cell X center: column start + half column width
-            const cellX = colStarts[cell.col] + cellW / 2;
-            // Cell Y center: row start (top edge) - half row height (going down from top)
-            const cellY = rowStarts[cell.row] - cellH / 2;
+            // Convert top-left track bounds into centered world coordinates.
+            const cellX = (-width / 2) + cellBounds.x + (cellW / 2);
+            const cellY = (height / 2) - cellBounds.y - (cellH / 2);
             
             const isSash = cell.type === 'sash' || (cell as any).type === 'sliding';
             const isSliding = cell.type === 'sliding' || (cell as any).type === 'sliding';

@@ -6,6 +6,7 @@
  */
 
 import type { Profile, WindowComponent, WindowGrid } from '@/types/fabricator';
+import { computeActiveDividerBoundaries } from '@/lib/fabricator/gridGeometry';
 
 /**
  * Generate internal dividers (interlocks for sliding, mullions for others)
@@ -31,19 +32,22 @@ export function generateInternalDividers(
   _systemPackId: string | null
 ): WindowComponent[] {
   const components: WindowComponent[] = [];
+  const { verticalBoundaries, horizontalBoundaries } = computeActiveDividerBoundaries(grid);
+  const innerHeight = Math.max(0, height - (2 * frameProfile.width));
+  const innerWidth = Math.max(0, width - (2 * frameProfile.width));
   
   // Vertical dividers (interlock for sliding, mullion for others)
-  if (grid.cols > 1) {
+  if (verticalBoundaries.length > 0) {
     if (isSlidingSystem && interlockProfile) {
       // Sliding system: Use interlock profile
-      const interlockHeight = height - (2 * frameProfile.width);
+      const interlockHeight = innerHeight;
       components.push({
         id: `interlock_vertical_${Date.now()}`,
         type: 'interlock',
         profile: interlockProfile,
         width: interlockProfile.width || 20,
         height: interlockHeight,
-        quantity: grid.cols - 1,
+        quantity: verticalBoundaries.length,
         cuttingLengths: [interlockHeight],
         angles: [90, 90],
         machiningOperations: [],
@@ -52,15 +56,15 @@ export function generateInternalDividers(
       });
     } else if (!isSlidingSystem && mullionProfile) {
       // Non-sliding: Use mullion profile
-      for (let i = 1; i < grid.cols; i++) {
+      for (const boundary of verticalBoundaries) {
         components.push({
-          id: `mullion_v_${i}_${Date.now()}`,
+          id: `mullion_v_${boundary}_${Date.now()}`,
           type: 'mullion',
           profile: mullionProfile,
           width: mullionProfile.width,
-          height: height - (2 * frameProfile.width),
+          height: innerHeight,
           quantity: 1,
-          cuttingLengths: [height - (2 * frameProfile.width)],
+          cuttingLengths: [innerHeight],
           angles: [90, 90],
           machiningOperations: [],
           glazingType: 'none',
@@ -71,16 +75,16 @@ export function generateInternalDividers(
   }
   
   // Horizontal dividers (transoms - always mullion profile)
-  if (grid.rows > 1 && mullionProfile) {
-    for (let i = 1; i < grid.rows; i++) {
+  if (horizontalBoundaries.length > 0 && mullionProfile) {
+    for (const boundary of horizontalBoundaries) {
       components.push({
-        id: `transom_h_${i}_${Date.now()}`,
+        id: `transom_h_${boundary}_${Date.now()}`,
         type: 'transom',
         profile: mullionProfile,
-        width: width - (2 * frameProfile.width),
+        width: innerWidth,
         height: mullionProfile.width,
         quantity: 1,
-        cuttingLengths: [width - (2 * frameProfile.width)],
+        cuttingLengths: [innerWidth],
         angles: [90, 90],
         machiningOperations: [],
         glazingType: 'none',

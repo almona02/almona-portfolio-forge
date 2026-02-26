@@ -144,6 +144,25 @@ describe('Apex Engine V6: Grid Integration', () => {
         expect((geometry.muntins as any[]).length).toBeGreaterThanOrEqual(2);
     });
 
+    it('should honor colSpan and avoid duplicated overlapped cells', () => {
+        const spannedWindow: WindowUnit = {
+            ...baseWindow,
+            grid: {
+                rows: 1,
+                cols: 2,
+                cells: [
+                    { id: 'c1', row: 0, col: 0, colSpan: 2, type: 'sash' },
+                    { id: 'c2-covered', row: 0, col: 1, type: 'fixed' }
+                ],
+                colWidths: [1, 1]
+            }
+        };
+
+        const geometry = generateModelGeometries(spannedWindow);
+        expect(geometry.sashes.length).toBe(1);
+        expect(geometry.fixedGlass.length).toBe(0);
+    });
+
     it('should NOT generate automatic muntins if presetId is present', () => {
         const presetWindow: WindowUnit = {
             ...baseWindow,
