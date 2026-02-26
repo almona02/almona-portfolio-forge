@@ -56,6 +56,26 @@ const geometryCache = new Map<string, GeometryCacheEntry>();
 const MAX_CACHE_SIZE = 50; // LRU cache limit
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+const DEBUG_LOG_PATH = '/opt/cursor/logs/debug.log';
+const isNodeDebugRuntime = typeof process !== 'undefined' && Boolean((process as { versions?: { node?: string } }).versions?.node);
+function writeDebugLog(
+  hypothesisId: string,
+  location: string,
+  message: string,
+  data: Record<string, unknown>,
+): void {
+  if (!isNodeDebugRuntime) return;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('fs').appendFileSync(
+      DEBUG_LOG_PATH,
+      JSON.stringify({ hypothesisId, location, message, data, timestamp: Date.now() }) + '\n',
+    );
+  } catch {
+    // Debug instrumentation is best-effort only.
+  }
+}
+
 /**
  * Generate cache key from window unit properties
  */
@@ -648,6 +668,15 @@ export function createGoldTierMiteredFrame(
       // Test mocks may not provide Matrix4.set; use a safe fallback path.
       extrusionToFrameBasis.makeRotationY(Math.PI / 2);
     }
+    // #region agent log
+    writeDebugLog('H1', 'windowGeometry.ts:createGoldTierMiteredFrame:entry', 'Frame part generation entry', {
+      width,
+      height,
+      profileW,
+      profileD,
+      cornerReinforcement,
+    });
+    // #endregion
     
     // ===== TOP BAR =====
     // Butt Joint: Top bar spans full width
@@ -756,7 +785,7 @@ export function createGoldTierMiteredFrame(
             shape: createCornerPlateShape(cornerSize),
             length: cornerDepth,
             matrix: new Matrix4().setPosition(
-                new Vector3(-halfW + cornerSize/2, halfH - cornerSize/2, profileD/2 + cornerDepth/2)
+                new Vector3(-halfW + cornerSize/2, halfH - cornerSize/2, profileD/2 - cornerDepth/2)
             ),
             metadata: {
                 type: 'corner_reinforcement',
@@ -771,7 +800,7 @@ export function createGoldTierMiteredFrame(
             shape: createCornerPlateShape(cornerSize),
             length: cornerDepth,
             matrix: new Matrix4().setPosition(
-                new Vector3(halfW - cornerSize/2, halfH - cornerSize/2, profileD/2 + cornerDepth/2)
+                new Vector3(halfW - cornerSize/2, halfH - cornerSize/2, profileD/2 - cornerDepth/2)
             ),
             metadata: {
                 type: 'corner_reinforcement_tr',
@@ -783,7 +812,7 @@ export function createGoldTierMiteredFrame(
             shape: createCornerPlateShape(cornerSize),
             length: cornerDepth,
             matrix: new Matrix4().setPosition(
-                new Vector3(halfW - cornerSize/2, -halfH + cornerSize/2, profileD/2 + cornerDepth/2)
+                new Vector3(halfW - cornerSize/2, -halfH + cornerSize/2, profileD/2 - cornerDepth/2)
             ),
             metadata: {
                 type: 'corner_reinforcement_br',
@@ -795,7 +824,7 @@ export function createGoldTierMiteredFrame(
             shape: createCornerPlateShape(cornerSize),
             length: cornerDepth,
             matrix: new Matrix4().setPosition(
-                new Vector3(-halfW + cornerSize/2, -halfH + cornerSize/2, profileD/2 + cornerDepth/2)
+                new Vector3(-halfW + cornerSize/2, -halfH + cornerSize/2, profileD/2 - cornerDepth/2)
             ),
             metadata: {
                 type: 'corner_reinforcement_bl',
@@ -804,6 +833,43 @@ export function createGoldTierMiteredFrame(
         });
     }
     
+    const structuralBars = parts.filter((part) => (
+      part.metadata?.type === 'top_bar'
+      || part.metadata?.type === 'bottom_bar'
+      || part.metadata?.type === 'left_bar'
+      || part.metadata?.type === 'right_bar'
+    ));
+    const axisSummary = structuralBars.map((part) => {
+      const start = new Vector3(0, 0, 0) as Vector3 & { applyMatrix4?: (m: Matrix4) => Vector3 };
+      const end = new Vector3(0, 0, 1) as Vector3 & { applyMatrix4?: (m: Matrix4) => Vector3 };
+      if (typeof start.applyMatrix4 !== 'function' || typeof end.applyMatrix4 !== 'function') {
+        return { type: part.metadata?.type, axisX: null, axisY: null, axisZ: null };
+      }
+      const axis = end.applyMatrix4(part.matrix).sub(start.applyMatrix4(part.matrix)).normalize();
+      return {
+        type: part.metadata?.type,
+        axisX: Number(axis.x.toFixed(4)),
+        axisY: Number(axis.y.toFixed(4)),
+        axisZ: Number(axis.z.toFixed(4)),
+      };
+    });
+    const cornerParts = parts.filter((part) => String(part.metadata?.type ?? '').includes('corner_reinforcement'));
+    const cornerDepthInfo = cornerParts.map((part) => {
+      const z = part.matrix.elements?.[14] ?? 0;
+      const protrusion = z + part.length / 2 - profileD / 2;
+      return {
+        type: part.metadata?.type,
+        z: Number(z.toFixed(4)),
+        depth: Number(part.length.toFixed(4)),
+        protrusion: Number(protrusion.toFixed(4)),
+      };
+    });
+    // #region agent log
+    writeDebugLog('H1', 'windowGeometry.ts:createGoldTierMiteredFrame:exit', 'Frame part generation summary', {
+      axisSummary,
+      cornerDepthInfo,
+    });
+    // #endregion
     return parts;
 }
 
@@ -1066,6 +1132,13 @@ export function generateModelGeometries(
   if (!options?.forceRegenerate) {
     const cached = geometryCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      // #region agent log
+      writeDebugLog('H3', 'windowGeometry.ts:generateModelGeometries:cacheHit', 'Geometry cache hit', {
+        cacheKey,
+        windowId: windowUnit.id,
+        ageMs: Date.now() - cached.timestamp,
+      });
+      // #endregion
       return cached.geometry;
     }
   }
@@ -1639,6 +1712,12 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
 
     // --- Main Frame ---
     const frameParts = createGoldTierMiteredFrame(width, height, frameProfile, true);
+    // #region agent log
+    writeDebugLog('H2', 'windowGeometry.ts:generateGenericGeometries:frameParts', 'Main frame part count', {
+      framePartCount: frameParts.length,
+      framePartTypes: frameParts.map((part) => part.metadata?.type ?? 'unknown'),
+    });
+    // #endregion
     
     // Muntins accumulator
     const muntins: BufferGeometry[] = [];
@@ -2127,6 +2206,20 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
         }
     }
 
+    const totalSashFrameParts = sashes.reduce((sum, sash) => sum + sash.parts.length, 0);
+    const totalCornerParts = [
+      ...frameParts,
+      ...sashes.flatMap((sash) => sash.parts),
+    ].filter((part) => String(part.metadata?.type ?? '').includes('corner_reinforcement')).length;
+    // #region agent log
+    writeDebugLog('H2', 'windowGeometry.ts:generateGenericGeometries:exit', 'Generated geometry summary', {
+      sashCount: sashes.length,
+      totalSashFrameParts,
+      totalCornerParts,
+      fixedGlassCount: fixedGlass.length,
+      fixedSpacerCount: fixedSpacers.length,
+    });
+    // #endregion
     return {
         frame: { profile: frameProfile, parts: frameParts },
         sashes,

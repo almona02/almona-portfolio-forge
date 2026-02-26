@@ -28,6 +28,11 @@ describe('Gold Tier Geometry', () => {
         // Check for corner reinforcement
         const reinforcements = frame.filter(p => p.metadata?.type && p.metadata.type.includes('corner_reinforcement'));
         expect(reinforcements.length).toBeGreaterThan(0);
+        reinforcements.forEach((part) => {
+            const centerZ = part.matrix.elements[14] ?? 0;
+            const protrusion = centerZ + part.length / 2 - (mockProfile.depth / 2);
+            expect(protrusion).toBeLessThanOrEqual(0.000001);
+        });
         
         // Check miter angle
         const topBar = frame.find(p => p.metadata?.type === 'top_bar');
