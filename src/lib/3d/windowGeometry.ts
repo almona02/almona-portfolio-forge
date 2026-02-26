@@ -56,26 +56,6 @@ const geometryCache = new Map<string, GeometryCacheEntry>();
 const MAX_CACHE_SIZE = 50; // LRU cache limit
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-const DEBUG_LOG_PATH = '/opt/cursor/logs/debug.log';
-const isNodeDebugRuntime = typeof process !== 'undefined' && Boolean((process as { versions?: { node?: string } }).versions?.node);
-function writeDebugLog(
-  hypothesisId: string,
-  location: string,
-  message: string,
-  data: Record<string, unknown>,
-): void {
-  if (!isNodeDebugRuntime) return;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('fs').appendFileSync(
-      DEBUG_LOG_PATH,
-      JSON.stringify({ hypothesisId, location, message, data, timestamp: Date.now() }) + '\n',
-    );
-  } catch {
-    // Debug logging is best-effort and must not affect runtime behavior.
-  }
-}
-
 /**
  * Generate cache key from window unit properties
  */
@@ -668,15 +648,6 @@ export function createGoldTierMiteredFrame(
       // Test mocks may not provide Matrix4.set; use a safe fallback path.
       extrusionToFrameBasis.makeRotationY(Math.PI / 2);
     }
-    // #region agent log
-    writeDebugLog('H1', 'windowGeometry.ts:createGoldTierMiteredFrame:entry', 'createGoldTierMiteredFrame entry', {
-      width,
-      height,
-      profileW,
-      profileD,
-      cornerReinforcement,
-    });
-    // #endregion
     
     // ===== TOP BAR =====
     // Butt Joint: Top bar spans full width
@@ -833,40 +804,6 @@ export function createGoldTierMiteredFrame(
         });
     }
     
-    const barParts = parts.filter((part) => (
-      part.metadata?.type === 'top_bar'
-      || part.metadata?.type === 'bottom_bar'
-      || part.metadata?.type === 'left_bar'
-      || part.metadata?.type === 'right_bar'
-    ));
-    const barAxes = barParts.map((part) => {
-      const start = new Vector3(0, 0, 0) as Vector3 & { applyMatrix4?: (m: Matrix4) => Vector3 };
-      const end = new Vector3(0, 0, 1) as Vector3 & { applyMatrix4?: (m: Matrix4) => Vector3 };
-      if (typeof start.applyMatrix4 !== 'function' || typeof end.applyMatrix4 !== 'function') {
-        return {
-          type: part.metadata?.type,
-          length: part.length,
-          axisX: null,
-          axisY: null,
-          axisZ: null,
-        };
-      }
-      const axis = end.applyMatrix4(part.matrix).sub(start.applyMatrix4(part.matrix)).normalize();
-      return {
-        type: part.metadata?.type,
-        length: part.length,
-        axisX: Number(axis.x.toFixed(4)),
-        axisY: Number(axis.y.toFixed(4)),
-        axisZ: Number(axis.z.toFixed(4)),
-      };
-    });
-    const cornerParts = parts.filter((part) => String(part.metadata?.type || '').includes('corner_reinforcement'));
-    // #region agent log
-    writeDebugLog('H1', 'windowGeometry.ts:createGoldTierMiteredFrame:exit', 'createGoldTierMiteredFrame axis summary', {
-      bars: barAxes,
-      cornerCount: cornerParts.length,
-    });
-    // #endregion
     return parts;
 }
 
@@ -1702,16 +1639,6 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
 
     // --- Main Frame ---
     const frameParts = createGoldTierMiteredFrame(width, height, frameProfile, true);
-    // #region agent log
-    writeDebugLog('H2', 'windowGeometry.ts:generateGenericGeometries:frameParts', 'Main frame parts generated', {
-      framePartCount: frameParts.length,
-      framePartTypes: frameParts.map((part) => part.metadata?.type ?? 'unknown'),
-      width,
-      height,
-      frameProfileW: frameProfile.width,
-      frameProfileD: frameProfile.depth,
-    });
-    // #endregion
     
     // Muntins accumulator
     const muntins: BufferGeometry[] = [];
