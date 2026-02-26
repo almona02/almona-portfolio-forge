@@ -1,6 +1,7 @@
 import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
 import NewProjectWizard, { type ProjectHeaderMeta } from '@/components/fabricator/NewProjectWizard';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { supabase } from '@/lib/supabase';
 import { useJobsStore } from '@/store/jobsStore';
 import { WindowUnit } from '@/types/fabricator';
 import React, { useEffect, useState } from 'react';
@@ -110,8 +111,7 @@ export const ProjectCreationManager: React.FC = () => {
                 // meta: { ...meta } 
             };
 
-            // 3. Persist Project
-            // This saves to the local store (Zustand) and eventually syncs to Supabase
+            // 3. Persist Project locally first (for immediate UI responsiveness)
             addOrUpdateJob(newProject);
 
             // 4. Update Workspace Context
@@ -120,15 +120,51 @@ export const ProjectCreationManager: React.FC = () => {
 
             // 5. Success Feedback & Navigation
             setShowProjectWizard(false);
-            setProjectMeta(null); // Reset meta
+            setProjectMeta(null);
 
             toast.success(
                 t('fabricator:project.created', 'Project created successfully. Opening drafting center...')
             );
 
-            // 6. Navigate to Project Studio Workspace (Design/Drafting Mode)
-            // Canonical route: /fabricator/studio/projects/:projectId/positions/:poseId/design
-            navigate(`/fabricator/studio/projects/${newProject.id}/positions/${newProject.id}/design`);
+            // 6. Try to get Supabase UUIDs for stable routing.
+            //    If Supabase returns UUIDs, navigate with those so the Studio V2
+            //    path can resolve the project. Otherwise fall back to client IDs.
+            let navProjectId = newProject.id;
+            let navPoseId = newProject.id;
+
+            try {
+                const { data: { user: authUser } } = await supabase.auth.getUser();
+                if (authUser) {
+                    // Wait briefly for the fire-and-forget sync to complete
+                    await new Promise(resolve => setTimeout(resolve, 800));
+
+                    const { data: dbProject } = await (supabase
+                        .from('fabricator_projects') as any)
+                        .select('id')
+                        .eq('project_code', projectCode)
+                        .eq('owner_user_id', authUser.id)
+                        .maybeSingle();
+
+                    if (dbProject?.id) {
+                        navProjectId = dbProject.id;
+
+                        const { data: dbPose } = await (supabase
+                            .from('fabricator_positions') as any)
+                            .select('id')
+                            .eq('project_id', dbProject.id)
+                            .eq('pos_number', '1')
+                            .maybeSingle();
+
+                        if (dbPose?.id) {
+                            navPoseId = dbPose.id;
+                        }
+                    }
+                }
+            } catch {
+                // Fallback to client-side IDs if Supabase lookup fails
+            }
+
+            navigate(`/fabricator/studio/projects/${navProjectId}/positions/${navPoseId}/design`);
 
         } catch (error) {
             console.error('Failed to create project:', error);
