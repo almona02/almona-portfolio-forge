@@ -1,4 +1,5 @@
 
+import { Vector3 } from 'three';
 import { createGoldTierMiteredFrame, createGoldTierProfileShape, generateProfileCrossSection } from './windowGeometry';
 
 describe('Gold Tier Geometry', () => {
@@ -33,5 +34,25 @@ describe('Gold Tier Geometry', () => {
         expect(topBar).toBeDefined();
         expect(topBar?.metadata?.hasMiter).toBe(true);
         expect(topBar?.metadata?.miterAngle).toBe(45);
+
+        const leftBar = frame.find(p => p.metadata?.type === 'left_bar');
+        expect(leftBar).toBeDefined();
+
+        const topAxis = new Vector3(0, 0, 1)
+            .applyMatrix4(topBar!.matrix)
+            .sub(new Vector3(0, 0, 0).applyMatrix4(topBar!.matrix))
+            .normalize();
+        const leftAxis = new Vector3(0, 0, 1)
+            .applyMatrix4(leftBar!.matrix)
+            .sub(new Vector3(0, 0, 0).applyMatrix4(leftBar!.matrix))
+            .normalize();
+
+        expect(Math.abs(topAxis.x)).toBeCloseTo(1, 6);
+        expect(Math.abs(topAxis.y)).toBeCloseTo(0, 6);
+        expect(Math.abs(topAxis.z)).toBeCloseTo(0, 6);
+
+        expect(Math.abs(leftAxis.x)).toBeCloseTo(0, 6);
+        expect(Math.abs(leftAxis.y)).toBeCloseTo(1, 6);
+        expect(Math.abs(leftAxis.z)).toBeCloseTo(0, 6);
     });
 });
