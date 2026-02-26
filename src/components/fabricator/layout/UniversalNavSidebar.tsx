@@ -95,6 +95,18 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       ],
     },
     {
+      id: 'reports',
+      label: 'Reports',
+      icon: <BarChart size={20} />,
+      href: '/fabricator/studio/reports',
+      subItems: [
+        { label: 'Material & Inventory', href: '/fabricator/studio/reports' },
+        { label: 'Quotes & Commercial', href: '/fabricator/studio/reports?tab=quotes' },
+        { label: 'Production & Quality', href: '/fabricator/studio/reports?tab=production' },
+        { label: 'Analytics', href: '/fabricator/studio/reports?tab=analytics' },
+      ],
+    },
+    {
       id: 'settings',
       label: 'Settings',
       icon: <Settings size={20} />,
