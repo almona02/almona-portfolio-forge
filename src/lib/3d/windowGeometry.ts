@@ -965,7 +965,7 @@ export function createMiteredFrame(width: number, height: number, profile: Profi
  * @returns Glass bounds with x, y, width, height
  */
 export function calculateGlassBounds(
-  cell: { row: number; col: number },
+  cell: { row: number; col: number; rowSpan?: number; colSpan?: number },
   cellX: number,
   cellY: number,
   cellW: number,
@@ -975,12 +975,36 @@ export function calculateGlassBounds(
   glassInset: number = 0.002
 ): { x: number; y: number; width: number; height: number } {
   const frameInset = frameProfile.width;
+  const rowSpan = Math.max(1, Math.floor(cell.rowSpan ?? 1));
+  const colSpan = Math.max(1, Math.floor(cell.colSpan ?? 1));
+  const colEnd = cell.col + colSpan - 1;
+  const rowEnd = cell.row + rowSpan - 1;
+  const hasGrid = Boolean(windowUnit.grid?.rows && windowUnit.grid?.cols);
+  const gridCols = hasGrid ? windowUnit.grid!.cols : 1;
+  const gridRows = hasGrid ? windowUnit.grid!.rows : 1;
+  const boundaries = hasGrid ? computeActiveDividerBoundaries(windowUnit.grid!) : { verticalBoundaries: [], horizontalBoundaries: [] };
+  const activeVerticalBoundaries = new Set(boundaries.verticalBoundaries);
+  const activeHorizontalBoundaries = new Set(boundaries.horizontalBoundaries);
+  const isOuterLeft = !hasGrid || cell.col <= 0;
+  const isOuterRight = !hasGrid || colEnd >= gridCols - 1;
+  const isOuterTop = !hasGrid || cell.row <= 0;
+  const isOuterBottom = !hasGrid || rowEnd >= gridRows - 1;
+  const hasLeftDivider = hasGrid && activeVerticalBoundaries.has(cell.col);
+  const hasRightDivider = hasGrid && activeVerticalBoundaries.has(colEnd + 1);
+  const hasTopDivider = hasGrid && activeHorizontalBoundaries.has(cell.row);
+  const hasBottomDivider = hasGrid && activeHorizontalBoundaries.has(rowEnd + 1);
+  const leftInset = isOuterLeft ? frameInset : (hasLeftDivider ? frameInset / 2 : frameInset);
+  const rightInset = isOuterRight ? frameInset : (hasRightDivider ? frameInset / 2 : frameInset);
+  const topInset = isOuterTop ? frameInset : (hasTopDivider ? frameInset / 2 : frameInset);
+  const bottomInset = isOuterBottom ? frameInset : (hasBottomDivider ? frameInset / 2 : frameInset);
   
-  // Start with cell dimensions minus frame inset
-  const glassWidth = cellW - frameInset * 2 - glassInset * 2;
-  let glassHeight = cellH - frameInset * 2 - glassInset * 2;
-  const glassX = cellX;
-  let glassY = cellY;
+  // Start with cell dimensions minus structural insets:
+  // - Outer frame edges use full inset
+  // - Shared internal divider edges split inset across adjacent cells
+  const glassWidth = cellW - leftInset - rightInset - glassInset * 2;
+  let glassHeight = cellH - topInset - bottomInset - glassInset * 2;
+  const glassX = cellX + (leftInset - rightInset) / 2;
+  let glassY = cellY - (topInset - bottomInset) / 2;
   
   // Check for transoms and adjust glass bounds
   if (windowUnit.presetData?.transoms && Array.isArray(windowUnit.presetData.transoms)) {
@@ -1003,12 +1027,13 @@ export function calculateGlassBounds(
     }
   }
   
-  return {
+  const result = {
     x: glassX,
     y: glassY,
     width: Math.max(0.02, glassWidth), // Minimum 20mm
     height: Math.max(0.02, glassHeight)
   };
+  return result;
 }
 
 export function generateModelGeometries(
