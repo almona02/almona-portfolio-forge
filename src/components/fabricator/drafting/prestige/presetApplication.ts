@@ -225,7 +225,7 @@ function createWindowGridFromPattern(
   // WindowGrid expects relative track weights, not absolute mm dimensions.
   // Keep deterministic ratios so 2D + 3D remain consistent.
   let colWidths: number[] | undefined = Array(pattern.cols).fill(1);
-  let rowHeights: number[] | undefined = Array(pattern.rows).fill(1);
+  const rowHeights: number[] | undefined = Array(pattern.rows).fill(1);
   if (pattern.isAsymmetrical && pattern.cols >= 2) {
     colWidths = Array(pattern.cols).fill(1);
     colWidths[Math.floor(pattern.cols / 2)] = 1.2;

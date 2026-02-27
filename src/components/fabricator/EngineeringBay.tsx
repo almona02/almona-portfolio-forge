@@ -14,12 +14,13 @@
  *   load profiles; it pre-configures the grid with a recommended layout.
  * - Unified Component & Hardware Management: A single, clean interface manages the
  *   bill of materials generated from the visual design.
- * - AI-Powered Suggestions: The "Apply Template" button is now an intelligent
- *   "Suggest Layout" that uses AI/heuristics to propose an optimal grid.
+ * - Deterministic Layout Suggestions: "Suggest Layout" applies rule-based Egyptian
+ *   pattern matching for transparent and auditable outcomes.
  * - Seamless 3D Integration: The Apex Engine is not a "preview"; it's a live,
  *   interactive twin of the engineering design.
  */
 
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { performanceMonitor } from '@/lib/performance';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
@@ -224,12 +225,6 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         // Switch back to smartdraw mode
         setDesignMode('smartdraw');
 
-        // Log constitutional checkpoint
-        console.log('[Constitutional] Drafting → Execution transition', {
-            timestamp: new Date().toISOString(),
-            validationId: draftingOutput.metadata.validationId,
-            tierTransition: 'Tier0 → Tier3'
-        });
     }, [actions]);
 
     // --- Preset Selection Handler ---
@@ -265,12 +260,6 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         // Close preset selector
         setShowPresetSelector(false);
 
-        console.log('[Preset Applied]', {
-            presetId,
-            presetTitle: preset.title,
-            grid: result.windowGrid,
-            recommendedSystem: result.recommendedSystem
-        });
     }, [project, actions]);
 
     // --- Event Handlers ---
@@ -413,7 +402,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                 projectId={project.id}
                 profiles={profiles}
                 onComplete={(wizardData) => {
-                    console.log('Wizard Complete:', wizardData);
+                    void wizardData;
                     toast.success(t('wizard.design_transferred', 'Design transferred to Engineering Bay'));
                     setEngineeringMode('expert');
                 }}
@@ -803,7 +792,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
                                     <Button onClick={handleSuggestLayout} variant="outline" className="w-full">
                                         <Wand2 className="h-4 w-4 mr-2" />
-                                        {t('engineering_bay.suggest_ai_layout', 'Suggest AI Layout')}
+                                        {t('engineering_bay.suggest_layout', 'Suggest Layout')}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -811,22 +800,31 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             <Card className="bg-gray-900/50">
                                 <CardHeader><CardTitle className="text-base">{t('engineering_bay.structure', 'Structure')}</CardTitle></CardHeader>
                                 <CardContent>
-                                    {CanvasComponent ? (
-                                        <CanvasComponent
-                                            width={project.overallWidth}
-                                            height={project.overallHeight}
-                                            grid={currentGrid}
-                                            onGridChange={actions.updateGrid}
-                                            systemPackId={activeSystemPackId}
-                                        />
-                                    ) : (
-                                        <SmartDrawCanvas
-                                            width={project.overallWidth}
-                                            height={project.overallHeight}
-                                            grid={currentGrid}
-                                            onGridChange={actions.updateGrid}
-                                        />
-                                    )}
+                                    <ErrorBoundary
+                                        level="component"
+                                        fallback={(
+                                            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+                                                Layout canvas failed to render. Please refresh this pose.
+                                            </div>
+                                        )}
+                                    >
+                                        {CanvasComponent ? (
+                                            <CanvasComponent
+                                                width={project.overallWidth}
+                                                height={project.overallHeight}
+                                                grid={currentGrid}
+                                                onGridChange={actions.updateGrid}
+                                                systemPackId={activeSystemPackId}
+                                            />
+                                        ) : (
+                                            <SmartDrawCanvas
+                                                width={project.overallWidth}
+                                                height={project.overallHeight}
+                                                grid={currentGrid}
+                                                onGridChange={actions.updateGrid}
+                                            />
+                                        )}
+                                    </ErrorBoundary>
                                 </CardContent>
                             </Card>
 
@@ -856,28 +854,37 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <CardContent>
                                     <div className="w-full h-[350px] lg:h-[600px] rounded-lg overflow-hidden border border-gray-800">
                                         {liveProject && (
-                                            PreviewComponent ? (
-                                                <PreviewComponent
-                                                    windowUnit={liveProject}
-                                                    mode="operator"
-                                                />
-                                            ) : (
-                                                <React.Suspense fallback={
-                                                    <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
-                                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-                                                        <span className="ml-3 text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
+                                            <ErrorBoundary
+                                                level="component"
+                                                fallback={(
+                                                    <div className="flex h-full items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+                                                        3D preview failed to render. Please refresh this pose.
                                                     </div>
-                                                }>
-                                                    <Window3DGenerator
+                                                )}
+                                            >
+                                                {PreviewComponent ? (
+                                                    <PreviewComponent
                                                         windowUnit={liveProject}
-                                                        profiles={profiles}
-                                                        showControls={true}
-                                                        presentationMode={false}
-                                                        showErrorDetection={true}
-                                                        mode={isPro3D ? 'pro' : 'standard'}
+                                                        mode="operator"
                                                     />
-                                                </React.Suspense>
-                                            )
+                                                ) : (
+                                                    <React.Suspense fallback={
+                                                        <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
+                                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+                                                            <span className="ml-3 text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
+                                                        </div>
+                                                    }>
+                                                        <Window3DGenerator
+                                                            windowUnit={liveProject}
+                                                            profiles={profiles}
+                                                            showControls={true}
+                                                            presentationMode={false}
+                                                            showErrorDetection={true}
+                                                            mode={isPro3D ? 'pro' : 'standard'}
+                                                        />
+                                                    </React.Suspense>
+                                                )}
+                                            </ErrorBoundary>
                                         )}
                                     </div>
                                 </CardContent>
@@ -1036,7 +1043,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Alt + D</TableCell>
                                 </TableRow>
                                 <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Suggest AI Layout</TableCell>
+                                    <TableCell className="py-2 font-medium text-gray-200">Suggest Layout</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Alt + A</TableCell>
                                 </TableRow>
                                 <TableRow className="border-gray-800 hover:bg-transparent">

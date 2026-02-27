@@ -9,6 +9,7 @@ import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { useJobsStore } from '@/store/jobsStore';
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { EngineeringBayWrapper } from '../EngineeringBayWrapper';
 import { DraftingWorkbench } from '../drafting/DraftingWorkbench';
 import { DesignModeSelector, type DesignMode } from '../panels/DesignModeSelector';
@@ -84,9 +85,18 @@ export const DesignWorkflowWrapper: React.FC = () => {
   // Use EngineeringBayWrapper for SmartDraw mode
   // This reuses the existing SmartDraw implementation
   const smartDrawCanvas = mode === 'smartdraw' && currentProject ? (
-    <div className="w-full h-full">
-      <EngineeringBayWrapper />
-    </div>
+    <ErrorBoundary
+      level="component"
+      fallback={(
+        <div className="flex h-full items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+          Design workspace failed to render. Reload this pose to continue.
+        </div>
+      )}
+    >
+      <div className="w-full h-full">
+        <EngineeringBayWrapper />
+      </div>
+    </ErrorBoundary>
   ) : null;
 
   // Drafting workbench
@@ -107,13 +117,22 @@ export const DesignWorkflowWrapper: React.FC = () => {
           </div>
         </div>
         <div className="flex-1 overflow-hidden">
-          <DraftingWorkbench
-            onDesignValidated={(output) => {
-              // Convert drafting output to components
-              handleDesignComplete(output.components || []);
-            }}
-            initialTemplate={currentProject?.systemPackId || undefined}
-          />
+          <ErrorBoundary
+            level="component"
+            fallback={(
+              <div className="flex h-full items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+                Drafting workbench failed to render. Return to SmartDraw and retry.
+              </div>
+            )}
+          >
+            <DraftingWorkbench
+              onDesignValidated={(output) => {
+                // Convert drafting output to components
+                handleDesignComplete(output.components || []);
+              }}
+              initialTemplate={currentProject?.systemPackId || undefined}
+            />
+          </ErrorBoundary>
         </div>
       </div>
     </div>
