@@ -445,6 +445,9 @@ const Window3DModelComponent = (props: {
         return detailSystem.generateDetailsForWindowUnit(windowUnit);
     }, [detailSystem, windowUnit]);
 
+    // Use renderPriority 1 when post-processing is active to prevent double render.
+    // R3F: priority > 0 disables automatic rendering; composer.render() becomes the sole render.
+    // Without this, both composer and R3F render each frame → ghosting/duplication on OrbitControls interaction.
     useFrame((_state, delta) => {
         // Update details LOD
         if (detailSystem && windowUnit) {
@@ -466,7 +469,7 @@ const Window3DModelComponent = (props: {
             const fps = 1 / safeDelta;
             monitor.updatePerformanceMetrics(safeDelta * 1000, fps);
         }
-    });
+    }, quality === 'standard' ? 0 : 1);
 
 
 

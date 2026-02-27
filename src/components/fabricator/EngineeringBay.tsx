@@ -78,6 +78,8 @@ interface EngineeringBayProps {
     project: WindowUnit | null;
     onDesignComplete: (components: WindowComponent[]) => void;
     onHardwareUpdate?: (hardware: any[]) => void;
+    /** Optional pose-level save handler from parent (supports local fallback modes). */
+    onPoseSave?: (updated: WindowUnit) => Promise<void> | void;
     profiles: Profile[];
     relatedPositions?: WindowUnit[];
     onSelectPosition?: (id: string) => void;
@@ -93,6 +95,7 @@ interface EngineeringBayProps {
 export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     project,
     onDesignComplete,
+    onPoseSave,
     profiles,
     relatedPositions,
     onSelectPosition,
@@ -444,6 +447,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                         pose={project}
                         open={showQuickEditModal}
                         onOpenChange={setShowQuickEditModal}
+                        onSavePose={onPoseSave}
                     />
                 )}
             </div>
@@ -496,6 +500,15 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             )}
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 px-2 text-gray-500 hover:text-orange-400"
+                                onClick={() => setShowQuickEditModal(true)}
+                                title="Quick Edit Pose (size, color, glazing)"
+                            >
+                                <Settings className="h-4 w-4" />
+                            </Button>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -1055,6 +1068,15 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {project && (
+                <PoseQuickEditModal
+                    pose={project}
+                    open={showQuickEditModal}
+                    onOpenChange={setShowQuickEditModal}
+                    onSavePose={onPoseSave}
+                />
+            )}
 
             {/* --- BILL OF MATERIALS (Maalem-Grade Precision) --- */}
             <BOMSidebar

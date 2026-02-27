@@ -102,6 +102,11 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
     const [activeUnitId, setActiveUnitId] = useState<string | null>(null);
     const [workflowStage, setWorkflowStage] = useState<'design' | 'optimize' | 'quote'>('design');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const flowStages: Array<{ id: 'design' | 'optimize' | 'quote'; label: string; helper: string }> = useMemo(() => ([
+        { id: 'design', label: 'Design', helper: 'Size, color, glazing' },
+        { id: 'optimize', label: 'Optimize', helper: 'Cut lists and efficiency' },
+        { id: 'quote', label: 'Quote', helper: 'Commercial output' },
+    ]), []);
 
     // Optimization Results Cache
     const [optimizationResults, setOptimizationResults] = useState<{
@@ -498,7 +503,35 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                         </h1>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
+                        <div className="hidden xl:flex items-center gap-2">
+                            {flowStages.map((stage, idx) => {
+                                const isActive = workflowStage === stage.id;
+                                const currentIndex = flowStages.findIndex((s) => s.id === workflowStage);
+                                const isCompleted = idx < currentIndex;
+                                return (
+                                    <div key={stage.id} className="flex items-center gap-2">
+                                        <div
+                                            className={`
+                                                h-7 px-2 rounded-md border text-[11px] flex items-center gap-1.5
+                                                ${isActive
+                                                    ? 'border-orange-500/70 bg-orange-500/20 text-orange-200'
+                                                    : isCompleted
+                                                        ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-200'
+                                                        : 'border-gray-700 bg-gray-800/60 text-gray-400'}
+                                            `}
+                                            title={stage.helper}
+                                        >
+                                            <span className="font-mono">{idx + 1}</span>
+                                            <span>{stage.label}</span>
+                                        </div>
+                                        {idx < flowStages.length - 1 && (
+                                            <div className={`w-4 h-px ${isCompleted ? 'bg-emerald-500/60' : 'bg-gray-700'}`} />
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                         <Tabs value={workflowStage} onValueChange={(v) => setWorkflowStage(v as any)} className="w-[400px]">
                             <TabsList className="grid w-full grid-cols-3 bg-gray-800 text-gray-400">
                                 <TabsTrigger value="design" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white">Design</TabsTrigger>
@@ -518,6 +551,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                                 project={activeUnit}
                                 profiles={profiles}
                                 onDesignComplete={handleDesignComplete}
+                                onPoseSave={(updated) => handleUpdateUnit(updated.id, updated)}
                                 // When "Save & Next" is clicked in EngineeringBay, we handle it here
                                 onAddNewPose={handleAddUnit}
                                 onSelectPosition={(id) => {

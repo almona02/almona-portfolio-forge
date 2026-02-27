@@ -28,7 +28,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/shared/ui/ui/select';
-import type { WindowUnit } from '@/types/fabricator';
+import { isGlazingSpecFlat, type WindowUnit } from '@/types/fabricator';
 import { Loader2, Save } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -39,6 +39,114 @@ interface PoseQuickEditModalProps {
   onOpenChange: (open: boolean) => void;
   /** Called after a successful save. Parent can use this to refresh data. */
   onSaved?: (updated: WindowUnit) => void;
+  /**
+   * Optional external save handler (e.g., parent-managed local fallback in Project Studio).
+   * If provided, the modal will use this instead of direct upsert mutation.
+   */
+  onSavePose?: (updated: WindowUnit) => Promise<void> | void;
+}
+
+type SupportedGlazingType = 'single' | 'double' | 'triple';
+
+function normalizeGlazingType(raw?: string): SupportedGlazingType {
+  const v = (raw ?? '').toLowerCase();
+  if (v.includes('triple')) return 'triple';
+  if (v.includes('single')) return 'single';
+  return 'double';
+}
+
+function readPoseGlazingDefaults(glazing: WindowUnit['glazing'] | undefined): {
+  type: SupportedGlazingType;
+  color: string;
+} {
+  if (!glazing || typeof glazing !== 'object') {
+    return { type: 'double', color: '' };
+  }
+
+  if (isGlazingSpecFlat(glazing)) {
+    return {
+      type: normalizeGlazingType(glazing.type),
+      color: glazing.color ?? '',
+    };
+  }
+
+  // Drafting path may store either one-level or nested per-cell glazing maps.
+  const candidates: Array<{ type?: string; color?: string }> = [];
+  for (const value of Object.values(glazing as Record<string, unknown>)) {
+    if (value && typeof value === 'object' && ('type' in value || 'color' in value)) {
+      candidates.push(value as { type?: string; color?: string });
+      continue;
+    }
+    if (value && typeof value === 'object') {
+      for (const nested of Object.values(value as Record<string, unknown>)) {
+        if (nested && typeof nested === 'object' && ('type' in nested || 'color' in nested)) {
+          candidates.push(nested as { type?: string; color?: string });
+        }
+      }
+    }
+  }
+
+  const first = candidates.find((item) => item.type || item.color);
+  return {
+    type: normalizeGlazingType(first?.type),
+    color: first?.color ?? '',
+  };
+}
+
+function applyPoseGlazing(
+  existing: WindowUnit['glazing'],
+  glazingType: SupportedGlazingType,
+  glazingColor: string,
+): WindowUnit['glazing'] {
+  const normalizedColor = glazingColor.trim();
+
+  if (!existing || typeof existing !== 'object' || Object.keys(existing as Record<string, unknown>).length === 0) {
+    return {
+      type: glazingType,
+      color: normalizedColor || undefined,
+    };
+  }
+
+  if (isGlazingSpecFlat(existing)) {
+    return {
+      ...existing,
+      type: glazingType,
+      color: normalizedColor || undefined,
+    };
+  }
+
+  const source = existing as Record<string, unknown>;
+  const next: Record<string, unknown> = {};
+
+  Object.entries(source).forEach(([key, value]) => {
+    if (value && typeof value === 'object' && ('type' in value || 'color' in value)) {
+      next[key] = {
+        ...(value as Record<string, unknown>),
+        type: glazingType,
+        color: normalizedColor || undefined,
+      };
+      return;
+    }
+
+    if (value && typeof value === 'object') {
+      const nestedOut: Record<string, unknown> = {};
+      Object.entries(value as Record<string, unknown>).forEach(([cellId, cellSpec]) => {
+        if (cellSpec && typeof cellSpec === 'object') {
+          nestedOut[cellId] = {
+            ...(cellSpec as Record<string, unknown>),
+            type: glazingType,
+            color: normalizedColor || undefined,
+          };
+        }
+      });
+      next[key] = nestedOut;
+      return;
+    }
+
+    next[key] = value;
+  });
+
+  return next as WindowUnit['glazing'];
 }
 
 export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
@@ -46,14 +154,20 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
   open,
   onOpenChange,
   onSaved,
+  onSavePose,
 }) => {
   const upsertPose = useUpsertPose();
 
   // ─── Local form state ──────────────────────────────────────────
   const [status, setStatus] = useState(pose?.status ?? 'design');
   const [quantity, setQuantity] = useState(pose?.quantity ?? 1);
+  const [widthMm, setWidthMm] = useState(pose?.overallWidth ?? 1000);
+  const [heightMm, setHeightMm] = useState(pose?.overallHeight ?? 1000);
   const [color, setColor] = useState(pose?.color ?? '');
+  const [glazingType, setGlazingType] = useState<SupportedGlazingType>('double');
+  const [glazingColor, setGlazingColor] = useState('');
   const [systemPackId, setSystemPackId] = useState(pose?.systemPackId ?? '');
+  const [isSaving, setIsSaving] = useState(false);
 
   // Position metadata
   const [flatNumber, setFlatNumber] = useState('');
@@ -68,7 +182,12 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
     if (!pose) return;
     setStatus(pose.status ?? 'design');
     setQuantity(pose.quantity ?? 1);
+    setWidthMm(pose.overallWidth ?? 1000);
+    setHeightMm(pose.overallHeight ?? 1000);
     setColor(pose.color ?? '');
+    const glazingDefaults = readPoseGlazingDefaults(pose.glazing);
+    setGlazingType(glazingDefaults.type);
+    setGlazingColor(glazingDefaults.color);
     setSystemPackId(pose.systemPackId ?? '');
     const meta = pose.positionMeta ?? {};
     setFlatNumber(meta.flatNumber ?? '');
@@ -86,7 +205,10 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
       ...pose,
       status: status as WindowUnit['status'],
       quantity,
+      overallWidth: Math.max(100, Math.round(widthMm)),
+      overallHeight: Math.max(100, Math.round(heightMm)),
       color,
+      glazing: applyPoseGlazing(pose.glazing, glazingType, glazingColor),
       systemPackId: systemPackId || pose.systemPackId,
       positionMeta: {
         ...pose.positionMeta,
@@ -101,17 +223,24 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
     };
 
     try {
-      await upsertPose.mutateAsync({ windowUnit: updated });
+      setIsSaving(true);
+      if (onSavePose) {
+        await onSavePose(updated);
+      } else {
+        await upsertPose.mutateAsync({ windowUnit: updated });
+      }
       toast.success(`Pose ${pose.posNumber} updated`);
       onSaved?.(updated);
       onOpenChange(false);
     } catch (err) {
       toast.error(`Failed to save: ${err}`);
+    } finally {
+      setIsSaving(false);
     }
   }, [
-    pose, status, quantity, color, systemPackId,
+    pose, status, quantity, widthMm, heightMm, color, glazingType, glazingColor, systemPackId,
     flatNumber, floor, buildingBlock, roomOrZone, elevation, remarks,
-    upsertPose, onSaved, onOpenChange,
+    upsertPose, onSaved, onOpenChange, onSavePose,
   ]);
 
   if (!pose) return null;
@@ -124,7 +253,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
             Quick Edit: {pose.posNumber}
           </DialogTitle>
           <DialogDescription className="text-amber-600/70">
-            {pose.orderNumber} &mdash; {pose.overallWidth} x {pose.overallHeight} mm
+            {pose.orderNumber} &mdash; {Math.round(widthMm)} x {Math.round(heightMm)} mm
           </DialogDescription>
         </DialogHeader>
 
@@ -151,7 +280,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
                 type="number"
                 min={1}
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
                 className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
               />
             </div>
@@ -164,6 +293,54 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 placeholder="e.g. RAL 9016"
+                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-amber-300">Glazing Type</Label>
+              <Select value={glazingType} onValueChange={(v) => setGlazingType(v as SupportedGlazingType)}>
+                <SelectTrigger className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-amber-200">
+                  <SelectItem value="single">Single</SelectItem>
+                  <SelectItem value="double">Double</SelectItem>
+                  <SelectItem value="triple">Triple</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs text-amber-300">Width (mm)</Label>
+              <Input
+                type="number"
+                min={100}
+                value={widthMm}
+                onChange={(e) => setWidthMm(Math.max(100, Number(e.target.value) || 0))}
+                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-amber-300">Height (mm)</Label>
+              <Input
+                type="number"
+                min={100}
+                value={heightMm}
+                onChange={(e) => setHeightMm(Math.max(100, Number(e.target.value) || 0))}
+                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs text-amber-300">Glazing Color / Tint</Label>
+              <Input
+                value={glazingColor}
+                onChange={(e) => setGlazingColor(e.target.value)}
+                placeholder="e.g. clear, bronze, low-e"
                 className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
               />
             </div>
@@ -256,10 +433,10 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={upsertPose.isPending}
+            disabled={upsertPose.isPending || isSaving}
             className="bg-amber-500 hover:bg-amber-600 text-black"
           >
-            {upsertPose.isPending ? (
+            {upsertPose.isPending || isSaving ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
               <Save className="h-4 w-4 mr-2" />
