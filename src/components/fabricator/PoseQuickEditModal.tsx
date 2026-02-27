@@ -323,6 +323,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
                 min={100}
                 value={widthInput}
                 onChange={(e) => setWidthInput(e.target.value)}
+                onFocus={(e) => e.currentTarget.select()}
                 className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
               />
             </div>
@@ -333,6 +334,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
                 min={100}
                 value={heightInput}
                 onChange={(e) => setHeightInput(e.target.value)}
+                onFocus={(e) => e.currentTarget.select()}
                 className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
               />
             </div>
