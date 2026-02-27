@@ -342,7 +342,7 @@ const Products = function ProductsPage() {
     setShow3DModel(true);
   }, []);
   
-  const handleQuickPreview = useCallback((machine: Machine) => {
+  const _handleQuickPreview = useCallback((machine: Machine) => {
     setQuickViewProduct(machine);
   }, []);
   

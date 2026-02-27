@@ -47,7 +47,7 @@ interface EmailSendDialogProps {
   /** Email type */
   type: 'quote' | 'invoice' | 'payment_reminder' | 'payment_confirmation';
   /** Template data */
-  templateData: Record<string, any>;
+  templateData: Record<string, unknown>;
   /** Default recipient email */
   defaultTo?: string;
   /** Sent callback */
@@ -83,7 +83,7 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
       setSubject(template.subject);
       
       // Set default recipient from template data if available
-      if (!defaultTo && templateData.customerEmail) {
+      if (!defaultTo && typeof templateData.customerEmail === 'string') {
         setTo(templateData.customerEmail);
       }
     }
@@ -263,7 +263,7 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
               Cancel
             </Button>
             <Button
-              onClick={handleSend}
+              onClick={() => void handleSend()}
               disabled={sending || !to.trim() || !subject.trim()}
               className="bg-amber-600 hover:bg-amber-700 text-white"
             >

@@ -64,11 +64,11 @@ export const InventoryPanel: React.FC = () => {
   const fetchServerPage = React.useCallback(async (): Promise<ServerPage<Product>> => {
     let query = supabase.from('products').select('*', { count: 'exact' })
 
-    if (category !== 'all') query = query.eq('category', category as any)
-    if (active !== 'all') query = query.eq('is_active', (active === 'active') as any)
-    if (stockStatus === 'ok') query = query.gt('stock_quantity', 10 as any)
-    if (stockStatus === 'low') query = query.gt('stock_quantity', 0 as any).lte('stock_quantity', 10 as any)
-    if (stockStatus === 'out') query = query.eq('stock_quantity', 0 as any)
+    if (category !== 'all') query = query.eq('category', category)
+    if (active !== 'all') query = query.eq('is_active', active === 'active')
+    if (stockStatus === 'ok') query = query.gt('stock_quantity', 10)
+    if (stockStatus === 'low') query = query.gt('stock_quantity', 0).lte('stock_quantity', 10)
+    if (stockStatus === 'out') query = query.eq('stock_quantity', 0)
     if (search) query = query.or(`sku.ilike.%${search}%,name_en.ilike.%${search}%`)
 
     const from = (page - 1) * pageSize
@@ -83,36 +83,29 @@ export const InventoryPanel: React.FC = () => {
     let mounted = true
     setLoading(true)
     setError(null)
-    fetchServerPage()
-      .then(({ rows, total }) => { if (!mounted) return; setData(rows); setTotal(total) })
-      .catch((e) => { if (!mounted) return; setError('Failed to load inventory'); console.error(e) })
-      .finally(() => mounted && setLoading(false))
+    void fetchServerPage()
+      .then(({ rows, total }) => { if (!mounted) return; setData(rows); setTotal(total); })
+      .catch((e) => { if (!mounted) return; setError('Failed to load inventory'); console.error(e); })
+      .finally(() => mounted && setLoading(false));
 
     const ch = supabase
       .channel('inventory-panel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
         if (mounted) {
-          fetchServerPage().then(({ rows, total }) => { 
+          void fetchServerPage().then(({ rows, total }) => { 
             if (mounted) {
               setData(rows); 
-              setTotal(total) 
+              setTotal(total); 
             }
-          })
+          });
         }
       })
       .subscribe()
 
     return () => { 
-      mounted = false
-      // Use removeChannel instead of unsubscribe for better cleanup
-      // This handles cases where the WebSocket connection hasn't been established yet
-      try {
-        supabase.removeChannel(ch)
-      } catch (error) {
-        // Silently handle cleanup errors - channel may not be fully established
-        console.debug('Channel cleanup error (expected if connection not established):', error)
-      }
-    }
+      mounted = false;
+      void supabase.removeChannel(ch);
+    };
   }, [fetchServerPage])
 
   // bulk helpers (similar to ProductsPanel)
@@ -295,7 +288,7 @@ export const InventoryPanel: React.FC = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={async () => {
+              onClick={() => void (async () => {
                 if (!pendingAction) return
                 if (pendingAction.type === 'activate') await bulkSetActive(true)
                 if (pendingAction.type === 'deactivate') await bulkSetActive(false)
@@ -303,7 +296,7 @@ export const InventoryPanel: React.FC = () => {
                   await bulkAdjustStock(Number(pendingAction.delta))
                 }
                 setConfirmOpen(false)
-              }}
+              })()}
             >
               Confirm
             </AlertDialogAction>

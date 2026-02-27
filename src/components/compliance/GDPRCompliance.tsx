@@ -1,6 +1,7 @@
 import { Check, Cookie, Download, Eye, Settings, Shield, Trash2, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 interface CookiePreferences {
   necessary: boolean;
@@ -109,7 +110,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
       try {
         // In a real implementation, this would call your API
         localStorage.clear();
-        alert(t('gdpr.deletionSuccess', 'Your data has been successfully deleted.'));
+        toast.success(t('gdpr.deletionSuccess', 'Your data has been successfully deleted.'));
       } catch (error) {
         console.error('Data deletion failed:', error);
       }

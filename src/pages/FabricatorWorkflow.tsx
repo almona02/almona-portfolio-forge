@@ -183,6 +183,7 @@ const NewProjectWizard = React.lazy(() =>
   })),
 );
 
+import type { CuttingJob, JobComplexity } from '@/algorithms/adaptiveSolver';
 import { EnhancedAdaptiveSolver } from '@/algorithms/EnhancedAdaptiveSolver';
 import { AnatolianCockpit } from '@/components/fabricator/AnatolianCockpit';
 import { BosphorusWorkflowRibbon } from '@/components/fabricator/BosphorusWorkflowRibbon';
@@ -204,6 +205,7 @@ import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { useJobsStore } from '@/store/jobsStore';
 import {
     AdaptiveSolverConfig,
+    HardwareItemMinimal,
     isGlazingSpecFlat,
     MeasurementData,
     OptimizationResult,
@@ -273,7 +275,7 @@ export const FabricatorWorkflow: React.FC = () => {
   // YDT Business Layer for intelligence-driven decisions
   const ydtBusinessLayer = useMemo(() => new YDTBusinessLayer(), []);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
-  const [projectMeta, setProjectMeta] = useState<(ProjectHeaderMeta & Record<string, any>) | null>(null);
+  const [projectMeta, setProjectMeta] = useState<(ProjectHeaderMeta & Record<string, unknown>) | null>(null);
   const [useEgyptWizard, setUseEgyptWizard] = useState(true);
   const [systemTunedMessage, setSystemTunedMessage] = useState<string | null>(null);
   // Project-created toast message is now handled directly by wizards
@@ -281,8 +283,9 @@ export const FabricatorWorkflow: React.FC = () => {
 
   // Check for system tuned message from navigation state
   useEffect(() => {
-    if (location.state && (location.state).systemTuned) {
-      const message = (location.state).systemTunedMessage;
+    const state = location.state as { systemTuned?: boolean; systemTunedMessage?: string } | null;
+    if (state?.systemTuned && state.systemTunedMessage) {
+      const message = state.systemTunedMessage;
       if (message) {
         setSystemTunedMessage(message);
         // Clear after 5 seconds
@@ -615,7 +618,7 @@ export const FabricatorWorkflow: React.FC = () => {
         console.error('Error getting user:', error);
       }
     };
-    getUser();
+    void getUser();
   }, []);
 
   useEffect(() => {
@@ -643,7 +646,7 @@ export const FabricatorWorkflow: React.FC = () => {
         const hasRock60Template = profiles.some(
           (p) =>
             (p.systemBrand && p.systemBrand.toLowerCase().includes('rock 60')) ||
-            (p.specifications && (p.specifications as any).window_system === 'ROCK 60'),
+            (p.specifications && (p.specifications as Record<string, unknown>).window_system === 'ROCK 60'),
         );
 
         if (!hasRock60Template) {
@@ -663,8 +666,7 @@ export const FabricatorWorkflow: React.FC = () => {
             supplier: 'Template',
             systemBrand: 'ROCK 60',
             weightPerMeter:
-              (ROCK60_WINDOW_SYSTEM_TEMPLATE.rock60_45_degree_config?.frame_profiles
-                ?.main_frame?.weight_kg_m as number | undefined) ?? 1.315,
+              ((ROCK60_WINDOW_SYSTEM_TEMPLATE as Record<string, unknown>).rock60_45_degree_config as { frame_profiles?: { main_frame?: { weight_kg_m?: number } } } | undefined)?.frame_profiles?.main_frame?.weight_kg_m ?? 1.315,
             grainDirection: null,
             specifications: {
               ...ROCK60_WINDOW_SYSTEM_TEMPLATE,
@@ -687,7 +689,7 @@ export const FabricatorWorkflow: React.FC = () => {
       }
     };
 
-    loadInventory();
+    void loadInventory();
   }, []);
 
   const generateCuttingPlan = useCallback(
@@ -783,13 +785,12 @@ export const FabricatorWorkflow: React.FC = () => {
         
         const solveTime = performance.now() - startTime;
         
-        // Collect training data for ML model
+        // Collect training data for ML model (access protected methods via typed assertion)
         try {
-          const complexity = (adaptiveSolver as any).analyzeComplexity(
-            { components, profiles },
-            profiles,
-          );
-          const algorithm = (adaptiveSolver as any).selectAlgorithm(complexity);
+          type SolverWithTraining = { analyzeComplexity(j: CuttingJob, p: Profile[]): JobComplexity; selectAlgorithm(c: JobComplexity): 'greedy' | 'linear' | 'genetic' };
+          const solver = adaptiveSolver as unknown as SolverWithTraining;
+          const complexity = solver.analyzeComplexity({ components, profiles }, profiles);
+          const algorithm = solver.selectAlgorithm(complexity);
 
           await trainingDataCollector.collectTrainingData(
             result,
@@ -923,7 +924,7 @@ export const FabricatorWorkflow: React.FC = () => {
             roomOrZone: data.roomOrZone || undefined,
             windowIndex: data.windowIndex || undefined,
             remarks: data.remarks || undefined,
-          } as any,
+          } as WindowUnit['positionMeta'],
           // Preserve all measurement inputs including preset profile selections
           systemProfileSelections: data.systemProfileSelections,
           measurementMode: data.measurementMode,
@@ -1083,7 +1084,7 @@ export const FabricatorWorkflow: React.FC = () => {
     }
   }, [currentProject, inventory, generateCuttingPlan, addOrUpdateJob, setSelectedJob, workspaceDispatch, announceStateChange]);
 
-  const handleHardwareUpdate = useCallback((hardware: any[]) => {
+  const handleHardwareUpdate = useCallback((hardware: HardwareItemMinimal[]) => {
     if (!currentProject) return;
 
     const updatedProject: WindowUnit = {
@@ -1184,7 +1185,7 @@ export const FabricatorWorkflow: React.FC = () => {
         const errorMessages = enhancedErrors
           .map(e => {
             const consequences = e.consequences && e.consequences.length > 0
-              ? `\n  Consequences: ${e.consequences.join(', ')}`
+              ? `\n  Consequences: ${e.consequences.map((c): string => c.title?.en ?? c.type ?? '').join(', ')}`
               : '';
             return `• ${e.message}${consequences}`;
           })
@@ -1252,7 +1253,7 @@ export const FabricatorWorkflow: React.FC = () => {
         updatedAt: new Date(),
         // Add constitutional metadata (if WindowUnit type supports it)
         ...(constitutionalMetadata && {
-          constitutionalMetadata: constitutionalMetadata as any
+          constitutionalMetadata: constitutionalMetadata as Record<string, unknown>
         }),
       };
 
@@ -1807,7 +1808,7 @@ export const FabricatorWorkflow: React.FC = () => {
                           >
                             <SmartMeasuringInterface
                               key={measurementSessionId}
-                              onMeasurementComplete={handleMeasurementComplete}
+                              onMeasurementComplete={(data) => void handleMeasurementComplete(data)}
                               systemPackId={projectMeta?.systemPackId}
                               region={projectMeta?.region}
                             />
@@ -1950,7 +1951,7 @@ export const FabricatorWorkflow: React.FC = () => {
                                 });
                                 setSelectedJob(target.id);
                               }}
-                              onDesignComplete={handleDesignComplete}
+                              onDesignComplete={(components) => void handleDesignComplete(components)}
                               onSmartDrawApply={handleSmartDrawApply}
                               onHardwareUpdate={handleHardwareUpdate}
                               onBackToMeasuring={() => setActiveTab('measuring')}
@@ -1975,7 +1976,7 @@ export const FabricatorWorkflow: React.FC = () => {
                                     segments: []
                                   } : undefined}
                                   egyptianFactors={{
-                                    location: projectMeta?.region as any,
+                                    location: projectMeta?.region as 'egypt' | 'uae' | 'saudi' | 'gcc' | undefined,
                                     installationComplexity: 'simple'
                                   }}
                                   workshopContext={{
@@ -2389,7 +2390,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     project={currentProject}
                     profiles={inventory}
                     accessories={[]}
-                    region={(projectMeta?.region ?? 'global') as any}
+                    region={(projectMeta?.region ?? 'global') as string}
                   />
                 )}
               </Suspense>

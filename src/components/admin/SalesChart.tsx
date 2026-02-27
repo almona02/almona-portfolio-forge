@@ -49,7 +49,7 @@ export const SalesChart: React.FC = () => {
         .from('orders')
         .select('total_amount,created_at,status')
         .gte('created_at', since.toISOString())
-        .eq('status', 'delivered' as any)
+        .eq('status', 'delivered')
         .order('created_at', { ascending: true })
 
       if (!mounted) return
@@ -79,16 +79,15 @@ export const SalesChart: React.FC = () => {
       setPoints(days.map((d) => ({ ...d, revenue: map[d.date] })))
       setLoading(false)
     }
-    fetchData()
-
+    void fetchData();
     const channel = supabase
       .channel('sales-chart')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => fetchData())
-      .subscribe()
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => void fetchData());
+    channel.subscribe()
     return () => {
-      mounted = false
-      channel.unsubscribe()
-    }
+      mounted = false;
+      void channel.unsubscribe();
+    };
   }, [])
 
   const fmtEGP = (n: number) =>

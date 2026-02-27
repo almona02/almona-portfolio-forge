@@ -216,7 +216,7 @@ function InteractiveModel({
 
         if (part) {
           if (part.id === selectedPartId || part.id === hoveredPart) {
-            child.material = child.material.clone();
+            child.material = (child.material as THREE.Material).clone();
             (child.material as THREE.MeshStandardMaterial).emissive = new THREE.Color(highlightColor);
             (child.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.3;
           } else {
@@ -337,7 +337,7 @@ export function InteractiveGLBViewer({
   useEffect(() => {
     let cancelled = false;
     if (enableWebXR && 'xr' in navigator) {
-      (async () => {
+      void (async () => {
         try {
           const navXR = (navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean> } }).xr;
           const supported = await navXR?.isSessionSupported?.('immersive-ar');
@@ -421,10 +421,12 @@ export function InteractiveGLBViewer({
   const enterWebXR = async () => {
     if (!rendererRef.current) return;
     try {
-      const session = await (navigator as any).xr.requestSession('immersive-ar', {
+      const navXR = (navigator as Navigator & { xr?: { requestSession?: (mode: XRSessionMode, init?: XRSessionInit) => Promise<XRSession> } }).xr;
+      const session = await navXR?.requestSession?.('immersive-ar', {
         requiredFeatures: webXRHitTest ? ['hit-test'] : [],
         optionalFeatures: ['local-floor']
       });
+      if (!session) throw new Error('XR session unavailable');
       await rendererRef.current.xr.setSession(session);
       setIsXRSession(true);
       session.addEventListener('end', () => setIsXRSession(false));
@@ -460,7 +462,7 @@ export function InteractiveGLBViewer({
                 )}
                 {enableWebXR && xrSupported && (
                   <button
-                    onClick={enterWebXR}
+                    onClick={() => void enterWebXR()}
                     className="px-3 py-2 bg-amber-500 text-white rounded text-sm hover:bg-amber-600"
                   >
                     WebXR AR

@@ -69,12 +69,25 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       href: '/fabricator/studio/production',
       badge: 3,
       badgeType: 'warning',
+      subItems: [
+        { label: 'Dashboard', href: '/fabricator/studio/production' },
+        { label: 'Workshop', href: '/fabricator/studio/production/workshop' },
+        { label: 'Delivery', href: '/fabricator/studio/production/delivery' },
+        { label: 'Orders', href: '/fabricator/studio/production/orders' },
+      ],
     },
     {
       id: 'data',
       label: 'Data Studio',
       icon: <BarChart size={20} />,
       href: '/fabricator/studio/data',
+      subItems: [
+        { label: 'System Packs', href: '/fabricator/studio/data' },
+        { label: 'Profiles', href: '/fabricator/studio/data/profiles' },
+        { label: 'Customers', href: '/fabricator/studio/data/customers' },
+        { label: 'Pattern Library', href: '/fabricator/studio/data/patterns' },
+        { label: 'Bent Profiles', href: '/fabricator/studio/data/bent-profiles' },
+      ],
     },
     {
       id: 'settings',

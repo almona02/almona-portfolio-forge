@@ -167,19 +167,21 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
             track('collaboration_participant_leave', { sessionId: session.id })
           },
           onCursorUpdate: (participantId, position) => {
-            setParticipants(prev => 
-              prev.map(p => 
-                p.id === participantId 
-                  ? { ...p, cursor_position: position }
+            const pos = position as Participant['cursor_position']
+            setParticipants(prev =>
+              prev.map(p =>
+                p.id === participantId
+                  ? { ...p, cursor_position: pos }
                   : p
               )
             )
           },
           onCameraUpdate: (participantId, camera) => {
-            setParticipants(prev => 
-              prev.map(p => 
-                p.id === participantId 
-                  ? { ...p, camera_position: camera }
+            const cam = camera as Participant['camera_position']
+            setParticipants(prev =>
+              prev.map(p =>
+                p.id === participantId
+                  ? { ...p, camera_position: cam }
                   : p
               )
             )
@@ -350,7 +352,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
                     size="sm"
                     variant="outline"
                     onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/collaborate/${sessionId}`)
+                      void navigator.clipboard.writeText(`${window.location.origin}/collaborate/${sessionId}`)
                       track('collaboration_link_shared', { sessionId })
                     }}
                   >

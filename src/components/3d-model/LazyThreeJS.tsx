@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PageLoadingWrapper } from '@/components/ui/PageLoadingWrapper';
 
+export type ThreeOptimizedModule = typeof import('@/lib/three-optimized');
+
 interface LazyThreeJSProps {
-  children: (threeJS: any) => React.ReactNode;
+  children: (threeJS: ThreeOptimizedModule) => React.ReactNode;
   fallback?: React.ReactNode;
 }
 
@@ -20,7 +22,7 @@ export const LazyThreeJS: React.FC<LazyThreeJSProps> = ({
     </PageLoadingWrapper>
   )
 }) => {
-  const [threeJS, setThreeJS] = useState<any>(null);
+  const [threeJS, setThreeJS] = useState<ThreeOptimizedModule | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +46,7 @@ export const LazyThreeJS: React.FC<LazyThreeJSProps> = ({
       }
     };
 
-    loadThreeJS();
+    void loadThreeJS();
   }, []);
 
   if (error) {

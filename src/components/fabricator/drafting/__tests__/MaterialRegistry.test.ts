@@ -24,13 +24,14 @@ describe('Phase 1: Material Awareness', () => {
             fillStyle: '',
             strokeStyle: '',
             lineWidth: 1,
-        }) as any;
-        
+        }) as unknown as CanvasRenderingContext2D;
+
         // Mock requestAnimationFrame
-        global.requestAnimationFrame = vi.fn((cb) => {
-            setTimeout(cb, 0);
+        const rafMock = vi.fn((cb: (time: number) => void) => {
+            setTimeout(() => cb(0), 0);
             return 1;
-        }) as any;
+        });
+        global.requestAnimationFrame = rafMock as typeof requestAnimationFrame;
         
         global.cancelAnimationFrame = vi.fn();
     });
@@ -69,9 +70,9 @@ describe('Phase 1: Material Awareness', () => {
              const manager = new OptimizedCanvasManager(container, {
                  x: 0, y: 0, width: 1000, height: 800, scale: 1
              });
-             // Access private/protected property via any cast for testing
-             expect((manager as any).activeSystemId).toBeDefined();
-             expect((manager as any).activeSystemId).toBe('alumil_m9660');
+             // Access private/protected property via type assertion for testing
+             expect((manager as { activeSystemId?: string }).activeSystemId).toBeDefined();
+             expect((manager as { activeSystemId?: string }).activeSystemId).toBe('alumil_m9660');
         });
     });
 });
