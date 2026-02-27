@@ -161,8 +161,8 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
   // ─── Local form state ──────────────────────────────────────────
   const [status, setStatus] = useState(pose?.status ?? 'design');
   const [quantity, setQuantity] = useState(pose?.quantity ?? 1);
-  const [widthMm, setWidthMm] = useState(pose?.overallWidth ?? 1000);
-  const [heightMm, setHeightMm] = useState(pose?.overallHeight ?? 1000);
+  const [widthInput, setWidthInput] = useState(String(pose?.overallWidth ?? 1000));
+  const [heightInput, setHeightInput] = useState(String(pose?.overallHeight ?? 1000));
   const [color, setColor] = useState(pose?.color ?? '');
   const [glazingType, setGlazingType] = useState<SupportedGlazingType>('double');
   const [glazingColor, setGlazingColor] = useState('');
@@ -182,8 +182,8 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
     if (!pose) return;
     setStatus(pose.status ?? 'design');
     setQuantity(pose.quantity ?? 1);
-    setWidthMm(pose.overallWidth ?? 1000);
-    setHeightMm(pose.overallHeight ?? 1000);
+    setWidthInput(String(pose.overallWidth ?? 1000));
+    setHeightInput(String(pose.overallHeight ?? 1000));
     setColor(pose.color ?? '');
     const glazingDefaults = readPoseGlazingDefaults(pose.glazing);
     setGlazingType(glazingDefaults.type);
@@ -200,13 +200,17 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
 
   const handleSave = useCallback(async () => {
     if (!pose) return;
+    const parsedWidth = Number.parseInt(widthInput, 10);
+    const parsedHeight = Number.parseInt(heightInput, 10);
+    const nextWidth = Math.max(100, Number.isFinite(parsedWidth) ? parsedWidth : pose.overallWidth);
+    const nextHeight = Math.max(100, Number.isFinite(parsedHeight) ? parsedHeight : pose.overallHeight);
 
     const updated: WindowUnit = {
       ...pose,
       status: status as WindowUnit['status'],
       quantity,
-      overallWidth: Math.max(100, Math.round(widthMm)),
-      overallHeight: Math.max(100, Math.round(heightMm)),
+      overallWidth: nextWidth,
+      overallHeight: nextHeight,
       color,
       glazing: applyPoseGlazing(pose.glazing, glazingType, glazingColor),
       systemPackId: systemPackId || pose.systemPackId,
@@ -238,7 +242,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
       setIsSaving(false);
     }
   }, [
-    pose, status, quantity, widthMm, heightMm, color, glazingType, glazingColor, systemPackId,
+    pose, status, quantity, widthInput, heightInput, color, glazingType, glazingColor, systemPackId,
     flatNumber, floor, buildingBlock, roomOrZone, elevation, remarks,
     upsertPose, onSaved, onOpenChange, onSavePose,
   ]);
@@ -253,7 +257,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
             Quick Edit: {pose.posNumber}
           </DialogTitle>
           <DialogDescription className="text-amber-600/70">
-            {pose.orderNumber} &mdash; {Math.round(widthMm)} x {Math.round(heightMm)} mm
+            {pose.orderNumber} &mdash; {Number.parseInt(widthInput, 10) || pose.overallWidth} x {Number.parseInt(heightInput, 10) || pose.overallHeight} mm
           </DialogDescription>
         </DialogHeader>
 
@@ -317,8 +321,8 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
               <Input
                 type="number"
                 min={100}
-                value={widthMm}
-                onChange={(e) => setWidthMm(Math.max(100, Number(e.target.value) || 0))}
+                value={widthInput}
+                onChange={(e) => setWidthInput(e.target.value)}
                 className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
               />
             </div>
@@ -327,8 +331,8 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
               <Input
                 type="number"
                 min={100}
-                value={heightMm}
-                onChange={(e) => setHeightMm(Math.max(100, Number(e.target.value) || 0))}
+                value={heightInput}
+                onChange={(e) => setHeightInput(e.target.value)}
                 className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
               />
             </div>
