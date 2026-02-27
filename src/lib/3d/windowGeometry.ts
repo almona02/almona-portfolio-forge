@@ -26,6 +26,7 @@ import { addOpeningMechanisms } from './openingMechanisms';
 import {
     Box3,
     BoxGeometry,
+    BufferAttribute,
     BufferGeometry,
     Euler,
     ExtrudeGeometry,
@@ -91,8 +92,8 @@ function disposeGeometry(geometry: FrameGeometry | undefined): void {
         // Also dispose attributes if they exist
         if (g.attributes) {
           Object.values(g.attributes).forEach(attr => {
-            if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
-              attr.dispose();
+            if (attr && 'dispose' in attr && typeof (attr as { dispose: () => void }).dispose === 'function') {
+              (attr as { dispose: () => void }).dispose();
             }
           });
         }
@@ -105,8 +106,8 @@ function disposeGeometry(geometry: FrameGeometry | undefined): void {
         g.dispose();
         if (g.attributes) {
           Object.values(g.attributes).forEach(attr => {
-            if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
-              attr.dispose();
+            if (attr && 'dispose' in attr && typeof (attr as { dispose: () => void }).dispose === 'function') {
+              (attr as { dispose: () => void }).dispose();
             }
           });
         }
@@ -120,8 +121,8 @@ function disposeGeometry(geometry: FrameGeometry | undefined): void {
           g.dispose();
           if (g.attributes) {
             Object.values(g.attributes).forEach(attr => {
-              if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
-                attr.dispose();
+              if (attr && 'dispose' in attr && typeof (attr as { dispose: () => void }).dispose === 'function') {
+                (attr as { dispose: () => void }).dispose();
               }
             });
           }
@@ -132,8 +133,8 @@ function disposeGeometry(geometry: FrameGeometry | undefined): void {
           g.dispose();
           if (g.attributes) {
             Object.values(g.attributes).forEach(attr => {
-              if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
-                attr.dispose();
+              if (attr && 'dispose' in attr && typeof (attr as { dispose: () => void }).dispose === 'function') {
+                (attr as { dispose: () => void }).dispose();
               }
             });
           }
@@ -149,8 +150,8 @@ function disposeGeometry(geometry: FrameGeometry | undefined): void {
           m.dispose();
           if (m.attributes) {
             Object.values(m.attributes).forEach(attr => {
-              if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
-                attr.dispose();
+              if (attr && 'dispose' in attr && typeof (attr as { dispose: () => void }).dispose === 'function') {
+                (attr as { dispose: () => void }).dispose();
               }
             });
           }
@@ -335,9 +336,10 @@ export function createRealisticProfileShape(
         new Vector2(-pocketHalf, pocketY),
     ];
 
-    (outer as any).hole = inner;
-    (outer as any).pocket = pocket;
-    return outer;
+    const result = outer as Vector2[] & { hole?: Vector2[]; pocket?: Vector2[] };
+    result.hole = inner;
+    result.pocket = pocket;
+    return result;
 }
 
 /**
@@ -559,11 +561,11 @@ export function createChamberedProfileGeometry(
     const { shape, metadata } = profileData;
     
     // Create main shape with holes for chambers
-    const mainShape = new Shape(shape as any);
+    const mainShape = new Shape(shape);
     
     // Add chambers as holes (for hollow appearance)
     metadata.chambers.forEach(chamber => {
-        const hole = new Path(chamber as any);
+        const hole = new Path(chamber);
         mainShape.holes.push(hole);
     });
     
@@ -582,12 +584,11 @@ export function createChamberedProfileGeometry(
     const geometry = new ExtrudeGeometry(mainShape, extrudeSettings);
     
     // Store metadata for material assignment
-    (geometry.userData as any) = {
-        profileType: 'frame', // Default, should be passed in
+    Object.assign(geometry.userData, {
+        profileType: 'frame' as const,
         hasChambers: metadata.chambers.length > 0,
         hasGasketGrooves: metadata.gasketGrooves.length > 0,
-        // material: metadata.material // This field is inside the output object of createGoldTierProfileShape, need to fix if expected
-    };
+    });
     
     return geometry;
 }
@@ -981,7 +982,7 @@ export function calculateGlassBounds(
     const transoms = windowUnit.presetData.transoms;
     
     // Transom ABOVE (at position row - 1)
-    const transomAbove = transoms.find((t: any) => t.position === cell.row - 1);
+    const transomAbove = transoms.find((t: { position?: number; height?: number }) => t.position === cell.row - 1);
     if (transomAbove) {
       const transomHeight = (transomAbove.height || 8) / 1000; // Default 8mm
       glassHeight -= transomHeight / 2; // Reduce from top
@@ -989,7 +990,7 @@ export function calculateGlassBounds(
     }
     
     // Transom BELOW (at position row)
-    const transomBelow = transoms.find((t: any) => t.position === cell.row);
+    const transomBelow = transoms.find((t: { position?: number; height?: number }) => t.position === cell.row);
     if (transomBelow) {
       const transomHeight = (transomBelow.height || 8) / 1000;
       glassHeight -= transomHeight / 2; // Reduce from bottom
@@ -1087,8 +1088,8 @@ export function generatePresetAwareGeometries(
   if (pattern.type === 'curtain_wall') {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { generateCurtainWallGeometry } = require('./specialized/curtainWallGeometry');
-      return generateCurtainWallGeometry(windowUnit, pattern);
+      const mod = require('./specialized/curtainWallGeometry') as { generateCurtainWallGeometry: (w: WindowUnit, p: EgyptianPattern) => FrameGeometry };
+      return mod.generateCurtainWallGeometry(windowUnit, pattern);
     } catch (error) {
       console.warn('Curtain wall module not available, using base generation:', error);
       // Fall through to base generation
@@ -1098,8 +1099,8 @@ export function generatePresetAwareGeometries(
   if (pattern.type === 'skylight') {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { generateSkylightGeometry } = require('./specialized/skylightGeometry');
-      return generateSkylightGeometry(windowUnit, pattern);
+      const mod = require('./specialized/skylightGeometry') as { generateSkylightGeometry: (w: WindowUnit, p: EgyptianPattern) => FrameGeometry };
+      return mod.generateSkylightGeometry(windowUnit, pattern);
     } catch (error) {
       console.warn('Skylight module not available, using base generation:', error);
       // Fall through to base generation
@@ -1109,8 +1110,8 @@ export function generatePresetAwareGeometries(
   if (pattern.type === 'door' && pattern.openingMechanism?.type === 'bi-fold') {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { generateBiFoldGeometry } = require('./specialized/biFoldGeometry');
-      return generateBiFoldGeometry(windowUnit, pattern);
+      const mod = require('./specialized/biFoldGeometry') as { generateBiFoldGeometry: (w: WindowUnit, p: EgyptianPattern) => FrameGeometry };
+      return mod.generateBiFoldGeometry(windowUnit, pattern);
     } catch (error) {
       console.warn('Bi-fold module not available, using base generation:', error);
       // Fall through to base generation
@@ -1168,7 +1169,7 @@ export function generatePresetAwareGeometries(
     baseGeometry.fixedSpacers = baseGeometry.fixedSpacers.filter((spacer: BufferGeometry) => {
       // Keep only glass spacers (smaller, square-ish) not mullions (tall vertical bars)
       // Mullions are typically taller than they are wide
-      const bbox = new Box3().setFromBufferAttribute(spacer.attributes.position as any);
+      const bbox = new Box3().setFromBufferAttribute(spacer.attributes.position as BufferAttribute);
       if (!bbox.isEmpty()) {
         const size = bbox.getSize(new Vector3());
         // Mullions are vertical bars (height >> width), glass spacers are more square
@@ -1286,17 +1287,17 @@ function createMullionsFromSpec(
   // If we have a grid, use it to calculate positions
   if (windowUnit.grid && windowUnit.grid.cols > 1) {
     const { cols, colWidths } = windowUnit.grid;
-    const colVals = colWidths && colWidths.length === cols ? colWidths : Array(cols).fill(1);
-    const colTotal = colVals.reduce((a, b) => a + b, 0) || cols;
-    const colSizes = colVals.map((v) => (v / colTotal) * width);
+    const colVals: number[] = colWidths && colWidths.length === cols ? colWidths : Array(cols).fill(1) as number[];
+    const colTotal = colVals.reduce((a: number, b: number) => a + b, 0) || cols;
+    const colSizes: number[] = colVals.map((v: number) => (v / colTotal) * width);
     
     // Calculate column start positions (left edge of each column)
-    const colStarts: number[] = [];
-    let currentX = -width / 2; // Start at left edge of window
-    colSizes.forEach((w) => {
-      colStarts.push(currentX);
-      currentX += w;
-    });
+        const colStarts: number[] = [];
+        let currentX = -width / 2; // Start at left edge of window
+        colSizes.forEach((w: number) => {
+          colStarts.push(currentX);
+          currentX += w;
+        });
     
     // Create mullions at pattern-specified positions using smart resolver
     // Supports column index (int), proportional (0-1), and absolute mm (>20)
@@ -1329,7 +1330,7 @@ function createMullionsFromSpec(
   // Keep existing glass spacers, add mullions
   const glassSpacers = existingSpacers.filter((spacer: BufferGeometry) => {
     // Filter logic same as above - keep only glass spacers
-    const bbox = new Box3().setFromBufferAttribute(spacer.attributes.position as any);
+    const bbox = new Box3().setFromBufferAttribute(spacer.attributes.position as BufferAttribute);
     if (!bbox.isEmpty()) {
       const size = bbox.getSize(new Vector3());
       const isMullion = size.y > size.x * 1.5;
@@ -1371,14 +1372,14 @@ function createTransomsFromSpec(
   // If we have a grid, use it to calculate positions
   if (windowUnit.grid && windowUnit.grid.rows > 1) {
     const { rows, rowHeights } = windowUnit.grid;
-    const rowVals = rowHeights && rowHeights.length === rows ? rowHeights : Array(rows).fill(1);
-    const rowTotal = rowVals.reduce((a, b) => a + b, 0) || rows;
-    const rowSizes = rowVals.map((v) => (v / rowTotal) * height);
+    const rowVals: number[] = rowHeights && rowHeights.length === rows ? rowHeights : Array(rows).fill(1) as number[];
+    const rowTotal = rowVals.reduce((a: number, b: number) => a + b, 0) || rows;
+    const rowSizes: number[] = rowVals.map((v: number) => (v / rowTotal) * height);
     
     // Calculate row start positions (top edge of each row)
     const rowStarts: number[] = [];
     let currentY = height / 2; // Start at top edge of window
-    rowSizes.forEach((h) => {
+    rowSizes.forEach((h: number) => {
       rowStarts.push(currentY);
       currentY -= h;
     });
@@ -1600,7 +1601,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
 
     const isKatraSystem = windowUnit.systemPackId?.includes('katra');
     const hasSlidingCells = Boolean(
-      windowUnit.grid?.cells?.some(cell => cell.type === 'sliding' || (cell as any).type === 'sliding') ||
+      windowUnit.grid?.cells?.some(cell => cell.type === 'sliding') ||
       windowUnit.type?.toLowerCase().includes('sliding')
     );
     const trackCount = resolvedProfiles.isThreeTrack || resolvedProfiles.supportsFlyScreen ? 3 : 2;
@@ -1630,22 +1631,22 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
         // Handle Grid Mode with proportional widths/heights from SmartDrawCanvas
         const { rows, cols, cells, colWidths, rowHeights } = windowUnit.grid;
 
-        const colVals = colWidths && colWidths.length === cols ? colWidths : Array(cols).fill(1);
-        const rowVals = rowHeights && rowHeights.length === rows ? rowHeights : Array(rows).fill(1);
-        const colTotal = colVals.reduce((a, b) => a + b, 0) || cols;
-        const rowTotal = rowVals.reduce((a, b) => a + b, 0) || rows;
-        const colSizes = colVals.map((v) => (v / colTotal) * width);
-        const rowSizes = rowVals.map((v) => (v / rowTotal) * height);
+        const colVals: number[] = colWidths && colWidths.length === cols ? colWidths : Array(cols).fill(1) as number[];
+        const rowVals: number[] = rowHeights && rowHeights.length === rows ? rowHeights : Array(rows).fill(1) as number[];
+        const colTotal = colVals.reduce((a: number, b: number) => a + b, 0) || cols;
+        const rowTotal = rowVals.reduce((a: number, b: number) => a + b, 0) || rows;
+        const colSizes: number[] = colVals.map((v: number) => (v / colTotal) * width);
+        const rowSizes: number[] = rowVals.map((v: number) => (v / rowTotal) * height);
 
         const colStarts: number[] = [];
         const rowStarts: number[] = [];
         // Column starts: from left edge (-width/2) going right
-        colSizes.reduce((acc, w) => {
+        colSizes.reduce((acc: number, w: number) => {
             colStarts.push(acc);
             return acc + w;
         }, -width / 2);
         // Row starts: from top edge (height/2) going down (subtracting heights)
-        rowSizes.reduce((acc, h) => {
+        rowSizes.reduce((acc: number, h: number) => {
             rowStarts.push(acc);
             return acc - h; // Subtract because we're going DOWN from top
         }, height / 2);
@@ -1703,8 +1704,8 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
             // Cell Y center: row start (top edge) - half row height (going down from top)
             const cellY = rowStarts[cell.row] - cellH / 2;
             
-            const isSash = cell.type === 'sash' || (cell as any).type === 'sliding';
-            const isSliding = cell.type === 'sliding' || (cell as any).type === 'sliding';
+            const isSash = cell.type === 'sash' || cell.type === 'sliding';
+            const isSliding = cell.type === 'sliding';
             const glassThickness = 0.006;
             const spacerThickness = 0.01;
             const glassRecess = Math.min(0.004, sashProfile.depth * 0.2);

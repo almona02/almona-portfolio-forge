@@ -20,7 +20,7 @@ const FrameMember3D = ({
     rotation?: [number, number, number]
 }) => {
     return (
-        <mesh position={position} rotation={rotation as any}>
+        <mesh position={position} rotation={rotation}>
             <boxGeometry args={size} />
             <meshStandardMaterial
                 color="#e2e8f0"
@@ -34,13 +34,13 @@ const FrameMember3D = ({
 
 // Component to render a single window/door unit in 3D
 const WindowUnit3D = ({ rect, systemId }: { rect: Rectangle, systemId: string }) => {
-    const profileSpec = useMemo(() => ProfileRegistry.getInstance().getSpecs(systemId) || {}, [systemId]);
+    const profileSpec = useMemo(() => ProfileRegistry.getInstance().getSpecs(systemId) || {} as Record<string, unknown>, [systemId]);
 
     // Dimensions (guard against invalid/zero so single-rectangle preview isn't corrupted)
     const width = typeof rect.width === 'number' && rect.width > 0 ? rect.width : 600;
     const height = typeof rect.height === 'number' && rect.height > 0 ? rect.height : 1200;
-    const frameWidth = (profileSpec as any).frameWidth || (profileSpec as any).profileDepth || 50; // default if missing (profileDepth is roughly frame width/depth depending on perspective, using depth as fallback)
-    const frameDepth = (profileSpec as any).frameDepth || (profileSpec as any).profileDepth || 60;
+    const frameWidth = Number(profileSpec.frameWidth ?? profileSpec.profileDepth ?? 50);
+    const frameDepth = Number(profileSpec.frameDepth ?? profileSpec.profileDepth ?? 60);
 
     // Center the unit (use safe numeric coords)
     const rx = typeof rect.x === 'number' ? rect.x : 0;
@@ -55,11 +55,11 @@ const WindowUnit3D = ({ rect, systemId }: { rect: Rectangle, systemId: string })
     // Actually, let's do simple overlapping boxes for V1 "Solid" look
     // Top Bar
     const topPos: [number, number, number] = [x, y + height / 2 - frameWidth / 2, 0];
-    const topSize: [number, number, number] = [width, frameWidth, frameDepth];
+    const topSize: [number, number, number] = [width, frameWidth, frameDepth] as [number, number, number];
 
     // Bottom Bar
     const botPos: [number, number, number] = [x, y - height / 2 + frameWidth / 2, 0];
-    const botSize: [number, number, number] = [width, frameWidth, frameDepth];
+    const botSize: [number, number, number] = [width, frameWidth, frameDepth] as [number, number, number];
 
     // Left Bar (Vertical, between top/bot)
     const leftPos: [number, number, number] = [x - width / 2 + frameWidth / 2, y, 0];

@@ -43,9 +43,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import type { DraftInvoice, DraftQuote } from '@/types/fabricator';
 import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Receipt, Search, Send, Trash2, X } from 'lucide-react';
+import { QuoteBuilder } from '@/components/fabricator/workflow/QuoteBuilder';
+import { useWorkflowStore } from '@/store/workflowStore';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 /**
@@ -53,6 +55,9 @@ import { toast } from 'sonner';
  * Gold-tier commercial workspace with bulk operations, quotes, and invoices management
  */
 const CommercialPageComponent: React.FC = () => {
+  const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
+  const isPoseContext = Boolean(projectId && poseId);
+  const { quote: workflowQuote } = useWorkflowStore();
   const { state, dispatch } = useFabricatorWorkspace();
   const _navigate = useNavigate();
   const { t } = useTranslation('fabricator');
@@ -752,6 +757,29 @@ const CommercialPageComponent: React.FC = () => {
     { label: 'Fabricator', href: '/fabricator' },
     { label: t('commercial.title', 'Commercial Workspace'), href: '#' },
   ], [t]);
+
+  // P1.3: In pose context, show QuoteBuilder for workflow quote generation
+  if (isPoseContext) {
+    return (
+      <FabricatorSectionProvider sectionId="commercial">
+        <FabricatorWorkspaceLayout
+          sectionId="commercial"
+          title={t('commercial.quote', 'Quote')}
+          breadcrumbs={breadcrumbs}
+          status="normal"
+          showCostCalculator={Boolean(workflowQuote?.total)}
+          cost={workflowQuote?.total ?? 0}
+          currency={workflowQuote?.currency ?? 'EGP'}
+          showLeftPanel={false}
+          mainContent={
+            <div className="container mx-auto px-4 py-8">
+              <QuoteBuilder />
+            </div>
+          }
+        />
+      </FabricatorSectionProvider>
+    );
+  }
 
   return (
     <FabricatorSectionProvider sectionId="commercial">

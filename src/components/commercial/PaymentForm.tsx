@@ -252,7 +252,7 @@ const PaymentFormInner: React.FC<PaymentFormProps & { clientSecret: string }> = 
         </div>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-6">
           {/* Payment Amount Display */}
           <div className="p-4 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/20">
             <div className="flex items-center justify-between">
@@ -415,7 +415,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
     };
 
     if (amount > 0) {
-      initializePayment();
+      void initializePayment();
     }
   }, [invoiceId, amount, currency, onError]);
 
@@ -582,7 +582,7 @@ const ManualPaymentForm: React.FC<{
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
       <div className="p-4 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -599,7 +599,7 @@ const ManualPaymentForm: React.FC<{
 
       <div className="space-y-2">
         <Label className="text-sm text-amber-300">Payment Method</Label>
-        <Select value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as any)}>
+        <Select value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as 'cash' | 'check' | 'bank_transfer')}>
           <SelectTrigger className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
             <SelectValue />
           </SelectTrigger>

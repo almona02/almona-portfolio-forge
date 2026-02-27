@@ -1,8 +1,18 @@
+import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
+import type { SystemPack, WindowUnit } from '@/types/fabricator';
+import type { AccessoryItem } from '../lib/fabricator/bom/AccessoriesBOMCalculator';
 import { CostCalculator } from '../lib/fabricator/bom/CostCalculator';
 import { EgyptianPatternOptimizer } from '../lib/fabricator/bom/EgyptianPatternOptimizer';
 import { GlassBOMCalculator } from '../lib/fabricator/bom/GlassBOMCalculator';
 import { HardwareBOMCalculator } from '../lib/fabricator/bom/HardwareBOMCalculator';
 import { ProfileBOMCalculator } from '../lib/fabricator/bom/ProfileBOMCalculator';
+
+interface BOMMessageData {
+  jobId: string;
+  windowUnit: WindowUnit;
+  pattern: EgyptianPattern;
+  systemPack: SystemPack;
+}
 
 // Initialize Calculators
 const profileCalculator = new ProfileBOMCalculator();
@@ -10,7 +20,7 @@ const glassCalculator = new GlassBOMCalculator();
 const hardwareCalculator = new HardwareBOMCalculator();
 const costCalculator = new CostCalculator();
 
-self.onmessage = async (e: MessageEvent) => {
+self.onmessage = async (e: MessageEvent<BOMMessageData>) => {
   const { jobId, windowUnit, pattern, systemPack } = e.data;
 
   try {
@@ -24,14 +34,14 @@ self.onmessage = async (e: MessageEvent) => {
     const hardware = await hardwareCalculator.calculateHardwareBOM(windowUnit, pattern, systemPack);
 
     // 4. Calculate Accessories (Placeholder or from Pattern)
-    const accessories: any[] = []; 
+    const accessories: AccessoryItem[] = [];
 
-    // 5. Calculate Cost
-    const cost = await costCalculator.calculateAccurateCost(
-        profiles, 
-        hardware, 
-        glazing, 
-        accessories, 
+    // 5. Calculate Cost (sync method)
+    const cost = costCalculator.calculateAccurateCost(
+        profiles,
+        hardware,
+        glazing,
+        accessories,
         windowUnit
     );
 

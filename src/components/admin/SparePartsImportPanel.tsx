@@ -69,7 +69,7 @@ export const SparePartsImportPanel: React.FC = () => {
           </div>
 
           <div className="flex-none">
-            <Button disabled={!file || busy} onClick={onImport}>
+            <Button disabled={!file || busy} onClick={() => void onImport()}>
               {busy ? 'Importing…' : 'Start Import'}
             </Button>
           </div>

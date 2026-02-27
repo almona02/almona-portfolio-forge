@@ -17,7 +17,7 @@
  * ```
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReportingService, type ConversionMetrics, type DateRange } from '@/services/reporting/ReportingService';
 import {
   BarChart,
@@ -65,8 +65,8 @@ export const ConversionChart: React.FC<ConversionChartProps> = ({
     try {
       const data = await ReportingService.getConversionMetrics(dateRange);
       setMetrics(data);
-    } catch (error) {
-      console.error('Failed to load conversion metrics:', error);
+    } catch (err: unknown) {
+      console.error('Failed to load conversion metrics:', err);
       toast.error('Failed to load conversion metrics');
     } finally {
       setLoading(false);
@@ -74,7 +74,7 @@ export const ConversionChart: React.FC<ConversionChartProps> = ({
   }, [dateRange]);
 
   useEffect(() => {
-    loadMetrics();
+    void loadMetrics();
   }, [loadMetrics]);
 
   // Funnel data

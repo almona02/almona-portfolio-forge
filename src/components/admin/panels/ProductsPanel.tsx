@@ -78,11 +78,11 @@ export const ProductsPanel: React.FC = () => {
     // Build query with filters
     let query = supabase.from('products').select('*', { count: 'exact' })
 
-    if (category !== 'all') query = query.eq('category', category as any)
-    if (active !== 'all') query = query.eq('is_active', (active === 'active') as any)
-    if (stock === 'low') query = query.gt('stock_quantity', 0 as any).lte('stock_quantity', 10 as any)
-    if (stock === 'out') query = query.eq('stock_quantity', 0 as any)
-    if (stock === 'in') query = query.gt('stock_quantity', 10 as any)
+    if (category !== 'all') query = query.eq('category', category)
+    if (active !== 'all') query = query.eq('is_active', active === 'active')
+    if (stock === 'low') query = query.gt('stock_quantity', 0).lte('stock_quantity', 10)
+    if (stock === 'out') query = query.eq('stock_quantity', 0)
+    if (stock === 'in') query = query.gt('stock_quantity', 10)
     if (search) query = query.ilike('sku', `%${search}%`)
 
     const from = (page - 1) * pageSize
@@ -97,33 +97,33 @@ export const ProductsPanel: React.FC = () => {
     let mounted = true
     setLoading(true)
     setError(null)
-    fetchServerPage()
+    void fetchServerPage()
       .then(({ rows, total }) => {
-        if (!mounted) return
-        setData(rows)
-        setTotal(total)
+        if (!mounted) return;
+        setData(rows);
+        setTotal(total);
       })
       .catch((e) => {
-        if (!mounted) return
-        setError('Failed to load products')
-        console.error(e)
+        if (!mounted) return;
+        setError('Failed to load products');
+        console.error(e);
       })
-      .finally(() => mounted && setLoading(false))
+      .finally(() => mounted && setLoading(false));
 
     const ch = supabase
       .channel('products-panel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
-        fetchServerPage().then(({ rows, total }) => {
-          setData(rows)
-          setTotal(total)
-        })
+        void fetchServerPage().then(({ rows, total }) => {
+          setData(rows);
+          setTotal(total);
+        });
       })
       .subscribe()
 
     return () => {
-      mounted = false
-      ch.unsubscribe()
-    }
+      mounted = false;
+      void ch.unsubscribe();
+    };
   }, [fetchServerPage])
 
   const onEditSubmit = async (values: ProductEditValues) => {
@@ -372,7 +372,7 @@ export const ProductsPanel: React.FC = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={async () => {
+              onClick={() => void (async () => {
                 if (!pendingAction) return
                 if (pendingAction.type === 'activate') await bulkSetActive(true)
                 if (pendingAction.type === 'deactivate') await bulkSetActive(false)
@@ -382,7 +382,7 @@ export const ProductsPanel: React.FC = () => {
                   await bulkAdjustStock(Number(pendingAction.delta))
                 }
                 setConfirmOpen(false)
-              }}
+              })()}
             >
               Confirm
             </AlertDialogAction>

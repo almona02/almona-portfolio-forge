@@ -20,9 +20,9 @@ import React, { ComponentType, ReactNode, useEffect, useState } from 'react';
  * ```
  */
 
-// Cache for loaded Framer Motion to avoid multiple loads
-let framerMotionCache: any = null;
-let framerMotionPromise: Promise<any> | null = null;
+type FramerMotionModule = typeof import('framer-motion');
+let framerMotionCache: FramerMotionModule | null = null;
+let framerMotionPromise: Promise<FramerMotionModule> | null = null;
 
 /**
  * Dynamically import Framer Motion
@@ -45,9 +45,9 @@ async function loadFramerMotion() {
 }
 
 interface LazyMotionProps {
-  component?: keyof JSX.IntrinsicElements | ComponentType<any>;
+  component?: keyof JSX.IntrinsicElements | ComponentType<unknown>;
   children: ReactNode;
-  [key: string]: any; // Allow all motion props
+  [key: string]: unknown; // Allow all motion props
 }
 
 /**
@@ -60,7 +60,7 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
   children, 
   ...motionProps 
 }) => {
-  const [MotionComponent, setMotionComponent] = useState<ComponentType<any> | null>(null);
+  const [MotionComponent, setMotionComponent] = useState<ComponentType<unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -78,32 +78,29 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
             if (motionElement) {
               setMotionComponent(() => motionElement);
             } else {
-              // Fallback if motion element doesn't exist
-              setMotionComponent(() => ((props: any) => React.createElement(component, props)) as ComponentType<any>);
+              setMotionComponent(() => ((props: Record<string, unknown>) => React.createElement(component, props)) as ComponentType<unknown>);
             }
           } else if (motion && component) {
             // For component references
             setMotionComponent(() => motion(component));
           } else {
-            // Fallback to regular element
             if (typeof component === 'string') {
-              setMotionComponent(() => ((props: any) => React.createElement(component, props)) as ComponentType<any>);
+              setMotionComponent(() => ((props: Record<string, unknown>) => React.createElement(component, props)) as ComponentType<unknown>);
             } else {
-              setMotionComponent(() => component as ComponentType<any>);
+              setMotionComponent(() => component as ComponentType<unknown>);
             }
           }
           setIsLoading(false);
         } catch (error) {
           console.error('Error setting up LazyMotion:', error);
-          setMotionComponent(() => component as ComponentType<any>);
+          setMotionComponent(() => component as ComponentType<unknown>);
           setIsLoading(false);
         }
       })
       .catch((error) => {
         if (!isMounted) return;
         console.error('Error loading Framer Motion:', error);
-        // Fallback to regular element if Framer Motion fails to load
-        setMotionComponent(() => component as ComponentType<any>);
+        setMotionComponent(() => component as ComponentType<unknown>);
         setIsLoading(false);
       });
     
@@ -116,7 +113,7 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
     try {
       // Render without animation while loading (prevents layout shift)
       // Filter out Framer Motion-specific props to avoid React warnings
-      const safeProps: any = {};
+      const safeProps: Record<string, unknown> = {};
       const motionPropKeys = [
         'initial', 'animate', 'exit', 'transition', 'variants',
         'whileHover', 'whileTap', 'whileFocus', 'whileDrag', 'whileInView',
@@ -142,7 +139,7 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
         const Element = component;
         return React.createElement(Element, safeProps, children);
       }
-      return React.createElement(component as ComponentType<any>, safeProps, children);
+      return React.createElement(component as ComponentType<unknown>, safeProps, children);
     } catch (error) {
       console.error('Error rendering LazyMotion fallback:', error);
       // Ultimate fallback - just render children in a div
@@ -150,7 +147,7 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
         const Element = component;
         return React.createElement(Element, {}, children);
       }
-      return React.createElement(component as ComponentType<any>, {}, children);
+      return React.createElement(component as ComponentType<unknown>, {}, children);
     }
   }
 
@@ -181,11 +178,11 @@ export const LazyMotionButton: React.FC<Omit<LazyMotionProps, 'component'>> = ({
 /**
  * Lazy AnimatePresence - Lazy loads AnimatePresence component
  */
-export const LazyAnimatePresence: React.FC<{ children: ReactNode; [key: string]: any }> = ({ 
+export const LazyAnimatePresence: React.FC<{ children: ReactNode; [key: string]: unknown }> = ({ 
   children, 
   ...props 
 }) => {
-  const [AnimatePresenceComponent, setAnimatePresenceComponent] = useState<ComponentType<any> | null>(null);
+  const [AnimatePresenceComponent, setAnimatePresenceComponent] = useState<ComponentType<{ children?: ReactNode }> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

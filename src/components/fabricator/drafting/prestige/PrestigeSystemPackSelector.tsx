@@ -33,15 +33,15 @@ export const PrestigeSystemPackSelector: React.FC<PrestigeSystemPackSelectorProp
   className,
   showPatternCount = false
 }) => {
-  const availablePacks = useMemo(() => {
+  const availablePacks = useMemo((): SystemPack[] => {
     if (allowedSystemIds && allowedSystemIds.length > 0) {
-      return SYSTEM_PACKS.filter(p => allowedSystemIds.includes(p.meta.id));
+      return SYSTEM_PACKS.filter((p: SystemPack) => allowedSystemIds.includes(p.meta.id));
     }
     return SYSTEM_PACKS;
   }, [allowedSystemIds]);
 
   const getSystemTier = (pack: SystemPack): 'Local' | 'Standard' | 'Premium' | 'Enterprise' => {
-    const name = pack.meta.name.toLowerCase();
+    const name = String(pack.meta?.name ?? '').toLowerCase();
     if (name.includes('panda') || name.includes('rock') || name.includes('jumbo')) {
       return 'Premium';
     }
@@ -67,7 +67,7 @@ export const PrestigeSystemPackSelector: React.FC<PrestigeSystemPackSelectorProp
   return (
     <div className={cn("space-y-4", className)}>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {availablePacks.map((pack) => {
+        {availablePacks.map((pack: SystemPack) => {
           const isSelected = selectedSystemId === pack.meta.id;
           const tier = getSystemTier(pack);
           const tierColor = getTierColor(tier);

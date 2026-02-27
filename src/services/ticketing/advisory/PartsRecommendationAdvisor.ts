@@ -9,6 +9,18 @@ import { AdvisoryHardener } from '../../../lib/ticketing/advisory/AdvisoryHarden
 import { AdvisoryMetrics } from '../../../lib/ticketing/advisory/AdvisoryMetrics';
 import { AdvisoryCircuitBreaker } from '../../../lib/ticketing/advisory/CircuitBreaker';
 
+interface FailureEntry {
+  symptom: string;
+  parts: string[];
+  confidence: number;
+}
+
+interface MachineModelData {
+  common_failures: FailureEntry[];
+}
+
+type PartsDatabaseShape = Record<string, Record<string, MachineModelData>>;
+
 export class PartsRecommendationAdvisor {
   private circuitBreaker = new AdvisoryCircuitBreaker();
   private metrics = new AdvisoryMetrics();
@@ -157,9 +169,10 @@ export class PartsRecommendationAdvisor {
    * Analyze symptoms against knowledge base
    */
   private analyzeSymptoms(machine: MachineInfo, symptoms: string[]): SymptomAnalysis {
-    const machineModels = (this.partsDatabase as any)[machine.brand];
-    const machineData = machineModels ? machineModels[machine.model] : undefined;
-    
+    const db = this.partsDatabase as PartsDatabaseShape;
+    const machineModels = db[machine.brand];
+    const machineData = machineModels?.[machine.model];
+
     if (!machineData) {
       return {
         confidence: 0.6,
@@ -171,8 +184,8 @@ export class PartsRecommendationAdvisor {
     }
 
     // Match symptoms to known failures
-    const matchedFailures = machineData.common_failures.filter((failure: any) =>
-      symptoms.some(symptom => 
+    const matchedFailures = machineData.common_failures.filter((failure: FailureEntry) =>
+      symptoms.some((symptom: string) =>
         symptom.toLowerCase().includes(failure.symptom.toLowerCase()) ||
         failure.symptom.toLowerCase().includes(symptom.toLowerCase())
       )
@@ -180,7 +193,7 @@ export class PartsRecommendationAdvisor {
 
     if (matchedFailures.length > 0) {
       // Use the highest confidence match
-      const bestMatch = matchedFailures.reduce((best: any, current: any) =>
+      const bestMatch = matchedFailures.reduce((best: FailureEntry, current: FailureEntry) =>
         current.confidence > best.confidence ? current : best
       );
 

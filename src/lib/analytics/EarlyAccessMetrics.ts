@@ -115,6 +115,7 @@ export class EarlyAccessMetrics {
    * Calculate overall metrics
    */
   calculateOverallMetrics(): EarlyAccessMetricsData {
+    const n = this.feedbackData.length;
     const workshopIds = new Set(this.feedbackData.map(f => f.workshopId));
     const workshops: WorkshopMetrics[] = [];
 
@@ -126,24 +127,25 @@ export class EarlyAccessMetrics {
     }
 
     const totalProjects = new Set(this.feedbackData.map(f => f.projectId)).size;
+    const safeDiv = (a: number, b: number) => (b > 0 ? a / b : 0);
 
     const overallAccuracy = {
-      bom: this.feedbackData.reduce((sum, f) => sum + f.accuracy.bomAccuracy, 0) / this.feedbackData.length,
-      hardware: this.feedbackData.reduce((sum, f) => sum + f.accuracy.hardwareAccuracy, 0) / this.feedbackData.length,
-      overall: this.feedbackData.reduce((sum, f) => sum + f.accuracy.overallAccuracy, 0) / this.feedbackData.length
+      bom: safeDiv(this.feedbackData.reduce((sum, f) => sum + f.accuracy.bomAccuracy, 0), n),
+      hardware: safeDiv(this.feedbackData.reduce((sum, f) => sum + f.accuracy.hardwareAccuracy, 0), n),
+      overall: safeDiv(this.feedbackData.reduce((sum, f) => sum + f.accuracy.overallAccuracy, 0), n)
     };
 
-    const averageTimeSavings = this.feedbackData.reduce((sum, f) => sum + f.usability.timeSavings, 0) / this.feedbackData.length;
-    const averageSatisfaction = this.feedbackData.reduce((sum, f) => sum + f.usability.satisfaction, 0) / this.feedbackData.length;
+    const averageTimeSavings = safeDiv(this.feedbackData.reduce((sum, f) => sum + f.usability.timeSavings, 0), n);
+    const averageSatisfaction = safeDiv(this.feedbackData.reduce((sum, f) => sum + f.usability.satisfaction, 0), n);
 
     const featureAdoption = {
-      fly_screen: (this.feedbackData.filter(f => f.feature === 'fly_screen').length / this.feedbackData.length) * 100,
-      quick_order: (this.feedbackData.filter(f => f.feature === 'quick_order').length / this.feedbackData.length) * 100,
-      egyptian_specials: (this.feedbackData.filter(f => f.feature === 'egyptian_specials').length / this.feedbackData.length) * 100,
-      custom_mullion: (this.feedbackData.filter(f => f.feature === 'custom_mullion').length / this.feedbackData.length) * 100
+      fly_screen: safeDiv(this.feedbackData.filter(f => f.feature === 'fly_screen').length, n) * 100,
+      quick_order: safeDiv(this.feedbackData.filter(f => f.feature === 'quick_order').length, n) * 100,
+      egyptian_specials: safeDiv(this.feedbackData.filter(f => f.feature === 'egyptian_specials').length, n) * 100,
+      custom_mullion: safeDiv(this.feedbackData.filter(f => f.feature === 'custom_mullion').length, n) * 100
     };
 
-    const recommendationRate = (this.feedbackData.filter(f => f.wouldRecommend).length / this.feedbackData.length) * 100;
+    const recommendationRate = safeDiv(this.feedbackData.filter(f => f.wouldRecommend).length, n) * 100;
 
     return {
       totalWorkshops: workshops.length,

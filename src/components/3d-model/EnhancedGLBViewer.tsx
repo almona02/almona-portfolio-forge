@@ -209,7 +209,11 @@ export const EnhancedGLBViewer = forwardRef<{ resetCamera: () => void }, Enhance
       }
     } catch (err) {
       console.error('[EnhancedGLBViewer] Failed to start WebXR AR session', err);
-      alert('Unable to start AR session in this browser.');
+      toast({
+        title: 'AR Error',
+        description: 'Unable to start AR session in this browser.',
+        variant: 'destructive',
+      });
     }
   };
 

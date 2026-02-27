@@ -31,12 +31,12 @@ export const LowStockAlerts: React.FC = () => {
       }
       setLoading(false)
     }
-    load()
+    void load();
     const ch = supabase
       .channel('low-stock-overview')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => load())
-      .subscribe()
-    return () => { mounted = false; ch.unsubscribe() }
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => void load());
+    ch.subscribe();
+    return () => { mounted = false; void ch.unsubscribe(); }
   }, [])
 
   return (

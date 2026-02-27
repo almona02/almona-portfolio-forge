@@ -74,7 +74,7 @@ export const validatePhase1Optimizations = (): ValidationResults => {
   let lcp = 0;
   if ('PerformanceObserver' in window) {
     try {
-      const lcpEntries: any[] = [];
+      const lcpEntries: PerformanceEntry[] = [];
       let observerDisconnected = false;
       
       const lcpObserver = new PerformanceObserver((entryList) => {
@@ -97,8 +97,8 @@ export const validatePhase1Optimizations = (): ValidationResults => {
         // we'll proceed with lcp=0 if not available yet
       } catch {
         // Fallback for older browsers
-        try {
-          (lcpObserver as any).observe({ entryTypes: ['largest-contentful-paint'] });
+      try {
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
         } catch {
           // PerformanceObserver not supported, lcp remains 0
         }
@@ -126,11 +126,12 @@ export const validatePhase1Optimizations = (): ValidationResults => {
   const longTasks = performance.getEntriesByType('longtask') as PerformanceEntry[];
   const tbt = longTasks.reduce((total, task) => total + (task.duration || 0), 0);
 
-  // Calculate CLS
-  const layoutShifts = performance.getEntriesByType('layout-shift') as any[];
+  // Calculate CLS (LayoutShift entries have value and hadRecentInput)
+  interface LayoutShiftEntry extends PerformanceEntry { value?: number; hadRecentInput?: boolean }
+  const layoutShifts = performance.getEntriesByType('layout-shift') as LayoutShiftEntry[];
   const cls = layoutShifts
     .filter(entry => !entry.hadRecentInput)
-    .reduce((total, entry) => total + (entry.value || 0), 0);
+    .reduce((total, entry) => total + (entry.value ?? 0), 0);
 
   const loadTimes = {
     FCP: fcp,
@@ -143,10 +144,15 @@ export const validatePhase1Optimizations = (): ValidationResults => {
   console.log(`First Contentful Paint: ${Math.round(loadTimes.FCP)}ms ${loadTimes.FCP < 1400 ? '✅' : '⚠️'} (Target: <1400ms)`);
   console.log(`Largest Contentful Paint: ${Math.round(loadTimes.LCP)}ms ${loadTimes.LCP < 2400 ? '✅' : '⚠️'} (Target: <2400ms)`);
   console.log(`Total Blocking Time: ${Math.round(loadTimes.TBT)}ms ${loadTimes.TBT < 400 ? '✅' : '⚠️'} (Target: <400ms)`);
-  console.log(`Cumulative Layout Shift: ${loadTimes.CLS.toFixed(3)} ${loadTimes.CLS < 0.1 ? '✅' : '⚠️'} (Target: <0.1)`);
+  console.log(`Cumulative Layout Shift: ${Number(loadTimes.CLS).toFixed(3)} ${loadTimes.CLS < 0.1 ? '✅' : '⚠️'} (Target: <0.1)`);
 
-  // 8. Connection Info (Egypt specific)
-  const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+  interface NavigatorWithConnection extends Navigator {
+    connection?: { effectiveType?: string; downlink?: number; rtt?: number; saveData?: boolean };
+    mozConnection?: { effectiveType?: string; downlink?: number; rtt?: number; saveData?: boolean };
+    webkitConnection?: { effectiveType?: string; downlink?: number; rtt?: number; saveData?: boolean };
+  }
+  const nav = navigator as NavigatorWithConnection;
+  const connection = nav.connection ?? nav.mozConnection ?? nav.webkitConnection;
   let connectionInfo = null;
   
   if (connection) {
@@ -262,10 +268,9 @@ export const validatePhase1Optimizations = (): ValidationResults => {
 
 // Export for easy access in console
 if (typeof window !== 'undefined') {
-  (window as any).validateAlmonaPerformance = validatePhase1Optimizations;
-  
-  // Auto-run in development mode
-  const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+  (window as Window & { validateAlmonaPerformance?: () => ValidationResults }).validateAlmonaPerformance = validatePhase1Optimizations;
+
+  const isDev = import.meta.env?.DEV ?? process.env.NODE_ENV === 'development';
   if (isDev) {
     window.addEventListener('load', () => {
       setTimeout(() => {

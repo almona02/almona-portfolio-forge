@@ -77,7 +77,7 @@ describe('Apex Engine V6: Grid Integration', () => {
         expect(geometry.muntins).toBeDefined();
         // Should be empty array
         expect(Array.isArray(geometry.muntins)).toBe(true);
-        expect((geometry.muntins as any[]).length).toBe(0);
+        expect((geometry.muntins as unknown[]).length).toBe(0);
     });
 
     it('should generate 1 mullion for 2x1 grid', () => {
@@ -98,7 +98,7 @@ describe('Apex Engine V6: Grid Integration', () => {
         expect(Array.isArray(geometry.muntins)).toBe(true);
         
         // Should have 1 vertical mullion
-        expect((geometry.muntins as any[]).length).toBeGreaterThanOrEqual(1);
+        expect((geometry.muntins as unknown[]).length).toBeGreaterThanOrEqual(1);
     });
 
     it('should generate 1 transom for 1x2 grid', () => {
@@ -119,7 +119,7 @@ describe('Apex Engine V6: Grid Integration', () => {
         expect(Array.isArray(geometry.muntins)).toBe(true);
         
         // Should have 1 horizontal transom
-        expect((geometry.muntins as any[]).length).toBeGreaterThanOrEqual(1);
+        expect((geometry.muntins as unknown[]).length).toBeGreaterThanOrEqual(1);
     });
 
     it('should generate cross mullions for 2x2 grid', () => {
@@ -141,7 +141,7 @@ describe('Apex Engine V6: Grid Integration', () => {
 
         const geometry = generateModelGeometries(gridWindow);
         // Expect 1 vertical + 1 horizontal = 2 elements
-        expect((geometry.muntins as any[]).length).toBeGreaterThanOrEqual(2);
+        expect((geometry.muntins as unknown[]).length).toBeGreaterThanOrEqual(2);
     });
 
     it('should NOT generate automatic muntins if presetId is present', () => {
@@ -159,6 +159,6 @@ describe('Apex Engine V6: Grid Integration', () => {
         };
 
         const geometry = generateModelGeometries(presetWindow);
-        expect((geometry.muntins as any[]).length).toBe(0);
+        expect((geometry.muntins as unknown[]).length).toBe(0);
     });
 });

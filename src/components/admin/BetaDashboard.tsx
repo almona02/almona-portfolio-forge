@@ -16,10 +16,10 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BetaMetrics } from '@/lib/analytics/BetaMetrics';
-import type { BetaMetrics as BetaMetricsType } from '@/lib/analytics/BetaMetrics';
+import type { BetaMetricsData } from '@/lib/analytics/BetaMetrics';
 
 export const BetaDashboard: React.FC = () => {
-  const [metrics, setMetrics] = useState<BetaMetricsType | null>(null);
+  const [metrics, setMetrics] = useState<BetaMetricsData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

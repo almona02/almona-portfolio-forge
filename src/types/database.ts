@@ -121,6 +121,9 @@ export interface Database {
         Row: {
           id: string
           ticket_number: string
+          digital_twin_code?: string | null
+          category?: string | null
+          machine_model?: string | null
           user_id: string
           title: string
           description: string | null
@@ -177,6 +180,7 @@ export interface Database {
           preferred_contact_method?: string
           site_location?: string | null
           machine_serial_number?: string | null
+          machine_model?: string | null
           resolution_summary?: string | null
           customer_satisfaction_rating?: number | null
           customer_feedback?: string | null
@@ -983,6 +987,85 @@ export interface Database {
           updated_at?: string
         }
       }
+      report_schedules: {
+        Row: {
+          id: string
+          template_id: string
+          name: string
+          frequency: string
+          day_of_week: number | null
+          day_of_month: number | null
+          time: string
+          recipients: string[]
+          enabled: boolean
+          last_run_at: string | null
+          next_run_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          template_id: string
+          name: string
+          frequency: string
+          day_of_week?: number | null
+          day_of_month?: number | null
+          time: string
+          recipients: string[]
+          enabled?: boolean
+          next_run_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          name?: string
+          frequency?: string
+          day_of_week?: number | null
+          day_of_month?: number | null
+          time?: string
+          recipients?: string[]
+          enabled?: boolean
+          last_run_at?: string | null
+          next_run_at?: string | null
+          updated_at?: string
+        }
+      }
+      fabricator_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          material: string
+          width: number
+          height: number | null
+          thickness: number | null
+          specifications: Record<string, unknown> | null
+          thumbnail_url: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          material: string
+          width: number
+          height?: number | null
+          thickness?: number | null
+          specifications?: Record<string, unknown> | null
+          thumbnail_url?: string | null
+        }
+        Update: {
+          name?: string
+          material?: string
+          width?: number
+          height?: number | null
+          thickness?: number | null
+          specifications?: Record<string, unknown> | null
+          thumbnail_url?: string | null
+          updated_at?: string
+        }
+      }
       fabricator_projects: {
         Row: {
           id: string
@@ -1345,6 +1428,21 @@ export interface Database {
           updated_at?: string
         }
       }
+      fabricator_dual_write_consistency_reports: {
+        Row: { id: string; sample_size: number; mismatch_count: number; drift_rate: number; report: Record<string, unknown>; reality_os_event_hash: string | null; reality_os_recorded_at: string | null; created_at: string }
+        Insert: { sample_size: number; mismatch_count: number; drift_rate: number; report: Record<string, unknown>; reality_os_event_hash?: string | null; reality_os_recorded_at?: string | null }
+        Update: { sample_size?: number; mismatch_count?: number; drift_rate?: number; report?: Record<string, unknown>; reality_os_event_hash?: string | null; reality_os_recorded_at?: string | null }
+      }
+      reality_events: {
+        Row: { event_hash: string; chain_position: number; payload: Record<string, unknown>; recorded_at: string }
+        Insert: never
+        Update: never
+      }
+      reality_events_readonly: {
+        Row: { event_hash: string; chain_position: number; payload: Record<string, unknown>; recorded_at: string }
+        Insert: never
+        Update: never
+      }
     }
     Views: {
       [_ in never]: never
@@ -1426,6 +1524,21 @@ export interface Database {
           plan_name: string | null
           coverage: Record<string, unknown> | null
         }[]
+      }
+      realityos_record_event: {
+        Args: {
+          p_event_type: string
+          p_entity_id: string
+          p_vertical_id: string
+          p_proof: Record<string, unknown>
+          p_payload: Record<string, unknown>
+          p_recorded_at: string
+        }
+        Returns: { event_hash: string }[]
+      }
+      reality_events_readonly: {
+        Args: Record<string, never>
+        Returns: { event_hash: string; chain_position: number; payload: Record<string, unknown>; recorded_at: string }[]
       }
     }
     Enums: {

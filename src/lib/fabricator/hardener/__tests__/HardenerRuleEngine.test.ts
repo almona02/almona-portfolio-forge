@@ -15,7 +15,7 @@ describe('HardenerRuleEngine', () => {
 
   describe('Constitutional Compliance', () => {
     it('should reject supplier data dependencies', () => {
-      const context: any = {
+      const context = {
         profileSystem: 'caluminium_ps_v3',
         material: 'aluminum',
         glassThickness: 6,
@@ -23,7 +23,7 @@ describe('HardenerRuleEngine', () => {
         sashHeight: 1500,
         openingType: 'casement',
         supplierId: 'supplier_123', // ❌ FORBIDDEN
-      };
+      } as HardenerSelectionContext & { supplierId?: string };
 
       const result = engine.selectHardener(context);
 
@@ -150,10 +150,10 @@ describe('HardenerRuleEngine', () => {
     });
 
     it('should fail for missing required fields', () => {
-      const context: any = {
+      const context = {
         profileSystem: 'caluminium_ps_v3',
         // Missing material, glassThickness, etc.
-      };
+      } as HardenerSelectionContext;
 
       const result = engine.selectHardener(context);
 

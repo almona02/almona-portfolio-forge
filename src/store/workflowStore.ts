@@ -1,6 +1,16 @@
 import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fabricator';
+import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
+/** Minimal quote shape for workflow pipeline (Phase 1) */
+export interface WorkflowQuote {
+  subtotal: number;
+  tax: number;
+  total: number;
+  currency: string;
+  lineItems?: Array<{ description: string; quantity: number; unitPrice: number; total: number }>;
+}
 
 interface WorkflowState {
   // Project data
@@ -8,15 +18,21 @@ interface WorkflowState {
   measurementData: MeasurementData | null;
   designData: WindowUnit | null;
   optimizationResult: OptimizationResult | null;
-  
+  /** P1: BOM from PresetAwareBOMGenerator */
+  bom: CompleteBOM | null;
+  /** P1: Priced quote for fabricator workflow */
+  quote: WorkflowQuote | null;
+
   // Progress tracking
   completedSteps: Set<string>;
   activeStep: string;
-  
+
   // Actions
   setMeasurementData: (data: MeasurementData) => void;
   setDesignData: (data: WindowUnit) => void;
   setOptimizationResult: (result: OptimizationResult) => void;
+  setBOM: (bom: CompleteBOM | null) => void;
+  setQuote: (quote: WorkflowQuote | null) => void;
   completeStep: (step: string) => void;
   setActiveStep: (step: string) => void;
   canAccessStep: (step: string) => boolean;
@@ -42,6 +58,8 @@ export const useWorkflowStore = create<WorkflowState>()(
       measurementData: null,
       designData: null,
       optimizationResult: null,
+      bom: null,
+      quote: null,
       completedSteps: new Set(),
       activeStep: 'measuring',
       
@@ -78,7 +96,15 @@ export const useWorkflowStore = create<WorkflowState>()(
       setOptimizationResult: (result) => {
         set({ optimizationResult: result });
       },
-      
+
+      setBOM: (bom) => {
+        set({ bom });
+      },
+
+      setQuote: (quote) => {
+        set({ quote });
+      },
+
       completeStep: (step) => {
         set((state) => ({
           completedSteps: new Set([...state.completedSteps, step]),
@@ -107,6 +133,8 @@ export const useWorkflowStore = create<WorkflowState>()(
           measurementData: null,
           designData: null,
           optimizationResult: null,
+          bom: null,
+          quote: null,
           completedSteps: new Set(),
           activeStep: 'measuring',
         });
@@ -123,13 +151,18 @@ export const useWorkflowStore = create<WorkflowState>()(
         currentProject: state.currentProject,
         measurementData: state.measurementData,
         designData: state.designData,
+        optimizationResult: state.optimizationResult,
+        bom: state.bom,
+        quote: state.quote,
         completedSteps: Array.from(state.completedSteps),
         activeStep: state.activeStep,
       }),
-      // On rehydrate, convert array back to Set
+      // On rehydrate, convert array back to Set and ensure new fields exist
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.completedSteps = new Set(state.completedSteps as unknown as string[]);
+          if (state.bom === undefined) state.bom = null;
+          if (state.quote === undefined) state.quote = null;
         }
       },
     }

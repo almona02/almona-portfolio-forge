@@ -35,6 +35,19 @@ export interface MemoryEvent {
 
 export type MemoryEventListener = (event: MemoryEvent) => void;
 
+/** Attribute with optional byteLength for memory estimation */
+interface GeoAttribute { array?: { byteLength?: number } }
+/** Geometry shape for memory estimation and disposal */
+interface GeoShape { dispose?: () => void; attributes?: Record<string, GeoAttribute>; index?: { array?: { byteLength?: number } } }
+/** Material shape for disposal */
+interface MatShape { map?: { dispose?: () => void }; dispose?: () => void }
+/** Three.js-like object for memory estimation and disposal */
+interface DisposableObject {
+  geometry?: GeoShape;
+  material?: MatShape | MatShape[];
+  children?: DisposableObject[];
+}
+
 /**
  * MemoryMonitor - Monitors and manages memory for 3D rendering
  */
@@ -66,7 +79,8 @@ export class MemoryMonitor {
    * Check if memory monitoring is available in this browser
    */
   isAvailable(): boolean {
-    return typeof window !== 'undefined' && 'performance' in window && 'memory' in (performance as any);
+    const perf = performance as Performance & { memory?: unknown };
+    return typeof window !== 'undefined' && 'performance' in window && 'memory' in perf;
   }
 
   /**
@@ -77,7 +91,8 @@ export class MemoryMonitor {
       return null;
     }
 
-    const perfMemory = (performance as any).memory;
+    const perfMemory = (performance as Performance & { memory?: { usedJSHeapSize: number; totalJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
+    if (!perfMemory) return null;
     const used = perfMemory.usedJSHeapSize;
     const total = perfMemory.totalJSHeapSize;
     const limit = perfMemory.jsHeapSizeLimit;
@@ -238,39 +253,34 @@ export class MemoryMonitor {
    * Note: This only works in Chrome DevTools with --js-flags="--expose-gc"
    */
   forceGarbageCollection(): void {
-    if (typeof (window as any).gc === 'function') {
-      (window as any).gc();
+    const win = window as Window & { gc?: () => void };
+    if (typeof win.gc === 'function') {
+      win.gc();
     }
   }
 
   /**
    * Estimate memory usage of a Three.js object
    */
-  estimateObjectMemory(object: any): number {
+  estimateObjectMemory(object: DisposableObject): number {
     let memory = 0;
 
     if (object.geometry) {
       const geometry = object.geometry;
       if (geometry.attributes) {
-        Object.values(geometry.attributes).forEach((attr: any) => {
-          if (attr.array) {
-            memory += attr.array.byteLength;
-          }
-        });
+        for (const attr of Object.values(geometry.attributes)) {
+          const arr = attr?.array as { byteLength?: number } | undefined;
+          if (arr?.byteLength) memory += arr.byteLength;
+        }
       }
-      if (geometry.index) {
-        memory += geometry.index.array.byteLength;
-      }
+      const idxArr = geometry.index?.array as { byteLength?: number } | undefined;
+      if (idxArr?.byteLength) memory += idxArr.byteLength;
     }
 
     if (object.material) {
-      // Rough estimate for textures
-      if (Array.isArray(object.material)) {
-        object.material.forEach((mat: any) => {
-          if (mat.map) memory += 1024 * 1024; // ~1MB per texture (rough estimate)
-        });
-      } else {
-        if (object.material.map) memory += 1024 * 1024;
+      const mats = Array.isArray(object.material) ? object.material : [object.material];
+      for (const mat of mats) {
+        if (mat?.map) memory += 1024 * 1024;
       }
     }
 
@@ -280,30 +290,25 @@ export class MemoryMonitor {
   /**
    * Cleanup Three.js objects to free memory
    */
-  disposeObject(object: any): void {
+  disposeObject(object: DisposableObject | null): void {
     if (!object) return;
 
-    // Dispose geometry
-    if (object.geometry) {
+    if (object.geometry?.dispose) {
       object.geometry.dispose();
     }
 
-    // Dispose materials
     if (object.material) {
-      if (Array.isArray(object.material)) {
-        object.material.forEach((mat: any) => {
-          if (mat.map) mat.map.dispose();
-          mat.dispose();
-        });
-      } else {
-        if (object.material.map) object.material.map.dispose();
-        object.material.dispose();
+      const mats = Array.isArray(object.material) ? object.material : [object.material];
+      for (const mat of mats) {
+        if (mat?.map && typeof (mat.map as { dispose?: () => void }).dispose === 'function') (mat.map as { dispose: () => void }).dispose();
+        if (typeof mat?.dispose === 'function') mat.dispose();
       }
     }
 
-    // Recursively dispose children
-    if (object.children) {
-      object.children.forEach((child: any) => this.disposeObject(child));
+    if (object.children?.length) {
+      for (const child of object.children) {
+        this.disposeObject(child);
+      }
     }
   }
 }

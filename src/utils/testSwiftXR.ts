@@ -123,7 +123,7 @@ export const testSwiftXR = {
 
 // Make available in browser console
 if (typeof window !== 'undefined') {
-  (window as any).testSwiftXR = testSwiftXR;
+  (window as Window & { testSwiftXR?: typeof testSwiftXR }).testSwiftXR = testSwiftXR;
   console.log('✅ SwiftXR Test Utility loaded. Use testSwiftXR.testAll() to run tests.');
 }
 

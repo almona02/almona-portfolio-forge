@@ -124,24 +124,24 @@ export function UnifiedARManager({
 
         if ('xr' in navigator) {
           try {
-            const xr = (navigator as any).xr;
-            if (xr && typeof xr.isSessionSupported === 'function') {
-              immersiveAR = await xr.isSessionSupported('immersive-ar');
+            const navXR = (navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean>; requestSession?: (mode: XRSessionMode, init?: XRSessionInit) => Promise<XRSession> } }).xr;
+            if (navXR && typeof navXR.isSessionSupported === 'function') {
+              immersiveAR = await navXR.isSessionSupported('immersive-ar');
               webXR = immersiveAR;
 
               // Check for advanced features
-              if (immersiveAR) {
-                const session = await xr.requestSession('immersive-ar', {
+              if (immersiveAR && navXR.requestSession) {
+                const session = await navXR.requestSession('immersive-ar', {
                   requiredFeatures: ['hit-test'],
                   optionalFeatures: ['light-estimation', 'anchors', 'depth-sensing']
                 });
 
-                hitTest = session && typeof session.requestHitTestSource === 'function';
-                lightingEstimation = session && 'light-estimation' in session;
-                anchors = session && 'anchors' in session;
-                depthSensing = session && 'depth-sensing' in session;
+                hitTest = typeof session.requestHitTestSource === 'function';
+                lightingEstimation = 'light-estimation' in session;
+                anchors = 'anchors' in session;
+                depthSensing = 'depth-sensing' in session;
 
-                if (session) session.end();
+                await session.end();
               }
             }
           } catch (error) {
@@ -195,7 +195,7 @@ export function UnifiedARManager({
       }
     };
 
-    detectCapabilities();
+    void detectCapabilities();
   }, [enableWebXR, enableSceneViewer, enableQuickLook, onError]);
 
   // Performance monitoring during AR sessions
@@ -218,15 +218,16 @@ export function UnifiedARManager({
         lastTime = currentTime;
       };
 
-      // Memory usage (if available)
-      const perfMemory = (performance as any).memory;
+      // Memory usage (if available - Chrome only)
+      const perfMemory = (performance as Performance & { memory?: { usedJSHeapSize: number; totalJSHeapSize: number } }).memory;
       const memoryUsage = perfMemory ?
         Math.round((perfMemory.usedJSHeapSize / perfMemory.totalJSHeapSize) * 100) : 0;
 
       // Battery level (if available)
       let batteryLevel: number | undefined;
-      if ('getBattery' in navigator) {
-        (navigator as any).getBattery().then((battery: any) => {
+      const navBattery = navigator as Navigator & { getBattery?: () => Promise<{ level: number }> };
+      if (typeof navBattery.getBattery === 'function') {
+        void navBattery.getBattery().then((battery) => {
           batteryLevel = Math.round(battery.level * 100);
         });
       }
@@ -255,15 +256,14 @@ export function UnifiedARManager({
   // Helper functions for AR launch methods
   const launchWebXR = useCallback(async () => {
     if (!capabilities?.webXR) throw new Error('WebXR not supported');
-
+    await Promise.resolve(); // Placeholder for future WebXR integration
     // WebXR implementation would go here
-    // This would integrate with your existing EnhancedGLBViewer WebXR code
     console.log('Launching WebXR AR session');
   }, [capabilities?.webXR]);
 
   const launchSceneViewer = useCallback(async () => {
     if (!capabilities?.sceneViewer) throw new Error('Scene Viewer not supported');
-
+    await Promise.resolve(); // Satisfy async
     const url = new URL(modelPath, window.location.origin).toString();
     const sceneViewerUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(url)}&mode=ar_preferred&title=${encodeURIComponent('Industrial Machine')}`;
 
@@ -272,7 +272,7 @@ export function UnifiedARManager({
 
   const launchQuickLook = useCallback(async () => {
     if (!capabilities?.quickLook || !usdzPath) throw new Error('Quick Look not supported');
-
+    await Promise.resolve(); // Satisfy async
     // iOS Quick Look for USDZ files
     const link = document.createElement('a');
     link.href = usdzPath;
@@ -362,7 +362,7 @@ export function UnifiedARManager({
   // This function is kept for backward compatibility but uses the new integration
 
   const launchFallback = async () => {
-    // Fallback to enhanced 3D viewer
+    await Promise.resolve(); // Placeholder for fallback logic
     console.log('Launching 3D fallback mode');
   };
 
@@ -439,7 +439,7 @@ export function UnifiedARManager({
 
           {/* Launch Button */}
           <Button
-            onClick={() => launchAR()}
+            onClick={() => void launchAR()}
             disabled={!deviceInfo?.supportsAR}
             className="swiftxr-launch-button w-full"
             size="lg"

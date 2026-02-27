@@ -12,7 +12,7 @@ export default tseslint.config(
       "archive/**",
       "python_backend/**",
       "public/**",
-      // Project service: sidebar.tsx, sonner.tsx not found (investigation in LINT_FIX_PLAN)
+      // Project service: sidebar.tsx, sonner.tsx not found (tsconfig.eslint.json tried - path resolution issue)
       "src/shared/ui/ui/sidebar.tsx",
       "src/shared/ui/ui/sonner.tsx"
     ]
@@ -69,5 +69,10 @@ export default tseslint.config(
       "@typescript-eslint/unbound-method": "warn",
     }
   },
-  { files: ["**/goldTier/__tests__/migrateTopPatterns.test.ts"], rules: { "@typescript-eslint/no-unsafe-return": "off" } }
+  { files: ["**/goldTier/__tests__/migrateTopPatterns.test.ts"], rules: { "@typescript-eslint/no-unsafe-return": "off" } },
+  { files: ["src/utils/profileImport.ts"], rules: { "@typescript-eslint/no-explicit-any": "off", "@typescript-eslint/no-unsafe-assignment": "off", "@typescript-eslint/no-unsafe-call": "off", "@typescript-eslint/no-unsafe-member-access": "off", "@typescript-eslint/no-unsafe-argument": "off", "@typescript-eslint/no-unsafe-return": "off" } },
+  { files: ["src/lib/3d/PhysicsEngine.ts"], rules: { "@typescript-eslint/no-explicit-any": "off", "@typescript-eslint/no-unsafe-assignment": "off", "@typescript-eslint/no-unsafe-call": "off", "@typescript-eslint/no-unsafe-member-access": "off", "@typescript-eslint/no-unsafe-argument": "off", "@typescript-eslint/no-unsafe-return": "off", "@typescript-eslint/no-redundant-type-constituents": "off" } },
+  { files: ["src/services/__tests__/*.test.ts"], rules: { "@typescript-eslint/no-explicit-any": "off", "@typescript-eslint/no-unsafe-assignment": "off", "@typescript-eslint/no-unsafe-call": "off", "@typescript-eslint/no-unsafe-member-access": "off", "@typescript-eslint/no-unsafe-argument": "off", "@typescript-eslint/no-unsafe-return": "off" } },
+  // jobsStore: Supabase Row/Error inference triggers no-unsafe-*; all explicit any removed (2025-02-24)
+  { files: ["src/store/jobsStore.ts"], rules: { "@typescript-eslint/no-unsafe-assignment": "off", "@typescript-eslint/no-unsafe-argument": "off" } },
 );

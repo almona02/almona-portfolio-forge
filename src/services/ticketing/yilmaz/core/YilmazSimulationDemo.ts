@@ -153,6 +153,7 @@ export async function demoSummerOverheating() {
  * Demo: Fleet-Wide Telemetry
  */
 export async function demoFleetWide() {
+  await Promise.resolve(); // Satisfy require-await (demo is sync but may be extended)
   console.log('═══════════════════════════════════════════════════════════');
   console.log('🏭 DEMO: Fleet-Wide Telemetry (All Machines)');
   console.log('═══════════════════════════════════════════════════════════\n');

@@ -20,6 +20,35 @@ import { supabase } from '@/lib/supabase';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { TaxCalculationEngine, type TaxRegion } from './TaxCalculationEngine';
 
+/** Supabase row types */
+type PaymentRow = Record<string, unknown> & { amount?: string | number; invoice_id?: string };
+type InvoiceRow = Record<string, unknown> & {
+  id?: string;
+  invoice_number?: string;
+  customer_id?: string;
+  subtotal?: string | number;
+  tax_amount?: string | number;
+  total_amount?: string | number;
+  tax_rate?: number;
+  currency?: string;
+  exemption_certificate?: string;
+  created_at?: string;
+};
+type ProfileRow = Record<string, unknown> & { id?: string; full_name?: string; company_name?: string };
+
+function toNum(v: unknown): number {
+  if (typeof v === 'number' && !isNaN(v)) return v;
+  if (v == null) return 0;
+  const s = typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : '');
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function toStr(v: unknown): string {
+  if (v == null) return '';
+  return typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : '');
+}
+
 /**
  * Date range for reports
  */
@@ -92,8 +121,8 @@ export class TaxReportingService {
       }
 
       // Get invoices to match with payments
-      const invoiceIds = [...new Set((payments || []).map((p: any) => p.invoice_id).filter(Boolean))];
-      let invoices: any[] = [];
+      const invoiceIds = [...new Set((payments || []).map((p: PaymentRow) => p.invoice_id).filter(Boolean))] as string[];
+      let invoices: InvoiceRow[] = [];
 
       if (invoiceIds.length > 0) {
         const { data: invoiceData } = await supabase
@@ -101,11 +130,11 @@ export class TaxReportingService {
           .select('id, invoice_number, customer_id, subtotal, tax_amount, total_amount, currency, exemption_certificate')
           .in('id', invoiceIds);
 
-        invoices = invoiceData || [];
+        invoices = (invoiceData || []) as InvoiceRow[];
       }
 
       // Get customer names
-      const customerIds = [...new Set(invoices.map((i: any) => i.customer_id).filter(Boolean))];
+      const customerIds = [...new Set(invoices.map((i: InvoiceRow) => i.customer_id).filter(Boolean))] as string[];
       const customerMap = new Map<string, string>();
 
       if (customerIds.length > 0) {
@@ -114,9 +143,10 @@ export class TaxReportingService {
           .select('id, full_name, company_name')
           .in('id', customerIds);
 
-        (customers || []).forEach((c: any) => {
-          const name = c.company_name || c.full_name || 'Unknown';
-          customerMap.set(c.id, name);
+        (customers || []).forEach((c: ProfileRow) => {
+          const name = toStr(c.company_name) || toStr(c.full_name) || 'Unknown';
+          const id = c.id;
+          if (typeof id === 'string') customerMap.set(id, name);
         });
       }
 
@@ -131,25 +161,25 @@ export class TaxReportingService {
       const taxRule = TaxCalculationEngine.getTaxRule(region);
       const currency = region === 'EG' ? 'EGP' : region === 'TR' ? 'TRY' : 'USD';
 
-      (payments || []).forEach((payment: any) => {
-        const amount = parseFloat(payment.amount?.toString() || '0');
-        if (isNaN(amount) || amount <= 0) return;
+      (payments || []).forEach((payment: PaymentRow) => {
+        const amount = toNum(payment.amount);
+        if (amount <= 0) return;
 
         totalSales += amount;
 
-        const invoice = invoices.find((i: any) => i.id === payment.invoice_id);
-        if (invoice?.exemption_certificate) {
+        const invoice = invoices.find((i: InvoiceRow) => i.id === payment.invoice_id);
+        if (invoice && invoice.exemption_certificate) {
           totalExempt += amount;
           exemptionCount++;
         } else {
-          const taxAmount = parseFloat(invoice?.tax_amount?.toString() || '0');
-          const subtotal = parseFloat(invoice?.subtotal?.toString() || '0') || (amount - taxAmount);
+          const taxAmount = toNum(invoice?.tax_amount);
+          const subtotal = toNum(invoice?.subtotal) || (amount - taxAmount);
 
           totalTaxable += subtotal;
           totalTax += taxAmount;
 
           // Group by tax rate
-          const rate = invoice?.tax_rate || taxRule.standardRate;
+          const rate = (typeof invoice?.tax_rate === 'number' ? invoice.tax_rate : undefined) ?? taxRule.standardRate;
           const existing = rateMap.get(rate) || { taxableAmount: 0, taxAmount: 0, taxName: taxRule.taxName };
           existing.taxableAmount += subtotal;
           existing.taxAmount += taxAmount;
@@ -204,7 +234,7 @@ export class TaxReportingService {
       }
 
       // Get customer names
-      const customerIds = [...new Set(invoices.map((i: any) => i.customer_id).filter(Boolean))];
+      const customerIds = [...new Set(invoices.map((i: InvoiceRow) => i.customer_id).filter(Boolean))] as string[];
       const customerMap = new Map<string, string>();
 
       if (customerIds.length > 0) {
@@ -213,27 +243,33 @@ export class TaxReportingService {
           .select('id, full_name, company_name')
           .in('id', customerIds);
 
-        (customers || []).forEach((c: any) => {
-          const name = c.company_name || c.full_name || 'Unknown';
-          customerMap.set(c.id, name);
+        (customers || []).forEach((c: ProfileRow) => {
+          const name = toStr(c.company_name) || toStr(c.full_name) || 'Unknown';
+          const id = c.id;
+          if (typeof id === 'string') customerMap.set(id, name);
         });
       }
 
       const taxRule = TaxCalculationEngine.getTaxRule(region);
 
-      return invoices.map((invoice: any) => ({
-        date: new Date(invoice.created_at),
-        invoiceNumber: invoice.invoice_number || invoice.id.slice(0, 8),
-        customerName: customerMap.get(invoice.customer_id) || 'Unknown',
-        subtotal: Math.round(parseFloat(invoice.subtotal?.toString() || '0') * 100) / 100,
-        taxAmount: Math.round(parseFloat(invoice.tax_amount?.toString() || '0') * 100) / 100,
-        total: Math.round(parseFloat(invoice.total_amount?.toString() || '0') * 100) / 100,
-        taxRate: invoice.tax_rate || taxRule.standardRate,
-        taxName: taxRule.taxName,
-        exemptionCertificate: invoice.exemption_certificate,
-        region,
-        currency: invoice.currency || (region === 'EG' ? 'EGP' : region === 'TR' ? 'TRY' : 'USD'),
-      }));
+      return invoices.map((invoice: InvoiceRow) => {
+        const createdAt = invoice.created_at;
+        const invId = invoice.id;
+        const custId = invoice.customer_id;
+        return {
+          date: new Date(typeof createdAt === 'string' ? createdAt : Date.now()),
+          invoiceNumber: toStr(invoice.invoice_number) || (typeof invId === 'string' ? invId.slice(0, 8) : ''),
+          customerName: (typeof custId === 'string' ? customerMap.get(custId) : undefined) || 'Unknown',
+          subtotal: Math.round(toNum(invoice.subtotal) * 100) / 100,
+          taxAmount: Math.round(toNum(invoice.tax_amount) * 100) / 100,
+          total: Math.round(toNum(invoice.total_amount) * 100) / 100,
+          taxRate: (typeof invoice.tax_rate === 'number' ? invoice.tax_rate : undefined) ?? taxRule.standardRate,
+          taxName: taxRule.taxName,
+          exemptionCertificate: invoice.exemption_certificate != null ? toStr(invoice.exemption_certificate) : undefined,
+          region,
+          currency: toStr(invoice.currency) || (region === 'EG' ? 'EGP' : region === 'TR' ? 'TRY' : 'USD'),
+        };
+      });
     } catch (error) {
       console.error('Failed to get tax report:', error);
       return [];

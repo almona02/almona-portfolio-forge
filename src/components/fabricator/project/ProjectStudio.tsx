@@ -28,8 +28,10 @@ import {
 import React, { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { EngineeringBay } from '../EngineeringBay';
+import { ProjectBOMAggregate } from './ProjectBOMAggregate';
 import { ProjectOptimizer } from './ProjectOptimizer';
 import { ProjectQuote } from './ProjectQuote';
+import { ProjectQuoteSummary } from './ProjectQuoteSummary';
 
 /**
  * PROJECT STUDIO (Reality Workflow)
@@ -97,7 +99,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
 
     // ─── UI-only state ─────────────────────────────────────────────
     const [activeUnitId, setActiveUnitId] = useState<string | null>(null);
-    const [workflowStage, setWorkflowStage] = useState<'design' | 'optimize' | 'quote'>('design');
+    const [workflowStage, setWorkflowStage] = useState<'design' | 'optimize' | 'quote' | 'summary'>('design');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     // Optimization Results Cache
@@ -360,6 +362,14 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                         >
                             <FileText className="h-4 w-4 mr-2" /> Generate Quote
                         </Button>
+                        <Button
+                            onClick={() => setWorkflowStage('summary')}
+                            disabled={!optimizationResults}
+                            variant="outline"
+                            className="w-full border-amber-500/30 text-amber-400 hover:bg-amber-900/20 disabled:opacity-50"
+                        >
+                            <Layout className="h-4 w-4 mr-2" /> Summary
+                        </Button>
                     </div>
                 )}
             </div>
@@ -373,16 +383,18 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                         <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
                             {workflowStage === 'design' && activeUnit ? `Designing: ${activeUnit.posNumber}` :
                                 workflowStage === 'optimize' ? 'Optimization & Cutting Lists' :
-                                    workflowStage === 'quote' ? 'Commercial Quote' : 'Project Overview'}
+                                    workflowStage === 'quote' ? 'Commercial Quote' :
+                                        workflowStage === 'summary' ? 'Project Summary' : 'Project Overview'}
                         </h1>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Tabs value={workflowStage} onValueChange={(v) => setWorkflowStage(v as any)} className="w-[400px]">
-                            <TabsList className="grid w-full grid-cols-3 bg-gray-800 text-gray-400">
+                        <Tabs value={workflowStage} onValueChange={(v) => setWorkflowStage(v as any)} className="w-[500px]">
+                            <TabsList className="grid w-full grid-cols-4 bg-gray-800 text-gray-400">
                                 <TabsTrigger value="design" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white">Design</TabsTrigger>
                                 <TabsTrigger value="optimize" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Optimize</TabsTrigger>
                                 <TabsTrigger value="quote" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">Quote</TabsTrigger>
+                                <TabsTrigger value="summary" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Summary</TabsTrigger>
                             </TabsList>
                         </Tabs>
                     </div>
@@ -429,6 +441,13 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                             project={project}
                             results={optimizationResults}
                         />
+                    )}
+
+                    {workflowStage === 'summary' && (
+                        <div className="h-full overflow-y-auto p-6 space-y-6">
+                            <ProjectBOMAggregate project={project} results={optimizationResults} />
+                            <ProjectQuoteSummary project={project} results={optimizationResults} />
+                        </div>
                     )}
 
                 </div>

@@ -88,12 +88,22 @@ const SystemPackTuningStudio = lazy(() => import("./components/fabricator/System
 const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuningStudio.tsx").then(m => ({ default: m.NoDXFTuningStudio })));
 const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx"));
 const SystemPacksPage = lazy(() => import("./pages/SystemPacksPage.tsx").then(m => ({ default: m.SystemPacksPage })));
+const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
+const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
+const WorkshopPortal = lazy(() => import("./pages/workshop/WorkshopPortal.tsx").then(m => ({ default: m.WorkshopPortal })));
+const DeliveryTrackingPage = lazy(() => import("./pages/DeliveryTrackingPage.tsx").then(m => ({ default: m.DeliveryTrackingPage })));
+const OrdersPanel = lazy(() => import("./components/admin/panels/OrdersPanel.tsx").then(m => ({ default: m.OrdersPanel })));
+const BentProfileDesignerPage = lazy(() => import("./pages/BentProfileDesignerPage.tsx").then(m => ({ default: m.default })));
+const FabricationWorkflowWizard = lazy(() => import("./components/fabricator/FabricationWorkflowWizard.tsx").then(m => ({ default: m.FabricationWorkflowWizard })));
+const ValidationDashboardPage = lazy(() => import("./pages/ValidationDashboardPage.tsx").then(m => ({ default: m.default })));
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 const ProductionDashboard = lazy(() => import("./components/fabricator/ProductionDashboard.tsx").then(m => ({ default: m.ProductionDashboard })));
 const ProjectStudioWrapper = lazy(() => import("./pages/fabricator/ProjectStudioWrapper"));
 
 // NEW: Workflow Page Components - Route-Based Architecture
 const _UnifiedDesignPage = lazy(() => import("./pages/fabricator/workflow/UnifiedDesignPage").then(m => ({ default: m.UnifiedDesignPage })));
+const MeasuringPage = lazy(() => import("./pages/fabricator/workflow/MeasuringPage").then(m => ({ default: m.MeasuringPage })));
+const BOMReviewPage = lazy(() => import("./pages/fabricator/workflow/BOMReviewPage").then(m => ({ default: m.BOMReviewPage })));
 const OptimizationPage = lazy(() => import("./pages/fabricator/workflow/OptimizationPage").then(m => ({ default: m.OptimizationPage })));
 const _InventoryWorkflowPage = lazy(() => import("./pages/fabricator/workflow/InventoryPage").then(m => ({ default: m.InventoryPage })));
 const ProductionPage = lazy(() => import("./pages/fabricator/workflow/ProductionPage").then(m => ({ default: m.ProductionPage })));
@@ -291,7 +301,13 @@ const GlobalDynamicImportGuard = () => {
   useEffect(() => {
     const handler = (ev: PromiseRejectionEvent) => {
       const r = ev.reason as unknown;
-      const msg = String(r instanceof Error ? r.message : (r && typeof r === 'object' && 'message' in r ? (r as { message: unknown }).message : r) ?? '').toLowerCase();
+      const raw = r instanceof Error ? r.message : (r && typeof r === 'object' && 'message' in r ? (r as { message: unknown }).message : r);
+      let msg: string;
+      if (typeof raw === 'string') msg = raw;
+      else if (raw == null) msg = '';
+      else if (typeof raw === 'object') msg = '[object Object]';
+      else msg = String(raw as string | number | boolean | bigint);
+      msg = msg.toLowerCase();
       // Only handle specific chunk/module loading errors, not all rejections
       if (msg.includes('failed to fetch dynamically imported module') ||
         (msg.includes('loading chunk') && msg.includes('failed'))) {
@@ -441,8 +457,10 @@ const App = memo(() => {
                                     {/* 2b. Project Studio Workspace (Full Screen) */}
                                     <Route path="projects/:projectId" element={<Suspense fallback={getLoadingComponent('Project Workspace')}><ProjectStudioWrapper /></Suspense>} />
 
-                                    {/* 2c. Pose-centric: design, optimization, commercial, production */}
+                                    {/* 2c. Pose-centric: measuring, design, bom, optimization, commercial, production */}
+                                    <Route path="projects/:projectId/positions/:poseId/measuring" element={<Suspense fallback={getLoadingComponent('Measuring')}><MeasuringPage /></Suspense>} />
                                     <Route path="projects/:projectId/positions/:poseId/design" element={<Suspense fallback={getLoadingComponent('Engineering Bay')}><EngineeringBayWrapper /></Suspense>} />
+                                    <Route path="projects/:projectId/positions/:poseId/bom" element={<Suspense fallback={getLoadingComponent('BOM')}><BOMReviewPage /></Suspense>} />
                                     <Route path="projects/:projectId/positions/:poseId/optimization" element={<Suspense fallback={getLoadingComponent('Optimization')}><OptimizationPage /></Suspense>} />
                                     <Route path="projects/:projectId/positions/:poseId/commercial" element={<Suspense fallback={getLoadingComponent('Commercial')}><CommercialPage /></Suspense>} />
                                     <Route path="projects/:projectId/positions/:poseId/production" element={<Suspense fallback={getLoadingComponent('Production')}><ProductionPage /></Suspense>} />
@@ -456,6 +474,9 @@ const App = memo(() => {
                                     {/* 4. Production Studio */}
                                     <Route path="production/*" element={<Suspense fallback={getLoadingComponent('Production Studio')}><ProductionStudioLayout /></Suspense>}>
                                       <Route index element={<Suspense fallback={getLoadingComponent('Production Dashboard')}><ProductionDashboard /></Suspense>} />
+                                      <Route path="workshop" element={<Suspense fallback={getLoadingComponent('Workshop')}><WorkshopPortal /></Suspense>} />
+                                      <Route path="delivery" element={<Suspense fallback={getLoadingComponent('Delivery')}><DeliveryTrackingPage /></Suspense>} />
+                                      <Route path="orders" element={<Suspense fallback={getLoadingComponent('Orders')}><OrdersPanel /></Suspense>} />
                                     </Route>
 
                                     {/* 5. Data Studio */}
@@ -464,11 +485,17 @@ const App = memo(() => {
                                       <Route path="tuning" element={<Suspense fallback={getLoadingComponent('Tuning Studio')}><SystemPackTuningStudio /></Suspense>} />
                                       <Route path="tuning-no-dxf" element={<Suspense fallback={getLoadingComponent('Tuning Studio')}><NoDXFTuningStudio /></Suspense>} />
                                       <Route path="profiles" element={<Suspense fallback={getLoadingComponent('Profile Studio')}><ProfileStudioLite /></Suspense>} />
+                                      <Route path="customers" element={<Suspense fallback={getLoadingComponent('Customers')}><CustomersPage /></Suspense>} />
+                                      <Route path="patterns" element={<Suspense fallback={getLoadingComponent('Pattern Library')}><PatternLibraryPage /></Suspense>} />
+                                      <Route path="bent-profiles" element={<Suspense fallback={getLoadingComponent('Bent Profiles')}><BentProfileDesignerPage /></Suspense>} />
                                     </Route>
                                     {/* 6. Reports */}
                                     <Route path="reports" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
                                     <Route path="reports/*" element={<Suspense fallback={getLoadingComponent('Reports')}><ProtectedRoute><FabricatorReportsPage /></ProtectedRoute></Suspense>} />
                                   </Route>
+
+                                  {/* Fabricator Wizard (standalone) */}
+                                  <Route path="/fabricator/wizard" element={<Suspense fallback={getLoadingComponent('Wizard')}><FabricationWorkflowWizard onWorkflowComplete={() => {}} /></Suspense>} />
 
                                   {/* Legacy /fabricator/workflow/* → studio (canonical) */}
                                   <Route path="/fabricator/workflow" element={<FabricatorWorkflowToStudioRedirect />} />
@@ -476,7 +503,7 @@ const App = memo(() => {
 
                                   {/* Legacy /fabricator/* (non-studio) → studio equivalents (301-style redirects) */}
                                   <Route path="/fabricator/projects" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
-                                  <Route path="/fabricator/customers" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/customers" element={<Navigate to={fabricatorRoutes.studioData('customers')} replace />} />
                                   <Route path="/fabricator/inventory" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
                                   <Route path="/fabricator/profiles" element={<Navigate to={fabricatorRoutes.studioData('profiles')} replace />} />
                                   <Route path="/fabricator/commercial" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
@@ -490,10 +517,10 @@ const App = memo(() => {
                                   <Route path="/fabricator/tuning-studio" element={<Navigate to={fabricatorRoutes.studioData('tuning')} replace />} />
                                   <Route path="/fabricator/tuning-studio-no-dxf" element={<Navigate to={fabricatorRoutes.studioData('tuning-no-dxf')} replace />} />
                                   <Route path="/fabricator/smart-wizard" element={<Navigate to={fabricatorRoutes.studioProjects()} replace />} />
-                                  <Route path="/fabricator/pattern-library" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/pattern-library" element={<Navigate to={fabricatorRoutes.studioData('patterns')} replace />} />
                                   <Route path="/fabricator/machine-testing" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
-                                  <Route path="/fabricator/validation" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
-                                  <Route path="/fabricator/bent-profile-designer" element={<Navigate to={fabricatorRoutes.studioData()} replace />} />
+                                  <Route path="/fabricator/validation" element={<Navigate to={fabricatorRoutes.adminValidation()} replace />} />
+                                  <Route path="/fabricator/bent-profile-designer" element={<Navigate to={fabricatorRoutes.studioDataBentProfiles()} replace />} />
                                   <Route path="/fabricator/onboarding" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
                                   <Route path="/fabricator/activity-timeline" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
                                   <Route path="/fabricator/payment-test" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
@@ -638,6 +665,7 @@ const App = memo(() => {
                                   <Route path="/admin" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
                                   <Route path="/admin/dashboard" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
                                   <Route path="/admin/demo" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
+                                  <Route path="/admin/validation" element={<Suspense fallback={getLoadingComponent('/admin/validation')}><ProtectedRoute><ValidationDashboardPage /></ProtectedRoute></Suspense>} />
 
                                   {/* Executive Trust Dashboard - Phase 4: Precision Upgrade Plan */}
                                   <Route path="/executive/trust" element={<Suspense fallback={getLoadingComponent('/executive')}><ProtectedRoute><ExecutiveTrustDashboard /></ProtectedRoute></Suspense>} />

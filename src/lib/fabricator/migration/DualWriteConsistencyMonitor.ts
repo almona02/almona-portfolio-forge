@@ -42,14 +42,15 @@ export interface ConsistencyReport {
   mismatches: ConsistencyMismatch[];
 }
 
-function stableSortObject(value: any): any {
+function stableSortObject(value: unknown): unknown {
   if (value === null || value === undefined) return value;
   if (Array.isArray(value)) return value.map(stableSortObject);
   if (typeof value !== 'object') return value;
 
-  const out: Record<string, any> = {};
-  for (const key of Object.keys(value).sort()) {
-    out[key] = stableSortObject(value[key]);
+  const out: Record<string, unknown> = {};
+  const obj = value as Record<string, unknown>;
+  for (const key of Object.keys(obj).sort()) {
+    out[key] = stableSortObject(obj[key]);
   }
   return out;
 }
@@ -89,7 +90,7 @@ export class DualWriteConsistencyMonitor {
     let sampledPositions = 0;
 
     // 1) Sample positions_v2 (most critical for rollback integrity)
-    const { data: v2Positions, error: v2PosError } = await (this.client as any)
+    const { data: v2Positions, error: v2PosError } = await this.client
       .from('fabricator_positions_v2')
       .select('id, owner_user_id, project_id, order_number, pos_number, type, overall_width_mm, overall_height_mm, color, status, quantity, position_meta, meta, optimization, grid, components, hardware, selected_preset, window_unit, updated_at')
       .limit(this.cfg.maxSampleSize);
@@ -101,14 +102,15 @@ export class DualWriteConsistencyMonitor {
         reason: 'exception',
       });
     } else if (Array.isArray(v2Positions)) {
-      const sample = v2Positions.filter(() => Math.random() < this.cfg.sampleRate);
+      type PositionRow = { id: string; owner_user_id: string };
+      const sample = v2Positions.filter(() => Math.random() < this.cfg.sampleRate) as PositionRow[];
       sampledPositions = sample.length;
 
       for (const row of sample) {
         try {
-          const { data: v1Row } = await (this.client as any)
+          const { data: v1Row } = await this.client
             .from('fabricator_positions')
-            .select('id, owner_user_id, project_id, order_number, pos_number, type, overall_width_mm, overall_height_mm, color, status, quantity, position_meta, optimization, components, grid, hardware, selected_preset, project_code, customer, meta, updated_at')
+            .select('id, owner_user_id, project_id, order_number, pos_number, type, overall_width_mm, overall_height_mm, color, status, quantity, position_meta, optimization, updated_at')
             .eq('id', row.id)
             .maybeSingle();
 
@@ -181,7 +183,7 @@ export class DualWriteConsistencyMonitor {
           'Dual-write drift exceeded threshold. Investigation required before rollback window closes.',
       };
 
-      const { data: emitted, error: emitError } = await (this.client as any).rpc('realityos_record_event', {
+      const { data: emitted, error: emitError } = await this.client.rpc('realityos_record_event', {
         p_event_type: 'FAULT',
         p_entity_id: 'fabricator_dual_write_drift',
         p_vertical_id: 'almona_vertical',
@@ -190,17 +192,18 @@ export class DualWriteConsistencyMonitor {
         p_recorded_at: realityOsRecordedAt,
       });
 
-      if (!emitError && Array.isArray(emitted) && emitted[0]?.event_hash) {
-        realityOsEventHash = emitted[0].event_hash;
+      if (!emitError && Array.isArray(emitted)) {
+        const first = emitted[0] as { event_hash?: string } | undefined;
+        if (first?.event_hash) realityOsEventHash = first.event_hash;
       }
     }
 
     // Persist append-only report for dashboards (including optional RealityOS linkage)
-    await (this.client as any).from('fabricator_dual_write_consistency_reports').insert({
+    await this.client.from('fabricator_dual_write_consistency_reports').insert({
       sample_size: report.sampleSize,
       mismatch_count: report.mismatchCount,
       drift_rate: report.driftRate,
-      report,
+      report: report as unknown as Record<string, unknown>,
       reality_os_event_hash: realityOsEventHash,
       reality_os_recorded_at: realityOsRecordedAt,
     });

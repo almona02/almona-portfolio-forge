@@ -154,7 +154,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             initial="initial"
             animate="animate"
             exit="exit"
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent) => {
               e.stopPropagation();
               if (on3DView) {
                 handle3DView();

@@ -18,7 +18,7 @@ import {
     type CollaborativeMessage
 } from '../utils/securityUtils';
 
-interface CollaborativeUser {
+export interface CollaborativeUser {
   id: string;
   name: string;
   color: string;
@@ -124,7 +124,8 @@ export function useCollaborativeDrafting({
         };
         
         // Check rate limit
-        if (!rateLimiter.current.checkLimit(userId)) {
+        const limiter = rateLimiter.current;
+        if (!limiter.checkLimit(userId)) {
           setError('Rate limit exceeded');
           ws.close();
           return;
@@ -168,7 +169,8 @@ export function useCollaborativeDrafting({
           const message = validation.sanitized!;
           
           // Check rate limit
-          if (!rateLimiter.current.checkLimit(message.userId)) {
+          const limiter = rateLimiter.current;
+          if (!limiter.checkLimit(message.userId)) {
             console.warn('Rate limit exceeded for user:', message.userId);
             return;
           }
@@ -176,10 +178,11 @@ export function useCollaborativeDrafting({
           switch (message.type) {
             case 'user_join':
               if (message.userId !== userId) {
+                const data = message.data as { userName?: string; color?: string } | undefined;
                 const newUser: CollaborativeUser = {
                   id: message.userId,
-                  name: sanitizeUserName(message.data?.userName || 'Anonymous'),
-                  color: message.data?.color || getUserColor(message.userId)
+                  name: sanitizeUserName(data?.userName ?? 'Anonymous'),
+                  color: data?.color ?? getUserColor(message.userId)
                 };
                 setUsers(prev => [...prev.filter(u => u.id !== newUser.id), newUser]);
                 onUserJoin?.(newUser);
@@ -193,13 +196,14 @@ export function useCollaborativeDrafting({
               
             case 'state_sync':
               if (message.userId !== userId && onStateUpdate) {
-                onStateUpdate(message.data.state);
+                onStateUpdate((message.data as { state: DraftingState }).state);
               }
               break;
               
-            case 'cursor_move':
-              if (message.userId !== userId && message.data?.cursor) {
-                const cursor = message.data.cursor;
+            case 'cursor_move': {
+                const dataWithCursor = message.data as { cursor?: { x: number; y: number } };
+                if (message.userId !== userId && dataWithCursor?.cursor) {
+                const cursor = dataWithCursor.cursor;
                 // Validate cursor coordinates
                 if (typeof cursor.x === 'number' && isFinite(cursor.x) &&
                     typeof cursor.y === 'number' && isFinite(cursor.y) &&
@@ -212,11 +216,13 @@ export function useCollaborativeDrafting({
                   ));
                 }
               }
+              }
               break;
               
-            case 'selection_change':
-              if (message.userId !== userId && message.data?.selection !== undefined) {
-                const selection = message.data.selection;
+            case 'selection_change': {
+                const dataWithSel = message.data as { selection?: number | null };
+                if (message.userId !== userId && dataWithSel?.selection !== undefined) {
+                const selection = dataWithSel.selection;
                 // Validate selection (null or non-negative integer)
                 if (selection === null || (typeof selection === 'number' && 
                     isFinite(selection) && selection >= 0 && Number.isInteger(selection))) {
@@ -226,6 +232,7 @@ export function useCollaborativeDrafting({
                       : u
                   ));
                 }
+              }
               }
               break;
               

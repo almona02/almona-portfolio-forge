@@ -147,7 +147,7 @@ export const QuoteTemplateEditor: React.FC<QuoteTemplateEditorProps> = ({
             }
         };
 
-        loadTemplate();
+        void loadTemplate();
     }, [templateId]);
 
     /**
@@ -533,7 +533,7 @@ export const QuoteTemplateEditor: React.FC<QuoteTemplateEditorProps> = ({
                             </Button>
                         )}
                         <Button
-                            onClick={handleSave}
+                            onClick={() => void handleSave()}
                             disabled={isSaving || !name.trim()}
                         >
                             {isSaving ? (

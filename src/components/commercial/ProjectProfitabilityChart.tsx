@@ -46,7 +46,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
 
   useEffect(() => {
     if (selectedRange) {
-      loadData();
+      void loadData();
     }
   }, [selectedRange, loadData]);
 
@@ -226,16 +226,17 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
             />
             <YAxis
               tick={{ fill: '#94a3b8', fontSize: 12 }}
-              tickFormatter={(value) => {
+              tickFormatter={(value: unknown) => {
+                const num = Number(value ?? 0);
                 try {
-                  return formatCurrency(value, 'en', currency, { notation: 'compact' });
+                  return formatCurrency(num, 'en', currency, { notation: 'compact' });
                 } catch {
                   return new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: currency,
                     notation: 'compact',
                     maximumFractionDigits: 1,
-                  }).format(value);
+                  }).format(num);
                 }
               }}
             />
@@ -246,16 +247,17 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
                 borderRadius: '8px',
                 color: '#e2e8f0',
               }}
-              formatter={(value: any, name: string, props: any) => {
+              formatter={(value: unknown, name: string, props: { payload?: { currency?: string } }) => {
+                const currency = props.payload?.currency ?? 'EGP';
                 if (name === 'revenue' || name === 'costs' || name === 'profit') {
                   try {
-                    return [formatCurrency(value, 'en', props.payload.currency), name.charAt(0).toUpperCase() + name.slice(1)];
+                    return [formatCurrency(Number(value ?? 0), 'en', currency), name.charAt(0).toUpperCase() + name.slice(1)];
                   } catch {
-                    return [new Intl.NumberFormat('en-US', { style: 'currency', currency: props.payload.currency }).format(value), name.charAt(0).toUpperCase() + name.slice(1)];
+                    return [new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(Number(value ?? 0)), name.charAt(0).toUpperCase() + name.slice(1)];
                   }
                 }
                 if (name === 'margin') {
-                  return [`${value.toFixed(1)}%`, 'Margin'];
+                  return [`${Number(value ?? 0).toFixed(1)}%`, 'Margin'];
                 }
                 return [value, name];
               }}

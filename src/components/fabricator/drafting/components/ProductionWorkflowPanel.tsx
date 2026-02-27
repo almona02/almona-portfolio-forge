@@ -215,13 +215,13 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
 
   // Load projects on mount
   useEffect(() => {
-    loadProjects();
+    void loadProjects();
   }, [loadProjects]);
 
   // Load project items when project is selected
   useEffect(() => {
     if (selectedProject) {
-      loadProjectItems(selectedProject.id);
+      void loadProjectItems(selectedProject.id);
     } else {
       setProjectItems([]);
     }
@@ -269,7 +269,7 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
                 </div>
                 <div>
                   <Label htmlFor="grouping-mode" className="text-xs text-slate-300">Grouping Mode</Label>
-                  <Select value={newProjectGrouping} onValueChange={(value: any) => setNewProjectGrouping(value)}>
+                  <Select value={newProjectGrouping} onValueChange={(value) => setNewProjectGrouping(value as 'type' | 'color' | 'none' | 'profile')}>
                     <SelectTrigger className="h-8 bg-slate-800/50 border-slate-700/50 text-slate-200">
                       <SelectValue />
                     </SelectTrigger>
@@ -283,7 +283,7 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
                 </div>
               </div>
               <Button
-                onClick={createProject}
+                onClick={() => void createProject()}
                 disabled={!newProjectName.trim() || isCreatingProject}
                 className="w-full h-8"
               >
@@ -343,7 +343,7 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
                             className="text-slate-400 hover:text-amber-400 hover:bg-amber-500/10"
                             onClick={(e) => {
                               e.stopPropagation();
-                              generateReport(project.id, 'execution_plan');
+                              void generateReport(project.id, 'execution_plan');
                             }}
                           >
                             <FileText className="h-4 w-4" />
@@ -396,7 +396,7 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => generateReport(selectedProject.id, 'cutting_list')}
+                    onClick={() => void generateReport(selectedProject.id, 'cutting_list')}
                   >
                     <FileText className="h-4 w-4 mr-2" />
                     Cutting List
@@ -404,7 +404,7 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => generateReport(selectedProject.id, 'purchase_order')}
+                    onClick={() => void generateReport(selectedProject.id, 'purchase_order')}
                   >
                     <Package className="h-4 w-4 mr-2" />
                     Purchase Order
@@ -448,7 +448,7 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
 
                 {selectedProject && (
                   <Button
-                    onClick={() => addWindowToProject(currentWindowUnit, selectedProject.id)}
+                    onClick={() => void addWindowToProject(currentWindowUnit, selectedProject.id)}
                     className="w-full"
                   >
                     <Plus className="h-4 w-4 mr-2" />
