@@ -72,7 +72,9 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
     initialProject = DEFAULT_PROJECT,
     profiles
 }) => {
-    const useV2 = FeatureFlags.FABRICATOR_READ_V2 && !!projectId;
+    const useV2Configured = FeatureFlags.FABRICATOR_READ_V2 && !!projectId;
+    const [forceLocalMode, setForceLocalMode] = useState(false);
+    const useV2 = useV2Configured && !forceLocalMode;
 
     // ─── V2: React Query as single source of truth ─────────────────
     const { data: projectMeta } = useProject(useV2 ? projectId : undefined);
@@ -123,6 +125,28 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         project.units.find(u => u.id === activeUnitId) || null,
         [project.units, activeUnitId]);
 
+    const isAuthError = useCallback((err: unknown) => {
+        const message = typeof err === 'string'
+            ? err
+            : err instanceof Error
+                ? err.message
+                : JSON.stringify(err);
+        return message.toLowerCase().includes('not authenticated');
+    }, []);
+
+    const switchToLocalDraftMode = useCallback(() => {
+        setForceLocalMode(true);
+        setLocalProject((prev) => ({
+            id: projectMeta?.id || prev.id,
+            clientName: projectMeta?.client_name || prev.clientName,
+            reference: projectMeta?.project_code || prev.reference,
+            units: v2Units.length > 0 ? v2Units : prev.units,
+        }));
+        toast.warning('Switched to local draft mode', {
+            description: 'Cloud auth unavailable. Changes are saved locally in this session.',
+        });
+    }, [projectMeta?.client_name, projectMeta?.id, projectMeta?.project_code, v2Units]);
+
     // --- Actions ---
 
     const handleAddUnit = useCallback(() => {
@@ -149,7 +173,18 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             // Persist through React Query — cache invalidation refreshes units
             upsertPose.mutate({ windowUnit: newUnit }, {
                 onSuccess: () => toast.success(`Unit ${newUnit.posNumber} added`),
-                onError: (err) => toast.error(`Failed to add unit: ${err}`),
+                onError: (err) => {
+                    if (isAuthError(err)) {
+                        switchToLocalDraftMode();
+                        setLocalProject(prev => ({
+                            ...prev,
+                            units: [...prev.units, newUnit]
+                        }));
+                        toast.success(`Unit ${newUnit.posNumber} added (local draft)`);
+                        return;
+                    }
+                    toast.error(`Failed to add unit: ${err}`);
+                },
             });
         } else {
             setLocalProject(prev => ({
@@ -160,7 +195,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         }
         setActiveUnitId(newUnit.id);
         setWorkflowStage('design');
-    }, [project.units, useV2, upsertPose]);
+    }, [isAuthError, project.units, switchToLocalDraftMode, upsertPose, useV2]);
 
     const handleDuplicateUnit = useCallback((unitId: string) => {
         const unit = project.units.find(u => u.id === unitId);
@@ -176,6 +211,18 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         if (useV2) {
             upsertPose.mutate({ windowUnit: newUnit }, {
                 onSuccess: () => toast.success('Unit duplicated'),
+                onError: (err) => {
+                    if (isAuthError(err)) {
+                        switchToLocalDraftMode();
+                        setLocalProject(prev => ({
+                            ...prev,
+                            units: [...prev.units, newUnit]
+                        }));
+                        toast.success('Unit duplicated (local draft)');
+                        return;
+                    }
+                    toast.error(`Failed to duplicate unit: ${err}`);
+                },
             });
         } else {
             setLocalProject(prev => ({
@@ -184,13 +231,24 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             }));
             toast.success('Unit duplicated');
         }
-    }, [project.units, useV2, upsertPose]);
+    }, [isAuthError, project.units, switchToLocalDraftMode, upsertPose, useV2]);
 
     const handleDeleteUnit = useCallback((unitId: string) => {
         if (useV2) {
             deletePoseMutation.mutate(unitId, {
                 onSuccess: () => toast.success('Unit removed'),
-                onError: (err) => toast.error(`Failed to remove unit: ${err}`),
+                onError: (err) => {
+                    if (isAuthError(err)) {
+                        switchToLocalDraftMode();
+                        setLocalProject(prev => ({
+                            ...prev,
+                            units: prev.units.filter(u => u.id !== unitId)
+                        }));
+                        toast.success('Unit removed (local draft)');
+                        return;
+                    }
+                    toast.error(`Failed to remove unit: ${err}`);
+                },
             });
         } else {
             setLocalProject(prev => ({
@@ -202,21 +260,33 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         if (activeUnitId === unitId) {
             setActiveUnitId(null);
         }
-    }, [activeUnitId, useV2, deletePoseMutation]);
+    }, [activeUnitId, deletePoseMutation, isAuthError, switchToLocalDraftMode, useV2]);
 
     const handleUpdateUnit = useCallback((unitId: string, updates: Partial<WindowUnit>) => {
         const unit = project.units.find(u => u.id === unitId);
         if (!unit) return;
 
         if (useV2) {
-            upsertPose.mutate({ windowUnit: { ...unit, ...updates } });
+            upsertPose.mutate({ windowUnit: { ...unit, ...updates } }, {
+                onError: (err) => {
+                    if (isAuthError(err)) {
+                        switchToLocalDraftMode();
+                        setLocalProject(prev => ({
+                            ...prev,
+                            units: prev.units.map(u => u.id === unitId ? { ...u, ...updates } : u)
+                        }));
+                        return;
+                    }
+                    toast.error(`Failed to update unit: ${err}`);
+                }
+            });
         } else {
             setLocalProject(prev => ({
                 ...prev,
                 units: prev.units.map(u => u.id === unitId ? { ...u, ...updates } : u)
             }));
         }
-    }, [project.units, useV2, upsertPose]);
+    }, [isAuthError, project.units, switchToLocalDraftMode, upsertPose, useV2]);
 
     const handleDesignComplete = useCallback((components: WindowComponent[]) => {
         if (activeUnitId) {
