@@ -20,6 +20,7 @@ import {
     Copy,
     FileText,
     Layout,
+    Loader2,
     Menu,
     MonitorPlay,
     Plus,
@@ -105,6 +106,17 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         projectSummary: any;
         unitResults: Map<string, ApexV6Output>;
     } | null>(null);
+    const [optimizationProgress, setOptimizationProgress] = useState<{
+        isRunning: boolean;
+        processed: number;
+        total: number;
+        currentUnitLabel: string | null;
+    }>({
+        isRunning: false,
+        processed: 0,
+        total: 0,
+        currentUnitLabel: null,
+    });
 
     // --- Derived State ---
     const activeUnit = useMemo(() =>
@@ -214,11 +226,22 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
 
     // --- Optimization Logic ---
     const runProjectOptimization = useCallback(async () => {
+        if (optimizationProgress.isRunning) {
+            return;
+        }
+
         if (project.units.length === 0) {
             toast.error("No units to optimize");
             return;
         }
 
+        setWorkflowStage('optimize');
+        setOptimizationProgress({
+            isRunning: true,
+            processed: 0,
+            total: project.units.length,
+            currentUnitLabel: null,
+        });
         const toastId = toast.loading("Running Apex Engine Optimization...");
 
         try {
@@ -226,6 +249,14 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             const unitResults = new Map<string, ApexV6Output>();
 
             for (const unit of project.units) {
+                setOptimizationProgress((prev) => ({
+                    ...prev,
+                    currentUnitLabel: unit.posNumber || unit.id,
+                }));
+                await new Promise<void>((resolve) => {
+                    setTimeout(resolve, 0);
+                });
+
                 // Find system pack
                 const pack = SYSTEM_PACKS.find(p => p.meta.id === (unit.systemPackId || 'generic-60')) || SYSTEM_PACKS[0];
 
@@ -233,6 +264,11 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                 const engine = new ApexEngineV6(pack, unit, 'miter');
                 const result = engine.generate();
                 unitResults.set(unit.id, result);
+
+                setOptimizationProgress((prev) => ({
+                    ...prev,
+                    processed: prev.processed + 1,
+                }));
             }
 
             // 2. Global Aggregation (Todo: Implement true global nesting in ProjectOptimizer)
@@ -252,8 +288,15 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             toast.dismiss(toastId);
             toast.error("Optimization Failed");
             console.error(err);
+        } finally {
+            setOptimizationProgress({
+                isRunning: false,
+                processed: 0,
+                total: 0,
+                currentUnitLabel: null,
+            });
         }
-    }, [project.units]);
+    }, [optimizationProgress.isRunning, project.units]);
 
     return (
         <div className="flex h-full bg-gray-950 text-white overflow-hidden font-sans">
@@ -347,10 +390,18 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                     <div className="p-4 border-t border-gray-800 space-y-2">
                         <Button
                             onClick={runProjectOptimization}
+                            disabled={optimizationProgress.isRunning}
                             variant="outline"
-                            className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-900/20"
+                            className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-900/20 disabled:opacity-60"
                         >
-                            <MonitorPlay className="h-4 w-4 mr-2" /> Optimize All
+                            {optimizationProgress.isRunning ? (
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            ) : (
+                                <MonitorPlay className="h-4 w-4 mr-2" />
+                            )}
+                            {optimizationProgress.isRunning
+                                ? `Optimizing ${optimizationProgress.processed}/${optimizationProgress.total}`
+                                : 'Optimize All'}
                         </Button>
                         <Button
                             onClick={() => setWorkflowStage('quote')}
@@ -421,6 +472,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                             project={project}
                             results={optimizationResults}
                             onReoptimize={runProjectOptimization}
+                            optimizationProgress={optimizationProgress}
                         />
                     )}
 

@@ -1,11 +1,13 @@
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import type { OptimizationResult } from '@/lib/algorithms/LinearOptimizer';
 import {
     downloadCSV,
     exportCutListToCSV,
     printCutListAlmonaStyle
 } from '@/lib/fabricator/CutListExport';
 import { ApexV6Output } from '@/lib/fabricator/goldTier/ApexEngineV6';
+import type { CutListItem, OptimizedCutList } from '@/lib/fabricator/UPVCCuttingEngine';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
@@ -17,7 +19,7 @@ import {
     RefreshCw,
     Scissors
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CutListViewer } from '../CutListViewer'; // Assuming this exists or I should reuse the logic
 
 interface ProjectOptimizerProps {
@@ -31,18 +33,147 @@ interface ProjectOptimizerProps {
         unitResults: Map<string, ApexV6Output>;
     } | null;
     onReoptimize: () => void;
+    optimizationProgress?: {
+        isRunning: boolean;
+        processed: number;
+        total: number;
+        currentUnitLabel: string | null;
+    };
+}
+
+const DEFAULT_SAW_KERF_MM = 5;
+
+function inferRoleFromCutLabel(label: string): CutListItem['role'] {
+    const normalized = label.toLowerCase();
+    if (normalized.includes('sash')) return 'sash';
+    if (normalized.includes('mullion')) return 'mullion';
+    if (normalized.includes('transom')) return 'transom';
+    return 'frame';
+}
+
+function getStrategyCutAngle(strategyUsed: string): number {
+    return strategyUsed.toLowerCase().includes('miter') ? 45 : 90;
+}
+
+function mapStockToCutListItems(
+    stock: OptimizationResult,
+    barOffset: number,
+    profileName: string,
+    strategyAngle: number,
+): CutListItem[] {
+    const items: CutListItem[] = [];
+
+    stock.stockUsed.forEach((bar, barIndex) => {
+        let cursor = 0;
+        bar.cuts.forEach((cut, cutIndex) => {
+            if (cutIndex > 0) {
+                cursor += DEFAULT_SAW_KERF_MM;
+            }
+
+            const role = inferRoleFromCutLabel(cut.label);
+            const positionOnBarMm = cursor;
+            cursor += cut.length;
+
+            items.push({
+                profileId: `${role}-${profileName.toLowerCase().replace(/\s+/g, '-')}`,
+                profileName,
+                role,
+                cutLengthMm: cut.length,
+                quantity: 1,
+                cuttingAngle: strategyAngle,
+                barNumber: barOffset + barIndex + 1,
+                positionOnBarMm,
+                wasteAfterMm: Math.max(0, bar.length - cursor),
+            });
+        });
+    });
+
+    return items;
+}
+
+function buildOptimizedCutList(result: ApexV6Output, unit: WindowUnit): OptimizedCutList {
+    const strategyAngle = getStrategyCutAngle(result.strategyUsed);
+    const frameProfileName = `${unit.systemPackId || 'Generic'} Frame`;
+    const sashProfileName = `${unit.systemPackId || 'Generic'} Sash`;
+
+    const frameItems = mapStockToCutListItems(
+        result.optimization.frameStock,
+        0,
+        frameProfileName,
+        strategyAngle,
+    );
+    const sashItems = mapStockToCutListItems(
+        result.optimization.sashStock,
+        result.optimization.frameStock.barsCount,
+        sashProfileName,
+        strategyAngle,
+    );
+
+    const items = [...frameItems, ...sashItems].sort((a, b) => (
+        a.barNumber - b.barNumber || a.positionOnBarMm - b.positionOnBarMm
+    ));
+
+    const totalBarsUsed =
+        result.optimization.frameStock.barsCount + result.optimization.sashStock.barsCount;
+    const totalWasteMm =
+        result.optimization.frameStock.totalWaste + result.optimization.sashStock.totalWaste;
+    const totalStockLength =
+        result.optimization.frameStock.totalStockLength + result.optimization.sashStock.totalStockLength;
+    const wastePercentage = totalStockLength > 0 ? (totalWasteMm / totalStockLength) * 100 : 0;
+
+    return {
+        items,
+        totalBarsUsed,
+        totalWasteMm,
+        wastePercentage,
+        cuttingSequence: items.map(
+            (item, idx) => `Step ${idx + 1}: Bar ${item.barNumber} - ${item.profileName} ${item.cutLengthMm.toFixed(1)}mm`,
+        ),
+    };
 }
 
 export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
     project,
     results,
-    onReoptimize
+    onReoptimize,
+    optimizationProgress,
 }) => {
     const [selectedUnitId, setSelectedUnitId] = useState<string | null>(
         project.units[0]?.id || null
     );
 
+    useEffect(() => {
+        if (selectedUnitId && project.units.some((unit) => unit.id === selectedUnitId)) {
+            return;
+        }
+        setSelectedUnitId(project.units[0]?.id || null);
+    }, [project.units, selectedUnitId]);
+
+    const progressPercent = optimizationProgress && optimizationProgress.total > 0
+        ? Math.round((optimizationProgress.processed / optimizationProgress.total) * 100)
+        : 0;
+
     if (!results) {
+        if (optimizationProgress?.isRunning) {
+            return (
+                <div className="h-full flex flex-col items-center justify-center p-8 text-center text-gray-300">
+                    <RefreshCw className="h-16 w-16 mb-4 animate-spin text-blue-400" />
+                    <h3 className="text-xl font-medium mb-2">Optimization in Progress</h3>
+                    <p className="max-w-md mb-6 text-gray-400">
+                        Processing {optimizationProgress.processed} of {optimizationProgress.total} units
+                        {optimizationProgress.currentUnitLabel ? ` (${optimizationProgress.currentUnitLabel})` : ''}.
+                    </p>
+                    <div className="w-full max-w-md rounded bg-gray-800 p-1">
+                        <div
+                            className="h-2 rounded bg-blue-500 transition-all duration-300"
+                            style={{ width: `${progressPercent}%` }}
+                        />
+                    </div>
+                    <div className="mt-2 text-sm text-gray-400">{progressPercent}% complete</div>
+                </div>
+            );
+        }
+
         return (
             <div className="h-full flex flex-col items-center justify-center p-8 text-center text-gray-500">
                 <Scissors className="h-16 w-16 mb-4 opacity-20" />
@@ -65,6 +196,13 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
     const totalBars = Array.from(results.unitResults.values()).reduce((acc, r) =>
         acc + (r.optimization.frameStock.barsCount + r.optimization.sashStock.barsCount), 0
     );
+    const totalCutLength = Array.from(results.unitResults.values()).reduce((acc, r) =>
+        acc + (r.optimization.frameStock.totalCutLength + r.optimization.sashStock.totalCutLength), 0
+    );
+    const totalStockLength = Array.from(results.unitResults.values()).reduce((acc, r) =>
+        acc + (r.optimization.frameStock.totalStockLength + r.optimization.sashStock.totalStockLength), 0
+    );
+    const globalEfficiency = totalStockLength > 0 ? (totalCutLength / totalStockLength) * 100 : 0;
 
     const totalProjectCost = project.units.reduce((acc, unit) => {
         const res = results.unitResults.get(unit.id);
@@ -73,6 +211,25 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
 
     return (
         <div className="h-full flex flex-col bg-gray-900 p-6 overflow-hidden">
+            {optimizationProgress?.isRunning && (
+                <Card className="mb-4 bg-blue-900/20 border-blue-500/30">
+                    <CardContent className="p-4">
+                        <div className="flex items-center justify-between text-sm text-blue-200">
+                            <span>
+                                Re-optimizing {optimizationProgress.processed}/{optimizationProgress.total}
+                                {optimizationProgress.currentUnitLabel ? ` • ${optimizationProgress.currentUnitLabel}` : ''}
+                            </span>
+                            <span className="font-mono">{progressPercent}%</span>
+                        </div>
+                        <div className="mt-2 rounded bg-gray-800 p-1">
+                            <div
+                                className="h-2 rounded bg-blue-500 transition-all duration-300"
+                                style={{ width: `${progressPercent}%` }}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Top Stats Bar */}
             <div className="grid grid-cols-4 gap-4 mb-6 flex-shrink-0">
@@ -107,7 +264,10 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                         </div>
                         <div>
                             <div className="text-xs text-emerald-300 uppercase font-bold">Optimization Efficiency</div>
-                            <div className="text-2xl font-bold text-white">94.2% <span className="text-sm font-normal text-gray-400">Global Average</span></div>
+                            <div className="text-2xl font-bold text-white">
+                                {globalEfficiency.toFixed(1)}%
+                                <span className="text-sm font-normal text-gray-400"> Global Average</span>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -179,13 +339,12 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                                         size="sm"
                                         className="border-gray-700 bg-gray-800"
                                         onClick={() => {
-                                            // Create optimized cut list structure if needed, or pass as is if compatible
-                                            // Assuming exportCutListToCSV handles it or we adapt. For now passing as any to suppress strict checks if needed
-                                            const csv = exportCutListToCSV(
-                                                selectedResult.optimization.frameStock as any,
-                                                project.clientName
-                                            );
-                                            downloadCSV(csv, `${selectedUnitId}-cutlist.csv`);
+                                            const selectedUnit = project.units.find((u) => u.id === selectedUnitId);
+                                            if (!selectedUnit) return;
+
+                                            const optimizedCutList = buildOptimizedCutList(selectedResult, selectedUnit);
+                                            const csv = exportCutListToCSV(optimizedCutList, project.clientName);
+                                            downloadCSV(csv, `${selectedUnit.posNumber || selectedUnitId}-cutlist.csv`);
                                         }}
                                     >
                                         <Download className="h-4 w-4 mr-2" /> CSV
@@ -194,44 +353,22 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                                         size="sm"
                                         className="bg-orange-600 hover:bg-orange-700"
                                         onClick={() => {
-                                            // Adapter: Convert Apex Linear Optimization result to Almona OptimizedCutList format
-                                            const frameStock = selectedResult.optimization.frameStock;
-                                            const adaptedItems = frameStock.stockUsed.flatMap((bar, barIdx) =>
-                                                bar.cuts.map(cut => ({
-                                                    barNumber: barIdx + 1,
-                                                    profileName: project.units.find(u => u.id === selectedUnitId)?.systemPackId || 'Generic Profile',
-                                                    profileId: 'generic-profile-id',
-                                                    role: cut.label.toLowerCase().includes('sash') ? 'sash' : 'frame',
-                                                    cutLengthMm: cut.length,
-                                                    cuttingAngle: 45, // Default for Gold Tier Miter
-                                                    quantity: 1, // Linear optimizer flattens quantities
-                                                    positionOnBarMm: 0, // Calculated by engine
-                                                    wasteAfterMm: 0
-                                                }))
-                                            );
+                                            const selectedUnit = project.units.find((u) => u.id === selectedUnitId);
+                                            if (!selectedUnit) return;
 
-                                            const adaptedCutList = {
-                                                items: adaptedItems,
-                                                totalBarsUsed: frameStock.barsCount,
-                                                totalWasteMm: frameStock.totalWaste,
-                                                wastePercentage: (1 - frameStock.efficiency) * 100
-                                            };
-
-                                            printCutListAlmonaStyle(
-                                                adaptedCutList as any, // Cast to OptimizedCutList
-                                                {
-                                                    name: project.clientName,
-                                                    jobNumber: project.id,
-                                                    personInCharge: 'Production Mgr',
-                                                    directory: 'Factory 1',
-                                                    profileType: 'Frame',
-                                                    material: 'Aluminum',
-                                                    color: 'Anthracite Grey',
-                                                    sawKerfMm: 5,
-                                                    endDeductionMm: 10,
-                                                    usableResidualMinMm: 500
-                                                }
-                                            );
+                                            const optimizedCutList = buildOptimizedCutList(selectedResult, selectedUnit);
+                                            printCutListAlmonaStyle(optimizedCutList, {
+                                                name: project.clientName,
+                                                jobNumber: selectedUnit.orderNumber || project.id,
+                                                personInCharge: 'Production Manager',
+                                                directory: 'Factory 1',
+                                                profileType: selectedUnit.systemPackId || 'Mixed',
+                                                material: selectedUnit.type.toLowerCase().includes('upvc') ? 'UPVC' : 'Aluminum',
+                                                color: selectedUnit.color || 'N/A',
+                                                sawKerfMm: DEFAULT_SAW_KERF_MM,
+                                                endDeductionMm: 10,
+                                                usableResidualMinMm: 500,
+                                            });
                                         }}
                                     >
                                         Review Print
