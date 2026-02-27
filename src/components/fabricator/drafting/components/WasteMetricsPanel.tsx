@@ -15,7 +15,7 @@ import { SimplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngin
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import type { Profile, WindowGrid } from '@/types/fabricator';
+import type { Profile, WindowGrid, WindowUnit } from '@/types/fabricator';
 import {
     AlertCircle,
     DollarSign,
@@ -72,7 +72,7 @@ export const WasteMetricsPanelComponent: React.FC<WasteMetricsPanelProps> = ({
       
       const systemPack = SYSTEM_PACKS.find(p => p.meta.id === systemPackId) || null;
       const result = generateComponentsFromGrid(
-        windowUnit as any,
+        windowUnit as WindowUnit,
         grid,
         profiles,
         systemPackId,
@@ -131,7 +131,7 @@ export const WasteMetricsPanelComponent: React.FC<WasteMetricsPanelProps> = ({
               label: `${comp.type || 'unknown'}-${idx}`,
               plannedLength: validatedLength,
               profileId: comp.profile.id,
-              role: comp.type as any,
+              role: comp.type as 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'reinforcement',
               quantity: (typeof comp.quantity === 'number' && comp.quantity > 0) ? comp.quantity : 1
             };
           })

@@ -87,7 +87,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
   };
 
   useEffect(() => {
-    loadExemptions();
+    void loadExemptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [region]);
 
@@ -123,7 +123,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
         reason: '',
         issuedBy: '',
       });
-      loadExemptions();
+      void loadExemptions();
     } catch (error) {
       console.error('Failed to create exemption:', error);
       toast.error('Failed to create exemption certificate');
@@ -134,7 +134,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
     try {
       await TaxExemptionHandler.revokeCertificate(certificateId, 'Revoked by administrator');
       toast.success('Exemption certificate revoked');
-      loadExemptions();
+      void loadExemptions();
     } catch (error) {
       console.error('Failed to revoke exemption:', error);
       toast.error('Failed to revoke exemption certificate');
@@ -311,7 +311,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    onClick={handleAddExemption}
+                    onClick={() => void handleAddExemption()}
                     className="bg-amber-600 hover:bg-amber-700 text-white"
                   >
                     Create Certificate
@@ -399,7 +399,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleRevokeExemption(exemption.id)}
+                            onClick={() => void handleRevokeExemption(exemption.id)}
                             className="border-red-500/30 text-red-300 hover:bg-red-500/10"
                           >
                             <Trash2 className="w-4 h-4" />

@@ -1,6 +1,7 @@
 import { ProjectStudio } from '@/components/fabricator/project/ProjectStudio';
 import { PageLoadingWrapper } from '@/components/ui/PageLoadingWrapper';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import type { Profile } from '@/types/fabricator';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -42,8 +43,9 @@ export const ProjectStudioWrapper: React.FC = () => {
 
     return (
         <ProjectStudio
+            projectId={projectId}
             initialProject={projectData}
-            profiles={allProfiles as any}
+            profiles={allProfiles}
         />
     );
 };

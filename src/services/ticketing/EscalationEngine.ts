@@ -5,14 +5,22 @@
  * @audit_trail complete
  */
 
+export interface TicketForEscalation {
+  status: string;
+  slaDeadline?: Date | string;
+}
+
 export class EscalationEngine {
   /**
    * Check if ticket needs escalation
    */
-  checkForEscalation(ticket: any): boolean {
+  checkForEscalation(ticket: TicketForEscalation): boolean {
     const now = new Date();
-    if (ticket.status !== 'resolved' && ticket.slaDeadline && now > ticket.slaDeadline) {
-        return true;
+    const deadline = ticket.slaDeadline instanceof Date
+      ? ticket.slaDeadline
+      : typeof ticket.slaDeadline === 'string' ? new Date(ticket.slaDeadline) : undefined;
+    if (ticket.status !== 'resolved' && deadline && now > deadline) {
+      return true;
     }
     return false;
   }

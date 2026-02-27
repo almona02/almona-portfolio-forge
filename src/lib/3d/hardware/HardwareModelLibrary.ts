@@ -7,7 +7,7 @@
  * Constitutional Tier: Tier 3 (Protected Determinism)
  */
 
-import { BoxGeometry, CylinderGeometry, Euler, Group, Mesh, MeshStandardMaterial, Vector3 } from 'three';
+import { BoxGeometry, CylinderGeometry, Euler, Group, Material, Mesh, MeshStandardMaterial, Vector3 } from 'three';
 
 export type HardwareType = 'hinge' | 'handle' | 'lock' | 'roller' | 'corner_key' | 'gasket';
 
@@ -41,7 +41,7 @@ export class HardwareModelLibrary {
     // ✅ HARDENED: Validate input
     if (!type || typeof type !== 'string') {
       console.error('[HardwareLibrary] Invalid hardware type:', type);
-      throw new Error(`Invalid hardware type: ${type}`);
+      throw new Error(`Invalid hardware type: ${String(type)}`);
     }
     
     const cacheKey = `${type}-${variant || 'default'}`;
@@ -196,13 +196,14 @@ export class HardwareModelLibrary {
     if (model) {
       // Dispose geometries and materials
       model.traverse((child) => {
-        if ((child as any).geometry) {
-          (child as any).geometry.dispose();
+        const mesh = child as Mesh;
+        if (mesh.geometry) {
+          mesh.geometry.dispose();
         }
-        if ((child as any).material) {
-          const material = (child as any).material;
+        if (mesh.material) {
+          const material = mesh.material;
           if (Array.isArray(material)) {
-            material.forEach((mat: any) => mat.dispose?.());
+            material.forEach((mat: Material) => mat.dispose?.());
           } else {
             material.dispose?.();
           }
@@ -261,7 +262,7 @@ export class HardwareModelLibrary {
         case 'gasket':
           return this.generateGasket();
         default:
-          console.warn(`[HardwareLibrary] Unknown hardware type: ${type}`);
+          console.warn(`[HardwareLibrary] Unknown hardware type: ${String(type)}`);
           return new Group();
       }
     } catch (error) {

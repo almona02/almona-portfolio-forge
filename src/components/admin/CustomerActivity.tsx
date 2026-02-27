@@ -49,17 +49,17 @@ export const CustomerActivity: React.FC = () => {
       setLoading(false)
     }
 
-    fetchActivity()
+    void fetchActivity();
     const channel = supabase
       .channel('customer-activity')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchActivity())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => fetchActivity())
-      .subscribe()
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => void fetchActivity())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => void fetchActivity());
+    channel.subscribe();
 
     return () => {
-      mounted = false
-      channel.unsubscribe()
-    }
+      mounted = false;
+      void channel.unsubscribe();
+    };
   }, [])
 
   return (

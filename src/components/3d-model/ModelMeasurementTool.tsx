@@ -541,7 +541,7 @@ export function ModelMeasurementTool({
                 size="sm"
                 variant="outline"
                 onClick={() => {
-                  navigator.clipboard.writeText(
+                  void navigator.clipboard.writeText(
                     measurements.map(m => `${m.distance.toFixed(2)} ${m.unit}`).join('\n')
                   );
                   toast({

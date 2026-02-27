@@ -1,3 +1,4 @@
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { MeasurementData } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
@@ -12,14 +13,18 @@ const SmartMeasuringInterface = lazyRetry(
 );
 
 export const MeasuringPage: React.FC = () => {
-    const { projectId } = useParams<{ projectId?: string }>();
+    const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
     const navigate = useNavigate();
     const { setMeasurementData, completeStep, measurementData } = useWorkflowStore();
 
     const handleMeasurementComplete = (data: MeasurementData) => {
         setMeasurementData(data);
         completeStep('measuring');
-        navigate(projectId ? `/fabricator/workflow/design/${projectId}` : '/fabricator/workflow/design');
+        if (projectId && poseId) {
+            navigate(fabricatorRoutes.poseDesign(projectId, poseId));
+        } else {
+            navigate(projectId ? `/fabricator/workflow/design/${projectId}` : '/fabricator/workflow/design');
+        }
     };
 
     return (

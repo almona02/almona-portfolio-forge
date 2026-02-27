@@ -98,7 +98,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
   }, [period, dateRange]);
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, [loadData]);
 
   // Calculate totals
@@ -197,7 +197,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
           </div>
           {showControls && (
             <div className="flex items-center gap-2">
-              <Select value={period} onValueChange={(v) => setPeriod(v as any)}>
+              <Select value={period} onValueChange={(v) => setPeriod(v as 'daily' | 'weekly' | 'monthly')}>
                 <SelectTrigger className="w-[120px] bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -296,7 +296,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                   stroke="#f59e0b"
                   strokeOpacity={0.5}
                   tick={{ fill: '#f59e0b', fontSize: 12 }}
-                  tickFormatter={(value) => `${currency} ${value.toFixed(0)}`}
+                  tickFormatter={(value: unknown) => `${currency} ${Number(value ?? 0).toFixed(0)}`}
                 />
                 <Tooltip
                   contentStyle={{
@@ -305,7 +305,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                     borderRadius: '8px',
                     color: '#f59e0b',
                   }}
-                  formatter={(value: number) => [`${currency} ${value.toFixed(2)}`, 'Revenue']}
+                  formatter={(value: unknown) => [`${currency} ${Number(value ?? 0).toFixed(2)}`, 'Revenue']}
                 />
                 <Area
                   type="monotone"
@@ -329,7 +329,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                   stroke="#f59e0b"
                   strokeOpacity={0.5}
                   tick={{ fill: '#f59e0b', fontSize: 12 }}
-                  tickFormatter={(value) => `${currency} ${value.toFixed(0)}`}
+                  tickFormatter={(value: unknown) => `${currency} ${Number(value ?? 0).toFixed(0)}`}
                 />
                 <Tooltip
                   contentStyle={{
@@ -338,7 +338,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                     borderRadius: '8px',
                     color: '#f59e0b',
                   }}
-                  formatter={(value: number) => [`${currency} ${value.toFixed(2)}`, 'Revenue']}
+                  formatter={(value: unknown) => [`${currency} ${Number(value ?? 0).toFixed(2)}`, 'Revenue']}
                 />
                 <Line
                   type="monotone"

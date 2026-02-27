@@ -191,7 +191,7 @@ export function GLBViewer({
           {!isARSession ? (
             <button
               type="button"
-              onClick={enterAR}
+              onClick={() => void enterAR()}
               className="swiftxr-ar-button"
             >
               SwiftXR AR
@@ -199,7 +199,7 @@ export function GLBViewer({
           ) : (
             <button
               type="button"
-              onClick={exitAR}
+              onClick={() => void exitAR()}
               className="swiftxr-ar-button"
               style={{ background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' }}
             >

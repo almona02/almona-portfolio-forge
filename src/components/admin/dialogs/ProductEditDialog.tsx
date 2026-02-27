@@ -112,7 +112,7 @@ export const ProductEditDialog: React.FC<ProductEditDialogProps> = ({ open, onOp
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={saving || !product}>Save changes</Button>
+          <Button onClick={() => void handleSubmit()} disabled={saving || !product}>Save changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

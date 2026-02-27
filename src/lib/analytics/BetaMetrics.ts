@@ -110,6 +110,7 @@ export class BetaMetrics {
    * Calculate overall metrics
    */
   calculateOverallMetrics(): BetaMetricsData {
+    const n = this.feedbackData.length;
     const workshopIds = new Set(this.feedbackData.map(f => f.workshopId));
     const workshops: BetaWorkshopMetrics[] = [];
 
@@ -121,17 +122,18 @@ export class BetaMetrics {
     }
 
     const totalProjects = new Set(this.feedbackData.map(f => f.projectId)).size;
+    const safeDiv = (a: number, b: number) => (b > 0 ? a / b : 0);
 
     const tierAdoption = {
-      wizard: (this.feedbackData.filter(f => f.tier === 'wizard').length / this.feedbackData.length) * 100,
-      pattern_library: (this.feedbackData.filter(f => f.tier === 'pattern_library').length / this.feedbackData.length) * 100,
-      expert_canvas: (this.feedbackData.filter(f => f.tier === 'expert_canvas').length / this.feedbackData.length) * 100
+      wizard: safeDiv(this.feedbackData.filter(f => f.tier === 'wizard').length, n) * 100,
+      pattern_library: safeDiv(this.feedbackData.filter(f => f.tier === 'pattern_library').length, n) * 100,
+      expert_canvas: safeDiv(this.feedbackData.filter(f => f.tier === 'expert_canvas').length, n) * 100
     };
 
-    const averageOnboardingTime = this.feedbackData.reduce((sum, f) => sum + f.onboardingTime, 0) / this.feedbackData.length;
-    const averageFirstProjectTime = this.feedbackData.reduce((sum, f) => sum + f.firstProjectTime, 0) / this.feedbackData.length;
-    const averagePricingAccuracy = this.feedbackData.reduce((sum, f) => sum + f.pricingAccuracy, 0) / this.feedbackData.length;
-    const averageVisualAccuracy = this.feedbackData.reduce((sum, f) => sum + f.visualAccuracy, 0) / this.feedbackData.length;
+    const averageOnboardingTime = safeDiv(this.feedbackData.reduce((sum, f) => sum + f.onboardingTime, 0), n);
+    const averageFirstProjectTime = safeDiv(this.feedbackData.reduce((sum, f) => sum + f.firstProjectTime, 0), n);
+    const averagePricingAccuracy = safeDiv(this.feedbackData.reduce((sum, f) => sum + f.pricingAccuracy, 0), n);
+    const averageVisualAccuracy = safeDiv(this.feedbackData.reduce((sum, f) => sum + f.visualAccuracy, 0), n);
 
     const overallMetrics = this.earlyAccessMetrics.calculateOverallMetrics();
 

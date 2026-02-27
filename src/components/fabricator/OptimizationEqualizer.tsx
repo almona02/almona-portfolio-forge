@@ -16,7 +16,7 @@ import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Slider } from '@/shared/ui/ui/slider';
 import type { Profile } from '@/types/fabricator';
-import { Clock, Info, Package, Save, Settings, TrendingUp } from 'lucide-react';
+import { ArrowRight, Clock, Info, Package, Save, Settings, TrendingUp } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -60,6 +60,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
   profiles: _profiles = [],
   onStrategyChange,
   initialStrategy,
+  onComplete,
 }) => {
   const { t } = useTranslation('fabricator');
   const [selectedPreset, setSelectedPreset] = useState<string>('balanced');
@@ -429,6 +430,19 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
             {t('optimization_equalizer.set_as_default', 'Set as Default')}
           </Button>
         </div>
+
+        {/* Continue to Production - P0: Unblock workflow */}
+        {onComplete && (
+          <div className="pt-4 border-t border-gray-700">
+            <Button
+              onClick={() => onComplete({ strategy, minRemnantLength, maxRemnantAge })}
+              className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-semibold"
+            >
+              {t('optimization_equalizer.continue_to_production', 'Continue to Production')}
+              <ArrowRight className={`${UI_DIMENSIONS.ICON_MEDIUM} ml-2`} />
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
