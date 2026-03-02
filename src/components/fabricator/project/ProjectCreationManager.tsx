@@ -1,6 +1,9 @@
 import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
 import NewProjectWizard, { type ProjectHeaderMeta } from '@/components/fabricator/NewProjectWizard';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { useUpsertPose } from '@/hooks/useFabricatorQueries';
+import { FeatureFlags } from '@/lib/featureFlags';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { useJobsStore } from '@/store/jobsStore';
 import { WindowUnit } from '@/types/fabricator';
 import React, { useEffect, useState } from 'react';
@@ -19,6 +22,8 @@ export const ProjectCreationManager: React.FC = () => {
     const { t } = useTranslation(['fabricator', 'translation']);
     const location = useLocation();
     const navigate = useNavigate();
+    const useV2 = FeatureFlags.FABRICATOR_READ_V2;
+    const upsertPose = useUpsertPose();
     const { addOrUpdateJob, setSelectedJob } = useJobsStore();
     const { dispatch: workspaceDispatch } = useFabricatorWorkspace();
 
@@ -110,13 +115,27 @@ export const ProjectCreationManager: React.FC = () => {
                 // meta: { ...meta } 
             };
 
-            // 3. Persist Project
-            // This saves to the local store (Zustand) and eventually syncs to Supabase
-            addOrUpdateJob(newProject);
+            let navigationProjectId = newProject.id;
+            let navigationPoseId = newProject.id;
+            let workspaceProject = newProject;
+
+            // 3. Persist through canonical v2 path when enabled.
+            if (useV2) {
+                const saved = await upsertPose.mutateAsync({ windowUnit: newProject });
+                navigationProjectId = saved.projectId;
+                navigationPoseId = saved.poseId;
+                workspaceProject = {
+                    ...newProject,
+                    id: saved.poseId,
+                };
+            } else {
+                // Legacy fallback: local-first store path.
+                addOrUpdateJob(newProject);
+            }
 
             // 4. Update Workspace Context
-            workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: newProject });
-            setSelectedJob(newProject.id);
+            workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: workspaceProject });
+            setSelectedJob(navigationPoseId);
 
             // 5. Success Feedback & Navigation
             setShowProjectWizard(false);
@@ -126,9 +145,8 @@ export const ProjectCreationManager: React.FC = () => {
                 t('fabricator:project.created', 'Project created successfully. Opening drafting center...')
             );
 
-            // 6. Navigate to Project Studio Workspace (Design/Drafting Mode)
-            // Canonical route: /fabricator/studio/projects/:projectId/positions/:poseId/design
-            navigate(`/fabricator/studio/projects/${newProject.id}/positions/${newProject.id}/design`);
+            // 6. Navigate with canonical IDs from persistence layer.
+            navigate(fabricatorRoutes.poseDesign(navigationProjectId, navigationPoseId));
 
         } catch (error) {
             console.error('Failed to create project:', error);
@@ -149,14 +167,18 @@ export const ProjectCreationManager: React.FC = () => {
                         // Keep the wizard open to switch views
                         setShowProjectWizard(true);
                     }}
-                    onSubmit={handleProjectCreate}
+                    onSubmit={(meta) => {
+                        void handleProjectCreate(meta);
+                    }}
                 />
             ) : (
                 <NewProjectWizard
                     open={showProjectWizard}
                     onOpenChange={setShowProjectWizard}
                     initialMeta={projectMeta || undefined}
-                    onSubmit={(meta) => handleProjectCreate({ ...meta })} // Adapt to compatible type
+                    onSubmit={(meta) => {
+                        void handleProjectCreate({ ...meta });
+                    }} // Adapt to compatible type
                 />
             )}
         </>
