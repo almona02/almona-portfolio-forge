@@ -1,7 +1,14 @@
 import { cn } from '@/lib/utils';
+import {
+  POSE_WORKFLOW_STAGES,
+  getPoseWorkflowPathForStage,
+  getPoseWorkflowStageFromPath,
+  getPoseWorkflowStageIndex,
+} from '@/lib/fabricator/workflow/workflowGraph';
 import { useWorkflowStore } from '@/store/workflowStore';
 import {
   Check,
+  CheckCircle2,
   ClipboardList,
   DollarSign,
   Factory,
@@ -11,22 +18,6 @@ import {
 } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-
-interface StepDef {
-  id: string;
-  label: string;
-  shortLabel: string;
-  icon: React.ReactNode;
-  pathSuffix: string;
-}
-
-const STEPS: StepDef[] = [
-  { id: 'design', label: 'Design', shortLabel: 'Design', icon: <Paintbrush size={14} />, pathSuffix: 'design' },
-  { id: 'bom', label: 'Bill of Materials', shortLabel: 'BOM', icon: <ClipboardList size={14} />, pathSuffix: 'bom' },
-  { id: 'optimization', label: 'Optimization', shortLabel: 'Optimize', icon: <Layers size={14} />, pathSuffix: 'optimization' },
-  { id: 'commercial', label: 'Commercial', shortLabel: 'Quote', icon: <DollarSign size={14} />, pathSuffix: 'commercial' },
-  { id: 'production', label: 'Production', shortLabel: 'Production', icon: <Factory size={14} />, pathSuffix: 'production' },
-];
 
 /**
  * WorkflowStepNavigator — Persistent horizontal stepper shown across all
@@ -38,19 +29,31 @@ export const WorkflowStepNavigator: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId: string; poseId: string }>();
   const { completedSteps } = useWorkflowStore();
 
-  const basePath = useMemo(
-    () =>
-      projectId && poseId
-        ? `/fabricator/studio/projects/${projectId}/positions/${poseId}`
-        : null,
-    [projectId, poseId],
+  const activeIndex = useMemo(
+    () => getPoseWorkflowStageIndex(getPoseWorkflowStageFromPath(location.pathname)),
+    [location.pathname],
   );
 
-  if (!basePath) return null;
+  if (!projectId || !poseId) return null;
 
-  const activeIndex = STEPS.findIndex((s) =>
-    location.pathname.endsWith(`/${s.pathSuffix}`),
-  );
+  const getStepIcon = (stepId: (typeof POSE_WORKFLOW_STAGES)[number]['id']) => {
+    switch (stepId) {
+      case 'design':
+        return <Paintbrush size={14} />;
+      case 'bom':
+        return <ClipboardList size={14} />;
+      case 'optimization':
+        return <Layers size={14} />;
+      case 'commercial':
+        return <DollarSign size={14} />;
+      case 'production':
+        return <Factory size={14} />;
+      case 'quality-control':
+        return <CheckCircle2 size={14} />;
+      default:
+        return <Paintbrush size={14} />;
+    }
+  };
 
   return (
     <nav
@@ -64,11 +67,11 @@ export const WorkflowStepNavigator: React.FC = () => {
         </span>
       </div>
 
-      {STEPS.map((step, i) => {
+      {POSE_WORKFLOW_STAGES.map((step, i) => {
         const isActive = i === activeIndex;
         const isCompleted = completedSteps.has(step.id);
         const isPast = i < activeIndex;
-        const href = `${basePath}/${step.pathSuffix}`;
+        const href = getPoseWorkflowPathForStage(step.id, projectId, poseId);
 
         return (
           <React.Fragment key={step.id}>
@@ -100,7 +103,7 @@ export const WorkflowStepNavigator: React.FC = () => {
                   !isActive && !isCompleted && !isPast && 'border-slate-700 text-slate-600',
                 )}
               >
-                {isCompleted && !isActive ? <Check size={10} /> : step.icon}
+                {isCompleted && !isActive ? <Check size={10} /> : getStepIcon(step.id)}
               </span>
               <span className="hidden sm:inline">{step.shortLabel}</span>
             </Link>

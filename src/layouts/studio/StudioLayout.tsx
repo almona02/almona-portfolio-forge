@@ -37,12 +37,23 @@ interface StudioLayoutProps {
   studioId?: 'command' | 'project' | 'design' | 'production' | 'data';
 }
 
+const STUDIO_SEGMENT_MAP: Record<string, NonNullable<StudioLayoutProps['studioId']>> = {
+  command: 'command',
+  projects: 'project',
+  design: 'design',
+  production: 'production',
+  data: 'data',
+  orders: 'project',
+  reports: 'command',
+};
+
 export const StudioLayout: React.FC<StudioLayoutProps> = ({ studioId }) => {
   const location = useLocation();
   const { user } = useAuth();
   
   // Determine active studio from prop or URL
-  const activeStudio = studioId || location.pathname.split('/')[3] || 'command';
+  const pathSegment = location.pathname.split('/')[3] || 'command';
+  const activeStudio = studioId || STUDIO_SEGMENT_MAP[pathSegment] || 'command';
 
   return (
     <FabricatorContextProvider>

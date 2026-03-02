@@ -11,16 +11,19 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { isRTL } from '@/lib/i18n';
 import { BarChart3, Recycle, Settings, TrendingUp } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const FabricatorDashboard: React.FC = () => {
   const { user } = useAuth();
   const { t, i18n } = useTranslation(['fabricator', 'translation']);
   const isRTLMode = isRTL(i18n.language);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-amber-200 pt-20 relative">
@@ -186,18 +189,18 @@ const FabricatorDashboard: React.FC = () => {
                   className="w-full" 
                   variant="outline"
                   onClick={() => {
-                    window.location.href = '/fabricator/workflow?tab=design';
+                    navigate(fabricatorRoutes.studioProjects());
                   }}
                 >
                   <Settings className="h-3 w-3 mr-2" />
-                  Calibration Wizard
+                  Open Project Studio
                 </Button>
                 <Button 
                   size="sm" 
                   className="w-full" 
                   variant="outline"
                   onClick={() => {
-                    window.location.href = '/fabricator/analytics';
+                    navigate(fabricatorRoutes.studioReports());
                   }}
                 >
                   <BarChart3 className="h-3 w-3 mr-2" />
@@ -208,7 +211,8 @@ const FabricatorDashboard: React.FC = () => {
                   className="w-full" 
                   variant="outline"
                   onClick={() => {
-                    window.location.href = '/fabricator/marketplace';
+                    toast.info('Marketplace module is launching from Command Studio');
+                    navigate(fabricatorRoutes.studioCommand());
                   }}
                 >
                   <Recycle className="h-3 w-3 mr-2" />

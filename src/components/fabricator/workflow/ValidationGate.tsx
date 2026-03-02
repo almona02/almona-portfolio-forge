@@ -1,3 +1,4 @@
+import { getPoseWorkflowStageFromPath } from '@/lib/fabricator/workflow/workflowGraph';
 import { WorkflowValidator, type ValidationIssue, type ValidationResult } from '@/lib/fabricator/validation/WorkflowValidator';
 import { cn } from '@/lib/utils';
 import { useWorkflowStore } from '@/store/workflowStore';
@@ -14,24 +15,19 @@ import { useLocation } from 'react-router-dom';
  */
 export const ValidationGate: React.FC = () => {
   const location = useLocation();
-  const { currentProject, measurementData, bom, optimizationResult } = useWorkflowStore();
+  const { currentProject, bom, optimizationResult } = useWorkflowStore();
 
-  const activeStep = useMemo(() => {
-    const path = location.pathname;
-    if (path.endsWith('/design')) return 'design';
-    if (path.endsWith('/bom')) return 'bom';
-    if (path.endsWith('/optimization')) return 'optimization';
-    if (path.endsWith('/commercial')) return 'commercial';
-    if (path.endsWith('/production')) return 'production';
-    return null;
-  }, [location.pathname]);
+  const activeStep = useMemo(
+    () => getPoseWorkflowStageFromPath(location.pathname),
+    [location.pathname],
+  );
 
   const validation = useMemo<ValidationResult | null>(() => {
     if (!activeStep) return null;
 
     switch (activeStep) {
       case 'design':
-        return WorkflowValidator.validateMeasuringToDesign(measurementData, currentProject);
+        return WorkflowValidator.validateSetupToDesign(currentProject);
       case 'bom':
         return WorkflowValidator.validateDesignToBOM(currentProject);
       case 'optimization':
@@ -40,10 +36,12 @@ export const ValidationGate: React.FC = () => {
         return WorkflowValidator.validateOptimizationToCommercial(optimizationResult);
       case 'production':
         return WorkflowValidator.validateCommercialToProduction(optimizationResult, currentProject);
+      case 'quality-control':
+        return WorkflowValidator.validateProductionToQuality(optimizationResult, currentProject);
       default:
         return null;
     }
-  }, [activeStep, currentProject, measurementData, bom, optimizationResult]);
+  }, [activeStep, currentProject, bom, optimizationResult]);
 
   if (!validation) return null;
   if (validation.passed && validation.warnings.length === 0) return null;

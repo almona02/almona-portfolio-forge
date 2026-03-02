@@ -1,5 +1,7 @@
 import { ProductionDocumentsPanel } from '@/components/fabricator/workflow/ProductionDocumentsPanel';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { getPoseWorkflowPathForStage } from '@/lib/fabricator/workflow/workflowGraph';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { lazyRetry } from '@/utils/lazyImport';
@@ -25,7 +27,7 @@ const ProductionCommand = lazyRetry(
  * - Generation state management
  */
 export const ProductionPage: React.FC = () => {
-    const { projectId } = useParams<{ projectId?: string }>();
+    const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
     const navigate = useNavigate();
     const {
         currentProject,
@@ -53,14 +55,13 @@ export const ProductionPage: React.FC = () => {
     // ✅ GOLD-TIER: Navigation handler
     const handleProductionComplete = () => {
         completeStep('production');
+        const qualityPath = projectId && poseId
+            ? getPoseWorkflowPathForStage('quality-control', projectId, poseId)
+            : '/fabricator/studio/production/quality';
 
         // Smooth transition
         setTimeout(() => {
-            navigate(
-                projectId
-                    ? `/fabricator/workflow/quality-control/${projectId}`
-                    : '/fabricator/workflow/quality-control'
-            );
+            navigate(qualityPath);
         }, 100);
     };
 
@@ -92,8 +93,12 @@ export const ProductionPage: React.FC = () => {
                     <button
                         onClick={() => navigate(
                             !currentProject
-                                ? '/fabricator/workflow/design'
-                                : '/fabricator/workflow/optimization'
+                                ? (projectId && poseId
+                                    ? getPoseWorkflowPathForStage('design', projectId, poseId)
+                                    : fabricatorRoutes.studioProjects())
+                                : (projectId && poseId
+                                    ? getPoseWorkflowPathForStage('optimization', projectId, poseId)
+                                    : fabricatorRoutes.studioProjects())
                         )}
                         className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-200 transform hover:scale-105"
                     >

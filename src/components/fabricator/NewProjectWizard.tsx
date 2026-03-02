@@ -502,7 +502,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 disabled={!canSubmit}
                 onClick={handleCreate}
               >
-                {t('new_project_wizard.create_project', 'Create Project & Start Measuring')}
+                {t('new_project_wizard.create_project_open_design', 'Create Project & Open Design')}
               </Button>
             </>
           )}
