@@ -23,6 +23,28 @@ export interface ValidationResult {
  * @since Phase 2: Validation Layer
  */
 export class WorkflowValidator {
+  static validateSetupToDesign(project: WindowUnit | null): ValidationResult {
+    const issues: ValidationIssue[] = [];
+
+    if (!project) {
+      issues.push({ code: 'S001', severity: 'error', message: 'Project setup is required before design' });
+    } else {
+      if (!project.overallWidth || project.overallWidth <= 0) {
+        issues.push({ code: 'S002', severity: 'error', message: 'Overall width is missing or invalid', field: 'overallWidth' });
+      }
+      if (!project.overallHeight || project.overallHeight <= 0) {
+        issues.push({ code: 'S003', severity: 'error', message: 'Overall height is missing or invalid', field: 'overallHeight' });
+      }
+      if (!project.systemPackId) {
+        issues.push({ code: 'S004', severity: 'error', message: 'System pack selection is required', field: 'systemPackId' });
+      }
+    }
+
+    const errors = issues.filter((i) => i.severity === 'error');
+    const warnings = issues.filter((i) => i.severity !== 'error');
+    return { passed: errors.length === 0, issues: errors, warnings };
+  }
+
   static validateMeasuringToDesign(
     measurement: MeasurementData | null,
     project: WindowUnit | null,
@@ -137,6 +159,24 @@ export class WorkflowValidator {
     const errors = issues.filter((i) => i.severity === 'error');
     const warnings = issues.filter((i) => i.severity !== 'error');
 
+    return { passed: errors.length === 0, issues: errors, warnings };
+  }
+
+  static validateProductionToQuality(
+    optimization: OptimizationResult | null,
+    project: WindowUnit | null,
+  ): ValidationResult {
+    const issues: ValidationIssue[] = [];
+
+    if (!project) {
+      issues.push({ code: 'Q001', severity: 'error', message: 'Project data is required for quality control' });
+    }
+    if (!optimization) {
+      issues.push({ code: 'Q002', severity: 'error', message: 'Optimization result is required before quality control' });
+    }
+
+    const errors = issues.filter((i) => i.severity === 'error');
+    const warnings = issues.filter((i) => i.severity !== 'error');
     return { passed: errors.length === 0, issues: errors, warnings };
   }
 }

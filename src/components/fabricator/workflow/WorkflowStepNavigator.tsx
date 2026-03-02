@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import { useWorkflowStore } from '@/store/workflowStore';
 import {
   Check,
+  CheckCircle2,
   ClipboardList,
   DollarSign,
   Factory,
@@ -26,6 +27,7 @@ const STEPS: StepDef[] = [
   { id: 'optimization', label: 'Optimization', shortLabel: 'Optimize', icon: <Layers size={14} />, pathSuffix: 'optimization' },
   { id: 'commercial', label: 'Commercial', shortLabel: 'Quote', icon: <DollarSign size={14} />, pathSuffix: 'commercial' },
   { id: 'production', label: 'Production', shortLabel: 'Production', icon: <Factory size={14} />, pathSuffix: 'production' },
+  { id: 'quality-control', label: 'Quality Control', shortLabel: 'Quality', icon: <CheckCircle2 size={14} />, pathSuffix: 'quality' },
 ];
 
 /**

@@ -1,3 +1,4 @@
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { Button } from '@/shared/ui/ui/button';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { CheckCircle2 } from 'lucide-react';
@@ -5,7 +6,7 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const QualityControlPage: React.FC = () => {
-    const { projectId } = useParams<{ projectId?: string }>();
+    const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
     const navigate = useNavigate();
     const { completeStep, currentProject, clearWorkflow } = useWorkflowStore();
 
@@ -18,7 +19,7 @@ export const QualityControlPage: React.FC = () => {
     const handleStartNew = () => {
         if (confirm('Start a new project? Current progress will be saved.')) {
             clearWorkflow();
-            navigate('/fabricator/workflow/measuring');
+            navigate(fabricatorRoutes.newProjectWizard());
         }
     };
 
@@ -90,7 +91,13 @@ export const QualityControlPage: React.FC = () => {
                 <div className="flex justify-between gap-4">
                     <Button
                         variant="outline"
-                        onClick={() => navigate(projectId ? `/fabricator/workflow/production/${projectId}` : '/fabricator/workflow/production')}
+                        onClick={() =>
+                            navigate(
+                                projectId && poseId
+                                    ? fabricatorRoutes.poseProduction(projectId, poseId)
+                                    : '/fabricator/studio/production'
+                            )
+                        }
                     >
                         ← Back to Production
                     </Button>

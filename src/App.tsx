@@ -198,7 +198,7 @@ const FabricatorWorkflowToStudioRedirect: React.FC = () => {
   const path = location.pathname;
   const rest = path.replace(/^\/fabricator\/workflow\/?/, '') || '';
   const parts = rest.split('/').filter(Boolean);
-  // design/:projectId, optimization/:projectId, engineering-bay/:jobId (jobId = poseId), etc.
+  // design/:projectId, optimization/:projectId, quality-control/:projectId, engineering-bay/:jobId (jobId = poseId), etc.
   if (parts[0] === 'design' && parts[1]) {
     const projectId = parts[1];
     return <Navigate to={fabricatorRoutes.poseDesign(projectId, projectId)} replace />;
@@ -211,11 +211,22 @@ const FabricatorWorkflowToStudioRedirect: React.FC = () => {
     const projectId = parts[1];
     return <Navigate to={fabricatorRoutes.poseProduction(projectId, projectId)} replace />;
   }
+  if (parts[0] === 'quality-control' && parts[1]) {
+    const projectId = parts[1];
+    return <Navigate to={fabricatorRoutes.poseQuality(projectId, projectId)} replace />;
+  }
   if (parts[0] === 'engineering-bay' && parts[1]) {
     const poseId = parts[1];
     return <Navigate to={fabricatorRoutes.poseDesign(poseId, poseId)} replace />;
   }
   return <Navigate to={fabricatorRoutes.studioProjects()} replace />;
+};
+
+// Direct legacy alias: /fabricator/workflow/quality-control/:projectId -> canonical pose quality route.
+const LegacyQualityControlRedirect: React.FC = () => {
+  const { projectId } = useParams<{ projectId?: string }>();
+  if (!projectId) return <Navigate to={fabricatorRoutes.studioProjects()} replace />;
+  return <Navigate to={fabricatorRoutes.poseQuality(projectId, projectId)} replace />;
 };
 
 /** Redirect /machines to /products/machines, preserving all query params (e.g. ?search=DC+421+PBS:1) */
@@ -445,6 +456,9 @@ const App = memo(() => {
                                       <Route path="commercial" element={<Suspense fallback={getLoadingComponent('Commercial')}><CommercialPage /></Suspense>} />
                                       <Route path="production" element={<Suspense fallback={getLoadingComponent('Production')}><ProductionPage /></Suspense>} />
                                     </Route>
+                                    <Route path="projects/:projectId/positions/:poseId/quality" element={<Suspense fallback={getLoadingComponent('Workflow')}><PoseWorkflowLayout /></Suspense>}>
+                                      <Route index element={<Suspense fallback={getLoadingComponent('Quality Control')}><QualityControlWorkflowPage /></Suspense>} />
+                                    </Route>
 
                                     {/* 3. Design Studio (legacy flat design - redirect from old nav) */}
                                     <Route path="design/*" element={<Suspense fallback={getLoadingComponent('Design Studio')}><DesignStudioLayout /></Suspense>}>
@@ -479,6 +493,7 @@ const App = memo(() => {
                                   {/* Legacy fabricator routes — single catch-all redirect to studio.
                                      Previously 30+ individual redirects; consolidated since the catch-all
                                      handles all cases and none of the old paths were public/indexed. */}
+                                  <Route path="/fabricator/workflow/quality-control/:projectId" element={<LegacyQualityControlRedirect />} />
                                   <Route path="/fabricator/workflow/*" element={<FabricatorWorkflowToStudioRedirect />} />
                                   <Route path="/fabricator/engineering-bay/:id" element={<LegacyEngineeringBayRedirect />} />
                                   <Route path="/fabricator/engineering-bay" element={<LegacyEngineeringBayRedirect />} />

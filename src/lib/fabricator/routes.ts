@@ -33,6 +33,12 @@ export const fabricatorRoutes = {
   /** Pose-centric: production */
   poseProduction: (projectId: string, poseId: string) =>
     `${STUDIO_BASE}/projects/${projectId}/positions/${poseId}/production`,
+  /** Pose-centric: quality control */
+  poseQuality: (projectId: string, poseId: string) =>
+    `${STUDIO_BASE}/projects/${projectId}/positions/${poseId}/quality`,
+  /** Pose-centric: delivery tracking */
+  poseDelivery: (projectId: string, poseId: string) =>
+    `${STUDIO_BASE}/projects/${projectId}/positions/${poseId}/delivery`,
   /** Data studio base */
   studioData: (subPath = '') =>
     subPath ? `${STUDIO_BASE}/data/${subPath}` : `${STUDIO_BASE}/data`,

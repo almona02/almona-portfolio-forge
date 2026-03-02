@@ -14,7 +14,7 @@ import { useLocation } from 'react-router-dom';
  */
 export const ValidationGate: React.FC = () => {
   const location = useLocation();
-  const { currentProject, measurementData, bom, optimizationResult } = useWorkflowStore();
+  const { currentProject, bom, optimizationResult } = useWorkflowStore();
 
   const activeStep = useMemo(() => {
     const path = location.pathname;
@@ -23,6 +23,7 @@ export const ValidationGate: React.FC = () => {
     if (path.endsWith('/optimization')) return 'optimization';
     if (path.endsWith('/commercial')) return 'commercial';
     if (path.endsWith('/production')) return 'production';
+    if (path.endsWith('/quality')) return 'quality';
     return null;
   }, [location.pathname]);
 
@@ -31,7 +32,7 @@ export const ValidationGate: React.FC = () => {
 
     switch (activeStep) {
       case 'design':
-        return WorkflowValidator.validateMeasuringToDesign(measurementData, currentProject);
+        return WorkflowValidator.validateSetupToDesign(currentProject);
       case 'bom':
         return WorkflowValidator.validateDesignToBOM(currentProject);
       case 'optimization':
@@ -40,10 +41,12 @@ export const ValidationGate: React.FC = () => {
         return WorkflowValidator.validateOptimizationToCommercial(optimizationResult);
       case 'production':
         return WorkflowValidator.validateCommercialToProduction(optimizationResult, currentProject);
+      case 'quality':
+        return WorkflowValidator.validateProductionToQuality(optimizationResult, currentProject);
       default:
         return null;
     }
-  }, [activeStep, currentProject, measurementData, bom, optimizationResult]);
+  }, [activeStep, currentProject, bom, optimizationResult]);
 
   if (!validation) return null;
   if (validation.passed && validation.warnings.length === 0) return null;
