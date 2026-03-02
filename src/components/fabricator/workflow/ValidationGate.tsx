@@ -1,3 +1,4 @@
+import { getPoseWorkflowStageFromPath } from '@/lib/fabricator/workflow/workflowGraph';
 import { WorkflowValidator, type ValidationIssue, type ValidationResult } from '@/lib/fabricator/validation/WorkflowValidator';
 import { cn } from '@/lib/utils';
 import { useWorkflowStore } from '@/store/workflowStore';
@@ -16,16 +17,10 @@ export const ValidationGate: React.FC = () => {
   const location = useLocation();
   const { currentProject, bom, optimizationResult } = useWorkflowStore();
 
-  const activeStep = useMemo(() => {
-    const path = location.pathname;
-    if (path.endsWith('/design')) return 'design';
-    if (path.endsWith('/bom')) return 'bom';
-    if (path.endsWith('/optimization')) return 'optimization';
-    if (path.endsWith('/commercial')) return 'commercial';
-    if (path.endsWith('/production')) return 'production';
-    if (path.endsWith('/quality')) return 'quality';
-    return null;
-  }, [location.pathname]);
+  const activeStep = useMemo(
+    () => getPoseWorkflowStageFromPath(location.pathname),
+    [location.pathname],
+  );
 
   const validation = useMemo<ValidationResult | null>(() => {
     if (!activeStep) return null;
@@ -41,7 +36,7 @@ export const ValidationGate: React.FC = () => {
         return WorkflowValidator.validateOptimizationToCommercial(optimizationResult);
       case 'production':
         return WorkflowValidator.validateCommercialToProduction(optimizationResult, currentProject);
-      case 'quality':
+      case 'quality-control':
         return WorkflowValidator.validateProductionToQuality(optimizationResult, currentProject);
       default:
         return null;

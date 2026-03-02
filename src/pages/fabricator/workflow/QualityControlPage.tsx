@@ -1,4 +1,5 @@
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { getPoseWorkflowPathForStage } from '@/lib/fabricator/workflow/workflowGraph';
 import { Button } from '@/shared/ui/ui/button';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { CheckCircle2 } from 'lucide-react';
@@ -94,7 +95,7 @@ export const QualityControlPage: React.FC = () => {
                         onClick={() =>
                             navigate(
                                 projectId && poseId
-                                    ? fabricatorRoutes.poseProduction(projectId, poseId)
+                                    ? getPoseWorkflowPathForStage('production', projectId, poseId)
                                     : '/fabricator/studio/production'
                             )
                         }

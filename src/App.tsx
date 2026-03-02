@@ -263,27 +263,26 @@ const getLoadingComponent = (path: string) => {
   return <LoadingSpinner message={`Loading ${path === '/' ? 'home' : path.replace('/', '').replace('-', ' ')}...`} />;
 };
 
-// Lightweight helper to activate route prefetching hook
-// Phase 1.5: Enhanced with critical Egypt route prefetching
+// Lightweight helper to activate canonical studio route prefetching.
 const RoutePrefetchingHelper = () => {
   const { prefetchRoute } = useRoutePrefetching();
 
-  // Prefetch critical Egypt workflow routes after initial load
+  // Prefetch critical studio routes after initial load
   useEffect(() => {
-    // Wait for initial render to complete before prefetching
     const timer = setTimeout(() => {
       const criticalRoutes = [
-        '/fabricator/studio/projects',
-        '/fabricator/studio/data/tuning-no-dxf',
-        '/egyptian-project-wizard'
+        fabricatorRoutes.studioCommand(),
+        fabricatorRoutes.studioProjects(),
+        fabricatorRoutes.studioData(),
+        fabricatorRoutes.studioReports(),
       ];
 
       criticalRoutes.forEach(route => prefetchRoute(route));
 
       if (import.meta.env.DEV) {
-        console.log('[Almona Egypt] Critical routes prefetched');
+        console.log('[Fabricator Studio] Critical routes prefetched');
       }
-    }, 3000); // 3 seconds after initial load
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [prefetchRoute]);

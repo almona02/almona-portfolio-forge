@@ -1,6 +1,7 @@
 import { ProductionDocumentsPanel } from '@/components/fabricator/workflow/ProductionDocumentsPanel';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { getPoseWorkflowPathForStage } from '@/lib/fabricator/workflow/workflowGraph';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { lazyRetry } from '@/utils/lazyImport';
@@ -55,7 +56,7 @@ export const ProductionPage: React.FC = () => {
     const handleProductionComplete = () => {
         completeStep('production');
         const qualityPath = projectId && poseId
-            ? fabricatorRoutes.poseQuality(projectId, poseId)
+            ? getPoseWorkflowPathForStage('quality-control', projectId, poseId)
             : '/fabricator/studio/production/quality';
 
         // Smooth transition
@@ -93,10 +94,10 @@ export const ProductionPage: React.FC = () => {
                         onClick={() => navigate(
                             !currentProject
                                 ? (projectId && poseId
-                                    ? fabricatorRoutes.poseDesign(projectId, poseId)
+                                    ? getPoseWorkflowPathForStage('design', projectId, poseId)
                                     : fabricatorRoutes.studioProjects())
                                 : (projectId && poseId
-                                    ? fabricatorRoutes.poseOptimization(projectId, poseId)
+                                    ? getPoseWorkflowPathForStage('optimization', projectId, poseId)
                                     : fabricatorRoutes.studioProjects())
                         )}
                         className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-200 transform hover:scale-105"
