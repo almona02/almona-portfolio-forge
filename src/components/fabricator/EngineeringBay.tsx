@@ -14,12 +14,13 @@
  *   load profiles; it pre-configures the grid with a recommended layout.
  * - Unified Component & Hardware Management: A single, clean interface manages the
  *   bill of materials generated from the visual design.
- * - AI-Powered Suggestions: The "Apply Template" button is now an intelligent
- *   "Suggest Layout" that uses AI/heuristics to propose an optimal grid.
+ * - Deterministic Layout Suggestions: "Suggest Layout" applies rule-based Egyptian
+ *   pattern matching for transparent and auditable outcomes.
  * - Seamless 3D Integration: The Apex Engine is not a "preview"; it's a live,
  *   interactive twin of the engineering design.
  */
 
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { performanceMonitor } from '@/lib/performance';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
@@ -37,6 +38,7 @@ import { toast } from 'sonner';
 const Window3DGenerator = React.lazy(() => import('./Window3DGenerator'));
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { patternToWindowGrid, suggestBestPatternForContext, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/shared/ui/ui/select';
@@ -76,6 +78,8 @@ interface EngineeringBayProps {
     project: WindowUnit | null;
     onDesignComplete: (components: WindowComponent[]) => void;
     onHardwareUpdate?: (hardware: any[]) => void;
+    /** Optional pose-level save handler from parent (supports local fallback modes). */
+    onPoseSave?: (updated: WindowUnit) => Promise<void> | void;
     profiles: Profile[];
     relatedPositions?: WindowUnit[];
     onSelectPosition?: (id: string) => void;
@@ -91,6 +95,7 @@ interface EngineeringBayProps {
 export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     project,
     onDesignComplete,
+    onPoseSave,
     profiles,
     relatedPositions,
     onSelectPosition,
@@ -223,12 +228,6 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         // Switch back to smartdraw mode
         setDesignMode('smartdraw');
 
-        // Log constitutional checkpoint
-        console.log('[Constitutional] Drafting → Execution transition', {
-            timestamp: new Date().toISOString(),
-            validationId: draftingOutput.metadata.validationId,
-            tierTransition: 'Tier0 → Tier3'
-        });
     }, [actions]);
 
     // --- Preset Selection Handler ---
@@ -264,12 +263,6 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         // Close preset selector
         setShowPresetSelector(false);
 
-        console.log('[Preset Applied]', {
-            presetId,
-            presetTitle: preset.title,
-            grid: result.windowGrid,
-            recommendedSystem: result.recommendedSystem
-        });
     }, [project, actions]);
 
     // --- Event Handlers ---
@@ -279,16 +272,48 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
     const handleSuggestLayout = useCallback(() => {
         actions.setError(null);
+        const type = project?.type?.toLowerCase() ?? '';
+        const preferredType: EgyptianPattern['type'] | null =
+            type.includes('sliding') ? 'sliding'
+                : (type.includes('casement') ? 'casement'
+                    : (type.includes('tilt') ? 'tilt_turn'
+                        : (type.includes('door') ? 'door'
+                            : (type.includes('fixed') ? 'fixed' : null))));
+
+        const suggestion = suggestBestPatternForContext({
+            overallWidth: project?.overallWidth,
+            overallHeight: project?.overallHeight,
+            systemPackId: activeSystemPackId,
+            preferredType,
+            existingGrid: currentGrid,
+        });
+
+        if (suggestion) {
+            actions.updateGrid(patternToWindowGrid(suggestion.pattern));
+
+            // If system pack is not selected yet, align to pattern's first compatible pack.
+            if (!activeSystemPackId && suggestion.pattern.compatibleSystems.length > 0) {
+                actions.setActiveSystemPackId(suggestion.pattern.compatibleSystems[0]);
+            }
+
+            toast.success(
+                t('engineering_bay.layout_suggested', 'Layout suggested from Egyptian pattern database'),
+                { description: suggestion.pattern.name }
+            );
+            return;
+        }
+
+        // Safe deterministic fallback when no pattern matches.
         actions.updateGrid({
-            rows: 2, cols: 2,
+            rows: 1, cols: 2,
             cells: [
                 { id: '0-0', row: 0, col: 0, type: 'fixed' },
-                { id: '0-1', row: 0, col: 1, type: 'fixed' },
-                { id: '1-0', row: 1, col: 0, type: 'sash' },
-                { id: '1-1', row: 1, col: 1, type: 'sash' },
-            ]
+                { id: '0-1', row: 0, col: 1, type: 'sash' },
+            ],
+            colWidths: [1, 1],
+            rowHeights: [1]
         });
-    }, [actions]);
+    }, [actions, activeSystemPackId, currentGrid, project, t]);
 
     const handleSaveAndNext = useCallback(() => {
         const ok = actions.validate();
@@ -380,7 +405,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                 projectId={project.id}
                 profiles={profiles}
                 onComplete={(wizardData) => {
-                    console.log('Wizard Complete:', wizardData);
+                    void wizardData;
                     toast.success(t('wizard.design_transferred', 'Design transferred to Engineering Bay'));
                     setEngineeringMode('expert');
                 }}
@@ -422,6 +447,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                         pose={project}
                         open={showQuickEditModal}
                         onOpenChange={setShowQuickEditModal}
+                        onSavePose={onPoseSave}
                     />
                 )}
             </div>
@@ -474,6 +500,15 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             )}
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 px-2 text-gray-500 hover:text-orange-400"
+                                onClick={() => setShowQuickEditModal(true)}
+                                title="Quick Edit Pose (size, color, glazing)"
+                            >
+                                <Settings className="h-4 w-4" />
+                            </Button>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -770,7 +805,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
                                     <Button onClick={handleSuggestLayout} variant="outline" className="w-full">
                                         <Wand2 className="h-4 w-4 mr-2" />
-                                        {t('engineering_bay.suggest_ai_layout', 'Suggest AI Layout')}
+                                        {t('engineering_bay.suggest_layout', 'Suggest Layout')}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -778,22 +813,31 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             <Card className="bg-gray-900/50">
                                 <CardHeader><CardTitle className="text-base">{t('engineering_bay.structure', 'Structure')}</CardTitle></CardHeader>
                                 <CardContent>
-                                    {CanvasComponent ? (
-                                        <CanvasComponent
-                                            width={project.overallWidth}
-                                            height={project.overallHeight}
-                                            grid={currentGrid}
-                                            onGridChange={actions.updateGrid}
-                                            systemPackId={activeSystemPackId}
-                                        />
-                                    ) : (
-                                        <SmartDrawCanvas
-                                            width={project.overallWidth}
-                                            height={project.overallHeight}
-                                            grid={currentGrid}
-                                            onGridChange={actions.updateGrid}
-                                        />
-                                    )}
+                                    <ErrorBoundary
+                                        level="component"
+                                        fallback={(
+                                            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+                                                Layout canvas failed to render. Please refresh this pose.
+                                            </div>
+                                        )}
+                                    >
+                                        {CanvasComponent ? (
+                                            <CanvasComponent
+                                                width={project.overallWidth}
+                                                height={project.overallHeight}
+                                                grid={currentGrid}
+                                                onGridChange={actions.updateGrid}
+                                                systemPackId={activeSystemPackId}
+                                            />
+                                        ) : (
+                                            <SmartDrawCanvas
+                                                width={project.overallWidth}
+                                                height={project.overallHeight}
+                                                grid={currentGrid}
+                                                onGridChange={actions.updateGrid}
+                                            />
+                                        )}
+                                    </ErrorBoundary>
                                 </CardContent>
                             </Card>
 
@@ -823,28 +867,37 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <CardContent>
                                     <div className="w-full h-[350px] lg:h-[600px] rounded-lg overflow-hidden border border-gray-800">
                                         {liveProject && (
-                                            PreviewComponent ? (
-                                                <PreviewComponent
-                                                    windowUnit={liveProject}
-                                                    mode="operator"
-                                                />
-                                            ) : (
-                                                <React.Suspense fallback={
-                                                    <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
-                                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-                                                        <span className="ml-3 text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
+                                            <ErrorBoundary
+                                                level="component"
+                                                fallback={(
+                                                    <div className="flex h-full items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+                                                        3D preview failed to render. Please refresh this pose.
                                                     </div>
-                                                }>
-                                                    <Window3DGenerator
+                                                )}
+                                            >
+                                                {PreviewComponent ? (
+                                                    <PreviewComponent
                                                         windowUnit={liveProject}
-                                                        profiles={profiles}
-                                                        showControls={true}
-                                                        presentationMode={false}
-                                                        showErrorDetection={true}
-                                                        mode={isPro3D ? 'pro' : 'standard'}
+                                                        mode="operator"
                                                     />
-                                                </React.Suspense>
-                                            )
+                                                ) : (
+                                                    <React.Suspense fallback={
+                                                        <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
+                                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+                                                            <span className="ml-3 text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
+                                                        </div>
+                                                    }>
+                                                        <Window3DGenerator
+                                                            windowUnit={liveProject}
+                                                            profiles={profiles}
+                                                            showControls={true}
+                                                            presentationMode={false}
+                                                            showErrorDetection={true}
+                                                            mode={isPro3D ? 'pro' : 'standard'}
+                                                        />
+                                                    </React.Suspense>
+                                                )}
+                                            </ErrorBoundary>
                                         )}
                                     </div>
                                 </CardContent>
@@ -1003,7 +1056,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Alt + D</TableCell>
                                 </TableRow>
                                 <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Suggest AI Layout</TableCell>
+                                    <TableCell className="py-2 font-medium text-gray-200">Suggest Layout</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Alt + A</TableCell>
                                 </TableRow>
                                 <TableRow className="border-gray-800 hover:bg-transparent">
@@ -1015,6 +1068,15 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {project && (
+                <PoseQuickEditModal
+                    pose={project}
+                    open={showQuickEditModal}
+                    onOpenChange={setShowQuickEditModal}
+                    onSavePose={onPoseSave}
+                />
+            )}
 
             {/* --- BILL OF MATERIALS (Maalem-Grade Precision) --- */}
             <BOMSidebar

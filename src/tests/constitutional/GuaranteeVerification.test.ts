@@ -9,7 +9,10 @@ import { DeterministicReplayEngine } from '@/core/authority/certification/Determ
 import { TruthVersionTracker } from '@/core/authority/certification/TruthVersionTracker';
 import { simplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngine';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
+import { suggestBestPatternForContext } from '@/lib/fabricator/presetUtils';
 import type { Profile, WindowUnit } from '@/types/fabricator';
+import { applyPresetIntelligence } from '@/components/fabricator/drafting/prestige/presetApplication';
+import { SIMPLE_PRESETS } from '@/components/fabricator/drafting/prestige/simplePresetsData';
 import { describe, expect, test, vi } from 'vitest';
 
 // --- MOCKS ---
@@ -268,6 +271,41 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
         const { input } = await loadGoldenMaster('facade-simple');
         const { cutList } = await runFullPipeline(input, [], 'caluminium-ps');
         expect(cutList).not.toHaveProperty('confidence');
+    });
+  });
+
+  describe('AICS-001 Section 7.5: Deterministic Pattern Intelligence', () => {
+    test('Pattern suggestion is deterministic for identical context', async () => {
+      const context = {
+        overallWidth: 2800,
+        overallHeight: 1800,
+        systemPackId: 'rock60',
+        preferredType: 'sliding' as const,
+        existingGrid: {
+          rows: 1,
+          cols: 3,
+          cells: [
+            { id: '0-0', row: 0, col: 0, type: 'sliding' as const },
+            { id: '0-1', row: 0, col: 1, type: 'fixed' as const },
+            { id: '0-2', row: 0, col: 2, type: 'sliding' as const },
+          ],
+          colWidths: [1, 1.2, 1],
+        },
+      };
+
+      const s1 = suggestBestPatternForContext(context);
+      const s2 = suggestBestPatternForContext(context);
+      expect(s1?.pattern.id).toBe(s2?.pattern.id);
+    });
+
+    test('Preset application yields deterministic grid output', async () => {
+      const preset = SIMPLE_PRESETS.find((p) => p.id === 'penthouse_panorama');
+      expect(preset).toBeDefined();
+
+      const r1 = applyPresetIntelligence(preset!, 2800, 1900);
+      const r2 = applyPresetIntelligence(preset!, 2800, 1900);
+      expect(r1.windowGrid).toEqual(r2.windowGrid);
+      expect(r1.recommendedSystem).toBe(r2.recommendedSystem);
     });
   });
 });

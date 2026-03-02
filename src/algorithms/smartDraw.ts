@@ -14,6 +14,11 @@ import {
   type ValidationError,
   type ValidationResult,
 } from '@/lib/fabricatorValidation';
+import {
+  buildGridTrackMetrics,
+  getCellBoundsFromTracks,
+  getRenderableGridCells,
+} from '@/lib/fabricator/gridGeometry';
 import type { Profile, WindowComponent, WindowGrid, WindowUnit } from '@/types/fabricator';
 import { isGlazingSpecFlat } from '@/types/fabricator';
 import { generateGlazingBeads } from './utils/glazingBeadUtils';
@@ -403,6 +408,10 @@ export function generateComponentsFromGrid(
 
   const width = project.overallWidth;
   const height = project.overallHeight;
+  const innerWidth = Math.max(0, width - (2 * frameProfile.width));
+  const innerHeight = Math.max(0, height - (2 * frameProfile.width));
+  const trackMetrics = buildGridTrackMetrics(grid, innerWidth, innerHeight);
+  const renderableCells = getRenderableGridCells(grid);
 
   // Hardware for frame assembly
   const isUPVC = frameProfile.material === 'upvc';
@@ -512,13 +521,14 @@ export function generateComponentsFromGrid(
   if (!grid.cells || !Array.isArray(grid.cells)) {
     return { components, hardware };
   }
-  grid.cells.forEach(cell => {
+  renderableCells.forEach(cell => {
       const isSashCell = cell.type === 'sliding' || cell.type === 'sash';
       if (isSashCell && sashProfile) {
-          // Calculate cell dimensions accurately
-          // For sliding systems: Each sash takes full height, width is divided by number of sashes
-          const cellW = (width - (2 * frameProfile.width)) / grid.cols;
-          const cellH = height - (2 * frameProfile.width); // Full height for sliding sashes
+          const cellBounds = getCellBoundsFromTracks(cell, trackMetrics, grid);
+          if (!cellBounds) return;
+          const cellW = Math.max(0, cellBounds.width);
+          const cellH = Math.max(0, cellBounds.height);
+          if (cellW <= 0 || cellH <= 0) return;
           
            components.push({
             id: `sash_${cell.id}_top`,
@@ -578,7 +588,7 @@ export function generateComponentsFromGrid(
               name: 'Standard Handle',
               type: 'handle',
               quantity: 1,
-              position: 'left'
+              position: cell.openingDirection === 'right' ? 'right' : 'left'
           });
 
           // ✅ ENHANCED: Extract UPVC reinforcement rules to config

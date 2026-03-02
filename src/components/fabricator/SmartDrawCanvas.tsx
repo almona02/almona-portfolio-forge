@@ -1,6 +1,12 @@
 import { useTouchGestures } from '@/hooks/useTouchGestures';
-import { getPatternById, getPatternsForSystem, patternToWindowGrid, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
-import { presetMatcher, type PatternMatch } from '@/lib/ml/PresetMatcher';
+import {
+  getPatternById,
+  getPatternsForSystem,
+  gridMatchesPattern,
+  patternToWindowGrid,
+  suggestBestPatternForContext,
+  type EgyptianPattern,
+} from '@/lib/fabricator/presetUtils';
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/ui/ui/button';
 import { Label } from '@/shared/ui/ui/label';
@@ -57,6 +63,12 @@ interface TouchGestureCallbacks {
   onGestureEnd?: () => void;
 }
 
+interface PatternSuggestionCandidate {
+  pattern: EgyptianPattern;
+  score: number;
+  rationale: string[];
+}
+
 interface SmartDrawProps {
   width: number;
   height: number;
@@ -110,7 +122,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   const [selectedSashForMullion, setSelectedSashForMullion] = useState<string | null>(null);
   const [mullionPositionInput, setMullionPositionInput] = useState('');
   const [showMullionInput, setShowMullionInput] = useState(false);
-  const [suggestedPatterns, setSuggestedPatterns] = useState<PatternMatch[]>([]);
+  const [suggestedPatterns, setSuggestedPatterns] = useState<PatternSuggestionCandidate[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [showMeasurements, setShowMeasurements] = useState(true);
 
@@ -212,24 +224,71 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
     if (canRedoRef) canRedoRef.current = canRedo;
   }, [handleUndo, handleRedo, canUndo, canRedo, onUndoRef, onRedoRef, canUndoRef, canRedoRef]);
 
-  const patterns = availablePatterns || (systemPackId ? getPatternsForSystem(systemPackId) : []);
+  const patterns = useMemo(
+    () => availablePatterns ?? getPatternsForSystem(systemPackId ?? null),
+    [availablePatterns, systemPackId],
+  );
 
-  // Calculate preset suggestions when grid changes (debounced)
+  // Calculate deterministic preset suggestions when grid changes.
   useEffect(() => {
-    // Only suggest if no pattern is currently selected and grid has cells
     if (!selectedPatternId && grid.cells && Array.isArray(grid.cells) && grid.cells.length > 0) {
-      const suggestions = presetMatcher.suggestPresets(
-        grid,
-        { width, height },
-        systemPackId || undefined
-      );
-      // Only show suggestions with confidence > 50%
-      const filteredSuggestions = suggestions.filter(s => s.confidence > 50);
-      setSuggestedPatterns(filteredSuggestions);
+      const candidatePatterns = patterns.length > 0 ? patterns : getPatternsForSystem(systemPackId ?? null);
+
+      const ranked = candidatePatterns
+        .map((pattern) => {
+          const match = gridMatchesPattern(grid, pattern);
+          let score = Math.round(match.confidence);
+          const rationale: string[] = [];
+
+          if (match.matches) {
+            rationale.push('grid alignment');
+          }
+
+          const widthInRange = width >= pattern.typicalWidthMm[0] && width <= pattern.typicalWidthMm[1];
+          const heightInRange = height >= pattern.typicalHeightMm[0] && height <= pattern.typicalHeightMm[1];
+          if (widthInRange || heightInRange) {
+            score += (widthInRange ? 8 : 0) + (heightInRange ? 8 : 0);
+            rationale.push('dimension fit');
+          }
+
+          if (grid.colWidths && pattern.gridSpec.colWidths && grid.colWidths.join(',') === pattern.gridSpec.colWidths.join(',')) {
+            score += 8;
+            rationale.push('column proportions');
+          }
+
+          if (grid.rowHeights && pattern.gridSpec.rowHeights && grid.rowHeights.join(',') === pattern.gridSpec.rowHeights.join(',')) {
+            score += 8;
+            rationale.push('row proportions');
+          }
+
+          return {
+            pattern,
+            score: Math.min(100, score),
+            rationale,
+          };
+        })
+        .sort((a, b) => b.score - a.score);
+
+      const contextualBest = suggestBestPatternForContext({
+        overallWidth: width,
+        overallHeight: height,
+        systemPackId: systemPackId ?? null,
+        existingGrid: grid,
+      });
+
+      if (contextualBest && !ranked.some((entry) => entry.pattern.id === contextualBest.pattern.id)) {
+        ranked.unshift({
+          pattern: contextualBest.pattern,
+          score: Math.min(100, contextualBest.score),
+          rationale: contextualBest.rationale.length > 0 ? contextualBest.rationale : ['context fit'],
+        });
+      }
+
+      setSuggestedPatterns(ranked.filter((entry) => entry.score >= 40).slice(0, 3));
     } else {
       setSuggestedPatterns([]);
     }
-  }, [grid, width, height, systemPackId, selectedPatternId]);
+  }, [grid, width, height, systemPackId, selectedPatternId, patterns]);
 
   // Initialize manual mullions array if not present
   useEffect(() => {
@@ -250,19 +309,6 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
       return;
     }
 
-    // Log user confirmation for ML training
-    if (suggestedPatterns.length > 0) {
-      const suggestedPattern = suggestedPatterns[0]?.pattern;
-      if (suggestedPattern) {
-        presetMatcher.logUserConfirmation(
-          grid,
-          suggestedPattern,
-          pattern,
-          { width, height }
-        );
-      }
-    }
-
     const newGrid = patternToWindowGrid(pattern);
 
     if (pattern.gridSpec.colWidths) {
@@ -274,7 +320,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
 
     handleGridChangeWithHistory(newGrid);
     onPatternSelect?.(patternId);
-  }, [grid, suggestedPatterns, width, height, handleGridChangeWithHistory, onPatternSelect]);
+  }, [handleGridChangeWithHistory, onPatternSelect]);
 
   const handleSuggestionClick = (pattern: EgyptianPattern) => {
     handlePatternSelect(pattern.id);
@@ -870,16 +916,16 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                         key={match.pattern.id}
                         onClick={() => handleSuggestionClick(match.pattern)}
                         className="text-xs px-2.5 py-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 rounded-md text-cyan-200 hover:text-cyan-100 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
-                        title={`${match.confidence}% match - ${match.matchingFeatures.join(', ')}`}
+                        title={`${match.score} score - ${match.rationale.join(', ') || 'deterministic match'}`}
                       >
                         <span className="font-medium">{match.pattern.name}</span>
-                        <span className="text-[10px] opacity-75">({match.confidence}%)</span>
+                        <span className="text-[10px] opacity-75">({match.score})</span>
                       </button>
                     ))}
                   </div>
-                  {suggestedPatterns[0] && suggestedPatterns[0].matchingFeatures.length > 0 && (
+                  {suggestedPatterns[0] && suggestedPatterns[0].rationale.length > 0 && (
                     <p className="text-[10px] text-cyan-400/80 mt-2">
-                      Matches: {suggestedPatterns[0].matchingFeatures.slice(0, 2).join(', ')}
+                      Best fit: {suggestedPatterns[0].rationale.slice(0, 2).join(', ')}
                     </p>
                   )}
                 </div>

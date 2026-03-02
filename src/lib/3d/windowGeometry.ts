@@ -17,6 +17,12 @@
  */
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import {
+  buildGridTrackMetrics,
+  computeActiveDividerBoundaries,
+  getCellBoundsFromTracks,
+  getRenderableGridCells,
+} from '@/lib/fabricator/gridGeometry';
 import { getPatternById, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
 import { FabricationData, Profile, WindowUnit } from '@/types/fabricator';
 import { FeatureFlagManager } from '../featureFlags';
@@ -625,6 +631,23 @@ export function createGoldTierMiteredFrame(
     const halfH = height / 2;
     const profileW = profile.width;
     const profileD = profile.depth;
+    // Maps profile-local axes to frame-local axes:
+    // local Z (extrusion length) -> frame X (bar run),
+    // local X (profile width) -> frame Y (face width),
+    // local Y (profile depth) -> frame Z (depth).
+    const extrusionToFrameBasis = new Matrix4();
+    const basisMatrix = extrusionToFrameBasis as Matrix4 & { set?: (...args: number[]) => Matrix4 };
+    if (typeof basisMatrix.set === 'function') {
+      basisMatrix.set(
+        0, 0, 1, 0,
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 0, 1,
+      );
+    } else {
+      // Test mocks may not provide Matrix4.set; use a safe fallback path.
+      extrusionToFrameBasis.makeRotationY(Math.PI / 2);
+    }
     
     // ===== TOP BAR =====
     // Butt Joint: Top bar spans full width
@@ -636,13 +659,17 @@ export function createGoldTierMiteredFrame(
     const topY = halfH - profileW/2;
     const topZ = 0;
     
-    topMatrix.makeRotationX(0);
+    topMatrix.copy(extrusionToFrameBasis);
     topMatrix.setPosition(new Vector3(topX, topY, topZ));
     
     parts.push({
         shape: profile.shape,
         length: topLength,
         matrix: topMatrix,
+        useBoxGeometry: true,
+        // Local box axes:
+        // x = profile face width, y = profile depth, z = bar run length.
+        boxSize: { width: profileW, height: profileD, depth: topLength },
         metadata: {
             type: 'top_bar',
             hasMiter: true,
@@ -660,13 +687,15 @@ export function createGoldTierMiteredFrame(
     // ===== BOTTOM BAR =====
     // Butt Joint: Bottom bar spans full width
     const bottomMatrix = new Matrix4();
-    bottomMatrix.makeRotationX(0);
+    bottomMatrix.copy(extrusionToFrameBasis);
     bottomMatrix.setPosition(new Vector3(0, -halfH + profileW/2, 0));
     
     parts.push({
         shape: profile.shape,
         length: topLength, // Same as top
         matrix: bottomMatrix,
+        useBoxGeometry: true,
+        boxSize: { width: profileW, height: profileD, depth: topLength },
         metadata: {
             type: 'bottom_bar',
             hasMiter: true,
@@ -683,12 +712,15 @@ export function createGoldTierMiteredFrame(
     const leftLength = height - (profileW * 2);
     const leftMatrix = new Matrix4();
     leftMatrix.makeRotationZ(Math.PI / 2); // Vertical
+    leftMatrix.multiplyMatrices(leftMatrix, extrusionToFrameBasis);
     leftMatrix.setPosition(new Vector3(-halfW + profileW/2, 0, 0)); // Centered Vertically
     
     parts.push({
         shape: profile.shape,
         length: leftLength,
         matrix: leftMatrix,
+        useBoxGeometry: true,
+        boxSize: { width: profileW, height: profileD, depth: leftLength },
         metadata: {
             type: 'left_bar',
             hasMiter: true,
@@ -704,12 +736,15 @@ export function createGoldTierMiteredFrame(
     // Butt Joint: Fits BETWEEN top and bottom bars
     const rightMatrix = new Matrix4();
     rightMatrix.makeRotationZ(Math.PI / 2);
+    rightMatrix.multiplyMatrices(rightMatrix, extrusionToFrameBasis);
     rightMatrix.setPosition(new Vector3(halfW - profileW/2, 0, 0)); // Centered Vertically
     
     parts.push({
         shape: profile.shape,
         length: leftLength,
         matrix: rightMatrix,
+        useBoxGeometry: true,
+        boxSize: { width: profileW, height: profileD, depth: leftLength },
         metadata: {
             type: 'right_bar',
             hasMiter: true,
@@ -731,8 +766,10 @@ export function createGoldTierMiteredFrame(
             shape: createCornerPlateShape(cornerSize),
             length: cornerDepth,
             matrix: new Matrix4().setPosition(
-                new Vector3(-halfW + cornerSize/2, halfH - cornerSize/2, profileD/2 + cornerDepth/2)
+                new Vector3(-halfW + cornerSize/2, halfH - cornerSize/2, profileD/2 - cornerDepth/2)
             ),
+            useBoxGeometry: true,
+            boxSize: { width: cornerSize, height: cornerSize, depth: cornerDepth },
             metadata: {
                 type: 'corner_reinforcement',
                 position: 'top_left',
@@ -746,8 +783,10 @@ export function createGoldTierMiteredFrame(
             shape: createCornerPlateShape(cornerSize),
             length: cornerDepth,
             matrix: new Matrix4().setPosition(
-                new Vector3(halfW - cornerSize/2, halfH - cornerSize/2, profileD/2 + cornerDepth/2)
+                new Vector3(halfW - cornerSize/2, halfH - cornerSize/2, profileD/2 - cornerDepth/2)
             ),
+            useBoxGeometry: true,
+            boxSize: { width: cornerSize, height: cornerSize, depth: cornerDepth },
             metadata: {
                 type: 'corner_reinforcement_tr',
                 position: 'top_right'
@@ -758,8 +797,10 @@ export function createGoldTierMiteredFrame(
             shape: createCornerPlateShape(cornerSize),
             length: cornerDepth,
             matrix: new Matrix4().setPosition(
-                new Vector3(halfW - cornerSize/2, -halfH + cornerSize/2, profileD/2 + cornerDepth/2)
+                new Vector3(halfW - cornerSize/2, -halfH + cornerSize/2, profileD/2 - cornerDepth/2)
             ),
+            useBoxGeometry: true,
+            boxSize: { width: cornerSize, height: cornerSize, depth: cornerDepth },
             metadata: {
                 type: 'corner_reinforcement_br',
                 position: 'bottom_right'
@@ -770,8 +811,10 @@ export function createGoldTierMiteredFrame(
             shape: createCornerPlateShape(cornerSize),
             length: cornerDepth,
             matrix: new Matrix4().setPosition(
-                new Vector3(-halfW + cornerSize/2, -halfH + cornerSize/2, profileD/2 + cornerDepth/2)
+                new Vector3(-halfW + cornerSize/2, -halfH + cornerSize/2, profileD/2 - cornerDepth/2)
             ),
+            useBoxGeometry: true,
+            boxSize: { width: cornerSize, height: cornerSize, depth: cornerDepth },
             metadata: {
                 type: 'corner_reinforcement_bl',
                 position: 'bottom_left'
@@ -959,7 +1002,7 @@ export function createMiteredFrame(width: number, height: number, profile: Profi
  * @returns Glass bounds with x, y, width, height
  */
 export function calculateGlassBounds(
-  cell: { row: number; col: number },
+  cell: { row: number; col: number; rowSpan?: number; colSpan?: number },
   cellX: number,
   cellY: number,
   cellW: number,
@@ -969,12 +1012,36 @@ export function calculateGlassBounds(
   glassInset: number = 0.002
 ): { x: number; y: number; width: number; height: number } {
   const frameInset = frameProfile.width;
+  const rowSpan = Math.max(1, Math.floor(cell.rowSpan ?? 1));
+  const colSpan = Math.max(1, Math.floor(cell.colSpan ?? 1));
+  const colEnd = cell.col + colSpan - 1;
+  const rowEnd = cell.row + rowSpan - 1;
+  const hasGrid = Boolean(windowUnit.grid?.rows && windowUnit.grid?.cols);
+  const gridCols = hasGrid ? windowUnit.grid!.cols : 1;
+  const gridRows = hasGrid ? windowUnit.grid!.rows : 1;
+  const boundaries = hasGrid ? computeActiveDividerBoundaries(windowUnit.grid!) : { verticalBoundaries: [], horizontalBoundaries: [] };
+  const activeVerticalBoundaries = new Set(boundaries.verticalBoundaries);
+  const activeHorizontalBoundaries = new Set(boundaries.horizontalBoundaries);
+  const isOuterLeft = !hasGrid || cell.col <= 0;
+  const isOuterRight = !hasGrid || colEnd >= gridCols - 1;
+  const isOuterTop = !hasGrid || cell.row <= 0;
+  const isOuterBottom = !hasGrid || rowEnd >= gridRows - 1;
+  const hasLeftDivider = hasGrid && activeVerticalBoundaries.has(cell.col);
+  const hasRightDivider = hasGrid && activeVerticalBoundaries.has(colEnd + 1);
+  const hasTopDivider = hasGrid && activeHorizontalBoundaries.has(cell.row);
+  const hasBottomDivider = hasGrid && activeHorizontalBoundaries.has(rowEnd + 1);
+  const leftInset = isOuterLeft ? frameInset : (hasLeftDivider ? frameInset / 2 : frameInset);
+  const rightInset = isOuterRight ? frameInset : (hasRightDivider ? frameInset / 2 : frameInset);
+  const topInset = isOuterTop ? frameInset : (hasTopDivider ? frameInset / 2 : frameInset);
+  const bottomInset = isOuterBottom ? frameInset : (hasBottomDivider ? frameInset / 2 : frameInset);
   
-  // Start with cell dimensions minus frame inset
-  const glassWidth = cellW - frameInset * 2 - glassInset * 2;
-  let glassHeight = cellH - frameInset * 2 - glassInset * 2;
-  const glassX = cellX;
-  let glassY = cellY;
+  // Start with cell dimensions minus structural insets:
+  // - Outer frame edges use full inset
+  // - Shared internal divider edges split inset across adjacent cells
+  const glassWidth = cellW - leftInset - rightInset - glassInset * 2;
+  let glassHeight = cellH - topInset - bottomInset - glassInset * 2;
+  const glassX = cellX + (leftInset - rightInset) / 2;
+  let glassY = cellY - (topInset - bottomInset) / 2;
   
   // Check for transoms and adjust glass bounds
   if (windowUnit.presetData?.transoms && Array.isArray(windowUnit.presetData.transoms)) {
@@ -997,12 +1064,13 @@ export function calculateGlassBounds(
     }
   }
   
-  return {
+  const result = {
     x: glassX,
     y: glassY,
     width: Math.max(0.02, glassWidth), // Minimum 20mm
     height: Math.max(0.02, glassHeight)
   };
+  return result;
 }
 
 export function generateModelGeometries(
@@ -1628,14 +1696,12 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
 
     if (windowUnit.grid && windowUnit.grid.cells.length > 0) {
         // Handle Grid Mode with proportional widths/heights from SmartDrawCanvas
-        const { rows, cols, cells, colWidths, rowHeights } = windowUnit.grid;
-
-        const colVals = colWidths && colWidths.length === cols ? colWidths : Array(cols).fill(1);
-        const rowVals = rowHeights && rowHeights.length === rows ? rowHeights : Array(rows).fill(1);
-        const colTotal = colVals.reduce((a, b) => a + b, 0) || cols;
-        const rowTotal = rowVals.reduce((a, b) => a + b, 0) || rows;
-        const colSizes = colVals.map((v) => (v / colTotal) * width);
-        const rowSizes = rowVals.map((v) => (v / rowTotal) * height);
+        const { rows, cols } = windowUnit.grid;
+        const tracks = buildGridTrackMetrics(windowUnit.grid, width, height);
+        const colSizes = tracks.colSizes;
+        const rowSizes = tracks.rowSizes;
+        const renderableCells = getRenderableGridCells(windowUnit.grid);
+        const { verticalBoundaries, horizontalBoundaries } = computeActiveDividerBoundaries(windowUnit.grid);
 
         const colStarts: number[] = [];
         const rowStarts: number[] = [];
@@ -1661,9 +1727,9 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
         // 1. Automatic Grid Mullions (Predictive Grid)
         // Only if NO preset is used, to avoid conflicts
         if (!windowUnit.presetId && !windowUnit.presetData) {
-            if (cols > 1 && colStarts.length >= cols) {
-                for (let c = 1; c < cols; c++) {
-                    const x = colStarts[c];
+            if (verticalBoundaries.length > 0 && colStarts.length >= cols) {
+                for (const boundary of verticalBoundaries) {
+                    const x = colStarts[boundary];
                     if (x === undefined || !Number.isFinite(x)) continue;
                     const mullionW = frameProfile.width;
                     const mullionD = frameProfile.depth;
@@ -1672,9 +1738,9 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     muntins.push(bar);
                 }
             }
-            if (rows > 1 && rowStarts.length >= rows) {
-                for (let r = 1; r < rows; r++) {
-                    const y = rowStarts[r];
+            if (horizontalBoundaries.length > 0 && rowStarts.length >= rows) {
+                for (const boundary of horizontalBoundaries) {
+                    const y = rowStarts[boundary];
                     if (y === undefined || !Number.isFinite(y)) continue;
                     const transomH = frameProfile.width;
                     const transomD = frameProfile.depth;
@@ -1691,17 +1757,18 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
              muntins.push(...manualParts);
         }
 
-        cells.forEach(cell => {
+        renderableCells.forEach(cell => {
             if (cell.type === 'empty') return;
             if (cell.col < 0 || cell.col >= cols || cell.row < 0 || cell.row >= rows) return;
 
-            const cellW = colSizes[cell.col];
-            const cellH = rowSizes[cell.row];
+            const cellBounds = getCellBoundsFromTracks(cell, tracks, windowUnit.grid!);
+            if (!cellBounds) return;
+            const cellW = cellBounds.width;
+            const cellH = cellBounds.height;
             if (cellW <= 0 || cellH <= 0 || !Number.isFinite(cellW) || !Number.isFinite(cellH)) return;
-            // Cell X center: column start + half column width
-            const cellX = colStarts[cell.col] + cellW / 2;
-            // Cell Y center: row start (top edge) - half row height (going down from top)
-            const cellY = rowStarts[cell.row] - cellH / 2;
+            // Convert top-left track bounds into centered world coordinates.
+            const cellX = (-width / 2) + cellBounds.x + (cellW / 2);
+            const cellY = (height / 2) - cellBounds.y - (cellH / 2);
             
             const isSash = cell.type === 'sash' || (cell as any).type === 'sliding';
             const isSliding = cell.type === 'sliding' || (cell as any).type === 'sliding';

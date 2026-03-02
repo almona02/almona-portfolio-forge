@@ -70,6 +70,7 @@ import { MaterialPerformanceMonitor } from '@/lib/3d/performance/MaterialPerform
 
 // Tree-shakeable imports
 import {
+    BoxGeometry,
     Euler,
     ExtrudeGeometry,
     Group,
@@ -149,14 +150,14 @@ const createSpacerMaterial = (clippingPlanes?: Plane[] | null): MeshStandardMate
  */
 function MiteredFramePart({ part, material, enableShadows, userData }: { part: MiteredFrameData, material: Material, enableShadows: boolean, userData?: any }) {
     const geometry = useMemo(() => {
-        // Temporary: Use BoxGeometry for simpler positioning (fixing frame bars)
-        // [CONSTITUTIONAL FIX] Disabled to ensure 99.8% geometric accuracy and prevent fragmentation.
-        // if (part.useBoxGeometry && part.boxSize) {
-        //     const { width, height, depth } = part.boxSize;
-        //     const geom = new BoxGeometry(width, height, depth);
-        //     geom.applyMatrix4(part.matrix);
-        //     return geom;
-        // }
+        // For preview stability, honor explicit box geometry hints emitted by
+        // frame generators (deterministic and prevents visually fragmented parts).
+        if (part.useBoxGeometry && part.boxSize) {
+            const { width, height, depth } = part.boxSize;
+            const geom = new BoxGeometry(width, height, depth);
+            geom.applyMatrix4(part.matrix);
+            return geom;
+        }
 
         // Original: ExtrudeGeometry for profile shapes
         // Use createChamberedProfileGeometry if chambers exist in metadata
@@ -329,9 +330,9 @@ const Window3DModelComponent = (props: {
 
     // Stabilize detail config keys for dependency array
     const {
-        enableWeatherSeals = true,
-        enableFasteners = true,
-        enableDrainage = true
+        enableWeatherSeals = false,
+        enableFasteners = false,
+        enableDrainage = false
     } = detailConfig || {};
 
     // Stabilize detail config to prevent system recreation
@@ -444,6 +445,9 @@ const Window3DModelComponent = (props: {
         return detailSystem.generateDetailsForWindowUnit(windowUnit);
     }, [detailSystem, windowUnit]);
 
+    // Use renderPriority 1 when post-processing is active to prevent double render.
+    // R3F: priority > 0 disables automatic rendering; composer.render() becomes the sole render.
+    // Without this, both composer and R3F render each frame → ghosting/duplication on OrbitControls interaction.
     useFrame((_state, delta) => {
         // Update details LOD
         if (detailSystem && windowUnit) {
@@ -465,7 +469,7 @@ const Window3DModelComponent = (props: {
             const fps = 1 / safeDelta;
             monitor.updatePerformanceMetrics(safeDelta * 1000, fps);
         }
-    });
+    }, quality === 'standard' ? 0 : 1);
 
 
 
@@ -1924,9 +1928,9 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
     // Detail Configuration
     const [detailConfig, setDetailConfig] = useState({
-        enableWeatherSeals: true,
-        enableFasteners: true,
-        enableDrainage: true
+        enableWeatherSeals: false,
+        enableFasteners: false,
+        enableDrainage: false
     });
 
     const modelRef = useRef<Group>(null!);

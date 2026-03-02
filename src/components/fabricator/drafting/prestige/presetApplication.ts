@@ -7,6 +7,7 @@
  */
 
 import type { WindowGrid, GridCell } from '@/types/fabricator';
+import { getPatternById, patternToWindowGrid, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
 import type { ArchitecturalPreset } from './ArchitecturalPresetSelector';
 import { logDraftingAction } from '../utils/constitutionalAudit';
 
@@ -21,6 +22,84 @@ export interface PresetApplicationResult {
   };
 }
 
+const PRESET_PATTERN_CANDIDATES: Record<string, string[]> = {
+  standard_residential_2x2: ['casement-double', 'sliding-2s', 'fixed-with-side-casements'],
+  luxury_villa_facade: ['fixed-with-side-casements', 'picture-window', 'corner-window'],
+  penthouse_panorama: ['sliding-3s-center-fixed', 'picture-window', 'sliding-4s'],
+  apartment_renovation: ['sliding-2s', 'casement-single', 'fixed'],
+  storefront_basic: ['sliding-door-2p', 'picture-window', 'fixed'],
+  standard_commercial: ['picture-window', 'fixed-with-side-casements', 'sliding-door-2p'],
+  heritage_geometric: ['with-shish-latish', 'with-shish', 'arched-panda'],
+};
+
+function inferPatternTypeFromPreset(preset: ArchitecturalPreset): EgyptianPattern['type'] | null {
+  const text = `${preset.intelligence.gridPattern} ${preset.title}`.toLowerCase();
+  if (text.includes('sliding')) return 'sliding';
+  if (text.includes('casement')) return 'casement';
+  if (text.includes('door')) return 'door';
+  if (text.includes('tilt')) return 'tilt_turn';
+  if (text.includes('fixed')) return 'fixed';
+  return null;
+}
+
+function scoreDimensionFit(
+  value: number | undefined,
+  min: number,
+  max: number,
+  inRangeScore: number,
+  nearRangeScore: number,
+): number {
+  if (!value || !Number.isFinite(value)) return 0;
+  if (value >= min && value <= max) return inRangeScore;
+
+  const nearest = value < min ? min : max;
+  const deviation = Math.abs(value - nearest) / Math.max(nearest, 1);
+  if (deviation <= 0.15) return nearRangeScore;
+  if (deviation <= 0.30) return Math.floor(nearRangeScore / 2);
+  return 0;
+}
+
+function selectPatternForPreset(
+  preset: ArchitecturalPreset,
+  overallWidth?: number,
+  overallHeight?: number,
+): EgyptianPattern | null {
+  const candidateIds = PRESET_PATTERN_CANDIDATES[preset.id];
+  if (!candidateIds || candidateIds.length === 0) return null;
+
+  const candidates = candidateIds
+    .map((id) => getPatternById(id))
+    .filter((pattern): pattern is EgyptianPattern => Boolean(pattern));
+  if (candidates.length === 0) return null;
+
+  const preferredType = inferPatternTypeFromPreset(preset);
+  const recommendedSystem = preset.intelligence.systemRecommendation.toLowerCase();
+
+  let bestPattern: EgyptianPattern | null = null;
+  let bestScore = -1;
+
+  for (const pattern of candidates) {
+    let score = 0;
+    score += scoreDimensionFit(overallWidth, pattern.typicalWidthMm[0], pattern.typicalWidthMm[1], 32, 16);
+    score += scoreDimensionFit(overallHeight, pattern.typicalHeightMm[0], pattern.typicalHeightMm[1], 32, 16);
+
+    if (preferredType && (pattern.type === preferredType || pattern.type === 'mixed')) {
+      score += pattern.type === preferredType ? 20 : 10;
+    }
+
+    if (pattern.compatibleSystems.some((systemId) => recommendedSystem.includes(systemId.toLowerCase()))) {
+      score += 12;
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestPattern = pattern;
+    }
+  }
+
+  return bestPattern;
+}
+
 /**
  * Apply preset intelligence to create WindowGrid
  * Constitutional: Deterministic conversion, no ML
@@ -32,15 +111,21 @@ export function applyPresetIntelligence(
 ): PresetApplicationResult {
   const checkpoint = `CHECKPOINT-PRESET-APPLY-${Date.now()}`;
   
-  // Parse grid pattern (deterministic)
-  const gridPattern = parseGridPattern(preset.intelligence.gridPattern);
-  
-  // Create WindowGrid
-  const windowGrid = createWindowGridFromPattern(
-    gridPattern,
-    overallWidth,
-    overallHeight
-  );
+  const selectedPattern = selectPatternForPreset(preset, overallWidth, overallHeight);
+  const gridPattern = selectedPattern
+    ? `${preset.intelligence.gridPattern} -> ${selectedPattern.id}`
+    : preset.intelligence.gridPattern;
+
+  // Create WindowGrid from mapped Egyptian pattern when available.
+  // Fallback to legacy deterministic parser for unknown presets.
+  const windowGrid = selectedPattern
+    ? patternToWindowGrid(selectedPattern)
+    : createWindowGridFromPattern(
+      parseGridPattern(preset.intelligence.gridPattern),
+      overallWidth,
+      overallHeight
+    );
+  const recommendedSystem = selectedPattern?.compatibleSystems[0] || preset.intelligence.systemRecommendation;
   
   // Constitutional audit logging
   logDraftingAction(
@@ -60,7 +145,7 @@ export function applyPresetIntelligence(
         cols: windowGrid.cols,
         cellCount: windowGrid.cells.length
       },
-      recommendedSystem: preset.intelligence.systemRecommendation,
+      recommendedSystem,
       recommendedMaterial: preset.intelligence.materialRecommendation
     },
     checkpoint
@@ -68,10 +153,10 @@ export function applyPresetIntelligence(
   
   return {
     windowGrid,
-    recommendedSystem: preset.intelligence.systemRecommendation,
+    recommendedSystem,
     recommendedMaterial: preset.intelligence.materialRecommendation,
     appliedIntelligence: {
-      gridPattern: preset.intelligence.gridPattern,
+      gridPattern,
       optimization: preset.intelligence.optimization || '',
       complexity: preset.complexity
     }
@@ -103,8 +188,8 @@ function parseGridPattern(pattern: string): { rows: number; cols: number; isAsym
  */
 function createWindowGridFromPattern(
   pattern: { rows: number; cols: number; isAsymmetrical?: boolean },
-  overallWidth?: number,
-  overallHeight?: number
+  _overallWidth?: number,
+  _overallHeight?: number
 ): WindowGrid {
   const cells: GridCell[] = [];
   
@@ -137,13 +222,13 @@ function createWindowGridFromPattern(
     }
   }
   
-  // Calculate column widths and row heights if dimensions provided
-  let colWidths: number[] | undefined;
-  let rowHeights: number[] | undefined;
-  
-  if (overallWidth && overallHeight) {
-    colWidths = Array(pattern.cols).fill(overallWidth / pattern.cols);
-    rowHeights = Array(pattern.rows).fill(overallHeight / pattern.rows);
+  // WindowGrid expects relative track weights, not absolute mm dimensions.
+  // Keep deterministic ratios so 2D + 3D remain consistent.
+  let colWidths: number[] | undefined = Array(pattern.cols).fill(1);
+  const rowHeights: number[] | undefined = Array(pattern.rows).fill(1);
+  if (pattern.isAsymmetrical && pattern.cols >= 2) {
+    colWidths = Array(pattern.cols).fill(1);
+    colWidths[Math.floor(pattern.cols / 2)] = 1.2;
   }
   
   return {

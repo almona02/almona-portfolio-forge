@@ -115,37 +115,44 @@ export const DraftingWorkbench: React.FC<{
 
   // Removed unused viewportBounds and activeStatusMessages memos
 
-  // Log facade model to avoid unused variable warning (temporary)
-  React.useEffect(() => {
-    if (facadeModel) console.log('Facade Model Updated:', facadeModel);
-  }, [facadeModel]);
-
   const handleFacadeReport = useCallback(async () => {
     if (!facadeModel) return;
 
     try {
-      // Construct a minimal WindowUnit wrapper for the report
-      const mockUnit: WindowUnit = {
-        id: 'FACADE-' + Date.now(),
-        orderNumber: `ORD-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000)}`,
-        customer: 'Valued Client',
-        width: facadeModel.spec.width,
-        height: facadeModel.spec.height,
+      const reportUnit: WindowUnit = project ? {
+        ...project,
         type: 'facade',
-        quantity: 1,
-        // Other fields would be populated from actual project context in a real app
+        overallWidth: facadeModel.spec.width,
+        overallHeight: facadeModel.spec.height,
+        facadeModel,
+        updatedAt: new Date(),
+      } : {
+        id: 'facade-preview',
+        orderNumber: 'FACADE-PREVIEW',
+        posNumber: 'FACADE',
+        type: 'facade',
         components: [],
+        overallWidth: facadeModel.spec.width,
+        overallHeight: facadeModel.spec.height,
+        color: '#FFFFFF',
+        glazing: {},
         hardware: [],
-        glazing: []
-      } as unknown as WindowUnit;
+        status: 'design',
+        optimization: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        customer: 'N/A',
+        quantity: 1,
+        facadeModel,
+      };
 
-      const blob = await FacadeReportService.generateFacadeReport(mockUnit, facadeModel);
+      const blob = await FacadeReportService.generateFacadeReport(reportUnit, facadeModel);
       const { saveAs } = await import('file-saver');
-      saveAs(blob, `Facade_Report_${mockUnit.orderNumber}.pdf`);
+      saveAs(blob, `Facade_Report_${reportUnit.orderNumber}.pdf`);
     } catch (error) {
       console.error("Report Generation Failed", error);
     }
-  }, [facadeModel]);
+  }, [facadeModel, project]);
 
 
 

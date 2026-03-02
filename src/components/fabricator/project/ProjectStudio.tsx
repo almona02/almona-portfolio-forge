@@ -20,6 +20,7 @@ import {
     Copy,
     FileText,
     Layout,
+    Loader2,
     Menu,
     MonitorPlay,
     Plus,
@@ -71,7 +72,9 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
     initialProject = DEFAULT_PROJECT,
     profiles
 }) => {
-    const useV2 = FeatureFlags.FABRICATOR_READ_V2 && !!projectId;
+    const useV2Configured = FeatureFlags.FABRICATOR_READ_V2 && !!projectId;
+    const [forceLocalMode, setForceLocalMode] = useState(false);
+    const useV2 = useV2Configured && !forceLocalMode;
 
     // ─── V2: React Query as single source of truth ─────────────────
     const { data: projectMeta } = useProject(useV2 ? projectId : undefined);
@@ -99,17 +102,55 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
     const [activeUnitId, setActiveUnitId] = useState<string | null>(null);
     const [workflowStage, setWorkflowStage] = useState<'design' | 'optimize' | 'quote'>('design');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const flowStages: Array<{ id: 'design' | 'optimize' | 'quote'; label: string; helper: string }> = useMemo(() => ([
+        { id: 'design', label: 'Design', helper: 'Size, color, glazing' },
+        { id: 'optimize', label: 'Optimize', helper: 'Cut lists and efficiency' },
+        { id: 'quote', label: 'Quote', helper: 'Commercial output' },
+    ]), []);
 
     // Optimization Results Cache
     const [optimizationResults, setOptimizationResults] = useState<{
         projectSummary: any;
         unitResults: Map<string, ApexV6Output>;
     } | null>(null);
+    const [optimizationProgress, setOptimizationProgress] = useState<{
+        isRunning: boolean;
+        processed: number;
+        total: number;
+        currentUnitLabel: string | null;
+    }>({
+        isRunning: false,
+        processed: 0,
+        total: 0,
+        currentUnitLabel: null,
+    });
 
     // --- Derived State ---
     const activeUnit = useMemo(() =>
         project.units.find(u => u.id === activeUnitId) || null,
         [project.units, activeUnitId]);
+
+    const isAuthError = useCallback((err: unknown) => {
+        const message = typeof err === 'string'
+            ? err
+            : err instanceof Error
+                ? err.message
+                : JSON.stringify(err);
+        return message.toLowerCase().includes('not authenticated');
+    }, []);
+
+    const switchToLocalDraftMode = useCallback(() => {
+        setForceLocalMode(true);
+        setLocalProject((prev) => ({
+            id: projectMeta?.id || prev.id,
+            clientName: projectMeta?.client_name || prev.clientName,
+            reference: projectMeta?.project_code || prev.reference,
+            units: v2Units.length > 0 ? v2Units : prev.units,
+        }));
+        toast.warning('Switched to local draft mode', {
+            description: 'Cloud auth unavailable. Changes are saved locally in this session.',
+        });
+    }, [projectMeta?.client_name, projectMeta?.id, projectMeta?.project_code, v2Units]);
 
     // --- Actions ---
 
@@ -137,7 +178,18 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             // Persist through React Query — cache invalidation refreshes units
             upsertPose.mutate({ windowUnit: newUnit }, {
                 onSuccess: () => toast.success(`Unit ${newUnit.posNumber} added`),
-                onError: (err) => toast.error(`Failed to add unit: ${err}`),
+                onError: (err) => {
+                    if (isAuthError(err)) {
+                        switchToLocalDraftMode();
+                        setLocalProject(prev => ({
+                            ...prev,
+                            units: [...prev.units, newUnit]
+                        }));
+                        toast.success(`Unit ${newUnit.posNumber} added (local draft)`);
+                        return;
+                    }
+                    toast.error(`Failed to add unit: ${err}`);
+                },
             });
         } else {
             setLocalProject(prev => ({
@@ -148,7 +200,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         }
         setActiveUnitId(newUnit.id);
         setWorkflowStage('design');
-    }, [project.units, useV2, upsertPose]);
+    }, [isAuthError, project.units, switchToLocalDraftMode, upsertPose, useV2]);
 
     const handleDuplicateUnit = useCallback((unitId: string) => {
         const unit = project.units.find(u => u.id === unitId);
@@ -164,6 +216,18 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         if (useV2) {
             upsertPose.mutate({ windowUnit: newUnit }, {
                 onSuccess: () => toast.success('Unit duplicated'),
+                onError: (err) => {
+                    if (isAuthError(err)) {
+                        switchToLocalDraftMode();
+                        setLocalProject(prev => ({
+                            ...prev,
+                            units: [...prev.units, newUnit]
+                        }));
+                        toast.success('Unit duplicated (local draft)');
+                        return;
+                    }
+                    toast.error(`Failed to duplicate unit: ${err}`);
+                },
             });
         } else {
             setLocalProject(prev => ({
@@ -172,13 +236,24 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             }));
             toast.success('Unit duplicated');
         }
-    }, [project.units, useV2, upsertPose]);
+    }, [isAuthError, project.units, switchToLocalDraftMode, upsertPose, useV2]);
 
     const handleDeleteUnit = useCallback((unitId: string) => {
         if (useV2) {
             deletePoseMutation.mutate(unitId, {
                 onSuccess: () => toast.success('Unit removed'),
-                onError: (err) => toast.error(`Failed to remove unit: ${err}`),
+                onError: (err) => {
+                    if (isAuthError(err)) {
+                        switchToLocalDraftMode();
+                        setLocalProject(prev => ({
+                            ...prev,
+                            units: prev.units.filter(u => u.id !== unitId)
+                        }));
+                        toast.success('Unit removed (local draft)');
+                        return;
+                    }
+                    toast.error(`Failed to remove unit: ${err}`);
+                },
             });
         } else {
             setLocalProject(prev => ({
@@ -190,21 +265,33 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         if (activeUnitId === unitId) {
             setActiveUnitId(null);
         }
-    }, [activeUnitId, useV2, deletePoseMutation]);
+    }, [activeUnitId, deletePoseMutation, isAuthError, switchToLocalDraftMode, useV2]);
 
     const handleUpdateUnit = useCallback((unitId: string, updates: Partial<WindowUnit>) => {
         const unit = project.units.find(u => u.id === unitId);
         if (!unit) return;
 
         if (useV2) {
-            upsertPose.mutate({ windowUnit: { ...unit, ...updates } });
+            upsertPose.mutate({ windowUnit: { ...unit, ...updates } }, {
+                onError: (err) => {
+                    if (isAuthError(err)) {
+                        switchToLocalDraftMode();
+                        setLocalProject(prev => ({
+                            ...prev,
+                            units: prev.units.map(u => u.id === unitId ? { ...u, ...updates } : u)
+                        }));
+                        return;
+                    }
+                    toast.error(`Failed to update unit: ${err}`);
+                }
+            });
         } else {
             setLocalProject(prev => ({
                 ...prev,
                 units: prev.units.map(u => u.id === unitId ? { ...u, ...updates } : u)
             }));
         }
-    }, [project.units, useV2, upsertPose]);
+    }, [isAuthError, project.units, switchToLocalDraftMode, upsertPose, useV2]);
 
     const handleDesignComplete = useCallback((components: WindowComponent[]) => {
         if (activeUnitId) {
@@ -214,11 +301,22 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
 
     // --- Optimization Logic ---
     const runProjectOptimization = useCallback(async () => {
+        if (optimizationProgress.isRunning) {
+            return;
+        }
+
         if (project.units.length === 0) {
             toast.error("No units to optimize");
             return;
         }
 
+        setWorkflowStage('optimize');
+        setOptimizationProgress({
+            isRunning: true,
+            processed: 0,
+            total: project.units.length,
+            currentUnitLabel: null,
+        });
         const toastId = toast.loading("Running Apex Engine Optimization...");
 
         try {
@@ -226,6 +324,14 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             const unitResults = new Map<string, ApexV6Output>();
 
             for (const unit of project.units) {
+                setOptimizationProgress((prev) => ({
+                    ...prev,
+                    currentUnitLabel: unit.posNumber || unit.id,
+                }));
+                await new Promise<void>((resolve) => {
+                    setTimeout(resolve, 0);
+                });
+
                 // Find system pack
                 const pack = SYSTEM_PACKS.find(p => p.meta.id === (unit.systemPackId || 'generic-60')) || SYSTEM_PACKS[0];
 
@@ -233,6 +339,11 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                 const engine = new ApexEngineV6(pack, unit, 'miter');
                 const result = engine.generate();
                 unitResults.set(unit.id, result);
+
+                setOptimizationProgress((prev) => ({
+                    ...prev,
+                    processed: prev.processed + 1,
+                }));
             }
 
             // 2. Global Aggregation (Todo: Implement true global nesting in ProjectOptimizer)
@@ -252,8 +363,15 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             toast.dismiss(toastId);
             toast.error("Optimization Failed");
             console.error(err);
+        } finally {
+            setOptimizationProgress({
+                isRunning: false,
+                processed: 0,
+                total: 0,
+                currentUnitLabel: null,
+            });
         }
-    }, [project.units]);
+    }, [optimizationProgress.isRunning, project.units]);
 
     return (
         <div className="flex h-full bg-gray-950 text-white overflow-hidden font-sans">
@@ -347,10 +465,18 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                     <div className="p-4 border-t border-gray-800 space-y-2">
                         <Button
                             onClick={runProjectOptimization}
+                            disabled={optimizationProgress.isRunning}
                             variant="outline"
-                            className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-900/20"
+                            className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-900/20 disabled:opacity-60"
                         >
-                            <MonitorPlay className="h-4 w-4 mr-2" /> Optimize All
+                            {optimizationProgress.isRunning ? (
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            ) : (
+                                <MonitorPlay className="h-4 w-4 mr-2" />
+                            )}
+                            {optimizationProgress.isRunning
+                                ? `Optimizing ${optimizationProgress.processed}/${optimizationProgress.total}`
+                                : 'Optimize All'}
                         </Button>
                         <Button
                             onClick={() => setWorkflowStage('quote')}
@@ -377,7 +503,35 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                         </h1>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
+                        <div className="hidden xl:flex items-center gap-2">
+                            {flowStages.map((stage, idx) => {
+                                const isActive = workflowStage === stage.id;
+                                const currentIndex = flowStages.findIndex((s) => s.id === workflowStage);
+                                const isCompleted = idx < currentIndex;
+                                return (
+                                    <div key={stage.id} className="flex items-center gap-2">
+                                        <div
+                                            className={`
+                                                h-7 px-2 rounded-md border text-[11px] flex items-center gap-1.5
+                                                ${isActive
+                                                    ? 'border-orange-500/70 bg-orange-500/20 text-orange-200'
+                                                    : isCompleted
+                                                        ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-200'
+                                                        : 'border-gray-700 bg-gray-800/60 text-gray-400'}
+                                            `}
+                                            title={stage.helper}
+                                        >
+                                            <span className="font-mono">{idx + 1}</span>
+                                            <span>{stage.label}</span>
+                                        </div>
+                                        {idx < flowStages.length - 1 && (
+                                            <div className={`w-4 h-px ${isCompleted ? 'bg-emerald-500/60' : 'bg-gray-700'}`} />
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                         <Tabs value={workflowStage} onValueChange={(v) => setWorkflowStage(v as any)} className="w-[400px]">
                             <TabsList className="grid w-full grid-cols-3 bg-gray-800 text-gray-400">
                                 <TabsTrigger value="design" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white">Design</TabsTrigger>
@@ -397,6 +551,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                                 project={activeUnit}
                                 profiles={profiles}
                                 onDesignComplete={handleDesignComplete}
+                                onPoseSave={(updated) => handleUpdateUnit(updated.id, updated)}
                                 // When "Save & Next" is clicked in EngineeringBay, we handle it here
                                 onAddNewPose={handleAddUnit}
                                 onSelectPosition={(id) => {
@@ -421,6 +576,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                             project={project}
                             results={optimizationResults}
                             onReoptimize={runProjectOptimization}
+                            optimizationProgress={optimizationProgress}
                         />
                     )}
 
