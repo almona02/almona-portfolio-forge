@@ -2,6 +2,28 @@
 
 Date: 2026-03-02  
 Product scope: Fabricator Pro workflow and studio surfaces in `src/`.
+Revision: r2 (execution-focused)
+
+## 0) Execution Posture (Solid Discipline)
+
+This plan is now run as a delivery blueprint, not a conceptual memo.
+
+- One canonical route strategy (no parallel "legacy-first" navigation paths).
+- One workflow graph authority (stage sequence defined once, consumed everywhere).
+- One ID model (`projectId`, `poseId`) through creation, navigation, and persistence.
+- One owner per work package, one PR per package, explicit acceptance criteria.
+- AICS-001 guardrails remain non-negotiable for deterministic flows.
+
+## 0.1 Current Delivery Snapshot
+
+Branch-level progress already delivered:
+
+- P0 routing hardening for quality flow continuity and legacy quality redirect alias.
+- Pose workflow stepper and validation gate updated to include quality stage.
+- New project CTA copy aligned to actual navigation outcome ("Open Design").
+- `PositionsGrid` stale `setPage(1)` runtime call removed.
+
+Remaining work in this plan focuses on architectural consolidation and UX maturity uplift.
 
 ## 1) Objective
 
@@ -134,6 +156,8 @@ Bring production, quality, and delivery into one pose-scoped completion area so 
 
 Goal: stop user flow breakage and obvious trust-loss issues.
 
+Status: Mostly completed (stabilization + follow-through in next sprint).
+
 ### Work package P0-A: Fix legacy production/QC routing drift
 
 Files:
@@ -188,6 +212,13 @@ Actions:
 Acceptance criteria:
 
 - Search input works without runtime exceptions.
+
+### Phase 0 close-out checklist
+
+1. Confirm all production/quality transitions use canonical route builders only.
+2. Remove any remaining direct string routes for pose completion stages.
+3. Keep legacy redirect aliases time-boxed and documented for removal date.
+4. Confirm no wizard copy references a stage that is not directly reachable.
 
 ## Phase 1 (Weeks 2-4): Workflow and State Consolidation
 
@@ -250,6 +281,13 @@ Acceptance criteria:
 
 - Critical workflow screens read from one authority per domain entity.
 
+### Phase 1 close-out checklist
+
+1. Route definitions generated from workflow graph metadata, not hand-maintained arrays.
+2. No new code paths allowed to assume `projectId === poseId`.
+3. State ownership matrix published and linked in contributor docs.
+4. Deprecated store writes flagged with TODO removal owner/date.
+
 ## Phase 2 (Weeks 5-8): Ease-of-Use Enhancement Layer
 
 Goal: close competitive UX gaps beyond defect fixes.
@@ -309,6 +347,13 @@ Acceptance criteria:
 
 - Dashboard and prefetch map contain only valid, canonical routes.
 
+### Phase 2 close-out checklist
+
+1. Role-focused quick actions available from dashboard + studio shell.
+2. "Resume last active pose" implemented and discoverable.
+3. Pose completion journey is uninterrupted through delivery evidence capture.
+4. High-density pages have default-safe mode with progressive advanced controls.
+
 ## 9) UX KPI Targets
 
 Measure before/after per phase:
@@ -342,6 +387,12 @@ PR slicing:
 - Include route snapshot tests for transition changes.
 - Include manual walkthrough evidence for stage transitions.
 
+Execution cadence:
+
+- Weekly architecture checkpoint (routes/state/identity drift review).
+- Twice-weekly product review for UX friction burn-down.
+- End-of-sprint cutover review with rollback plan for navigation changes.
+
 ## 11) Risk Register
 
 1. **Risk:** Regressions from route normalization  
@@ -356,7 +407,43 @@ PR slicing:
 4. **Risk:** State drift during transition period  
    **Mitigation:** strict state ownership matrix and lint rules for restricted store access by layer.
 
-## 12) Source Notes (External Benchmark Inputs)
+5. **Risk:** Legacy compatibility paths become permanent  
+   **Mitigation:** add deprecation owner + deadline for each legacy alias route.
+
+## 12) Sprint-Ready Backlog (Priority Ordered)
+
+| ID | Priority | Work Package | Primary Files | Outcome |
+|---|---|---|---|---|
+| UX-101 | P0 | Canonicalize remaining completion route calls | `ProductionPage.tsx`, `QualityControlPage.tsx`, `App.tsx` | No route-string drift in completion flow |
+| UX-102 | P0 | Remove stale legacy route references from shell/nav/prefetch | `StudioLayout.tsx`, `useRoutePrefetching.ts`, dashboard/nav components | Users only discover valid routes |
+| UX-103 | P1 | Introduce `workflowGraph.ts` and generate stepper from metadata | `src/lib/fabricator/workflow/*`, `WorkflowStepNavigator.tsx`, `App.tsx` | One workflow source of truth |
+| UX-104 | P1 | Canonical ID creation handshake (`projectId` + `poseId`) | `ProjectCreationManager.tsx`, `fabricatorClientV2.ts`, `EngineeringBayWrapper.tsx` | Reliable first-save and reload continuity |
+| UX-105 | P1 | State ownership consolidation (server/workflow/ui) | workspace context/store/query hooks | Reduced state drift and duplicate writes |
+| UX-106 | P2 | Pose-scoped delivery integration | `App.tsx`, `PoseWorkflowLayout.tsx`, `DeliveryTrackingPage.tsx` | Production->QC->Delivery in one contextual pipeline |
+| UX-107 | P2 | Progressive disclosure pass for high-density screens | `EngineeringBay.tsx`, `CommercialPage.tsx`, `ProductionCommand.tsx` | Lower cognitive load with no power-user loss |
+| UX-108 | P2 | Role-centric quick actions + resume-last-pose | dashboard + studio shell + nav | Faster daily operator loops |
+
+## 13) AICS-001 Alignment for This Refactor Plan
+
+The UX refactor must preserve constitutional constraints:
+
+1. Deterministic execution paths remain free of adaptive AI behavior (Tier 3).
+2. Any adaptive intelligence interactions remain behind `IntelligenceGate`.
+3. Route/state orchestration logic remains deterministic and auditable.
+4. Workflow output/approval UX maintains explicit human validation checkpoints.
+
+## 14) Definition of Done (Plan-Level)
+
+This plan is complete only when all are true:
+
+- No known broken transition in canonical Fabricator workflow paths.
+- Setup-to-design and completion-stage UX copy/state/route semantics are consistent.
+- Workflow graph, route generation, and validation dependencies share one stage model.
+- Project/pose identity remains stable across create, navigate, refresh, and reload.
+- Quality and delivery are pose-scoped and accessible without leaving active context.
+- Legacy aliases are either removed or explicitly time-boxed with owner/date.
+
+## 15) Source Notes (External Benchmark Inputs)
 
 Primary URLs used during benchmark research:
 
