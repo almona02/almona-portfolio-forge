@@ -110,7 +110,7 @@ export const ProjectCreationManager: React.FC = () => {
                     usageType: meta.usageType,
                     baseShape: meta.baseShape,
                     openingType: meta.openingType,
-                } as any,
+                } as unknown as WindowUnit['positionMeta'],
                 // Store advanced meta if needed by specific logic (optional)
                 // meta: { ...meta } 
             };
