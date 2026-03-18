@@ -8,11 +8,13 @@ import { TaxSettingsPanel } from '@/components/commercial/TaxSettingsPanel';
 import { FabricatorWorkspaceLayout } from '@/components/fabricator/layout/FabricatorWorkspaceLayout';
 import { ReportGenerator } from '@/components/ui/ReportGenerator';
 import { ReportTemplateEditor } from '@/components/ui/ReportTemplateEditor';
+import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { FabricatorSectionProvider } from '@/contexts/FabricatorSectionContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { CURRENCY_INFO, getExchangeRate, type ExchangeRate } from '@/lib/currencyExchange';
 import { formatCurrency } from '@/lib/i18n/formatters';
+import { supabase } from '@/lib/supabase';
 import { QuotingEngine } from '@/modules/commercial/QuotingEngine';
 import { CommercialExportService } from '@/services/commercial/CommercialExportService';
 import { CommercialPDFService } from '@/services/commercial/CommercialPDFService';
@@ -41,10 +43,14 @@ import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import type { DraftInvoice, DraftQuote } from '@/types/fabricator';
-import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Receipt, Search, Send, Trash2, X } from 'lucide-react';
-import { QuoteBuilder } from '@/components/fabricator/workflow/QuoteBuilder';
 import { useWorkflowStore } from '@/store/workflowStore';
+import type { DraftInvoice, DraftQuote } from '@/types/fabricator';
+<<<<<<< HEAD
+import { QuoteBuilder } from '@/components/fabricator/workflow/QuoteBuilder';
+import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Receipt, Search, Send, Trash2, X } from 'lucide-react';
+=======
+import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Package, Receipt, Search, Send, Trash2, X } from 'lucide-react';
+>>>>>>> origin/main
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -59,8 +65,11 @@ const CommercialPageComponent: React.FC = () => {
   const isPoseContext = Boolean(projectId && poseId);
   const { quote: workflowQuote } = useWorkflowStore();
   const { state, dispatch } = useFabricatorWorkspace();
-  const _navigate = useNavigate();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { t } = useTranslation('fabricator');
+  const { bom, optimizationResult, completeStep } = useWorkflowStore();
   const [selectedInvoice, setSelectedInvoice] = useState<DraftInvoice | null>(null);
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'workspace' | 'reports' | 'reconciliation' | 'tax' | 'invoices' | 'templates'>('workspace');
@@ -101,31 +110,35 @@ const CommercialPageComponent: React.FC = () => {
   // PDF download state
   const [downloadingPDF, setDownloadingPDF] = useState<{ type: 'quote' | 'invoice'; id: string } | null>(null);
 
-  const _handleCreateDraftQuote = () => {
+  const handleCreateDraftQuote = () => {
     const project = state.currentProject;
     let amount = 0;
-    let currency: string = 'EGP'; // Default to EGP
+    let currency: string = 'EGP';
     let coreQuote: ReturnType<QuotingEngine['generateQuote']> | null = null;
 
-    if (project && project.optimization) {
+    if (project && (project.optimization || optimizationResult)) {
       const engine = new QuotingEngine();
-      coreQuote = engine.generateQuote(project, project.optimization);
+      coreQuote = engine.generateQuote(project, project.optimization || optimizationResult!);
       amount = coreQuote.total;
 
-      // Infer currency from system pack regions where possible
       if (project.systemPackId) {
         const pack = SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId);
         const regions = pack?.meta.regions || [];
         if (regions.includes('turkey')) currency = 'TRY';
         else if (regions.includes('egypt')) currency = 'EGP';
       }
+    } else if (bom?.cost) {
+      const markup = 0.25;
+      const tax = 0.14;
+      const base = bom.cost.totalCost;
+      amount = base * (1 + markup) * (1 + tax);
     }
 
     const newQuote: DraftQuote = {
       id: `quote_${Date.now()}`,
-      customerName: (state.currentCustomer)?.name || 'New Customer',
+      customerName: (state.currentCustomer)?.name || project?.customer || 'New Customer',
       projectTitle: project?.projectCode || project?.orderNumber || 'New Project',
-      amount,
+      amount: Number(amount.toFixed(2)),
       currency,
       status: 'draft',
       items: coreQuote?.lineItems || [],
@@ -134,6 +147,7 @@ const CommercialPageComponent: React.FC = () => {
       createdAt: new Date(),
     };
     dispatch({ type: 'UPDATE_DRAFT_QUOTE', payload: newQuote });
+    toast.success(`Quote generated: ${formatCurrency(amount, 'en', currency)}`);
   };
 
   const handleConvertToInvoice = (quoteId: string) => {
@@ -155,6 +169,36 @@ const CommercialPageComponent: React.FC = () => {
 
     dispatch({ type: 'ADD_DRAFT_INVOICE', payload: invoice });
     dispatch({ type: 'REMOVE_DRAFT_QUOTE', payload: quoteId });
+  };
+
+  const handleConvertToOrder = async (quoteId: string) => {
+    const quote = state.draftQuotes.find((q) => q.id === quoteId);
+    if (!quote || !user?.id) return;
+
+    try {
+      const amount = quote.amount || 0;
+      const tax = amount * 0.14;
+      const { error } = await supabase.from('orders').insert({
+        user_id: user.id,
+        status: 'pending' as const,
+        subtotal: amount,
+        tax_amount: Number(tax.toFixed(2)),
+        discount_amount: 0,
+        shipping_cost: 0,
+        total_amount: Number((amount + tax).toFixed(2)),
+        currency: quote.currency || 'EGP',
+        payment_status: 'pending',
+        customer_notes: `From quote: ${quote.projectTitle || quoteId}`,
+        billing_address: {},
+        shipping_address: {},
+      });
+      if (error) throw error;
+      dispatch({ type: 'UPDATE_DRAFT_QUOTE', payload: { ...quote, status: 'accepted' } });
+      toast.success('Order created from quote');
+    } catch (err) {
+      console.error('Failed to create order:', err);
+      toast.error('Failed to create order');
+    }
   };
 
   const handleDeleteDraft = (id: string, type: 'quote' | 'invoice') => {
@@ -826,6 +870,25 @@ const CommercialPageComponent: React.FC = () => {
 
         {/* Workspace Tab */}
         <TabsContent value="workspace" className="space-y-6">
+          {/* Generate Quote from Pipeline Data */}
+          {(bom?.cost || optimizationResult) && state.draftQuotes.length === 0 && (
+            <Card className="bg-gradient-to-r from-amber-900/30 to-amber-800/20 border-amber-500/40">
+              <CardContent className="py-5 flex items-center justify-between">
+                <div>
+                  <p className="text-amber-200 font-semibold">Generate Quote from BOM</p>
+                  <p className="text-amber-500/70 text-sm mt-1">
+                    BOM total: {formatCurrency(bom?.cost?.totalCost || optimizationResult?.costBreakdown?.totalCost || 0, 'en', 'EGP')}
+                    {' — '}Click to create a draft quote with 25% markup + 14% VAT.
+                  </p>
+                </div>
+                <Button onClick={handleCreateDraftQuote} className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Generate Quote
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Search and Filters Bar */}
           <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
             <CardContent className="pt-6">
@@ -1356,6 +1419,14 @@ const CommercialPageComponent: React.FC = () => {
                         </Button>
                         <Button
                           size="sm"
+                          onClick={() => void handleConvertToOrder(quote.id)}
+                          className="bg-blue-500 hover:bg-blue-600 text-xs"
+                        >
+                          <Package className="h-3 w-3 mr-1" />
+                          Order
+                        </Button>
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => handleDownloadQuotePDF(quote)}
                           disabled={downloadingPDF?.type === 'quote' && downloadingPDF?.id === quote.id}
@@ -1679,6 +1750,26 @@ const CommercialPageComponent: React.FC = () => {
           }}
           onUpdate={handleInvoiceUpdate}
         />
+      )}
+
+      {/* Continue to Production CTA */}
+      {projectId && poseId && (
+        <div className="fixed bottom-8 right-8 z-50">
+          <button
+            onClick={() => {
+              completeStep('commercial');
+              navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/production`);
+            }}
+            className="group relative px-8 py-4 bg-gradient-to-r from-green-500 via-green-600 to-green-500 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              Continue to Production
+              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </span>
+          </button>
+        </div>
       )}
 
       {/* Bulk Action Confirmation Dialog */}

@@ -57,9 +57,15 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       badge: 12,
     },
     {
+      id: 'orders',
+      label: 'Orders',
+      icon: <Box size={20} />,
+      href: '/fabricator/studio/orders',
+    },
+    {
       id: 'design',
       label: 'Design Studio',
-      icon: <Settings size={20} />, // Using Settings as placeholder for Design/Drafting
+      icon: <Settings size={20} />,
       href: '/fabricator/studio/design',
     },
     {
@@ -71,9 +77,14 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       badgeType: 'warning',
       subItems: [
         { label: 'Dashboard', href: '/fabricator/studio/production' },
+<<<<<<< HEAD
         { label: 'Workshop', href: '/fabricator/studio/production/workshop' },
         { label: 'Delivery', href: '/fabricator/studio/production/delivery' },
         { label: 'Orders', href: '/fabricator/studio/production/orders' },
+=======
+        { label: 'Quality Control', href: '/fabricator/studio/production/quality' },
+        { label: 'Delivery Tracking', href: '/fabricator/studio/production/delivery' },
+>>>>>>> origin/main
       ],
     },
     {
@@ -84,9 +95,15 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       subItems: [
         { label: 'System Packs', href: '/fabricator/studio/data' },
         { label: 'Profiles', href: '/fabricator/studio/data/profiles' },
+<<<<<<< HEAD
         { label: 'Customers', href: '/fabricator/studio/data/customers' },
         { label: 'Pattern Library', href: '/fabricator/studio/data/patterns' },
         { label: 'Bent Profiles', href: '/fabricator/studio/data/bent-profiles' },
+=======
+        { label: 'Tuning', href: '/fabricator/studio/data/tuning' },
+        { label: 'Customers', href: '/fabricator/studio/data/customers' },
+        { label: 'Pattern Library', href: '/fabricator/studio/data/patterns' },
+>>>>>>> origin/main
       ],
     },
     {

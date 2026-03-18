@@ -95,20 +95,20 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     return [currentProject, ...others];
   }, [currentProject, allSiblingPositions]);
 
-  // Handle design completion
+  const { setCurrentProject: setWorkflowProject, setDesignData, completeStep } = useWorkflowStore();
+
   const handleDesignComplete = (components: WindowComponent[]) => {
     if (!currentProject) return;
 
-    // Update project with new components
     const updatedProject: WindowUnit = {
       ...currentProject,
       components: components,
     };
 
-    // Update context
     dispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });
     dispatch({ type: 'UPDATE_PROJECT_COMPONENTS', payload: components });
 
+<<<<<<< HEAD
     // P1: Sync to workflowStore so OptimizationPage has design data
     setCurrentProject(updatedProject);
     setDesignData(updatedProject);
@@ -119,6 +119,15 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     } else {
       navigate(fabricatorRoutes.studioProjects());
     }
+=======
+    setWorkflowProject(updatedProject);
+    setDesignData(updatedProject);
+    completeStep('design');
+
+    const projKey = resolvedProjectId ?? projectId ?? 'default';
+    const poseKey = effectivePoseId ?? currentProject.id;
+    navigate(fabricatorRoutes.poseBOM(projKey, poseKey));
+>>>>>>> origin/main
   };
 
   const handleBackToMeasuring = () => {
