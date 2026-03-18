@@ -20,6 +20,63 @@
 
 import { supabase } from '@/lib/supabase';
 
+/** Supabase row types for report queries */
+type PaymentRow = Record<string, unknown> & {
+  amount?: string | number;
+  currency?: string;
+  completed_at?: string;
+  created_at?: string;
+  invoice_id?: string;
+};
+
+type QuoteRow = Record<string, unknown> & {
+  id?: string;
+  status?: string;
+  total_amount?: string | number;
+  accepted_at?: string;
+  valid_until?: string;
+  sent_at?: string;
+};
+
+type OrderRow = Record<string, unknown> & {
+  id?: string;
+  user_id?: string;
+  total_amount?: string | number;
+  currency?: string;
+  created_at?: string;
+  order_number?: string;
+};
+
+type ProfileRow = Record<string, unknown> & {
+  id?: string;
+  full_name?: string;
+  company_name?: string;
+  username?: string;
+};
+
+type ProjectRow = Record<string, unknown> & {
+  id?: string;
+  project_code?: string;
+  client_name?: string;
+  currency?: string;
+  meta?: { estimatedCostPercentage?: string | number };
+};
+
+/** Safe number from unknown */
+function toNum(v: unknown): number {
+  if (typeof v === 'number' && !isNaN(v)) return v;
+  if (v == null) return 0;
+  const s = typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : '');
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+/** Safe string from unknown */
+function toStr(v: unknown): string {
+  if (v == null) return '';
+  return typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : '');
+}
+
 /**
  * Date range for reports
  */
@@ -138,10 +195,10 @@ export class ReportingService {
       // Group by period
       const grouped = new Map<string, { revenue: number; count: number; currency: string }>();
 
-      (payments || []).forEach((payment: any) => {
+      (payments || []).forEach((payment: PaymentRow) => {
         if (!payment) return;
         
-        const completedAt = payment.completed_at || payment.created_at;
+        const completedAt = payment.completed_at ?? payment.created_at;
         if (!completedAt) return;
         
         const date = new Date(completedAt);
@@ -165,10 +222,10 @@ export class ReportingService {
 
         if (!periodKey) return;
 
-        const amount = parseFloat(payment.amount);
-        if (isNaN(amount) || amount <= 0) return;
+        const amount = toNum(payment.amount);
+        if (amount <= 0) return;
 
-        const existing = grouped.get(periodKey) || { revenue: 0, count: 0, currency: (payment.currency || 'USD') as string };
+        const existing = grouped.get(periodKey) || { revenue: 0, count: 0, currency: toStr(payment.currency) || 'USD' };
         existing.revenue += amount;
         existing.count += 1;
         grouped.set(periodKey, existing);
@@ -220,11 +277,11 @@ export class ReportingService {
       let totalInvoiceValue = 0;
       let invoiceCount = 0;
 
-      (quotes || []).forEach((quote: any) => {
+      (quotes || []).forEach((quote: QuoteRow) => {
         if (!quote) return;
         
         quotesCreated++;
-        const quoteAmount = parseFloat(quote.total_amount?.toString() || '0');
+        const quoteAmount = toNum(quote.total_amount);
         if (!isNaN(quoteAmount) && quoteAmount > 0) {
           totalQuoteValue += quoteAmount;
         }
@@ -346,8 +403,8 @@ export class ReportingService {
       }
 
       // Get customer profiles for names
-      const userIds = [...new Set(orders.map((o: any) => o?.user_id).filter(Boolean))];
-      let profileMap = new Map<string, any>();
+      const userIds = [...new Set(orders.map((o: OrderRow) => o?.user_id).filter(Boolean))] as string[];
+      let profileMap = new Map<string, ProfileRow>();
       
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
@@ -355,8 +412,8 @@ export class ReportingService {
           .select('id, full_name, company_name, username')
           .in('id', userIds);
 
-        profileMap = new Map<string, any>(
-          (profiles || []).map((p: any) => [p?.id, p] as [string, any]).filter(([id]) => id)
+        profileMap = new Map<string, ProfileRow>(
+          (profiles || []).map((p: ProfileRow) => [p?.id, p] as [string, ProfileRow]).filter(([id]) => id)
         );
       }
 
@@ -372,10 +429,10 @@ export class ReportingService {
         currency: string;
       }>();
 
-      orders.forEach((order: any) => {
+      orders.forEach((order: OrderRow) => {
         if (!order || !order.user_id) return;
         
-        const customerId = order.user_id as string;
+        const customerId = order.user_id;
         const profile = profileMap.get(customerId);
         const customerName = (profile)?.company_name || 
                             (profile)?.full_name || 
@@ -391,13 +448,13 @@ export class ReportingService {
             firstOrderDate: null,
             lastOrderDate: null,
             averageOrderValue: 0,
-            currency: (order.currency || 'EGP') as string,
+            currency: toStr(order.currency) || 'EGP',
           });
         }
 
         const customer = customerMap.get(customerId)!;
-        const orderAmount = parseFloat(order.total_amount?.toString() || '0');
-        if (!isNaN(orderAmount) && orderAmount > 0) {
+        const orderAmount = toNum(order.total_amount);
+        if (orderAmount > 0) {
           customer.totalRevenue += orderAmount;
           customer.orderCount += 1;
 
@@ -423,12 +480,12 @@ export class ReportingService {
       // Add payments if available (more accurate revenue)
       if (payments && Array.isArray(payments)) {
         // Try to match payments to orders via invoice_id = order_id
-        payments.forEach((payment: any) => {
+        payments.forEach((payment: PaymentRow) => {
           if (!payment || !payment.invoice_id) return;
           
-          const order = orders.find((o: any) => o && o.id === payment.invoice_id);
-          if (order && (order as any).user_id) {
-            const customer = customerMap.get((order as any).user_id);
+          const order = orders.find((o: OrderRow) => o && o.id === payment.invoice_id);
+          if (order && order.user_id) {
+            const customer = customerMap.get(order.user_id as string);
             if (customer) {
               // Payment already counted in order, or add if not
               // For now, we'll use order amounts as they're more reliable
@@ -489,8 +546,8 @@ export class ReportingService {
       }
 
       // Get customer profiles
-      const userIds = [...new Set(orders.map((o: any) => o?.user_id).filter(Boolean))];
-      let profileMap = new Map<string, any>();
+      const userIds = [...new Set(orders.map((o: OrderRow) => o?.user_id).filter(Boolean))] as string[];
+      let profileMap = new Map<string, ProfileRow>();
       
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
@@ -498,13 +555,13 @@ export class ReportingService {
           .select('id, full_name, company_name, username')
           .in('id', userIds);
 
-        profileMap = new Map<string, any>(
-          (profiles || []).map((p: any) => [p?.id, p] as [string, any]).filter(([id]) => id)
+        profileMap = new Map<string, ProfileRow>(
+          (profiles || []).map((p: ProfileRow) => [p?.id, p] as [string, ProfileRow]).filter(([id]) => id)
         );
       }
 
       // Get payments for each order to calculate outstanding amount
-      const orderIds = orders.map((o: any) => o?.id).filter(Boolean);
+      const orderIds = orders.map((o: OrderRow) => o?.id).filter(Boolean) as string[];
       const paymentsByOrder = new Map<string, number>();
       
       if (orderIds.length > 0) {
@@ -514,11 +571,11 @@ export class ReportingService {
           .in('invoice_id', orderIds)
           .eq('status', 'completed');
 
-        (payments || []).forEach((payment: any) => {
+        (payments || []).forEach((payment: PaymentRow) => {
           if (!payment || !payment.invoice_id) return;
           
-          const invoiceId = payment.invoice_id as string;
-          const amount = parseFloat(payment.amount?.toString() || '0');
+          const invoiceId = payment.invoice_id;
+          const amount = toNum(payment.amount);
           if (!isNaN(amount) && amount > 0) {
             const current = paymentsByOrder.get(invoiceId) || 0;
             paymentsByOrder.set(invoiceId, current + amount);
@@ -528,7 +585,7 @@ export class ReportingService {
 
       // Calculate aging buckets
       const receivables: AgingReceivable[] = orders
-        .map((order: any) => {
+        .map((order: OrderRow) => {
           if (!order || !order.id || !order.user_id) return null;
           
           const createdAt = order.created_at;
@@ -545,16 +602,16 @@ export class ReportingService {
           const daysOld = Math.floor((now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24));
           if (daysOld < 0) return null; // Future dates are invalid
           
-          const totalAmount = parseFloat(order.total_amount?.toString() || '0');
+          const totalAmount = toNum(order.total_amount);
           if (isNaN(totalAmount) || totalAmount <= 0) return null;
           
-          const orderId = order.id as string;
+          const orderId = order.id;
           const paidAmount = paymentsByOrder.get(orderId) || 0;
           const outstandingAmount = totalAmount - paidAmount;
 
           if (outstandingAmount <= 0) return null; // Skip fully paid orders
 
-          const userId = order.user_id as string;
+          const userId = order.user_id;
           const profile = profileMap.get(userId);
           const customerName = (profile)?.company_name || 
                               (profile)?.full_name || 
@@ -575,7 +632,7 @@ export class ReportingService {
 
           return {
             invoiceId: orderId,
-            invoiceNumber: (order.order_number || orderId.slice(0, 8)) as string,
+            invoiceNumber: (order.order_number || orderId.slice(0, 8)),
             customerId: userId,
             customerName,
             totalAmount,
@@ -584,7 +641,7 @@ export class ReportingService {
             daysOld,
             agingBucket,
             dueDate: orderDate, // Using created_at as due date for now
-            currency: (order.currency || 'EGP') as string,
+            currency: toStr(order.currency) || 'EGP',
           };
         })
         .filter((r): r is AgingReceivable => r !== null); // Filter out nulls and type guard
@@ -631,8 +688,8 @@ export class ReportingService {
       }
 
       // Get customer profiles for matching
-      const userIds = orders ? [...new Set(orders.map((o: any) => o?.user_id).filter(Boolean))] : [];
-      let profileMap = new Map();
+      const userIds = orders ? [...new Set(orders.map((o: OrderRow) => o?.user_id).filter(Boolean))] as string[] : [];
+      let profileMap = new Map<string, ProfileRow>();
       
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
@@ -640,18 +697,18 @@ export class ReportingService {
           .select('id, full_name, company_name, username')
           .in('id', userIds);
 
-        profileMap = new Map<string, any>(
-          (profiles || []).map((p: any) => [p?.id, p] as [string, any]).filter(([id]) => id)
+        profileMap = new Map<string, ProfileRow>(
+          (profiles || []).map((p: ProfileRow) => [p?.id, p] as [string, ProfileRow]).filter(([id]) => id)
         );
       }
 
       // Match projects to orders via client_name
       const projectProfitability: ProjectProfitability[] = projects
-        .map((project: any) => {
+        .map((project: ProjectRow) => {
           if (!project || !project.id) return null;
           
           // Find orders that match this project's client
-          const matchingOrders = (orders || []).filter((order: any) => {
+          const matchingOrders = (orders || []).filter((order: OrderRow) => {
             if (!order || !order.user_id) return false;
             
             const profile = profileMap.get(order.user_id);
@@ -669,19 +726,18 @@ export class ReportingService {
           });
 
           // Calculate revenue from matching orders
-          const revenue = matchingOrders.reduce((sum: number, order: any) => {
+          const revenue = matchingOrders.reduce((sum: number, order: OrderRow) => {
             if (!order) return sum;
-            const amount = parseFloat(order.total_amount?.toString() || '0');
-            return sum + (isNaN(amount) ? 0 : amount);
+            return sum + toNum(order.total_amount);
           }, 0);
 
           if (revenue <= 0) return null; // Skip projects with no revenue
 
           // Estimate costs (30% of revenue as default, or from meta if available)
           // In a real system, costs would come from inventory, labor, overhead tracking
-          const meta = project.meta;
-          const costPercentage = (meta && typeof meta === 'object' && meta.estimatedCostPercentage) 
-            ? parseFloat(meta.estimatedCostPercentage) 
+          const meta = project.meta as { estimatedCostPercentage?: string | number } | undefined;
+          const costPercentage = (meta && typeof meta === 'object' && meta.estimatedCostPercentage != null) 
+            ? toNum(meta.estimatedCostPercentage) 
             : 0.30;
           
           if (isNaN(costPercentage) || costPercentage < 0 || costPercentage > 1) {
@@ -695,14 +751,14 @@ export class ReportingService {
           const profitMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
 
           return {
-            projectId: project.id as string,
-            projectCode: (project.project_code || project.id.slice(0, 8)) as string,
-            customerName: (project.client_name || 'Unknown') as string,
+            projectId: project.id,
+            projectCode: (project.project_code || project.id.slice(0, 8)),
+            customerName: (project.client_name || 'Unknown'),
             revenue: Math.round(revenue * 100) / 100,
             costs: Math.round(costs * 100) / 100,
             profit: Math.round(profit * 100) / 100,
             profitMargin: Math.round(profitMargin * 100) / 100,
-            currency: (project.currency || 'EGP') as string,
+            currency: (project.currency || 'EGP'),
             orderCount: matchingOrders.length,
           };
         })
@@ -755,11 +811,11 @@ export class ReportingService {
       const stageMap = new Map<string, {
         count: number;
         totalValue: number;
-        quotes: any[];
+        quotes: QuoteRow[];
       }>();
 
       const now = new Date();
-      quotes.forEach((quote: any) => {
+      quotes.forEach((quote: QuoteRow) => {
         if (!quote) return;
 
         let stage = 'Qualified'; // Default stage
@@ -809,7 +865,7 @@ export class ReportingService {
 
         const stageData = stageMap.get(stage)!;
         stageData.count += 1;
-        const amount = parseFloat(quote.total_amount?.toString() || '0');
+        const amount = toNum(quote.total_amount);
         if (!isNaN(amount) && amount > 0) {
           stageData.totalValue += amount;
         }
@@ -851,7 +907,7 @@ export class ReportingService {
   /**
    * Export report to CSV
    */
-  static exportToCSV(data: any[], filename: string): void {
+  static exportToCSV(data: Record<string, unknown>[], filename: string): void {
     if (data.length === 0) {
       console.warn('No data to export');
       return;
@@ -888,7 +944,7 @@ export class ReportingService {
    * @param filename - Filename for the PDF (without extension)
    * @param title - Title for the PDF report
    */
-  static async exportToPDF(data: any[], filename: string, title: string = 'Report'): Promise<void> {
+  static async exportToPDF(data: Record<string, unknown>[], filename: string, title: string = 'Report'): Promise<void> {
     try {
       // Lazy load pdf-lib to reduce initial bundle size
       const { PDFDocument, rgb, StandardFonts } = await import('pdf-lib');
@@ -953,13 +1009,20 @@ export class ReportingService {
           const y = startY - ((rowIndex + 1) * rowHeight);
           
           headers.forEach((header, colIndex) => {
-            let value = row[header];
-            if (value instanceof Date) {
-              value = value.toLocaleDateString();
-            } else if (typeof value === 'object' && value !== null) {
-              value = JSON.stringify(value);
+            let value: string;
+            const raw = row[header];
+            if (raw instanceof Date) {
+              value = raw.toLocaleDateString();
+            } else if (typeof raw === 'object' && raw !== null) {
+              value = JSON.stringify(raw);
+            } else if (raw == null) {
+              value = '';
+            } else if (typeof raw === 'string') {
+              value = raw;
+            } else if (typeof raw === 'number' || typeof raw === 'boolean') {
+              value = String(raw);
             } else {
-              value = String(value ?? '');
+              value = JSON.stringify(raw);
             }
             
             // Truncate long values
@@ -999,9 +1062,10 @@ export class ReportingService {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to export PDF:', error);
-      throw new Error(`PDF export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`PDF export failed: ${msg}`);
     }
   }
 }

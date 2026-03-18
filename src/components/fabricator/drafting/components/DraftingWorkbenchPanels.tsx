@@ -12,7 +12,7 @@
  */
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import type { Profile, WindowGrid } from '@/types/fabricator';
+import type { GridCell, Profile, WindowGrid } from '@/types/fabricator';
 import { DollarSign, Eye, Factory, Info, Layers, Package, Settings, Shield, Wrench } from 'lucide-react';
 import React, { Suspense, lazy } from 'react';
 import { DraftingValidationGate } from '../DraftingValidationGate';
@@ -20,7 +20,7 @@ import type { DraftingEngine } from '../hooks/useDraftingEngine';
 import type { DraftingWorkbenchState, DraftingWorkbenchStateActions } from '../hooks/useDraftingWorkbenchState';
 import { getGap, getMargin, getPadding } from '../styles/spacing';
 import { getTypographyPreset } from '../styles/typography';
-import type { DraftingOutput } from '../types/drafting';
+import type { DraftingOutput, Viewport } from '../types/drafting';
 import { convertDraftingToWindowGrid } from '../utils/draftingToWindowGrid';
 import { getViewportBounds, getViewportPreset } from '../utils/viewportUtils';
 import { SnapSpacingSelector } from './PropertiesPanel';
@@ -372,7 +372,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
                       break;
                   }
 
-                  actions.setViewport((prev: any) => ({
+                  actions.setViewport((prev: Viewport) => ({
                     ...prev,
                     centerX: newCenterX,
                     centerY: newCenterY
@@ -560,7 +560,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
                   id: `cell-${i}`,
                   row: Math.floor(i / template.cols),
                   col: i % template.cols,
-                  type: template.cellTypes[Math.floor(i / template.cols)]?.[i % template.cols] as any || 'fixed'
+                  type: (template.cellTypes[Math.floor(i / template.cols)]?.[i % template.cols] as GridCell['type']) || 'fixed'
                 }))
               } : {
                 rows: 2,

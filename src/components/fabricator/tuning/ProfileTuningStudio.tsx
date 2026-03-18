@@ -85,6 +85,26 @@ type GeometryConfig = {
   thumbnailOffsetY?: number;
 };
 
+/** Safe string from profile specs */
+function specStr(specs: Record<string, unknown>, key: string, def = ''): string {
+  const v = specs[key];
+  if (v == null) return def;
+  return typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : def);
+}
+
+/** Safe number from profile specs */
+function specNum(specs: Record<string, unknown>, key: string, def = 0): number {
+  const v = specs[key];
+  if (v == null) return def;
+  return typeof v === 'number' ? v : (typeof v === 'string' ? parseFloat(v) || def : def);
+}
+
+/** Safe array from profile specs */
+function specArr<T = string>(specs: Record<string, unknown>, key: string): T[] {
+  const v = specs[key];
+  return Array.isArray(v) ? (v as T[]) : [];
+}
+
 const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   profile,
   userId,
@@ -143,25 +163,24 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   >('calibration');
   const [savingStatus, setSavingStatus] = useState(false);
   const [showImportBanner, setShowImportBanner] = useState(false);
+  const specs = (profile.specifications || {}) as Record<string, unknown>;
+  const geo = (specs.geometryConfig || {}) as Record<string, unknown>;
   const [zones, setZones] = useState<MachiningZone[]>(
-    ((profile.specifications as any)?.machiningZones as MachiningZone[]) || []
+    Array.isArray(specs.machiningZones) ? (specs.machiningZones as MachiningZone[]) : []
   );
-  const [geometryConfig, setGeometryConfig] = useState<GeometryConfig>(() => {
-    const geo = (profile.specifications as any)?.geometryConfig || {};
-    return {
-      archetype: geo.archetype || DEFAULT_GEOMETRY_CONFIG.DEFAULT_ARCHETYPE,
-      wallThicknessMm: geo.wallThicknessMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_WALL_THICKNESS_MM,
-      glazingPocketDepthMm: geo.glazingPocketDepthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_GLAZING_POCKET_DEPTH_MM,
-      glazingPocketWidthMm: geo.glazingPocketWidthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_GLAZING_POCKET_WIDTH_MM,
-      thermalBreakWidthMm: geo.thermalBreakWidthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_THERMAL_BREAK_WIDTH_MM,
-      flangeWidthMm: geo.flangeWidthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_FLANGE_WIDTH_MM,
-      webOffsetMm: geo.webOffsetMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_WEB_OFFSET_MM,
-      source: geo.source,
-      svgPath: geo.svgPath,
-      scannedWidth: geo.scannedWidth,
-      scannedHeight: geo.scannedHeight,
-    };
-  });
+  const [geometryConfig, setGeometryConfig] = useState<GeometryConfig>(() => ({
+    archetype: specStr(geo, 'archetype', DEFAULT_GEOMETRY_CONFIG.DEFAULT_ARCHETYPE),
+    wallThicknessMm: specNum(geo, 'wallThicknessMm', DEFAULT_GEOMETRY_CONFIG.DEFAULT_WALL_THICKNESS_MM),
+    glazingPocketDepthMm: specNum(geo, 'glazingPocketDepthMm', DEFAULT_GEOMETRY_CONFIG.DEFAULT_GLAZING_POCKET_DEPTH_MM),
+    glazingPocketWidthMm: specNum(geo, 'glazingPocketWidthMm', DEFAULT_GEOMETRY_CONFIG.DEFAULT_GLAZING_POCKET_WIDTH_MM),
+    thermalBreakWidthMm: specNum(geo, 'thermalBreakWidthMm', DEFAULT_GEOMETRY_CONFIG.DEFAULT_THERMAL_BREAK_WIDTH_MM),
+    flangeWidthMm: specNum(geo, 'flangeWidthMm', DEFAULT_GEOMETRY_CONFIG.DEFAULT_FLANGE_WIDTH_MM),
+    webOffsetMm: specNum(geo, 'webOffsetMm', DEFAULT_GEOMETRY_CONFIG.DEFAULT_WEB_OFFSET_MM),
+    source: specStr(geo, 'source') || undefined,
+    svgPath: specStr(geo, 'svgPath') || undefined,
+    scannedWidth: typeof geo.scannedWidth === 'number' ? geo.scannedWidth : undefined,
+    scannedHeight: typeof geo.scannedHeight === 'number' ? geo.scannedHeight : undefined,
+  }));
   const [scanResult, setScanResult] = useState<ProfileScanResult | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [authToken, setAuthToken] = useState('');
@@ -170,12 +189,10 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   const dirtyInitRef = useRef(false);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
-  const specs = profile.specifications || {};
-
   const startScan = async () => {
     try {
-      const { data } = await (supabase as any).auth.getSession();
-      const token = data?.session?.access_token || '';
+      const { data } = await supabase.auth.getSession();
+      const token = data?.session?.access_token ?? '';
       if (!token) {
         toast.error('Unable to start scan (missing auth token)');
         return;
@@ -203,66 +220,61 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   };
 
   const [cuttingConfig, setCuttingConfig] = useState({
-    borderExtraAllowanceMm: (specs as any)?.borderExtraAllowanceMm ?? '',
-    preferredBarLengthMm: (specs as any)?.preferredBarLengthMm ?? '',
-    minOffcutMm: (specs as any)?.minOffcutMm ?? '',
-    roundToNearestMm: (specs as any)?.roundToNearestMm ?? '',
-    cornerTechnology: ((specs as any)?.cornerTechnology as string) || 'crimped',
-    miter45JointAllowanceMm: (specs as any)?.miter45JointAllowanceMm ?? '',
-    butt90JointAllowanceMm: (specs as any)?.butt90JointAllowanceMm ?? '',
-    tJointAllowanceMm: (specs as any)?.tJointAllowanceMm ?? '',
-    mullionJointAllowanceMm: (specs as any)?.mullionJointAllowanceMm ?? '',
+    borderExtraAllowanceMm: specStr(specs, 'borderExtraAllowanceMm'),
+    preferredBarLengthMm: specStr(specs, 'preferredBarLengthMm'),
+    minOffcutMm: specStr(specs, 'minOffcutMm'),
+    roundToNearestMm: specStr(specs, 'roundToNearestMm'),
+    cornerTechnology: specStr(specs, 'cornerTechnology') || 'crimped',
+    miter45JointAllowanceMm: specStr(specs, 'miter45JointAllowanceMm'),
+    butt90JointAllowanceMm: specStr(specs, 'butt90JointAllowanceMm'),
+    tJointAllowanceMm: specStr(specs, 'tJointAllowanceMm'),
+    mullionJointAllowanceMm: specStr(specs, 'mullionJointAllowanceMm'),
   });
 
   const [glazingConfig, setGlazingConfig] = useState({
-    glazingMinMm: (specs as any)?.glazingMinMm ?? '',
-    glazingMaxMm: (specs as any)?.glazingMaxMm ?? '',
-    gasketCompressionTargetMm: (specs as any)?.gasketCompressionTargetMm ?? '',
-    allowedGlassPackagesText: Array.isArray((specs as any)?.allowedGlassPackages)
-      ? ((specs as any).allowedGlassPackages as string[]).join(', ')
-      : '',
+    glazingMinMm: specStr(specs, 'glazingMinMm'),
+    glazingMaxMm: specStr(specs, 'glazingMaxMm'),
+    gasketCompressionTargetMm: specStr(specs, 'gasketCompressionTargetMm'),
+    allowedGlassPackagesText: specArr<string>(specs, 'allowedGlassPackages').join(', '),
   });
 
   const [structuralConfig, setStructuralConfig] = useState({
-    maxFrameSpanMm: (specs as any)?.maxFrameSpanMm ?? '',
-    maxMullionSpanMm: (specs as any)?.maxMullionSpanMm ?? '',
-    maxSashWidthMm: (specs as any)?.maxSashWidthMm ?? '',
-    maxSashHeightMm: (specs as any)?.maxSashHeightMm ?? '',
-    maxSashWeightKg: (specs as any)?.maxSashWeightKg ?? '',
-    maxUnitWidthMm: (specs as any)?.maxUnitWidthMm ?? '',
-    maxUnitHeightMm: (specs as any)?.maxUnitHeightMm ?? '',
-    structuralNotes: (specs as any)?.structuralNotes ?? '',
-    physicsStiffnessClass:
-      ((specs as any)?.physicsStiffnessClass as string) || 'standard',
+    maxFrameSpanMm: specStr(specs, 'maxFrameSpanMm'),
+    maxMullionSpanMm: specStr(specs, 'maxMullionSpanMm'),
+    maxSashWidthMm: specStr(specs, 'maxSashWidthMm'),
+    maxSashHeightMm: specStr(specs, 'maxSashHeightMm'),
+    maxSashWeightKg: specStr(specs, 'maxSashWeightKg'),
+    maxUnitWidthMm: specStr(specs, 'maxUnitWidthMm'),
+    maxUnitHeightMm: specStr(specs, 'maxUnitHeightMm'),
+    structuralNotes: specStr(specs, 'structuralNotes'),
+    physicsStiffnessClass: specStr(specs, 'physicsStiffnessClass') || 'standard',
   });
 
   const [hardwareConfig, setHardwareConfig] = useState({
-    primaryHingeFamily: (specs as any)?.primaryHingeFamily ?? '',
-    primaryLockFamily: (specs as any)?.primaryLockFamily ?? '',
-    preferredHandleFamily: (specs as any)?.preferredHandleFamily ?? '',
-    hardwarePackTagsText: Array.isArray((specs as any)?.hardwarePackTags)
-      ? ((specs as any).hardwarePackTags as string[]).join(', ')
-      : '',
+    primaryHingeFamily: specStr(specs, 'primaryHingeFamily'),
+    primaryLockFamily: specStr(specs, 'primaryLockFamily'),
+    preferredHandleFamily: specStr(specs, 'preferredHandleFamily'),
+    hardwarePackTagsText: specArr<string>(specs, 'hardwarePackTags').join(', '),
   });
 
   const [costConfig, setCostConfig] = useState({
-    aluminumPricePerKg: (specs as any)?.aluminumPricePerKg ?? '',
-    machiningCostPerOp: (specs as any)?.machiningCostPerOp ?? '',
-    coatingCostPerSqm: (specs as any)?.coatingCostPerSqm ?? '',
-    scrapCostPerKg: (specs as any)?.scrapCostPerKg ?? '',
-    erpItemCode: (specs as any)?.erpItemCode ?? '',
-    warehouseLocation: (specs as any)?.warehouseLocation ?? '',
+    aluminumPricePerKg: specStr(specs, 'aluminumPricePerKg'),
+    machiningCostPerOp: specStr(specs, 'machiningCostPerOp'),
+    coatingCostPerSqm: specStr(specs, 'coatingCostPerSqm'),
+    scrapCostPerKg: specStr(specs, 'scrapCostPerKg'),
+    erpItemCode: specStr(specs, 'erpItemCode'),
+    warehouseLocation: specStr(specs, 'warehouseLocation'),
   });
 
   const [qaConfig, _setQaConfig] = useState({
-    cutToleranceMm: (specs as any)?.cutToleranceMm ?? '',
-    assemblyToleranceMm: (specs as any)?.assemblyToleranceMm ?? '',
-    qaNotes: (specs as any)?.qaNotes ?? '',
+    cutToleranceMm: specStr(specs, 'cutToleranceMm'),
+    assemblyToleranceMm: specStr(specs, 'assemblyToleranceMm'),
+    qaNotes: specStr(specs, 'qaNotes'),
   });
 
   const systemPackId =
     profile.systemPackIds?.[0] ||
-    (profile.specifications as any)?.systemPackId ||
+    specStr(specs, 'systemPackId') ||
     'generic';
 
   const uploadThumbnailFromCapture = async (): Promise<string | null> => {
@@ -272,12 +284,11 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
       const response = await fetch(dataUrl);
       const blob = await response.blob();
       const fileName = `${userId}/${profile.id}-${Date.now()}.png`;
-      const { error } = await (supabase as any)
-        .storage
+      const { error } = await supabase.storage
         .from('profile-thumbnails')
         .upload(fileName, blob, { cacheControl: String(STORAGE_CONSTANTS.CACHE_CONTROL_DURATION_SECONDS), upsert: true });
       if (error) throw error;
-      const { data } = (supabase as any).storage.from('profile-thumbnails').getPublicUrl(fileName);
+      const { data } = supabase.storage.from('profile-thumbnails').getPublicUrl(fileName);
       return data.publicUrl;
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
@@ -287,8 +298,8 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   };
 
   const tuningStatus: TuningStatus = useMemo(() => {
-    const specs = profile.specifications || {};
-    const raw = (specs as any).tuningStatus as TuningStatus | undefined;
+    const specs = (profile.specifications || {}) as Record<string, unknown>;
+    const raw = specs.tuningStatus;
     if (raw === 'tuned' || raw === 'in_progress' || raw === 'untuned') return raw;
     // Heuristic: if any calibration or machining macros exist, mark as in_progress
     if ((profile.calibrations && profile.calibrations.length > 0) || profile.machiningMacros?.length) {
@@ -324,7 +335,8 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   }, [tuningStatus, t]);
 
   useEffect(() => {
-    if (location.state && (location.state).highlightGeometry) {
+    const state = location.state as { highlightGeometry?: boolean } | null;
+    if (state?.highlightGeometry) {
       setActiveTab('geometry');
       setShowImportBanner(true);
       const timer = setTimeout(() => setShowImportBanner(false), TIMEOUT_CONSTANTS.IMPORT_BANNER_TIMEOUT_MS);
@@ -355,12 +367,13 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
 
   // Prestige warning on tab close/refresh when dirty
   useEffect(() => {
-    const handler = (e: BeforeUnloadEvent) => {
-      if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent): string => {
+      if (!isDirty) return '';
       e.preventDefault();
       // Prestige message for browser's native confirmation dialog
-      e.returnValue = 'You have unsaved changes in Profile Tuning Studio. Are you sure you want to leave? All unsaved tuning data will be permanently lost.';
-      return e.returnValue;
+      const msg = 'You have unsaved changes in Profile Tuning Studio. Are you sure you want to leave? All unsaved tuning data will be permanently lost.';
+      e.returnValue = msg;
+      return msg;
     };
     if (isDirty) window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
@@ -381,7 +394,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
         throw new Error('Profile data is invalid. Please refresh and try again.');
       }
 
-      const db = supabase as unknown as { from: (table: string) => any };
+      const db = supabase;
 
       // Collect all current changes into specifications first
       const nextSpecs = {
@@ -503,8 +516,8 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
         }
 
         if (existingProfile) {
-          // Update the profile ID to the database UUID
-          profile.id = existingProfile.id;
+          const id = String(existingProfile.id ?? '');
+          if (id) profile.id = id;
         } else {
           // Insert the profile first to get a UUID
           const { data: insertedProfile, error: insertError } = await db
@@ -527,7 +540,8 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
           }
 
           // Update profile ID for future operations
-          profile.id = insertedProfile.id;
+          const insertedId = insertedProfile ? String(insertedProfile.id ?? '') : '';
+          if (insertedId) profile.id = insertedId;
           return true; // Successfully inserted, no need to update
         }
       }
@@ -607,7 +621,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
         }
       }
 
-      const db = supabase as unknown as { from: (table: string) => any };
+      const db = supabase;
 
       // Check authentication
       if (!userId) {
@@ -634,9 +648,11 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
         }
 
         if (existingProfile) {
-          profileIdToUse = existingProfile.id;
-          // Update the profile ID for future operations
-          profile.id = existingProfile.id;
+          const id = String(existingProfile.id ?? '');
+          if (id) {
+            profileIdToUse = id;
+            profile.id = id;
+          }
         } else {
           // Insert the profile first to get a UUID
           const { data: insertedProfile, error: insertError } = await db
@@ -662,8 +678,11 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
           }
 
           // Update profile ID for future operations
-          profile.id = insertedProfile.id;
-          profileIdToUse = insertedProfile.id;
+          const insertedId = insertedProfile ? String(insertedProfile.id ?? '') : '';
+          if (insertedId) {
+            profile.id = insertedId;
+            profileIdToUse = insertedId;
+          }
 
           toast.success(`Profile "${profile.name}" created and marked as tuned`);
           onProfileUpdated?.();
@@ -707,7 +726,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   const saveCuttingConfig = async () => {
     try {
       setSavingStatus(true);
-      const db = supabase as unknown as { from: (table: string) => any };
+      const db = supabase;
       const nextSpecs = {
         ...(profile.specifications || {}),
         borderExtraAllowanceMm: cuttingConfig.borderExtraAllowanceMm !== ''
@@ -761,7 +780,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   const saveGlazingConfig = async () => {
     try {
       setSavingStatus(true);
-      const db = supabase as unknown as { from: (table: string) => any };
+      const db = supabase;
       const allowedGlassPackages =
         glazingConfig.allowedGlassPackagesText
           .split(',')
@@ -806,7 +825,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   const saveStructuralConfig = async () => {
     try {
       setSavingStatus(true);
-      const db = supabase as unknown as { from: (table: string) => any };
+      const db = supabase;
       const nextSpecs = {
         ...(profile.specifications || {}),
         maxFrameSpanMm:
@@ -865,7 +884,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   const saveHardwareConfig = async () => {
     try {
       setSavingStatus(true);
-      const db = supabase as unknown as { from: (table: string) => any };
+      const db = supabase;
 
       const hardwarePackTags =
         hardwareConfig.hardwarePackTagsText
@@ -905,7 +924,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   const saveCostConfig = async () => {
     try {
       setSavingStatus(true);
-      const db = supabase as unknown as { from: (table: string) => any };
+      const db = supabase;
       const nextSpecs = {
         ...(profile.specifications || {}),
         aluminumPricePerKg:
@@ -952,7 +971,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
   const saveQaConfig = async () => {
     try {
       setSavingStatus(true);
-      const db = supabase as unknown as { from: (table: string) => any };
+      const db = supabase;
       const nextSpecs = {
         ...(profile.specifications || {}),
         cutToleranceMm:
@@ -1045,7 +1064,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
               <div className="flex items-center">
                 <Button
                   size="sm"
-                  onClick={markAsTuned}
+                  onClick={() => void markAsTuned()}
                   disabled={savingStatus || tuningStatus === 'tuned'}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
@@ -1072,7 +1091,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                   <CardContent className="space-y-2 text-xs text-gray-300">
                     <p>
                       <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.role', 'Role')}:</span>{' '}
-                      {profile.profileRole || (profile.specifications as any)?.profileRole || 'Frame'}
+                      {profile.profileRole || specStr((profile.specifications || {}) as Record<string, unknown>, 'profileRole') || 'Frame'}
                     </p>
                     <p>
                       <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.system_pack', 'System Pack')}:</span>{' '}
@@ -1080,11 +1099,11 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                     </p>
                     <p>
                       <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.twin_code', 'Twin Code')}:</span>{' '}
-                      {(profile.specifications as any)?.internalCode || profile.id.slice(0, 8)}
+                      {specStr((profile.specifications || {}) as Record<string, unknown>, 'internalCode') || profile.id.slice(0, 8)}
                     </p>
                     <p>
                       <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.supplier_code', 'Supplier Code')}:</span>{' '}
-                      {(profile.specifications as any)?.supplierCode || '—'}
+                      {specStr((profile.specifications || {}) as Record<string, unknown>, 'supplierCode') || '—'}
                     </p>
                     <p className="mt-2 text-[11px] text-gray-400">
                       {t('profile_tuning_studio.overview.description', 'Use the tabs on the right to calibrate cutting (K-factors), define machining zones, and validate production accuracy. Once you are confident, mark this profile as tuned.')}
@@ -1345,7 +1364,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                           <div className="flex justify-end">
                             <Button
                               size="sm"
-                              onClick={saveCuttingConfig}
+                              onClick={() => void saveCuttingConfig()}
                               disabled={savingStatus}
                               className="btn-primary-gradient font-bold"
                             >
@@ -1536,7 +1555,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                           <div className="flex justify-end">
                             <Button
                               size="sm"
-                              onClick={saveStructuralConfig}
+                              onClick={() => void saveStructuralConfig()}
                               disabled={savingStatus}
                               className="bg-teal-500 hover:bg-teal-600 text-white"
                             >
@@ -1636,7 +1655,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                           <div className="flex justify-end">
                             <Button
                               size="sm"
-                              onClick={saveHardwareConfig}
+                              onClick={() => void saveHardwareConfig()}
                               disabled={savingStatus}
                               className="btn-primary"
                             >
@@ -1772,7 +1791,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                           <div className="flex justify-end">
                             <Button
                               size="sm"
-                              onClick={saveCostConfig}
+                              onClick={() => void saveCostConfig()}
                               disabled={savingStatus}
                               className="bg-lime-500 hover:bg-lime-600 text-white"
                             >
@@ -1880,7 +1899,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                           <div className="flex justify-end">
                             <Button
                               size="sm"
-                              onClick={saveGlazingConfig}
+                              onClick={() => void saveGlazingConfig()}
                               disabled={savingStatus}
                               className="bg-blue-500 hover:bg-blue-600 text-white"
                             >
@@ -1930,7 +1949,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                onClick={startScan}
+                                onClick={() => void startScan()}
                                 disabled={savingStatus}
                                 className="bg-amber-500 hover:bg-amber-600 text-white"
                               >
@@ -2205,7 +2224,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                           <div className="flex justify-end">
                             <Button
                               size="sm"
-                              onClick={async () => {
+                              onClick={() => void (async () => {
                                 try {
                                   setSavingStatus(true);
 
@@ -2230,11 +2249,11 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                                           canvas.toBlob((blob) => {
                                             if (blob) {
                                               const fileName = `${userId}/${profile.id}-${Date.now()}.png`;
-                                              (supabase as any).storage
+                                              supabase.storage
                                                 .from('profile-thumbnails')
                                                 .upload(fileName, blob, { cacheControl: '3600', upsert: true })
-                                                .then(({ data: _urlData }: any) => {
-                                                  const { data } = (supabase as any).storage.from('profile-thumbnails').getPublicUrl(fileName);
+                                                .then(() => {
+                                                  const { data } = supabase.storage.from('profile-thumbnails').getPublicUrl(fileName);
                                                   thumbnailUrl = data.publicUrl;
                                                   resolve(null);
                                                 })
@@ -2259,19 +2278,18 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                                     geometryConfig,
                                   };
 
-                                  const { error } = await (supabase as any)
+                                  const { error } = await supabase
                                     .from('fabricator_profiles')
                                     .update({
                                       specifications: nextSpecs,
-                                      thumbnail_url: thumbnailUrl || (profile as any).thumbnail_url || null,
+                                      thumbnail_url: (thumbnailUrl || profile.thumbnailUrl) ?? null,
                                     })
                                     .eq('id', profile.id)
                                     .eq('user_id', userId);
                                   if (error) throw error;
 
                                   if (thumbnailUrl) {
-                                    (profile as any).thumbnail_url = thumbnailUrl;
-                                    (profile as any).thumbnailUrl = thumbnailUrl;
+                                    (profile as { thumbnailUrl?: string }).thumbnailUrl = thumbnailUrl;
                                   }
 
                                   toast.success('Geometry saved and thumbnail updated');
@@ -2284,7 +2302,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                                 } finally {
                                   setSavingStatus(false);
                                 }
-                              }}
+                              })()}
                               disabled={savingStatus}
                               className="bg-amber-500 hover:bg-amber-600 text-white"
                             >
@@ -2439,7 +2457,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                           <div className="flex justify-end">
                             <Button
                               size="sm"
-                              onClick={saveQaConfig}
+                              onClick={() => void saveQaConfig()}
                               disabled={savingStatus}
                               className="bg-sky-500 hover:bg-sky-600 text-white"
                             >

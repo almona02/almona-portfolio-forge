@@ -6,9 +6,9 @@ import App from "./App";
 import { useJobsStore } from "./store/jobsStore";
 
 // [DEV/E2E] Ensure critical stores are available globally
-if ((import.meta as any).env?.DEV) {
+if (import.meta.env?.DEV) {
   if (typeof window !== 'undefined') {
-    (window as any).jobsStore = useJobsStore;
+    (window as Window & { jobsStore?: typeof useJobsStore }).jobsStore = useJobsStore;
   }
 }
 // Persona integrity check - must run before React render
@@ -72,7 +72,7 @@ class CriticalErrorBoundary extends React.Component<
             >
               Refresh Page
             </button>
-            {(import.meta as any).env?.DEV && this.state.error && (
+            {import.meta.env?.DEV && this.state.error && (
               <details className="mt-4 text-left">
                 <summary className="cursor-pointer text-sm text-muted-foreground">
                   Error Details (Development)
@@ -117,7 +117,7 @@ try {
       try {
         fn();
       } catch (error) {
-        const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+        const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
         if (isDev) {
           console.warn('Non-critical feature failed:', error);
         }
@@ -126,8 +126,8 @@ try {
   };
 
   // Defer non-critical initialization using requestIdleCallback or setTimeout
-  if ('requestIdleCallback' in window) {
-    (window as any).requestIdleCallback(initializeNonCriticalFeatures, { timeout: 5000 });
+  if (window.requestIdleCallback) {
+    window.requestIdleCallback(initializeNonCriticalFeatures, { timeout: 5000 });
   } else {
     // Fallback: Wait 3 seconds then initialize
     setTimeout(initializeNonCriticalFeatures, 3000);
@@ -150,9 +150,9 @@ try {
     });
 
     // Initialize Web Vitals monitoring (deferred)
-    const isProdEnv = (import.meta as any).env?.PROD || process.env.NODE_ENV === 'production';
+    const isProdEnv = import.meta.env?.PROD || process.env.NODE_ENV === 'production';
     if (isProdEnv) {
-      import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }: any) => {
+      import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
         onCLS(() => { });
         onINP(() => { });
         onFCP(() => { });
@@ -165,8 +165,8 @@ try {
   };
 
   // Defer non-critical initialization using requestIdleCallback or setTimeout
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(deferNonCritical, { timeout: 2000 });
+  if (window.requestIdleCallback) {
+    window.requestIdleCallback(deferNonCritical, { timeout: 2000 });
   } else {
     // Fallback for browsers without requestIdleCallback
     setTimeout(deferNonCritical, 100);
@@ -177,15 +177,15 @@ try {
 
 // PHASE 1.7: Deferred Analytics - Load after critical rendering
 const initializeDeferredAnalytics = () => {
-  const isProd = (import.meta as any).env?.PROD || process.env.NODE_ENV === 'production';
+  const isProd = import.meta.env?.PROD || process.env.NODE_ENV === 'production';
   if (!isProd) return;
 
   // Google Analytics is already deferred in index.html
   // This is for any additional analytics setup
 
   // Log Egyptian connection info for monitoring
-  const connection = (navigator as any).connection;
-  const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+  const connection = navigator.connection;
+  const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
   if (connection && isDev) {
     console.log('Egypt Connection Info:', {
       effectiveType: connection.effectiveType,
@@ -199,7 +199,7 @@ const initializeDeferredAnalytics = () => {
 // PHASE 1.7: Background tasks for Egypt workflow
 // Uses getApiBase() - never /api/* directly (404 on Vercel)
 const initializeBackgroundTasks = () => {
-  import('./lib/apiBase').then(({ getApiBase, isApiAvailable }) => {
+  void import('./lib/apiBase').then(({ getApiBase, isApiAvailable }) => {
     if (!isApiAvailable()) return;
     setTimeout(() => {
       const base = getApiBase();
@@ -236,7 +236,7 @@ const initializeCacheWarming = () => {
 const initializeWebWorkers = () => {
   // Check if Web Workers are supported
   if (!window.Worker) {
-    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
     if (isDev) {
       console.log('Web Workers not supported, falling back to main thread');
     }
@@ -245,7 +245,7 @@ const initializeWebWorkers = () => {
 
   // Pre-load worker URLs (Vite will handle the actual worker files)
   // This is just for documentation - actual worker initialization happens on demand
-  const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+  const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
   if (isDev) {
     console.log('[Almona Egypt] Web Workers ready for optimization algorithms');
   }
@@ -257,8 +257,9 @@ const initializeWebWorkers = () => {
 // Report bundle loading issues - DISABLED AUTO-RELOAD (too aggressive)
 // Only log errors, don't auto-reload on first load
 window.addEventListener('error', (event) => {
-  if (event.error && event.error.message.includes('chunk')) {
-    console.error('Chunk loading failed:', event.error);
+  const err = event.error as Error | undefined;
+  if (err?.message?.includes('chunk')) {
+    console.error('Chunk loading failed:', err);
     // Don't auto-reload - let user decide or use manual retry
     // Auto-reload was causing double page loads on first visit
   }
@@ -266,8 +267,8 @@ window.addEventListener('error', (event) => {
 
 // Global error handler for unhandled Supabase auth errors and browser extension errors
 window.addEventListener('unhandledrejection', (event) => {
-  const error = event.reason;
-  const errorMessage = error?.message || String(error || '');
+  const error = event.reason as unknown;
+  const errorMessage = error instanceof Error ? error.message : (typeof error === 'object' && error !== null && 'message' in error ? String((error as { message: unknown }).message) : (error == null ? '' : typeof error === 'string' ? error : JSON.stringify(error)));
 
   // Handle chunk loading errors - DISABLED AUTO-RELOAD (too aggressive)
   // Only log errors, don't auto-reload on first load
@@ -300,7 +301,7 @@ window.addEventListener('unhandledrejection', (event) => {
     errorMessage.includes('chrome-extension://') ||
     errorMessage.includes('moz-extension://')) {
     // These are harmless browser extension errors - suppress them
-    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
     if (isDev) {
       console.debug('[Suppressed] Browser extension error:', errorMessage);
     }
@@ -360,7 +361,7 @@ window.addEventListener('error', (event) => {
 
     if (isExternalError) {
       event.preventDefault();
-      const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+      const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
       if (isDev) {
         console.debug('[Suppressed] External HTTP2 error:', errorSource);
       }
@@ -375,7 +376,7 @@ window.addEventListener('error', (event) => {
     event.filename.includes('moz-extension://')
   )) {
     event.preventDefault();
-    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
     if (isDev) {
       console.debug('[Suppressed] Browser extension error:', event.filename, event.message);
     }
@@ -383,21 +384,22 @@ window.addEventListener('error', (event) => {
   }
 
   // Log unexpected errors with stack/position to aid release debugging
+  const err = event.error as Error | undefined;
   console.error('[GlobalError]', {
     message: event.message,
     filename: event.filename,
     lineno: event.lineno,
     colno: event.colno,
-    stack: event.error?.stack,
+    stack: err instanceof Error ? err.stack : undefined,
   });
 }, true); // Use capture phase to catch errors early
 
 // Environment validation
-const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
 if (isDev) {
   console.log("🔧 Development mode active");
   const requiredEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
-  const env = (import.meta as any).env || {};
+  const env = import.meta.env;
   const missingEnvVars = requiredEnvVars.filter(envVar => !env[envVar]);
   if (missingEnvVars.length > 0) {
     console.warn('⚠️ Missing environment variables:', missingEnvVars);
@@ -438,7 +440,7 @@ const renderApp = () => {
     console.error('[PersonaIntegrity] Failed integrity check:', error);
     // In development, show error but don't block rendering
     // In production, fail fast for security
-    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
     if (!isDev) {
       // Fail fast in production
       throw error;
@@ -514,14 +516,14 @@ const LCP_TIMEOUT = 4000; // 4 seconds max for LCP
 
 window.addEventListener('load', () => {
   const loadTime = performance.now() - startTime;
-  const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+  const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
   if (isDev) {
     console.log(`[Almona Egypt] Initial load completed in ${Math.round(loadTime)}ms`);
   }
 
   // LCP timeout protection - ensure LCP doesn't block too long
   // Use PerformanceObserver instead of deprecated getEntriesByType
-  let lastLCPEntry: any = null;
+  let lastLCPEntry: PerformanceEntry | null = null;
 
   if ('PerformanceObserver' in window) {
     const lcpObserver = new PerformanceObserver((entryList) => {
@@ -536,7 +538,7 @@ window.addEventListener('load', () => {
     } catch {
       // Fallback if buffered option not supported
       try {
-        (lcpObserver as any).observe({ entryTypes: ['largest-contentful-paint'] });
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] as PerformanceEntryType[] });
       } catch {
         console.warn('[LCP Fix] PerformanceObserver not supported');
       }
@@ -553,7 +555,7 @@ window.addEventListener('load', () => {
           if (!img.complete) {
             img.loading = 'lazy';
             img.setAttribute('data-lcp-protected', 'true');
-            const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+            const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
             if (isDev) {
               console.log('[LCP Fix] Switched blocking image to lazy:', img.src);
             }
@@ -568,14 +570,14 @@ window.addEventListener('load', () => {
   // Measure Time to Interactive
   setTimeout(() => {
     const tti = performance.now() - startTime;
-    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
     if (isDev) {
       console.log(`[Almona Egypt] Time to Interactive ~${Math.round(tti)}ms`);
     }
 
     // Report to analytics if available
-    if ((window as any).analytics) {
-      (window as any).analytics.track('app_loaded', {
+    if (window.analytics) {
+      window.analytics.track('app_loaded', {
         load_time: Math.round(loadTime),
         tti: Math.round(tti),
         country: 'Egypt'
@@ -587,7 +589,7 @@ window.addEventListener('load', () => {
 // PWA Service Worker Registration
 // VitePWA with injectRegister: "auto" handles registration automatically
 // This code provides user feedback and handles updates
-const isProdEnv = (import.meta as any).env?.PROD || process.env.NODE_ENV === 'production';
+const isProdEnv = import.meta.env?.PROD || process.env.NODE_ENV === 'production';
 if ('serviceWorker' in navigator && isProdEnv) {
   // Dynamic import with error handling - virtual module only exists in production
   import('virtual:pwa-register').then(({ registerSW }) => {
@@ -618,7 +620,7 @@ if ('serviceWorker' in navigator && isProdEnv) {
     });
   }).catch((error) => {
     // Virtual module doesn't exist in dev mode - this is expected
-    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
     if (isDev) {
       // Silently ignore in dev mode
     } else {

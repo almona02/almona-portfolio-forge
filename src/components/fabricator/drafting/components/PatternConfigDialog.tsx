@@ -8,7 +8,7 @@ import type { PatternType } from '../utils/patternUtils';
 
 interface PatternConfigDialogProps {
   patternType: PatternType;
-  onApply: (config: any) => void;
+  onApply: (config: Record<string, unknown>) => void;
   onCancel: () => void;
   basePoint?: Point;
 }

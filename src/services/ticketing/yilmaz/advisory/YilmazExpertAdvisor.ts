@@ -105,6 +105,7 @@ export class YilmazExpertAdvisor {
       }
 
       const ruleResult = await this.circuitBreaker.execute('maintenance', async () => {
+        await Promise.resolve(); // Satisfy require-await for circuit breaker
         return yilmazEgyptRulesEngine.executeRules(input);
       });
 

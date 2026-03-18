@@ -11,22 +11,27 @@ interface CollaborativeCursorsProps {
 /**
  * Render cursors for all collaborative users
  */
+interface UserWithCursor extends CollaborativeUser {
+  cursor: { x: number; y: number };
+}
+
 export const CollaborativeCursors: React.FC<CollaborativeCursorsProps> = ({
   users,
   currentUserId
 }) => {
+  const usersWithCursors = users.filter(
+    (u): u is UserWithCursor => u.id !== currentUserId && !!u.cursor
+  );
   return (
     <g>
-      {users
-        .filter(user => user.id !== currentUserId && user.cursor)
-        .map(user => (
-          <g key={user.id}>
+      {usersWithCursors.map((u) => (
+          <g key={u.id}>
             {/* Cursor */}
             <circle
-              cx={user.cursor!.x}
-              cy={user.cursor!.y}
+              cx={u.cursor.x}
+              cy={u.cursor.y}
               r={8}
-              fill={user.color}
+              fill={u.color}
               stroke="white"
               strokeWidth={2}
               opacity={0.8}
@@ -34,23 +39,23 @@ export const CollaborativeCursors: React.FC<CollaborativeCursorsProps> = ({
             />
             {/* User name label */}
             <text
-              x={user.cursor!.x + 12}
-              y={user.cursor!.y - 12}
-              fill={user.color}
+              x={u.cursor.x + 12}
+              y={u.cursor.y - 12}
+              fill={u.color}
               fontSize="12"
               fontWeight="500"
               className="pointer-events-none"
             >
-              {user.name}
+              {u.name}
             </text>
             {/* Selection indicator */}
-            {user.selection !== null && user.selection !== undefined && (
+            {u.selection !== null && u.selection !== undefined && (
               <circle
-                cx={user.cursor!.x}
-                cy={user.cursor!.y}
+                cx={u.cursor.x}
+                cy={u.cursor.y}
                 r={12}
                 fill="none"
-                stroke={user.color}
+                stroke={u.color}
                 strokeWidth={2}
                 strokeDasharray="4,4"
                 opacity={0.6}

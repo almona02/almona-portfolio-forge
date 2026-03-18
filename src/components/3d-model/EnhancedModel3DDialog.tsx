@@ -21,7 +21,7 @@ import {
     ZoomIn,
     ZoomOut
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Collaborative3DViewer } from './Collaborative3DViewer';
 import { LazyEnhancedGLBViewer } from './LazyGLBViewer';
 import { ModelMeasurementTool } from './ModelMeasurementTool';
@@ -177,13 +177,13 @@ export function EnhancedModel3DDialog({
 
   const handleShare = useCallback(() => {
     if (navigator.share) {
-      navigator.share({
+      void navigator.share({
         title: `${machineName} - 3D Model`,
         text: `Check out this 3D model of ${machineName}`,
         url: window.location.href
       });
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      void navigator.clipboard.writeText(window.location.href);
       toast({
         title: "Link Copied",
         description: "Model link copied to clipboard",
@@ -199,10 +199,10 @@ export function EnhancedModel3DDialog({
 
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
+      void document.documentElement.requestFullscreen();
       setIsFullscreen(true);
     } else {
-      document.exitFullscreen();
+      void document.exitFullscreen();
       setIsFullscreen(false);
     }
   }, []);
@@ -245,7 +245,7 @@ export function EnhancedModel3DDialog({
           initial="initial"
           animate="animate"
           exit="exit"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="flex justify-between items-center p-6 border-b border-gray-700">

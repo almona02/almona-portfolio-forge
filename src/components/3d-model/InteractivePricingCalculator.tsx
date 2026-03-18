@@ -17,7 +17,7 @@ import { PartAnnotation } from './InteractiveGLBViewer';
 
 interface InteractivePricingCalculatorProps {
   selectedParts: PartAnnotation[];
-  onPricingUpdate?: (totalPricing: TotalPricingCalculation) => void;
+  onPricingUpdate?: (totalPricing: TotalPricingCalculation | null) => void;
   enableQuantityAdjustment?: boolean;
   showTaxBreakdown?: boolean;
   showRegionalPricing?: boolean;
@@ -70,7 +70,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
   useEffect(() => {
     if (selectedParts.length === 0) {
       setTotalPricing(null);
-      onPricingUpdate?.(null as any);
+      onPricingUpdate?.(null);
       return;
     }
 

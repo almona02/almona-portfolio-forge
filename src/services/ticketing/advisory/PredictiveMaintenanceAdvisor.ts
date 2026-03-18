@@ -86,10 +86,10 @@ export class PredictiveMaintenanceAdvisor {
         urgency: result.urgency,
         recommendedActions: result.recommendedActions,
         evidence: result.evidence,
-        estimatedDowntime: (result as any).estimatedDowntime, // Type assertion as these may be specific to result
-        costEstimate: (result as any).costEstimate,
-        circuitState: (result as any).circuitState,
-        usedFallback: (result as any).usedFallback
+        estimatedDowntime: 'estimatedDowntime' in result ? result.estimatedDowntime : undefined,
+        costEstimate: 'costEstimate' in result ? result.costEstimate : undefined,
+        circuitState: 'circuitState' in result ? result.circuitState : undefined,
+        usedFallback: 'usedFallback' in result ? result.usedFallback : undefined
       });
 
       if (!hardened.valid) {
@@ -209,7 +209,7 @@ export class PredictiveMaintenanceAdvisor {
     };
   }
 
-  private calculateFailureProbability(features: any): number {
+  private calculateFailureProbability(features: ExtractedFeatures): number {
     // Simplified probability calculation
     let probability = 0;
     if (features.vibration > 5) probability += 0.3;
@@ -219,19 +219,19 @@ export class PredictiveMaintenanceAdvisor {
     return Math.min(0.95, probability);
   }
 
-  private estimateTimeToFailure(features: any): number {
+  private estimateTimeToFailure(features: ExtractedFeatures): number {
     // Simplified estimation in hours
     return 1000 / (this.calculateFailureProbability(features) + 0.1);
   }
 
-  private identifyCriticalComponents(features: any): string[] {
+  private identifyCriticalComponents(features: ExtractedFeatures): string[] {
     const components = [];
     if (features.vibration > 5) components.push('Bearings', 'Shafts');
     if (features.temperature > 80) components.push('Motor', 'Cooling System');
     return [...new Set(components)];
   }
 
-  private generateRecommendedActions(predictions: any): string[] {
+  private generateRecommendedActions(predictions: MLPredictions): string[] {
     const actions = ['Visual inspection'];
     
     if (predictions.failureProbability > 0.7) {
@@ -247,7 +247,7 @@ export class PredictiveMaintenanceAdvisor {
     return actions;
   }
 
-  private collectEvidence(features: any, predictions: any): string[] {
+  private collectEvidence(features: ExtractedFeatures, predictions: MLPredictions): string[] {
     const evidence = [];
     
     if (features.vibration > 5) evidence.push(`High vibration: ${features.vibration} units`);
@@ -261,7 +261,7 @@ export class PredictiveMaintenanceAdvisor {
     return evidence;
   }
 
-  private estimateCost(predictions: any): string {
+  private estimateCost(predictions: MLPredictions): string {
     if (predictions.failureProbability > 0.7) return '$2,000 - $5,000';
     if (predictions.failureProbability > 0.4) return '$500 - $2,000';
     return '$200 - $500';
@@ -269,18 +269,31 @@ export class PredictiveMaintenanceAdvisor {
 }
 
 // Type definitions
+interface ExtractedFeatures {
+  vibration: number;
+  temperature: number;
+  operatingHours: number;
+  recentTickets: number;
+  criticalTickets: number;
+  ageDays: number;
+}
+
+interface MLPredictions {
+  failureProbability: number;
+  timeToFailure: number;
+  criticalComponents: string[];
+}
+
 interface MachineTelemetry {
   vibration?: number;
   temperature?: number;
   operatingHours?: number;
   installationDate: string;
-  [key: string]: any;
 }
 
 interface Ticket {
   id: string;
   priority: string;
-  [key: string]: any;
 }
 
 interface MaintenanceAdvisory {

@@ -8,7 +8,7 @@ import { DraftingValidationGate } from './DraftingValidationGate';
 const state = { ui: { canvasWidth: 1200, canvasHeight: 1400, selectedSystemPack: 'sys-1' } };
 const project = { id: 'p1' };
 const draftingEngine = { getGeometry: () => ({ rectangles: [], lines: [], points: [], circles: [], arcs: [], polygons: [], splines: [] }) };
-const onDesignValidated = (o: any) => console.log(o);
+const onDesignValidated = (o: unknown) => console.log(o);
 
 export const DraftingValidationGateIntegrationExample: React.FC = () => {
     // 1. Add state for showing validation gate

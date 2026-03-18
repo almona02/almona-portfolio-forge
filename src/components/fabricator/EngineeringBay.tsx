@@ -42,6 +42,7 @@ import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/shared/ui/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/ui/table';
 
+import { BuildingCodeValidator } from '@/components/national/BuildingCodeValidator';
 import { StructuralValidator } from '@/lib/physics/StructuralValidator';
 import { ThermalEngine } from '@/lib/physics/ThermalEngine';
 import { PoseQuickEditModal } from './PoseQuickEditModal';
@@ -774,6 +775,9 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     </Button>
                                 </CardContent>
                             </Card>
+
+                            {/* P3.2: BuildingCodeValidator - HBRC wind load compliance */}
+                            <BuildingCodeValidator />
 
                             <Card className="bg-gray-900/50">
                                 <CardHeader><CardTitle className="text-base">{t('engineering_bay.structure', 'Structure')}</CardTitle></CardHeader>

@@ -11,7 +11,7 @@ interface SecurityEvent {
   user_id: string | null;
   ip_address: string | null;
   severity: string;
-  details: any;
+  details: Record<string, unknown>;
 }
 
 export function SecurityDashboard() {
@@ -37,14 +37,12 @@ export function SecurityDashboard() {
         (payload) => {
           setEvents(prev => [payload.new as SecurityEvent, ...prev.slice(0, 99)]);
         }
-      )
-      .subscribe();
-
-    // Load initial events
-    loadEvents();
+      );
+    channel.subscribe();
+    void loadEvents();
 
     return () => {
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
   }, []);
 

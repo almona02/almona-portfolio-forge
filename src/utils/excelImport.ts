@@ -70,6 +70,16 @@ const toInt = (v: string | number | null | undefined): number | null => {
   return Number.isNaN(n) ? null : n;
 };
 
+/** Safe string conversion for Excel cell values (avoids [object Object]) */
+const safeCellStr = (v: unknown): string => {
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+  if (v instanceof Date) return v.toISOString();
+  if (typeof v === 'object' && v !== null && 'text' in v && typeof (v as { text: string }).text === 'string') return (v as { text: string }).text;
+  return '';
+};
+
 /**
  * Options for configuring the import process
  */
@@ -105,65 +115,66 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
     
     const rowData: SparePartExcelRow = {};
     row.eachCell((cell, colNumber) => {
-      const header = worksheet.getRow(1).getCell(colNumber).value?.toString() || '';
+      const header = safeCellStr(worksheet.getRow(1).getCell(colNumber).value);
       const value = cell.value;
-      
+      const s = safeCellStr(value);
+
       // Map common header variations
       const normalizedHeader = header.toLowerCase().replace(/[_\s]/g, '');
       switch (normalizedHeader) {
         case 'partnumber':
         case 'part_number':
-          rowData.part_number = value?.toString();
+          rowData.part_number = s || undefined;
           break;
         case 'name':
-          rowData.name = value?.toString();
+          rowData.name = s || undefined;
           break;
         case 'description':
-          rowData.description = value?.toString();
+          rowData.description = s || undefined;
           break;
         case 'category':
-          rowData.category = value?.toString();
+          rowData.category = s || undefined;
           break;
         case 'subcategory':
-          rowData.subcategory = value?.toString();
+          rowData.subcategory = s || undefined;
           break;
         case 'compatiblemachines':
         case 'compatible_machines':
-          rowData.compatible_machines = value?.toString();
+          rowData.compatible_machines = s || undefined;
           break;
         case 'price':
-          rowData.price = typeof value === 'number' ? value : parseFloat(value?.toString() || '0');
+          rowData.price = typeof value === 'number' ? value : parseFloat(s || '0');
           break;
         case 'originalprice':
         case 'original_price':
-          rowData.original_price = typeof value === 'number' ? value : parseFloat(value?.toString() || '0');
+          rowData.original_price = typeof value === 'number' ? value : parseFloat(s || '0');
           break;
         case 'stockquantity':
         case 'stock_quantity':
-          rowData.stock_quantity = typeof value === 'number' ? value : parseInt(value?.toString() || '0', 10);
+          rowData.stock_quantity = typeof value === 'number' ? value : parseInt(s || '0', 10);
           break;
         case 'minorderquantity':
         case 'min_order_quantity':
-          rowData.min_order_quantity = typeof value === 'number' ? value : parseInt(value?.toString() || '1', 10);
+          rowData.min_order_quantity = typeof value === 'number' ? value : parseInt(s || '1', 10);
           break;
         case 'weightkg':
         case 'weight_kg':
-          rowData.weight_kg = typeof value === 'number' ? value : parseFloat(value?.toString() || '0');
+          rowData.weight_kg = typeof value === 'number' ? value : parseFloat(s || '0');
           break;
         case 'specifications':
-          rowData.specifications = value?.toString();
+          rowData.specifications = s || undefined;
           break;
         case 'imageurl':
         case 'image_url':
-          rowData.image_url = value?.toString();
+          rowData.image_url = s || undefined;
           break;
         case 'iscritical':
         case 'is_critical':
-          rowData.is_critical = value?.toString() === 'true' || value === true;
+          rowData.is_critical = s === 'true' || value === true;
           break;
         case 'isactive':
         case 'is_active':
-          rowData.is_active = value?.toString() === 'true' || value === true;
+          rowData.is_active = s === 'true' || value === true;
           break;
       }
     });
@@ -177,6 +188,7 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
 
   for (const item of data) {
     try {
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return -- table()/supabase chain types from client */
       // Normalize fields (tolerate header case variations)
       const part_number = item.part_number ?? item.PART_NUMBER ?? item.Part_Number ?? item.PartNumber;
 
@@ -195,7 +207,7 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
   min_order_quantity: toInt(item.min_order_quantity) ?? 1,
   weight_kg: toFloat(item.weight_kg),
         specifications: (() => {
-          try { return item.specifications ? JSON.parse(item.specifications) : {}; } catch { return {}; }
+          try { return item.specifications ? JSON.parse(String(item.specifications)) : {}; } catch { return {}; }
         })(),
         image_url: item.image_url ?? null,
         is_critical: toBoolean(item.is_critical) ?? false,
@@ -241,15 +253,12 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
           is_new: false,
           is_on_sale: payload.original_price != null && payload.price != null && payload.original_price > payload.price,
         } as const;
-        // Use table helper to avoid strict generic inference to never; ok to cast on this line
-         
-        const { error } = await (table('products') as any)
-          .upsert(product, { onConflict: 'sku' });
+        const productsTable = table('products');
+        const { error } = await productsTable.upsert(product, { onConflict: 'sku' });
         if (error) throw error;
       } else {
-        // If a separate spare_parts table exists and is exposed in Database types, map and upsert there.
-         
-        const { error } = await (supabase as any)
+        type DynamicFrom = { from: (t: string) => { upsert: (d: unknown, o?: { onConflict?: string }) => Promise<{ error: Error | null }> } };
+        const { error } = await (supabase as DynamicFrom)
           .from('spare_parts')
           .upsert({
             part_number: payload.part_number,
@@ -268,9 +277,10 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
           }, { onConflict: 'part_number' });
         if (error) throw error;
       }
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return */
     } catch (e) {
       console.error('Error importing part:', item?.part_number, e);
-      errors.push({ part_number: item?.part_number, message: (e as Error)?.message ?? 'Unknown error' });
+      errors.push({ part_number: item?.part_number, message: e instanceof Error ? e.message : 'Unknown error' });
     }
   }
 

@@ -8,7 +8,7 @@
 import { supabase } from "@/lib/supabase";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
@@ -49,7 +49,7 @@ export interface QuoteTemplateResponse {
   name: string;
   description?: string;
   category: QuoteTemplateCategory;
-  template_config: Record<string, any>;
+  template_config: Record<string, unknown>;
   is_public: boolean;
   is_default: boolean;
   version: string;
@@ -73,7 +73,7 @@ export interface QuoteTemplateCreateRequest {
   name: string;
   description?: string;
   category?: QuoteTemplateCategory;
-  template_config?: Record<string, any>;
+  template_config?: Record<string, unknown>;
   is_public?: boolean;
   is_default?: boolean;
 }
@@ -85,7 +85,7 @@ export interface QuoteTemplateUpdateRequest {
   name?: string;
   description?: string;
   category?: QuoteTemplateCategory;
-  template_config?: Record<string, any>;
+  template_config?: Record<string, unknown>;
   is_public?: boolean;
   is_default?: boolean;
 }
@@ -126,10 +126,10 @@ export async function listQuoteTemplates(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to list quote templates");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to list quote templates");
   }
 
   return await response.json();
@@ -156,10 +156,10 @@ export async function getQuoteTemplate(
     if (response.status === 404) {
       throw new Error(`Quote template ${templateId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to get quote template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to get quote template");
   }
 
   return await response.json();
@@ -184,10 +184,10 @@ export async function createQuoteTemplate(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to create quote template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to create quote template");
   }
 
   return await response.json();
@@ -216,10 +216,10 @@ export async function updateQuoteTemplate(
     if (response.status === 404) {
       throw new Error(`Quote template ${templateId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to update quote template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to update quote template");
   }
 
   return await response.json();
@@ -246,9 +246,9 @@ export async function deleteQuoteTemplate(
     if (response.status === 404) {
       throw new Error(`Quote template ${templateId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to delete quote template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to delete quote template");
   }
 }

@@ -38,18 +38,16 @@ export const RecentOrders: React.FC = () => {
       setLoading(false)
     }
 
-    fetchOrders()
-
-    // Optional: subscribe to realtime changes to refresh list
+    void fetchOrders();
     const channel = supabase
       .channel('recent-orders')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => fetchOrders())
-      .subscribe()
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => void fetchOrders());
+    channel.subscribe();
 
     return () => {
-      mounted = false
-      channel.unsubscribe()
-    }
+      mounted = false;
+      void channel.unsubscribe();
+    };
   }, [])
 
   const getStatusVariant = (

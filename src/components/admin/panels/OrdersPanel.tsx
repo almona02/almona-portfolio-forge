@@ -55,8 +55,8 @@ export const OrdersPanel: React.FC = () => {
     | { type: 'status'; value: Order['status'] }
     | { type: 'payment'; value: Order['payment_status'] }
   >()
-  const [bulkStatusValue, setBulkStatusValue] = React.useState<Order['status'] | ''>('')
-  const [bulkPaymentValue, setBulkPaymentValue] = React.useState<Order['payment_status'] | ''>('')
+  const [bulkStatusValue, setBulkStatusValue] = React.useState<Order['status'] | undefined>(undefined)
+  const [bulkPaymentValue, setBulkPaymentValue] = React.useState<Order['payment_status'] | undefined>(undefined)
 
   // filters
   const [search, setSearch] = React.useState('')
@@ -72,7 +72,7 @@ export const OrdersPanel: React.FC = () => {
   const fetchServerPage = React.useCallback(async (): Promise<ServerPage<Order>> => {
     let query = supabase.from('orders').select('*', { count: 'exact' })
 
-    if (status !== 'all') query = query.eq('status', status as any)
+    if (status !== 'all') query = query.eq('status', status)
     if (search) query = query.ilike('id', `%${search}%`)
     if (dateFrom) query = query.gte('created_at', new Date(dateFrom).toISOString())
     if (dateTo) {
@@ -92,32 +92,32 @@ export const OrdersPanel: React.FC = () => {
     let mounted = true
     setLoading(true)
     setError(null)
-    fetchServerPage()
+    void fetchServerPage()
       .then(({ rows, total }) => {
-        if (!mounted) return
-        setData(rows)
-        setTotal(total)
+        if (!mounted) return;
+        setData(rows);
+        setTotal(total);
       })
       .catch((e) => {
-        if (!mounted) return
-        setError('Failed to load orders')
-        console.error(e)
+        if (!mounted) return;
+        setError('Failed to load orders');
+        console.error(e);
       })
-      .finally(() => mounted && setLoading(false))
+      .finally(() => mounted && setLoading(false));
 
     const ch = supabase
       .channel('orders-panel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
-        fetchServerPage().then(({ rows, total }) => {
-          setData(rows)
-          setTotal(total)
-        })
+        void fetchServerPage().then(({ rows, total }) => {
+          setData(rows);
+          setTotal(total);
+        });
       })
       .subscribe()
     return () => {
-      mounted = false
-      ch.unsubscribe()
-    }
+      mounted = false;
+      void ch.unsubscribe();
+    };
   }, [fetchServerPage])
 
   const handleUpdated = (patch: Partial<Order>) => {
@@ -167,7 +167,7 @@ export const OrdersPanel: React.FC = () => {
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Bulk status:</span>
-            <Select value={bulkStatusValue} onValueChange={(v: string) => { setBulkStatusValue(v as Order['status']); if (hasSelection) { setPendingAction({ type: 'status', value: v as Order['status'] }); setConfirmOpen(true) } }}>
+            <Select value={bulkStatusValue ?? ''} onValueChange={(v: string) => { setBulkStatusValue(v as Order['status']); if (hasSelection) { setPendingAction({ type: 'status', value: v as Order['status'] }); setConfirmOpen(true) } }}>
               <SelectTrigger>
                 <SelectValue placeholder={hasSelection ? 'Select status' : 'Select rows first'} />
               </SelectTrigger>
@@ -186,7 +186,7 @@ export const OrdersPanel: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Bulk payment:</span>
-            <Select value={bulkPaymentValue} onValueChange={(v: string) => { setBulkPaymentValue(v); if (hasSelection) { setPendingAction({ type: 'payment', value: v }); setConfirmOpen(true) } }}>
+            <Select value={bulkPaymentValue ?? ''} onValueChange={(v: string) => { setBulkPaymentValue(v); if (hasSelection) { setPendingAction({ type: 'payment', value: v }); setConfirmOpen(true) } }}>
               <SelectTrigger>
                 <SelectValue placeholder={hasSelection ? 'Select payment' : 'Select rows first'} />
               </SelectTrigger>
@@ -274,7 +274,7 @@ export const OrdersPanel: React.FC = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={async () => {
+              onClick={() => void (async () => {
                 if (!pendingAction) return
                 const ids = selectedRows.map((r) => r.id)
                 if (!ids.length) return
@@ -308,10 +308,10 @@ export const OrdersPanel: React.FC = () => {
                   toast({ title: `Updated payment for ${ids.length} order(s)` })
                 }
                 setSelectionResetKey((k) => k + 1)
-                setBulkStatusValue('')
-                setBulkPaymentValue('')
+                setBulkStatusValue(undefined)
+                setBulkPaymentValue(undefined)
                 setConfirmOpen(false)
-              }}
+              })()}
             >
               Confirm
             </AlertDialogAction>

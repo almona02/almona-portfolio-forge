@@ -15,9 +15,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { CheckCircle, Clock, DollarSign, TrendingUp, Users } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 
+export interface TrendingStyle {
+  name: string;
+  popularityScore: number;
+  projectCount: number;
+  averageMargin: number;
+}
+
+export interface YDTInsights {
+  trendingStyles: TrendingStyle[];
+}
+
 export const YDTImpactDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<YDTMetrics | null>(null);
-  const [insights, setInsights] = useState<any>(null);
+  const [insights, setInsights] = useState<YDTInsights | null>(null);
   const [loading, setLoading] = useState(true);
 
   const analyzer = useMemo(() => new YDTImpactAnalyzer(), []);
@@ -33,9 +44,7 @@ export const YDTImpactDashboard: React.FC = () => {
 
         // Get market intelligence insights
         const trendingStyles = await ydt.getTrendingStyles('Cairo');
-        setInsights({
-          trendingStyles,
-        });
+        setInsights({ trendingStyles });
 
         setLoading(false);
       } catch (error) {
@@ -44,7 +53,7 @@ export const YDTImpactDashboard: React.FC = () => {
       }
     };
 
-    loadMetrics();
+    void loadMetrics();
   }, [analyzer, ydt]);
 
   if (loading) {
@@ -155,9 +164,9 @@ export const YDTImpactDashboard: React.FC = () => {
                 <h3 className="typography-h3 mb-2">Trending Window Styles (Cairo)</h3>
                 {insights.trendingStyles && insights.trendingStyles.length > 0 ? (
                   <ul className="list-disc list-inside space-y-1">
-                    {insights.trendingStyles.map((style: any, index: number) => (
+                    {insights.trendingStyles.map((style, index) => (
                       <li key={index}>
-                        {style.name} - {style.popularityScore * 100}% popularity
+                        {style.name} - {(style.popularityScore * 100).toFixed(0)}% popularity
                       </li>
                     ))}
                   </ul>

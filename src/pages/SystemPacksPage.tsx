@@ -8,7 +8,7 @@
 import { SystemTuningStudio } from '@/components/fabricator/SystemTuningStudio';
 import { UnifiedStudioWizard } from '@/components/fabricator/unifiedWorkflow/UnifiedStudioWizard';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { addCustomSystemAsync, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { addCustomSystemAsync, loadCustomSystems, type StoredSystemPack } from '@/lib/fabricator/customSystemStorage';
 import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -37,7 +37,7 @@ export const SystemPacksPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'tuned' | 'untuned' | 'upvc' | 'aluminum'>('all');
-  const [customSystems, setCustomSystems] = useState<any[]>([]);
+  const [customSystems, setCustomSystems] = useState<StoredSystemPack[]>([]);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [showSystemWizard, setShowSystemWizard] = useState(false);
   const [showUnifiedWizard, setShowUnifiedWizard] = useState(false);
@@ -68,7 +68,7 @@ export const SystemPacksPage: React.FC = () => {
   }, []);
 
   const allSystems = useMemo(() => {
-    const systemsMap = new Map<string, any>();
+    const systemsMap = new Map<string, StoredSystemPack>();
     SYSTEM_PACKS.forEach(system => {
       systemsMap.set(system.meta.id, system);
     });

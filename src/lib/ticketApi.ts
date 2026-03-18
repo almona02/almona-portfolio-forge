@@ -9,27 +9,34 @@ import {
     ServiceTicket,
     TicketFilters,
     TicketMessage,
+    TicketPriority,
     TicketStatus,
+    TicketType,
     TicketWithDetails
 } from '@/types/tickets'
 
-type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'] & { source?: string | null }
-type DBTicketMessageRow = Database['public']['Tables']['ticket_messages']['Row']
+type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'] & {
+  digital_twin_code?: string | null;
+  category?: string | null;
+  machine_model?: string | null;
+  source?: string | null;
+};
+type DBTicketMessageRow = Database['public']['Tables']['ticket_messages']['Row'];
 
 // ---------- Helpers ----------
 function mapTicket(row: DBServiceTicketRow): ServiceTicket {
   return {
     id: row.id,
     ticket_number: row.ticket_number,
-    digital_twin_code: (row as any).digital_twin_code ?? null,
-    category: (row as any).category ?? null,
+    digital_twin_code: row.digital_twin_code ?? null,
+    category: row.category ?? null,
     user_id: row.user_id,
     title: row.title,
     description: row.description,
   type: row.type as ServiceTicket['type'],
   priority: row.priority as ServiceTicket['priority'],
   status: row.status as ServiceTicket['status'],
-  source: (row as any).source ?? null,
+  source: row.source ?? null,
   // maintenance_type: (row as any).maintenance_type ?? null, // Removed - column doesn't exist
     related_quote_id: row.related_quote_id,
     related_order_id: row.related_order_id,
@@ -48,7 +55,7 @@ function mapTicket(row: DBServiceTicketRow): ServiceTicket {
     preferred_contact_method: row.preferred_contact_method || 'email',
     site_location: row.site_location,
     machine_serial_number: row.machine_serial_number,
-  machine_model: (row as any).machine_model ?? null,
+  machine_model: row.machine_model ?? null,
     resolution_summary: row.resolution_summary,
     customer_satisfaction_rating: row.customer_satisfaction_rating,
     customer_feedback: row.customer_feedback,
@@ -62,7 +69,7 @@ function mapTicket(row: DBServiceTicketRow): ServiceTicket {
 // ---------- Ticket CRUD ----------
 export const createTicket = async (ticketData: CreateTicketData, userId: string): Promise<ServiceTicket> => {
   // Attempt V2 path first only if explicitly enabled
-  const ENABLE_V2 = (import.meta as any).env?.VITE_ENABLE_V2_TICKETS === 'true'
+  const ENABLE_V2 = import.meta.env?.VITE_ENABLE_V2_TICKETS === 'true';
   if (ENABLE_V2) try {
     let category: string | null = null
     if (ticketData.type === 'maintenance') {
@@ -75,24 +82,26 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     else if (['general', 'technical'].includes(ticketData.type)) category = 'support'
 
     if (category) {
-      const payload: any = {
+      const ext = ticketData as { machine_id?: string; machine_model?: string };
+      const payload: { category: string; payload: Record<string, unknown> } = {
         category,
         payload: {
           title: ticketData.title,
           description: ticketData.description,
           priority: ticketData.priority,
-          machine_id: (ticketData as any).machine_id || undefined,
+          machine_id: ext.machine_id || undefined,
           machine_serial_number: ticketData.machine_serial_number || undefined,
         },
-      }
+      };
       if (category === 'preventive_maintenance') {
         // payload.maintenance_metadata = { maintenance_type: (ticketData as any).maintenance_type } // Removed - column doesn't exist
       }
-      const v2 = await ticketsV2Api.create(payload)
+      const v2 = await ticketsV2Api.create(payload);
+      const v2Ext = v2 as { digital_twin_code?: string };
       return {
         id: v2.id,
         ticket_number: v2.ticket_number,
-        digital_twin_code: (v2 as any).digital_twin_code || null,
+        digital_twin_code: v2Ext.digital_twin_code || null,
         category: v2.category || null,
         user_id: userId,
         title: v2.title,
@@ -119,7 +128,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
         preferred_contact_method: ticketData.preferred_contact_method || 'email',
         site_location: ticketData.site_location || null,
         machine_serial_number: ticketData.machine_serial_number || null,
-  machine_model: (ticketData as any).machine_model || null,
+        machine_model: (ticketData as { machine_model?: string }).machine_model || null,
         resolution_summary: null,
         customer_satisfaction_rating: null,
         customer_feedback: null,
@@ -142,8 +151,8 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     title: ticketData.title?.toString().slice(0, 200) || 'Support Ticket',
     description: ticketData.description || 'Support ticket created via services page',
     // Provide safe defaults for likely NOT NULL columns
-    type: (ticketData.type as any) || 'general',
-    priority: (ticketData.priority as any) || 'medium',
+    type: ticketData.type || 'general',
+    priority: ticketData.priority || 'medium',
     status: 'open' as const,
     preferred_contact_method: ticketData.preferred_contact_method || 'email',
     user_id: currentUserId,
@@ -154,7 +163,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     contact_email: ticketData.contact_email || null,
     site_location: ticketData.site_location || null,
     machine_serial_number: ticketData.machine_serial_number || null,
-    machine_model: (ticketData as any).machine_model || null,
+    machine_model: (ticketData as { machine_model?: string }).machine_model || null,
     // maintenance_type: (ticketData as any).maintenance_type || null, // Removed - column doesn't exist in database
   }
   
@@ -163,8 +172,8 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
   
   // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
   // Select all columns including digital_twin_code and ticket_number
-  const selectColumns = 'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_serial_number, machine_model, created_at, updated_at'
-  const { data, error } = await (supabase as any)
+  const selectColumns = 'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_serial_number, machine_model, created_at, updated_at';
+  const { data, error } = await supabase
     .from('service_tickets')
     .insert([insertPayload])
     .select(selectColumns)
@@ -185,7 +194,7 @@ export const getUserTickets = async (
   userId: string,
   filters?: TicketFilters
 ): Promise<TicketWithDetails[]> => {
-  let query = (supabase as any).from('service_tickets').select('*').eq('user_id', userId)
+  let query = supabase.from('service_tickets').select('*').eq('user_id', userId);
   if (filters?.status?.length) query = query.in('status', filters.status)
   if (filters?.type?.length) query = query.in('type', filters.type)
   if (filters?.priority?.length) query = query.in('priority', filters.priority)
@@ -200,7 +209,7 @@ export const getUserTickets = async (
   const ids = (data || []).map((r: { id: string }) => r.id)
   let counts: Record<string, number> = {}
   if (ids.length) {
-  const { data: msgAgg, error: msgErr } = await (supabase as any)
+  const { data: msgAgg, error: msgErr } = await supabase
       .from('ticket_messages')
       .select('ticket_id, count:ticket_id')
       .in('ticket_id', ids)
@@ -212,16 +221,17 @@ export const getUserTickets = async (
     }
   }
 
-  return (data || []).map(row => ({
+  const rows = (data || []) as DBServiceTicketRow[];
+  return rows.map(row => ({
     ...mapTicket(row),
     message_count: counts[row.id] || 0
-  }))
+  }));
 }
 
 export const getTicketById = async (ticketId: string): Promise<TicketWithDetails | null> => {
-  const { data, error } = await (supabase as any).from('service_tickets').select('*').eq('id', ticketId).single()
-  if (error) return null
-  return mapTicket(data)
+  const { data, error } = await supabase.from('service_tickets').select('*').eq('id', ticketId).single();
+  if (error || !data) return null;
+  return mapTicket(data as DBServiceTicketRow);
 }
 
 export const updateTicketStatus = async (
@@ -249,14 +259,14 @@ export const updateTicketStatus = async (
   if (status === 'resolved') patch['resolved_at'] = new Date().toISOString()
   if (status === 'closed') patch['closed_at'] = new Date().toISOString()
   if (resolution_summary) patch['resolution_summary'] = resolution_summary
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('service_tickets')
-    .update(patch)
+    .update(patch as Database['public']['Tables']['service_tickets']['Update'])
     .eq('id', ticketId)
     .select()
     .single()
-  if (error) throw new Error(error.message)
-  return mapTicket(data)
+  if (error) throw new Error(error.message);
+  return mapTicket(data as DBServiceTicketRow);
 }
 
 // ---------- Messages ----------
@@ -265,25 +275,25 @@ export const getTicketMessages = async (ticketId: string): Promise<MessageWithAu
   try {
     const v2 = await ticketsV2Api.listMessages(ticketId)
     // Assume v2 returns array with at least: id, message, created_at, author_id
-    return v2.map((m: any) => ({
-      id: m.id,
+    return v2.map((m: Record<string, unknown>) => ({
+      id: String(m.id),
       ticket_id: ticketId,
-      author_id: m.author_id || m.user_id || 'unknown',
-      message: m.message || m.content || '',
-      message_type: m.message_type || 'message',
-      is_internal_note: m.is_internal_note || false,
-      attachments: m.attachments || [],
-      spare_parts_details: m.spare_parts_details || null,
-      status_change: m.status_change || null,
-      time_spent_minutes: m.time_spent_minutes || null,
-      created_at: m.created_at,
-      edited_at: m.edited_at || null,
-      author: { full_name: m.author_name || null, role: 'user', avatar_url: m.author_avatar || null }
+      author_id: typeof m.author_id === 'string' ? m.author_id : (typeof m.user_id === 'string' ? m.user_id : 'unknown'),
+      message: typeof m.message === 'string' ? m.message : (typeof m.content === 'string' ? m.content : ''),
+      message_type: typeof m.message_type === 'string' ? m.message_type : 'message',
+      is_internal_note: Boolean(m.is_internal_note),
+      attachments: (m.attachments as unknown[]) || [],
+      spare_parts_details: (m.spare_parts_details as Record<string, unknown> | null) || null,
+      status_change: (m.status_change as Record<string, unknown> | null) || null,
+      time_spent_minutes: (m.time_spent_minutes as number | null) || null,
+      created_at: String(m.created_at),
+      edited_at: (m.edited_at as string | null) || null,
+      author: { full_name: (m.author_name as string | null) || null, role: 'user' as const, avatar_url: (m.author_avatar as string | null) || null }
     }))
   } catch (err) {
     console.warn('V2 listMessages failed, legacy fallback:', err)
   }
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('ticket_messages')
     .select('*')
     .eq('ticket_id', ticketId)
@@ -328,7 +338,7 @@ export const createMessage = async (messageData: CreateMessageData & { author_id
     spare_parts_details: messageData.spare_parts_details || null,
     time_spent_minutes: messageData.time_spent_minutes || null
   }
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('ticket_messages')
     .insert([insertPayload])
     .select()
@@ -342,7 +352,7 @@ export const createMessage = async (messageData: CreateMessageData & { author_id
     message: row.message,
     message_type: row.message_type,
     is_internal_note: row.is_internal_note,
-    attachments: (row.attachments as any[]) || [],
+    attachments: (row.attachments as TicketMessage['attachments']) || [],
     spare_parts_details: row.spare_parts_details,
     status_change: row.status_change,
     time_spent_minutes: row.time_spent_minutes,
@@ -361,38 +371,39 @@ export const assignTicket = async (ticketId: string, assigneeId: string): Promis
   } catch (err) {
     console.warn('V2 assign failed, legacy fallback:', err)
   }
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('service_tickets')
     .update({ assigned_to: assigneeId, assigned_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq('id', ticketId)
     .select()
     .single()
-  if (error) throw new Error(error.message)
-  return mapTicket(data)
+  if (error) throw new Error(error.message);
+  return mapTicket(data as DBServiceTicketRow);
 }
 
 // ---------- Analytics ----------
 export const getTicketStats = async (userId: string) => {
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('service_tickets')
     .select('id,status,priority,type,resolved_at')
     .eq('user_id', userId)
-  if (error) throw new Error(error.message)
-  const tickets: ServiceTicket[] = (data || [])
-  const total = tickets.length
-  const open = tickets.filter(t => ['open','assigned','in_progress'].includes(t.status)).length
-  const resolved = tickets.filter(t => t.status === 'resolved').length
-  const closed = tickets.filter(t => t.status === 'closed').length
-  const byPriority: Record<string, number> = { low:0, medium:0, high:0, critical:0, urgent:0 }
-  tickets.forEach(t => { byPriority[t.priority] = (byPriority[t.priority]||0)+1 })
-  const byTypeKeys = ['general','technical','billing','sales','spare_parts','warranty','complaint','installation','maintenance']
-  const byType: Record<string, number> = {}
-  byTypeKeys.forEach(k => { byType[k]=0 })
-  tickets.forEach(t => { byType[t.type] = (byType[t.type]||0)+1 })
+  if (error) throw new Error(error.message);
+  const tickets = (data || []) as DBServiceTicketRow[];
+  const mapped = tickets.map(mapTicket);
+  const total = mapped.length;
+  const open = mapped.filter(t => ['open','assigned','in_progress'].includes(t.status)).length;
+  const resolved = mapped.filter(t => t.status === 'resolved').length;
+  const closed = mapped.filter(t => t.status === 'closed').length;
+  const byPriority: Record<string, number> = { low:0, medium:0, high:0, critical:0, urgent:0 };
+  mapped.forEach(t => { byPriority[t.priority] = (byPriority[t.priority]||0)+1; });
+  const byTypeKeys = ['general','technical','billing','sales','spare_parts','warranty','complaint','installation','maintenance'] as const;
+  const byType: Record<string, number> = {};
+  byTypeKeys.forEach(k => { byType[k]=0; });
+  mapped.forEach(t => { byType[t.type] = (byType[t.type]||0)+1; });
   return {
     total, open, resolved, closed,
-  byPriority: byPriority as any,
-  byType: byType as any,
+  byPriority: byPriority as Record<TicketPriority, number>,
+  byType: byType as Record<TicketType, number>,
     avgResolutionTime: 0
   }
 }

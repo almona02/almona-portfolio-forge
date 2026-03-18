@@ -196,7 +196,7 @@ export class YilmazTelemetrySimulator {
       ambientTempCelsius: telemetry.ambientTempCelsius,
       symptoms: telemetry.symptoms,
       currentMonth: telemetry.currentMonth,
-      location: telemetry.location as any,
+      location: telemetry.location as YilmazTechnicianInput['location'],
       operatingHours: telemetry.operatingHours
     };
   }
@@ -383,7 +383,11 @@ export class YilmazTelemetrySimulator {
     return symptoms;
   }
 
-  private generateSimulationNote(isKhamsinSeason: boolean, isSummer: boolean, options?: any): string {
+  private generateSimulationNote(
+    isKhamsinSeason: boolean,
+    isSummer: boolean,
+    options?: { forceVoltageIssue?: boolean; forceOverheating?: boolean }
+  ): string {
     const notes: string[] = ['SIMULATED DATA'];
     
     if (isKhamsinSeason) notes.push('Khamsin Season Active');

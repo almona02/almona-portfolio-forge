@@ -461,7 +461,7 @@ export const Enhanced3DViewer = forwardRef<{ resetCamera: () => void; startWindo
         )}
 
         {/* Window Controls */}
-        {isWindowMode && enableWindowControls && !presentationMode && (
+        {isWindowMode && _enableWindowControls && !presentationMode && (
           <div className="absolute top-3 right-3 z-10">
             <div className="bg-gray-900/90 backdrop-blur-sm border border-gray-700 rounded-lg p-2 space-y-2">
               <button

@@ -47,14 +47,14 @@ export function withErrorHandling<T extends Record<string, any>>(
       validateComponentProps(props, componentName);
       
       return React.createElement(Component, props);
-    } catch (error) {
+    } catch (err) {
       // Log error
       logComponentError({
         type: ComponentErrorType.PROPS_ERROR,
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: err instanceof Error ? err.message : 'Unknown error',
         component: componentName,
         props: sanitizeProps(props),
-        stack: error instanceof Error ? error.stack : undefined,
+        stack: err instanceof Error ? err.stack : undefined,
         timestamp: new Date()
       });
       
@@ -63,7 +63,7 @@ export function withErrorHandling<T extends Record<string, any>>(
         'div',
         { className: 'p-4 bg-red-50 border border-red-200 rounded text-red-800 text-sm' },
         React.createElement('p', { className: 'font-semibold' }, `Error in ${componentName}`),
-        React.createElement('p', { className: 'text-xs mt-1' }, error instanceof Error ? error.message : 'Unknown error')
+        React.createElement('p', { className: 'text-xs mt-1' }, err instanceof Error ? err.message : 'Unknown error')
       );
     }
   };
@@ -147,13 +147,13 @@ export function safeEventHandler<T extends (...args: any[]) => any>(
   return function safeHandler(...args: Parameters<T>) {
     try {
       return handler(...args);
-    } catch (error) {
+    } catch (err) {
       logComponentError({
         type: ComponentErrorType.EVENT_ERROR,
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: err instanceof Error ? err.message : 'Unknown error',
         component: componentName,
         props: { eventName, args: args.map(arg => typeof arg) },
-        stack: error instanceof Error ? error.stack : undefined,
+        stack: err instanceof Error ? err.stack : undefined,
         timestamp: new Date()
       });
       
@@ -173,16 +173,16 @@ export async function safeAsyncHandler<T extends (...args: any[]) => Promise<any
 ): Promise<ReturnType<T> | null> {
   try {
     return await handler();
-  } catch (error) {
+  } catch (err) {
     logComponentError({
       type: ComponentErrorType.ASYNC_ERROR,
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message: err instanceof Error ? err.message : 'Unknown error',
       component: componentName,
       props: { operationName },
-      stack: error instanceof Error ? error.stack : undefined,
+      stack: err instanceof Error ? err.stack : undefined,
       timestamp: new Date()
     });
-    
+
     return null;
   }
 }

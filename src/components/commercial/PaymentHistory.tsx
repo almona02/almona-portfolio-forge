@@ -130,7 +130,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
   }, [invoiceId]);
 
   useEffect(() => {
-    loadPayments();
+    void loadPayments();
   }, [loadPayments]);
 
   // Filter payments
@@ -199,7 +199,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
             <AlertCircle className="w-12 h-12 text-red-500/70 mb-4" />
             <p className="text-sm text-red-400/70 mb-2">{error}</p>
             <Button
-              onClick={loadPayments}
+              onClick={() => void loadPayments()}
               variant="outline"
               size="sm"
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
@@ -235,7 +235,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={loadPayments}
+                onClick={() => void loadPayments()}
                 variant="outline"
                 size="sm"
                 className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
@@ -268,7 +268,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
                 className="pl-10 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
               />
             </div>
-            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as any)}>
+            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as Payment['status'] | 'all')}>
               <SelectTrigger className="w-full sm:w-[180px] bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Status" />
@@ -283,7 +283,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={methodFilter} onValueChange={(value) => setMethodFilter(value as any)}>
+            <Select value={methodFilter} onValueChange={(value) => setMethodFilter(value as Payment['method'] | 'all')}>
               <SelectTrigger className="w-full sm:w-[180px] bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
                 <SelectValue placeholder="Method" />
               </SelectTrigger>

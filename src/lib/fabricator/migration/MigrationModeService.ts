@@ -35,7 +35,7 @@ export interface FabricatorMigrationModeContext {
 type LedgerRow = {
   event_hash: string;
   chain_position: number;
-  payload: any;
+  payload: Record<string, unknown>;
   recorded_at: string;
 };
 
@@ -64,13 +64,7 @@ export class MigrationModeService {
   private async fetchRecentLedgerRows(limit: number = 200): Promise<LedgerRow[]> {
     // Prefer RPC if migration 049 was applied (reality_events_readonly() function).
     try {
-      const { data, error } = await (supabase as any)
-        .rpc('reality_events_readonly')
-        // Many supabase-js versions do not support `.select()` on rpc builders reliably;
-        // rely on server-side function return shape and just order/limit.
-        .order('chain_position', { ascending: false })
-        .limit(limit);
-
+      const { data, error } = await supabase.rpc('reality_events_readonly', {});
       if (!error && Array.isArray(data)) return data as LedgerRow[];
     } catch {
       // Fall back below.
@@ -78,7 +72,7 @@ export class MigrationModeService {
 
     // Fallback for environments where reality_events_readonly is still a view.
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('reality_events_readonly')
         .select('event_hash,chain_position,payload,recorded_at')
         .order('chain_position', { ascending: false })
@@ -90,7 +84,7 @@ export class MigrationModeService {
     }
 
     // Final fallback: query base table (requires SELECT permission / RLS alignment).
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('reality_events')
       .select('event_hash,chain_position,payload,recorded_at')
       .order('chain_position', { ascending: false })
@@ -101,10 +95,11 @@ export class MigrationModeService {
   }
 
   private deriveContextFromLatestMigrationEvent(row: LedgerRow): FabricatorMigrationModeContext {
+    const p = row?.payload as { almona_event_type?: string; almonaEvent?: string; eventType?: string } | undefined;
     const almonaEventType =
-      row?.payload?.almona_event_type ||
-      row?.payload?.almonaEvent ||
-      row?.payload?.eventType ||
+      p?.almona_event_type ||
+      p?.almonaEvent ||
+      p?.eventType ||
       'unknown';
 
     // Default safe behavior (v1 read/write only)
@@ -167,7 +162,7 @@ export class MigrationModeService {
     const rows = await this.fetchRecentLedgerRows(250);
 
     const latest = rows.find((r) => {
-      const t = r?.payload?.almona_event_type;
+      const t = (r?.payload as { almona_event_type?: string } | undefined)?.almona_event_type;
       return typeof t === 'string' && MIGRATION_ALMONA_EVENT_TYPES.has(t);
     });
 

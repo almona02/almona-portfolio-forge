@@ -4,6 +4,7 @@ import { GeometryLine } from '../components/GeometryLine';
 import { GeometryRectangle } from '../components/GeometryRectangle';
 import { HardwareIcon } from '../components/HardwareIcon';
 import { StructuralLine } from '../components/StructuralLine';
+import type { StructuralElement } from '../types/materialAware';
 import type { Annotation, Arc, Circle, DraftingTool, Line, Polygon, Rectangle, Spline } from '../types/drafting';
 import { controlPointsToSVGPath } from '../utils/splineUtils';
 
@@ -27,9 +28,9 @@ interface GeometryLayerProps {
   };
   geometryCounts: GeometryCounts;
   annotations: Annotation[];
-  structuralElements: any[];
-  hardwareElements: any[];
-  layerStyleMap: Map<string, { color: string; lineType: any; lineWeight: number; strokeDasharray: string; locked: boolean }>;
+  structuralElements: StructuralElement[];
+  hardwareElements: import('../types/materialAware').HardwarePlacement[];
+  layerStyleMap: Map<string, { color: string; lineType: 'solid' | 'dashed' | 'dotted'; lineWeight: number; strokeDasharray: string; locked: boolean }>;
   selectedElementIndex: number | null;
   hoveredElementIndex: number | null;
   selectedTool: DraftingTool;

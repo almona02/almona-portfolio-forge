@@ -313,7 +313,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
               <Button
                 type="button"
                 size="sm"
-                onClick={handleRun}
+                onClick={() => void handleRun()}
                 disabled={isRunning || selectedIds.length === 0}
                 className="btn-primary"
               >

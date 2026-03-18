@@ -215,10 +215,11 @@ export const EnhancedTooltip: React.FC<EnhancedTooltipProps> = React.memo(({
     onMouseMove: handleMouseMove,
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      if (typeof (children as any).ref === 'function') {
-        (children as any).ref(node);
-      } else if ((children as any).ref) {
-        (children as any).ref.current = node;
+      const childRef = (children as React.ReactElement & { ref?: React.Ref<HTMLElement> }).ref;
+      if (typeof childRef === 'function') {
+        childRef(node);
+      } else if (childRef && typeof childRef === 'object' && 'current' in childRef) {
+        (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
       }
     }
   });

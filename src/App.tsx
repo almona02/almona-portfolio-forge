@@ -89,22 +89,28 @@ const SystemPackTuningStudio = lazy(() => import("./components/fabricator/System
 const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuningStudio.tsx").then(m => ({ default: m.NoDXFTuningStudio })));
 const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx"));
 const SystemPacksPage = lazy(() => import("./pages/SystemPacksPage.tsx").then(m => ({ default: m.SystemPacksPage })));
+const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
+const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
+const WorkshopPortal = lazy(() => import("./pages/workshop/WorkshopPortal.tsx").then(m => ({ default: m.WorkshopPortal })));
+const DeliveryTrackingPage = lazy(() => import("./pages/DeliveryTrackingPage.tsx").then(m => ({ default: m.DeliveryTrackingPage })));
+const OrdersPanel = lazy(() => import("./components/admin/panels/OrdersPanel.tsx").then(m => ({ default: m.OrdersPanel })));
+// BentProfileDesignerPage removed — page deleted in consolidation
+const FabricationWorkflowWizard = lazy(() => import("./components/fabricator/FabricationWorkflowWizard.tsx").then(m => ({ default: m.FabricationWorkflowWizard })));
+const ValidationDashboardPage = lazy(() => import("./pages/ValidationDashboardPage.tsx").then(m => ({ default: m.default })));
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 const ProductionDashboard = lazy(() => import("./components/fabricator/ProductionDashboard.tsx").then(m => ({ default: m.ProductionDashboard })));
 const ProjectStudioWrapper = lazy(() => import("./pages/fabricator/ProjectStudioWrapper"));
 
 // NEW: Workflow Page Components - Route-Based Architecture
 // _UnifiedDesignPage removed — design uses EngineeringBayWrapper
+// MeasuringPage/BOMReviewPage — pose workflow uses PoseWorkflowLayout with BOMReviewPanel
 const OptimizationPage = lazy(() => import("./pages/fabricator/workflow/OptimizationPage").then(m => ({ default: m.OptimizationPage })));
 // _InventoryWorkflowPage removed — inventory integrated into Data Studio
 const ProductionPage = lazy(() => import("./pages/fabricator/workflow/ProductionPage").then(m => ({ default: m.ProductionPage })));
 const QualityControlWorkflowPage = lazy(() => import("./pages/fabricator/workflow/QualityControlPage").then(m => ({ default: m.QualityControlPage })));
-const DeliveryTrackingPage = lazy(() => import("./pages/DeliveryTrackingPage").then(m => ({ default: m.DeliveryTrackingPage })));
 // _DebugWorkflowPage removed — debug page not needed in production
 const BOMReviewPanel = lazy(() => import("./components/fabricator/workflow/BOMReviewPanel").then(m => ({ default: m.BOMReviewPanel })));
-const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const OrderManagementPage = lazy(() => import("./components/fabricator/orders/OrderManagement").then(m => ({ default: m.OrderManagement })));
-const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
 
 // Phase 5: Pre-Pilot Hardening - lazy loaded
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage.tsx"));
@@ -286,7 +292,13 @@ const GlobalDynamicImportGuard = () => {
   useEffect(() => {
     const handler = (ev: PromiseRejectionEvent) => {
       const r = ev.reason as unknown;
-      const msg = String(r instanceof Error ? r.message : (r && typeof r === 'object' && 'message' in r ? (r as { message: unknown }).message : r) ?? '').toLowerCase();
+      const raw = r instanceof Error ? r.message : (r && typeof r === 'object' && 'message' in r ? (r as { message: unknown }).message : r);
+      let msg: string;
+      if (typeof raw === 'string') msg = raw;
+      else if (raw == null) msg = '';
+      else if (typeof raw === 'object') msg = '[object Object]';
+      else msg = String(raw as string | number | boolean | bigint);
+      msg = msg.toLowerCase();
       // Only handle specific chunk/module loading errors, not all rejections
       if (msg.includes('failed to fetch dynamically imported module') ||
         (msg.includes('loading chunk') && msg.includes('failed'))) {
@@ -455,8 +467,10 @@ const App = memo(() => {
                                     {/* 4. Production Studio */}
                                     <Route path="production/*" element={<Suspense fallback={getLoadingComponent('Production Studio')}><ProductionStudioLayout /></Suspense>}>
                                       <Route index element={<Suspense fallback={getLoadingComponent('Production Dashboard')}><ProductionDashboard /></Suspense>} />
+                                      <Route path="workshop" element={<Suspense fallback={getLoadingComponent('Workshop')}><WorkshopPortal /></Suspense>} />
                                       <Route path="quality" element={<Suspense fallback={getLoadingComponent('Quality Control')}><QualityControlWorkflowPage /></Suspense>} />
                                       <Route path="delivery" element={<Suspense fallback={getLoadingComponent('Delivery Tracking')}><DeliveryTrackingPage /></Suspense>} />
+                                      <Route path="orders" element={<Suspense fallback={getLoadingComponent('Orders')}><OrdersPanel /></Suspense>} />
                                     </Route>
 
                                     {/* 5. Data Studio */}
@@ -467,6 +481,7 @@ const App = memo(() => {
                                       <Route path="profiles" element={<Suspense fallback={getLoadingComponent('Profile Studio')}><ProfileStudioLite /></Suspense>} />
                                       <Route path="customers" element={<Suspense fallback={getLoadingComponent('Customers')}><CustomersPage /></Suspense>} />
                                       <Route path="patterns" element={<Suspense fallback={getLoadingComponent('Pattern Library')}><PatternLibraryPage /></Suspense>} />
+                                      {/* bent-profiles removed — BentProfileDesignerPage deleted in consolidation */}
                                     </Route>
                                     {/* 6. Orders */}
                                     <Route path="orders" element={<Suspense fallback={getLoadingComponent('Orders')}><OrderManagementPage /></Suspense>} />
@@ -476,9 +491,11 @@ const App = memo(() => {
                                     <Route path="reports/*" element={<Suspense fallback={getLoadingComponent('Reports')}><FabricatorReportsPage /></Suspense>} />
                                   </Route>
 
-                                  {/* Legacy fabricator routes — single catch-all redirect to studio.
-                                     Previously 30+ individual redirects; consolidated since the catch-all
-                                     handles all cases and none of the old paths were public/indexed. */}
+                                  {/* Fabricator Wizard (standalone) */}
+                                  <Route path="/fabricator/wizard" element={<Suspense fallback={getLoadingComponent('Wizard')}><FabricationWorkflowWizard onWorkflowComplete={() => {}} /></Suspense>} />
+
+                                  {/* Legacy fabricator routes — consolidated redirects to studio */}
+                                  <Route path="/fabricator/workflow" element={<FabricatorWorkflowToStudioRedirect />} />
                                   <Route path="/fabricator/workflow/*" element={<FabricatorWorkflowToStudioRedirect />} />
                                   <Route path="/fabricator/engineering-bay/:id" element={<LegacyEngineeringBayRedirect />} />
                                   <Route path="/fabricator/engineering-bay" element={<LegacyEngineeringBayRedirect />} />
@@ -612,6 +629,7 @@ const App = memo(() => {
                                   <Route path="/admin" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
                                   <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
                                   <Route path="/admin/demo" element={<Navigate to="/admin" replace />} />
+                                  <Route path="/admin/validation" element={<Suspense fallback={getLoadingComponent('/admin/validation')}><ProtectedRoute><ValidationDashboardPage /></ProtectedRoute></Suspense>} />
 
                                   {/* Executive Trust Dashboard */}
                                   <Route path="/executive/trust" element={<Suspense fallback={getLoadingComponent('/executive')}><ProtectedRoute><ExecutiveTrustDashboard /></ProtectedRoute></Suspense>} />

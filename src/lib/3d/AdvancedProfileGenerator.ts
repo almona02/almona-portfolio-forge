@@ -14,6 +14,15 @@ import type { Profile } from '@/types/fabricator';
 import { Vector2 } from 'three';
 import type { ProfileCrossSection } from './windowGeometry';
 
+/** Shape array with optional chamber metadata (drainage, reinforcement, hole, pocket) */
+interface ExtendedProfileShape extends Array<Vector2> {
+  drainage?: Vector2[][];
+  reinforcement?: Vector2[][];
+  hole?: Vector2[];
+  pocket?: Vector2[];
+  chambers?: Vector2[][];
+}
+
 export interface ChamberConfig {
   count: 3 | 5 | 7 | 9;
   hasDrainage: boolean;
@@ -113,29 +122,16 @@ export class AdvancedProfileGenerator {
       new Vector2(-pocketHalf, pocketY)
     ];
 
-    // Drainage channels (if enabled)
+    const extended = outer as ExtendedProfileShape;
     if (config.hasDrainage) {
-      const drainageChannels = this.generateDrainageChannels(
-        width,
-        depth,
-        wallThickness
-      );
-      (outer as any).drainage = drainageChannels;
+      extended.drainage = this.generateDrainageChannels(width, depth, wallThickness);
     }
-
-    // Reinforcement channels (if enabled)
     if (config.hasReinforcement) {
-      const reinforcementChannels = this.generateReinforcementChannels(
-        width,
-        depth,
-        wallThickness
-      );
-      (outer as any).reinforcement = reinforcementChannels;
+      extended.reinforcement = this.generateReinforcementChannels(width, depth, wallThickness);
     }
-
-    (outer as any).hole = inner;
-    (outer as any).pocket = pocket;
-    (outer as any).chambers = chambers;
+    extended.hole = inner;
+    extended.pocket = pocket;
+    extended.chambers = chambers;
 
     return outer;
   }

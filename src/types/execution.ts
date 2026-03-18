@@ -51,7 +51,7 @@ export interface ExecutionLog {
   logType: LogType;
   message: string;
   operatorId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: string;
 }
 

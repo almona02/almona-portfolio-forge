@@ -65,13 +65,15 @@ interface QuoteContextType {
   saving: boolean;
   
   // User info
-  userInfo: {
-    id?: string;
-    full_name?: string;
-    email?: string;
-    company_name?: string;
-    phone?: string;
-  };
+  userInfo: QuoteUserInfo;
+}
+
+export interface QuoteUserInfo {
+  id?: string;
+  full_name?: string;
+  email?: string;
+  company_name?: string;
+  phone?: string;
 }
 
 const QuoteContext = createContext<QuoteContextType | undefined>(undefined);
@@ -93,7 +95,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const [currentQuote, setCurrentQuote] = useState<Database['public']['Tables']['quotes']['Row'] | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [userInfo, setUserInfo] = useState({});
+  const [userInfo, setUserInfo] = useState<QuoteUserInfo>({});
   
   const { user, supabaseUser } = useAuth();
   useTranslation();
