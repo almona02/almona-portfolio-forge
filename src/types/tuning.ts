@@ -5,7 +5,7 @@
  * and micron-level parameter tuning for 99.8% accuracy.
  */
 
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import type { Profile } from '@/types/fabricator';
 
 /**

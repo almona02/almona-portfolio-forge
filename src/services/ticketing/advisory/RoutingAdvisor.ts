@@ -26,9 +26,18 @@ interface RoutingAdvisory {
     mlModelVersion?: string;
 }
 
+interface MLPrediction {
+  technicianId?: string;
+  confidence?: number;
+}
+
+interface MLModelLike {
+  predict: (ticket: Ticket) => MLPrediction;
+}
+
 export class RoutingAdvisor {
-  private readonly mlModel?: any; // Optional ML model (Tier 2 allowed)
-  
+  private readonly mlModel?: MLModelLike; // Optional ML model (Tier 2 allowed)
+
   /**
    * Generate advisory suggestions for ticket routing
    * @advisory_only true - Never executes assignments
@@ -39,14 +48,14 @@ export class RoutingAdvisor {
   ): RoutingAdvisory {
     let suggestion: string;
     let confidence: number;
-    
+
     // This is Tier 2 - ML allowed but with disclaimers
     if (this.mlModel) {
         // Mock prediction check
         try {
             const prediction = this.mlModel.predict(ticket);
-            suggestion = `Technician ${prediction.technicianId} (ML suggested)`;
-            confidence = prediction.confidence;
+            suggestion = `Technician ${prediction.technicianId ?? 'unknown'} (ML suggested)`;
+            confidence = prediction.confidence ?? 0.8;
         } catch (_e) {
              // Fallback if ML fails or not loaded
              suggestion = this.generateRuleBasedSuggestion(ticket, availableTechnicians);

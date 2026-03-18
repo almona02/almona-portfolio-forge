@@ -135,7 +135,8 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
 
     // Replace variables with preview data
     variables.forEach(variable => {
-      const value = previewData[variable] || `[${variable}]`;
+      const raw = (previewData as Record<string, unknown>)[variable];
+      const value = typeof raw === 'string' || typeof raw === 'number' ? String(raw) : `[${variable}]`;
       const regex = new RegExp(`\\$\\{${variable}\\}`, 'g');
       previewSubject = previewSubject.replace(regex, String(value));
       previewHtml = previewHtml.replace(regex, String(value));
@@ -287,8 +288,11 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
                       <div key={variable} className="flex items-center gap-2">
                         <Label className="text-xs text-amber-600/70 w-24">{variable}:</Label>
                         <Input
-                          value={previewData[variable] || ''}
-                          onChange={(e) => setPreviewData({ ...previewData, [variable]: e.target.value })}
+                          value={(() => {
+                          const raw = (previewData as Record<string, unknown>)[variable];
+                          return typeof raw === 'string' || typeof raw === 'number' ? String(raw) : '';
+                        })()}
+                          onChange={(e) => setPreviewData({ ...previewData, [variable]: e.target.value } as EmailTemplateData)}
                           className="flex-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs"
                           placeholder={`${variable} value`}
                         />

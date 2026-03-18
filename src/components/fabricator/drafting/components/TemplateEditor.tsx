@@ -92,7 +92,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
   // Load jobs on mount
   useEffect(() => {
     if (jobs.length === 0) {
-      loadJobs();
+      void loadJobs();
     }
   }, [jobs.length, loadJobs]);
 
@@ -236,7 +236,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleExtractFromHistory}
+              onClick={() => void handleExtractFromHistory()}
               disabled={isLoading || jobs.length === 0}
               className="border-amber-600/30 text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-600/50"
             >
@@ -246,7 +246,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleExtractKnowledge}
+              onClick={() => void handleExtractKnowledge()}
               disabled={isLoading || jobs.length === 0}
               className="border-amber-600/30 text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-600/50"
             >
@@ -257,7 +257,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleGetRecommendations}
+                onClick={() => void handleGetRecommendations()}
                 disabled={isLoading}
                 className="border-amber-600/30 text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-600/50"
               >

@@ -52,6 +52,9 @@ interface PropertiesPanelProps {
   className?: string;
 }
 
+const toNumStr = (v: unknown): string =>
+    typeof v === 'number' || typeof v === 'string' ? String(v) : '';
+
 export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) => {
   const drafting = useDraftingContext();
   const geometry = drafting.getGeometry();
@@ -153,7 +156,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
   }, [selectedElement, geometry, materialAwareWindows, hardware, structuralElements]);
   
   // Local state for editing
-  const [editValues, setEditValues] = useState<Record<string, any>>({});
+  const [editValues, setEditValues] = useState<Record<string, unknown>>({});
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isDirty, setIsDirty] = useState(false);
   
@@ -166,7 +169,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
       return;
     }
     
-    const values: Record<string, any> = {};
+    const values: Record<string, unknown> = {};
     
     switch (selection.type) {
       case 'rectangle':
@@ -281,28 +284,30 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
   }, [isMultiSelect, selectedElements, geometry]);
 
   // Validate and update value
-  const updateValue = useCallback((key: string, value: any) => {
+  const updateValue = useCallback((key: string, value: unknown) => {
     setEditValues(prev => ({ ...prev, [key]: value }));
     setIsDirty(true);
     
     // Validate
     try {
       if (key === 'x' || key === 'y' || key === 'startX' || key === 'startY' || key === 'endX' || key === 'endY' || key === 'cx' || key === 'cy') {
-        validatePoint({ x: key.includes('x') || key === 'cx' ? value : editValues[key.includes('x') ? 'x' : 'y'], y: key.includes('y') || key === 'cy' ? value : editValues[key.includes('y') ? 'y' : 'x'] });
+        const xVal = key.includes('x') || key === 'cx' ? value : editValues[key.includes('x') ? 'x' : 'y'];
+        const yVal = key.includes('y') || key === 'cy' ? value : editValues[key.includes('y') ? 'y' : 'x'];
+        validatePoint({ x: Number(xVal ?? 0), y: Number(yVal ?? 0) });
         setValidationErrors(prev => {
           const next = { ...prev };
           delete next[key];
           return next;
         });
       } else if (key === 'width' || key === 'height' || key === 'r' || key === 'depth') {
-        validateDimension(value);
+        validateDimension(Number(value ?? 0));
         setValidationErrors(prev => {
           const next = { ...prev };
           delete next[key];
           return next;
         });
       } else if (key === 'rotation') {
-        validateRotation(value);
+        validateRotation(Number(value ?? 0));
         setValidationErrors(prev => {
           const next = { ...prev };
           delete next[key];
@@ -310,7 +315,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
         });
       } else if (key === 'scaleX' || key === 'scaleY') {
         // Validate scale (0.01 - 100)
-        const scaleValue = parseFloat(value);
+        const scaleValue = parseFloat(toNumStr(value));
         if (!isFinite(scaleValue) || scaleValue < 0.01 || scaleValue > 100) {
           setValidationErrors(prev => ({ 
             ...prev, 
@@ -342,7 +347,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
       switch (selection.type) {
         case 'rectangle': {
           const rotationValue = editValues.rotation !== undefined 
-            ? parseFloat(editValues.rotation) || 0 
+            ? parseFloat(toNumStr(editValues.rotation)) || 0 
             : selection.element.rotation || 0;
           
           // Normalize rotation to 0-360
@@ -351,12 +356,12 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
           // Build base rectangle with position, size, and rotation
           const baseRect: Rectangle = {
             ...selection.element,
-            x: parseFloat(editValues.x) || selection.element.x,
-            y: parseFloat(editValues.y) || selection.element.y,
-            width: parseFloat(editValues.width) || selection.element.width,
-            height: parseFloat(editValues.height) || selection.element.height,
+            x: parseFloat(toNumStr(editValues.x)) || selection.element.x,
+            y: parseFloat(toNumStr(editValues.y)) || selection.element.y,
+            width: parseFloat(toNumStr(editValues.width)) || selection.element.width,
+            height: parseFloat(toNumStr(editValues.height)) || selection.element.height,
             rotation: normalizedRotation > 0 ? normalizedRotation : undefined,
-            type: editValues.type || selection.element.type || 'fixed'
+            type: (editValues.type as Rectangle['type']) || selection.element.type || 'fixed'
           };
           
           // Apply transformations in order: scale -> mirror
@@ -367,8 +372,8 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
           };
           
           // Apply scale transformation if scale is not 1
-          const scaleX = editValues.scaleX !== undefined ? parseFloat(editValues.scaleX) : 1;
-          const scaleY = editValues.scaleY !== undefined ? parseFloat(editValues.scaleY) : 1;
+          const scaleX = editValues.scaleX !== undefined ? parseFloat(toNumStr(editValues.scaleX)) : 1;
+          const scaleY = editValues.scaleY !== undefined ? parseFloat(toNumStr(editValues.scaleY)) : 1;
           
           if ((scaleX !== 1 || scaleY !== 1) && isFinite(scaleX) && isFinite(scaleY) && scaleX > 0 && scaleY > 0) {
             rect = scaleRectangle(rect, center, scaleX, scaleY);
@@ -379,7 +384,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
           
           // Apply mirror transformation
           if (editValues.mirror && editValues.mirror !== 'none') {
-            rect = mirrorRectangle(rect, center, editValues.mirror as 'horizontal' | 'vertical');
+            rect = mirrorRectangle(rect, center, toNumStr(editValues.mirror) as 'horizontal' | 'vertical');
           }
           
           // Update rectangle
@@ -405,14 +410,14 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
           const line: Line = {
             ...selection.element,
             start: {
-              x: parseFloat(editValues.startX) || selection.element.start.x,
-              y: parseFloat(editValues.startY) || selection.element.start.y
+              x: parseFloat(toNumStr(editValues.startX)) || selection.element.start.x,
+              y: parseFloat(toNumStr(editValues.startY)) || selection.element.start.y
             },
             end: {
-              x: parseFloat(editValues.endX) || selection.element.end.x,
-              y: parseFloat(editValues.endY) || selection.element.end.y
+              x: parseFloat(toNumStr(editValues.endX)) || selection.element.end.x,
+              y: parseFloat(toNumStr(editValues.endY)) || selection.element.end.y
             },
-            type: editValues.type || selection.element.type || 'solid'
+            type: (editValues.type as Line['type']) || selection.element.type || 'solid'
           };
           
           drafting.updateLine(selection.index, line);
@@ -423,11 +428,11 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
         case 'arc': {
           const arc: Arc = {
             ...selection.element,
-            cx: parseFloat(editValues.cx) || selection.element.cx,
-            cy: parseFloat(editValues.cy) || selection.element.cy,
-            r: parseFloat(editValues.r) || selection.element.r,
-            startAngle: ((parseFloat(editValues.startAngle) || 0) * Math.PI) / 180,
-            endAngle: ((parseFloat(editValues.endAngle) || 0) * Math.PI) / 180
+            cx: parseFloat(toNumStr(editValues.cx)) || selection.element.cx,
+            cy: parseFloat(toNumStr(editValues.cy)) || selection.element.cy,
+            r: parseFloat(toNumStr(editValues.r)) || selection.element.r,
+            startAngle: ((parseFloat(toNumStr(editValues.startAngle)) || 0) * Math.PI) / 180,
+            endAngle: ((parseFloat(toNumStr(editValues.endAngle)) || 0) * Math.PI) / 180
           };
           
           drafting.updateArc(selection.index, arc);
@@ -439,10 +444,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
           const hw: HardwarePlacement = {
             ...selection.element,
             position: {
-              x: parseFloat(editValues.x) || selection.element.position.x,
-              y: parseFloat(editValues.y) || selection.element.position.y
+              x: parseFloat(toNumStr(editValues.x)) || selection.element.position.x,
+              y: parseFloat(toNumStr(editValues.y)) || selection.element.position.y
             },
-            orientation: editValues.orientation || selection.element.orientation
+            orientation: (editValues.orientation as HardwarePlacement['orientation']) || selection.element.orientation
           };
           
           drafting.updateHardware(selection.index, hw);
@@ -451,13 +456,14 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
         }
         
         case 'structural': {
+          const pos = editValues.position as { x: number; y: number } | undefined;
           const struct: StructuralElement = {
             ...selection.element,
-            position: parseFloat(editValues.position) || selection.element.position,
+            position: (pos && typeof pos.x === 'number' && typeof pos.y === 'number') ? pos : selection.element.position,
             dimensions: {
-              width: parseFloat(editValues.width) || selection.element.dimensions.width,
-              depth: parseFloat(editValues.depth) || selection.element.dimensions.depth,
-              height: parseFloat(editValues.height) || selection.element.dimensions.height
+              width: parseFloat(toNumStr(editValues.width)) || selection.element.dimensions.width,
+              depth: parseFloat(toNumStr(editValues.depth)) || selection.element.dimensions.depth,
+              height: parseFloat(toNumStr(editValues.height)) || selection.element.dimensions.height
             },
             material: (editValues.material as MaterialType) || selection.element.material
           };
@@ -478,7 +484,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
     if (!selection) return;
     
     // Re-initialize from selection
-    const values: Record<string, any> = {};
+    const values: Record<string, unknown> = {};
     
     switch (selection.type) {
       case 'rectangle':

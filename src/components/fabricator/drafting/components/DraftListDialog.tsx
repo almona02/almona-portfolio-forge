@@ -91,7 +91,7 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
   // Load drafts when dialog opens
   useEffect(() => {
     if (open && userId) {
-      loadDrafts();
+      void loadDrafts();
     } else {
       setDrafts([]);
       setFilteredDrafts([]);
@@ -193,7 +193,7 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
                 {filteredDrafts.map((draft) => (
                   <div
                     key={draft.id}
-                    onClick={() => handleSelectDraft(draft.id)}
+                    onClick={() => void handleSelectDraft(draft.id)}
                     className={`group relative p-4 rounded-lg border transition-all cursor-pointer ${
                       isLoadingDraft === draft.id
                         ? 'border-amber-500 bg-amber-500/10'
@@ -226,7 +226,7 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={(e) => handleDeleteDraft(draft.id, e)}
+                        onClick={(e) => void handleDeleteDraft(draft.id, e)}
                         disabled={isDeleting === draft.id}
                         className="h-8 w-8 text-slate-400 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
                       >

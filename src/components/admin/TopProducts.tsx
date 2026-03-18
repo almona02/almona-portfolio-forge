@@ -47,16 +47,16 @@ export const TopProducts: React.FC = () => {
       setLoading(false)
     }
 
-    fetchTop()
+    void fetchTop();
     const channel = supabase
       .channel('top-products')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'order_items' }, () => fetchTop())
-      .subscribe()
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'order_items' }, () => void fetchTop());
+    channel.subscribe();
 
     return () => {
-      mounted = false
-      channel.unsubscribe()
-    }
+      mounted = false;
+      void channel.unsubscribe();
+    };
   }, [])
 
   return (

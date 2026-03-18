@@ -466,7 +466,7 @@ export function Model3DGallery({
               initial="initial"
               animate="animate"
               exit="exit"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">

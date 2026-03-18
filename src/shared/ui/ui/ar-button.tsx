@@ -12,11 +12,11 @@ export const ArButton = ({ productId: _productId, onClick }: ArButtonProps) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Check for WebXR AR support
     const checkArSupport = async () => {
-      if ('xr' in navigator) {
+      const nav = navigator as Navigator & { xr?: { isSessionSupported?: (mode: string) => Promise<boolean> } };
+      if (nav.xr?.isSessionSupported) {
         try {
-          const supported = await (navigator as any).xr.isSessionSupported('immersive-ar');
+          const supported = await nav.xr.isSessionSupported('immersive-ar');
           setIsArSupported(supported);
         } catch {
           setIsArSupported(false);
@@ -26,12 +26,11 @@ export const ArButton = ({ productId: _productId, onClick }: ArButtonProps) => {
       }
     };
 
-    // Check if device is mobile (iOS or Android)
-    const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
-    const mobile = /android|iphone|ipad|ipod/i.test(userAgent);
-    setIsMobile(mobile);
+    const win = window as Window & { opera?: string };
+    const userAgent = navigator.userAgent || navigator.vendor || win.opera || '';
+    setIsMobile(/android|iphone|ipad|ipod/i.test(userAgent));
 
-    checkArSupport();
+    void checkArSupport();
   }, []);
 
   const handleClick = () => {

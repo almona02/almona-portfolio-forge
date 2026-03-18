@@ -37,7 +37,7 @@ export interface QueryOptions {
   offset?: number;
   orderBy?: string;
   orderDirection?: 'asc' | 'desc';
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 }
 
 export interface BatchOperationResult<T, TInput = T> {
@@ -50,8 +50,8 @@ export interface AuditLogEntry {
   action: 'INSERT' | 'UPDATE' | 'DELETE' | 'SELECT';
   table_name: string;
   record_id: string;
-  old_values?: Record<string, any>;
-  new_values?: Record<string, any>;
+  old_values?: Record<string, unknown>;
+  new_values?: Record<string, unknown>;
   user_id: string;
   ip_address?: string;
   user_agent?: string;
@@ -88,7 +88,7 @@ export class FabricatorClient {
     };
 
     // Initialize user ID
-    this.initializeUser();
+    void this.initializeUser();
   }
 
   // ============================================================================
@@ -183,7 +183,7 @@ export class FabricatorClient {
       const ipAddress = await this.getClientIP();
       const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : undefined;
 
-      await (this.client.from('audit_logs') as any).insert({
+      await this.client.from('audit_logs').insert({
         ...entry,
         user_id: userId,
         ip_address: ipAddress,
@@ -195,9 +195,9 @@ export class FabricatorClient {
     }
   }
 
-  private async getClientIP(): Promise<string | undefined> {
+  private getClientIP(): Promise<string | undefined> {
     // In a real implementation, you might get this from headers or a service
-    return undefined;
+    return Promise.resolve(undefined);
   }
 
   // ============================================================================
@@ -277,7 +277,7 @@ export class FabricatorClient {
         record_id: 'multiple',
       });
 
-      return (data || []).map(this.mapProfileFromDB);
+      return (data || []).map((row) => this.mapProfileFromDB(row as Record<string, unknown>));
     });
   }
 
@@ -332,11 +332,11 @@ export class FabricatorClient {
       await this.logAuditEntry({
         action: 'INSERT',
         table_name: 'fabricator_profiles',
-        record_id: (data as any).id,
-        new_values: data as any,
+        record_id: (data as { id: string }).id,
+        new_values: data as Record<string, unknown>,
       });
 
-      return this.mapProfileFromDB(data);
+      return this.mapProfileFromDB(data as Record<string, unknown>);
     });
   }
 
@@ -354,8 +354,8 @@ export class FabricatorClient {
       const updateData = this.mapProfileToDB(updates as Partial<Profile>);
 
       const { data, error } = await this.withRetry('updateProfile', async () => {
-        return await (this.client
-          .from('fabricator_profiles') as any)
+        return await this.client
+          .from('fabricator_profiles')
           .update(updateData)
           .eq('id', id)
           .eq('user_id', userId)
@@ -370,7 +370,7 @@ export class FabricatorClient {
         action: 'UPDATE',
         table_name: 'fabricator_profiles',
         record_id: id,
-        old_values: oldProfile as any,
+        old_values: oldProfile as Record<string, unknown>,
         new_values: data,
       });
 
@@ -447,7 +447,7 @@ export class FabricatorClient {
         record_id: 'multiple',
       });
 
-      return (data || []).map(this.mapAccessoryFromDB);
+      return (data || []).map((row) => this.mapAccessoryFromDB(row as Record<string, unknown>));
     });
   }
 
@@ -504,11 +504,11 @@ export class FabricatorClient {
       await this.logAuditEntry({
         action: 'INSERT',
         table_name: 'fabricator_accessories',
-        record_id: (data as any).id,
-        new_values: data as any,
+        record_id: (data as { id: string }).id,
+        new_values: data as Record<string, unknown>,
       });
 
-      return this.mapAccessoryFromDB(data);
+      return this.mapAccessoryFromDB(data as Record<string, unknown>);
     });
   }
 
@@ -525,8 +525,8 @@ export class FabricatorClient {
       const updateData = this.mapAccessoryToDB(updates as Partial<FabricatorAccessory>);
 
       const { data, error } = await this.withRetry('updateAccessory', async () => {
-        return await (this.client
-          .from('fabricator_accessories') as any)
+        return await this.client
+          .from('fabricator_accessories')
           .update(updateData)
           .eq('id', id)
           .eq('user_id', userId)
@@ -541,7 +541,7 @@ export class FabricatorClient {
         action: 'UPDATE',
         table_name: 'fabricator_accessories',
         record_id: id,
-        old_values: oldAccessory as any,
+        old_values: oldAccessory as Record<string, unknown>,
         new_values: data,
       });
 
@@ -595,9 +595,9 @@ export class FabricatorClient {
 
       // Filter by user_id (RLS should handle this, but double-check)
       const accessories = (data || [])
-        .map((item: any) => item.fabricator_accessories)
-        .filter((acc: any) => acc && acc.user_id === userId)
-        .map(this.mapAccessoryFromDB);
+        .map((item: { fabricator_accessories?: { user_id?: string } }) => item.fabricator_accessories)
+        .filter((acc): acc is NonNullable<typeof acc> => acc != null && acc.user_id === userId)
+        .map((acc) => this.mapAccessoryFromDB(acc as Record<string, unknown>));
 
       return accessories;
     });
@@ -605,8 +605,8 @@ export class FabricatorClient {
 
   async addCompatibility(profileId: string, accessoryId: string): Promise<void> {
     return this.measurePerformance('addCompatibility', async () => {
-      const { error } = await (this.client
-        .from('profile_accessory_compatibility') as any)
+      const { error } = await this.client
+        .from('profile_accessory_compatibility')
         .insert({
           profile_id: profileId,
           accessory_id: accessoryId,
@@ -662,8 +662,8 @@ export class FabricatorClient {
           user_id: userId,
         }));
 
-        const { data, error } = await (this.client
-          .from('fabricator_profiles') as any)
+        const { data, error } = await this.client
+          .from('fabricator_profiles')
           .insert(batchData)
           .select();
 
@@ -739,8 +739,8 @@ export class FabricatorClient {
         (payload) => {
           callback({
             eventType: payload.eventType,
-            new: payload.new ? this.mapProfileFromDB(payload.new as any) : undefined,
-            old: payload.old ? this.mapProfileFromDB(payload.old as any) : undefined,
+            new: payload.new ? this.mapProfileFromDB(payload.new as Record<string, unknown>) : undefined,
+            old: payload.old ? this.mapProfileFromDB(payload.old as Record<string, unknown>) : undefined,
           });
         }
       )
@@ -749,7 +749,7 @@ export class FabricatorClient {
     this.realtimeChannels.set('fabricator-profiles', channel);
 
     return () => {
-      channel.unsubscribe();
+      void channel.unsubscribe();
       this.realtimeChannels.delete('fabricator-profiles');
     };
   }
@@ -774,8 +774,8 @@ export class FabricatorClient {
         (payload) => {
           callback({
             eventType: payload.eventType,
-            new: payload.new ? this.mapAccessoryFromDB(payload.new as any) : undefined,
-            old: payload.old ? this.mapAccessoryFromDB(payload.old as any) : undefined,
+            new: payload.new ? this.mapAccessoryFromDB(payload.new as Record<string, unknown>) : undefined,
+            old: payload.old ? this.mapAccessoryFromDB(payload.old as Record<string, unknown>) : undefined,
           });
         }
       )
@@ -784,14 +784,14 @@ export class FabricatorClient {
     this.realtimeChannels.set('fabricator-accessories', channel);
 
     return () => {
-      channel.unsubscribe();
+      void channel.unsubscribe();
       this.realtimeChannels.delete('fabricator-accessories');
     };
   }
 
   unsubscribeAll(): void {
     this.realtimeChannels.forEach((channel) => {
-      channel.unsubscribe();
+      void channel.unsubscribe();
     });
     this.realtimeChannels.clear();
   }
@@ -800,8 +800,8 @@ export class FabricatorClient {
   // Data Mapping
   // ============================================================================
 
-  private mapProfileFromDB(data: any): Profile {
-    const specs = data.specifications || {};
+  private mapProfileFromDB(data: Record<string, unknown>): Profile {
+    const specs = (data.specifications as Record<string, unknown>) || {};
 
     return {
       id: data.id,
@@ -830,8 +830,8 @@ export class FabricatorClient {
     };
   }
 
-  private mapProfileToDB(profile: Partial<Profile>): any {
-    const dbProfile: any = {};
+  private mapProfileToDB(profile: Partial<Profile>): Record<string, unknown> {
+    const dbProfile: Record<string, unknown> = {};
 
     if (profile.name !== undefined) dbProfile.name = profile.name;
     if (profile.material !== undefined) dbProfile.material = profile.material;
@@ -852,7 +852,7 @@ export class FabricatorClient {
     return dbProfile;
   }
 
-  private mapAccessoryFromDB(data: any): FabricatorAccessory {
+  private mapAccessoryFromDB(data: Record<string, unknown>): FabricatorAccessory {
     return {
       id: data.id,
       name: data.name,
@@ -874,8 +874,8 @@ export class FabricatorClient {
     };
   }
 
-  private mapAccessoryToDB(accessory: Partial<FabricatorAccessory>): any {
-    const dbAccessory: any = {};
+  private mapAccessoryToDB(accessory: Partial<FabricatorAccessory>): Record<string, unknown> {
+    const dbAccessory: Record<string, unknown> = {};
 
     if (accessory.name !== undefined) dbAccessory.name = accessory.name;
     if (accessory.type !== undefined) dbAccessory.type = accessory.type;

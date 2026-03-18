@@ -1,9 +1,9 @@
 export interface AdvisoryOutput {
   tier: string;
-  suggestion: any;
+  suggestion: unknown;
   constitutionalDisclaimer?: string;
   requiresHumanValidation?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ValidationResult {

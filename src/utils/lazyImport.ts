@@ -8,17 +8,17 @@ import { ComponentType, lazy } from 'react';
  * @param componentName - Name of component for debugging and session storage key
  * @returns React lazy component with retry logic
  */
-export function lazyRetry<T extends ComponentType<any>>(
+export function lazyRetry<T extends ComponentType<unknown>>(
   componentImport: () => Promise<{ default: T }>,
   componentName: string = 'Unknown'
 ): React.LazyExoticComponent<T> {
   return lazy(async () => {
     const pageHasBeenForceRefreshed = JSON.parse(
       window.sessionStorage.getItem(`page-refreshed-${componentName}`) || 'false'
-    );
+    ) as boolean;
 
     try {
-      const component = await componentImport();
+      const component = await componentImport() as { default: T };
       window.sessionStorage.setItem(`page-refreshed-${componentName}`, 'false');
       return component;
     } catch (error) {
@@ -75,7 +75,7 @@ export function lazyRetry<T extends ComponentType<any>>(
  * 
  * @param importFn - Function that imports the chunk
  */
-export function preloadChunk(importFn: () => Promise<any>): void {
+export function preloadChunk(importFn: () => Promise<unknown>): void {
   if ('requestIdleCallback' in window) {
     requestIdleCallback(() => {
       importFn().catch(() => {

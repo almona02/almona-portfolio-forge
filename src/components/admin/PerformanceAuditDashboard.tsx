@@ -43,8 +43,8 @@ export function PerformanceAuditDashboard({
   }, [aggregator]);
 
   useEffect(() => {
-    loadMetrics();
-    const interval = setInterval(loadMetrics, refreshInterval);
+    void loadMetrics();
+    const interval = setInterval(() => void loadMetrics(), refreshInterval);
     return () => clearInterval(interval);
   }, [loadMetrics, refreshInterval]);
 
@@ -73,7 +73,7 @@ export function PerformanceAuditDashboard({
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Performance Audit Dashboard</h1>
         <button
-          onClick={loadMetrics}
+          onClick={() => void loadMetrics()}
           disabled={isLoading}
           className="flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
         >

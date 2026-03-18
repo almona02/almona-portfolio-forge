@@ -43,7 +43,7 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, []);
 
   const loadData = async () => {
@@ -123,7 +123,7 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
         <Button
           variant="outline"
           size="sm"
-          onClick={loadData}
+          onClick={() => void loadData()}
           className="bg-slate-800/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
         >
           <RefreshCw className="w-4 h-4 mr-2" />
@@ -172,8 +172,8 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label={({ bucket, total, currency }) => 
-                  `${bucket}: ${formatCurrency(total, currency, true)}`
+                label={({ bucket, total, currency }: { bucket: string; total: unknown; currency?: unknown }) =>
+                  `${bucket}: ${formatCurrency(Number(total ?? 0), typeof currency === 'string' ? currency : 'EGP', true)}`
                 }
               >
                 {bucketArray.map((entry, index) => (
@@ -187,8 +187,8 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
                   borderRadius: '8px',
                   color: '#e2e8f0',
                 }}
-                formatter={(value: any, name: string, props: any) => [
-                  formatCurrency(value, props.payload.currency),
+                formatter={(value: unknown, _name: string, props: { payload?: { currency?: string } }) => [
+                  formatCurrency(Number(value ?? 0), props.payload?.currency ?? 'EGP'),
                   'Outstanding'
                 ]}
               />
@@ -212,7 +212,7 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
               />
               <YAxis
                 tick={{ fill: '#94a3b8', fontSize: 12 }}
-                tickFormatter={(value) => formatCurrency(value, currency, true)}
+                tickFormatter={(value: unknown) => formatCurrency(Number(value ?? 0), currency, true)}
               />
               <Tooltip
                 contentStyle={{
@@ -221,8 +221,8 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
                   borderRadius: '8px',
                   color: '#e2e8f0',
                 }}
-                formatter={(value: any, name: string, props: any) => [
-                  formatCurrency(value, props.payload.currency),
+                formatter={(value: unknown, _name: string, props: { payload?: { currency?: string } }) => [
+                  formatCurrency(Number(value ?? 0), props.payload?.currency ?? 'EGP'),
                   'Outstanding'
                 ]}
               />

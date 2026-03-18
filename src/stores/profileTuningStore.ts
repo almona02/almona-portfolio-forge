@@ -16,6 +16,7 @@ export const useProfileTuningStore = create<ProfileTuningStore>((set) => ({
   loadProfile: async (profileId: string) => {
     // Placeholder: in a fuller integration, fetch the profile by ID here
     set({ currentProfileId: profileId });
+    await Promise.resolve();
   },
 }));
 

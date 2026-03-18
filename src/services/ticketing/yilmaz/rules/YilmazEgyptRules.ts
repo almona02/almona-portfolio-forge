@@ -566,6 +566,7 @@ export class YilmazEgyptRulesEngine {
         // Rule matched - compile result
         const parts = rule.recommendedParts.map(partNum => {
           const partInfo = YILMAZ_EGYPT_PARTS[partNum];
+          if (!partInfo) throw new Error(`Invalid part number: ${partNum}`);
           return {
             partNumber: partNum,
             name: partInfo.name,
@@ -573,7 +574,7 @@ export class YilmazEgyptRulesEngine {
             priceEGP: partInfo.priceEGP,
             stockLevel: partInfo.stockLevel,
             leadTimeDays: partInfo.leadTimeDays,
-            critical: partInfo.critical
+            critical: partInfo.critical as boolean | undefined
           };
         });
 

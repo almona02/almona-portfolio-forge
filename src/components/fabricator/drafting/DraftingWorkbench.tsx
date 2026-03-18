@@ -271,7 +271,7 @@ export const DraftingWorkbench: React.FC<{
             size="sm"
             variant="outline"
             className="ml-auto h-8 text-xs gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-[0_0_15px_-3px_rgba(245,158,11,0.3)]"
-            onClick={handleFacadeReport}
+            onClick={() => void handleFacadeReport()}
             disabled={!facadeModel}
           >
             <span className="relative flex h-2 w-2">

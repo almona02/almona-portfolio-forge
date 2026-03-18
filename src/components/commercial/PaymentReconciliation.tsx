@@ -105,7 +105,7 @@ export const PaymentReconciliation: React.FC<PaymentReconciliationProps> = ({
   };
 
   useEffect(() => {
-    loadPayments();
+    void loadPayments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [periodStart, periodEnd]);
 
@@ -239,7 +239,7 @@ export const PaymentReconciliation: React.FC<PaymentReconciliationProps> = ({
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={loadPayments}
+                onClick={() => void loadPayments()}
                 variant="outline"
                 size="sm"
                 className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
@@ -247,7 +247,7 @@ export const PaymentReconciliation: React.FC<PaymentReconciliationProps> = ({
                 <RefreshCw className="w-4 h-4" />
               </Button>
               <Button
-                onClick={handleExport}
+                onClick={() => handleExport()}
                 variant="outline"
                 size="sm"
                 className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"

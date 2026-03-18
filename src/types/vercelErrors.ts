@@ -270,7 +270,7 @@ export class VercelErrorHandler {
       }
     }
     
-    throw lastError;
+    throw lastError instanceof Error ? lastError : new Error(String(lastError));
   }
 
   /**

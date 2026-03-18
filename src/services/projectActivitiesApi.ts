@@ -14,7 +14,7 @@ import type {
 } from "@/components/ui/ProjectActivityTimeline";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
@@ -219,10 +219,10 @@ export async function listProjectActivities(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to list project activities");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to list project activities");
   }
 
   return await response.json();
@@ -253,10 +253,10 @@ export async function getActivity(
     if (response.status === 404) {
       throw new Error(`Activity ${activityId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to get activity");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to get activity");
   }
 
   return await response.json();
@@ -282,10 +282,10 @@ export async function createActivity(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to create activity");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to create activity");
   }
 
   return await response.json();
@@ -315,10 +315,10 @@ export async function addActivityComment(
   );
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to add comment");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to add comment");
   }
 
   return await response.json();
@@ -349,10 +349,10 @@ export async function updateActivityComment(
   );
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to update comment");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to update comment");
   }
 
   return await response.json();
@@ -381,10 +381,10 @@ export async function deleteActivityComment(
   );
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to delete comment");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to delete comment");
   }
 }
 

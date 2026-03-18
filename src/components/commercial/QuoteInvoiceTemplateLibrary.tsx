@@ -131,7 +131,7 @@ export const QuoteInvoiceTemplateLibrary: React.FC<QuoteInvoiceTemplateLibraryPr
     }, [type, category, search]);
 
     useEffect(() => {
-        loadTemplates();
+        void loadTemplates();
     }, [loadTemplates]);
 
     /**
@@ -150,7 +150,7 @@ export const QuoteInvoiceTemplateLibrary: React.FC<QuoteInvoiceTemplateLibraryPr
             toast.success('Template deleted successfully');
             setDeleteDialogOpen(false);
             setTemplateToDelete(null);
-            loadTemplates();
+            void loadTemplates();
         } catch (error) {
             toast.error(
                 error instanceof Error
@@ -184,7 +184,7 @@ export const QuoteInvoiceTemplateLibrary: React.FC<QuoteInvoiceTemplateLibraryPr
     const handleEditorSave = useCallback(() => {
         setEditorOpen(false);
         setEditingTemplateId(null);
-        loadTemplates();
+        void loadTemplates();
     }, [loadTemplates]);
 
     /**
@@ -378,7 +378,7 @@ export const QuoteInvoiceTemplateLibrary: React.FC<QuoteInvoiceTemplateLibraryPr
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleDelete}
+                            onClick={() => void handleDelete()}
                             disabled={isDeleting}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >

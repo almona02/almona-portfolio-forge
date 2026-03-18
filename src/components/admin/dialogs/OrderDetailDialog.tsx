@@ -34,8 +34,8 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({ open, onOp
       if (!error) setItems((data as OrderItem[]) ?? [])
       setLoading(false)
     }
-    load()
-  }, [order])
+    void load();
+  }, [order]);
 
   const totalFmt = (n: number) => new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP' }).format(n)
 
@@ -145,7 +145,7 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({ open, onOp
         )}
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>Close</Button>
-          <Button onClick={handleSave} disabled={saving || !order}>Save</Button>
+          <Button onClick={() => void handleSave()} disabled={saving || !order}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

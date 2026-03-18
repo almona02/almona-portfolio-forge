@@ -10,7 +10,7 @@ export interface ScaleDetectionResult {
   reference_line?: ReferenceLine;
   detected_label?: string;
   suggestion_text?: string;
-  debug_info?: Record<string, any>;
+  debug_info?: Record<string, unknown>;
 }
 
 export interface ScanDimensions {
@@ -32,7 +32,7 @@ export interface QualityFlags {
   has_dimension_labels: boolean;
   auto_scale_detected: boolean;
   auto_scale_confidence?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface StorageUrls {
@@ -40,7 +40,7 @@ export interface StorageUrls {
   svg_url?: string | null;
   debug_overlay_url?: string | null;
   photo_url?: string | null;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ProfileScanResult {
@@ -53,14 +53,14 @@ export interface ProfileScanResult {
     height: number;
   };
   qualityFlags?: QualityFlags;
-  quality?: Record<string, any>;
+  quality?: Record<string, unknown>;
   vectorizer?: string;
   scaleDetection?: ScaleDetectionResult;
   storageUrls?: StorageUrls;
   storage?: StorageUrls;
   processing_time_ms?: number;
   timestamp?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 

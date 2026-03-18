@@ -1,38 +1,51 @@
+import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { CostCalculator } from '@/lib/fabricator/bom/CostCalculator';
 import { EgyptianPricingEngine } from '@/lib/fabricator/bom/EgyptianPricingEngine';
 import { GlassBOMCalculator } from '@/lib/fabricator/bom/GlassBOMCalculator';
 import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
-import { EgyptianPattern, SystemPack, WindowUnit } from '@/types/fabricator';
+import type { SystemPack, WindowUnit } from '@/types/fabricator';
 import { bench, describe, expect, it } from 'vitest';
 
-// Mock data setup
+// Mock data setup - use real pattern for type safety
+const mockPattern = EGYPTIAN_PATTERNS[0];
+
 const mockSystemPack: SystemPack = {
-  meta: { id: 'test-system', name: 'Test System', description: 'Test', version: '1.0' },
+  meta: {
+    id: 'test-system',
+    name: 'Test System',
+    brands: ['Test'],
+    regions: ['global'],
+  },
+  windowSystemSpec: {},
+  id: 'test-system',
   profiles: [],
-  hardware: [],
-  pricing: {},
-  constraints: { maxSashWeight: 100, maxSashWidth: 1000, maxSashHeight: 2000 }
 };
 
 const mockWindowUnit: WindowUnit = {
   id: 'test-unit',
-  name: 'Test Unit',
-  width: 2000, // Large unit
-  height: 2000,
-  quantity: 1,
+  orderNumber: 'ORD-001',
+  posNumber: 'POS-001',
   type: 'casement',
   components: [],
+  overallWidth: 2000,
+  overallHeight: 2000,
+  color: '#ffffff',
+  glazing: { type: 'single', thickness: 6 },
   hardware: [],
-  grid: { rows: 2, cols: 2, cells: [] }
-};
-
-const mockPattern: EgyptianPattern = {
-  id: 'custom',
-  name: 'Custom',
-  defaultWidth: 1000,
-  defaultHeight: 1000,
-  type: 'casement',
-  category: 'window'
+  status: 'design',
+  optimization: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  grid: {
+    rows: 2,
+    cols: 2,
+    cells: [
+      { id: '0-0', row: 0, col: 0, type: 'sash' },
+      { id: '0-1', row: 0, col: 1, type: 'sash' },
+      { id: '1-0', row: 1, col: 0, type: 'sash' },
+      { id: '1-1', row: 1, col: 1, type: 'sash' },
+    ],
+  },
 };
 
 // Initialize calculators

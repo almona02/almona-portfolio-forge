@@ -1,6 +1,9 @@
 import { ProductionDocumentsPanel } from '@/components/fabricator/workflow/ProductionDocumentsPanel';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { lazyRetry } from '@/utils/lazyImport';
 import { AlertCircle, ClipboardList, Cpu, Loader2 } from 'lucide-react';
@@ -25,13 +28,29 @@ const ProductionCommand = lazyRetry(
  * - Generation state management
  */
 export const ProductionPage: React.FC = () => {
-    const { projectId } = useParams<{ projectId?: string }>();
+    const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
     const navigate = useNavigate();
     const {
+        measurementData,
         currentProject,
         optimizationResult,
+        bom,
         completeStep
     } = useWorkflowStore();
+
+    const productionValidation = useMemo(
+        () =>
+            validateStepTransition(
+                {
+                    measurementData,
+                    currentProject,
+                    bom,
+                    optimizationResult,
+                },
+                'production'
+            ),
+        [measurementData, currentProject, bom, optimizationResult]
+    );
 
     // ✅ GOLD-TIER: Generation state (reserved for future use)
     const [isGenerating, _setIsGenerating] = useState(false);
@@ -74,31 +93,36 @@ export const ProductionPage: React.FC = () => {
         </div>
     );
 
-    // ✅ GOLD-TIER: Error state with actionable guidance
-    if (!hasRequiredData) {
+    // ✅ P3.1.4: WorkflowValidationGate when production prerequisites missing
+    if (!hasRequiredData || !productionValidation.valid) {
+        const goBackTarget = !currentProject ? 'design' : 'optimization';
         return (
             <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
-                <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
-                    <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
-                    <h2 className="text-2xl font-bold text-amber-200">
-                        {!currentProject ? 'Project Required' : 'Optimization Required'}
-                    </h2>
-                    <p className="text-slate-400">
-                        {!currentProject
-                            ? 'Please complete the design step before proceeding to production.'
-                            : 'Please complete the optimization step before generating production commands.'
-                        }
-                    </p>
-                    <button
-                        onClick={() => navigate(
-                            !currentProject
-                                ? '/fabricator/workflow/design'
-                                : '/fabricator/workflow/optimization'
-                        )}
-                        className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-200 transform hover:scale-105"
-                    >
-                        {!currentProject ? 'Go to Design' : 'Go to Optimization'}
-                    </button>
+                <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 space-y-6">
+                    <div className="text-center">
+                        <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold text-amber-200">
+                            {!currentProject ? 'Project Required' : 'Optimization Required'}
+                        </h2>
+                    </div>
+                    <WorkflowValidationGate
+                        result={productionValidation}
+                        targetStepLabel="Production"
+                        onGoBack={() => {
+                            const projId = projectId ?? currentProject?.id;
+                            const posId = poseId ?? projId;
+                            if (projId && posId) {
+                                navigate(
+                                    goBackTarget === 'design'
+                                        ? fabricatorRoutes.poseDesign(projId, posId)
+                                        : fabricatorRoutes.poseOptimization(projId, posId)
+                                );
+                            } else {
+                                navigate(fabricatorRoutes.studioProjects());
+                            }
+                        }}
+                        backLabel={goBackTarget === 'design' ? 'Go to Design' : 'Go to Optimization'}
+                    />
                 </div>
             </div>
         );
@@ -127,6 +151,7 @@ export const ProductionPage: React.FC = () => {
                         <ProductionCommand
                             project={currentProject}
                             optimization={optimizationResult}
+                            bom={bom}
                             isGenerating={isGenerating}
                             profiles={profiles}
                         />

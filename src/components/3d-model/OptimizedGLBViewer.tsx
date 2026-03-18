@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, Suspense } from 'react'
-import { LazyThreeJS } from './LazyThreeJS'
+import * as THREE from 'three'
+import { LazyThreeJS, type ThreeOptimizedModule } from './LazyThreeJS'
 import { initCompressedModelDecoders } from '@/lib/three-optimized'
 
 // Props extended to support AR, scaling, positioning, and animation auto‑play
@@ -29,8 +30,8 @@ const OptimizedModel = ({
   enableShadows = false,
   enableAnimations = true,
   threeJS
-}: OptimizedGLBViewerProps & { threeJS: any }) => {
-  const groupRef = useRef<any>(null)
+}: OptimizedGLBViewerProps & { threeJS: ThreeOptimizedModule }) => {
+  const groupRef = useRef<THREE.Group | null>(null)
   const { gl, camera: _camera } = threeJS.useThree()
 
   // Always call hooks in the same order
@@ -39,7 +40,7 @@ const OptimizedModel = ({
   const animations = gltfResult.animations || []
 
   // Always call useAnimations hook
-  const { actions } = threeJS.useAnimations(animations, scene)
+  const { actions } = threeJS.useAnimations(animations, scene ?? groupRef.current ?? undefined)
 
   const [arSupported, setArSupported] = useState(false)
   const [isARSession, setIsARSession] = useState(false)
@@ -49,7 +50,7 @@ const OptimizedModel = ({
   useEffect(() => {
     if (checkingRef.current) return
     checkingRef.current = true
-    ;(async () => {
+    void (async () => {
       if ('xr' in navigator) {
         try {
           const navXR = (navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean> } }).xr
@@ -66,30 +67,33 @@ const OptimizedModel = ({
   useEffect(() => {
     if (enableAnimations && actions && Object.keys(actions).length > 0) {
       try {
-        Object.values(actions).forEach((action: any) => {
+        Object.values(actions).forEach((action: { play?: () => void } | null) => {
           if (action && typeof action.play === 'function') {
             action.play()
           }
         })
-      } catch (error) {
-        console.warn('Failed to play animations:', error);
+      } catch (err) {
+        console.warn('Failed to play animations:', err);
       }
     }
   }, [actions, enableAnimations])
 
   // Handle AR session
   const handleAR = async () => {
-    if (!arSupported || !gl.xr) return
+    const renderer = gl
+    if (!arSupported || !renderer.xr) return
 
     try {
       if (isARSession) {
-        await gl.xr.getSession()?.end()
+        const xrSession = renderer.xr.getSession?.()
+        if (xrSession) await xrSession.end()
         setIsARSession(false)
       } else {
-        const session = await gl.xr.requestSession('immersive-ar', {
+        /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- WebXR requestSession; three.js types may not align with browser XRSession */
+        const session: XRSession = await renderer.xr.requestSession('immersive-ar', {
           requiredFeatures: ['local'],
         })
-        await gl.xr.setSession(session)
+        await renderer.xr.setSession(session)
         setIsARSession(true)
       }
     } catch (e) {
@@ -108,14 +112,14 @@ const OptimizedModel = ({
   useEffect(() => {
     if (enableShadows && scene) {
       try {
-        scene.traverse((child: any) => {
-          if (child.isMesh) {
+        scene.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
             child.castShadow = true
             child.receiveShadow = true
           }
         })
-      } catch (error) {
-        console.warn('Failed to apply shadows:', error);
+      } catch (err) {
+        console.warn('Failed to apply shadows:', err);
       }
     }
   }, [scene, enableShadows])
@@ -128,7 +132,7 @@ const OptimizedModel = ({
       {enableAR && arSupported && (
         <mesh position={[0, -2, 0]}>
           <button
-            onClick={handleAR}
+            onClick={() => void handleAR()}
             style={{
               position: 'absolute',
               bottom: '20px',
@@ -200,7 +204,7 @@ const Initializer: React.FC = () => {
   useEffect(() => {
     if (initializedRef.current) return
     initializedRef.current = true
-    initCompressedModelDecoders('/').catch(() => {})
+    void initCompressedModelDecoders('/').catch(() => {})
   }, [])
   return null
 }

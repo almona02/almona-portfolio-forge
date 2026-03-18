@@ -28,6 +28,23 @@ import { addDays, endOfDay, endOfMonth, format, startOfDay, startOfMonth, subMon
 import { ReportTemplates } from './ReportTemplates';
 import { ReportingService, type DateRange } from './ReportingService';
 
+/** Supabase schedule row */
+type ScheduleRow = Record<string, unknown> & {
+  id?: string;
+  template_id?: string;
+  name?: string;
+  frequency?: string;
+  day_of_week?: number | null;
+  day_of_month?: number | null;
+  time?: string;
+  recipients?: string[];
+  enabled?: boolean;
+  last_run_at?: string | null;
+  next_run_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
 /**
  * Schedule configuration
  */
@@ -115,7 +132,7 @@ export class ReportScheduler {
 
       // Store in database
       try {
-        await (supabase.from('report_schedules') as any).insert({
+        await supabase.from('report_schedules').insert({
           id: schedule.id,
           template_id: config.templateId,
           name: config.name,
@@ -158,8 +175,8 @@ export class ReportScheduler {
    */
   static async getAllSchedules(): Promise<ReportSchedule[]> {
     try {
-      const { data, error } = await (supabase
-        .from('report_schedules') as any)
+      const { data, error } = await supabase
+        .from('report_schedules')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -168,21 +185,27 @@ export class ReportScheduler {
         return [];
       }
 
-      return (data || []).map((s: any) => ({
-        id: s.id,
-        templateId: s.template_id,
-        name: s.name,
-        frequency: s.frequency,
-        dayOfWeek: s.day_of_week,
-        dayOfMonth: s.day_of_month,
-        time: s.time,
-        recipients: s.recipients || [],
-        enabled: s.enabled !== false,
-        lastRunAt: s.last_run_at ? new Date(s.last_run_at) : undefined,
-        nextRunAt: s.next_run_at ? new Date(s.next_run_at) : undefined,
-        createdAt: new Date(s.created_at),
-        updatedAt: new Date(s.updated_at),
-      }));
+      return (data || []).map((s: ScheduleRow) => {
+        const lastRun = s.last_run_at;
+        const nextRun = s.next_run_at;
+        const createdAt = s.created_at;
+        const updatedAt = s.updated_at;
+        return {
+          id: String(s.id ?? ''),
+          templateId: String(s.template_id ?? ''),
+          name: String(s.name ?? ''),
+          frequency: (s.frequency ?? 'daily') as 'daily' | 'weekly' | 'monthly',
+          dayOfWeek: s.day_of_week ?? undefined,
+          dayOfMonth: s.day_of_month ?? undefined,
+          time: String(s.time ?? '09:00'),
+          recipients: Array.isArray(s.recipients) ? s.recipients : [],
+          enabled: s.enabled !== false,
+          lastRunAt: typeof lastRun === 'string' ? new Date(lastRun) : undefined,
+          nextRunAt: typeof nextRun === 'string' ? new Date(nextRun) : undefined,
+          createdAt: new Date(typeof createdAt === 'string' ? createdAt : Date.now()),
+          updatedAt: new Date(typeof updatedAt === 'string' ? updatedAt : Date.now()),
+        };
+      });
     } catch (error) {
       console.error('Failed to get schedules:', error);
       return [];
@@ -197,7 +220,7 @@ export class ReportScheduler {
     updates: Partial<Omit<ReportSchedule, 'id' | 'createdAt' | 'updatedAt'>>
   ): Promise<void> {
     try {
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         updated_at: new Date().toISOString(),
       };
 
@@ -223,9 +246,7 @@ export class ReportScheduler {
         }
       }
 
-      await (supabase.from('report_schedules') as any)
-        .update(updateData)
-        .eq('id', scheduleId);
+      await supabase.from('report_schedules').update(updateData).eq('id', scheduleId);
     } catch (error) {
       console.error('Failed to update schedule:', error);
       throw error;
@@ -237,9 +258,7 @@ export class ReportScheduler {
    */
   static async deleteSchedule(scheduleId: string): Promise<void> {
     try {
-      await (supabase.from('report_schedules') as any)
-        .delete()
-        .eq('id', scheduleId);
+      await supabase.from('report_schedules').delete().eq('id', scheduleId);
     } catch (error) {
       console.error('Failed to delete schedule:', error);
       throw error;
@@ -251,8 +270,8 @@ export class ReportScheduler {
    */
   static async getSchedule(scheduleId: string): Promise<ReportSchedule | null> {
     try {
-      const { data, error } = await (supabase
-        .from('report_schedules') as any)
+      const { data, error } = await supabase
+        .from('report_schedules')
         .select('*')
         .eq('id', scheduleId)
         .single();
@@ -261,20 +280,25 @@ export class ReportScheduler {
         return null;
       }
 
+      const row = data as ScheduleRow;
+      const lastRun = row.last_run_at;
+      const nextRun = row.next_run_at;
+      const createdAt = row.created_at;
+      const updatedAt = row.updated_at;
       return {
-        id: data.id,
-        templateId: data.template_id,
-        name: data.name,
-        frequency: data.frequency,
-        dayOfWeek: data.day_of_week,
-        dayOfMonth: data.day_of_month,
-        time: data.time,
-        recipients: data.recipients || [],
-        enabled: data.enabled !== false,
-        lastRunAt: data.last_run_at ? new Date(data.last_run_at) : undefined,
-        nextRunAt: data.next_run_at ? new Date(data.next_run_at) : undefined,
-        createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at),
+        id: String(row.id ?? ''),
+        templateId: String(row.template_id ?? ''),
+        name: String(row.name ?? ''),
+        frequency: (row.frequency ?? 'daily') as 'daily' | 'weekly' | 'monthly',
+        dayOfWeek: row.day_of_week ?? undefined,
+        dayOfMonth: row.day_of_month ?? undefined,
+        time: String(row.time ?? '09:00'),
+        recipients: Array.isArray(row.recipients) ? row.recipients : [],
+        enabled: row.enabled !== false,
+        lastRunAt: typeof lastRun === 'string' ? new Date(lastRun) : undefined,
+        nextRunAt: typeof nextRun === 'string' ? new Date(nextRun) : undefined,
+        createdAt: new Date(typeof createdAt === 'string' ? createdAt : Date.now()),
+        updatedAt: new Date(typeof updatedAt === 'string' ? updatedAt : Date.now()),
       };
     } catch (error) {
       console.error('Failed to get schedule:', error);
@@ -355,7 +379,7 @@ export class ReportScheduler {
       const dateRange = this.calculateDateRange(template.dateRange.default);
 
       // Generate report data based on template type
-      let reportData: any[] = [];
+      let reportData: Record<string, unknown>[] = [];
       let reportTitle = template.name;
 
       switch (template.reportType) {
@@ -533,7 +557,7 @@ export class ReportScheduler {
   /**
    * Generate CSV from data
    */
-  private static generateCSV(data: any[]): string {
+  private static generateCSV(data: Record<string, unknown>[]): string {
     if (data.length === 0) {
       return '';
     }
@@ -541,13 +565,17 @@ export class ReportScheduler {
     const headers = Object.keys(data[0]);
     const rows = [
       headers.join(','),
-      ...data.map(row =>
-        headers.map(header => {
+      ...data.map((row: Record<string, unknown>) =>
+        headers.map((header: string) => {
           const value = row[header];
           if (value instanceof Date) {
             return format(value, 'yyyy-MM-dd');
           }
-          return JSON.stringify(value ?? '');
+          if (value == null) return '""';
+          if (typeof value === 'object') return JSON.stringify(value);
+          if (typeof value === 'string') return JSON.stringify(value);
+          if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+          return JSON.stringify(value);
         }).join(',')
       ),
     ];

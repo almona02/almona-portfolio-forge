@@ -93,21 +93,21 @@ export function SwiftXRManager({
 
         if ('xr' in navigator && enableWebXR) {
           try {
-            const xr = (navigator as any).xr;
-            if (xr && typeof xr.isSessionSupported === 'function') {
-              immersiveAR = await xr.isSessionSupported('immersive-ar');
+            const navXR = (navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean>; requestSession?: (mode: XRSessionMode, init?: XRSessionInit) => Promise<XRSession> } }).xr;
+            if (navXR && typeof navXR.isSessionSupported === 'function') {
+              immersiveAR = await navXR.isSessionSupported('immersive-ar');
               webXR = immersiveAR;
               setLoadingProgress(60);
 
-              if (immersiveAR) {
+              if (immersiveAR && navXR?.requestSession) {
                 try {
-                  const session = await xr.requestSession('immersive-ar', {
+                  const session = await navXR.requestSession('immersive-ar', {
                     requiredFeatures: ['hit-test'],
                     optionalFeatures: ['light-estimation', 'anchors']
                   });
-                  hitTest = session && typeof session.requestHitTestSource === 'function';
-                  lightingEstimation = session && 'light-estimation' in session;
-                  if (session) session.end();
+                  hitTest = typeof session.requestHitTestSource === 'function';
+                  lightingEstimation = 'light-estimation' in session;
+                  await session.end();
                 } catch {
                   // Session test failed, but AR is still supported
                 }
@@ -164,7 +164,7 @@ export function SwiftXRManager({
           
           // Update preferred method if SwiftXR is installed
           if (swiftXRDetection.isInstalled) {
-            device.preferredARMethod = 'swiftxr' as any;
+            device.preferredARMethod = 'swiftxr';
             device.supportsAR = true;
             setDeviceInfo(device);
           }
@@ -178,7 +178,7 @@ export function SwiftXRManager({
       }
     };
 
-    detectCapabilities();
+    void detectCapabilities();
   }, [enableWebXR, enableSceneViewer, enableQuickLook, onError]);
 
   const launchSwiftXR = useCallback(async () => {
@@ -317,7 +317,7 @@ export function SwiftXRManager({
 
           {/* Launch Button */}
           <Button
-            onClick={launchSwiftXR}
+            onClick={() => void launchSwiftXR()}
             disabled={!deviceInfo?.supportsAR || isARSessionActive}
             className="swiftxr-launch-button w-full"
             size="lg"

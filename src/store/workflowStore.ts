@@ -3,9 +3,16 @@ import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fa
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+/** Workflow quote - supports minimal (FabricatorQuoteService) and full (origin) shapes */
 export interface WorkflowQuote {
-  id: string;
-  bomCost: {
+  total: number;
+  currency: string;
+  subtotal?: number;
+  tax?: number;
+  lineItems?: Array<{ description: string; quantity: number; unitPrice: number; total: number }>;
+  /** Extended fields (optional) */
+  id?: string;
+  bomCost?: {
     materialCost: number;
     laborCost: number;
     hardwareCost: number;
@@ -13,19 +20,16 @@ export interface WorkflowQuote {
     accessoriesCost: number;
     totalCost: number;
   };
-  markupPercentage: number;
-  markup: number;
-  subtotal: number;
-  taxPercentage: number;
-  tax: number;
-  discountPercentage: number;
-  discount: number;
-  finalPrice: number;
-  currency: string;
+  markupPercentage?: number;
+  markup?: number;
+  taxPercentage?: number;
+  discountPercentage?: number;
+  discount?: number;
+  finalPrice?: number;
   customerName?: string;
   projectTitle?: string;
-  createdAt: string;
-  validUntil: string;
+  createdAt?: string;
+  validUntil?: string;
 }
 
 export interface CutSheetItem {
@@ -66,11 +70,11 @@ interface WorkflowState {
   bom: CompleteBOM | null;
   quote: WorkflowQuote | null;
   productionDocuments: ProductionDocuments | null;
-  
+
   // Progress tracking
   completedSteps: Set<string>;
   activeStep: string;
-  
+
   // Actions
   setMeasurementData: (data: MeasurementData) => void;
   setDesignData: (data: WindowUnit) => void;
@@ -143,19 +147,19 @@ export const useWorkflowStore = create<WorkflowState>()(
       setOptimizationResult: (result) => {
         set({ optimizationResult: result });
       },
-      
+
       setBOM: (bom) => {
         set({ bom });
       },
-      
+
       setQuote: (quote) => {
         set({ quote });
       },
-      
+
       setProductionDocuments: (docs) => {
         set({ productionDocuments: docs });
       },
-      
+
       completeStep: (step) => {
         set((state) => ({
           completedSteps: new Set([...state.completedSteps, step]),
@@ -203,13 +207,20 @@ export const useWorkflowStore = create<WorkflowState>()(
         currentProject: state.currentProject,
         measurementData: state.measurementData,
         designData: state.designData,
+        optimizationResult: state.optimizationResult,
+        bom: state.bom,
+        quote: state.quote,
+        productionDocuments: state.productionDocuments,
         completedSteps: Array.from(state.completedSteps),
         activeStep: state.activeStep,
       }),
-      // On rehydrate, convert array back to Set
+      // On rehydrate, convert array back to Set and ensure new fields exist
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.completedSteps = new Set(state.completedSteps as unknown as string[]);
+          if (state.bom === undefined) state.bom = null;
+          if (state.quote === undefined) state.quote = null;
+          if (state.productionDocuments === undefined) state.productionDocuments = null;
         }
       },
     }

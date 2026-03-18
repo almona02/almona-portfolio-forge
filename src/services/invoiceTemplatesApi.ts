@@ -8,7 +8,7 @@
 import { supabase } from "@/lib/supabase";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
@@ -126,10 +126,10 @@ export async function listInvoiceTemplates(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to list invoice templates");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to list invoice templates");
   }
 
   return await response.json();
@@ -156,10 +156,10 @@ export async function getInvoiceTemplate(
     if (response.status === 404) {
       throw new Error(`Invoice template ${templateId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to get invoice template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to get invoice template");
   }
 
   return await response.json();
@@ -184,10 +184,10 @@ export async function createInvoiceTemplate(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to create invoice template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to create invoice template");
   }
 
   return await response.json();
@@ -216,10 +216,10 @@ export async function updateInvoiceTemplate(
     if (response.status === 404) {
       throw new Error(`Invoice template ${templateId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to update invoice template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to update invoice template");
   }
 
   return await response.json();
@@ -246,9 +246,9 @@ export async function deleteInvoiceTemplate(
     if (response.status === 404) {
       throw new Error(`Invoice template ${templateId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to delete invoice template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to delete invoice template");
   }
 }

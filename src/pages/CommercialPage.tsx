@@ -14,12 +14,11 @@ import { FabricatorSectionProvider } from '@/contexts/FabricatorSectionContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { CURRENCY_INFO, getExchangeRate, type ExchangeRate } from '@/lib/currencyExchange';
 import { formatCurrency } from '@/lib/i18n/formatters';
+import { supabase } from '@/lib/supabase';
 import { QuotingEngine } from '@/modules/commercial/QuotingEngine';
 import { CommercialExportService } from '@/services/commercial/CommercialExportService';
 import { CommercialPDFService } from '@/services/commercial/CommercialPDFService';
 import { BulkEmailService } from '@/services/email/BulkEmailService';
-import { supabase } from '@/lib/supabase';
-import { useWorkflowStore } from '@/store/workflowStore';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -44,7 +43,9 @@ import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { useWorkflowStore } from '@/store/workflowStore';
 import type { DraftInvoice, DraftQuote } from '@/types/fabricator';
+import { QuoteBuilder } from '@/components/fabricator/workflow/QuoteBuilder';
 import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Package, Receipt, Search, Send, Trash2, X } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -56,10 +57,12 @@ import { toast } from 'sonner';
  * Gold-tier commercial workspace with bulk operations, quotes, and invoices management
  */
 const CommercialPageComponent: React.FC = () => {
+  const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
+  const isPoseContext = Boolean(projectId && poseId);
+  const { quote: workflowQuote } = useWorkflowStore();
   const { state, dispatch } = useFabricatorWorkspace();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { t } = useTranslation('fabricator');
   const { bom, optimizationResult, completeStep } = useWorkflowStore();
   const [selectedInvoice, setSelectedInvoice] = useState<DraftInvoice | null>(null);
@@ -793,6 +796,29 @@ const CommercialPageComponent: React.FC = () => {
     { label: 'Fabricator', href: '/fabricator' },
     { label: t('commercial.title', 'Commercial Workspace'), href: '#' },
   ], [t]);
+
+  // P1.3: In pose context, show QuoteBuilder for workflow quote generation
+  if (isPoseContext) {
+    return (
+      <FabricatorSectionProvider sectionId="commercial">
+        <FabricatorWorkspaceLayout
+          sectionId="commercial"
+          title={t('commercial.quote', 'Quote')}
+          breadcrumbs={breadcrumbs}
+          status="normal"
+          showCostCalculator={Boolean(workflowQuote?.total)}
+          cost={workflowQuote?.total ?? 0}
+          currency={workflowQuote?.currency ?? 'EGP'}
+          showLeftPanel={false}
+          mainContent={
+            <div className="container mx-auto px-4 py-8">
+              <QuoteBuilder />
+            </div>
+          }
+        />
+      </FabricatorSectionProvider>
+    );
+  }
 
   return (
     <FabricatorSectionProvider sectionId="commercial">

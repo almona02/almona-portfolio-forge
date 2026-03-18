@@ -75,17 +75,17 @@ export const EgyptianTemplateLibrary: React.FC = () => {
 
 function normalizeRatios(ratios: number[] | undefined, count: number): number[] {
   if (!ratios || ratios.length !== count) {
-    return Array(count).fill(1 / Math.max(count, 1));
+    return Array<number>(count).fill(1 / Math.max(count, 1));
   }
 
-  const normalized = ratios.map(value => (typeof value === 'number' && isFinite(value) && value > 0 ? value : 0));
+  const normalized: number[] = ratios.map(value => (typeof value === 'number' && isFinite(value) && value > 0 ? value : 0));
   const sum = normalized.reduce((total, value) => total + value, 0);
 
   if (sum <= 0) {
-    return Array(count).fill(1 / Math.max(count, 1));
+    return Array<number>(count).fill(1 / Math.max(count, 1));
   }
 
-  return normalized.map(value => value / sum);
+  return normalized.map((value: number) => value / sum);
 }
 
 function buildGridLines(origin: number, total: number, ratios: number[]): number[] {

@@ -9,7 +9,7 @@ import { supabase } from "@/lib/supabase";
 import type { ProjectTemplate, TemplateCategory } from "@/components/ui/ProjectTemplates";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
@@ -42,7 +42,7 @@ export interface TemplateResponse {
   category: TemplateCategory;
   tags: string[];
   thumbnail?: string;
-  projectData: any;
+  projectData: Record<string, unknown>;
   authorId: string;
   authorName?: string;
   createdAt: string;
@@ -146,13 +146,13 @@ export async function listTemplates(options?: {
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to list templates");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to list templates");
   }
 
-  return await response.json();
+  return (await response.json()) as TemplateListResponse;
 }
 
 /**
@@ -174,13 +174,13 @@ export async function getTemplate(templateId: string): Promise<TemplateResponse>
     if (response.status === 404) {
       throw new Error(`Template ${templateId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to get template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to get template");
   }
 
-  return await response.json();
+  return (await response.json()) as TemplateResponse;
 }
 
 /**
@@ -202,13 +202,13 @@ export async function createTemplate(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to create template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to create template");
   }
 
-  return await response.json();
+  return (await response.json()) as TemplateResponse;
 }
 
 /**
@@ -231,13 +231,13 @@ export async function updateTemplate(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to update template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to update template");
   }
 
-  return await response.json();
+  return (await response.json()) as TemplateResponse;
 }
 
 /**
@@ -256,10 +256,10 @@ export async function deleteTemplate(templateId: string): Promise<void> {
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to delete template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to delete template");
   }
 }
 
@@ -283,13 +283,13 @@ export async function cloneTemplate(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to clone template");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to clone template");
   }
 
-  return await response.json();
+  return (await response.json()) as TemplateResponse;
 }
 
 /**
@@ -314,13 +314,13 @@ export async function uploadTemplateThumbnail(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to upload thumbnail");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to upload thumbnail");
   }
 
-  return await response.json();
+  return (await response.json()) as TemplateResponse;
 }
 
 /**

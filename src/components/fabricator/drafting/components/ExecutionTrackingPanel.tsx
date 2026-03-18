@@ -250,7 +250,7 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
 
   // Load data on mount and when project changes
   useEffect(() => {
-    loadExecutionData();
+    void loadExecutionData();
   }, [loadExecutionData]);
 
   // Calculate progress
@@ -303,7 +303,7 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
         <p className="text-slate-400 mb-4">
           Initialize execution stages to start tracking production progress.
         </p>
-        <Button onClick={initializeStages}>
+        <Button onClick={() => void initializeStages()}>
           Initialize Execution Stages
         </Button>
       </div>
@@ -366,7 +366,7 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
                   {stage.status === 'pending' && (
                     <Button
                       size="sm"
-                      onClick={() => startStage(stage.id)}
+                      onClick={() => void startStage(stage.id)}
                     >
                       <Play className="h-3 w-3 mr-1" />
                       Start
@@ -553,11 +553,11 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
                           </div>
 
                           <div className="flex gap-2">
-                            <Button onClick={completeStage} className="flex-1">
+                            <Button onClick={() => void completeStage()} className="flex-1">
                               <CheckCircle className="h-4 w-4 mr-2" />
                               Complete
                             </Button>
-                            <Button onClick={failStage} variant="destructive" className="flex-1">
+                            <Button onClick={() => void failStage()} variant="destructive" className="flex-1">
                               <XCircle className="h-4 w-4 mr-2" />
                               Fail
                             </Button>

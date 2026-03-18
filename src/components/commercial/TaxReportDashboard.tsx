@@ -89,7 +89,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
   };
 
   useEffect(() => {
-    loadTaxData();
+    void loadTaxData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [region, dateRange.start, dateRange.end]);
 
@@ -149,7 +149,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={loadTaxData}
+                onClick={() => void loadTaxData()}
                 variant="outline"
                 size="sm"
                 className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
@@ -304,7 +304,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
                         borderRadius: '8px',
                         color: '#fbbf24',
                       }}
-                      formatter={(value: any) => formatCurrency(value, 'en', taxSummary.currency)}
+                      formatter={(value: unknown) => formatCurrency(Number(value ?? 0), 'en', taxSummary.currency)}
                     />
                     <Legend wrapperStyle={{ color: '#d97706' }} />
                     <Bar dataKey="taxableAmount" name="Taxable Amount" fill="#f59e0b" radius={[4, 4, 0, 0]} />

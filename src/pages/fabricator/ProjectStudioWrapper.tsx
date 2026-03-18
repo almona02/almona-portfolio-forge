@@ -1,8 +1,8 @@
 import { ProjectStudio } from '@/components/fabricator/project/ProjectStudio';
 import { ProjectSummaryDashboard } from '@/components/fabricator/project/ProjectSummaryDashboard';
 import { PageLoadingWrapper } from '@/components/ui/PageLoadingWrapper';
-import { useProject, useProjectPositions } from '@/hooks/useFabricatorQueries';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { useProject, useProjectPositions } from '@/hooks/useFabricatorQueries';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { BarChart3, Layout } from 'lucide-react';

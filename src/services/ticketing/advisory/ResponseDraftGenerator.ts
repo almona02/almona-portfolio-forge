@@ -89,10 +89,8 @@ export class ResponseDraftGenerator {
     
     try {
       const result = await this.circuitBreaker.execute('response', async () => {
-        // Analyze context
         const context = this.analyzeContext(ticket, customer, conversationHistory);
-        
-        // Generate draft based on context
+        await Promise.resolve(); // Satisfy require-await for circuit breaker callback
         return this.generateContextAwareDraft(context);
       });
 
@@ -194,9 +192,11 @@ export class ResponseDraftGenerator {
    * Generate context-aware draft (Gold Tier)
    */
   private generateContextAwareDraft(context: ConversationContext): GeneratedDraft {
-    const templates = (this.responseTemplates as any)[context.ticketType] 
-      || this.responseTemplates.technical;
-    
+    type TemplateKey = keyof typeof this.responseTemplates;
+    const templates = (context.ticketType in this.responseTemplates
+      ? this.responseTemplates[context.ticketType as TemplateKey]
+      : null) ?? this.responseTemplates.technical;
+
     // Select appropriate phrases based on context
     const opening = this.selectPhrase(templates.opening, context);
     const body = this.generateBody(context);
@@ -296,12 +296,16 @@ export class ResponseDraftGenerator {
   }
 
   private generateBody(context: ConversationContext): string {
-    const templates = (this.responseTemplates as any)[context.ticketType];
-    
+    type TemplateKey = keyof typeof this.responseTemplates;
+    const templates = context.ticketType in this.responseTemplates
+      ? this.responseTemplates[context.ticketType as TemplateKey]
+      : null;
+
     // Access safely
     if (templates && 'body' in templates) {
-      const priorityKey = `${context.urgency}_priority` as keyof typeof templates.body;
-      return templates.body[priorityKey] || '';
+      const body = templates.body as Record<string, string>;
+      const priorityKey = `${context.urgency}_priority`;
+      return body[priorityKey] ?? '';
     }
     
     // Fallback if ticket type doesn't have body definition or is missing
@@ -355,14 +359,14 @@ export class ResponseDraftGenerator {
 interface Ticket {
   type: string;
   priority: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface Customer {
   tier?: string;
   preferredLanguage?: string;
   name?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface Message {

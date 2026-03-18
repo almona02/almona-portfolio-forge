@@ -159,7 +159,7 @@ export const ARViewer = ({
       setIsSupported(hasAccelerometer && hasGyroscope && isMobile);
     };
 
-    checkARSupport();
+    void checkARSupport();
   }, []);
 
   // Performance monitoring
@@ -248,7 +248,7 @@ export const ARViewer = ({
       }
     };
 
-    fetchMaintenanceInfo();
+    void fetchMaintenanceInfo();
   }, [selectedMachine, productId, toast]);
 
   // Measurement calculations
@@ -342,11 +342,10 @@ export const ARViewer = ({
   }, [onClose, arSession]);
 
   // Enhanced capture functionality - memoized
-  const captureSnapshot = useCallback(async () => {
+  const captureSnapshot = useCallback(() => {
     if (!arContainerRef.current) return;
     
     try {
-      // In a real implementation, this would capture the AR view
       toast({
         title: "Snapshot Captured",
         description: "Image saved to your device",
@@ -373,7 +372,7 @@ export const ARViewer = ({
         console.log('Sharing cancelled');
       }
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      void navigator.clipboard.writeText(window.location.href);
       toast({
         title: "Link Copied",
         description: "Share this link to view the AR experience",
@@ -603,7 +602,7 @@ export const ARViewer = ({
                       </Button>
                       
                       <Button
-                        onClick={captureSnapshot}
+                        onClick={() => captureSnapshot()}
                         variant="outline"
                         size="sm"
                         className="border-gray-600"
@@ -670,7 +669,7 @@ export const ARViewer = ({
             {/* Primary AR Action */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button 
-                onClick={startAR}
+                onClick={() => void startAR()}
                 disabled={!isSupported || !selectedMachine}
                 className="h-12 bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600"
                 size="lg"
@@ -680,7 +679,7 @@ export const ARViewer = ({
               </Button>
               
               <Button 
-                onClick={shareExperience}
+                onClick={() => void shareExperience()}
                 variant="outline"
                 className="h-12 border-gray-600"
                 size="lg"
@@ -798,7 +797,7 @@ export const ARViewer = ({
                         size="icon"
                         variant="secondary"
                         className="bg-gray-800/80 backdrop-blur-sm"
-                        onClick={captureSnapshot}
+                        onClick={() => captureSnapshot()}
                       >
                         <Camera className="h-4 w-4" />
                       </Button>

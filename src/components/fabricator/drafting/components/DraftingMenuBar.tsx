@@ -548,7 +548,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="optimize" placement="right" delay={200}>
             <DropdownMenuItem
-              onClick={handleOptimize}
+              onClick={() => void handleOptimize()}
               disabled={isOptimizing}
               className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >

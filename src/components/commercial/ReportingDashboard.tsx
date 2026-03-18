@@ -68,9 +68,9 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
     end: endOfDay(new Date()),
   });
   const [loading, setLoading] = useState(false);
-  const [revenueData, setRevenueData] = useState<any[]>([]);
+  const [revenueData, setRevenueData] = useState<{ period: string; revenue: number; count: number; currency: string }[]>([]);
   const [revenueCurrency, setRevenueCurrency] = useState<string>('USD');
-  const [pipelineData, setPipelineData] = useState<any[]>([]);
+  const [pipelineData, setPipelineData] = useState<{ stage: string; count: number; totalValue: number; averageValue: number; winProbability: number; weightedValue: number }[]>([]);
 
   // Load revenue data for summary cards
   useEffect(() => {
@@ -85,7 +85,7 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
         console.error('Failed to load revenue data for summary:', err);
       }
     };
-    loadRevenueData();
+    void loadRevenueData();
   }, [dateRange]);
 
   // Load pipeline data
@@ -98,7 +98,7 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
         console.error('Failed to load pipeline data:', err);
       }
     };
-    loadPipelineData();
+    void loadPipelineData();
   }, []);
 
   // Calculate summary metrics
@@ -111,15 +111,15 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
       };
     }
 
-    const totalRevenue = revenueData.reduce((sum, item) => sum + (item.revenue || 0), 0);
+    const totalRevenue = revenueData.reduce((sum, item) => sum + (item.revenue ?? 0), 0);
     const averageRevenue = totalRevenue / revenueData.length;
     
     // Calculate growth rate (month over month)
     let growthRate: number | null = null;
     if (revenueData.length >= 2) {
       const sortedData = [...revenueData].sort((a, b) => a.period.localeCompare(b.period));
-      const lastMonth = sortedData[sortedData.length - 1]?.revenue || 0;
-      const previousMonth = sortedData[sortedData.length - 2]?.revenue || 0;
+      const lastMonth = sortedData[sortedData.length - 1]?.revenue ?? 0;
+      const previousMonth = sortedData[sortedData.length - 2]?.revenue ?? 0;
       
       if (previousMonth > 0) {
         growthRate = ((lastMonth - previousMonth) / previousMonth) * 100;
@@ -133,7 +133,7 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
     };
   }, [revenueData]);
 
-  const handleExport = async (reportType: string) => {
+  const handleExport = (reportType: string) => {
     try {
       setLoading(true);
       // Export logic will be implemented based on report type

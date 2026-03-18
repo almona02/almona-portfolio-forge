@@ -6,9 +6,27 @@
  * @since Phase 1: Precision Upgrade Plan (January 2026)
  */
 
+import type { WindowUnit } from '@/types/fabricator';
 import { describe, expect, it } from 'vitest';
 import { HardenerValidationGate } from '../HardenerValidationGate';
 import type { HardenerSelectionResult } from '../types';
+
+const minimalWindowUnit: WindowUnit = {
+  id: '',
+  orderNumber: '',
+  posNumber: '',
+  type: 'window',
+  components: [],
+  overallWidth: 0,
+  overallHeight: 0,
+  color: '',
+  glazing: {},
+  hardware: [],
+  status: 'design',
+  optimization: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
 
 describe('HardenerValidationGate', () => {
   const gate = new HardenerValidationGate();
@@ -35,7 +53,7 @@ describe('HardenerValidationGate', () => {
         requiresHumanIntervention: true,
       };
 
-      const validation = gate.validateHardenerSelection(selection, {} as any);
+      const validation = gate.validateHardenerSelection(selection, minimalWindowUnit);
 
       expect(validation.isValid).toBe(false);
       expect(validation.systemStop).toBe(true);
@@ -63,7 +81,7 @@ describe('HardenerValidationGate', () => {
         requiresHumanIntervention: true,
       };
 
-      const validation = gate.validateHardenerSelection(selection, {} as any);
+      const validation = gate.validateHardenerSelection(selection, minimalWindowUnit);
 
       expect(validation.isValid).toBe(true);
       expect(validation.systemStop).toBe(false);
@@ -74,7 +92,7 @@ describe('HardenerValidationGate', () => {
 
   describe('Tier 3 Compliance', () => {
     it('should reject non-Tier 3 selections', () => {
-      const selection: any = {
+      const selection = {
         tier: 'Tier 2', // ❌ Wrong tier
         deterministic: true,
         hardenerCode: 'HX-14-A-C',
@@ -92,9 +110,9 @@ describe('HardenerValidationGate', () => {
         constitutionalDisclaimer: 'Test',
         systemStopRequired: false,
         requiresHumanIntervention: false,
-      };
+      } as HardenerSelectionResult;
 
-      const validation = gate.validateHardenerSelection(selection, {} as any);
+      const validation = gate.validateHardenerSelection(selection, minimalWindowUnit);
 
       expect(validation.isValid).toBe(false);
       expect(validation.systemStop).toBe(true);
@@ -102,7 +120,7 @@ describe('HardenerValidationGate', () => {
     });
 
     it('should reject non-deterministic selections', () => {
-      const selection: any = {
+      const selection = {
         tier: 'Tier 3',
         deterministic: false, // ❌ Not deterministic
         hardenerCode: 'HX-14-A-C',
@@ -120,9 +138,9 @@ describe('HardenerValidationGate', () => {
         constitutionalDisclaimer: 'Test',
         systemStopRequired: false,
         requiresHumanIntervention: false,
-      };
+      } as HardenerSelectionResult;
 
-      const validation = gate.validateHardenerSelection(selection, {} as any);
+      const validation = gate.validateHardenerSelection(selection, minimalWindowUnit);
 
       expect(validation.isValid).toBe(false);
       expect(validation.systemStop).toBe(true);

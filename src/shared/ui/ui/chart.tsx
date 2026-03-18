@@ -184,9 +184,10 @@ const ChartTooltipContent = React.forwardRef<
         {!nestLabel ? tooltipLabel : null}
         <div className="grid gap-1.5">
           {payload.map((item, index) => {
-            const key = `${nameKey || item.name || item.dataKey || "value"}`
+            const key = `${nameKey ?? item.name ?? item.dataKey ?? "value"}`
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
-            const indicatorColor = color || item.payload.fill || item.color
+            const payloadItem = item as { payload?: { fill?: string }; color?: string };
+            const indicatorColor = color || payloadItem.payload?.fill || payloadItem.color
 
             return (
               <div
@@ -197,7 +198,7 @@ const ChartTooltipContent = React.forwardRef<
                 )}
               >
                 {formatter && item?.value !== undefined && item.name ? (
-                  formatter(item.value, item.name, item, index, item.payload)
+                  formatter(item.value, item.name, item, index, payload)
                 ) : (
                   <>
                     {itemConfig?.icon ? (
@@ -284,12 +285,14 @@ const ChartLegendContent = React.forwardRef<
         )}
       >
         {payload.map((item) => {
-          const key = `${nameKey || item.dataKey || "value"}`
+          const key = `${String(nameKey ?? item.dataKey ?? "value")}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
 
+          const itemVal = (item as { value?: unknown }).value;
+          const safeKey = typeof itemVal === 'string' || typeof itemVal === 'number' ? String(itemVal) : key;
           return (
             <div
-              key={item.value}
+              key={safeKey}
               className={cn(
                 "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
               )}
@@ -299,9 +302,9 @@ const ChartLegendContent = React.forwardRef<
               ) : (
                 <div
                   className="h-2 w-2 shrink-0 rounded-[2px]"
-                  style={{
-                    backgroundColor: item.color,
-                  }}
+                style={{
+                  backgroundColor: (item as { color?: string }).color ?? undefined,
+                } as React.CSSProperties}
                 />
               )}
               {itemConfig?.label}

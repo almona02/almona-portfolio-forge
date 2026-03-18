@@ -45,6 +45,7 @@ export {
 export { 
   OrbitControls,
   useGLTF,
+  useAnimations,
   Environment,
   Bounds
 } from '@react-three/drei';

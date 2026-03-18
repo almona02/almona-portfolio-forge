@@ -46,7 +46,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(dateRange);
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, [selectedRange]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = async () => {
@@ -193,7 +193,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
             />
             <YAxis
               tick={{ fill: '#94a3b8', fontSize: 12 }}
-              tickFormatter={(value) => formatCurrency(value, chartData[0]?.currency || 'EGP', true)}
+              tickFormatter={(value: unknown) => formatCurrency(Number(value ?? 0), chartData[0]?.currency || 'EGP', true)}
             />
             <Tooltip
               contentStyle={{
@@ -202,12 +202,13 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
                 borderRadius: '8px',
                 color: '#e2e8f0',
               }}
-              formatter={(value: any, name: string, props: any) => {
+              formatter={(value: unknown, name: string, props: { payload?: { currency?: string } }) => {
+                const currency = props.payload?.currency ?? 'EGP';
                 if (name === 'revenue') {
-                  return [formatCurrency(value, props.payload.currency), 'Revenue'];
+                  return [formatCurrency(Number(value ?? 0), currency), 'Revenue'];
                 }
                 if (name === 'avgOrder') {
-                  return [formatCurrency(value, props.payload.currency), 'Avg Order'];
+                  return [formatCurrency(Number(value ?? 0), currency), 'Avg Order'];
                 }
                 return [value, name];
               }}

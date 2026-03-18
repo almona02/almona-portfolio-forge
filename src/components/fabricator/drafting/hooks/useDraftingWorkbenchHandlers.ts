@@ -67,8 +67,8 @@ export interface DraftingWorkbenchHandlers {
   handleGridToggle: () => void;
   handleSnapToggle: () => void;
 
-  // Optimization
-  handleOptimize: () => Promise<void>;
+  // Optimization (void wrapper - callers use void handleOptimize())
+  handleOptimize: () => void;
 
   // Validation
   handleValidateForExecution: () => Promise<void>;
@@ -783,8 +783,8 @@ export function useDraftingWorkbenchHandlers({
     handleGridToggle,
     handleSnapToggle,
 
-    // Optimization
-    handleOptimize,
+    // Optimization (async - callers use void handleOptimize())
+    handleOptimize: () => { void handleOptimize(); },
 
     // Validation
     handleValidateForExecution,

@@ -39,7 +39,7 @@ export interface ProfileSpec {
   /** Compatible hardware IDs */
   compatibleHardwareIds?: string[];
   /** Technical specifications */
-  specifications?: Record<string, any>;
+  specifications?: Record<string, unknown>;
 }
 
 /**
@@ -270,22 +270,25 @@ export interface FenestrationSystem {
 /**
  * Type guard to check if an object is a FenestrationSystem
  */
-export function isFenestrationSystem(obj: any): obj is FenestrationSystem {
+export function isFenestrationSystem(obj: unknown): obj is FenestrationSystem {
+  const o = obj as Record<string, unknown>;
   return (
     typeof obj === 'object' &&
     obj !== null &&
-    typeof obj.id === 'string' &&
-    typeof obj.name === 'string' &&
-    typeof obj.manufacturer === 'string' &&
-    typeof obj.version === 'string' &&
-    ['EGY', 'TUR', 'GCC', 'GLOBAL'].includes(obj.region) &&
-    ['aluminum', 'upvc', 'steel'].includes(obj.material) &&
-    typeof obj.profiles === 'object' &&
-    typeof obj.fabricationRules === 'object' &&
-    typeof obj.hardwareKit === 'object' &&
-    typeof obj.constraints === 'object' &&
-    typeof obj.regionalPhysics === 'object' &&
-    typeof obj.metadata === 'object'
+    typeof o.id === 'string' &&
+    typeof o.name === 'string' &&
+    typeof o.manufacturer === 'string' &&
+    typeof o.version === 'string' &&
+    typeof o.region === 'string' &&
+    ['EGY', 'TUR', 'GCC', 'GLOBAL'].includes(o.region) &&
+    typeof o.material === 'string' &&
+    ['aluminum', 'upvc', 'steel'].includes(o.material) &&
+    typeof o.profiles === 'object' &&
+    typeof o.fabricationRules === 'object' &&
+    typeof o.hardwareKit === 'object' &&
+    typeof o.constraints === 'object' &&
+    typeof o.regionalPhysics === 'object' &&
+    typeof o.metadata === 'object'
   );
 }
 

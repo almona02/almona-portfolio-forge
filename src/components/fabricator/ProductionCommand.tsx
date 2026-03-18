@@ -37,28 +37,53 @@ import {
     Card, CardContent, CardHeader, CardTitle
 } from '@/shared/ui/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
-import { CuttingPlan, OptimizationResult, Profile, WindowUnit, type Cut } from '@/types/fabricator';
+import { BarcodeLabelGenerator, type BarcodeLabel, type BarcodeLabelOptions } from '@/integrations/yilmaz/BarcodeLabelGenerator';
+import { generateCutSheets } from '@/lib/fabricator/production/CutSheetGenerator';
+import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
+import { OptimizationResult, Profile, WindowUnit, type Cut } from '@/types/fabricator';
 import {
     AlertCircle, CheckCircle,
+    ChevronDown,
+    ChevronUp,
     Clock,
     Code,
     DollarSign, Download,
     FileText,
+    ListOrdered,
     Loader2,
     Package,
     Scissors,
     Send,
+    Tag,
     TrendingUp
 } from 'lucide-react';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { BarDrawing } from './BarDrawing';
 import { InstallationVariablesPanel } from './InstallationVariablesPanel';
 import { ProductionPreviewDialog } from './ProductionPreviewDialog';
+
+/** Generate printable HTML label sheet for standard printers */
+function generateLabelSheetHTML(labels: BarcodeLabel[], orderNumber: string): string {
+    const rows = labels.map((l) => `
+        <div class="label">
+            <div class="barcode">${l.barcode}</div>
+            <div class="meta">${l.profileName} | ${l.cutLength}mm @ ${l.angle}°</div>
+            <div class="order">${l.orderNumber} ${l.position || ''}</div>
+        </div>`).join('');
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Labels ${orderNumber}</title>
+<style>body{font-family:sans-serif;margin:1rem}.labels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.label{border:1px solid #ccc;padding:8px;font-size:11px;page-break-inside:avoid}
+.barcode{font-family:monospace;font-weight:bold;font-size:12px}.meta{color:#666}.order{font-size:10px;color:#999}
+@media print{.labels{gap:4px}}</style></head><body>
+<h2>Labels - ${orderNumber}</h2><div class="labels">${rows}</div>
+<script>window.onload=()=>window.print()</script></body></html>`;
+}
 
 interface ProductionCommandProps {
     project: WindowUnit | null;
     optimization: OptimizationResult | null;
+    bom?: CompleteBOM | null;
     isGenerating: boolean;
     profiles?: Profile[];
 }
@@ -66,70 +91,6 @@ interface ProductionCommandProps {
 // ============================================================================
 // VISUAL SUB-COMPONENTS
 // ============================================================================
-
-/**
- * A visual representation of a single stock bar with its cuts.
- * This is a major prestige enhancement.
- */
-const StockBarVisualization: React.FC<{ plan: CuttingPlan }> = ({ plan }) => {
-    const { t } = useTranslation('fabricator');
-    const stockLength = plan.stockLength || 6000;
-    let currentPos = 0;
-
-    const cuts = plan.cuts.map(cut => {
-        const item = { ...cut, start: currentPos };
-        currentPos += cut.length;
-        return item;
-    });
-    
-    const wasteLength = stockLength - currentPos;
-
-    return (
-        <div className="w-full bg-gray-900 p-2 rounded-md border border-gray-700">
-            <div className="flex h-12 w-full">
-                {cuts.map((cut, index) => (
-                    <TooltipProvider key={cut.componentId || `cut-${index}`}>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <div
-                                    className={`h-full flex items-center justify-center border-r-2 border-dashed border-red-500/50 ${index % 2 === 0 ? 'bg-blue-500/20' : 'bg-blue-500/30'}`}
-                                    style={{ width: `${(cut.length / stockLength) * 100}%` }}
-                                >
-                                    <span className="text-xs font-mono text-white select-none">{cut.length}</span>
-                                </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{t('production_command.cut_tooltip', 'Cut: {length}mm @ {angle}°', { length: cut.length, angle: cut.angle })}</p>
-                                <p>{t('production_command.for_component', 'For Component: {componentId}', { componentId: cut.componentId })}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                ))}
-                {wasteLength > 1 && ( // Only show waste if significant
-                     <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <div
-                                    className="h-full flex items-center justify-center bg-red-900/50"
-                                    style={{ width: `${(wasteLength / stockLength) * 100}%` }}
-                                >
-                                     <span className="text-xs font-mono text-red-300">{wasteLength.toFixed(0)}</span>
-                                </div>
-                            </TooltipTrigger>
-                             <TooltipContent>
-                                <p>{t('production_command.waste_tooltip', 'Waste: {length}mm', { length: wasteLength.toFixed(0) })}</p>
-                             </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                )}
-            </div>
-            <div className="flex justify-between text-[10px] text-gray-500 mt-1 px-1">
-                <span>0mm</span>
-                <span>{stockLength}mm</span>
-            </div>
-        </div>
-    );
-};
 
 /**
  * Animated CNC Toolpath Simulation
@@ -257,6 +218,7 @@ const CNCSimulationView: React.FC<{ gcode: string; machine: string }> = ({ gcode
 const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     project,
     optimization,
+    bom,
     isGenerating,
     profiles = [],
 }) => {
@@ -277,6 +239,9 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     // Installation variables state
     const [_installationVariables, setInstallationVariables] = useState<InstallationVariables | null>(null);
     const [installationBreakdown, setInstallationBreakdown] = useState<InstallationCostBreakdown | null>(null);
+    const [isCutSheetsExpanded, setIsCutSheetsExpanded] = useState(false);
+    const [isAssemblyExpanded, setIsAssemblyExpanded] = useState(true);
+    const [isLabelsExpanded, setIsLabelsExpanded] = useState(false);
 
     // ✅ HARDENING: Memoize static array to prevent recreation on every render
     const availableMachines = useMemo<YilmazMachineModel[]>(() => [
@@ -321,6 +286,20 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
             }
         }
     }, [optimization, project]);
+
+    // P2.3: Labels from BarcodeLabelGenerator
+    const labelOptions: BarcodeLabelOptions = useMemo(() => ({
+        format: 'code128',
+        includeQR: true,
+        labelSize: 'medium',
+        includeMetadata: true,
+        language: 'en',
+    }), []);
+    const labels = useMemo(() => {
+        if (!optimization?.cuttingPlan?.length || !project?.orderNumber) return [];
+        const gen = new BarcodeLabelGenerator();
+        return gen.generateLabels(optimization.cuttingPlan, project.orderNumber, labelOptions);
+    }, [optimization?.cuttingPlan, project?.orderNumber, labelOptions]);
 
     // --- Internal Handlers ---
     // ✅ HARDENING: Memoize all handlers to prevent unnecessary re-renders
@@ -623,38 +602,220 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                 </Card>
             </div>
 
-            {/* --- 3. VISUAL CUTTING PLAN --- */}
+            {/* --- 3. VISUAL CUTTING PLAN (BarDrawing) --- */}
             <Card className="bg-gray-800/30 border-gray-700">
                 <CardHeader>
                     <CardTitle className="text-base">{t('production_command.visual_cutting_plan', 'Visual Cutting Plan')}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                    {optimization.cuttingPlan.map((plan, index) => (
-                        <div key={index}>
-                            <div className="flex justify-between items-center mb-2">
-                                <div className="flex items-center gap-2">
-                                    {/* Profile Thumbnail in Production Command */}
-                                    {plan.profile.thumbnailUrl && (
-                                        <img 
-                                            src={plan.profile.thumbnailUrl} 
-                                            alt={plan.profile.name}
-                                            className="w-10 h-10 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).style.display = 'none';
-                                            }}
-                                        />
-                                    )}
-                                    <h4 className="typography-h4 text-gray-200">{plan.profile.name}</h4>
-                                </div>
-                                <Badge variant="outline" className="font-mono text-xs">
-                                    {t('production_command.utilization', '{value}% Utilization', { value: plan.utilization?.toFixed(1) })}
-                                </Badge>
-                            </div>
-                            <StockBarVisualization plan={plan} />
-                        </div>
-                    ))}
+                <CardContent>
+                    <BarDrawing
+                        cuttingPlans={optimization.cuttingPlan}
+                        profiles={profiles}
+                        projectName={project?.orderNumber}
+                        orderNumber={project?.orderNumber}
+                        onExportPDF={handleQuickExportPDF}
+                        onExportDXF={handleQuickExportDXF}
+                    />
                 </CardContent>
             </Card>
+
+            {/* --- 3b. CUT SHEETS (per-bar instructions) --- */}
+            {optimization.cuttingPlan.length > 0 && (() => {
+                const cutSheets = generateCutSheets(optimization.cuttingPlan, {
+                    orderNumber: project?.orderNumber,
+                    positionNumber: project?.posNumber,
+                });
+                return (
+                    <Card className="bg-gray-800/30 border-gray-700">
+                        <CardHeader
+                            className="cursor-pointer select-none flex flex-row items-center justify-between"
+                            onClick={() => setIsCutSheetsExpanded(!isCutSheetsExpanded)}
+                        >
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <FileText className="h-4 w-4" />
+                                {t('production_command.cut_sheets', 'Cut Sheets')}
+                                <Badge variant="outline" className="font-mono text-xs">
+                                    {cutSheets.totalBars} {t('production_command.bars', 'bars')}
+                                </Badge>
+                            </CardTitle>
+                            {isCutSheetsExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        </CardHeader>
+                        {isCutSheetsExpanded && (
+                            <CardContent className="space-y-4">
+                                {cutSheets.bars.map((bar) => (
+                                    <div key={bar.barIndex} className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="font-medium text-gray-200">
+                                                Bar {bar.barIndex}: {bar.profileName}
+                                            </span>
+                                            <span className="text-xs text-gray-400">
+                                                {bar.stockLength}mm stock • {bar.utilizationPercent.toFixed(1)}% util
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-5 gap-2 text-xs font-mono">
+                                            <div className="text-gray-500">#</div>
+                                            <div className="text-gray-500">Length</div>
+                                            <div className="text-gray-500">Angle</div>
+                                            <div className="text-gray-500">Position</div>
+                                            <div className="text-gray-500">Component</div>
+                                            {bar.cuts.map((c) => (
+                                                <React.Fragment key={c.sequence}>
+                                                    <div>{c.sequence}</div>
+                                                    <div>{c.lengthMm}mm</div>
+                                                    <div>{c.angleDeg}°</div>
+                                                    <div>{c.positionMm}mm</div>
+                                                    <div className="truncate" title={c.componentId}>{c.componentId}</div>
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                        {bar.wasteMm > 0 && (
+                                            <div className="mt-2 text-xs text-red-400">
+                                                Waste: {bar.wasteMm.toFixed(0)}mm
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </CardContent>
+                        )}
+                    </Card>
+                );
+            })()}
+
+            {/* --- 3c. LABELS (per-piece barcode/QR) --- */}
+            {labels.length > 0 && (
+                <Card className="bg-gray-800/30 border-gray-700">
+                    <CardHeader
+                        className="cursor-pointer select-none flex flex-row items-center justify-between"
+                        onClick={() => setIsLabelsExpanded(!isLabelsExpanded)}
+                    >
+                        <CardTitle className="text-base flex items-center gap-2">
+                            <Tag className="h-4 w-4" />
+                            {t('production_command.labels', 'Labels')}
+                            <Badge variant="outline" className="font-mono text-xs">
+                                {labels.length} {t('production_command.pieces', 'pieces')}
+                            </Badge>
+                        </CardTitle>
+                        {isLabelsExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </CardHeader>
+                    {isLabelsExpanded && (
+                        <CardContent className="space-y-4">
+                            <div className="flex flex-wrap gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        const gen = new BarcodeLabelGenerator();
+                                        const zpl = labels.map((l) => gen.generateZPL(l, labelOptions)).join('\n');
+                                        const blob = new Blob([zpl], { type: 'text/plain' });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = `labels_${project?.orderNumber || 'export'}_zpl.txt`;
+                                        a.click();
+                                        URL.revokeObjectURL(url);
+                                    }}
+                                >
+                                    <Download className="h-4 w-4 mr-2" />
+                                    {t('production_command.download_zpl', 'Download ZPL')}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        const html = generateLabelSheetHTML(labels, project?.orderNumber || '');
+                                        const blob = new Blob([html], { type: 'text/html' });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = `labels_${project?.orderNumber || 'export'}.html`;
+                                        a.click();
+                                        URL.revokeObjectURL(url);
+                                    }}
+                                >
+                                    <FileText className="h-4 w-4 mr-2" />
+                                    {t('production_command.download_label_sheet', 'Label Sheet (HTML)')}
+                                </Button>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-64 overflow-y-auto">
+                                {labels.slice(0, 24).map((label, i) => (
+                                    <div
+                                        key={i}
+                                        className="bg-gray-900/80 rounded border border-gray-700 p-2 text-xs font-mono"
+                                    >
+                                        <div className="font-semibold text-amber-400 truncate">{label.barcode}</div>
+                                        <div className="text-gray-400 mt-1">{label.profileName}</div>
+                                        <div>{label.cutLength}mm @ {label.angle}°</div>
+                                        {label.position && <div className="text-gray-500">{label.position}</div>}
+                                        {label.qrCode && (
+                                            <div className="mt-1 text-[10px] text-gray-600 truncate" title={label.qrCode}>
+                                                QR: {label.qrCode.slice(0, 30)}…
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            {labels.length > 24 && (
+                                <div className="text-xs text-gray-500">
+                                    {t('production_command.showing_first', 'Showing first 24 of {total} labels', { total: labels.length })}
+                                </div>
+                            )}
+                        </CardContent>
+                    )}
+                </Card>
+            )}
+
+            {/* --- 3d. ASSEMBLY SEQUENCE --- */}
+            {bom?.assemblySequence && bom.assemblySequence.length > 0 && (
+                <Card className="bg-gray-800/30 border-gray-700">
+                    <CardHeader
+                        className="cursor-pointer select-none flex flex-row items-center justify-between"
+                        onClick={() => setIsAssemblyExpanded(!isAssemblyExpanded)}
+                    >
+                        <CardTitle className="text-base flex items-center gap-2">
+                            <ListOrdered className="h-4 w-4" />
+                            {t('production_command.assembly_sequence', 'Assembly Sequence')}
+                            <Badge variant="outline" className="font-mono text-xs">
+                                {bom.assemblySequence.length} {t('production_command.steps', 'steps')}
+                            </Badge>
+                        </CardTitle>
+                        {isAssemblyExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </CardHeader>
+                    {isAssemblyExpanded && (
+                        <CardContent>
+                            <ol className="space-y-3">
+                                {bom.assemblySequence.map((step) => (
+                                    <li key={step.step} className="flex gap-3 p-3 rounded-lg bg-gray-900/50 border border-gray-700">
+                                        <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-600/30 text-amber-300 flex items-center justify-center font-semibold text-sm">
+                                            {step.step}
+                                        </span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-medium text-gray-200">{step.operation}</div>
+                                            <div className="flex flex-wrap gap-2 mt-1 text-xs text-gray-400">
+                                                <span>{step.station}</span>
+                                                <span>•</span>
+                                                <span>{step.estimatedTime} min</span>
+                                                {step.toolsRequired?.length > 0 && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span>{step.toolsRequired.join(', ')}</span>
+                                                    </>
+                                                )}
+                                            </div>
+                                            {step.qualityGates && step.qualityGates.length > 0 && (
+                                                <ul className="mt-2 text-xs text-gray-500 list-disc list-inside">
+                                                    {step.qualityGates.map((gate, i) => (
+                                                        <li key={i}>{gate}</li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ol>
+                        </CardContent>
+                    )}
+                </Card>
+            )}
 
             {/* --- 4. INSTALLATION VARIABLES --- */}
             {project && (
