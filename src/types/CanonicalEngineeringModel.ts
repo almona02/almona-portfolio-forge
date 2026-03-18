@@ -39,7 +39,7 @@ export interface CanonicalEngineeringModel {
       type: string;
       position: { x: number; y: number };
       dimensions: { width: number; height: number };
-      properties?: Record<string, any>;
+      properties?: Record<string, unknown>;
     }>;
   };
   
@@ -106,8 +106,8 @@ export interface CanonicalEngineeringModel {
       
       // Preserve original CAD data
       draftingData?: {
-        shapes: any[];
-        canvas: any;
+        shapes: unknown[];
+        canvas: unknown;
         templates?: string[];
       };
     };
@@ -125,7 +125,7 @@ export interface CanonicalEngineeringModel {
       action: string;
       ruleId?: string;
       userId?: string;
-      data?: any;
+      data?: unknown;
     }>;
     
     // Validation status
@@ -135,7 +135,7 @@ export interface CanonicalEngineeringModel {
   
   // Optimization results (populated after optimization step)
   optimization?: {
-    cuttingPlan: any;
+    cuttingPlan: unknown;
     materialCost: number;
     wastePercentage: number;
     optimizationAlgorithm: string;
@@ -145,7 +145,7 @@ export interface CanonicalEngineeringModel {
   // Production data (populated after production step)
   production?: {
     gcode?: string;
-    machineInstructions?: any;
+    machineInstructions?: unknown;
     estimatedTime?: number;
     status?: 'pending' | 'in-progress' | 'completed';
   };
@@ -154,20 +154,21 @@ export interface CanonicalEngineeringModel {
 /**
  * Type guard to check if a model is canonical
  */
-export function isCanonicalEngineeringModel(obj: any): obj is CanonicalEngineeringModel {
+export function isCanonicalEngineeringModel(obj: unknown): obj is CanonicalEngineeringModel {
+  if (!obj || typeof obj !== 'object') return false;
+  const o = obj as Record<string, unknown>;
   return (
-    obj &&
-    typeof obj.id === 'string' &&
-    obj.geometry &&
-    typeof obj.geometry.overallWidth === 'number' &&
-    typeof obj.geometry.overallHeight === 'number' &&
-    Array.isArray(obj.geometry.components) &&
-    obj.materials &&
-    typeof obj.materials.systemPack === 'string' &&
-    obj.metadata &&
-    ['measurement', 'drafting', 'import'].includes(obj.metadata.entryMode) &&
-    obj.constitutional &&
-    obj.constitutional.tier === 'Tier 3 Protected Determinism'
+    typeof o.id === 'string' &&
+    o.geometry &&
+    typeof (o.geometry as Record<string, unknown>).overallWidth === 'number' &&
+    typeof (o.geometry as Record<string, unknown>).overallHeight === 'number' &&
+    Array.isArray((o.geometry as Record<string, unknown>).components) &&
+    o.materials &&
+    typeof (o.materials as Record<string, unknown>).systemPack === 'string' &&
+    o.metadata &&
+    ['measurement', 'drafting', 'import'].includes((o.metadata as Record<string, unknown>).entryMode as string) &&
+    o.constitutional &&
+    (o.constitutional as Record<string, unknown>).tier === 'Tier 3 Protected Determinism'
   );
 }
 

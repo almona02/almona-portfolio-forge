@@ -43,7 +43,7 @@ export interface FeatureUsageMetric {
   user_id: string;
   session_id: string;
   timestamp: Date;
-  context: Record<string, any>;
+  context: Record<string, unknown>;
   success: boolean;
   error_message?: string;
   performance_data: {
@@ -174,9 +174,10 @@ class PerformanceMonitoringService {
   }
 
   private initializeMemoryMonitoring() {
-    if ('memory' in performance) {
+    const perf = performance as Performance & { memory?: MemoryInfo };
+    if (perf.memory) {
       setInterval(() => {
-        const memory = (performance as any).memory;
+        const memory = perf.memory!;
         this.recordMetric('heap_used', memory.usedJSHeapSize, 'bytes', 'memory');
         this.recordMetric('heap_total', memory.totalJSHeapSize, 'bytes', 'memory');
         this.recordMetric('heap_limit', memory.jsHeapSizeLimit, 'bytes', 'memory');
@@ -189,7 +190,8 @@ class PerformanceMonitoringService {
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
       const startTime = performance.now();
-      const url = typeof args[0] === 'string' ? args[0] : (args[0]).toString();
+      const firstArg = args[0];
+      const url = typeof firstArg === 'string' ? firstArg : (firstArg instanceof Request ? firstArg.url : String(firstArg));
       
       // Skip monitoring for non-critical endpoints that may not exist
       const isNonCriticalEndpoint = url.includes('feature_usage_metrics') || url.includes('user_satisfaction_metrics');
@@ -230,7 +232,10 @@ class PerformanceMonitoringService {
   }
 
   // Observe specific performance entries
-  private observePerformanceEntry(entryType: string, callback: (entry: any) => void) {
+  private observePerformanceEntry(
+    entryType: string,
+    callback: (entry: PerformanceEntry & { processingStart?: number; hadRecentInput?: boolean; value?: number }) => void
+  ) {
     if ('PerformanceObserver' in window) {
       try {
         const observer = new PerformanceObserver((list) => {
@@ -260,7 +265,7 @@ class PerformanceMonitoringService {
     value: number, 
     unit: string, 
     category: PerformanceMetric['category'],
-    _additionalContext?: Record<string, any>
+    _additionalContext?: Record<string, unknown>
   ) {
     const metric: PerformanceMetric = {
       id: `${name}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -290,7 +295,7 @@ class PerformanceMonitoringService {
     featureName: string,
     action: string,
     success: boolean,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
     errorMessage?: string
   ) {
     const usage: FeatureUsageMetric = {
@@ -331,7 +336,7 @@ class PerformanceMonitoringService {
       }
     };
 
-    this.sendSatisfactionToDatabase(satisfaction);
+    void this.sendSatisfactionToDatabase(satisfaction);
   }
 
   // Measure specific operations
@@ -361,8 +366,8 @@ class PerformanceMonitoringService {
   }
 
   // Get performance summary
-  public getPerformanceSummary(): Record<string, any> {
-    const summary: Record<string, any> = {};
+  public getPerformanceSummary(): Record<string, unknown> {
+    const summary: Record<string, unknown> = {};
 
     this.metrics.forEach((metrics, category) => {
       summary[category] = {
@@ -394,7 +399,7 @@ class PerformanceMonitoringService {
       screenResolution: `${screen.width}x${screen.height}`,
       viewportSize: `${window.innerWidth}x${window.innerHeight}`,
       connectionType: this.getConnectionType(),
-      memoryInfo: (performance as any).memory,
+      memoryInfo: (performance as Performance & { memory?: MemoryInfo }).memory,
       isOnline: navigator.onLine,
       isMobile: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent),
       isPWA: window.matchMedia('(display-mode: standalone)').matches
@@ -402,8 +407,13 @@ class PerformanceMonitoringService {
   }
 
   private getConnectionType(): string {
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
-    return connection?.effectiveType || 'unknown';
+    const nav = navigator as Navigator & {
+      connection?: { effectiveType?: string };
+      mozConnection?: { effectiveType?: string };
+      webkitConnection?: { effectiveType?: string };
+    };
+    const connection = nav.connection ?? nav.mozConnection ?? nav.webkitConnection;
+    return connection?.effectiveType ?? 'unknown';
   }
 
   private getCurrentUserId(): string {
@@ -412,7 +422,7 @@ class PerformanceMonitoringService {
   }
 
   private getMemoryUsage(): number {
-    return (performance as any).memory?.usedJSHeapSize || 0;
+    return (performance as Performance & { memory?: MemoryInfo }).memory?.usedJSHeapSize ?? 0;
   }
 
   private getInteractionCount(): number {
@@ -438,7 +448,7 @@ class PerformanceMonitoringService {
     return name in criticalThresholds && value > criticalThresholds[name];
   }
 
-  private recordInteraction(type: string, element: Element, duration: number, context?: any) {
+  private recordInteraction(type: string, element: Element, duration: number, context?: Record<string, unknown>) {
     this.recordMetric(`interaction_${type}`, duration, 'ms', 'interaction', {
       element_tag: element.tagName,
       element_id: element.id,
@@ -472,11 +482,11 @@ class PerformanceMonitoringService {
     // This would be integrated with your AI service calls
   }
 
-  private async sendToAnalytics(metric: PerformanceMetric) {
+  private sendToAnalytics(metric: PerformanceMetric): void {
     try {
-      // Send to your analytics service (Google Analytics, Mixpanel, etc.)
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        (window as any).gtag('event', 'performance_metric', {
+      const win = window as Window & { gtag?: (a: string, b: string, c: Record<string, unknown>) => void };
+      if (typeof window !== 'undefined' && win.gtag) {
+        win.gtag('event', 'performance_metric', {
           custom_parameter: metric.name,
           value: metric.value,
           custom_parameter_2: metric.unit
@@ -488,7 +498,7 @@ class PerformanceMonitoringService {
     }
   }
 
-  private async sendFeatureUsageToDatabase(usage: FeatureUsageMetric) {
+  private sendFeatureUsageToDatabase(usage: FeatureUsageMetric): void {
     // Skip if we've detected the table doesn't exist
     if (this.featureUsageTableExists === false) {
       return;
@@ -497,7 +507,7 @@ class PerformanceMonitoringService {
     // Defer to avoid blocking critical rendering
     const sendAsync = async () => {
       try {
-        const { error } = await (supabase.from('feature_usage_metrics') as any).insert({
+        const { error } = await supabase.from('feature_usage_metrics').insert({
           feature_name: usage.feature_name,
           action: usage.action,
           user_id: usage.user_id,
@@ -530,10 +540,11 @@ class PerformanceMonitoringService {
     };
     
     // Use requestIdleCallback if available, otherwise setTimeout
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(sendAsync, { timeout: 5000 });
+    const win = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number };
+    if (typeof window !== 'undefined' && win.requestIdleCallback) {
+      win.requestIdleCallback(() => { void sendAsync(); }, { timeout: 5000 });
     } else {
-      setTimeout(sendAsync, 0);
+      setTimeout(() => { void sendAsync(); }, 0);
     }
   }
 
@@ -544,7 +555,7 @@ class PerformanceMonitoringService {
     }
 
     try {
-      const { error } = await (supabase.from('user_satisfaction_metrics') as any).insert({
+      const { error } = await supabase.from('user_satisfaction_metrics').insert({
         page: satisfaction.page,
         rating: satisfaction.rating,
         feedback: satisfaction.feedback,
@@ -596,7 +607,7 @@ export const usePerformanceMonitoring = () => {
   );
 
   const recordFeatureUsage = React.useCallback(
-    (feature: string, action: string, success: boolean, context?: any, error?: string) =>
+    (feature: string, action: string, success: boolean, context?: Record<string, unknown>, error?: string) =>
       monitoring.recordFeatureUsage(feature, action, success, context, error),
     [monitoring]
   );

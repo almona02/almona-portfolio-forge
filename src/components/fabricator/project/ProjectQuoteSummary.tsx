@@ -26,20 +26,8 @@ interface ProjectQuoteSummaryProps {
 
 export const ProjectQuoteSummary: React.FC<ProjectQuoteSummaryProps> = ({ project, results }) => {
   const units = project?.units ?? [];
+  const unitResults = results?.unitResults ?? new Map<string, ApexV6Output>();
 
-  if (!results?.unitResults?.size) {
-    return (
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardContent className="p-8 text-center text-gray-500">
-          <FileText className="h-12 w-12 mx-auto mb-4 opacity-30" aria-hidden />
-          <p className="text-sm">Run optimization and generate quote to see summary.</p>
-          <p className="text-xs text-gray-500 mt-2">Click &quot;Optimize All&quot; then &quot;Generate Quote&quot;.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const unitResults = results.unitResults;
   const { totalCost, totalProjectValue, margin } = useMemo(() => {
     const cost = Array.from(unitResults.values()).reduce(
       (acc, r) => acc + (r.financials?.totalCost ?? 0),
@@ -52,6 +40,18 @@ export const ProjectQuoteSummary: React.FC<ProjectQuoteSummaryProps> = ({ projec
     }, 0);
     return { totalCost: cost, totalProjectValue: quoted, margin: quoted - cost };
   }, [unitResults, units]);
+
+  if (!results?.unitResults?.size) {
+    return (
+      <Card className="bg-gray-800/50 border-gray-700">
+        <CardContent className="p-8 text-center text-gray-500">
+          <FileText className="h-12 w-12 mx-auto mb-4 opacity-30" aria-hidden />
+          <p className="text-sm">Run optimization and generate quote to see summary.</p>
+          <p className="text-xs text-gray-500 mt-2">Click &quot;Optimize All&quot; then &quot;Generate Quote&quot;.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-gray-800/50 border-gray-700">

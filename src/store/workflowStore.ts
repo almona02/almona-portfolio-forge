@@ -3,18 +3,16 @@ import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fa
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-<<<<<<< HEAD
-/** Minimal quote shape for workflow pipeline (Phase 1) */
+/** Workflow quote - supports minimal (FabricatorQuoteService) and full (origin) shapes */
 export interface WorkflowQuote {
-  subtotal: number;
-  tax: number;
   total: number;
   currency: string;
+  subtotal?: number;
+  tax?: number;
   lineItems?: Array<{ description: string; quantity: number; unitPrice: number; total: number }>;
-=======
-export interface WorkflowQuote {
-  id: string;
-  bomCost: {
+  /** Extended fields (optional) */
+  id?: string;
+  bomCost?: {
     materialCost: number;
     laborCost: number;
     hardwareCost: number;
@@ -22,19 +20,16 @@ export interface WorkflowQuote {
     accessoriesCost: number;
     totalCost: number;
   };
-  markupPercentage: number;
-  markup: number;
-  subtotal: number;
-  taxPercentage: number;
-  tax: number;
-  discountPercentage: number;
-  discount: number;
-  finalPrice: number;
-  currency: string;
+  markupPercentage?: number;
+  markup?: number;
+  taxPercentage?: number;
+  discountPercentage?: number;
+  discount?: number;
+  finalPrice?: number;
   customerName?: string;
   projectTitle?: string;
-  createdAt: string;
-  validUntil: string;
+  createdAt?: string;
+  validUntil?: string;
 }
 
 export interface CutSheetItem {
@@ -64,7 +59,6 @@ export interface ProductionDocuments {
   cutSheets: CutSheetItem[];
   labels: LabelData[];
   generatedAt: string;
->>>>>>> origin/main
 }
 
 interface WorkflowState {
@@ -73,18 +67,10 @@ interface WorkflowState {
   measurementData: MeasurementData | null;
   designData: WindowUnit | null;
   optimizationResult: OptimizationResult | null;
-<<<<<<< HEAD
-  /** P1: BOM from PresetAwareBOMGenerator */
-  bom: CompleteBOM | null;
-  /** P1: Priced quote for fabricator workflow */
-  quote: WorkflowQuote | null;
-
-=======
   bom: CompleteBOM | null;
   quote: WorkflowQuote | null;
   productionDocuments: ProductionDocuments | null;
-  
->>>>>>> origin/main
+
   // Progress tracking
   completedSteps: Set<string>;
   activeStep: string;
@@ -95,10 +81,7 @@ interface WorkflowState {
   setOptimizationResult: (result: OptimizationResult) => void;
   setBOM: (bom: CompleteBOM | null) => void;
   setQuote: (quote: WorkflowQuote | null) => void;
-<<<<<<< HEAD
-=======
   setProductionDocuments: (docs: ProductionDocuments | null) => void;
->>>>>>> origin/main
   completeStep: (step: string) => void;
   setActiveStep: (step: string) => void;
   canAccessStep: (step: string) => boolean;
@@ -127,10 +110,7 @@ export const useWorkflowStore = create<WorkflowState>()(
       optimizationResult: null,
       bom: null,
       quote: null,
-<<<<<<< HEAD
-=======
       productionDocuments: null,
->>>>>>> origin/main
       completedSteps: new Set(),
       activeStep: 'measuring',
       
@@ -167,7 +147,6 @@ export const useWorkflowStore = create<WorkflowState>()(
       setOptimizationResult: (result) => {
         set({ optimizationResult: result });
       },
-<<<<<<< HEAD
 
       setBOM: (bom) => {
         set({ bom });
@@ -177,21 +156,10 @@ export const useWorkflowStore = create<WorkflowState>()(
         set({ quote });
       },
 
-=======
-      
-      setBOM: (bom) => {
-        set({ bom });
-      },
-      
-      setQuote: (quote) => {
-        set({ quote });
-      },
-      
       setProductionDocuments: (docs) => {
         set({ productionDocuments: docs });
       },
-      
->>>>>>> origin/main
+
       completeStep: (step) => {
         set((state) => ({
           completedSteps: new Set([...state.completedSteps, step]),
@@ -222,10 +190,7 @@ export const useWorkflowStore = create<WorkflowState>()(
           optimizationResult: null,
           bom: null,
           quote: null,
-<<<<<<< HEAD
-=======
           productionDocuments: null,
->>>>>>> origin/main
           completedSteps: new Set(),
           activeStep: 'measuring',
         });
@@ -245,6 +210,7 @@ export const useWorkflowStore = create<WorkflowState>()(
         optimizationResult: state.optimizationResult,
         bom: state.bom,
         quote: state.quote,
+        productionDocuments: state.productionDocuments,
         completedSteps: Array.from(state.completedSteps),
         activeStep: state.activeStep,
       }),
@@ -254,6 +220,7 @@ export const useWorkflowStore = create<WorkflowState>()(
           state.completedSteps = new Set(state.completedSteps as unknown as string[]);
           if (state.bom === undefined) state.bom = null;
           if (state.quote === undefined) state.quote = null;
+          if (state.productionDocuments === undefined) state.productionDocuments = null;
         }
       },
     }

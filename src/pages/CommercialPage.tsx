@@ -45,12 +45,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { DraftInvoice, DraftQuote } from '@/types/fabricator';
-<<<<<<< HEAD
 import { QuoteBuilder } from '@/components/fabricator/workflow/QuoteBuilder';
-import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Receipt, Search, Send, Trash2, X } from 'lucide-react';
-=======
 import { BarChart3, Calculator, Calendar, Download, Eye, FileDown, FileText, Filter, Package, Receipt, Search, Send, Trash2, X } from 'lucide-react';
->>>>>>> origin/main
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -67,7 +63,6 @@ const CommercialPageComponent: React.FC = () => {
   const { state, dispatch } = useFabricatorWorkspace();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { t } = useTranslation('fabricator');
   const { bom, optimizationResult, completeStep } = useWorkflowStore();
   const [selectedInvoice, setSelectedInvoice] = useState<DraftInvoice | null>(null);

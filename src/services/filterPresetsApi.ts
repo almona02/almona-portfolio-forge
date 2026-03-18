@@ -9,7 +9,7 @@ import { supabase } from "@/lib/supabase";
 import type { FilterDomain, FilterSet, FilterPreset } from "./FilterService";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
@@ -98,10 +98,10 @@ export async function listFilterPresets(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to list filter presets");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to list filter presets");
   }
 
   return await response.json();
@@ -126,10 +126,10 @@ export async function getFilterPreset(presetId: string): Promise<FilterPresetRes
     if (response.status === 404) {
       throw new Error(`Filter preset ${presetId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to get filter preset");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to get filter preset");
   }
 
   return await response.json();
@@ -154,14 +154,14 @@ export async function createFilterPreset(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
     
     if (response.status === 409) {
-      throw new Error(errorData.detail || "Preset name already exists");
+      throw new Error(errorData.detail ?? "Preset name already exists");
     }
-    throw new Error(errorData.detail || "Failed to create filter preset");
+    throw new Error(errorData.detail ?? "Failed to create filter preset");
   }
 
   return await response.json();
@@ -187,10 +187,10 @@ export async function updateFilterPreset(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to update filter preset");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to update filter preset");
   }
 
   return await response.json();
@@ -212,10 +212,10 @@ export async function deleteFilterPreset(presetId: string): Promise<void> {
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to delete filter preset");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to delete filter preset");
   }
 }
 

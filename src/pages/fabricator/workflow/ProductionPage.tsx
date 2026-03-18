@@ -1,15 +1,12 @@
 import { ProductionDocumentsPanel } from '@/components/fabricator/workflow/ProductionDocumentsPanel';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-<<<<<<< HEAD
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
-=======
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
->>>>>>> origin/main
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { lazyRetry } from '@/utils/lazyImport';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, ClipboardList, Cpu, Loader2 } from 'lucide-react';
 import React, { Suspense, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -134,15 +131,6 @@ export const ProductionPage: React.FC = () => {
     return (
         <div className="flex flex-col h-full">
             <Suspense fallback={LoadingFallback}>
-<<<<<<< HEAD
-                <ProductionCommand
-                    project={currentProject}
-                    optimization={optimizationResult}
-                    bom={bom}
-                    isGenerating={isGenerating}
-                    profiles={profiles}
-                />
-=======
                 <Tabs defaultValue="documents" className="flex-1 flex flex-col">
                     <div className="px-6 pt-4">
                         <TabsList className="bg-slate-900/60 border-amber-600/20 grid grid-cols-2 w-full max-w-sm">
@@ -154,7 +142,6 @@ export const ProductionPage: React.FC = () => {
                             </TabsTrigger>
                         </TabsList>
                     </div>
->>>>>>> origin/main
 
                     <TabsContent value="documents" className="flex-1 p-6 overflow-auto">
                         <ProductionDocumentsPanel />
@@ -164,6 +151,7 @@ export const ProductionPage: React.FC = () => {
                         <ProductionCommand
                             project={currentProject}
                             optimization={optimizationResult}
+                            bom={bom}
                             isGenerating={isGenerating}
                             profiles={profiles}
                         />

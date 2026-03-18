@@ -3,7 +3,7 @@ import type { AssemblyComponent, AssemblyResponse } from "@/types/assembly";
 
 const getApiBase = (): string => {
   // In production, VITE_API_URL must be set in environment variables
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     // Remove trailing slash if present
     return envUrl.replace(/\/$/, '');

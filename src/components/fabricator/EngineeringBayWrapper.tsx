@@ -36,7 +36,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
   const { jobs, setSelectedJob } = useJobsStore();
   const upsertPose = useUpsertPose();
   const { user } = useAuth();
-  const { setCurrentProject, setDesignData } = useWorkflowStore();
+  const { setCurrentProject, setDesignData, completeStep } = useWorkflowStore();
   const effectivePoseId = poseId ?? projectId;
   const { data: poseV2, isLoading: loadingPoseV2 } = usePoseV2(effectivePoseId ?? undefined);
 
@@ -95,8 +95,6 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     return [currentProject, ...others];
   }, [currentProject, allSiblingPositions]);
 
-  const { setCurrentProject: setWorkflowProject, setDesignData, completeStep } = useWorkflowStore();
-
   const handleDesignComplete = (components: WindowComponent[]) => {
     if (!currentProject) return;
 
@@ -108,26 +106,13 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     dispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });
     dispatch({ type: 'UPDATE_PROJECT_COMPONENTS', payload: components });
 
-<<<<<<< HEAD
-    // P1: Sync to workflowStore so OptimizationPage has design data
     setCurrentProject(updatedProject);
-    setDesignData(updatedProject);
-
-    // Navigate to next step: BOM review when in pose context, else projects list
-    if (projectId && poseId) {
-      navigate(fabricatorRoutes.poseBom(projectId, poseId));
-    } else {
-      navigate(fabricatorRoutes.studioProjects());
-    }
-=======
-    setWorkflowProject(updatedProject);
     setDesignData(updatedProject);
     completeStep('design');
 
     const projKey = resolvedProjectId ?? projectId ?? 'default';
     const poseKey = effectivePoseId ?? currentProject.id;
     navigate(fabricatorRoutes.poseBOM(projKey, poseKey));
->>>>>>> origin/main
   };
 
   const handleBackToMeasuring = () => {

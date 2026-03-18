@@ -61,7 +61,7 @@ describe('Report Templates API', () => {
 
             (global.fetch as any).mockResolvedValueOnce({
                 ok: true,
-                json: async () => mockResponse,
+                json: () => Promise.resolve(mockResponse),
             });
 
             const result = await listReportTemplates();
@@ -82,7 +82,7 @@ describe('Report Templates API', () => {
             (global.fetch as any).mockResolvedValueOnce({
                 ok: false,
                 status: 500,
-                json: async () => ({ detail: 'Internal server error' }),
+                json: () => Promise.resolve({ detail: 'Internal server error' }),
             });
 
             await expect(listReportTemplates()).rejects.toThrow();
@@ -105,7 +105,7 @@ describe('Report Templates API', () => {
 
             (global.fetch as any).mockResolvedValueOnce({
                 ok: true,
-                json: async () => mockTemplate,
+                json: () => Promise.resolve(mockTemplate),
             });
 
             const result = await getReportTemplate('1');
@@ -140,7 +140,7 @@ describe('Report Templates API', () => {
 
             (global.fetch as any).mockResolvedValueOnce({
                 ok: true,
-                json: async () => mockTemplate,
+                json: () => Promise.resolve(mockTemplate),
             });
 
             const result = await createReportTemplate(createRequest);
@@ -176,7 +176,7 @@ describe('Report Templates API', () => {
 
             (global.fetch as any).mockResolvedValueOnce({
                 ok: true,
-                json: async () => mockTemplate,
+                json: () => Promise.resolve(mockTemplate),
             });
 
             const result = await updateReportTemplate('1', updateRequest);

@@ -4,24 +4,16 @@ import { useAuth } from '@/context/AuthContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
-<<<<<<< HEAD
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { findBestMatchingPattern, getPatternById } from '@/lib/fabricator/presetUtils';
-import { useWorkflowStore } from '@/store/workflowStore';
-import type { AdaptiveSolverConfig, OptimizationResult } from '@/types/fabricator';
-import { lazyRetry } from '@/utils/lazyImport';
-import { AlertCircle, Loader2 } from 'lucide-react';
-import React, { Suspense, useCallback, useMemo, useState } from 'react';
-=======
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent } from '@/shared/ui/ui/card';
 import { useWorkflowStore } from '@/store/workflowStore';
-import type { OptimizationResult } from '@/types/fabricator';
+import type { AdaptiveSolverConfig, OptimizationResult } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
 import { AlertCircle, DollarSign, Loader2, TrendingDown } from 'lucide-react';
-import React, { Suspense, useMemo } from 'react';
->>>>>>> origin/main
+import React, { Suspense, useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const OptimizationEqualizer = lazyRetry(
@@ -49,13 +41,8 @@ export const OptimizationPage: React.FC = () => {
     const {
         measurementData,
         currentProject,
-<<<<<<< HEAD
         bom,
         optimizationResult,
-=======
-        optimizationResult,
-        bom,
->>>>>>> origin/main
         completeStep,
         setOptimizationResult,
         setBOM,
@@ -86,9 +73,8 @@ export const OptimizationPage: React.FC = () => {
     // ✅ GOLD-TIER: Error handling for missing data
     const hasRequiredData = currentProject !== null;
 
-<<<<<<< HEAD
     // P0: Run cutting optimization and proceed to commercial
-    const handleOptimizationComplete = useCallback(async (payload: { strategy?: unknown; minRemnantLength?: number; maxRemnantAge?: number }) => {
+    const handleOptimizationComplete = useCallback(async (_payload: { strategy?: unknown; minRemnantLength?: number; maxRemnantAge?: number }) => {
         if (!currentProject || !profiles.length) return;
 
         setIsOptimizing(true);
@@ -173,21 +159,6 @@ export const OptimizationPage: React.FC = () => {
             setIsOptimizing(false);
         }
     }, [currentProject, profiles, projectId, poseId, systemPack, completeStep, setOptimizationResult, setBOM, navigate]);
-=======
-    // ✅ GOLD-TIER: Navigation with smooth transition
-    const handleOptimizationComplete = (result: OptimizationResult) => {
-        setOptimizationResult(result);
-        completeStep('optimization');
-
-        setTimeout(() => {
-            if (projectId && poseId) {
-                navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/commercial`);
-            } else {
-                navigate('/fabricator/studio/projects');
-            }
-        }, 100);
-    };
->>>>>>> origin/main
 
     // ✅ GOLD-TIER: Premium loading state
     const LoadingFallback = (

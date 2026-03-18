@@ -8,7 +8,7 @@
 import { supabase } from "@/lib/supabase";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
@@ -111,11 +111,11 @@ export async function getAnalyticsMetrics(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to get analytics metrics");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to get analytics metrics");
   }
 
-  return await response.json();
+  return (await response.json()) as AnalyticsMetricsResponse;
 }
