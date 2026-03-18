@@ -107,6 +107,10 @@ export const YilmazMachineDashboard: React.FC = () => {
             <LineChart className="w-4 h-4 mr-2" />
             Analytics
           </Button>
+          <Button onClick={() => navigate('/yilmaz-export')}>
+            <Zap className="w-4 h-4 mr-2" />
+            Export to CNC
+          </Button>
           <Badge variant="secondary">{lastUpdated.toLocaleTimeString()}</Badge>
           <Button onClick={refreshTelemetry} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />

@@ -64,6 +64,7 @@ const DigitalTwinDashboard = lazy(() => import("./pages/machines/DigitalTwinDash
 const YilmazService = lazy(() => import("./pages/YilmazService.tsx"));
 const YilmazTraining = lazy(() => import("./pages/YilmazTraining.tsx"));
 const YilmazMachineDashboard = lazy(() => import("./pages/YilmazMachineDashboard.tsx"));
+const YilmazExportPage = lazy(() => import("./pages/YilmazExportPage.tsx"));
 const YilmazAnalytics = lazy(() => import("./components/predictive/YilmazAnalytics.tsx").then(m => ({ default: m.YilmazAnalytics })));
 
 // Digital Egypt Initiative - lazy loaded
@@ -376,6 +377,7 @@ const App = memo(() => {
                                   <Route path="/yilmaz-training-egypt" element={<Suspense fallback={getLoadingComponent('/yilmaz')}><YilmazTraining /></Suspense>} />
                                   <Route path="/yilmaz-maintenance" element={<Suspense fallback={getLoadingComponent('/yilmaz-maintenance')}><YilmazMachineDashboard /></Suspense>} />
                                   <Route path="/yilmaz-analytics" element={<Suspense fallback={getLoadingComponent('/yilmaz-analytics')}><YilmazAnalytics /></Suspense>} />
+                                  <Route path="/yilmaz-export" element={<Suspense fallback={getLoadingComponent('/yilmaz-export')}><YilmazExportPage /></Suspense>} />
 
                                   {/* Alias for CNC machines to Products */}
                                   <Route path="/yilmaz-cnc-machines" element={<Navigate to="/products/machines?category=processing-centers" replace />} />
