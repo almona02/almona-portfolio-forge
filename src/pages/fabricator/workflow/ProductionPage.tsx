@@ -1,8 +1,13 @@
+import { ProductionDocumentsPanel } from '@/components/fabricator/workflow/ProductionDocumentsPanel';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+<<<<<<< HEAD
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
-import { useWorkflowStore } from '@/store/workflowStore';
+=======
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+>>>>>>> origin/main
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
+import { useWorkflowStore } from '@/store/workflowStore';
 import { lazyRetry } from '@/utils/lazyImport';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import React, { Suspense, useMemo, useState } from 'react';
@@ -129,6 +134,7 @@ export const ProductionPage: React.FC = () => {
     return (
         <div className="flex flex-col h-full">
             <Suspense fallback={LoadingFallback}>
+<<<<<<< HEAD
                 <ProductionCommand
                     project={currentProject}
                     optimization={optimizationResult}
@@ -136,8 +142,35 @@ export const ProductionPage: React.FC = () => {
                     isGenerating={isGenerating}
                     profiles={profiles}
                 />
+=======
+                <Tabs defaultValue="documents" className="flex-1 flex flex-col">
+                    <div className="px-6 pt-4">
+                        <TabsList className="bg-slate-900/60 border-amber-600/20 grid grid-cols-2 w-full max-w-sm">
+                            <TabsTrigger value="documents" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+                                <ClipboardList className="w-3 h-3 mr-1" /> Documents
+                            </TabsTrigger>
+                            <TabsTrigger value="cnc" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+                                <Cpu className="w-3 h-3 mr-1" /> CNC / G-Code
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
+>>>>>>> origin/main
 
-                {/* ✅ GOLD-TIER: Continue button with premium styling */}
+                    <TabsContent value="documents" className="flex-1 p-6 overflow-auto">
+                        <ProductionDocumentsPanel />
+                    </TabsContent>
+
+                    <TabsContent value="cnc" className="flex-1 overflow-auto">
+                        <ProductionCommand
+                            project={currentProject}
+                            optimization={optimizationResult}
+                            isGenerating={isGenerating}
+                            profiles={profiles}
+                        />
+                    </TabsContent>
+                </Tabs>
+
+                {/* Continue button */}
                 <div className="fixed bottom-8 right-8 z-50">
                     <button
                         onClick={handleProductionComplete}
@@ -159,7 +192,6 @@ export const ProductionPage: React.FC = () => {
                                 </>
                             )}
                         </span>
-                        {/* Shimmer effect */}
                         {!isGenerating && (
                             <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
                         )}
