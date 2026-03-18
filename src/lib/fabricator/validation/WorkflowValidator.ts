@@ -1,11 +1,11 @@
-<<<<<<< HEAD
 /**
  * Fabricator Workflow Validator
  *
  * Validates pose-centric pipeline state for step transitions.
  * Phase 3.1: Inter-Step Validation (IMPROVEMENT_PLAN.md).
  *
- * Checks: Measuring→Design, Design→Optimization, Optimization→Commercial, Commercial→Production
+ * Exports both validateStepTransition (for workflow pages) and WorkflowValidator
+ * class (for ValidationGate component).
  */
 
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
@@ -21,15 +21,23 @@ export type WorkflowStep =
   | 'quality-control';
 
 export interface ValidationIssue {
-  type: 'error' | 'warning';
+  type?: 'error' | 'warning';
+  severity?: 'error' | 'warning' | 'info';
   code: string;
   message: string;
   step?: WorkflowStep;
+  field?: string;
 }
 
 export interface WorkflowValidationResult {
   valid: boolean;
   errors: ValidationIssue[];
+  warnings: ValidationIssue[];
+}
+
+export interface ValidationResult {
+  passed: boolean;
+  issues: ValidationIssue[];
   warnings: ValidationIssue[];
 }
 
@@ -183,21 +191,6 @@ export function validateStepTransition(
  */
 export function validateStepAccess(state: WorkflowState, step: WorkflowStep): WorkflowValidationResult {
   return validateStepTransition(state, step);
-=======
-import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fabricator';
-
-export interface ValidationIssue {
-  code: string;
-  severity: 'error' | 'warning' | 'info';
-  message: string;
-  field?: string;
-}
-
-export interface ValidationResult {
-  passed: boolean;
-  issues: ValidationIssue[];
-  warnings: ValidationIssue[];
 }
 
 /**
@@ -325,5 +318,4 @@ export class WorkflowValidator {
 
     return { passed: errors.length === 0, issues: errors, warnings };
   }
->>>>>>> origin/main
 }

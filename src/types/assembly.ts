@@ -18,7 +18,7 @@ export interface AssemblyComponent {
   suggestions: string[];
   user_confirmed_role?: string;
   dimensions_mm?: Record<string, number>;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export interface AssemblyConnection {
@@ -40,7 +40,7 @@ export interface AssemblyResponse {
   system: AssemblySystem;
   components: AssemblyComponent[];
   connections: AssemblyConnection[];
-  validation_results: Record<string, any>;
+  validation_results: Record<string, unknown>;
   missing_components: string[];
   confidence: number;
   requires_user_review: boolean;

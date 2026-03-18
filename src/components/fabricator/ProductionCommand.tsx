@@ -40,7 +40,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { BarcodeLabelGenerator, type BarcodeLabel, type BarcodeLabelOptions } from '@/integrations/yilmaz/BarcodeLabelGenerator';
 import { generateCutSheets } from '@/lib/fabricator/production/CutSheetGenerator';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import { CuttingPlan, OptimizationResult, Profile, WindowUnit, type Cut } from '@/types/fabricator';
+import { OptimizationResult, Profile, WindowUnit, type Cut } from '@/types/fabricator';
 import {
     AlertCircle, CheckCircle,
     ChevronDown,

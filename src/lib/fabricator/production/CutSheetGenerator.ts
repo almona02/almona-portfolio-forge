@@ -1,14 +1,15 @@
-<<<<<<< HEAD
 /**
  * CutSheetGenerator - Per-bar cutting instructions for workshop
  *
- * Transforms CuttingPlan[] into printable cut sheets (per-bar instructions).
- * Phase 2: Production Documents (IMPROVEMENT_PLAN.md).
+ * Provides both:
+ * - generateCutSheets(): Functional API for ProductionCommand (PDF/print export)
+ * - CutSheetGenerator.generate(): Class API for ProductionDocumentsPanel (CutSheetItem[])
  *
- * Output: Structured data for PDF/print export.
+ * Phase 2: Production Documents (IMPROVEMENT_PLAN.md).
  */
 
 import type { Cut, CuttingPlan } from '@/types/fabricator';
+import type { CutSheetItem } from '@/store/workflowStore';
 
 export interface CutSheetBar {
   barIndex: number;
@@ -40,7 +41,7 @@ export interface CutSheet {
 }
 
 /**
- * Generate printable cut sheets from cutting plans.
+ * Generate printable cut sheets from cutting plans (for ProductionCommand PDF export).
  */
 export function generateCutSheets(
   cuttingPlans: CuttingPlan[],
@@ -94,9 +95,7 @@ export function generateCutSheets(
     totalCuts,
     totalWasteMm,
   };
-=======
-import type { CuttingPlan } from '@/types/fabricator';
-import type { CutSheetItem } from '@/store/workflowStore';
+}
 
 /**
  * CutSheetGenerator - Transforms CuttingPlan[] into formatted cut sheet items.
@@ -134,5 +133,4 @@ export class CutSheetGenerator {
 
     return sheets;
   }
->>>>>>> origin/main
 }
