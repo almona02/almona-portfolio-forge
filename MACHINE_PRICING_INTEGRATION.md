@@ -17,7 +17,7 @@ Machine prices from `MachinePricingService.ts` are now **fully synced** across:
 - Contains all machine prices in EGP
 - Example prices:
   - DC-421-PBS: 1,375,000 EGP
-  - MK-450: 107,000 EGP
+  - MK-450: 110,000 EGP
   - ALM 6510: 8,600,000 EGP
 
 ### 2. **EnhancedProductCard.tsx** (Products Page)
@@ -99,7 +99,7 @@ To update machine prices, edit `MachinePricingService.ts`:
 ```typescript
 const MACHINE_PRICES: Record<string, { price: number; currency: string }> = {
   'ym-002': { price: 1375000, currency: 'EGP' }, // DC-421-PBS
-  'ym-019': { price: 107000, currency: 'EGP' },  // MK-450
+  'ym-019': { price: 110000, currency: 'EGP' },  // MK-450
   // Add more...
 };
 ```
