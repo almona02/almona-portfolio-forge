@@ -383,7 +383,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={handleCancel}
+                  onClick={() => void handleCancel()}
                   className="text-slate-400 hover:text-slate-200"
                 >
                   Cancel
@@ -487,7 +487,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDelete}
+              onClick={() => void handleDelete()}
               className="bg-red-600 text-white hover:bg-red-700"
             >
               Delete
@@ -552,7 +552,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
               Cancel
             </Button>
             <Button
-              onClick={handleEdit}
+              onClick={() => void handleEdit()}
               className="bg-amber-600 text-white hover:bg-amber-700"
             >
               Save Changes
@@ -596,7 +596,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
               Cancel
             </Button>
             <Button
-              onClick={handleExport}
+              onClick={() => void handleExport()}
               className="bg-amber-600 text-white hover:bg-amber-700"
             >
               Export
@@ -637,7 +637,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
               Cancel
             </Button>
             <Button
-              onClick={handleStatusChange}
+              onClick={() => void handleStatusChange()}
               className="bg-amber-600 text-white hover:bg-amber-700"
             >
               Change Status

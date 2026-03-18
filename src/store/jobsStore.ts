@@ -76,8 +76,8 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         };
 
         // Check if project exists first, then update or insert
-        const { data: existingProject } = await (supabase
-          .from('fabricator_projects') as any)
+        const { data: existingProject } = await supabase
+          .from('fabricator_projects')
           .select('id')
           .eq('project_code', projectCode)
           .eq('owner_user_id', user.id)
@@ -88,8 +88,8 @@ export const useJobsStore = create<JobsState>((set, get) => ({
 
         if (existingProject) {
           // Update existing project
-          const { data, error } = await (supabase
-            .from('fabricator_projects') as any)
+          const { data, error } = await supabase
+            .from('fabricator_projects')
             .update(baseProject)
             .eq('id', existingProject.id)
             .select('*')
@@ -98,8 +98,8 @@ export const useJobsStore = create<JobsState>((set, get) => ({
           projError = error;
         } else {
           // Insert new project
-          const { data, error } = await (supabase
-            .from('fabricator_projects') as any)
+          const { data, error } = await supabase
+            .from('fabricator_projects')
             .insert(baseProject)
             .select('*')
             .single();
@@ -158,19 +158,19 @@ export const useJobsStore = create<JobsState>((set, get) => ({
           overall_width_mm: job.overallWidth,
           overall_height_mm: job.overallHeight,
           color: job.color,
-          glazing: job.glazing as any,
+          glazing: (job.glazing ?? null) as Record<string, unknown> | null,
           system_pack_id: job.systemPackId || project.system_pack_id,
           status: job.status,
           quantity: job.quantity ?? 1,
-          position_meta: (job.positionMeta as any) || {},
-          optimization: (job.optimization as any) || null,
+          position_meta: (job.positionMeta && typeof job.positionMeta === 'object' ? job.positionMeta : {}) as Record<string, unknown>,
+          optimization: (job.optimization ?? null) as Record<string, unknown> | null,
         };
 
         let posError = null;
 
         if (existingPosition) {
-          const { error } = await (supabase
-            .from('fabricator_positions') as any)
+          const { error } = await supabase
+            .from('fabricator_positions')
             .update(positionPayload)
             .eq('id', existingPosition.id);
           posError = error;
@@ -179,8 +179,8 @@ export const useJobsStore = create<JobsState>((set, get) => ({
             ...positionPayload,
             ...(isValidUUID ? { id: job.id } : {}),
           };
-          const { error } = await (supabase
-            .from('fabricator_positions') as any)
+          const { error } = await supabase
+            .from('fabricator_positions')
             .insert(insertPayload);
           posError = error;
         }
@@ -252,8 +252,8 @@ export const useJobsStore = create<JobsState>((set, get) => ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const dbUpdates: any = {};
-      
+      type PositionUpdate = Database['public']['Tables']['fabricator_positions']['Update'];
+      const dbUpdates: PositionUpdate = {};
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.color) dbUpdates.color = updates.color;
       if (updates.systemPackId) dbUpdates.system_pack_id = updates.systemPackId;
@@ -317,13 +317,13 @@ export const useJobsStore = create<JobsState>((set, get) => ({
 
       const [{ data: projects, error: projError }, { data: positions, error: posError }] =
         await Promise.all([
-          (supabase
-            .from('fabricator_projects') as any)
+          supabase
+            .from('fabricator_projects')
             .select('*')
             .eq('owner_user_id', user.id)
             .order('created_at', { ascending: false }),
-          (supabase
-            .from('fabricator_positions') as any)
+          supabase
+            .from('fabricator_positions')
             .select('*')
             .eq('owner_user_id', user.id)
             .order('created_at', { ascending: false }),
@@ -378,6 +378,6 @@ export const useJobsStore = create<JobsState>((set, get) => ({
 // [DEV/E2E] Expose store for testing
 if (import.meta.env.DEV) {
   if (typeof window !== 'undefined') {
-    (window as any).jobsStore = useJobsStore;
+    (window as Window & { jobsStore?: typeof useJobsStore }).jobsStore = useJobsStore;
   }
 }

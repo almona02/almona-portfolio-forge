@@ -18,7 +18,7 @@ export interface TechnicalSpecs {
 }
 
 export interface SystemGalleryItem {
-  id: PilotSystemId | string;
+  id: string; // PilotSystemId or custom ID
   name: string;
   nameArabic: string;
   manufacturer: string;

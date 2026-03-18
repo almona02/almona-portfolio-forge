@@ -8,7 +8,7 @@
 import { supabase } from "@/lib/supabase";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
@@ -67,7 +67,7 @@ export interface QueryPerformance {
  */
 export interface AnalyticsQueryRequest {
   type: QueryType;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
   group_by?: string[];
   date_range?: Record<string, string>;
   limit?: number;
@@ -78,7 +78,7 @@ export interface AnalyticsQueryRequest {
  * Analytics query response
  */
 export interface AnalyticsQueryResponse {
-  data: Record<string, any>[];
+  data: Record<string, unknown>[];
   metadata: QueryMetadata;
   performance: QueryPerformance;
 }
@@ -102,13 +102,13 @@ export async function executeAnalyticsQuery(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to execute analytics query");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to execute analytics query");
   }
 
-  return await response.json();
+  return (await response.json()) as AnalyticsQueryResponse;
 }
 
 /**
@@ -132,10 +132,10 @@ export async function getQueryResult(
     if (response.status === 404) {
       throw new Error(`Query ${queryId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to get query result");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to get query result");
   }
 
   return await response.json();

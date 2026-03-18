@@ -14,10 +14,10 @@
 
 import * as THREE from 'three';
 
-// Ammo.js types (loaded dynamically)
+// Ammo.js types (loaded dynamically - external library)
 declare global {
   interface Window {
-    Ammo: any;
+    Ammo?: unknown;
   }
 }
 
@@ -53,7 +53,7 @@ export type ConstraintType = 'hinge' | 'slider' | 'tilt_turn' | 'fixed';
 export interface PhysicsBody {
   id: string;
   mesh: THREE.Object3D;
-  rigidBody: any; // Ammo.btRigidBody
+  rigidBody: unknown; // Ammo.btRigidBody
   mass: number;
   type: 'static' | 'dynamic' | 'kinematic';
 }
@@ -63,10 +63,10 @@ export interface PhysicsConstraint {
   type: ConstraintType;
   bodyA: string;
   bodyB: string;
-  constraint: any; // Ammo.btTypedConstraint
+  constraint: unknown; // Ammo.btTypedConstraint
 }
 
-let ammoInstance: any = null;
+let ammoInstance: unknown = null;
 let isAmmoInitialized = false;
 let initPromise: Promise<boolean> | null = null;
 
@@ -79,34 +79,29 @@ export async function initPhysics(): Promise<boolean> {
   
   if (initPromise) return initPromise;
   
-  initPromise = new Promise(async (resolve) => {
+  initPromise = new Promise<boolean>((resolve) => {
+    void (async () => {
     try {
       // Dynamic import of ammo.js
       // ammo.js v0.0.10 exports differently - try multiple import patterns
-      let AmmoModule: any;
+      type AmmoModule = { default?: unknown | (() => Promise<unknown>); ready?: Promise<unknown>; Ammo?: () => Promise<unknown> };
+      let AmmoModule: AmmoModule | undefined;
       try {
-        AmmoModule = await import('ammo.js');
+        AmmoModule = await import('ammo.js') as AmmoModule;
         
-        // ammo.js v0.0.10 typically exports as: { default: function() }
-        // But the function might be at different levels
         if (AmmoModule && typeof AmmoModule === 'object') {
-          // Try default export first
-          if (AmmoModule.default) {
-            if (typeof AmmoModule.default === 'function') {
-              ammoInstance = await AmmoModule.default();
-            } else if (typeof AmmoModule.default === 'object' && AmmoModule.default.ready) {
-              // Some versions export a promise-like object
-              ammoInstance = await AmmoModule.default;
+          const def = AmmoModule.default;
+          if (def) {
+            if (typeof def === 'function') {
+              ammoInstance = await (def as () => Promise<unknown>)();
+            } else if (typeof def === 'object' && def !== null && 'ready' in def) {
+              ammoInstance = await (def as { ready: Promise<unknown> }).ready;
             } else {
-              ammoInstance = AmmoModule.default;
+              ammoInstance = def;
             }
-          } 
-          // Try direct function export
-          else if (typeof AmmoModule === 'function') {
-            ammoInstance = await AmmoModule();
-          }
-          // Try named exports
-          else if (AmmoModule.Ammo && typeof AmmoModule.Ammo === 'function') {
+          } else if (typeof AmmoModule === 'function') {
+            ammoInstance = await (AmmoModule as () => Promise<unknown>)();
+          } else if (AmmoModule.Ammo && typeof AmmoModule.Ammo === 'function') {
             ammoInstance = await AmmoModule.Ammo();
           }
           else {
@@ -116,9 +111,9 @@ export async function initPhysics(): Promise<boolean> {
         } else {
           throw new Error('Ammo.js module structure not recognized');
         }
-      } catch (importError: any) {
+      } catch (importError: unknown) {
         // Fallback: try loading from CDN or skip physics
-        console.warn('[PhysicsEngine] Direct import failed, physics will be disabled:', importError?.message || importError);
+        console.warn('[PhysicsEngine] Direct import failed, physics will be disabled:', importError instanceof Error ? importError.message : importError);
         resolve(false);
         return;
       }
@@ -132,10 +127,11 @@ export async function initPhysics(): Promise<boolean> {
         console.warn('[PhysicsEngine] Ammo.js instance is invalid, disabling physics');
         resolve(false);
       }
-    } catch (error: any) {
-      console.error('[PhysicsEngine] Failed to initialize Ammo.js:', error?.message || error);
+    } catch (error: unknown) {
+      console.error('[PhysicsEngine] Failed to initialize Ammo.js:', error instanceof Error ? error.message : error);
       resolve(false);
     }
+    })();
   });
   
   return initPromise;
@@ -146,10 +142,10 @@ export async function initPhysics(): Promise<boolean> {
  * Handles the simulation loop and body management
  */
 export class PhysicsWorld {
-  private world: any; // Ammo.btDiscreteDynamicsWorld
+  private world: unknown; // Ammo.btDiscreteDynamicsWorld
   private bodies: Map<string, PhysicsBody> = new Map();
   private constraints: Map<string, PhysicsConstraint> = new Map();
-  private tempTransform: any;
+  private tempTransform: unknown;
   private config: PhysicsConfig;
   private isRunning: boolean = false;
   private lastTime: number = 0;
@@ -213,7 +209,7 @@ export class PhysicsWorld {
     bbox.getSize(size);
     
     // Create collision shape
-    let collisionShape: any;
+    let collisionShape: unknown;
     switch (shape) {
       case 'sphere':
         collisionShape = new Ammo.btSphereShape(Math.max(size.x, size.y, size.z) / 2);

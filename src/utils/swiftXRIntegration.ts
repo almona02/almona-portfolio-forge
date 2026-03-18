@@ -253,10 +253,16 @@ function extractModelName(pathOrUrl: string): string {
 /**
  * Detect current platform
  */
+interface WindowWithVendor extends Window {
+  opera?: string;
+  MSStream?: unknown;
+}
+
 function detectPlatform(): 'ios' | 'android' | 'desktop' | 'unknown' {
-  const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+  const win = window as WindowWithVendor;
+  const ua = navigator.userAgent || navigator.vendor || win.opera || '';
   
-  if (/iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream) {
+  if (/iPad|iPhone|iPod/.test(ua) && !win.MSStream) {
     return 'ios';
   }
   
@@ -375,7 +381,9 @@ async function launchWebXR(modelPath: string): Promise<boolean> {
   }
   
   try {
-    const xr = (navigator as any).xr;
+    const nav = navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean> } };
+    const xr = nav.xr;
+    if (!xr?.isSessionSupported) throw new Error('WebXR not available');
     const supported = await xr.isSessionSupported('immersive-ar');
     
     if (!supported) {
@@ -386,7 +394,8 @@ async function launchWebXR(modelPath: string): Promise<boolean> {
     console.log('Launching WebXR for:', modelPath);
     return true;
   } catch (error) {
-    throw new Error(`WebXR launch failed: ${error}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new Error(`WebXR launch failed: ${msg}`);
   }
 }
 

@@ -12,12 +12,12 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EscalationEngine, type Issue } from '@/lib/support/EscalationEngine';
-import { PilotMetrics } from '@/lib/analytics/PilotMetrics';
+import { PilotMetrics, type PilotMetricsData } from '@/lib/analytics/PilotMetrics';
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 
 export const PilotMonitoringDashboard: React.FC = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
-  const [metrics, setMetrics] = useState<any>(null);
+  const [metrics, setMetrics] = useState<PilotMetricsData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -72,13 +72,13 @@ export const PilotMonitoringDashboard: React.FC = () => {
                   <Card className="bg-gray-800 border-gray-700">
                     <CardContent className="p-4">
                       <div className="text-sm text-gray-400">Total Workshops</div>
-                      <div className="text-2xl font-bold">{metrics?.totalWorkshops || 0}</div>
+                      <div className="text-2xl font-bold">{metrics?.totalWorkshops ?? 0}</div>
                     </CardContent>
                   </Card>
                   <Card className="bg-gray-800 border-gray-700">
                     <CardContent className="p-4">
                       <div className="text-sm text-gray-400">Total Projects</div>
-                      <div className="text-2xl font-bold">{metrics?.totalProjects || 0}</div>
+                      <div className="text-2xl font-bold">{metrics?.totalProjects ?? 0}</div>
                     </CardContent>
                   </Card>
                   <Card className="bg-red-900/20 border-red-600">
@@ -136,19 +136,19 @@ export const PilotMonitoringDashboard: React.FC = () => {
                     <Card className="bg-gray-800 border-gray-700">
                       <CardContent className="p-4">
                         <div className="text-sm text-gray-400">Average Accuracy</div>
-                        <div className="text-2xl font-bold">{metrics.averageAccuracy.toFixed(1)}%</div>
+                        <div className="text-2xl font-bold">{Number(metrics.averageAccuracy).toFixed(1)}%</div>
                       </CardContent>
                     </Card>
                     <Card className="bg-gray-800 border-gray-700">
                       <CardContent className="p-4">
                         <div className="text-sm text-gray-400">Time Savings</div>
-                        <div className="text-2xl font-bold">{metrics.averageTimeSavings.toFixed(1)} hrs/week</div>
+                        <div className="text-2xl font-bold">{Number(metrics.averageTimeSavings).toFixed(1)} hrs/week</div>
                       </CardContent>
                     </Card>
                     <Card className="bg-gray-800 border-gray-700">
                       <CardContent className="p-4">
                         <div className="text-sm text-gray-400">Satisfaction</div>
-                        <div className="text-2xl font-bold">{metrics.averageSatisfaction.toFixed(1)}/10</div>
+                        <div className="text-2xl font-bold">{Number(metrics.averageSatisfaction).toFixed(1)}/10</div>
                       </CardContent>
                     </Card>
                   </div>

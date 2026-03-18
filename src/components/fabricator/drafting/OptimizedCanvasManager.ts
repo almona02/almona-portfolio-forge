@@ -344,7 +344,7 @@ export class OptimizedCanvasManager {
              const mockRect: Rectangle = { x: 0, y: 0, width: 1200, height: 1200, type: 'casement' };
              // Check visibility (Culling)
              if (this.isVisible(mockRect)) {
-                 this.renderEgyptianTemplate(ctx, this.templateId, mockRect, this.currentLOD);
+                 void this.renderEgyptianTemplate(ctx, this.templateId, mockRect, this.currentLOD);
              }
         }
     } else {
@@ -359,7 +359,7 @@ export class OptimizedCanvasManager {
             // Egyptian Template Rendering
             if (this.isEgyptianStandard && this.templateId && rect.type) {
                  // Use global template for now, but in future use rect.type mapping
-                 this.renderEgyptianTemplate(ctx, this.templateId, rect, this.currentLOD);
+                 void this.renderEgyptianTemplate(ctx, this.templateId, rect, this.currentLOD);
             } else {
                 // Standard CAD Rendering — use light color for dark background
                 ctx.strokeStyle = '#e2e8f0';
@@ -378,11 +378,15 @@ export class OptimizedCanvasManager {
                 const { x, y, width, height } = frame;
                 const cols = Math.max(1, grid.cols ?? 1);
                 const rows = Math.max(1, grid.rows ?? 1);
-                const colWidths = grid.colWidths?.length === cols
-                    ? grid.colWidths
+                const toNumArray = (arr: unknown[]): number[] =>
+                  arr.map((v): number => (typeof v === 'number' && isFinite(v) ? v : Number(v ?? 1)));
+                const rawColWidths = grid.colWidths as unknown[] | undefined;
+                const colWidths: number[] = rawColWidths?.length === cols
+                    ? toNumArray(rawColWidths)
                     : Array(cols).fill(1);
-                const rowHeights = grid.rowHeights?.length === rows
-                    ? grid.rowHeights
+                const rawRowHeights = grid.rowHeights as unknown[] | undefined;
+                const rowHeights: number[] = rawRowHeights?.length === rows
+                    ? toNumArray(rawRowHeights)
                     : Array(rows).fill(1);
                 const colTotal = colWidths.reduce((a: number, b: number) => a + b, 0) || 1;
                 const rowTotal = rowHeights.reduce((a: number, b: number) => a + b, 0) || 1;

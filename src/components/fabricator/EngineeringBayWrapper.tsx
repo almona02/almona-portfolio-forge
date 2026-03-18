@@ -36,6 +36,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
   const { jobs, setSelectedJob } = useJobsStore();
   const upsertPose = useUpsertPose();
   const { user } = useAuth();
+  const { setCurrentProject, setDesignData, completeStep } = useWorkflowStore();
   const effectivePoseId = poseId ?? projectId;
   const { data: poseV2, isLoading: loadingPoseV2 } = usePoseV2(effectivePoseId ?? undefined);
 
@@ -54,15 +55,19 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
       if (useV2 && poseV2) {
         dispatch({ type: 'SET_CURRENT_PROJECT', payload: poseV2 });
         setSelectedJob(effectivePoseId);
+        setCurrentProject(poseV2);
+        setDesignData(poseV2);
       } else {
         const foundJob = jobs.find((job) => job.id === effectivePoseId);
         if (foundJob) {
           dispatch({ type: 'SET_CURRENT_PROJECT', payload: foundJob });
           setSelectedJob(effectivePoseId);
+          setCurrentProject(foundJob);
+          setDesignData(foundJob);
         }
       }
     }
-  }, [useV2, effectivePoseId, poseV2, jobs, dispatch, setSelectedJob]);
+  }, [useV2, effectivePoseId, poseV2, jobs, dispatch, setSelectedJob, setCurrentProject, setDesignData]);
 
   // Get profiles from project or use empty array
   // Note: WindowUnit doesn't have a profiles property - profiles come from context or props
@@ -90,8 +95,6 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     return [currentProject, ...others];
   }, [currentProject, allSiblingPositions]);
 
-  const { setCurrentProject: setWorkflowProject, setDesignData, completeStep } = useWorkflowStore();
-
   const handleDesignComplete = (components: WindowComponent[]) => {
     if (!currentProject) return;
 
@@ -103,7 +106,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     dispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });
     dispatch({ type: 'UPDATE_PROJECT_COMPONENTS', payload: components });
 
-    setWorkflowProject(updatedProject);
+    setCurrentProject(updatedProject);
     setDesignData(updatedProject);
     completeStep('design');
 
@@ -113,7 +116,11 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
   };
 
   const handleBackToMeasuring = () => {
-    navigate(fabricatorRoutes.newProjectWizard());
+    if (projectId && poseId) {
+      navigate(fabricatorRoutes.poseMeasuring(projectId, poseId));
+    } else {
+      navigate(fabricatorRoutes.newProjectWizard());
+    }
   };
 
   const handleSelectPosition = useCallback((id: string) => {

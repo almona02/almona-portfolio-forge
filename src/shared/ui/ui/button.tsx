@@ -16,7 +16,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, children, ...props }, ref) => {
     // Safer handling for asChild: avoid Radix Slot clone issues when child is not forwardRef
     if (asChild && React.isValidElement(children)) {
-      const mergedClass = cn(buttonVariants({ variant, size, className }), (children as any).props?.className);
+      const childProps = React.isValidElement(children) ? (children as React.ReactElement<{ className?: string }>).props : undefined;
+      const mergedClass = cn(buttonVariants({ variant, size, className }), childProps?.className);
       return React.cloneElement(children as React.ReactElement, {
         className: mergedClass,
         ref,

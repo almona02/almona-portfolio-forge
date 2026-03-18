@@ -61,7 +61,7 @@ export const FinancePanel: React.FC = () => {
 
   const fetchServerPage = React.useCallback(async (): Promise<ServerPage<Order>> => {
     let query = supabase.from('orders').select('*', { count: 'exact' })
-    if (payment !== 'all') query = query.eq('payment_status', payment as any)
+    if (payment !== 'all') query = query.eq('payment_status', payment)
     if (dateFrom) query = query.gte('created_at', new Date(dateFrom).toISOString())
     if (dateTo) {
       const dt = new Date(dateTo)
@@ -79,18 +79,18 @@ export const FinancePanel: React.FC = () => {
     let mounted = true
     setLoading(true)
     setError(null)
-    fetchServerPage()
-      .then(({ rows, total }) => { if (!mounted) return; setData(rows); setTotal(total) })
-      .catch((e) => { if (!mounted) return; setError('Failed to load finance'); console.error(e) })
-      .finally(() => mounted && setLoading(false))
+    void fetchServerPage()
+      .then(({ rows, total }) => { if (!mounted) return; setData(rows); setTotal(total); })
+      .catch((e) => { if (!mounted) return; setError('Failed to load finance'); console.error(e); })
+      .finally(() => mounted && setLoading(false));
 
     const ch = supabase
       .channel('finance-panel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
-        fetchServerPage().then(({ rows, total }) => { setData(rows); setTotal(total) })
+        void fetchServerPage().then(({ rows, total }) => { setData(rows); setTotal(total); });
       })
       .subscribe()
-    return () => { mounted = false; ch.unsubscribe() }
+    return () => { mounted = false; void ch.unsubscribe(); };
   }, [fetchServerPage])
 
   const columns: ColumnDef<Order>[] = [

@@ -208,7 +208,7 @@ function InteractiveGLBModel({
   useEffect(() => {
     if (autoPlayAnimations && actions && Object.keys(actions).length > 0) {
       try {
-        Object.values(actions).forEach((a: any) => {
+        Object.values(actions).forEach((a: { play?: () => void } | null) => {
           if (a && typeof a.play === 'function') {
             a.play();
           }
@@ -220,11 +220,11 @@ function InteractiveGLBModel({
     return () => {
       if (actions && Object.keys(actions).length > 0) {
         try {
-          Object.values(actions).forEach((a: any) => {
-            if (a && typeof a.stop === 'function') {
-              a.stop();
-            }
-          });
+        Object.values(actions).forEach((a: { stop?: () => void } | null) => {
+          if (a && typeof a.stop === 'function') {
+            a.stop();
+          }
+        });
         } catch (error) {
           console.warn('Failed to stop animations:', error);
         }
@@ -364,7 +364,7 @@ export function Interactive3DViewer({
   selectedPartId,
   highlightColor = '#ff6b35',
   showAnnotations = true,
-  showMeasurements = true,
+  showMeasurements: _showMeasurements = true,
   enableMeasurementTool: _enableMeasurementTool = false,
   onModelUpdate,
   cameraState: _cameraState,
@@ -389,7 +389,7 @@ export function Interactive3DViewer({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const modelGroupRef = useRef<THREE.Group | null>(null);
   const windowModelRef = useRef<THREE.Group | null>(null);
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<{ object: THREE.Camera; target: THREE.Vector3 } | null>(null);
 
   // Window animation state
   const [isWindowAnimating, setIsWindowAnimating] = useState(false);
@@ -442,7 +442,7 @@ export function Interactive3DViewer({
   useEffect(() => {
     let cancelled = false;
     if (enableWebXR && 'xr' in navigator) {
-      (async () => {
+      void (async () => {
         try {
           const navXR = (navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean> } }).xr;
           const supported = await navXR?.isSessionSupported?.('immersive-ar');
@@ -455,7 +455,7 @@ export function Interactive3DViewer({
     }
     
     if (isIOS) {
-      detectSwiftXR().then(result => {
+      void detectSwiftXR().then(result => {
         if (!cancelled) setSwiftXRInstalled(result.isInstalled);
       });
     }
@@ -519,10 +519,10 @@ export function Interactive3DViewer({
       session.addEventListener('end', () => setIsXRSession(false));
       
       if (modelGroupRef.current) {
-        modelGroupRef.current.scale.setScalar(webXRScaleFactor);
+        modelGroupRef.current.scale.setScalar(_webXRScaleFactor);
       }
       if (windowModelRef.current) {
-        windowModelRef.current.scale.setScalar(webXRScaleFactor);
+        windowModelRef.current.scale.setScalar(_webXRScaleFactor);
       }
     } catch (err) {
       console.error('[Interactive3DViewer] Failed to start WebXR AR session', err);
@@ -569,7 +569,7 @@ export function Interactive3DViewer({
             <div className="flex gap-2">
               {isIOS && (
                 <button
-                  onClick={async () => {
+                  onClick={() => void (async () => {
                     if (isWindowMode) {
                       toast({
                         title: "iOS AR",
@@ -596,7 +596,7 @@ export function Interactive3DViewer({
                         }
                       });
                     }
-                  }}
+                  })()}
                   className="swiftxr-ar-button"
                 >
                   {swiftXRInstalled ? 'SwiftXR Native' : 'SwiftXR Quick Look'}
@@ -622,15 +622,17 @@ export function Interactive3DViewer({
               {enableWebXR && xrSupported && (
                 !isXRSession ? (
                   <button
-                    onClick={enterWebXR}
+                    onClick={() => void enterWebXR()}
                     className="swiftxr-ar-button"
                   >SwiftXR AR</button>
                 ) : (
                   <button
-                    onClick={exitWebXR}
+                    onClick={() => void exitWebXR()}
                     className="swiftxr-ar-button"
                     style={{ background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' }}
-                  >Exit SwiftXR</button>
+                  >
+                    Exit SwiftXR
+                  </button>
                 )
               )}
             </div>
@@ -722,9 +724,7 @@ export function Interactive3DViewer({
                     />
                   </group>
                 </Bounds>
-                {showMeasurements && (
-                  {/* Measurement overlay removed - component doesn't exist */}
-                )}
+                {/* Measurement overlay removed - component doesn't exist */}
               </>
             ) : isGLBMode && modelPath ? (
               <Bounds fit clip observe margin={1.15}>
@@ -732,7 +732,7 @@ export function Interactive3DViewer({
                   <InteractiveGLBModel 
                     modelPath={modelPath} 
                     onLoaded={onLoaded} 
-                    onError={onError} 
+                    onError={_onError} 
                     autoPlayAnimations={autoPlayAnimations}
                     annotations={effectiveAnnotations}
                     enablePartSelection={enablePartSelection}

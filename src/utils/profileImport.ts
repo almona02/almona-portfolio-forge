@@ -1,11 +1,10 @@
 import { supabase } from "@/lib/supabase";
-import type { FabricatorProfileRow } from "@/types/fabricator";
 
 export interface ScannedProfileData {
   name: string;
   role: "frame" | "sash" | "mullion" | "transom";
   material: "aluminum" | "upvc" | "wood";
-  specifications: any;
+  specifications: Record<string, unknown>;
 }
 
 interface ProfileInsertData {
@@ -13,7 +12,7 @@ interface ProfileInsertData {
   name: string;
   role: "frame" | "sash" | "mullion" | "transom";
   material: "aluminum" | "upvc" | "wood";
-  specifications: Record<string, any>;
+  specifications: Record<string, unknown>;
   source: string;
   created_at: string;
 }
@@ -39,7 +38,6 @@ export async function saveScannedProfile(
   }
 
   try {
-    // Create profile record
     const insertData: ProfileInsertData = {
       user_id: userId,
       name: profileData.name.trim(),
@@ -50,17 +48,16 @@ export async function saveScannedProfile(
       created_at: new Date().toISOString(),
     };
 
-    // Use type assertion for Supabase query (types not fully generated)
     const { data: profile, error: profileError } = await (supabase as any)
       .from("fabricator_profiles")
       .insert(insertData)
       .select()
-      .single() as { data: FabricatorProfileRow | null; error: any };
+      .single();
 
     if (profileError) {
       console.error("Profile creation error:", profileError);
       throw new Error(
-        profileError.message || "Failed to create profile record in database"
+        (profileError as { message?: string }).message ?? "Failed to create profile record in database"
       );
     }
 
@@ -68,15 +65,14 @@ export async function saveScannedProfile(
       throw new Error("Profile created but no ID returned");
     }
 
-    // Upload thumbnail if geometry is present
-    const geom = profileData.specifications?.geometry_config;
+    const geom = profileData.specifications?.geometry_config as { svg_path?: string; view_box?: string } | undefined;
     if (geom?.svg_path && geom?.view_box) {
       try {
         const svgContent = generateProfileSVG(geom.svg_path, geom.view_box);
         const thumbnailUrl = await uploadProfileThumbnail(svgContent, profile.id, userId);
 
-        // Update profile with thumbnail URL (non-critical, don't fail if this fails)
-        const { error: updateError } = await (supabase as any)
+        const supabaseUpdate = supabase as any;
+        const { error: updateError } = await supabaseUpdate
           .from("fabricator_profiles")
           .update({ thumbnail_url: thumbnailUrl })
           .eq("id", profile.id)
@@ -92,7 +88,7 @@ export async function saveScannedProfile(
       }
     }
 
-    return profile.id;
+    return profile.id as string;
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error saving profile";

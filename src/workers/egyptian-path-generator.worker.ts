@@ -185,7 +185,8 @@ const generateSlidingWindowPaths = (width: number, height: number, quality: stri
 
 self.onmessage = (e: MessageEvent<EgyptianPathRequest>) => {
   const start = performance.now();
-  const { templateId, width, height, quality, params } = e.data;
+  const { templateId, width, height, quality, params: rawParams } = e.data;
+  const params = rawParams && typeof rawParams === 'object' ? rawParams : {};
 
   let paths: PathItem[] = [];
   

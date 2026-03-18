@@ -19,7 +19,7 @@ export interface DXFParseResponse {
     polygonCount: number;
     vertexCount: number;
   };
-  metrics?: Record<string, any>;
+  metrics?: Record<string, unknown>;
   warnings?: string[];
   error?: {
     type: string;
@@ -34,7 +34,7 @@ export interface DXFParseResponse {
  * Note: Full DXF parsing is done on backend via API.
  * This worker handles lightweight validation and preprocessing.
  */
-self.onmessage = async (event: MessageEvent<DXFParseRequest>) => {
+self.onmessage = (event: MessageEvent<DXFParseRequest>) => {
   const { fileContent, filename: _filename, language: _language = 'en' } = event.data;
 
   try {

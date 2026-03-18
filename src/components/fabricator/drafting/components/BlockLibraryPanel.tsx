@@ -45,6 +45,7 @@ import {
 import React, { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useDraftingContext } from '../DraftingContext';
+import type { Geometry2D } from '../types/drafting';
 import type { BlockDefinition } from '../types/blocks';
 import { BlockManager } from '../types/blocks';
 
@@ -276,7 +277,7 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
       ...block,
       id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: newName,
-      geometry: JSON.parse(JSON.stringify(block.geometry)), // Deep copy
+      geometry: JSON.parse(JSON.stringify(block.geometry)) as Geometry2D, // Deep copy
       createdAt: new Date(),
       updatedAt: new Date(),
       usageCount: 0

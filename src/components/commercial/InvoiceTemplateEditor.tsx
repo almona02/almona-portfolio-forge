@@ -147,7 +147,7 @@ export const InvoiceTemplateEditor: React.FC<InvoiceTemplateEditorProps> = ({
             }
         };
 
-        loadTemplate();
+        void loadTemplate();
     }, [templateId]);
 
     /**
@@ -533,7 +533,7 @@ export const InvoiceTemplateEditor: React.FC<InvoiceTemplateEditorProps> = ({
                             </Button>
                         )}
                         <Button
-                            onClick={handleSave}
+                            onClick={() => void handleSave()}
                             disabled={isSaving || !name.trim()}
                         >
                             {isSaving ? (

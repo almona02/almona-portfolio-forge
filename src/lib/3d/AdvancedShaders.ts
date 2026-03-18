@@ -497,10 +497,10 @@ export function updateMaterialLights(
 ): void {
   scene.traverse((object) => {
     if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
-      const uniforms = object.material.uniforms;
-      if (uniforms.lightPosition) uniforms.lightPosition.value.copy(lightPosition);
-      if (uniforms.lightColor) uniforms.lightColor.value.copy(lightColor);
-      if (uniforms.lightIntensity) uniforms.lightIntensity.value = lightIntensity;
+      const u = object.material.uniforms as Record<string, { value: THREE.Vector3 | THREE.Color | number }>;
+      if (u.lightPosition?.value && 'copy' in u.lightPosition.value) (u.lightPosition.value as THREE.Vector3).copy(lightPosition);
+      if (u.lightColor?.value && 'copy' in u.lightColor.value) (u.lightColor.value as THREE.Color).copy(lightColor);
+      if (u.lightIntensity?.value !== undefined) u.lightIntensity.value = lightIntensity;
     }
   });
 }
@@ -511,8 +511,8 @@ export function updateMaterialLights(
 export function updateMaterialEnvMap(scene: THREE.Scene, envMap: THREE.CubeTexture): void {
   scene.traverse((object) => {
     if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
-      const uniforms = object.material.uniforms;
-      if (uniforms.envMap) uniforms.envMap.value = envMap;
+      const u = object.material.uniforms as Record<string, { value: THREE.CubeTexture }>;
+      if (u.envMap) u.envMap.value = envMap;
     }
   });
 }

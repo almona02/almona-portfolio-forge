@@ -8,7 +8,7 @@
 import { supabase } from "@/lib/supabase";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
@@ -52,7 +52,7 @@ export type ReportJobStatus =
 export interface ReportGenerationRequest {
   template_id?: string;
   report_type: string;
-  report_data: Record<string, any>;
+  report_data: Record<string, unknown>;
   format?: ReportFormat;
 }
 
@@ -95,10 +95,10 @@ export async function generateReport(
   });
 
   if (!response.ok) {
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to generate report");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to generate report");
   }
 
   return await response.json();
@@ -125,10 +125,10 @@ export async function getReportJob(
     if (response.status === 404) {
       throw new Error(`Report job ${jobId} not found`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to get report job");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to get report job");
   }
 
   return await response.json();
@@ -153,10 +153,10 @@ export async function downloadReport(jobId: string): Promise<string> {
     if (response.status === 404) {
       throw new Error(`Report ${jobId} not available for download`);
     }
-    const errorData = await response
+    const errorData = (await response
       .json()
-      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "Failed to download report");
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }))) as { detail?: string };
+    throw new Error(errorData.detail ?? "Failed to download report");
   }
 
   // Backend returns a redirect, extract the location

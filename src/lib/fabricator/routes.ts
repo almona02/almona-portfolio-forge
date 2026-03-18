@@ -18,6 +18,9 @@ export const fabricatorRoutes = {
   studioProjects: () => `${STUDIO_BASE}/projects`,
   /** Single project workspace (full screen) */
   studioProject: (projectId: string) => `${STUDIO_BASE}/projects/${projectId}`,
+  /** Pose-centric: measuring (capture dimensions before design) */
+  poseMeasuring: (projectId: string, poseId: string) =>
+    `${STUDIO_BASE}/projects/${projectId}/positions/${poseId}/measuring`,
   /** Pose-centric: design studio */
   poseDesign: (projectId: string, poseId: string) =>
     `${STUDIO_BASE}/projects/${projectId}/positions/${poseId}/design`,
@@ -39,6 +42,18 @@ export const fabricatorRoutes = {
   /** Reports */
   studioReports: (subPath = '') =>
     subPath ? `${STUDIO_BASE}/reports/${subPath}` : `${STUDIO_BASE}/reports`,
+  /** Production: workshop portal */
+  studioProductionWorkshop: () => `${STUDIO_BASE}/production/workshop`,
+  /** Production: delivery tracking */
+  studioProductionDelivery: () => `${STUDIO_BASE}/production/delivery`,
+  /** Production: orders management */
+  studioProductionOrders: () => `${STUDIO_BASE}/production/orders`,
+  /** Data: bent profile designer */
+  studioDataBentProfiles: () => `${STUDIO_BASE}/data/bent-profiles`,
+  /** Fabricator wizard (standalone) */
+  fabricatorWizard: () => '/fabricator/wizard',
+  /** Admin: validation dashboard */
+  adminValidation: () => '/admin/validation',
   /** New project wizard (legacy entry: redirect target) */
   newProjectWizard: () => '/fabricator/studio/projects?new=true',
 } as const;

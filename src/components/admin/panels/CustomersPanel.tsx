@@ -48,9 +48,9 @@ export const CustomersPanel: React.FC = () => {
   const fetchServerPage = React.useCallback(async (): Promise<ServerPage<Profile>> => {
     let query = supabase.from('profiles').select('*', { count: 'exact' })
 
-    if (role !== 'all') query = query.eq('role', role as any)
-    if (sector !== 'all') query = query.eq('sector', sector as any)
-    if (verified !== 'all') query = query.eq('is_verified', (verified === 'verified') as any)
+    if (role !== 'all') query = query.eq('role', role)
+    if (sector !== 'all') query = query.eq('sector', sector)
+    if (verified !== 'all') query = query.eq('is_verified', verified === 'verified')
     if (governorate) query = query.ilike('governorate', `%${governorate}%`)
     if (search) {
       const s = search.replace(/%/g, '')
@@ -71,18 +71,18 @@ export const CustomersPanel: React.FC = () => {
     let mounted = true
     setLoading(true)
     setError(null)
-    fetchServerPage()
-      .then(({ rows, total }) => { if (!mounted) return; setData(rows); setTotal(total) })
-      .catch((e) => { if (!mounted) return; setError('Failed to load customers'); console.error(e) })
-      .finally(() => mounted && setLoading(false))
+    void fetchServerPage()
+      .then(({ rows, total }) => { if (!mounted) return; setData(rows); setTotal(total); })
+      .catch((e) => { if (!mounted) return; setError('Failed to load customers'); console.error(e); })
+      .finally(() => mounted && setLoading(false));
 
     const ch = supabase
       .channel('customers-panel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
-        fetchServerPage().then(({ rows, total }) => { setData(rows); setTotal(total) })
+        void fetchServerPage().then(({ rows, total }) => { setData(rows); setTotal(total); });
       })
       .subscribe()
-    return () => { mounted = false; ch.unsubscribe() }
+    return () => { mounted = false; void ch.unsubscribe(); };
   }, [fetchServerPage])
 
   const columns: ColumnDef<Profile>[] = [
@@ -90,7 +90,7 @@ export const CustomersPanel: React.FC = () => {
     { accessorKey: 'company_name', header: 'Company' },
     { accessorKey: 'phone', header: 'Phone' },
     { accessorKey: 'governorate', header: 'Governorate' },
-    { accessorKey: 'sector', header: 'Sector', cell: ({ getValue }) => <Badge variant="outline">{String(getValue() ?? '')}</Badge> },
+    { accessorKey: 'sector', header: 'Sector', cell: ({ getValue }) => { const v = getValue(); return <Badge variant="outline">{typeof v === 'string' ? v : v == null ? '' : typeof v === 'object' ? '[object Object]' : String(v as string | number | boolean)}</Badge>; } },
     { accessorKey: 'role', header: 'Role', cell: ({ getValue }) => <Badge variant="secondary">{String(getValue())}</Badge> },
     { accessorKey: 'is_verified', header: 'Verified', cell: ({ getValue }) => (getValue() ? <Badge>Yes</Badge> : <Badge variant="secondary">No</Badge>) },
   ]
