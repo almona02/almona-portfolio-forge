@@ -17,8 +17,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { ArrowRight, Layers, Loader2 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
-
 export const BOMReviewPage: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();

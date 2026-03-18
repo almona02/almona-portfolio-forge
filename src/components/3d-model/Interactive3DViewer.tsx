@@ -364,7 +364,7 @@ export function Interactive3DViewer({
   selectedPartId,
   highlightColor = '#ff6b35',
   showAnnotations = true,
-  showMeasurements = true,
+  showMeasurements: _showMeasurements = true,
   enableMeasurementTool: _enableMeasurementTool = false,
   onModelUpdate,
   cameraState: _cameraState,

@@ -9,10 +9,7 @@
 
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
-import {
-  generateFabricatorQuote,
-  type FabricatorQuoteOptions,
-} from '@/lib/fabricator/commercial/FabricatorQuoteService';
+import { generateFabricatorQuote } from '@/lib/fabricator/commercial/FabricatorQuoteService';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { formatCurrency } from '@/lib/i18n/formatters';

@@ -1,15 +1,12 @@
 import { ProjectStudio } from '@/components/fabricator/project/ProjectStudio';
+import { ProjectSummaryDashboard } from '@/components/fabricator/project/ProjectSummaryDashboard';
 import { PageLoadingWrapper } from '@/components/ui/PageLoadingWrapper';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useProject, useProjectPositions } from '@/hooks/useFabricatorQueries';
-<<<<<<< HEAD
-import React from 'react';
-=======
 import { FeatureFlags } from '@/lib/featureFlags';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { BarChart3, Layout } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
->>>>>>> origin/main
 import { useParams } from 'react-router-dom';
 
 export const ProjectStudioWrapper: React.FC = () => {
@@ -29,13 +26,6 @@ export const ProjectStudioWrapper: React.FC = () => {
     }
 
     return (
-<<<<<<< HEAD
-        <ProjectStudio
-            projectId={projectId}
-            initialProject={projectData}
-            profiles={allProfiles}
-        />
-=======
         <div className="flex flex-col h-full overflow-hidden">
             {/* View toggle */}
             <div className="flex items-center justify-between px-6 py-3 border-b border-amber-600/20 bg-[#0c0c0c]">
@@ -76,7 +66,6 @@ export const ProjectStudioWrapper: React.FC = () => {
                 )}
             </div>
         </div>
->>>>>>> origin/main
     );
 };
 

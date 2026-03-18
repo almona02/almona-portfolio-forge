@@ -8,7 +8,7 @@
 import { supabase } from "@/lib/supabase";
 
 const getApiBase = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
