@@ -21,6 +21,7 @@ interface StepDef {
 }
 
 const STEPS: StepDef[] = [
+  { id: 'measuring', label: 'Measuring', shortLabel: 'Measure', icon: <Ruler size={14} />, pathSuffix: 'measuring' },
   { id: 'design', label: 'Design', shortLabel: 'Design', icon: <Paintbrush size={14} />, pathSuffix: 'design' },
   { id: 'bom', label: 'Bill of Materials', shortLabel: 'BOM', icon: <ClipboardList size={14} />, pathSuffix: 'bom' },
   { id: 'optimization', label: 'Optimization', shortLabel: 'Optimize', icon: <Layers size={14} />, pathSuffix: 'optimization' },

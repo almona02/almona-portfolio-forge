@@ -44,22 +44,26 @@ export interface FabricatorPositionV2 {
   updated_at: string;
 }
 
-/** Map v2 position row to WindowUnit for UI (exported for use in hooks/components). */
+/** Map v2 position row to WindowUnit for UI (exported for use in hooks/components).
+ * AICS-001: sizes come from stored millimetre columns, not inferred values.
+ * `window_unit` JSON is optional overlay — missing blob must not hide a pose.
+ */
 export function mapPositionRowToWindowUnit(row: PositionV2Row): WindowUnit | null {
-  const wu = row.window_unit;
-  if (!wu) return null;
+  if (!row?.id) return null;
+  const wu = (row.window_unit ?? {}) as Record<string, unknown>;
   const components = (row.components ?? wu.components ?? []) as WindowUnit['components'];
+  const hardwareRaw = wu.hardware ?? row.hardware;
   return {
     id: row.id,
     orderNumber: (wu.orderNumber as string) ?? row.order_number ?? '',
     posNumber: (wu.posNumber as string) ?? row.pos_number ?? '',
-    type: (wu.type as string) ?? row.type ?? '',
+    type: (wu.type as string) ?? row.type ?? 'window',
     components: Array.isArray(components) ? components : [],
-    overallWidth: (wu.overallWidth as number) ?? row.overall_width_mm ?? 0,
-    overallHeight: (wu.overallHeight as number) ?? row.overall_height_mm ?? 0,
+    overallWidth: Number(wu.overallWidth ?? row.overall_width_mm ?? 0) || 0,
+    overallHeight: Number(wu.overallHeight ?? row.overall_height_mm ?? 0) || 0,
     color: (wu.color as string) ?? row.color ?? '',
     glazing: (wu.glazing as WindowUnit['glazing']) ?? row.glazing ?? {},
-    hardware: (Array.isArray(wu.hardware) ? wu.hardware : []) as WindowUnit['hardware'],
+    hardware: (Array.isArray(hardwareRaw) ? hardwareRaw : []) as WindowUnit['hardware'],
     status: (wu.status as WindowUnit['status']) ?? row.status ?? 'measuring',
     optimization: (row.optimization ?? wu.optimization) as WindowUnit['optimization'],
     createdAt: new Date(row.created_at),
@@ -73,10 +77,77 @@ export function mapPositionRowToWindowUnit(row: PositionV2Row): WindowUnit | nul
   } as WindowUnit;
 }
 
+export function persistenceErrorMessage(err: unknown): string {
+  if (err instanceof Error && err.message && err.message !== '[object Object]') {
+    return err.message;
+  }
+  if (err && typeof err === 'object') {
+    const rec = err as { message?: unknown; details?: unknown; hint?: unknown; code?: unknown };
+    const parts = [rec.message, rec.details, rec.hint, rec.code]
+      .filter((v) => typeof v === 'string' && v.length > 0) as string[];
+    if (parts.length) return parts.join(' — ');
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  }
+  return String(err);
+}
+
 // Helper to validate UUID format
-const isUuid = (id: string): boolean => {
+export const isFabricatorUuid = (id: string | undefined | null): boolean => {
+  if (!id) return false;
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 };
+
+const isUuid = isFabricatorUuid;
+
+/** Dual-write trigger mirrors v2 positions onto v1 using the same project UUID. */
+async function ensureLegacyProjectMirror(project: {
+  id: string;
+  owner_user_id: string;
+  project_code: string;
+  project_name: string;
+  client_name: string;
+  site_name: string | null;
+  system_pack_id: string;
+  status?: string;
+}): Promise<void> {
+  const { data: byId } = await supabase
+    .from('fabricator_projects')
+    .select('id')
+    .eq('id', project.id)
+    .maybeSingle();
+  if (byId?.id) return;
+
+  const payload = {
+    id: project.id,
+    owner_user_id: project.owner_user_id,
+    project_code: project.project_code,
+    project_name: project.project_name,
+    client_name: project.client_name,
+    site_name: project.site_name,
+    currency: 'EGP',
+    region: 'egypt',
+    system_pack_id: project.system_pack_id,
+    status: project.status ?? 'draft',
+    meta: {},
+  };
+
+  const { error } = await supabase.from('fabricator_projects').insert(payload);
+  if (!error) return;
+  const isDup = error.code === '23505' || /duplicate|unique/i.test(error.message ?? '');
+  if (!isDup) throw new Error(persistenceErrorMessage(error));
+
+  const { error: retryErr } = await supabase.from('fabricator_projects').insert({
+    ...payload,
+    project_code: `${project.project_code}-V2`,
+  });
+  if (retryErr && retryErr.code !== '23505') {
+    throw new Error(persistenceErrorMessage(retryErr));
+  }
+}
 
 export const fabricatorClientV2 = {
   async getUserId(): Promise<string> {
@@ -96,17 +167,50 @@ export const fabricatorClientV2 = {
   },
 
   async getProject(projectId: string, ownerUserId: string): Promise<FabricatorProjectV2 | null> {
-    // Validate UUID to prevent 400 Bad Request
-    if (!isUuid(projectId)) return null;
+    const resolved = await this.resolveProjectId(projectId, ownerUserId);
+    if (!resolved) return null;
 
     const { data, error } = await supabase
       .from('fabricator_projects_v2')
       .select('*')
-      .eq('id', projectId)
+      .eq('id', resolved)
       .eq('owner_user_id', ownerUserId)
       .maybeSingle();
     if (error) throw error;
     return data as FabricatorProjectV2 | null;
+  },
+
+  /**
+   * Resolve a route/legacy id or project code to the canonical v2 project UUID.
+   * AICS-001: lookup is exact (id or project_code), never inferred.
+   */
+  async resolveProjectId(
+    rawId: string | undefined | null,
+    ownerUserId: string,
+    fallbackCode?: string | null,
+  ): Promise<string | null> {
+    if (rawId && isUuid(rawId)) {
+      const { data } = await supabase
+        .from('fabricator_projects_v2')
+        .select('id')
+        .eq('id', rawId)
+        .eq('owner_user_id', ownerUserId)
+        .maybeSingle();
+      if (data?.id) return data.id;
+    }
+
+    const codes = [rawId, fallbackCode].filter((c): c is string => !!c && !isUuid(c));
+    for (const code of codes) {
+      const { data } = await supabase
+        .from('fabricator_projects_v2')
+        .select('id')
+        .eq('project_code', code)
+        .eq('owner_user_id', ownerUserId)
+        .maybeSingle();
+      if (data?.id) return data.id;
+    }
+
+    return null;
   },
 
   async listPositions(ownerUserId: string, projectId?: string | null): Promise<PositionV2Row[]> {
@@ -114,14 +218,14 @@ export const fabricatorClientV2 = {
       .from('fabricator_positions_v2')
       .select('*')
       .eq('owner_user_id', ownerUserId)
-      .order('updated_at', { ascending: false });
-    
+      .order('pos_number', { ascending: true });
+
     if (projectId) {
-      // If projectId provided but not UUID, return empty (or ignore filter? safer to return empty for strict correctness)
-      if (!isUuid(projectId)) return [];
-      q = q.eq('project_id', projectId);
+      const resolved = await this.resolveProjectId(projectId, ownerUserId, projectId);
+      if (!resolved) return [];
+      q = q.eq('project_id', resolved);
     }
-    
+
     const { data, error } = await q;
     if (error) throw error;
     return (data ?? []) as PositionV2Row[];
@@ -149,14 +253,21 @@ export const fabricatorClientV2 = {
     options?: { grid?: Record<string, unknown>; selectedPreset?: string }
   ): Promise<{ projectId: string; poseId: string }> {
     const projectCode = windowUnit.projectCode || windowUnit.orderNumber;
+    const siteName =
+      (windowUnit.positionMeta as Record<string, unknown> | undefined)?.siteName as string
+      ?? (windowUnit.positionMeta as Record<string, unknown> | undefined)?.elevation as string
+      ?? null;
+    const projectName =
+      (windowUnit.positionMeta as Record<string, unknown> | undefined)?.projectName as string
+      ?? projectCode;
     const baseProject: Omit<ProjectV2Insert, 'id'> = {
       owner_user_id: ownerUserId,
       project_code: projectCode,
-      project_name: projectCode,
+      project_name: projectName,
       client_name: windowUnit.customer ?? 'Fabricator Client',
-      site_name: (windowUnit.positionMeta as Record<string, unknown>)?.elevation as string ?? null,
+      site_name: siteName,
       currency: 'EGP',
-      region: 'global',
+      region: 'egypt',
       system_pack_id: windowUnit.systemPackId ?? 'rock60',
       status: windowUnit.status ?? 'draft',
       meta: {},
@@ -173,15 +284,46 @@ export const fabricatorClientV2 = {
     let projectId: string;
     if (existingProject?.id) {
       projectId = existingProject.id;
-    } else {
+    } else if (isUuid(windowUnit.projectId)) {
       const { data: inserted, error: projErr } = await supabase
         .from('fabricator_projects_v2')
-        .insert(baseProject as ProjectV2Insert)
+        .insert({ ...baseProject, id: windowUnit.projectId } as ProjectV2Insert)
         .select('id')
         .single();
-      if (projErr || !inserted?.id) throw new Error(projErr?.message ?? 'Failed to create project');
+      if (projErr || !inserted?.id) throw new Error(persistenceErrorMessage(projErr) || 'Failed to create project');
+      projectId = inserted.id;
+    } else {
+      const { data: v1ByCode } = await supabase
+        .from('fabricator_projects')
+        .select('id')
+        .eq('project_code', projectCode)
+        .eq('owner_user_id', ownerUserId)
+        .maybeSingle();
+
+      const insertRow: ProjectV2Insert = {
+        ...baseProject,
+        ...(v1ByCode?.id ? { id: v1ByCode.id } : {}),
+      } as ProjectV2Insert;
+
+      const { data: inserted, error: projErr } = await supabase
+        .from('fabricator_projects_v2')
+        .insert(insertRow)
+        .select('id')
+        .single();
+      if (projErr || !inserted?.id) throw new Error(persistenceErrorMessage(projErr) || 'Failed to create project');
       projectId = inserted.id;
     }
+
+    await ensureLegacyProjectMirror({
+      id: projectId,
+      owner_user_id: ownerUserId,
+      project_code: projectCode,
+      project_name: projectName,
+      client_name: baseProject.client_name,
+      site_name: siteName,
+      system_pack_id: baseProject.system_pack_id,
+      status: baseProject.status,
+    });
 
     const now = new Date().toISOString();
     const positionPayload: PositionV2Update & Partial<PositionV2Insert> = {
@@ -206,13 +348,14 @@ export const fabricatorClientV2 = {
       selected_preset: options?.selectedPreset ?? null,
       window_unit: {
         ...windowUnit,
+        createdAt: windowUnit.createdAt instanceof Date ? windowUnit.createdAt.toISOString() : windowUnit.createdAt,
+        updatedAt: now,
         projectCode,
         projectId,
       } as unknown as Record<string, unknown>,
       updated_at: now,
     };
 
-    // Only update if ID is UUID
     if (isUuid(windowUnit.id)) {
         const { data: existingPos } = await supabase
         .from('fabricator_positions_v2')
@@ -227,46 +370,41 @@ export const fabricatorClientV2 = {
             .update(positionPayload)
             .eq('id', windowUnit.id)
             .eq('owner_user_id', ownerUserId);
-        if (upErr) throw upErr;
+        if (upErr) throw new Error(persistenceErrorMessage(upErr));
         return { projectId, poseId: windowUnit.id };
         }
     }
-    
-    // Fallback or Insert logic: If ID is legacy, we might need a new UUID or force insert if we want to migrate?
-    // For now, if it's not a UUID, we likely want a new UUID. 
-    // However, the interface expects `windowUnit.id` to be the ID.
-    // If windowUnit.id is NOT a UUID, we should probably generate a new one for V2
-    // But then we lose the link. 
-    // Let's assume for now we try to insert. If it fails due to UUID constraint, it throws.
-    // But `windowUnit` usually comes from the app state.
-    
-    // Safer: check if windowUnit.id is UUID. If not, generate one?
-    // But wait, the previous code just inserted it.
-    // If windowUnit.id is 'project-123', insert will fail if col is uuid.
-    
+
+    const { data: existingByPos } = await supabase
+      .from('fabricator_positions_v2')
+      .select('id')
+      .eq('project_id', projectId)
+      .eq('owner_user_id', ownerUserId)
+      .eq('pos_number', windowUnit.posNumber)
+      .maybeSingle();
+
+    if (existingByPos?.id) {
+      const { error: upErr } = await supabase
+        .from('fabricator_positions_v2')
+        .update(positionPayload)
+        .eq('id', existingByPos.id)
+        .eq('owner_user_id', ownerUserId);
+      if (upErr) throw new Error(persistenceErrorMessage(upErr));
+      return { projectId, poseId: existingByPos.id };
+    }
+
     const insertPayload = { ...positionPayload };
     if (isUuid(windowUnit.id)) {
         (insertPayload as PositionV2Insert).id = windowUnit.id;
-    } else {
-        // omit ID to let postgres generate it? Or generate one here?
-        // If we omit, supabase/postgres generates it. We return the new ID.
-        // But we need to return `poseId`.
-        // Let's rely on Postgres generation if invalid.
-        // BUT `windowUnit.id` is required in the object we return?
-        // Actually the return type is { projectId, poseId }.
-        
-        // If we don't pass ID, we need to capture it from insert response.
     }
-    
-    // We'll trust that if it's not a valid UUID, we shouldn't force it into the ID column.
-    
+
     const { data: insertedPos, error: insErr } = await supabase
       .from('fabricator_positions_v2')
       .insert(insertPayload as PositionV2Insert)
       .select('id')
       .single();
-      
-    if (insErr) throw insErr;
+
+    if (insErr || !insertedPos?.id) throw new Error(persistenceErrorMessage(insErr) || 'Failed to save pose');
     return { projectId, poseId: insertedPos.id };
   },
 

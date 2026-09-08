@@ -347,10 +347,12 @@ const ProjectsPage: React.FC = () => {
                   <div className="divide-y divide-amber-600/30 space-y-1">
                     {projectsSummary.map((p) => {
                       const handleProjectClick = () => {
+                        if (useV2 && p.projectId) {
+                          navigate(fabricatorRoutes.studioProject(p.projectId));
+                          return;
+                        }
                         if (useV2 && p.projectId && p.firstPoseId) {
-                          navigate(fabricatorRoutes.poseDesign(p.projectId, p.firstPoseId), {
-                            state: { jobId: p.firstPoseId, startTab: 'design' },
-                          });
+                          navigate(fabricatorRoutes.poseMeasuring(p.projectId, p.firstPoseId));
                           return;
                         }
                         const firstJob = jobs.find((job) => (job.projectCode || job.orderNumber) === p.key);

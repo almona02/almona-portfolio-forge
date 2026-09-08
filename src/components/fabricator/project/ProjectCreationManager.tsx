@@ -1,6 +1,10 @@
 import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
 import NewProjectWizard, { type ProjectHeaderMeta } from '@/components/fabricator/NewProjectWizard';
+import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { FeatureFlags } from '@/lib/featureFlags';
+import { fabricatorClientV2, persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
 import { useJobsStore } from '@/store/jobsStore';
 import { WindowUnit } from '@/types/fabricator';
 import React, { useEffect, useState } from 'react';
@@ -21,6 +25,7 @@ export const ProjectCreationManager: React.FC = () => {
     const navigate = useNavigate();
     const { addOrUpdateJob, setSelectedJob } = useJobsStore();
     const { dispatch: workspaceDispatch } = useFabricatorWorkspace();
+    const { user } = useAuth();
 
     // Dialog State
     const [showProjectWizard, setShowProjectWizard] = useState(false);
@@ -71,16 +76,17 @@ export const ProjectCreationManager: React.FC = () => {
                 .slice(0, 3);
             const customerCode = `FC-${clientSlug}-${Date.now().toString(36).toUpperCase().slice(-3)}`;
 
-            const newProjectId = `project-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+            const newProjectId = crypto.randomUUID();
+            const poseId = crypto.randomUUID();
 
             // 2. Construct WindowUnit Object
             const newProject: WindowUnit = {
-                id: newProjectId,
+                id: poseId,
                 orderNumber: projectCode,
                 posNumber: '1', // Default first position
                 type: 'window',
                 components: [],
-                overallWidth: 1200, // Reasonable default
+                overallWidth: 1200, // Reasonable default — operator sets exact size on Measuring
                 overallHeight: 1400,
                 color: '#FFFFFF',
                 glazing: { type: 'clear', thickness: 24 },
@@ -92,12 +98,14 @@ export const ProjectCreationManager: React.FC = () => {
                 customer: meta.clientName,
                 projectCode,
                 customerCode,
+                projectId: newProjectId,
                 systemPackId: meta.systemPackId,
                 quantity: 1,
                 // Store Egyptian/Regional constraints in positionMeta
                 positionMeta: {
                     siteName: meta.siteName,
-                    elevation: meta.siteName, // Use site name as default elevation
+                    projectName: meta.projectName || meta.siteName || projectCode,
+                    elevation: meta.siteName,
                     governorate: meta.governorate,
                     windZone: meta.windZone,
                     exposure: meta.exposure,
@@ -106,12 +114,20 @@ export const ProjectCreationManager: React.FC = () => {
                     baseShape: meta.baseShape,
                     openingType: meta.openingType,
                 } as any,
-                // Store advanced meta if needed by specific logic (optional)
-                // meta: { ...meta } 
             };
 
-            // 3. Persist Project
-            // This saves to the local store (Zustand) and eventually syncs to Supabase
+            let persistedProjectId = newProjectId;
+            let persistedPoseId = poseId;
+
+            if (FeatureFlags.FABRICATOR_READ_V2 && user?.id) {
+                const saved = await fabricatorClientV2.savePose(newProject, user.id);
+                persistedProjectId = saved.projectId;
+                persistedPoseId = saved.poseId;
+                newProject.id = persistedPoseId;
+                newProject.projectId = persistedProjectId;
+            }
+
+            // 3. Persist Project locally (v2 server write already done above)
             addOrUpdateJob(newProject);
 
             // 4. Update Workspace Context
@@ -123,12 +139,11 @@ export const ProjectCreationManager: React.FC = () => {
             setProjectMeta(null); // Reset meta
 
             toast.success(
-                t('fabricator:project.created', 'Project created successfully. Opening drafting center...')
+                t('fabricator:project.created', 'Project created. Enter the first window size on Measuring.')
             );
 
-            // 6. Navigate to Project Studio Workspace (Design/Drafting Mode)
-            // Canonical route: /fabricator/studio/projects/:projectId/positions/:poseId/design
-            navigate(`/fabricator/studio/projects/${newProject.id}/positions/${newProject.id}/design`);
+            // 6. Measuring first so each pose's W×H is captured before design
+            navigate(fabricatorRoutes.poseMeasuring(persistedProjectId, persistedPoseId));
 
         } catch (error) {
             console.error('Failed to create project:', error);

@@ -13,6 +13,7 @@ import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { usePose as usePoseV2, useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
+import { isFabricatorUuid, persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
 import { useJobsStore } from '@/store/jobsStore';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
@@ -79,10 +80,10 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
 
   // Get related positions (sibling poses within the same project)
   const resolvedProjectId = useMemo<string | undefined>(() => {
-    if (projectId) return projectId;
-    // Derive from the loaded pose when the route only has poseId
+    if (projectId && isFabricatorUuid(projectId)) return projectId;
     const cp = currentProject as WindowUnit & { projectId?: string } | null;
-    return cp?.projectId ?? cp?.projectCode ?? undefined;
+    if (cp?.projectId && isFabricatorUuid(cp.projectId)) return cp.projectId;
+    return cp?.projectCode ?? projectId ?? undefined;
   }, [projectId, currentProject]);
 
   const allSiblingPositions = useProjectPositions(resolvedProjectId);
@@ -141,29 +142,39 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
 
   const handleAddNewPose = useCallback(async () => {
     if (!currentProject || !useV2 || !resolvedProjectId || !user?.id) return;
-    const nextPosNum = allSiblingPositions.length + 1;
-    const newUnit: WindowUnit = {
-      ...currentProject,
-      id: crypto.randomUUID(),
-      orderNumber: currentProject.orderNumber ?? '1',
-      posNumber: String(nextPosNum),
-      status: 'draft',
-      quantity: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      components: [],
-      grid: { rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }] },
-      glazing: {},
-      hardware: [],
-    } as WindowUnit;
     try {
+      const savedCurrent = await upsertPose.mutateAsync({ windowUnit: currentProject });
+      const nextPosNum = String(
+        (allSiblingPositions.reduce((max, p) => {
+          const n = Number(p.posNumber);
+          return Number.isFinite(n) ? Math.max(max, n) : max;
+        }, 0) || allSiblingPositions.length) + 1,
+      );
+      const newUnit: WindowUnit = {
+        ...currentProject,
+        id: crypto.randomUUID(),
+        projectId: savedCurrent.projectId,
+        orderNumber: currentProject.orderNumber ?? currentProject.projectCode ?? '1',
+        projectCode: currentProject.projectCode ?? currentProject.orderNumber,
+        posNumber: nextPosNum,
+        status: 'measuring',
+        quantity: 1,
+        overallWidth: 1200,
+        overallHeight: 1400,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        components: [],
+        grid: { rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }] },
+        glazing: currentProject.glazing ?? {},
+        hardware: [],
+      } as WindowUnit;
       const result = await upsertPose.mutateAsync({ windowUnit: newUnit });
-      toast.success('New pose added');
-      navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
+      toast.success(`Pose ${currentProject.posNumber} saved. Measuring pose ${nextPosNum}.`);
+      navigate(fabricatorRoutes.poseMeasuring(result.projectId, result.poseId));
     } catch (err) {
-      toast.error(`Failed to add pose: ${err}`);
+      toast.error(`Failed to add pose: ${persistenceErrorMessage(err)}`);
     }
-  }, [currentProject, useV2, resolvedProjectId, user?.id, allSiblingPositions.length, upsertPose, navigate]);
+  }, [currentProject, useV2, resolvedProjectId, user?.id, allSiblingPositions, upsertPose, navigate]);
 
   if (useV2 && effectivePoseId && loadingPoseV2) {
     return (

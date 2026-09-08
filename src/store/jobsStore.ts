@@ -1,4 +1,5 @@
 import { ConnectivityFactory } from '@/lib/connectivity/ConnectivityGateway';
+import { FeatureFlags } from '@/lib/featureFlags';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 import type { WindowUnit } from '@/types/fabricator';
@@ -49,7 +50,11 @@ export const useJobsStore = create<JobsState>((set, get) => ({
 
     set({ jobs: nextJobs });
 
-    // Fire-and-forget Supabase sync for persistence
+    // Fire-and-forget Supabase sync for persistence (v1 path only).
+    // When FABRICATOR_READ_V2 is on, fabricatorClientV2.savePose is canonical;
+    // writing v1 here creates a second project UUID and breaks dual-write FKs.
+    if (FeatureFlags.FABRICATOR_READ_V2) return;
+
     void (async () => {
       try {
         const {

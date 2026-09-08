@@ -270,4 +270,38 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
         expect(cutList).not.toHaveProperty('confidence');
     });
   });
+
+  describe('AICS-001: Pose measures are stored millimetres, not inferred', () => {
+    test('Position mapping uses overall_width_mm / overall_height_mm without a window_unit blob', async () => {
+      const { mapPositionRowToWindowUnit } = await import('@/lib/supabase/fabricatorClientV2');
+      const wu = mapPositionRowToWindowUnit({
+        id: '11111111-1111-4111-8111-111111111111',
+        project_id: '22222222-2222-4222-8222-222222222222',
+        owner_user_id: '33333333-3333-4333-8333-333333333333',
+        order_number: 'FP-TEST',
+        pos_number: '2',
+        type: 'window',
+        overall_width_mm: 1200,
+        overall_height_mm: 1400,
+        color: null,
+        glazing: {},
+        system_pack_id: null,
+        status: 'draft',
+        quantity: 1,
+        position_meta: {},
+        meta: {},
+        optimization: null,
+        grid: {},
+        components: [],
+        hardware: {},
+        selected_preset: null,
+        window_unit: null,
+        created_at: '2026-09-08T00:00:00.000Z',
+        updated_at: '2026-09-08T00:00:00.000Z',
+      } as any);
+      expect(wu?.overallWidth).toBe(1200);
+      expect(wu?.overallHeight).toBe(1400);
+      expect(wu).not.toHaveProperty('confidence');
+    });
+  });
 });

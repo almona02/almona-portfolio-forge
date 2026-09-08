@@ -117,20 +117,23 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
 
     const handleAddUnit = useCallback(() => {
         const newUnit: WindowUnit = {
-            id: `unit-${Date.now()}`,
-            orderNumber: `ORD-${Date.now()}`,
-            posNumber: `U${project.units.length + 1}`,
-            type: 'casement',
-            overallWidth: 1000,
-            overallHeight: 1200,
+            id: crypto.randomUUID(),
+            orderNumber: project.reference,
+            projectCode: project.reference,
+            projectId: project.id,
+            customer: project.clientName,
+            posNumber: String(project.units.length + 1),
+            type: 'window',
+            overallWidth: 1200,
+            overallHeight: 1400,
             components: [],
             quantity: 1,
-            color: 'white',
+            color: '#FFFFFF',
             glazing: {},
             hardware: [],
-            status: 'design',
+            status: 'measuring',
             optimization: null,
-            systemPackId: 'generic-60',
+            systemPackId: project.units[0]?.systemPackId || 'generic-60',
             createdAt: new Date(),
             updatedAt: new Date()
         };
@@ -158,7 +161,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
 
         const newUnit: WindowUnit = {
             ...unit,
-            id: `unit-${Date.now()}`,
+            id: crypto.randomUUID(),
             posNumber: `${unit.posNumber} (Copy)`,
             updatedAt: new Date()
         };
@@ -327,11 +330,21 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                                 </div>
 
                                 {isSidebarOpen && (
-                                    <div className="flex justify-between text-xs text-gray-500">
-                                        <span>{unit.overallWidth} x {unit.overallHeight}</span>
-                                        <Badge variant="outline" className="text-[9px] h-4 px-1 border-gray-700">
-                                            {unit.systemPackId || 'Generic'}
-                                        </Badge>
+                                    <div className="space-y-2">
+                                        <div className="h-10 rounded-sm border border-cyan-500/40 bg-cyan-500/10 relative overflow-hidden">
+                                            <div
+                                                className="absolute inset-y-1 left-1 bg-cyan-400/30 border border-cyan-400/50"
+                                                style={{
+                                                    width: `${Math.min(90, Math.max(20, (unit.overallWidth / 2400) * 100))}%`,
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex justify-between text-xs text-gray-500">
+                                            <span className="font-mono text-amber-200/80">{unit.overallWidth} × {unit.overallHeight} mm</span>
+                                            <Badge variant="outline" className="text-[9px] h-4 px-1 border-gray-700">
+                                                {unit.systemPackId || 'Generic'}
+                                            </Badge>
+                                        </div>
                                     </div>
                                 )}
 

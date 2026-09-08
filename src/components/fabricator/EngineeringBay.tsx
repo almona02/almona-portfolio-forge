@@ -81,7 +81,7 @@ interface EngineeringBayProps {
     relatedPositions?: WindowUnit[];
     onSelectPosition?: (id: string) => void;
     onBackToMeasuring?: () => void;
-    onAddNewPose?: () => void;
+    onAddNewPose?: () => void | Promise<void>;
     mode?: 'expert' | 'wizard';
     /** Swappable design canvas (default: SmartDrawCanvas) */
     CanvasComponent?: DesignCanvasComponent;
@@ -297,7 +297,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
         // If a dedicated add‑pose handler is provided (measuring tab workflow), use it.
         if (onAddNewPose) {
-            onAddNewPose();
+            void Promise.resolve(onAddNewPose());
             return;
         }
 

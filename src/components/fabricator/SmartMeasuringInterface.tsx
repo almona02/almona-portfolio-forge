@@ -97,16 +97,24 @@ const HIGH_CONTRAST_THEME = {
 
 interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
+  /** Save current pose measures then start the next pose in this project. */
+  onSaveAndNextPose?: (data: MeasurementData) => void;
+  /** Seed width/height and location fields from a stored pose. */
+  initialData?: Partial<MeasurementData> | null;
   /** Optional preselected system pack ID, typically from NewProjectWizard */
   systemPackId?: string;
   /** Optional region hint from project header to filter system packs (e.g. 'egypt') */
   region?: 'egypt' | 'turkey' | 'mena' | 'gulf' | 'global';
+  poseLabel?: string;
 }
 
 export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = ({
   onMeasurementComplete,
+  onSaveAndNextPose,
+  initialData,
   systemPackId,
   region,
+  poseLabel,
 }) => {
   const { t } = useTranslation('fabricator');
   const [highContrast, setHighContrast] = useState(false);
@@ -127,23 +135,23 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   const [measurements, setMeasurements] = useState({
     // Default professional stub dimensions – can be refined per system later.
-    width: String(DEFAULT_MEASUREMENTS.DEFAULT_WIDTH_MM),
-    height: String(DEFAULT_MEASUREMENTS.DEFAULT_HEIGHT_MM),
-    measurementMode: 'hole', // 'hole' (rough opening) or 'manufacturing'
-    wallDeduction: String(DEFAULT_MEASUREMENTS.DEFAULT_WALL_DEDUCTION_MM), // mm deduction for wall tolerance
-    windowType: 'sliding_window_2sash', // Default to 2-sash sliding window (matches SelectItem value)
-    color: egyptianDefaults.color,
-    glazingType: egyptianDefaults.glazingType || 'double', // Ensure glazingType has a default value
-    glassColor: egyptianDefaults.glassColor || 'clear', // Default to 'clear' (first option) - selected by default
-    flyScreenType: 'none', // Default to 'none' to avoid empty string in Select
-    flatNumber: '', // Text input - OK
-    buildingBlock: '', // Text input - OK
-    floor: '', // Text input - OK
-    unitOrApartment: '', // Text input - OK
-    elevation: '', // Text input - OK
-    roomOrZone: '', // Text input - OK
-    windowIndex: '', // Text input - OK
-    remarks: '', // Text input - OK
+    width: String(initialData?.width ?? DEFAULT_MEASUREMENTS.DEFAULT_WIDTH_MM),
+    height: String(initialData?.height ?? DEFAULT_MEASUREMENTS.DEFAULT_HEIGHT_MM),
+    measurementMode: initialData?.measurementMode ?? 'hole', // 'hole' (rough opening) or 'manufacturing'
+    wallDeduction: String(initialData?.wallDeduction ?? DEFAULT_MEASUREMENTS.DEFAULT_WALL_DEDUCTION_MM), // mm deduction for wall tolerance
+    windowType: initialData?.windowType || 'sliding_window_2sash', // Default to 2-sash sliding window (matches SelectItem value)
+    color: initialData?.color || egyptianDefaults.color,
+    glazingType: initialData?.glazingType || egyptianDefaults.glazingType || 'double', // Ensure glazingType has a default value
+    glassColor: initialData?.glassColor || egyptianDefaults.glassColor || 'clear', // Default to 'clear' (first option) - selected by default
+    flyScreenType: initialData?.flyScreenType || 'none', // Default to 'none' to avoid empty string in Select
+    flatNumber: initialData?.flatNumber || '', // Text input - OK
+    buildingBlock: initialData?.buildingBlock || '', // Text input - OK
+    floor: initialData?.floor || '', // Text input - OK
+    unitOrApartment: initialData?.unitOrApartment || '', // Text input - OK
+    elevation: initialData?.elevation || '', // Text input - OK
+    roomOrZone: initialData?.roomOrZone || '', // Text input - OK
+    windowIndex: initialData?.windowIndex || '', // Text input - OK
+    remarks: initialData?.remarks || '', // Text input - OK
   });
 
   // Grid State for Phase 4
@@ -454,7 +462,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (nextPose = false) => {
     const rawWidth = Number(measurements.width);
     const rawHeight = Number(measurements.height);
     const deduction = Number(measurements.wallDeduction || '0');
@@ -542,7 +550,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     };
 
     // Call the callback
-    if (onMeasurementComplete) {
+    if (nextPose && onSaveAndNextPose) {
+      onSaveAndNextPose(payload);
+    } else if (onMeasurementComplete) {
       onMeasurementComplete(payload);
     } else {
       trackError('SmartMeasuringInterface', 'measurement_complete', 'onMeasurementComplete callback is missing');
@@ -810,7 +820,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Ruler className="h-4 w-4 text-amber-400" />
-                        <span className="text-sm font-semibold text-amber-300 uppercase tracking-wide">Window Dimensions</span>
+                        <span className="text-sm font-semibold text-amber-300 uppercase tracking-wide">
+                          {poseLabel ? `${poseLabel} — Window Dimensions` : 'Window Dimensions'}
+                        </span>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-center">
@@ -1294,7 +1306,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               )}
 
               <Button
-                onClick={handleSubmit}
+                onClick={() => handleSubmit(false)}
                 disabled={!verificationConfirmed}
                 className={`
                   transition-all duration-300 w-full sm:w-auto
@@ -1303,8 +1315,18 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     : 'bg-[#1a1a1a] text-amber-600/50 cursor-not-allowed border-2 border-amber-600/20'}
                 `}
               >
-                {t('smart_measuring.actions.complete', 'Finalize Design')} <CheckCircle2 className="ml-2 h-4 w-4" />
+                {t('smart_measuring.actions.complete', 'Save Pose & Design')} <CheckCircle2 className="ml-2 h-4 w-4" />
               </Button>
+              {onSaveAndNextPose && (
+                <Button
+                  onClick={() => handleSubmit(true)}
+                  disabled={!verificationConfirmed}
+                  variant="secondary"
+                  className="bg-cyan-500 text-slate-900 hover:bg-cyan-400 font-semibold w-full sm:w-auto"
+                >
+                  {t('engineering_bay.save_and_next', 'Save & Next Pose')}
+                </Button>
+              )}
             </div>
           ) : (
             <Button onClick={nextStep} className="btn-primary-gradient font-bold w-full sm:w-auto">

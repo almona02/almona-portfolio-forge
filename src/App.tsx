@@ -99,6 +99,7 @@ const FabricationWorkflowWizard = lazy(() => import("./components/fabricator/Fab
 const ValidationDashboardPage = lazy(() => import("./pages/ValidationDashboardPage.tsx").then(m => ({ default: m.default })));
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 const ProductionDashboard = lazy(() => import("./components/fabricator/ProductionDashboard.tsx").then(m => ({ default: m.ProductionDashboard })));
+const MeasuringPage = lazy(() => import("./pages/fabricator/workflow/MeasuringPage").then(m => ({ default: m.MeasuringPage })));
 const ProjectStudioWrapper = lazy(() => import("./pages/fabricator/ProjectStudioWrapper"));
 
 // NEW: Workflow Page Components - Route-Based Architecture
@@ -446,6 +447,8 @@ const App = memo(() => {
 
                                     {/* 2c. Pose-centric workflow with persistent step navigator */}
                                     <Route path="projects/:projectId/positions/:poseId" element={<Suspense fallback={getLoadingComponent('Workflow')}><PoseWorkflowLayout /></Suspense>}>
+                                      <Route index element={<Navigate to="measuring" replace />} />
+                                      <Route path="measuring" element={<Suspense fallback={getLoadingComponent('Measuring')}><MeasuringPage /></Suspense>} />
                                       <Route path="design" element={<Suspense fallback={getLoadingComponent('Engineering Bay')}><EngineeringBayWrapper /></Suspense>} />
                                       <Route path="bom" element={<Suspense fallback={getLoadingComponent('BOM Review')}><BOMReviewPanel /></Suspense>} />
                                       <Route path="optimization" element={<Suspense fallback={getLoadingComponent('Optimization')}><OptimizationPage /></Suspense>} />

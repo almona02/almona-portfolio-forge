@@ -1,3 +1,4 @@
+import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { PresetAwareBOMGenerator, type CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
@@ -175,6 +176,14 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
               </Button>
             </div>
           ) : (
+            <div className="space-y-4">
+              <PoseLayoutPreview
+                poses={positions}
+                onSelect={(id) => {
+                  if (!projectId) return;
+                  navigate(fabricatorRoutes.poseMeasuring(projectId, id));
+                }}
+              />
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -241,6 +250,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                   </tfoot>
                 )}
               </table>
+            </div>
             </div>
           )}
         </CardContent>
