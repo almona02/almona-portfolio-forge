@@ -1,0 +1,44 @@
+# Gate 1 — Security / Shipability (FP-013, FP-014)
+name: Gate 1 Shipability
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  secret-scan:
+    name: Repository secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run Gate 1 secret scan
+        run: node scripts/security/gate1-secret-scan.mjs
+
+  production-build:
+    name: Vite production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Install deps
+        run: npm ci --no-audit --no-fund
+      - name: Type-check
+        run: npm run type-check
+      - name: Production build
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: build-time-placeholder-anon-key

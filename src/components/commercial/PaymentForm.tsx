@@ -376,17 +376,8 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
         setLoading(true);
         setError(null);
 
-        // NOTE: PaymentService.createPaymentIntent() uses Stripe server-side SDK
-        // In production, this should be called from a backend API route
-        // For now, we'll handle the error gracefully if Stripe is not configured
-        
-        // TODO: Replace with API call to backend route:
-        // const response = await fetch('/api/payments/create-intent', {
-        //   method: 'POST',
-        //   body: JSON.stringify({ invoiceId, amount, currency })
-        // });
-        // const { clientSecret } = await response.json();
-
+        // Stripe PaymentIntents are server-only (FP-014). Client createPaymentIntent throws.
+        // Manual payment remains available when Stripe is not configured on a backend.
         try {
           const result = await PaymentService.createPaymentIntent(
             invoiceId || null,
