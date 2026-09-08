@@ -751,7 +751,7 @@ export const FabricatorWorkflow: React.FC = () => {
           maxSolvingTime: 60, // 60 seconds max
           complexityThresholds: {
             simple: 50, // Use greedy for <50 cuts
-            medium: 500, // Use LP for 50-500, genetic for 500+
+            medium: 500, // Use LP for 50–499; Tier-3 greedy for 500+ (genetic is advisory-only)
           },
           timeConstraint: 'fast', // Default to fast, can be made configurable
           optimalityTarget: 'balanced',
@@ -761,7 +761,7 @@ export const FabricatorWorkflow: React.FC = () => {
           enableProgressiveOptimization: true, // Enable progressive optimization
         };
 
-        // Use enhanced adaptive solver with ML prediction and caching
+        // EnhancedAdaptiveSolver — Tier-3 manufacturing truth only (greedy | linear)
         const adaptiveSolver = new EnhancedAdaptiveSolver(solverConfig);
         const startTime = performance.now();
         

@@ -1,7 +1,7 @@
 /**
  * Hybrid Mass Production Optimizer
- * Combines cross-project genetic algorithm with remnant-first optimization
- * Designed for large-scale mass production scenarios
+ * Combines cross-project remnant-first matching with Tier-3 deterministic nesting (greedy).
+ * FP-016 Option B: genetic search is not used for mass manufacturing authority.
  */
 
 import {
@@ -12,7 +12,7 @@ import {
   MassProductionOptimizationRequest,
 } from '@/types/fabricator';
 import { remnantManager, type Remnant, type RemnantMatch } from '@/lib/inventory/RemnantManager';
-import { GeneticOptimizer } from './geneticOptimization';
+import { GreedyHeuristic } from './greedyHeuristic';
 
 export interface HybridOptimizationResult {
   unifiedCuttingPlan: CuttingPlan[];
@@ -49,9 +49,9 @@ export class HybridMassOptimizer {
       request
     );
 
-    // Step 4: Optimize remaining cuts with genetic algorithm
+    // Step 4: Optimize remaining cuts with Tier-3 deterministic greedy (FP-016)
     const remainingCuts = this.getRemainingCuts(cutsByProfile, remnantMatches);
-    const optimizedPlans = await this.optimizeWithGenetic(
+    const optimizedPlans = await this.optimizeRemainingDeterministic(
       remainingCuts,
       request
     );
@@ -180,9 +180,9 @@ export class HybridMassOptimizer {
   }
 
   /**
-   * Optimize remaining cuts with genetic algorithm
+   * Optimize remaining cuts with Tier-3 deterministic greedy (FP-016 Option B).
    */
-  private async optimizeWithGenetic(
+  private async optimizeRemainingDeterministic(
     remainingCuts: Map<string, { profile: Profile; cuts: Cut[] }>,
     request: MassProductionOptimizationRequest
   ): Promise<CuttingPlan[]> {
@@ -191,16 +191,8 @@ export class HybridMassOptimizer {
 
     for (const [_profileId, { profile, cuts }] of remainingCuts.entries()) {
       const stockLength = request.constraints.maxStockLengthMm || 6000;
-
-      // Use genetic algorithm for complex optimization
-      const geneticOptimizer = new GeneticOptimizer(cuts, profile, stockLength, {
-        populationSize: 100,
-        generations: 50,
-        mutationRate: 0.1,
-        crossoverRate: 0.8,
-      });
-
-      const plans = geneticOptimizer.optimize();
+      const greedyOptimizer = new GreedyHeuristic(cuts, profile, stockLength);
+      const plans = greedyOptimizer.optimize();
       allPlans.push(...plans);
     }
 

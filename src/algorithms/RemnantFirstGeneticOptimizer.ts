@@ -1,12 +1,16 @@
 /**
  * Remnant-First Genetic Algorithm Optimizer
  * ---------------------------------------------------------------------------
+ * FP-016 Option B / AICS-001: ADVISORY / SEARCH-ONLY.
+ * Stochastic remnant-first exploration must NOT become Tier-3 manufacturing truth.
+ * Canonical manufacturing path: AdaptiveSolver → greedy | linear.
+ *
  * Implements a sophisticated "remnant-first strategy" for the one-dimensional
  * cutting stock problem (1DCSP) using a hybrid approach:
  * 
  * 1. First, prioritize remnants using greedy matching
  * 2. Then, optimize remaining cuts with genetic algorithm
- * 
+ *
  * Based on research from:
  * - filipwodnicki/custo (GitHub)
  * - jasonrhansen/cut-optimizer-1d (GitHub)

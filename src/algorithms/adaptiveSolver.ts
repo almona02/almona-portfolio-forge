@@ -1,10 +1,17 @@
 /**
  * Adaptive Solver
- * Orchestrates algorithm selection based on job complexity and time constraints
- * Automatically selects the best algorithm: Greedy, Linear Programming, or Genetic
+ * Orchestrates algorithm selection based on job complexity and time constraints.
+ *
+ * FP-016 Option B (AICS-001 Tier 3):
+ * Manufacturing truth path uses only deterministic algorithms: greedy | linear.
+ * Genetic optimization is advisory/search-only and is never selected for Tier-3 execution.
  */
 
 import { calibrationManager } from '@/lib/calibration/CalibrationManager';
+import {
+  assertTier3ManufacturingAlgorithm,
+  type Tier3ManufacturingAlgorithm,
+} from '@/lib/fabricator/manufacturingAuthority';
 import {
     AdaptiveSolverConfig,
     Cut,
@@ -13,9 +20,11 @@ import {
     Profile,
     WindowComponent
 } from '@/types/fabricator';
-import { GeneticOptimizer } from './geneticOptimization';
 import { GreedyHeuristic } from './greedyHeuristic';
 import { LinearProgrammingOptimizer } from './linearProgramming';
+
+/** Tier-3 manufacturing algorithms only (deterministic). Genetic is excluded (FP-016 Option B). */
+export type Tier3CuttingAlgorithm = Tier3ManufacturingAlgorithm;
 
 export interface JobComplexity {
   totalCuts: number;
@@ -150,44 +159,50 @@ export class AdaptiveSolver {
   }
 
   /**
-   * Select optimal algorithm based on complexity and configuration
+   * Select Tier-3 manufacturing algorithm (greedy | linear only).
+   * Genetic is never returned — FP-016 Option B / AICS-001.
    */
-  protected selectAlgorithm(complexity: JobComplexity): 'greedy' | 'linear' | 'genetic' {
-    // If preferred algorithm is specified and complexity allows, use it
-    if (this.config.preferredAlgorithm) {
-      const preferred = this.config.preferredAlgorithm;
-      
-      // Validate preferred algorithm is suitable
-      if (preferred === 'greedy' && complexity.totalCuts < this.config.complexityThresholds.medium) {
-        return 'greedy';
-      }
-      if (preferred === 'linear' && complexity.totalCuts < this.config.complexityThresholds.medium) {
+  protected selectAlgorithm(complexity: JobComplexity): Tier3CuttingAlgorithm {
+    // preferredAlgorithm: genetic is advisory-only → ignore for Tier-3 execution
+    if (this.config.preferredAlgorithm === 'genetic') {
+      console.warn(
+        '[AICS-001 / FP-016] preferredAlgorithm=genetic is advisory-only; selecting Tier-3 deterministic algorithm instead.',
+      );
+    } else if (this.config.preferredAlgorithm === 'greedy') {
+      return 'greedy';
+    } else if (this.config.preferredAlgorithm === 'linear') {
+      // Prefer linear only when cut count is within a safe band for LP
+      if (complexity.totalCuts < this.config.complexityThresholds.medium) {
         return 'linear';
       }
-      if (preferred === 'genetic') {
-        return 'genetic';
-      }
+      console.warn(
+        '[AICS-001] preferredAlgorithm=linear skipped for large cut counts; using greedy.',
+      );
+      return 'greedy';
     }
 
-    // Auto-select based on complexity thresholds
     if (complexity.totalCuts < this.config.complexityThresholds.simple) {
       return 'greedy';
-    } else if (complexity.totalCuts < this.config.complexityThresholds.medium) {
-      return 'linear';
-    } else {
-      return 'genetic';
     }
+    if (complexity.totalCuts < this.config.complexityThresholds.medium) {
+      return 'linear';
+    }
+    // Complex jobs: deterministic greedy (scales safely). Genetic is advisory-only (FP-016).
+    return 'greedy';
   }
 
   /**
-   * Execute optimization with selected algorithm
+   * Execute optimization with selected Tier-3 algorithm
    */
   protected async executeOptimization(
     job: CuttingJob,
     profiles: Profile[],
-    algorithm: 'greedy' | 'linear' | 'genetic',
+    algorithm: Tier3CuttingAlgorithm | string,
     _complexity: JobComplexity
   ): Promise<CuttingPlan[]> {
+    // Fail closed: genetic / advisory must never execute as manufacturing truth
+    assertTier3ManufacturingAlgorithm(algorithm, 'AdaptiveSolver.executeOptimization');
+
     await Promise.resolve();
     const allPlans: CuttingPlan[] = [];
 
@@ -251,6 +266,8 @@ export class AdaptiveSolver {
             length: rawLength,
             angle,
             componentId: component.id,
+            cutId: `${component.id}:${index}`,
+            occurrenceIndex: index,
             componentType: (specs.profileRole as string | undefined) || component.type,
             waste: allowance,
           });
@@ -261,29 +278,21 @@ export class AdaptiveSolver {
 
       const stockLength = this.getStockLength(profile, job.defaultStockLength);
 
-      // Execute selected algorithm
+      // Execute selected algorithm (Tier-3: greedy | linear only — asserted above)
       let profilePlans: CuttingPlan[];
-      
+
       switch (algorithm) {
-        case 'greedy':
-          const greedyOptimizer = new GreedyHeuristic(cuts, profile, stockLength);
-          profilePlans = greedyOptimizer.optimize();
-          break;
-        
-        case 'linear':
+        case 'linear': {
           const lpOptimizer = new LinearProgrammingOptimizer(cuts, profile, stockLength);
           profilePlans = lpOptimizer.optimize();
           break;
-        
-        case 'genetic':
-          const geneticOptimizer = new GeneticOptimizer(cuts, profile, stockLength);
-          profilePlans = geneticOptimizer.optimize();
+        }
+        case 'greedy':
+        default: {
+          const greedyOptimizer = new GreedyHeuristic(cuts, profile, stockLength);
+          profilePlans = greedyOptimizer.optimize();
           break;
-        
-        default:
-          // Fallback to greedy
-          const fallbackOptimizer = new GreedyHeuristic(cuts, profile, stockLength);
-          profilePlans = fallbackOptimizer.optimize();
+        }
       }
 
       allPlans.push(...profilePlans);

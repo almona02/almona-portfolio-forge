@@ -8,9 +8,10 @@
  * - Produces a UnifiedCuttingPlan with baseline vs mass-mode waste metrics
  *
  * This is designed to be orchestration logic on top of the existing
- * 1D profile optimizers (Genetic / LP / SA) and the DB-backed
+ * 1D profile optimizers (Tier-3 greedy / linear) and the DB-backed
  * `RemnantManager` in `src/lib/inventory/RemnantManager.ts`.
  *
+ * FP-016 Option B: mass-mode nesting uses deterministic greedy — not genetic.
  * NOTE:
  *  - Data fetching is injected via the ProjectLoader so this module
  *    stays independent of any specific backend or state store.
@@ -30,7 +31,7 @@ import {
   remnantManager,
   type RemnantOptimizationResult,
 } from '@/lib/inventory/RemnantManager';
-import { GeneticOptimizer } from './geneticOptimization';
+import { GreedyHeuristic } from './greedyHeuristic';
 
 // ---------------------------------------------------------------------------
 // Base Optimizer Abstraction
@@ -304,7 +305,7 @@ export class MassProductionOptimizer extends BaseOptimizer<OptimizationOptions> 
         baselineTotalStockLength > 0 ? (baselineTotalWaste / baselineTotalStockLength) * 100 : 0;
 
       // -------------------------------------------------------------------
-      // 2. Aggregate cuts across projects by profile & run GA in mass-mode
+      // 2. Aggregate cuts across projects by profile & run Tier-3 greedy
       // -------------------------------------------------------------------
 
       const {
@@ -317,17 +318,8 @@ export class MassProductionOptimizer extends BaseOptimizer<OptimizationOptions> 
       for (const { profile, stockLength, cuts } of aggregatedPlans.values()) {
         if (cuts.length === 0) continue;
 
-        // For mass-mode we keep GA configuration conservative to stay well
-        // under the 2-minute SLA even for 50+ projects.
-        const optimizer = new GeneticOptimizer(cuts, profile, stockLength, {
-          populationSize: 60,
-          generations: 40,
-          mutationRate: 0.12,
-          crossoverRate: 0.8,
-          elitismCount: 5,
-          tournamentSize: 5,
-        });
-
+        // FP-016 Option B: deterministic greedy for mass manufacturing authority
+        const optimizer = new GreedyHeuristic(cuts, profile, stockLength);
         const optimizedForProfile = optimizer.optimize();
         massModePlans.push(...optimizedForProfile);
       }

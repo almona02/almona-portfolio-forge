@@ -12,8 +12,12 @@ import {
   OptimizationResult,
   AdaptiveSolverConfig,
 } from '@/types/fabricator';
-import { AdaptiveSolver, JobComplexity, CuttingJob } from './adaptiveSolver';
+import { AdaptiveSolver, JobComplexity, CuttingJob, Tier3CuttingAlgorithm } from './adaptiveSolver';
 import { algorithmSelector } from '@/lib/fabricator/AlgorithmSelector';
+import {
+  assertNotAdvisoryManufacturingAuthority,
+  assertTier3ManufacturingAlgorithm,
+} from '@/lib/fabricator/manufacturingAuthority';
 
 export interface OptimizationCache {
   key: string;
@@ -148,10 +152,12 @@ export class EnhancedAdaptiveSolver extends AdaptiveSolver {
   private async progressiveOptimization(
     job: CuttingJob,
     profiles: Profile[],
-    initialAlgorithm: 'greedy' | 'linear' | 'genetic',
+    initialAlgorithm: Tier3CuttingAlgorithm,
     complexity: JobComplexity,
     onProgress?: (progress: number, result?: OptimizationResult) => void
   ): Promise<OptimizationResult> {
+    assertTier3ManufacturingAlgorithm(initialAlgorithm, 'EnhancedAdaptiveSolver.progressiveOptimization');
+
     // Step 1: Get initial fast solution
     const initialStartTime = performance.now();
     const initialPlan = await this.executeOptimization(
@@ -170,13 +176,11 @@ export class EnhancedAdaptiveSolver extends AdaptiveSolver {
       onProgress(50, initialResult);
     }
 
-    // Step 2: Refine in background if complexity warrants it
-    if (complexity.complexityScore > 30 && initialAlgorithm !== 'genetic') {
-      // Refine with better algorithm in background
+    // Step 2: Refine in background if complexity warrants it (Tier-3 only)
+    if (complexity.complexityScore > 30) {
       const refinedAlgorithm = this.selectRefinementAlgorithm(initialAlgorithm, complexity);
-      
+
       if (refinedAlgorithm !== initialAlgorithm) {
-        // Run refinement asynchronously
         this.refineInBackground(
           job,
           profiles,
@@ -200,7 +204,7 @@ export class EnhancedAdaptiveSolver extends AdaptiveSolver {
   private async refineInBackground(
     job: CuttingJob,
     profiles: Profile[],
-    algorithm: 'greedy' | 'linear' | 'genetic',
+    algorithm: Tier3CuttingAlgorithm,
     complexity: JobComplexity,
     initialResult: OptimizationResult,
     onProgress?: (progress: number, result?: OptimizationResult) => void
@@ -246,36 +250,35 @@ export class EnhancedAdaptiveSolver extends AdaptiveSolver {
    * Constitutional Compliance: Tier 3 (Protected Determinism)
    * No ML, no AI, no predictions - just transparent, auditable rules.
    */
-  private selectAlgorithmByRule(
-    complexity: JobComplexity
-  ): 'greedy' | 'linear' | 'genetic' {
-    // Use rule-based selection (deterministic, constitutional)
+  private selectAlgorithmByRule(complexity: JobComplexity): Tier3CuttingAlgorithm {
     const selection = algorithmSelector.selectByRule(complexity);
-    
-    // Validate selection for constitutional compliance
+
     const validation = algorithmSelector.validateSelection(selection);
     if (!validation.isValid) {
       console.warn('Algorithm selection validation failed:', validation.errors);
-      // Fall back to standard algorithm selection
       return this.selectAlgorithm(complexity);
     }
-    
-    return selection.algorithm;
+
+    // Fail closed if advisory/genetic ever appears on this path
+    assertNotAdvisoryManufacturingAuthority(selection);
+    return selection.algorithm as Tier3CuttingAlgorithm;
   }
 
   /**
-   * Select refinement algorithm based on initial algorithm and complexity
+   * Select Tier-3 refinement algorithm only (FP-016: never genetic).
    */
   private selectRefinementAlgorithm(
-    initial: 'greedy' | 'linear' | 'genetic',
+    initial: Tier3CuttingAlgorithm,
     complexity: JobComplexity
-  ): 'greedy' | 'linear' | 'genetic' {
-    if (initial === 'greedy') {
-      return complexity.totalCuts < this.config.complexityThresholds.medium ? 'linear' : 'genetic';
-    } else if (initial === 'linear') {
-      return 'genetic';
+  ): Tier3CuttingAlgorithm {
+    if (
+      initial === 'greedy' &&
+      complexity.totalCuts < this.config.complexityThresholds.medium
+    ) {
+      return 'linear';
     }
-    return initial; // Already using best algorithm
+    // Already linear, or complex enough that LP is unsafe → stay on deterministic path
+    return initial;
   }
 
   /**

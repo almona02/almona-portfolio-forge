@@ -12,10 +12,11 @@
 
 ALMONA is an **industrial execution authority** for aluminum and UPVC fabrication, providing:
 
-- ✅ **Deterministic BOM Generation** - Identical inputs → identical outputs, every time
-- ✅ **Rule-Based Optimization** - No AI, no ML, no black boxes
+- ✅ **Deterministic BOM Generation** - Identical inputs → identical outputs on the Tier-3 manufacturing path (greedy / linear)
+- ✅ **Rule-Based Optimization** - No AI, no ML, no black boxes on the protected execution path
 - ✅ **Constitutional Guarantees** - Provable accuracy, auditable decisions
 - ✅ **Human-Validated Outputs** - No engineering authority claims
+- ⚠️ **Genetic search (optional)** - Advisory/search-only; explicitly excluded from Tier-3 manufacturing truth (FP-016 Option B)
 
 ### What ALMONA Is NOT
 
@@ -34,10 +35,12 @@ ALMONA operates under **Tier 3 Protected Determinism** (AICS-001):
 1. **No ML/AI in Execution Path**
    - Algorithm selection uses deterministic rules only
    - No training data, no confidence scores, no learning
-   - Rule-based: `<50 cuts → greedy`, `50-500 → linear`, `500+ → genetic`
+   - Rule-based Tier-3 path: `<50 cuts → greedy`, `50–499 → linear`, `500+ → greedy`
+   - Genetic optimization is advisory/search-only (FP-016 Option B) — not manufacturing truth
 
 2. **Deterministic Replay Guarantee**
-   - Identical inputs produce identical outputs
+   - Identical inputs produce identical outputs on the Tier-3 (greedy/linear) path
+   - Genetic search is non-deterministic and must not be treated as shop-floor authority
    - No external dependencies required
    - Offline operation guaranteed
    - Cryptographically verifiable (when enabled)

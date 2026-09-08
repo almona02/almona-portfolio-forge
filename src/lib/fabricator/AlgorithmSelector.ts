@@ -19,10 +19,11 @@
 
 import { JobComplexity } from '@/algorithms/adaptiveSolver';
 import {
-    ALGORITHM_THRESHOLDS,
-    EXPECTED_ALGORITHM_DURATIONS,
-    EXPECTED_WASTE_PERCENTAGES,
+  ALGORITHM_THRESHOLDS,
+  EXPECTED_ALGORITHM_DURATIONS,
+  EXPECTED_WASTE_PERCENTAGES,
 } from './algorithmSelectionConstants';
+import { ManufacturingAuthorityError } from './manufacturingAuthority';
 
 /**
  * Algorithm Selection Result
@@ -35,12 +36,16 @@ export interface AlgorithmSelection {
    * Selected algorithm based on deterministic rules
    */
   algorithm: 'greedy' | 'linear' | 'genetic';
-  
+
   /**
    * Rationale: Clear explanation of which rule was applied
-   * Format: "Selected by deterministic rule X.Y from system pack Z"
    */
   rationale: string;
+  
+  /**
+   * When true, selection is advisory/search-only and must not drive Tier-3 manufacturing truth (FP-016 Option B).
+   */
+  advisoryOnly?: boolean;
   
   /**
    * Expected performance metrics (based on historical averages, not predictions)
@@ -101,14 +106,32 @@ export class AlgorithmSelector {
       };
     }
     
-    // Rule 3: Complex jobs (500+ cuts) → Genetic Algorithm
+    // Rule 3: Complex jobs (500+ cuts) → Greedy (Tier-3 deterministic, scalable).
+    // Genetic remains available as advisory/search-only via suggestAdvisoryGenetic() — FP-016 Option B.
+    return {
+      algorithm: 'greedy',
+      rationale: `Selected by deterministic rule 1.3: Job has ${complexity.totalCuts} cuts (above ${ALGORITHM_THRESHOLDS.MEDIUM_JOB_MAX_CUTS} threshold). Greedy is the Tier-3 manufacturing path for large jobs; genetic search is advisory-only (FP-016 Option B / AICS-001).`,
+      expectedWastePercentage: EXPECTED_WASTE_PERCENTAGES.GREEDY_WASTE_PERCENT,
+      expectedDuration: EXPECTED_ALGORITHM_DURATIONS.GREEDY_DURATION_MS,
+      constitutionalNote: 'Tier 3 deterministic selection. No AI involved. Genetic excluded from manufacturing truth path.',
+      ruleId: 'rule_1.3_complex_job_greedy',
+      advisoryOnly: false,
+    };
+  }
+
+  /**
+   * Advisory-only genetic suggestion (NOT Tier-3 manufacturing authority).
+   * Callers must not treat this as shop-floor / identical-output truth.
+   */
+  suggestAdvisoryGenetic(complexity: JobComplexity): AlgorithmSelection {
     return {
       algorithm: 'genetic',
-      rationale: `Selected by deterministic rule 1.3: Job has ${complexity.totalCuts} cuts (above ${ALGORITHM_THRESHOLDS.MEDIUM_JOB_MAX_CUTS} threshold). Genetic algorithm is required for complex optimization.`,
-      expectedWastePercentage: EXPECTED_WASTE_PERCENTAGES.GENETIC_WASTE_PERCENT, // Historical average, not prediction
-      expectedDuration: EXPECTED_ALGORITHM_DURATIONS.GENETIC_DURATION_MS, // Historical average, not prediction
-      constitutionalNote: 'Tier 3 deterministic selection. No AI involved. Rule-based only.',
-      ruleId: 'rule_1.3_complex_job'
+      rationale: `Advisory search suggestion only: Job has ${complexity.totalCuts} cuts. Genetic optimization may explore alternatives but is NOT part of the Tier-3 protected manufacturing path (FP-016 Option B).`,
+      expectedWastePercentage: EXPECTED_WASTE_PERCENTAGES.GENETIC_WASTE_PERCENT,
+      expectedDuration: EXPECTED_ALGORITHM_DURATIONS.GENETIC_DURATION_MS,
+      constitutionalNote: 'ADVISORY ONLY — not Tier-3 manufacturing truth. Non-deterministic search (Math.random). Do not use for identical-input identical-output guarantees.',
+      ruleId: 'advisory_genetic_search_only',
+      advisoryOnly: true,
     };
   }
   
@@ -135,14 +158,40 @@ export class AlgorithmSelector {
         algorithm: 'linear'
       },
       {
-        id: 'rule_1.3_complex_job',
-        description: 'Complex job optimization',
+        id: 'rule_1.3_complex_job_greedy',
+        description: 'Complex job optimization (Tier-3 deterministic greedy)',
         condition: `totalCuts >= ${ALGORITHM_THRESHOLDS.MEDIUM_JOB_MAX_CUTS}`,
+        algorithm: 'greedy'
+      },
+      {
+        id: 'advisory_genetic_search_only',
+        description: 'Advisory genetic search (NOT Tier-3 manufacturing truth)',
+        condition: 'explicit advisory request only',
         algorithm: 'genetic'
       }
     ];
   }
   
+  /**
+   * Promote a selection to Tier-3 manufacturing authority.
+   * Advisory/genetic selections fail closed (FP-016 Option B).
+   */
+  authorizeForManufacturing(selection: AlgorithmSelection): AlgorithmSelection {
+    if (selection.algorithm === 'genetic' || selection.advisoryOnly) {
+      throw new ManufacturingAuthorityError(
+        `[AICS-001 / FP-016] Cannot authorize algorithm="${selection.algorithm}" ` +
+          `(advisoryOnly=${String(selection.advisoryOnly)}) for Tier-3 manufacturing truth.`
+      );
+    }
+    const validation = this.validateSelection(selection);
+    if (!validation.isValid) {
+      throw new ManufacturingAuthorityError(
+        `[AICS-001 / FP-016] Invalid Tier-3 selection: ${validation.errors.join('; ')}`
+      );
+    }
+    return selection;
+  }
+
   /**
    * Validate selection (constitutional compliance check)
    */
@@ -170,9 +219,18 @@ export class AlgorithmSelector {
       errors.push('Selection missing required rule identifier');
     }
     
-    // Check: Rationale explains rule
-    if (!selection.rationale.includes('rule') && !selection.rationale.includes('deterministic')) {
+    // Check: Rationale explains rule (Tier-3) or advisory classification
+    if (
+      !selection.advisoryOnly &&
+      !selection.rationale.includes('rule') &&
+      !selection.rationale.includes('deterministic')
+    ) {
       errors.push('Selection rationale must explain deterministic rule application');
+    }
+
+    // Check: Advisory genetic must be flagged
+    if (selection.algorithm === 'genetic' && !selection.advisoryOnly) {
+      errors.push('Genetic selection must set advisoryOnly=true (FP-016 Option B)');
     }
     
     return {

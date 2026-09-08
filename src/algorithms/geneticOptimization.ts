@@ -1,6 +1,15 @@
 /**
  * Genetic Algorithm for Material Nesting Optimization
- * Uses evolutionary algorithms to find optimal cutting patterns
+ *
+ * FP-016 Option B / AICS-001:
+ * This optimizer is ADVISORY / SEARCH-ONLY. It uses Math.random and is NOT part of
+ * the Tier-3 protected manufacturing truth path.
+ *
+ * Callers that need shop-floor identical-input → identical-output MUST use
+ * AdaptiveSolver / GreedyHeuristic / LinearProgrammingOptimizer instead.
+ *
+ * Attempting to authorize a genetic AlgorithmSelection via
+ * algorithmSelector.authorizeForManufacturing() fails closed.
  */
 
 import { CuttingPlan, Cut, Profile } from '@/types/fabricator';

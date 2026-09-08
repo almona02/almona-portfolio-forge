@@ -136,8 +136,8 @@ describe('Adaptive Solver Integration Tests', () => {
     });
   });
 
-  describe('Complex Job (500+ cuts) - Genetic Algorithm', () => {
-    it('should select genetic algorithm for complex jobs', async () => {
+  describe('Complex Job (500+ cuts) - Tier-3 deterministic (not genetic)', () => {
+    it('should use deterministic Tier-3 path for complex jobs (genetic excluded)', async () => {
       // Create a complex job (600 cuts)
       const complexComponents: WindowComponent[] = [];
       for (let i = 0; i < 150; i++) {
@@ -157,6 +157,19 @@ describe('Adaptive Solver Integration Tests', () => {
       }
 
       const solver = new AdaptiveSolver(defaultConfig);
+      const selected = (
+        solver as unknown as { selectAlgorithm: (c: { totalCuts: number; uniqueProfiles: number; averageCutLength: number; maxCutLength: number; stockLengthConstraints: number[]; complexityScore: number }) => string }
+      ).selectAlgorithm({
+        totalCuts: 600,
+        uniqueProfiles: 1,
+        averageCutLength: 1000,
+        maxCutLength: 2000,
+        stockLengthConstraints: [6000],
+        complexityScore: 80,
+      });
+      expect(selected).not.toBe('genetic');
+      expect(['greedy', 'linear']).toContain(selected);
+
       const result = await solver.solve(
         {
           components: complexComponents,
