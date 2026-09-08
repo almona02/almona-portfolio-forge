@@ -1,5 +1,6 @@
  
 import { ticketsV2Api } from '@/lib/api/ticketsV2'
+import { ensureOwnProfile } from '@/lib/data/profilesClient'
 import { supabase } from '@/lib/supabase'
 import { Database } from '@/types/database'
 import {
@@ -143,7 +144,13 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
   }
   // Get user ID once to avoid multiple async calls
   const currentUser = (await supabase.auth.getUser()).data.user;
-  const currentUserId = currentUser?.id || undefined;
+  const currentUserId = currentUser?.id;
+  if (!currentUserId) {
+    throw new Error('You must be signed in to create a ticket.');
+  }
+  await ensureOwnProfile(currentUserId, {
+    full_name: currentUser?.email || null,
+  });
 
   // Minimal, schema-safe payload to avoid 400 due to column diffs
   // Let database trigger handle ticket_number and digital_twin_code generation (Security Hardening)

@@ -1,4 +1,4 @@
-import { getProfileById, updateProfile as updateProfileDomain } from '@/lib/data/profilesClient';
+import { ensureOwnProfile, getProfileById, updateProfile as updateProfileDomain } from '@/lib/data/profilesClient';
 import { handleAuthError, supabase } from '@/lib/supabase';
 import { Database } from '@/types/database';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -121,7 +121,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
       );
 
-      const profile = await Promise.race([profilePromise, timeoutPromise]);
+      let profile = await Promise.race([profilePromise, timeoutPromise]);
+
+      if (!profile && supabaseUser && supabaseUser.id === userId) {
+        profile = await ensureOwnProfile(userId, {
+          full_name: getMetaString(supabaseUser.user_metadata as Record<string, unknown>, 'full_name')
+            || supabaseUser.email
+            || null,
+        });
+      }
 
       if (profile) {
         setUser(profile);
@@ -279,29 +287,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        // Add timeout to prevent hanging on network issues
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise<{ data: { session: null }, error: { message: 'Session timeout' } }>((resolve) =>
-          setTimeout(() => resolve({ data: { session: null }, error: { message: 'Session timeout' } }), 5000)
-        );
-
-        const result = await Promise.race([
-          sessionPromise,
-          timeoutPromise
-        ]);
+        // Do not race getSession against a 5s timeout. A timed-out "no session"
+        // made ProtectedRoute send logged-in users to /login, then Login bounced home.
+        const { data: { session }, error } = await supabase.auth.getSession();
 
         if (!isMounted) return;
 
-        const { data: { session }, error } = result;
-
         if (error) {
-          // Session timeout is expected behavior, don't log as error
-          if (error.message === 'Session timeout') {
-            console.warn('Session check timed out (expected in some network conditions)');
-          } else {
-            console.error('Error getting session:', error);
-          }
-          // Handle auth errors including refresh token issues
+          console.error('Error getting session:', error);
           await handleAuthError(error);
           if (isMounted) setLoading(false);
           return;
@@ -309,6 +302,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (session?.user && isMounted) {
           setSupabaseUser(session.user);
+          const meta = session.user.user_metadata as Record<string, unknown> | null | undefined;
+          // Set a placeholder before loading ends so ProtectedRoute does not bounce
+          // a valid session to /login while the profile fetch is still deferred.
+          setUser(prev => prev || {
+            id: session.user.id,
+            email: session.user.email || undefined,
+            username: null,
+            full_name: getMetaString(meta, 'full_name'),
+            avatar_url: getMetaString(meta, 'avatar_url'),
+            company_name: getMetaString(meta, 'company_name'),
+            phone: getMetaString(meta, 'phone'),
+            sector: null as unknown as User['sector'],
+            workshop_location: null,
+            governorate: null,
+            address: null as unknown as User['address'],
+            tax_number: null,
+            commercial_register: null,
+            role: 'customer' as User['role'],
+            is_verified: false,
+            preferences: {} as User['preferences'],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          if (!stableEmailRef.current && session.user.email) {
+            stableEmailRef.current = session.user.email;
+          }
           // Defer profile fetch to avoid blocking UI - use startTransition for non-urgent update
           startTransition(() => {
             // Use requestIdleCallback if available, otherwise setTimeout

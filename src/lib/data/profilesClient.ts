@@ -128,6 +128,35 @@ export async function getProfileById(id: string): Promise<ProfileRow | null> {
   return requestPromise;
 }
 
+/** Insert the signed-in user's profile when the auth trigger failed (e.g. broken subscriptions trigger). */
+export async function ensureOwnProfile(
+  id: string,
+  extras?: { full_name?: string | null }
+): Promise<ProfileRow | null> {
+  const existing = await getProfileById(id);
+  if (existing) return existing;
+
+  const { data, error } = await table('profiles')
+    .insert({
+      id,
+      full_name: extras?.full_name || 'User',
+      sector: 'GENERAL' as SectorType,
+    })
+    .select('*')
+    .maybeSingle();
+
+  if (error) {
+    console.error('ensureOwnProfile insert failed:', error.message);
+    return null;
+  }
+
+  invalidateProfileCache(id);
+  if (data) {
+    profileCache.set(id, { data: data as ProfileRow, timestamp: Date.now() });
+  }
+  return data;
+}
+
 export async function updateProfile(id: string, input: ProfileUpdateInput): Promise<ProfileRow> {
   const parsed = profileUpdateSchema.parse(input);
   const dbPayload: ProfileUpdateDB = { ...(parsed as any), updated_at: new Date().toISOString() };

@@ -12,7 +12,7 @@ import { motion } from 'framer-motion';
 import { Mail } from 'lucide-react';
 import React, { startTransition, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
@@ -26,17 +26,20 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const { signIn: login, user, actionLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
+  const postLoginPath = from && from.startsWith('/') && !from.startsWith('//') ? from : '/';
 
   useEffect(() => {
     if (user) {
       requestAnimationFrame(() => {
         toast.success('Logged in successfully!');
         startTransition(() => {
-          navigate('/');
+          navigate(postLoginPath, { replace: true });
         });
       });
     }
-  }, [user, navigate]);
+  }, [user, navigate, postLoginPath]);
 
   useEffect(() => {
     try {
@@ -65,7 +68,7 @@ const Login = () => {
       } catch {
         // ignore storage issues
       }
-      navigate('/', { replace: true });
+      navigate(postLoginPath, { replace: true });
     } catch (error: any) {
       const errorMessage = error?.message || error?.error?.message || 'We were unable to complete your login request. Please verify your credentials and try again.';
       setError(errorMessage);

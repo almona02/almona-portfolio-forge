@@ -33,6 +33,7 @@ Closure path: **exposed → revoked/rotated → replacement stored securely → 
 - [ ] Supabase: Railway `SUPABASE_SERVICE_KEY` / secret (CLI login required)
 - [ ] Supabase: publishable in password manager; secret in backend secret storage (operator)
 - [x] Sign-in path on production accepts publishable key (invalid credentials, not invalid API key)
-- [ ] Real user sign-in / sign-out on production (needs operator account)
+- [x] Real user sign-in / sign-out on production (2026-09-08 browser E2E)
+- [x] Ticket create on production (SQL applied 2026-09-08; signup → profile → ticket INSERT 201 verified; throwaway users deleted)
 - [ ] Legacy JWT + anon **not disabled** until Railway secret is cut over and real sign-in/out passes
 - [x] Supabase residual risk previously accepted; rotation now in progress (legacy not disabled)

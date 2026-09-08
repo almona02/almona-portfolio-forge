@@ -5,20 +5,16 @@
 
 import { useCallback, useRef, useState } from 'react';
 
-// YDT Agent API URL - prioritize YDT-specific env var, then check for local dev
-// Allow localhost for local development
+// YDT Agent API URL — never fall back to a dead Railway hostname.
 const getApiBaseUrl = () => {
-  const ydtUrl = import.meta.env.VITE_YDT_API_URL;
-  if (ydtUrl) {
-    return ydtUrl;
+  const configured = import.meta.env.VITE_YDT_API_URL || import.meta.env.VITE_API_URL;
+  if (configured) {
+    return String(configured).replace(/\/$/, '');
   }
-  // Check if we're in development mode
   if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
-    // Try localhost first for local development
     return 'http://localhost:8000';
   }
-  // Production URL
-  return 'https://ydt-production.up.railway.app';
+  return '';
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -121,6 +117,12 @@ export const usePrestigeAgent = () => {
     setIsLoading(true);
 
     try {
+      if (!API_BASE_URL) {
+        return {
+          success: false,
+          error: 'Prestige Agent is paused until the backend is deployed. Set VITE_YDT_API_URL or VITE_API_URL.',
+        };
+      }
       const response = await fetch(`${API_BASE_URL}/api/v1/chat`, {
         method: 'POST',
         headers: {
@@ -187,6 +189,9 @@ export const usePrestigeAgent = () => {
     material: string = 'aluminum',
     language: string = 'en'
   ): Promise<GCodeValidationResponse> => {
+    if (!API_BASE_URL) {
+      return { success: false, error: 'Prestige Agent backend is not configured.' };
+    }
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/gcode/validate`, {
         method: 'POST',
@@ -208,6 +213,9 @@ export const usePrestigeAgent = () => {
   }, []);
 
   const getLearningModules = useCallback(async (language: string = 'en'): Promise<LearningModulesResponse> => {
+    if (!API_BASE_URL) {
+      return { success: false, error: 'Prestige Agent backend is not configured.' };
+    }
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/learn/modules?language=${language}`);
       const data = await response.json();
@@ -223,6 +231,9 @@ export const usePrestigeAgent = () => {
     errorCodes: string[] = [],
     language: string = 'en'
   ): Promise<DiagnosisResponse> => {
+    if (!API_BASE_URL) {
+      return { success: false, error: 'Prestige Agent backend is not configured.' };
+    }
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/diagnose`, {
         method: 'POST',
@@ -243,6 +254,9 @@ export const usePrestigeAgent = () => {
   }, []);
 
   const getKnowledgeStats = useCallback(async () => {
+    if (!API_BASE_URL) {
+      return { success: false, error: 'Prestige Agent backend is not configured.' };
+    }
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/knowledge/stats`, {
         signal: AbortSignal.timeout(5000) // 5 second timeout
@@ -263,6 +277,9 @@ export const usePrestigeAgent = () => {
   }, []);
 
   const getMachineCapabilities = useCallback(async () => {
+    if (!API_BASE_URL) {
+      return { success: false, error: 'Prestige Agent backend is not configured.' };
+    }
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/machine/capabilities`, {
         signal: AbortSignal.timeout(5000) // 5 second timeout
