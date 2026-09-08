@@ -64,12 +64,22 @@ const supabaseOptions = {
   db: {
     schema: 'public' as const,
   },
-  // Add connection pooling and timeout settings
+  // Publishable/secret keys are not JWTs. Auth rejects Authorization: Bearer sb_*.
+  // Keep apikey set; only send Authorization when it is a real user session JWT.
   fetch: (url: string, options: RequestInit = {}) => {
+    const headers = new Headers(options.headers)
+    const authorization = headers.get('Authorization')
+    if (authorization && /^Bearer sb_(publishable|secret)_/i.test(authorization)) {
+      headers.delete('Authorization')
+    }
+    if (supabaseKey && !headers.has('apikey')) {
+      headers.set('apikey', supabaseKey)
+    }
     return fetch(url, {
       ...options,
-      // Add timeout to prevent hanging requests
-      signal: AbortSignal.timeout(10000), // 10 second timeout
+      headers,
+      cache: 'no-store',
+      signal: options.signal ?? AbortSignal.timeout(10000),
     });
   },
 }

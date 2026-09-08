@@ -200,17 +200,12 @@ export default defineConfig(({ mode }) => {
                 }
               }
             },
-            // Network-first for API calls (always fresh data)
+            // Never cache Auth/REST. NetworkFirst can replay a 401 after key rotation.
             {
               urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-              handler: 'NetworkFirst',
+              handler: 'NetworkOnly',
               options: {
-                cacheName: 'supabase-api',
-                expiration: {
-                  maxEntries: 30,
-                  maxAgeSeconds: 5 * 60, // 5 minutes
-                },
-                networkTimeoutSeconds: 10,
+                cacheName: 'supabase-api-network-only',
               },
             },
             // Cache static assets (JS, CSS) with versioning
