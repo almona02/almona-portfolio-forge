@@ -1,9 +1,12 @@
-# Environment files
+# Environment files — never commit real secrets
 .env
 .env.local
 .env.preview
 .env.production
 .env.*.local
+python_backend/.env
+pg.env
+.env.redis.correct
 
 # Python
 __pycache__/
