@@ -5,7 +5,6 @@ import { ServiceCard } from "../components/services/ServiceCard";
 // import { MachineRegistration } from "../components/services/MachineRegistration";
 import { MaintenanceDashboard } from "../components/services/MaintenanceDashboard";
 // import { CustomerPortal } from "../components/services/CustomerPortal";
-import AIFeatures from "./AIFeatures";
 import {
   Tabs,
   TabsContent,
@@ -143,9 +142,12 @@ const Services = () => {
               </div>
             </TabsContent>
 
-            {/* AI Features */}
+            {/* AI Features — standalone AIFeatures page was removed as an orphan */}
             <TabsContent value="ai">
-              <AIFeatures />
+              <div className="text-center py-12">
+                <h3 className="typography-h3 mb-4">AI Features</h3>
+                <p className="text-gray-400">Equipment advisor and comparison tools are available in the shop.</p>
+              </div>
             </TabsContent>
           </Tabs>
 

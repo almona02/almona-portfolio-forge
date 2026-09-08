@@ -6,14 +6,12 @@
 -r requirements-prod.txt
 
 # CPU-only ML to avoid huge CUDA wheels in CI
-# CRITICAL SECURITY FIX: Upgraded to 2.8.0 to fix CVE-2025-3730 (DoS vulnerability)
-# See: https://github.com/advisories/GHSA-887c-mr87-cxwp
-# Previous fix: Upgraded from 2.3.1 to 2.6.0 to fix CVE-2025-32434 (RCE vulnerability)
-# Note: +cpu local version label requires == operator, not >=
-# torchvision 0.23.0+cpu is compatible with torch 2.8.0+cpu
+# CPU torch: 2.9.1 patches unpack_sequence memory corruption (GHSA-vgrw-7cvw-pwgx).
+# +cpu local version label requires == operator, not >=
+# torchvision 0.24.1+cpu is compatible with torch 2.9.1+cpu
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.8.0+cpu
-torchvision==0.23.0+cpu
+torch==2.9.1+cpu
+torchvision==0.24.1+cpu
 
 # Testing (only CI-specific packages not in prod)
 # pytest, pytest-asyncio, pytest-timeout are already in requirements-prod.txt
