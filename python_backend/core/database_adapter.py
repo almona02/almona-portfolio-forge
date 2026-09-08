@@ -13,7 +13,7 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy import text
 import redis.asyncio as redis
 
-from core.config import settings
+from core.config import settings, skip_railway
 from core.supabase_client import get_enhanced_supabase_client
 
 logger = logging.getLogger(__name__)
@@ -39,23 +39,26 @@ class DatabaseAdapter:
     def _initialize(self):
         """Initialize database connections based on available services."""
 
-        # Check if Railway PostgreSQL is available
-        if settings.DATABASE_URL and settings.DATABASE_URL.startswith("postgresql"):
-            try:
-                self._setup_railway_postgresql()
-                self.use_railway = True
-                logger.info("✅ Using Railway PostgreSQL as primary database")
-            except Exception as e:
-                logger.warning(f"⚠️  Railway PostgreSQL setup failed: {e}")
-                self.use_railway = False
+        if skip_railway():
+            logger.info("SKIP_RAILWAY is set — not connecting to Railway PostgreSQL/Redis")
+        else:
+            # Check if Railway PostgreSQL is available
+            if settings.DATABASE_URL and settings.DATABASE_URL.startswith("postgresql"):
+                try:
+                    self._setup_railway_postgresql()
+                    self.use_railway = True
+                    logger.info("✅ Using Railway PostgreSQL as primary database")
+                except Exception as e:
+                    logger.warning(f"⚠️  Railway PostgreSQL setup failed: {e}")
+                    self.use_railway = False
 
-        # Setup Redis if available
-        if settings.REDIS_URL:
-            try:
-                self._setup_redis()
-                logger.info("✅ Redis cache configured")
-            except Exception as e:
-                logger.warning(f"⚠️  Redis setup failed: {e}")
+            # Setup Redis if available
+            if settings.REDIS_URL:
+                try:
+                    self._setup_redis()
+                    logger.info("✅ Redis cache configured")
+                except Exception as e:
+                    logger.warning(f"⚠️  Redis setup failed: {e}")
 
         # Fallback to Supabase if Railway not available
         if not self.use_railway:
@@ -63,8 +66,13 @@ class DatabaseAdapter:
                 self.supabase_client = get_enhanced_supabase_client()
                 logger.info("📡 Using Supabase as fallback database")
             except Exception as e:
-                logger.error(f"❌ Supabase setup failed: {e}")
-                raise RuntimeError("No database connection available!")
+                if skip_railway():
+                    logger.warning(
+                        f"No database connection in SKIP_RAILWAY mode: {e}"
+                    )
+                else:
+                    logger.error(f"❌ Supabase setup failed: {e}")
+                    raise RuntimeError("No database connection available!")
 
     def _setup_railway_postgresql(self):
         """Setup Railway PostgreSQL connection."""

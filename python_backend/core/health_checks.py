@@ -237,7 +237,7 @@ class RailwayServicesHealthCheck(HealthCheck):
             # Convert Railway status to our health status
             if railway_status["overall_status"] == "healthy":
                 return HealthStatus.HEALTHY
-            elif railway_status["overall_status"] == "degraded":
+            elif railway_status["overall_status"] in ("degraded", "skipped"):
                 return HealthStatus.DEGRADED
             else:
                 return HealthStatus.UNHEALTHY

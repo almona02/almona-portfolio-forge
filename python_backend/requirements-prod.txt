@@ -44,7 +44,7 @@ deprecation==2.1.0
 distro==1.9.0
 dnspython==2.8.0
 docker==7.1.0
-easyocr==1.7.2
+# easyocr==1.7.2  # pulls torch; stubbed in tests (AICS-001)
 # ecdsa removed: no patched version for CVE-2024-23342 (Minerva timing attack).
 # It is still installed transitively by python-jose, but python-jose[cryptography]
 # uses the cryptography backend for all ECDSA operations, avoiding the vulnerable code path.
@@ -250,11 +250,11 @@ tomli_w==1.2.0
 tqdm==4.67.1
 twilio==9.7.0
 typer-slim==0.21.1
-typing-inspection==0.4.1
+typing-inspection==0.4.2
 typing_extensions==4.14.1
 tzdata==2025.2
-ultralytics==8.3.40
-ultralytics-thop==2.0.14
+# ultralytics==8.3.40  # pulls torch; stubbed in tests (AICS-001)
+# ultralytics-thop==2.0.14
 uritemplate==4.2.0
 urllib3==2.7.0
 uvicorn==0.34.0

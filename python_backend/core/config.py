@@ -245,3 +245,8 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def skip_railway() -> bool:
+    """True when Railway postgres/redis must not be contacted (account on hold, CI, tests)."""
+    return os.getenv("SKIP_RAILWAY", "").strip().lower() in {"1", "true", "yes", "on"}

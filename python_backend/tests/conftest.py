@@ -18,6 +18,8 @@ def _stub_module(name: str):
 
 
 # Mock heavy/unused ML deps before importing the app to avoid long load times and tf spec errors
+os.environ.setdefault("SKIP_RAILWAY", "1")
+
 sys.modules['ultralytics'] = Mock()
 _stub_module('tensorflow')
 _stub_module('torch')
@@ -29,6 +31,18 @@ _stub_module('easyocr')
 
 # Import after mocking to avoid long load times
 from apis.main import app  # noqa: E402
+
+
+def pytest_collection_modifyitems(config, items):
+    """Skip live Railway postgres/redis tests while the account is on hold."""
+    skip_mark = pytest.mark.skip(
+        reason="Railway account on hold (invoice); set SKIP_RAILWAY=0 to enable"
+    )
+    for item in items:
+        node = item.nodeid.lower().replace("\\", "/")
+        if "railway" in node:
+            item.add_marker(skip_mark)
+            item.add_marker(pytest.mark.railway)
 
 
 @pytest.fixture

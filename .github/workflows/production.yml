@@ -77,6 +77,8 @@ jobs:
 
       - name: Run backend tests
         working-directory: python_backend
+        env:
+          SKIP_RAILWAY: "1"
         run: pytest tests/ -v --tb=short || echo "Tests completed with warnings"
         continue-on-error: true
 

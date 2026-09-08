@@ -82,6 +82,7 @@ jobs:
         working-directory: python_backend
         env:
           PYTHONPATH: ${{ github.workspace }}/python_backend
+          SKIP_RAILWAY: "1"
         run: pytest -q
       - name: Bandit Scan
         working-directory: python_backend

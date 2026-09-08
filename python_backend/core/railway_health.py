@@ -8,7 +8,7 @@ from datetime import datetime
 
 from core.database_adapter import db_adapter
 from core.email_adapter import email_adapter
-from core.config import settings
+from core.config import settings, skip_railway
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,16 @@ class RailwayHealthCheck:
     
     async def check_all_services(self) -> Dict[str, Any]:
         """Check health of all Railway and fallback services."""
-        
+
+        if skip_railway():
+            return {
+                "timestamp": datetime.utcnow().isoformat(),
+                "overall_status": "skipped",
+                "environment": settings.ENVIRONMENT,
+                "note": "Railway checks skipped (SKIP_RAILWAY); account on hold",
+                "services": {},
+            }
+
         health_status = {
             "timestamp": datetime.utcnow().isoformat(),
             "overall_status": "healthy",
