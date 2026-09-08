@@ -2,10 +2,10 @@
 # Based on actual dependency analysis, not fantasy
 
 # Core Framework
-fastapi==0.123.8
+fastapi==0.141.1
 uvicorn[standard]==0.24.0
 pydantic==2.9.0
-python-multipart>=0.0.20
+python-multipart==0.0.32
 
 # Database
 supabase==2.8.0

@@ -2,10 +2,10 @@
 # Removed: ortools (has fallback), pandas (only required by ortools), sympy (check if needed)
 
 # Core Framework
-fastapi==0.123.8
+fastapi==0.141.1
 uvicorn[standard]==0.24.0
 pydantic==2.9.0
-python-multipart>=0.0.20
+python-multipart==0.0.32
 
 # Database
 supabase==2.8.0
@@ -32,7 +32,7 @@ pillow>=12.1.1         # ~20MB (CVE-2026-25990 fix)
 # Security
 python-jose[cryptography]==3.4.0
 passlib[bcrypt]==1.7.4
-PyJWT==2.9.0
+PyJWT==2.13.0
 
 # Monitoring (MINIMAL)
 structlog==23.2.0

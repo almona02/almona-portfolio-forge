@@ -14,7 +14,7 @@ respx==0.21.1
 psutil==5.9.6
 
 # Development Tools (DEVELOPMENT ONLY)
-black==24.10.0
+black==26.5.1
 isort==5.12.0
 flake8==6.1.0
 mypy==1.7.1
