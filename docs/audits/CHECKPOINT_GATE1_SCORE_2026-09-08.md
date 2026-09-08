@@ -1,59 +1,71 @@
-# ALMONA Checkpoint — Gate 1 Shipability (2026-09-08)
+# ALMONA Score Recheck — 2026-09-08 (evening)
 
-## Verdict
+**HEAD:** `c8ca80f` (`origin/main`)  
+**Mode:** Evidence-based recheck after Gate 1 commit + later main fixes
 
-| Gate | Status |
-|------|--------|
-| P0.11 Service ticketing DB boundary | ✅ Accepted (live proof earlier) |
-| Gate 1 repo controls | ✅ Proven |
-| Gate 1 Supabase key rotation | ⚠️ Skipped — residual risk **accepted by owner** |
-| **Gate 1 Production Ready** | ⚠️ **CONDITIONAL** (accepted Supabase residual risk) |
-| Full platform Production Ready | ❌ No |
-| Gold-Tier Ready | ❌ No |
-| **Defensible Gold-Tier score** | **~7.0 / 10** |
+## Verdict (revised)
 
-Rotating Supabase would close Gate 1 fully for integrity, but would only move the headline score to roughly **~7.1–7.2**, not a major jump. Next real score movement is Gate 2.
+| Gate | Prior checkpoint | **Now** |
+|------|------------------|---------|
+| Gate 1 repo controls | ✅ Proven | ✅ **Still proven** (`security:gate1` pass; history `.env` count 0; `origin/main` only) |
+| Gate 1 PaymentService | ✅ Proven | ✅ **Still proven** (no Stripe secret path) |
+| Gate 1 shipability | ✅ Proven | ✅ **Still proven** (`type-check` 0, `build` 0) |
+| Supabase rotation | ⚠️ Skipped / risk accepted | 🔄 **In progress** — publishable pair on Vercel; prod sign-in + ticket create verified; **legacy JWT still enabled**; Railway secret cutover **open** |
+| **Gate 1 Production Ready** | CONDITIONAL | ⚠️ **Still CONDITIONAL** — close only when Railway secret cut over **and** legacy JWT/anon disabled |
+| P0.11 DB boundary on **this** `main` tree | ✅ Accepted (historical live proof) | ⚠️ **Partial** — live proof was real, but **re-verify tooling + migrations 080–083 + `TicketGovernanceService` are not on current `main`** |
+| Full platform Production Ready | ❌ | ❌ |
+| Gold-Tier Ready | ❌ | ❌ |
+| **Defensible Gold-Tier score** | ~7.0 | **~7.0** (held; micro-moves cancel) |
 
-## Score by objective (honest)
+## What was re-verified just now
 
-| Objective / audit area | Score | Notes |
-|------------------------|------:|-------|
-| Fabricator Studio engineering core | 7.5 | Auth, v2 UUID, cut coverage — real asset |
-| Ticketing Tier-3 DB boundary (P0.11) | 8.5 | Live FSM + SLA + events proven |
-| Event persistence (RealityOS) | 7.0 | RPC proven; Option C best-effort |
-| Security / secrets (Gate 1) | 7.0 | Tree+history clean on `main`; PaymentService browser-safe; Supabase unrotated by choice |
-| Shipability (build / CI gate) | 8.0 | `npm run build` green; `gate1-shipability` workflow |
-| Manufacturing determinism (AICS / GA) | 4.5 | FP-016 open — Option B required |
-| Physical-cut identity through QC | 5.5 | FP-017 open — `componentId` collapse |
-| Application integrity (routes / tests) | 5.5 | FP-022 / FP-018 pending |
-| Commercial shell (shop / used / tickets UI) | 3.0 | Mock/static surfaces remain |
-| **Overall Gold-Tier readiness** | **~7.0** | Held — do not inflate for hygiene alone |
+| Check | Result |
+|--------|--------|
+| `npm run security:gate1` | ✅ PASS |
+| Reachable `.env` history | ✅ 0 |
+| Remote branches | ✅ `origin/main` only |
+| `PaymentService` Stripe secret load | ✅ Absent |
+| `npm run type-check` | ✅ exit 0 |
+| `npm run build` | ✅ exit 0 |
+| `npm run verify:ticketing-boundary` | ❌ Script **missing** on `main` |
+| `migrations/080–083` | ❌ **Missing** on `main` |
+| `src/lib/ticketing/TicketGovernanceService.ts` | ❌ **Missing** on `main` (only on pre-checkout checkpoint commit) |
+| QC `measuredLengths[cut.componentId]` | ❌ Still present (`QualityVerificationEngine.ts:576`) |
+| Genetic `Math.random` on Tier-3 path | ❌ Still present (`adaptiveSolver` → `GeneticOptimizer`) |
+| README “identical inputs → identical outputs” | ❌ Still claimed |
+| Ticket detail page | ❌ Still **hardcoded mock** |
+| Supabase publishable cutover (docs) | 🔄 Pair created; Vercel set; E2E sign-in + ticket create noted; legacy not disabled |
 
-## Main objectives — next gates
+## Score by objective (revised)
 
-1. **Gate 2 — Manufacturing truth** (score-moving)  
-   - FP-016 Option B: genetic = advisory/search-only; excluded from Tier-3 truth  
-   - FP-017: QC by physical cut identity (`cutId` / assignment key)  
-   - Then audit Measurement → Design → Optimization → Cut → Production → QC → Delivery  
+| Objective / audit area | Prior | **Now** | Delta reason |
+|------------------------|------:|--------:|--------------|
+| Fabricator Studio engineering core | 7.5 | **7.6** | Measuring / Save & Next Pose fixes on `main` (`c8ca80f`) |
+| Ticketing Tier-3 DB boundary | 8.5 | **7.0** | Historical live proof stands, but **cannot re-prove from current `main`** (no 080–083, no verify script, no governance service in tree) |
+| Event persistence (RealityOS) | 7.0 | **6.5** | `078` SQL still in repo; app governance/event path not fully present on `main` |
+| Security / secrets (Gate 1) | 7.0 | **7.5** | Publishable-key cutover in progress + scan/build still green; legacy JWT still on |
+| Shipability (build / CI gate) | 8.0 | **8.0** | Unchanged |
+| Manufacturing determinism (AICS / GA) | 4.5 | **4.5** | Unchanged — FP-016 still open |
+| Physical-cut identity through QC | 5.5 | **5.5** | Unchanged — FP-017 still open |
+| Application integrity (routes / tests) | 5.5 | **5.5** | Unchanged |
+| Commercial shell (shop / used / tickets UI) | 3.0 | **3.0** | Ticket detail still mock |
+| **Overall Gold-Tier readiness** | **~7.0** | **~7.0** | Studio/security up; ticketing/events down — **net hold** |
 
-2. **Gate 3 — Application integrity**  
-   - FP-022 stale routing test  
-   - FP-018 unprotected manufacturing surfaces  
-   - Full relevant test matrix + golden master  
+### If Supabase rotation fully completes
+(Railway secret cut over + legacy JWT/anon **disabled** + real sign-in still green)
 
-3. **Gate 4 — Commercial platform**  
-   - Ticket detail → used machines → catalogue → shop honesty → payments  
+→ Gate 1 can move **CONDITIONAL → Accepted**  
+→ Overall score **~7.1–7.2** only (not 8+)
 
-4. **Optional integrity**  
-   - Rotate Supabase credentials when ready (Gate 1 → fully closed; score ~7.1–7.2)
+### What would move the score for real
+**Gate 2:** FP-016 Option B (GA advisory-only) → FP-017 (QC by physical cut id) → expected **~7.5–8.0** if proven.
 
-## Evidence for this commit
+## Main objectives (unchanged priority)
 
-- Local stash ref purged; reachable `.env` history count = 0  
-- Extra remote branches deleted; only `origin/main`  
-- `PaymentService` server-only for Stripe Intent/webhook  
-- `npm run security:gate1` → pass  
-- `npm run type-check` / `npm run build` → pass  
-- Owner confirmed non-Supabase rotation; Supabase residual risk accepted  
+1. **Restore P0.11 artifacts onto `main`** (or re-prove live boundary) — migrations 080–083, governance service, verify script  
+2. **Gate 2 — Manufacturing truth** — FP-016 Option B → FP-017  
+3. **Finish Supabase rotation** — Railway + disable legacy  
+4. **Gate 3** — FP-022 / FP-018  
+5. **Gate 4** — commercial honesty (ticket detail first)
 
 **No secret values are stored in this document.**

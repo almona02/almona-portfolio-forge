@@ -1,26 +1,12 @@
-# Gate 1 — Security / Shipability (FP-013 / FP-014)
+# Gate 1 — Security / Shipability (status after recheck)
 
-**Date:** 2026-09-08  
-**Gate 1 Production Ready:** ⚠️ **CONDITIONAL** — Supabase keys intentionally not rotated (owner-accepted residual risk)
+**Recheck:** 2026-09-08 evening · HEAD `c8ca80f`
 
-See authoritative scoreboard: `docs/audits/CHECKPOINT_GATE1_SCORE_2026-09-08.md`
+| Item | Status |
+|------|--------|
+| Secret scan / history / PaymentService / build | ✅ Proven |
+| Supabase publishable cutover | 🔄 In progress (legacy JWT still enabled; Railway open) |
+| Gate 1 Production Ready | ⚠️ CONDITIONAL |
+| Overall Gold-Tier | **~7.0** (held) |
 
-## Status matrix
-
-| Gate 1 item | Status |
-|-------------|--------|
-| Secret files removed from `main` tip | ✅ Proven |
-| `.env` absent from reachable history | ✅ Proven (stash purged) |
-| Extra remote branches deleted | ✅ Proven (`origin/main` only) |
-| `.env.example` scrubbed | ✅ Proven |
-| Browser-safe PaymentService | ✅ Proven |
-| Server-only payment operations | ✅ Proven |
-| Type-check + production build | ✅ Proven |
-| Secret scan + CI workflow | ✅ Proven |
-| Non-Supabase credential rotation | ✅ Per owner |
-| Supabase credential rotation | ⚠️ Skipped — residual risk accepted |
-| **Overall Gold-Tier score** | **~7.0/10** (held) |
-
-## Next
-
-Gate 2: FP-016 Option B → FP-017 (manufacturing-truth boundary).
+Authoritative scoreboard: `CHECKPOINT_GATE1_SCORE_2026-09-08.md`
