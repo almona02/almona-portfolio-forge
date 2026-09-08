@@ -26,6 +26,9 @@ export interface CutSheetCut {
   lengthMm: number;
   angleDeg: number;
   componentId: string;
+  /** Physical-cut identity when present on source Cut (FP-017) */
+  cutId?: string;
+  occurrenceIndex?: number;
   componentType?: string;
   positionMm: number;
 }
@@ -61,6 +64,8 @@ export function generateCutSheets(
         lengthMm: cut.length,
         angleDeg: cut.angle ?? 0,
         componentId: cut.componentId ?? `cut-${cutIndex + 1}`,
+        cutId: cut.cutId,
+        occurrenceIndex: cut.occurrenceIndex,
         componentType: cut.componentType,
         positionMm: currentPosition,
       };
@@ -126,6 +131,8 @@ export class CutSheetGenerator {
           stockBarId,
           stockBarLength,
           positionOnBar,
+          cutId: cut.cutId,
+          componentId: cut.componentId,
         });
         positionOnBar += cut.length + 4; // 4mm saw blade kerf
       }

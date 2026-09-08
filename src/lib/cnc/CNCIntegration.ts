@@ -188,7 +188,7 @@ export class CNCIntegration {
       );
 
       cuts.push({
-        cutId: cut.componentId || `cut_${i}`,
+        cutId: cut.cutId ?? cut.componentId ?? `cut_${i}`,
         sequence: i + 1,
         length: cut.length,
         angle: cut.angle,
@@ -241,7 +241,7 @@ export class CNCIntegration {
     }
 
     return {
-      cutId: cut.componentId || 'unknown',
+      cutId: cut.cutId ?? cut.componentId ?? 'unknown',
       baseParameters,
       adjustedParameters,
       adjustmentReason,

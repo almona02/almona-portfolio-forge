@@ -563,7 +563,9 @@ export class QualityVerificationEngine {
   }
 
   /**
-   * Verify profile cuts against BOM specifications
+   * Verify profile cuts against BOM specifications.
+   * FP-017: measurements are keyed by physical cut identity (`cut.cutId`), not componentId alone.
+   * Fallback to componentId only when cutId is absent (legacy single-key callers).
    */
   async verifyProfileCuts(
     cuts: Cut[],
@@ -573,12 +575,20 @@ export class QualityVerificationEngine {
     const profileLengthTolerance = this.DEFAULT_TOLERANCES.profileLength;
 
     for (const cut of cuts) {
-      const measuredLength = measuredLengths[cut.componentId];
+      const physicalKey =
+        cut.cutId ??
+        (cut.occurrenceIndex !== undefined
+          ? `${cut.componentId}:${cut.occurrenceIndex}`
+          : undefined);
+      const lookupKey = physicalKey ?? cut.componentId;
+      const measuredLength = measuredLengths[lookupKey];
+      const labelId = physicalKey ?? cut.componentId;
+
       if (measuredLength === undefined) {
         checks.push({
-          id: `cut-${cut.componentId}`,
+          id: `cut-${labelId}`,
           category: 'dimensional',
-          label: `Profile Cut: ${cut.componentId}`,
+          label: `Profile Cut: ${labelId}`,
           specification: `${cut.length}mm (±${profileLengthTolerance.upperTolerance}mm)`,
           status: 'pending',
           notes: 'Measurement required',
@@ -588,16 +598,16 @@ export class QualityVerificationEngine {
       }
 
       const measurement = this.checkTolerance(
-        `Profile Cut: ${cut.componentId}`,
+        `Profile Cut: ${labelId}`,
         cut.length,
         measuredLength,
         profileLengthTolerance
       );
 
       checks.push({
-        id: `cut-${cut.componentId}`,
+        id: `cut-${labelId}`,
         category: 'dimensional',
-        label: `Profile Cut: ${cut.componentId}`,
+        label: `Profile Cut: ${labelId}`,
         specification: `${cut.length}mm (±${profileLengthTolerance.upperTolerance}mm)`,
         status: measurement.withinTolerance ? 'pass' : 'fail',
         measurements: [measurement],

@@ -633,13 +633,13 @@ export interface OptimizationResult {
 export interface AdaptiveSolverConfig {
   /** Maximum time in seconds allowed for solving */
   maxSolvingTime: number;
-  /** Preferred algorithm override (optional, will be auto-selected if not specified) */
+  /** Preferred algorithm override (optional). `genetic` is advisory-only and is not used on the Tier-3 manufacturing path (FP-016 Option B). */
   preferredAlgorithm?: 'greedy' | 'linear' | 'genetic';
   /** Complexity thresholds for algorithm selection */
   complexityThresholds: {
     /** Number of cuts below which greedy algorithm is used (e.g., 50) */
     simple: number;
-    /** Number of cuts above which genetic algorithm is used (e.g., 500) */
+    /** Number of cuts at/above which Tier-3 uses greedy (not genetic); e.g. 500 */
     medium: number;
   };
   /** Time constraint mode */
@@ -696,6 +696,13 @@ export interface Cut {
   length: number;
   angle: number;
   componentId: string;
+  /**
+   * Physical-cut identity (FP-017). Prefer this for QC / production traceability.
+   * Format typically `${componentId}:${occurrenceIndex}`.
+   */
+  cutId?: string;
+  /** Zero-based occurrence of this length within the component cutting list */
+  occurrenceIndex?: number;
   componentType?: string;
   waste: number;
 }

@@ -42,6 +42,9 @@ export interface CutSheetItem {
   stockBarId: string;
   stockBarLength: number;
   positionOnBar: number;
+  /** Physical-cut identity when available (FP-017) */
+  cutId?: string;
+  componentId?: string;
 }
 
 export interface LabelData {
