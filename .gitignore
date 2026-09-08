@@ -31,6 +31,7 @@ htmlcov/
 # Exception: YDT knowledge base must be tracked for production
 !src/lib/ydt/knowledge-base.json
 !src/core/authority/version_lock.json
+!src/lib/ticketing/sla_policy.json
 *.png
 test_report.html
 test_report.json

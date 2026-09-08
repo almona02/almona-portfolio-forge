@@ -1,7 +1,7 @@
 manifest:
   version: 1.0.0
   constitutionalAuthority: AICS-001-v1.0.0
-  lastUpdated: '2026-01-18'
+  lastUpdated: '2026-09-02'
   governingDocument: docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md
 truthDomains:
   serviceTruth:
@@ -44,18 +44,22 @@ truthDomains:
         execution_class: advisory
         requires_human_validation: true
     tier_1:
-      - component: TicketDashboard
-        location: src/components/ticketing/dashboard/TicketDashboard.tsx
+      - component: TicketWizardDialog
+        location: src/components/support/TicketWizardDialog.tsx
         truth_domain: serviceTruth
         execution_class: presentation
-      - component: TicketWizard
-        location: src/components/ticketing/wizard/TicketWizard.tsx
+      - component: AdminTicketDashboard
+        location: src/components/support/AdminTicketDashboard.tsx
         truth_domain: serviceTruth
         execution_class: presentation
-      - component: AdvisoryGate
-        location: src/components/ticketing/gates/AdvisoryGate.tsx
+      - component: TicketDetailPage
+        location: src/pages/TicketDetailPage.tsx
         truth_domain: serviceTruth
         execution_class: presentation
+      - component: TicketGovernanceService
+        location: src/lib/ticketing/TicketGovernanceService.ts
+        truth_domain: serviceTruth
+        execution_class: orchestration
   geometryTruth:
     canonicalSources:
       - src/components/fabricator/drafting/DraftingCanvas2D.tsx
@@ -120,7 +124,6 @@ executionClasses:
       - src/future/advisory-panels/ConstitutionalHealthDashboard.tsx
       - src/future/advisory-panels/DesignModeSelector.tsx
       - src/services/ticketing/advisory/RoutingAdvisor.ts
-      - src/components/ticketing/gates/AdvisoryGate.tsx
   tier1_authoritative:
     authority: YDT mandatory
     aiAllowed: true
@@ -186,11 +189,7 @@ serviceTruth:
       location: src/services/ticketing/advisory/PartsRecommendationAdvisor.ts
       truth_domain: serviceTruth
       execution_class: advisory
-  tier_1:
-    - component: AdvisoryDashboard
-      location: src/components/ticketing/advisory/dashboard/AdvisoryDashboard.tsx
-      truth_domain: serviceTruth
-      execution_class: presentation
+  tier_1: []
   tier_2_support:
     - component: AdvisoryHardener
       location: src/lib/ticketing/advisory/AdvisoryHardener.ts

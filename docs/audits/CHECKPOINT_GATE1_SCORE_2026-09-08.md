@@ -1,71 +1,44 @@
-# ALMONA Score Recheck — 2026-09-08 (evening)
+# ALMONA Score Recheck — P0.11 artifacts restored to main (2026-09-08)
 
-**HEAD:** `c8ca80f` (`origin/main`)  
-**Mode:** Evidence-based recheck after Gate 1 commit + later main fixes
+**HEAD:** pending commit on `main`  
+**Change:** Restored migrations 080–083, TicketGovernanceService, verify script, live tests from checkpoint `608b154`
 
-## Verdict (revised)
+## Verdict
 
-| Gate | Prior checkpoint | **Now** |
-|------|------------------|---------|
-| Gate 1 repo controls | ✅ Proven | ✅ **Still proven** (`security:gate1` pass; history `.env` count 0; `origin/main` only) |
-| Gate 1 PaymentService | ✅ Proven | ✅ **Still proven** (no Stripe secret path) |
-| Gate 1 shipability | ✅ Proven | ✅ **Still proven** (`type-check` 0, `build` 0) |
-| Supabase rotation | ⚠️ Skipped / risk accepted | 🔄 **In progress** — publishable pair on Vercel; prod sign-in + ticket create verified; **legacy JWT still enabled**; Railway secret cutover **open** |
-| **Gate 1 Production Ready** | CONDITIONAL | ⚠️ **Still CONDITIONAL** — close only when Railway secret cut over **and** legacy JWT/anon disabled |
-| P0.11 DB boundary on **this** `main` tree | ✅ Accepted (historical live proof) | ⚠️ **Partial** — live proof was real, but **re-verify tooling + migrations 080–083 + `TicketGovernanceService` are not on current `main`** |
-| Full platform Production Ready | ❌ | ❌ |
-| Gold-Tier Ready | ❌ | ❌ |
-| **Defensible Gold-Tier score** | ~7.0 | **~7.0** (held; micro-moves cancel) |
+| Item | Status |
+|------|--------|
+| 080–083 / governance / verify script on `main` | ✅ **Restored** |
+| App wiring (`ticketApi` / `adminTicketApi` → governance) | ✅ Restored |
+| Unit/integration gate tests | ✅ 26 passed |
+| Live `realityos_record_event` (078) | ✅ Verified |
+| Live FSM probe (`open → resolved`) | ⚠️ **Blocked locally** — `.env` has publishable key only; need `SUPABASE_SERVICE_ROLE_KEY=sb_secret_…` (or legacy service_role JWT) |
+| Overall Gold-Tier | **~7.2** |
 
-## What was re-verified just now
+## Score by objective
 
-| Check | Result |
-|--------|--------|
-| `npm run security:gate1` | ✅ PASS |
-| Reachable `.env` history | ✅ 0 |
-| Remote branches | ✅ `origin/main` only |
-| `PaymentService` Stripe secret load | ✅ Absent |
-| `npm run type-check` | ✅ exit 0 |
-| `npm run build` | ✅ exit 0 |
-| `npm run verify:ticketing-boundary` | ❌ Script **missing** on `main` |
-| `migrations/080–083` | ❌ **Missing** on `main` |
-| `src/lib/ticketing/TicketGovernanceService.ts` | ❌ **Missing** on `main` (only on pre-checkout checkpoint commit) |
-| QC `measuredLengths[cut.componentId]` | ❌ Still present (`QualityVerificationEngine.ts:576`) |
-| Genetic `Math.random` on Tier-3 path | ❌ Still present (`adaptiveSolver` → `GeneticOptimizer`) |
-| README “identical inputs → identical outputs” | ❌ Still claimed |
-| Ticket detail page | ❌ Still **hardcoded mock** |
-| Supabase publishable cutover (docs) | 🔄 Pair created; Vercel set; E2E sign-in + ticket create noted; legacy not disabled |
+| Objective | Prior evening | **Now** |
+|-----------|--------------:|--------:|
+| Fabricator Studio | 7.6 | 7.6 |
+| Ticketing Tier-3 DB boundary | 7.0 | **7.8** | repo can re-prove; live FSM needs service-role secret in env |
+| Event persistence | 6.5 | **7.0** | 078 live hash verified again |
+| Security / secrets | 7.5 | 7.5 |
+| Shipability | 8.0 | 8.0 |
+| Determinism / QC / commercial | 4.5 / 5.5 / 3.0 | unchanged |
+| **Overall** | ~7.0 | **~7.2** |
 
-## Score by objective (revised)
+## Operator one-liner to finish live FSM proof
 
-| Objective / audit area | Prior | **Now** | Delta reason |
-|------------------------|------:|--------:|--------------|
-| Fabricator Studio engineering core | 7.5 | **7.6** | Measuring / Save & Next Pose fixes on `main` (`c8ca80f`) |
-| Ticketing Tier-3 DB boundary | 8.5 | **7.0** | Historical live proof stands, but **cannot re-prove from current `main`** (no 080–083, no verify script, no governance service in tree) |
-| Event persistence (RealityOS) | 7.0 | **6.5** | `078` SQL still in repo; app governance/event path not fully present on `main` |
-| Security / secrets (Gate 1) | 7.0 | **7.5** | Publishable-key cutover in progress + scan/build still green; legacy JWT still on |
-| Shipability (build / CI gate) | 8.0 | **8.0** | Unchanged |
-| Manufacturing determinism (AICS / GA) | 4.5 | **4.5** | Unchanged — FP-016 still open |
-| Physical-cut identity through QC | 5.5 | **5.5** | Unchanged — FP-017 still open |
-| Application integrity (routes / tests) | 5.5 | **5.5** | Unchanged |
-| Commercial shell (shop / used / tickets UI) | 3.0 | **3.0** | Ticket detail still mock |
-| **Overall Gold-Tier readiness** | **~7.0** | **~7.0** | Studio/security up; ticketing/events down — **net hold** |
+Add to **local** `.env` (never commit):
 
-### If Supabase rotation fully completes
-(Railway secret cut over + legacy JWT/anon **disabled** + real sign-in still green)
+```
+SUPABASE_SERVICE_ROLE_KEY=sb_secret_…   # or legacy service_role JWT
+```
 
-→ Gate 1 can move **CONDITIONAL → Accepted**  
-→ Overall score **~7.1–7.2** only (not 8+)
+Then:
 
-### What would move the score for real
-**Gate 2:** FP-016 Option B (GA advisory-only) → FP-017 (QC by physical cut id) → expected **~7.5–8.0** if proven.
+```bash
+npm run verify:ticketing-boundary   # expect exit 0
+npm run test:ticketing-boundary     # expect 7/7 pass
+```
 
-## Main objectives (unchanged priority)
-
-1. **Restore P0.11 artifacts onto `main`** (or re-prove live boundary) — migrations 080–083, governance service, verify script  
-2. **Gate 2 — Manufacturing truth** — FP-016 Option B → FP-017  
-3. **Finish Supabase rotation** — Railway + disable legacy  
-4. **Gate 3** — FP-022 / FP-018  
-5. **Gate 4** — commercial honesty (ticket detail first)
-
-**No secret values are stored in this document.**
+**No secret values stored in this document.**

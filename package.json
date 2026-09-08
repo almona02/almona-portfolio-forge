@@ -164,7 +164,9 @@
     "perf:tier-audit": "tsx src/lib/performance/scripts/performance-audit-cli.ts tier-audit",
     "perf:full-audit": "tsx src/lib/performance/scripts/performance-audit-cli.ts full-audit",
     "test:bench": "vitest bench",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:ticketing-boundary": "cross-env SUPABASE_INTEGRATION_TESTS=true SUPABASE_INTEGRATION_REQUIRED=true vitest run src/tests/integration/ticketing/ServiceTicketingSupabaseBoundary.test.ts",
+    "verify:ticketing-boundary": "node scripts/verify-ticketing-boundary.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

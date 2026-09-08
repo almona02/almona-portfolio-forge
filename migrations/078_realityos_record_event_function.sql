@@ -11,6 +11,9 @@
 -- - DB constraints in 041 require proof JSON to contain 'verified_by' and 'timestamp' keys.
 --
 BEGIN;
+-- pgcrypto lives in extensions on Supabase; must be on search_path for SECURITY DEFINER
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
+
 CREATE OR REPLACE FUNCTION public.realityos_record_event(
     p_event_type core_event_type,
     p_entity_id VARCHAR,
@@ -19,7 +22,7 @@ CREATE OR REPLACE FUNCTION public.realityos_record_event(
     p_payload JSONB,
     p_recorded_at TIMESTAMPTZ DEFAULT NOW()
   ) RETURNS TABLE(event_hash CHAR(64), chain_position BIGINT) LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = public AS $$
+SET search_path = public, extensions AS $$
 DECLARE v_prev_hash CHAR(64);
 v_payload_hash TEXT;
 v_proof_hash TEXT;
@@ -32,16 +35,20 @@ SELECT re.event_hash INTO v_prev_hash
 FROM public.reality_events re
 ORDER BY re.chain_position DESC
 LIMIT 1;
--- Compute hashes
+-- Compute hashes (convert_to → bytea avoids digest(text, unknown))
 v_payload_hash := encode(
-  digest(COALESCE(p_payload, '{}'::jsonb)::text, 'sha256'), 'hex'
+  digest(convert_to(COALESCE(p_payload, '{}'::jsonb)::text, 'UTF8'), 'sha256'), 'hex'
 );
 v_proof_hash := encode(
-  digest(COALESCE(p_proof, '{}'::jsonb)::text, 'sha256'), 'hex'
+  digest(convert_to(COALESCE(p_proof, '{}'::jsonb)::text, 'UTF8'), 'sha256'), 'hex'
 );
 v_event_hash := encode(
   digest(
-    COALESCE(v_prev_hash, '') || v_payload_hash || v_proof_hash || COALESCE(p_proof->>'timestamp', ''), 'sha256'
+    convert_to(
+      COALESCE(v_prev_hash, '') || v_payload_hash || v_proof_hash || COALESCE(p_proof->>'timestamp', ''),
+      'UTF8'
+    ),
+    'sha256'
   ), 'hex'
 );
 INSERT INTO public.reality_events (

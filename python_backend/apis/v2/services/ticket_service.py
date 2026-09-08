@@ -9,7 +9,7 @@ from supabase import Client  # type: ignore
 from apis.v2.repositories.tickets import TicketsRepository
 from apis.v2.core.errors import (
     TicketValidationError,
-    SupabaseError
+    SupabaseError,
 )
 from models.api_v2_models import (
     TicketResponse,
@@ -18,6 +18,8 @@ from models.api_v2_models import (
     TicketStatus,
     UnifiedTicketBase,
 )
+from services.sla_calculator import calculate_sla_deadlines
+from services.ticket_lifecycle import validate_transition
 
 
 def utcnow_iso() -> str:
@@ -52,6 +54,9 @@ class TicketService:
             else:
                 priority_value = str(payload.priority)
 
+            created = datetime.now(timezone.utc)
+            sla = calculate_sla_deadlines(priority_value, category.value, created)
+
             data: Dict[str, Any] = {
                 "category": category.value,
                 "title": payload.title,
@@ -61,6 +66,10 @@ class TicketService:
                 "machine_serial_number": payload.machine_serial_number,
                 "user_id": str(user_id),
                 "status": TicketStatus.OPEN.value,
+                "type": category.value if category.value in {"technical", "general"} else "general",
+                "sla_response_due": sla.response_due.isoformat().replace("+00:00", "Z"),
+                "sla_resolution_due": sla.resolution_due.isoformat().replace("+00:00", "Z"),
+                "sla_breached": False,
                 "created_at": utcnow_iso(),
                 "updated_at": utcnow_iso(),
             }
@@ -138,6 +147,18 @@ class TicketService:
         status: TicketStatus,
         resolution_summary: Optional[str] = None
     ) -> Optional[TicketResponse]:
+        existing = self._repo.get_ticket_by_id(ticket_id)
+        if not existing:
+            return None
+
+        current_status = existing.get("status", TicketStatus.OPEN.value)
+        valid, rationale = validate_transition(current_status, status.value)
+        if not valid:
+            raise TicketValidationError(
+                message=rationale,
+                field="status",
+            )
+
         update: Dict[str, Any] = {
             "status": status.value,
             "updated_at": utcnow_iso(),
@@ -146,22 +167,45 @@ class TicketService:
             update["resolved_at"] = utcnow_iso()
             if resolution_summary:
                 update["resolution_summary"] = resolution_summary
+        if status == TicketStatus.CLOSED:
+            update["closed_at"] = utcnow_iso()
+        if current_status == TicketStatus.OPEN.value and status.value in {
+            TicketStatus.ASSIGNED.value,
+            TicketStatus.IN_PROGRESS.value,
+        }:
+            update["first_response_at"] = utcnow_iso()
+
         row = self._repo.update_ticket_fields(ticket_id, update)
         return TicketResponse(**row) if row else None
 
     def assign_ticket(
         self, ticket_id: UUID, assignee_id: UUID, assigned_by: UUID
     ) -> Optional[TicketResponse]:
-        """Assign a ticket to a user with error handling."""
+        """Assign a ticket to a user with FSM-governed status transition."""
         try:
-            update = {
+            existing = self._repo.get_ticket_by_id(ticket_id)
+            if not existing:
+                return None
+
+            current_status = existing.get("status", TicketStatus.OPEN.value)
+            update: Dict[str, Any] = {
                 "assigned_to": str(assignee_id),
                 "assigned_by": str(assigned_by),
                 "assigned_at": utcnow_iso(),
-                "status": TicketStatus.IN_PROGRESS.value,
                 "updated_at": utcnow_iso(),
             }
-            
+
+            if current_status == TicketStatus.OPEN.value:
+                valid, rationale = validate_transition(current_status, TicketStatus.ASSIGNED.value)
+                if not valid:
+                    raise TicketValidationError(message=rationale, field="status")
+                update["status"] = TicketStatus.ASSIGNED.value
+                update["first_response_at"] = utcnow_iso()
+            elif current_status == TicketStatus.ASSIGNED.value:
+                valid, rationale = validate_transition(current_status, TicketStatus.IN_PROGRESS.value)
+                if valid:
+                    update["status"] = TicketStatus.IN_PROGRESS.value
+
             try:
                 row = self._repo.update_ticket_fields(ticket_id, update)
             except Exception as e:
@@ -174,10 +218,10 @@ class TicketService:
             return TicketResponse(**row) if row else None
         
         except SupabaseError:
-            # Re-raise our custom errors
+            raise
+        except TicketValidationError:
             raise
         except Exception as e:
-            # Convert unexpected errors to SupabaseError
             raise SupabaseError(
                 message="Unexpected error in ticket assignment",
                 operation="assign_ticket",

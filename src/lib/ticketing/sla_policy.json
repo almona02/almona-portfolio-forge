@@ -1,0 +1,33 @@
+{
+  "default": { "responseHours": 24, "resolutionHours": 72, "escalationHours": 48 },
+  "critical": {
+    "technical": { "responseHours": 1, "resolutionHours": 4, "escalationHours": 2 },
+    "spare_parts": { "responseHours": 1, "resolutionHours": 8, "escalationHours": 4 },
+    "warranty": { "responseHours": 1, "resolutionHours": 8, "escalationHours": 4 },
+    "general": { "responseHours": 2, "resolutionHours": 8, "escalationHours": 4 }
+  },
+  "urgent": {
+    "technical": { "responseHours": 2, "resolutionHours": 8, "escalationHours": 6 },
+    "spare_parts": { "responseHours": 2, "resolutionHours": 12, "escalationHours": 8 },
+    "warranty": { "responseHours": 2, "resolutionHours": 12, "escalationHours": 8 },
+    "general": { "responseHours": 4, "resolutionHours": 16, "escalationHours": 12 }
+  },
+  "high": {
+    "technical": { "responseHours": 4, "resolutionHours": 24, "escalationHours": 16 },
+    "spare_parts": { "responseHours": 4, "resolutionHours": 48, "escalationHours": 24 },
+    "warranty": { "responseHours": 4, "resolutionHours": 48, "escalationHours": 24 },
+    "general": { "responseHours": 8, "resolutionHours": 48, "escalationHours": 32 }
+  },
+  "medium": {
+    "technical": { "responseHours": 8, "resolutionHours": 72, "escalationHours": 48 },
+    "spare_parts": { "responseHours": 8, "resolutionHours": 120, "escalationHours": 72 },
+    "warranty": { "responseHours": 8, "resolutionHours": 120, "escalationHours": 72 },
+    "general": { "responseHours": 24, "resolutionHours": 120, "escalationHours": 96 }
+  },
+  "low": {
+    "technical": { "responseHours": 24, "resolutionHours": 168, "escalationHours": 120 },
+    "spare_parts": { "responseHours": 24, "resolutionHours": 240, "escalationHours": 168 },
+    "warranty": { "responseHours": 24, "resolutionHours": 240, "escalationHours": 168 },
+    "general": { "responseHours": 48, "resolutionHours": 240, "escalationHours": 192 }
+  }
+}

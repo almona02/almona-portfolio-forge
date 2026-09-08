@@ -399,32 +399,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- 12. Create trigger function for ticket creation
+-- Tier-3 SLA and assignment are owned by TicketGovernanceService (application layer).
+-- This trigger generates ticket_number only. See migrations/079_service_ticketing_governance.sql.
 CREATE OR REPLACE FUNCTION handle_new_ticket()
 RETURNS TRIGGER AS $$
-DECLARE
-    sla_dates RECORD;
-    assigned_user_id UUID;
 BEGIN
-    -- Generate ticket number if not provided
     IF NEW.ticket_number IS NULL OR NEW.ticket_number = '' THEN
         NEW.ticket_number := generate_ticket_number();
     END IF;
-    
-    -- Calculate SLA dates
-    SELECT response_due, resolution_due INTO sla_dates
-    FROM calculate_sla_dates(NEW.priority, NEW.type, NEW.created_at);
-    
-    NEW.sla_response_due := sla_dates.response_due;
-    NEW.sla_resolution_due := sla_dates.resolution_due;
-    
-    -- Auto-assign ticket
-    assigned_user_id := auto_assign_ticket(NEW.id);
-    IF assigned_user_id IS NOT NULL THEN
-        NEW.assigned_to := assigned_user_id;
-        NEW.assigned_at := NOW();
-        NEW.status := 'assigned';
-    END IF;
-    
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -640,10 +622,6 @@ DROP POLICY IF EXISTS "Users can create their own tickets" ON public.service_tic
 CREATE POLICY "Users can create their own tickets" ON public.service_tickets 
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS "Users can update their own open tickets" ON public.service_tickets;
-CREATE POLICY "Users can update their own open tickets" ON public.service_tickets 
-    FOR UPDATE USING (auth.uid() = user_id AND status IN ('open', 'awaiting_customer'));
-
 DROP POLICY IF EXISTS "Staff can view assigned tickets" ON public.service_tickets;
 CREATE POLICY "Staff can view assigned tickets" ON public.service_tickets 
     FOR SELECT USING (
@@ -652,10 +630,26 @@ CREATE POLICY "Staff can view assigned tickets" ON public.service_tickets
     );
 
 DROP POLICY IF EXISTS "Staff can manage all tickets" ON public.service_tickets;
-CREATE POLICY "Staff can manage all tickets" ON public.service_tickets 
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'technician', 'sales_rep'))
+DROP POLICY IF EXISTS "Staff can view all tickets" ON public.service_tickets;
+CREATE POLICY "Staff can view all tickets" ON public.service_tickets
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'technician', 'sales_rep', 'support'))
     );
+DROP POLICY IF EXISTS "Staff can update tickets (FSM enforced by trigger)" ON public.service_tickets;
+CREATE POLICY "Staff can update tickets (FSM enforced by trigger)" ON public.service_tickets
+    FOR UPDATE USING (
+        EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'technician', 'sales_rep', 'support'))
+    );
+DROP POLICY IF EXISTS "Staff can create tickets" ON public.service_tickets;
+CREATE POLICY "Staff can create tickets" ON public.service_tickets
+    FOR INSERT WITH CHECK (
+        EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'technician', 'sales_rep', 'support'))
+    );
+
+DROP POLICY IF EXISTS "Users can update their own open tickets" ON public.service_tickets;
+DROP POLICY IF EXISTS "Users can update own ticket contact fields only" ON public.service_tickets;
+CREATE POLICY "Users can update own ticket contact fields only" ON public.service_tickets
+    FOR UPDATE USING (auth.uid() = user_id AND status IN ('open', 'awaiting_customer'));
 
 -- Ticket Messages Policies
 DROP POLICY IF EXISTS "Users can view messages for their tickets" ON public.ticket_messages;

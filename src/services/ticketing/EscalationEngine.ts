@@ -2,34 +2,46 @@
  * @tier Tier 3 Protected (Execution Path)
  * @constitutional_compliance AICS-001 §5.10.2 (No ML/AI)
  * @deterministic true
- * @audit_trail complete
  */
 
 export interface TicketForEscalation {
+  id: string;
   status: string;
-  slaDeadline?: Date | string;
+  slaResolutionDue?: Date | string | null;
+  escalated?: boolean;
+}
+
+export interface EscalationResult {
+  ticketId: string;
+  escalated: boolean;
+  ruleId: string;
+  timestamp: string;
+  tier: string;
+  deterministic: boolean;
 }
 
 export class EscalationEngine {
-  /**
-   * Check if ticket needs escalation
-   */
-  checkForEscalation(ticket: TicketForEscalation): boolean {
-    const now = new Date();
-    const deadline = ticket.slaDeadline instanceof Date
-      ? ticket.slaDeadline
-      : typeof ticket.slaDeadline === 'string' ? new Date(ticket.slaDeadline) : undefined;
-    if (ticket.status !== 'resolved' && deadline && now > deadline) {
-      return true;
-    }
-    return false;
+  checkForEscalation(ticket: TicketForEscalation, now: Date = new Date()): boolean {
+    if (['resolved', 'closed', 'cancelled'].includes(ticket.status)) return false;
+    if (ticket.escalated) return false;
+    if (!ticket.slaResolutionDue) return false;
+
+    const deadline =
+      ticket.slaResolutionDue instanceof Date
+        ? ticket.slaResolutionDue
+        : new Date(ticket.slaResolutionDue);
+
+    return now.getTime() > deadline.getTime();
   }
 
-  /**
-   * execute deterministic escalation
-   */
-  escalate(ticketId: string): void {
-      console.log(`[Tier 3] Escalate Ticket ${ticketId} - Rule: SLA_BREACH`);
-      // Logic to update ticket priority or notify manager
+  escalate(ticketId: string, timestamp: string = new Date().toISOString()): EscalationResult {
+    return {
+      ticketId,
+      escalated: true,
+      ruleId: 'SLA_BREACH_ESCALATION',
+      timestamp,
+      tier: 'Tier 3',
+      deterministic: true,
+    };
   }
 }

@@ -1,6 +1,10 @@
- 
-import { ticketsV2Api } from '@/lib/api/ticketsV2'
-import { ensureOwnProfile } from '@/lib/data/profilesClient'
+import {
+  buildGovernedTransitionPatch,
+  governedCreateTicket,
+  recordTransitionEvent,
+  validateStatusTransition,
+} from '@/lib/ticketing/TicketGovernanceService'
+import { recordServiceEvent } from '@/lib/ticketing/serviceEventLedger'
 import { supabase } from '@/lib/supabase'
 import { Database } from '@/types/database'
 import {
@@ -38,7 +42,6 @@ function mapTicket(row: DBServiceTicketRow): ServiceTicket {
   priority: row.priority as ServiceTicket['priority'],
   status: row.status as ServiceTicket['status'],
   source: row.source ?? null,
-  // maintenance_type: (row as any).maintenance_type ?? null, // Removed - column doesn't exist
     related_quote_id: row.related_quote_id,
     related_order_id: row.related_order_id,
     related_product_id: row.related_product_id,
@@ -68,133 +71,15 @@ function mapTicket(row: DBServiceTicketRow): ServiceTicket {
 }
 
 // ---------- Ticket CRUD ----------
+/**
+ * Canonical ticket creation — always routes through TicketGovernanceService.
+ * V2 ticket create bypass removed (P0.10.2); no alternate create authority.
+ */
 export const createTicket = async (ticketData: CreateTicketData, userId: string): Promise<ServiceTicket> => {
-  // Attempt V2 path first only if explicitly enabled
-  const ENABLE_V2 = import.meta.env?.VITE_ENABLE_V2_TICKETS === 'true';
-  if (ENABLE_V2) try {
-    let category: string | null = null
-    if (ticketData.type === 'maintenance') {
-      // const mt = (ticketData as any).maintenance_type // Removed - column doesn't exist
-      // if (mt === 'emergency') category = 'emergency_service'
-      // else if (mt === 'preventive') category = 'preventive_maintenance'
-      // else if (mt) category = 'scheduled_maintenance'
-      category = 'scheduled_maintenance' // Default for maintenance tickets
-    } else if (ticketData.type === 'sales') category = 'product_quote'
-    else if (['general', 'technical'].includes(ticketData.type)) category = 'support'
-
-    if (category) {
-      const ext = ticketData as { machine_id?: string; machine_model?: string };
-      const payload: { category: string; payload: Record<string, unknown> } = {
-        category,
-        payload: {
-          title: ticketData.title,
-          description: ticketData.description,
-          priority: ticketData.priority,
-          machine_id: ext.machine_id || undefined,
-          machine_serial_number: ticketData.machine_serial_number || undefined,
-        },
-      };
-      if (category === 'preventive_maintenance') {
-        // payload.maintenance_metadata = { maintenance_type: (ticketData as any).maintenance_type } // Removed - column doesn't exist
-      }
-      const v2 = await ticketsV2Api.create(payload);
-      const v2Ext = v2 as { digital_twin_code?: string };
-      return {
-        id: v2.id,
-        ticket_number: v2.ticket_number,
-        digital_twin_code: v2Ext.digital_twin_code || null,
-        category: v2.category || null,
-        user_id: userId,
-        title: v2.title,
-        description: v2.description || null,
-        type: ticketData.type,
-        priority: v2.priority,
-        status: v2.status as TicketStatus,
-        source: null,
-        // maintenance_type: (ticketData as any).maintenance_type || null, // Removed - column doesn't exist
-        related_quote_id: null,
-        related_order_id: null,
-        related_product_id: null,
-        assigned_to: null,
-        assigned_at: null,
-        assigned_by: null,
-        sla_response_due: null,
-        sla_resolution_due: null,
-        first_response_at: null,
-        sla_breached: false,
-        escalated: false,
-        escalated_at: null,
-        contact_phone: ticketData.contact_phone || null,
-        contact_email: ticketData.contact_email || null,
-        preferred_contact_method: ticketData.preferred_contact_method || 'email',
-        site_location: ticketData.site_location || null,
-        machine_serial_number: ticketData.machine_serial_number || null,
-        machine_model: (ticketData as { machine_model?: string }).machine_model || null,
-        resolution_summary: null,
-        customer_satisfaction_rating: null,
-        customer_feedback: null,
-        created_at: v2.created_at,
-        updated_at: v2.updated_at,
-        resolved_at: null,
-        closed_at: null,
-      }
-    }
-  } catch {
-    // Silent fallback to legacy without noisy logs when disabled/missing backend
-  }
-  // Get user ID once to avoid multiple async calls
   const currentUser = (await supabase.auth.getUser()).data.user;
-  const currentUserId = currentUser?.id;
-  if (!currentUserId) {
-    throw new Error('You must be signed in to create a ticket.');
-  }
-  await ensureOwnProfile(currentUserId, {
-    full_name: currentUser?.email || null,
-  });
-
-  // Minimal, schema-safe payload to avoid 400 due to column diffs
-  // Let database trigger handle ticket_number and digital_twin_code generation (Security Hardening)
-  const insertPayload = {
-    title: ticketData.title?.toString().slice(0, 200) || 'Support Ticket',
-    description: ticketData.description || 'Support ticket created via services page',
-    // Provide safe defaults for likely NOT NULL columns
-    type: ticketData.type || 'general',
-    priority: ticketData.priority || 'medium',
-    status: 'open' as const,
-    preferred_contact_method: ticketData.preferred_contact_method || 'email',
-    user_id: currentUserId,
-    // ticket_number: Generated by server-side trigger
-    // digital_twin_code: Generated by server-side trigger
-    // Additional optional fields
-    contact_phone: ticketData.contact_phone || null,
-    contact_email: ticketData.contact_email || null,
-    site_location: ticketData.site_location || null,
-    machine_serial_number: ticketData.machine_serial_number || null,
-    machine_model: (ticketData as { machine_model?: string }).machine_model || null,
-    // maintenance_type: (ticketData as any).maintenance_type || null, // Removed - column doesn't exist in database
-  }
-  
-  // Debug: Log the payload being sent
-  console.log('[tickets.createTicket] Insert payload:', insertPayload);
-  
-  // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
-  // Select all columns including digital_twin_code and ticket_number
-  const selectColumns = 'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_serial_number, machine_model, created_at, updated_at';
-  const { data, error } = await supabase
-    .from('service_tickets')
-    .insert([insertPayload])
-    .select(selectColumns)
-    .single()
-  // No retry needed; first attempt already minimal
-  if (error) {
-    console.error('[tickets.createTicket] insert error (after retry)', { message: error.message, details: (error).details, hint: (error).hint })
-    throw new Error(error.message)
-  }
-  
-  // Debug: Log the response data
-  console.log('[tickets.createTicket] Response data:', data);
-  console.log('[tickets.createTicket] Digital twin code in response:', data?.digital_twin_code);
-  return mapTicket(data)
+  const currentUserId = currentUser?.id || undefined;
+  const result = await governedCreateTicket(ticketData, userId, currentUserId);
+  return mapTicket(result.row as DBServiceTicketRow);
 }
 
 export const getUserTickets = async (
@@ -212,7 +97,6 @@ export const getUserTickets = async (
   const { data, error } = await query.order('created_at', { ascending: false })
   if (error) throw new Error(error.message)
 
-  // Fetch message counts
   const ids = (data || []).map((r: { id: string }) => r.id)
   let counts: Record<string, number> = {}
   if (ids.length) {
@@ -244,62 +128,37 @@ export const getTicketById = async (ticketId: string): Promise<TicketWithDetails
 export const updateTicketStatus = async (
   ticketId: string,
   status: TicketStatus,
-  resolution_summary?: string
+  resolution_summary?: string,
+  actorId?: string,
 ): Promise<ServiceTicket> => {
-  try {
-    const updated = await ticketsV2Api.updateStatus(ticketId, status, resolution_summary)
-    const existing = await getTicketById(ticketId)
-    if (existing) {
-      return {
-        ...existing,
-        status: updated.status as TicketStatus,
-        updated_at: updated.updated_at,
-        resolved_at: status === 'resolved' ? updated.updated_at : existing.resolved_at,
-        closed_at: status === 'closed' ? updated.updated_at : existing.closed_at,
-        resolution_summary: resolution_summary || existing.resolution_summary,
-      }
-    }
-  } catch (err) {
-    console.warn('V2 status update failed, legacy fallback:', err)
-  }
-  const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() }
-  if (status === 'resolved') patch['resolved_at'] = new Date().toISOString()
-  if (status === 'closed') patch['closed_at'] = new Date().toISOString()
-  if (resolution_summary) patch['resolution_summary'] = resolution_summary
+  const existing = await getTicketById(ticketId)
+  if (!existing) throw new Error('Ticket not found')
+
+  const actor = actorId ?? existing.user_id ?? 'system'
+  validateStatusTransition(existing.status, status)
+
+  const patch = buildGovernedTransitionPatch({
+    ticketId,
+    currentStatus: existing.status,
+    targetStatus: status,
+    actorId: actor,
+    resolution_summary,
+  })
+
   const { data, error } = await supabase
     .from('service_tickets')
     .update(patch as Database['public']['Tables']['service_tickets']['Update'])
     .eq('id', ticketId)
     .select()
     .single()
-  if (error) throw new Error(error.message);
-  return mapTicket(data as DBServiceTicketRow);
+  if (error) throw new Error(error.message)
+
+  await recordTransitionEvent(ticketId, existing.status, status, actor, `TRANS-${ticketId}-${status}-${actor}`)
+  return mapTicket(data as DBServiceTicketRow)
 }
 
 // ---------- Messages ----------
 export const getTicketMessages = async (ticketId: string): Promise<MessageWithAuthor[]> => {
-  // Try V2 first
-  try {
-    const v2 = await ticketsV2Api.listMessages(ticketId)
-    // Assume v2 returns array with at least: id, message, created_at, author_id
-    return v2.map((m: Record<string, unknown>) => ({
-      id: String(m.id),
-      ticket_id: ticketId,
-      author_id: typeof m.author_id === 'string' ? m.author_id : (typeof m.user_id === 'string' ? m.user_id : 'unknown'),
-      message: typeof m.message === 'string' ? m.message : (typeof m.content === 'string' ? m.content : ''),
-      message_type: typeof m.message_type === 'string' ? m.message_type : 'message',
-      is_internal_note: Boolean(m.is_internal_note),
-      attachments: (m.attachments as unknown[]) || [],
-      spare_parts_details: (m.spare_parts_details as Record<string, unknown> | null) || null,
-      status_change: (m.status_change as Record<string, unknown> | null) || null,
-      time_spent_minutes: (m.time_spent_minutes as number | null) || null,
-      created_at: String(m.created_at),
-      edited_at: (m.edited_at as string | null) || null,
-      author: { full_name: (m.author_name as string | null) || null, role: 'user' as const, avatar_url: (m.author_avatar as string | null) || null }
-    }))
-  } catch (err) {
-    console.warn('V2 listMessages failed, legacy fallback:', err)
-  }
   const { data, error } = await supabase
     .from('ticket_messages')
     .select('*')
@@ -324,17 +183,6 @@ export const getTicketMessages = async (ticketId: string): Promise<MessageWithAu
 }
 
 export const createMessage = async (messageData: CreateMessageData & { author_id: string }): Promise<TicketMessage> => {
-  try {
-    await ticketsV2Api.addMessage(messageData.ticket_id, messageData.message, {
-      message_type: messageData.message_type,
-      is_internal: messageData.is_internal_note,
-    })
-    // Re-fetch via V2 for consistent shape
-    const msgs = await getTicketMessages(messageData.ticket_id)
-    return msgs[msgs.length - 1] as TicketMessage
-  } catch (err) {
-    console.warn('V2 addMessage failed, legacy fallback:', err)
-  }
   const insertPayload = {
     ticket_id: messageData.ticket_id,
     author_id: messageData.author_id,
@@ -368,24 +216,46 @@ export const createMessage = async (messageData: CreateMessageData & { author_id
   }
 }
 
-export const assignTicket = async (ticketId: string, assigneeId: string): Promise<ServiceTicket> => {
-  try {
-    const updated = await ticketsV2Api.assign(ticketId, assigneeId)
-    const existing = await getTicketById(ticketId)
-    if (existing) {
-      return { ...existing, assigned_to: assigneeId, updated_at: updated.updated_at }
-    }
-  } catch (err) {
-    console.warn('V2 assign failed, legacy fallback:', err)
-  }
+export const assignTicket = async (
+  ticketId: string,
+  assigneeId: string,
+  assignedBy?: string,
+): Promise<ServiceTicket> => {
+  const existing = await getTicketById(ticketId)
+  if (!existing) throw new Error('Ticket not found')
+
+  const actor = assignedBy ?? existing.user_id ?? 'system'
+  const statusPatch =
+    existing.status === 'open'
+      ? buildGovernedTransitionPatch({
+          ticketId,
+          currentStatus: existing.status,
+          targetStatus: 'assigned',
+          actorId: actor,
+          rationale: 'Manual assignment',
+        })
+      : { updated_at: new Date().toISOString() }
+
   const { data, error } = await supabase
     .from('service_tickets')
-    .update({ assigned_to: assigneeId, assigned_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update({
+      ...statusPatch,
+      assigned_to: assigneeId,
+      assigned_at: new Date().toISOString(),
+      assigned_by: actor,
+    })
     .eq('id', ticketId)
     .select()
     .single()
-  if (error) throw new Error(error.message);
-  return mapTicket(data as DBServiceTicketRow);
+  if (error) throw new Error(error.message)
+
+  await recordServiceEvent({
+    eventType: 'VERIFICATION',
+    entityId: ticketId,
+    payload: { kind: 'ticket_assigned', assignedTo: assigneeId, manual: true },
+    verifiedBy: actor,
+  })
+  return mapTicket(data as DBServiceTicketRow)
 }
 
 // ---------- Analytics ----------
@@ -424,7 +294,6 @@ export const uploadTicketAttachment = async (file: File, ticketId: string): Prom
   return pub.publicUrl
 }
 
-// ---------- Search Helper ----------
 export const searchTickets = async (
   userId: string,
   searchTerm: string,

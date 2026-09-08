@@ -1,15 +1,24 @@
-import { 
+import {
+  buildGovernedTransitionPatch,
+  checkAndApplyEscalation,
+  validateStatusTransition,
+} from '@/lib/ticketing/TicketGovernanceService';
+import { recordServiceEvent } from '@/lib/ticketing/serviceEventLedger';
+import {
   ServiceTicket,
   TicketWithDetails,
   TicketStatus,
   TicketPriority,
-  TicketFilters
-} from '@/types/tickets'
-import { supabase } from '@/lib/supabase'
- 
+  TicketFilters,
+} from '@/types/tickets';
+import { supabase } from '@/lib/supabase';
+import type { Database } from '@/types/database';
+
+type ServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'];
+type ProfileRow = Pick<Database['public']['Tables']['profiles']['Row'], 'id' | 'full_name' | 'company_name' | 'phone'>;
 
 // Helper: map raw ticket row to ServiceTicket/TicketWithDetails
-function baseMap(row: any): ServiceTicket {
+function baseMap(row: ServiceTicketRow): ServiceTicket {
   return {
     id: row.id,
     ticket_number: row.ticket_number,
@@ -50,7 +59,7 @@ function baseMap(row: any): ServiceTicket {
 
 // Build dynamic filter query
 function buildTicketQuery(filters?: TicketFilters) {
-  let query: any = (supabase as any).from('service_tickets').select('*')
+  let query = supabase.from('service_tickets').select('*')
   if (filters?.status?.length) query = query.in('status', filters.status)
   if (filters?.type?.length) query = query.in('type', filters.type)
   if (filters?.priority?.length) query = query.in('priority', filters.priority)
@@ -65,39 +74,47 @@ function buildTicketQuery(filters?: TicketFilters) {
 
 // Admin ticket operations
 export const getAllTickets = async (filters?: TicketFilters): Promise<TicketWithDetails[]> => {
-  const { data, error } = await buildTicketQuery(filters)
-  if (error) throw new Error(error.message)
-  const ids = (data || []).map(r => r.id)
-  let counts: Record<string, number> = {}
+  const { data, error: err } = await buildTicketQuery(filters);
+  if (err) throw new Error(String((err as { message?: string }).message ?? 'Unknown error'));
+  const rows: ServiceTicketRow[] = (data ?? []) as ServiceTicketRow[];
+  const ids = rows.map((r) => r.id);
+  let counts: Record<string, number> = {};
   if (ids.length) {
-  const { data: msgAgg } = await (supabase as any)
+    const { data: msgData } = await supabase
       .from('ticket_messages')
-      .select('ticket_id, count:ticket_id')
-      .in('ticket_id', ids)
-    if (msgAgg) {
-  counts = msgAgg.reduce((acc: Record<string, number>, row: any) => {
-        acc[row.ticket_id] = (acc[row.ticket_id] || 0) + 1
-        return acc
-      }, {})
+      .select('ticket_id')
+      .in('ticket_id', ids);
+    if (msgData) {
+      const rows = msgData as Array<{ ticket_id: string }>;
+      counts = rows.reduce<Record<string, number>>((acc, row) => {
+        acc[row.ticket_id] = (acc[row.ticket_id] ?? 0) + 1;
+        return acc;
+      }, {});
     }
   }
   // Optional profile fetch for display (batch)
-  const userIds = [...new Set((data||[]).map(r => r.user_id))]
-  let profiles: Record<string, { full_name: string | null; company_name: string | null; phone: string | null }> = {}
+  const userIds = [...new Set(rows.map((r) => r.user_id))];
+  let profiles: Record<string, { full_name: string | null; company_name: string | null; phone: string | null }> = {};
   if (userIds.length) {
-  const { data: prof } = await (supabase as any).from('profiles').select('id,full_name,company_name,phone').in('id', userIds)
+    const { data: prof } = await supabase
+      .from('profiles')
+      .select('id,full_name,company_name,phone')
+      .in('id', userIds);
     if (prof) {
-  profiles = prof.reduce((acc: Record<string, any>, p: any) => {
-        acc[p.id] = { full_name: p.full_name, company_name: p.company_name, phone: p.phone }
-        return acc
-      }, {})
+      profiles = (prof as ProfileRow[]).reduce<Record<string, { full_name: string | null; company_name: string | null; phone: string | null }>>(
+        (acc, p) => {
+          acc[p.id] = { full_name: p.full_name, company_name: p.company_name, phone: p.phone };
+          return acc;
+        },
+        {}
+      );
     }
   }
-  return (data || []).map(row => ({
+  return rows.map((row: ServiceTicketRow) => ({
     ...baseMap(row),
     user_profile: profiles[row.user_id],
-    message_count: counts[row.id] || 0
-  }))
+    message_count: counts[row.id] ?? 0,
+  }));
 }
 
 export const assignTicket = async (
@@ -105,49 +122,128 @@ export const assignTicket = async (
   assigneeId: string,
   assignedBy: string
 ): Promise<ServiceTicket> => {
+  const { data: current } = await supabase.from('service_tickets').select('status').eq('id', ticketId).single();
+  const currentStatus = current?.status ?? 'open';
+
+  const statusPatch =
+    currentStatus === 'open'
+      ? buildGovernedTransitionPatch({
+          ticketId,
+          currentStatus,
+          targetStatus: 'assigned',
+          actorId: assignedBy,
+          rationale: 'Admin assignment',
+        })
+      : { updated_at: new Date().toISOString() };
+
   const patch: Record<string, unknown> = {
+    ...statusPatch,
     assigned_to: assigneeId,
     assigned_by: assignedBy,
     assigned_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
-  // Fetch current status to decide if move to assigned
-  const { data: current } = await (supabase as any).from('service_tickets').select('status').eq('id', ticketId).single()
-  if (current && current.status === 'open') patch['status'] = 'assigned'
-  const { data, error } = await (supabase as any).from('service_tickets').update(patch).eq('id', ticketId).select().single()
-  if (error) throw new Error(error.message)
-  return baseMap(data)
+  };
+
+  const { data, error } = await supabase.from('service_tickets').update(patch).eq('id', ticketId).select().single();
+  if (error) throw new Error(error.message);
+
+  await recordServiceEvent({
+    eventType: 'VERIFICATION',
+    entityId: ticketId,
+    payload: { kind: 'ticket_assigned', assignedTo: assigneeId, manual: true },
+    verifiedBy: assignedBy,
+  });
+
+  return baseMap(data);
 }
 
 export const updateTicketStatusAndPriority = async (
   ticketId: string,
-  updates: { status?: TicketStatus; priority?: TicketPriority; resolution_summary?: string }
+  updates: { status?: TicketStatus; priority?: TicketPriority; resolution_summary?: string },
+  actorId: string = 'admin',
 ): Promise<ServiceTicket> => {
-  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() }
+  const { data: currentRow, error: fetchErr } = await supabase
+    .from('service_tickets')
+    .select('*')
+    .eq('id', ticketId)
+    .single();
+  if (fetchErr || !currentRow) throw new Error(fetchErr?.message ?? 'Ticket not found');
+
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+
   if (updates.status) {
-    patch['status'] = updates.status
-    if (updates.status === 'resolved' || updates.status === 'closed') {
-      patch['resolved_at'] = new Date().toISOString()
-      if (updates.resolution_summary) patch['resolution_summary'] = updates.resolution_summary
-    }
-    if (updates.status === 'closed') {
-      patch['closed_at'] = new Date().toISOString()
+    validateStatusTransition(currentRow.status, updates.status);
+    Object.assign(
+      patch,
+      buildGovernedTransitionPatch({
+        ticketId,
+        currentStatus: currentRow.status,
+        targetStatus: updates.status,
+        actorId,
+        resolution_summary: updates.resolution_summary,
+      }),
+    );
+  }
+
+  if (updates.priority) patch['priority'] = updates.priority;
+
+  const { data, error } = await supabase.from('service_tickets').update(patch).eq('id', ticketId).select().single();
+  if (error) throw new Error(error.message);
+
+  if (updates.status) {
+    await recordServiceEvent({
+      eventType: 'VERIFICATION',
+      entityId: ticketId,
+      payload: {
+        kind: 'ticket_status_transition',
+        previousStatus: currentRow.status,
+        newStatus: updates.status,
+      },
+      verifiedBy: actorId,
+    });
+  }
+
+  const mapped = baseMap(data);
+
+  const escalation = await checkAndApplyEscalation({
+    id: mapped.id,
+    status: mapped.status,
+    sla_resolution_due: mapped.sla_resolution_due,
+    escalated: mapped.escalated ?? false,
+  });
+  if (escalation.escalated && escalation.patch) {
+    const { data: escalatedRow } = await supabase
+      .from('service_tickets')
+      .update(escalation.patch)
+      .eq('id', ticketId)
+      .select()
+      .single();
+    if (escalatedRow) {
+      await recordServiceEvent({
+        eventType: 'FAULT',
+        entityId: ticketId,
+        payload: { kind: 'sla_escalation', ruleId: 'SLA_BREACH_ESCALATION' },
+        verifiedBy: actorId,
+      });
+      return baseMap(escalatedRow);
     }
   }
-  if (updates.priority) patch['priority'] = updates.priority
-  const { data, error } = await (supabase as any).from('service_tickets').update(patch).eq('id', ticketId).select().single()
-  if (error) throw new Error(error.message)
-  return baseMap(data)
+
+  return mapped;
 }
 
-export const getAvailableAssignees = async (): Promise<Array<{id: string, full_name: string | null, role: string | null}>> => {
-  const { data, error } = await (supabase as any)
+export const getAvailableAssignees = async (): Promise<Array<{ id: string; full_name: string | null; role: string | null }>> => {
+  const { data, error: err } = await supabase
     .from('profiles')
     .select('id,full_name,role')
-    .in('role', ['technician','admin','support'])
-  if (error) throw new Error(error.message)
-  return (data || []).map(p => ({ id: p.id, full_name: p.full_name, role: p.role }))
-}
+    .in('role', ['technician', 'admin', 'support']);
+  if (err) throw new Error(String((err as { message?: string }).message ?? 'Unknown error'));
+  const list = (data ?? []) as Array<{ id: string; full_name: string | null; role: string | null }>;
+  return list.map((p) => ({
+    id: p.id,
+    full_name: p.full_name,
+    role: p.role,
+  }));
+};
 
 export const getTicketMetrics = async (): Promise<{
   totalTickets: number
@@ -162,11 +258,21 @@ export const getTicketMetrics = async (): Promise<{
   byStatus: Record<string, number>
   byType: Record<string, number>
 }> => {
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('service_tickets')
-    .select('id,status,priority,type,created_at,first_response_at,resolved_at,sla_resolution_due,sla_breached')
-  if (error) throw new Error(error.message)
-  const tickets = data || []
+    .select('id,status,priority,type,created_at,first_response_at,resolved_at,sla_resolution_due,sla_breached');
+  if (error) throw new Error(error.message);
+  const tickets = (data ?? []) as Array<{
+    id: string;
+    status: string;
+    priority: string;
+    type: string;
+    created_at: string;
+    first_response_at: string | null;
+    resolved_at: string | null;
+    sla_resolution_due: string | null;
+    sla_breached: boolean;
+  }>;
   const now = new Date()
   const totalTickets = tickets.length
   const openTickets = tickets.filter(t => ['open','assigned'].includes(t.status)).length
@@ -236,25 +342,23 @@ export const subscribeToTicketUpdates = (callback: (payload: {
 export const bulkAssignTickets = async (ticketIds: string[], assigneeId: string, assignedBy: string): Promise<ServiceTicket[]> => {
   const now = new Date().toISOString()
   const patch = { assigned_to: assigneeId, assigned_by: assignedBy, assigned_at: now, updated_at: now }
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('service_tickets')
     .update(patch)
     .in('id', ticketIds)
-    .select()
-  if (error) throw new Error(error.message)
-  return (data||[]).map(baseMap)
+    .select();
+  if (error) throw new Error(error.message);
+  return (data ?? []).map(baseMap);
 }
 
-export const bulkUpdateStatus = async (ticketIds: string[], status: TicketStatus): Promise<ServiceTicket[]> => {
-  const now = new Date().toISOString()
-  const patch: Record<string, unknown> = { status, updated_at: now }
-  if (status === 'resolved' || status === 'closed') patch['resolved_at'] = now
-  if (status === 'closed') patch['closed_at'] = now
-  const { data, error } = await (supabase as any)
-    .from('service_tickets')
-    .update(patch)
-    .in('id', ticketIds)
-    .select()
-  if (error) throw new Error(error.message)
-  return (data||[]).map(baseMap)
+export const bulkUpdateStatus = async (
+  ticketIds: string[],
+  status: TicketStatus,
+  actorId: string = 'admin',
+): Promise<ServiceTicket[]> => {
+  const results: ServiceTicket[] = [];
+  for (const id of ticketIds) {
+    results.push(await updateTicketStatusAndPriority(id, { status }, actorId));
+  }
+  return results;
 }
