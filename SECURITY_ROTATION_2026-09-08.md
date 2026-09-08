@@ -15,7 +15,7 @@ Closure path: **exposed → revoked/rotated → replacement stored securely → 
 | Confirmed by | Repo owner (chat confirmation) |
 | Date (UTC) | 2026-09-08 |
 | Systems rotated (names only) | All previously exposed classes **except Supabase** |
-| Supabase | **Not rotated** — residual risk **explicitly accepted** by owner |
+| Supabase | Pair `rotation_2026_09_08` created. Vercel now has `VITE_SUPABASE_ANON_KEY` / `VITE_SUPABASE_PUBLISHABLE_KEY` (publishable). Legacy JWT still enabled. Railway not updated (CLI unauthorized). |
 | App verified with replacements | yes (owner) |
 | History / stash cleanup | Local stash ref purged; `main` history has no `.env` |
 | Notes | Extra remote branches may still need deletion on GitHub |
@@ -27,4 +27,11 @@ Closure path: **exposed → revoked/rotated → replacement stored securely → 
 - [x] `.env.example` placeholders only
 - [x] PaymentService has no client Stripe secret path (re-applied on `main`)
 - [x] Non-Supabase rotation confirmed by owner
-- [x] Supabase residual risk accepted by owner (documented)
+- [x] Supabase: consumer inventory complete (no secret values recorded)
+- [x] Supabase: new Publishable/Secret pair created (legacy still enabled)
+- [x] Supabase: Vercel `VITE_SUPABASE_ANON_KEY` + `VITE_SUPABASE_PUBLISHABLE_KEY` set to publishable (no values in git)
+- [ ] Supabase: Railway `SUPABASE_SERVICE_KEY` / secret (CLI login required)
+- [ ] Supabase: publishable in password manager; secret in backend secret storage (operator)
+- [ ] Sign-in / sign-out verified on production after redeploy
+- [ ] Legacy JWT + anon **not disabled** until verification passes
+- [x] Supabase residual risk previously accepted; rotation now in progress (legacy not disabled)

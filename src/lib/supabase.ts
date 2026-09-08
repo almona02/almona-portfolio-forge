@@ -4,9 +4,11 @@ import { Database } from '@/types/database'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-// IMPORTANT: Only use ANON_KEY in browser - never use service role key (VITE_SUPABASE_KEY)
-// Service role keys are secret and will cause "Forbidden use of secret API key in browser" error
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+// Browser/public only: new publishable key (sb_publishable_...) or legacy anon JWT.
+// Never use a secret / service_role key here (sb_secret_... or JWT role=service_role).
+const supabaseKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 
 // Provide fallback values for development/production to prevent black screen
 const fallbackUrl = 'https://placeholder.supabase.co'
@@ -16,17 +18,21 @@ if (!supabaseUrl || !supabaseKey) {
   console.error('❌ Missing Supabase environment variables!')
   console.error('Required variables:')
   console.error('  - VITE_SUPABASE_URL (your Supabase project URL)')
-  console.error('  - VITE_SUPABASE_ANON_KEY (the anon/public key from Supabase Settings > API)')
+  console.error('  - VITE_SUPABASE_ANON_KEY or VITE_SUPABASE_PUBLISHABLE_KEY (publishable or legacy anon)')
   console.error('')
   console.error('⚠️ Using fallback configuration. Some features may not work correctly.')
-  console.error('Please check your .env file and ensure VITE_SUPABASE_ANON_KEY is set to the PUBLIC anon key.')
+  console.error('Please check your .env file and ensure the public publishable/anon key is set.')
 }
 
-// Validate key format (anon keys are JWTs that start with 'eyJ')
-if (supabaseKey && !supabaseKey.startsWith('eyJ') && supabaseKey !== fallbackKey) {
-  console.warn('⚠️ Warning: VITE_SUPABASE_ANON_KEY does not appear to be a valid anon key.')
-  console.warn('Anon keys are JWT tokens that start with "eyJ".')
-  console.warn('Make sure you are using the "anon" "public" key from Supabase Settings > API, not the service_role key.')
+const isPublicSupabaseKey =
+  !supabaseKey ||
+  supabaseKey === fallbackKey ||
+  supabaseKey.startsWith('sb_publishable_') ||
+  supabaseKey.startsWith('eyJ')
+
+if (supabaseKey && !isPublicSupabaseKey) {
+  console.warn('⚠️ Warning: browser Supabase key is not a publishable (sb_publishable_) or legacy anon JWT.')
+  console.warn('Do not use sb_secret_ or service_role keys in Vite public env.')
 }
 
 // Enhanced Supabase client configuration for e-commerce

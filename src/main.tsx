@@ -398,9 +398,12 @@ window.addEventListener('error', (event) => {
 const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
 if (isDev) {
   console.log("🔧 Development mode active");
-  const requiredEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
+  const requiredEnvVars = ['VITE_SUPABASE_URL'];
   const env = import.meta.env;
   const missingEnvVars = requiredEnvVars.filter(envVar => !env[envVar]);
+  if (!env.VITE_SUPABASE_ANON_KEY && !env.VITE_SUPABASE_PUBLISHABLE_KEY) {
+    missingEnvVars.push('VITE_SUPABASE_ANON_KEY|VITE_SUPABASE_PUBLISHABLE_KEY');
+  }
   if (missingEnvVars.length > 0) {
     console.warn('⚠️ Missing environment variables:', missingEnvVars);
   }

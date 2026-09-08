@@ -612,7 +612,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
           profileId: profile.id,
           isUUID: VALIDATION_PATTERNS.UUID_PATTERN.test(profile.id),
           hasSupabaseUrl: !!import.meta.env.VITE_SUPABASE_URL,
-          hasSupabaseKey: !!import.meta.env.VITE_SUPABASE_ANON_KEY,
+          hasSupabaseKey: !!(import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY),
         };
         // Only log in development mode
         if (import.meta.env.DEV) {

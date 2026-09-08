@@ -4,6 +4,8 @@
 .env.preview
 .env.production
 .env.*.local
+.env.rotation.publishable
+.env.rotation.secret
 python_backend/.env
 pg.env
 .env.redis.correct

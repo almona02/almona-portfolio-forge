@@ -269,7 +269,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         // Check if Supabase is properly configured
-        if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        if (!import.meta.env.VITE_SUPABASE_URL || !(import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY)) {
           console.warn('Supabase not configured, skipping authentication');
           if (isMounted) {
             setUser(null);
@@ -341,7 +341,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     void getInitialSession();
 
-    if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    if (import.meta.env.VITE_SUPABASE_URL && (import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY)) {
       const {
         data: { subscription: authSubscription },
       } = supabase.auth.onAuthStateChange((event, session) => {
