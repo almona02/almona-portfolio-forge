@@ -33,7 +33,7 @@
     "undici": "6.28.1",
     "node-forge": "1.4.0",
     "flatted": "3.4.4",
-    "linkify-it": "6.1.0",
+    "linkify-it": "5.0.2",
     "@babel/plugin-transform-modules-systemjs": "7.29.8",
     "@babel/core": "7.29.7",
     "ip-address": "10.7.0",
