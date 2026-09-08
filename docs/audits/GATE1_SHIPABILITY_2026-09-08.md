@@ -1,12 +1,10 @@
-# Gate 1 — Security / Shipability (status after recheck)
-
-**Recheck:** 2026-09-08 evening · HEAD `c8ca80f`
+# Gate 1 / P0.11 status (after live re-proof)
 
 | Item | Status |
 |------|--------|
-| Secret scan / history / PaymentService / build | ✅ Proven |
-| Supabase publishable cutover | 🔄 In progress (legacy JWT still enabled; Railway open) |
-| Gate 1 Production Ready | ⚠️ CONDITIONAL |
-| Overall Gold-Tier | **~7.0** (held) |
+| P0.11 live verify + 7/7 integration tests | ✅ Proven on `main` |
+| Ticketing DB boundary Production Ready | ✅ Yes |
+| Overall Gold-Tier | **~7.4/10** |
+| Next | Gate 2: FP-016 Option B → FP-017 |
 
-Authoritative scoreboard: `CHECKPOINT_GATE1_SCORE_2026-09-08.md`
+See `CHECKPOINT_GATE1_SCORE_2026-09-08.md`.

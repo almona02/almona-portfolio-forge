@@ -1,44 +1,54 @@
-# ALMONA Score Recheck — P0.11 artifacts restored to main (2026-09-08)
+# ALMONA Checkpoint — P0.11 re-proven on main (2026-09-08)
 
-**HEAD:** pending commit on `main`  
-**Change:** Restored migrations 080–083, TicketGovernanceService, verify script, live tests from checkpoint `608b154`
+**Evidence time:** 2026-09-08 ~23:06 local  
+**Branch:** `main`
+
+## Live evidence (operator-run)
+
+### `npm run verify:ticketing-boundary` → Production boundary VERIFIED
+
+- 078 RealityOS RPC: VERIFIED (hash returned)
+- Probe user_id: VERIFIED
+- 080 governance: VERIFIED — insert stays `open`, `ticket_number=TKT-2026-000002`, no SQL auto-assign
+- 081 FSM: VERIFIED — `open → resolved` rejected; read-back `status=open` unchanged; no false success
+
+**Summary:** 10 verified, 0 unverified, 0 blocked, 0 failed
+
+### `npm run test:ticketing-boundary` → **7/7 passed**
+
+- create → canonical SLA → Postgres → read-back
+- RealityOS event → `reality_events` read-back
+- negative: `open → resolved` rejected, unchanged, no misleading event
+- legal FSM: `open → assigned` → `in_progress`
+- SLA immutability after create
 
 ## Verdict
 
-| Item | Status |
+| Gate | Status |
 |------|--------|
-| 080–083 / governance / verify script on `main` | ✅ **Restored** |
-| App wiring (`ticketApi` / `adminTicketApi` → governance) | ✅ Restored |
-| Unit/integration gate tests | ✅ 26 passed |
-| Live `realityos_record_event` (078) | ✅ Verified |
-| Live FSM probe (`open → resolved`) | ⚠️ **Blocked locally** — `.env` has publishable key only; need `SUPABASE_SERVICE_ROLE_KEY=sb_secret_…` (or legacy service_role JWT) |
-| Overall Gold-Tier | **~7.2** |
+| P0.11 on **current `main` tree** | ✅ **Re-proven** |
+| Ticketing production boundary | ✅ Production Ready (boundary) |
+| Gate 1 secrets / PaymentService | ✅ Proven (CONDITIONAL on full Supabase legacy disable if still open) |
+| Full platform / Gold-Tier Ready | ❌ No |
+| **Defensible Gold-Tier score** | **~7.4 / 10** |
 
-## Score by objective
+## Score by objective (revised after live re-proof)
 
-| Objective | Prior evening | **Now** |
-|-----------|--------------:|--------:|
-| Fabricator Studio | 7.6 | 7.6 |
-| Ticketing Tier-3 DB boundary | 7.0 | **7.8** | repo can re-prove; live FSM needs service-role secret in env |
-| Event persistence | 6.5 | **7.0** | 078 live hash verified again |
-| Security / secrets | 7.5 | 7.5 |
-| Shipability | 8.0 | 8.0 |
-| Determinism / QC / commercial | 4.5 / 5.5 / 3.0 | unchanged |
-| **Overall** | ~7.0 | **~7.2** |
+| Objective | Prior (restore, no service-role) | **Now** |
+|-----------|--------------------------------:|--------:|
+| Fabricator Studio core | 7.6 | 7.6 |
+| Ticketing Tier-3 DB boundary | 7.8 | **8.5** |
+| Event persistence | 7.0 | **7.5** |
+| Security / secrets (Gate 1) | 7.5 | 7.5 |
+| Shipability (build / CI) | 8.0 | 8.0 |
+| Manufacturing determinism | 4.5 | 4.5 |
+| Physical-cut identity / QC | 5.5 | 5.5 |
+| Application integrity | 5.5 | 5.5 |
+| Commercial shell | 3.0 | 3.0 |
+| **Overall Gold-Tier** | ~7.2 | **~7.4** |
 
-## Operator one-liner to finish live FSM proof
+## Next score-moving work
 
-Add to **local** `.env` (never commit):
+**Gate 2 — Manufacturing truth:** FP-016 Option B (GA advisory-only) → FP-017 (QC by physical cut id) → expected path toward **~7.5–8.0**.
 
-```
-SUPABASE_SERVICE_ROLE_KEY=sb_secret_…   # or legacy service_role JWT
-```
-
-Then:
-
-```bash
-npm run verify:ticketing-boundary   # expect exit 0
-npm run test:ticketing-boundary     # expect 7/7 pass
-```
-
-**No secret values stored in this document.**
+**No secret values are stored in this document.**
