@@ -88,6 +88,10 @@ temp/
 *.sln
 *.sw?
 
+# Local Python venv (torch/tensorflow DLLs exceed Vercel's 100MB file limit)
+.venv/
+venv/
+
 # Python backend (not needed for frontend deployment)
 python_backend/
 *.py
