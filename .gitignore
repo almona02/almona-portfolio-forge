@@ -87,3 +87,8 @@ secrets/
 *.backup
 *.old
 nul
+
+# Vendored security-patched packages (tracked; overrides npm dist/ and *.json ignores)
+!vendor/
+!vendor/image-size/
+!vendor/image-size/**

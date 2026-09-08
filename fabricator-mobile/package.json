@@ -47,7 +47,7 @@
     "tar": "7.5.22",
     "shell-quote": "1.10.0",
     "@xmldom/xmldom": "0.8.15",
-    "image-size": "2.0.2",
+    "image-size": "file:../vendor/image-size",
     "undici": "6.28.1",
     "nanoid": "5.1.16",
     "brace-expansion": "2.1.4",

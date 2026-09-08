@@ -5,13 +5,9 @@
 
 -r requirements-prod.txt
 
-# CPU-only ML to avoid huge CUDA wheels in CI
-# CPU torch: 2.9.1 patches unpack_sequence memory corruption (GHSA-vgrw-7cvw-pwgx).
-# +cpu local version label requires == operator, not >=
-# torchvision 0.24.1+cpu is compatible with torch 2.9.1+cpu
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.9.1+cpu
-torchvision==0.24.1+cpu
+# Do not install torch/torchvision in CI (AICS-001: no ML in execution paths).
+# Remaining torch.jit.script / lstm_cell advisories have no 2.8-line patch worth
+# pulling an 8GB+ wheel for tests that already stub torchvision.
 
 # Testing (only CI-specific packages not in prod)
 # pytest, pytest-asyncio, pytest-timeout are already in requirements-prod.txt

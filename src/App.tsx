@@ -333,12 +333,7 @@ const App = memo(() => {
                       <LanguageProvider>
                         <QuoteProvider>
                           <FabricatorWorkspaceProvider>
-                            <BrowserRouter
-                              future={{
-                                v7_startTransition: true,
-                                v7_relativeSplatPath: true,
-                              }}
-                            >
+                            <BrowserRouter>
                               <GlobalDynamicImportGuard />
                               <RoutePrefetchingHelper />
                               <FabricatorCutoverListener />

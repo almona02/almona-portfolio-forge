@@ -1,0 +1,78 @@
+{
+  "name": "image-size",
+  "version": "2.0.3",
+  "description": "image-size 2.0.2 with DoS loop guards (unpublished 2.0.3)",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.mjs",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
+      },
+      "require": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.cjs"
+      }
+    },
+    "./fromFile": {
+      "import": {
+        "types": "./lib/fromFile.d.ts",
+        "default": "./lib/fromFile.mjs"
+      },
+      "require": {
+        "types": "./lib/fromFile.d.ts",
+        "default": "./lib/fromFile.cjs"
+      }
+    },
+    "./types/*": {
+      "import": {
+        "types": "./lib/types/*.d.ts",
+        "default": "./lib/types/*.mjs"
+      },
+      "require": {
+        "types": "./lib/types/*.d.ts",
+        "default": "./lib/types/*.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "bin/image-size.js"
+  ],
+  "engines": {
+    "node": ">=16.x"
+  },
+  "bin": "bin/image-size.js",
+  "keywords": [
+    "image",
+    "size",
+    "dimensions",
+    "resolution",
+    "width",
+    "height",
+    "avif",
+    "bmp",
+    "cur",
+    "gif",
+    "heic",
+    "heif",
+    "icns",
+    "ico",
+    "jpeg",
+    "jxl",
+    "png",
+    "psd",
+    "svg",
+    "tga",
+    "tiff",
+    "webp"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/image-size/image-size.git"
+  },
+  "author": "netroy <aditya@netroy.in> (http://netroy.in/)",
+  "license": "MIT"
+}

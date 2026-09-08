@@ -20,6 +20,7 @@ def _stub_module(name: str):
 # Mock heavy/unused ML deps before importing the app to avoid long load times and tf spec errors
 sys.modules['ultralytics'] = Mock()
 _stub_module('tensorflow')
+_stub_module('torch')
 _stub_module('torchvision')
 _stub_module('torchvision.transforms')
 _stub_module('torchvision.ops')

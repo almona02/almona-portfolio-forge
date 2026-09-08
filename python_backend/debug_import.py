@@ -15,6 +15,7 @@ def _stub_module(name: str):
 
 sys.modules["ultralytics"] = Mock()
 _stub_module("tensorflow")
+_stub_module("torch")
 _stub_module("torchvision")
 _stub_module("torchvision.transforms")
 _stub_module("torchvision.ops")
