@@ -94,6 +94,9 @@ python_backend/
 requirements.txt
 Pipfile
 Pipfile.lock
+archive/
+coverage/
+src/lib/ydt/code-structure.json
 
 # Database files
 *.db
@@ -123,6 +126,9 @@ __tests__/
 *.spec.*
 test/
 tests/
+playwright-report/
+test-results/
+lint-*.json
 
 # Allow app test components used in production routes
 !src/components/test/
