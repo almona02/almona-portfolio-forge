@@ -32,6 +32,7 @@ Closure path: **exposed → revoked/rotated → replacement stored securely → 
 - [x] Supabase: Vercel `VITE_SUPABASE_ANON_KEY` + `VITE_SUPABASE_PUBLISHABLE_KEY` set to publishable (no values in git)
 - [ ] Supabase: Railway `SUPABASE_SERVICE_KEY` / secret (CLI login required)
 - [ ] Supabase: publishable in password manager; secret in backend secret storage (operator)
-- [ ] Sign-in / sign-out verified on production after redeploy
-- [ ] Legacy JWT + anon **not disabled** until verification passes
+- [x] Sign-in path on production accepts publishable key (invalid credentials, not invalid API key)
+- [ ] Real user sign-in / sign-out on production (needs operator account)
+- [ ] Legacy JWT + anon **not disabled** until Railway secret is cut over and real sign-in/out passes
 - [x] Supabase residual risk previously accepted; rotation now in progress (legacy not disabled)
