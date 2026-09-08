@@ -46,7 +46,7 @@ opentelemetry-semantic-conventions==0.42b0
 # Utilities
 pydantic-core==2.14.1
 typing-extensions==4.8.0
-python-dotenv==1.0.0
+python-dotenv==1.2.3
 
 # Production WSGI
 gunicorn>=21.0.0

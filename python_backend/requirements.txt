@@ -11,7 +11,7 @@ pydantic-settings==2.1.0
 
 # Machine Learning
 # ultralytics==8.3.40
-requests==2.32.5
+requests==2.34.2
 feedparser==6.0.10
 httpx==0.25.0
 # easyocr==1.7.1
@@ -55,7 +55,7 @@ opentelemetry-instrumentation-logging==0.42b0
 opentelemetry-semantic-conventions==0.42b0
 
 # Testing
-pytest==7.4.3
+pytest==8.4.2
 pytest-asyncio==0.21.1
 pytest-timeout==2.2.0
 pytest-mock==3.12.0

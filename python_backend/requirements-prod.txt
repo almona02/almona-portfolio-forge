@@ -1,6 +1,6 @@
 absl-py==2.3.1
 aiohappyeyeballs==2.6.1
-aiohttp==3.13.3
+aiohttp==3.14.3
 aiohttp-retry==2.9.1
 aiosignal==1.4.0
 albumentations==1.4.0
@@ -83,7 +83,7 @@ greenlet==3.2.4
 grpcio==1.74.0
 grpcio-status==1.71.2
 h11==0.16.0
-h2==4.3.0
+h2==4.4.1
 h5py==3.14.0
 hf-xet==1.2.0
 hpack==4.1.0
@@ -94,7 +94,7 @@ httpx==0.27.2
 huey==2.5.4
 huggingface_hub==1.3.1
 hyperframe==6.1.0
-idna==3.10
+idna==3.19
 ImageHash==4.3.2
 imageio==2.37.0
 importlib_metadata==8.7.0
@@ -123,7 +123,7 @@ ml_dtypes==0.5.3
 # and it accounted for a large cluster of critical/high Dependabot alerts.
 # Optional tracking remains available via python_backend/docker-compose.mlflow.yml.
 mpmath==1.3.0
-msgpack==1.1.1
+msgpack==1.2.2
 multidict==6.6.3
 namex==0.1.0
 networkx==3.5
@@ -176,7 +176,7 @@ pydantic==2.9.0
 pydantic-settings==2.1.0
 pydantic_core==2.23.2
 pyee==13.0.0
-Pygments==2.19.2
+Pygments==2.21.0
 PyJWT==2.13.0
 pyodbc==5.3.0
 pyparsing==3.2.3
@@ -184,12 +184,12 @@ pypdf>=6.1.3
 # PyPDF2 removed — deprecated, replaced by pypdf (already listed above)
 pypdfium2==5.1.0
 pytesseract==0.3.13
-pytest==8.3.4
+pytest==8.4.2
 pytest-asyncio==0.24.0
 pytest-timeout==2.4.0
 python-bidi==0.6.7
 python-dateutil==2.9.0.post0
-python-dotenv==1.0.1
+python-dotenv==1.2.3
 python-engineio
 python-http-client==3.3.7
 python-jose[cryptography]==3.4.0
@@ -203,7 +203,7 @@ qudida==0.0.4
 realtime==2.5.3
 redis==5.2.0
 reportlab==4.0.9
-requests==2.32.5
+requests==2.34.2
 respx==0.22.0
 rich==14.1.0
 rsa==4.9.1
@@ -212,7 +212,7 @@ scikit-learn==1.7.2
 scipy==1.16.1
 seaborn==0.13.2
 sendgrid==6.11.0
-setuptools==80.9.0
+setuptools==84.0.0
 shapely==2.1.2
 shellingham==1.5.4
 simple-websocket==1.1.0
