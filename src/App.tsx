@@ -111,6 +111,8 @@ const ProductionPage = lazy(() => import("./pages/fabricator/workflow/Production
 const QualityControlWorkflowPage = lazy(() => import("./pages/fabricator/workflow/QualityControlPage").then(m => ({ default: m.QualityControlPage })));
 // _DebugWorkflowPage removed — debug page not needed in production
 const BOMReviewPanel = lazy(() => import("./components/fabricator/workflow/BOMReviewPanel").then(m => ({ default: m.BOMReviewPanel })));
+const StudioStockPage = lazy(() => import("./pages/fabricator/studio/StudioStockPage").then(m => ({ default: m.StudioStockPage })));
+const StudioIntegrationsPage = lazy(() => import("./pages/fabricator/studio/StudioIntegrationsPage").then(m => ({ default: m.StudioIntegrationsPage })));
 const OrderManagementPage = lazy(() => import("./components/fabricator/orders/OrderManagement").then(m => ({ default: m.OrderManagement })));
 
 // Phase 5: Pre-Pilot Hardening - lazy loaded
@@ -431,7 +433,7 @@ const App = memo(() => {
                                   <Route path="/fabricator" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
 
                                   {/* Canonical Fabricator: studio-only hierarchy */}
-                                  <Route path="/fabricator/studio" element={<Suspense fallback={getLoadingComponent('Studio Layout')}><StudioLayout /></Suspense>}>
+                                  <Route path="/fabricator/studio" element={<Suspense fallback={getLoadingComponent('Studio Layout')}><ProtectedRoute><StudioLayout /></ProtectedRoute></Suspense>}>
                                     <Route index element={<Navigate to="command" replace />} />
 
                                     {/* 1. Command Center */}
@@ -479,6 +481,8 @@ const App = memo(() => {
                                       <Route path="profiles" element={<Suspense fallback={getLoadingComponent('Profile Studio')}><ProfileStudioLite /></Suspense>} />
                                       <Route path="customers" element={<Suspense fallback={getLoadingComponent('Customers')}><CustomersPage /></Suspense>} />
                                       <Route path="patterns" element={<Suspense fallback={getLoadingComponent('Pattern Library')}><PatternLibraryPage /></Suspense>} />
+                                      <Route path="stock" element={<Suspense fallback={getLoadingComponent('Stock')}><StudioStockPage /></Suspense>} />
+                                      <Route path="integrations" element={<Suspense fallback={getLoadingComponent('Integrations')}><StudioIntegrationsPage /></Suspense>} />
                                       {/* bent-profiles removed — BentProfileDesignerPage deleted in consolidation */}
                                     </Route>
                                     {/* 6. Orders */}
