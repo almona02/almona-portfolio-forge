@@ -4,6 +4,7 @@
  */
 
 import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
+import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 
 export interface Remnant {
   id: string;
@@ -39,7 +40,11 @@ export interface RemnantOptimizationResult {
 
 export class RemnantManager {
   private remnants: Map<string, Remnant> = new Map();
-  private minRemnantLength: number = 200; // Minimum usable remnant length in mm
+  private minRemnantLength: number;
+
+  constructor(minRemnantLengthMm: number = PLATFORM_MANUFACTURING_DEFAULTS.minimumReusableLengthMm) {
+    this.minRemnantLength = minRemnantLengthMm;
+  }
 
   /**
    * Add a remnant to the inventory
@@ -315,7 +320,7 @@ export class RemnantManager {
    */
   generateRemnantsFromWaste(
     cuttingPlan: CuttingPlan[],
-    minRemnantLength: number = 200
+    minRemnantLength: number = PLATFORM_MANUFACTURING_DEFAULTS.minimumReusableLengthMm
   ): Remnant[] {
     const newRemnants: Remnant[] = [];
 

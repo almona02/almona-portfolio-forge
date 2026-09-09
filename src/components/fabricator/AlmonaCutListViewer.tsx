@@ -19,7 +19,7 @@ import type { OptimizedCutList } from '@/lib/fabricator/UPVCCuttingEngine';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { FileDown, Printer, Scissors } from 'lucide-react';
+import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 import React, { useMemo } from 'react';
 import { CutListViewer } from './CutListViewer';
 
@@ -40,8 +40,8 @@ const defaultProjectInfo: AlmonaCutPrintProjectInfo = {
   material: 'Aluminium',
   color: 'RAL 7012',
   barLengthMm: 6500,
-  sawKerfMm: 10,
-  endDeductionMm: 20,
+  sawKerfMm: PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
+  endDeductionMm: PLATFORM_MANUFACTURING_DEFAULTS.endDeductionMm,
 };
 
 export const AlmonaCutListViewer: React.FC<AlmonaCutListViewerProps> = ({
@@ -161,6 +161,7 @@ export const AlmonaCutListViewer: React.FC<AlmonaCutListViewerProps> = ({
         <CutListViewer
           cutList={cutList}
           barLengthMm={barLengthMm}
+          sawKerfMm={projectInfo.sawKerfMm ?? PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm}
           showRemnants={true}
           projectInfo={{
             name: projectInfo.name,

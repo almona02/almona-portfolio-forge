@@ -15,6 +15,11 @@
 
 import { WindowUnit } from '@/types/fabricator';
 import { Profile } from '@/types/profile';
+import {
+  PLATFORM_MANUFACTURING_DEFAULTS,
+  resolveManufacturingSettings,
+  type ManufacturingSettingsInput,
+} from '@/lib/fabricator/ManufacturingSettings';
 
 /**
  * K-Factor: Miter cut length adjustment for 45-degree corners
@@ -96,7 +101,7 @@ export interface UPVCCuttingParams {
    */
   cutting: {
     miterAngleDegrees: number; // 45° for standard corners
-    kerfWidthMm: number; // Saw blade width (default 3mm for UPVC)
+    kerfWidthMm: number; // Passed through; bar packing uses ManufacturingSettings.sawKerfMm
   };
 
   /**
@@ -238,8 +243,11 @@ export function generateOptimizedCutList(
   windowUnit: WindowUnit,
   profiles: Profile[],
   welding: { burnOffMm: number; coolingFactorPercent: number },
-  barLengthMm: number = 6000
+  barLengthMm: number = 6000,
+  settingsInput: ManufacturingSettingsInput = {}
 ): OptimizedCutList {
+  const settings = resolveManufacturingSettings(settingsInput);
+  const kerfWidthMm = settings.sawKerfMm;
   const items: CutListItem[] = [];
   const bars: { profileId: string; usedMm: number; cuts: CutListItem[] }[] = [];
 
@@ -258,7 +266,7 @@ export function generateOptimizedCutList(
       welding,
       cutting: {
         miterAngleDegrees: 45,
-        kerfWidthMm: 3,
+        kerfWidthMm,
       },
       cornerCount: 4,
     });
@@ -286,7 +294,7 @@ export function generateOptimizedCutList(
       welding,
       cutting: {
         miterAngleDegrees: 45,
-        kerfWidthMm: 3,
+        kerfWidthMm,
       },
       cornerCount: 4,
     });
@@ -312,7 +320,6 @@ export function generateOptimizedCutList(
 
   let currentBar: typeof bars[0] | null = null;
   let barIndex = 0;
-  const kerfWidthMm = 3; // Saw blade width
 
   for (const item of sortedItems) {
     for (let i = 0; i < item.quantity; i++) {
@@ -392,7 +399,7 @@ export function generateOptimizedCutListForBatch(
   profiles: Profile[],
   welding: { burnOffMm: number; coolingFactorPercent: number },
   barLengthMm: number = 6000,
-  sawKerfMm: number = 3
+  sawKerfMm: number = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm
 ): OptimizedCutList {
   const items: CutListItem[] = [];
   const frameProfile = profiles.find((p) => p.profileRole === 'frame');
@@ -419,14 +426,14 @@ export function generateOptimizedCutListForBatch(
       finishedDimensionMm: overallWidth,
       profile: { widthMm: frameWidthMm, wallThicknessMm: frameProfile.thickness || 2.5, role: 'frame' },
       welding,
-      cutting: { miterAngleDegrees: 45, kerfWidthMm: 3 },
+      cutting: { miterAngleDegrees: 45, kerfWidthMm: sawKerfMm },
       cornerCount: 4,
     });
     const frameVert = calculateUPVCCutLength({
       finishedDimensionMm: overallHeight,
       profile: { widthMm: frameWidthMm, wallThicknessMm: frameProfile.thickness || 2.5, role: 'frame' },
       welding,
-      cutting: { miterAngleDegrees: 45, kerfWidthMm: 3 },
+      cutting: { miterAngleDegrees: 45, kerfWidthMm: sawKerfMm },
       cornerCount: 4,
     });
 
@@ -462,14 +469,14 @@ export function generateOptimizedCutListForBatch(
           finishedDimensionMm: sashOuterW,
           profile: { widthMm: sashWidthMm, wallThicknessMm: sashProfile.thickness || 2.5, role: 'sash' },
           welding,
-          cutting: { miterAngleDegrees: 45, kerfWidthMm: 3 },
+          cutting: { miterAngleDegrees: 45, kerfWidthMm: sawKerfMm },
           cornerCount: 4,
         });
         const sashVert = calculateUPVCCutLength({
           finishedDimensionMm: sashOuterH,
           profile: { widthMm: sashWidthMm, wallThicknessMm: sashProfile.thickness || 2.5, role: 'sash' },
           welding,
-          cutting: { miterAngleDegrees: 45, kerfWidthMm: 3 },
+          cutting: { miterAngleDegrees: 45, kerfWidthMm: sawKerfMm },
           cornerCount: 4,
         });
         items.push({

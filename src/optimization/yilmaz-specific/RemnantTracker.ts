@@ -5,6 +5,7 @@
  */
 
 import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
+import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 
 export interface Remnant {
   id: string;
@@ -44,8 +45,12 @@ export interface RemnantOptimizationResult {
 
 export class RemnantTracker {
   private remnants: Map<string, Remnant> = new Map();
-  private minRemnantLength: number = 200; // Minimum usable remnant length in mm
+  private minRemnantLength: number;
   private maxRemnantAge: number = 90; // Days before remnant is considered old
+
+  constructor(minRemnantLengthMm: number = PLATFORM_MANUFACTURING_DEFAULTS.minimumReusableLengthMm) {
+    this.minRemnantLength = minRemnantLengthMm;
+  }
 
   /**
    * Add remnant from cutting operation

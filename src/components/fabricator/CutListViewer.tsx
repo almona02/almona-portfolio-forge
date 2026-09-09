@@ -16,6 +16,7 @@
  */
 
 import { downloadCSV, exportCutListToCSV, printCutList } from '@/lib/fabricator/CutListExport';
+import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 import { OptimizedCutList } from '@/lib/fabricator/UPVCCuttingEngine';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -34,6 +35,7 @@ import { VisualCuttingPlan } from './VisualCuttingPlan';
 interface CutListViewerProps {
   cutList: OptimizedCutList;
   barLengthMm?: number;
+  sawKerfMm?: number;
   showRemnants?: boolean;
   projectInfo?: {
     name: string;
@@ -46,6 +48,7 @@ interface CutListViewerProps {
 const CutListViewerInner: React.FC<CutListViewerProps> = ({
   cutList,
   barLengthMm = 6000,
+  sawKerfMm = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
   showRemnants = true,
   projectInfo = {
     name: 'Window Project',
@@ -157,7 +160,7 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
         </CardContent>
       </Card>
 
-      <VisualCuttingPlan cutList={cutList} barLengthMm={barLengthMm} />
+      <VisualCuttingPlan cutList={cutList} barLengthMm={barLengthMm} sawKerfMm={sawKerfMm} />
 
       {/* Cutting Sequence (for single-head machine) */}
       <Card>

@@ -5,6 +5,7 @@ import {
     exportCutListToCSV,
     printCutListAlmonaStyle
 } from '@/lib/fabricator/CutListExport';
+import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 import { ApexV6Output } from '@/lib/fabricator/goldTier/ApexEngineV6';
 import { runBatchOptimization, type BatchOptimizationResult } from '@/lib/fabricator/production/BatchOptimizationService';
 import { Button } from '@/shared/ui/ui/button';
@@ -320,9 +321,10 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                                                     profileType: 'Frame',
                                                     material: 'Aluminum',
                                                     color: 'Anthracite Grey',
-                                                    sawKerfMm: 5,
-                                                    endDeductionMm: 10,
-                                                    usableResidualMinMm: 500
+                                                    sawKerfMm: PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
+                                                    endDeductionMm: PLATFORM_MANUFACTURING_DEFAULTS.endDeductionMm,
+                                                    usableResidualMinMm:
+                                                        PLATFORM_MANUFACTURING_DEFAULTS.minimumReusableLengthMm
                                                 }
                                             );
                                         }}

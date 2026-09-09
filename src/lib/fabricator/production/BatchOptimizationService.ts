@@ -10,12 +10,15 @@
 import type { CutRequest } from '@/lib/algorithms/LinearOptimizer';
 import { optimizeLinearCuts, type OptimizationResult } from '@/lib/algorithms/LinearOptimizer';
 import { ApexEngineV6, type ApexV6Output } from '@/lib/fabricator/goldTier/ApexEngineV6';
+import {
+  resolveManufacturingSettings,
+  type ManufacturingSettingsInput,
+} from '@/lib/fabricator/ManufacturingSettings';
 import type { WindowUnit } from '@/types/fabricator';
 import type { SystemPack } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 
 const STOCK_LENGTH_MM = 6000;
-const KERF_MM = 5;
 
 export interface BatchOptimizationResult {
   frameStock: OptimizationResult;
@@ -56,7 +59,8 @@ function cutResultToRequests(
  */
 export function runBatchOptimization(
   units: WindowUnit[],
-  systemPacks: SystemPack[] = SYSTEM_PACKS
+  systemPacks: SystemPack[] = SYSTEM_PACKS,
+  settingsInput: ManufacturingSettingsInput = {}
 ): BatchOptimizationResult {
   const perUnitResults = new Map<string, ApexV6Output>();
   const allFrameRequests: CutRequest[] = [];
@@ -99,8 +103,9 @@ export function runBatchOptimization(
     );
   }
 
-  const frameStock = optimizeLinearCuts(allFrameRequests, STOCK_LENGTH_MM, KERF_MM);
-  const sashStock = optimizeLinearCuts(allSashRequests, STOCK_LENGTH_MM, KERF_MM);
+  const settings = resolveManufacturingSettings(settingsInput);
+  const frameStock = optimizeLinearCuts(allFrameRequests, STOCK_LENGTH_MM, settings.sawKerfMm);
+  const sashStock = optimizeLinearCuts(allSashRequests, STOCK_LENGTH_MM, settings.sawKerfMm);
 
   const batchBars = frameStock.barsCount + sashStock.barsCount;
   const batchWaste = frameStock.totalWaste + sashStock.totalWaste;

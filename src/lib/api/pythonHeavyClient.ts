@@ -1,5 +1,6 @@
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 
 /**
  * Types for heavy cutting optimization against the Python backend.
@@ -109,7 +110,7 @@ export async function enqueueCuttingOptimization(
       profile_id: s.profileId ?? null,
     })),
     objective: req.objective ?? 'balanced',
-    kerf_width_mm: req.kerfWidthMm ?? 3,
+    kerf_width_mm: req.kerfWidthMm ?? PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
     min_usable_remnant_mm: req.minUsableRemnantMm ?? 100,
     time_limit_seconds: req.timeLimitSeconds ?? 30,
     workshop_id: req.workshopId ?? null,
@@ -298,7 +299,7 @@ export function runLocalGreedyFallback(
   expandedCuts.sort((a, b) => b.lengthMm - a.lengthMm);
 
   const plans: LocalPlan[] = [];
-  const kerf = 3;
+  const kerf = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm;
 
   const allBars: HeavyStockInput[] = [];
   stock.forEach((s) => {

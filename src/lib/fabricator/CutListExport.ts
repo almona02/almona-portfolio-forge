@@ -8,7 +8,7 @@ import type {
     AlmonaCutReport,
     PackedBar
 } from './AlmonaCuttingEngine';
-import { AlmonaCuttingEngine } from './AlmonaCuttingEngine';
+import { PLATFORM_MANUFACTURING_DEFAULTS } from './ManufacturingSettings';
 import { OptimizedCutList } from './UPVCCuttingEngine';
 
 // -----------------------------------------------------------------------------
@@ -504,8 +504,8 @@ export function buildAlmonaCutReportAndHTML(
 ): { report: AlmonaCutReport; html: string } {
   const engine = new AlmonaCuttingEngine({
     barLengthMm: projectInfo.barLengthMm ?? 6500,
-    sawKerfMm: projectInfo.sawKerfMm ?? 10,
-    endDeductionMm: projectInfo.endDeductionMm ?? 20,
+    sawKerfMm: projectInfo.sawKerfMm ?? PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
+    endDeductionMm: projectInfo.endDeductionMm ?? PLATFORM_MANUFACTURING_DEFAULTS.endDeductionMm,
   });
   const report = engine.buildReportFromOptimizedCutList(cutList, projectInfo);
   const html = exportAlmonaCutStylePrintHTML(report, projectInfo.name);

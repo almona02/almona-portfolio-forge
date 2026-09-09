@@ -10,6 +10,10 @@
 
 import type { Cut, CuttingPlan } from '@/types/fabricator';
 import type { CutSheetItem } from '@/store/workflowStore';
+import {
+  resolveManufacturingSettings,
+  type ManufacturingSettingsInput,
+} from '@/lib/fabricator/ManufacturingSettings';
 
 export interface CutSheetBar {
   barIndex: number;
@@ -48,8 +52,9 @@ export interface CutSheet {
  */
 export function generateCutSheets(
   cuttingPlans: CuttingPlan[],
-  options?: { orderNumber?: string; positionNumber?: string }
+  options?: { orderNumber?: string; positionNumber?: string } & ManufacturingSettingsInput
 ): CutSheet {
+  const sawKerfMm = resolveManufacturingSettings(options).sawKerfMm;
   const bars: CutSheetBar[] = [];
   let totalCuts = 0;
   let totalWasteMm = 0;
@@ -69,7 +74,7 @@ export function generateCutSheets(
         componentType: cut.componentType,
         positionMm: currentPosition,
       };
-      currentPosition += cut.length;
+      currentPosition += cut.length + sawKerfMm;
       return cutSheetCut;
     });
 
@@ -109,9 +114,13 @@ export function generateCutSheets(
  * @since Phase 1: Core Pipeline Wiring
  */
 export class CutSheetGenerator {
-  static generate(cuttingPlan: CuttingPlan[]): CutSheetItem[] {
+  static generate(
+    cuttingPlan: CuttingPlan[],
+    settingsInput: ManufacturingSettingsInput = {}
+  ): CutSheetItem[] {
     const sheets: CutSheetItem[] = [];
     let globalIndex = 0;
+    const sawKerfMm = resolveManufacturingSettings(settingsInput).sawKerfMm;
 
     for (let barIndex = 0; barIndex < cuttingPlan.length; barIndex++) {
       const plan = cuttingPlan[barIndex];
@@ -134,7 +143,7 @@ export class CutSheetGenerator {
           cutId: cut.cutId,
           componentId: cut.componentId,
         });
-        positionOnBar += cut.length + 4; // 4mm saw blade kerf
+        positionOnBar += cut.length + sawKerfMm;
       }
     }
 

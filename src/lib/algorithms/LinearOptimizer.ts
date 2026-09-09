@@ -5,7 +5,10 @@
  * into standard stock lengths, minimizing waste.
  * 
  * Constitutional Tier: Tier 2 (Mathematical Truth)
+ * Kerf default: FP-023A ManufacturingSettings platform sawKerfMm.
  */
+
+import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 
 export interface StockBar {
   id: string; // Unique ID for this bar
@@ -40,12 +43,12 @@ export interface CutRequest {
  * 
  * @param requests - List of required cuts and quantities
  * @param stockLength - Standard length of stock bar (default 6000mm)
- * @param kerfWidth - Sword cut width to deduct (default 5mm)
+ * @param kerfWidth - Saw blade kerf (default: canonical platform sawKerfMm)
  */
 export function optimizeLinearCuts(
   requests: CutRequest[],
   stockLength: number = 6000,
-  kerfWidth: number = 5
+  kerfWidth: number = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm
 ): OptimizationResult {
   // 1. Flatten requests into individual cuts
   const allCuts: Array<{ id: string; length: number; label: string }> = [];

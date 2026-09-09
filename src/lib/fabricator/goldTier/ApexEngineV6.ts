@@ -16,6 +16,10 @@
 
 import type { SystemPack } from '@/types/fabricator';
 import { OptimizationResult, optimizeLinearCuts } from '@/lib/algorithms/LinearOptimizer';
+import {
+  resolveManufacturingSettings,
+  systemPackCuttingOverrideFromMicrons,
+} from '@/lib/fabricator/ManufacturingSettings';
 import { logFabricatorAudit } from '@/lib/audit/fabricatorAudit';
 import type { WindowUnit } from '@/types/fabricator';
 import type { FenestrationSystem, ProfileSpec } from '@/types/fenestration';
@@ -116,7 +120,8 @@ export class ApexEngineV6 {
         fabricationRules: {
             connectionType: 'miter',
             cutting: {
-                sawKerf: 1500, // 1.5mm
+                // 0 → ManufacturingSettings platform kerf (do not invent 1.5 mm packing kerf)
+                sawKerf: 0,
                 miterAllowance: 0,
                 barEndTrim: 5000, // 5mm
                 cuttingTolerance: 500 // 0.5mm
@@ -294,8 +299,11 @@ export class ApexEngineV6 {
 
     // 2. Optimize
     const stockLen = 6000; // 6 meters
-    const frameOpt = optimizeLinearCuts(frameRequests, stockLen);
-    const sashOpt = optimizeLinearCuts(sashRequests, stockLen);
+    const settings = resolveManufacturingSettings({
+      systemPack: systemPackCuttingOverrideFromMicrons(this.system.fabricationRules.cutting),
+    });
+    const frameOpt = optimizeLinearCuts(frameRequests, stockLen, settings.sawKerfMm);
+    const sashOpt = optimizeLinearCuts(sashRequests, stockLen, settings.sawKerfMm);
 
     return { frameStock: frameOpt, sashStock: sashOpt };
   }

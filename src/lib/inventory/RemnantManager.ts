@@ -13,6 +13,7 @@
  */
 
 import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
+import type { ManufacturingSettings } from '@/lib/fabricator/ManufacturingSettings';
 import { supabase } from '../supabase';
 
 /**
@@ -97,8 +98,24 @@ export interface RemnantStatistics {
 }
 
 export class RemnantManager {
-  private minRemnantLength: number = 200; // Minimum usable remnant length in mm
+  /**
+   * Warehouse inventory floor. Canonical cut-sheet remnant uses
+   * ManufacturingSettings.minimumReusableLengthMm (platform 300 / Yilmaz parity 500).
+   * Pass that resolved value when creating remnants from a manufacturing job.
+   * Default 200 is the historical inventory path — not aliased to trimCut or kerf.
+   */
+  private minRemnantLength: number;
   private defaultExpirationDays: number = 90; // Default expiration period
+
+  constructor(minRemnantLengthMm: number = 200) {
+    this.minRemnantLength = minRemnantLengthMm;
+  }
+
+  static fromManufacturingSettings(
+    settings: Pick<ManufacturingSettings, 'minimumReusableLengthMm'>
+  ): RemnantManager {
+    return new RemnantManager(settings.minimumReusableLengthMm);
+  }
 
   /**
    * Create a remnant from cutting waste

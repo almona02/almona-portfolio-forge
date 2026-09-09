@@ -1,10 +1,10 @@
 import { CutListItem, OptimizedCutList } from '@/lib/fabricator/UPVCCuttingEngine';
+import { PLATFORM_MANUFACTURING_DEFAULTS, visualBarUsedMm } from '@/lib/fabricator/ManufacturingSettings';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Maximize2, Ruler, ZoomIn, ZoomOut } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
-const DEFAULT_SAW_KERF_MM = 10;
 
 interface VisualCuttingPlanProps {
     cutList: OptimizedCutList;
@@ -20,7 +20,7 @@ interface VisualSegment extends CutListItem {
 const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
     cutList,
     barLengthMm = 6500,
-    sawKerfMm = DEFAULT_SAW_KERF_MM,
+    sawKerfMm = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
 }) => {
     const [zoomLevel, setZoomLevel] = useState(1);
     const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
@@ -119,8 +119,10 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
                     .sort(([a], [b]) => parseInt(a, 10) - parseInt(b, 10))
                     .map(([barNum, cuts]) => {
                         const _barNumber = parseInt(barNum, 10);
-                        const totalUsed =
-                            cuts.reduce((sum, c) => sum + c.cutLengthMm, 0) + cuts.length * sawKerfMm;
+                        const totalUsed = visualBarUsedMm(
+                            cuts.map((c) => c.cutLengthMm),
+                            sawKerfMm
+                        );
                         const wasteMm = barLengthMm - totalUsed;
                         const _wastePercent = barLengthMm > 0 ? (wasteMm / barLengthMm) * 100 : 0;
                         const visualEndUsed = cuts.reduce(

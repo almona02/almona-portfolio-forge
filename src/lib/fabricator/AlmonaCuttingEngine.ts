@@ -13,6 +13,34 @@
  */
 
 import type { CutListItem, OptimizedCutList } from './UPVCCuttingEngine';
+import {
+  isReusableRemnantLength,
+  resolveManufacturingSettings,
+  type ManufacturingSettings,
+  type NamedManufacturingProfileId,
+} from './ManufacturingSettings';
+
+function settingsInputFromProject(
+  options?: Partial<AlmonaCutProjectInfo>
+): {
+  namedProfileId?: NamedManufacturingProfileId;
+  machineId?: string;
+  job: {
+    sawKerfMm?: number;
+    endDeductionMm?: number;
+    minimumReusableLengthMm?: number;
+  };
+} {
+  return {
+    namedProfileId: options?.namedProfileId,
+    machineId: options?.machineId,
+    job: {
+      sawKerfMm: options?.sawKerfMm,
+      endDeductionMm: options?.endDeductionMm,
+      minimumReusableLengthMm: options?.usableResidualMinMm,
+    },
+  };
+}
 
 /** Project metadata for Cut Optimisation report header */
 export interface AlmonaCutProjectInfo {
@@ -25,12 +53,16 @@ export interface AlmonaCutProjectInfo {
   color?: string;
   /** Bar length mm (e.g. 6500) */
   barLengthMm?: number;
-  /** Saw kerf mm (e.g. 10) */
+  /** Saw kerf mm — resolved ManufacturingSettings.sawKerfMm when omitted */
   sawKerfMm?: number;
-  /** End deduction total mm (e.g. 20) */
+  /**
+   * Report-header end deduction (mm). Not bar packing; not trimCutMm.
+   */
   endDeductionMm?: number;
   /** Minimum length (mm) to consider as usable remnant */
   usableResidualMinMm?: number;
+  namedProfileId?: NamedManufacturingProfileId;
+  machineId?: string;
 }
 
 /** Single segment on a bar for report */
@@ -118,10 +150,7 @@ export interface EgyptianPatternSpec {
 }
 
 const DEFAULT_BAR_LENGTH = 6500;
-const DEFAULT_SAW_KERF = 10;
-const DEFAULT_END_DEDUCTION = 20;
 const INDUSTRY_BASELINE_UTILIZATION = 0.976;
-const MIN_USABLE_REMNANT_MM = 300;
 
 /**
  * Generates workshop part IDs (WD01, WD04-3, W03-2A.2 style) from cut list items.
@@ -160,20 +189,46 @@ export class AlmonaCuttingEngine {
   private endDeduction: number;
   private usableResidualMin: number;
   private remnantCache: RemnantInfo[] = [];
+  private settings: ManufacturingSettings;
+  private namedProfileId?: NamedManufacturingProfileId;
+  private machineId?: string;
 
   constructor(options?: Partial<AlmonaCutProjectInfo>) {
+    const resolved = resolveManufacturingSettings(settingsInputFromProject(options));
+    this.settings = resolved;
+    this.namedProfileId = options?.namedProfileId;
+    this.machineId = options?.machineId;
     this.barLength = options?.barLengthMm ?? DEFAULT_BAR_LENGTH;
-    this.sawKerf = options?.sawKerfMm ?? DEFAULT_SAW_KERF;
-    this.endDeduction = options?.endDeductionMm ?? DEFAULT_END_DEDUCTION;
-    this.usableResidualMin = options?.usableResidualMinMm ?? MIN_USABLE_REMNANT_MM;
+    this.sawKerf = options?.sawKerfMm ?? resolved.sawKerfMm;
+    this.endDeduction = options?.endDeductionMm ?? resolved.endDeductionMm;
+    this.usableResidualMin = options?.usableResidualMinMm ?? resolved.minimumReusableLengthMm;
   }
 
   /** Configure bar/kerf/deduction (e.g. for Egyptian market). */
   configure(options: Partial<AlmonaCutProjectInfo>): void {
     if (options.barLengthMm != null) this.barLength = options.barLengthMm;
+    if (options.namedProfileId != null) this.namedProfileId = options.namedProfileId;
+    if (options.machineId != null) this.machineId = options.machineId;
+    this.settings = resolveManufacturingSettings(
+      settingsInputFromProject({
+        namedProfileId: this.namedProfileId,
+        machineId: this.machineId,
+        sawKerfMm: options.sawKerfMm ?? this.sawKerf,
+        endDeductionMm: options.endDeductionMm ?? this.endDeduction,
+        usableResidualMinMm: options.usableResidualMinMm ?? this.usableResidualMin,
+      })
+    );
     if (options.sawKerfMm != null) this.sawKerf = options.sawKerfMm;
     if (options.endDeductionMm != null) this.endDeduction = options.endDeductionMm;
     if (options.usableResidualMinMm != null) this.usableResidualMin = options.usableResidualMinMm;
+    else this.usableResidualMin = this.settings.minimumReusableLengthMm;
+    if (options.sawKerfMm == null) this.sawKerf = this.settings.sawKerfMm;
+    if (options.endDeductionMm == null) this.endDeduction = this.settings.endDeductionMm;
+  }
+
+  /** Inspect remnants created by the last pack (deterministic IDs, no Date.now). */
+  getRemnants(): RemnantInfo[] {
+    return [...this.remnantCache];
   }
 
   /** Add remnants to use in next optimization (chaining). */
@@ -190,11 +245,21 @@ export class AlmonaCuttingEngine {
     project: AlmonaCutProjectInfo
   ): AlmonaCutReport {
     const barLength = project.barLengthMm ?? this.barLength;
+    const settings = resolveManufacturingSettings(
+      settingsInputFromProject({
+        namedProfileId: project.namedProfileId ?? this.namedProfileId,
+        machineId: project.machineId ?? this.machineId,
+        sawKerfMm: project.sawKerfMm ?? this.sawKerf,
+        endDeductionMm: project.endDeductionMm ?? this.endDeduction,
+        usableResidualMinMm: project.usableResidualMinMm ?? this.usableResidualMin,
+      })
+    );
+    this.settings = settings;
     const sawKerf = project.sawKerfMm ?? this.sawKerf;
     const endDeduction = project.endDeductionMm ?? this.endDeduction;
 
     const partIdMap = generateWorkshopPartIds(cutList.items);
-    const bars = this.buildPackedBarsFromItems(cutList.items, barLength, sawKerf, partIdMap);
+    const bars = this.buildPackedBarsFromItems(cutList.items, barLength, sawKerf, partIdMap, settings);
 
     const totalBarLength = bars.length * barLength;
     const totalWasteMm = cutList.totalWasteMm;
@@ -205,7 +270,10 @@ export class AlmonaCuttingEngine {
     const estimatedSavingsUsd = this.estimateSavingsUsd(bars.length, utilization, barLength);
 
     const totalCuts = cutList.items.reduce((s, i) => s + i.quantity, 0);
-    const usableResidualLength = bars.reduce((s, b) => s + (b.remnant >= this.usableResidualMin ? b.remnant : 0), 0);
+    const usableResidualLength = bars.reduce(
+      (s, b) => s + (isReusableRemnantLength(b.remnant, settings) ? b.remnant : 0),
+      0
+    );
 
     const header: AlmonaCutReportHeader = {
       title: 'Cut Optimisation',
@@ -252,8 +320,10 @@ export class AlmonaCuttingEngine {
     items: CutListItem[],
     barLength: number,
     sawKerf: number,
-    partIdMap: Map<string, string>
+    partIdMap: Map<string, string>,
+    settings: ManufacturingSettings = this.settings
   ): PackedBar[] {
+    this.remnantCache = [];
     const bars: PackedBar[] = [];
     const expanded: { item: CutListItem; itemIndex: number; copyIndex: number }[] = [];
     items.forEach((item, idx) => {
@@ -289,8 +359,9 @@ export class AlmonaCuttingEngine {
 
       if (currentSegments.length > 0) {
         const remnant = barLength - currentUsed;
+        const assignedBar = barNumber++;
         bars.push({
-          barNumber: barNumber++,
+          barNumber: assignedBar,
           repeatCount: 1,
           totalLength: barLength,
           remnant,
@@ -298,9 +369,9 @@ export class AlmonaCuttingEngine {
           profileId: currentProfileId,
           profileName: currentSegments[0] ? (items.find((i) => i.profileId === currentProfileId)?.profileName) : undefined,
         });
-        if (remnant >= this.usableResidualMin) {
+        if (isReusableRemnantLength(remnant, settings)) {
           this.remnantCache.push({
-            id: `REM-${Date.now()}-${barNumber}`,
+            id: `REM-${assignedBar}`,
             length: remnant,
             profileId: currentProfileId,
             priority: 1,
@@ -324,8 +395,9 @@ export class AlmonaCuttingEngine {
 
     if (currentSegments.length > 0) {
       const remnant = barLength - currentUsed;
+      const assignedBar = barNumber++;
       bars.push({
-        barNumber: barNumber++,
+        barNumber: assignedBar,
         repeatCount: 1,
         totalLength: barLength,
         remnant,
@@ -333,6 +405,14 @@ export class AlmonaCuttingEngine {
         profileId: currentProfileId,
         profileName: items.find((i) => i.profileId === currentProfileId)?.profileName,
       });
+      if (isReusableRemnantLength(remnant, settings)) {
+        this.remnantCache.push({
+          id: `REM-${assignedBar}`,
+          length: remnant,
+          profileId: currentProfileId,
+          priority: 1,
+        });
+      }
     }
 
     return bars;
