@@ -170,6 +170,8 @@ describe('FP-025A industrial Studio UI', () => {
       <EngineeringInspector project={sampleProject} selectionKind="pose" />,
     );
     expect(screen.getByTestId('engineering-inspector')).toHaveAttribute('data-selection', 'pose');
+    const colorValue = screen.getByText('#FFFFFF');
+    expect(colorValue).toHaveAttribute('dir', 'ltr');
     rerender(<EngineeringInspector project={sampleProject} selectionKind="sash" />);
     expect(screen.getByTestId('engineering-inspector')).toHaveAttribute('data-selection', 'sash');
     expect(screen.getByText('Sash')).toBeInTheDocument();

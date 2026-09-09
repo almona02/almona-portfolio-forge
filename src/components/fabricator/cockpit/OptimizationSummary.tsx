@@ -17,6 +17,19 @@ function countCuts(plans: CuttingPlan[] | undefined): number {
 }
 
 /**
+ * Authority is never inferred from waste, algorithm name, or result shape.
+ * Only an explicit AlgorithmSelector value may render AUTHORITATIVE / ADVISORY.
+ */
+export function formatAuthorityLabel(
+  authority: OptimizationSummaryProps['authority'],
+  t: (key: string, fallback: string) => string = (_k, fallback) => fallback,
+): string {
+  if (authority === 'advisory') return t('industrial.opt.advisory', 'ADVISORY');
+  if (authority === 'deterministic') return t('industrial.opt.authoritative', 'AUTHORITATIVE');
+  return NOT_RECORDED;
+}
+
+/**
  * Reads already-produced OptimizationResult fields. Does not recompute waste, kerf, or length.
  */
 export const OptimizationSummary: React.FC<OptimizationSummaryProps> = ({
@@ -44,7 +57,7 @@ export const OptimizationSummary: React.FC<OptimizationSummaryProps> = ({
     };
   }, [result]);
 
-  const cells = [
+  const cells: { label: string; value: string; testId?: string }[] = [
     {
       label: t('industrial.opt.required', 'Required pieces'),
       value: metrics ? String(metrics.requiredPieces) : NOT_RECORDED,
@@ -81,11 +94,8 @@ export const OptimizationSummary: React.FC<OptimizationSummaryProps> = ({
     },
     {
       label: t('industrial.opt.authority', 'Authority'),
-      value: authority
-        ? authority === 'advisory'
-          ? t('industrial.opt.advisory', 'ADVISORY')
-          : t('industrial.opt.authoritative', 'AUTHORITATIVE')
-        : NOT_RECORDED,
+      value: formatAuthorityLabel(authority, t),
+      testId: 'optimization-authority-value',
     },
   ];
 
@@ -93,7 +103,11 @@ export const OptimizationSummary: React.FC<OptimizationSummaryProps> = ({
     <section
       className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-px bg-amber-900/30 border border-amber-600/20"
       data-testid="optimization-summary"
-      data-authority={authority ?? 'not_recorded'}
+      data-authority={
+        authority === 'advisory' || authority === 'deterministic'
+          ? authority
+          : 'not_recorded'
+      }
     >
       {cells.map((c) => (
         <div key={c.label} className="bg-[#0d0d0d] px-3 py-2">
@@ -101,6 +115,7 @@ export const OptimizationSummary: React.FC<OptimizationSummaryProps> = ({
           <div
             className="text-sm font-mono text-amber-100 mt-0.5 tabular-nums"
             dir="ltr"
+            data-testid={c.testId}
           >
             {c.value}
           </div>

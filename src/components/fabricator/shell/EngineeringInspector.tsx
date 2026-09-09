@@ -89,7 +89,7 @@ export const EngineeringInspector: React.FC<EngineeringInspectorProps> = ({
           />
           <Row label="Type" value={project.type || NOT_RECORDED} />
           <Row label="System" value={pack?.meta.name || project.systemPackId || NOT_RECORDED} ltr />
-          <Row label="Color" value={project.color || NOT_RECORDED} />
+          <Row label="Color" value={project.color || NOT_RECORDED} ltr />
           <Row
             label="Opening"
             value={
