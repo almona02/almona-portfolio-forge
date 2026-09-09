@@ -81,7 +81,7 @@ After Tests 2–4, Cursor produces **only** a delta table and authority classifi
 
 A term is eligible for FP-024C implementation only when a **single-variable** row is **PROVEN EFFECT**. `CONTROL_FIXTURE` cannot yield that for a setting. No formula patch, no +3, no +7, no K-factor change until then.
 
-The first decisive evidence is still the **actual baseline General Settings screenshot** for the existing asdd run. Isolation ingest is rejected until that snapshot is transcribed.
+The first decisive evidence is still the **actual baseline General Settings screenshot** for the existing asdd run, bound to the already-known export identifiers (`DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS`). Classify that snapshot first. Tests 2–4 stay closed until Welding Waste, Saw Thickness, Trim Cut, and DC-600 are transcribed from it.
 
 ---
 

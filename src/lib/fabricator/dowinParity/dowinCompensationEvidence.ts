@@ -16,6 +16,8 @@ import {
 } from '@/lib/fabricator/barPackExternalReconciliation';
 import {
   DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
+  DOWIN_ASDD_JOB,
+  DOWIN_ASDD_SOURCE_HASHES,
   type DowinJobObservedSettings,
   type DowinPhysicalLengthGoldenRow,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
@@ -45,6 +47,83 @@ export function calibrationRunKind(variable: CalibrationVariable): CalibrationRu
   if (variable === 'baseline') return 'BASELINE_SETTINGS_SNAPSHOT';
   if (variable === 'ninetyDegreeControl') return 'CONTROL_FIXTURE';
   return 'SINGLE_SETTING_ISOLATION';
+}
+
+/**
+ * What each evidence type is allowed to prove. Existing PDFs/MDB are
+ * observed outputs only — never causal formulas.
+ */
+export const EVIDENCE_HIERARCHY = [
+  {
+    kind: 'BASELINE_SETTINGS_SNAPSHOT' as const,
+    canProve: 'What settings actually governed the original asdd run',
+  },
+  {
+    kind: 'SINGLE_SETTING_ISOLATION' as const,
+    canProve:
+      'Whether one setting causes a measurable delta in nominal / packed / machine / remainder layers',
+  },
+  {
+    kind: 'CONTROL_FIXTURE' as const,
+    canProve: 'Whether angle/geometry conditions behave differently under unchanged settings',
+  },
+  {
+    kind: 'EXISTING_PDF_MDB' as const,
+    canProve: 'Observed outputs only; not causal formulas',
+  },
+] as const;
+
+/** Already-known asdd export identifiers. Screenshot SHA-256 is still missing. */
+export const DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS = {
+  fixtureId: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.id,
+  orderNo: DOWIN_ASDD_JOB.orderNo,
+  designName: DOWIN_ASDD_JOB.designName,
+  profileSystem: DOWIN_ASDD_JOB.profileSystem,
+  widthMm: DOWIN_ASDD_JOB.overallWidthMm,
+  heightMm: DOWIN_ASDD_JOB.overallHeightMm,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  files: DOWIN_ASDD_SOURCE_HASHES,
+  generalSettingsScreenshotSha256: null as string | null,
+} as const;
+
+export const BASELINE_SNAPSHOT_REQUIRED_FIELDS = [
+  'weldingWasteMm',
+  'sawThicknessMm',
+  'trimCutMm',
+  'machineId',
+] as const satisfies readonly (keyof DowinJobObservedSettings)[];
+
+export function isBaselineSettingsSnapshotClassified(
+  settings: DowinJobObservedSettings
+): boolean {
+  return (
+    settings.weldingWasteMm != null &&
+    settings.sawThicknessMm != null &&
+    settings.trimCutMm != null &&
+    settings.machineId === REQUIRED_ISOLATION_MACHINE_ID
+  );
+}
+
+export function classifyBaselineSettingsSnapshot(settings: DowinJobObservedSettings): {
+  interpretation: CompensationInterpretation;
+  missingFields: (keyof DowinJobObservedSettings)[];
+  note: string;
+} {
+  const missingFields = BASELINE_SNAPSHOT_REQUIRED_FIELDS.filter((key) =>
+    key === 'machineId' ? settings.machineId !== REQUIRED_ISOLATION_MACHINE_ID : settings[key] == null
+  );
+  if (missingFields.length > 0) {
+    return {
+      interpretation: 'NOT MEASURED',
+      missingFields,
+      note: 'asdd lengths and PDFs/MDB are observed only. General Settings screenshot is not transcribed. Tests 2–4 stay closed.',
+    };
+  }
+  return {
+    interpretation: 'AMBIGUOUS',
+    missingFields: [],
+    note: 'asdd General Settings transcribed. This is the reference state, not a causal formula. Tests 2–4 may now be ingested.',
+  };
 }
 
 export type CalibrationRunStatus = 'MEASURED' | 'PENDING_OPERATOR_RUN';
@@ -730,10 +809,17 @@ export function ingestOperatorCalibrationRun(
       reasons.push('CONTROL_FIXTURE must keep General Settings identical to the parent.');
     }
   } else if (runKind === 'BASELINE_SETTINGS_SNAPSHOT') {
-    if (pkg.observedSettings.weldingWasteMm == null) {
-      reasons.push('Baseline settings snapshot still has unknown Welding Waste.');
+    if (!isBaselineSettingsSnapshotClassified(pkg.observedSettings)) {
+      reasons.push(
+        'Baseline snapshot must transcribe Welding Waste, Saw Thickness, Trim Cut, and DC-600 from the asdd General Settings screenshot.'
+      );
     }
   } else {
+    if (!isBaselineSettingsSnapshotClassified(parent.observedSettings)) {
+      reasons.push(
+        'Classify the asdd BASELINE_SETTINGS_SNAPSHOT first. Tests 2–4 are not accepted until that screenshot is transcribed.'
+      );
+    }
     if (!pkg.changedSettingNote) {
       reasons.push('Note identifying the single changed setting is missing.');
     }
@@ -743,12 +829,6 @@ export function ingestOperatorCalibrationRun(
     if (changed.length !== 1) {
       reasons.push(
         `SINGLE_SETTING_ISOLATION must change exactly one setting; changed: ${changed.join(', ') || 'none'}.`
-      );
-    }
-    const field = isolationFieldForVariable(pkg.isolationVariable);
-    if (field && parent.observedSettings[field] == null) {
-      reasons.push(
-        'Baseline General Settings still missing; do not ingest isolation until the asdd screenshot is transcribed.'
       );
     }
     if (pkg.widthMm !== parent.widthMm || pkg.heightMm !== parent.heightMm) {
@@ -854,6 +934,7 @@ export function buildIsolationDeltaTable(
       };
     }
     if (run.runKind === 'BASELINE_SETTINGS_SNAPSHOT') {
+      const classified = classifyBaselineSettingsSnapshot(run.observedSettings);
       return {
         runKind: run.runKind,
         variableChanged: 'baseline',
@@ -862,8 +943,8 @@ export function buildIsolationDeltaTable(
         packedDeltaMm: null,
         machineDeltaMm: null,
         remainderDeltaMm: null,
-        interpretation: 'AMBIGUOUS',
-        note: 'Baseline lengths measured; General Settings screenshot still required before attributing +3 mm.',
+        interpretation: classified.interpretation,
+        note: classified.note,
       };
     }
     if (run.runKind === 'CONTROL_FIXTURE') {
@@ -906,10 +987,19 @@ export function buildIsolationDeltaTable(
 export function buildOperatorIsolationReport(
   runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
 ): {
+  evidenceHierarchy: typeof EVIDENCE_HIERARCHY;
+  knownExportIdentifiers: typeof DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS;
+  baselineClassification: ReturnType<typeof classifyBaselineSettingsSnapshot>;
   deltaTable: IsolationDeltaRow[];
   termAuthority: readonly CompensationTermRecord[];
 } {
+  const baseline = runs.find((r) => r.runKind === 'BASELINE_SETTINGS_SNAPSHOT');
   return {
+    evidenceHierarchy: EVIDENCE_HIERARCHY,
+    knownExportIdentifiers: DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS,
+    baselineClassification: classifyBaselineSettingsSnapshot(
+      baseline?.observedSettings ?? emptyObservedSettings(null)
+    ),
     deltaTable: buildIsolationDeltaTable(runs),
     termAuthority: DOWIN_COMPENSATION_TERM_AUTHORITY,
   };

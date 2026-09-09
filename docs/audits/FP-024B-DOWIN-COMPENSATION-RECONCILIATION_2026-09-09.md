@@ -85,7 +85,7 @@ Do **not** commit licensed PDFs, MDB binaries, or screenshots unless project pol
 
 Cursor output after ingest: **delta table + classification only** (`PROVEN EFFECT` / `NO OBSERVED EFFECT` / `AMBIGUOUS` / `NOT MEASURED`). No formula patch.
 
-First capture the **existing asdd** settings (Welding Waste, Saw Thickness, Trim Cut, angle compensation L/R, robot safety length, sash offset if exposed, glazing clearance, selected machine). Until that exists, the baseline +3 mm stays unattributed.
+First capture the **existing asdd** settings bound to `DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS`. Classify that snapshot before Tests 2–4. Filling only Welding Waste is not enough.
 
 `ingestOperatorCalibrationRun` rejects incomplete packages, multi-setting isolation, geometry/stock/qty changes on the first three isolation runs, and setting changes on the 90° CONTROL_FIXTURE.
 
