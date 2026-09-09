@@ -287,6 +287,9 @@ export const DOWIN_ASDD_SOURCE_HASHES: Record<string, string> = {
     'f6a00ef01eba45336e1557abd5dcceefbe14bdb70c55f7443a705afd8d9c64b0',
   'asdasd_2026.09.09_18.15.mdb':
     '6d5932947327db0272e5de92de4d47e4320ecb1aeadbc6a268f2bbd383a3f82d',
+  /** Live Management Panel → General Settings PNG captured 2026-09-09; file not committed. */
+  'dowin-general-settings.png':
+    '95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a',
 };
 
 function piece(
@@ -332,14 +335,14 @@ export const DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION: DowinPhysicalLengthGoldenFi
   overallHeightMm: 1500,
   manufacturingProfileId: 'yilmazcad-parity',
   jobSettings: {
-    sawThicknessMm: null,
-    weldingWasteMm: null,
-    sashOffsetMm: null,
-    trimCutMm: null,
-    remnantThresholdMm: null,
-    glazingClearanceMm: null,
+    sawThicknessMm: 4,
+    weldingWasteMm: 3,
+    sashOffsetMm: 7,
+    trimCutMm: 0,
+    remnantThresholdMm: 500,
+    glazingClearanceMm: 2.5,
     robotSafetyLengthMm: null,
-    profileWasteMarginPercent: null,
+    profileWasteMarginPercent: 0,
     compLessThan90LeftMm: null,
     compLessThan90RightMm: null,
     compGreaterThan90LeftMm: null,

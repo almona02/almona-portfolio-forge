@@ -83,7 +83,8 @@ export const DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS = {
   heightMm: DOWIN_ASDD_JOB.overallHeightMm,
   machineId: REQUIRED_ISOLATION_MACHINE_ID,
   files: DOWIN_ASDD_SOURCE_HASHES,
-  generalSettingsScreenshotSha256: null as string | null,
+  generalSettingsScreenshotSha256:
+    DOWIN_ASDD_SOURCE_HASHES['dowin-general-settings.png'],
 } as const;
 
 export const BASELINE_SNAPSHOT_REQUIRED_FIELDS = [
@@ -481,7 +482,7 @@ export const DOWIN_ASDD_BASELINE_RUN: DowinCalibrationRun = {
   pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
   bars: DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
   provenance:
-    'Licensed asdd PDFs + DC-600 Table1 millimetres. General Settings for this run were not transcribed.',
+    'Licensed asdd PDFs + DC-600 Table1 millimetres. General Settings transcribed from live Management Panel screenshot SHA-256 95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a (PNG not committed). Project list showed asdasd / 100001; DC-550 SKH also enabled globally. Angle compensation and robot safety length still null.',
 };
 
 export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
@@ -622,19 +623,19 @@ export const DOWIN_COMPENSATION_TERM_AUTHORITY: readonly CompensationTermRecord[
     term: 'Welding Waste',
     authority: 'UNPROVEN',
     proposedForFp024c: false,
-    evidence: 'Test 2 not executed. This-run Welding Waste is null.',
+    evidence: 'Live General Settings: Welding Waste = 3 mm. Test 2 not executed. Do not encode packed = nominal + 3.',
   },
   {
     term: 'Saw Thickness',
     authority: 'UNPROVEN',
     proposedForFp024c: false,
-    evidence: 'Test 3 not executed. This-run Saw Thickness is null.',
+    evidence: 'Live General Settings: Saw Thickness = 4 mm. Test 3 not executed. Do not encode remainder with a hidden constant.',
   },
   {
     term: 'Trim Cut',
     authority: 'UNPROVEN',
     proposedForFp024c: false,
-    evidence: 'Test 4 not executed. Candidate for leftover after packed labels; not encoded as +7.',
+    evidence: 'Live General Settings: Trim Cut = 0 mm. Test 4 not executed. Leftover 7 mm after packed + N×4 remains unexplained.',
   },
   {
     term: 'KASA/KANAT leftover after packed + named-parity N×4 kerf',

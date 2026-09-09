@@ -53,24 +53,21 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(calibrationRunKind('ninetyDegreeControl')).toBe('CONTROL_FIXTURE');
     expect(calibrationRunKind('weldingWaste')).toBe('SINGLE_SETTING_ISOLATION');
     expect(REQUIRED_ISOLATION_MACHINE_ID).toBe('DC-600');
-    expect(isBaselineSettingsSnapshotClassified(DOWIN_ASDD_BASELINE_RUN.observedSettings)).toBe(false);
+    expect(isBaselineSettingsSnapshotClassified(DOWIN_ASDD_BASELINE_RUN.observedSettings)).toBe(true);
     expect(classifyBaselineSettingsSnapshot(DOWIN_ASDD_BASELINE_RUN.observedSettings).interpretation).toBe(
-      'NOT MEASURED'
+      'AMBIGUOUS'
     );
     const empty = emptyObservedSettings(null);
     expect(empty.weldingWasteMm).toBeNull();
     expect(empty.sawThicknessMm).toBeNull();
     expect(empty.trimCutMm).toBeNull();
-    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.weldingWasteMm).toBeNull();
-    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.sawThicknessMm).toBeNull();
-    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.glazingClearanceMm).toBeNull();
+    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.weldingWasteMm).toBe(3);
+    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.sawThicknessMm).toBe(4);
+    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.trimCutMm).toBe(0);
+    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.sashOffsetMm).toBe(7);
+    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.glazingClearanceMm).toBe(2.5);
     expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.machineId).toBe('DC-600');
-    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings).not.toEqual(
-      expect.objectContaining({
-        weldingWasteMm: YILMAZCAD_PARITY_MANUFACTURING_SETTINGS.weldingWasteMm,
-        sawThicknessMm: YILMAZCAD_PARITY_MANUFACTURING_SETTINGS.sawKerfMm,
-      })
-    );
+    expect(DOWIN_ASDD_BASELINE_RUN.observedSettings.compLessThan90LeftMm).toBeNull();
   });
 
   it('keeps settings snapshots fixture-specific', () => {
@@ -171,8 +168,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(frame.externalBarParity).toBe('CONDITIONAL');
     expect(sash.externalBarParity).toBe('CONDITIONAL');
     expect(mullion.externalBarParity).toBe('RECONCILED');
-    expect(frame.candidates.find((c) => c.termId === 'canonicalKerfIfSawThicknessKnown')?.mm).toBeNull();
-    expect(frame.candidates.find((c) => c.termId === 'trimIfThisRunKnown')?.mm).toBeNull();
+    expect(frame.candidates.find((c) => c.termId === 'canonicalKerfIfSawThicknessKnown')?.mm).toBe(16);
+    expect(frame.candidates.find((c) => c.termId === 'trimIfThisRunKnown')?.mm).toBe(0);
     expect(DOWIN_COMPENSATION_TERM_AUTHORITY.every((t) => t.authority !== 'PROVEN')).toBe(true);
     expect(DOWIN_COMPENSATION_TERM_AUTHORITY.every((t) => t.proposedForFp024c === false)).toBe(true);
   });
@@ -192,14 +189,16 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     const isolation = buildIsolationDeltaTable();
     expect(isolation).toHaveLength(5);
     expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(4);
-    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(5);
+    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(4);
     expect(isolation.filter((r) => r.runKind === 'CONTROL_FIXTURE')[0]?.interpretation).toBe(
       'NOT MEASURED'
     );
     const report = buildOperatorIsolationReport();
     expect(report.deltaTable).toEqual(isolation);
-    expect(report.baselineClassification.interpretation).toBe('NOT MEASURED');
-    expect(report.knownExportIdentifiers.generalSettingsScreenshotSha256).toBeNull();
+    expect(report.baselineClassification.interpretation).toBe('AMBIGUOUS');
+    expect(report.knownExportIdentifiers.generalSettingsScreenshotSha256).toBe(
+      '95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a'
+    );
     expect(report.knownExportIdentifiers.files['asdasd_2026.09.09_18.15.mdb']).toBe(
       '6d5932947327db0272e5de92de4d47e4320ecb1aeadbc6a268f2bbd383a3f82d'
     );
@@ -328,9 +327,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(isolationBeforeBaselineSettings.ok).toBe(false);
     if (!isolationBeforeBaselineSettings.ok) {
       expect(
-        isolationBeforeBaselineSettings.reasons.some((r) =>
-          r.includes('Classify the asdd BASELINE_SETTINGS_SNAPSHOT first')
-        )
+        isolationBeforeBaselineSettings.reasons.some((r) => r.includes('MDB was generated but SHA-256'))
       ).toBe(true);
     }
   });
@@ -415,6 +412,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
       observedSettings: {
         ...DOWIN_ASDD_BASELINE_RUN.observedSettings,
         weldingWasteMm: 99,
+        sawThicknessMm: null,
+        trimCutMm: null,
       },
     };
     const tooSoon = ingestOperatorCalibrationRun(weldOnly, {

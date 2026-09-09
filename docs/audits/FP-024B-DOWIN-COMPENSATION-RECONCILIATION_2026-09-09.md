@@ -110,11 +110,14 @@ This-run settings:
 
 | Field | This run |
 |-------|----------|
-| Welding Waste | **null** |
-| Saw Thickness | **null** |
-| Trim Cut | **null** |
-| Glazing clearance / sash offset / angle comps / remnant / robot / waste margin | **null** |
-| Machine | `DC-600` |
+| Welding Waste | **3** (live General Settings screenshot) |
+| Saw Thickness | **4** |
+| Trim Cut | **0** |
+| Glazing clearance | **2.5** |
+| Sash offset | **7** |
+| Remnant / min offcut | **500** |
+| Angle comps / robot | **null** |
+| Machine | `DC-600` (DC-550 SKH also enabled in the global machine list) |
 
 Dealer-audit named-profile numbers (weld 3, kerf 4, remnant 500) are **not** this-run Settings.
 

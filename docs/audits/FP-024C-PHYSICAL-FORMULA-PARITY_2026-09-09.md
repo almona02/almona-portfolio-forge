@@ -7,7 +7,7 @@
 | Branch | `feature/fp024c-physical-parity` (from `main` after FP-025A; merged `feature/fp024-dowin-external-golden`) |
 | Depends on | FP-023A, FP-023B, FP-024A, FP-024B, operator isolation evidence |
 | Scope | Identify which **this-run** settings drive nominal → packed → machine length, then implement only those proven terms and re-run ±0.1 mm parity. Not FP-016, FP-017, or FP-025B. |
-| Gate | ⏸ **WAITING_OPERATOR_ISOLATION** — no formula implementation yet |
+| Gate | ⏸ **WAITING_OPERATOR_ISOLATION** — baseline screenshot classified; tests 2–4 not executed; no formula implementation |
 | Physical-length score | **Unchanged at 6.0/10** |
 
 ---
@@ -55,7 +55,7 @@ The 90° run is a **CONTROL_FIXTURE**, not a `SINGLE_SETTING_ISOLATION`. The fir
 
 | Test | Kind | Isolation | Status |
 |------|------|-----------|--------|
-| 1 Baseline settings snapshot | `BASELINE_SETTINGS_SNAPSHOT` | Transcribe **this-run** General Settings on asdd | **NOT MEASURED** (lengths MEASURED) |
+| 1 Baseline settings snapshot | `BASELINE_SETTINGS_SNAPSHOT` | Transcribe **this-run** General Settings on asdd | **AMBIGUOUS** reference state (Welding Waste 3, Saw Thickness 4, Trim Cut 0, DC-600). Angle comps / robot safety still null. |
 | 2 Welding Waste | `SINGLE_SETTING_ISOLATION` | Only Welding Waste → `0`; same geometry/stock/qty/system/`DC-600` | `PENDING_OPERATOR_RUN` |
 | 3 Saw Thickness | `SINGLE_SETTING_ISOLATION` | Only saw + known 1 mm; same identity | `PENDING_OPERATOR_RUN` |
 | 4 Trim Cut | `SINGLE_SETTING_ISOLATION` | Only trim + known delta; same identity | `PENDING_OPERATOR_RUN` |
@@ -81,7 +81,7 @@ After Tests 2–4, Cursor produces **only** a delta table and authority classifi
 
 A term is eligible for FP-024C implementation only when a **single-variable** row is **PROVEN EFFECT**. `CONTROL_FIXTURE` cannot yield that for a setting. No formula patch, no +3, no +7, no K-factor change until then.
 
-The first decisive evidence is still the **actual baseline General Settings screenshot** for the existing asdd run, bound to the already-known export identifiers (`DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS`). Classify that snapshot first. Tests 2–4 stay closed until Welding Waste, Saw Thickness, Trim Cut, and DC-600 are transcribed from it.
+The asdd baseline General Settings screenshot is captured (SHA-256 `95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a`, PNG not committed). Transcribed: Welding Waste **3**, Saw Thickness **4**, Trim Cut **0**, Sash Offset **7**, Glazing Clearance **2.5**, remnant **500**, machine **DC-600** (DC-550 SKH also enabled globally). Project list showed `asdasd` / `100001`. Tests 2–4 may now be ingested. They are **not yet executed**. No formula patch.
 
 ---
 

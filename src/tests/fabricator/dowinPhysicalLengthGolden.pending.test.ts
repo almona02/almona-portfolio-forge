@@ -67,13 +67,16 @@ describe('FP-024 DoWin external golden', () => {
     expect(DOWIN_LENGTH_CATEGORIES).toHaveLength(9);
   });
 
-  it('does not fill unknown this-run settings with factory defaults', () => {
-    expect(fixture.jobSettings.sawThicknessMm).toBeNull();
-    expect(fixture.jobSettings.weldingWasteMm).toBeNull();
-    expect(fixture.jobSettings.sashOffsetMm).toBeNull();
-    expect(fixture.jobSettings.trimCutMm).toBeNull();
-    expect(fixture.jobSettings.remnantThresholdMm).toBeNull();
+  it('transcribes this-run General Settings from the live screenshot, not from platform defaults', () => {
+    expect(fixture.jobSettings.sawThicknessMm).toBe(4);
+    expect(fixture.jobSettings.weldingWasteMm).toBe(3);
+    expect(fixture.jobSettings.sashOffsetMm).toBe(7);
+    expect(fixture.jobSettings.trimCutMm).toBe(0);
+    expect(fixture.jobSettings.remnantThresholdMm).toBe(500);
+    expect(fixture.jobSettings.glazingClearanceMm).toBe(2.5);
     expect(fixture.jobSettings.machineId).toBe('DC-600');
+    expect(fixture.jobSettings.compLessThan90LeftMm).toBeNull();
+    expect(fixture.sourceHashesSha256['dowin-general-settings.png']).toMatch(/^95652321b98d/);
   });
 
   it('keeps repeated lengths as distinct physical records', () => {
