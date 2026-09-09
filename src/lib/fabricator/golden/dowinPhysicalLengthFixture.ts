@@ -70,6 +70,13 @@ export interface DowinJobObservedSettings {
   sashOffsetMm: number | null;
   trimCutMm: number | null;
   remnantThresholdMm: number | null;
+  glazingClearanceMm: number | null;
+  robotSafetyLengthMm: number | null;
+  profileWasteMarginPercent: number | null;
+  compLessThan90LeftMm: number | null;
+  compLessThan90RightMm: number | null;
+  compGreaterThan90LeftMm: number | null;
+  compGreaterThan90RightMm: number | null;
   machineId: string | null;
 }
 
@@ -330,6 +337,13 @@ export const DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION: DowinPhysicalLengthGoldenFi
     sashOffsetMm: null,
     trimCutMm: null,
     remnantThresholdMm: null,
+    glazingClearanceMm: null,
+    robotSafetyLengthMm: null,
+    profileWasteMarginPercent: null,
+    compLessThan90LeftMm: null,
+    compLessThan90RightMm: null,
+    compGreaterThan90LeftMm: null,
+    compGreaterThan90RightMm: null,
     machineId: 'DC-600',
   },
   sourceHashesSha256: DOWIN_ASDD_SOURCE_HASHES,

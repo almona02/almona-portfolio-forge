@@ -336,7 +336,7 @@ Replace K-factor-on-width as the only sash correction with DoWin’s split model
 
 **Golden fixture:** Deceuninck 70 Z sash 12/16/6/6. Build one casement in DoWin, export the cut list, assert ALMONA within 0.1 mm. Until that design exists, unit-test against Settings + Profile rows.
 
-**FP-024A checkpoint (9 Sep 2026):** Licensed asdd export ingested as a three-layer fixture (nominal / packed / machine). Beads have no MDB LENGTH so machine stays null. Glass and non-square angle remain UNPROVEN. Represented categories FAIL vs isolated ALMONA actuals. `dowinParityGatePasses` is **false**. Physical-length score stays **6.0/10**. See `docs/audits/FP-024A-EXTERNAL-DOWIN-GOLDEN-PARITY_2026-09-09.md`. PDFs/MDB are not in the repo.
+**FP-024B checkpoint (9 Sep 2026):** Compensation reconciliation is ⚠️ CONDITIONAL. asdd piece-layer deltas are recorded; this-run General Settings remain null; isolation templates are pending. No +3/+7 production constants. Score stays **6.0/10**. See `docs/audits/FP-024B-DOWIN-COMPENSATION-RECONCILIATION_2026-09-09.md`.
 
 ### Phase 2 — CAM operations (~1 week)
 
