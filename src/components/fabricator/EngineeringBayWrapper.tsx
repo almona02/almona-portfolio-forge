@@ -20,6 +20,7 @@ import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { DesignWorkspaceShell } from './shell/DesignWorkspaceShell';
 import { EngineeringBay } from './EngineeringBay';
 
 // Optional: If projectId is provided in route, we can load it
@@ -189,15 +190,22 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
 
   return (
     <div className="h-full w-full flex flex-col overflow-hidden">
-      <EngineeringBay
+      <DesignWorkspaceShell
+        positions={relatedPositions}
         project={currentProject}
-        onDesignComplete={handleDesignComplete}
-        profiles={profiles}
-        relatedPositions={relatedPositions}
         onSelectPosition={handleSelectPosition}
-        onBackToMeasuring={handleBackToMeasuring}
-        onAddNewPose={useV2 && resolvedProjectId && user?.id ? handleAddNewPose : undefined}
-      />
+        onAddPosition={useV2 && resolvedProjectId && user?.id ? handleAddNewPose : undefined}
+      >
+        <EngineeringBay
+          project={currentProject}
+          onDesignComplete={handleDesignComplete}
+          profiles={profiles}
+          relatedPositions={relatedPositions}
+          onSelectPosition={handleSelectPosition}
+          onBackToMeasuring={handleBackToMeasuring}
+          onAddNewPose={useV2 && resolvedProjectId && user?.id ? handleAddNewPose : undefined}
+        />
+      </DesignWorkspaceShell>
     </div>
   );
 };
