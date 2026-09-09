@@ -1,10 +1,11 @@
 /**
  * FP-024B/C — External compensation reconciliation (test/reference only).
  *
- * SINGLE_SETTING_ISOLATION changes one General Settings field on identical
- * asdd geometry/stock/quantity/system/machine. The 90° run is a CONTROL_FIXTURE
- * and is not a single-setting isolation. Do not encode packed = nominal + 3,
- * do not absorb a hidden +7 mm, and do not feed these values into runtime manufacturing.
+ * Sequence: 1A BASELINE_SETTINGS_SNAPSHOT → 1B BASELINE_REPRODUCTION_RUN
+ * (same asdd 1000×1500, settings unchanged) → Tests 2–4 SINGLE_SETTING_ISOLATION
+ * → Test 5 CONTROL_FIXTURE. Isolation is not authorized until 1B reproduces.
+ * Do not encode packed = nominal + 3, do not absorb a hidden +7 mm, and do
+ * not feed these values into runtime manufacturing.
  *
  * @see docs/audits/FP-024C-PHYSICAL-FORMULA-PARITY_2026-09-09.md
  */
@@ -24,6 +25,7 @@ import {
 
 export type CalibrationVariable =
   | 'baseline'
+  | 'baselineReproduction'
   | 'weldingWaste'
   | 'sawThickness'
   | 'trimCut'
@@ -32,8 +34,11 @@ export type CalibrationVariable =
 /** How the run is allowed to differ from the asdd parent. */
 export type CalibrationRunKind =
   | 'BASELINE_SETTINGS_SNAPSHOT'
+  | 'BASELINE_REPRODUCTION_RUN'
   | 'SINGLE_SETTING_ISOLATION'
   | 'CONTROL_FIXTURE';
+
+export type ReproductionVerdict = 'NOT MEASURED' | 'REPRODUCED' | 'REPRODUCTION_FAILED';
 
 export const REQUIRED_ISOLATION_MACHINE_ID = 'DC-600';
 
@@ -45,6 +50,7 @@ export const SINGLE_SETTING_ISOLATION_VARIABLES = [
 
 export function calibrationRunKind(variable: CalibrationVariable): CalibrationRunKind {
   if (variable === 'baseline') return 'BASELINE_SETTINGS_SNAPSHOT';
+  if (variable === 'baselineReproduction') return 'BASELINE_REPRODUCTION_RUN';
   if (variable === 'ninetyDegreeControl') return 'CONTROL_FIXTURE';
   return 'SINGLE_SETTING_ISOLATION';
 }
@@ -56,7 +62,12 @@ export function calibrationRunKind(variable: CalibrationVariable): CalibrationRu
 export const EVIDENCE_HIERARCHY = [
   {
     kind: 'BASELINE_SETTINGS_SNAPSHOT' as const,
-    canProve: 'What settings actually governed the original asdd run',
+    canProve: 'Current live General Settings. Not proof they were active at the original 18:14 export.',
+  },
+  {
+    kind: 'BASELINE_REPRODUCTION_RUN' as const,
+    canProve:
+      'Whether the same asdd design with the currently captured settings reproduces the original length layers and bar accounting',
   },
   {
     kind: 'SINGLE_SETTING_ISOLATION' as const,
@@ -73,7 +84,7 @@ export const EVIDENCE_HIERARCHY = [
   },
 ] as const;
 
-/** Already-known asdd export identifiers. Screenshot SHA-256 is still missing. */
+/** Already-known asdd export identifiers. Live settings SHA-256 is transcribed; 1B still pending. */
 export const DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS = {
   fixtureId: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.id,
   orderNo: DOWIN_ASDD_JOB.orderNo,
@@ -117,13 +128,101 @@ export function classifyBaselineSettingsSnapshot(settings: DowinJobObservedSetti
     return {
       interpretation: 'NOT MEASURED',
       missingFields,
-      note: 'asdd lengths and PDFs/MDB are observed only. General Settings screenshot is not transcribed. Tests 2–4 stay closed.',
+      note: 'asdd lengths and PDFs/MDB are observed only. General Settings screenshot is not transcribed. BASELINE_REPRODUCTION_RUN and Tests 2–4 stay closed.',
     };
   }
   return {
     interpretation: 'AMBIGUOUS',
     missingFields: [],
-    note: 'asdd General Settings transcribed. This is the reference state, not a causal formula. Tests 2–4 may now be ingested.',
+    note: 'Current live General Settings transcribed. Not proof they were active at the original 18:14 export. Tests 2–4 stay closed until BASELINE_REPRODUCTION_RUN reproduces.',
+  };
+}
+
+export interface LengthLayerSignature {
+  category: string;
+  nominalMm: number | null;
+  packedMm: number | null;
+  machineMm: number | null;
+}
+
+/** Required contemporaneous reproduction of the original asdd 18:14 length pairs. */
+export const ASDD_REQUIRED_REPRODUCTION_PAIRS = [
+  { category: 'sash_horizontal', nominalMm: 451, packedMm: 454, machineMm: 454 },
+  { category: 'sash_vertical', nominalMm: 1430, packedMm: 1433, machineMm: 1433 },
+  { category: 'frame_horizontal', nominalMm: 1000, packedMm: 1003, machineMm: 1003 },
+  { category: 'frame_vertical', nominalMm: 1500, packedMm: 1503, machineMm: 1503 },
+] as const;
+
+export function uniqueLayerSignatures(
+  pieces: readonly DowinPhysicalLengthGoldenRow[]
+): LengthLayerSignature[] {
+  const keys = new Set<string>();
+  const rows: LengthLayerSignature[] = [];
+  for (const piece of pieces) {
+    if (piece.category === 'glass' || piece.category === 'angle_compensation') continue;
+    const sig: LengthLayerSignature = {
+      category: piece.category,
+      nominalMm: piece.expectedNominalLengthMm,
+      packedMm: piece.expectedPackedSegmentMm,
+      machineMm: piece.expectedMachineLengthMm,
+    };
+    const key = `${sig.category}:${sig.nominalMm}:${sig.packedMm}:${sig.machineMm}`;
+    if (!keys.has(key)) {
+      keys.add(key);
+      rows.push(sig);
+    }
+  }
+  return rows.sort((a, b) => a.category.localeCompare(b.category) || (a.nominalMm ?? 0) - (b.nominalMm ?? 0));
+}
+
+export function signatureKey(sig: LengthLayerSignature): string {
+  return `${sig.category}:${sig.nominalMm}:${sig.packedMm}:${sig.machineMm}`;
+}
+
+export function evaluateBaselineReproduction(
+  original: { pieces: readonly DowinPhysicalLengthGoldenRow[]; bars: readonly ExternalBarPattern[] },
+  candidate: { pieces: readonly DowinPhysicalLengthGoldenRow[]; bars: readonly ExternalBarPattern[] }
+): {
+  verdict: ReproductionVerdict;
+  missingPairs: string[];
+  remainderMismatches: string[];
+} {
+  const candidateKeys = new Set(uniqueLayerSignatures(candidate.pieces).map(signatureKey));
+  const missingPairs = ASDD_REQUIRED_REPRODUCTION_PAIRS.filter(
+    (pair) => !candidateKeys.has(signatureKey(pair))
+  ).map(signatureKey);
+
+  const remainderMismatches: string[] = [];
+  const unused = [...candidate.bars];
+  for (const bar of original.bars) {
+    let idx = unused.findIndex((b) => b.id === bar.id);
+    if (idx < 0) {
+      idx = unused.findIndex(
+        (b) =>
+          b.profileCode === bar.profileCode &&
+          b.stockLengthMm === bar.stockLengthMm &&
+          b.remainingMm === bar.remainingMm
+      );
+    }
+    if (idx < 0) {
+      remainderMismatches.push(`${bar.profileCode} ${bar.stockLengthMm} remaining ${bar.remainingMm} missing`);
+      continue;
+    }
+    const match = unused.splice(idx, 1)[0];
+    if (match.remainingMm !== bar.remainingMm) {
+      remainderMismatches.push(
+        `${bar.profileCode} remaining ${match.remainingMm} ≠ ${bar.remainingMm}`
+      );
+    }
+  }
+
+  return {
+    verdict:
+      missingPairs.length === 0 && remainderMismatches.length === 0
+        ? 'REPRODUCED'
+        : 'REPRODUCTION_FAILED',
+    missingPairs,
+    remainderMismatches,
   };
 }
 
@@ -436,6 +535,7 @@ export interface DowinCalibrationRun {
   pieces: DowinPhysicalLengthGoldenRow[];
   bars: readonly ExternalBarPattern[];
   provenance: string;
+  reproductionVerdict: ReproductionVerdict | null;
 }
 
 function pendingTemplate(
@@ -462,6 +562,7 @@ function pendingTemplate(
     pieces: [],
     bars: [],
     provenance,
+    reproductionVerdict: runKind === 'BASELINE_REPRODUCTION_RUN' ? 'NOT MEASURED' : null,
   };
 }
 
@@ -482,17 +583,28 @@ export const DOWIN_ASDD_BASELINE_RUN: DowinCalibrationRun = {
   pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
   bars: DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
   provenance:
-    'Licensed asdd PDFs + DC-600 Table1 millimetres. General Settings transcribed from live Management Panel screenshot SHA-256 95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a (PNG not committed). Project list showed asdasd / 100001; DC-550 SKH also enabled globally. Angle compensation and robot safety length still null.',
+    'Licensed asdd PDFs + DC-600 Table1 millimetres. General Settings transcribed from live Management Panel screenshot SHA-256 95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a (PNG not committed). Project list showed asdasd / 100001; DC-550 SKH also enabled globally. Angle compensation and robot safety length still null. Not proof these settings were active at 18:14.',
+  reproductionVerdict: null,
 };
 
 export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
+  pendingTemplate(
+    'dowin-asdd-baseline-reproduction-pending',
+    'baselineReproduction',
+    {
+      field: null,
+      instructedToMm: null,
+      note: 'BASELINE_REPRODUCTION_RUN: rerun the same asdd 1000×1500 design unchanged with currently captured settings (Weld=3 / Saw=4 / Trim=0) and DC-600. Do not change settings. Export Design Preview, Labels, Optimization, MDB, General Settings screenshot. If 451→454 / 1430→1433 / 1000→1003 / 1500→1503 and bar remainders do not match the original, STOP — Tests 2–4 are not clean.',
+    },
+    'Operator template. Contemporaneous reproduction of the historical asdd export. Not an executed DoWin run.'
+  ),
   pendingTemplate(
     'dowin-asdd-weld-0-pending',
     'weldingWaste',
     {
       field: 'weldingWasteMm',
       instructedToMm: 0,
-      note: 'SINGLE_SETTING_ISOLATION: duplicate asdd. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Welding Waste to 0. Export Design Preview, Labels, Optimization, MDB.',
+      note: 'SINGLE_SETTING_ISOLATION: duplicate asdd. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Welding Waste to 0. Export Design Preview, Labels, Optimization, MDB. Not authorized until BASELINE_REPRODUCTION_RUN is REPRODUCED.',
     },
     'Operator template. Not an executed DoWin run.'
   ),
@@ -501,10 +613,10 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     'sawThickness',
     {
       field: 'sawThicknessMm',
-      instructedToMm: null,
-      note: 'SINGLE_SETTING_ISOLATION: return weld to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Saw Thickness by a known +1 mm from the transcribed baseline. Baseline saw is still null.',
+      instructedToMm: 5,
+      note: 'SINGLE_SETTING_ISOLATION: return weld to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Saw Thickness 4 → 5. Not authorized until BASELINE_REPRODUCTION_RUN is REPRODUCED.',
     },
-    'Operator template. Saw Thickness baseline is unknown, so the instructed target stays null until Test 1 is filled.'
+    'Operator template. Instructed Saw Thickness target is 5 mm after a 4 mm contemporaneous baseline.'
   ),
   pendingTemplate(
     'dowin-asdd-trim-plus-delta-pending',
@@ -512,9 +624,9 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     {
       field: 'trimCutMm',
       instructedToMm: null,
-      note: 'SINGLE_SETTING_ISOLATION: return saw to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Trim Cut by a known delta. Compare remainder and packed/machine.',
+      note: 'SINGLE_SETTING_ISOLATION: return saw to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Trim Cut from 0 to a known value. Compare remainder and packed/machine. Not authorized until BASELINE_REPRODUCTION_RUN is REPRODUCED.',
     },
-    'Operator template. Trim Cut baseline is unknown.'
+    'Operator template. Trim Cut baseline is 0. Instructed target stays null until the operator picks a known non-zero value.'
   ),
   pendingTemplate(
     'dowin-asdd-90-control-pending',
@@ -532,6 +644,25 @@ export const DOWIN_CALIBRATION_RUNS: readonly DowinCalibrationRun[] = [
   DOWIN_ASDD_BASELINE_RUN,
   ...DOWIN_CALIBRATION_TEMPLATES,
 ];
+
+export function findBaselineReproduction(
+  runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
+): DowinCalibrationRun | undefined {
+  return runs.find((r) => r.runKind === 'BASELINE_REPRODUCTION_RUN');
+}
+
+export function isCausalIsolationAuthorized(
+  runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
+): boolean {
+  const snapshot = runs.find((r) => r.runKind === 'BASELINE_SETTINGS_SNAPSHOT');
+  const reproduction = findBaselineReproduction(runs);
+  return (
+    snapshot != null &&
+    isBaselineSettingsSnapshotClassified(snapshot.observedSettings) &&
+    reproduction?.status === 'MEASURED' &&
+    reproduction.reproductionVerdict === 'REPRODUCED'
+  );
+}
 
 export function pieceDeltasForRun(run: DowinCalibrationRun): PieceLayerDeltas[] {
   return run.pieces
@@ -756,7 +887,7 @@ function classifyMeasuredIsolation(
   machineDeltaMm: number | null,
   remainderDeltaMmValue: number | null
 ): CompensationInterpretation {
-  if (runKind === 'CONTROL_FIXTURE' || runKind === 'BASELINE_SETTINGS_SNAPSHOT') {
+  if (runKind === 'CONTROL_FIXTURE' || runKind === 'BASELINE_SETTINGS_SNAPSHOT' || runKind === 'BASELINE_REPRODUCTION_RUN') {
     return 'AMBIGUOUS';
   }
   const layers = [nominalDeltaMm, packedDeltaMm, machineDeltaMm, remainderDeltaMmValue];
@@ -770,10 +901,12 @@ function classifyMeasuredIsolation(
 
 export function ingestOperatorCalibrationRun(
   parent: DowinCalibrationRun,
-  pkg: OperatorEvidencePackage
+  pkg: OperatorEvidencePackage,
+  context: { runs?: readonly DowinCalibrationRun[] } = {}
 ): OperatorIngestResult {
   const reasons: string[] = [];
   const runKind = calibrationRunKind(pkg.isolationVariable);
+  const runs = context.runs ?? DOWIN_CALIBRATION_RUNS;
 
   if (!pkg.generalSettingsScreenshotNote) {
     reasons.push('General Settings screenshot/transcription is missing.');
@@ -815,10 +948,25 @@ export function ingestOperatorCalibrationRun(
         'Baseline snapshot must transcribe Welding Waste, Saw Thickness, Trim Cut, and DC-600 from the asdd General Settings screenshot.'
       );
     }
-  } else {
+  } else if (runKind === 'BASELINE_REPRODUCTION_RUN') {
     if (!isBaselineSettingsSnapshotClassified(parent.observedSettings)) {
+      reasons.push('Classify the asdd BASELINE_SETTINGS_SNAPSHOT first.');
+    }
+    if (changed.length > 0) {
       reasons.push(
-        'Classify the asdd BASELINE_SETTINGS_SNAPSHOT first. Tests 2–4 are not accepted until that screenshot is transcribed.'
+        'BASELINE_REPRODUCTION_RUN must keep General Settings identical to the captured snapshot (Weld=3 / Saw=4 / Trim=0).'
+      );
+    }
+    if (pkg.widthMm !== parent.widthMm || pkg.heightMm !== parent.heightMm) {
+      reasons.push('BASELINE_REPRODUCTION_RUN must keep the same asdd 1000×1500 geometry.');
+    }
+    if (pkg.profileSystem !== parent.profileSystem) {
+      reasons.push('Do not change profile system on BASELINE_REPRODUCTION_RUN.');
+    }
+  } else {
+    if (!isCausalIsolationAuthorized(runs)) {
+      reasons.push(
+        'BASELINE_REPRODUCTION_RUN must reproduce original asdd lengths (451→454, 1430→1433, 1000→1003, 1500→1503) and bar remainders before Tests 2–4.'
       );
     }
     if (!pkg.changedSettingNote) {
@@ -848,6 +996,10 @@ export function ingestOperatorCalibrationRun(
   }
 
   const isolationField = isolationFieldForVariable(pkg.isolationVariable);
+  const reproduction =
+    runKind === 'BASELINE_REPRODUCTION_RUN'
+      ? evaluateBaselineReproduction(parent, { pieces: pkg.pieces, bars: pkg.bars })
+      : null;
 
   return {
     ok: true,
@@ -864,7 +1016,7 @@ export function ingestOperatorCalibrationRun(
       machineId: REQUIRED_ISOLATION_MACHINE_ID,
       observedSettings: { ...pkg.observedSettings },
       intendedIsolation: {
-        field: runKind === 'CONTROL_FIXTURE' ? null : isolationField,
+        field: runKind === 'SINGLE_SETTING_ISOLATION' ? isolationField : null,
         instructedToMm:
           runKind === 'SINGLE_SETTING_ISOLATION' && isolationField
             ? ((pkg.observedSettings[isolationField] as number | null) ?? null)
@@ -872,12 +1024,15 @@ export function ingestOperatorCalibrationRun(
         note:
           runKind === 'CONTROL_FIXTURE'
             ? (pkg.controlFixtureNote as string)
-            : (pkg.changedSettingNote as string),
+            : runKind === 'BASELINE_REPRODUCTION_RUN'
+              ? (pkg.generalSettingsScreenshotNote as string)
+              : (pkg.changedSettingNote as string),
       },
       changedSetting: pkg.changedSetting,
       pieces: pkg.pieces,
       bars: pkg.bars,
       provenance: `Operator package ${pkg.runId} at ${pkg.timestampIso}. ${pkg.generalSettingsScreenshotNote}`,
+      reproductionVerdict: reproduction?.verdict ?? null,
     },
   };
 }
@@ -948,6 +1103,23 @@ export function buildIsolationDeltaTable(
         note: classified.note,
       };
     }
+    if (run.runKind === 'BASELINE_REPRODUCTION_RUN') {
+      const reproduction = evaluateBaselineReproduction(baseline, run);
+      return {
+        runKind: run.runKind,
+        variableChanged: 'baselineReproduction',
+        status: 'MEASURED',
+        nominalDeltaMm: 0,
+        packedDeltaMm: null,
+        machineDeltaMm: null,
+        remainderDeltaMm: null,
+        interpretation: 'AMBIGUOUS',
+        note:
+          reproduction.verdict === 'REPRODUCED'
+            ? 'Contemporaneous baseline: Weld=3 / Saw=4 / Trim=0 reproduces original asdd 451→454, 1430→1433, 1000→1003, 1500→1503 and bar remainders. Tests 2–4 may proceed.'
+            : `REPRODUCTION_FAILED. Missing length pairs: ${reproduction.missingPairs.join('; ') || 'none'}. Remainder mismatches: ${reproduction.remainderMismatches.join('; ') || 'none'}. STOP — Tests 2–4 are not clean.`,
+      };
+    }
     if (run.runKind === 'CONTROL_FIXTURE') {
       return {
         runKind: run.runKind,
@@ -991,16 +1163,21 @@ export function buildOperatorIsolationReport(
   evidenceHierarchy: typeof EVIDENCE_HIERARCHY;
   knownExportIdentifiers: typeof DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS;
   baselineClassification: ReturnType<typeof classifyBaselineSettingsSnapshot>;
+  reproductionVerdict: ReproductionVerdict;
+  causalIsolationAuthorized: boolean;
   deltaTable: IsolationDeltaRow[];
   termAuthority: readonly CompensationTermRecord[];
 } {
   const baseline = runs.find((r) => r.runKind === 'BASELINE_SETTINGS_SNAPSHOT');
+  const reproduction = findBaselineReproduction(runs);
   return {
     evidenceHierarchy: EVIDENCE_HIERARCHY,
     knownExportIdentifiers: DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS,
     baselineClassification: classifyBaselineSettingsSnapshot(
       baseline?.observedSettings ?? emptyObservedSettings(null)
     ),
+    reproductionVerdict: reproduction?.reproductionVerdict ?? 'NOT MEASURED',
+    causalIsolationAuthorized: isCausalIsolationAuthorized(runs),
     deltaTable: buildIsolationDeltaTable(runs),
     termAuthority: DOWIN_COMPENSATION_TERM_AUTHORITY,
   };

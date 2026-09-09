@@ -33,27 +33,32 @@ import {
   buildOperatorIsolationReport,
   calibrationRunKind,
   classifyBaselineSettingsSnapshot,
+  evaluateBaselineReproduction,
   computePieceLayerDeltas,
   emptyObservedSettings,
   ingestOperatorCalibrationRun,
   isBaselineSettingsSnapshotClassified,
+  isCausalIsolationAuthorized,
   uniquePackedMinusNominalMm,
 } from '@/lib/fabricator/dowinParity/dowinCompensationEvidence';
 
 describe('FP-024B DoWin compensation reconciliation', () => {
   it('registers multiple fixture runs without filling unknown settings', () => {
-    expect(DOWIN_CALIBRATION_RUNS).toHaveLength(5);
+    expect(DOWIN_CALIBRATION_RUNS).toHaveLength(6);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.isolationVariable === 'baseline')).toHaveLength(1);
-    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(4);
+    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'BASELINE_REPRODUCTION_RUN')).toHaveLength(1);
+    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(5);
     expect(
       DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'SINGLE_SETTING_ISOLATION')
     ).toHaveLength(3);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'CONTROL_FIXTURE')).toHaveLength(1);
     expect(SINGLE_SETTING_ISOLATION_VARIABLES).toEqual(['weldingWaste', 'sawThickness', 'trimCut']);
+    expect(calibrationRunKind('baselineReproduction')).toBe('BASELINE_REPRODUCTION_RUN');
     expect(calibrationRunKind('ninetyDegreeControl')).toBe('CONTROL_FIXTURE');
     expect(calibrationRunKind('weldingWaste')).toBe('SINGLE_SETTING_ISOLATION');
     expect(REQUIRED_ISOLATION_MACHINE_ID).toBe('DC-600');
     expect(isBaselineSettingsSnapshotClassified(DOWIN_ASDD_BASELINE_RUN.observedSettings)).toBe(true);
+    expect(isCausalIsolationAuthorized()).toBe(false);
     expect(classifyBaselineSettingsSnapshot(DOWIN_ASDD_BASELINE_RUN.observedSettings).interpretation).toBe(
       'AMBIGUOUS'
     );
@@ -72,8 +77,13 @@ describe('FP-024B DoWin compensation reconciliation', () => {
 
   it('keeps settings snapshots fixture-specific', () => {
     const weld = DOWIN_CALIBRATION_RUNS.find((r) => r.fixtureId === 'dowin-asdd-weld-0-pending');
+    const saw = DOWIN_CALIBRATION_RUNS.find((r) => r.fixtureId === 'dowin-asdd-saw-plus-1-pending');
+    const reproduction = DOWIN_CALIBRATION_RUNS.find((r) => r.fixtureId === 'dowin-asdd-baseline-reproduction-pending');
     expect(weld?.observedSettings).toEqual(emptyObservedSettings(null));
     expect(weld?.intendedIsolation?.instructedToMm).toBe(0);
+    expect(saw?.intendedIsolation?.instructedToMm).toBe(5);
+    expect(reproduction?.runKind).toBe('BASELINE_REPRODUCTION_RUN');
+    expect(reproduction?.reproductionVerdict).toBe('NOT MEASURED');
     expect(weld?.observedSettings.weldingWasteMm).toBeNull();
     expect(weld?.observedSettings).not.toBe(DOWIN_ASDD_BASELINE_RUN.observedSettings);
   });
@@ -104,12 +114,12 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     const a = buildCompensationMatrix();
     const b = buildCompensationMatrix();
     expect(a).toEqual(b);
-    expect(a).toHaveLength(5);
+    expect(a).toHaveLength(6);
     const baseline = a.find((r) => r.variableChanged === 'baseline');
     expect(baseline?.interpretation).toBe('AMBIGUOUS');
     expect(baseline?.packedMinusNominalValuesMm).toEqual([0, 3]);
     expect(baseline?.machineDeltaMm).toBe(0);
-    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(4);
+    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(5);
     expect(a.every((r) => r.interpretation !== 'PROVEN EFFECT')).toBe(true);
   });
 
@@ -187,15 +197,17 @@ describe('FP-024B DoWin compensation reconciliation', () => {
   it('rejects incomplete operator packages and multi-setting isolation', () => {
     expect(OPERATOR_EVIDENCE_PACKAGE_CHECKLIST).toHaveLength(11);
     const isolation = buildIsolationDeltaTable();
-    expect(isolation).toHaveLength(5);
-    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(4);
-    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(4);
+    expect(isolation).toHaveLength(6);
+    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(5);
+    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(5);
     expect(isolation.filter((r) => r.runKind === 'CONTROL_FIXTURE')[0]?.interpretation).toBe(
       'NOT MEASURED'
     );
     const report = buildOperatorIsolationReport();
     expect(report.deltaTable).toEqual(isolation);
     expect(report.baselineClassification.interpretation).toBe('AMBIGUOUS');
+    expect(report.reproductionVerdict).toBe('NOT MEASURED');
+    expect(report.causalIsolationAuthorized).toBe(false);
     expect(report.knownExportIdentifiers.generalSettingsScreenshotSha256).toBe(
       '95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a'
     );
@@ -406,73 +418,31 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     }
   });
 
-  it('accepts SINGLE_SETTING_ISOLATION only after the baseline snapshot is classified', () => {
-    const weldOnly = {
-      ...DOWIN_ASDD_BASELINE_RUN,
-      observedSettings: {
-        ...DOWIN_ASDD_BASELINE_RUN.observedSettings,
-        weldingWasteMm: 99,
-        sawThicknessMm: null,
-        trimCutMm: null,
-      },
-    };
-    const tooSoon = ingestOperatorCalibrationRun(weldOnly, {
-      runId: 'weld-0-partial-baseline',
-      timestampIso: '2026-09-09T19:00:00.000Z',
-      generalSettingsScreenshotNote: 'partial',
-      changedSettingNote: 'Welding Waste 99 → 0',
-      controlFixtureNote: null,
-      changedSetting: { field: 'weldingWasteMm', oldValue: 99, newValue: 0 },
-      sourceHashesSha256: {
-        generalSettingsScreenshot: 's',
-        designPreview: 'a',
-        assemblyLabels: 'b',
-        optimization: 'c',
-      },
-      mdbGenerated: false,
-      isolationVariable: 'weldingWaste',
-      observedSettings: {
-        ...weldOnly.observedSettings,
-        weldingWasteMm: 0,
-      },
-      widthMm: 1000,
-      heightMm: 1500,
-      profileSystem: DOWIN_ASDD_BASELINE_RUN.profileSystem,
-      pieces: DOWIN_ASDD_BASELINE_RUN.pieces,
-      bars: [...DOWIN_ASDD_BASELINE_RUN.bars],
-    });
-    expect(tooSoon.ok).toBe(false);
+  it('accepts SINGLE_SETTING_ISOLATION only after BASELINE_REPRODUCTION_RUN reproduces', () => {
+    const sameAsOriginal = evaluateBaselineReproduction(DOWIN_ASDD_BASELINE_RUN, DOWIN_ASDD_BASELINE_RUN);
+    expect(sameAsOriginal.verdict).toBe('REPRODUCED');
+    expect(sameAsOriginal.missingPairs).toEqual([]);
+    expect(sameAsOriginal.remainderMismatches).toEqual([]);
 
-    const classifiedParent = {
-      ...DOWIN_ASDD_BASELINE_RUN,
-      observedSettings: {
-        ...DOWIN_ASDD_BASELINE_RUN.observedSettings,
-        weldingWasteMm: 99,
-        sawThicknessMm: 11,
-        trimCutMm: 0,
-      },
+    const hashes = {
+      generalSettingsScreenshot: 's',
+      designPreview: 'a',
+      assemblyLabels: 'b',
+      optimization: 'c',
     };
-    expect(isBaselineSettingsSnapshotClassified(classifiedParent.observedSettings)).toBe(true);
-    expect(classifyBaselineSettingsSnapshot(classifiedParent.observedSettings).interpretation).toBe(
-      'AMBIGUOUS'
-    );
-    const weldIsolation = ingestOperatorCalibrationRun(classifiedParent, {
-      runId: 'weld-0-after-classified-baseline',
+
+    const classifiedButNoReproduction = ingestOperatorCalibrationRun(DOWIN_ASDD_BASELINE_RUN, {
+      runId: 'weld-0-before-reproduction',
       timestampIso: '2026-09-09T19:00:00.000Z',
-      generalSettingsScreenshotNote: 'synthetic classified snapshot for ingest-gate test only',
-      changedSettingNote: 'Welding Waste 99 → 0',
+      generalSettingsScreenshotNote: 'live snapshot classified; 1B not run',
+      changedSettingNote: 'Welding Waste 3 → 0',
       controlFixtureNote: null,
-      changedSetting: { field: 'weldingWasteMm', oldValue: 99, newValue: 0 },
-      sourceHashesSha256: {
-        generalSettingsScreenshot: 's',
-        designPreview: 'a',
-        assemblyLabels: 'b',
-        optimization: 'c',
-      },
+      changedSetting: { field: 'weldingWasteMm', oldValue: 3, newValue: 0 },
+      sourceHashesSha256: hashes,
       mdbGenerated: false,
       isolationVariable: 'weldingWaste',
       observedSettings: {
-        ...classifiedParent.observedSettings,
+        ...DOWIN_ASDD_BASELINE_RUN.observedSettings,
         weldingWasteMm: 0,
       },
       widthMm: 1000,
@@ -481,9 +451,124 @@ describe('FP-024B DoWin compensation reconciliation', () => {
       pieces: DOWIN_ASDD_BASELINE_RUN.pieces,
       bars: [...DOWIN_ASDD_BASELINE_RUN.bars],
     });
+    expect(classifiedButNoReproduction.ok).toBe(false);
+    if (!classifiedButNoReproduction.ok) {
+      expect(
+        classifiedButNoReproduction.reasons.some((r) => r.includes('BASELINE_REPRODUCTION_RUN must reproduce'))
+      ).toBe(true);
+    }
+
+    const failedPieces = DOWIN_ASDD_BASELINE_RUN.pieces.map((p) =>
+      p.category === 'sash_horizontal'
+        ? { ...p, expectedPackedSegmentMm: 999, expectedMachineLengthMm: 999 }
+        : p
+    );
+    const failedReproduction = ingestOperatorCalibrationRun(DOWIN_ASDD_BASELINE_RUN, {
+      runId: 'BASELINE_REPRODUCTION_RUN-failed',
+      timestampIso: '2026-09-09T19:10:00.000Z',
+      generalSettingsScreenshotNote: 'Weld=3 / Saw=4 / Trim=0 unchanged; lengths did not match',
+      changedSettingNote: null,
+      controlFixtureNote: null,
+      changedSetting: null,
+      sourceHashesSha256: hashes,
+      mdbGenerated: false,
+      isolationVariable: 'baselineReproduction',
+      observedSettings: { ...DOWIN_ASDD_BASELINE_RUN.observedSettings },
+      widthMm: 1000,
+      heightMm: 1500,
+      profileSystem: DOWIN_ASDD_BASELINE_RUN.profileSystem,
+      pieces: failedPieces,
+      bars: [...DOWIN_ASDD_BASELINE_RUN.bars],
+    });
+    expect(failedReproduction.ok).toBe(true);
+    if (failedReproduction.ok) {
+      expect(failedReproduction.run.reproductionVerdict).toBe('REPRODUCTION_FAILED');
+      expect(
+        isCausalIsolationAuthorized([DOWIN_ASDD_BASELINE_RUN, failedReproduction.run])
+      ).toBe(false);
+    }
+
+    const reproduced = ingestOperatorCalibrationRun(DOWIN_ASDD_BASELINE_RUN, {
+      runId: 'BASELINE_REPRODUCTION_RUN',
+      timestampIso: '2026-09-09T19:20:00.000Z',
+      generalSettingsScreenshotNote: 'Weld=3 / Saw=4 / Trim=0 unchanged; DC-600; same asdd 1000×1500',
+      changedSettingNote: null,
+      controlFixtureNote: null,
+      changedSetting: null,
+      sourceHashesSha256: hashes,
+      mdbGenerated: false,
+      isolationVariable: 'baselineReproduction',
+      observedSettings: { ...DOWIN_ASDD_BASELINE_RUN.observedSettings },
+      widthMm: 1000,
+      heightMm: 1500,
+      profileSystem: DOWIN_ASDD_BASELINE_RUN.profileSystem,
+      pieces: DOWIN_ASDD_BASELINE_RUN.pieces,
+      bars: [...DOWIN_ASDD_BASELINE_RUN.bars],
+    });
+    expect(reproduced.ok).toBe(true);
+    if (!reproduced.ok) throw new Error(reproduced.reasons.join('; '));
+    expect(reproduced.run.runKind).toBe('BASELINE_REPRODUCTION_RUN');
+    expect(reproduced.run.reproductionVerdict).toBe('REPRODUCED');
+    expect(isCausalIsolationAuthorized([DOWIN_ASDD_BASELINE_RUN, reproduced.run])).toBe(true);
+
+    const table = buildIsolationDeltaTable([DOWIN_ASDD_BASELINE_RUN, reproduced.run]);
+    const reproductionRow = table.find((r) => r.runKind === 'BASELINE_REPRODUCTION_RUN');
+    expect(reproductionRow?.interpretation).toBe('AMBIGUOUS');
+    expect(reproductionRow?.note).toContain('Tests 2–4 may proceed');
+
+    const weldIsolation = ingestOperatorCalibrationRun(
+      DOWIN_ASDD_BASELINE_RUN,
+      {
+        runId: 'weld-0-after-reproduction',
+        timestampIso: '2026-09-09T19:30:00.000Z',
+        generalSettingsScreenshotNote: 'synthetic 1B REPRODUCED for ingest-gate test only',
+        changedSettingNote: 'Welding Waste 3 → 0',
+        controlFixtureNote: null,
+        changedSetting: { field: 'weldingWasteMm', oldValue: 3, newValue: 0 },
+        sourceHashesSha256: hashes,
+        mdbGenerated: false,
+        isolationVariable: 'weldingWaste',
+        observedSettings: {
+          ...DOWIN_ASDD_BASELINE_RUN.observedSettings,
+          weldingWasteMm: 0,
+        },
+        widthMm: 1000,
+        heightMm: 1500,
+        profileSystem: DOWIN_ASDD_BASELINE_RUN.profileSystem,
+        pieces: DOWIN_ASDD_BASELINE_RUN.pieces,
+        bars: [...DOWIN_ASDD_BASELINE_RUN.bars],
+      },
+      { runs: [DOWIN_ASDD_BASELINE_RUN, reproduced.run] }
+    );
     expect(weldIsolation.ok).toBe(true);
     if (weldIsolation.ok) {
       expect(weldIsolation.run.runKind).toBe('SINGLE_SETTING_ISOLATION');
     }
+
+    const weldAfterFailedReproduction = ingestOperatorCalibrationRun(
+      DOWIN_ASDD_BASELINE_RUN,
+      {
+        runId: 'weld-0-after-failed-reproduction',
+        timestampIso: '2026-09-09T19:40:00.000Z',
+        generalSettingsScreenshotNote: '1B failed; isolation must stay closed',
+        changedSettingNote: 'Welding Waste 3 → 0',
+        controlFixtureNote: null,
+        changedSetting: { field: 'weldingWasteMm', oldValue: 3, newValue: 0 },
+        sourceHashesSha256: hashes,
+        mdbGenerated: false,
+        isolationVariable: 'weldingWaste',
+        observedSettings: {
+          ...DOWIN_ASDD_BASELINE_RUN.observedSettings,
+          weldingWasteMm: 0,
+        },
+        widthMm: 1000,
+        heightMm: 1500,
+        profileSystem: DOWIN_ASDD_BASELINE_RUN.profileSystem,
+        pieces: DOWIN_ASDD_BASELINE_RUN.pieces,
+        bars: [...DOWIN_ASDD_BASELINE_RUN.bars],
+      },
+      { runs: [DOWIN_ASDD_BASELINE_RUN, failedReproduction.ok ? failedReproduction.run : DOWIN_ASDD_BASELINE_RUN] }
+    );
+    expect(weldAfterFailedReproduction.ok).toBe(false);
   });
 });

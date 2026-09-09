@@ -59,10 +59,11 @@ Unknown fields stay null. Platform / `yilmazcad-parity` defaults are **not** cop
 
 | Test | Kind | Isolation | Status | Required exports |
 |------|------|-----------|--------|------------------|
-| 1 Baseline | `BASELINE_SETTINGS_SNAPSHOT` | none — asdd as run | **MEASURED** for lengths; **NOT MEASURED** for General Settings | Settings screenshot still needed |
-| 2 Welding Waste | `SINGLE_SETTING_ISOLATION` | only Welding Waste → `0` | `PENDING_OPERATOR_RUN` | Design Preview, Labels, Optimization, MDB |
-| 3 Saw Thickness | `SINGLE_SETTING_ISOLATION` | only saw + known 1 mm | `PENDING_OPERATOR_RUN` | same; also remainder / used |
-| 4 Trim Cut | `SINGLE_SETTING_ISOLATION` | only trim + known delta | `PENDING_OPERATOR_RUN` | remainder vs packed/machine |
+| 1A Baseline settings | `BASELINE_SETTINGS_SNAPSHOT` | none — live screenshot | **AMBIGUOUS** vs 18:14 | Live weld 3 / saw 4 / trim 0 |
+| 1B Same-design reproduction | `BASELINE_REPRODUCTION_RUN` | settings unchanged; same asdd | `PENDING_OPERATOR_RUN` | Design Preview, Labels, Optimization, MDB, settings screenshot |
+| 2 Welding Waste | `SINGLE_SETTING_ISOLATION` | only Welding Waste → `0` | closed until 1B `REPRODUCED` | Design Preview, Labels, Optimization, MDB |
+| 3 Saw Thickness | `SINGLE_SETTING_ISOLATION` | only Saw Thickness 4 → 5 | closed until 1B `REPRODUCED` | same; also remainder / used |
+| 4 Trim Cut | `SINGLE_SETTING_ISOLATION` | only Trim Cut 0 → a known value | closed until 1B `REPRODUCED` | remainder vs packed/machine |
 | 5 90° control | `CONTROL_FIXTURE` | 90°/90° demand, settings unchanged; geometry/cut-angle may differ | `PENDING_OPERATOR_RUN` | three length layers |
 
 Tests 2–4 must keep geometry, stock, quantity, system, and machine (`DC-600`) identical. The 90° run is **not** a single-setting isolation.
@@ -85,9 +86,9 @@ Do **not** commit licensed PDFs, MDB binaries, or screenshots unless project pol
 
 Cursor output after ingest: **delta table + classification only** (`PROVEN EFFECT` / `NO OBSERVED EFFECT` / `AMBIGUOUS` / `NOT MEASURED`). No formula patch.
 
-First capture the **existing asdd** settings bound to `DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS`. Classify that snapshot before Tests 2–4. Filling only Welding Waste is not enough.
+First capture the **existing asdd** settings bound to `DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS` (Test 1A), then rerun the same design unchanged (Test 1B). Tests 2–4 stay closed until 1B is `REPRODUCED`. Filling only Welding Waste is not enough.
 
-`ingestOperatorCalibrationRun` rejects incomplete packages, multi-setting isolation, geometry/stock/qty changes on the first three isolation runs, and setting changes on the 90° CONTROL_FIXTURE.
+`ingestOperatorCalibrationRun` rejects incomplete packages, multi-setting isolation, geometry/stock/qty changes on the first three isolation runs, setting changes on the 90° CONTROL_FIXTURE or 1B, and isolation before 1B reproduces.
 
 ---
 
