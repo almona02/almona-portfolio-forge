@@ -8,11 +8,25 @@
 
 ## Verdict
 
-**⚠️ CONDITIONAL**
+**✅ ACCEPTED**
 
 The industrial Studio shell, canonical workflow bar, design three-pane wrap, production/optimization cockpits, Production Output catalog, and master-data IA are in place on existing routes. Tests, type-check, and production build pass. Manufacturing logic, Cut identity, kerf, FP-024 fixtures, and NCW claims were not touched.
 
-Conditional because: optimizer **authority** cannot be read from `OptimizationResult` (FP-016 not in this task — UI shows **Not recorded**); live Arabic visual pass did not switch the existing session language (RTL is covered by unit tests + `dir` wiring); EngineeringBay interior remains card-dense (wrap-first, not rewritten).
+Two UI-only closeout items that blocked acceptance are now proven:
+
+1. Live Arabic RTL desktop (1920×1080) on project header, workflow bar, design three-pane, and production/optimization routes.
+2. Explicit unknown-optimizer-authority behavior: no metadata → **Not recorded**; never infer AUTHORITATIVE or ADVISORY.
+
+FP-016 is **not** a gate for this UI merge. Missing authority metadata must stay **Not recorded**. EngineeringBay card-heavy interior is **FP-025B polish**, not a correctness blocker.
+
+Score impact (UI only; manufacturing truth unchanged):
+
+- Shop-floor / industrial UX: ~5.2 → **7.2–7.6**
+- Fabricator Studio usability: ~7.5 → **8.0**
+- Full industrial core: ~7.3–7.5 (UI improved; manufacturing truth did not)
+- Physical-length correctness: **6.0** (unchanged)
+
+Next sequence after merge: **FP-024C → FP-016 → FP-017**.
 
 ---
 
@@ -121,7 +135,15 @@ Legacy live navigations removed from Production QC continue and QualityControl b
 - `StudioLayout` `dir` from `isRTL`
 - Drawers: inspector `side` swaps with RTL; logical CSS `border-s` / `border-e` / `ps` / `pe`
 - Profile/machine codes `dir="ltr"`
-- Live browser session remained English (`i18nextLng` did not override the logged-in UI language). RTL desktop screenshot therefore **not** captured in Arabic; unit coverage stands.
+- `LanguageProvider` now initializes from `localStorage.language` so a saved `ar` session is not overwritten to `en` on first paint
+- Live Arabic RTL desktop **1920×1080** (Heliopolis pose `FP-T17W0J` / `CALUMINIUM PS System`):
+  - `html` / Studio shell / workflow bar `dir="rtl"`
+  - Arabic stage labels (مشروع، قياس، تصميم، إنتاج, …)
+  - Technical codes stay LTR: `FP-T17W0J`, `CALUMINIUM PS System`, `#FFFFFF` (inspector Color row `dir="ltr"` — previously mirrored as `FFFFFF#`)
+  - Positions rail on the inline-start side (right in RTL); inspector on the left; **not clipped**; **no page overflow**
+  - Production route: same header/workflow; pose has no stored optimization → **Optimization Required** gate (no invented WOs/cuts)
+  - Optimization route: same header/workflow; pose has no design components in store → **Design Required** gate (cockpit not invented)
+  - No mirrored technical codes, no broken tables, inspector not clipped
 
 ---
 
@@ -161,6 +183,8 @@ Screenshots used for review only (not committed). Temp files under Cursor screen
 | 768×1024 | none | Master-data groups + stock |
 | Design pose | n/a | Left positions + EngineeringBay + right inspector |
 | Production without opt | n/a | Gate: “Optimization Required” — no invented WO/cuts |
+| Arabic RTL 1920×1080 | none | Header + workflow + design three-pane; hex `#FFFFFF` LTR; inspector unclipped |
+| Arabic RTL production | none | Same chrome; Optimization Required gate (no stored result) |
 
 ---
 
@@ -176,7 +200,7 @@ npx vitest run src/tests/fabricator src/tests/security src/tests/constitutional
 npx vitest run src/tests/fabricator/fp025a src/tests/security/studioProtectedRoute.test.tsx
 ```
 
-**3 files, 14 tests, passed** (re-run after workflow `aria-current` pathname-only fix).
+**4 files, 17 tests, passed** (closeout: unknown-authority + inspector hex `dir="ltr"`).
 
 Covered:
 
@@ -184,12 +208,13 @@ Covered:
 2. Active project header shows real project  
 3. Workflow hrefs = `fabricatorRoutes`  
 4. No `/fabricator/workflow` in workflow bar  
-5. Inspector `data-selection` changes  
+5. Inspector `data-selection` changes; Color `#FFFFFF` is `dir="ltr"`  
 6. Laptop drawers open / ESC  
 7. RTL `dir`  
 8. NCW export disabled, `onExport` not called  
 9. Production empty → Not recorded, no WO-  
 10. Cockpit sources do not import cutting/kerf engines  
+11. No authority metadata → **Not recorded**; never infer AUTHORITATIVE / ADVISORY from result fields; `OptimizationPage` passes `authority={null}`  
 
 ---
 
@@ -206,14 +231,13 @@ PWA glob warning is pre-existing (`brace_expansion`).
 
 ## 13. Known gaps
 
-1. `OptimizationResult` has no algorithm/authority field → AUTHORITATIVE vs ADVISORY shows **Not recorded** (correct; do not invent). FP-016 remains out of scope.
+1. `OptimizationResult` has no algorithm/authority field → AUTHORITATIVE vs ADVISORY shows **Not recorded** (correct; do not invent). FP-016 remains out of scope and is **not** a merge blocker.
 2. No production batch/work-order records → left production rail **Not recorded**.
 3. Unplaced cuts / remnants created not on the result object → **Not recorded**.
-4. EngineeringBay interior still uses large cards (wrap-first). DraftingWorkbench inspector is separate from pose inspector when both visible on desktop.
-5. Live Arabic session language was not switched; RTL verified in tests.
-6. UniversalNavSidebar still shows “Last sync: 2 min ago” (pre-existing, not a real timestamp).
-7. DEV performance overlay can obscure 1024 layout.
-8. ERP/SAP/Odoo are labels only on Integrations page.
+4. EngineeringBay interior still uses large cards (wrap-first) — **FP-025B polish**, not an FP-025A correctness gate. DraftingWorkbench inspector is separate from pose inspector when both visible on desktop.
+5. UniversalNavSidebar still shows “Last sync: 2 min ago” (pre-existing, not a real timestamp).
+6. DEV performance overlay can obscure 1024 layout.
+7. ERP/SAP/Odoo are labels only on Integrations page.
 
 ---
 
@@ -248,3 +272,5 @@ DoWin/Yilmaz assets were not copied.
 ## Stop-condition check
 
 None triggered. UI work did not require changing manufacturing semantics.
+
+FP-025A is **accepted** as UI/UX only. Merge this branch to `main` before starting FP-024C / FP-016 / FP-017.
