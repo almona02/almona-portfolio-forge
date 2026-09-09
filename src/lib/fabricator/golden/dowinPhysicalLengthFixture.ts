@@ -1,18 +1,14 @@
 /**
- * FP-024 — DoWin physical-length golden fixture schema.
+ * FP-024A — Licensed DoWin external golden fixture (asdd, 9 Sep 2026).
  *
- * Do NOT invent exported DoWin cut lengths. expectedLengthMm stays null
- * until a licensed dealer supplies a real export for the same elevation,
- * system, and manufacturing settings.
+ * Three length layers (do not collapse, do not substitute):
+ *   expectedNominalLengthMm   — Design Preview / assembly table
+ *   expectedPackedSegmentMm   — optimization bar-graphic label
+ *   expectedMachineLengthMm   — DC-600 MDB LENGTH only; null if that export lacks the piece
  *
- * Acceptance (when status is READY):
- *   ALMONA actualLengthMm within ±0.1 mm of expectedLengthMm, per physical piece,
- *   scored separately for each DowinLengthCategory.
+ * Glass and non-square angle compensation are UNPROVEN on this fixture.
+ * READY / READY_EXTERNAL_FIXTURE means expected millimetres exist, not acceptance.
  */
-
-export const DOWIN_GOLDEN_FIXTURE_STATUS = 'PENDING_EXTERNAL_FIXTURE' as const;
-
-export type DowinGoldenFixtureStatus = 'PENDING_EXTERNAL_FIXTURE' | 'READY';
 
 export const DOWIN_PARITY_TOLERANCE_MM = 0.1;
 
@@ -22,6 +18,8 @@ export type DowinLengthCategory =
   | 'sash_horizontal'
   | 'sash_vertical'
   | 'mullion'
+  | 'glazing_bead_horizontal'
+  | 'glazing_bead_vertical'
   | 'glass'
   | 'angle_compensation';
 
@@ -31,17 +29,75 @@ export const DOWIN_LENGTH_CATEGORIES: readonly DowinLengthCategory[] = [
   'sash_horizontal',
   'sash_vertical',
   'mullion',
+  'glazing_bead_horizontal',
+  'glazing_bead_vertical',
   'glass',
   'angle_compensation',
 ] as const;
 
+export const DOWIN_ASDD_REPRESENTED_CATEGORIES: readonly DowinLengthCategory[] = [
+  'frame_horizontal',
+  'frame_vertical',
+  'sash_horizontal',
+  'sash_vertical',
+  'mullion',
+  'glazing_bead_horizontal',
+  'glazing_bead_vertical',
+] as const;
+
+export type DowinCategoryGate = 'UNPROVEN' | 'PASS' | 'FAIL';
+
+export type DowinGoldenFixtureStatus = 'READY_EXTERNAL_FIXTURE';
+
+export type DowinDiscrepancyClass =
+  | 'SASH_OFFSET'
+  | 'HORIZONTAL_BASMA'
+  | 'VERTICAL_BASMA'
+  | 'HORIZONTAL_KAYNAK'
+  | 'VERTICAL_KAYNAK'
+  | 'WELDING_WASTE'
+  | 'MULLION_OFFSET'
+  | 'GLAZING_CLEARANCE'
+  | 'ANGLE_COMPENSATION'
+  | 'PROFILE_GEOMETRY'
+  | 'KERF_ACCOUNTING'
+  | 'UNKNOWN'
+  | 'UNEVIDENCED_FORMULA';
+
+export interface DowinJobObservedSettings {
+  sawThicknessMm: number | null;
+  weldingWasteMm: number | null;
+  sashOffsetMm: number | null;
+  trimCutMm: number | null;
+  remnantThresholdMm: number | null;
+  glazingClearanceMm: number | null;
+  robotSafetyLengthMm: number | null;
+  profileWasteMarginPercent: number | null;
+  compLessThan90LeftMm: number | null;
+  compLessThan90RightMm: number | null;
+  compGreaterThan90LeftMm: number | null;
+  compGreaterThan90RightMm: number | null;
+  machineId: string | null;
+}
+
 export interface DowinPhysicalLengthGoldenRow {
   pieceId: string;
+  externalAssemblyLabel: string;
   profileCode: string;
   category: DowinLengthCategory;
-  /** Null until a real DoWin export is supplied. */
-  expectedLengthMm: number | null;
+  leftAngleDeg: number | null;
+  rightAngleDeg: number | null;
+  /** Design Preview / assembly table. */
+  expectedNominalLengthMm: number | null;
+  /** Optimization bar-graphic label. Not assumed equal to machine. */
+  expectedPackedSegmentMm: number | null;
+  /** DC-600 MDB LENGTH only. Null unless that export contains the piece. */
+  expectedMachineLengthMm: number | null;
+  sourceDocument: 'design_preview' | 'assembly_report' | 'optimization_report' | 'machine_export' | null;
+  sourcePage: number | null;
 }
+
+export type DowinCategoryAvailability = 'READY' | 'PENDING_EXTERNAL_FIXTURE' | 'NOT_APPLICABLE';
 
 export interface DowinProfileOverlap {
   horizontalBasmaMm: number;
@@ -53,12 +109,20 @@ export interface DowinProfileOverlap {
 export interface DowinPhysicalLengthGoldenFixture {
   id: string;
   status: DowinGoldenFixtureStatus;
+  sourceType: 'licensed-dowin-production-export';
+  orderNo: string;
+  designName: string;
   profileSystem: string;
+  material: string;
+  reportDate: string;
   elevationNote: string;
-  /** Unknown until the exported job is supplied. */
-  overallWidthMm: number | null;
-  overallHeightMm: number | null;
+  overallWidthMm: number;
+  overallHeightMm: number;
   manufacturingProfileId: 'yilmazcad-parity';
+  /** Observed on this licensed run only. Unknown fields stay null — no factory-default fill. */
+  jobSettings: DowinJobObservedSettings;
+  sourceHashesSha256: Record<string, string>;
+  /** Dealer-audit overlap used for isolated formula tracing. Not this-run Settings authority. */
   referenceSettings: DowinProfileOverlap & {
     sashOffsetMm: number;
     weldingWasteMm: number;
@@ -67,6 +131,7 @@ export interface DowinPhysicalLengthGoldenFixture {
     pvcMullionOffsetMm: number;
     minGlassProductionSizeMm: number;
   };
+  categoryAvailability: Record<DowinLengthCategory, DowinCategoryAvailability>;
   rows: DowinPhysicalLengthGoldenRow[];
 }
 
@@ -75,117 +140,213 @@ export function isWithinDowinParityTolerance(
   expectedMm: number,
   toleranceMm: number = DOWIN_PARITY_TOLERANCE_MM
 ): boolean {
-  return Math.abs(actualMm - expectedMm) <= toleranceMm;
+  return Math.abs(actualMm - expectedMm) <= toleranceMm + 1e-9;
 }
 
-export type DowinGoldenCompareStatus = 'PENDING_EXTERNAL_FIXTURE' | 'COMPARED';
-
-export type DowinCategoryGate = 'PENDING' | 'PASS' | 'FAIL';
-
-export interface DowinGoldenCategoryResult {
-  category: DowinLengthCategory;
-  pieceId: string;
-  expectedLengthMm: number | null;
-  actualLengthMm: number | null;
+export interface DowinLayerResult {
+  expectedMm: number | null;
+  actualMm: number | null;
   deltaMm: number | null;
   withinTolerance: boolean | null;
 }
 
+export interface DowinGoldenPieceResult {
+  pieceId: string;
+  externalAssemblyLabel: string;
+  category: DowinLengthCategory;
+  nominal: DowinLayerResult;
+  packed: DowinLayerResult;
+  machine: DowinLayerResult;
+}
+
 export interface DowinGoldenCompareResult {
-  status: DowinGoldenCompareStatus;
-  allCategoriesRepresented: boolean;
-  /** Scored independently. A sash pass must not hide a frame fail. */
+  fixtureId: string;
+  representedCategoriesPass: boolean;
+  fullSuitePasses: boolean;
   categoryScorecard: Record<DowinLengthCategory, DowinCategoryGate>;
-  results: DowinGoldenCategoryResult[];
+  results: DowinGoldenPieceResult[];
+}
+
+function layerResult(expectedMm: number | null, actualMm: number | null): DowinLayerResult {
+  if (expectedMm == null) {
+    return { expectedMm: null, actualMm, deltaMm: null, withinTolerance: null };
+  }
+  if (actualMm == null) {
+    return { expectedMm, actualMm: null, deltaMm: null, withinTolerance: false };
+  }
+  const deltaMm = actualMm - expectedMm;
+  return {
+    expectedMm,
+    actualMm,
+    deltaMm,
+    withinTolerance: isWithinDowinParityTolerance(actualMm, expectedMm),
+  };
 }
 
 export function scoreDowinCategories(
-  results: DowinGoldenCategoryResult[]
+  results: DowinGoldenPieceResult[]
 ): Record<DowinLengthCategory, DowinCategoryGate> {
   const card = {} as Record<DowinLengthCategory, DowinCategoryGate>;
   for (const category of DOWIN_LENGTH_CATEGORIES) {
     const rows = results.filter((row) => row.category === category);
-    if (rows.length === 0 || rows.some((row) => row.withinTolerance == null)) {
-      card[category] = 'PENDING';
-    } else if (rows.every((row) => row.withinTolerance === true)) {
-      card[category] = 'PASS';
-    } else {
-      card[category] = 'FAIL';
+    if (rows.length === 0) {
+      card[category] = 'UNPROVEN';
+      continue;
     }
+    const unproven = rows.every(
+      (row) =>
+        row.nominal.expectedMm == null &&
+        row.packed.expectedMm == null &&
+        row.machine.expectedMm == null
+    );
+    if (unproven) {
+      card[category] = 'UNPROVEN';
+      continue;
+    }
+    const scored = rows.filter(
+      (row) =>
+        row.nominal.expectedMm != null ||
+        row.packed.expectedMm != null ||
+        row.machine.expectedMm != null
+    );
+    const pass = scored.every((row) => {
+      const nominalOk = row.nominal.expectedMm == null || row.nominal.withinTolerance === true;
+      const packedOk = row.packed.expectedMm == null || row.packed.withinTolerance === true;
+      const machineOk = row.machine.expectedMm == null || row.machine.withinTolerance === true;
+      return nominalOk && packedOk && machineOk;
+    });
+    card[category] = pass ? 'PASS' : 'FAIL';
   }
   return card;
 }
 
-/** Gate pass requires COMPARED, every category represented, and every category PASS. */
-export function dowinParityGatePasses(compared: DowinGoldenCompareResult): boolean {
-  if (compared.status !== 'COMPARED' || !compared.allCategoriesRepresented) {
-    return false;
-  }
-  return DOWIN_LENGTH_CATEGORIES.every((c) => compared.categoryScorecard[c] === 'PASS');
-}
-
-/**
- * Compare ALMONA actuals to a fixture. If any expected length is null,
- * returns PENDING_EXTERNAL_FIXTURE and does not invent a pass.
- */
 export function compareDowinGoldenLengths(
   fixture: DowinPhysicalLengthGoldenFixture,
-  actuals: Array<{ pieceId: string; category: DowinLengthCategory; actualLengthMm: number }>
+  actuals: Array<{
+    pieceId: string;
+    nominalLengthMm?: number | null;
+    packedSegmentMm?: number | null;
+    machineInstructionMm?: number | null;
+  }>
 ): DowinGoldenCompareResult {
-  const represented = new Set(fixture.rows.map((row) => row.category));
-  const allCategoriesRepresented = DOWIN_LENGTH_CATEGORIES.every((c) => represented.has(c));
-
-  const results: DowinGoldenCategoryResult[] = fixture.rows.map((row) => {
-    const actual = actuals.find((a) => a.pieceId === row.pieceId);
-    const actualLengthMm = actual?.actualLengthMm ?? null;
-    if (row.expectedLengthMm == null || actualLengthMm == null) {
-      return {
-        category: row.category,
-        pieceId: row.pieceId,
-        expectedLengthMm: row.expectedLengthMm,
-        actualLengthMm,
-        deltaMm: null,
-        withinTolerance: null,
-      };
-    }
-    const deltaMm = actualLengthMm - row.expectedLengthMm;
+  const byId = new Map(actuals.map((a) => [a.pieceId, a]));
+  const results: DowinGoldenPieceResult[] = fixture.rows.map((row) => {
+    const actual = byId.get(row.pieceId);
     return {
-      category: row.category,
       pieceId: row.pieceId,
-      expectedLengthMm: row.expectedLengthMm,
-      actualLengthMm,
-      deltaMm,
-      withinTolerance: isWithinDowinParityTolerance(actualLengthMm, row.expectedLengthMm),
+      externalAssemblyLabel: row.externalAssemblyLabel,
+      category: row.category,
+      nominal: layerResult(row.expectedNominalLengthMm, actual?.nominalLengthMm ?? null),
+      packed: layerResult(row.expectedPackedSegmentMm, actual?.packedSegmentMm ?? null),
+      machine: layerResult(row.expectedMachineLengthMm, actual?.machineInstructionMm ?? null),
     };
   });
-
-  const pending =
-    fixture.status === DOWIN_GOLDEN_FIXTURE_STATUS ||
-    fixture.rows.length === 0 ||
-    results.some((r) => r.expectedLengthMm == null);
-
+  const categoryScorecard = scoreDowinCategories(results);
+  const representedCategoriesPass = DOWIN_ASDD_REPRESENTED_CATEGORIES.every(
+    (c) => categoryScorecard[c] === 'PASS'
+  );
+  const fullSuitePasses = DOWIN_LENGTH_CATEGORIES.every((c) => categoryScorecard[c] === 'PASS');
   return {
-    status: pending ? DOWIN_GOLDEN_FIXTURE_STATUS : 'COMPARED',
-    allCategoriesRepresented,
-    categoryScorecard: scoreDowinCategories(results),
+    fixtureId: fixture.id,
+    representedCategoriesPass,
+    fullSuitePasses,
+    categoryScorecard,
     results,
   };
 }
 
-/**
- * Dealer-audit reference for the preferred first future fixture.
- * Basma/Kaynak are settings context, not expected cut lengths.
- * Elevation and expected rows stay empty until a real DoWin export exists.
- */
+export function dowinParityGatePasses(compared: DowinGoldenCompareResult): boolean {
+  return compared.fullSuitePasses;
+}
+
+/** Machine-layer PASS requires an external MDB/NCW expected value that matched. Null is not a pass. */
+export function dowinMachineParityPasses(layer: DowinLayerResult): boolean {
+  return layer.expectedMm != null && layer.withinTolerance === true;
+}
+
+export const DOWIN_ASDD_FIXTURE_SLUG = 'deceuninck70-asdd-1000x1500-dowin-2026-09-09';
+
+export const DOWIN_ASDD_JOB = {
+  designName: 'asdd',
+  orderNo: '10001',
+  profileSystem: "Deceuninck 70'lik PVC Sistemi",
+  material: 'PVC',
+  overallWidthMm: 1000,
+  overallHeightMm: 1500,
+  sashOuterWidthMm: 437,
+  sashOuterHeightMm: 1416,
+  weldDeltaOn45DegMm: 3,
+} as const;
+
+export const DOWIN_ASDD_SOURCE_HASHES: Record<string, string> = {
+  'OptimizationReport_20260909_181432.pdf':
+    'e9ce43f736bbe40d037f29100e58d13c9b6f7febc611f51ac6f3a26a1f012ca0',
+  'OptimizationReport_20260909_181432_Labels.pdf':
+    'd84ba781136a3859980d10866e267c13fe5ad942663df77e76709c6d9c7d05fe',
+  'OptimizationReport_20260909_181432_DesignPreview.pdf':
+    'f6a00ef01eba45336e1557abd5dcceefbe14bdb70c55f7443a705afd8d9c64b0',
+  'asdasd_2026.09.09_18.15.mdb':
+    '6d5932947327db0272e5de92de4d47e4320ecb1aeadbc6a268f2bbd383a3f82d',
+};
+
+function piece(
+  pieceId: string,
+  externalAssemblyLabel: string,
+  profileCode: string,
+  category: DowinLengthCategory,
+  nominal: number | null,
+  packed: number | null,
+  machine: number | null,
+  leftAngleDeg: number | null,
+  rightAngleDeg: number | null,
+  sourceDocument: DowinPhysicalLengthGoldenRow['sourceDocument'],
+  sourcePage: number | null = null
+): DowinPhysicalLengthGoldenRow {
+  return {
+    pieceId,
+    externalAssemblyLabel,
+    profileCode,
+    category,
+    leftAngleDeg,
+    rightAngleDeg,
+    expectedNominalLengthMm: nominal,
+    expectedPackedSegmentMm: packed,
+    expectedMachineLengthMm: machine,
+    sourceDocument,
+    sourcePage,
+  };
+}
+
 export const DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION: DowinPhysicalLengthGoldenFixture = {
-  id: 'deceuninck-70z-sash',
-  status: DOWIN_GOLDEN_FIXTURE_STATUS,
-  profileSystem: 'Deceuninck 70 Z sash',
+  id: 'dowin-deceuninck70z-asdd-1000x1500-20260909',
+  status: 'READY_EXTERNAL_FIXTURE',
+  sourceType: 'licensed-dowin-production-export',
+  orderNo: '10001',
+  designName: 'asdd',
+  profileSystem: "Deceuninck 70'lik PVC Sistemi",
+  material: 'PVC',
+  reportDate: '2026-09-09',
   elevationNote:
-    'Awaiting a licensed DoWin exported cut list. Do not claim ±0.1 mm parity.',
-  overallWidthMm: null,
-  overallHeightMm: null,
+    'Three-layer asdd fixture: nominal (Design Preview), packed (optimization graphic), machine (DC-600 MDB). Beads have no MDB row so machine stays null. Glass and non-square angle UNPROVEN. Not accepted.',
+  overallWidthMm: 1000,
+  overallHeightMm: 1500,
   manufacturingProfileId: 'yilmazcad-parity',
+  jobSettings: {
+    sawThicknessMm: null,
+    weldingWasteMm: null,
+    sashOffsetMm: null,
+    trimCutMm: null,
+    remnantThresholdMm: null,
+    glazingClearanceMm: null,
+    robotSafetyLengthMm: null,
+    profileWasteMarginPercent: null,
+    compLessThan90LeftMm: null,
+    compLessThan90RightMm: null,
+    compGreaterThan90LeftMm: null,
+    compGreaterThan90RightMm: null,
+    machineId: 'DC-600',
+  },
+  sourceHashesSha256: DOWIN_ASDD_SOURCE_HASHES,
   referenceSettings: {
     horizontalBasmaMm: 12,
     verticalBasmaMm: 16,
@@ -198,5 +359,54 @@ export const DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION: DowinPhysicalLengthGoldenFi
     pvcMullionOffsetMm: 0,
     minGlassProductionSizeMm: 50,
   },
-  rows: [],
+  categoryAvailability: {
+    frame_horizontal: 'READY',
+    frame_vertical: 'READY',
+    sash_horizontal: 'READY',
+    sash_vertical: 'READY',
+    mullion: 'READY',
+    glazing_bead_horizontal: 'READY',
+    glazing_bead_vertical: 'READY',
+    glass: 'PENDING_EXTERNAL_FIXTURE',
+    angle_compensation: 'NOT_APPLICABLE',
+  },
+  rows: [
+    piece('asdd.Frame.Top', 'asdd.Frame Top', 'Deceuninck-KASA-70', 'frame_horizontal', 1000, 1003, 1003, 45, 45, 'machine_export'),
+    piece('asdd.Frame.Bottom', 'asdd.Frame Bottom', 'Deceuninck-KASA-70', 'frame_horizontal', 1000, 1003, 1003, 45, 45, 'machine_export'),
+    piece('asdd.Frame.Left', 'asdd.Frame Left', 'Deceuninck-KASA-70', 'frame_vertical', 1500, 1503, 1503, 45, 45, 'machine_export'),
+    piece('asdd.Frame.Right', 'asdd.Frame Right', 'Deceuninck-KASA-70', 'frame_vertical', 1500, 1503, 1503, 45, 45, 'machine_export'),
+    piece('asdd.Left.Sash.Top', 'asdd.Left Area (Sash).Top', 'Deceuninck-KANAT-70', 'sash_horizontal', 451, 454, 454, 45, 45, 'machine_export'),
+    piece('asdd.Left.Sash.Bottom', 'asdd.Left Area (Sash).Bottom', 'Deceuninck-KANAT-70', 'sash_horizontal', 451, 454, 454, 45, 45, 'machine_export'),
+    piece('asdd.Right.Sash.Top', 'asdd.Right Area (Sash).Top', 'Deceuninck-KANAT-70', 'sash_horizontal', 451, 454, 454, 45, 45, 'machine_export'),
+    piece('asdd.Right.Sash.Bottom', 'asdd.Right Area (Sash).Bottom', 'Deceuninck-KANAT-70', 'sash_horizontal', 451, 454, 454, 45, 45, 'machine_export'),
+    piece('asdd.Left.Sash.Left', 'asdd.Left Area (Sash).Left', 'Deceuninck-KANAT-70', 'sash_vertical', 1430, 1433, 1433, 45, 45, 'machine_export'),
+    piece('asdd.Left.Sash.Right', 'asdd.Left Area (Sash).Right', 'Deceuninck-KANAT-70', 'sash_vertical', 1430, 1433, 1433, 45, 45, 'machine_export'),
+    piece('asdd.Right.Sash.Left', 'asdd.Right Area (Sash).Left', 'Deceuninck-KANAT-70', 'sash_vertical', 1430, 1433, 1433, 45, 45, 'machine_export'),
+    piece('asdd.Right.Sash.Right', 'asdd.Right Area (Sash).Right', 'Deceuninck-KANAT-70', 'sash_vertical', 1430, 1433, 1433, 45, 45, 'machine_export'),
+    piece('asdd.Mullion.Vertical', 'asdd.Mullion Vertical', 'Deceuninck-ORTA-KAYIT-70', 'mullion', 1416, 1416, 1416, 90, 90, 'machine_export'),
+    piece('asdd.Left.Bead.Top', 'asdd.Left Area (Sash).GlazingBead Top', 'Deceuninck-CITA-20', 'glazing_bead_horizontal', 331, 334, null, 45, 45, 'optimization_report'),
+    piece('asdd.Left.Bead.Bottom', 'asdd.Left Area (Sash).GlazingBead Bottom', 'Deceuninck-CITA-20', 'glazing_bead_horizontal', 331, 334, null, 45, 45, 'optimization_report'),
+    piece('asdd.Right.Bead.Top', 'asdd.Right Area (Sash).GlazingBead Top', 'Deceuninck-CITA-20', 'glazing_bead_horizontal', 331, 334, null, 45, 45, 'optimization_report'),
+    piece('asdd.Right.Bead.Bottom', 'asdd.Right Area (Sash).GlazingBead Bottom', 'Deceuninck-CITA-20', 'glazing_bead_horizontal', 331, 334, null, 45, 45, 'optimization_report'),
+    piece('asdd.Left.Bead.Left', 'asdd.Left Area (Sash).GlazingBead Left', 'Deceuninck-CITA-20', 'glazing_bead_vertical', 1310, 1313, null, 45, 45, 'optimization_report'),
+    piece('asdd.Left.Bead.Right', 'asdd.Left Area (Sash).GlazingBeadRight', 'Deceuninck-CITA-20', 'glazing_bead_vertical', 1310, 1313, null, 45, 45, 'optimization_report'),
+    piece('asdd.Right.Bead.Left', 'asdd.Right Area (Sash).GlazingBead Left', 'Deceuninck-CITA-20', 'glazing_bead_vertical', 1310, 1313, null, 45, 45, 'optimization_report'),
+    piece('asdd.Right.Bead.Right', 'asdd.Right Area (Sash).GlazingBeadRight', 'Deceuninck-CITA-20', 'glazing_bead_vertical', 1310, 1313, null, 45, 45, 'optimization_report'),
+    piece('asdd.Glass.UNPROVEN', 'UNPROVEN', 'GLASS', 'glass', null, null, null, null, null, null),
+    piece('asdd.Angle.UNPROVEN', 'UNPROVEN', 'COMP', 'angle_compensation', null, null, null, null, null, null),
+  ],
 };
+
+/** Backward-compatible alias: DC-600 saw lengths only. */
+export const DOWIN_ASDD_MDB_PROFILE_CUTS = DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows
+  .filter((r) => r.expectedMachineLengthMm != null)
+  .map((r) => ({
+    assemblyId: r.externalAssemblyLabel,
+    stockCode: r.profileCode,
+    lengthMm: r.expectedMachineLengthMm as number,
+    leftAngleDeg: r.leftAngleDeg ?? 0,
+    rightAngleDeg: r.rightAngleDeg ?? 0,
+  }));
+
+/** @deprecated Use READY_EXTERNAL_FIXTURE. Kept so older imports type-check during migration. */
+export const DOWIN_GOLDEN_FIXTURE_STATUS = 'READY_EXTERNAL_FIXTURE' as const;

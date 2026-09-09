@@ -1,5 +1,9 @@
 # FP-024 — DoWin Physical-Length Golden Parity
 
+> **Superseded for the asdd three-layer gate by** [`FP-024A-EXTERNAL-DOWIN-GOLDEN-PARITY_2026-09-09.md`](./FP-024A-EXTERNAL-DOWIN-GOLDEN-PARITY_2026-09-09.md).
+> This file remains as the earlier dual-length checkpoint. Verdict is still ❌ NOT ACCEPTED. Score remains 6.0/10.
+
+
 | Field | Value |
 |-------|--------|
 | Date | 9 September 2026 |
@@ -7,8 +11,9 @@
 | Branch | `main` |
 | Depends on | FP-023A (settings contract), FP-023B (canonical kerf identity) |
 | Scope | Per-piece physical length vs a **real exported DoWin cut list**. Not FP-016, FP-017, kerf count, or production K-factor replacement. |
-| Gate | ❌ **BLOCKED** — harness ready, no real DoWin expected cut list supplied, no score increase. **Not accepted.** Harness is **READY_FOR_EXTERNAL_DOWIN_FIXTURE**. |
-| Physical-length score | **Unchanged at 6.0/10**. No increase until the external fixture passes. |
+| Job | DoWin design **asdd**, Deceuninck 70 Z, 1000 × 1500 mm, two 500 mm sashes, vertical mullion |
+| Gate | ❌ **NOT ACCEPTED** — expected cut list populated; `dowinParityGatePasses` is **false**. No score increase. |
+| Physical-length score | **Unchanged at 6.0/10** |
 
 ---
 
@@ -16,77 +21,73 @@
 
 > Same elevation + same system + same manufacturing settings → ALMONA cut lengths within **±0.1 mm** of a **real exported DoWin cut list**, per physical piece.
 
-Categories are scored **independently**. A sash match must not hide a frame, mullion, glass, or angle fail:
-
-| Category | Role |
-|---------|------|
-| `frame_horizontal` | Frame rails |
-| `frame_vertical` | Frame jambs |
-| `sash_horizontal` | Sash rails |
-| `sash_vertical` | Sash stiles |
-| `mullion` | PVC / transom mullion |
-| `glass` | Pane production size |
-| `angle_compensation` | Comp&lt;90 / Comp&gt;90 left+right |
+Categories scored independently. A sash match must not hide a frame, mullion, glass, or angle fail.
 
 `dowinParityGatePasses` is true only when status is `COMPARED`, every category is represented, and every category is `PASS`.
 
 ---
 
-## Why the gate is BLOCKED
+## External evidence (asdd, 9 Sep 2026)
 
-No licensed DoWin export exists in this repository (no cut-list CSV / NCW / MDB with expected millimetres for a named elevation). Inventing those numbers would fake the first legitimate physical-length score move.
+Sources (MDB/PDF not committed; millimetres transcribed only):
 
-The Deceuninck 70 Z sash 12/16/6/6 job remains the **preferred first fixture** (`DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION`). Elevation millimetres and `expectedLengthMm` stay **null**.
+- DoWin Optimization **Required Parts** (saw-bound)
+- DC-600 machine export `asdasd_2026.09.09_18.15.mdb` `Table1` (13 profile pieces)
+- `OptimizationReport_20260909_181432.pdf`
+- `OptimizationReport_20260909_181432_Labels.pdf`
+- `OptimizationReport_20260909_181432_DesignPreview.pdf`
 
-| Verdict | Meaning |
-|---------|---------|
-| **BLOCKED** | ±0.1 mm vs real DoWin export cannot be claimed |
-| **READY_FOR_EXTERNAL_DOWIN_FIXTURE** | Schema, tolerance, per-category scorecard, and evidenced sash/glass/angle formulas are in code |
-| **NOT_READY** | Production `generateOptimizedCutList` still uses `calculateKFactor` (intentional isolation) |
+The MDB is the machine-bound cut list. `LENGTH` matches Optimization Required Parts exactly. It does **not** match the Labels/Design Preview PDF (those 45° pieces are 3 mm shorter). `FRAME_X`/`FRAME_Y` on every MDB row are overall finished **1000 × 1500**, while frame `LENGTH` is **1003 / 1503**. Beads and glass are absent from this DC-600 file (13 rows = 4 frame + 8 sash + 1 mullion).
 
----
+DoWin publishes **two** millimetre columns for 45° pieces, 3 mm apart (`WeldingWaste`):
 
-## What this gate built (without claiming parity)
+| Piece | Labels / Design Preview (finished) | Optimization Required Parts (saw) |
+|-------|-------------------------------------:|----------------------------------:|
+| Frame H (KASA-70) | 1000 | **1003** |
+| Frame V (KASA-70) | 1500 | **1503** |
+| Sash H (KANAT-70) × 4 | 451 | **454** |
+| Sash V (KANAT-70) × 4 | 1430 | **1433** |
+| Mullion (ORTA-KAYIT-70) 90°/90° | 1416 | **1416** |
+| Glass (design canvas) | 329 × 1308 | (not in profile cut list) |
+| Bead CITA-20 (not a gate category) | 331 / 1310 | 334 / 1313 |
 
-### 1. Golden schema
+**FP-024 expected values are the MDB / Optimization `LENGTH` column** (saw-bound). Mullion is unchanged (square cut, no weld add). Glass 329 × 1308 is taken from the design canvas only — it is not in the MDB.
 
-`src/lib/fabricator/golden/dowinPhysicalLengthFixture.ts`
-
-- Tolerance `DOWIN_PARITY_TOLERANCE_MM = 0.1`
-- `compareDowinGoldenLengths` returns `PENDING_EXTERNAL_FIXTURE` if any expected length is null
-- Per-category scorecard: `PENDING` / `PASS` / `FAIL`
-- Synthetic harness proves sash `PASS` + frame `FAIL` ⇒ gate false
-
-### 2. Parity length model (not production)
-
-`src/lib/fabricator/dowinParity/DowinParityLengthEngine.ts`
-
-Behavioural formulas from `docs/audits/DOWIN_VS_ALMONA_DEALER_AUDIT_2026-09-09.md` §12 Phase 1. **Not** wired into `UPVCCuttingEngine.generateOptimizedCutList`.
-
-| Category | Formula | Status |
-|----------|---------|--------|
-| sash H | `sashInnerW + YatayBasma + YatayKaynak + WeldingWaste` | **evidenced** |
-| sash V | `sashInnerH + DikeyBasma + DikeyKaynak + WeldingWaste` | **evidenced** |
-| glass | `daylight − 2 × GlazingClearance`; reject &lt; 50 mm | **evidenced** |
-| angle | Comp&lt;90 / Comp&gt;90 left+right (defaults 0) | **evidenced** (defaults only) |
-| frame H / V | DoWin seed Basma/Kaynak **null** on frames | **unevidenced** — length stays `null` |
-| mullion | audit only records `+PvcMullionOffset` | **unevidenced** — length stays `null` |
-
-ALMONA model check (not a DoWin expected length): finished 1200 × 1400 mm, offset 7, overlap 12/16/6/6, weld 3 → sash H **1207**, sash V **1411**, glass W **1181**.
-
-Do **not** treat those millimetres as DoWin expected values.
+Design intermediates (not expected cuts): sash property panel **437 × 1416**.
 
 ---
 
-## Explicitly not touched
+## Scorecard vs current ALMONA parity model
 
-- `calculateKFactor` (still production sash/frame miter)
-- Basma/Kaynak as production default (parity engine only)
-- BOM 2 mm compensation
-- MicronEngine 4.2 / 15 mm
-- `ProductionOptimizer`
-- FP-016 / FP-017
-- FP-023B kerf identity (already PROVEN; this gate is piece **length**, not bar consumption)
+ALMONA actuals from `almonaParityActualsForAsdd()` using sash-outer **437 × 1416** as finished input. Frame and mullion still have **no formula** (missing actual = FAIL). Formulas were **not** retuned to match 454 / 1433.
+
+| Category | Expected (saw) | ALMONA actual | Δ mm | Gate |
+|---------|----------------:|-------------:|-----:|------|
+| frame_horizontal | 1003 | *(none)* | — | **FAIL** |
+| frame_vertical | 1503 | *(none)* | — | **FAIL** |
+| sash_horizontal | 454 | 444 | −10 | **FAIL** |
+| sash_vertical | 1433 | 1427 | −6 | **FAIL** |
+| mullion | 1416 | *(none)* | — | **FAIL** |
+| glass W / H | 329 / 1308 | 418 / 1397 | +89 / +89 | **FAIL** |
+| angle_compensation | 0 | 0 | 0 | **PASS** |
+
+`dowinParityGatePasses` = **false**. Angle-only pass does not lift the gate.
+
+Production `calculateKFactor` was **not** used as the actuals path and was not deleted.
+
+---
+
+## Traced discrepancies (not adopted as formula changes)
+
+Do **not** change ALMONA formulas merely to make the fixture green.
+
+| Observation | Rule it may be | Why it is not adopted yet |
+|------------|----------------|---------------------------|
+| Labels + 3 mm = saw on every 45° piece; 90° mullion unchanged | **WeldingWaste 3 mm** on miters | Dual publication (label vs saw) is recorded; expected already uses saw |
+| Frame saw = overall + 3 (1000+3, 1500+3) | WeldingWaste on frame miters | Frame Basma/Kaynak still unevidenced; do not guess a full frame formula from one job |
+| Mullion 1416 = sash outer height | Mullion sits on sash-height plane; `PvcMullionOffset` 0 | One job; keep mullion unevidenced until the length rule is written from settings, not copied |
+| 437 + 2×7 + 3 = 454 (and 1416+14+3 = 1433) | `sashOuter + 2×SashOffset + WeldingWaste` | **Conflicts** with documented `sashInner + Basma + Kaynak + Weld` (444 / 1427). Do not replace Basma/Kaynak with this shortcut until the 437 sash-outer derivation from 1000×1500+mullion is proven |
+| Glass 329 vs inner−2×2.5 = 418 | Glazing rebate is ~54 mm/side on this Z sash, not 2.5 mm clearance on sash inner | Clearance formula is the documented glass rule; 54 mm is profile geometry, not yet a named setting |
 
 ---
 
@@ -96,19 +97,15 @@ Do **not** treat those millimetres as DoWin expected values.
 |------------|----------------|
 | No ML in execution | Deterministic millimetre arithmetic only |
 | No silent production swap | `UPVCCuttingEngine` does not import `DowinParityLengthEngine` |
-| Human validation | Gate cannot pass until a licensed export fills `expectedLengthMm` |
-| Constitutional lock | `GuaranteeVerification.test.ts` asserts pending fixture + K-factor still present |
+| Human validation | Gate remains false until every category is ±0.1 mm |
+| No formula green-washing | Observed 2×SashOffset shortcut is tested as **not** equal to the documented sash formula |
+| Constitutional lock | `GuaranteeVerification.test.ts` asserts READY fixture + gate false + K-factor present |
+
+Explicitly not touched: Basma/Kaynak as production default, BOM 2 mm, MicronEngine 4.2/15, `ProductionOptimizer`, FP-016, FP-017, FP-023B kerf identity.
 
 ---
 
 ## Tests
-
-| Command | Result |
-|---------|--------|
-| `npm run type-check` | pass |
-| `npm run build` | pass |
-| `npx vitest run src/tests/fabricator` | **5 files, 62 passed** |
-| `npx vitest run src/tests/constitutional` | **8 files, 83 passed** |
 
 Harness: `src/tests/fabricator/dowinPhysicalLengthGolden.pending.test.ts`
 
@@ -116,7 +113,7 @@ Harness: `src/tests/fabricator/dowinPhysicalLengthGolden.pending.test.ts`
 
 ## Scores (unchanged)
 
-FP-024 increases **harness confidence**, not readiness. Physical-length correctness stays **6.0/10** until a real DoWin cut list is compared per category.
+Expected values now exist. That is **not** a pass. Physical-length correctness stays **6.0/10** until every category is within ±0.1 mm.
 
 | Area | Score |
 |------|------:|
@@ -127,18 +124,12 @@ FP-024 increases **harness confidence**, not readiness. Physical-length correctn
 | Industrial core | ~7.2–7.4/10 |
 | Full platform | ~5.3/10 |
 
-After the external fixture passes, physical-length correctness may move from 6.0 toward **~8.0–8.5**. No earlier increase.
+After every category passes, this score may move from 6.0 toward **~8.0–8.5**.
 
 ---
 
 ## Gate verdict
 
-**BLOCKED** — harness ready, no real DoWin expected cut list supplied, no score increase.
+**NOT ACCEPTED.** Real DoWin expected cut list is populated for asdd. Comparison ran. Six of seven categories fail. Angle compensation passes at 0 mm. Physical-length score stays **6.0/10**.
 
-FP-024 is **not accepted**. This is a blocked parity harness, not a passed golden.
-
-**READY_FOR_EXTERNAL_DOWIN_FIXTURE** for: category schema, 0.1 mm comparator, independent scorecard, evidenced sash/glass/angle model, unevidenced frame/mullion left null.
-
-To unblock, create one named Deceuninck 70 Z-sash elevation in licensed DoWin, fix the manufacturing settings for the test, export the actual cut/production list, and populate `expectedLengthMm` only from those legitimate outputs. Then run `dowinParityGatePasses`. Every physical piece must be ≤ 0.1 mm absolute error in its category.
-
-Do **not** change ALMONA formulas merely to make the fixture green until each discrepancy is traced to a specific manufacturing rule (sash offset, Basma/Kaynak, welding allowance, mullion compensation, glazing clearance, or angle compensation).
+Do not treat fixture status `READY` as acceptance. `READY` only means expected millimetres exist.

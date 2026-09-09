@@ -272,23 +272,30 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
   });
 
   describe('AICS-001 FP-024: DoWin physical-length gate stays isolated', () => {
-    test('golden expected lengths stay null and calculateKFactor is not deleted', async () => {
+    test('golden asdd fixture is READY but the ±0.1 mm gate does not pass', async () => {
       const {
         DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
-        DOWIN_GOLDEN_FIXTURE_STATUS,
         DOWIN_LENGTH_CATEGORIES,
         DOWIN_PARITY_TOLERANCE_MM,
         compareDowinGoldenLengths,
         dowinParityGatePasses,
       } = await import('@/lib/fabricator/golden/dowinPhysicalLengthFixture');
+      const { almonaParityActualsForAsdd } = await import(
+        '@/lib/fabricator/dowinParity/DowinParityLengthEngine'
+      );
       const { calculateKFactor } = await import('@/lib/fabricator/UPVCCuttingEngine');
 
       expect(DOWIN_PARITY_TOLERANCE_MM).toBe(0.1);
-      expect(DOWIN_LENGTH_CATEGORIES).toHaveLength(7);
-      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe(DOWIN_GOLDEN_FIXTURE_STATUS);
-      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows).toEqual([]);
+      expect(DOWIN_LENGTH_CATEGORIES).toHaveLength(9);
+      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe('READY_EXTERNAL_FIXTURE');
+      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows.length).toBeGreaterThan(0);
       expect(
-        dowinParityGatePasses(compareDowinGoldenLengths(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION, []))
+        dowinParityGatePasses(
+          compareDowinGoldenLengths(
+            DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
+            almonaParityActualsForAsdd()
+          )
+        )
       ).toBe(false);
       expect(
         calculateKFactor({

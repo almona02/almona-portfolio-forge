@@ -11,7 +11,6 @@ import {
 } from '@/lib/fabricator/ManufacturingSettings';
 import {
   DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
-  DOWIN_GOLDEN_FIXTURE_STATUS,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
 
 function sourceOf(rel: string): string {
@@ -66,8 +65,8 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
     expect(k).toBeGreaterThan(0);
   });
 
-  test('DoWin golden fixture remains PENDING_EXTERNAL_FIXTURE', () => {
-    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe(DOWIN_GOLDEN_FIXTURE_STATUS);
-    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows).toEqual([]);
+  test('DoWin golden fixture is READY_EXTERNAL_FIXTURE but the gate does not pass', () => {
+    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe('READY_EXTERNAL_FIXTURE');
+    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows.length).toBeGreaterThan(0);
   });
 });

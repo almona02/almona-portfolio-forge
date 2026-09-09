@@ -705,6 +705,30 @@ export interface Cut {
   occurrenceIndex?: number;
   componentType?: string;
   waste: number;
+  /**
+   * Design / assembly reference length (DoWin Design Preview / welded report).
+   * Optional. Do not treat as packed or machine length.
+   */
+  reportedWeldedLengthMm?: number;
+  /** Alias of reportedWeldedLengthMm for the FP-024A nominal layer. */
+  nominalLengthMm?: number;
+  /**
+   * Optimization bar-graphic / packed segment (DoWin Required Parts graphic).
+   * Optional. Do not fall back to nominal or machine.
+   */
+  packedSegmentMm?: number;
+  /**
+   * Physical saw-cut length used by historical packing (`length` remains the default).
+   * Optional. Not an FP-024 machine-parity claim.
+   */
+  sawCutLengthMm?: number;
+  /**
+   * Machine-control instruction millimetres (MDB/NCW). Populate only from
+   * a legitimate machine export. Do not copy packedSegmentMm into this field.
+   */
+  machineInstructionLengthMm?: number;
+  /** External assembly label (DoWin EXPLANATION2). Provenance only — not Cut.id. */
+  externalAssemblyLabel?: string;
 }
 
 /**

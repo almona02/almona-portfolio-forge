@@ -20,7 +20,11 @@ import {
   YILMAZCAD_PARITY_MANUFACTURING_SETTINGS,
   roundManufacturingMm,
 } from '@/lib/fabricator/ManufacturingSettings';
-import type { DowinProfileOverlap } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
+import {
+  DOWIN_ASDD_JOB,
+  type DowinLengthCategory,
+  type DowinProfileOverlap,
+} from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
 
 export type DowinParityFormulaStatus = 'evidenced' | 'unevidenced';
 
@@ -246,4 +250,62 @@ export function deceuninck70zParityInput(
     compGreaterThan90LeftMm: s.compGreaterThan90LeftMm,
     compGreaterThan90RightMm: s.compGreaterThan90RightMm,
   };
+}
+
+export interface DowinParityActual {
+  pieceId: string;
+  /** ALMONA design/report millimetres. Null until a real nominal layer exists. */
+  nominalLengthMm?: number | null;
+  /** Isolated Basma/Kaynak production-cut candidate. Not a machine command. */
+  packedSegmentMm?: number | null;
+  /** ALMONA MDB/NCW instruction. Null until a real machine export exists. */
+  machineInstructionMm?: number | null;
+}
+
+/**
+ * ALMONA actuals for asdd using the current isolated parity model.
+ * Documented sash formula is compared on the packed layer only.
+ * Nominal and machine stay null — ALMONA does not yet emit those layers.
+ * Frame, mullion, and beads stay omitted (unevidenced) — missing actuals fail represented categories.
+ * Glass and angle are not emitted: fixture marks them UNPROVEN.
+ */
+export function almonaParityActualsForAsdd(): DowinParityActual[] {
+  const result = computeDowinParityLengths(
+    deceuninck70zParityInput(DOWIN_ASDD_JOB.sashOuterWidthMm, DOWIN_ASDD_JOB.sashOuterHeightMm)
+  );
+  const sashH = result.lines.find((l) => l.category === 'sash_horizontal')?.lengthMm;
+  const sashV = result.lines.find((l) => l.category === 'sash_vertical')?.lengthMm;
+  const actuals: DowinParityActual[] = [];
+
+  if (sashH != null) {
+    for (const pieceId of [
+      'asdd.Left.Sash.Top',
+      'asdd.Left.Sash.Bottom',
+      'asdd.Right.Sash.Top',
+      'asdd.Right.Sash.Bottom',
+    ]) {
+      actuals.push({
+        pieceId,
+        nominalLengthMm: null,
+        packedSegmentMm: sashH,
+        machineInstructionMm: null,
+      });
+    }
+  }
+  if (sashV != null) {
+    for (const pieceId of [
+      'asdd.Left.Sash.Left',
+      'asdd.Left.Sash.Right',
+      'asdd.Right.Sash.Left',
+      'asdd.Right.Sash.Right',
+    ]) {
+      actuals.push({
+        pieceId,
+        nominalLengthMm: null,
+        packedSegmentMm: sashV,
+        machineInstructionMm: null,
+      });
+    }
+  }
+  return actuals;
 }
