@@ -1,18 +1,17 @@
 import type { CuttingJob } from '@/algorithms/adaptiveSolver';
 import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
+import { OptimizationCockpit } from '@/components/fabricator/cockpit/OptimizationCockpit';
+import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { useAuth } from '@/context/AuthContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { fabricatorRoutes } from '@/lib/fabricator/routes';
-import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
-import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { findBestMatchingPattern, getPatternById } from '@/lib/fabricator/presetUtils';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Card, CardContent } from '@/shared/ui/ui/card';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { AdaptiveSolverConfig, OptimizationResult } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
-import { AlertCircle, DollarSign, Loader2, TrendingDown } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import React, { Suspense, useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -25,13 +24,9 @@ const OptimizationEqualizer = lazyRetry(
 
 /**
  * GOLD-TIER OPTIMIZATION PAGE
- * 
- * Features:
- * - Proper data flow from workflow store
- * - Error handling for missing data
- * - Loading states with premium UX
- * - User authentication integration
- * - System pack profile resolution
+ *
+ * Solver path is unchanged. FP-025A only wraps the workspace in OptimizationCockpit
+ * so results are displayed, not recalculated in the UI.
  */
 export const OptimizationPage: React.FC = () => {
     const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
@@ -67,13 +62,10 @@ export const OptimizationPage: React.FC = () => {
         return SYSTEM_PACKS.find(p => p.meta.id === currentProject.systemPackId) ?? null;
     }, [currentProject?.systemPackId]);
 
-    // ✅ GOLD-TIER: Resolve profiles from system pack
     const profiles = useMemo(() => systemPack?.profiles ?? [], [systemPack]);
 
-    // ✅ GOLD-TIER: Error handling for missing data
     const hasRequiredData = currentProject !== null;
 
-    // P0: Run cutting optimization and proceed to commercial
     const handleOptimizationComplete = useCallback(async (_payload: { strategy?: unknown; minRemnantLength?: number; maxRemnantAge?: number }) => {
         if (!currentProject || !profiles.length) return;
 
@@ -96,7 +88,6 @@ export const OptimizationPage: React.FC = () => {
                 const solver = new AdaptiveSolver(solverConfig);
                 optimizationResult = await solver.solve(job, profiles);
             } else {
-                // Minimal result when no components (e.g. empty design)
                 optimizationResult = {
                     materialUsage: 0,
                     wastePercentage: 0,
@@ -115,7 +106,6 @@ export const OptimizationPage: React.FC = () => {
 
             setOptimizationResult(optimizationResult);
 
-            // P1.2: Generate BOM when we have pattern + systemPack
             if (systemPack && currentProject.grid) {
                 try {
                     const pattern =
@@ -142,7 +132,6 @@ export const OptimizationPage: React.FC = () => {
             }, 100);
         } catch (err) {
             console.error('[OptimizationPage] Optimization failed:', err);
-            // Fallback: minimal result so user can proceed
             setOptimizationResult({
                 materialUsage: 0,
                 wastePercentage: 0,
@@ -160,7 +149,6 @@ export const OptimizationPage: React.FC = () => {
         }
     }, [currentProject, profiles, projectId, poseId, systemPack, completeStep, setOptimizationResult, setBOM, navigate]);
 
-    // ✅ GOLD-TIER: Premium loading state
     const LoadingFallback = (
         <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
             <div className="text-center space-y-4">
@@ -170,7 +158,6 @@ export const OptimizationPage: React.FC = () => {
         </div>
     );
 
-    // ✅ P3.1.4: WorkflowValidationGate when design is incomplete
     if (!hasRequiredData || !optimizationValidation.valid) {
         return (
             <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
@@ -201,67 +188,9 @@ export const OptimizationPage: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col h-full bg-gradient-to-br from-slate-50 to-amber-50">
+        <div className="flex flex-col h-full bg-[#0a0a0a]">
             <Suspense fallback={LoadingFallback}>
-                <div className="max-w-7xl mx-auto w-full p-6 space-y-6">
-                    {/* ✅ GOLD-TIER: Page header with context */}
-                    <div className="bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200 p-6">
-                        <h1 className="text-2xl font-bold text-slate-900">
-                            Optimization Strategy
-                        </h1>
-                        <p className="text-slate-600 mt-2">
-                            Fine-tune your optimization parameters to match your production needs.
-                            Adjust the balance between waste reduction, remnant usage, and production speed.
-                        </p>
-                    </div>
-
-                    {/* Cost & Metrics Summary (from BOM + optimization data) */}
-                    {(bom?.cost || optimizationResult?.costBreakdown) && (
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                            {(() => {
-                                const cost = bom?.cost || optimizationResult?.costBreakdown;
-                                if (!cost) return null;
-                                const items = [
-                                    { label: 'Material', value: cost.materialCost, icon: <DollarSign size={12} /> },
-                                    { label: 'Hardware', value: cost.hardwareCost, icon: <DollarSign size={12} /> },
-                                    { label: 'Glazing', value: cost.glazingCost, icon: <DollarSign size={12} /> },
-                                    { label: 'Labor', value: cost.laborCost, icon: <DollarSign size={12} /> },
-                                    { label: 'Total', value: cost.totalCost, highlight: true, icon: <DollarSign size={14} /> },
-                                ];
-                                return items.map((item) => (
-                                    <Card key={item.label} className={item.highlight ? 'bg-amber-50 border-amber-300' : 'bg-white/60 border-slate-200'}>
-                                        <CardContent className="pt-3 pb-2 px-3">
-                                            <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-slate-500">
-                                                {item.icon}
-                                                {item.label}
-                                            </div>
-                                            <p className={`text-lg font-bold mt-0.5 ${item.highlight ? 'text-amber-700' : 'text-slate-800'}`}>
-                                                {item.value.toLocaleString('en-EG', { maximumFractionDigits: 0 })}
-                                                <span className="text-xs font-normal text-slate-400 ml-1">EGP</span>
-                                            </p>
-                                        </CardContent>
-                                    </Card>
-                                ));
-                            })()}
-                        </div>
-                    )}
-
-                    {optimizationResult && (
-                        <div className="flex items-center gap-4 text-sm">
-                            <Badge className="bg-green-100 text-green-700 border-green-300">
-                                <TrendingDown size={12} className="mr-1" />
-                                {optimizationResult.wastePercentage?.toFixed(1)}% waste
-                            </Badge>
-                            <Badge className="bg-blue-100 text-blue-700 border-blue-300">
-                                {optimizationResult.materialUsage?.toFixed(1)}% material usage
-                            </Badge>
-                            <Badge className="bg-slate-100 text-slate-700 border-slate-300">
-                                Est. {optimizationResult.estimatedProductionTime?.toFixed(0)} min production
-                            </Badge>
-                        </div>
-                    )}
-
-                    {/* Optimization controls */}
+                <OptimizationCockpit result={optimizationResult} algorithmLabel={null} authority={null}>
                     <OptimizationEqualizer
                         userId={user?.id || 'guest'}
                         profiles={profiles}
@@ -273,24 +202,19 @@ export const OptimizationPage: React.FC = () => {
                             <span>Running cutting optimization...</span>
                         </div>
                     )}
-                </div>
+                </OptimizationCockpit>
 
-                {/* Continue to Commercial CTA */}
                 {optimizationResult && projectId && poseId && (
-                    <div className="fixed bottom-8 right-8 z-50">
+                    <div className="p-2 flex justify-end">
                         <button
+                            type="button"
                             onClick={() => {
                                 completeStep('optimization');
-                                navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/commercial`);
+                                navigate(fabricatorRoutes.poseCommercial(projectId, poseId));
                             }}
-                            className="group relative px-8 py-4 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                            className="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white text-sm rounded"
                         >
-                            <span className="relative z-10 flex items-center gap-2">
-                                Continue to Quote
-                                <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </span>
+                            Continue to Quote
                         </button>
                     </div>
                 )}
