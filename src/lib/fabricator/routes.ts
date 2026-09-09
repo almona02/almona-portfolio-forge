@@ -44,10 +44,18 @@ export const fabricatorRoutes = {
     subPath ? `${STUDIO_BASE}/reports/${subPath}` : `${STUDIO_BASE}/reports`,
   /** Production: workshop portal */
   studioProductionWorkshop: () => `${STUDIO_BASE}/production/workshop`,
+  /** Production floor dashboard */
+  studioProduction: () => `${STUDIO_BASE}/production`,
+  /** Production: quality control (existing studio route) */
+  studioProductionQuality: () => `${STUDIO_BASE}/production/quality`,
   /** Production: delivery tracking */
   studioProductionDelivery: () => `${STUDIO_BASE}/production/delivery`,
   /** Production: orders management */
   studioProductionOrders: () => `${STUDIO_BASE}/production/orders`,
+  /** Data: stock / remnants (InventoryDashboard) */
+  studioDataStock: () => `${STUDIO_BASE}/data/stock`,
+  /** Data: integration placeholders (no fake ERP) */
+  studioDataIntegrations: () => `${STUDIO_BASE}/data/integrations`,
   /** Data: bent profile designer */
   studioDataBentProfiles: () => `${STUDIO_BASE}/data/bent-profiles`,
   /** Fabricator wizard (standalone) */

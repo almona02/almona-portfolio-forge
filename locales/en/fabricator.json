@@ -1,4 +1,37 @@
 {
+  "industrial": {
+    "no_active_project": "No active project",
+    "workflow_nav": "Manufacturing workflow",
+    "stages": {
+      "project": "Project",
+      "measure": "Measure",
+      "design": "Design",
+      "quote": "Quote",
+      "bom": "BOM",
+      "stock": "Stock",
+      "optimize": "Optimize",
+      "production": "Production",
+      "qc": "QC",
+      "delivery": "Delivery"
+    },
+    "context": {
+      "project": "Project",
+      "pose": "Position",
+      "customer": "Customer",
+      "system": "System Pack",
+      "material": "Material",
+      "status": "Status",
+      "revision": "Revision",
+      "machine": "Machine",
+      "saved": "Last saved"
+    },
+    "output": {
+      "title": "Production output",
+      "open": "Production output",
+      "export": "Export",
+      "planned": "Not available / planned"
+    }
+  },
   "workspace": {
     "title_prefix": "Your Company Name",
     "title": "Industrial Operations Workspace",

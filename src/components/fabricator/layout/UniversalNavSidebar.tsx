@@ -54,7 +54,6 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       label: 'Project Studio',
       icon: <Folder size={20} />,
       href: '/fabricator/studio/projects',
-      badge: 12,
     },
     {
       id: 'orders',
@@ -73,8 +72,6 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       label: 'Production Studio',
       icon: <Box size={20} />,
       href: '/fabricator/studio/production',
-      badge: 3,
-      badgeType: 'warning',
       subItems: [
         { label: 'Dashboard', href: '/fabricator/studio/production' },
         { label: 'Quality Control', href: '/fabricator/studio/production/quality' },
@@ -87,11 +84,11 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       icon: <BarChart size={20} />,
       href: '/fabricator/studio/data',
       subItems: [
-        { label: 'System Packs', href: '/fabricator/studio/data' },
+        { label: 'System library', href: '/fabricator/studio/data' },
         { label: 'Profiles', href: '/fabricator/studio/data/profiles' },
-        { label: 'Tuning', href: '/fabricator/studio/data/tuning' },
+        { label: 'Stock / remnants', href: '/fabricator/studio/data/stock' },
         { label: 'Customers', href: '/fabricator/studio/data/customers' },
-        { label: 'Pattern Library', href: '/fabricator/studio/data/patterns' },
+        { label: 'Integrations', href: '/fabricator/studio/data/integrations' },
       ],
     },
     {
@@ -99,13 +96,6 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       label: 'Settings',
       icon: <Settings size={20} />,
       href: '/settings',
-    },
-    // Legacy Routes (kept for reference or specific tools)
-    {
-      id: 'legacy-admin',
-      label: 'Admin',
-      icon: <Settings size={20} />,
-      href: '/admin',
     },
   ], []);
   

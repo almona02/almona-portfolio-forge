@@ -1,4 +1,37 @@
 {
+  "industrial": {
+    "no_active_project": "لا يوجد مشروع نشط",
+    "workflow_nav": "مسار التصنيع",
+    "stages": {
+      "project": "مشروع",
+      "measure": "قياس",
+      "design": "تصميم",
+      "quote": "عرض سعر",
+      "bom": "قائمة المواد",
+      "stock": "مخزون",
+      "optimize": "تحسين",
+      "production": "إنتاج",
+      "qc": "جودة",
+      "delivery": "تسليم"
+    },
+    "context": {
+      "project": "مشروع",
+      "pose": "موضع",
+      "customer": "عميل",
+      "system": "نظام",
+      "material": "مادة",
+      "status": "حالة",
+      "revision": "مراجعة",
+      "machine": "ماكينة",
+      "saved": "آخر حفظ"
+    },
+    "output": {
+      "title": "مخرجات الإنتاج",
+      "open": "مخرجات الإنتاج",
+      "export": "تصدير",
+      "planned": "غير متاح / مخطط"
+    }
+  },
   "workspace": {
     "title_prefix": "Your Company Name",
     "title": "مساحة عمليات صناعية متقدمة",
