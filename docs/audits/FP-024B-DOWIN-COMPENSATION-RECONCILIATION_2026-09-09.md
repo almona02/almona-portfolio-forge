@@ -215,13 +215,14 @@ FP-023A ⚠️ CONDITIONAL
 → FP-023B ✅ PROVEN internally
 → FP-024A ❌ parity failed
 → FP-024B ⚠️ CONDITIONAL calibration evidence
+→ FP-025A ✅ ACCEPTED UI (main; manufacturing truth unchanged)
 → operator isolation runs required
 → FP-024C formula implementation + ±0.1 mm external parity
 → FP-016
 → FP-017
 ```
 
-The first manufacturing score increase waits for FP-024C.
+The first manufacturing score increase waits for FP-024C. FP-025B polish must not interrupt this sequence.
 
 ---
 
