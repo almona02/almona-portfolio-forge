@@ -1,11 +1,12 @@
 /**
- * FP-024B — External compensation reconciliation (test/reference only).
+ * FP-024B/C — External compensation reconciliation (test/reference only).
  *
- * Controlled DoWin runs isolate one General Settings field at a time.
- * Do not encode packed = nominal + 3, do not absorb a hidden +7 mm,
- * and do not feed these values into runtime manufacturing.
+ * SINGLE_SETTING_ISOLATION changes one General Settings field on identical
+ * asdd geometry/stock/quantity/system/machine. The 90° run is a CONTROL_FIXTURE
+ * and is not a single-setting isolation. Do not encode packed = nominal + 3,
+ * do not absorb a hidden +7 mm, and do not feed these values into runtime manufacturing.
  *
- * @see docs/audits/FP-024B-DOWIN-COMPENSATION-RECONCILIATION_2026-09-09.md
+ * @see docs/audits/FP-024C-PHYSICAL-FORMULA-PARITY_2026-09-09.md
  */
 
 import { kerfLossOnBarMm } from '@/lib/fabricator/barPackAccounting';
@@ -25,6 +26,26 @@ export type CalibrationVariable =
   | 'sawThickness'
   | 'trimCut'
   | 'ninetyDegreeControl';
+
+/** How the run is allowed to differ from the asdd parent. */
+export type CalibrationRunKind =
+  | 'BASELINE_SETTINGS_SNAPSHOT'
+  | 'SINGLE_SETTING_ISOLATION'
+  | 'CONTROL_FIXTURE';
+
+export const REQUIRED_ISOLATION_MACHINE_ID = 'DC-600';
+
+export const SINGLE_SETTING_ISOLATION_VARIABLES = [
+  'weldingWaste',
+  'sawThickness',
+  'trimCut',
+] as const satisfies readonly CalibrationVariable[];
+
+export function calibrationRunKind(variable: CalibrationVariable): CalibrationRunKind {
+  if (variable === 'baseline') return 'BASELINE_SETTINGS_SNAPSHOT';
+  if (variable === 'ninetyDegreeControl') return 'CONTROL_FIXTURE';
+  return 'SINGLE_SETTING_ISOLATION';
+}
 
 export type CalibrationRunStatus = 'MEASURED' | 'PENDING_OPERATOR_RUN';
 
@@ -69,8 +90,14 @@ export function emptyObservedSettings(
   };
 }
 
-export interface IntendedIsolation {
+export interface ChangedSettingRecord {
   field: keyof DowinJobObservedSettings;
+  oldValue: string | number | null;
+  newValue: string | number | null;
+}
+
+export interface IntendedIsolation {
+  field: keyof DowinJobObservedSettings | null;
   /** Operator instruction only. Not a measured this-run value. */
   instructedToMm: number | null;
   note: string;
@@ -300,6 +327,7 @@ export const DOWIN_ASDD_MDB_TABLE1_EVIDENCE: DowinMdbTable1Evidence = {
 
 export interface CompensationMatrixRow {
   fixtureId: string;
+  runKind: CalibrationRunKind;
   variableChanged: CalibrationVariable;
   status: CalibrationRunStatus;
   nominalDeltaMm: number | null;
@@ -314,6 +342,7 @@ export interface CompensationMatrixRow {
 export interface DowinCalibrationRun {
   fixtureId: string;
   parentFixtureId: string | null;
+  runKind: CalibrationRunKind;
   isolationVariable: CalibrationVariable;
   status: CalibrationRunStatus;
   designName: string;
@@ -323,6 +352,7 @@ export interface DowinCalibrationRun {
   machineId: string | null;
   observedSettings: DowinJobObservedSettings;
   intendedIsolation: IntendedIsolation | null;
+  changedSetting: ChangedSettingRecord | null;
   pieces: DowinPhysicalLengthGoldenRow[];
   bars: readonly ExternalBarPattern[];
   provenance: string;
@@ -334,18 +364,21 @@ function pendingTemplate(
   intendedIsolation: IntendedIsolation,
   provenance: string
 ): DowinCalibrationRun {
+  const runKind = calibrationRunKind(isolationVariable);
   return {
     fixtureId,
     parentFixtureId: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.id,
+    runKind,
     isolationVariable,
     status: 'PENDING_OPERATOR_RUN',
-    designName: 'asdd',
+    designName: runKind === 'CONTROL_FIXTURE' ? 'pending-90-control' : 'asdd',
     profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
-    widthMm: 1000,
-    heightMm: 1500,
-    machineId: null,
+    widthMm: runKind === 'CONTROL_FIXTURE' ? 0 : 1000,
+    heightMm: runKind === 'CONTROL_FIXTURE' ? 0 : 1500,
+    machineId: REQUIRED_ISOLATION_MACHINE_ID,
     observedSettings: emptyObservedSettings(null),
     intendedIsolation,
+    changedSetting: null,
     pieces: [],
     bars: [],
     provenance,
@@ -355,6 +388,7 @@ function pendingTemplate(
 export const DOWIN_ASDD_BASELINE_RUN: DowinCalibrationRun = {
   fixtureId: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.id,
   parentFixtureId: null,
+  runKind: 'BASELINE_SETTINGS_SNAPSHOT',
   isolationVariable: 'baseline',
   status: 'MEASURED',
   designName: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.designName,
@@ -364,6 +398,7 @@ export const DOWIN_ASDD_BASELINE_RUN: DowinCalibrationRun = {
   machineId: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings.machineId,
   observedSettings: { ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings },
   intendedIsolation: null,
+  changedSetting: null,
   pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
   bars: DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
   provenance:
@@ -377,7 +412,7 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     {
       field: 'weldingWasteMm',
       instructedToMm: 0,
-      note: 'Duplicate asdd. Change ONLY Welding Waste to 0. Export Design Preview, Labels, Optimization, MDB.',
+      note: 'SINGLE_SETTING_ISOLATION: duplicate asdd. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Welding Waste to 0. Export Design Preview, Labels, Optimization, MDB.',
     },
     'Operator template. Not an executed DoWin run.'
   ),
@@ -387,7 +422,7 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     {
       field: 'sawThicknessMm',
       instructedToMm: null,
-      note: 'Return weld to baseline. Change ONLY Saw Thickness by a known +1 mm from the transcribed baseline. Baseline saw is still null.',
+      note: 'SINGLE_SETTING_ISOLATION: return weld to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Saw Thickness by a known +1 mm from the transcribed baseline. Baseline saw is still null.',
     },
     'Operator template. Saw Thickness baseline is unknown, so the instructed target stays null until Test 1 is filled.'
   ),
@@ -397,7 +432,7 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     {
       field: 'trimCutMm',
       instructedToMm: null,
-      note: 'Return saw to baseline. Change ONLY Trim Cut by a known delta. Compare remainder and packed/machine.',
+      note: 'SINGLE_SETTING_ISOLATION: return saw to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Trim Cut by a known delta. Compare remainder and packed/machine.',
     },
     'Operator template. Trim Cut baseline is unknown.'
   ),
@@ -405,11 +440,11 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     'dowin-asdd-90-control-pending',
     'ninetyDegreeControl',
     {
-      field: 'machineId',
+      field: null,
       instructedToMm: null,
-      note: 'Simple 90°/90° physical cut. Compare nominal vs packed vs machine. Do not change General Settings.',
+      note: 'CONTROL_FIXTURE: separate 90°/90° design. Keep General Settings, system, and DC-600 unchanged. Geometry and cut-angle may differ. Not a single-setting isolation.',
     },
-    'Operator template. Mullion on asdd is a same-job 90° observation, not an isolated control design.'
+    'Operator CONTROL_FIXTURE template. The asdd mullion is a same-job 90° observation, not this control fixture.'
   ),
 ];
 
@@ -439,6 +474,7 @@ export function buildCompensationMatrix(
     if (run.status === 'PENDING_OPERATOR_RUN') {
       return {
         fixtureId: run.fixtureId,
+        runKind: run.runKind,
         variableChanged: run.isolationVariable,
         status: run.status,
         nominalDeltaMm: null,
@@ -463,6 +499,7 @@ export function buildCompensationMatrix(
 
     return {
       fixtureId: run.fixtureId,
+      runKind: run.runKind,
       variableChanged: run.isolationVariable,
       status: run.status,
       nominalDeltaMm: 0,
@@ -529,14 +566,17 @@ export const DOWIN_COMPENSATION_TERM_AUTHORITY: readonly CompensationTermRecord[
 ];
 
 export const OPERATOR_EVIDENCE_PACKAGE_CHECKLIST = [
-  'Screenshot of General Settings before the run',
-  'Exact design dimensions / system / machine',
+  'Exact General Settings screenshot',
+  'Design dimensions / system / profile',
+  'Machine = DC-600',
   'Design Preview PDF',
-  'Assembly/Labels PDF',
+  'Labels / Assembly PDF',
   'Optimization PDF',
-  'MDB machine export where applicable',
+  'MDB if generated',
   'Timestamp / run ID',
-  'Note showing exactly one changed setting',
+  'The one changed setting and old/new value (SINGLE_SETTING_ISOLATION only)',
+  'SHA-256 of each external file',
+  'Transcribed nominal / packed / machine / remainder values',
 ] as const;
 
 export interface OperatorEvidencePackage {
@@ -544,12 +584,16 @@ export interface OperatorEvidencePackage {
   timestampIso: string | null;
   generalSettingsScreenshotNote: string | null;
   changedSettingNote: string | null;
+  controlFixtureNote: string | null;
+  changedSetting: ChangedSettingRecord | null;
   sourceHashesSha256: {
+    generalSettingsScreenshot?: string | null;
     designPreview?: string | null;
     assemblyLabels?: string | null;
     optimization?: string | null;
     mdb?: string | null;
   };
+  mdbGenerated: boolean;
   isolationVariable: CalibrationVariable;
   observedSettings: DowinJobObservedSettings;
   widthMm: number;
@@ -586,44 +630,135 @@ export function changedObservedSettingKeys(
   return SETTING_KEYS.filter((key) => parent[key] !== child[key]);
 }
 
+function isolationFieldForVariable(
+  variable: CalibrationVariable
+): keyof DowinJobObservedSettings | null {
+  if (variable === 'weldingWaste') return 'weldingWasteMm';
+  if (variable === 'sawThickness') return 'sawThicknessMm';
+  if (variable === 'trimCut') return 'trimCutMm';
+  return null;
+}
+
+function barsIdenticalForIsolation(
+  parent: readonly ExternalBarPattern[],
+  child: readonly ExternalBarPattern[]
+): boolean {
+  if (parent.length !== child.length) return false;
+  return parent.every((p, i) => {
+    const c = child[i];
+    return (
+      c != null &&
+      p.profileCode === c.profileCode &&
+      p.stockLengthMm === c.stockLengthMm &&
+      p.applicationCount === c.applicationCount &&
+      p.packedSegmentMm.length === c.packedSegmentMm.length
+    );
+  });
+}
+
+function remainderDeltaMm(
+  parent: DowinCalibrationRun,
+  child: DowinCalibrationRun
+): number | null {
+  if (parent.bars.length === 0 || child.bars.length !== parent.bars.length) return null;
+  const diffs: number[] = [];
+  for (let i = 0; i < parent.bars.length; i += 1) {
+    diffs.push(round1(child.bars[i].remainingMm - parent.bars[i].remainingMm));
+  }
+  const unique = [...new Set(diffs)];
+  return unique.length === 1 ? unique[0] : null;
+}
+
+function classifyMeasuredIsolation(
+  runKind: CalibrationRunKind,
+  nominalDeltaMm: number | null,
+  packedDeltaMm: number | null,
+  machineDeltaMm: number | null,
+  remainderDeltaMmValue: number | null
+): CompensationInterpretation {
+  if (runKind === 'CONTROL_FIXTURE' || runKind === 'BASELINE_SETTINGS_SNAPSHOT') {
+    return 'AMBIGUOUS';
+  }
+  const layers = [nominalDeltaMm, packedDeltaMm, machineDeltaMm, remainderDeltaMmValue];
+  if (layers.every((n) => n == null)) return 'AMBIGUOUS';
+  if (layers.every((n) => n == null || n === 0)) return 'NO OBSERVED EFFECT';
+  const nonZero = layers.filter((n): n is number => n != null && n !== 0);
+  const uniqueNonZero = [...new Set(nonZero)];
+  if (uniqueNonZero.length === 1 && nonZero.length >= 1) return 'PROVEN EFFECT';
+  return 'AMBIGUOUS';
+}
+
 export function ingestOperatorCalibrationRun(
   parent: DowinCalibrationRun,
   pkg: OperatorEvidencePackage
 ): OperatorIngestResult {
   const reasons: string[] = [];
+  const runKind = calibrationRunKind(pkg.isolationVariable);
+
   if (!pkg.generalSettingsScreenshotNote) {
     reasons.push('General Settings screenshot/transcription is missing.');
-  }
-  if (!pkg.changedSettingNote) {
-    reasons.push('Note identifying the single changed setting is missing.');
   }
   if (!pkg.timestampIso) {
     reasons.push('Timestamp / run ID timestamp is missing.');
   }
+  if (!pkg.sourceHashesSha256.generalSettingsScreenshot) {
+    reasons.push('General Settings screenshot SHA-256 is missing.');
+  }
   if (!pkg.sourceHashesSha256.designPreview) reasons.push('Design Preview PDF hash is missing.');
   if (!pkg.sourceHashesSha256.assemblyLabels) reasons.push('Assembly/Labels PDF hash is missing.');
   if (!pkg.sourceHashesSha256.optimization) reasons.push('Optimization PDF hash is missing.');
+  if (pkg.mdbGenerated && !pkg.sourceHashesSha256.mdb) {
+    reasons.push('MDB was generated but SHA-256 is missing.');
+  }
+  if (pkg.observedSettings.machineId !== REQUIRED_ISOLATION_MACHINE_ID) {
+    reasons.push(`Machine must be ${REQUIRED_ISOLATION_MACHINE_ID}.`);
+  }
+  if (pkg.pieces.length === 0) {
+    reasons.push('Transcribed nominal / packed / machine piece values are missing.');
+  }
+  if (pkg.bars.length === 0) {
+    reasons.push('Transcribed remainder / bar values are missing.');
+  }
 
   const changed = changedObservedSettingKeys(parent.observedSettings, pkg.observedSettings);
-  if (pkg.isolationVariable === 'ninetyDegreeControl') {
-    if (changed.length > 0) {
-      reasons.push('90° control must keep General Settings identical to the parent.');
+
+  if (runKind === 'CONTROL_FIXTURE') {
+    if (!pkg.controlFixtureNote) {
+      reasons.push('CONTROL_FIXTURE note is missing (geometry/cut-angle change; settings unchanged).');
     }
-  } else if (pkg.isolationVariable === 'baseline') {
-    if (changed.length === 0 && pkg.observedSettings.weldingWasteMm == null) {
+    if (changed.length > 0) {
+      reasons.push('CONTROL_FIXTURE must keep General Settings identical to the parent.');
+    }
+  } else if (runKind === 'BASELINE_SETTINGS_SNAPSHOT') {
+    if (pkg.observedSettings.weldingWasteMm == null) {
       reasons.push('Baseline settings snapshot still has unknown Welding Waste.');
     }
   } else {
+    if (!pkg.changedSettingNote) {
+      reasons.push('Note identifying the single changed setting is missing.');
+    }
+    if (!pkg.changedSetting) {
+      reasons.push('Old/new value for the one changed setting is missing.');
+    }
     if (changed.length !== 1) {
       reasons.push(
-        `Isolation run must change exactly one setting; changed: ${changed.join(', ') || 'none'}.`
+        `SINGLE_SETTING_ISOLATION must change exactly one setting; changed: ${changed.join(', ') || 'none'}.`
+      );
+    }
+    const field = isolationFieldForVariable(pkg.isolationVariable);
+    if (field && parent.observedSettings[field] == null) {
+      reasons.push(
+        'Baseline General Settings still missing; do not ingest isolation until the asdd screenshot is transcribed.'
       );
     }
     if (pkg.widthMm !== parent.widthMm || pkg.heightMm !== parent.heightMm) {
-      reasons.push('Do not change geometry between the first three isolation runs.');
+      reasons.push('Do not change geometry on SINGLE_SETTING_ISOLATION runs.');
     }
     if (pkg.profileSystem !== parent.profileSystem) {
-      reasons.push('Do not change profile system between isolation runs.');
+      reasons.push('Do not change profile system on SINGLE_SETTING_ISOLATION runs.');
+    }
+    if (!barsIdenticalForIsolation(parent.bars, pkg.bars)) {
+      reasons.push('Keep stock, quantity, and bar identity identical on SINGLE_SETTING_ISOLATION runs.');
     }
   }
 
@@ -631,30 +766,34 @@ export function ingestOperatorCalibrationRun(
     return { ok: false, reasons };
   }
 
+  const isolationField = isolationFieldForVariable(pkg.isolationVariable);
+
   return {
     ok: true,
     run: {
       fixtureId: pkg.runId,
       parentFixtureId: parent.fixtureId,
+      runKind,
       isolationVariable: pkg.isolationVariable,
       status: 'MEASURED',
-      designName: parent.designName,
+      designName: runKind === 'CONTROL_FIXTURE' ? pkg.runId : parent.designName,
       profileSystem: pkg.profileSystem,
       widthMm: pkg.widthMm,
       heightMm: pkg.heightMm,
-      machineId: pkg.observedSettings.machineId,
+      machineId: REQUIRED_ISOLATION_MACHINE_ID,
       observedSettings: { ...pkg.observedSettings },
       intendedIsolation: {
-        field:
-          pkg.isolationVariable === 'ninetyDegreeControl'
-            ? 'machineId'
-            : ((changed[0] ?? 'weldingWasteMm') as keyof DowinJobObservedSettings),
+        field: runKind === 'CONTROL_FIXTURE' ? null : isolationField,
         instructedToMm:
-          pkg.isolationVariable === 'ninetyDegreeControl' || !changed[0] || changed[0] === 'machineId'
-            ? null
-            : ((pkg.observedSettings[changed[0]] as number | null) ?? null),
-        note: pkg.changedSettingNote as string,
+          runKind === 'SINGLE_SETTING_ISOLATION' && isolationField
+            ? ((pkg.observedSettings[isolationField] as number | null) ?? null)
+            : null,
+        note:
+          runKind === 'CONTROL_FIXTURE'
+            ? (pkg.controlFixtureNote as string)
+            : (pkg.changedSettingNote as string),
       },
+      changedSetting: pkg.changedSetting,
       pieces: pkg.pieces,
       bars: pkg.bars,
       provenance: `Operator package ${pkg.runId} at ${pkg.timestampIso}. ${pkg.generalSettingsScreenshotNote}`,
@@ -663,13 +802,14 @@ export function ingestOperatorCalibrationRun(
 }
 
 export interface IsolationDeltaRow {
+  runKind: CalibrationRunKind;
   variableChanged: CalibrationVariable;
   status: CalibrationRunStatus;
   nominalDeltaMm: number | null;
   packedDeltaMm: number | null;
   machineDeltaMm: number | null;
   remainderDeltaMm: number | null;
-  interpretation: CompensationInterpretation | 'SUPPORTED';
+  interpretation: CompensationInterpretation;
   note: string;
 }
 
@@ -691,13 +831,18 @@ function meanDeltaByPieceId(
   return unique.length === 1 ? unique[0] : null;
 }
 
+/**
+ * Operator ingest output: delta table + classification only.
+ * Does not patch formulas, K-factor, +3, or +7.
+ */
 export function buildIsolationDeltaTable(
   runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
 ): IsolationDeltaRow[] {
-  const baseline = runs.find((r) => r.isolationVariable === 'baseline');
+  const baseline = runs.find((r) => r.runKind === 'BASELINE_SETTINGS_SNAPSHOT');
   return runs.map((run) => {
     if (run.status !== 'MEASURED' || !baseline) {
       return {
+        runKind: run.runKind,
         variableChanged: run.isolationVariable,
         status: run.status,
         nominalDeltaMm: null,
@@ -708,8 +853,9 @@ export function buildIsolationDeltaTable(
         note: run.intendedIsolation?.note ?? run.provenance,
       };
     }
-    if (run.isolationVariable === 'baseline') {
+    if (run.runKind === 'BASELINE_SETTINGS_SNAPSHOT') {
       return {
+        runKind: run.runKind,
         variableChanged: 'baseline',
         status: 'MEASURED',
         nominalDeltaMm: 0,
@@ -720,17 +866,53 @@ export function buildIsolationDeltaTable(
         note: 'Baseline lengths measured; General Settings screenshot still required before attributing +3 mm.',
       };
     }
+    if (run.runKind === 'CONTROL_FIXTURE') {
+      return {
+        runKind: run.runKind,
+        variableChanged: run.isolationVariable,
+        status: 'MEASURED',
+        nominalDeltaMm: null,
+        packedDeltaMm: null,
+        machineDeltaMm: null,
+        remainderDeltaMm: null,
+        interpretation: 'AMBIGUOUS',
+        note: 'CONTROL_FIXTURE is not a single-setting delta vs asdd. Report within-fixture layers only; do not encode a production formula.',
+      };
+    }
+    const nominalDeltaMm = meanDeltaByPieceId(baseline, run, 'nominalMm');
+    const packedDeltaMm = meanDeltaByPieceId(baseline, run, 'packedMm');
+    const machineDeltaMm = meanDeltaByPieceId(baseline, run, 'machineMm');
+    const remainder = remainderDeltaMm(baseline, run);
     return {
+      runKind: run.runKind,
       variableChanged: run.isolationVariable,
       status: 'MEASURED',
-      nominalDeltaMm: meanDeltaByPieceId(baseline, run, 'nominalMm'),
-      packedDeltaMm: meanDeltaByPieceId(baseline, run, 'packedMm'),
-      machineDeltaMm: meanDeltaByPieceId(baseline, run, 'machineMm'),
-      remainderDeltaMm: null,
-      interpretation: 'SUPPORTED',
-      note: 'Ingested operator isolation run. Not encoded as a production formula.',
+      nominalDeltaMm,
+      packedDeltaMm,
+      machineDeltaMm,
+      remainderDeltaMm: remainder,
+      interpretation: classifyMeasuredIsolation(
+        run.runKind,
+        nominalDeltaMm,
+        packedDeltaMm,
+        machineDeltaMm,
+        remainder
+      ),
+      note: 'SINGLE_SETTING_ISOLATION delta vs asdd. Not encoded as a production formula.',
     };
   });
+}
+
+export function buildOperatorIsolationReport(
+  runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
+): {
+  deltaTable: IsolationDeltaRow[];
+  termAuthority: readonly CompensationTermRecord[];
+} {
+  return {
+    deltaTable: buildIsolationDeltaTable(runs),
+    termAuthority: DOWIN_COMPENSATION_TERM_AUTHORITY,
+  };
 }
 
 export function asddFrameBarResidual(): BarResidualAttribution {

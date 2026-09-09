@@ -43,25 +43,45 @@ FP-024B converted tempting constants into hypotheses. None of these may enter `M
 | KASA/KANAT leftover 7 mm | UNPROVEN | No |
 | Generalized DoWin compensation | NOT ESTABLISHED | No |
 
-`ingestOperatorCalibrationRun` still rejects incomplete packages, multi-setting changes, and geometry changes on the first three isolation runs.
+`ingestOperatorCalibrationRun` rejects incomplete packages, multi-setting isolation, geometry/stock/qty changes on SINGLE_SETTING_ISOLATION, and setting changes on CONTROL_FIXTURE.
 
 ---
 
-## Operator isolation (the actual next step)
+## Operator isolation vs control fixture
 
 DoWin is **not** executed from this repo. Each run needs one evidence package. Do **not** commit licensed PDFs/MDB binaries; ingest SHA-256 + transcribed millimetres.
 
-| Test | Isolation | Status |
-|------|-----------|--------|
-| 1 Baseline settings snapshot | Transcribe **this-run** General Settings on asdd (Welding Waste, Saw Thickness, Trim Cut, angle L/R, robot safety, sash offset if exposed, glazing clearance, machine) | **NOT MEASURED** |
-| 2 Welding Waste | Only Welding Waste → `0`; same geometry | `PENDING_OPERATOR_RUN` |
-| 3 Saw Thickness | Only saw + known 1 mm; same geometry | `PENDING_OPERATOR_RUN` |
-| 4 Trim Cut | Only trim + known delta; remainder vs packed/machine | `PENDING_OPERATOR_RUN` |
-| 5 90° control | 90°/90° demand; settings unchanged | `PENDING_OPERATOR_RUN` |
+The 90° run is a **CONTROL_FIXTURE**, not a `SINGLE_SETTING_ISOLATION`. The first three isolation runs keep geometry, stock, quantity, system, and machine identical.
 
-Package per run: General Settings screenshot, design W×H / system / machine, Design Preview PDF, Assembly/Labels PDF, Optimization PDF, MDB if applicable, timestamp / run ID, note of **exactly one** changed setting.
+| Test | Kind | Isolation | Status |
+|------|------|-----------|--------|
+| 1 Baseline settings snapshot | `BASELINE_SETTINGS_SNAPSHOT` | Transcribe **this-run** General Settings on asdd | **NOT MEASURED** (lengths MEASURED) |
+| 2 Welding Waste | `SINGLE_SETTING_ISOLATION` | Only Welding Waste → `0`; same geometry/stock/qty/system/`DC-600` | `PENDING_OPERATOR_RUN` |
+| 3 Saw Thickness | `SINGLE_SETTING_ISOLATION` | Only saw + known 1 mm; same identity | `PENDING_OPERATOR_RUN` |
+| 4 Trim Cut | `SINGLE_SETTING_ISOLATION` | Only trim + known delta; same identity | `PENDING_OPERATOR_RUN` |
+| 5 90° control | `CONTROL_FIXTURE` | Separate 90°/90° design; settings unchanged; geometry/cut-angle **may** differ | `PENDING_OPERATOR_RUN` |
 
-After Test 2–4, compare unique `packed − nominal` and remainder deltas to Test 1. A term is eligible for FP-024C implementation only when the matrix row is **PROVEN EFFECT** from a single-setting change.
+Package per run:
+
+1. Exact General Settings screenshot  
+2. Design dimensions / system / profile  
+3. Machine = DC-600  
+4. Design Preview PDF  
+5. Labels / Assembly PDF  
+6. Optimization PDF  
+7. MDB if generated  
+8. Timestamp / run ID  
+9. The one changed setting and old/new value (**SINGLE_SETTING_ISOLATION only**)  
+10. SHA-256 of each external file  
+11. Transcribed nominal / packed / machine / remainder values  
+
+After Tests 2–4, Cursor produces **only** a delta table and authority classification:
+
+`PROVEN EFFECT` / `NO OBSERVED EFFECT` / `AMBIGUOUS` / `NOT MEASURED`
+
+A term is eligible for FP-024C implementation only when a **single-variable** row is **PROVEN EFFECT**. `CONTROL_FIXTURE` cannot yield that for a setting. No formula patch, no +3, no +7, no K-factor change until then.
+
+The first decisive evidence is still the **actual baseline General Settings screenshot** for the existing asdd run. Isolation ingest is rejected until that snapshot is transcribed.
 
 ---
 

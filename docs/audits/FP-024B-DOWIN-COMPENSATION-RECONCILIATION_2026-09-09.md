@@ -57,32 +57,37 @@ Unknown fields stay null. Platform / `yilmazcad-parity` defaults are **not** cop
 
 ## Controlled experiment plan (operator; DoWin is not executed here)
 
-| Test | Isolation | Status | Required exports |
-|------|----------|--------|------------------|
-| 1 Baseline | none — asdd as run | **MEASURED** for lengths; **NOT MEASURED** for General Settings | Settings screenshot still needed |
-| 2 Welding Waste | only Welding Waste → `0` | `PENDING_OPERATOR_RUN` | Design Preview, Labels, Optimization, MDB |
-| 3 Saw Thickness | only saw + known 1 mm | `PENDING_OPERATOR_RUN` | same; also remainder / used |
-| 4 Trim Cut | only trim + known delta | `PENDING_OPERATOR_RUN` | remainder vs packed/machine |
-| 5 90° control | 90°/90° demand, settings unchanged | `PENDING_OPERATOR_RUN` | three length layers |
+| Test | Kind | Isolation | Status | Required exports |
+|------|------|-----------|--------|------------------|
+| 1 Baseline | `BASELINE_SETTINGS_SNAPSHOT` | none — asdd as run | **MEASURED** for lengths; **NOT MEASURED** for General Settings | Settings screenshot still needed |
+| 2 Welding Waste | `SINGLE_SETTING_ISOLATION` | only Welding Waste → `0` | `PENDING_OPERATOR_RUN` | Design Preview, Labels, Optimization, MDB |
+| 3 Saw Thickness | `SINGLE_SETTING_ISOLATION` | only saw + known 1 mm | `PENDING_OPERATOR_RUN` | same; also remainder / used |
+| 4 Trim Cut | `SINGLE_SETTING_ISOLATION` | only trim + known delta | `PENDING_OPERATOR_RUN` | remainder vs packed/machine |
+| 5 90° control | `CONTROL_FIXTURE` | 90°/90° demand, settings unchanged; geometry/cut-angle may differ | `PENDING_OPERATOR_RUN` | three length layers |
 
-Do not change more than one parameter per run. Do not change geometry between baseline, Welding Waste, Saw Thickness, and Trim Cut.
+Tests 2–4 must keep geometry, stock, quantity, system, and machine (`DC-600`) identical. The 90° run is **not** a single-setting isolation.
 
 ### Operator evidence package (required for each run)
 
 Do **not** commit licensed PDFs, MDB binaries, or screenshots unless project policy later allows licensed internal images. Ingest SHA-256 + transcribed millimetres only.
 
-1. Screenshot of General Settings **before** the run  
-2. Exact design dimensions / system / machine  
-3. Design Preview PDF  
-4. Assembly/Labels PDF  
-5. Optimization PDF  
-6. MDB where applicable  
-7. Timestamp / run ID  
-8. Note showing **exactly one** changed setting  
+1. Exact General Settings screenshot  
+2. Design dimensions / system / profile  
+3. Machine = DC-600  
+4. Design Preview PDF  
+5. Labels / Assembly PDF  
+6. Optimization PDF  
+7. MDB if generated  
+8. Timestamp / run ID  
+9. The one changed setting and old/new value (`SINGLE_SETTING_ISOLATION` only)  
+10. SHA-256 of each external file  
+11. Transcribed nominal / packed / machine / remainder values  
+
+Cursor output after ingest: **delta table + classification only** (`PROVEN EFFECT` / `NO OBSERVED EFFECT` / `AMBIGUOUS` / `NOT MEASURED`). No formula patch.
 
 First capture the **existing asdd** settings (Welding Waste, Saw Thickness, Trim Cut, angle compensation L/R, robot safety length, sash offset if exposed, glazing clearance, selected machine). Until that exists, the baseline +3 mm stays unattributed.
 
-`ingestOperatorCalibrationRun` rejects incomplete packages, multi-setting isolation, and geometry changes on the first three isolation runs.
+`ingestOperatorCalibrationRun` rejects incomplete packages, multi-setting isolation, geometry/stock/qty changes on the first three isolation runs, and setting changes on the 90° CONTROL_FIXTURE.
 
 ---
 
@@ -123,7 +128,7 @@ Dealer-audit named-profile numbers (weld 3, kerf 4, remnant 500) are **not** thi
 | weld-0 | weldingWaste | — | — | — | — | **NOT MEASURED** |
 | saw+1 | sawThickness | — | — | — | — | **NOT MEASURED** |
 | trim+Δ | trimCut | — | — | — | — | **NOT MEASURED** |
-| 90° control | ninetyDegreeControl | — | — | — | — | **NOT MEASURED** |
+| 90° control | CONTROL_FIXTURE | — | — | — | — | **NOT MEASURED** |
 
 No row is `PROVEN EFFECT`. The 3 mm 45° observation is **not** authority to set `packedLength = nominalLength + 3`.
 
@@ -202,7 +207,7 @@ Recorded on this branch (9 Sep 2026):
 2. Welding Waste = 0 isolation export (Test 2).
 3. Saw Thickness +1 mm isolation (Test 3).
 4. Trim Cut isolation vs the 23 mm extra-after-packed and the 7 mm hypothesis leftover (Test 4).
-5. Separate 90° control design (Test 5).
+5. Separate 90° **CONTROL_FIXTURE** (not a single-setting isolation).
 6. Bead machine instruction (not in DC-600 `Table1`).
 7. Glass production dimension.
 
