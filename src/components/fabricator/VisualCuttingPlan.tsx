@@ -1,5 +1,5 @@
 import { CutListItem, OptimizedCutList } from '@/lib/fabricator/UPVCCuttingEngine';
-import { PLATFORM_MANUFACTURING_DEFAULTS, visualBarUsedMm } from '@/lib/fabricator/ManufacturingSettings';
+import { PLATFORM_MANUFACTURING_DEFAULTS, barConsumedLengthMm } from '@/lib/fabricator/ManufacturingSettings';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Maximize2, Ruler, ZoomIn, ZoomOut } from 'lucide-react';
@@ -11,6 +11,7 @@ interface VisualCuttingPlanProps {
     barLengthMm?: number;
     /** Saw kerf (mm) used for bar packing — used so "Used" and waste % match the report. */
     sawKerfMm?: number;
+    trimCutMm?: number;
 }
 
 interface VisualSegment extends CutListItem {
@@ -21,6 +22,7 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
     cutList,
     barLengthMm = 6500,
     sawKerfMm = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
+    trimCutMm = PLATFORM_MANUFACTURING_DEFAULTS.trimCutMm,
 }) => {
     const [zoomLevel, setZoomLevel] = useState(1);
     const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
@@ -43,9 +45,9 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
         Object.keys(groups).forEach((key) => {
             const k = parseInt(key, 10);
             groups[k].sort((a, b) => a.positionOnBarMm - b.positionOnBarMm);
-            let currentPos = 0;
+            let currentPos = trimCutMm;
             groups[k].forEach((cut, idx) => {
-                if (idx === 0 && cut.positionOnBarMm > 0) currentPos = cut.positionOnBarMm;
+                if (idx === 0 && cut.positionOnBarMm > currentPos) currentPos = cut.positionOnBarMm;
                 if (cut.positionOnBarMm < currentPos) {
                     cut.positionOnBarMm = currentPos;
                 }
@@ -54,7 +56,7 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
         });
 
         return groups;
-    }, [cutList.items, sawKerfMm]);
+    }, [cutList.items, sawKerfMm, trimCutMm]);
 
     const BAR_HEIGHT = 160; // Doubled for clearer visibility
     const VIEW_HEIGHT = 240; // Extra space for labels and hover dimension
@@ -119,9 +121,10 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
                     .sort(([a], [b]) => parseInt(a, 10) - parseInt(b, 10))
                     .map(([barNum, cuts]) => {
                         const _barNumber = parseInt(barNum, 10);
-                        const totalUsed = visualBarUsedMm(
+                        const packSettings = { sawKerfMm, trimCutMm };
+                        const totalUsed = barConsumedLengthMm(
                             cuts.map((c) => c.cutLengthMm),
-                            sawKerfMm
+                            packSettings
                         );
                         const wasteMm = barLengthMm - totalUsed;
                         const _wastePercent = barLengthMm > 0 ? (wasteMm / barLengthMm) * 100 : 0;

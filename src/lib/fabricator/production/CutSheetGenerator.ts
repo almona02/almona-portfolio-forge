@@ -11,6 +11,8 @@
 import type { Cut, CuttingPlan } from '@/types/fabricator';
 import type { CutSheetItem } from '@/store/workflowStore';
 import {
+  barRemnantLengthMm,
+  pieceStartPositionsMm,
   resolveManufacturingSettings,
   type ManufacturingSettingsInput,
 } from '@/lib/fabricator/ManufacturingSettings';
@@ -54,33 +56,31 @@ export function generateCutSheets(
   cuttingPlans: CuttingPlan[],
   options?: { orderNumber?: string; positionNumber?: string } & ManufacturingSettingsInput
 ): CutSheet {
-  const sawKerfMm = resolveManufacturingSettings(options).sawKerfMm;
+  const settings = resolveManufacturingSettings(options);
   const bars: CutSheetBar[] = [];
   let totalCuts = 0;
   let totalWasteMm = 0;
 
   cuttingPlans.forEach((plan, planIndex) => {
     const stockLength = plan.stockLength || 6000;
-    let currentPosition = 0;
+    const lengths = plan.cuts.map((cut) => cut.length);
+    const starts = pieceStartPositionsMm(lengths, settings);
 
-    const cuts: CutSheetCut[] = plan.cuts.map((cut: Cut, cutIndex: number) => {
-      const cutSheetCut: CutSheetCut = {
-        sequence: cutIndex + 1,
-        lengthMm: cut.length,
-        angleDeg: cut.angle ?? 0,
-        componentId: cut.componentId ?? `cut-${cutIndex + 1}`,
-        cutId: cut.cutId,
-        occurrenceIndex: cut.occurrenceIndex,
-        componentType: cut.componentType,
-        positionMm: currentPosition,
-      };
-      currentPosition += cut.length + sawKerfMm;
-      return cutSheetCut;
-    });
+    const cuts: CutSheetCut[] = plan.cuts.map((cut: Cut, cutIndex: number) => ({
+      sequence: cutIndex + 1,
+      lengthMm: cut.length,
+      angleDeg: cut.angle ?? 0,
+      componentId: cut.componentId ?? `cut-${cutIndex + 1}`,
+      cutId: cut.cutId,
+      occurrenceIndex: cut.occurrenceIndex,
+      componentType: cut.componentType,
+      positionMm: starts[cutIndex],
+    }));
 
-    const wasteMm = Math.max(0, stockLength - currentPosition);
+    const wasteMm = Math.max(0, barRemnantLengthMm(stockLength, lengths, settings));
+    const consumedMm = stockLength - wasteMm;
     const utilizationPercent =
-      stockLength > 0 ? ((currentPosition / stockLength) * 100) : 0;
+      stockLength > 0 ? ((consumedMm / stockLength) * 100) : 0;
 
     totalCuts += cuts.length;
     totalWasteMm += wasteMm;
@@ -118,18 +118,22 @@ export class CutSheetGenerator {
     cuttingPlan: CuttingPlan[],
     settingsInput: ManufacturingSettingsInput = {}
   ): CutSheetItem[] {
+    const settings = resolveManufacturingSettings(settingsInput);
     const sheets: CutSheetItem[] = [];
     let globalIndex = 0;
-    const sawKerfMm = resolveManufacturingSettings(settingsInput).sawKerfMm;
 
     for (let barIndex = 0; barIndex < cuttingPlan.length; barIndex++) {
       const plan = cuttingPlan[barIndex];
       const stockBarId = `BAR-${barIndex + 1}`;
       const stockBarLength = plan.stockLength || 6000;
       const profileRole = plan.profile?.profileRole || plan.profile?.type || plan.profile?.name || 'profile';
-      let positionOnBar = 0;
+      const starts = pieceStartPositionsMm(
+        plan.cuts.map((cut) => cut.length),
+        settings
+      );
 
-      for (const cut of plan.cuts) {
+      for (let cutIndex = 0; cutIndex < plan.cuts.length; cutIndex++) {
+        const cut = plan.cuts[cutIndex];
         sheets.push({
           id: `CS-${++globalIndex}`,
           profileRole,
@@ -139,11 +143,10 @@ export class CutSheetGenerator {
           quantity: 1,
           stockBarId,
           stockBarLength,
-          positionOnBar,
+          positionOnBar: starts[cutIndex],
           cutId: cut.cutId,
           componentId: cut.componentId,
         });
-        positionOnBar += cut.length + sawKerfMm;
       }
     }
 

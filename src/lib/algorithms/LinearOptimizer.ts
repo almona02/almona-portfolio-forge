@@ -5,10 +5,13 @@
  * into standard stock lengths, minimizing waste.
  * 
  * Constitutional Tier: Tier 2 (Mathematical Truth)
- * Kerf default: FP-023A ManufacturingSettings platform sawKerfMm.
+ * Kerf rule: FP-023B kerf_after_each_piece (N kerfs for N pieces).
  */
 
-import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
+import {
+  PLATFORM_MANUFACTURING_DEFAULTS,
+  pieceSlotMm,
+} from '@/lib/fabricator/ManufacturingSettings';
 
 export interface StockBar {
   id: string; // Unique ID for this bar
@@ -48,7 +51,8 @@ export interface CutRequest {
 export function optimizeLinearCuts(
   requests: CutRequest[],
   stockLength: number = 6000,
-  kerfWidth: number = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm
+  kerfWidth: number = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
+  trimCutMm: number = PLATFORM_MANUFACTURING_DEFAULTS.trimCutMm
 ): OptimizationResult {
   // 1. Flatten requests into individual cuts
   const allCuts: Array<{ id: string; length: number; label: string }> = [];
@@ -75,14 +79,9 @@ export function optimizeLinearCuts(
     // Try to find the best existing bar that fits this cut
     for (let i = 0; i < stockBars.length; i++) {
       const bar = stockBars[i];
-      // Check if cut + kerf fits
-      // Note: We only add kerf if it's not the first cut, but for simplicity/safety
-      // in estimation, we often assume kerf is needed for every cut or pre-deduct it.
-      // Here we check: remaining space >= cut.length + (bar.cuts.length > 0 ? kerfWidth : 0)
-      const kerfNeeded = bar.cuts.length > 0 ? kerfWidth : 0;
-      
-      if (bar.waste >= cut.length + kerfNeeded) {
-        const potentialWaste = bar.waste - (cut.length + kerfNeeded);
+      const slot = pieceSlotMm(cut.length, kerfWidth);
+      if (bar.waste >= slot) {
+        const potentialWaste = bar.waste - slot;
         if (potentialWaste < minWaste) {
           minWaste = potentialWaste;
           bestBarIndex = i;
@@ -91,25 +90,23 @@ export function optimizeLinearCuts(
     }
 
     if (bestBarIndex !== -1) {
-      // Add to existing bar
       const bar = stockBars[bestBarIndex];
-      const kerfNeeded = bar.cuts.length > 0 ? kerfWidth : 0;
+      const slot = pieceSlotMm(cut.length, kerfWidth);
       bar.cuts.push(cut);
-      bar.waste -= (cut.length + kerfNeeded);
+      bar.waste -= slot;
       bar.wastePercentage = bar.waste / bar.length;
     } else {
-      // Create new bar
-      // Validate that cut fits in a full bar
       if (cut.length > stockLength) {
         console.warn(`Cut ${cut.label} (${cut.length}mm) exceeds stock length (${stockLength}mm). Skipping.`);
-        return; // Skip impossible cuts or handle as special order
+        return;
       }
-      
+
+      const slot = pieceSlotMm(cut.length, kerfWidth);
       const newBar: StockBar = {
         id: `stock-${stockBars.length + 1}`,
         length: stockLength,
         cuts: [cut],
-        waste: stockLength - cut.length, // First cut typically needs edge trim, but we simplify here
+        waste: stockLength - trimCutMm - slot,
         wastePercentage: 0,
       };
       newBar.wastePercentage = newBar.waste / newBar.length;

@@ -36,6 +36,7 @@ interface CutListViewerProps {
   cutList: OptimizedCutList;
   barLengthMm?: number;
   sawKerfMm?: number;
+  trimCutMm?: number;
   showRemnants?: boolean;
   projectInfo?: {
     name: string;
@@ -49,6 +50,7 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
   cutList,
   barLengthMm = 6000,
   sawKerfMm = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
+  trimCutMm = PLATFORM_MANUFACTURING_DEFAULTS.trimCutMm,
   showRemnants = true,
   projectInfo = {
     name: 'Window Project',
@@ -160,7 +162,12 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
         </CardContent>
       </Card>
 
-      <VisualCuttingPlan cutList={cutList} barLengthMm={barLengthMm} sawKerfMm={sawKerfMm} />
+      <VisualCuttingPlan
+        cutList={cutList}
+        barLengthMm={barLengthMm}
+        sawKerfMm={sawKerfMm}
+        trimCutMm={trimCutMm}
+      />
 
       {/* Cutting Sequence (for single-head machine) */}
       <Card>

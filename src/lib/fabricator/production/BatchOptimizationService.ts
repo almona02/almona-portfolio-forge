@@ -104,8 +104,8 @@ export function runBatchOptimization(
   }
 
   const settings = resolveManufacturingSettings(settingsInput);
-  const frameStock = optimizeLinearCuts(allFrameRequests, STOCK_LENGTH_MM, settings.sawKerfMm);
-  const sashStock = optimizeLinearCuts(allSashRequests, STOCK_LENGTH_MM, settings.sawKerfMm);
+  const frameStock = optimizeLinearCuts(allFrameRequests, STOCK_LENGTH_MM, settings.sawKerfMm, settings.trimCutMm);
+  const sashStock = optimizeLinearCuts(allSashRequests, STOCK_LENGTH_MM, settings.sawKerfMm, settings.trimCutMm);
 
   const batchBars = frameStock.barsCount + sashStock.barsCount;
   const batchWaste = frameStock.totalWaste + sashStock.totalWaste;

@@ -302,8 +302,8 @@ export class ApexEngineV6 {
     const settings = resolveManufacturingSettings({
       systemPack: systemPackCuttingOverrideFromMicrons(this.system.fabricationRules.cutting),
     });
-    const frameOpt = optimizeLinearCuts(frameRequests, stockLen, settings.sawKerfMm);
-    const sashOpt = optimizeLinearCuts(sashRequests, stockLen, settings.sawKerfMm);
+    const frameOpt = optimizeLinearCuts(frameRequests, stockLen, settings.sawKerfMm, settings.trimCutMm);
+    const sashOpt = optimizeLinearCuts(sashRequests, stockLen, settings.sawKerfMm, settings.trimCutMm);
 
     return { frameStock: frameOpt, sashStock: sashOpt };
   }

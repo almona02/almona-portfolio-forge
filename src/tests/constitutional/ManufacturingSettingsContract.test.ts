@@ -26,7 +26,9 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
     const cutSheet = sourceOf('src/lib/fabricator/production/CutSheetGenerator.ts');
     const batch = sourceOf('src/lib/fabricator/production/BatchOptimizationService.ts');
 
-    expect(linear).toContain('PLATFORM_MANUFACTURING_DEFAULTS');
+    expect(linear).toContain('pieceSlotMm');
+    expect(linear).not.toMatch(/bar\.cuts\.length > 0 \? kerfWidth/);
+    expect(almona).toContain('barRemnantLengthMm');
     expect(linear).not.toMatch(/kerfWidth:\s*number\s*=\s*5\b/);
     expect(almona).toContain('resolveManufacturingSettings');
     expect(almona).not.toMatch(/const DEFAULT_SAW_KERF\s*=\s*10/);
@@ -47,6 +49,12 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
     expect(a.sawKerfMm).toBe(3);
     expect(a.sawKerfMm).toBe(b.sawKerfMm);
     expect(a.sawKerfMm).not.toBe(PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm);
+  });
+
+  test('warehouse RemnantManager default is platform 300, not a third 200 mm floor', () => {
+    const inventory = sourceOf('src/lib/inventory/RemnantManager.ts');
+    expect(inventory).toContain('PLATFORM_MANUFACTURING_DEFAULTS.minimumReusableLengthMm');
+    expect(inventory).not.toMatch(/minRemnantLengthMm:\s*number\s*=\s*200/);
   });
 
   test('calculateKFactor remains available (FP-023A does not delete it)', () => {

@@ -314,7 +314,7 @@ export function runLocalGreedyFallback(
 
     for (const cut of expandedCuts) {
       if (cut.quantity === 0) continue;
-      const required = cut.lengthMm + (assigned.length > 0 ? kerf : 0);
+      const required = cut.lengthMm + kerf;
       if (used + required <= bar.lengthMm) {
         assigned.push(cut);
         used += required;

@@ -17,6 +17,7 @@ import { WindowUnit } from '@/types/fabricator';
 import { Profile } from '@/types/profile';
 import {
   PLATFORM_MANUFACTURING_DEFAULTS,
+  pieceSlotMm,
   resolveManufacturingSettings,
   type ManufacturingSettingsInput,
 } from '@/lib/fabricator/ManufacturingSettings';
@@ -323,7 +324,7 @@ export function generateOptimizedCutList(
 
   for (const item of sortedItems) {
     for (let i = 0; i < item.quantity; i++) {
-      const requiredLength = item.cutLengthMm + kerfWidthMm;
+      const requiredLength = pieceSlotMm(item.cutLengthMm, kerfWidthMm);
 
       // Try to fit in current bar
       if (
@@ -340,15 +341,16 @@ export function generateOptimizedCutList(
       } else {
         // Start new bar
         barIndex++;
+        const startMm = settings.trimCutMm;
         currentBar = {
           profileId: item.profileId,
-          usedMm: requiredLength,
-          cuts: [{ ...item, barNumber: barIndex, positionOnBarMm: 0 }],
+          usedMm: startMm + requiredLength,
+          cuts: [{ ...item, barNumber: barIndex, positionOnBarMm: startMm }],
         };
         bars.push(currentBar);
         item.barNumber = barIndex;
-        item.positionOnBarMm = 0;
-        item.wasteAfterMm = barLengthMm - requiredLength;
+        item.positionOnBarMm = startMm;
+        item.wasteAfterMm = barLengthMm - currentBar.usedMm;
       }
     }
   }
@@ -513,7 +515,7 @@ export function generateOptimizedCutListForBatch(
 
   for (const item of sortedItems) {
     for (let i = 0; i < item.quantity; i++) {
-      const requiredLength = item.cutLengthMm + sawKerfMm;
+      const requiredLength = pieceSlotMm(item.cutLengthMm, sawKerfMm);
       if (
         currentBar &&
         currentBar.profileId === item.profileId &&
@@ -526,15 +528,16 @@ export function generateOptimizedCutListForBatch(
         currentBar.cuts.push({ ...item });
       } else {
         barIndex++;
+        const startMm = PLATFORM_MANUFACTURING_DEFAULTS.trimCutMm;
         currentBar = {
           profileId: item.profileId,
-          usedMm: requiredLength,
-          cuts: [{ ...item, barNumber: barIndex, positionOnBarMm: 0 }],
+          usedMm: startMm + requiredLength,
+          cuts: [{ ...item, barNumber: barIndex, positionOnBarMm: startMm }],
         };
         bars.push(currentBar);
         item.barNumber = barIndex;
-        item.positionOnBarMm = 0;
-        item.wasteAfterMm = barLengthMm - requiredLength;
+        item.positionOnBarMm = startMm;
+        item.wasteAfterMm = barLengthMm - currentBar.usedMm;
       }
     }
   }

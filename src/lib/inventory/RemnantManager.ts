@@ -13,7 +13,10 @@
  */
 
 import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
-import type { ManufacturingSettings } from '@/lib/fabricator/ManufacturingSettings';
+import {
+  PLATFORM_MANUFACTURING_DEFAULTS,
+  type ManufacturingSettings,
+} from '@/lib/fabricator/ManufacturingSettings';
 import { supabase } from '../supabase';
 
 /**
@@ -99,16 +102,23 @@ export interface RemnantStatistics {
 
 export class RemnantManager {
   /**
-   * Warehouse inventory floor. Canonical cut-sheet remnant uses
-   * ManufacturingSettings.minimumReusableLengthMm (platform 300 / Yilmaz parity 500).
-   * Pass that resolved value when creating remnants from a manufacturing job.
-   * Default 200 is the historical inventory path — not aliased to trimCut or kerf.
+   * Warehouse / marketplace keep-drop floor — not bar-pack consumed-length.
+   * Canonical bar remnant millimetres come from barRemnantLengthMm.
+   * Default is platform ManufacturingSettings (300 mm), not a third 200 mm threshold.
+   * Use fromManufacturingSettings() for yilmazcad-parity (500 mm).
    */
   private minRemnantLength: number;
   private defaultExpirationDays: number = 90; // Default expiration period
 
-  constructor(minRemnantLengthMm: number = 200) {
+  constructor(
+    minRemnantLengthMm: number = PLATFORM_MANUFACTURING_DEFAULTS.minimumReusableLengthMm
+  ) {
     this.minRemnantLength = minRemnantLengthMm;
+  }
+
+  /** Keep/drop floor in mm. Not bar consumed-length. */
+  get minimumReusableLengthMm(): number {
+    return this.minRemnantLength;
   }
 
   static fromManufacturingSettings(

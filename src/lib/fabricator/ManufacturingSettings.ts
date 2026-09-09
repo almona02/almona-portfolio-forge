@@ -227,8 +227,21 @@ export function isReusableRemnantLength(
   return roundManufacturingMm(lengthMm) >= roundManufacturingMm(settings.minimumReusableLengthMm);
 }
 
+import { barConsumedLengthMm as consumedLengthOnBarMm } from './barPackAccounting';
+
+export {
+  BAR_PACK_KERF_RULE_ID,
+  accountBarPack,
+  barConsumedLengthMm,
+  barRemnantLengthMm,
+  kerfLossOnBarMm,
+  pieceSlotMm,
+  pieceStartPositionsMm,
+} from './barPackAccounting';
+
+/** Visual/report used-length with trimCut 0. Canonical packing uses barConsumedLengthMm. */
 export function visualBarUsedMm(cutLengthsMm: number[], sawKerfMm: number): number {
-  return cutLengthsMm.reduce((sum, length) => sum + length, 0) + cutLengthsMm.length * sawKerfMm;
+  return consumedLengthOnBarMm(cutLengthsMm, { sawKerfMm, trimCutMm: 0 });
 }
 
 export function manufacturingSettingsSignature(

@@ -14,10 +14,12 @@
 
 import type { CutListItem, OptimizedCutList } from './UPVCCuttingEngine';
 import {
-  isReusableRemnantLength,
-  resolveManufacturingSettings,
-  type ManufacturingSettings,
-  type NamedManufacturingProfileId,
+    isReusableRemnantLength,
+    barRemnantLengthMm,
+    pieceSlotMm,
+    resolveManufacturingSettings,
+    type ManufacturingSettings,
+    type NamedManufacturingProfileId,
 } from './ManufacturingSettings';
 
 function settingsInputFromProject(
@@ -339,7 +341,7 @@ export class AlmonaCuttingEngine {
     let position = 0;
 
     expanded.forEach(({ item, itemIndex, copyIndex }, globalIdx) => {
-      const needLength = item.cutLengthMm + sawKerf;
+      const needLength = pieceSlotMm(item.cutLengthMm, sawKerf);
       const partId = partIdMap.get(`${itemIndex}-${copyIndex}`) ?? `P${globalIdx + 1}`;
 
       if (
@@ -358,7 +360,11 @@ export class AlmonaCuttingEngine {
       }
 
       if (currentSegments.length > 0) {
-        const remnant = barLength - currentUsed;
+        const remnant = barRemnantLengthMm(
+          barLength,
+          currentSegments.map((s) => s.length),
+          { sawKerfMm: sawKerf, trimCutMm: settings.trimCutMm }
+        );
         const assignedBar = barNumber++;
         bars.push({
           barNumber: assignedBar,
@@ -380,21 +386,24 @@ export class AlmonaCuttingEngine {
       }
 
       currentProfileId = item.profileId;
-      currentUsed = needLength;
-      position = 0;
+      currentUsed = settings.trimCutMm + needLength;
       currentSegments = [
         {
           partId,
           length: item.cutLengthMm,
           angle: item.cuttingAngle,
-          position: 0,
+          position: settings.trimCutMm,
         },
       ];
-      position = needLength;
+      position = settings.trimCutMm + needLength;
     });
 
     if (currentSegments.length > 0) {
-      const remnant = barLength - currentUsed;
+      const remnant = barRemnantLengthMm(
+        barLength,
+        currentSegments.map((s) => s.length),
+        { sawKerfMm: sawKerf, trimCutMm: settings.trimCutMm }
+      );
       const assignedBar = barNumber++;
       bars.push({
         barNumber: assignedBar,
