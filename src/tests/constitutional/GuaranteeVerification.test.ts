@@ -271,6 +271,35 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
     });
   });
 
+  describe('AICS-001 FP-024: DoWin physical-length gate stays isolated', () => {
+    test('golden expected lengths stay null and calculateKFactor is not deleted', async () => {
+      const {
+        DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
+        DOWIN_GOLDEN_FIXTURE_STATUS,
+        DOWIN_LENGTH_CATEGORIES,
+        DOWIN_PARITY_TOLERANCE_MM,
+        compareDowinGoldenLengths,
+        dowinParityGatePasses,
+      } = await import('@/lib/fabricator/golden/dowinPhysicalLengthFixture');
+      const { calculateKFactor } = await import('@/lib/fabricator/UPVCCuttingEngine');
+
+      expect(DOWIN_PARITY_TOLERANCE_MM).toBe(0.1);
+      expect(DOWIN_LENGTH_CATEGORIES).toHaveLength(7);
+      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe(DOWIN_GOLDEN_FIXTURE_STATUS);
+      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows).toEqual([]);
+      expect(
+        dowinParityGatePasses(compareDowinGoldenLengths(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION, []))
+      ).toBe(false);
+      expect(
+        calculateKFactor({
+          profileWidthMm: 70,
+          wallThicknessMm: 2.5,
+          miterAngleDegrees: 45,
+        })
+      ).toBeGreaterThan(0);
+    });
+  });
+
   describe('AICS-001: Pose measures are stored millimetres, not inferred', () => {
     test('Position mapping uses overall_width_mm / overall_height_mm without a window_unit blob', async () => {
       const { mapPositionRowToWindowUnit } = await import('@/lib/supabase/fabricatorClientV2');

@@ -69,8 +69,5 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
   test('DoWin golden fixture remains PENDING_EXTERNAL_FIXTURE', () => {
     expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe(DOWIN_GOLDEN_FIXTURE_STATUS);
     expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows).toEqual([]);
-    expect(
-      DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows.every((row) => row.expectedLengthMm == null)
-    ).toBe(true);
   });
 });
