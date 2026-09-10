@@ -61,7 +61,7 @@ Live General Settings (Test 1A) are **not** proof they governed the original 18:
 | 3 Saw Thickness | `SINGLE_SETTING_ISOLATION` | Only Saw Thickness 4 → 5; same identity | **AMBIGUOUS** (piece lengths inert; remainder not attributable to Saw after reset) |
 | 4 Trim Cut | `SINGLE_SETTING_ISOLATION` | Only Trim Cut 0 → 10; same identity | **AMBIGUOUS** (piece/machine inert; remainder confound, not Trim evidence) |
 | Reset | `BASELINE_RESET_VALIDATION` | Restore Weld=3 / Saw=4 / Trim=0; Clear Screen; rerun unchanged asdd | **REPRODUCTION_FAILED** (2026-09-10 23:16). Machine lengths recovered; remainders still Test 3/4. |
-| FP-024C.1 | `OPTIMIZATION_STATE_PROVENANCE_AUDIT` | Same geometry + Weld 3 / Saw 4 / Trim 0 + same stock + fresh project/design/plan/result; compare assignment signatures | `PENDING_OPERATOR_RUN` |
+| FP-024C.1 Fresh A/B/C | `OPTIMIZATION_STATE_PROVENANCE_AUDIT` | Same geometry + Weld 3 / Saw 4 / Trim 0 + same stock + newly solved + snapshots/fingerprints/SHA-256 + bar-by-bar assignment. Clear Screen is not freshness. | `PENDING_OPERATOR_RUN` × 3 |
 | 5 90° control | `CONTROL_FIXTURE` | Separate 90°/90° design; settings unchanged; geometry/cut-angle **may** differ | **Gated** |
 
 Package per run:
@@ -165,14 +165,15 @@ Decisive experiment: **same geometry + Weld 3 / Saw 4 / Trim 0 + same stock quan
 
 | Outcome | Classification |
 |---------|----------------|
-| Original remainder topology returns (KASA 965 / KANAT 2203 / ORTA 5080 / CITA 206+6160) | **PERSISTED STATE EFFECT PROVEN** |
-| Later topology returns consistently (KASA 960 / KANAT 2198 / ORTA 5079 / CITA 3178×2) | 1B depended on other hidden state / alternative optimizer solution |
-| Repeated fresh runs produce different topology | optimizer nondeterminism or tie-breaking variability |
-| Inputs cannot be proven identical | **AMBIGUOUS** |
+| Proven-identical inputs; reused/reopened later topology B **and** a genuinely fresh counterpart original topology A | **PERSISTED_STATE_EFFECT_PROVEN** |
+| ≥3 genuinely fresh proven-equivalent runs all later topology | **ALTERNATIVE_OPTIMIZER_SOLUTION** |
+| ≥3 genuinely fresh proven-equivalent runs with more than one topology | **OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING** |
+| Concrete fingerprint/snapshot difference | **HIDDEN_INPUT_DIFFERENCE** |
+| Incomplete fingerprints, reused without fresh counterpart, one/two fresh runs, or Clear Screen | **AMBIGUOUS** / **UNPROVEN** — never `IDENTICAL` |
 
 Do not compare only total utilization. Compare the bar-by-bar assignment signature: profile, stock-bar identity/ordinal, piece sequence, packed lengths, and remainder. Two optimizations can have the same utilization and different topology.
 
-A single fresh run cannot claim consistency. `ALTERNATIVE_OPTIMIZER_SOLUTION` needs three equivalent newly solved runs. `PERSISTED_STATE_EFFECT_PROVEN` requires a captured reused/reopened counterpart plus a genuinely fresh solve under proven-identical input fingerprints. Missing provenance never becomes `IDENTICAL`.
+A single fresh run cannot claim consistency. `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING` also requires Fresh A+B+C. `PERSISTED_STATE_EFFECT_PROVEN` requires a captured reused/reopened counterpart plus a genuinely fresh solve under proven-identical input fingerprints. Missing provenance never becomes `IDENTICAL`. The 90° CONTROL_FIXTURE stays gated even if a reset recovers 1B, until Fresh A/B/C are measured and FP-024C.1 is no longer PENDING_OPERATOR_RUN or AMBIGUOUS.
 
 See `docs/audits/FP-024C1-OPTIMIZATION-STATE-PROVENANCE_2026-09-10.md`.
 

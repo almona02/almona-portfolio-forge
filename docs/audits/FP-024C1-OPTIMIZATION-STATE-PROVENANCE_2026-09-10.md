@@ -2,10 +2,11 @@
 
 | Field | Value |
 |-------|--------|
-| Date | 10 September 2026 |
+| Date | 10–11 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
-| Origin HEAD (at audit start) | `056f100` — `FP-024C: classify BASELINE_REPRODUCTION_RUN as REPRODUCED` |
-| Local vs origin | Working tree was ahead of origin with uncommitted isolation + provenance work; no extra local commits at start. Public Draft PR #32 description still reflected the earlier 1B/Test-2 stage and is not the authority. |
+| Origin HEAD | `056f100` — `FP-024C: classify BASELINE_REPRODUCTION_RUN as REPRODUCED` |
+| Prior local HEAD | `332914f` — `audit: record FP-024C.1 state provenance checkpoint` (4 commits ahead of origin) |
+| This checkpoint commits | `7f602e9` harden; `5f7589c` intake; `184fcf3` tests; this audit commit |
 | Gate | ⏸ **PENDING_OPERATOR_RUN** |
 | Physical-length score | **Unchanged at 6.0/10** |
 | PR #32 | Draft / **DO NOT MERGE** |
@@ -19,7 +20,7 @@ FP-024C ⏸ STATE PROVENANCE INVESTIGATION
 FP-024C.1 PENDING_OPERATOR_RUN
 
 Test 2 packed/machine:
-✅ PROVEN for this fixture
+✅ PROVEN — fixture-specific only
 
 Test 3 remainder:
 ⚠️ AMBIGUOUS / UNPROVEN
@@ -28,8 +29,17 @@ Test 4 remainder:
 ⚠️ AMBIGUOUS
 
 BASELINE_RESET_VALIDATION:
-❌ REPRODUCTION_FAILED for topology
+❌ topology REPRODUCTION_FAILED
 ✅ machine-length signature recovered
+
+Fresh A:
+PENDING_OPERATOR_RUN
+
+Fresh B:
+PENDING_OPERATOR_RUN
+
+Fresh C:
+PENDING_OPERATOR_RUN
 
 90° CONTROL_FIXTURE:
 GATED
@@ -40,98 +50,77 @@ Physical-length correctness:
 Production formulas:
 FROZEN
 
-FP-016:
-NOT STARTED
-
-FP-017:
-NOT STARTED
-
 PR #32:
-DRAFT
-DO NOT MERGE
+DRAFT / DO NOT MERGE
 ```
 
 FP-024C.1 answers one question:
 
 > **Why can identical visible geometry/settings produce different optimization remainder topology?**
 
-No licensed DoWin Fresh A/B/C package was ingested. Schema, ingest gate, comparators, tests, and pending templates are in place. Millimetres and provenance IDs were not fabricated.
+No licensed DoWin Fresh A/B/C package was ingested. Schema, ingest gate, comparators, tests, and pending templates are in place. Millimetres and SHA-256 values were not fabricated.
 
-This audit does **not** claim an ALMONA source finding explains DoWin.
+This audit does **not** claim an ALMONA source finding explains DoWin internals.
 
 ---
 
-## Files changed (this checkpoint)
+## Files changed (this checkpoint vs `332914f`)
 
 | Path | Role |
 |------|------|
-| `src/lib/fabricator/dowinParity/canonicalFingerprint.ts` | Canonical deterministic serialization + SHA-256 fingerprints (test/reference) |
-| `src/lib/fabricator/dowinParity/optimizerStateProvenance.ts` | Provenance model, topology signature, input equivalence, classification |
-| `src/lib/fabricator/dowinParity/dowinCompensationEvidence.ts` | Existing calibration catalog extended; length vs topology split |
-| `src/lib/fabricator/golden/dowinPhysicalLengthFixture.ts` | SHA-256 of Tests 2–4 + reset artifacts (licensed files not committed) |
-| `src/tests/fabricator/dowinCompensationReconciliation.test.ts` | Isolation + ingest gate updates |
-| `src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | FP-024C.1 proofs |
-| `docs/audits/FP-024C-PHYSICAL-FORMULA-PARITY_2026-09-09.md` | Isolation board + provenance question |
+| `src/lib/fabricator/dowinParity/canonicalFingerprint.ts` | Omit timestamp/result/project IDs from optimizer-input fingerprints |
+| `src/lib/fabricator/dowinParity/optimizerStateProvenance.ts` | Fresh A/B/C intake, 3-run nondeterminism gate, ALMONA forensic table |
+| `src/lib/fabricator/dowinParity/dowinCompensationEvidence.ts` | Fresh A/B/C pending templates; fail-closed ingest; 90° stays gated |
+| `src/tests/fabricator/dowinCompensationReconciliation.test.ts` | Catalog length 10; 3-run classifier; 90° not opened by recovered reset |
+| `src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | Fingerprint, freshness, grouping, Clear Screen, forensic surface proofs |
+| `docs/audits/FP-024C-PHYSICAL-FORMULA-PARITY_2026-09-09.md` | Fresh A/B/C + fail-closed classifier rules |
 | `docs/audits/FP-024C1-OPTIMIZATION-STATE-PROVENANCE_2026-09-10.md` | This checkpoint |
 
----
-
-## Optimizer provenance surfaces (ALMONA forensic)
-
-These rows describe **ALMONA**. They do not explain DoWin internals.
-
-| Surface | file:line | persisted? | affects optimizer input? | affects selected result? | deterministic? | evidence gap |
-|---------|-----------|------------|----------------------------|--------------------------|----------------|---------------|
-| Optimizer entry (workflow) | `src/pages/fabricator/workflow/OptimizationPage.tsx:78-107` | Yes via store | Yes — `CuttingJob` from `currentProject.components` | Yes — `setOptimizationResult` | Solver-dependent | No production-plan / history ID captured |
-| Algorithm selection | `src/lib/fabricator/AlgorithmSelector.ts:73-80`; `src/algorithms/adaptiveSolver.ts:45-98` | No | Yes | Yes | Tier-3 greedy/linear; genetic excluded | Complexity thresholds can change algorithm |
-| Required-cuts construction | `OptimizationPage.tsx:74-83`; `adaptiveSolver.ts:105-119` | Indirect | Yes | Yes | Order follows `job.components` | Component array order is semantically input |
-| Input ordering / sort | `OptimizationEngine.ts:116-117`; `greedyHeuristic.ts:100-129`; `StockOptimizer.ts:43-44` | No | Yes | Yes | Length-descending FFD; equal lengths keep array order | JS `sort` is not a stable tie-break guarantee for equal lengths |
-| Stock construction | `OptimizationEngine.ts:198-209`; `StockOptimizer.ts:47-79` | No | Yes | Yes | Default 6000 mm | Bar IDs use `Date.now` + `Math.random` (`OptimizationEngine.ts:203`) |
-| Remnant/offcut inclusion | `AlmonaCuttingEngine.ts:193-239, 328-384` | Instance `remnantCache` | Yes if `setRemnants` used | Yes | Remnant IDs `REM-${barNumber}` are deterministic | Whether DoWin remainder topology includes remnants is unproven |
-| Stock identity / ordinal | `StockOptimizer.ts:72-74` (`bar-${n}`) | No | Ordinal is packing order | Yes | Sequential | DoWin stock-bar identity not captured until operator snapshot |
-| Result persistence | `src/store/workflowStore.ts:106-219` | **Yes** — zustand persist `fabricator-workflow-storage` includes `optimizationResult` | Rehydrate can feed a later UI | Yes — selected result survives reload | Rehydrate restores last result | **Clear Screen analogue is `clearWorkflow`; persist can outlive UI clear if not called** |
-| Result reuse | `workflowStore.ts:150-152, 207-219` | Yes | Can skip a new solve | Yes | Last stored result | No `solveDisposition` in production UI |
-| Selected-result logic | `OptimizationPage.tsx:107`; `workflowStore.ts:113` | Yes | N/A | Single current result | Last write wins | No history / selectedResult ID |
-| Optimization history | Not modeled in workflow store | No | Unknown | Unknown | N/A | **Gap: no optimizationHistoryId in ALMONA workflow** |
-| Cache / state | `goldTier/ApexEngineV6.ts:204-240` TTL cache | Yes (in-memory) | Can return cached result | Yes | Cache keyed; TTL uses `Date.now` | Not on DoWin path; ALMONA risk if reused |
-| Randomness / seed | `algorithms/geneticOptimization.ts`; `RemnantFirstGeneticOptimizer.ts:700-706` | N/A | Advisory GA only | Not Tier-3 | Non-deterministic | Genetic is not manufacturing authority (FP-016 Option B) |
-| Unstable tie-break | `greedyHeuristic.ts:105` `b.length - a.length` | No | Equal-length order | Possible | Unstable for ties | Equal packed lengths can permute |
-| Object/map iteration | `adaptiveSolver.ts:109` `profileMap` / `stockLengths` Set | No | Set iteration not used as pack order | Unlikely | Insertion order for Set | Pack order comes from sorted cuts |
-| Timestamp identity | `OptimizationEngine.ts:203`; `workflowStore.ts:127` project IDs | Yes | Project IDs if compared | Metadata only | Non-deterministic IDs | Topology fingerprint **excludes** these IDs |
-| Array mutation during pack | `greedyHeuristic.ts:26` copies cuts; `StockOptimizer.ts:57` mutates bars | Local | Working copy | Yes | Engine-local | Original cut list copied in greedy |
-| Solver object reuse | `OptimizationPage.tsx:88` `new AdaptiveSolver` per run; `simplifiedOptimizationEngine` singleton (`OptimizationEngine.ts:214`) | Singleton engine | Config via micronEngine | Yes | New AdaptiveSolver each page run; singleton FFD engine | Singleton does not keep prior bars |
+Historical FP-024C.1 files already on the branch (`dowinPhysicalLengthFixture.ts`, length/topology split) were not mutated for manufacturing formulas.
 
 ---
 
-## New evidence types
+## ALMONA forensic file:line findings
 
-- `OPTIMIZATION_STATE_PROVENANCE_AUDIT` (existing run kind, now structured)
-- `OptimizerRunProvenance` / `solveDisposition`: `NEWLY_SOLVED` | `REOPENED` | `REUSED` | `UNKNOWN`
-- `OptimizerInputEquivalence`: `IDENTICAL` | `DIFFERENT` | `UNPROVEN`
-- `OptimizationStateProvenanceVerdict`: `PENDING_OPERATOR_RUN` | `PERSISTED_STATE_EFFECT_PROVEN` | `ALTERNATIVE_OPTIMIZER_SOLUTION` | `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING` | `HIDDEN_INPUT_DIFFERENCE` | `AMBIGUOUS`
-- Split reset verdicts: `lengthLayerVerdict` vs `topologyVerdict`
+These rows describe **ALMONA**. They do not explain DoWin.
 
-## Input fingerprint rules
+| Surface | file:line | Classification | Defect? |
+|---------|-----------|----------------|---------|
+| New AdaptiveSolver per OptimizationPage run | `OptimizationPage.tsx:78-107` | INPUT_IDENTITY_ONLY | no |
+| AlgorithmSelector / AdaptiveSolver algorithm choice | `AlgorithmSelector.ts:73`; `adaptiveSolver.ts:45-98` | TOPOLOGY_AFFECTING | no |
+| FFD / equal-length sort | `OptimizationEngine.ts:116-117`; `greedyHeuristic.ts:100-129` | TOPOLOGY_AFFECTING | **ALMONA_REPRODUCIBILITY_DEFECT** (tie-break / sort stability) |
+| Stock IDs `Date.now` + `Math.random` | `OptimizationEngine.ts:203` | RESULT_METADATA_ONLY | **ALMONA_REPRODUCIBILITY_DEFECT** (excluded from topology fingerprint) |
+| Persist `optimizationResult` | `workflowStore.ts:106-219` | PERSISTENCE_ONLY | **ALMONA_REPRODUCIBILITY_DEFECT** (`fabricator-workflow-storage`) |
+| `AlmonaCuttingEngine` remnantCache | `AlmonaCuttingEngine.ts:193-239` | TOPOLOGY_AFFECTING | if `setRemnants` used |
+| Genetic / Math.random GA | `geneticOptimization.ts`; `RemnantFirstGeneticOptimizer.ts:700-706` | ADVISORY_ONLY | not Tier-3 |
+| Project IDs on measurement create | `workflowStore.ts:127` | INPUT_IDENTITY_ONLY | container identity only |
 
-- Canonical JSON: sorted object keys, arrays preserve order, null stays null, undefined is rejected (not coerced).
-- Unit `'mm'` is explicit in fingerprint payloads.
-- Optimizer-**input** fingerprints exclude timestamp, result ID, history ID, project/design IDs, and random UUIDs.
-- Missing snapshots ⇒ fingerprint `null` ⇒ equivalence `UNPROVEN`. Missing provenance never becomes `IDENTICAL`.
-- External file hashes remain operator SHA-256; unprovided files stay `null` / `NOT MEASURED`. Fake hashes are not generated.
+Production optimizer behavior was **not** patched. Defects are evidence-infrastructure classifications only.
 
-## Topology signature rules
+These ALMONA surfaces can contaminate **ALMONA** reproducibility evidence (persisted result reuse, equal-length sort order, remnant cache). They are not a DoWin causal claim.
+
+---
+
+## Input fingerprint / equivalence gate
+
+- Canonical JSON: sorted object keys, arrays preserve semantic order, null stays null, undefined is rejected (not coerced to positive evidence).
+- Optimizer-**input** fingerprints omit `timestampIso` / `timestamp` / `runId` / `optimizationResultId` / `optimizationHistoryId` / `projectId` / `designId` / `productionPlanId`.
+- Result UUID/timestamp changes do not change topology identity.
+- Same utilization with different bar assignment = different topology.
+- Same total remainder with different distribution = different topology.
+- Same pieces with different bar grouping = different topology.
+- Missing snapshots/fingerprints ⇒ `UNPROVEN`. Missing provenance never becomes `IDENTICAL`.
+- Machine-output reproduction and optimizer-topology reproduction remain separate verdicts.
+
+---
+
+## Topology-signature rules
 
 Each bar: profile, stock-bar id (signature only), ordinal, stock length, piece sequence (physical/source/external IDs, role, packed mm, angles), remainder mm.
 
 Fingerprint **excludes** stock-bar UUID and report timestamp. Comparison is not utilization, total waste, bar count, or summed remainder.
 
-| Case | Result |
-|------|--------|
-| Same utilization, different pieces | DIFFERENT TOPOLOGY |
-| Same total remainder, different distribution | DIFFERENT TOPOLOGY |
-| Same pieces, different bar grouping | DIFFERENT TOPOLOGY |
-| Same bars, different semantically meaningful piece order | DIFFERENT TOPOLOGY |
-| Same topology, different report timestamp / result UUID | SAME TOPOLOGY |
+---
 
 ## External evidence (already measured; no new DoWin run)
 
@@ -141,7 +130,7 @@ Later/reset topology: KASA 960 / KANAT 2198 / ORTA 5079 / CITA 3178×2.
 
 Machine lengths recovered at reset: 454 / 1433 / 1003 / 1503 / 1416.
 
-Test 2: Welding Waste packed/machine PROVEN on asdd 45° KASA/KANAT; not a general formula.
+Test 2: Welding Waste packed/machine PROVEN on asdd 45° KASA/KANAT; **not** a general `packed = nominal + WeldingWaste` formula; **not** “all 45° pieces receive WeldingWaste”; **not** `machine = nominal + WeldingWaste`; **no +3 encoded**.
 
 Test 3 remainder: AMBIGUOUS / UNPROVEN after reset.
 
@@ -149,36 +138,46 @@ Test 4 remainder: AMBIGUOUS (not Trim).
 
 Reset: combined `REPRODUCTION_FAILED`; length-layer `REPRODUCED`; topology `REPRODUCTION_FAILED`.
 
-90° CONTROL_FIXTURE: gated on reset recovering 1B topology.
+90° CONTROL_FIXTURE: GATED. Recovered 1B reset is not enough. Fresh A returning original topology does not open it. Fresh B/C (or an explicit non-PENDING/AMBIGUOUS classifier conclusion plus measured A/B/C) is required.
 
-Clear Screen on `asdd` is not freshness. Decisive package: Fresh A, Fresh B, Fresh C from equivalent fresh state.
+Clear Screen on `asdd` is not freshness.
 
-A single fresh run cannot claim consistency. `ALTERNATIVE_OPTIMIZER_SOLUTION` requires three newly solved equivalent runs. `PERSISTED_STATE_EFFECT_PROVEN` requires a captured reused/reopened counterpart with later topology **and** a genuinely fresh solve with original topology under proven-identical input fingerprints.
+---
+
+## Fresh A/B/C operator package required
+
+Catalog templates: `FP024C1_FRESH_A`, `FP024C1_FRESH_B`, `FP024C1_FRESH_C` — all `PENDING_OPERATOR_RUN`.
+
+Each run must supply:
+
+- `runId`, timestamp, projectId, designId, productionPlanId
+- optimizationResultId and/or optimizationHistoryId if exposed
+- `solveDisposition = NEWLY_SOLVED`
+- optimizer/version, algorithm, seed if knowable (otherwise `null` / NOT_MEASURED)
+- machine = DC-600
+- settings: Welding Waste 3 mm, Saw Thickness 4 mm, Trim Cut 0 mm
+- geometry / required-parts / stock / offcut-remnant snapshots (empty offcut list allowed; `null` is not)
+- SHA-256 of General Settings screenshot, Design Preview, Labels/Assembly, Optimization report; machine export if generated, else `null` / NOT_MEASURED
+- bar-by-bar transcription: profile, stock identity if exposed, ordinal, stock length, piece sequence, Cut identity where available, packed mm, angles, remainder
+
+Unavailable external values stay `null` / NOT_MEASURED / UNPROVEN. Do not invent values.
+
+Intake rejects or downgrades to AMBIGUOUS when project/design/plan/result is reused, provenance is missing, fingerprints are incomplete, settings/geometry/machine/stock/parts/offcut differ, hashes are missing, only utilization/waste is provided, or the operator claims equivalence without evidence.
+
+Classifier:
+
+- `PENDING_OPERATOR_RUN` until measured Fresh A/B/C exist
+- `PERSISTED_STATE_EFFECT_PROVEN` only with proven-identical inputs + reused later topology B + genuinely fresh original topology A
+- `ALTERNATIVE_OPTIMIZER_SOLUTION` only after ≥3 newly solved IDENTICAL fresh runs all later topology
+- `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING` only after ≥3 newly solved IDENTICAL fresh runs with more than one topology
+- `HIDDEN_INPUT_DIFFERENCE` only with a concrete fingerprint/snapshot difference
+- `AMBIGUOUS` for incomplete provenance, reused without counterpart, missing fingerprints, or fewer than three fresh runs
+
+One fresh run must never be described as consistent.
 
 ---
 
 ## Tests and freeze
-
-See “Verification” below (filled after commands).
-
-Formula freeze: this FP-024C.1 work adds no mutation to `barPackAccounting.ts`, `UPVCCuttingEngine.ts`, `ManufacturingSettings.ts`, or `src/lib/fabricator/production`. Pre-FP-024C.1 branch diffs vs `main` in ManufacturingSettings snapshot helpers and CutSheet layer fields remain from earlier FP-024A/C diagnostic work.
-
-Licensed PDFs/MDB/DW/screenshots are not committed. SHA-256 only.
-
----
-
-## Remaining operator evidence
-
-1. Fresh project/design (not Clear Screen on `asdd`).
-2. Fresh production plan + newly solved optimization result (not reopened/reused).
-3. Same geometry, Deceuninck 70, Weld 3 / Saw 4 / Trim 0, DC-600, same stock lengths/quantities, same offcut/remnant availability.
-4. Repeat as Fresh A / B / C.
-5. Per run: General Settings screenshot, IDs, required-parts/stock/offcut snapshots, SHA-256 of supplied artifacts, bar-by-bar assignment transcription.
-6. Do not run the 90° control until an explicit provenance verdict authorizes continuation.
-
----
-
-## Verification
 
 | Check | Result |
 |-------|--------|
@@ -187,13 +186,19 @@ Licensed PDFs/MDB/DW/screenshots are not committed. SHA-256 only.
 | `npx vitest run src/tests/fabricator/dowinPhysicalLengthGolden.pending.test.ts` | Pass |
 | `npx vitest run src/tests/constitutional/ManufacturingSettingsContract.test.ts` | Pass |
 | `npx vitest run src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | Pass |
-| Combined above | 4 files, 57 tests passed |
-| `npm run build` | Pass (`vite build --mode production`, ~54s) |
-| Formula freeze this work vs HEAD | No diff in `barPackAccounting.ts`, `UPVCCuttingEngine.ts`, `ManufacturingSettings.ts`, `src/lib/fabricator/production` |
-| Licensed artifacts | Excluded (SHA-256 only in golden fixture) |
+| Combined above | 4 files, **65 tests passed** |
+| `npm run build` | Pass (`vite build --mode production`) |
+| Formula freeze this work vs HEAD (`332914f`) | No diff in `barPackAccounting.ts`, `UPVCCuttingEngine.ts`, `ManufacturingSettings.ts`, `src/lib/fabricator/production` |
+| Historical branch diffs vs `main` | ManufacturingSettings snapshot helpers + CutSheet layer fields + machine-export preflight remain from earlier FP-024A/C diagnostic work — not new formula mutation |
+| Licensed artifacts | Excluded (SHA-256 only; PDFs/MDB/DW/screenshots not committed) |
+
+No evidence code mutates `ManufacturingSettings`, `barPackAccounting`, or production Cut lengths. No runtime `+3` / `+7` constants were introduced.
 
 ---
 
-## Next operator artifact required
+## Remaining operator evidence
 
-FP-024C.1 Fresh A: new project/design, new production plan, newly solved result, same visible geometry/settings/stock, full provenance package + bar-assignment transcription. Then Fresh B and Fresh C. Do not merge PR #32.
+1. Fresh A: new project/design, new production plan, newly solved result, same visible geometry/settings/stock, full provenance package + bar-assignment transcription.
+2. Fresh B, then Fresh C. One run cannot claim consistency.
+3. Do not run the 90° control until an explicit provenance verdict authorizes continuation.
+4. Do not merge PR #32.
