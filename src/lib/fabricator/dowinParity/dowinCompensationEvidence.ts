@@ -31,14 +31,18 @@ import {
 import {
   FP024C1_AUDIT_QUESTION,
   FP024C1_DECISIVE_EXPERIMENT,
+  FP024C1_FRESH_RUN_IDS,
   FP024C1_PROVENANCE_AUDIT_CHECKLIST,
+  ALMONA_REPRODUCIBILITY_SURFACES,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
   attachOptimizerInputFingerprints,
   classifyOptimizationStateProvenance,
   compareOptimizerInputFingerprints,
+  evaluateFreshRunIntake,
   freshOptimizerProvenance,
   identifyAssignmentTopology,
+  isClearScreenNotFreshness,
   isOptimizerProvenanceComplete,
   missingOptimizerProvenanceFields,
   overallUtilizationPercent,
@@ -57,13 +61,17 @@ import {
 export {
   FP024C1_AUDIT_QUESTION,
   FP024C1_DECISIVE_EXPERIMENT,
+  FP024C1_FRESH_RUN_IDS,
   FP024C1_PROVENANCE_AUDIT_CHECKLIST,
+  ALMONA_REPRODUCIBILITY_SURFACES,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
   attachOptimizerInputFingerprints,
   classifyOptimizationStateProvenance,
   compareOptimizerInputFingerprints,
+  evaluateFreshRunIntake,
   freshOptimizerProvenance,
+  isClearScreenNotFreshness,
   isOptimizerProvenanceComplete,
   missingOptimizerProvenanceFields,
   overallUtilizationPercent,
@@ -676,7 +684,7 @@ function pendingTemplate(
       runKind === 'CONTROL_FIXTURE'
         ? 'pending-90-control'
         : runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
-          ? 'pending-fresh-state-clone'
+          ? fixtureId
           : 'asdd',
     profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
     widthMm: runKind === 'CONTROL_FIXTURE' ? 0 : 1000,
@@ -976,14 +984,34 @@ export const DOWIN_ASDD_BASELINE_RESET_RUN: DowinCalibrationRun = {
 
 export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
   pendingTemplate(
-    'FP024C1_PROVENANCE_AUDIT',
+    'FP024C1_FRESH_A',
     'optimizationStateProvenance',
     {
       field: null,
       instructedToMm: null,
-      note: 'FP-024C.1 answers one question: why identical visible geometry/settings can produce different optimization remainder topology. Decisive experiment: same geometry + Weld 3 / Saw 4 / Trim 0 + same stock quantities + fresh project/design + fresh production plan + fresh optimization result. Compare bar-assignment signatures, not utilization. Not a manufacturing-setting isolation. Do not encode formulas.',
+      note: 'FP-024C.1 Fresh A: same geometry + Weld 3 / Saw 4 / Trim 0 + same stock + fresh project/design/plan/result. Newly solved. Not Clear Screen. Compare assignment signatures. PENDING_OPERATOR_RUN.',
     },
-    'Operator template. Capture optimizer input and selected-result provenance on every run. Test 3 remainder is not attributed to Saw. 90° stays gated until FP-024C.1 explains the discrepancy.'
+    'Operator template Fresh A. Newly solved only. Capture snapshots, SHA-256, and bar-by-bar assignment. Do not invent millimetres.'
+  ),
+  pendingTemplate(
+    'FP024C1_FRESH_B',
+    'optimizationStateProvenance',
+    {
+      field: null,
+      instructedToMm: null,
+      note: 'FP-024C.1 Fresh B: independent fresh solve with proven-equivalent inputs to Fresh A. Newly solved. One run cannot claim consistency.',
+    },
+    'Operator template Fresh B. Independent newly solved result. Same intake as Fresh A.'
+  ),
+  pendingTemplate(
+    'FP024C1_FRESH_C',
+    'optimizationStateProvenance',
+    {
+      field: null,
+      instructedToMm: null,
+      note: 'FP-024C.1 Fresh C: third independent fresh solve. Required before repeatability or nondeterminism classification.',
+    },
+    'Operator template Fresh C. Completes the A/B/C package. 90° stays gated.'
   ),
   pendingTemplate(
     'dowin-asdd-90-control-pending',
@@ -991,9 +1019,9 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     {
       field: null,
       instructedToMm: null,
-      note: 'CONTROL_FIXTURE: separate 90°/90° design. Keep General Settings, system, and DC-600 unchanged. Geometry and cut-angle may differ. Not a single-setting isolation.',
+      note: 'CONTROL_FIXTURE: separate 90°/90° design. Keep General Settings, system, and DC-600 unchanged. Geometry and cut-angle may differ. Not a single-setting isolation. Gated until FP-024C.1 completes A/B/C.',
     },
-    'Operator CONTROL_FIXTURE template. The asdd mullion is a same-job 90° observation, not this control fixture.'
+    'Operator CONTROL_FIXTURE template. The asdd mullion is a same-job 90° observation, not this control fixture. GATED.'
   ),
 ];
 
@@ -1032,12 +1060,30 @@ export function findBaselineReset(
   return runs.find((r) => r.runKind === 'BASELINE_RESET_VALIDATION');
 }
 
-/** 90° CONTROL_FIXTURE is gated until reset recovers the 1B remainder/machine signature. */
+/**
+ * 90° CONTROL_FIXTURE stays gated until:
+ * 1. BASELINE_RESET_VALIDATION recovers the 1B remainder topology, and
+ * 2. Fresh A/B/C templates are no longer pending, and
+ * 3. FP-024C.1 is not still PENDING_OPERATOR_RUN or AMBIGUOUS.
+ * A single Fresh A recovery of original topology does not open this gate.
+ */
 export function isControlFixtureAuthorized(
   runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
 ): boolean {
   const reset = findBaselineReset(runs);
-  return reset?.status === 'MEASURED' && reset.reproductionVerdict === 'REPRODUCED';
+  if (!(reset?.status === 'MEASURED' && reset.reproductionVerdict === 'REPRODUCED')) {
+    return false;
+  }
+  const pendingFresh = runs.filter(
+    (run) =>
+      run.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT' &&
+      run.status === 'PENDING_OPERATOR_RUN'
+  );
+  if (pendingFresh.length > 0) return false;
+  const provenance = classifyProvenanceFreshStateExperiment(runs);
+  return (
+    provenance.verdict !== 'PENDING_OPERATOR_RUN' && provenance.verdict !== 'AMBIGUOUS'
+  );
 }
 
 const ASDD_RESET_MULLION_PAIR = {
@@ -1317,6 +1363,7 @@ export interface OperatorEvidencePackage {
     assemblyLabels?: string | null;
     optimization?: string | null;
     mdb?: string | null;
+    machineExport?: string | null;
   };
   mdbGenerated: boolean;
   isolationVariable: CalibrationVariable;
@@ -1327,6 +1374,9 @@ export interface OperatorEvidencePackage {
   pieces: DowinPhysicalLengthGoldenRow[];
   bars: ExternalBarPattern[];
   optimizerProvenance?: OptimizerRunProvenance | null;
+  freshSlot?: 'A' | 'B' | 'C' | null;
+  clearScreenClaimedFresh?: boolean;
+  operatorClaimsEquivalence?: boolean;
 }
 
 export type OperatorIngestResult =
@@ -1469,7 +1519,7 @@ export function ingestOperatorCalibrationRun(
   if (runKind === 'CONTROL_FIXTURE') {
     if (!isControlFixtureAuthorized(runs)) {
       reasons.push(
-        'BASELINE_RESET_VALIDATION must recover 1B remainders (KASA 965 / KANAT 2203 / ORTA 5080 / CITA 206/6160) and machine lengths 454 / 1433 / 1003 / 1503 / 1416 before the 90° CONTROL_FIXTURE.'
+        '90° CONTROL_FIXTURE stays gated until BASELINE_RESET_VALIDATION recovers 1B remainders (KASA 965 / KANAT 2203 / ORTA 5080 / CITA 206/6160) and machine lengths 454 / 1433 / 1003 / 1503 / 1416, Fresh A/B/C are measured, and FP-024C.1 is no longer PENDING_OPERATOR_RUN or AMBIGUOUS.'
       );
     }
     if (!pkg.controlFixtureNote) {
@@ -1537,6 +1587,11 @@ export function ingestOperatorCalibrationRun(
         'FP-024C.1 decisive experiment requires the same stock quantities as 1B. Inputs cannot be proven identical.'
       );
     }
+    if (pkg.bars.every((bar) => bar.packedSegmentMm.length === 0)) {
+      reasons.push(
+        'FP-024C.1 requires bar-by-bar piece sequence. Utilization or total waste alone is not evidence.'
+      );
+    }
     const missingProvenance = missingOptimizerProvenanceFields(pkg.optimizerProvenance);
     if (missingProvenance.length > 0) {
       reasons.push(
@@ -1551,6 +1606,26 @@ export function ingestOperatorCalibrationRun(
       reasons.push(
         'FP-024C.1 decisive experiment requires a fresh project/design, not Clear Screen on the same asdd design.'
       );
+    }
+    const intake = evaluateFreshRunIntake({
+      runId: pkg.runId,
+      timestampIso: pkg.timestampIso,
+      observedSettings: pkg.observedSettings,
+      widthMm: pkg.widthMm,
+      heightMm: pkg.heightMm,
+      profileSystem: pkg.profileSystem,
+      provenance: pkg.optimizerProvenance,
+      sourceHashes: {
+        ...pkg.sourceHashesSha256,
+        machineExport: pkg.sourceHashesSha256.machineExport ?? pkg.sourceHashesSha256.mdb ?? null,
+      },
+      clearScreenClaimedFresh: pkg.clearScreenClaimedFresh,
+      mdbGenerated: pkg.mdbGenerated,
+      freshSlot: pkg.freshSlot,
+      operatorClaimsEquivalence: pkg.operatorClaimsEquivalence,
+    });
+    if (!intake.ok) {
+      reasons.push(...intake.reasons.filter((r) => !reasons.includes(r)));
     }
   } else {
     if (!isCausalIsolationAuthorized(runs)) {
