@@ -11,7 +11,12 @@ import {
   DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
   type ExternalBarPattern,
 } from '@/lib/fabricator/barPackExternalReconciliation';
-import { canonicalJson, fingerprintSha256 } from '@/lib/fabricator/dowinParity/canonicalFingerprint';
+import {
+  CanonicalEvidenceError,
+  canonicalJson,
+  fingerprintSha256,
+  optimizerInputFingerprintSha256,
+} from '@/lib/fabricator/dowinParity/canonicalFingerprint';
 import {
   DOWIN_ASDD_BASELINE_REPRODUCTION_RUN,
   DOWIN_ASDD_BASELINE_RESET_RUN,
@@ -30,6 +35,9 @@ import {
   evaluateOptimizerTopologyReproduction,
   freshOptimizerProvenance,
   identifyAsddAssignmentTopology,
+  ALMONA_REPRODUCIBILITY_SURFACES,
+  evaluateFreshRunIntake,
+  isClearScreenNotFreshness,
   ingestOperatorCalibrationRun,
   isControlFixtureAuthorized,
   overallUtilizationPercent,
@@ -39,7 +47,9 @@ import {
 } from '@/lib/fabricator/dowinParity/dowinCompensationEvidence';
 import {
   compareOptimizerInputFingerprints,
+  FP024C1_FRESH_RUN_IDS,
   FP024C1_MIN_FRESH_RUNS_FOR_CONSISTENCY,
+  FP024C1_MIN_FRESH_RUNS_FOR_NONDETERMINISM,
 } from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
 
 function sourceOf(rel: string): string {
@@ -223,14 +233,21 @@ describe('FP-024C.1 optimization state provenance', () => {
     expect(classifyProvenanceFreshStateExperiment([a, b]).verdict).toBe('HIDDEN_INPUT_DIFFERENCE');
   });
 
-  it('classifies repeated fresh equivalent runs with differing topology as nondeterminism', () => {
+  it('classifies repeated fresh equivalent runs with differing topology as AMBIGUOUS until Fresh A/B/C exist', () => {
     const a = provenanceRun('fresh-a', DOWIN_ASDD_EXTERNAL_BAR_PATTERNS, equivalent({ optimizationResultId: 'a' }));
     const b = provenanceRun(
       'fresh-b',
       DOWIN_ASDD_TRIM_CUT_10_BARS,
       equivalent({ optimizationResultId: 'b' })
     );
-    expect(classifyProvenanceFreshStateExperiment([a, b]).verdict).toBe(
+    expect(FP024C1_MIN_FRESH_RUNS_FOR_NONDETERMINISM).toBe(3);
+    expect(classifyProvenanceFreshStateExperiment([a, b]).verdict).toBe('AMBIGUOUS');
+    const c = provenanceRun(
+      'fresh-c',
+      DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
+      equivalent({ optimizationResultId: 'c' })
+    );
+    expect(classifyProvenanceFreshStateExperiment([a, b, c]).verdict).toBe(
       'OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING'
     );
   });
@@ -335,5 +352,212 @@ describe('FP-024C.1 optimization state provenance', () => {
     });
     expect(reused.ok).toBe(false);
     expect(isControlFixtureAuthorized()).toBe(false);
+  });
+
+  it('treats REOPENED and REUSED as not fresh, independently', () => {
+    const reopened = provenanceRun(
+      'reopened-only',
+      DOWIN_ASDD_TRIM_CUT_10_BARS,
+      equivalent({ solveKind: 'REOPENED_REUSED', solveDisposition: 'REOPENED' })
+    );
+    const reusedOnly = provenanceRun(
+      'reused-only',
+      DOWIN_ASDD_TRIM_CUT_10_BARS,
+      equivalent({ solveKind: 'REOPENED_REUSED', solveDisposition: 'REUSED' })
+    );
+    expect(classifyProvenanceFreshStateExperiment([reopened]).verdict).toBe('AMBIGUOUS');
+    expect(classifyProvenanceFreshStateExperiment([reusedOnly]).verdict).toBe('AMBIGUOUS');
+  });
+
+  it('does not treat Clear Screen as fresh-state proof', () => {
+    expect(
+      isClearScreenNotFreshness({
+        runId: 'FP024C1_FRESH_A',
+        projectId: 'fresh-project',
+        designId: 'fresh-design',
+        clearScreenClaimedFresh: true,
+      })
+    ).toBe(true);
+    expect(
+      isClearScreenNotFreshness({
+        runId: 'asdd',
+        projectId: 'asdasd',
+        designId: '100001',
+      })
+    ).toBe(true);
+    const hashes = {
+      generalSettingsScreenshot: 's',
+      designPreview: 'a',
+      assemblyLabels: 'b',
+      optimization: 'c',
+      mdb: 'm',
+    };
+    const cleared = ingestOperatorCalibrationRun(DOWIN_ASDD_BASELINE_REPRODUCTION_RUN, {
+      runId: 'FP024C1_FRESH_A',
+      timestampIso: '2026-09-10T21:00:00.000Z',
+      generalSettingsScreenshotNote: 'Clear Screen then Optimize',
+      changedSettingNote: null,
+      controlFixtureNote: null,
+      changedSetting: null,
+      sourceHashesSha256: hashes,
+      mdbGenerated: true,
+      isolationVariable: 'optimizationStateProvenance',
+      observedSettings: { ...DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings },
+      widthMm: 1000,
+      heightMm: 1500,
+      profileSystem: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.profileSystem,
+      pieces: [...DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.pieces],
+      bars: [...DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars],
+      optimizerProvenance: equivalent({ runId: 'FP024C1_FRESH_A' }),
+      freshSlot: 'A',
+      clearScreenClaimedFresh: true,
+    });
+    expect(cleared.ok).toBe(false);
+    if (!cleared.ok) {
+      expect(cleared.reasons.some((r) => r.includes('Clear Screen'))).toBe(true);
+    }
+  });
+
+  it('classifies changed required-parts, offcut, and settings fingerprints as DIFFERENT', () => {
+    const base = equivalent();
+    const parts = asddEquivalentInputProvenance(
+      DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.pieces,
+      DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
+      DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings,
+      {
+        requiredPartsSnapshot: [
+          {
+            physicalCutId: 'other',
+            sourceCutId: 'other',
+            externalPieceId: 'other',
+            role: 'frame',
+            packedLengthMm: 1503,
+            leftAngleDeg: 45,
+            rightAngleDeg: 45,
+            quantity: 1,
+          },
+        ],
+      }
+    );
+    const offcut = asddEquivalentInputProvenance(
+      DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.pieces,
+      DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
+      DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings,
+      {
+        offcutRemnantSnapshot: [{ profileCode: 'Deceuninck-KASA-70', lengthMm: 500, quantity: 1 }],
+      }
+    );
+    const settings = asddEquivalentInputProvenance(
+      DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.pieces,
+      DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
+      {
+        ...DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings,
+        remnantThresholdMm: 999,
+      }
+    );
+    expect(compareOptimizerInputFingerprints(base, parts)).toBe('DIFFERENT');
+    expect(compareOptimizerInputFingerprints(base, offcut)).toBe('DIFFERENT');
+    expect(compareOptimizerInputFingerprints(base, settings)).toBe('DIFFERENT');
+    expect(
+      classifyProvenanceFreshStateExperiment([
+        provenanceRun('fresh-a', DOWIN_ASDD_EXTERNAL_BAR_PATTERNS, base),
+        provenanceRun('fresh-b', DOWIN_ASDD_EXTERNAL_BAR_PATTERNS, parts),
+      ]).verdict
+    ).toBe('HIDDEN_INPUT_DIFFERENCE');
+  });
+
+  it('never promotes incomplete fingerprints to IDENTICAL', () => {
+    const complete = equivalent();
+    const incomplete = {
+      ...complete,
+      geometryFingerprint: null,
+      requiredPartsFingerprint: null,
+      stockFingerprint: null,
+      offcutRemnantFingerprint: null,
+      settingsFingerprint: null,
+    };
+    expect(compareOptimizerInputFingerprints(complete, incomplete)).toBe('UNPROVEN');
+    expect(compareOptimizerInputFingerprints(null, complete)).toBe('UNPROVEN');
+  });
+
+  it('treats same pieces with different bar grouping as different topology', () => {
+    const original = DOWIN_ASDD_EXTERNAL_BAR_PATTERNS;
+    const kanat = original[1];
+    const regrouped: ExternalBarPattern[] = [
+      original[0],
+      { ...kanat, id: 'kanat-a', applicationCount: 1 },
+      { ...kanat, id: 'kanat-b', applicationCount: 1 },
+      original[2],
+      original[3],
+      original[4],
+    ];
+    expect(assignmentSignaturesEqual(original, regrouped)).toBe(false);
+  });
+
+  it('keeps Fresh A/B/C templates pending and does not invent hashes', () => {
+    expect(FP024C1_FRESH_RUN_IDS).toEqual(['FP024C1_FRESH_A', 'FP024C1_FRESH_B', 'FP024C1_FRESH_C']);
+    const pending = DOWIN_CALIBRATION_RUNS.filter((r) =>
+      (FP024C1_FRESH_RUN_IDS as readonly string[]).includes(r.fixtureId)
+    );
+    expect(pending).toHaveLength(3);
+    expect(pending.every((r) => r.status === 'PENDING_OPERATOR_RUN')).toBe(true);
+    expect(pending.every((r) => r.optimizerProvenance == null)).toBe(true);
+  });
+
+  it('excludes timestamp and result IDs from optimizer-input fingerprints', () => {
+    const a = equivalent({
+      timestampIso: '2026-09-10T21:00:00.000Z',
+      optimizationResultId: 'result-a',
+    });
+    const b = equivalent({
+      timestampIso: '2026-09-11T00:00:00.000Z',
+      optimizationResultId: 'result-b',
+    });
+    expect(compareOptimizerInputFingerprints(a, b)).toBe('IDENTICAL');
+    expect(
+      optimizerInputFingerprintSha256({
+        timestampIso: 't1',
+        optimizationResultId: 'r1',
+        geometry: { widthMm: 1000, heightMm: 1500 },
+      })
+    ).toBe(
+      optimizerInputFingerprintSha256({
+        timestampIso: 't2',
+        optimizationResultId: 'r2',
+        geometry: { widthMm: 1000, heightMm: 1500 },
+      })
+    );
+    expect(() => canonicalJson(undefined)).toThrow(CanonicalEvidenceError);
+    expect(canonicalJson({ b: 1, a: null })).toBe('{"a":null,"b":1}');
+  });
+
+  it('records ALMONA reproducibility surfaces without mutating manufacturing settings', () => {
+    expect(ALMONA_REPRODUCIBILITY_SURFACES.some((s) => s.defect === 'ALMONA_REPRODUCIBILITY_DEFECT')).toBe(
+      true
+    );
+    expect(
+      ALMONA_REPRODUCIBILITY_SURFACES.find((s) => s.fileLine.includes('OptimizationEngine.ts:203'))
+        ?.classification
+    ).toBe('RESULT_METADATA_ONLY');
+    const before = resolveManufacturingSettings();
+    evaluateFreshRunIntake({
+      runId: 'FP024C1_FRESH_A',
+      timestampIso: '2026-09-10T21:00:00.000Z',
+      observedSettings: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings,
+      widthMm: 1000,
+      heightMm: 1500,
+      profileSystem: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.profileSystem,
+      provenance: equivalent(),
+      sourceHashes: {
+        generalSettingsScreenshot: 's',
+        designPreview: 'a',
+        assemblyLabels: 'b',
+        optimization: 'c',
+        mdb: 'm',
+      },
+      mdbGenerated: true,
+      freshSlot: 'A',
+    });
+    expect(resolveManufacturingSettings()).toEqual(before);
   });
 });

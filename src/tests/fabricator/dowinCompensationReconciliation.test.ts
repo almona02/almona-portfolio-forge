@@ -68,12 +68,15 @@ import {
 
 describe('FP-024B DoWin compensation reconciliation', () => {
   it('registers multiple fixture runs without filling unknown settings', () => {
-    expect(DOWIN_CALIBRATION_RUNS).toHaveLength(8);
+    expect(DOWIN_CALIBRATION_RUNS).toHaveLength(10);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.isolationVariable === 'baseline')).toHaveLength(1);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'BASELINE_REPRODUCTION_RUN')).toHaveLength(1);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'BASELINE_RESET_VALIDATION')).toHaveLength(1);
-    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT')).toHaveLength(1);
-    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(2);
+    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT')).toHaveLength(3);
+    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(4);
+    expect(DOWIN_CALIBRATION_RUNS.map((r) => r.fixtureId)).toEqual(
+      expect.arrayContaining(['FP024C1_FRESH_A', 'FP024C1_FRESH_B', 'FP024C1_FRESH_C'])
+    );
     expect(
       DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'SINGLE_SETTING_ISOLATION')
     ).toHaveLength(3);
@@ -163,12 +166,12 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     const a = buildCompensationMatrix();
     const b = buildCompensationMatrix();
     expect(a).toEqual(b);
-    expect(a).toHaveLength(8);
+    expect(a).toHaveLength(10);
     const baseline = a.find((r) => r.variableChanged === 'baseline');
     expect(baseline?.interpretation).toBe('AMBIGUOUS');
     expect(baseline?.packedMinusNominalValuesMm).toEqual([0, 3]);
     expect(baseline?.machineDeltaMm).toBe(0);
-    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(2);
+    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(4);
     expect(a.every((r) => r.interpretation !== 'PROVEN EFFECT')).toBe(true);
   });
 
@@ -256,9 +259,9 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     );
     expect(FP024C1_DECISIVE_EXPERIMENT).toContain('fresh project/design');
     const isolation = buildIsolationDeltaTable();
-    expect(isolation).toHaveLength(8);
-    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(2);
-    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(2);
+    expect(isolation).toHaveLength(10);
+    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(4);
+    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(4);
     expect(isolation.filter((r) => r.runKind === 'CONTROL_FIXTURE')[0]?.interpretation).toBe(
       'NOT MEASURED'
     );
@@ -444,12 +447,12 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(blocked.ok).toBe(false);
     if (!blocked.ok) {
       expect(
-        blocked.reasons.some((r) => r.includes('BASELINE_RESET_VALIDATION must recover 1B remainders'))
+        blocked.reasons.some((r) => r.includes('90° CONTROL_FIXTURE stays gated'))
       ).toBe(true);
     }
   });
 
-  it('ingests a 90° CONTROL_FIXTURE only after reset recovers 1B', () => {
+  it('keeps the 90° CONTROL_FIXTURE gated even if a reset recovers 1B', () => {
     const recoveredReset: DowinCalibrationRun = {
       ...DOWIN_ASDD_BASELINE_REPRODUCTION_RUN,
       fixtureId: 'BASELINE_RESET_VALIDATION',
@@ -464,7 +467,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
       DOWIN_ASDD_BASELINE_REPRODUCTION_RUN,
       recoveredReset,
     ];
-    expect(isControlFixtureAuthorized(authorizedRuns)).toBe(true);
+    expect(isControlFixtureAuthorized(authorizedRuns)).toBe(false);
 
     const control = ingestOperatorCalibrationRun(
       DOWIN_ASDD_BASELINE_RUN,
@@ -500,14 +503,9 @@ describe('FP-024B DoWin compensation reconciliation', () => {
       },
       { runs: authorizedRuns }
     );
-    expect(control.ok).toBe(true);
-    if (control.ok) {
-      expect(control.run.runKind).toBe('CONTROL_FIXTURE');
-      expect(control.run.widthMm).toBe(800);
-      const table = buildIsolationDeltaTable([DOWIN_ASDD_BASELINE_RUN, control.run]);
-      const row = table.find((r) => r.runKind === 'CONTROL_FIXTURE');
-      expect(row?.interpretation).toBe('AMBIGUOUS');
-      expect(row?.interpretation).not.toBe('PROVEN EFFECT');
+    expect(control.ok).toBe(false);
+    if (!control.ok) {
+      expect(control.reasons.some((r) => r.includes('Fresh A/B/C'))).toBe(true);
     }
 
     const controlWithSettingChange = ingestOperatorCalibrationRun(
@@ -981,7 +979,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
       );
       expect(
         isControlFixtureAuthorized([...context.runs, recovered.run])
-      ).toBe(true);
+      ).toBe(false);
     }
 
     const stale = ingestOperatorCalibrationRun(
@@ -1079,6 +1077,25 @@ describe('FP-024B DoWin compensation reconciliation', () => {
         originalRun,
         laterRun,
       ]).verdict
+    ).toBe('AMBIGUOUS');
+    const third = {
+      ...originalRun,
+      fixtureId: 'fresh-original-topology-c',
+      designName: 'fresh-original-topology-c',
+      optimizerProvenance: asddEquivalentInputProvenance(
+        DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.pieces,
+        DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,
+        DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings,
+        { optimizationResultId: 'fresh-result-c' }
+      ),
+    };
+    expect(
+      classifyProvenanceFreshStateExperiment([
+        DOWIN_ASDD_BASELINE_REPRODUCTION_RUN,
+        originalRun,
+        laterRun,
+        third,
+      ]).verdict
     ).toBe('OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING');
     expect(
       classifyProvenanceFreshStateExperiment([
@@ -1120,7 +1137,12 @@ describe('FP-024B DoWin compensation reconciliation', () => {
         profileSystem: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.profileSystem,
         pieces: [...DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.pieces],
         bars: [...DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars],
-        optimizerProvenance: freshOptimizerProvenance(),
+        optimizerProvenance: asddEquivalentInputProvenance(
+          DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.pieces,
+          DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,
+          DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings,
+          { runId: 'fresh-clone-asdd' }
+        ),
       },
       context
     );
