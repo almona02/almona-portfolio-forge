@@ -3,9 +3,14 @@
  *
  * Sequence: 1A BASELINE_SETTINGS_SNAPSHOT → 1B BASELINE_REPRODUCTION_RUN
  * (same asdd 1000×1500, settings unchanged) → Tests 2–4 SINGLE_SETTING_ISOLATION
+ * → BASELINE_RESET_VALIDATION (Weld=3 / Saw=4 / Trim=0 must recover 1B)
+ * → FP-024C.1 OPTIMIZATION_STATE_PROVENANCE_AUDIT (one question: why
+ *   identical visible geometry/settings can produce different remainder
+ *   topology; compare bar-assignment signatures, not utilization)
  * → Test 5 CONTROL_FIXTURE. Isolation is not authorized until 1B reproduces.
- * Do not encode packed = nominal + 3, do not absorb a hidden +7 mm, and do
- * not feed these values into runtime manufacturing.
+ * CONTROL_FIXTURE is not authorized until reset recovers. Do not encode
+ * packed = nominal + 3, do not absorb a hidden +7 mm, and do not feed these
+ * values into runtime manufacturing.
  *
  * @see docs/audits/FP-024C-PHYSICAL-FORMULA-PARITY_2026-09-09.md
  */
@@ -23,20 +28,74 @@ import {
   type DowinJobObservedSettings,
   type DowinPhysicalLengthGoldenRow,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
+import {
+  FP024C1_AUDIT_QUESTION,
+  FP024C1_DECISIVE_EXPERIMENT,
+  FP024C1_PROVENANCE_AUDIT_CHECKLIST,
+  asddEquivalentInputProvenance,
+  assignmentSignaturesEqual,
+  attachOptimizerInputFingerprints,
+  classifyOptimizationStateProvenance,
+  compareOptimizerInputFingerprints,
+  freshOptimizerProvenance,
+  identifyAssignmentTopology,
+  isOptimizerProvenanceComplete,
+  missingOptimizerProvenanceFields,
+  overallUtilizationPercent,
+  solveDispositionOf,
+  topologyFingerprint,
+  topologySignatureFromBars,
+  type AsddAssignmentTopology,
+  type BarAssignmentSignature,
+  type OptimizationStateProvenanceVerdict,
+  type OptimizerInputEquivalence,
+  type OptimizerRunProvenance,
+  type OptimizerSolveKind,
+  type ProvenanceAuditVerdict,
+} from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
+
+export {
+  FP024C1_AUDIT_QUESTION,
+  FP024C1_DECISIVE_EXPERIMENT,
+  FP024C1_PROVENANCE_AUDIT_CHECKLIST,
+  asddEquivalentInputProvenance,
+  assignmentSignaturesEqual,
+  attachOptimizerInputFingerprints,
+  classifyOptimizationStateProvenance,
+  compareOptimizerInputFingerprints,
+  freshOptimizerProvenance,
+  isOptimizerProvenanceComplete,
+  missingOptimizerProvenanceFields,
+  overallUtilizationPercent,
+  solveDispositionOf,
+  topologyFingerprint,
+  topologySignatureFromBars,
+  type AsddAssignmentTopology,
+  type BarAssignmentSignature,
+  type OptimizationStateProvenanceVerdict,
+  type OptimizerInputEquivalence,
+  type OptimizerRunProvenance,
+  type OptimizerSolveKind,
+  type ProvenanceAuditVerdict,
+};
 
 export type CalibrationVariable =
   | 'baseline'
   | 'baselineReproduction'
+  | 'baselineReset'
   | 'weldingWaste'
   | 'sawThickness'
   | 'trimCut'
+  | 'optimizationStateProvenance'
   | 'ninetyDegreeControl';
 
 /** How the run is allowed to differ from the asdd parent. */
 export type CalibrationRunKind =
   | 'BASELINE_SETTINGS_SNAPSHOT'
   | 'BASELINE_REPRODUCTION_RUN'
+  | 'BASELINE_RESET_VALIDATION'
   | 'SINGLE_SETTING_ISOLATION'
+  | 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
   | 'CONTROL_FIXTURE';
 
 export type ReproductionVerdict = 'NOT MEASURED' | 'REPRODUCED' | 'REPRODUCTION_FAILED';
@@ -52,6 +111,8 @@ export const SINGLE_SETTING_ISOLATION_VARIABLES = [
 export function calibrationRunKind(variable: CalibrationVariable): CalibrationRunKind {
   if (variable === 'baseline') return 'BASELINE_SETTINGS_SNAPSHOT';
   if (variable === 'baselineReproduction') return 'BASELINE_REPRODUCTION_RUN';
+  if (variable === 'baselineReset') return 'BASELINE_RESET_VALIDATION';
+  if (variable === 'optimizationStateProvenance') return 'OPTIMIZATION_STATE_PROVENANCE_AUDIT';
   if (variable === 'ninetyDegreeControl') return 'CONTROL_FIXTURE';
   return 'SINGLE_SETTING_ISOLATION';
 }
@@ -69,6 +130,16 @@ export const EVIDENCE_HIERARCHY = [
     kind: 'BASELINE_REPRODUCTION_RUN' as const,
     canProve:
       'Whether the same asdd design with the currently captured settings reproduces the original length layers and bar accounting',
+  },
+  {
+    kind: 'BASELINE_RESET_VALIDATION' as const,
+    canProve:
+      'Whether Weld=3 / Saw=4 / Trim=0 still recovers the 1B remainder and machine-length signature after isolation Tests 2–4',
+  },
+  {
+    kind: 'OPTIMIZATION_STATE_PROVENANCE_AUDIT' as const,
+    canProve:
+      'Why identical visible geometry/settings can produce different optimization remainder topology. Captures optimizer input and selected-result provenance. Not a manufacturing-setting isolation.',
   },
   {
     kind: 'SINGLE_SETTING_ISOLATION' as const,
@@ -186,7 +257,7 @@ function withinParityToleranceMm(a: number | null, b: number | null): boolean {
 }
 
 function requiredPairReproduced(
-  pair: (typeof ASDD_REQUIRED_REPRODUCTION_PAIRS)[number],
+  pair: Pick<LengthLayerSignature, 'category' | 'nominalMm' | 'packedMm' | 'machineMm'>,
   signatures: readonly LengthLayerSignature[]
 ): boolean {
   return signatures.some(
@@ -249,11 +320,36 @@ export type CalibrationRunStatus = 'MEASURED' | 'PENDING_OPERATOR_RUN';
 
 export type CompensationInterpretation =
   | 'PROVEN EFFECT'
+  | 'PROVEN CONSISTENT EFFECT'
   | 'NO OBSERVED EFFECT'
+  | 'CONDITIONAL'
   | 'AMBIGUOUS'
+  | 'DOWNSTREAM OPTIMIZER RESPONSE'
+  | 'UNPROVEN'
+  | 'UNPROVEN GENERALIZATION'
   | 'NOT MEASURED';
 
 export type CompensationTermAuthority = 'PROVEN' | 'SUPPORTED' | 'UNPROVEN';
+
+export const WELDABLE_45_CATEGORIES = [
+  'sash_horizontal',
+  'sash_vertical',
+  'frame_horizontal',
+  'frame_vertical',
+] as const;
+
+export interface IsolationFinding {
+  id: string;
+  finding: string;
+  classification: CompensationInterpretation;
+  note: string;
+}
+
+export const KASA_KANAT_PROFILE_CODES = ['Deceuninck-KASA-70', 'Deceuninck-KANAT-70'] as const;
+export const KASA_PROFILE_CODE = 'Deceuninck-KASA-70';
+export const KANAT_PROFILE_CODE = 'Deceuninck-KANAT-70';
+export const ORTA_PROFILE_CODE = 'Deceuninck-ORTA-KAYIT-70';
+export const CITA_PROFILE_CODE = 'Deceuninck-CITA-20';
 
 export type ResidualCandidateStatus = 'OBSERVED' | 'HYPOTHESIS' | 'UNKNOWN_THIS_RUN';
 
@@ -555,6 +651,9 @@ export interface DowinCalibrationRun {
   bars: readonly ExternalBarPattern[];
   provenance: string;
   reproductionVerdict: ReproductionVerdict | null;
+  lengthLayerVerdict?: ReproductionVerdict | null;
+  topologyVerdict?: ReproductionVerdict | null;
+  optimizerProvenance?: OptimizerRunProvenance | null;
 }
 
 function pendingTemplate(
@@ -566,11 +665,19 @@ function pendingTemplate(
   const runKind = calibrationRunKind(isolationVariable);
   return {
     fixtureId,
-    parentFixtureId: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.id,
+    parentFixtureId:
+      runKind === 'BASELINE_RESET_VALIDATION' || runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
+        ? 'BASELINE_REPRODUCTION_RUN'
+        : DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.id,
     runKind,
     isolationVariable,
     status: 'PENDING_OPERATOR_RUN',
-    designName: runKind === 'CONTROL_FIXTURE' ? 'pending-90-control' : 'asdd',
+    designName:
+      runKind === 'CONTROL_FIXTURE'
+        ? 'pending-90-control'
+        : runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
+          ? 'pending-fresh-state-clone'
+          : 'asdd',
     profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
     widthMm: runKind === 'CONTROL_FIXTURE' ? 0 : 1000,
     heightMm: runKind === 'CONTROL_FIXTURE' ? 0 : 1500,
@@ -581,7 +688,13 @@ function pendingTemplate(
     pieces: [],
     bars: [],
     provenance,
-    reproductionVerdict: runKind === 'BASELINE_REPRODUCTION_RUN' ? 'NOT MEASURED' : null,
+    reproductionVerdict:
+      runKind === 'BASELINE_REPRODUCTION_RUN' ||
+      runKind === 'BASELINE_RESET_VALIDATION' ||
+      runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
+        ? 'NOT MEASURED'
+        : null,
+    optimizerProvenance: runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT' ? null : undefined,
   };
 }
 
@@ -631,36 +744,246 @@ export const DOWIN_ASDD_BASELINE_REPRODUCTION_RUN: DowinCalibrationRun = {
   reproductionVerdict: 'REPRODUCED',
 };
 
+function weldingWaste0Pieces(): DowinPhysicalLengthGoldenRow[] {
+  return DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows.map((row) => {
+    if (row.category === 'glass' || row.category === 'angle_compensation' || row.category === 'mullion') {
+      return row;
+    }
+    if (row.category === 'glazing_bead_horizontal' || row.category === 'glazing_bead_vertical') {
+      return { ...row, expectedPackedSegmentMm: row.expectedNominalLengthMm };
+    }
+    return {
+      ...row,
+      expectedPackedSegmentMm: row.expectedNominalLengthMm,
+      expectedMachineLengthMm: row.expectedNominalLengthMm,
+    };
+  });
+}
+
+export const DOWIN_ASDD_WELDING_WASTE_0_BARS: readonly ExternalBarPattern[] = [
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[0],
+    packedSegmentMm: [1500, 1500, 1000, 1000],
+    remainingMm: 977,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[1],
+    packedSegmentMm: [1430, 1430, 451, 451],
+    remainingMm: 2215,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[2],
+    packedSegmentMm: [1416],
+    remainingMm: 5080,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[3],
+    packedSegmentMm: [1310, 1310, 331, 331],
+    remainingMm: 3195,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[4],
+    packedSegmentMm: [1310, 1310, 331, 331],
+    remainingMm: 3195,
+  },
+];
+
+export const DOWIN_ASDD_WELDING_WASTE_0_RUN: DowinCalibrationRun = {
+  fixtureId: 'WELDING_WASTE_0',
+  parentFixtureId: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.fixtureId,
+  runKind: 'SINGLE_SETTING_ISOLATION',
+  isolationVariable: 'weldingWaste',
+  status: 'MEASURED',
+  designName: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.designName,
+  profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
+  widthMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallWidthMm,
+  heightMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallHeightMm,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  observedSettings: {
+    ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings,
+    weldingWasteMm: 0,
+  },
+  intendedIsolation: {
+    field: 'weldingWasteMm',
+    instructedToMm: 0,
+    note: 'SINGLE_SETTING_ISOLATION vs 1B: only Welding Waste 3 → 0. Same asdd 1000×1500, Deceuninck 70, stock, quantity, Saw=4, Trim=0, DC-600.',
+  },
+  changedSetting: { field: 'weldingWasteMm', oldValue: 3, newValue: 0 },
+  pieces: weldingWaste0Pieces(),
+  bars: DOWIN_ASDD_WELDING_WASTE_0_BARS,
+  provenance:
+    'SINGLE_SETTING_ISOLATION 2026-09-10 21:54. Welding Waste 3→0 only. Settings saved (screenshot SHA-256 ba20b105029affbf9152130c171f0cf6446175cba7fb20e34ec056eec6653638). Design Preview/Labels nominals unchanged (451 / 1430 / 1000 / 1500 / 1416 / 331 / 1310). Packed and DC-600 Table1 LENGTH sash H 451 / sash V 1430 / frame H 1000 / frame V 1500 / mullion 1416; FRAME_X/Y 1000×1500. Optimization List remainders CITA 3195×2 / KANAT 2215 / KASA 977 / ORTA 5080. Licensed files not committed.',
+  reproductionVerdict: null,
+};
+
+export const DOWIN_ASDD_SAW_THICKNESS_5_BARS: readonly ExternalBarPattern[] = [
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[0],
+    packedSegmentMm: [1503, 1503, 1003, 1003],
+    remainingMm: 960,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[1],
+    id: 'asdd-sash-kanat-6000-verticals',
+    applicationCount: 1,
+    packedSegmentMm: [1433, 1433, 1433, 1433],
+    remainingMm: 240,
+    pieceExternalIds: [
+      'asdd.Left.Sash.Left',
+      'asdd.Left.Sash.Right',
+      'asdd.Right.Sash.Left',
+      'asdd.Right.Sash.Right',
+    ],
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[1],
+    id: 'asdd-sash-kanat-6000-horizontals',
+    applicationCount: 1,
+    packedSegmentMm: [454, 454, 454, 454],
+    remainingMm: 4156,
+    pieceExternalIds: [
+      'asdd.Left.Sash.Top',
+      'asdd.Left.Sash.Bottom',
+      'asdd.Right.Sash.Top',
+      'asdd.Right.Sash.Bottom',
+    ],
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[2],
+    remainingMm: 5079,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[3],
+    packedSegmentMm: [1313, 1313, 334, 334],
+    remainingMm: 3178,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[4],
+    packedSegmentMm: [1313, 1313, 334, 334],
+    remainingMm: 3178,
+  },
+];
+
+export const DOWIN_ASDD_SAW_THICKNESS_5_RUN: DowinCalibrationRun = {
+  fixtureId: 'SAW_THICKNESS_5',
+  parentFixtureId: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.fixtureId,
+  runKind: 'SINGLE_SETTING_ISOLATION',
+  isolationVariable: 'sawThickness',
+  status: 'MEASURED',
+  designName: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.designName,
+  profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
+  widthMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallWidthMm,
+  heightMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallHeightMm,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  observedSettings: {
+    ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings,
+    sawThicknessMm: 5,
+  },
+  intendedIsolation: {
+    field: 'sawThicknessMm',
+    instructedToMm: 5,
+    note: 'SINGLE_SETTING_ISOLATION vs 1B: Welding Waste restored to 3. Only Saw Thickness 4 → 5. Same asdd 1000×1500, Deceuninck 70, stock, quantity, Trim=0, DC-600.',
+  },
+  changedSetting: { field: 'sawThicknessMm', oldValue: 4, newValue: 5 },
+  pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
+  bars: DOWIN_ASDD_SAW_THICKNESS_5_BARS,
+  provenance:
+    'SINGLE_SETTING_ISOLATION 2026-09-10 22:21. Saw Thickness 4→5 only (Weld restored to 3, Trim=0). Settings saved (screenshot SHA-256 f1d48844a192d0367f134eae706f622b89adefa09c1eabfbcab2af2c04643bad). Design Preview/Labels nominals unchanged (451 / 1430 / 1000 / 1500 / 1416 / 331 / 1310). Packed required-parts and DC-600 Table1 LENGTH unchanged vs 1B (sash H 454 / sash V 1433 / frame H 1003 / frame V 1503 / mullion 1416; FRAME_X/Y 1000×1500). Optimization List remainders CITA 3178×2 / KANAT 240+4156 / KASA 960 / ORTA 5079. Licensed files not committed.',
+  reproductionVerdict: null,
+};
+
+export const DOWIN_ASDD_TRIM_CUT_10_BARS: readonly ExternalBarPattern[] = [
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[0],
+    packedSegmentMm: [1503, 1503, 1003, 1003],
+    remainingMm: 960,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[1],
+    packedSegmentMm: [1433, 1433, 454, 454],
+    remainingMm: 2198,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[2],
+    remainingMm: 5079,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[3],
+    packedSegmentMm: [1313, 1313, 334, 334],
+    remainingMm: 3178,
+  },
+  {
+    ...DOWIN_ASDD_EXTERNAL_BAR_PATTERNS[4],
+    packedSegmentMm: [1313, 1313, 334, 334],
+    remainingMm: 3178,
+  },
+];
+
+export const DOWIN_ASDD_TRIM_CUT_10_RUN: DowinCalibrationRun = {
+  fixtureId: 'TRIM_CUT_10',
+  parentFixtureId: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.fixtureId,
+  runKind: 'SINGLE_SETTING_ISOLATION',
+  isolationVariable: 'trimCut',
+  status: 'MEASURED',
+  designName: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.designName,
+  profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
+  widthMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallWidthMm,
+  heightMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallHeightMm,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  observedSettings: {
+    ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings,
+    trimCutMm: 10,
+  },
+  intendedIsolation: {
+    field: 'trimCutMm',
+    instructedToMm: 10,
+    note: 'SINGLE_SETTING_ISOLATION vs 1B: Saw restored to 4, Weld=3. Only Trim Cut 0 → 10. Same asdd 1000×1500, Deceuninck 70, stock, quantity, DC-600.',
+  },
+  changedSetting: { field: 'trimCutMm', oldValue: 0, newValue: 10 },
+  pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
+  bars: DOWIN_ASDD_TRIM_CUT_10_BARS,
+  provenance:
+    'SINGLE_SETTING_ISOLATION 2026-09-10 22:52. Trim Cut 0→10 only (Saw restored to 4, Weld=3). Settings screenshot SHA-256 b17121a62c89d83cb734f094d8c36cbe5bc6d6af164462eef47af7943ed3535a. Design Preview/Labels nominals unchanged (451 / 1430 / 1000 / 1500 / 1416 / 331 / 1310). Packed required-parts and DC-600 Table1 LENGTH unchanged vs 1B (sash H 454 / sash V 1433 / frame H 1003 / frame V 1503 / mullion 1416). Optimization List remainders CITA 3178×2 / KANAT 2198×2 / KASA 960 / ORTA 5079. Licensed files not committed.',
+  reproductionVerdict: null,
+};
+
+export const DOWIN_ASDD_BASELINE_RESET_RUN: DowinCalibrationRun = {
+  fixtureId: 'BASELINE_RESET_VALIDATION',
+  parentFixtureId: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.fixtureId,
+  runKind: 'BASELINE_RESET_VALIDATION',
+  isolationVariable: 'baselineReset',
+  status: 'MEASURED',
+  designName: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.designName,
+  profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
+  widthMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallWidthMm,
+  heightMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallHeightMm,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  observedSettings: { ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings },
+  intendedIsolation: {
+    field: null,
+    instructedToMm: null,
+    note: 'BASELINE_RESET_VALIDATION: Weld=3 / Saw=4 / Trim=0 restored. Clear Screen, re-Send unchanged asdd, Run. Must recover 1B remainders before the 90° control.',
+  },
+  changedSetting: null,
+  pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
+  bars: DOWIN_ASDD_TRIM_CUT_10_BARS,
+  provenance:
+    'BASELINE_RESET_VALIDATION 2026-09-10 23:16. Settings screenshot SHA-256 1d4326c1c8d3343fd1362a058a0bd659e6b4a40b5d4ba5a8348216bb14c505a4 shows Weld=3 / Saw=4 / Trim=0 / DC-600. Clear Screen then re-Send asdd + Run. Machine lengths recovered (454 / 1433 / 1003 / 1503 / 1416). Remainders did not: CITA 3178×2 / KANAT 2198 / KASA 960 / ORTA 5079 — the Test 3/4 signature, not 1B 965 / 2203 / 5080 / 206 / 6160. DC-600 .dw SHA matches Test 4 (machine-output identity, not optimizer-remainder identity). REPRODUCTION_FAILED. STOP — FP-024C.1 provenance audit next. Licensed files not committed.',
+  reproductionVerdict: 'REPRODUCTION_FAILED',
+  lengthLayerVerdict: 'REPRODUCED',
+  topologyVerdict: 'REPRODUCTION_FAILED',
+};
+
 export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
   pendingTemplate(
-    'dowin-asdd-weld-0-pending',
-    'weldingWaste',
+    'FP024C1_PROVENANCE_AUDIT',
+    'optimizationStateProvenance',
     {
-      field: 'weldingWasteMm',
-      instructedToMm: 0,
-      note: 'SINGLE_SETTING_ISOLATION: duplicate asdd. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Welding Waste to 0. Export Design Preview, Labels, Optimization, MDB. 1B is REPRODUCED — this is now a valid causal experiment.',
-    },
-    'Operator template. Not an executed DoWin run.'
-  ),
-  pendingTemplate(
-    'dowin-asdd-saw-plus-1-pending',
-    'sawThickness',
-    {
-      field: 'sawThicknessMm',
-      instructedToMm: 5,
-      note: 'SINGLE_SETTING_ISOLATION: return weld to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Saw Thickness 4 → 5. 1B is REPRODUCED — this is now a valid causal experiment.',
-    },
-    'Operator template. Instructed Saw Thickness target is 5 mm after a 4 mm contemporaneous baseline.'
-  ),
-  pendingTemplate(
-    'dowin-asdd-trim-plus-delta-pending',
-    'trimCut',
-    {
-      field: 'trimCutMm',
+      field: null,
       instructedToMm: null,
-      note: 'SINGLE_SETTING_ISOLATION: return saw to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Trim Cut from 0 to a known value. Compare remainder and packed/machine. 1B is REPRODUCED — this is now a valid causal experiment.',
+      note: 'FP-024C.1 answers one question: why identical visible geometry/settings can produce different optimization remainder topology. Decisive experiment: same geometry + Weld 3 / Saw 4 / Trim 0 + same stock quantities + fresh project/design + fresh production plan + fresh optimization result. Compare bar-assignment signatures, not utilization. Not a manufacturing-setting isolation. Do not encode formulas.',
     },
-    'Operator template. Trim Cut baseline is 0. Instructed target stays null until the operator picks a known non-zero value.'
+    'Operator template. Capture optimizer input and selected-result provenance on every run. Test 3 remainder is not attributed to Saw. 90° stays gated until FP-024C.1 explains the discrepancy.'
   ),
   pendingTemplate(
     'dowin-asdd-90-control-pending',
@@ -677,6 +1000,10 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
 export const DOWIN_CALIBRATION_RUNS: readonly DowinCalibrationRun[] = [
   DOWIN_ASDD_BASELINE_RUN,
   DOWIN_ASDD_BASELINE_REPRODUCTION_RUN,
+  DOWIN_ASDD_WELDING_WASTE_0_RUN,
+  DOWIN_ASDD_SAW_THICKNESS_5_RUN,
+  DOWIN_ASDD_TRIM_CUT_10_RUN,
+  DOWIN_ASDD_BASELINE_RESET_RUN,
   ...DOWIN_CALIBRATION_TEMPLATES,
 ];
 
@@ -697,6 +1024,106 @@ export function isCausalIsolationAuthorized(
     reproduction?.status === 'MEASURED' &&
     reproduction.reproductionVerdict === 'REPRODUCED'
   );
+}
+
+export function findBaselineReset(
+  runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
+): DowinCalibrationRun | undefined {
+  return runs.find((r) => r.runKind === 'BASELINE_RESET_VALIDATION');
+}
+
+/** 90° CONTROL_FIXTURE is gated until reset recovers the 1B remainder/machine signature. */
+export function isControlFixtureAuthorized(
+  runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
+): boolean {
+  const reset = findBaselineReset(runs);
+  return reset?.status === 'MEASURED' && reset.reproductionVerdict === 'REPRODUCED';
+}
+
+const ASDD_RESET_MULLION_PAIR = {
+  category: 'mullion',
+  nominalMm: 1416,
+  packedMm: 1416,
+  machineMm: 1416,
+} as const;
+
+/** Reset must recover 1B length pairs, mullion 1416, and 1B remainders. */
+export function evaluateBaselineReset(
+  original: { pieces: readonly DowinPhysicalLengthGoldenRow[]; bars: readonly ExternalBarPattern[] },
+  candidate: { pieces: readonly DowinPhysicalLengthGoldenRow[]; bars: readonly ExternalBarPattern[] }
+): ReturnType<typeof evaluateBaselineReproduction> {
+  const reproduction = evaluateBaselineReproduction(original, candidate);
+  const signatures = uniqueLayerSignatures(candidate.pieces);
+  const mullionMissing = requiredPairReproduced(ASDD_RESET_MULLION_PAIR, signatures)
+    ? []
+    : [signatureKey(ASDD_RESET_MULLION_PAIR)];
+  const missingPairs = [...reproduction.missingPairs, ...mullionMissing];
+  return {
+    missingPairs,
+    remainderMismatches: reproduction.remainderMismatches,
+    verdict:
+      missingPairs.length === 0 && reproduction.remainderMismatches.length === 0
+        ? 'REPRODUCED'
+        : 'REPRODUCTION_FAILED',
+  };
+}
+
+/** Length-layer only: required pairs + mullion 1416. Remainders are not this verdict. */
+export function evaluateLengthLayerReset(
+  _original: { pieces: readonly DowinPhysicalLengthGoldenRow[] },
+  candidate: { pieces: readonly DowinPhysicalLengthGoldenRow[] }
+): { verdict: ReproductionVerdict; missingPairs: string[] } {
+  const signatures = uniqueLayerSignatures(candidate.pieces);
+  const missingPairs = [
+    ...ASDD_REQUIRED_REPRODUCTION_PAIRS.filter((pair) => !requiredPairReproduced(pair, signatures)).map(
+      signatureKey
+    ),
+    ...(requiredPairReproduced(ASDD_RESET_MULLION_PAIR, signatures)
+      ? []
+      : [signatureKey(ASDD_RESET_MULLION_PAIR)]),
+  ];
+  return {
+    missingPairs,
+    verdict: missingPairs.length === 0 ? 'REPRODUCED' : 'REPRODUCTION_FAILED',
+  };
+}
+
+/** Optimizer remainder topology only. Machine-output identity is a separate verdict. */
+export function evaluateOptimizerTopologyReproduction(
+  originalBars: readonly ExternalBarPattern[],
+  candidateBars: readonly ExternalBarPattern[]
+): ReproductionVerdict {
+  return assignmentSignaturesEqual(originalBars, candidateBars) ? 'REPRODUCED' : 'REPRODUCTION_FAILED';
+}
+
+export function identifyAsddAssignmentTopology(
+  bars: readonly ExternalBarPattern[]
+): AsddAssignmentTopology {
+  return identifyAssignmentTopology(bars, DOWIN_ASDD_EXTERNAL_BAR_PATTERNS, DOWIN_ASDD_TRIM_CUT_10_BARS);
+}
+
+export function classifyProvenanceFreshStateExperiment(
+  runs: readonly DowinCalibrationRun[]
+): ReturnType<typeof classifyOptimizationStateProvenance> {
+  const provenanceMeasured = runs.filter(
+    (run) => run.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT' && run.status === 'MEASURED'
+  );
+  const freshRuns = provenanceMeasured.filter(
+    (run) => solveDispositionOf(run.optimizerProvenance) === 'NEWLY_SOLVED'
+  );
+  const reusedStateRuns = [
+    ...runs.filter((run) => run.runKind === 'BASELINE_RESET_VALIDATION' && run.status === 'MEASURED'),
+    ...provenanceMeasured.filter((run) => {
+      const d = solveDispositionOf(run.optimizerProvenance);
+      return d === 'REOPENED' || d === 'REUSED';
+    }),
+  ];
+  return classifyOptimizationStateProvenance({
+    freshRuns,
+    reusedStateRuns,
+    originalBars: DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
+    laterBars: DOWIN_ASDD_TRIM_CUT_10_BARS,
+  });
 }
 
 export function pieceDeltasForRun(run: DowinCalibrationRun): PieceLayerDeltas[] {
@@ -771,7 +1198,7 @@ export const DOWIN_COMPENSATION_TERM_AUTHORITY: readonly CompensationTermRecord[
     term: 'packedMinusNominal on 45° asdd pieces',
     authority: 'SUPPORTED',
     proposedForFp024c: false,
-    evidence: 'This job: frame/sash/bead packed − nominal = 3 mm. Not isolated to Welding Waste. Do not encode +3.',
+    evidence: 'This job: frame/sash/bead packed − nominal = 3 mm. Test 2 proves Welding Waste moves KASA/KANAT packed by −3 mm on this fixture. Still not a generalized production +3.',
   },
   {
     term: 'packedMinusNominal on 90° mullion',
@@ -786,22 +1213,74 @@ export const DOWIN_COMPENSATION_TERM_AUTHORITY: readonly CompensationTermRecord[
     evidence: '13 profile rows: LENGTH equals packed graphic. Beads have no MDB row. Not a general machine rule.',
   },
   {
+    term: 'Welding Waste on asdd 45° KASA/KANAT packed length',
+    authority: 'PROVEN',
+    proposedForFp024c: false,
+    evidence:
+      'Test 2 vs 1B: unique packed delta −3 mm on 45° KASA/KANAT. One fixture. Not a production formula.',
+  },
+  {
+    term: 'Welding Waste on asdd 45° KASA/KANAT DC-600 machine length',
+    authority: 'PROVEN',
+    proposedForFp024c: false,
+    evidence:
+      'Test 2 vs 1B: unique Table1 LENGTH delta −3 mm on 45° KASA/KANAT. Machine still equals packed. Not encoded.',
+  },
+  {
     term: 'Welding Waste',
     authority: 'UNPROVEN',
     proposedForFp024c: false,
-    evidence: 'Live General Settings: Welding Waste = 3 mm. Test 2 not executed. Do not encode packed = nominal + 3.',
+    evidence:
+      'Test 2 package is CONDITIONAL. KASA/KANAT packed/machine −3 mm is proven on this fixture. Generalized “all 45° profiles add WeldingWaste” and proprietary DoWin formula stay unproven. Do not encode.',
+  },
+  {
+    term: 'Saw Thickness on asdd packed/machine piece length',
+    authority: 'UNPROVEN',
+    proposedForFp024c: false,
+    evidence:
+      'Test 3 vs 1B: unique packed and Table1 LENGTH deltas are 0 mm on KASA/KANAT/ORTA. Saw is not a piece-length compensation on this fixture. Do not encode.',
+  },
+  {
+    term: 'Saw Thickness on asdd KASA remainder',
+    authority: 'UNPROVEN',
+    proposedForFp024c: false,
+    evidence:
+      'Test 3 observed KASA 965→960 vs 1B, but BASELINE_RESET_VALIDATION with Saw restored to 4 did not recover 1B remainders. Remainder delta is not attributable to Saw Thickness. Do not encode.',
+  },
+  {
+    term: 'Saw Thickness on asdd ORTA remainder',
+    authority: 'UNPROVEN',
+    proposedForFp024c: false,
+    evidence:
+      'Test 3 observed ORTA 5080→5079 vs 1B, but reset at Saw=4 kept 5079. Remainder delta is not attributable to Saw Thickness. Do not encode.',
   },
   {
     term: 'Saw Thickness',
     authority: 'UNPROVEN',
     proposedForFp024c: false,
-    evidence: 'Live General Settings: Saw Thickness = 4 mm. Test 3 not executed. Do not encode remainder with a hidden constant.',
+    evidence:
+      'Test 3 package is AMBIGUOUS. Packed/machine piece lengths did not move. Remainder moved vs 1B but did not revert when Saw returned to 4. Exact proprietary kerf formula stays unproven. Do not encode.',
+  },
+  {
+    term: 'Trim Cut on asdd packed/machine piece length',
+    authority: 'UNPROVEN',
+    proposedForFp024c: false,
+    evidence:
+      'Test 4 vs 1B: unique packed and Table1 LENGTH deltas are 0 mm. Trim Cut 10 is not a piece-level or machine-level compensation on this fixture. Do not encode.',
+  },
+  {
+    term: 'Trim Cut remainder = configured trim delta',
+    authority: 'UNPROVEN',
+    proposedForFp024c: false,
+    evidence:
+      'Test 4 remainder is not Trim evidence. KASA 960 / ORTA 5079 / CITA 3178×2 matched Test 3 and survived reset at Saw=4. Treat as optimizer-state confound. FP-024C.1 provenance audit is next.',
   },
   {
     term: 'Trim Cut',
     authority: 'UNPROVEN',
     proposedForFp024c: false,
-    evidence: 'Live General Settings: Trim Cut = 0 mm. Test 4 not executed. Leftover 7 mm after packed + N×4 remains unexplained.',
+    evidence:
+    'Test 4 package is AMBIGUOUS. Packed/machine piece lengths did not move. Remainder signature matched Test 3 (KASA 960 / ORTA 5079 / CITA 3178×2) and is not Trim evidence. Possible optimizer-state confound. Do not encode.',
   },
   {
     term: 'KASA/KANAT leftover after packed + named-parity N×4 kerf',
@@ -847,6 +1326,7 @@ export interface OperatorEvidencePackage {
   profileSystem: string;
   pieces: DowinPhysicalLengthGoldenRow[];
   bars: ExternalBarPattern[];
+  optimizerProvenance?: OptimizerRunProvenance | null;
 }
 
 export type OperatorIngestResult =
@@ -885,21 +1365,28 @@ function isolationFieldForVariable(
   return null;
 }
 
+function stockQuantityByIdentity(
+  bars: readonly ExternalBarPattern[]
+): Map<string, number> {
+  const totals = new Map<string, number>();
+  for (const bar of bars) {
+    const key = `${bar.profileCode}|${bar.stockLengthMm}`;
+    totals.set(key, (totals.get(key) ?? 0) + bar.applicationCount);
+  }
+  return totals;
+}
+
 function barsIdenticalForIsolation(
   parent: readonly ExternalBarPattern[],
   child: readonly ExternalBarPattern[]
 ): boolean {
-  if (parent.length !== child.length) return false;
-  return parent.every((p, i) => {
-    const c = child[i];
-    return (
-      c != null &&
-      p.profileCode === c.profileCode &&
-      p.stockLengthMm === c.stockLengthMm &&
-      p.applicationCount === c.applicationCount &&
-      p.packedSegmentMm.length === c.packedSegmentMm.length
-    );
-  });
+  const parentQty = stockQuantityByIdentity(parent);
+  const childQty = stockQuantityByIdentity(child);
+  if (parentQty.size !== childQty.size) return false;
+  for (const [key, qty] of parentQty) {
+    if (childQty.get(key) !== qty) return false;
+  }
+  return true;
 }
 
 function remainderDeltaMm(
@@ -922,12 +1409,21 @@ function classifyMeasuredIsolation(
   machineDeltaMm: number | null,
   remainderDeltaMmValue: number | null
 ): CompensationInterpretation {
-  if (runKind === 'CONTROL_FIXTURE' || runKind === 'BASELINE_SETTINGS_SNAPSHOT' || runKind === 'BASELINE_REPRODUCTION_RUN') {
+  if (
+    runKind === 'CONTROL_FIXTURE' ||
+    runKind === 'BASELINE_SETTINGS_SNAPSHOT' ||
+    runKind === 'BASELINE_REPRODUCTION_RUN' ||
+    runKind === 'BASELINE_RESET_VALIDATION' ||
+    runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
+  ) {
     return 'AMBIGUOUS';
   }
   const layers = [nominalDeltaMm, packedDeltaMm, machineDeltaMm, remainderDeltaMmValue];
   if (layers.every((n) => n == null)) return 'AMBIGUOUS';
-  if (layers.every((n) => n == null || n === 0)) return 'NO OBSERVED EFFECT';
+  if (layers.some((n) => n == null) && layers.every((n) => n == null || n === 0)) {
+    return 'AMBIGUOUS';
+  }
+  if (layers.every((n) => n === 0)) return 'NO OBSERVED EFFECT';
   const nonZero = layers.filter((n): n is number => n != null && n !== 0);
   const uniqueNonZero = [...new Set(nonZero)];
   if (uniqueNonZero.length === 1 && nonZero.length >= 1) return 'PROVEN EFFECT';
@@ -971,6 +1467,11 @@ export function ingestOperatorCalibrationRun(
   const changed = changedObservedSettingKeys(parent.observedSettings, pkg.observedSettings);
 
   if (runKind === 'CONTROL_FIXTURE') {
+    if (!isControlFixtureAuthorized(runs)) {
+      reasons.push(
+        'BASELINE_RESET_VALIDATION must recover 1B remainders (KASA 965 / KANAT 2203 / ORTA 5080 / CITA 206/6160) and machine lengths 454 / 1433 / 1003 / 1503 / 1416 before the 90° CONTROL_FIXTURE.'
+      );
+    }
     if (!pkg.controlFixtureNote) {
       reasons.push('CONTROL_FIXTURE note is missing (geometry/cut-angle change; settings unchanged).');
     }
@@ -997,6 +1498,59 @@ export function ingestOperatorCalibrationRun(
     }
     if (pkg.profileSystem !== parent.profileSystem) {
       reasons.push('Do not change profile system on BASELINE_REPRODUCTION_RUN.');
+    }
+  } else if (runKind === 'BASELINE_RESET_VALIDATION') {
+    const oneB = findBaselineReproduction(runs);
+    if (oneB?.status !== 'MEASURED' || oneB.reproductionVerdict !== 'REPRODUCED') {
+      reasons.push('BASELINE_RESET_VALIDATION requires a REPRODUCED BASELINE_REPRODUCTION_RUN.');
+    }
+    if (changed.length > 0) {
+      reasons.push(
+        'BASELINE_RESET_VALIDATION must restore Weld=3 / Saw=4 / Trim=0. Settings must match 1B.'
+      );
+    }
+    if (pkg.widthMm !== parent.widthMm || pkg.heightMm !== parent.heightMm) {
+      reasons.push('BASELINE_RESET_VALIDATION must keep the same asdd 1000×1500 geometry.');
+    }
+    if (pkg.profileSystem !== parent.profileSystem) {
+      reasons.push('Do not change profile system on BASELINE_RESET_VALIDATION.');
+    }
+  } else if (runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT') {
+    const oneB = findBaselineReproduction(runs);
+    if (oneB?.status !== 'MEASURED' || oneB.reproductionVerdict !== 'REPRODUCED') {
+      reasons.push('OPTIMIZATION_STATE_PROVENANCE_AUDIT requires a REPRODUCED BASELINE_REPRODUCTION_RUN.');
+    }
+    if (changed.length > 0) {
+      reasons.push(
+        'FP-024C.1 must keep Weld=3 / Saw=4 / Trim=0. Settings must match 1B. This is not a manufacturing-setting isolation.'
+      );
+    }
+    if (pkg.widthMm !== 1000 || pkg.heightMm !== 1500) {
+      reasons.push('FP-024C.1 discriminator must keep the same 1000×1500 geometry.');
+    }
+    if (pkg.profileSystem !== parent.profileSystem) {
+      reasons.push('Do not change profile system on OPTIMIZATION_STATE_PROVENANCE_AUDIT.');
+    }
+    const oneBForStock = findBaselineReproduction(runs);
+    if (oneBForStock && !barsIdenticalForIsolation(oneBForStock.bars, pkg.bars)) {
+      reasons.push(
+        'FP-024C.1 decisive experiment requires the same stock quantities as 1B. Inputs cannot be proven identical.'
+      );
+    }
+    const missingProvenance = missingOptimizerProvenanceFields(pkg.optimizerProvenance);
+    if (missingProvenance.length > 0) {
+      reasons.push(
+        `FP-024C.1 provenance is incomplete (${missingProvenance.join(', ')}). Inputs cannot be proven identical.`
+      );
+    } else if (solveDispositionOf(pkg.optimizerProvenance) !== 'NEWLY_SOLVED') {
+      reasons.push(
+        'FP-024C.1 decisive experiment requires a newly solved optimization result, not a reopened/reused one.'
+      );
+    }
+    if (pkg.runId === parent.designName || pkg.runId === 'asdd') {
+      reasons.push(
+        'FP-024C.1 decisive experiment requires a fresh project/design, not Clear Screen on the same asdd design.'
+      );
     }
   } else {
     if (!isCausalIsolationAuthorized(runs)) {
@@ -1031,9 +1585,24 @@ export function ingestOperatorCalibrationRun(
   }
 
   const isolationField = isolationFieldForVariable(pkg.isolationVariable);
+  const oneB = findBaselineReproduction(runs);
   const reproduction =
     runKind === 'BASELINE_REPRODUCTION_RUN'
       ? evaluateBaselineReproduction(parent, { pieces: pkg.pieces, bars: pkg.bars })
+      : runKind === 'BASELINE_RESET_VALIDATION' || runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
+        ? evaluateBaselineReset(oneB ?? parent, { pieces: pkg.pieces, bars: pkg.bars })
+        : null;
+  const lengthLayer =
+    runKind === 'BASELINE_RESET_VALIDATION' || runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
+      ? evaluateLengthLayerReset(oneB ?? parent, { pieces: pkg.pieces })
+      : runKind === 'BASELINE_REPRODUCTION_RUN'
+        ? evaluateBaselineReproduction(parent, { pieces: pkg.pieces, bars: pkg.bars })
+        : null;
+  const topology =
+    runKind === 'BASELINE_RESET_VALIDATION' ||
+    runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT' ||
+    runKind === 'BASELINE_REPRODUCTION_RUN'
+      ? evaluateOptimizerTopologyReproduction((oneB ?? parent).bars, pkg.bars)
       : null;
 
   return {
@@ -1044,7 +1613,10 @@ export function ingestOperatorCalibrationRun(
       runKind,
       isolationVariable: pkg.isolationVariable,
       status: 'MEASURED',
-      designName: runKind === 'CONTROL_FIXTURE' ? pkg.runId : parent.designName,
+      designName:
+        runKind === 'CONTROL_FIXTURE' || runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
+          ? pkg.runId
+          : parent.designName,
       profileSystem: pkg.profileSystem,
       widthMm: pkg.widthMm,
       heightMm: pkg.heightMm,
@@ -1059,7 +1631,9 @@ export function ingestOperatorCalibrationRun(
         note:
           runKind === 'CONTROL_FIXTURE'
             ? (pkg.controlFixtureNote as string)
-            : runKind === 'BASELINE_REPRODUCTION_RUN'
+            : runKind === 'BASELINE_REPRODUCTION_RUN' ||
+                runKind === 'BASELINE_RESET_VALIDATION' ||
+                runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
               ? (pkg.generalSettingsScreenshotNote as string)
               : (pkg.changedSettingNote as string),
       },
@@ -1068,6 +1642,11 @@ export function ingestOperatorCalibrationRun(
       bars: pkg.bars,
       provenance: `Operator package ${pkg.runId} at ${pkg.timestampIso}. ${pkg.generalSettingsScreenshotNote}`,
       reproductionVerdict: reproduction?.verdict ?? null,
+      lengthLayerVerdict: lengthLayer
+        ? lengthLayer.verdict
+        : null,
+      topologyVerdict: topology,
+      optimizerProvenance: pkg.optimizerProvenance ?? null,
     },
   };
 }
@@ -1081,17 +1660,20 @@ export interface IsolationDeltaRow {
   machineDeltaMm: number | null;
   remainderDeltaMm: number | null;
   interpretation: CompensationInterpretation;
+  findings: IsolationFinding[];
   note: string;
 }
 
-function meanDeltaByPieceId(
+export function uniquePieceLayerDeltaVsParent(
   parent: DowinCalibrationRun,
   child: DowinCalibrationRun,
-  layer: 'nominalMm' | 'packedMm' | 'machineMm'
+  layer: 'nominalMm' | 'packedMm' | 'machineMm',
+  categories?: readonly string[]
 ): number | null {
   const parentById = new Map(pieceDeltasForRun(parent).map((d) => [d.pieceId, d]));
   const diffs: number[] = [];
   for (const childDelta of pieceDeltasForRun(child)) {
+    if (categories && !categories.includes(childDelta.category)) continue;
     const parentDelta = parentById.get(childDelta.pieceId);
     if (!parentDelta) continue;
     const delta = subtractMm(childDelta[layer], parentDelta[layer]);
@@ -1100,6 +1682,295 @@ function meanDeltaByPieceId(
   if (diffs.length === 0) return null;
   const unique = [...new Set(diffs)];
   return unique.length === 1 ? unique[0] : null;
+}
+
+export function uniqueBarRemainderDeltaVsParent(
+  parent: DowinCalibrationRun,
+  child: DowinCalibrationRun,
+  profileCodes?: readonly string[]
+): number | null {
+  const parentBars = parent.bars.filter((b) =>
+    profileCodes ? profileCodes.includes(b.profileCode) : true
+  );
+  const childBars = child.bars.filter((b) =>
+    profileCodes ? profileCodes.includes(b.profileCode) : true
+  );
+  if (parentBars.length === 0 || childBars.length !== parentBars.length) return null;
+  const diffs: number[] = [];
+  for (let i = 0; i < parentBars.length; i += 1) {
+    diffs.push(round1(childBars[i].remainingMm - parentBars[i].remainingMm));
+  }
+  const unique = [...new Set(diffs)];
+  return unique.length === 1 ? unique[0] : null;
+}
+
+function packingTopologyChanged(
+  parent: DowinCalibrationRun,
+  child: DowinCalibrationRun,
+  profileCode: string
+): boolean {
+  const parentBars = parent.bars.filter((b) => b.profileCode === profileCode);
+  const childBars = child.bars.filter((b) => b.profileCode === profileCode);
+  if (parentBars.length !== childBars.length) return true;
+  return parentBars.some((p, i) => {
+    const c = childBars[i];
+    if (c == null || p.applicationCount !== c.applicationCount) return true;
+    if (p.packedSegmentMm.length !== c.packedSegmentMm.length) return true;
+    return p.packedSegmentMm.some((v, j) => v !== c.packedSegmentMm[j]);
+  });
+}
+
+function citaPackingTopologyChanged(
+  parent: DowinCalibrationRun,
+  child: DowinCalibrationRun
+): boolean {
+  return packingTopologyChanged(parent, child, CITA_PROFILE_CODE);
+}
+
+/**
+ * Test 2 authority split. CITA optimizer topology is downstream of lengths
+ * and does not veto a unique −3 mm packed/machine effect on 45° KASA/KANAT.
+ * Does not authorize a production formula.
+ */
+export function buildWeldingWasteIsolationFindings(
+  parent: DowinCalibrationRun,
+  child: DowinCalibrationRun
+): IsolationFinding[] {
+  const packedWeldable = uniquePieceLayerDeltaVsParent(
+    parent,
+    child,
+    'packedMm',
+    WELDABLE_45_CATEGORIES
+  );
+  const machineWeldable = uniquePieceLayerDeltaVsParent(
+    parent,
+    child,
+    'machineMm',
+    WELDABLE_45_CATEGORIES
+  );
+  const nominalAll = uniquePieceLayerDeltaVsParent(parent, child, 'nominalMm');
+  const mullionPacked = uniquePieceLayerDeltaVsParent(parent, child, 'packedMm', ['mullion']);
+  const mullionMachine = uniquePieceLayerDeltaVsParent(parent, child, 'machineMm', ['mullion']);
+  const kasaKanatRemainder = uniqueBarRemainderDeltaVsParent(
+    parent,
+    child,
+    KASA_KANAT_PROFILE_CODES
+  );
+  const citaChanged = citaPackingTopologyChanged(parent, child);
+
+  return [
+    {
+      id: 'kasa-kanat-packed',
+      finding: 'Welding Waste 3→0 changes KASA/KANAT packed length by −3 mm',
+      classification: packedWeldable === -3 ? 'PROVEN EFFECT' : packedWeldable === 0 ? 'NO OBSERVED EFFECT' : 'AMBIGUOUS',
+      note: `Unique packed delta on 45° KASA/KANAT vs parent: ${packedWeldable ?? 'mixed/null'} mm.`,
+    },
+    {
+      id: 'kasa-kanat-machine',
+      finding: 'Welding Waste 3→0 changes KASA/KANAT DC-600 machine length by −3 mm',
+      classification: machineWeldable === -3 ? 'PROVEN EFFECT' : machineWeldable === 0 ? 'NO OBSERVED EFFECT' : 'AMBIGUOUS',
+      note: `Unique Table1 LENGTH delta on 45° KASA/KANAT vs parent: ${machineWeldable ?? 'mixed/null'} mm.`,
+    },
+    {
+      id: 'nominal-report',
+      finding: 'Nominal report lengths',
+      classification: nominalAll === 0 ? 'NO OBSERVED EFFECT' : nominalAll == null ? 'AMBIGUOUS' : 'AMBIGUOUS',
+      note: `Unique nominal delta vs parent: ${nominalAll ?? 'mixed/null'} mm.`,
+    },
+    {
+      id: 'mullion-90',
+      finding: '90° mullion',
+      classification:
+        mullionPacked === 0 && mullionMachine === 0
+          ? 'NO OBSERVED EFFECT'
+          : 'AMBIGUOUS',
+      note: `Mullion packed ${mullionPacked ?? 'null'} / machine ${mullionMachine ?? 'null'} vs parent.`,
+    },
+    {
+      id: 'kasa-kanat-remainder',
+      finding: 'KASA/KANAT remainder +12 mm',
+      classification: kasaKanatRemainder === 12 ? 'PROVEN CONSISTENT EFFECT' : 'AMBIGUOUS',
+      note: `Unique KASA/KANAT remainder delta vs parent: ${kasaKanatRemainder ?? 'mixed/null'} mm (4 pieces × 3 mm).`,
+    },
+    {
+      id: 'cita-topology',
+      finding: 'CITA packing topology',
+      classification: citaChanged ? 'DOWNSTREAM OPTIMIZER RESPONSE' : 'NO OBSERVED EFFECT',
+      note: citaChanged
+        ? 'CITA remainder/pattern changed. Downstream of piece lengths; does not veto the KASA/KANAT −3 mm packed/machine result.'
+        : 'CITA remainder and packed-segment topology unchanged.',
+    },
+    {
+      id: 'generalized-45-welding-waste',
+      finding: 'All 45° profiles always add WeldingWaste',
+      classification: 'UNPROVEN GENERALIZATION',
+      note: 'One asdd / Deceuninck 70 / DC-600 fixture. Beads are 45° but have no Table1 row. Do not encode a production rule.',
+    },
+    {
+      id: 'proprietary-dowin-formula',
+      finding: 'Exact proprietary DoWin formula',
+      classification: 'UNPROVEN',
+      note: 'Isolation identifies which layers moved. It does not recover DoWin source math.',
+    },
+  ];
+}
+
+/**
+ * Test 3 authority split. Packed/machine piece lengths did not move.
+ * Remainder is not Saw evidence: reset at Saw=4 did not recover 1B remainders.
+ */
+export function buildSawThicknessIsolationFindings(
+  parent: DowinCalibrationRun,
+  child: DowinCalibrationRun
+): IsolationFinding[] {
+  const packedAll = uniquePieceLayerDeltaVsParent(parent, child, 'packedMm');
+  const machineWeldable = uniquePieceLayerDeltaVsParent(
+    parent,
+    child,
+    'machineMm',
+    WELDABLE_45_CATEGORIES
+  );
+  const machineMullion = uniquePieceLayerDeltaVsParent(parent, child, 'machineMm', ['mullion']);
+  const nominalAll = uniquePieceLayerDeltaVsParent(parent, child, 'nominalMm');
+  const kanatChanged = packingTopologyChanged(parent, child, KANAT_PROFILE_CODE);
+  const citaChanged = packingTopologyChanged(parent, child, CITA_PROFILE_CODE);
+
+  return [
+    {
+      id: 'nominal-report',
+      finding: 'Nominal report lengths',
+      classification: nominalAll === 0 ? 'NO OBSERVED EFFECT' : 'AMBIGUOUS',
+      note: `Unique nominal delta vs parent: ${nominalAll ?? 'mixed/null'} mm.`,
+    },
+    {
+      id: 'packed-piece-length',
+      finding: 'Saw Thickness 4→5 changes packed/machine piece length',
+      classification:
+        packedAll === 0 && machineWeldable === 0 && machineMullion === 0
+          ? 'NO OBSERVED EFFECT'
+          : 'AMBIGUOUS',
+      note: `Unique packed ${packedAll ?? 'mixed/null'} / KASA-KANAT machine ${machineWeldable ?? 'mixed/null'} / mullion machine ${machineMullion ?? 'mixed/null'} mm vs parent.`,
+    },
+    {
+      id: 'bar-remainder-saw-effect',
+      finding: 'Saw has a proven bar-remainder effect',
+      classification: 'UNPROVEN',
+      note: 'KASA 965→960 and ORTA 5080→5079 were observed vs 1B, but BASELINE_RESET_VALIDATION with Saw restored to 4 did not recover 1B remainders. Those remainder deltas cannot be attributed to Saw Thickness.',
+    },
+    {
+      id: 'remainder-signature-confound',
+      finding: 'Test-3 remainder signature',
+      classification: 'AMBIGUOUS',
+      note: 'KASA 960 / ORTA 5079 / CITA 3178×2 persisted through Test 4 and reset at Weld=3 / Saw=4 / Trim=0. Possible persisted optimizer/stock/history state. FP-024C.1 provenance audit is next.',
+    },
+    {
+      id: 'kanat-topology',
+      finding: 'KANAT packing topology',
+      classification: kanatChanged ? 'DOWNSTREAM OPTIMIZER RESPONSE' : 'NO OBSERVED EFFECT',
+      note: kanatChanged
+        ? 'KANAT split from 2×[1433,1433,454,454] rem 2203 into [1433×4] rem 240 + [454×4] rem 4156. Not attributed to Saw after reset failure.'
+        : 'KANAT remainder and packed-segment topology unchanged.',
+    },
+    {
+      id: 'cita-topology',
+      finding: 'CITA packing topology',
+      classification: citaChanged ? 'DOWNSTREAM OPTIMIZER RESPONSE' : 'NO OBSERVED EFFECT',
+      note: citaChanged
+        ? 'CITA remainder/pattern 206/6160 → 3178×2. Downstream optimizer response; not attributed to Saw after reset failure.'
+        : 'CITA remainder and packed-segment topology unchanged.',
+    },
+    {
+      id: 'exact-kerf-formula',
+      finding: 'Exact remainder delta = N × Δsaw',
+      classification: 'UNPROVEN',
+      note: 'Not a recovered N×Δsaw identity. Remainder no longer attributed to Saw. Do not encode kerf into production.',
+    },
+    {
+      id: 'proprietary-dowin-formula',
+      finding: 'Exact proprietary DoWin formula',
+      classification: 'UNPROVEN',
+      note: 'Isolation does not recover DoWin source math. Remainder confound is a provenance question, not a formula.',
+    },
+  ];
+}
+
+/**
+ * Test 4 authority split. Piece/machine lengths did not move.
+ * Remainder is not Trim evidence: the stable-bar signature matched Test 3.
+ */
+export function buildTrimCutIsolationFindings(
+  parent: DowinCalibrationRun,
+  child: DowinCalibrationRun
+): IsolationFinding[] {
+  const packedAll = uniquePieceLayerDeltaVsParent(parent, child, 'packedMm');
+  const machineWeldable = uniquePieceLayerDeltaVsParent(
+    parent,
+    child,
+    'machineMm',
+    WELDABLE_45_CATEGORIES
+  );
+  const machineMullion = uniquePieceLayerDeltaVsParent(parent, child, 'machineMm', ['mullion']);
+  const nominalAll = uniquePieceLayerDeltaVsParent(parent, child, 'nominalMm');
+
+  return [
+    {
+      id: 'nominal-report',
+      finding: 'Trim 0→10 changes nominal lengths',
+      classification: nominalAll === 0 ? 'NO OBSERVED EFFECT' : 'AMBIGUOUS',
+      note: `Unique nominal delta vs parent: ${nominalAll ?? 'mixed/null'} mm.`,
+    },
+    {
+      id: 'packed-piece-length',
+      finding: 'Trim 0→10 changes packed lengths',
+      classification: packedAll === 0 ? 'NO OBSERVED EFFECT' : 'AMBIGUOUS',
+      note: `Unique packed delta vs parent: ${packedAll ?? 'mixed/null'} mm.`,
+    },
+    {
+      id: 'machine-length',
+      finding: 'Trim 0→10 changes DC-600 LENGTH',
+      classification:
+        machineWeldable === 0 && machineMullion === 0 ? 'NO OBSERVED EFFECT' : 'AMBIGUOUS',
+      note: `Unique KASA/KANAT machine ${machineWeldable ?? 'mixed/null'} / mullion machine ${machineMullion ?? 'mixed/null'} mm vs parent.`,
+    },
+    {
+      id: 'bar-remainder-trim-effect',
+      finding: 'Trim has a proven bar-remainder effect',
+      classification: 'UNPROVEN',
+      note: 'Remainder moved vs 1B, but KASA 960 / ORTA 5079 / CITA 3178×2 are the Test 3 saw signature. Do not attribute that movement to Trim Cut.',
+    },
+    {
+      id: 'remainder-signature-confound',
+      finding: 'Test-4 remainder signature',
+      classification: 'AMBIGUOUS',
+      note: 'Identical to Test 3 on KASA/ORTA/CITA. Possible stale optimization state, a setting that needs a fresh cycle, other persisted state, or an internal relationship. None assumed. BASELINE_RESET_VALIDATION is required before the 90° control.',
+    },
+    {
+      id: 'proprietary-dowin-formula',
+      finding: 'Exact proprietary DoWin formula',
+      classification: 'UNPROVEN',
+      note: 'Isolation identifies which layers did not move. It does not recover DoWin source math.',
+    },
+  ];
+}
+
+export function classifyIsolationPackage(
+  findings: readonly IsolationFinding[]
+): CompensationInterpretation {
+  if (findings.length === 0) return 'AMBIGUOUS';
+  const hasProven = findings.some(
+    (f) => f.classification === 'PROVEN EFFECT' || f.classification === 'PROVEN CONSISTENT EFFECT'
+  );
+  const hasOpenQuestion = findings.some(
+    (f) =>
+      f.classification === 'AMBIGUOUS' ||
+      f.classification === 'DOWNSTREAM OPTIMIZER RESPONSE' ||
+      f.classification === 'UNPROVEN' ||
+      f.classification === 'UNPROVEN GENERALIZATION'
+  );
+  if (hasProven && hasOpenQuestion) return 'CONDITIONAL';
+  if (hasProven) return 'PROVEN EFFECT';
+  if (findings.every((f) => f.classification === 'NO OBSERVED EFFECT')) return 'NO OBSERVED EFFECT';
+  return 'AMBIGUOUS';
 }
 
 /**
@@ -1121,6 +1992,7 @@ export function buildIsolationDeltaTable(
         machineDeltaMm: null,
         remainderDeltaMm: null,
         interpretation: 'NOT MEASURED',
+        findings: [],
         note: run.intendedIsolation?.note ?? run.provenance,
       };
     }
@@ -1135,6 +2007,7 @@ export function buildIsolationDeltaTable(
         machineDeltaMm: null,
         remainderDeltaMm: null,
         interpretation: classified.interpretation,
+        findings: [],
         note: classified.note,
       };
     }
@@ -1149,10 +2022,45 @@ export function buildIsolationDeltaTable(
         machineDeltaMm: null,
         remainderDeltaMm: null,
         interpretation: 'AMBIGUOUS',
+        findings: [],
         note:
           reproduction.verdict === 'REPRODUCED'
             ? 'Contemporaneous baseline: Weld=3 / Saw=4 / Trim=0 reproduces original asdd 451→454, 1430→1433, 1000→1003, 1500→1503 and bar remainders. Tests 2–4 may proceed.'
             : `REPRODUCTION_FAILED. Missing length pairs: ${reproduction.missingPairs.join('; ') || 'none'}. Remainder mismatches: ${reproduction.remainderMismatches.join('; ') || 'none'}. STOP — Tests 2–4 are not clean.`,
+      };
+    }
+    if (run.runKind === 'BASELINE_RESET_VALIDATION') {
+      const oneB = findBaselineReproduction(runs) ?? baseline;
+      const reset = evaluateBaselineReset(oneB, run);
+      return {
+        runKind: run.runKind,
+        variableChanged: 'baselineReset',
+        status: 'MEASURED',
+        nominalDeltaMm: 0,
+        packedDeltaMm: null,
+        machineDeltaMm: null,
+        remainderDeltaMm: null,
+        interpretation: 'AMBIGUOUS',
+        findings: [],
+        note:
+          reset.verdict === 'REPRODUCED'
+            ? 'BASELINE_RESET_VALIDATION recovered 1B: KASA 965 / KANAT 2203 / ORTA 5080 / CITA 206/6160 and machine 454 / 1433 / 1003 / 1503 / 1416. 90° CONTROL_FIXTURE may proceed.'
+            : `REPRODUCTION_FAILED. Persistent optimizer/application state. Missing length pairs: ${reset.missingPairs.join('; ') || 'none'}. Remainder mismatches: ${reset.remainderMismatches.join('; ') || 'none'}. STOP — FP-024C.1 provenance audit next. Do not run the 90° CONTROL_FIXTURE.`,
+      };
+    }
+    if (run.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT') {
+      const audit = classifyProvenanceFreshStateExperiment(runs);
+      return {
+        runKind: run.runKind,
+        variableChanged: 'optimizationStateProvenance',
+        status: 'MEASURED',
+        nominalDeltaMm: 0,
+        packedDeltaMm: null,
+        machineDeltaMm: null,
+        remainderDeltaMm: null,
+        interpretation: 'AMBIGUOUS',
+        findings: [],
+        note: `${audit.verdict}. ${audit.note} Topology: ${audit.topologies.join(', ') || 'none'}. Compare bar-assignment signatures (profile, stock-bar identity/ordinal, piece sequence, packed lengths, remainder), not total utilization.`,
       };
     }
     if (run.runKind === 'CONTROL_FIXTURE') {
@@ -1165,29 +2073,63 @@ export function buildIsolationDeltaTable(
         machineDeltaMm: null,
         remainderDeltaMm: null,
         interpretation: 'AMBIGUOUS',
+        findings: [],
         note: 'CONTROL_FIXTURE is not a single-setting delta vs asdd. Report within-fixture layers only; do not encode a production formula.',
       };
     }
-    const nominalDeltaMm = meanDeltaByPieceId(baseline, run, 'nominalMm');
-    const packedDeltaMm = meanDeltaByPieceId(baseline, run, 'packedMm');
-    const machineDeltaMm = meanDeltaByPieceId(baseline, run, 'machineMm');
-    const remainder = remainderDeltaMm(baseline, run);
+    const comparisonParent =
+      (run.parentFixtureId
+        ? runs.find((r) => r.fixtureId === run.parentFixtureId)
+        : undefined) ?? baseline;
+    const findings =
+      run.isolationVariable === 'weldingWaste'
+        ? buildWeldingWasteIsolationFindings(comparisonParent, run)
+        : run.isolationVariable === 'sawThickness'
+          ? buildSawThicknessIsolationFindings(comparisonParent, run)
+          : run.isolationVariable === 'trimCut'
+            ? buildTrimCutIsolationFindings(comparisonParent, run)
+            : [];
+    const nominalDeltaMm = uniquePieceLayerDeltaVsParent(comparisonParent, run, 'nominalMm');
+    const packedWeldable = uniquePieceLayerDeltaVsParent(
+      comparisonParent,
+      run,
+      'packedMm',
+      WELDABLE_45_CATEGORIES
+    );
+    const machineWeldable = uniquePieceLayerDeltaVsParent(
+      comparisonParent,
+      run,
+      'machineMm',
+      WELDABLE_45_CATEGORIES
+    );
+    const remainder = remainderDeltaMm(comparisonParent, run);
     return {
       runKind: run.runKind,
       variableChanged: run.isolationVariable,
       status: 'MEASURED',
       nominalDeltaMm,
-      packedDeltaMm,
-      machineDeltaMm,
+      packedDeltaMm: packedWeldable,
+      machineDeltaMm: machineWeldable,
       remainderDeltaMm: remainder,
-      interpretation: classifyMeasuredIsolation(
-        run.runKind,
-        nominalDeltaMm,
-        packedDeltaMm,
-        machineDeltaMm,
-        remainder
-      ),
-      note: 'SINGLE_SETTING_ISOLATION delta vs asdd. Not encoded as a production formula.',
+      interpretation:
+        findings.length > 0
+          ? classifyIsolationPackage(findings)
+          : classifyMeasuredIsolation(
+              run.runKind,
+              nominalDeltaMm,
+              packedWeldable,
+              machineWeldable,
+              remainder
+            ),
+      findings,
+      note:
+        run.fixtureId === 'WELDING_WASTE_0'
+          ? 'Test 2 vs 1B: 45° KASA/KANAT packed/machine −3 mm is PROVEN EFFECT. Nominal and 90° mullion NO OBSERVED EFFECT. KASA/KANAT remainder +12 mm is PROVEN CONSISTENT EFFECT. CITA topology is a downstream optimizer response. Package CONDITIONAL. Not encoded as a production formula.'
+          : run.fixtureId === 'SAW_THICKNESS_5'
+            ? 'Test 3 vs 1B: packed/machine piece lengths NO OBSERVED EFFECT. Remainder 965→960 / 5080→5079 is AMBIGUOUS — reset at Saw=4 did not recover 1B. Saw bar-remainder effect UNPROVEN. Package AMBIGUOUS. Not encoded as a production formula.'
+            : run.fixtureId === 'TRIM_CUT_10'
+              ? 'Test 4 vs 1B: packed/machine piece lengths NO OBSERVED EFFECT. Remainder signature matched Test 3 (KASA 960 / ORTA 5079 / CITA 3178×2) and is AMBIGUOUS / possible optimizer-state confound. Trim bar-remainder effect UNPROVEN. Not encoded as a production formula.'
+          : 'SINGLE_SETTING_ISOLATION delta vs parent. Not encoded as a production formula.',
     };
   });
 }
@@ -1200,11 +2142,17 @@ export function buildOperatorIsolationReport(
   baselineClassification: ReturnType<typeof classifyBaselineSettingsSnapshot>;
   reproductionVerdict: ReproductionVerdict;
   causalIsolationAuthorized: boolean;
+  controlFixtureAuthorized: boolean;
+  resetVerdict: ReproductionVerdict;
+  provenanceAuditQuestion: typeof FP024C1_AUDIT_QUESTION;
+  provenanceAuditVerdict: OptimizationStateProvenanceVerdict;
   deltaTable: IsolationDeltaRow[];
   termAuthority: readonly CompensationTermRecord[];
 } {
   const baseline = runs.find((r) => r.runKind === 'BASELINE_SETTINGS_SNAPSHOT');
   const reproduction = findBaselineReproduction(runs);
+  const reset = findBaselineReset(runs);
+  const provenanceAudit = classifyProvenanceFreshStateExperiment(runs);
   return {
     evidenceHierarchy: EVIDENCE_HIERARCHY,
     knownExportIdentifiers: DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS,
@@ -1213,6 +2161,10 @@ export function buildOperatorIsolationReport(
     ),
     reproductionVerdict: reproduction?.reproductionVerdict ?? 'NOT MEASURED',
     causalIsolationAuthorized: isCausalIsolationAuthorized(runs),
+    controlFixtureAuthorized: isControlFixtureAuthorized(runs),
+    resetVerdict: reset?.reproductionVerdict ?? 'NOT MEASURED',
+    provenanceAuditQuestion: FP024C1_AUDIT_QUESTION,
+    provenanceAuditVerdict: provenanceAudit.verdict,
     deltaTable: buildIsolationDeltaTable(runs),
     termAuthority: DOWIN_COMPENSATION_TERM_AUTHORITY,
   };

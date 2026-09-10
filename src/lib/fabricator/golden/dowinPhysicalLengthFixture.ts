@@ -301,6 +301,50 @@ export const DOWIN_ASDD_SOURCE_HASHES: Record<string, string> = {
     '3ef793742552adc04177d1bd9f80984e43df6f166cb3890663c5e52d997546e7',
   'dowin-1b-general-settings.png':
     '51af280dc2f358853944d58a2847a2da231af9ab0083682c9eb39e8a95ff8405',
+  /** SINGLE_SETTING_ISOLATION Welding Waste 3→0 2026-09-10 21:54; files not committed. */
+  'OptimizationReport_20260910_215413.pdf':
+    '1bd3b0180319663f0306b7d3dc8d52ccc7e35bb0ff1241d6e438b612f1671b9e',
+  'OptimizationReport_20260910_215413_Labels.pdf':
+    '3ccc22062e9f302d750db5f2a3deee49ebeacf799dff8f728744cb0eff1d29eb',
+  'OptimizationReport_20260910_215413_DesignPreview.pdf':
+    '26bb4cdebddf2eb7f2c4c9f1b38f9a7bc3210690b15f9e358a2e55dfcf8a2a46',
+  'asdasd_2026.09.10_21.56.dw':
+    '249ed511f1283133ebf8fb8ea4cb139d4d0143e4c910a704f91e931f911449f3',
+  'dowin-t2-general-settings.png':
+    'ba20b105029affbf9152130c171f0cf6446175cba7fb20e34ec056eec6653638',
+  /** SINGLE_SETTING_ISOLATION Saw Thickness 4→5 2026-09-10 22:21; files not committed. */
+  'OptimizationReport_20260910_222128.pdf':
+    '747714ab504af7f28eec2bfb8fcf9ba52c7b115b4ba6c21d7285a35fdc287ff6',
+  'OptimizationReport_20260910_222128_Labels.pdf':
+    'e363241f4b9e8b345f9508bd47d3d1d39c0ca1a3c1011133ef28142928860764',
+  'OptimizationReport_20260910_222128_DesignPreview.pdf':
+    '88ea8da8821bc8336156177ee88d95027efd6c6b9580cc2ead5d82b561bdf6fa',
+  'asdasd_2026.09.10_22.23.dw':
+    '32b0897e961744842a77c259b973e4c07ee3edf2ba3f2421b58c5f5aba25ad3f',
+  'dowin-t3-general-settings.png':
+    'f1d48844a192d0367f134eae706f622b89adefa09c1eabfbcab2af2c04643bad',
+  /** SINGLE_SETTING_ISOLATION Trim Cut 0→10 2026-09-10 22:52; files not committed. */
+  'OptimizationReport_20260910_225229.pdf':
+    '2a07ebdb5cf8c2f2519c8568534c2b2d4fbd310f21fbf8ef182c89c3937ce017',
+  'OptimizationReport_20260910_225229_Labels.pdf':
+    '6cb08b82eee2c388f4312083d67c34f3dc1cd2af9824c117f429315252d5dde4',
+  'OptimizationReport_20260910_225229_DesignPreview.pdf':
+    'b1f45764bd89d5387e59a11aa247239ab0b109a6b70e253c0214e49aa2a63812',
+  'asdasd_2026.09.10_22.53.dw':
+    'fc9e4db440ecead864cc7542a3960dfd0c366bcd16fd0648676facc2f4d8f5aa',
+  'dowin-t4-general-settings.png':
+    'b17121a62c89d83cb734f094d8c36cbe5bc6d6af164462eef47af7943ed3535a',
+  /** BASELINE_RESET_VALIDATION 2026-09-10 23:16; files not committed. Remainders did not recover 1B. */
+  'oPTIMIZATIONrEPORT_20260910_232145.pdf':
+    'b5c2c03c780519ac126e21ef2cd18fc4b0d7bfa048aea093ddd25f17ce6f1380',
+  'oPTIMIZATIONrEPORT_20260910_232145_Labels.pdf':
+    'aa74212d2ef79fb6f67a78c86d4b983d14f979d68c5f467fbd32ff72f9ed91ee',
+  'oPTIMIZATIONrEPORT_20260910_232145_DesignPreview.pdf':
+    '2f6454dcbd7f94ca0d0a107fd8aa2cbe5a1014f78d0a5a2fb6e2dd9b57ebc4c5',
+  'ASDASD_2026.09.10_23.16.DW':
+    'fc9e4db440ecead864cc7542a3960dfd0c366bcd16fd0648676facc2f4d8f5aa',
+  'dowin-reset-general-settings.png':
+    '1d4326c1c8d3343fd1362a058a0bd659e6b4a40b5d4ba5a8348216bb14c505a4',
 };
 
 function piece(
