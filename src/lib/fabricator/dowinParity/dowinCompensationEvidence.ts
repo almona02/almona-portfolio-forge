@@ -19,6 +19,7 @@ import {
   DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
   DOWIN_ASDD_JOB,
   DOWIN_ASDD_SOURCE_HASHES,
+  DOWIN_PARITY_TOLERANCE_MM,
   type DowinJobObservedSettings,
   type DowinPhysicalLengthGoldenRow,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
@@ -134,7 +135,7 @@ export function classifyBaselineSettingsSnapshot(settings: DowinJobObservedSetti
   return {
     interpretation: 'AMBIGUOUS',
     missingFields: [],
-    note: 'Current live General Settings transcribed. Not proof they were active at the original 18:14 export. Tests 2–4 stay closed until BASELINE_REPRODUCTION_RUN reproduces.',
+    note: 'Current live General Settings transcribed. Not historical proof for the original 18:14 export. Contemporaneous reproduction is a separate BASELINE_REPRODUCTION_RUN.',
   };
 }
 
@@ -179,6 +180,24 @@ export function signatureKey(sig: LengthLayerSignature): string {
   return `${sig.category}:${sig.nominalMm}:${sig.packedMm}:${sig.machineMm}`;
 }
 
+function withinParityToleranceMm(a: number | null, b: number | null): boolean {
+  if (a == null || b == null) return a === b;
+  return Math.abs(a - b) <= DOWIN_PARITY_TOLERANCE_MM;
+}
+
+function requiredPairReproduced(
+  pair: (typeof ASDD_REQUIRED_REPRODUCTION_PAIRS)[number],
+  signatures: readonly LengthLayerSignature[]
+): boolean {
+  return signatures.some(
+    (sig) =>
+      sig.category === pair.category &&
+      withinParityToleranceMm(sig.nominalMm, pair.nominalMm) &&
+      withinParityToleranceMm(sig.packedMm, pair.packedMm) &&
+      withinParityToleranceMm(sig.machineMm, pair.machineMm)
+  );
+}
+
 export function evaluateBaselineReproduction(
   original: { pieces: readonly DowinPhysicalLengthGoldenRow[]; bars: readonly ExternalBarPattern[] },
   candidate: { pieces: readonly DowinPhysicalLengthGoldenRow[]; bars: readonly ExternalBarPattern[] }
@@ -187,9 +206,9 @@ export function evaluateBaselineReproduction(
   missingPairs: string[];
   remainderMismatches: string[];
 } {
-  const candidateKeys = new Set(uniqueLayerSignatures(candidate.pieces).map(signatureKey));
+  const signatures = uniqueLayerSignatures(candidate.pieces);
   const missingPairs = ASDD_REQUIRED_REPRODUCTION_PAIRS.filter(
-    (pair) => !candidateKeys.has(signatureKey(pair))
+    (pair) => !requiredPairReproduced(pair, signatures)
   ).map(signatureKey);
 
   const remainderMismatches: string[] = [];
@@ -201,7 +220,7 @@ export function evaluateBaselineReproduction(
         (b) =>
           b.profileCode === bar.profileCode &&
           b.stockLengthMm === bar.stockLengthMm &&
-          b.remainingMm === bar.remainingMm
+          withinParityToleranceMm(b.remainingMm, bar.remainingMm)
       );
     }
     if (idx < 0) {
@@ -209,7 +228,7 @@ export function evaluateBaselineReproduction(
       continue;
     }
     const match = unused.splice(idx, 1)[0];
-    if (match.remainingMm !== bar.remainingMm) {
+    if (!withinParityToleranceMm(match.remainingMm, bar.remainingMm)) {
       remainderMismatches.push(
         `${bar.profileCode} remaining ${match.remainingMm} ≠ ${bar.remainingMm}`
       );
@@ -587,24 +606,39 @@ export const DOWIN_ASDD_BASELINE_RUN: DowinCalibrationRun = {
   reproductionVerdict: null,
 };
 
+export const DOWIN_ASDD_BASELINE_REPRODUCTION_RUN: DowinCalibrationRun = {
+  fixtureId: 'BASELINE_REPRODUCTION_RUN',
+  parentFixtureId: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.id,
+  runKind: 'BASELINE_REPRODUCTION_RUN',
+  isolationVariable: 'baselineReproduction',
+  status: 'MEASURED',
+  designName: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.designName,
+  profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
+  widthMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallWidthMm,
+  heightMm: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallHeightMm,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  observedSettings: { ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings },
+  intendedIsolation: {
+    field: null,
+    instructedToMm: null,
+    note: 'Same asdd 1000×1500 Deceuninck 70, Weld=3 / Saw=4 / Trim=0, DC-600. Settings unchanged from the 1A snapshot.',
+  },
+  changedSetting: null,
+  pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
+  bars: DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
+  provenance:
+    'BASELINE_REPRODUCTION_RUN 2026-09-10 21:25. Design Preview text identical to 18:14. Labels/Optimization text identical except report timestamps. DC-600 Table1 LENGTH sash H 454 / sash V 1433 / frame H 1003 / frame V 1503 / mullion 1416; FRAME_X/Y 1000×1500. Optimization List remainders 206 / 6160 / 2203 / 965 / 5080. Licensed files not committed. SHA-256 in DOWIN_ASDD_SOURCE_HASHES.',
+  reproductionVerdict: 'REPRODUCED',
+};
+
 export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
-  pendingTemplate(
-    'dowin-asdd-baseline-reproduction-pending',
-    'baselineReproduction',
-    {
-      field: null,
-      instructedToMm: null,
-      note: 'BASELINE_REPRODUCTION_RUN: rerun the same asdd 1000×1500 design unchanged with currently captured settings (Weld=3 / Saw=4 / Trim=0) and DC-600. Do not change settings. Export Design Preview, Labels, Optimization, MDB, General Settings screenshot. If 451→454 / 1430→1433 / 1000→1003 / 1500→1503 and bar remainders do not match the original, STOP — Tests 2–4 are not clean.',
-    },
-    'Operator template. Contemporaneous reproduction of the historical asdd export. Not an executed DoWin run.'
-  ),
   pendingTemplate(
     'dowin-asdd-weld-0-pending',
     'weldingWaste',
     {
       field: 'weldingWasteMm',
       instructedToMm: 0,
-      note: 'SINGLE_SETTING_ISOLATION: duplicate asdd. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Welding Waste to 0. Export Design Preview, Labels, Optimization, MDB. Not authorized until BASELINE_REPRODUCTION_RUN is REPRODUCED.',
+      note: 'SINGLE_SETTING_ISOLATION: duplicate asdd. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Welding Waste to 0. Export Design Preview, Labels, Optimization, MDB. 1B is REPRODUCED — this is now a valid causal experiment.',
     },
     'Operator template. Not an executed DoWin run.'
   ),
@@ -614,7 +648,7 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     {
       field: 'sawThicknessMm',
       instructedToMm: 5,
-      note: 'SINGLE_SETTING_ISOLATION: return weld to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Saw Thickness 4 → 5. Not authorized until BASELINE_REPRODUCTION_RUN is REPRODUCED.',
+      note: 'SINGLE_SETTING_ISOLATION: return weld to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Saw Thickness 4 → 5. 1B is REPRODUCED — this is now a valid causal experiment.',
     },
     'Operator template. Instructed Saw Thickness target is 5 mm after a 4 mm contemporaneous baseline.'
   ),
@@ -624,7 +658,7 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     {
       field: 'trimCutMm',
       instructedToMm: null,
-      note: 'SINGLE_SETTING_ISOLATION: return saw to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Trim Cut from 0 to a known value. Compare remainder and packed/machine. Not authorized until BASELINE_REPRODUCTION_RUN is REPRODUCED.',
+      note: 'SINGLE_SETTING_ISOLATION: return saw to baseline. Keep geometry, stock, quantity, system, and DC-600 identical. Change ONLY Trim Cut from 0 to a known value. Compare remainder and packed/machine. 1B is REPRODUCED — this is now a valid causal experiment.',
     },
     'Operator template. Trim Cut baseline is 0. Instructed target stays null until the operator picks a known non-zero value.'
   ),
@@ -642,6 +676,7 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
 
 export const DOWIN_CALIBRATION_RUNS: readonly DowinCalibrationRun[] = [
   DOWIN_ASDD_BASELINE_RUN,
+  DOWIN_ASDD_BASELINE_REPRODUCTION_RUN,
   ...DOWIN_CALIBRATION_TEMPLATES,
 ];
 

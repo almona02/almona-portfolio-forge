@@ -7,14 +7,14 @@
 | Branch | `feature/fp024c-physical-parity` (from `main` after FP-025A; merged `feature/fp024-dowin-external-golden`) |
 | Depends on | FP-023A, FP-023B, FP-024A, FP-024B, operator isolation evidence |
 | Scope | Identify which **this-run** settings drive nominal → packed → machine length, then implement only those proven terms and re-run ±0.1 mm parity. Not FP-016, FP-017, or FP-025B. |
-| Gate | ⏸ **BLOCKED** — baseline settings captured; awaiting BASELINE_REPRODUCTION_RUN before causal isolation |
+| Gate | ⏸ **BLOCKED** — 1B REPRODUCED; awaiting Welding Waste → 0 isolation. Do not merge |
 | Physical-length score | **Unchanged at 6.0/10** |
 
 ---
 
 ## Verdict
 
-⏸ **BLOCKED — baseline settings captured; awaiting BASELINE_REPRODUCTION_RUN before causal isolation**
+⏸ **BLOCKED — 1B REPRODUCED; awaiting Welding Waste → 0 isolation. Do not merge.**
 
 FP-025A is ✅ ACCEPTED on `main` and did not contaminate manufacturing truth. FP-024A/B calibration evidence is now on this branch. **No production formula, K-factor, kerf identity, or Cut identity change is allowed in this kickoff.**
 
@@ -56,10 +56,10 @@ Live General Settings (Test 1A) are **not** proof they governed the original 18:
 | Test | Kind | Isolation | Status |
 |------|------|-----------|--------|
 | 1A Current settings snapshot | `BASELINE_SETTINGS_SNAPSHOT` | Live screenshot: Welding Waste 3, Saw Thickness 4, Trim Cut 0, DC-600 | **AMBIGUOUS** (not historical proof) |
-| 1B Same-design baseline reproduction | `BASELINE_REPRODUCTION_RUN` | Settings unchanged; same asdd 1000×1500 | `PENDING_OPERATOR_RUN` |
-| 2 Welding Waste | `SINGLE_SETTING_ISOLATION` | Only Welding Waste → `0`; same geometry/stock/qty/system/`DC-600` | closed until 1B `REPRODUCED` |
-| 3 Saw Thickness | `SINGLE_SETTING_ISOLATION` | Only Saw Thickness 4 → 5; same identity | closed until 1B `REPRODUCED` |
-| 4 Trim Cut | `SINGLE_SETTING_ISOLATION` | Only Trim Cut 0 → a known value; same identity | closed until 1B `REPRODUCED` |
+| 1B Same-design baseline reproduction | `BASELINE_REPRODUCTION_RUN` | Settings unchanged; same asdd 1000×1500 | **REPRODUCED** (2026-09-10 21:25) |
+| 2 Welding Waste | `SINGLE_SETTING_ISOLATION` | Only Welding Waste → `0`; same geometry/stock/qty/system/`DC-600` | `PENDING_OPERATOR_RUN` — now a valid causal experiment |
+| 3 Saw Thickness | `SINGLE_SETTING_ISOLATION` | Only Saw Thickness 4 → 5; same identity | `PENDING_OPERATOR_RUN` |
+| 4 Trim Cut | `SINGLE_SETTING_ISOLATION` | Only Trim Cut 0 → a known value; same identity | `PENDING_OPERATOR_RUN` |
 | 5 90° control | `CONTROL_FIXTURE` | Separate 90°/90° design; settings unchanged; geometry/cut-angle **may** differ | `PENDING_OPERATOR_RUN` |
 
 Package per run:
@@ -82,7 +82,9 @@ After Tests 2–4, Cursor produces **only** a delta table and authority classifi
 
 A term is eligible for FP-024C implementation only when a **single-variable** row is **PROVEN EFFECT**. `CONTROL_FIXTURE` cannot yield that for a setting. No formula patch, no +3, no +7, no K-factor change until then.
 
-The asdd baseline General Settings screenshot is captured (SHA-256 `95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a`, PNG not committed). Transcribed: Welding Waste **3**, Saw Thickness **4**, Trim Cut **0**, Sash Offset **7**, Glazing Clearance **2.5**, remnant **500**, machine **DC-600** (DC-550 SKH also enabled globally). Project list showed `asdasd` / `100001`. Classification remains **AMBIGUOUS** versus the original 18:14 export. **BASELINE_REPRODUCTION_RUN is not executed.** Tests 2–4 stay closed. No formula patch.
+The asdd baseline General Settings screenshot is captured (SHA-256 `95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a`, PNG not committed). Transcribed: Welding Waste **3**, Saw Thickness **4**, Trim Cut **0**, Sash Offset **7**, Glazing Clearance **2.5**, remnant **500**, machine **DC-600** (DC-550 SKH also enabled globally).
+
+**BASELINE_REPRODUCTION_RUN 2026-09-10 21:25 is `REPRODUCED`.** Same asdd 1000×1500, settings unchanged. Design Preview text is identical to 18:14. Labels and Optimization List text are identical except timestamps. DC-600 Table1 `LENGTH` is sash H **454**, sash V **1433**, frame H **1003**, frame V **1503**, mullion **1416**. Optimization remainders **206 / 6160 / 2203 / 965 / 5080**. Licensed files not committed. Tests 2–4 are now valid causal experiments and are **not yet executed**. No formula patch.
 
 ---
 
@@ -105,7 +107,7 @@ FP-023A ⚠️ CONDITIONAL
 → FP-024A ❌ parity failed
 → FP-024B ⚠️ calibration ready
 → FP-025A ✅ ACCEPTED UI
-→ FP-024C ⏸ BLOCKED awaiting BASELINE_REPRODUCTION_RUN (this branch)
+→ FP-024C ⏸ 1B REPRODUCED; awaiting Welding Waste → 0 (this branch)
 → FP-016  (after credible physical parity)
 → FP-017
 ```

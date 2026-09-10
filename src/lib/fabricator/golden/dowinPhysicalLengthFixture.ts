@@ -290,6 +290,17 @@ export const DOWIN_ASDD_SOURCE_HASHES: Record<string, string> = {
   /** Live Management Panel → General Settings PNG captured 2026-09-09; file not committed. */
   'dowin-general-settings.png':
     '95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a',
+  /** BASELINE_REPRODUCTION_RUN 2026-09-10 21:25; files not committed. */
+  'OptimizationReport_20260910_212450.pdf':
+    '609f43ca4e4d643d1d50aae65bf7c3f9c0740e8f955270fdc42e87c76fc3893f',
+  'OptimizationReport_20260910_212450_Labels.pdf':
+    'fc97f09f83fe03e23aa412705e3c38797bc60608a6a37c1de792afc925bd982e',
+  'OptimizationReport_20260910_212450_DesignPreview.pdf':
+    'fb27646829c6110c9c661c580b8cc1bc7a2413339cee979ef6c2c22b1238917d',
+  'asdasd_2026.09.10_21.26.dw':
+    '3ef793742552adc04177d1bd9f80984e43df6f166cb3890663c5e52d997546e7',
+  'dowin-1b-general-settings.png':
+    '51af280dc2f358853944d58a2847a2da231af9ab0083682c9eb39e8a95ff8405',
 };
 
 function piece(
