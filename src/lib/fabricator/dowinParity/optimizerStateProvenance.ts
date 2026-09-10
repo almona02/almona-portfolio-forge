@@ -9,7 +9,10 @@
  */
 
 import type { ExternalBarPattern } from '@/lib/fabricator/barPackExternalReconciliation';
-import { fingerprintSha256 } from '@/lib/fabricator/dowinParity/canonicalFingerprint';
+import {
+  fingerprintSha256,
+  optimizerInputFingerprintSha256,
+} from '@/lib/fabricator/dowinParity/canonicalFingerprint';
 import type {
   DowinJobObservedSettings,
   DowinPhysicalLengthGoldenRow,
@@ -22,6 +25,25 @@ export const FP024C1_DECISIVE_EXPERIMENT =
   'same geometry + Weld 3 / Saw 4 / Trim 0 + same stock quantities + fresh project/design + fresh production plan + fresh optimization result';
 
 export const FP024C1_MIN_FRESH_RUNS_FOR_CONSISTENCY = 3;
+
+/** Fresh A + B + C before claiming repeatability or nondeterminism. */
+export const FP024C1_MIN_FRESH_RUNS_FOR_NONDETERMINISM = 3;
+
+export const FP024C1_FRESH_SLOTS = ['A', 'B', 'C'] as const;
+export type Fp024c1FreshSlot = (typeof FP024C1_FRESH_SLOTS)[number];
+
+export const FP024C1_FRESH_RUN_IDS = [
+  'FP024C1_FRESH_A',
+  'FP024C1_FRESH_B',
+  'FP024C1_FRESH_C',
+] as const;
+
+export const FP024C1_REQUIRED_LIVE_SETTINGS = {
+  weldingWasteMm: 3,
+  sawThicknessMm: 4,
+  trimCutMm: 0,
+  machineId: 'DC-600',
+} as const;
 
 export type OptimizerSolveKind = 'NEWLY_SOLVED' | 'REOPENED_REUSED';
 
@@ -268,11 +290,19 @@ export function attachOptimizerInputFingerprints(
   const settings = provenance.settingsSnapshot ?? null;
   return {
     ...provenance,
-    geometryFingerprint: geometry ? fingerprintSha256({ unit: 'mm', geometry }) : null,
-    requiredPartsFingerprint: parts ? fingerprintSha256({ unit: 'mm', parts }) : null,
-    stockFingerprint: stock ? fingerprintSha256({ unit: 'mm', stock }) : null,
-    offcutRemnantFingerprint: offcut ? fingerprintSha256({ unit: 'mm', offcut }) : null,
-    settingsFingerprint: settings ? fingerprintSha256({ unit: 'mm', settings }) : null,
+    geometryFingerprint: geometry
+      ? optimizerInputFingerprintSha256({ unit: 'mm', geometry })
+      : null,
+    requiredPartsFingerprint: parts
+      ? optimizerInputFingerprintSha256({ unit: 'mm', parts })
+      : null,
+    stockFingerprint: stock ? optimizerInputFingerprintSha256({ unit: 'mm', stock }) : null,
+    offcutRemnantFingerprint: offcut
+      ? optimizerInputFingerprintSha256({ unit: 'mm', offcut })
+      : null,
+    settingsFingerprint: settings
+      ? optimizerInputFingerprintSha256({ unit: 'mm', settings })
+      : null,
   };
 }
 
@@ -357,6 +387,199 @@ export function compareOptimizerInputFingerprints(
   if (missing) return 'UNPROVEN';
   if (keys.some((key) => a[key] !== b[key])) return 'DIFFERENT';
   return 'IDENTICAL';
+}
+
+export function hasCompleteInputFingerprints(
+  provenance: OptimizerRunProvenance | null | undefined
+): boolean {
+  if (!provenance) return false;
+  return (
+    nonempty(provenance.geometryFingerprint ?? null) &&
+    nonempty(provenance.requiredPartsFingerprint ?? null) &&
+    nonempty(provenance.stockFingerprint ?? null) &&
+    nonempty(provenance.offcutRemnantFingerprint ?? null) &&
+    nonempty(provenance.settingsFingerprint ?? null)
+  );
+}
+
+export function isClearScreenNotFreshness(args: {
+  runId: string;
+  projectId: string | null;
+  designId: string | null;
+  clearScreenClaimedFresh?: boolean;
+}): boolean {
+  if (args.clearScreenClaimedFresh === true) return true;
+  const reusedNames = new Set(['asdd', 'asdasd', '100001']);
+  return (
+    reusedNames.has(args.runId) ||
+    reusedNames.has(args.projectId ?? '') ||
+    reusedNames.has(args.designId ?? '')
+  );
+}
+
+export type AlmonaReproducibilityRisk =
+  | 'INPUT_IDENTITY_ONLY'
+  | 'TOPOLOGY_AFFECTING'
+  | 'RESULT_METADATA_ONLY'
+  | 'PERSISTENCE_ONLY'
+  | 'ADVISORY_ONLY'
+  | 'UNKNOWN';
+
+export interface AlmonaReproducibilitySurface {
+  surface: string;
+  fileLine: string;
+  classification: AlmonaReproducibilityRisk;
+  defect?: 'ALMONA_REPRODUCIBILITY_DEFECT';
+  note: string;
+}
+
+/**
+ * ALMONA-only forensic classification. Does not explain DoWin.
+ * Production optimizer behavior is not patched here.
+ */
+export const ALMONA_REPRODUCIBILITY_SURFACES: readonly AlmonaReproducibilitySurface[] = [
+  {
+    surface: 'AdaptiveSolver constructed per OptimizationPage run',
+    fileLine: 'src/pages/fabricator/workflow/OptimizationPage.tsx:78-107',
+    classification: 'INPUT_IDENTITY_ONLY',
+    note: 'New solver instance each click. Does not by itself reuse a prior cutting plan.',
+  },
+  {
+    surface: 'AlgorithmSelector / AdaptiveSolver algorithm choice',
+    fileLine: 'src/lib/fabricator/AlgorithmSelector.ts:73; src/algorithms/adaptiveSolver.ts:45-98',
+    classification: 'TOPOLOGY_AFFECTING',
+    note: 'Greedy vs linear can change packing. Selection is rule-based, not random.',
+  },
+  {
+    surface: 'First-Fit Decreasing sort',
+    fileLine: 'src/lib/fabricator/OptimizationEngine.ts:116-117; src/algorithms/greedyHeuristic.ts:100-129',
+    classification: 'TOPOLOGY_AFFECTING',
+    defect: 'ALMONA_REPRODUCIBILITY_DEFECT',
+    note: 'Equal-length ties depend on engine sort stability and original array order. Not patched in FP-024C.1.',
+  },
+  {
+    surface: 'Stock bar IDs Date.now + Math.random',
+    fileLine: 'src/lib/fabricator/OptimizationEngine.ts:203',
+    classification: 'RESULT_METADATA_ONLY',
+    defect: 'ALMONA_REPRODUCIBILITY_DEFECT',
+    note: 'IDs are metadata. Topology fingerprints exclude them. Do not use these IDs as optimizer-input identity.',
+  },
+  {
+    surface: 'workflowStore persist optimizationResult',
+    fileLine: 'src/store/workflowStore.ts:106-219',
+    classification: 'PERSISTENCE_ONLY',
+    defect: 'ALMONA_REPRODUCIBILITY_DEFECT',
+    note: 'localStorage key fabricator-workflow-storage rehydrates the last result. A later UI open can display a reused solve. clearWorkflow is required; Clear Screen is not modeled here.',
+  },
+  {
+    surface: 'AlmonaCuttingEngine remnantCache',
+    fileLine: 'src/lib/fabricator/AlmonaCuttingEngine.ts:193-239',
+    classification: 'TOPOLOGY_AFFECTING',
+    note: 'Instance remnant cache can change the next pack if setRemnants is used. IDs REM-n are deterministic.',
+  },
+  {
+    surface: 'Genetic / Math.random GA',
+    fileLine: 'src/algorithms/geneticOptimization.ts; src/algorithms/RemnantFirstGeneticOptimizer.ts:700-706',
+    classification: 'ADVISORY_ONLY',
+    note: 'Excluded from Tier-3 manufacturing authority (FP-016 Option B).',
+  },
+  {
+    surface: 'Project IDs Date.now + Math.random on measurement create',
+    fileLine: 'src/store/workflowStore.ts:127',
+    classification: 'INPUT_IDENTITY_ONLY',
+    note: 'Project/order IDs are container identity, not geometry. Fresh A/B/C must capture them without putting them in input fingerprints.',
+  },
+];
+
+export function evaluateFreshRunIntake(args: {
+  runId: string;
+  timestampIso: string | null;
+  observedSettings: DowinJobObservedSettings;
+  widthMm: number;
+  heightMm: number;
+  profileSystem: string;
+  provenance: OptimizerRunProvenance | null | undefined;
+  sourceHashes: {
+    generalSettingsScreenshot?: string | null;
+    designPreview?: string | null;
+    assemblyLabels?: string | null;
+    optimization?: string | null;
+    machineExport?: string | null;
+    mdb?: string | null;
+  };
+  clearScreenClaimedFresh?: boolean;
+  mdbGenerated?: boolean;
+  freshSlot?: Fp024c1FreshSlot | null;
+  operatorClaimsEquivalence?: boolean;
+}): { ok: boolean; reasons: string[] } {
+  const reasons: string[] = [];
+  const p = args.provenance ?? null;
+  if (!nonempty(args.runId) || !nonempty(args.timestampIso)) {
+    reasons.push('runId and timestamp are required.');
+  }
+  if (args.freshSlot) {
+    const expected = `FP024C1_FRESH_${args.freshSlot}`;
+    if (args.runId !== expected) {
+      reasons.push(`freshSlot ${args.freshSlot} requires runId ${expected}.`);
+    }
+  }
+  reasons.push(...missingOptimizerProvenanceFields(p).map((f) => `missing ${f}`));
+  if (solveDispositionOf(p) !== 'NEWLY_SOLVED') {
+    reasons.push('solveDisposition must be NEWLY_SOLVED. REOPENED/REUSED is not fresh.');
+  }
+  if (
+    isClearScreenNotFreshness({
+      runId: args.runId,
+      projectId: p?.projectId ?? null,
+      designId: p?.designId ?? null,
+      clearScreenClaimedFresh: args.clearScreenClaimedFresh,
+    })
+  ) {
+    reasons.push('Clear Screen / reused asdd project/design is not fresh-state proof.');
+  }
+  if (args.observedSettings.weldingWasteMm !== FP024C1_REQUIRED_LIVE_SETTINGS.weldingWasteMm) {
+    reasons.push('Welding Waste must be 3 mm.');
+  }
+  if (args.observedSettings.sawThicknessMm !== FP024C1_REQUIRED_LIVE_SETTINGS.sawThicknessMm) {
+    reasons.push('Saw Thickness must be 4 mm.');
+  }
+  if (args.observedSettings.trimCutMm !== FP024C1_REQUIRED_LIVE_SETTINGS.trimCutMm) {
+    reasons.push('Trim Cut must be 0 mm.');
+  }
+  if (args.observedSettings.machineId !== FP024C1_REQUIRED_LIVE_SETTINGS.machineId) {
+    reasons.push('Machine must be DC-600.');
+  }
+  if (args.widthMm !== 1000 || args.heightMm !== 1500) {
+    reasons.push('Geometry must remain 1000×1500.');
+  }
+  if (!p?.geometrySnapshot || !p.requiredPartsSnapshot || !p.stockSnapshot || p.offcutRemnantSnapshot == null) {
+    reasons.push('geometry, required-parts, stock, and offcut/remnant snapshots are required (empty offcut list is allowed).');
+  }
+  if (!hasCompleteInputFingerprints(p)) {
+    reasons.push('Input fingerprints are incomplete. Equivalence is UNPROVEN, never IDENTICAL.');
+  }
+  if (args.operatorClaimsEquivalence === true && !hasCompleteInputFingerprints(p)) {
+    reasons.push(
+      'Operator claims equivalence without complete fingerprints. Equivalence stays UNPROVEN, never IDENTICAL.'
+    );
+  }
+  const hashes = args.sourceHashes;
+  if (
+    !nonempty(hashes.generalSettingsScreenshot ?? null) ||
+    !nonempty(hashes.designPreview ?? null) ||
+    !nonempty(hashes.assemblyLabels ?? null) ||
+    !nonempty(hashes.optimization ?? null)
+  ) {
+    reasons.push('SHA-256 of General Settings, Design Preview, Labels/Assembly, and Optimization report are required.');
+  }
+  if (
+    args.mdbGenerated === true &&
+    !nonempty(hashes.mdb ?? null) &&
+    !nonempty(hashes.machineExport ?? null)
+  ) {
+    reasons.push('Machine export SHA-256 is required when an export was generated. Otherwise leave it null / NOT_MEASURED.');
+  }
+  return { ok: reasons.length === 0, reasons };
 }
 
 export function topologySignatureFromBars(
@@ -591,11 +814,19 @@ export function classifyOptimizationStateProvenance(args: {
   }
 
   if (uniqueFingerprints.length > 1) {
+    if (newlySolved.length < FP024C1_MIN_FRESH_RUNS_FOR_NONDETERMINISM) {
+      return {
+        verdict: 'AMBIGUOUS',
+        topologies,
+        inputEquivalence,
+        note: `Differing assignment topologies were observed, but Fresh A/B/C (${FP024C1_MIN_FRESH_RUNS_FOR_NONDETERMINISM} independent newly solved runs) are required before classifying OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING. Captured ${newlySolved.length}. AMBIGUOUS. 90° stays gated.`,
+      };
+    }
     return {
       verdict: 'OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING',
       topologies,
       inputEquivalence,
-      note: 'Proven-identical inputs with genuinely fresh runs produced more than one assignment topology. Optimizer nondeterminism or tie-breaking variability. Do not encode. 90° stays gated.',
+      note: 'Proven-identical inputs with genuinely fresh Fresh A/B/C runs produced more than one assignment topology. Optimizer nondeterminism or tie-breaking variability. Do not encode. 90° stays gated.',
     };
   }
 

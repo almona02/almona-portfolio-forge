@@ -49,3 +49,45 @@ export function canonicalJson(value: unknown): string {
 export function fingerprintSha256(value: unknown): string {
   return createHash('sha256').update(canonicalJson(value), 'utf8').digest('hex');
 }
+
+/** Must never enter optimizer-input fingerprints. */
+export const OPTIMIZER_INPUT_FINGERPRINT_OMIT_KEYS = [
+  'timestampIso',
+  'timestamp',
+  'runId',
+  'optimizationResultId',
+  'optimizationHistoryId',
+  'projectId',
+  'designId',
+  'productionPlanId',
+] as const;
+
+export function omitKeysDeep(value: unknown, omit: ReadonlySet<string>): unknown {
+  if (value === undefined) {
+    throw new CanonicalEvidenceError('undefined is not evidence and must not be canonicalized');
+  }
+  if (value === null) return null;
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => omitKeysDeep(item, omit));
+  }
+  if (typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    const next: Record<string, unknown> = {};
+    for (const key of Object.keys(obj).sort()) {
+      if (omit.has(key)) continue;
+      if (obj[key] === undefined) continue;
+      next[key] = omitKeysDeep(obj[key], omit);
+    }
+    return next;
+  }
+  throw new CanonicalEvidenceError(`unsupported evidence type: ${typeof value}`);
+}
+
+export function optimizerInputFingerprintSha256(value: unknown): string {
+  return fingerprintSha256(
+    omitKeysDeep(value, new Set<string>(OPTIMIZER_INPUT_FINGERPRINT_OMIT_KEYS))
+  );
+}
