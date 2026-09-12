@@ -15,6 +15,7 @@ import {
 } from '@/lib/fabricator/dowinParity/canonicalFingerprint';
 import type {
   DowinJobObservedSettings,
+  DowinLengthCategory,
   DowinPhysicalLengthGoldenRow,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
 
@@ -863,4 +864,646 @@ export function classifyOptimizationStateProvenance(args: {
     inputEquivalence,
     note: 'Assignment signature matched neither a complete persisted-state pair nor a consistent later/original set. AMBIGUOUS. Do not encode. 90° stays gated.',
   };
+}
+
+/* ------------------------------------------------------------------ *
+ * FP-024C.3 — controlled fresh-solve repeatability.
+ *
+ * The original Fresh A cannot participate in a repeatability triplicate
+ * because a proven warehouse write (FP-024C.2, 22:17:20) changed stock
+ * afterwards. FP-024C.3 freezes the current post-Fresh-A warehouse state
+ * as a new baseline and requires three new controlled runs against it.
+ *
+ * Evidence gate only. No production formula, K-factor, or Cut length here.
+ * ------------------------------------------------------------------ */
+
+export const FP024C3_RUN_IDS = ['FP024C3_RUN_A', 'FP024C3_RUN_B', 'FP024C3_RUN_C'] as const;
+export type Fp024c3RunId = (typeof FP024C3_RUN_IDS)[number];
+
+/** No repeatability claim from A alone or A+B. */
+export const FP024C3_REQUIRED_RUN_COUNT = 3;
+
+export interface WarehouseStockCard {
+  profileCode: string;
+  stockLengthMm: number;
+  quantity: number;
+}
+
+/**
+ * Frozen FP-024C.3 control baseline = warehouse state after the Fresh A
+ * stock write. Historical 48/98/14 is evidence, not a restoration target.
+ * ORTA stays at 0.
+ */
+export const FP024C3_FROZEN_WAREHOUSE_BASELINE: readonly WarehouseStockCard[] = [
+  { profileCode: 'Deceuninck-CITA-20', stockLengthMm: 6500, quantity: 46 },
+  { profileCode: 'Deceuninck-DESTEK-SACI-2.0MM', stockLengthMm: 6500, quantity: 15 },
+  { profileCode: 'Deceuninck-KANAT-70', stockLengthMm: 6000, quantity: 96 },
+  { profileCode: 'Deceuninck-KASA-70', stockLengthMm: 6000, quantity: 13 },
+  { profileCode: 'Deceuninck-KOSE-METAL-05', stockLengthMm: 6500, quantity: 100 },
+  { profileCode: 'Deceuninck-KOSE-PLASTIK-01', stockLengthMm: 6500, quantity: 50 },
+  { profileCode: 'Deceuninck-ORTA-KAYIT-70', stockLengthMm: 6500, quantity: 0 },
+];
+
+/** Warehouse-write actions that invalidate FP-024C.3 if invoked. */
+export const FP024C3_FORBIDDEN_WAREHOUSE_ACTIONS = [
+  'Update Stock',
+  'Add Offcuts',
+  'Production Approval',
+  'Confirm Stock',
+  'Import Remnants',
+] as const;
+
+export type ControlledStockPostcheck = 'PASS' | 'STOCK_STATE_MUTATED' | 'UNPROVEN';
+
+export interface ControlledStockDelta {
+  profileCode: string;
+  stockLengthMm: number;
+  baselineQuantity: number | null;
+  observedQuantity: number | null;
+  deltaQuantity: number | null;
+}
+
+export interface ControlledStockPostcheckResult {
+  verdict: ControlledStockPostcheck;
+  deltas: ControlledStockDelta[];
+  missingCards: string[];
+  unexpectedCards: string[];
+}
+
+function stockCardKey(card: { profileCode: string; stockLengthMm: number }): string {
+  return `${card.profileCode}|${card.stockLengthMm}`;
+}
+
+/**
+ * Post-run warehouse verification. Fail-closed: an uncaptured or incomplete
+ * stock screen is UNPROVEN, never PASS. A new card (for example an imported
+ * remnant row) counts as a mutation.
+ */
+export function evaluateControlledStockPostcheck(
+  observed: readonly WarehouseStockCard[] | null | undefined,
+  baseline: readonly WarehouseStockCard[] = FP024C3_FROZEN_WAREHOUSE_BASELINE
+): ControlledStockPostcheckResult {
+  if (observed == null) {
+    return {
+      verdict: 'UNPROVEN',
+      deltas: [],
+      missingCards: baseline.map(stockCardKey),
+      unexpectedCards: [],
+    };
+  }
+  const observedByKey = new Map(observed.map((card) => [stockCardKey(card), card]));
+  const baselineKeys = new Set(baseline.map(stockCardKey));
+  const deltas: ControlledStockDelta[] = [];
+  const missingCards: string[] = [];
+  for (const card of baseline) {
+    const match = observedByKey.get(stockCardKey(card));
+    if (!match) {
+      missingCards.push(stockCardKey(card));
+      deltas.push({
+        profileCode: card.profileCode,
+        stockLengthMm: card.stockLengthMm,
+        baselineQuantity: card.quantity,
+        observedQuantity: null,
+        deltaQuantity: null,
+      });
+      continue;
+    }
+    deltas.push({
+      profileCode: card.profileCode,
+      stockLengthMm: card.stockLengthMm,
+      baselineQuantity: card.quantity,
+      observedQuantity: match.quantity,
+      deltaQuantity: match.quantity - card.quantity,
+    });
+  }
+  const unexpectedCards = observed
+    .map(stockCardKey)
+    .filter((key) => !baselineKeys.has(key));
+  if (deltas.some((delta) => delta.deltaQuantity != null && delta.deltaQuantity !== 0)) {
+    return { verdict: 'STOCK_STATE_MUTATED', deltas, missingCards, unexpectedCards };
+  }
+  if (unexpectedCards.length > 0) {
+    return { verdict: 'STOCK_STATE_MUTATED', deltas, missingCards, unexpectedCards };
+  }
+  if (missingCards.length > 0) {
+    return { verdict: 'UNPROVEN', deltas, missingCards, unexpectedCards };
+  }
+  return { verdict: 'PASS', deltas, missingCards, unexpectedCards };
+}
+
+/**
+ * Offcut/remnant evidence. There is no PROVEN_NONE state: an absent UI
+ * surface stays UNPROVEN and must not be read as "no remnants".
+ */
+export type OffcutRemnantEvidenceState = 'MEASURED' | 'UNPROVEN';
+
+export const FP024C3_EQUIVALENCE_AXES = [
+  'geometry',
+  'requiredParts',
+  'settings',
+  'machine',
+  'optimizerStock',
+  'warehouseStock',
+  'offcutRemnant',
+  'freshness',
+] as const;
+export type Fp024c3EquivalenceAxis = (typeof FP024C3_EQUIVALENCE_AXES)[number];
+
+/**
+ * MEASURED_INPUT_EQUIVALENCE covers only axes the licensed UI exposes.
+ * offcutRemnant is deliberately excluded, which is why measured equivalence
+ * must never be reported as COMPLETE_INPUT_EQUIVALENCE.
+ */
+export const FP024C3_MEASURED_EQUIVALENCE_AXES = FP024C3_EQUIVALENCE_AXES.filter(
+  (axis) => axis !== 'offcutRemnant'
+) as readonly Fp024c3EquivalenceAxis[];
+
+export interface ControlledRunEvidence {
+  runId: string;
+  provenance: OptimizerRunProvenance | null;
+  /** Stock Management reopened immediately after solve/export. */
+  observedWarehouseStock: readonly WarehouseStockCard[] | null;
+  offcutRemnantEvidence: OffcutRemnantEvidenceState;
+  /** New screenshot per run. A reused hash is not evidence of current state. */
+  settingsScreenshotSha256: string | null;
+  bars: readonly ExternalBarPattern[] | null;
+  pieces: readonly DowinPhysicalLengthGoldenRow[];
+  warehouseWriteActionInvoked?: boolean;
+}
+
+/** DIFFERENT (a concrete finding) outranks UNPROVEN, which outranks IDENTICAL. */
+function reduceEquivalence(
+  values: readonly OptimizerInputEquivalence[]
+): OptimizerInputEquivalence {
+  if (values.some((value) => value === 'DIFFERENT')) return 'DIFFERENT';
+  if (values.some((value) => value === 'UNPROVEN')) return 'UNPROVEN';
+  return values.length > 0 ? 'IDENTICAL' : 'UNPROVEN';
+}
+
+function compareFingerprintAxis(
+  a: string | null | undefined,
+  b: string | null | undefined
+): OptimizerInputEquivalence {
+  if (!nonempty(a ?? null) || !nonempty(b ?? null)) return 'UNPROVEN';
+  return a === b ? 'IDENTICAL' : 'DIFFERENT';
+}
+
+function compareFreshnessAxis(
+  a: ControlledRunEvidence,
+  b: ControlledRunEvidence
+): OptimizerInputEquivalence {
+  const da = solveDispositionOf(a.provenance);
+  const db = solveDispositionOf(b.provenance);
+  if (da === 'UNKNOWN' || db === 'UNKNOWN') return 'UNPROVEN';
+  if (da === 'NEWLY_SOLVED' && db === 'NEWLY_SOLVED') return 'IDENTICAL';
+  return 'DIFFERENT';
+}
+
+function compareSettingsAxis(
+  a: ControlledRunEvidence,
+  b: ControlledRunEvidence
+): OptimizerInputEquivalence {
+  const fingerprints = compareFingerprintAxis(
+    a.provenance?.settingsFingerprint,
+    b.provenance?.settingsFingerprint
+  );
+  if (fingerprints !== 'IDENTICAL') return fingerprints;
+  if (!nonempty(a.settingsScreenshotSha256) || !nonempty(b.settingsScreenshotSha256)) {
+    return 'UNPROVEN';
+  }
+  // A shared hash means one screenshot was reused across runs, so the second
+  // run has no contemporaneous settings evidence.
+  if (a.settingsScreenshotSha256 === b.settingsScreenshotSha256) return 'UNPROVEN';
+  return 'IDENTICAL';
+}
+
+function warehouseStockFingerprint(
+  stock: readonly WarehouseStockCard[] | null | undefined
+): string | null {
+  if (stock == null) return null;
+  const sorted = [...stock].sort(
+    (x, y) => x.profileCode.localeCompare(y.profileCode) || x.stockLengthMm - y.stockLengthMm
+  );
+  return optimizerInputFingerprintSha256({ unit: 'mm', warehouse: sorted });
+}
+
+export function compareControlledRunAxes(
+  a: ControlledRunEvidence,
+  b: ControlledRunEvidence
+): Record<Fp024c3EquivalenceAxis, OptimizerInputEquivalence> {
+  const offcut =
+    a.offcutRemnantEvidence === 'UNPROVEN' || b.offcutRemnantEvidence === 'UNPROVEN'
+      ? 'UNPROVEN'
+      : compareFingerprintAxis(
+          a.provenance?.offcutRemnantFingerprint,
+          b.provenance?.offcutRemnantFingerprint
+        );
+  return {
+    geometry: compareFingerprintAxis(
+      a.provenance?.geometryFingerprint,
+      b.provenance?.geometryFingerprint
+    ),
+    requiredParts: compareFingerprintAxis(
+      a.provenance?.requiredPartsFingerprint,
+      b.provenance?.requiredPartsFingerprint
+    ),
+    settings: compareSettingsAxis(a, b),
+    machine: compareFingerprintAxis(a.provenance?.machineId, b.provenance?.machineId),
+    optimizerStock: compareFingerprintAxis(
+      a.provenance?.stockFingerprint,
+      b.provenance?.stockFingerprint
+    ),
+    warehouseStock: compareFingerprintAxis(
+      warehouseStockFingerprint(a.observedWarehouseStock),
+      warehouseStockFingerprint(b.observedWarehouseStock)
+    ),
+    offcutRemnant: offcut,
+    freshness: compareFreshnessAxis(a, b),
+  };
+}
+
+export interface ControlledEquivalencePair {
+  pair: string;
+  axes: Record<Fp024c3EquivalenceAxis, OptimizerInputEquivalence>;
+  /** Excludes offcut/remnant. Never rename this to complete equivalence. */
+  measuredInputEquivalence: OptimizerInputEquivalence;
+  /** Includes offcut/remnant. Stays UNPROVEN while no remnant surface exists. */
+  completeInputEquivalence: OptimizerInputEquivalence;
+}
+
+export function buildControlledEquivalenceMatrix(
+  runs: readonly ControlledRunEvidence[]
+): ControlledEquivalencePair[] {
+  const pairs: ControlledEquivalencePair[] = [];
+  for (let i = 0; i < runs.length; i += 1) {
+    for (let j = i + 1; j < runs.length; j += 1) {
+      const axes = compareControlledRunAxes(runs[i], runs[j]);
+      pairs.push({
+        pair: `${runs[i].runId} ↔ ${runs[j].runId}`,
+        axes,
+        measuredInputEquivalence: reduceEquivalence(
+          FP024C3_MEASURED_EQUIVALENCE_AXES.map((axis) => axes[axis])
+        ),
+        completeInputEquivalence: reduceEquivalence(
+          FP024C3_EQUIVALENCE_AXES.map((axis) => axes[axis])
+        ),
+      });
+    }
+  }
+  return pairs;
+}
+
+export type ControlledRepeatabilityVerdict =
+  | 'CONTROLLED_REPEATABILITY_IN_PROGRESS'
+  | 'MEASURED_INPUT_REPEATABILITY_PROVEN'
+  | 'NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS'
+  | 'OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING'
+  | 'HIDDEN_INPUT_DIFFERENCE'
+  | 'STOCK_STATE_MUTATED'
+  | 'AMBIGUOUS';
+
+export interface ControlledRepeatabilityResult {
+  verdict: ControlledRepeatabilityVerdict;
+  runCount: number;
+  stockPostchecks: { runId: string; verdict: ControlledStockPostcheck }[];
+  topologyFingerprints: (string | null)[];
+  uniqueTopologyCount: number;
+  measuredInputEquivalence: OptimizerInputEquivalence;
+  completeInputEquivalence: OptimizerInputEquivalence;
+  /** True only when every axis including offcut/remnant is IDENTICAL. */
+  fullDeterminismClaimAllowed: boolean;
+  matrix: ControlledEquivalencePair[];
+  note: string;
+}
+
+export function classifyControlledRepeatability(args: {
+  runs: readonly ControlledRunEvidence[];
+  baseline?: readonly WarehouseStockCard[];
+}): ControlledRepeatabilityResult {
+  const { runs, baseline = FP024C3_FROZEN_WAREHOUSE_BASELINE } = args;
+  const stockPostchecks = runs.map((run) => ({
+    runId: run.runId,
+    verdict: evaluateControlledStockPostcheck(run.observedWarehouseStock, baseline).verdict,
+  }));
+  const matrix = buildControlledEquivalenceMatrix(runs);
+  const measuredInputEquivalence = reduceEquivalence(
+    matrix.map((entry) => entry.measuredInputEquivalence)
+  );
+  const completeInputEquivalence = reduceEquivalence(
+    matrix.map((entry) => entry.completeInputEquivalence)
+  );
+  const topologyFingerprints = runs.map((run) =>
+    run.bars == null ? null : topologyFingerprint(run.bars, run.pieces)
+  );
+  const uniqueTopologyCount = new Set(
+    topologyFingerprints.filter((value): value is string => value != null)
+  ).size;
+  const base = {
+    runCount: runs.length,
+    stockPostchecks,
+    topologyFingerprints,
+    uniqueTopologyCount,
+    measuredInputEquivalence,
+    completeInputEquivalence,
+    fullDeterminismClaimAllowed: false,
+    matrix,
+  };
+
+  if (runs.some((run) => run.warehouseWriteActionInvoked === true)) {
+    return {
+      ...base,
+      verdict: 'STOCK_STATE_MUTATED',
+      note: `A forbidden warehouse-write action (${FP024C3_FORBIDDEN_WAREHOUSE_ACTIONS.join(' / ')}) was invoked during FP-024C.3. STOP. Do not repair experiment state.`,
+    };
+  }
+  if (stockPostchecks.some((check) => check.verdict === 'STOCK_STATE_MUTATED')) {
+    return {
+      ...base,
+      verdict: 'STOCK_STATE_MUTATED',
+      note: 'Warehouse quantities left the frozen FP-024C.3 baseline during the experiment. STOP all runs. Do not repair stock. Classify the failure.',
+    };
+  }
+  if (runs.length < FP024C3_REQUIRED_RUN_COUNT) {
+    return {
+      ...base,
+      verdict: 'CONTROLLED_REPEATABILITY_IN_PROGRESS',
+      note: `FP-024C.3 requires ${FP024C3_REQUIRED_RUN_COUNT} controlled runs (${FP024C3_RUN_IDS.join(' / ')}) against the frozen baseline. Captured ${runs.length}. No repeatability claim from A or A+B.`,
+    };
+  }
+  const incomplete = runs.filter((run) => !isOptimizerProvenanceComplete(run.provenance));
+  if (incomplete.length > 0) {
+    return {
+      ...base,
+      verdict: 'AMBIGUOUS',
+      note: `Provenance is incomplete for ${incomplete.map((run) => run.runId).join(', ')}. Missing provenance never becomes IDENTICAL.`,
+    };
+  }
+  if (runs.some((run) => solveDispositionOf(run.provenance) !== 'NEWLY_SOLVED')) {
+    return {
+      ...base,
+      verdict: 'AMBIGUOUS',
+      note: 'Every controlled run must be NEWLY_SOLVED. A reopened or reused result means freshness is not proven.',
+    };
+  }
+  if (stockPostchecks.some((check) => check.verdict === 'UNPROVEN')) {
+    return {
+      ...base,
+      verdict: 'AMBIGUOUS',
+      note: 'A post-run Stock Management check is missing or incomplete. Absence of a stock capture is not a PASS.',
+    };
+  }
+  if (topologyFingerprints.some((value) => value == null)) {
+    return {
+      ...base,
+      verdict: 'AMBIGUOUS',
+      note: 'Bar-by-bar topology is missing for at least one run. Utilization is not topology.',
+    };
+  }
+  if (measuredInputEquivalence === 'DIFFERENT') {
+    return {
+      ...base,
+      verdict: 'HIDDEN_INPUT_DIFFERENCE',
+      note: 'A concrete measured-input fingerprint difference was found across the controlled triplicate. Repeatability cannot be assessed under differing inputs.',
+    };
+  }
+  if (measuredInputEquivalence === 'UNPROVEN') {
+    return {
+      ...base,
+      verdict: 'AMBIGUOUS',
+      note: 'Measured input equivalence is UNPROVEN (missing fingerprints, reused settings screenshot hash, or uncaptured axis). Fail-closed.',
+    };
+  }
+  if (uniqueTopologyCount === 1) {
+    return {
+      ...base,
+      verdict: 'MEASURED_INPUT_REPEATABILITY_PROVEN',
+      fullDeterminismClaimAllowed: completeInputEquivalence === 'IDENTICAL',
+      note:
+        completeInputEquivalence === 'IDENTICAL'
+          ? 'Three controlled fresh solves under identical measured inputs produced one topology, and every axis including offcut/remnant is proven identical.'
+          : 'Three controlled fresh solves under identical measured inputs produced one topology. Offcut/remnant evidence remains UNPROVEN, so this is NOT full determinism proven.',
+    };
+  }
+  if (completeInputEquivalence === 'IDENTICAL') {
+    return {
+      ...base,
+      verdict: 'OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING',
+      note: 'All input axes including offcut/remnant are proven identical and the controlled triplicate still produced more than one topology.',
+    };
+  }
+  return {
+    ...base,
+    verdict: 'NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS',
+    note: 'More than one topology under identical measured inputs, but offcut/remnant evidence is UNPROVEN. Do not overclaim pure nondeterminism or hidden state.',
+  };
+}
+
+export type WarehouseAvailabilityObservation =
+  | 'WAREHOUSE_QTY_VS_OPTIMIZER_AVAILABILITY_DISCREPANCY'
+  | 'NOT_OBSERVED'
+  | 'UNPROVEN';
+
+/**
+ * ORTA-class observation: a profile carried at warehouse quantity 0 that the
+ * optimizer still packs. Recorded as an observation, not a product defect.
+ */
+export function observeWarehouseQtyVsOptimizerAvailability(args: {
+  warehouseStock: readonly WarehouseStockCard[] | null | undefined;
+  usedBars: readonly ExternalBarPattern[] | null | undefined;
+}): { observation: WarehouseAvailabilityObservation; profileCodes: string[] } {
+  if (args.warehouseStock == null || args.usedBars == null) {
+    return { observation: 'UNPROVEN', profileCodes: [] };
+  }
+  const zeroQty = new Set(
+    args.warehouseStock.filter((card) => card.quantity === 0).map((card) => card.profileCode)
+  );
+  const profileCodes = [
+    ...new Set(args.usedBars.map((bar) => bar.profileCode).filter((code) => zeroQty.has(code))),
+  ].sort();
+  return {
+    observation:
+      profileCodes.length > 0
+        ? 'WAREHOUSE_QTY_VS_OPTIMIZER_AVAILABILITY_DISCREPANCY'
+        : 'NOT_OBSERVED',
+    profileCodes,
+  };
+}
+
+export interface ControlledFixtureRow {
+  category: DowinLengthCategory;
+  nominalLengthMm: number;
+  packedLengthMm: number;
+  leftAngleDeg: number;
+  rightAngleDeg: number;
+  quantity: number;
+}
+
+/**
+ * The fixture each controlled run must generate on its own: 1000×1500,
+ * Deceuninck 70. Cut lengths must arise from design generation. Do not
+ * force them by hand; a mismatch stops that run.
+ */
+export const FP024C3_EXPECTED_FIXTURE_ROWS: readonly ControlledFixtureRow[] = [
+  { category: 'frame_horizontal', nominalLengthMm: 1000, packedLengthMm: 1003, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 2 },
+  { category: 'frame_vertical', nominalLengthMm: 1500, packedLengthMm: 1503, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 2 },
+  { category: 'sash_horizontal', nominalLengthMm: 451, packedLengthMm: 454, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 4 },
+  { category: 'sash_vertical', nominalLengthMm: 1430, packedLengthMm: 1433, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 4 },
+  { category: 'mullion', nominalLengthMm: 1416, packedLengthMm: 1416, leftAngleDeg: 90, rightAngleDeg: 90, quantity: 1 },
+  { category: 'glazing_bead_horizontal', nominalLengthMm: 331, packedLengthMm: 334, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 4 },
+  { category: 'glazing_bead_vertical', nominalLengthMm: 1310, packedLengthMm: 1313, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 4 },
+];
+
+export const FP024C3_EXPECTED_PIECE_COUNT = 21;
+
+export type ControlledFixtureVerdict =
+  | 'MATCH'
+  | 'GEOMETRY_OR_SYSTEM_INPUT_DIFFERENCE'
+  | 'UNPROVEN';
+
+/**
+ * Compares a run's generated pieces against the required fixture signature.
+ * A missing layer is UNPROVEN; a present-but-different layer stops the run.
+ */
+export function evaluateControlledFixtureSignature(
+  pieces: readonly DowinPhysicalLengthGoldenRow[] | null | undefined,
+  expected: readonly ControlledFixtureRow[] = FP024C3_EXPECTED_FIXTURE_ROWS
+): { verdict: ControlledFixtureVerdict; reasons: string[] } {
+  if (pieces == null || pieces.length === 0) {
+    return { verdict: 'UNPROVEN', reasons: ['no generated pieces were captured'] };
+  }
+  const cuttable = pieces.filter(
+    (piece) => piece.category !== 'glass' && piece.category !== 'angle_compensation'
+  );
+  const reasons: string[] = [];
+  let unproven = false;
+  for (const row of expected) {
+    const matches = cuttable.filter((piece) => piece.category === row.category);
+    if (matches.length === 0) {
+      unproven = true;
+      reasons.push(`${row.category}: not present in the captured design`);
+      continue;
+    }
+    const sized = matches.filter((piece) => piece.expectedNominalLengthMm === row.nominalLengthMm);
+    if (sized.length === 0) {
+      reasons.push(
+        `${row.category}: expected nominal ${row.nominalLengthMm} mm, captured ${[
+          ...new Set(matches.map((piece) => piece.expectedNominalLengthMm)),
+        ].join('/')}`
+      );
+      continue;
+    }
+    if (sized.length !== row.quantity) {
+      reasons.push(
+        `${row.category} ${row.nominalLengthMm} mm: expected ×${row.quantity}, captured ×${sized.length}`
+      );
+    }
+    for (const piece of sized) {
+      if (piece.expectedPackedSegmentMm == null) {
+        unproven = true;
+        reasons.push(`${piece.pieceId}: packed length not captured`);
+        continue;
+      }
+      if (piece.expectedPackedSegmentMm !== row.packedLengthMm) {
+        reasons.push(
+          `${piece.pieceId}: expected packed ${row.packedLengthMm} mm, captured ${piece.expectedPackedSegmentMm} mm`
+        );
+      }
+      if (
+        piece.leftAngleDeg !== row.leftAngleDeg ||
+        piece.rightAngleDeg !== row.rightAngleDeg
+      ) {
+        reasons.push(
+          `${piece.pieceId}: expected ${row.leftAngleDeg}°/${row.rightAngleDeg}°, captured ${piece.leftAngleDeg}°/${piece.rightAngleDeg}°`
+        );
+      }
+    }
+  }
+  if (cuttable.length !== FP024C3_EXPECTED_PIECE_COUNT) {
+    reasons.push(
+      `expected ${FP024C3_EXPECTED_PIECE_COUNT} cuttable pieces, captured ${cuttable.length}`
+    );
+  }
+  if (reasons.length === 0) return { verdict: 'MATCH', reasons };
+  return {
+    verdict: unproven ? 'UNPROVEN' : 'GEOMETRY_OR_SYSTEM_INPUT_DIFFERENCE',
+    reasons,
+  };
+}
+
+/**
+ * Intake gate for a controlled run. Reuses the FP-024C.1 fresh-run rules and
+ * adds the FP-024C.3 stock-isolation requirements.
+ */
+export function evaluateControlledRunIntake(args: {
+  run: ControlledRunEvidence;
+  observedSettings: DowinJobObservedSettings;
+  widthMm: number;
+  heightMm: number;
+  profileSystem: string;
+  sourceHashes: {
+    generalSettingsScreenshot?: string | null;
+    designPreview?: string | null;
+    assemblyLabels?: string | null;
+    optimization?: string | null;
+    machineExport?: string | null;
+    mdb?: string | null;
+  };
+  priorRuns?: readonly ControlledRunEvidence[];
+  baseline?: readonly WarehouseStockCard[];
+  mdbGenerated?: boolean;
+  operatorClaimsEquivalence?: boolean;
+}): { ok: boolean; reasons: string[] } {
+  const { run, priorRuns = [], baseline = FP024C3_FROZEN_WAREHOUSE_BASELINE } = args;
+  const reasons: string[] = [];
+  if (!(FP024C3_RUN_IDS as readonly string[]).includes(run.runId)) {
+    reasons.push(`runId must be one of ${FP024C3_RUN_IDS.join(' / ')}.`);
+  }
+  const fresh = evaluateFreshRunIntake({
+    runId: run.runId,
+    timestampIso: run.provenance?.timestampIso ?? null,
+    observedSettings: args.observedSettings,
+    widthMm: args.widthMm,
+    heightMm: args.heightMm,
+    profileSystem: args.profileSystem,
+    provenance: run.provenance,
+    sourceHashes: args.sourceHashes,
+    mdbGenerated: args.mdbGenerated,
+    operatorClaimsEquivalence: args.operatorClaimsEquivalence,
+  });
+  reasons.push(...fresh.reasons.filter((reason) => !reason.startsWith('freshSlot')));
+  const postcheck = evaluateControlledStockPostcheck(run.observedWarehouseStock, baseline);
+  if (postcheck.verdict === 'STOCK_STATE_MUTATED') {
+    reasons.push(
+      'Post-run warehouse stock left the frozen FP-024C.3 baseline. STOCK_STATE_MUTATED. Stop the experiment.'
+    );
+  }
+  if (postcheck.verdict === 'UNPROVEN') {
+    reasons.push('Post-run Stock Management capture is missing or incomplete.');
+  }
+  if (run.warehouseWriteActionInvoked === true) {
+    reasons.push('A warehouse-write action was invoked. The run is invalid.');
+  }
+  if (!nonempty(run.settingsScreenshotSha256)) {
+    reasons.push('A new General Settings screenshot SHA-256 is required for each run.');
+  } else if (
+    priorRuns.some((prior) => prior.settingsScreenshotSha256 === run.settingsScreenshotSha256)
+  ) {
+    reasons.push(
+      'The settings screenshot hash matches a prior run. A reused hash is not evidence of current state.'
+    );
+  }
+  const fixture = evaluateControlledFixtureSignature(run.pieces);
+  if (fixture.verdict !== 'MATCH') {
+    reasons.push(`fixture signature ${fixture.verdict}: ${fixture.reasons.join('; ')}`);
+  }
+  if (
+    priorRuns.some(
+      (prior) =>
+        prior.provenance?.optimizationResultId != null &&
+        prior.provenance.optimizationResultId === run.provenance?.optimizationResultId
+    )
+  ) {
+    reasons.push('An optimization result was reused across controlled runs.');
+  }
+  return { ok: reasons.length === 0, reasons };
 }

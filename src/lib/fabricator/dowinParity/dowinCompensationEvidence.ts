@@ -33,18 +33,33 @@ import {
   FP024C1_DECISIVE_EXPERIMENT,
   FP024C1_FRESH_RUN_IDS,
   FP024C1_PROVENANCE_AUDIT_CHECKLIST,
+  FP024C3_EQUIVALENCE_AXES,
+  FP024C3_EXPECTED_FIXTURE_ROWS,
+  FP024C3_EXPECTED_PIECE_COUNT,
+  FP024C3_FORBIDDEN_WAREHOUSE_ACTIONS,
+  FP024C3_FROZEN_WAREHOUSE_BASELINE,
+  FP024C3_MEASURED_EQUIVALENCE_AXES,
+  FP024C3_REQUIRED_RUN_COUNT,
+  FP024C3_RUN_IDS,
   ALMONA_REPRODUCIBILITY_SURFACES,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
   attachOptimizerInputFingerprints,
+  buildControlledEquivalenceMatrix,
+  classifyControlledRepeatability,
   classifyOptimizationStateProvenance,
+  compareControlledRunAxes,
   compareOptimizerInputFingerprints,
+  evaluateControlledFixtureSignature,
+  evaluateControlledRunIntake,
+  evaluateControlledStockPostcheck,
   evaluateFreshRunIntake,
   freshOptimizerProvenance,
   identifyAssignmentTopology,
   isClearScreenNotFreshness,
   isOptimizerProvenanceComplete,
   missingOptimizerProvenanceFields,
+  observeWarehouseQtyVsOptimizerAvailability,
   overallUtilizationPercent,
   requiredPartsSnapshotFromPieces,
   settingsSnapshotFromObserved,
@@ -53,11 +68,22 @@ import {
   topologySignatureFromBars,
   type AsddAssignmentTopology,
   type BarAssignmentSignature,
+  type ControlledEquivalencePair,
+  type ControlledFixtureVerdict,
+  type ControlledRepeatabilityResult,
+  type ControlledRepeatabilityVerdict,
+  type ControlledRunEvidence,
+  type ControlledStockPostcheck,
+  type Fp024c3EquivalenceAxis,
+  type Fp024c3RunId,
+  type OffcutRemnantEvidenceState,
   type OptimizationStateProvenanceVerdict,
   type OptimizerInputEquivalence,
   type OptimizerRunProvenance,
   type OptimizerSolveKind,
   type ProvenanceAuditVerdict,
+  type WarehouseAvailabilityObservation,
+  type WarehouseStockCard,
 } from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
 
 export {
@@ -65,28 +91,54 @@ export {
   FP024C1_DECISIVE_EXPERIMENT,
   FP024C1_FRESH_RUN_IDS,
   FP024C1_PROVENANCE_AUDIT_CHECKLIST,
+  FP024C3_EQUIVALENCE_AXES,
+  FP024C3_EXPECTED_FIXTURE_ROWS,
+  FP024C3_EXPECTED_PIECE_COUNT,
+  FP024C3_FORBIDDEN_WAREHOUSE_ACTIONS,
+  FP024C3_FROZEN_WAREHOUSE_BASELINE,
+  FP024C3_MEASURED_EQUIVALENCE_AXES,
+  FP024C3_REQUIRED_RUN_COUNT,
+  FP024C3_RUN_IDS,
   ALMONA_REPRODUCIBILITY_SURFACES,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
   attachOptimizerInputFingerprints,
+  buildControlledEquivalenceMatrix,
+  classifyControlledRepeatability,
   classifyOptimizationStateProvenance,
+  compareControlledRunAxes,
   compareOptimizerInputFingerprints,
+  evaluateControlledFixtureSignature,
+  evaluateControlledRunIntake,
+  evaluateControlledStockPostcheck,
   evaluateFreshRunIntake,
   freshOptimizerProvenance,
   isClearScreenNotFreshness,
   isOptimizerProvenanceComplete,
   missingOptimizerProvenanceFields,
+  observeWarehouseQtyVsOptimizerAvailability,
   overallUtilizationPercent,
   solveDispositionOf,
   topologyFingerprint,
   topologySignatureFromBars,
   type AsddAssignmentTopology,
   type BarAssignmentSignature,
+  type ControlledEquivalencePair,
+  type ControlledFixtureVerdict,
+  type ControlledRepeatabilityResult,
+  type ControlledRepeatabilityVerdict,
+  type ControlledRunEvidence,
+  type ControlledStockPostcheck,
+  type Fp024c3EquivalenceAxis,
+  type Fp024c3RunId,
+  type OffcutRemnantEvidenceState,
   type OptimizationStateProvenanceVerdict,
   type OptimizerInputEquivalence,
   type OptimizerRunProvenance,
   type OptimizerSolveKind,
   type ProvenanceAuditVerdict,
+  type WarehouseAvailabilityObservation,
+  type WarehouseStockCard,
 };
 
 export type CalibrationVariable =
@@ -1170,6 +1222,36 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     'Operator template Fresh C. Completes the A/B/C package. 90° stays gated.'
   ),
   pendingTemplate(
+    'FP024C3_RUN_A',
+    'optimizationStateProvenance',
+    {
+      field: null,
+      instructedToMm: null,
+      note: 'FP-024C.3 controlled Run A: first member of the new triplicate against the frozen post-Fresh-A warehouse baseline (CITA 46 / KANAT 96 / KASA 13 / ORTA 0). New project/design/plan/result. No warehouse write.',
+    },
+    'Operator template FP024C3_RUN_A. Fresh A cannot serve as a triplicate member because a proven stock write followed it (FP-024C.2 22:17:20).'
+  ),
+  pendingTemplate(
+    'FP024C3_RUN_B',
+    'optimizationStateProvenance',
+    {
+      field: null,
+      instructedToMm: null,
+      note: 'FP-024C.3 controlled Run B: authorized only after RUN_A post-stock check PASSes. New identities, no inherited optimization state.',
+    },
+    'Operator template FP024C3_RUN_B. Not the old Fresh B, which stays INVALID_PRE_RUN / STOCK_STATE_CHANGED.'
+  ),
+  pendingTemplate(
+    'FP024C3_RUN_C',
+    'optimizationStateProvenance',
+    {
+      field: null,
+      instructedToMm: null,
+      note: 'FP-024C.3 controlled Run C: authorized only after RUN_B post-stock check PASSes. Completes the controlled triplicate.',
+    },
+    'Operator template FP024C3_RUN_C. No fourth run without explicit authorization. 90° stays gated until the repeatability verdict exists.'
+  ),
+  pendingTemplate(
     'dowin-asdd-90-control-pending',
     'ninetyDegreeControl',
     {
@@ -1191,6 +1273,27 @@ export const DOWIN_CALIBRATION_RUNS: readonly DowinCalibrationRun[] = [
   DOWIN_FP024C1_FRESH_A_RUN,
   ...DOWIN_CALIBRATION_TEMPLATES,
 ];
+
+/**
+ * FP-024C.3 catalog view: the controlled triplicate slots, which stay
+ * PENDING_OPERATOR_RUN until the operator supplies each run package.
+ */
+export function fp024c3ControlledRuns(
+  runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
+): readonly DowinCalibrationRun[] {
+  return runs.filter((run) => (FP024C3_RUN_IDS as readonly string[]).includes(run.fixtureId));
+}
+
+/** FP-024C.3 stays in progress while any controlled slot is unmeasured. */
+export function isFp024c3ControlledTriplicateComplete(
+  runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
+): boolean {
+  const controlled = fp024c3ControlledRuns(runs);
+  return (
+    controlled.length === FP024C3_REQUIRED_RUN_COUNT &&
+    controlled.every((run) => run.status === 'MEASURED')
+  );
+}
 
 export function findBaselineReproduction(
   runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
@@ -1220,9 +1323,10 @@ export function findBaselineReset(
 /**
  * 90° CONTROL_FIXTURE stays gated until:
  * 1. BASELINE_RESET_VALIDATION recovers the 1B remainder topology, and
- * 2. Fresh A/B/C templates are no longer pending, and
+ * 2. Fresh A/B/C and the FP-024C.3 controlled triplicate are no longer pending, and
  * 3. FP-024C.1 is not still PENDING_OPERATOR_RUN or AMBIGUOUS.
  * A single Fresh A recovery of original topology does not open this gate.
+ * The FP-024C.3 repeatability verdict must exist before 90° is requested.
  */
 export function isControlFixtureAuthorized(
   runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
@@ -1237,6 +1341,7 @@ export function isControlFixtureAuthorized(
       run.status === 'PENDING_OPERATOR_RUN'
   );
   if (pendingFresh.length > 0) return false;
+  if (!isFp024c3ControlledTriplicateComplete(runs)) return false;
   const provenance = classifyProvenanceFreshStateExperiment(runs);
   return (
     provenance.verdict !== 'PENDING_OPERATOR_RUN' && provenance.verdict !== 'AMBIGUOUS'

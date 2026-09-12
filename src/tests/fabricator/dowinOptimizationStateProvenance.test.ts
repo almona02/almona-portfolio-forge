@@ -52,6 +52,24 @@ import {
   FP024C1_MIN_FRESH_RUNS_FOR_CONSISTENCY,
   FP024C1_MIN_FRESH_RUNS_FOR_NONDETERMINISM,
 } from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
+import {
+  FP024C3_EQUIVALENCE_AXES,
+  FP024C3_EXPECTED_PIECE_COUNT,
+  FP024C3_FROZEN_WAREHOUSE_BASELINE,
+  FP024C3_MEASURED_EQUIVALENCE_AXES,
+  FP024C3_REQUIRED_RUN_COUNT,
+  FP024C3_RUN_IDS,
+  buildControlledEquivalenceMatrix,
+  classifyControlledRepeatability,
+  evaluateControlledFixtureSignature,
+  evaluateControlledRunIntake,
+  evaluateControlledStockPostcheck,
+  fp024c3ControlledRuns,
+  isFp024c3ControlledTriplicateComplete,
+  observeWarehouseQtyVsOptimizerAvailability,
+  type ControlledRunEvidence,
+  type WarehouseStockCard,
+} from '@/lib/fabricator/dowinParity/dowinCompensationEvidence';
 
 function sourceOf(rel: string): string {
   return readFileSync(resolve(process.cwd(), rel), 'utf8');
@@ -610,5 +628,299 @@ describe('FP-024C.1 optimization state provenance', () => {
       freshSlot: 'A',
     });
     expect(resolveManufacturingSettings()).toEqual(before);
+  });
+});
+
+const CONTROLLED_PIECES = DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.pieces;
+
+function controlledRun(
+  runId: string,
+  overrides: Partial<ControlledRunEvidence> = {}
+): ControlledRunEvidence {
+  return {
+    runId,
+    provenance: equivalent({ optimizationResultId: `result-${runId}` }),
+    observedWarehouseStock: [...FP024C3_FROZEN_WAREHOUSE_BASELINE],
+    offcutRemnantEvidence: 'UNPROVEN',
+    settingsScreenshotSha256: `settings-${runId}`,
+    bars: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,
+    pieces: CONTROLLED_PIECES,
+    ...overrides,
+  };
+}
+
+function controlledTriplicate(
+  overrides: Partial<ControlledRunEvidence>[] = []
+): ControlledRunEvidence[] {
+  return FP024C3_RUN_IDS.map((runId, index) => controlledRun(runId, overrides[index] ?? {}));
+}
+
+describe('FP-024C.3 controlled fresh-solve repeatability', () => {
+  it('freezes the current post-Fresh-A warehouse state as the control baseline', () => {
+    const quantities = Object.fromEntries(
+      FP024C3_FROZEN_WAREHOUSE_BASELINE.map((card) => [card.profileCode, card.quantity])
+    );
+    expect(quantities['Deceuninck-CITA-20']).toBe(46);
+    expect(quantities['Deceuninck-KANAT-70']).toBe(96);
+    expect(quantities['Deceuninck-KASA-70']).toBe(13);
+    expect(quantities['Deceuninck-ORTA-KAYIT-70']).toBe(0);
+    expect(quantities['Deceuninck-KOSE-METAL-05']).toBe(100);
+    expect(quantities['Deceuninck-KOSE-PLASTIK-01']).toBe(50);
+    expect(quantities['Deceuninck-DESTEK-SACI-2.0MM']).toBe(15);
+    expect(FP024C3_RUN_IDS).toEqual(['FP024C3_RUN_A', 'FP024C3_RUN_B', 'FP024C3_RUN_C']);
+    expect(FP024C3_REQUIRED_RUN_COUNT).toBe(3);
+  });
+
+  it('fails closed on the post-run stock check', () => {
+    expect(evaluateControlledStockPostcheck([...FP024C3_FROZEN_WAREHOUSE_BASELINE]).verdict).toBe(
+      'PASS'
+    );
+    expect(evaluateControlledStockPostcheck(null).verdict).toBe('UNPROVEN');
+    const partial = FP024C3_FROZEN_WAREHOUSE_BASELINE.slice(0, 3);
+    expect(evaluateControlledStockPostcheck([...partial]).verdict).toBe('UNPROVEN');
+
+    const deducted: WarehouseStockCard[] = FP024C3_FROZEN_WAREHOUSE_BASELINE.map((card) =>
+      card.profileCode === 'Deceuninck-KASA-70' ? { ...card, quantity: 12 } : { ...card }
+    );
+    const mutated = evaluateControlledStockPostcheck(deducted);
+    expect(mutated.verdict).toBe('STOCK_STATE_MUTATED');
+    expect(
+      mutated.deltas.find((delta) => delta.profileCode === 'Deceuninck-KASA-70')?.deltaQuantity
+    ).toBe(-1);
+
+    const remnantImported: WarehouseStockCard[] = [
+      ...FP024C3_FROZEN_WAREHOUSE_BASELINE.map((card) => ({ ...card })),
+      { profileCode: 'Deceuninck-CITA-20', stockLengthMm: 6160, quantity: 1 },
+    ];
+    const withRemnant = evaluateControlledStockPostcheck(remnantImported);
+    expect(withRemnant.verdict).toBe('STOCK_STATE_MUTATED');
+    expect(withRemnant.unexpectedCards).toEqual(['Deceuninck-CITA-20|6160']);
+  });
+
+  it('keeps the controlled triplicate pending in the catalog and the 90° gate closed', () => {
+    const controlled = fp024c3ControlledRuns();
+    expect(controlled).toHaveLength(3);
+    expect(controlled.map((run) => run.fixtureId)).toEqual([...FP024C3_RUN_IDS]);
+    expect(controlled.every((run) => run.status === 'PENDING_OPERATOR_RUN')).toBe(true);
+    expect(controlled.every((run) => run.bars.length === 0)).toBe(true);
+    expect(controlled.every((run) => run.optimizerProvenance == null)).toBe(true);
+    expect(isFp024c3ControlledTriplicateComplete()).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(classifyControlledRepeatability({ runs: [] }).verdict).toBe(
+      'CONTROLLED_REPEATABILITY_IN_PROGRESS'
+    );
+  });
+
+  it('refuses a repeatability claim from Run A or Run A + Run B', () => {
+    const runs = controlledTriplicate();
+    expect(classifyControlledRepeatability({ runs: runs.slice(0, 1) }).verdict).toBe(
+      'CONTROLLED_REPEATABILITY_IN_PROGRESS'
+    );
+    const two = classifyControlledRepeatability({ runs: runs.slice(0, 2) });
+    expect(two.verdict).toBe('CONTROLLED_REPEATABILITY_IN_PROGRESS');
+    expect(two.note).toContain('No repeatability claim from A or A+B');
+  });
+
+  it('separates measured-input repeatability from full determinism while offcuts stay UNPROVEN', () => {
+    const result = classifyControlledRepeatability({ runs: controlledTriplicate() });
+    expect(result.verdict).toBe('MEASURED_INPUT_REPEATABILITY_PROVEN');
+    expect(result.measuredInputEquivalence).toBe('IDENTICAL');
+    expect(result.completeInputEquivalence).toBe('UNPROVEN');
+    expect(result.fullDeterminismClaimAllowed).toBe(false);
+    expect(result.uniqueTopologyCount).toBe(1);
+    expect(result.note).toContain('NOT full determinism proven');
+    expect(result.matrix.map((entry) => entry.pair)).toEqual([
+      'FP024C3_RUN_A ↔ FP024C3_RUN_B',
+      'FP024C3_RUN_A ↔ FP024C3_RUN_C',
+      'FP024C3_RUN_B ↔ FP024C3_RUN_C',
+    ]);
+    expect(result.matrix.every((entry) => entry.axes.offcutRemnant === 'UNPROVEN')).toBe(true);
+    expect(FP024C3_MEASURED_EQUIVALENCE_AXES).not.toContain('offcutRemnant');
+    expect(FP024C3_EQUIVALENCE_AXES).toContain('offcutRemnant');
+  });
+
+  it('does not overclaim nondeterminism when offcut evidence is missing', () => {
+    const runs = controlledTriplicate([{}, {}, { bars: DOWIN_ASDD_TRIM_CUT_10_BARS }]);
+    const result = classifyControlledRepeatability({ runs });
+    expect(result.uniqueTopologyCount).toBe(2);
+    expect(result.verdict).toBe('NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS');
+    expect(result.fullDeterminismClaimAllowed).toBe(false);
+
+    const proven = classifyControlledRepeatability({
+      runs: runs.map((run) => ({ ...run, offcutRemnantEvidence: 'MEASURED' as const })),
+    });
+    expect(proven.completeInputEquivalence).toBe('IDENTICAL');
+    expect(proven.verdict).toBe('OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING');
+  });
+
+  it('stops the experiment when stock moves or a warehouse write is invoked', () => {
+    const mutated = controlledTriplicate([
+      {},
+      {
+        observedWarehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE.map((card) =>
+          card.profileCode === 'Deceuninck-CITA-20' ? { ...card, quantity: 44 } : { ...card }
+        ),
+      },
+      {},
+    ]);
+    expect(classifyControlledRepeatability({ runs: mutated }).verdict).toBe('STOCK_STATE_MUTATED');
+
+    const written = controlledTriplicate([{ warehouseWriteActionInvoked: true }, {}, {}]);
+    const verdict = classifyControlledRepeatability({ runs: written });
+    expect(verdict.verdict).toBe('STOCK_STATE_MUTATED');
+    expect(verdict.note).toContain('Update Stock');
+  });
+
+  it('treats an uncaptured stock check, reused screenshot, or reused result as not proven', () => {
+    expect(
+      classifyControlledRepeatability({
+        runs: controlledTriplicate([{}, {}, { observedWarehouseStock: null }]),
+      }).verdict
+    ).toBe('AMBIGUOUS');
+
+    const sharedHash = controlledTriplicate([
+      { settingsScreenshotSha256: 'same-hash' },
+      { settingsScreenshotSha256: 'same-hash' },
+      {},
+    ]);
+    const shared = classifyControlledRepeatability({ runs: sharedHash });
+    expect(shared.matrix[0].axes.settings).toBe('UNPROVEN');
+    expect(shared.measuredInputEquivalence).toBe('UNPROVEN');
+    expect(shared.verdict).toBe('AMBIGUOUS');
+
+    expect(
+      classifyControlledRepeatability({
+        runs: controlledTriplicate([
+          {},
+          {},
+          { provenance: equivalent({ solveKind: 'REOPENED_REUSED', solveDisposition: 'REUSED' }) },
+        ]),
+      }).verdict
+    ).toBe('AMBIGUOUS');
+  });
+
+  it('reports a concrete optimizer-stock difference as HIDDEN_INPUT_DIFFERENCE', () => {
+    const runs = controlledTriplicate([
+      {},
+      {},
+      {
+        provenance: equivalent({
+          stockSnapshot: [
+            { profileCode: 'Deceuninck-KASA-70', stockLengthMm: 6000, ordinal: 0, quantity: 13 },
+          ],
+        }),
+      },
+    ]);
+    const result = classifyControlledRepeatability({ runs });
+    expect(result.verdict).toBe('HIDDEN_INPUT_DIFFERENCE');
+    expect(
+      buildControlledEquivalenceMatrix(runs).some((entry) => entry.axes.optimizerStock === 'DIFFERENT')
+    ).toBe(true);
+  });
+
+  it('stops a run whose generated fixture does not match the required signature', () => {
+    const match = evaluateControlledFixtureSignature(CONTROLLED_PIECES);
+    expect(match.verdict).toBe('MATCH');
+    expect(
+      CONTROLLED_PIECES.filter(
+        (piece) => piece.category !== 'glass' && piece.category !== 'angle_compensation'
+      )
+    ).toHaveLength(FP024C3_EXPECTED_PIECE_COUNT);
+
+    expect(evaluateControlledFixtureSignature([]).verdict).toBe('UNPROVEN');
+    expect(evaluateControlledFixtureSignature(null).verdict).toBe('UNPROVEN');
+
+    const forced = CONTROLLED_PIECES.map((piece) =>
+      piece.category === 'mullion' ? { ...piece, expectedPackedSegmentMm: 1420 } : piece
+    );
+    const drift = evaluateControlledFixtureSignature(forced);
+    expect(drift.verdict).toBe('GEOMETRY_OR_SYSTEM_INPUT_DIFFERENCE');
+    expect(drift.reasons.join(' ')).toContain('expected packed 1416 mm, captured 1420 mm');
+  });
+
+  it('records the ORTA quantity-0 availability discrepancy as an observation', () => {
+    const observed = observeWarehouseQtyVsOptimizerAvailability({
+      warehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE,
+      usedBars: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,
+    });
+    expect(observed.observation).toBe('WAREHOUSE_QTY_VS_OPTIMIZER_AVAILABILITY_DISCREPANCY');
+    expect(observed.profileCodes).toContain('Deceuninck-ORTA-KAYIT-70');
+    expect(
+      observeWarehouseQtyVsOptimizerAvailability({ warehouseStock: null, usedBars: null }).observation
+    ).toBe('UNPROVEN');
+    expect(
+      observeWarehouseQtyVsOptimizerAvailability({
+        warehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE.map((card) =>
+          card.profileCode === 'Deceuninck-ORTA-KAYIT-70' ? { ...card, quantity: 5 } : card
+        ),
+        usedBars: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,
+      }).observation
+    ).toBe('NOT_OBSERVED');
+  });
+
+  it('gates controlled-run intake on run identity, stock isolation, and fresh evidence', () => {
+    const hashes = {
+      generalSettingsScreenshot: 'settings-FP024C3_RUN_A',
+      designPreview: 'design-a',
+      assemblyLabels: 'labels-a',
+      optimization: 'report-a',
+      machineExport: 'dw-a',
+    };
+    const intakeArgs = {
+      observedSettings: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings,
+      widthMm: 1000,
+      heightMm: 1500,
+      profileSystem: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.profileSystem,
+      sourceHashes: hashes,
+      mdbGenerated: true,
+    };
+    const runA = controlledRun('FP024C3_RUN_A');
+    expect(evaluateControlledRunIntake({ run: runA, ...intakeArgs }).ok).toBe(true);
+
+    expect(
+      evaluateControlledRunIntake({ run: controlledRun('FRESH_D'), ...intakeArgs }).reasons.join(' ')
+    ).toContain('runId must be one of');
+
+    const reusedResult = evaluateControlledRunIntake({
+      run: controlledRun('FP024C3_RUN_B', {
+        provenance: equivalent({ optimizationResultId: 'result-FP024C3_RUN_A' }),
+      }),
+      priorRuns: [runA],
+      ...intakeArgs,
+    });
+    expect(reusedResult.ok).toBe(false);
+    expect(reusedResult.reasons.join(' ')).toContain('optimization result was reused');
+
+    const reusedScreenshot = evaluateControlledRunIntake({
+      run: controlledRun('FP024C3_RUN_B', {
+        settingsScreenshotSha256: 'settings-FP024C3_RUN_A',
+      }),
+      priorRuns: [runA],
+      ...intakeArgs,
+    });
+    expect(reusedScreenshot.ok).toBe(false);
+    expect(reusedScreenshot.reasons.join(' ')).toContain('reused hash is not evidence');
+
+    const stockMoved = evaluateControlledRunIntake({
+      run: controlledRun('FP024C3_RUN_C', {
+        observedWarehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE.map((card) =>
+          card.profileCode === 'Deceuninck-KANAT-70' ? { ...card, quantity: 94 } : { ...card }
+        ),
+      }),
+      ...intakeArgs,
+    });
+    expect(stockMoved.ok).toBe(false);
+    expect(stockMoved.reasons.join(' ')).toContain('STOCK_STATE_MUTATED');
+  });
+
+  it('does not let FP-024C.3 evidence touch manufacturing settings', () => {
+    const before = resolveManufacturingSettings();
+    classifyControlledRepeatability({ runs: controlledTriplicate() });
+    evaluateControlledStockPostcheck([...FP024C3_FROZEN_WAREHOUSE_BASELINE]);
+    evaluateControlledFixtureSignature(CONTROLLED_PIECES);
+    expect(resolveManufacturingSettings()).toEqual(before);
+    const source = sourceOf('src/lib/fabricator/dowinParity/optimizerStateProvenance.ts');
+    expect(source).not.toContain('ManufacturingSettings');
+    expect(source).not.toMatch(/packedLengthMm\s*=\s*nominalLengthMm\s*\+/);
   });
 });
