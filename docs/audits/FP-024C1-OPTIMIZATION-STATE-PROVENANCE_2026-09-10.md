@@ -8,7 +8,8 @@
 | Prior local HEAD | `332914f` — `audit: record FP-024C.1 state provenance checkpoint` |
 | Fresh A ingest | 12 September 2026 — valid newly solved package after failed Saw=5 pre-run |
 | Fresh B attempt | 12 September 2026 — **STOPPED** before project/solve: warehouse stock ≠ Fresh A |
-| Gate | ⏸ **HIDDEN_INPUT_DIFFERENCE / STOCK_STATE_CHANGED** (Fresh A measured; Fresh B not created) |
+| FP-024C.2 | 12 September 2026 — stock-update **PROVEN** at 22:17:20; Run/Export did **not** write stock |
+| Gate | ⏸ **PAUSED BY STOCK_STATE_CHANGED** — A/B repeatability paused pending a clean stock method |
 | Physical-length score | **Unchanged at 6.0/10** |
 | PR #32 | Draft / **DO NOT MERGE** |
 
@@ -18,7 +19,8 @@
 
 ```
 FP-024C ⏸ STATE PROVENANCE INVESTIGATION
-FP-024C.1 HIDDEN_INPUT_DIFFERENCE / STOCK_STATE_CHANGED
+FP-024C.1 PAUSED BY STOCK_STATE_CHANGED
+FP-024C.2 STOCK MUTATION PROVENANCE AUDIT
 
 Test 2 packed/machine:
 ✅ PROVEN — fixture-specific only
@@ -45,6 +47,7 @@ one run cannot claim repeatability
 Fresh B:
 INVALID_PRE_RUN / STOCK_STATE_CHANGED
 not created — not solved — not ingested
+A/B repeatability paused pending FP-024C.2
 
 Fresh C:
 CLOSED (not started)
@@ -453,7 +456,8 @@ Fresh B: **INVALID_PRE_RUN**. Do not solve. Do not compare topology. Do not call
 
 ## Remaining operator evidence
 
-1. Fresh A remains the only ingested fresh solve. Do **not** treat this blocked pre-run as Fresh B.
-2. Do **not** add ORTA stock or restore CITA/KANAT/KASA quantities to force A/B sameness. That would be a new experiment, not Fresh B vs current observed environment.
-3. Fresh C stays **CLOSED**. 90° stays **GATED**.
-4. Do not merge PR #32. Physical-length score stays 6.0/10. Production formulas stay FROZEN.
+1. Fresh A remains the only ingested fresh solve. Fresh B was **blocked by stock-state contamination**. A/B repeatability is **paused pending FP-024C.2**.
+2. FP-024C.2: warehouse write is **PROVEN** at 22:17:20 (CITA 46 / KANAT 96 / KASA 13 / ORTA clamped 0). Run Optimization and machine/PDF export did **not** write stock on this timeline. The 22:17:20 user-visible trigger is **AMBIGUOUS**. See `docs/audits/FP-024C2-STOCK-MUTATION-PROVENANCE_2026-09-12.md`.
+3. Do **not** restore CITA/KANAT/KASA/ORTA quantities yet. Current warehouse is evidence.
+4. Fresh B and Fresh C stay **BLOCKED**. 90° stays **GATED**.
+5. Do not merge PR #32. Physical-length score stays 6.0/10. Production formulas stay FROZEN.
