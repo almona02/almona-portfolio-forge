@@ -7,7 +7,8 @@
 | Origin HEAD | `056f100` — `FP-024C: classify BASELINE_REPRODUCTION_RUN as REPRODUCED` |
 | Prior local HEAD | `332914f` — `audit: record FP-024C.1 state provenance checkpoint` |
 | Fresh A ingest | 12 September 2026 — valid newly solved package after failed Saw=5 pre-run |
-| Gate | ⏸ **AMBIGUOUS** / **PENDING_MORE_FRESH_RUNS** (Fresh A measured; B/C not started) |
+| Fresh B attempt | 12 September 2026 — **STOPPED** before project/solve: warehouse stock ≠ Fresh A |
+| Gate | ⏸ **HIDDEN_INPUT_DIFFERENCE / STOCK_STATE_CHANGED** (Fresh A measured; Fresh B not created) |
 | Physical-length score | **Unchanged at 6.0/10** |
 | PR #32 | Draft / **DO NOT MERGE** |
 
@@ -17,7 +18,7 @@
 
 ```
 FP-024C ⏸ STATE PROVENANCE INVESTIGATION
-FP-024C.1 AMBIGUOUS / PENDING_MORE_FRESH_RUNS
+FP-024C.1 HIDDEN_INPUT_DIFFERENCE / STOCK_STATE_CHANGED
 
 Test 2 packed/machine:
 ✅ PROVEN — fixture-specific only
@@ -42,7 +43,8 @@ topology OTHER vs 1B and vs later/reset
 one run cannot claim repeatability
 
 Fresh B:
-CLOSED (not started)
+INVALID_PRE_RUN / STOCK_STATE_CHANGED
+not created — not solved — not ingested
 
 Fresh C:
 CLOSED (not started)
@@ -327,7 +329,7 @@ Recorded: catalog **AMBIGUOUS** (one newly solved run cannot claim repeatability
 
 ## Fresh A/B/C operator package required
 
-Catalog: `FP024C1_FRESH_A` **MEASURED**; `FP024C1_FRESH_B` and `FP024C1_FRESH_C` remain `PENDING_OPERATOR_RUN`. Do not start B/C in this checkpoint.
+Catalog: `FP024C1_FRESH_A` **MEASURED**; `FP024C1_FRESH_B` remains `PENDING_OPERATOR_RUN` after **INVALID_PRE_RUN / STOCK_STATE_CHANGED** (not ingested); `FP024C1_FRESH_C` remains `PENDING_OPERATOR_RUN` and **CLOSED**.
 
 Each run must supply:
 
@@ -376,9 +378,82 @@ No evidence code mutates `ManufacturingSettings`, `barPackAccounting`, or produc
 
 ---
 
+---
+
+## Fresh B — STOPPED (2026-09-12). Not created. Not solved. Not ingested.
+
+Authorized to run after Fresh A. **Stopped at Step 2** before project creation / design / plan / solve.
+
+### Settings (Step 1) — contemporaneous, MATCH Fresh A required values
+
+Re-entered Management Panel → General Settings. English UI. No field was edited. Save was not clicked.
+
+| Field | Live |
+|-------|------|
+| Welding Waste | 3 |
+| Saw Thickness | 4 |
+| Trim Cut | 0 |
+| Sash Offset | 7 |
+| Glazing Clearance | 2.5 |
+| Minimum offcut | 500 |
+| Mullion Offset | 0 |
+| DC-600 | checked |
+| DC-550 SKH | also globally enabled |
+
+Fresh B settings screenshot SHA-256 (new; **not** reused Fresh A hash):  
+`10eb9dcdb8dc2f4c339c6d91235e62b0e88ff09b3e1509358b5393d42db22a83`
+
+Start/New Project screenshot SHA-256:  
+`acec4e5eed9d51059107bf59d4584b6dcb55fddddf24c504a47a6c0074bf591f`  
+Saved list visible: `100002 / FP024C1_FRESH_A` and `100001 / asdasd`. Neither was opened. New Project form blank.
+
+### Stock (Step 2) — DOES NOT MATCH Fresh A. STOP.
+
+Stock Management captured as-found. No Add / Save / Delete / remnant import. Management Panel closed without save.
+
+Stock screenshot SHA-256:  
+`480646001d0ab21ba4812bb09614db5764c097207f8ec76b16e13a4ec6f46a56`
+
+| Profile | Length | Fresh A required | Live now | Delta |
+|---------|--------|------------------|----------|-------|
+| Deceuninck-KOSE-METAL-05 | 6500 | 100 | 100 | 0 |
+| Deceuninck-KOSE-PLASTIK-01 | 6500 | 50 | 50 | 0 |
+| Deceuninck-DESTEK-SACI-2.0MM | 6500 | 15 | 15 | 0 |
+| Deceuninck-CITA-20 | 6500 | **48** | **46** | **-2** |
+| Deceuninck-ORTA-KAYIT-70 | 6500 | 0 | 0 | 0 |
+| Deceuninck-KANAT-70 | 6000 | **98** | **96** | **-2** |
+| Deceuninck-KASA-70 | 6000 | **14** | **13** | **-1** |
+
+The live deltas equal Fresh A **used-bar counts** (CITA 2, KANAT 2, KASA 1). ORTA remains qty 0 (Fresh A used one 6500 ORTA bar against qty 0; still 0). This is consistent with post-solve warehouse consumption of Fresh A, not with “stock unrepaired.” ORTA qty 0 was **not** added. Quantities were **not** restored to Fresh A.
+
+Classification: **HIDDEN_INPUT_DIFFERENCE / STOCK_STATE_CHANGED**.  
+Fresh B: **INVALID_PRE_RUN**. Do not solve. Do not compare topology. Do not call this optimizer nondeterminism.
+
+### What was not done
+
+- Project `FP024C1_FRESH_B` was **not** created.
+- Design `FRESH_B` / plan `FRESH_B_PLAN` were **not** created.
+- No optimization. No export. No production approval. No remnant import.
+- `asdd` / `asdasd` / Fresh A were not opened.
+- Catalog template `FP024C1_FRESH_B` remains `PENDING_OPERATOR_RUN` (not a fake MEASURED ingest).
+- Production formulas unchanged.
+
+### Fresh B vs Fresh A (inputs)
+
+| Axis | Verdict |
+|------|---------|
+| Settings (visible General Settings) | IDENTICAL (Weld 3 / Saw 4 / Trim 0 / sash 7 / glazing 2.5 / min offcut 500 / DC-600) |
+| Warehouse stock | **DIFFERENT** |
+| Optimizer stock | **UNPROVEN** (Optimization screen not opened; warehouse already differed) |
+| Offcut/remnant | **UNPROVEN** |
+| Geometry / required-parts / topology | **UNPROVEN** (no Fresh B design/solve) |
+| Overall | **DIFFERENT** / fail-closed **UNPROVEN** for unmeasured axes |
+
+---
+
 ## Remaining operator evidence
 
-1. Fresh A is ingested. Do **not** start Fresh B or Fresh C in this checkpoint.
-2. Do not run the 90° control until an explicit provenance verdict authorizes continuation.
-3. Do not merge PR #32.
-4. Do not change production formulas. Physical-length score stays 6.0/10.
+1. Fresh A remains the only ingested fresh solve. Do **not** treat this blocked pre-run as Fresh B.
+2. Do **not** add ORTA stock or restore CITA/KANAT/KASA quantities to force A/B sameness. That would be a new experiment, not Fresh B vs current observed environment.
+3. Fresh C stays **CLOSED**. 90° stays **GATED**.
+4. Do not merge PR #32. Physical-length score stays 6.0/10. Production formulas stay FROZEN.
