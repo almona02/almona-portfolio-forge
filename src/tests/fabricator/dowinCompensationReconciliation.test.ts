@@ -73,7 +73,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'BASELINE_REPRODUCTION_RUN')).toHaveLength(1);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'BASELINE_RESET_VALIDATION')).toHaveLength(1);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT')).toHaveLength(3);
-    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(4);
+    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(3);
     expect(DOWIN_CALIBRATION_RUNS.map((r) => r.fixtureId)).toEqual(
       expect.arrayContaining(['FP024C1_FRESH_A', 'FP024C1_FRESH_B', 'FP024C1_FRESH_C'])
     );
@@ -171,7 +171,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(baseline?.interpretation).toBe('AMBIGUOUS');
     expect(baseline?.packedMinusNominalValuesMm).toEqual([0, 3]);
     expect(baseline?.machineDeltaMm).toBe(0);
-    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(4);
+    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(3);
     expect(a.every((r) => r.interpretation !== 'PROVEN EFFECT')).toBe(true);
   });
 
@@ -260,8 +260,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(FP024C1_DECISIVE_EXPERIMENT).toContain('fresh project/design');
     const isolation = buildIsolationDeltaTable();
     expect(isolation).toHaveLength(10);
-    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(4);
-    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(4);
+    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(3);
+    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(3);
     expect(isolation.filter((r) => r.runKind === 'CONTROL_FIXTURE')[0]?.interpretation).toBe(
       'NOT MEASURED'
     );
@@ -274,7 +274,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(report.reproductionVerdict).toBe('REPRODUCED');
     expect(report.resetVerdict).toBe('REPRODUCTION_FAILED');
     expect(report.provenanceAuditQuestion).toBe(FP024C1_AUDIT_QUESTION);
-    expect(report.provenanceAuditVerdict).toBe('PENDING_OPERATOR_RUN');
+    expect(report.provenanceAuditVerdict).toBe('AMBIGUOUS');
     expect(report.causalIsolationAuthorized).toBe(true);
     expect(report.controlFixtureAuthorized).toBe(false);
     expect(report.knownExportIdentifiers.generalSettingsScreenshotSha256).toBe(
@@ -1029,7 +1029,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     ).toBeLessThan(1);
 
     const catalog = classifyProvenanceFreshStateExperiment(DOWIN_CALIBRATION_RUNS);
-    expect(catalog.verdict).toBe('PENDING_OPERATOR_RUN');
+    expect(catalog.verdict).toBe('AMBIGUOUS');
+    expect(catalog.note).toContain('cannot claim repeatability');
 
     const originalRun: DowinCalibrationRun = {
       ...DOWIN_ASDD_BASELINE_REPRODUCTION_RUN,

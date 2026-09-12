@@ -2,12 +2,12 @@
 
 | Field | Value |
 |-------|--------|
-| Date | 10–11 September 2026 |
+| Date | 10–12 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
 | Origin HEAD | `056f100` — `FP-024C: classify BASELINE_REPRODUCTION_RUN as REPRODUCED` |
-| Prior local HEAD | `332914f` — `audit: record FP-024C.1 state provenance checkpoint` (4 commits ahead of origin) |
-| This checkpoint commits | `7f602e9` harden; `5f7589c` intake; `184fcf3` tests; this audit commit |
-| Gate | ⏸ **PENDING_OPERATOR_RUN** |
+| Prior local HEAD | `332914f` — `audit: record FP-024C.1 state provenance checkpoint` |
+| Fresh A ingest | 12 September 2026 — valid newly solved package after failed Saw=5 pre-run |
+| Gate | ⏸ **AMBIGUOUS** / **PENDING_MORE_FRESH_RUNS** (Fresh A measured; B/C not started) |
 | Physical-length score | **Unchanged at 6.0/10** |
 | PR #32 | Draft / **DO NOT MERGE** |
 
@@ -17,7 +17,7 @@
 
 ```
 FP-024C ⏸ STATE PROVENANCE INVESTIGATION
-FP-024C.1 PENDING_OPERATOR_RUN
+FP-024C.1 AMBIGUOUS / PENDING_MORE_FRESH_RUNS
 
 Test 2 packed/machine:
 ✅ PROVEN — fixture-specific only
@@ -32,14 +32,20 @@ BASELINE_RESET_VALIDATION:
 ❌ topology REPRODUCTION_FAILED
 ✅ machine-length signature recovered
 
+Failed pre-run (2026-09-12):
+PRE_RUN_ENVIRONMENT_EVIDENCE only
+Saw 5 — NOT Fresh A — no project — no solve
+
 Fresh A:
-PENDING_OPERATOR_RUN
+MEASURED / NEWLY_SOLVED
+topology OTHER vs 1B and vs later/reset
+one run cannot claim repeatability
 
 Fresh B:
-PENDING_OPERATOR_RUN
+CLOSED (not started)
 
 Fresh C:
-PENDING_OPERATOR_RUN
+CLOSED (not started)
 
 90° CONTROL_FIXTURE:
 GATED
@@ -58,7 +64,7 @@ FP-024C.1 answers one question:
 
 > **Why can identical visible geometry/settings produce different optimization remainder topology?**
 
-No licensed DoWin Fresh A/B/C package was ingested. Schema, ingest gate, comparators, tests, and pending templates are in place. Millimetres and SHA-256 values were not fabricated.
+Fresh A is ingested as one newly solved observation. Catalog classifier: **AMBIGUOUS** (`cannot claim repeatability`). This is **not** `PERSISTED_STATE_EFFECT_PROVEN`, **not** `ALTERNATIVE_OPTIMIZER_SOLUTION`, **not** `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING`.
 
 This audit does **not** claim an ALMONA source finding explains DoWin internals.
 
@@ -144,9 +150,184 @@ Clear Screen on `asdd` is not freshness.
 
 ---
 
+## Failed pre-run (PRE_RUN_ENVIRONMENT_EVIDENCE — not Fresh A)
+
+Correctly stopped before project creation / solve. Live General Settings showed **Saw Thickness = 5** (required 4). Do **not** reuse as Fresh A. Do **not** ingest as a solve. Do **not** assign an optimizer topology verdict.
+
+| Artifact | SHA-256 |
+|----------|---------|
+| Start screenshot | `0cc6657cdf8a556f856e1e110d4b66d41c6d0ad787c595456fb73894dd89c4f9` |
+| Settings screenshot (Saw 5) | `ad9cbc0d1dc6a883813babca48278564ebadab281e509cb2b955549ed54fa488` |
+| Stock management screenshot | `5b5321c03b2b468c4ef5b750c325d202ed63b18d23f1e9c938ccc630a375bc4e` |
+
+As-found warehouse cards (not modified; ORTA qty 0 left as-found):
+
+| Profile | Length | Qty |
+|---------|--------|-----|
+| Deceuninck-KASA-70 | 6000 | 14 |
+| Deceuninck-KANAT-70 | 6000 | 98 |
+| Deceuninck-ORTA-KAYIT-70 | 6500 | **0** |
+| Deceuninck-CITA-20 | 6500 | 48 |
+| Deceuninck-DESTEK-SACI-2.0MM | 6500 | 15 |
+| Deceuninck-KOSE-PLASTIK-01 | 6500 | 50 |
+| Metal corner row (name truncated) | 6500 | 100 |
+
+Offcut/remnant state at pre-run: **UNPROVEN**. Existing `asdd`/`asdasd` were not opened.
+
+---
+
+## Fresh A — valid newly solved package (2026-09-12 22:00 UTC+3)
+
+Settings restored **Saw 5 → 4**, Save All Changes, left and re-entered General Settings. Persistence proven:
+
+- Welding Waste **3**
+- Saw Thickness **4**
+- Trim Cut **0**
+- Sash Offset **7**
+- Glazing Clearance **2.5**
+- Min offcut **500**
+- Mullion Offset **0**
+- DC-600 checked; **DC-550 SKH also globally enabled**
+
+Fresh A settings screenshot SHA-256: `571dc804d0ec43d56969fa3d41d0eb482fd4bffb0e1b96eabf8034bdd2d7f6e9`
+
+Stock was **not** modified. ORTA qty 0 did **not** block solve (hidden input: optimizer still used a 6500 ORTA bar remaining 5080).
+
+### Identities (exposed only)
+
+| Field | Value |
+|-------|--------|
+| Project name | `FP024C1_FRESH_A` |
+| Project list order | `100002` (list UI) |
+| Design Preview Order No | `10002` (ingested `projectId`; list `100002` recorded as a discrepancy, not invented UUID) |
+| Customer | `sdf` / Customer Code `1000002` |
+| Design | `FRESH_A` — 1000×1500, Deceuninck 70'lik PVC Sistemi, double sash, quantity 1 |
+| Production plan | `FRESH_A_PLAN`, designs 1, date 9/12/2026, quantity 1 |
+| Optimization history before send | red X (not previously solved) |
+| `optimizationResultId` | `OptimizationReport_20260912_215949` |
+| `optimizationHistoryId` | `null` (not exposed) |
+| `solveDisposition` | `NEWLY_SOLVED` |
+| Solve timestamp | `2026-09-12T19:00:00.000Z` (PDF 12.09.2026 22:00 UTC+3) |
+| Duration / bars / yield | 0.35 s / 6 bars / 54.8% / total offcut 16819 mm |
+| Algorithm / seed / optimizer version | `null` |
+| Production approval | **not** performed |
+
+`asdd` / `asdasd` were not opened. Clear Screen was not used as freshness.
+
+### Artifact SHA-256 (licensed files not committed)
+
+| Artifact | SHA-256 |
+|----------|---------|
+| General Settings (Fresh A source) | `571dc804d0ec43d56969fa3d41d0eb482fd4bffb0e1b96eabf8034bdd2d7f6e9` |
+| Design Preview PDF | `989304b59ca87aa66362f636ad197a7e4ca50b13798635564eda9f0bf077ba88` |
+| Labels / Assembly PDF | `ce6e5fa5f654ef1f24ef0b0ac429352edd36746f2fde658dcdc2e11a1e34ff41` |
+| Optimization Report PDF | `d9239261a96962d04569f1fcc6a4b4ef0ab7ea0b262c934c3f48d93d59228b13` |
+| DC-600 `.dw` | `7c468479c2e1d87b268e38090d7c77faba6a0f59886bd28704a8af3e107bf34c` |
+| Design created screenshot | `7e494ad4a7c8a33663aed1d1b5525018a3ba72a7ecabebad0522f93f1efc60f0` |
+| Plan saved screenshot | `41e56493d73ecb5ea17060a4a2eff99ded412697876914a9aaed7dce28e10d3c` |
+| Pre-run Optimization screenshot | `7487387c78cfb47901426e31e4224bfdaef1aef3604ac73c7191f61a5d90e609` |
+
+### Required-parts (packed, pre-run; IDENTICAL to original asdd packed list)
+
+KASA H 1003 ×2 45/45; KASA V 1503 ×2 45/45; ORTA 1416 ×1 90/90; KANAT H 454 ×4 45/45; KANAT V 1433 ×4 45/45; CITA H 334 ×4 45/45; CITA V 1313 ×4 45/45. Total 21 pieces / 20564 mm.
+
+Nominal (Design Preview): KASA H 1000, KASA V 1500, KANAT H 451, KANAT V 1430, ORTA 1416, CITA H 331, CITA V 1310.
+
+Fingerprint: `requiredPartsSnapshotFromPieces` of golden asdd rows (same packed/angles/qty).
+
+SHA-256 (canonical optimizer-input fingerprints):
+
+| Axis | SHA-256 |
+|------|---------|
+| Geometry | `fa7c2c6bd216d3cf5e290e70b3e76b9d2d3dcabced119c36e2cbdbe533d8a1fd` |
+| Required-parts | `9160358a3f42cb6275e17cde14877c4df232e93efbd1911cd91ae01f9279dd86` |
+| Settings | `ced7db453ae44a277cd5a874f7c8aaf102b8df6b4130982635a552721e4f63a5` |
+| Optimizer stock | `b1901a7f8d94844f19887a811762f414f5f4fea491c2b06d757b1862e1f1da85` |
+| Offcut/remnant (`[]` ingest-gate hash) | `646b8805113090ae522d2194aecc70d6937041b1ec51e1737e33853e931145e6` — operator axis still **UNPROVEN** |
+| Topology (assignment signature) | `fac3b067816900c0413fd14e1a90b40d86e8e5baf88ee9ab0fd1928bd79c897d` |
+
+### Optimizer stock (Optimization screen before Run — authority)
+
+| Profile | Length | Qty | Ordinal |
+|---------|--------|-----|---------|
+| Deceuninck-KOSE-METAL-05 | 6500 | 100 | 0 |
+| Deceuninck-KOSE-PLASTIK-01 | 6500 | 50 | 1 |
+| Deceuninck-DESTEK-SACI-2.0MM | 6500 | 15 | 2 |
+| Deceuninck-CITA-20 | 6500 | 48 | 3 |
+| Deceuninck-ORTA-KAYIT-70 | 6500 | **0** | 4 |
+| Deceuninck-KANAT-70 | 6000 | 98 | 5 |
+| Deceuninck-KASA-70 | 6000 | 14 | 6 |
+
+Warehouse cards ≠ used-bar 1B helper (`stockSnapshotFromBars`). Optimizer-offered stock is authority for this experiment.
+
+### Offcut / remnant
+
+Dedicated remnant/offcut list **not visible**. `offcutRemnantSnapshot = []` is ingest-gate form only. Operator axis: **UNPROVEN**. Do not convert “not visible” to “none”.
+
+### Machine
+
+Export Select Machine: **DC-600 selected**. DC-550 SKH also listed/enabled globally. Not treated as automatically identical concepts.
+
+### Length layers
+
+**NOMINAL:** KASA H 1000, KASA V 1500, KANAT H 451, KANAT V 1430, ORTA 1416, CITA H 331, CITA V 1310
+
+**PACKED:** KASA H 1003, KASA V 1503, KANAT H 454, KANAT V 1433, ORTA 1416, CITA H 334, CITA V 1313
+
+**MACHINE (DC-600 Table1 LENGTH):** KANAT V 1433 ×4, KANAT H 454 ×4, KASA H 1003 ×2, KASA V 1503 ×2, ORTA 1416 ×1, CITA **null** (not in Table1; 13 rows)
+
+### Bar-by-bar topology
+
+| Ordinal | Profile | Stock | Packed sequence | Remaining | Yield |
+|---------|---------|-------|-----------------|-----------|-------|
+| 0 | Deceuninck-CITA-20 | 6500 | 334, 1313, 334, 1313, 1313, 334, 1313 | 206.4 | 96.8% |
+| 1 | Deceuninck-CITA-20 | 6500 | 334 | 6160.3 | 5.2% |
+| 2 | Deceuninck-KANAT-70 | 6000 | 1433 ×4 | 245.4 | 95.9% |
+| 3 | Deceuninck-KANAT-70 | 6000 | 454 ×4 | 4161.4 | 30.6% |
+| 4 | Deceuninck-KASA-70 | 6000 | 1003, 1003, 1503, 1503 | 965.4 | 83.9% |
+| 5 | Deceuninck-ORTA-KAYIT-70 | 6500 | 1416 | 5080.0 | 21.8% |
+
+`identifyAsddAssignmentTopology` = **OTHER**.
+
+Fresh A vs 1B (KASA 965 / KANAT 2203 / ORTA 5080 / CITA 206 / 6160): **DIFFERENT** (KANAT 245.4 / 4161.4, not 2203).
+
+Fresh A vs later/reset (KASA 960 / KANAT 2198 / ORTA 5079 / CITA 3178×2): **DIFFERENT**.
+
+Do **not** call this 1B reproduced. Do **not** call this Test 3 topology.
+
+### Input-equivalence vs original 1B helper (`compareOptimizerInputFingerprints`)
+
+| Axis | Verdict | Note |
+|------|---------|------|
+| Geometry | IDENTICAL | 1000×1500 Deceuninck 70 |
+| Required-parts | IDENTICAL | packed/angles/qty match asdd golden rows |
+| Settings | IDENTICAL | Weld 3 / Saw 4 / Trim 0 / sash 7 / glazing 2.5 / remnant 500 / DC-600 |
+| Machine (this export) | IDENTICAL field | DC-600 selected; DC-550 SKH also globally enabled (recorded separately) |
+| Stock | DIFFERENT | optimizer cards (accessories + ORTA qty 0) vs 1B used-bar identity counts |
+| Offcut/remnant | UNPROVEN | no remnant UI; empty ingest list is not proven-none |
+| Overall (comparator, empty offcut hashed) | DIFFERENT | stock fingerprint mismatch |
+| Overall (fail-closed operator rule: missing remnant UI) | UNPROVEN | missing offcut evidence cannot yield IDENTICAL |
+
+### Hidden input findings
+
+- ORTA warehouse/optimizer qty **0** yet a 6500 ORTA bar was used (remaining 5080). Not `FRESH_A_BLOCKED_BY_CURRENT_STOCK_STATE`. Not optimizer nondeterminism.
+- DC-550 SKH globally enabled in addition to DC-600 selected for this export.
+- Project list order `100002` vs Design Preview Order No `10002`.
+- Accessory profiles offered to the optimizer (KOSE-METAL, KOSE-PLASTIK, DESTEK-SACI).
+- Dedicated offcut/remnant UI absent.
+- Failed pre-run Saw=5 is **not** this solve’s settings.
+
+### Phase classification
+
+Allowed after Fresh A only: `PENDING_MORE_FRESH_RUNS` / `HIDDEN_INPUT_DIFFERENCE` / `AMBIGUOUS` / `INVALID_FRESH_RUN`.
+
+Recorded: catalog **AMBIGUOUS** (one newly solved run cannot claim repeatability). Stock vs 1B helper is a concrete fingerprint difference, recorded as a hidden-input **finding**, not as a global provenance verdict. Fresh B/C required before global provenance claims.
+
+---
+
 ## Fresh A/B/C operator package required
 
-Catalog templates: `FP024C1_FRESH_A`, `FP024C1_FRESH_B`, `FP024C1_FRESH_C` — all `PENDING_OPERATOR_RUN`.
+Catalog: `FP024C1_FRESH_A` **MEASURED**; `FP024C1_FRESH_B` and `FP024C1_FRESH_C` remain `PENDING_OPERATOR_RUN`. Do not start B/C in this checkpoint.
 
 Each run must supply:
 
@@ -188,8 +369,7 @@ One fresh run must never be described as consistent.
 | `npx vitest run src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | Pass |
 | Combined above | 4 files, **65 tests passed** |
 | `npm run build` | Pass (`vite build --mode production`) |
-| Formula freeze this work vs HEAD (`332914f`) | No diff in `barPackAccounting.ts`, `UPVCCuttingEngine.ts`, `ManufacturingSettings.ts`, `src/lib/fabricator/production` |
-| Historical branch diffs vs `main` | ManufacturingSettings snapshot helpers + CutSheet layer fields + machine-export preflight remain from earlier FP-024A/C diagnostic work — not new formula mutation |
+| Formula freeze this ingest | No diff in `barPackAccounting.ts`, `UPVCCuttingEngine.ts`, `ManufacturingSettings.ts`, `src/lib/fabricator/production` |
 | Licensed artifacts | Excluded (SHA-256 only; PDFs/MDB/DW/screenshots not committed) |
 
 No evidence code mutates `ManufacturingSettings`, `barPackAccounting`, or production Cut lengths. No runtime `+3` / `+7` constants were introduced.
@@ -198,7 +378,7 @@ No evidence code mutates `ManufacturingSettings`, `barPackAccounting`, or produc
 
 ## Remaining operator evidence
 
-1. Fresh A: new project/design, new production plan, newly solved result, same visible geometry/settings/stock, full provenance package + bar-assignment transcription.
-2. Fresh B, then Fresh C. One run cannot claim consistency.
-3. Do not run the 90° control until an explicit provenance verdict authorizes continuation.
-4. Do not merge PR #32.
+1. Fresh A is ingested. Do **not** start Fresh B or Fresh C in this checkpoint.
+2. Do not run the 90° control until an explicit provenance verdict authorizes continuation.
+3. Do not merge PR #32.
+4. Do not change production formulas. Physical-length score stays 6.0/10.

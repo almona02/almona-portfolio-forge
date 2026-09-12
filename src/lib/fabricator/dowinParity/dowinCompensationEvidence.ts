@@ -46,6 +46,8 @@ import {
   isOptimizerProvenanceComplete,
   missingOptimizerProvenanceFields,
   overallUtilizationPercent,
+  requiredPartsSnapshotFromPieces,
+  settingsSnapshotFromObserved,
   solveDispositionOf,
   topologyFingerprint,
   topologySignatureFromBars,
@@ -982,17 +984,171 @@ export const DOWIN_ASDD_BASELINE_RESET_RUN: DowinCalibrationRun = {
   topologyVerdict: 'REPRODUCTION_FAILED',
 };
 
-export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
-  pendingTemplate(
-    'FP024C1_FRESH_A',
-    'optimizationStateProvenance',
-    {
-      field: null,
-      instructedToMm: null,
-      note: 'FP-024C.1 Fresh A: same geometry + Weld 3 / Saw 4 / Trim 0 + same stock + fresh project/design/plan/result. Newly solved. Not Clear Screen. Compare assignment signatures. PENDING_OPERATOR_RUN.',
+export const DOWIN_FP024C1_FRESH_A_BARS: readonly ExternalBarPattern[] = [
+  {
+    id: 'fresh-a-bead-cita-6500-7pc',
+    profileCode: 'Deceuninck-CITA-20',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: [
+      'asdd.Left.Bead.Bottom',
+      'asdd.Left.Bead.Left',
+      'asdd.Left.Bead.Top',
+      'asdd.Left.Bead.Right',
+      'asdd.Right.Bead.Left',
+      'asdd.Right.Bead.Top',
+      'asdd.Right.Bead.Right',
+    ],
+    packedSegmentMm: [334, 1313, 334, 1313, 1313, 334, 1313],
+    remainingMm: 206.4,
+    reportedYieldPercent: 96.8,
+  },
+  {
+    id: 'fresh-a-bead-cita-6500-1pc',
+    profileCode: 'Deceuninck-CITA-20',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: ['asdd.Right.Bead.Bottom'],
+    packedSegmentMm: [334],
+    remainingMm: 6160.3,
+    reportedYieldPercent: 5.2,
+  },
+  {
+    id: 'fresh-a-sash-kanat-6000-verticals',
+    profileCode: 'Deceuninck-KANAT-70',
+    stockLengthMm: 6000,
+    applicationCount: 1,
+    pieceExternalIds: [
+      'asdd.Left.Sash.Left',
+      'asdd.Left.Sash.Right',
+      'asdd.Right.Sash.Left',
+      'asdd.Right.Sash.Right',
+    ],
+    packedSegmentMm: [1433, 1433, 1433, 1433],
+    remainingMm: 245.4,
+    reportedYieldPercent: 95.9,
+  },
+  {
+    id: 'fresh-a-sash-kanat-6000-horizontals',
+    profileCode: 'Deceuninck-KANAT-70',
+    stockLengthMm: 6000,
+    applicationCount: 1,
+    pieceExternalIds: [
+      'asdd.Left.Sash.Top',
+      'asdd.Left.Sash.Bottom',
+      'asdd.Right.Sash.Top',
+      'asdd.Right.Sash.Bottom',
+    ],
+    packedSegmentMm: [454, 454, 454, 454],
+    remainingMm: 4161.4,
+    reportedYieldPercent: 30.6,
+  },
+  {
+    id: 'fresh-a-frame-kasa-6000',
+    profileCode: 'Deceuninck-KASA-70',
+    stockLengthMm: 6000,
+    applicationCount: 1,
+    pieceExternalIds: [
+      'asdd.Frame.Top',
+      'asdd.Frame.Bottom',
+      'asdd.Frame.Left',
+      'asdd.Frame.Right',
+    ],
+    packedSegmentMm: [1003, 1003, 1503, 1503],
+    remainingMm: 965.4,
+    reportedYieldPercent: 83.9,
+  },
+  {
+    id: 'fresh-a-mullion-orta-6500',
+    profileCode: 'Deceuninck-ORTA-KAYIT-70',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: ['asdd.Mullion.Vertical'],
+    packedSegmentMm: [1416],
+    remainingMm: 5080,
+    reportedYieldPercent: 21.8,
+  },
+];
+
+/** Optimizer Stock Items before Run — warehouse cards offered to the solver, not used-bar counts. */
+export const DOWIN_FP024C1_FRESH_A_OPTIMIZER_STOCK = [
+  { profileCode: 'Deceuninck-KOSE-METAL-05', stockLengthMm: 6500, ordinal: 0, quantity: 100 },
+  { profileCode: 'Deceuninck-KOSE-PLASTIK-01', stockLengthMm: 6500, ordinal: 1, quantity: 50 },
+  { profileCode: 'Deceuninck-DESTEK-SACI-2.0MM', stockLengthMm: 6500, ordinal: 2, quantity: 15 },
+  { profileCode: 'Deceuninck-CITA-20', stockLengthMm: 6500, ordinal: 3, quantity: 48 },
+  { profileCode: 'Deceuninck-ORTA-KAYIT-70', stockLengthMm: 6500, ordinal: 4, quantity: 0 },
+  { profileCode: 'Deceuninck-KANAT-70', stockLengthMm: 6000, ordinal: 5, quantity: 98 },
+  { profileCode: 'Deceuninck-KASA-70', stockLengthMm: 6000, ordinal: 6, quantity: 14 },
+] as const;
+
+export const DOWIN_FP024C1_FRESH_A_RUN: DowinCalibrationRun = {
+  fixtureId: 'FP024C1_FRESH_A',
+  parentFixtureId: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.fixtureId,
+  runKind: 'OPTIMIZATION_STATE_PROVENANCE_AUDIT',
+  isolationVariable: 'optimizationStateProvenance',
+  status: 'MEASURED',
+  designName: 'FRESH_A',
+  profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
+  widthMm: 1000,
+  heightMm: 1500,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  observedSettings: { ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings },
+  intendedIsolation: {
+    field: null,
+    instructedToMm: null,
+    note: 'FP-024C.1 Fresh A newly solved. Weld 3 / Saw 4 / Trim 0 persisted. Project FP024C1_FRESH_A / design FRESH_A / plan FRESH_A_PLAN. Not asdd, not Clear Screen.',
+  },
+  changedSetting: null,
+  pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
+  bars: DOWIN_FP024C1_FRESH_A_BARS,
+  provenance:
+    'FP024C1_FRESH_A 2026-09-12 22:00. Failed pre-run (Saw 5) was not ingested. Settings restored Saw 5→4 and re-entered (screenshot SHA-256 571dc804d0ec43d56969fa3d41d0eb482fd4bffb0e1b96eabf8034bdd2d7f6e9). New project FP024C1_FRESH_A, design FRESH_A 1000×1500 Deceuninck 70 double sash, plan FRESH_A_PLAN qty 1. Optimization red-X before send. NEWLY_SOLVED 0.35s, 6 bars, yield 54.8%, offcut 16819 mm. Unplaced empty. No production approval. DC-600 selected for export (DC-550 SKH also globally enabled). Optimizer Stock Items included ORTA-KAYIT-70 6500 qty 0 and still placed a 6500 ORTA bar remaining 5080. Dedicated remnant UI not visible; offcutRemnantSnapshot=[] is ingest-gate form, not proven-none. Topology OTHER vs 1B (KANAT 245.4/4161.4 not 2203) and vs later/reset (CITA 206.4/6160.3 and KASA 965.4 not 3178×2 / 960). Licensed files not committed.',
+  reproductionVerdict: 'REPRODUCTION_FAILED',
+  lengthLayerVerdict: 'REPRODUCED',
+  topologyVerdict: 'REPRODUCTION_FAILED',
+  optimizerProvenance: attachOptimizerInputFingerprints({
+    runId: 'FP024C1_FRESH_A',
+    timestampIso: '2026-09-12T19:00:00.000Z',
+    projectId: '10002',
+    designId: 'FRESH_A',
+    productionPlanId: 'FRESH_A_PLAN',
+    optimizationResultId: 'OptimizationReport_20260912_215949',
+    optimizationHistoryId: null,
+    solveKind: 'NEWLY_SOLVED',
+    solveDisposition: 'NEWLY_SOLVED',
+    optimizerId: null,
+    optimizerVersion: null,
+    algorithm: null,
+    seed: null,
+    requiredPartsSnapshotId: 'fresh-a-required-parts-20260912',
+    stockSnapshotId: 'fresh-a-optimizer-stock-items-20260912',
+    offcutRemnantSnapshotId: 'UNPROVEN-no-dedicated-remnant-ui',
+    machineId: 'DC-600',
+    settingsSnapshotSha256:
+      '571dc804d0ec43d56969fa3d41d0eb482fd4bffb0e1b96eabf8034bdd2d7f6e9',
+    settingsSnapshot: settingsSnapshotFromObserved(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings),
+    geometrySnapshot: {
+      widthMm: 1000,
+      heightMm: 1500,
+      profileSystem: "Deceuninck 70'lik PVC Sistemi",
     },
-    'Operator template Fresh A. Newly solved only. Capture snapshots, SHA-256, and bar-by-bar assignment. Do not invent millimetres.'
-  ),
+    requiredPartsSnapshot: requiredPartsSnapshotFromPieces(
+      DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows
+    ),
+    stockSnapshot: [...DOWIN_FP024C1_FRESH_A_OPTIMIZER_STOCK],
+    offcutRemnantSnapshot: [],
+    sourceHashesSha256: {
+      generalSettingsScreenshot:
+        '571dc804d0ec43d56969fa3d41d0eb482fd4bffb0e1b96eabf8034bdd2d7f6e9',
+      designPreview: '989304b59ca87aa66362f636ad197a7e4ca50b13798635564eda9f0bf077ba88',
+      assemblyLabels: 'ce6e5fa5f654ef1f24ef0b0ac429352edd36746f2fde658dcdc2e11a1e34ff41',
+      optimization: 'd9239261a96962d04569f1fcc6a4b4ef0ab7ea0b262c934c3f48d93d59228b13',
+      machineExport: '7c468479c2e1d87b268e38090d7c77faba6a0f59886bd28704a8af3e107bf34c',
+    },
+  }),
+};
+
+export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
   pendingTemplate(
     'FP024C1_FRESH_B',
     'optimizationStateProvenance',
@@ -1032,6 +1188,7 @@ export const DOWIN_CALIBRATION_RUNS: readonly DowinCalibrationRun[] = [
   DOWIN_ASDD_SAW_THICKNESS_5_RUN,
   DOWIN_ASDD_TRIM_CUT_10_RUN,
   DOWIN_ASDD_BASELINE_RESET_RUN,
+  DOWIN_FP024C1_FRESH_A_RUN,
   ...DOWIN_CALIBRATION_TEMPLATES,
 ];
 

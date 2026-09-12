@@ -345,6 +345,17 @@ export const DOWIN_ASDD_SOURCE_HASHES: Record<string, string> = {
     'fc9e4db440ecead864cc7542a3960dfd0c366bcd16fd0648676facc2f4d8f5aa',
   'dowin-reset-general-settings.png':
     '1d4326c1c8d3343fd1362a058a0bd659e6b4a40b5d4ba5a8348216bb14c505a4',
+  /** FP-024C.1 Fresh A 2026-09-12 22:00; licensed files not committed. */
+  'dowin-fp024c1-fresh-a-general-settings.png':
+    '571dc804d0ec43d56969fa3d41d0eb482fd4bffb0e1b96eabf8034bdd2d7f6e9',
+  'OptimizationReport_20260912_215949.pdf':
+    'd9239261a96962d04569f1fcc6a4b4ef0ab7ea0b262c934c3f48d93d59228b13',
+  'OptimizationReport_20260912_215949_Labels.pdf':
+    'ce6e5fa5f654ef1f24ef0b0ac429352edd36746f2fde658dcdc2e11a1e34ff41',
+  'OptimizationReport_20260912_215949_DesignPreview.pdf':
+    '989304b59ca87aa66362f636ad197a7e4ca50b13798635564eda9f0bf077ba88',
+  'FP024C1_FRESH_A_2026.09.12_22.02.dw':
+    '7c468479c2e1d87b268e38090d7c77faba6a0f59886bd28704a8af3e107bf34c',
 };
 
 function piece(

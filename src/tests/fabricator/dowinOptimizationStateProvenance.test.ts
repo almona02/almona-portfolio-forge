@@ -26,6 +26,7 @@ import {
   DOWIN_ASDD_SAW_THICKNESS_5_RUN,
   DOWIN_CALIBRATION_RUNS,
   DOWIN_COMPENSATION_TERM_AUTHORITY,
+  DOWIN_FP024C1_FRESH_A_RUN,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
   buildWeldingWasteIsolationFindings,
@@ -162,7 +163,7 @@ describe('FP-024C.1 optimization state provenance', () => {
     );
     expect(classifyProvenanceFreshStateExperiment([reused]).verdict).toBe('AMBIGUOUS');
     expect(classifyProvenanceFreshStateExperiment(DOWIN_CALIBRATION_RUNS).verdict).toBe(
-      'PENDING_OPERATOR_RUN'
+      'AMBIGUOUS'
     );
   });
 
@@ -494,14 +495,64 @@ describe('FP-024C.1 optimization state provenance', () => {
     expect(assignmentSignaturesEqual(original, regrouped)).toBe(false);
   });
 
-  it('keeps Fresh A/B/C templates pending and does not invent hashes', () => {
+  it('records Fresh A as measured without repeatability claims', () => {
     expect(FP024C1_FRESH_RUN_IDS).toEqual(['FP024C1_FRESH_A', 'FP024C1_FRESH_B', 'FP024C1_FRESH_C']);
-    const pending = DOWIN_CALIBRATION_RUNS.filter((r) =>
+    const fresh = DOWIN_CALIBRATION_RUNS.filter((r) =>
       (FP024C1_FRESH_RUN_IDS as readonly string[]).includes(r.fixtureId)
     );
-    expect(pending).toHaveLength(3);
-    expect(pending.every((r) => r.status === 'PENDING_OPERATOR_RUN')).toBe(true);
-    expect(pending.every((r) => r.optimizerProvenance == null)).toBe(true);
+    expect(fresh).toHaveLength(3);
+    const a = fresh.find((r) => r.fixtureId === 'FP024C1_FRESH_A');
+    expect(a).toBe(DOWIN_FP024C1_FRESH_A_RUN);
+    expect(a?.status).toBe('MEASURED');
+    expect(a?.optimizerProvenance?.solveDisposition).toBe('NEWLY_SOLVED');
+    expect(a?.optimizerProvenance?.projectId).toBe('10002');
+    expect(a?.optimizerProvenance?.designId).toBe('FRESH_A');
+    expect(a?.optimizerProvenance?.productionPlanId).toBe('FRESH_A_PLAN');
+    expect(identifyAsddAssignmentTopology(a!.bars)).toBe('OTHER');
+    expect(identifyAsddAssignmentTopology(DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars)).toBe(
+      'ORIGINAL_1B'
+    );
+    expect(identifyAsddAssignmentTopology(DOWIN_ASDD_BASELINE_RESET_RUN.bars)).toBe('LATER_TEST3_4');
+    expect(
+      assignmentSignaturesEqual(a!.bars, DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars)
+    ).toBe(false);
+    expect(assignmentSignaturesEqual(a!.bars, DOWIN_ASDD_TRIM_CUT_10_BARS)).toBe(false);
+    const oneBEquivalent = asddEquivalentInputProvenance(
+      DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.pieces,
+      DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,
+      DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings
+    );
+    expect(compareOptimizerInputFingerprints(a!.optimizerProvenance, oneBEquivalent)).toBe(
+      'DIFFERENT'
+    );
+    expect(a?.optimizerProvenance?.geometryFingerprint).toBe(oneBEquivalent.geometryFingerprint);
+    expect(a?.optimizerProvenance?.requiredPartsFingerprint).toBe(
+      oneBEquivalent.requiredPartsFingerprint
+    );
+    expect(a?.optimizerProvenance?.settingsFingerprint).toBe(oneBEquivalent.settingsFingerprint);
+    expect(a?.optimizerProvenance?.stockFingerprint).not.toBe(oneBEquivalent.stockFingerprint);
+    expect(a?.optimizerProvenance?.offcutRemnantSnapshotId).toBe(
+      'UNPROVEN-no-dedicated-remnant-ui'
+    );
+    expect(
+      evaluateFreshRunIntake({
+        runId: 'FP024C1_FRESH_A',
+        timestampIso: a!.optimizerProvenance!.timestampIso,
+        observedSettings: a!.observedSettings,
+        widthMm: 1000,
+        heightMm: 1500,
+        profileSystem: a!.profileSystem,
+        provenance: a!.optimizerProvenance,
+        sourceHashes: a!.optimizerProvenance!.sourceHashesSha256 ?? {},
+        freshSlot: 'A',
+        mdbGenerated: true,
+      }).ok
+    ).toBe(true);
+    expect(fresh.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(2);
+    expect(classifyProvenanceFreshStateExperiment(DOWIN_CALIBRATION_RUNS).verdict).toBe(
+      'AMBIGUOUS'
+    );
+    expect(isControlFixtureAuthorized()).toBe(false);
   });
 
   it('excludes timestamp and result IDs from optimizer-input fingerprints', () => {
