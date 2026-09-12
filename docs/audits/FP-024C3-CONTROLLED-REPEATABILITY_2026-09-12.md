@@ -2,12 +2,14 @@
 
 | Field | Value |
 |-------|--------|
-| Date | 12 September 2026 |
+| Date | 12 September 2026, re-baselined 13 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
 | HEAD at start | `243558a` — `audit: trace Fresh A stock mutation provenance` |
+| HEAD at re-baseline | `cb05ab0` |
 | PR #32 | Draft / **DO NOT MERGE** |
 | Question | Do multiple genuinely fresh optimization solves under the same current input state produce the same bar-assignment topology? |
-| Gate | ⏸ **CONTROLLED_REPEATABILITY_IN_PROGRESS** — 0 of 3 controlled runs ingested |
+| Active baseline | **V2** — frozen 12 Sep 23:58:45 +03, `MANUAL_STOCK_CARD_EDIT_CONTAMINATED_V1` |
+| Gate | ⏸ **READY_FOR_RUN_A_ON_BASELINE_V2** — 0 of 3 controlled runs ingested |
 | Physical-length score | **Unchanged at 6.0/10** |
 | Production formulas | **FROZEN** |
 | 90° CONTROL_FIXTURE | **GATED** |
@@ -20,17 +22,28 @@
 FP-024C   ⏸ STATE PROVENANCE INVESTIGATION
 FP-024C.1 PAUSED BY STOCK_STATE_CHANGED
 FP-024C.2 ✅ STOCK MUTATION PROVENANCE AUDIT COMPLETE
-FP-024C.3 ⏸ CONTROLLED_REPEATABILITY_IN_PROGRESS
+FP-024C.3 ⏸ READY_FOR_RUN_A_ON_BASELINE_V2
 
-Controlled baseline:
-FROZEN at current post-Fresh-A warehouse state
+Controlled baseline V1:
+INVALIDATED BEFORE RUN_A — HISTORICAL_ONLY
+reason: MANUAL_STOCK_CARD_EDIT_CONTAMINATED_V1
 
-FP024C3_RUN_A: PENDING_OPERATOR_RUN
-FP024C3_RUN_B: PENDING_OPERATOR_RUN
-FP024C3_RUN_C: PENDING_OPERATOR_RUN
+Controlled baseline V2:
+FROZEN — CITA 46 / KANAT 96 / KASA 13 / ORTA 100
+source hash: c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012
+
+FP024C3_RUN_A: PENDING_OPERATOR_RUN (never created, never solved)
+FP024C3_RUN_B: CLOSED
+FP024C3_RUN_C: CLOSED
 
 Repeatability classification:
 NOT YET CLASSIFIABLE (0 of 3 runs)
+
+ORTA_ZERO_QTY_CONTROL_OBSERVABILITY:
+LOST_BY_MANUAL_STOCK_EDIT
+
+MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED:
+PROVEN FOR OBSERVED PATH
 
 Measured-input repeatability:
 UNPROVEN
@@ -81,23 +94,112 @@ Do not reopen this causal question unless new contrary evidence appears.
 
 ---
 
-## New frozen control baseline
+## Baseline V1 — invalidated before RUN_A (historical evidence only)
 
-The **current** warehouse state is frozen as the FP-024C.3 baseline. Historical 48 / 98 / 14 is evidence, not a restoration target. ORTA is **not** to be replenished.
+V1 froze the post-Fresh-A warehouse state. It was superseded **before any controlled run was created**, so no run was ever solved against it.
+
+| Profile | Length | V1 quantity |
+|---------|--------|-------------|
+| Deceuninck-CITA-20 | 6500 | 46 |
+| Deceuninck-KANAT-70 | 6000 | 96 |
+| Deceuninck-KASA-70 | 6000 | 13 |
+| Deceuninck-ORTA-KAYIT-70 | 6500 | **0** |
+| Deceuninck-KOSE-METAL-05 | 6500 | 100 |
+| Deceuninck-KOSE-PLASTIK-01 | 6500 | 50 |
+| Deceuninck-DESTEK-SACI-2.0MM | 6500 | 15 |
+
+| Field | Value |
+|-------|-------|
+| `baselineVersion` | 1 |
+| `baselineReason` | `POST_FRESH_A_OPTIMIZATION_STOCK_WRITE` |
+| `baselineSourceHash` | `a1881bba3df98e15eb73adf3958a0fcc6d312cbbb1b025e5999f25db0ba8ae31` |
+| `status` | **HISTORICAL_ONLY** |
+| Verified at | 12 Sep 2026 23:24:05 +03 |
+
+V1 must not be used as a comparison target for input equivalence, and must not be restored. `evaluateBaselineEquivalenceClaim(1)` returns `REJECTED_BASELINE_SUPERSEDED`.
+
+---
+
+## Manual stock mutation that invalidated V1
+
+Between the Management Panel opening at **23:57:36** and an independent capture at **23:58:45**, a manual Stock Management card edit raised one quantity:
+
+| Profile | Length | V1 | Observed | Δ |
+|---------|--------|----|----------|---|
+| Deceuninck-ORTA-KAYIT-70 | 6500 | 0 | **100** | **+100** |
+
+All six other cards were unchanged, with no missing and no unexpected rows. Running the observed snapshot through `evaluateControlledStockPostcheck` against V1 returned `STOCK_STATE_MUTATED` with exactly one non-zero delta.
+
+The edit produced **no stock-write log line**; `ExecuteStockUpdateCoreAsync` occurrences stayed at 6. See `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` in the FP-024C.2 audit.
+
+Per protocol the mutation was **not repaired**: ORTA was not returned to 0 by hand. Restoring would itself be a warehouse write, and historical stock is evidence rather than a target.
+
+`FP024C3_RUN_A` was **never created** and **never solved** under either baseline.
+
+---
+
+## Baseline V2 — active frozen control baseline
+
+The current observed warehouse state is frozen as V2. ORTA 100 is now the accepted controlled value, not an anomaly.
 
 | Profile | Length | Frozen quantity |
 |---------|--------|-----------------|
 | Deceuninck-CITA-20 | 6500 | **46** |
 | Deceuninck-KANAT-70 | 6000 | **96** |
 | Deceuninck-KASA-70 | 6000 | **13** |
-| Deceuninck-ORTA-KAYIT-70 | 6500 | **0** |
+| Deceuninck-ORTA-KAYIT-70 | 6500 | **100** |
 | Deceuninck-KOSE-METAL-05 | 6500 | 100 |
 | Deceuninck-KOSE-PLASTIK-01 | 6500 | 50 |
 | Deceuninck-DESTEK-SACI-2.0MM | 6500 | 15 |
 
-Encoded as `FP024C3_FROZEN_WAREHOUSE_BASELINE` in `src/lib/fabricator/dowinParity/optimizerStateProvenance.ts`.
+| Field | Value |
+|-------|-------|
+| `baselineVersion` | 2 |
+| `baselineReason` | `MANUAL_STOCK_CARD_EDIT_CONTAMINATED_V1` |
+| `baselineSourceHash` | `c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012` |
+| `status` | **ACTIVE** |
+| Frozen at | 12 Sep 2026 23:58:45 +03 |
 
-Bound evidence for these quantities: Stock Management screenshot SHA-256 `480646001d0ab21ba4812bb09614db5764c097207f8ec76b16e13a4ec6f46a56` (captured during the blocked Fresh B pre-run). Each controlled run requires its **own** post-run capture; this hash is not reusable as post-run evidence.
+Encoded as `FP024C3_BASELINE_V2` / `FP024C3_FROZEN_WAREHOUSE_BASELINE_V2` in `src/lib/fabricator/dowinParity/optimizerStateProvenance.ts`. `FP024C3_FROZEN_WAREHOUSE_BASELINE` now aliases the **active** snapshot, and `FP024C3_ACTIVE_BASELINE_VERSION` is `2`.
+
+The V2 source hash is a **pre-run** capture and is not reusable as post-run evidence. Each controlled run still requires its own contemporaneous post-run capture.
+
+### Why the experiment survives
+
+A/B/C answer whether repeated fresh solves under the **same current** measured input state produce the same topology. They never needed the historical ORTA-0 state. Under V2 the question is unchanged:
+
+```
+same geometry (1000×1500 Deceuninck 70)
++ same Weld 3 / Saw 4 / Trim 0
++ same machine (DC-600)
++ same required parts
++ same optimizer stock
++ warehouse baseline V2
++ no stock mutation between runs
+= does topology repeat?
+```
+
+---
+
+## Warehouse verification now requires two sources
+
+`verifyWarehouseImmutability` demands **both** checks for every controlled run:
+
+| Source | Role |
+|--------|------|
+| Direct Stock Management quantity comparison | **Authoritative** for detecting drift |
+| Diagnostic log review | **Supplementary** only |
+
+Resulting rules, all covered by tests:
+
+| Situation | Verdict |
+|-----------|---------|
+| UI matches V2, log reviewed, no write logged | `IMMUTABLE_VERIFIED` |
+| UI mismatch, log silent | `STOCK_STATE_MUTATED` — log silence cannot override the UI |
+| UI matches, stock write logged | `STOCK_STATE_MUTATED` — a write occurred |
+| Manual stock-card edit observed | `STOCK_STATE_MUTATED` regardless of the log |
+| UI matches, log not reviewed | `UNPROVEN` — a UI match alone is not verification |
+| UI capture missing or partial | `UNPROVEN` |
 
 ---
 
@@ -115,7 +217,9 @@ Import Remnants
 
 Encoded as `FP024C3_FORBIDDEN_WAREHOUSE_ACTIONS`. If an Update Stock confirmation appears it must be cancelled or closed, never accepted.
 
-After **every** run, Stock Management is reopened immediately and compared to the frozen baseline:
+Added 13 September 2026: **editing a stock card in the Management Panel is equally forbidden**, including any quantity change and any Save on the stock form. That path is unlogged, so it is invisible to the diagnostic log and detectable only by UI capture. It is the mutation that invalidated baseline V1.
+
+After **every** run, Stock Management is reopened immediately and compared to the **active** frozen baseline (V2):
 
 | Postcheck outcome | Meaning |
 |-------------------|---------|
@@ -133,9 +237,11 @@ Three new experiments. These are **not** Fresh B / Fresh C from the previous pro
 
 | Slot | Project | Design | Plan | Status |
 |------|---------|--------|------|--------|
-| `FP024C3_RUN_A` | `FP024C3_RUN_A` | `RUN_A` | `RUN_A_PLAN` | **PENDING_OPERATOR_RUN** |
-| `FP024C3_RUN_B` | `FP024C3_RUN_B` | `RUN_B` | `RUN_B_PLAN` | **PENDING_OPERATOR_RUN** |
-| `FP024C3_RUN_C` | `FP024C3_RUN_C` | `RUN_C` | `RUN_C_PLAN` | **PENDING_OPERATOR_RUN** |
+| `FP024C3_RUN_A` | `FP024C3_RUN_A` | `RUN_A` | `RUN_A_PLAN` | **PENDING_OPERATOR_RUN** — never created, never solved |
+| `FP024C3_RUN_B` | `FP024C3_RUN_B` | `RUN_B` | `RUN_B_PLAN` | **CLOSED** until RUN_A is ingested |
+| `FP024C3_RUN_C` | `FP024C3_RUN_C` | `RUN_C` | `RUN_C_PLAN` | **CLOSED** until RUN_A is ingested |
+
+All three must be solved against baseline **V2**. A run declaring baseline V1 is rejected at intake, and classification returns `BASELINE_SUPERSEDED`.
 
 The old `FP024C1_FRESH_B` remains **INVALID_PRE_RUN / STOCK_STATE_CHANGED** and `FP024C1_FRESH_C` remains closed. All three FP-024C.3 slots are registered in the existing catalog (`DOWIN_CALIBRATION_RUNS`, 13 entries, 6 pending) with empty pieces, empty bars, and `optimizerProvenance = null`. No placeholder topology exists.
 
@@ -288,11 +394,22 @@ These remain observational. Current runs must **not** be classified as historica
 
 ---
 
-## ORTA quantity 0
+## ORTA quantity 0 — observability lost
 
-ORTA remains at quantity 0 and must not be replenished. If the optimizer again offers or packs a 6500 ORTA bar despite warehouse quantity 0, record `WAREHOUSE_QTY_VS_OPTIMIZER_AVAILABILITY_DISCREPANCY` (encoded as `observeWarehouseQtyVsOptimizerAvailability`). If it occurs identically across A/B/C it is a supported repeatable observation. It is **not** a product defect without a separate audit.
+```
+ORTA_ZERO_QTY_CONTROL_OBSERVABILITY = LOST_BY_MANUAL_STOCK_EDIT
+```
 
-Current state: **UNPROVEN** for the controlled runs (no run captured). Previously observed on Fresh A.
+On Fresh A the optimizer packed one 6500 ORTA bar while the warehouse carried ORTA at quantity 0 — recorded as `WAREHOUSE_QTY_VS_OPTIMIZER_AVAILABILITY_DISCREPANCY` via `observeWarehouseQtyVsOptimizerAvailability`. The anomaly is only visible while ORTA sits at 0, so the manual edit to 100 removed it from the active baseline.
+
+| Baseline | Observation with the Fresh A bar set |
+|----------|--------------------------------------|
+| V1 (ORTA 0) | `WAREHOUSE_QTY_VS_OPTIMIZER_AVAILABILITY_DISCREPANCY` — historical only |
+| V2 (ORTA 100) | `NOT_OBSERVED` — not retestable |
+
+This side observation is **historical evidence only** and cannot be reproduced under V2. It must not be recreated by hand: ORTA is not to be set back to 0 and is not to be artificially decremented. If ORTA ever returns to 0 through genuine consumption, the observable returns with it.
+
+This is **not** a blocker for the controlled repeatability experiment. It removes one side observation and nothing else. It also remains **not** a product defect without a separate audit.
 
 ---
 
@@ -302,13 +419,26 @@ Current state: **UNPROVEN** for the controlled runs (no run captured). Previousl
 |-------|--------|
 | `npm run type-check` | **Pass** (`tsc --noEmit`) |
 | `npx vitest run src/tests/fabricator/dowinCompensationReconciliation.test.ts` | **Pass** — 18 tests |
-| `npx vitest run src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | **Pass** — 35 tests (13 new FP-024C.3 cases) |
+| `npx vitest run src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | **Pass** — 40 tests (18 FP-024C.3 cases) |
 | `npx vitest run src/tests/fabricator/dowinPhysicalLengthGolden.pending.test.ts` | **Pass** — 20 tests |
-| `npx vitest run src/tests/constitutional/ManufacturingSettingsContract.test.ts` | **Pass** — 5 tests |
-| Combined | 4 files, **78 tests passed** |
+| `npx vitest run src/tests/fabricator/manufacturingSettingsContract.test.ts` | **Pass** — 15 tests |
+| Combined | 4 files, **93 tests passed** |
 | `npm run build` | **Pass** (`vite build --mode production`) |
 
-New FP-024C.3 coverage: frozen baseline values; postcheck PASS / mutated / partial / remnant-row-added / uncaptured; catalog slots pending and 90° gate closed; refusal to claim repeatability from A or A+B; measured repeatability separated from full determinism; no nondeterminism overclaim while offcuts are unproven; stop on stock movement or warehouse write; reused settings hash and reused result rejected; `HIDDEN_INPUT_DIFFERENCE` on a concrete optimizer-stock difference; fixture-signature match / drift / unproven; ORTA availability observation; and a no-mutation assertion on `resolveManufacturingSettings`.
+FP-024C.3 coverage: frozen baseline values; postcheck PASS / mutated / partial / remnant-row-added / uncaptured; catalog slots pending and 90° gate closed; refusal to claim repeatability from A or A+B; measured repeatability separated from full determinism; no nondeterminism overclaim while offcuts are unproven; stop on stock movement or warehouse write; reused settings hash and reused result rejected; `HIDDEN_INPUT_DIFFERENCE` on a concrete optimizer-stock difference; fixture-signature match / drift / unproven; ORTA availability observation; and a no-mutation assertion on `resolveManufacturingSettings`.
+
+Re-baseline coverage added 13 September 2026:
+
+| Test | Proves |
+|------|--------|
+| baseline V2 is active with ORTA 100 | `FP024C3_FROZEN_WAREHOUSE_BASELINE` aliases V2; `FP024C3_ACTIVE_BASELINE_VERSION === 2` |
+| V1 and V2 are distinct | different reasons, different source hashes, ORTA is the **sole** delta, and cross-comparison is `STOCK_STATE_MUTATED` in both directions |
+| RUN_A cannot claim equivalence to V1 | `evaluateBaselineEquivalenceClaim(1)` is `REJECTED_BASELINE_SUPERSEDED`; intake rejects a V1 run; classification returns `BASELINE_SUPERSEDED` |
+| exact V2 snapshot passes the pre-run gate | `PASS`, and ORTA 100 is the accepted controlled value |
+| any later delta fails the run | ORTA ±1 and a KASA consumption of −1 all return `STOCK_STATE_MUTATED` |
+| log silence cannot override a UI mismatch | UI mismatch with a silent log is still `STOCK_STATE_MUTATED`; a logged write is a mutation even when quantities match; an observed manual card edit is a mutation regardless of the log |
+| both sources are required to proceed | UI match with an unreviewed log is `UNPROVEN`; UI match plus reviewed silent log is `IMMUTABLE_VERIFIED` and permits the triplicate to classify |
+| ORTA-0 observation is historical only | discrepancy under V1, `NOT_OBSERVED` under V2 |
 
 ---
 
@@ -320,11 +450,11 @@ Changes are confined to:
 
 | Path | Role |
 |------|------|
-| `src/lib/fabricator/dowinParity/optimizerStateProvenance.ts` | FP-024C.3 baseline, postcheck, equivalence matrix, classifier, fixture-signature gate, intake gate |
+| `src/lib/fabricator/dowinParity/optimizerStateProvenance.ts` | FP-024C.3 baselines V1/V2, postcheck, two-source immutability check, equivalence matrix, classifier, fixture-signature gate, intake gate |
 | `src/lib/fabricator/dowinParity/dowinCompensationEvidence.ts` | three pending controlled slots, re-exports, 90° gate now also requires the controlled triplicate |
 | `src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | FP-024C.3 test block |
 | `src/tests/fabricator/dowinCompensationReconciliation.test.ts` | catalog counts 10 → 13, pending 3 → 6 |
-| `docs/audits/*` | this audit and the FP-024C.1 update |
+| `docs/audits/*` | this audit, the FP-024C.2 correction, and the FP-024C.1 update |
 
 Test 2 authority is unchanged: Welding Waste affects packed/machine KASA/KANAT in the observed `asdd` fixture only. No generalization.
 
@@ -346,8 +476,11 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 - The three solves require the licensed DoWin application on the operator PC and cannot be generated from this repository.
 - The offcut/remnant axis has no evidence surface, so complete input equivalence can stay `UNPROVEN` even after three valid runs.
 - The exact user-visible trigger of the 22:17:20 warehouse write remains `AMBIGUOUS` from FP-024C.2; the controlled protocol avoids the question rather than answering it.
-- The frozen baseline is bound to a Fresh-B-era stock screenshot. Each run still needs its own contemporaneous post-run capture.
+- The V2 source hash is a pre-run capture. Each run still needs its own contemporaneous post-run capture.
 - Production-plan "approved" versus "optimized" UI flags remain `UNPROVEN` because Production Status is not to be clicked.
+- Baseline V1 was invalidated by a manual stock edit before RUN_A existed. Nothing was measured against V1, so no result was lost — but the ORTA-0 side observation is not recoverable under V2.
+- The manual Stock Management edit path is **unlogged**. Warehouse drift between runs is therefore detectable only by contemporaneous UI capture, which is why the two-source check treats the log as supplementary. An unobserved manual edit between two runs would surface as `STOCK_STATE_MUTATED` at the next capture, not at the moment it happened.
+- `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` is proven for the observed path only and is not generalized to every manual edit surface in DoWin.
 
 ---
 
@@ -355,8 +488,14 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 
 | Item | Status |
 |------|--------|
-| FP024C3_RUN_A / B / C | **PENDING_OPERATOR_RUN** |
+| FP-024C.3 | **READY_FOR_RUN_A_ON_BASELINE_V2** |
+| Controlled baseline | **V2 frozen** — CITA 46 / KANAT 96 / KASA 13 / ORTA 100 |
+| Baseline V1 | **HISTORICAL_ONLY** — invalidated before RUN_A, not a restoration target |
+| FP024C3_RUN_A | **PENDING_OPERATOR_RUN** — awaiting authorization |
+| FP024C3_RUN_B / C | **CLOSED** until RUN_A is ingested |
 | Repeatability verdict | **NOT YET CLASSIFIABLE** |
+| `ORTA_ZERO_QTY_CONTROL_OBSERVABILITY` | **LOST_BY_MANUAL_STOCK_EDIT** |
+| `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` | **PROVEN FOR OBSERVED PATH** |
 | 90° CONTROL_FIXTURE | **GATED** — not to be run during FP-024C.3; the repeatability verdict comes first, then authorization is requested |
 | Physical-length correctness | **6.0/10** |
 | Production formulas | **FROZEN** |

@@ -33,6 +33,12 @@ AMBIGUOUS
 Offcut import:
 NOT_OBSERVED
 
+Manual Stock Management card edit path:
+UNLOGGED — PROVEN FOR OBSERVED PATH (added 13 Sep 2026)
+
+Log silence as proof of warehouse immutability:
+REJECTED (see narrowing below)
+
 Fresh B / Fresh C:
 BLOCKED
 
@@ -52,6 +58,68 @@ DRAFT / DO NOT MERGE
 Do **not** restore warehouse quantities. Current post-Fresh-A stock is forensic evidence.
 
 Do **not** call this optimizer nondeterminism.
+
+---
+
+## Correction added 13 September 2026 — `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED`
+
+This audit originally treated the absence of a stock-update log line as evidence that no
+warehouse mutation had occurred in a given window. That inference is now known to be unsound
+for one proven path.
+
+### What was observed
+
+| Time (+03) | Event | Log evidence |
+|------------|-------|--------------|
+| 23:32:56 | DoWin restarted after operator shutdown | session start entries |
+| 23:57:36 | Management Panel opened | `[RawMaterialsViewModel] [SERVICE_INIT]` and three sibling `SERVICE_INIT` lines |
+| 23:57:36 – 23:58:45 | Manual `Deceuninck-ORTA-KAYIT-70` stock-card quantity edit, 0 → 100, saved | **none** |
+| 23:58:45 | Independent `PrintWindow` capture of Stock Management showed ORTA 6500 ×100 | capture SHA-256 `c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012` |
+
+`ExecuteStockUpdateCoreAsync` occurrences in `app-20260912.log` remained at **6** across the
+edit, and the only lines appended after the watermark were the four `SERVICE_INIT` entries.
+The operator subsequently confirmed the edit.
+
+### Classification
+
+```
+MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED = PROVEN FOR OBSERVED PATH
+```
+
+Wording to use: *observed Stock Management card edit path can mutate quantity without the
+optimization stock-update log event.* This is **not** generalized to every manual edit surface
+in DoWin; only the observed path is proven.
+
+### The two warehouse-write paths behave differently
+
+| Path | Log signature |
+|------|---------------|
+| Optimization ribbon → Update Stock | `[OptimizationViewModel.ExecuteStockUpdateCoreAsync]` plus `N adet RawMaterial kaydı başarıyla güncellendi` |
+| Management Panel → Stock Card edit → Save | **no trace** |
+
+### What FP-024C.2 still proves, and what it no longer proves
+
+Retained, because each rests on a positive log record or a direct UI observation rather than
+on log silence alone:
+
+- The **22:17:20 dedicated optimization stock-update event is directly logged and proven.**
+- **Run Optimization at 21:55:16** had no observed stock mutation at that time, corroborated
+  independently by the post-run UI still showing KASA qty **14**.
+- **PDF export** had no observed mutation.
+- **DC-600 `.dw` export** had no observed mutation.
+- The exact **user trigger of the 22:17:20 write remains AMBIGUOUS**.
+
+Withdrawn as a general rule:
+
+- "No stock-update log line in window *X*, therefore no stock mutation in window *X*." Manual
+  Stock Management edits are a separate, unlogged mutation path and are invisible to that test.
+
+### Consequence for evidence code
+
+`verifyWarehouseImmutability` in `src/lib/fabricator/dowinParity/optimizerStateProvenance.ts`
+now requires **both** a direct Stock Management quantity comparison and a log review. The UI
+comparison is authoritative for detecting drift; the log is supplementary. Log silence can
+neither override a UI mismatch nor substitute for a missing UI capture.
 
 ---
 

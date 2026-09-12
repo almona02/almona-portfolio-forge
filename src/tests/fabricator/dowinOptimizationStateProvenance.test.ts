@@ -53,20 +53,32 @@ import {
   FP024C1_MIN_FRESH_RUNS_FOR_NONDETERMINISM,
 } from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
 import {
+  FP024C3_ACTIVE_BASELINE,
+  FP024C3_ACTIVE_BASELINE_VERSION,
+  FP024C3_BASELINE_V1,
+  FP024C3_BASELINE_V2,
+  FP024C3_CONTROLLED_BASELINES,
   FP024C3_EQUIVALENCE_AXES,
   FP024C3_EXPECTED_PIECE_COUNT,
   FP024C3_FROZEN_WAREHOUSE_BASELINE,
+  FP024C3_FROZEN_WAREHOUSE_BASELINE_V1,
+  FP024C3_FROZEN_WAREHOUSE_BASELINE_V2,
   FP024C3_MEASURED_EQUIVALENCE_AXES,
   FP024C3_REQUIRED_RUN_COUNT,
   FP024C3_RUN_IDS,
+  MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED,
+  ORTA_ZERO_QTY_CONTROL_OBSERVABILITY,
   buildControlledEquivalenceMatrix,
   classifyControlledRepeatability,
+  controlledBaselineOf,
+  evaluateBaselineEquivalenceClaim,
   evaluateControlledFixtureSignature,
   evaluateControlledRunIntake,
   evaluateControlledStockPostcheck,
   fp024c3ControlledRuns,
   isFp024c3ControlledTriplicateComplete,
   observeWarehouseQtyVsOptimizerAvailability,
+  verifyWarehouseImmutability,
   type ControlledRunEvidence,
   type WarehouseStockCard,
 } from '@/lib/fabricator/dowinParity/dowinCompensationEvidence';
@@ -642,6 +654,7 @@ function controlledRun(
     provenance: equivalent({ optimizationResultId: `result-${runId}` }),
     observedWarehouseStock: [...FP024C3_FROZEN_WAREHOUSE_BASELINE],
     offcutRemnantEvidence: 'UNPROVEN',
+    stockWriteLogReview: 'NO_STOCK_WRITE_LOGGED',
     settingsScreenshotSha256: `settings-${runId}`,
     bars: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,
     pieces: CONTROLLED_PIECES,
@@ -656,19 +669,196 @@ function controlledTriplicate(
 }
 
 describe('FP-024C.3 controlled fresh-solve repeatability', () => {
-  it('freezes the current post-Fresh-A warehouse state as the control baseline', () => {
+  it('freezes baseline V2 as the active control baseline with ORTA at 100', () => {
     const quantities = Object.fromEntries(
       FP024C3_FROZEN_WAREHOUSE_BASELINE.map((card) => [card.profileCode, card.quantity])
     );
     expect(quantities['Deceuninck-CITA-20']).toBe(46);
     expect(quantities['Deceuninck-KANAT-70']).toBe(96);
     expect(quantities['Deceuninck-KASA-70']).toBe(13);
-    expect(quantities['Deceuninck-ORTA-KAYIT-70']).toBe(0);
+    expect(quantities['Deceuninck-ORTA-KAYIT-70']).toBe(100);
     expect(quantities['Deceuninck-KOSE-METAL-05']).toBe(100);
     expect(quantities['Deceuninck-KOSE-PLASTIK-01']).toBe(50);
     expect(quantities['Deceuninck-DESTEK-SACI-2.0MM']).toBe(15);
     expect(FP024C3_RUN_IDS).toEqual(['FP024C3_RUN_A', 'FP024C3_RUN_B', 'FP024C3_RUN_C']);
     expect(FP024C3_REQUIRED_RUN_COUNT).toBe(3);
+    expect(FP024C3_ACTIVE_BASELINE_VERSION).toBe(2);
+    expect(FP024C3_ACTIVE_BASELINE).toBe(FP024C3_BASELINE_V2);
+    expect(FP024C3_FROZEN_WAREHOUSE_BASELINE).toBe(FP024C3_FROZEN_WAREHOUSE_BASELINE_V2);
+  });
+
+  it('keeps V1 and V2 distinct, with V1 historical-only and ORTA the sole delta', () => {
+    expect(FP024C3_CONTROLLED_BASELINES.map((b) => b.baselineVersion)).toEqual([1, 2]);
+    expect(FP024C3_BASELINE_V1.status).toBe('HISTORICAL_ONLY');
+    expect(FP024C3_BASELINE_V2.status).toBe('ACTIVE');
+    expect(FP024C3_BASELINE_V1.baselineReason).toBe('POST_FRESH_A_OPTIMIZATION_STOCK_WRITE');
+    expect(FP024C3_BASELINE_V2.baselineReason).toBe('MANUAL_STOCK_CARD_EDIT_CONTAMINATED_V1');
+    expect(FP024C3_BASELINE_V1.baselineSourceHash).toBe(
+      'a1881bba3df98e15eb73adf3958a0fcc6d312cbbb1b025e5999f25db0ba8ae31'
+    );
+    expect(FP024C3_BASELINE_V2.baselineSourceHash).toBe(
+      'c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012'
+    );
+    expect(FP024C3_BASELINE_V1.baselineSourceHash).not.toBe(FP024C3_BASELINE_V2.baselineSourceHash);
+    expect(controlledBaselineOf(1)).toBe(FP024C3_BASELINE_V1);
+    expect(controlledBaselineOf(2)).toBe(FP024C3_BASELINE_V2);
+
+    // V2 differs from V1 on exactly one card: ORTA 0 → 100.
+    const v1 = new Map(
+      FP024C3_FROZEN_WAREHOUSE_BASELINE_V1.map((c) => [`${c.profileCode}|${c.stockLengthMm}`, c])
+    );
+    const drifted = FP024C3_FROZEN_WAREHOUSE_BASELINE_V2.filter(
+      (c) => v1.get(`${c.profileCode}|${c.stockLengthMm}`)?.quantity !== c.quantity
+    );
+    expect(drifted.map((c) => c.profileCode)).toEqual(['Deceuninck-ORTA-KAYIT-70']);
+    expect(v1.get('Deceuninck-ORTA-KAYIT-70|6500')?.quantity).toBe(0);
+    expect(drifted[0].quantity).toBe(100);
+
+    // Cross-comparison is a mutation in both directions; neither is a PASS.
+    expect(
+      evaluateControlledStockPostcheck(
+        [...FP024C3_FROZEN_WAREHOUSE_BASELINE_V1],
+        FP024C3_FROZEN_WAREHOUSE_BASELINE_V2
+      ).verdict
+    ).toBe('STOCK_STATE_MUTATED');
+    expect(
+      evaluateControlledStockPostcheck(
+        [...FP024C3_FROZEN_WAREHOUSE_BASELINE_V2],
+        FP024C3_FROZEN_WAREHOUSE_BASELINE_V1
+      ).verdict
+    ).toBe('STOCK_STATE_MUTATED');
+  });
+
+  it('refuses a RUN_A equivalence claim against superseded baseline V1', () => {
+    expect(evaluateBaselineEquivalenceClaim(2).claim).toBe('ALLOWED');
+    const rejected = evaluateBaselineEquivalenceClaim(1);
+    expect(rejected.claim).toBe('REJECTED_BASELINE_SUPERSEDED');
+    expect(rejected.reason).toContain('HISTORICAL_ONLY');
+    expect(rejected.reason).toContain('MANUAL_STOCK_CARD_EDIT_CONTAMINATED_V1');
+    expect(evaluateBaselineEquivalenceClaim(3).claim).toBe('REJECTED_UNKNOWN_BASELINE');
+
+    const intake = evaluateControlledRunIntake({
+      run: controlledRun('FP024C3_RUN_A', { baselineVersion: 1 }),
+      observedSettings: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.observedSettings,
+      widthMm: 1000,
+      heightMm: 1500,
+      profileSystem: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.profileSystem,
+      sourceHashes: {
+        generalSettingsScreenshot: 'settings-FP024C3_RUN_A',
+        designPreview: 'design-a',
+        assemblyLabels: 'labels-a',
+        optimization: 'report-a',
+        machineExport: 'dw-a',
+      },
+      mdbGenerated: true,
+    });
+    expect(intake.ok).toBe(false);
+    expect(intake.reasons.join(' ')).toContain('Baseline V1 is HISTORICAL_ONLY');
+
+    const classified = classifyControlledRepeatability({
+      runs: controlledTriplicate([{ baselineVersion: 1 }, {}, {}]),
+    });
+    expect(classified.verdict).toBe('BASELINE_SUPERSEDED');
+    expect(classified.baselineVersion).toBe(2);
+    expect(
+      classifyControlledRepeatability({ runs: controlledTriplicate(), baselineVersion: 1 }).verdict
+    ).toBe('BASELINE_SUPERSEDED');
+  });
+
+  it('accepts the exact V2 snapshot and rejects any later delta from it', () => {
+    expect(evaluateControlledStockPostcheck([...FP024C3_FROZEN_WAREHOUSE_BASELINE_V2]).verdict).toBe(
+      'PASS'
+    );
+    // ORTA 100 is now the accepted controlled value, not an anomaly.
+    expect(
+      FP024C3_FROZEN_WAREHOUSE_BASELINE_V2.find(
+        (c) => c.profileCode === 'Deceuninck-ORTA-KAYIT-70'
+      )?.quantity
+    ).toBe(100);
+
+    for (const delta of [-1, 1]) {
+      const moved = FP024C3_FROZEN_WAREHOUSE_BASELINE_V2.map((card) =>
+        card.profileCode === 'Deceuninck-ORTA-KAYIT-70'
+          ? { ...card, quantity: card.quantity + delta }
+          : { ...card }
+      );
+      expect(evaluateControlledStockPostcheck(moved).verdict).toBe('STOCK_STATE_MUTATED');
+    }
+    const consumed = FP024C3_FROZEN_WAREHOUSE_BASELINE_V2.map((card) =>
+      card.profileCode === 'Deceuninck-KASA-70' ? { ...card, quantity: 12 } : { ...card }
+    );
+    const postRun = evaluateControlledStockPostcheck(consumed);
+    expect(postRun.verdict).toBe('STOCK_STATE_MUTATED');
+    expect(
+      postRun.deltas.find((d) => d.profileCode === 'Deceuninck-KASA-70')?.deltaQuantity
+    ).toBe(-1);
+  });
+
+  it('never lets log silence override a UI stock mismatch', () => {
+    const mismatch = FP024C3_FROZEN_WAREHOUSE_BASELINE_V2.map((card) =>
+      card.profileCode === 'Deceuninck-ORTA-KAYIT-70' ? { ...card, quantity: 0 } : { ...card }
+    );
+    // Exactly the FP-024C.3 failure: quantity moved, no stock-write log entry.
+    const silent = verifyWarehouseImmutability({
+      observedStock: mismatch,
+      logReview: 'NO_STOCK_WRITE_LOGGED',
+    });
+    expect(silent.verdict).toBe('STOCK_STATE_MUTATED');
+    expect(silent.uiVerdict).toBe('STOCK_STATE_MUTATED');
+    expect(silent.reasons.join(' ')).toContain('log silence cannot override it');
+
+    // A logged write is a mutation even when quantities currently match.
+    expect(
+      verifyWarehouseImmutability({
+        observedStock: [...FP024C3_FROZEN_WAREHOUSE_BASELINE_V2],
+        logReview: 'STOCK_WRITE_LOGGED',
+      }).verdict
+    ).toBe('STOCK_STATE_MUTATED');
+
+    // An observed manual card edit is a mutation regardless of the log.
+    expect(
+      verifyWarehouseImmutability({
+        observedStock: [...FP024C3_FROZEN_WAREHOUSE_BASELINE_V2],
+        logReview: 'NO_STOCK_WRITE_LOGGED',
+        manualStockCardEditObserved: true,
+      }).verdict
+    ).toBe('STOCK_STATE_MUTATED');
+
+    expect(MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED.classification).toBe('PROVEN_FOR_OBSERVED_PATH');
+    expect(MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED.doesNotGeneralize).toContain('Not generalized');
+  });
+
+  it('requires both sources before a controlled run may proceed', () => {
+    expect(
+      verifyWarehouseImmutability({
+        observedStock: [...FP024C3_FROZEN_WAREHOUSE_BASELINE_V2],
+        logReview: 'NO_STOCK_WRITE_LOGGED',
+      }).verdict
+    ).toBe('IMMUTABLE_VERIFIED');
+
+    // UI match alone is not verification.
+    const unreviewed = verifyWarehouseImmutability({
+      observedStock: [...FP024C3_FROZEN_WAREHOUSE_BASELINE_V2],
+      logReview: 'NOT_REVIEWED',
+    });
+    expect(unreviewed.verdict).toBe('UNPROVEN');
+    expect(unreviewed.uiVerdict).toBe('PASS');
+    expect(unreviewed.reasons.join(' ')).toContain('Both sources are required');
+
+    expect(
+      verifyWarehouseImmutability({ observedStock: null, logReview: 'NO_STOCK_WRITE_LOGGED' })
+        .verdict
+    ).toBe('UNPROVEN');
+
+    const unreviewedTriplicate = classifyControlledRepeatability({
+      runs: controlledTriplicate([{ stockWriteLogReview: 'NOT_REVIEWED' }, {}, {}]),
+    });
+    expect(unreviewedTriplicate.verdict).toBe('AMBIGUOUS');
+    expect(unreviewedTriplicate.note).toContain('log silence alone is not verification');
+
+    const proceeds = classifyControlledRepeatability({ runs: controlledTriplicate() });
+    expect(proceeds.immutability.every((c) => c.verdict === 'IMMUTABLE_VERIFIED')).toBe(true);
+    expect(proceeds.verdict).toBe('MEASURED_INPUT_REPEATABILITY_PROVEN');
   });
 
   it('fails closed on the post-run stock check', () => {
@@ -838,19 +1028,30 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(drift.reasons.join(' ')).toContain('expected packed 1416 mm, captured 1420 mm');
   });
 
-  it('records the ORTA quantity-0 availability discrepancy as an observation', () => {
-    const observed = observeWarehouseQtyVsOptimizerAvailability({
-      warehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE,
+  it('keeps the ORTA quantity-0 availability discrepancy as a V1 historical observation only', () => {
+    // The anomaly is only visible while ORTA sits at 0, i.e. under baseline V1.
+    const historical = observeWarehouseQtyVsOptimizerAvailability({
+      warehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE_V1,
       usedBars: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,
     });
-    expect(observed.observation).toBe('WAREHOUSE_QTY_VS_OPTIMIZER_AVAILABILITY_DISCREPANCY');
-    expect(observed.profileCodes).toContain('Deceuninck-ORTA-KAYIT-70');
+    expect(historical.observation).toBe('WAREHOUSE_QTY_VS_OPTIMIZER_AVAILABILITY_DISCREPANCY');
+    expect(historical.profileCodes).toContain('Deceuninck-ORTA-KAYIT-70');
+
+    // The manual edit removed it from the active baseline. Not retestable.
+    expect(ORTA_ZERO_QTY_CONTROL_OBSERVABILITY).toBe('LOST_BY_MANUAL_STOCK_EDIT');
+    const active = observeWarehouseQtyVsOptimizerAvailability({
+      warehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE_V2,
+      usedBars: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,
+    });
+    expect(active.observation).toBe('NOT_OBSERVED');
+    expect(active.profileCodes).toEqual([]);
+
     expect(
       observeWarehouseQtyVsOptimizerAvailability({ warehouseStock: null, usedBars: null }).observation
     ).toBe('UNPROVEN');
     expect(
       observeWarehouseQtyVsOptimizerAvailability({
-        warehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE.map((card) =>
+        warehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE_V1.map((card) =>
           card.profileCode === 'Deceuninck-ORTA-KAYIT-70' ? { ...card, quantity: 5 } : card
         ),
         usedBars: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.bars,

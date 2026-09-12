@@ -889,12 +889,17 @@ export interface WarehouseStockCard {
   quantity: number;
 }
 
+export type ControlledBaselineVersion = 1 | 2;
+
 /**
- * Frozen FP-024C.3 control baseline = warehouse state after the Fresh A
- * stock write. Historical 48/98/14 is evidence, not a restoration target.
- * ORTA stays at 0.
+ * Baseline V1 = warehouse state after the Fresh A stock write (FP-024C.2,
+ * 22:17:20). Superseded before any controlled run was created, because a
+ * manual Stock Management card edit raised ORTA from 0 to 100.
+ *
+ * HISTORICAL_ONLY. Never a comparison target for a controlled run, and never
+ * a restoration target. Historical 48/98/14 is likewise evidence, not a goal.
  */
-export const FP024C3_FROZEN_WAREHOUSE_BASELINE: readonly WarehouseStockCard[] = [
+export const FP024C3_FROZEN_WAREHOUSE_BASELINE_V1: readonly WarehouseStockCard[] = [
   { profileCode: 'Deceuninck-CITA-20', stockLengthMm: 6500, quantity: 46 },
   { profileCode: 'Deceuninck-DESTEK-SACI-2.0MM', stockLengthMm: 6500, quantity: 15 },
   { profileCode: 'Deceuninck-KANAT-70', stockLengthMm: 6000, quantity: 96 },
@@ -903,6 +908,129 @@ export const FP024C3_FROZEN_WAREHOUSE_BASELINE: readonly WarehouseStockCard[] = 
   { profileCode: 'Deceuninck-KOSE-PLASTIK-01', stockLengthMm: 6500, quantity: 50 },
   { profileCode: 'Deceuninck-ORTA-KAYIT-70', stockLengthMm: 6500, quantity: 0 },
 ];
+
+/**
+ * Baseline V2 = warehouse state observed at 2026-09-12 23:58:45 +03, after the
+ * manual ORTA edit. Only ORTA differs from V1 (0 → 100). This is the active
+ * control baseline for FP024C3_RUN_A/B/C.
+ */
+export const FP024C3_FROZEN_WAREHOUSE_BASELINE_V2: readonly WarehouseStockCard[] = [
+  { profileCode: 'Deceuninck-CITA-20', stockLengthMm: 6500, quantity: 46 },
+  { profileCode: 'Deceuninck-DESTEK-SACI-2.0MM', stockLengthMm: 6500, quantity: 15 },
+  { profileCode: 'Deceuninck-KANAT-70', stockLengthMm: 6000, quantity: 96 },
+  { profileCode: 'Deceuninck-KASA-70', stockLengthMm: 6000, quantity: 13 },
+  { profileCode: 'Deceuninck-KOSE-METAL-05', stockLengthMm: 6500, quantity: 100 },
+  { profileCode: 'Deceuninck-KOSE-PLASTIK-01', stockLengthMm: 6500, quantity: 50 },
+  { profileCode: 'Deceuninck-ORTA-KAYIT-70', stockLengthMm: 6500, quantity: 100 },
+];
+
+export type ControlledBaselineStatus = 'ACTIVE' | 'HISTORICAL_ONLY';
+
+export interface ControlledStockBaseline {
+  baselineVersion: ControlledBaselineVersion;
+  baselineStockSnapshot: readonly WarehouseStockCard[];
+  baselineReason: string;
+  /** SHA-256 of the independent Stock Management capture that froze it. */
+  baselineSourceHash: string | null;
+  status: ControlledBaselineStatus;
+  frozenAtIso: string;
+}
+
+export const FP024C3_BASELINE_V1: ControlledStockBaseline = {
+  baselineVersion: 1,
+  baselineStockSnapshot: FP024C3_FROZEN_WAREHOUSE_BASELINE_V1,
+  baselineReason: 'POST_FRESH_A_OPTIMIZATION_STOCK_WRITE',
+  baselineSourceHash: 'a1881bba3df98e15eb73adf3958a0fcc6d312cbbb1b025e5999f25db0ba8ae31',
+  status: 'HISTORICAL_ONLY',
+  frozenAtIso: '2026-09-12T23:24:05+03:00',
+};
+
+export const FP024C3_BASELINE_V2: ControlledStockBaseline = {
+  baselineVersion: 2,
+  baselineStockSnapshot: FP024C3_FROZEN_WAREHOUSE_BASELINE_V2,
+  baselineReason: 'MANUAL_STOCK_CARD_EDIT_CONTAMINATED_V1',
+  baselineSourceHash: 'c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012',
+  status: 'ACTIVE',
+  frozenAtIso: '2026-09-12T23:58:45+03:00',
+};
+
+export const FP024C3_CONTROLLED_BASELINES: readonly ControlledStockBaseline[] = [
+  FP024C3_BASELINE_V1,
+  FP024C3_BASELINE_V2,
+];
+
+export const FP024C3_ACTIVE_BASELINE_VERSION: ControlledBaselineVersion = 2;
+
+export const FP024C3_ACTIVE_BASELINE: ControlledStockBaseline = FP024C3_BASELINE_V2;
+
+/** Always the ACTIVE snapshot. Read V1 explicitly when you mean history. */
+export const FP024C3_FROZEN_WAREHOUSE_BASELINE: readonly WarehouseStockCard[] =
+  FP024C3_ACTIVE_BASELINE.baselineStockSnapshot;
+
+export function controlledBaselineOf(
+  version: ControlledBaselineVersion
+): ControlledStockBaseline | null {
+  return FP024C3_CONTROLLED_BASELINES.find((b) => b.baselineVersion === version) ?? null;
+}
+
+export type BaselineEquivalenceClaim =
+  | 'ALLOWED'
+  | 'REJECTED_BASELINE_SUPERSEDED'
+  | 'REJECTED_UNKNOWN_BASELINE';
+
+/**
+ * A controlled run may only claim input equivalence against the ACTIVE
+ * baseline. Once V2 is active, a V1 comparison is a category error: the two
+ * snapshots describe different warehouse states.
+ */
+export function evaluateBaselineEquivalenceClaim(
+  claimedVersion: number,
+  activeVersion: ControlledBaselineVersion = FP024C3_ACTIVE_BASELINE_VERSION
+): { claim: BaselineEquivalenceClaim; reason: string } {
+  const known = FP024C3_CONTROLLED_BASELINES.find((b) => b.baselineVersion === claimedVersion);
+  if (!known) {
+    return {
+      claim: 'REJECTED_UNKNOWN_BASELINE',
+      reason: `Baseline version ${claimedVersion} is not a frozen FP-024C.3 baseline.`,
+    };
+  }
+  if (known.baselineVersion !== activeVersion) {
+    const active = FP024C3_CONTROLLED_BASELINES.find((b) => b.baselineVersion === activeVersion);
+    return {
+      claim: 'REJECTED_BASELINE_SUPERSEDED',
+      reason: `Baseline V${known.baselineVersion} is ${known.status}; it was frozen for ${known.baselineReason} and superseded by V${activeVersion} for ${active?.baselineReason ?? 'an unrecorded reason'}. Controlled runs compare against V${activeVersion} only. V${known.baselineVersion} remains historical evidence.`,
+    };
+  }
+  return { claim: 'ALLOWED', reason: `Baseline V${activeVersion} is ACTIVE.` };
+}
+
+/**
+ * The ORTA anomaly (warehouse quantity 0, yet the optimizer packed one 6500
+ * ORTA bar) is only observable while ORTA sits at 0. The manual edit removed
+ * that. It must not be recreated by hand or by artificial decrement.
+ */
+export const ORTA_ZERO_QTY_CONTROL_OBSERVABILITY = 'LOST_BY_MANUAL_STOCK_EDIT' as const;
+
+/**
+ * Proven for the observed path only: a Management Panel stock-card edit can
+ * mutate warehouse quantity without emitting the optimization stock-update log
+ * event that FP-024C.2 relied on. Log silence is therefore not proof of
+ * warehouse immutability.
+ */
+export const MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED = {
+  id: 'MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED',
+  classification: 'PROVEN_FOR_OBSERVED_PATH',
+  statement:
+    'Observed Stock Management card edit path can mutate quantity without the optimization stock-update log event.',
+  evidence: [
+    'Management Panel opened at 23:57:36 (SERVICE_INIT entries only).',
+    'A manual Deceuninck-ORTA-KAYIT-70 quantity edit occurred afterward.',
+    'Independent capture at 23:58:45 showed ORTA 6500 ×100 against a frozen baseline of 0.',
+    'No stock-write log line appeared; ExecuteStockUpdateCoreAsync entries stayed at 6.',
+  ],
+  doesNotGeneralize:
+    'Not generalized to every manual edit path in DoWin. Only the observed Stock Management card edit is proven.',
+} as const;
 
 /** Warehouse-write actions that invalidate FP-024C.3 if invoked. */
 export const FP024C3_FORBIDDEN_WAREHOUSE_ACTIONS = [
@@ -992,6 +1120,81 @@ export function evaluateControlledStockPostcheck(
 }
 
 /**
+ * Diagnostic-log review outcome for the stock-write window of a run. Kept as a
+ * separate axis from the UI comparison so neither can silently stand in for
+ * the other.
+ */
+export type StockWriteLogReview =
+  | 'NO_STOCK_WRITE_LOGGED'
+  | 'STOCK_WRITE_LOGGED'
+  | 'NOT_REVIEWED';
+
+export type WarehouseImmutabilityVerdict =
+  | 'IMMUTABLE_VERIFIED'
+  | 'STOCK_STATE_MUTATED'
+  | 'UNPROVEN';
+
+export interface WarehouseImmutabilityResult {
+  verdict: WarehouseImmutabilityVerdict;
+  /** The authoritative source. */
+  uiVerdict: ControlledStockPostcheck;
+  logReview: StockWriteLogReview;
+  deltas: ControlledStockDelta[];
+  reasons: string[];
+}
+
+/**
+ * FP-024C.3 requires BOTH a direct Stock Management quantity comparison and a
+ * diagnostic-log review. The UI comparison is authoritative for detecting
+ * drift; the log is supplementary.
+ *
+ * MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED is why: log silence can never override or
+ * substitute for a UI mismatch, and an unreviewed log leaves the run UNPROVEN
+ * rather than verified.
+ */
+export function verifyWarehouseImmutability(args: {
+  observedStock: readonly WarehouseStockCard[] | null | undefined;
+  baseline?: readonly WarehouseStockCard[];
+  logReview: StockWriteLogReview;
+  manualStockCardEditObserved?: boolean;
+}): WarehouseImmutabilityResult {
+  const { observedStock, baseline = FP024C3_FROZEN_WAREHOUSE_BASELINE, logReview } = args;
+  const ui = evaluateControlledStockPostcheck(observedStock, baseline);
+  const reasons: string[] = [];
+  const shell = { uiVerdict: ui.verdict, logReview, deltas: ui.deltas };
+
+  if (args.manualStockCardEditObserved === true) {
+    reasons.push(
+      'A manual Stock Management card edit was observed. That path mutates the warehouse without a stock-update log entry.'
+    );
+    return { ...shell, verdict: 'STOCK_STATE_MUTATED', reasons };
+  }
+  if (ui.verdict === 'STOCK_STATE_MUTATED') {
+    reasons.push(
+      'Stock Management quantities differ from the active frozen baseline. The UI comparison is authoritative; log silence cannot override it.'
+    );
+    return { ...shell, verdict: 'STOCK_STATE_MUTATED', reasons };
+  }
+  if (logReview === 'STOCK_WRITE_LOGGED') {
+    reasons.push(
+      'A stock-write log event was recorded for this window. A write occurred even though quantities currently match the baseline.'
+    );
+    return { ...shell, verdict: 'STOCK_STATE_MUTATED', reasons };
+  }
+  if (ui.verdict === 'UNPROVEN') {
+    reasons.push('The Stock Management capture is missing or incomplete.');
+    return { ...shell, verdict: 'UNPROVEN', reasons };
+  }
+  if (logReview === 'NOT_REVIEWED') {
+    reasons.push(
+      'The diagnostic log was not reviewed. Both sources are required; a UI match alone is not verification.'
+    );
+    return { ...shell, verdict: 'UNPROVEN', reasons };
+  }
+  return { ...shell, verdict: 'IMMUTABLE_VERIFIED', reasons };
+}
+
+/**
  * Offcut/remnant evidence. There is no PROVEN_NONE state: an absent UI
  * surface stays UNPROVEN and must not be read as "no remnants".
  */
@@ -1029,6 +1232,12 @@ export interface ControlledRunEvidence {
   bars: readonly ExternalBarPattern[] | null;
   pieces: readonly DowinPhysicalLengthGoldenRow[];
   warehouseWriteActionInvoked?: boolean;
+  /** Frozen baseline this run was solved against. Defaults to the active one. */
+  baselineVersion?: ControlledBaselineVersion;
+  /** Supplementary log review for the run's stock window. */
+  stockWriteLogReview?: StockWriteLogReview;
+  /** Set when a Management Panel stock-card edit was seen (unlogged path). */
+  manualStockCardEditObserved?: boolean;
 }
 
 /** DIFFERENT (a concrete finding) outranks UNPROVEN, which outranks IDENTICAL. */
@@ -1160,12 +1369,16 @@ export type ControlledRepeatabilityVerdict =
   | 'OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING'
   | 'HIDDEN_INPUT_DIFFERENCE'
   | 'STOCK_STATE_MUTATED'
+  | 'BASELINE_SUPERSEDED'
   | 'AMBIGUOUS';
 
 export interface ControlledRepeatabilityResult {
   verdict: ControlledRepeatabilityVerdict;
   runCount: number;
+  baselineVersion: ControlledBaselineVersion;
   stockPostchecks: { runId: string; verdict: ControlledStockPostcheck }[];
+  /** UI comparison plus log review. Both are required per run. */
+  immutability: ({ runId: string } & WarehouseImmutabilityResult)[];
   topologyFingerprints: (string | null)[];
   uniqueTopologyCount: number;
   measuredInputEquivalence: OptimizerInputEquivalence;
@@ -1179,11 +1392,25 @@ export interface ControlledRepeatabilityResult {
 export function classifyControlledRepeatability(args: {
   runs: readonly ControlledRunEvidence[];
   baseline?: readonly WarehouseStockCard[];
+  baselineVersion?: ControlledBaselineVersion;
 }): ControlledRepeatabilityResult {
-  const { runs, baseline = FP024C3_FROZEN_WAREHOUSE_BASELINE } = args;
+  const { runs, baselineVersion = FP024C3_ACTIVE_BASELINE_VERSION } = args;
+  const baseline =
+    args.baseline ??
+    controlledBaselineOf(baselineVersion)?.baselineStockSnapshot ??
+    FP024C3_FROZEN_WAREHOUSE_BASELINE;
   const stockPostchecks = runs.map((run) => ({
     runId: run.runId,
     verdict: evaluateControlledStockPostcheck(run.observedWarehouseStock, baseline).verdict,
+  }));
+  const immutability = runs.map((run) => ({
+    runId: run.runId,
+    ...verifyWarehouseImmutability({
+      observedStock: run.observedWarehouseStock,
+      baseline,
+      logReview: run.stockWriteLogReview ?? 'NOT_REVIEWED',
+      manualStockCardEditObserved: run.manualStockCardEditObserved,
+    }),
   }));
   const matrix = buildControlledEquivalenceMatrix(runs);
   const measuredInputEquivalence = reduceEquivalence(
@@ -1200,7 +1427,9 @@ export function classifyControlledRepeatability(args: {
   ).size;
   const base = {
     runCount: runs.length,
+    baselineVersion,
     stockPostchecks,
+    immutability,
     topologyFingerprints,
     uniqueTopologyCount,
     measuredInputEquivalence,
@@ -1209,6 +1438,29 @@ export function classifyControlledRepeatability(args: {
     matrix,
   };
 
+  const baselineClaim = evaluateBaselineEquivalenceClaim(baselineVersion);
+  if (baselineClaim.claim !== 'ALLOWED') {
+    return { ...base, verdict: 'BASELINE_SUPERSEDED', note: baselineClaim.reason };
+  }
+  const wrongBaselineRuns = runs.filter(
+    (run) => (run.baselineVersion ?? FP024C3_ACTIVE_BASELINE_VERSION) !== baselineVersion
+  );
+  if (wrongBaselineRuns.length > 0) {
+    return {
+      ...base,
+      verdict: 'BASELINE_SUPERSEDED',
+      note: `${wrongBaselineRuns
+        .map((run) => run.runId)
+        .join(', ')} declared a different frozen baseline than V${baselineVersion}. Runs frozen against different warehouse states cannot be compared for input equivalence.`,
+    };
+  }
+  if (runs.some((run) => run.manualStockCardEditObserved === true)) {
+    return {
+      ...base,
+      verdict: 'STOCK_STATE_MUTATED',
+      note: 'A manual Stock Management card edit was observed during FP-024C.3. That path mutates the warehouse without a stock-update log entry. STOP. Do not repair stock.',
+    };
+  }
   if (runs.some((run) => run.warehouseWriteActionInvoked === true)) {
     return {
       ...base,
@@ -1216,11 +1468,17 @@ export function classifyControlledRepeatability(args: {
       note: `A forbidden warehouse-write action (${FP024C3_FORBIDDEN_WAREHOUSE_ACTIONS.join(' / ')}) was invoked during FP-024C.3. STOP. Do not repair experiment state.`,
     };
   }
-  if (stockPostchecks.some((check) => check.verdict === 'STOCK_STATE_MUTATED')) {
+  if (immutability.some((check) => check.verdict === 'STOCK_STATE_MUTATED')) {
     return {
       ...base,
       verdict: 'STOCK_STATE_MUTATED',
-      note: 'Warehouse quantities left the frozen FP-024C.3 baseline during the experiment. STOP all runs. Do not repair stock. Classify the failure.',
+      note: `Warehouse immutability failed for ${immutability
+        .filter((check) => check.verdict === 'STOCK_STATE_MUTATED')
+        .map((check) => check.runId)
+        .join(', ')}: ${immutability
+        .filter((check) => check.verdict === 'STOCK_STATE_MUTATED')
+        .flatMap((check) => check.reasons)
+        .join(' ')} STOP all runs. Do not repair stock. Classify the failure.`,
     };
   }
   if (runs.length < FP024C3_REQUIRED_RUN_COUNT) {
@@ -1245,11 +1503,17 @@ export function classifyControlledRepeatability(args: {
       note: 'Every controlled run must be NEWLY_SOLVED. A reopened or reused result means freshness is not proven.',
     };
   }
-  if (stockPostchecks.some((check) => check.verdict === 'UNPROVEN')) {
+  if (immutability.some((check) => check.verdict === 'UNPROVEN')) {
     return {
       ...base,
       verdict: 'AMBIGUOUS',
-      note: 'A post-run Stock Management check is missing or incomplete. Absence of a stock capture is not a PASS.',
+      note: `Warehouse immutability is UNPROVEN for ${immutability
+        .filter((check) => check.verdict === 'UNPROVEN')
+        .map((check) => check.runId)
+        .join(', ')}: ${immutability
+        .filter((check) => check.verdict === 'UNPROVEN')
+        .flatMap((check) => check.reasons)
+        .join(' ')} Absence of a stock capture is not a PASS, and log silence alone is not verification.`,
     };
   }
   if (topologyFingerprints.some((value) => value == null)) {
@@ -1450,13 +1714,25 @@ export function evaluateControlledRunIntake(args: {
   };
   priorRuns?: readonly ControlledRunEvidence[];
   baseline?: readonly WarehouseStockCard[];
+  baselineVersion?: ControlledBaselineVersion;
   mdbGenerated?: boolean;
   operatorClaimsEquivalence?: boolean;
 }): { ok: boolean; reasons: string[] } {
-  const { run, priorRuns = [], baseline = FP024C3_FROZEN_WAREHOUSE_BASELINE } = args;
+  const { run, priorRuns = [], baselineVersion = FP024C3_ACTIVE_BASELINE_VERSION } = args;
+  const baseline =
+    args.baseline ??
+    controlledBaselineOf(baselineVersion)?.baselineStockSnapshot ??
+    FP024C3_FROZEN_WAREHOUSE_BASELINE;
   const reasons: string[] = [];
   if (!(FP024C3_RUN_IDS as readonly string[]).includes(run.runId)) {
     reasons.push(`runId must be one of ${FP024C3_RUN_IDS.join(' / ')}.`);
+  }
+  const baselineClaim = evaluateBaselineEquivalenceClaim(
+    run.baselineVersion ?? baselineVersion,
+    baselineVersion
+  );
+  if (baselineClaim.claim !== 'ALLOWED') {
+    reasons.push(baselineClaim.reason);
   }
   const fresh = evaluateFreshRunIntake({
     runId: run.runId,
@@ -1471,14 +1747,19 @@ export function evaluateControlledRunIntake(args: {
     operatorClaimsEquivalence: args.operatorClaimsEquivalence,
   });
   reasons.push(...fresh.reasons.filter((reason) => !reason.startsWith('freshSlot')));
-  const postcheck = evaluateControlledStockPostcheck(run.observedWarehouseStock, baseline);
-  if (postcheck.verdict === 'STOCK_STATE_MUTATED') {
+  const immutability = verifyWarehouseImmutability({
+    observedStock: run.observedWarehouseStock,
+    baseline,
+    logReview: run.stockWriteLogReview ?? 'NOT_REVIEWED',
+    manualStockCardEditObserved: run.manualStockCardEditObserved,
+  });
+  if (immutability.verdict === 'STOCK_STATE_MUTATED') {
     reasons.push(
-      'Post-run warehouse stock left the frozen FP-024C.3 baseline. STOCK_STATE_MUTATED. Stop the experiment.'
+      `Post-run warehouse stock left frozen FP-024C.3 baseline V${baselineVersion}. STOCK_STATE_MUTATED. Stop the experiment. ${immutability.reasons.join(' ')}`
     );
   }
-  if (postcheck.verdict === 'UNPROVEN') {
-    reasons.push('Post-run Stock Management capture is missing or incomplete.');
+  if (immutability.verdict === 'UNPROVEN') {
+    reasons.push(`Warehouse immutability UNPROVEN. ${immutability.reasons.join(' ')}`);
   }
   if (run.warehouseWriteActionInvoked === true) {
     reasons.push('A warehouse-write action was invoked. The run is invalid.');
