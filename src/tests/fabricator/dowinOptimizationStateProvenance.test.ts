@@ -28,8 +28,11 @@ import {
   DOWIN_COMPENSATION_TERM_AUTHORITY,
   DOWIN_FP024C1_FRESH_A_RUN,
   DOWIN_FP024C3_RUN_A_RUN,
+  DOWIN_FP024C3_RUN_B_RUN,
   DOWIN_OBSERVED_SOLVER_STAGES,
   STOCK_COMMIT_DIALOG_TRIGGER,
+  barContentFingerprint,
+  compareBarTopology,
   observeOverproductionBeyondRequired,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
@@ -46,6 +49,8 @@ import {
   ingestOperatorCalibrationRun,
   isControlFixtureAuthorized,
   overallUtilizationPercent,
+  totalRemainingMm,
+  totalStockMm,
   topologyFingerprint,
   topologySignatureFromBars,
   type DowinCalibrationRun,
@@ -891,7 +896,7 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(withRemnant.unexpectedCards).toEqual(['Deceuninck-CITA-20|6160']);
   });
 
-  it('holds RUN_A measured while RUN_B/C stay pending and the 90° gate stays closed', () => {
+  it('holds RUN_A and RUN_B measured while RUN_C stays pending and the 90° gate stays closed', () => {
     const controlled = fp024c3ControlledRuns();
     expect(controlled).toHaveLength(3);
     expect(controlled.map((run) => run.fixtureId)).toEqual([...FP024C3_RUN_IDS]);
@@ -901,22 +906,86 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(runA?.status).toBe('MEASURED');
     expect(runA?.optimizerProvenance?.solveDisposition).toBe('NEWLY_SOLVED');
     expect(runA?.optimizerProvenance?.projectId).toBe('100003');
-    expect(runA?.optimizerProvenance?.designId).toBe('RUN_A');
-    expect(runA?.optimizerProvenance?.productionPlanId).toBe('RUN_A_PLAN');
     expect(runA?.bars).toHaveLength(5);
 
-    const pending = controlled.filter((run) => run.fixtureId !== 'FP024C3_RUN_A');
-    expect(pending.map((run) => run.fixtureId)).toEqual(['FP024C3_RUN_B', 'FP024C3_RUN_C']);
-    expect(pending.every((run) => run.status === 'PENDING_OPERATOR_RUN')).toBe(true);
+    const runB = controlled.find((run) => run.fixtureId === 'FP024C3_RUN_B');
+    expect(runB).toBe(DOWIN_FP024C3_RUN_B_RUN);
+    expect(runB?.status).toBe('MEASURED');
+    expect(runB?.optimizerProvenance?.solveDisposition).toBe('NEWLY_SOLVED');
+    expect(runB?.optimizerProvenance?.projectId).toBe('100004');
+    expect(runB?.optimizerProvenance?.designId).toBe('RUN_B');
+    expect(runB?.optimizerProvenance?.productionPlanId).toBe('RUN_B_PLAN');
+    expect(runB?.bars).toHaveLength(4);
+
+    // Distinct identities and distinct solver results; nothing reused.
+    expect(runB?.optimizerProvenance?.optimizationResultId).not.toBe(
+      runA?.optimizerProvenance?.optimizationResultId
+    );
+
+    const pending = controlled.filter((run) => run.status === 'PENDING_OPERATOR_RUN');
+    expect(pending.map((run) => run.fixtureId)).toEqual(['FP024C3_RUN_C']);
     expect(pending.every((run) => run.bars.length === 0)).toBe(true);
     expect(pending.every((run) => run.optimizerProvenance == null)).toBe(true);
 
-    // One of three proves nothing, and 90° stays gated.
+    // Two of three proves nothing, and 90° stays gated.
     expect(isFp024c3ControlledTriplicateComplete()).toBe(false);
     expect(isControlFixtureAuthorized()).toBe(false);
     expect(classifyControlledRepeatability({ runs: [] }).verdict).toBe(
       'CONTROLLED_REPEATABILITY_IN_PROGRESS'
     );
+  });
+
+  it('records the A/B topology divergence without claiming nondeterminism', () => {
+    const a = DOWIN_FP024C3_RUN_A_RUN.bars;
+    const b = DOWIN_FP024C3_RUN_B_RUN.bars;
+
+    // Utilization, bar count and total remainder all hide the difference.
+    expect(totalStockMm(a)).toBe(totalStockMm(b));
+    expect(overallUtilizationPercent(a)).toBe(overallUtilizationPercent(b));
+    expect(Math.abs(totalRemainingMm(a) - totalRemainingMm(b))).toBeLessThan(0.1);
+
+    // The assignment does not.
+    const compared = compareBarTopology(a, b);
+    expect(compared.comparison).toBe('CONTENT_DIVERGENT');
+    expect(compared.reasons.join(' ')).toContain('Deceuninck-CITA-20');
+    expect(compared.reasons.join(' ')).not.toContain('Deceuninck-KASA-70');
+    expect(assignmentSignaturesEqual(a, b)).toBe(false);
+
+    // A pure re-ordering must never be reported as a divergence, because
+    // RUN_A's within-bar sequence was not captured for KANAT and KASA.
+    const reordered = a.map((bar) => ({
+      ...bar,
+      packedSegmentMm: [...bar.packedSegmentMm].reverse(),
+    }));
+    expect(compareBarTopology(a, reordered).comparison).toBe('ORDER_ONLY_DIFFERENCE');
+    expect(barContentFingerprint(a)).toBe(barContentFingerprint(reordered));
+    expect(compareBarTopology(a, null).comparison).toBe('UNPROVEN');
+
+    // Two runs still cannot classify repeatability either way.
+    expect(classifyControlledRepeatability({ runs: [] }).verdict).toBe(
+      'CONTROLLED_REPEATABILITY_IN_PROGRESS'
+    );
+  });
+
+  it('reproduces the over-production in RUN_B with an identical surplus signature', () => {
+    const a = observeOverproductionBeyondRequired({
+      bars: DOWIN_FP024C3_RUN_A_RUN.bars,
+      pieces: DOWIN_FP024C3_RUN_A_RUN.pieces,
+    });
+    const b = observeOverproductionBeyondRequired({
+      bars: DOWIN_FP024C3_RUN_B_RUN.bars,
+      pieces: DOWIN_FP024C3_RUN_B_RUN.pieces,
+    });
+    expect(b.observation).toBe('OVERPRODUCTION_BEYOND_REQUIRED_QUANTITY');
+    expect(b.requiredPieceCount).toBe(FP024C3_EXPECTED_PIECE_COUNT);
+    expect(b.producedPieceCount).toBe(24);
+    expect(b.surplus).toEqual(a.surplus);
+    expect(b.surplus[0]).toMatchObject({
+      packedLengthMm: 1416,
+      requiredQuantity: 1,
+      producedQuantity: 4,
+      surplusLengthMm: 4248,
+    });
   });
 
   it('keeps RUN_A out of the FP-024C.1 fresh-state comparison across baselines', () => {

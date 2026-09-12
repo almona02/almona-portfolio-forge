@@ -73,8 +73,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'BASELINE_REPRODUCTION_RUN')).toHaveLength(1);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'BASELINE_RESET_VALIDATION')).toHaveLength(1);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT')).toHaveLength(6);
-    // FP024C3_RUN_A is MEASURED; FRESH_B/C, RUN_B/C and the 90° control stay pending.
-    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(5);
+    // FP024C3_RUN_A and RUN_B are MEASURED; FRESH_B/C, RUN_C and the 90° control stay pending.
+    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(4);
     expect(DOWIN_CALIBRATION_RUNS.map((r) => r.fixtureId)).toEqual(
       expect.arrayContaining([
         'FP024C1_FRESH_A',
@@ -179,7 +179,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(baseline?.interpretation).toBe('AMBIGUOUS');
     expect(baseline?.packedMinusNominalValuesMm).toEqual([0, 3]);
     expect(baseline?.machineDeltaMm).toBe(0);
-    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(5);
+    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(4);
     expect(a.every((r) => r.interpretation !== 'PROVEN EFFECT')).toBe(true);
   });
 
@@ -268,8 +268,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(FP024C1_DECISIVE_EXPERIMENT).toContain('fresh project/design');
     const isolation = buildIsolationDeltaTable();
     expect(isolation).toHaveLength(13);
-    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(5);
-    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(5);
+    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(4);
+    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(4);
     expect(isolation.filter((r) => r.runKind === 'CONTROL_FIXTURE')[0]?.interpretation).toBe(
       'NOT MEASURED'
     );

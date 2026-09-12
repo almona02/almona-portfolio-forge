@@ -2,14 +2,14 @@
 
 | Field | Value |
 |-------|--------|
-| Date | 12 September 2026, re-baselined 13 September 2026, RUN_A executed 13 September 2026 |
+| Date | 12 September 2026, re-baselined 13 September 2026, RUN_A and RUN_B executed 13 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
 | HEAD at start | `243558a` — `audit: trace Fresh A stock mutation provenance` |
 | HEAD at re-baseline | `cb05ab0` |
 | PR #32 | Draft / **DO NOT MERGE** |
 | Question | Do multiple genuinely fresh optimization solves under the same current input state produce the same bar-assignment topology? |
 | Active baseline | **V2** — frozen 12 Sep 23:58:45 +03, `MANUAL_STOCK_CARD_EDIT_CONTAMINATED_V1` |
-| Gate | ⏸ **RUN_A_INGESTED_AWAITING_RUN_B** — 1 of 3 controlled runs ingested |
+| Gate | ⏸ **PENDING_RUN_C** — 2 of 3 controlled runs ingested |
 | Physical-length score | **Unchanged at 6.0/10** |
 | Production formulas | **FROZEN** |
 | 90° CONTROL_FIXTURE | **GATED** |
@@ -33,12 +33,25 @@ FROZEN — CITA 46 / KANAT 96 / KASA 13 / ORTA 100
 source hash: c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012
 
 FP024C3_RUN_A: MEASURED (OptimizationRun Id=9, NEWLY_SOLVED)
-FP024C3_RUN_B: CLOSED pending authorization
+FP024C3_RUN_B: MEASURED (OptimizationRun Id=10, NEWLY_SOLVED)
 FP024C3_RUN_C: CLOSED pending authorization
 
 Repeatability classification:
-NOT YET CLASSIFIABLE (1 of 3 runs)
-One run cannot establish or refute repeatability.
+NOT YET CLASSIFIABLE (2 of 3 runs)
+NONREPEATABLE_OBSERVATION_PENDING_RUN_C
+
+A_B_TOPOLOGY_DIVERGENCE:
+OBSERVED — CITA-20 assignment differs under
+proven-identical measured inputs
+
+A_B_MEASURED_INPUT_EQUIVALENCE:
+IDENTICAL
+
+A_B_MACHINE_LENGTH_LAYER:
+IDENTICAL (Table1 read directly, 13 rows field-for-field)
+
+SURPLUS_ORIGINAL_PARTS_BEHAVIOR:
+REPRODUCED_IN_RUN_B (identical surplus signature)
 
 RUN_A warehouse immutability:
 IMMUTABLE_VERIFIED (UI byte-identical to V2 + zero stock-write log lines)
@@ -77,7 +90,7 @@ PR #32:
 DRAFT / DO NOT MERGE
 ```
 
-This checkpoint establishes the controlled baseline, the stock-isolation rules, the intake gate, and the classification logic, and ingests **RUN_A only**. The three controlled solves require the licensed DoWin application on the operator PC and cannot be produced from this repository. No topology, hash, or provenance value below is invented.
+This checkpoint establishes the controlled baseline, the stock-isolation rules, the intake gate, and the classification logic, and ingests **RUN_A and RUN_B**. RUN_C is not authorized by this document. The three controlled solves require the licensed DoWin application on the operator PC and cannot be produced from this repository. No topology, hash, or provenance value below is invented.
 
 ---
 
@@ -251,12 +264,12 @@ Three new experiments. These are **not** Fresh B / Fresh C from the previous pro
 | Slot | Project | Design | Plan | Status |
 |------|---------|--------|------|--------|
 | `FP024C3_RUN_A` | `FP024C3_RUN_A` Id=3 (No 100003) | `RUN_A` Id=5 | `RUN_A_PLAN` Id=3 | **MEASURED** — `OptimizationRun` Id=9 |
-| `FP024C3_RUN_B` | `FP024C3_RUN_B` | `RUN_B` | `RUN_B_PLAN` | **CLOSED** until RUN_B is authorized |
-| `FP024C3_RUN_C` | `FP024C3_RUN_C` | `RUN_C` | `RUN_C_PLAN` | **CLOSED** until RUN_B is ingested |
+| `FP024C3_RUN_B` | `FP024C3_RUN_B` Id=4 (No 100004) | `RUN_B` Id=6 | `RUN_B_PLAN` Id=4 | **MEASURED** — `OptimizationRun` Id=10 |
+| `FP024C3_RUN_C` | `FP024C3_RUN_C` | `RUN_C` | `RUN_C_PLAN` | **CLOSED** until explicitly authorized |
 
 All three must be solved against baseline **V2**. A run declaring baseline V1 is rejected at intake, and classification returns `BASELINE_SUPERSEDED`.
 
-The old `FP024C1_FRESH_B` remains **INVALID_PRE_RUN / STOCK_STATE_CHANGED** and `FP024C1_FRESH_C` remains closed. All three FP-024C.3 slots are registered in the existing catalog (`DOWIN_CALIBRATION_RUNS`, 13 entries, 5 pending). RUN_A now carries measured pieces, five bar patterns, and full `optimizerProvenance`. RUN_B and RUN_C keep empty pieces, empty bars, and `optimizerProvenance = null`; no placeholder topology exists.
+The old `FP024C1_FRESH_B` remains **INVALID_PRE_RUN / STOCK_STATE_CHANGED** and `FP024C1_FRESH_C` remains closed. All three FP-024C.3 slots are registered in the existing catalog (`DOWIN_CALIBRATION_RUNS`, 13 entries, 4 pending). RUN_A carries five bar patterns and RUN_B four, both with full `optimizerProvenance`. RUN_C keeps empty pieces, empty bars, and `optimizerProvenance = null`; no placeholder topology exists.
 
 RUN_A is deliberately **excluded** from `classifyProvenanceFreshStateExperiment`. Fresh A solved against V1-era optimizer stock (48 / 98 / 14 / 0) and RUN_A against V2 (46 / 96 / 13 / 100), so comparing them would be a cross-baseline category error — the same error `BASELINE_SUPERSEDED` guards at intake. FP-024C.3 runs are classified only by `classifyControlledRepeatability`.
 
@@ -320,7 +333,7 @@ Expected DC-600 machine rows (transcription target, not a claim): KANAT V 1433 �
 
 ---
 
-## Per-run provenance (all PENDING)
+## Per-run provenance
 
 ### FP024C3_RUN_A — MEASURED
 
@@ -363,7 +376,7 @@ The post-export **Stock Update** dialog was answered **No**. No warehouse write 
 
 ---
 
-## OVERPRODUCTION_BEYOND_REQUIRED_QUANTITY — observed on RUN_A
+## OVERPRODUCTION_BEYOND_REQUIRED_QUANTITY — observed on RUN_A, reproduced in RUN_B
 
 The RUN_A cutting plan cuts **24 pieces where the design requires 21**.
 
@@ -407,13 +420,140 @@ Simulated annealing is a **stochastic metaheuristic**. This is the first concret
 
 RUN_A logged a **fourth** MIP stage at `Toplam Maliyet: 6.50` that is absent from both Fresh A and the stray Id=8 run. Recorded as an observation only.
 
-### FP024C3_RUN_B
+### FP024C3_RUN_B — MEASURED
 
-Identical intake requirements. **PENDING_OPERATOR_RUN.** RUN_A's postcheck is `PASS`, so RUN_B is unblocked but still requires explicit operator authorization. A geometric copy is acceptable only if no optimization state or history is inherited; a reused `optimizationResultId` is rejected by intake.
+| Axis | Value |
+|------|-------|
+| Project / design / plan identity | Project Id=4 `FP024C3_RUN_B` (No 100004, OrderNo 10004) / Design Id=6 `RUN_B` / Plan Id=4 `RUN_B_PLAN` ItemCount=1 |
+| `optimizationResultId` | `OptimizationRun_10_343040d6` |
+| `solveDisposition` | `NEWLY_SOLVED` — solved 01:42:08 +03; `önceki sonuçlar temizlendi` confirms no inherited state |
+| Settings screenshot SHA-256 | `8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae` — **new capture**, byte-identical render to RUN_A |
+| Required-parts list | 21 cuttable rows / 20 564 mm — all 21 rows visually measured, **IDENTICAL** to RUN_A |
+| Optimizer Stock Items | same 7 SKUs mirroring V2, ORTA 6500 qty **100** |
+| Optimizer Required Parts view | ORTA qty **1** — the surplus does not originate in the input |
+| Offcut / remnant surface | **UNPROVEN** (no remnant source row exposed) |
+| Machine | DC-600 double head cutting machine; DC-550 SKH globally enabled |
+| Artifact hashes | Design Preview `c3626e4b…` / Labels `2ee33658…` / Optimization `4c908def…` / DC-600 `.dw` `25734a04…` |
+| Pre-run stock check | **PASS** — live re-read after panel reload (`SERVICE_INIT` 01:25:37), byte-identical to V2 |
+| Post-export stock check | **PASS** — byte-identical to V2 after a full DoWin restart (session `a1377777268a`) |
+| Stock Update modal | **SHOWN**; response **NO** |
+| Warehouse immutability | **IMMUTABLE_VERIFIED** — UI authoritative + zero `ExecuteStockUpdateCoreAsync` lines |
+
+Reported result: yield **66.2 %**, 6 stock bars, **4 patterns**, **0 unplaced**, total offcut **12 559 mm**.
+
+#### Measured topology
+
+| Bar | Profile | Stock | Applications | Packed segments, in shown order (mm) | Remaining (mm) | Yield |
+|-----|---------|-------|--------------|--------------------------------------|----------------|-------|
+| 1 | CITA-20 | 6500 | **2** | 1313, 1313, 334, 334 | **3183.37** each | 51.0 % |
+| 2 | KANAT-70 | 6000 | 2 | 454, 454, 1433, 1433 | 2203.37 each | 63.3 % |
+| 3 | KASA-70 | 6000 | 1 | 1503, 1503, 1003, 1003 | 965.37 | 83.9 % |
+| 4 | ORTA-KAYIT-70 | 6500 | 1 | **1416, 1416, 1416, 1416** | 820.00 | 87.4 % |
+
+6 bars, 24 pieces, 24 812 mm used, 12 558.85 mm remainder — every figure reconciles with the reported totals.
+
+#### Machine export
+
+`MachineExportRecord RunId=10, Machine=DC-600` wrote **13 pieces**, with the identical warning `3 piece(s) in the optimization plan could not be matched to the detailed production list.` The machine-export behaviour also reproduced.
+
+---
+
+## A ↔ B comparison
+
+### Input equivalence
+
+| Axis | Verdict | Basis |
+|------|---------|-------|
+| Geometry | **IDENTICAL** | 1000×1500, Deceuninck 70 (Id 1), `DESIGN_VALIDATION VALID` in both |
+| Required parts | **IDENTICAL** | 21 rows, every length / angle / quantity, 20 564 mm total, all rows measured |
+| Settings | **IDENTICAL** | new capture per run; both render to `8597b36c…`, i.e. pixel-level equality |
+| Machine | **IDENTICAL** | DC-600 selected; DC-550 SKH enabled in both |
+| Optimizer stock | **IDENTICAL** | same 7 SKUs, same order, same quantities |
+| Warehouse stock | **IDENTICAL** | both `c8626da5…` = baseline V2 |
+| Offcut / remnant | **UNPROVEN** | no evidence surface in either run |
+| Freshness | **IDENTICAL** | both `NEWLY_SOLVED`, new project/design/plan/result |
+
+`MEASURED_INPUT_EQUIVALENCE = IDENTICAL`. `COMPLETE_INPUT_EQUIVALENCE = UNPROVEN`, because the offcut/remnant axis has no evidence surface. Complete equivalence is **not** upgraded.
+
+### Output comparison
+
+| # | Axis | Verdict |
+|---|------|---------|
+| 1 | Nominal lengths | **IDENTICAL** |
+| 2 | Packed lengths | **IDENTICAL** |
+| 3 | Machine lengths | **IDENTICAL** — `Table1` read directly from both `.dw` files: 13 rows matching field-for-field, including `BAR_NO`/`PICE_NO` order, `LENGTH`, angles, `FRAME_X/Y`, `TOTAL_SIZE`, `REMAINING_LENGTH` |
+| 4 | Required-piece count | **IDENTICAL** — 21 = 21 |
+| 5 | Optimization-plan piece count | **IDENTICAL** — 24 = 24 |
+| 6 | Surplus signature | **IDENTICAL** — 3 × ORTA 1416 mm = 4248 mm in both |
+| 7 | Bar-assignment topology | **DIVERGENT** — `CONTENT_DIVERGENT` on CITA-20 |
+| 8 | Remainder distribution | **DIVERGENT on CITA**; identical elsewhere; totals equal |
+| 9 | Machine export represented pieces | **IDENTICAL** — 13 = 13, same warning text |
+| 10 | Stock immutability | **IDENTICAL** — `IMMUTABLE_VERIFIED` in both |
+
+Note the deliberate omission: **total utilization is not used as evidence of equality.** It would have concealed finding 7 entirely.
+
+### The divergence, precisely
+
+| | RUN_A | RUN_B |
+|---|-------|-------|
+| CITA bar 1 | 1313×4 + 334×3, remaining **206.43** | 1313×2 + 334×2, remaining **3183.37** |
+| CITA bar 2 | 334×1, remaining **6160.34** | 1313×2 + 334×2, remaining **3183.37** |
+| CITA patterns | 2 distinct | 1 pattern × 2 |
+| Plan patterns | 5 | 4 |
+| CITA total remainder | 6366.77 | 6366.74 |
+| Total offcut | 12 559 mm | 12 559 mm |
+| Overall yield | 66.2 % | 66.2 % |
+
+Same eight glazing beads, same two 6500 mm bars, same total remainder to within 0.03 mm — distributed differently. RUN_A concentrated the beads into one nearly-full bar plus one nearly-empty bar; RUN_B split them evenly.
+
+**These are not economically equivalent.** RUN_A yields one 6160 mm offcut, reusable and long enough to host another full bead set, plus a 206 mm piece that falls below the 500 mm minimum and is therefore scrap. RUN_B yields two 3183 mm offcuts, both above the minimum but neither able to host a full bead set. Identical yield, materially different value.
+
+### Where the divergence arose
+
+The MIP stages were identical in both runs, stage for stage:
+
+| Stage | Cost | Stock / layouts | Annealing | Profile (by unit price) |
+|-------|------|-----------------|-----------|------------------------|
+| 1 | 6000.00 | 1 / 1 | MaxIter 210, T 100 | KASA-70 (6 m × 1000) |
+| 2 | 6.50 | 1 / 1 | MaxIter 210, T 100 | ORTA-KAYIT-70 |
+| 3 | 18000.00 | 2 / 2 | MaxIter 220, T 100 | KANAT-70 (2 × 6 m × 1500) |
+| 4 | 6500.00 | 2 / 2 | MaxIter 220, T 100 | CITA-20 (2 × 6.5 m × 500) |
+
+Both runs allocated **two** CITA bars at the same cost. The divergence is therefore **not** in the MIP allocation but in the intra-bar assignment produced afterwards — which is exactly where `TAVLAMA BENZETİMİ` (simulated annealing) operates. KANAT also received two bars and packed identically in both runs, so the instability is not simply "any profile allocated two bars".
+
+### What is NOT claimed
+
+- **Not** `OPTIMIZER_NONDETERMINISM`. Two runs cannot support that; RUN_C is required. Recorded as `NONREPEATABLE_OBSERVATION_PENDING_RUN_C`.
+- **Not** attributable to the annealing seed. No seed is logged. Simulated annealing is a *plausible mechanism*, not a demonstrated cause.
+- **Not** a claim that either plan is "correct". Both are valid solver outputs of equal reported yield.
+- **Not** full determinism in either direction — the offcut/remnant axis stays `UNPROVEN`.
+
+---
+
+## Bar-sequence measurement limitation (RUN_A)
+
+Only the CITA and ORTA bar strips were captured for RUN_A, so the **within-bar cut sequence** for its KANAT and KASA bars was never measured; the recorded order came from the asdd baseline convention. RUN_B measured all four strips and shows DoWin uses no single convention — its CITA and KASA bars render longest-first while its KANAT bar renders shortest-first.
+
+The bar *contents* are nonetheless fixed by unique arithmetic: 4 pieces totalling 3774 mm drawn from {454, 1433} admits only {1433, 1433, 454, 454}, and 5012 mm from {1003, 1503} admits only {1503, 1503, 1003, 1003}.
+
+Consequence: the A↔B topology verdict is taken from `compareBarTopology`, which returns `CONTENT_DIVERGENT` only on genuinely different contents, remainders or grouping, and `ORDER_ONLY_DIFFERENCE` when just the sequence differs. The divergence above rests entirely on the CITA regrouping — a difference in bar count and remainders — **not** on any unmeasured ordering.
+
+---
+
+## Correction to the RUN_A over-production finding
+
+RUN_A's write-up said the surplus was "confined to the cutting plan" and that "the machine file is unaffected". Reading `Table1` directly from both `.dw` files corrects this:
+
+- The exported **piece list** is unaffected — one 1416 mm mullion, correctly, in both runs.
+- The **`REMAINING_LENGTH` field is affected** — the ORTA row carries `8200` (820.0 mm) in both files, when cutting one mullion actually leaves 5080 mm.
+
+So the 4260 mm misstatement does reach the machine file. The DC-600 does not cut from that field, so there is still no wrong-parts risk on this path, but any downstream offcut tracking that reads `REMAINING_LENGTH` inherits the error. The original claim was too narrow.
+
+---
 
 ### FP024C3_RUN_C
 
-Identical intake requirements. **PENDING_OPERATOR_RUN.** Authorized only after Run B's postcheck is `PASS`.
+Identical intake requirements. **PENDING_OPERATOR_RUN.** RUN_B's postcheck is `PASS`, so RUN_C is unblocked but still requires explicit operator authorization. RUN_C is the run that decides whether the A/B divergence becomes `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING` or stays an unexplained two-run observation. A geometric copy is acceptable only if no optimization state or history is inherited; a reused `optimizationResultId` is rejected by intake.
 
 ---
 
@@ -503,10 +643,10 @@ This is **not** a blocker for the controlled repeatability experiment. It remove
 |-------|--------|
 | `npm run type-check` | **Pass** (`tsc --noEmit`) |
 | `npx vitest run src/tests/fabricator/dowinCompensationReconciliation.test.ts` | **Pass** — 18 tests |
-| `npx vitest run src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | **Pass** — 43 tests (21 FP-024C.3 cases) |
+| `npx vitest run src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | **Pass** — 45 tests (23 FP-024C.3 cases) |
 | `npx vitest run src/tests/fabricator/dowinPhysicalLengthGolden.pending.test.ts` | **Pass** — 20 tests |
 | `npx vitest run src/tests/fabricator/manufacturingSettingsContract.test.ts` | **Pass** — 15 tests |
-| Combined | 4 files, **96 tests passed** |
+| Combined | 4 files, **98 tests passed** |
 | `npm run build` | **Pass** (`vite build --mode production`) |
 
 FP-024C.3 coverage: frozen baseline values; postcheck PASS / mutated / partial / remnant-row-added / uncaptured; catalog slots pending and 90° gate closed; refusal to claim repeatability from A or A+B; measured repeatability separated from full determinism; no nondeterminism overclaim while offcuts are unproven; stop on stock movement or warehouse write; reused settings hash and reused result rejected; `HIDDEN_INPUT_DIFFERENCE` on a concrete optimizer-stock difference; fixture-signature match / drift / unproven; ORTA availability observation; and a no-mutation assertion on `resolveManufacturingSettings`.
@@ -533,6 +673,15 @@ RUN_A ingest coverage added 13 September 2026:
 | over-production is measured, not asserted | `observeOverproductionBeyondRequired` derives 24 produced vs 21 required and a single surplus row of 3 × 1416 mm = 4248 mm from the bars themselves; Fresh A returns `NOT_OBSERVED`; missing inputs return `UNPROVEN` |
 | the stock-write trigger is not overclaimed | the dialog finding stays `SUPPORTED_BY_CONTROLLED_COMPARISON` with the inferred Fresh A "Yes" recorded as a limitation; solver stages record no seed and no documented determinism |
 
+RUN_B ingest coverage added 13 September 2026:
+
+| Test | Proves |
+|------|--------|
+| RUN_A and RUN_B measured, RUN_C pending | RUN_B carries 4 bars and `NEWLY_SOLVED` provenance under project 100004; its `optimizationResultId` differs from RUN_A's; only RUN_C remains pending; triplicate incomplete; 90° still gated; two runs still classify as `CONTROLLED_REPEATABILITY_IN_PROGRESS` |
+| the A/B divergence is real, not an artifact | total stock, overall utilization and total remainder are equal across A and B, yet `compareBarTopology` returns `CONTENT_DIVERGENT` naming CITA-20 and **not** KASA-70; `assignmentSignaturesEqual` is false |
+| unmeasured ordering cannot fake a divergence | reversing every segment order returns `ORDER_ONLY_DIFFERENCE`, `barContentFingerprint` is unchanged, and a missing bar set returns `UNPROVEN` |
+| the surplus reproduced identically | `observeOverproductionBeyondRequired` on RUN_B yields 24 produced vs 21 required with a surplus row equal to RUN_A's, 3 × 1416 mm = 4248 mm |
+
 ---
 
 ## Formula freeze verification
@@ -544,9 +693,9 @@ Changes are confined to:
 | Path | Role |
 |------|------|
 | `src/lib/fabricator/dowinParity/optimizerStateProvenance.ts` | FP-024C.3 baselines V1/V2, postcheck, two-source immutability check, equivalence matrix, classifier, fixture-signature gate, intake gate |
-| `src/lib/fabricator/dowinParity/dowinCompensationEvidence.ts` | three pending controlled slots, re-exports, 90° gate now also requires the controlled triplicate |
+| `src/lib/fabricator/dowinParity/dowinCompensationEvidence.ts` | RUN_A and RUN_B ingest, RUN_C pending slot, re-exports, FP-024C.1 classifier scoped away from controlled runs, 90° gate now also requires the controlled triplicate |
 | `src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | FP-024C.3 test block |
-| `src/tests/fabricator/dowinCompensationReconciliation.test.ts` | catalog counts 10 → 13, pending 3 → 6 |
+| `src/tests/fabricator/dowinCompensationReconciliation.test.ts` | catalog counts 10 → 13, pending 3 → 6 → 4 as RUN_A and RUN_B were ingested |
 | `docs/audits/*` | this audit, the FP-024C.2 correction, and the FP-024C.1 update |
 
 Test 2 authority is unchanged: Welding Waste affects packed/machine KASA/KANAT in the observed `asdd` fixture only. No generalization.
@@ -565,13 +714,16 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 
 ## Limitations
 
-- **One** of three controlled runs has been executed. RUN_A is measured; RUN_B and RUN_C are `PENDING_OPERATOR_RUN`. A single run cannot establish or refute repeatability, and no repeatability claim is made.
-- The remaining two solves require the licensed DoWin application on the operator PC and cannot be generated from this repository.
-- RUN_A's over-production has no proven cause. The ORTA stock limit lifting from 0 to 100 is the obvious candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids.
-- DoWin's solver includes simulated annealing. If RUN_B or RUN_C differ from RUN_A, `OPTIMIZER_NONDETERMINISM` becomes mechanically plausible rather than speculative — but the annealing seed is not exposed, so determinism cannot be proven either way from logs alone.
+- **Two** of three controlled runs have been executed. RUN_A and RUN_B are measured; RUN_C is `PENDING_OPERATOR_RUN`. Two runs cannot establish or refute repeatability, and no repeatability claim is made.
+- The remaining solve requires the licensed DoWin application on the operator PC and cannot be generated from this repository.
+- The A/B topology divergence is **observed but unexplained**. It is confined to CITA-20 intra-bar assignment after an identical MIP allocation. RUN_C decides whether this becomes `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING` or remains a two-run anomaly.
+- RUN_A's within-bar cut sequence for KANAT and KASA was never captured, so sequence-level comparison on those bars is `UNPROVEN`. Bar contents are fixed by unique arithmetic and the divergence verdict does not depend on ordering.
+- The over-production has no proven cause. It reproduced exactly in RUN_B, so it is deterministic across these two runs and not a stochastic artifact. The ORTA stock limit lifting from 0 to 100 remains the obvious candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids. Candidate future gate name only: **FP-027 OPTIMIZATION_REQUIRED_PARTS_CONSERVATION** — not implemented.
+- DoWin's solver includes simulated annealing, and RUN_B **did** differ from RUN_A in bar assignment, so a stochastic mechanism is now mechanically plausible rather than speculative. It is still not proven: the annealing seed is not exposed, the MIP stages were identical, and `POSSIBLE_NONDETERMINISTIC_MECHANISM` must not be upgraded from architecture plus two runs.
 - The offcut/remnant **inventory** axis still has no evidence surface, so complete input equivalence can stay `UNPROVEN` even after three valid runs. The offcut **policy** surface is now known (Reusable Offcut Settings, Minimum Offcut Length 500 mm, with *Add Offcuts to Stock* as a separate explicit ribbon action — which explains why the proven 22:17:20 stock write created no remnant rows despite remainders far above 500 mm). Knowing the policy does not prove the inventory is empty; that axis stays `UNPROVEN`.
 - The user-visible trigger of the 22:17:20 warehouse write is now **resolved**: the post-export **Stock Update** dialog. Fresh A's `Yes` is inferred from the proven write plus the observed dialog, not directly observed; RUN_A's `No` arm is directly observed. See FP-024C.2.
-- The V2 source hash is a pre-run capture. Each run still needs its own contemporaneous post-run capture.
+- The V2 source hash is a pre-run capture. Each run still needs its own contemporaneous post-run capture; RUN_A and RUN_B both supplied one.
+- Machine-length equality was established by reading `Table1` from the two `.dw` files. The files themselves are licensed output and are **not** committed; only their SHA-256 values are recorded. The differing file hashes reflect the embedded project name and timestamp, not a length difference.
 - Production-plan "approved" versus "optimized" UI flags remain `UNPROVEN` because Production Status is not to be clicked.
 - Baseline V1 was invalidated by a manual stock edit before RUN_A existed. Nothing was measured against V1, so no result was lost — but the ORTA-0 side observation is not recoverable under V2.
 - The manual Stock Management edit path is **unlogged**. Warehouse drift between runs is therefore detectable only by contemporaneous UI capture, which is why the two-source check treats the log as supplementary. An unobserved manual edit between two runs would surface as `STOCK_STATE_MUTATED` at the next capture, not at the moment it happened.
@@ -583,12 +735,16 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 
 | Item | Status |
 |------|--------|
-| FP-024C.3 | **READY_FOR_RUN_A_ON_BASELINE_V2** |
+| FP-024C.3 | **PENDING_RUN_C** |
 | Controlled baseline | **V2 frozen** — CITA 46 / KANAT 96 / KASA 13 / ORTA 100 |
 | Baseline V1 | **HISTORICAL_ONLY** — invalidated before RUN_A, not a restoration target |
-| FP024C3_RUN_A | **PENDING_OPERATOR_RUN** — awaiting authorization |
-| FP024C3_RUN_B / C | **CLOSED** until RUN_A is ingested |
-| Repeatability verdict | **NOT YET CLASSIFIABLE** |
+| FP024C3_RUN_A | **MEASURED** — `OptimizationRun` Id=9, `IMMUTABLE_VERIFIED` |
+| FP024C3_RUN_B | **MEASURED** — `OptimizationRun` Id=10, `IMMUTABLE_VERIFIED` |
+| FP024C3_RUN_C | **CLOSED** until explicitly authorized |
+| `A_B_TOPOLOGY_DIVERGENCE` | **OBSERVED** — CITA-20 only, under proven-identical measured inputs |
+| `SURPLUS_ORIGINAL_PARTS_BEHAVIOR` | **REPRODUCED_IN_RUN_B** |
+| `A_B_MACHINE_LENGTH_LAYER` | **IDENTICAL** |
+| Repeatability verdict | **NOT YET CLASSIFIABLE** — `NONREPEATABLE_OBSERVATION_PENDING_RUN_C` |
 | `ORTA_ZERO_QTY_CONTROL_OBSERVABILITY` | **LOST_BY_MANUAL_STOCK_EDIT** |
 | `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` | **PROVEN FOR OBSERVED PATH** |
 | 90° CONTROL_FIXTURE | **GATED** — not to be run during FP-024C.3; the repeatability verdict comes first, then authorization is requested |
@@ -597,4 +753,5 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 | FP-016 / FP-017 | not started |
 | FP-025B | do not start |
 | FP-026 | future finding, not implemented |
+| FP-027 | candidate name only, not implemented |
 | PR #32 | **Draft / DO NOT MERGE** |

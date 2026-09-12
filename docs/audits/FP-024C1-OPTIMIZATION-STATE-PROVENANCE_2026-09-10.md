@@ -12,6 +12,7 @@
 | FP-024C.3 | 12 September 2026 — new controlled triplicate opened against a frozen current-state baseline; Fresh A excluded |
 | FP-024C.3 re-baseline | 13 September 2026 — baseline **V1 invalidated before RUN_A** by a manual unlogged stock-card edit (ORTA 0 → 100); **V2 frozen** at CITA 46 / KANAT 96 / KASA 13 / ORTA 100 |
 | FP-024C.3 RUN_A | 13 September 2026 — **1 of 3** controlled runs measured (`OptimizationRun` Id=9). Warehouse `IMMUTABLE_VERIFIED`. Over-production observed. Repeatability still **NOT CLASSIFIABLE** |
+| FP-024C.3 RUN_B | 13 September 2026 — **2 of 3** controlled runs measured (`OptimizationRun` Id=10). Inputs proven identical to RUN_A, machine lengths identical, over-production reproduced, but **bar-assignment topology diverged** on CITA-20. Repeatability still **NOT CLASSIFIABLE**; `PENDING_RUN_C` |
 | Gate | ⏸ **PAUSED BY STOCK_STATE_CHANGED** — A/B repeatability paused pending a clean stock method |
 | Physical-length score | **Unchanged at 6.0/10** |
 | PR #32 | Draft / **DO NOT MERGE** |
@@ -484,6 +485,6 @@ The old `FP024C1_FRESH_B` keeps its classification **INVALID_PRE_RUN / STOCK_STA
 1. Fresh A remains the only ingested fresh solve. Fresh B was **blocked by stock-state contamination**. A/B repeatability under the original protocol is **closed**, superseded by the FP-024C.3 controlled triplicate.
 2. FP-024C.2: warehouse write is **PROVEN** at 22:17:20 (CITA 46 / KANAT 96 / KASA 13 / ORTA clamped 0). Run Optimization and machine/PDF export did **not** write stock on this timeline. The 22:17:20 user-visible trigger is **AMBIGUOUS**. See `docs/audits/FP-024C2-STOCK-MUTATION-PROVENANCE_2026-09-12.md`.
 3. Do **not** restore CITA/KANAT/KASA/ORTA quantities. Current warehouse is frozen FP-024C.3 baseline **V2** (ORTA 100). ORTA must not be set back to 0 or artificially decremented.
-4. Fresh B and Fresh C stay **BLOCKED**. `FP024C3_RUN_A` is **MEASURED** on baseline V2 with its warehouse `IMMUTABLE_VERIFIED`; RUN_B is unblocked but requires explicit authorization, and RUN_C stays **CLOSED** until RUN_B is ingested. 90° stays **GATED** until the FP-024C.3 repeatability verdict exists.
+4. Fresh B and Fresh C stay **BLOCKED**. `FP024C3_RUN_A` and `FP024C3_RUN_B` are **MEASURED** on baseline V2, both `IMMUTABLE_VERIFIED`; RUN_C is unblocked but requires explicit authorization. 90° stays **GATED** until the FP-024C.3 repeatability verdict exists.
 5. RUN_A is deliberately **not** comparable to Fresh A. Fresh A solved against V1-era optimizer stock (48 / 98 / 14 / 0) and RUN_A against V2 (46 / 96 / 13 / 100), so `classifyProvenanceFreshStateExperiment` excludes FP-024C.3 runs. Fresh A's `warehouseStock` axis can never again be `IDENTICAL` to any later run, exactly as this audit already recorded.
 5. Do not merge PR #32. Physical-length score stays 6.0/10. Production formulas stay FROZEN.

@@ -649,6 +649,92 @@ export function topologyFingerprint(
   return fingerprintSha256({ unit: 'mm', bars: payload });
 }
 
+/**
+ * Order-insensitive view of a bar pack: segments sorted within each bar and
+ * bars sorted canonically. Two plans with the same contents but a different
+ * cut sequence share this fingerprint while differing under
+ * `topologyFingerprint`.
+ */
+export function barContentFingerprint(bars: readonly ExternalBarPattern[]): string {
+  const payload = bars
+    .map((bar) => ({
+      profileCode: bar.profileCode,
+      stockLengthMm: bar.stockLengthMm,
+      applicationCount: bar.applicationCount,
+      segmentsSortedMm: [...bar.packedSegmentMm].sort((x, y) => x - y),
+      remainingMm: bar.remainingMm,
+    }))
+    .map((entry) => ({
+      entry,
+      key: [
+        entry.profileCode,
+        entry.stockLengthMm,
+        entry.applicationCount,
+        entry.segmentsSortedMm.join(','),
+        entry.remainingMm,
+      ].join('|'),
+    }))
+    .sort((x, y) => (x.key < y.key ? -1 : x.key > y.key ? 1 : 0))
+    .map((wrapped) => wrapped.entry);
+  return fingerprintSha256({ unit: 'mm', barContents: payload });
+}
+
+export type TopologyComparison =
+  | 'IDENTICAL'
+  | 'ORDER_ONLY_DIFFERENCE'
+  | 'CONTENT_DIVERGENT'
+  | 'UNPROVEN';
+
+/**
+ * Separates a genuine bar-assignment divergence from a mere difference in the
+ * within-bar cut sequence. This matters because DoWin does not render one
+ * uniform sequence convention, and a sequence that was never captured must not
+ * be allowed to manufacture a divergence.
+ */
+export function compareBarTopology(
+  a: readonly ExternalBarPattern[] | null | undefined,
+  b: readonly ExternalBarPattern[] | null | undefined
+): { comparison: TopologyComparison; reasons: string[] } {
+  if (a == null || b == null || a.length === 0 || b.length === 0) {
+    return {
+      comparison: 'UNPROVEN',
+      reasons: ['Bar-by-bar topology is missing for at least one run.'],
+    };
+  }
+  if (topologyFingerprint(a) === topologyFingerprint(b)) {
+    return { comparison: 'IDENTICAL', reasons: [] };
+  }
+  if (barContentFingerprint(a) === barContentFingerprint(b)) {
+    return {
+      comparison: 'ORDER_ONLY_DIFFERENCE',
+      reasons: [
+        'Bar contents, application counts and remainders match; only the within-bar cut sequence differs.',
+      ],
+    };
+  }
+  const describe = (bars: readonly ExternalBarPattern[]) => {
+    const byProfile = new Map<string, string[]>();
+    for (const bar of bars) {
+      const key = `${bar.profileCode}|${bar.stockLengthMm}`;
+      const list = byProfile.get(key) ?? [];
+      list.push(
+        `x${bar.applicationCount} [${[...bar.packedSegmentMm].sort((x, y) => x - y).join(',')}] rem ${bar.remainingMm}`
+      );
+      byProfile.set(key, list);
+    }
+    return byProfile;
+  };
+  const left = describe(a);
+  const right = describe(b);
+  const reasons: string[] = [];
+  for (const key of [...new Set([...left.keys(), ...right.keys()])].sort()) {
+    const l = (left.get(key) ?? []).sort().join(' + ');
+    const r = (right.get(key) ?? []).sort().join(' + ');
+    if (l !== r) reasons.push(`${key}: A = ${l || 'none'} ; B = ${r || 'none'}`);
+  }
+  return { comparison: 'CONTENT_DIVERGENT', reasons };
+}
+
 export function assignmentSignaturesEqual(
   a: readonly ExternalBarPattern[],
   b: readonly ExternalBarPattern[],
