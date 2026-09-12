@@ -28,7 +28,8 @@ PDF / machine export mutates stock:
 NOT_OBSERVED on this timeline (contradicted)
 
 User-visible trigger of the 22:17:20 update:
-AMBIGUOUS
+RESOLVED 13 Sep 2026 — POST_EXPORT STOCK UPDATE DIALOG
+(was AMBIGUOUS; see the correction section below)
 
 Offcut import:
 NOT_OBSERVED
@@ -107,7 +108,7 @@ on log silence alone:
   independently by the post-run UI still showing KASA qty **14**.
 - **PDF export** had no observed mutation.
 - **DC-600 `.dw` export** had no observed mutation.
-- The exact **user trigger of the 22:17:20 write remains AMBIGUOUS**.
+- ~~The exact **user trigger of the 22:17:20 write remains AMBIGUOUS**.~~ **Resolved 13 September 2026** — the post-export Stock Update dialog. See the correction section below.
 
 Withdrawn as a general rule:
 
@@ -288,7 +289,7 @@ The manual describes stock update as an explicit post-optimization warehouse act
 - DoWin was not decompiled.
 - Fresh A history UI was not re-opened (possible mutation risk).
 - PDF export has a file timestamp but no matching `[USER_ACTION]` log line.
-- Stock-update log line has no `[USER_ACTION]` tag, so ribbon click vs other invoke is AMBIGUOUS.
+- Stock-update log line has no `[USER_ACTION]` tag. ~~so ribbon click vs other invoke is AMBIGUOUS.~~ **Explained 13 September 2026**: the confirmation is a modal dialog, not a ribbon command, and dialog confirmations are not `[USER_ACTION]`-tagged.
 - “6 RawMaterial records updated” vs four used profile codes: extra rows UNKNOWN (not treated as remnant import).
 - GPU overlay on later Management Panel screenshots does not affect quantities.
 
@@ -323,3 +324,45 @@ ALMONA today:
 ## Formula freeze
 
 This audit is documentation only. No edits to `ManufacturingSettings.ts`, `barPackAccounting.ts`, `UPVCCuttingEngine.ts`, production formulas, K-factor, Cut identity, or CNC lengths.
+
+
+---
+
+## Correction added 13 September 2026 — the write trigger is resolved
+
+FP-024C.3 RUN_A exposed the trigger that FP-024C.2 could only classify as `AMBIGUOUS`.
+
+**Send to Machine raises a modal dialog after a successful export:**
+
+> **Stock Update**
+> Export to machine completed successfully. Would you like to deduct the used stock quantities from your inventory?
+>  [ Yes ] [ No ]
+
+Answering **Yes** commits the warehouse write. Answering **No** does not.
+
+### Two-armed comparison on the same trigger
+
+| Arm | Export logged | Answer | `ExecuteStockUpdateCoreAsync` | Warehouse |
+|-----|---------------|--------|-------------------------------|-----------|
+| Fresh A, 12 Sep | `MDB Export` 22:02:57 | **Yes** (inferred) | **22:17:20** | Written — CITA 48→46, KANAT 98→96, KASA 14→13 |
+| RUN_A, 13 Sep | `MDB Export` 01:05:22 | **No** (observed) | *none in the entire session log* | Unchanged — byte-identical to baseline V2 |
+
+### What this explains that was previously unexplained
+
+1. **The 14 min 23 s gap.** The interval between export and write was never explained by any logged command. It is the dialog sitting open, waiting for an answer.
+2. **The missing `[USER_ACTION]` tag.** DoWin tags ribbon commands, not modal confirmations. The write looked untriggered because the trigger is not a ribbon command.
+3. **Why shutdown looked suspicious.** The shutdown 21 s after the write was a coincidence of timing — the operator answered the dialog and then closed the application. RUN_A independently clears shutdown as a writer: DoWin was closed and relaunched after the RUN_A export and the warehouse did not change.
+
+### Classification
+
+`SUPPORTED_BY_CONTROLLED_COMPARISON`, not `PROVEN`. The Fresh A **Yes** was not directly observed; it is inferred from the proven write plus the now-observed dialog on an identical export path. The RUN_A **No** arm *is* directly observed. Hypothesis C (`IMPLICIT_CONFIRMATION_OR_STATUS_TRANSITION`) is upgraded from `SUPPORTED` to the identified mechanism; hypotheses A, B and D are withdrawn as unnecessary.
+
+### This vindicates the recorded FP-026 concern
+
+`FP-026 STOCK_COMMIT_BOUNDARY` was recorded on the suspicion that DoWin commits stock at an ill-defined boundary. It does: the commit is bound to a machine export and gated only by an easily mis-clicked modal. ALMONA must not copy this. A stock commit belongs to an explicit, auditable inventory transaction, not to a dialog raised as a side effect of writing a machine file.
+
+### Offcut policy surface (related, discovered in the same session)
+
+The proven 22:17:20 write deducted whole bars and created **no** remnant rows, despite leaving remainders of 5080, 4161 and 965 mm — all far above the observed **Minimum Offcut Length of 500 mm**. The reason is that *Add Offcuts to Stock* is a **separate explicit ribbon action**, not part of the stock deduction.
+
+This is the *policy* surface only. It does **not** prove the offcut inventory is empty, and the offcut/remnant axis stays **UNPROVEN** in both FP-024C.1 and FP-024C.3.

@@ -48,8 +48,10 @@ import {
   FP024C3_MEASURED_EQUIVALENCE_AXES,
   FP024C3_REQUIRED_RUN_COUNT,
   FP024C3_RUN_IDS,
+  DOWIN_OBSERVED_SOLVER_STAGES,
   MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED,
   ORTA_ZERO_QTY_CONTROL_OBSERVABILITY,
+  STOCK_COMMIT_DIALOG_TRIGGER,
   ALMONA_REPRODUCIBILITY_SURFACES,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
@@ -70,6 +72,7 @@ import {
   isClearScreenNotFreshness,
   isOptimizerProvenanceComplete,
   missingOptimizerProvenanceFields,
+  observeOverproductionBeyondRequired,
   observeWarehouseQtyVsOptimizerAvailability,
   overallUtilizationPercent,
   requiredPartsSnapshotFromPieces,
@@ -97,6 +100,8 @@ import {
   type OptimizerInputEquivalence,
   type OptimizerRunProvenance,
   type OptimizerSolveKind,
+  type OverproductionObservation,
+  type OverproductionSurplusRow,
   type ProvenanceAuditVerdict,
   type StockWriteLogReview,
   type WarehouseAvailabilityObservation,
@@ -125,8 +130,10 @@ export {
   FP024C3_MEASURED_EQUIVALENCE_AXES,
   FP024C3_REQUIRED_RUN_COUNT,
   FP024C3_RUN_IDS,
+  DOWIN_OBSERVED_SOLVER_STAGES,
   MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED,
   ORTA_ZERO_QTY_CONTROL_OBSERVABILITY,
+  STOCK_COMMIT_DIALOG_TRIGGER,
   ALMONA_REPRODUCIBILITY_SURFACES,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
@@ -146,6 +153,7 @@ export {
   isClearScreenNotFreshness,
   isOptimizerProvenanceComplete,
   missingOptimizerProvenanceFields,
+  observeOverproductionBeyondRequired,
   observeWarehouseQtyVsOptimizerAvailability,
   overallUtilizationPercent,
   solveDispositionOf,
@@ -171,6 +179,8 @@ export {
   type OptimizerInputEquivalence,
   type OptimizerRunProvenance,
   type OptimizerSolveKind,
+  type OverproductionObservation,
+  type OverproductionSurplusRow,
   type ProvenanceAuditVerdict,
   type StockWriteLogReview,
   type WarehouseAvailabilityObservation,
@@ -1238,6 +1248,162 @@ export const DOWIN_FP024C1_FRESH_A_RUN: DowinCalibrationRun = {
   }),
 };
 
+/**
+ * FP024C3_RUN_A cutting plan, 2026-09-13 00:57:08 +03, OptimizationRun Id=9.
+ * Transcribed from the Optimization Results grid and the per-bar layout strip.
+ *
+ * The ORTA bar is the FP-024C.3 over-production observation: four 1416 mm
+ * mullions cut where the design requires one. `pieceExternalIds` carries the
+ * single matched production-list piece, so the gap between four segments and
+ * one external id is the surplus, structurally.
+ */
+export const FP024C3_RUN_A_BARS: readonly ExternalBarPattern[] = [
+  {
+    id: 'run-a-bead-cita-6500-7pc',
+    profileCode: 'Deceuninck-CITA-20',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: [],
+    packedSegmentMm: [1313, 1313, 1313, 1313, 334, 334, 334],
+    remainingMm: 206.43,
+    reportedYieldPercent: 96.8,
+  },
+  {
+    id: 'run-a-bead-cita-6500-1pc',
+    profileCode: 'Deceuninck-CITA-20',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: [],
+    packedSegmentMm: [334],
+    remainingMm: 6160.34,
+    reportedYieldPercent: 5.2,
+  },
+  {
+    id: 'run-a-sash-kanat-6000',
+    profileCode: 'Deceuninck-KANAT-70',
+    stockLengthMm: 6000,
+    applicationCount: 2,
+    pieceExternalIds: [
+      'RUN_A.Left Area (Sash).Left',
+      'RUN_A.Left Area (Sash).Right',
+      'RUN_A.Left Area (Sash).Top',
+      'RUN_A.Left Area (Sash).Bottom',
+      'RUN_A.Right Area (Sash).Left',
+      'RUN_A.Right Area (Sash).Right',
+      'RUN_A.Right Area (Sash).Top',
+      'RUN_A.Right Area (Sash).Bottom',
+    ],
+    packedSegmentMm: [1433, 1433, 454, 454],
+    remainingMm: 2203.37,
+    reportedYieldPercent: 63.3,
+  },
+  {
+    id: 'run-a-frame-kasa-6000',
+    profileCode: 'Deceuninck-KASA-70',
+    stockLengthMm: 6000,
+    applicationCount: 1,
+    pieceExternalIds: [
+      'RUN_A.Frame Leftt',
+      'RUN_A.Frame Right',
+      'RUN_A.Frame Top',
+      'RUN_A.Frame Bottom',
+    ],
+    packedSegmentMm: [1503, 1503, 1003, 1003],
+    remainingMm: 965.37,
+    reportedYieldPercent: 83.9,
+  },
+  {
+    id: 'run-a-mullion-orta-6500',
+    profileCode: 'Deceuninck-ORTA-KAYIT-70',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: ['RUN_A.Mullion Vertical'],
+    packedSegmentMm: [1416, 1416, 1416, 1416],
+    remainingMm: 820.0,
+    reportedYieldPercent: 87.4,
+  },
+];
+
+/** Optimizer Stock Items before Run — mirrors frozen baseline V2 exactly. */
+export const FP024C3_RUN_A_OPTIMIZER_STOCK = [
+  { profileCode: 'Deceuninck-KOSE-METAL-05', stockLengthMm: 6500, ordinal: 0, quantity: 100 },
+  { profileCode: 'Deceuninck-KOSE-PLASTIK-01', stockLengthMm: 6500, ordinal: 1, quantity: 50 },
+  { profileCode: 'Deceuninck-DESTEK-SACI-2.0MM', stockLengthMm: 6500, ordinal: 2, quantity: 15 },
+  { profileCode: 'Deceuninck-CITA-20', stockLengthMm: 6500, ordinal: 3, quantity: 46 },
+  { profileCode: 'Deceuninck-ORTA-KAYIT-70', stockLengthMm: 6500, ordinal: 4, quantity: 100 },
+  { profileCode: 'Deceuninck-KANAT-70', stockLengthMm: 6000, ordinal: 5, quantity: 96 },
+  { profileCode: 'Deceuninck-KASA-70', stockLengthMm: 6000, ordinal: 6, quantity: 13 },
+] as const;
+
+export const DOWIN_FP024C3_RUN_A_RUN: DowinCalibrationRun = {
+  fixtureId: 'FP024C3_RUN_A',
+  parentFixtureId: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.fixtureId,
+  runKind: 'OPTIMIZATION_STATE_PROVENANCE_AUDIT',
+  isolationVariable: 'optimizationStateProvenance',
+  status: 'MEASURED',
+  designName: 'RUN_A',
+  profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
+  widthMm: 1000,
+  heightMm: 1500,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  observedSettings: { ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings },
+  intendedIsolation: {
+    field: null,
+    instructedToMm: null,
+    note: 'FP-024C.3 controlled Run A against frozen baseline V2 (CITA 46 / KANAT 96 / KASA 13 / ORTA 100). New project FP024C3_RUN_A (Id=3) / design RUN_A (Id=5) / plan RUN_A_PLAN (Id=3) / OptimizationRun Id=9. No warehouse write. One run cannot claim repeatability.',
+  },
+  changedSetting: null,
+  pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
+  bars: FP024C3_RUN_A_BARS,
+  provenance:
+    'FP024C3_RUN_A 2026-09-13 00:57:08 +03, OptimizationRun Id=9, solver id 1af599d5. Baseline V2 verified live before the run: Management Panel closed and reopened (RawMaterialsViewModel SERVICE_INIT 00:37:01, new hwnd), capture SHA-256 c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012. Settings Weld 3 / Saw 4 / Trim 0 re-verified, screenshot SHA-256 8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae; also bound Glazing Clearance 2.5, Sash Offset 7, Mullion Offset PVC 0, waste margin 0%, Reusable Offcut minimum 500 mm. Cut list 21 rows / 20564 mm, all 21 rows visually measured across three captures. Optimizer offered 7 SKUs mirroring V2 including ORTA 6500 qty 100. NEWLY_SOLVED 0.09s, 5 patterns, 6 bars, yield 66.2%, total offcut 12559 mm, 0 unplaced. OVER-PRODUCTION: plan cut 24 pieces against 21 required, surplus 3 x ORTA 1416 mm = 4248 mm; confirmed by DoWin ExportToMdb warning "3 piece(s) in the optimization plan could not be matched to the detailed production list". DC-600 export wrote 13 pieces (8 KANAT + 4 KASA + 1 ORTA; CITA beads excluded, as on Fresh A), artifact SHA-256 4b1974bc5bdf9ab5501ff4c4f8b9dd51b699607c8f076fd53d40ccb153e34fec, MachineExportRecord RunId=9. Post-export Stock Update dialog answered NO. Post-run and post-export stock checks both PASS byte-identical to V2, the latter after a full DoWin restart (pid 2536 -> 31040); zero ExecuteStockUpdateCoreAsync lines in app-20260913.log. Offcut/remnant inventory axis remains UNPROVEN: policy surface exists (minimum 500 mm) and Add Offcuts to Stock is a separate action, but no remnant source row is exposed. offcutRemnantSnapshot=[] is ingest-gate form, not proven-none. Licensed PDFs/.dw/screenshots not committed.',
+  reproductionVerdict: null,
+  lengthLayerVerdict: 'REPRODUCED',
+  topologyVerdict: null,
+  optimizerProvenance: attachOptimizerInputFingerprints({
+    runId: 'FP024C3_RUN_A',
+    timestampIso: '2026-09-12T21:57:08.000Z',
+    projectId: '100003',
+    designId: 'RUN_A',
+    productionPlanId: 'RUN_A_PLAN',
+    optimizationResultId: 'OptimizationRun_9_1af599d5',
+    optimizationHistoryId: null,
+    solveKind: 'NEWLY_SOLVED',
+    solveDisposition: 'NEWLY_SOLVED',
+    optimizerId: null,
+    optimizerVersion: null,
+    algorithm: null,
+    seed: null,
+    requiredPartsSnapshotId: 'run-a-required-parts-20260913',
+    stockSnapshotId: 'run-a-optimizer-stock-items-20260913',
+    offcutRemnantSnapshotId: 'UNPROVEN-no-remnant-source-row-exposed',
+    machineId: 'DC-600',
+    settingsSnapshotSha256:
+      '8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae',
+    settingsSnapshot: settingsSnapshotFromObserved(
+      DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings
+    ),
+    geometrySnapshot: {
+      widthMm: 1000,
+      heightMm: 1500,
+      profileSystem: "Deceuninck 70'lik PVC Sistemi",
+    },
+    requiredPartsSnapshot: requiredPartsSnapshotFromPieces(
+      DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows
+    ),
+    stockSnapshot: [...FP024C3_RUN_A_OPTIMIZER_STOCK],
+    offcutRemnantSnapshot: [],
+    sourceHashesSha256: {
+      generalSettingsScreenshot:
+        '8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae',
+      designPreview: 'c24c91cecf62bc27321324cf2fc288d50840936618a93f478778c579676d4b9f',
+      assemblyLabels: '2d19d0108e26607ad5e4a408672107ef3fbcf4a0ce0b061c95a8ae383ce9988a',
+      optimization: '466c016811b9688b8233fe68cc1a9b4edf9bfddf948ea3bd30203a857ac19431',
+      machineExport: '4b1974bc5bdf9ab5501ff4c4f8b9dd51b699607c8f076fd53d40ccb153e34fec',
+    },
+  }),
+};
+
 export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
   pendingTemplate(
     'FP024C1_FRESH_B',
@@ -1258,16 +1424,6 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
       note: 'FP-024C.1 Fresh C: third independent fresh solve. Required before repeatability or nondeterminism classification.',
     },
     'Operator template Fresh C. Completes the A/B/C package. 90° stays gated.'
-  ),
-  pendingTemplate(
-    'FP024C3_RUN_A',
-    'optimizationStateProvenance',
-    {
-      field: null,
-      instructedToMm: null,
-      note: 'FP-024C.3 controlled Run A: first member of the new triplicate against the frozen post-Fresh-A warehouse baseline (CITA 46 / KANAT 96 / KASA 13 / ORTA 0). New project/design/plan/result. No warehouse write.',
-    },
-    'Operator template FP024C3_RUN_A. Fresh A cannot serve as a triplicate member because a proven stock write followed it (FP-024C.2 22:17:20).'
   ),
   pendingTemplate(
     'FP024C3_RUN_B',
@@ -1309,6 +1465,7 @@ export const DOWIN_CALIBRATION_RUNS: readonly DowinCalibrationRun[] = [
   DOWIN_ASDD_TRIM_CUT_10_RUN,
   DOWIN_ASDD_BASELINE_RESET_RUN,
   DOWIN_FP024C1_FRESH_A_RUN,
+  DOWIN_FP024C3_RUN_A_RUN,
   ...DOWIN_CALIBRATION_TEMPLATES,
 ];
 
@@ -1451,8 +1608,15 @@ export function identifyAsddAssignmentTopology(
 export function classifyProvenanceFreshStateExperiment(
   runs: readonly DowinCalibrationRun[]
 ): ReturnType<typeof classifyOptimizationStateProvenance> {
+  // FP-024C.3 controlled runs are frozen against baseline V2 and are classified
+  // by classifyControlledRepeatability. Mixing them into the FP-024C.1 fresh-state
+  // comparison would compare solves taken under different warehouse states.
+  const controlledIds = new Set<string>(FP024C3_RUN_IDS);
   const provenanceMeasured = runs.filter(
-    (run) => run.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT' && run.status === 'MEASURED'
+    (run) =>
+      run.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT' &&
+      run.status === 'MEASURED' &&
+      !controlledIds.has(run.fixtureId)
   );
   const freshRuns = provenanceMeasured.filter(
     (run) => solveDispositionOf(run.optimizerProvenance) === 'NEWLY_SOLVED'

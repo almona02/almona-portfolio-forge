@@ -27,6 +27,10 @@ import {
   DOWIN_CALIBRATION_RUNS,
   DOWIN_COMPENSATION_TERM_AUTHORITY,
   DOWIN_FP024C1_FRESH_A_RUN,
+  DOWIN_FP024C3_RUN_A_RUN,
+  DOWIN_OBSERVED_SOLVER_STAGES,
+  STOCK_COMMIT_DIALOG_TRIGGER,
+  observeOverproductionBeyondRequired,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
   buildWeldingWasteIsolationFindings,
@@ -887,18 +891,88 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(withRemnant.unexpectedCards).toEqual(['Deceuninck-CITA-20|6160']);
   });
 
-  it('keeps the controlled triplicate pending in the catalog and the 90° gate closed', () => {
+  it('holds RUN_A measured while RUN_B/C stay pending and the 90° gate stays closed', () => {
     const controlled = fp024c3ControlledRuns();
     expect(controlled).toHaveLength(3);
     expect(controlled.map((run) => run.fixtureId)).toEqual([...FP024C3_RUN_IDS]);
-    expect(controlled.every((run) => run.status === 'PENDING_OPERATOR_RUN')).toBe(true);
-    expect(controlled.every((run) => run.bars.length === 0)).toBe(true);
-    expect(controlled.every((run) => run.optimizerProvenance == null)).toBe(true);
+
+    const runA = controlled.find((run) => run.fixtureId === 'FP024C3_RUN_A');
+    expect(runA).toBe(DOWIN_FP024C3_RUN_A_RUN);
+    expect(runA?.status).toBe('MEASURED');
+    expect(runA?.optimizerProvenance?.solveDisposition).toBe('NEWLY_SOLVED');
+    expect(runA?.optimizerProvenance?.projectId).toBe('100003');
+    expect(runA?.optimizerProvenance?.designId).toBe('RUN_A');
+    expect(runA?.optimizerProvenance?.productionPlanId).toBe('RUN_A_PLAN');
+    expect(runA?.bars).toHaveLength(5);
+
+    const pending = controlled.filter((run) => run.fixtureId !== 'FP024C3_RUN_A');
+    expect(pending.map((run) => run.fixtureId)).toEqual(['FP024C3_RUN_B', 'FP024C3_RUN_C']);
+    expect(pending.every((run) => run.status === 'PENDING_OPERATOR_RUN')).toBe(true);
+    expect(pending.every((run) => run.bars.length === 0)).toBe(true);
+    expect(pending.every((run) => run.optimizerProvenance == null)).toBe(true);
+
+    // One of three proves nothing, and 90° stays gated.
     expect(isFp024c3ControlledTriplicateComplete()).toBe(false);
     expect(isControlFixtureAuthorized()).toBe(false);
     expect(classifyControlledRepeatability({ runs: [] }).verdict).toBe(
       'CONTROLLED_REPEATABILITY_IN_PROGRESS'
     );
+  });
+
+  it('keeps RUN_A out of the FP-024C.1 fresh-state comparison across baselines', () => {
+    // Fresh A solved against V1-era stock (48/98/14/0); RUN_A against V2
+    // (46/96/13/100). Comparing them would be a cross-baseline category error.
+    expect(
+      compareOptimizerInputFingerprints(
+        DOWIN_FP024C1_FRESH_A_RUN.optimizerProvenance,
+        DOWIN_FP024C3_RUN_A_RUN.optimizerProvenance
+      )
+    ).toBe('DIFFERENT');
+    expect(classifyProvenanceFreshStateExperiment(DOWIN_CALIBRATION_RUNS).verdict).not.toBe(
+      'HIDDEN_INPUT_DIFFERENCE'
+    );
+  });
+
+  it('records RUN_A over-production against the required fixture', () => {
+    const observed = observeOverproductionBeyondRequired({
+      bars: DOWIN_FP024C3_RUN_A_RUN.bars,
+      pieces: DOWIN_FP024C3_RUN_A_RUN.pieces,
+    });
+    expect(observed.observation).toBe('OVERPRODUCTION_BEYOND_REQUIRED_QUANTITY');
+    expect(observed.requiredPieceCount).toBe(FP024C3_EXPECTED_PIECE_COUNT);
+    expect(observed.producedPieceCount).toBe(24);
+    expect(observed.surplus).toHaveLength(1);
+    expect(observed.surplus[0]).toMatchObject({
+      packedLengthMm: 1416,
+      requiredQuantity: 1,
+      producedQuantity: 4,
+      surplusQuantity: 3,
+      surplusLengthMm: 4248,
+    });
+
+    // Fresh A cut exactly what was required, so the observation is run-specific.
+    expect(
+      observeOverproductionBeyondRequired({
+        bars: DOWIN_FP024C1_FRESH_A_RUN.bars,
+        pieces: DOWIN_FP024C1_FRESH_A_RUN.pieces,
+      }).observation
+    ).toBe('NOT_OBSERVED');
+    expect(
+      observeOverproductionBeyondRequired({ bars: null, pieces: null }).observation
+    ).toBe('UNPROVEN');
+  });
+
+  it('records the post-export dialog as the stock-write trigger without overclaiming', () => {
+    expect(STOCK_COMMIT_DIALOG_TRIGGER.raisedBy).toContain('Send to Machine');
+    expect(STOCK_COMMIT_DIALOG_TRIGGER.logsUserActionTag).toBe(false);
+    expect(STOCK_COMMIT_DIALOG_TRIGGER.classification).toBe(
+      'SUPPORTED_BY_CONTROLLED_COMPARISON'
+    );
+    // The Fresh A "Yes" was inferred, not observed. Keep that visible.
+    expect(STOCK_COMMIT_DIALOG_TRIGGER.limitation).toContain('not directly observed');
+    expect(DOWIN_OBSERVED_SOLVER_STAGES.seedExposed).toBe(false);
+    expect(DOWIN_OBSERVED_SOLVER_STAGES.determinismDocumented).toBe(false);
+    expect(DOWIN_OBSERVED_SOLVER_STAGES.stages.join(' ')).toContain('TAVLAMA');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

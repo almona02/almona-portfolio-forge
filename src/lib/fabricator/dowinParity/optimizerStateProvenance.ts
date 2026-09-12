@@ -1593,6 +1593,130 @@ export function observeWarehouseQtyVsOptimizerAvailability(args: {
   };
 }
 
+/**
+ * Resolves the FP-024C.2 `AMBIGUOUS` trigger. Send to Machine raises a modal
+ * "Stock Update" dialog offering to deduct used stock. The write is logged by
+ * `ExecuteStockUpdateCoreAsync` but carries no `[USER_ACTION]` tag, because a
+ * dialog confirmation is not a ribbon command — which is why the 22:17:20
+ * write looked untriggered.
+ *
+ * Observed as a two-armed comparison on the same trigger:
+ *   Fresh A  export 22:02:57 → Yes at 22:17:20 → stock write PROVEN
+ *   RUN_A    export 01:05:22 → No  at ~01:06   → no stock write
+ */
+export const STOCK_COMMIT_DIALOG_TRIGGER = {
+  id: 'POST_EXPORT_STOCK_UPDATE_DIALOG_IS_THE_WRITE_TRIGGER',
+  classification: 'SUPPORTED_BY_CONTROLLED_COMPARISON',
+  dialogTitle: 'Stock Update',
+  dialogText:
+    'Export to machine completed successfully. Would you like to deduct the used stock quantities from your inventory?',
+  raisedBy: 'Send to Machine (MDB/DC-600 export)',
+  logsUserActionTag: false,
+  statement:
+    'The post-export Stock Update dialog is the confirmation that commits the warehouse write. Answering Yes writes stock; answering No does not.',
+  evidence: [
+    'Fresh A: MDB Export logged 22:02:57, then ExecuteStockUpdateCoreAsync at 22:17:20 with no [USER_ACTION] tag. The 14 min 23 s gap is the dialog awaiting an answer.',
+    'RUN_A: MDB Export logged 01:05:22, operator answered No, and app-20260913.log contains zero ExecuteStockUpdateCoreAsync lines across the whole session.',
+  ],
+  limitation:
+    'The Fresh A answer was not directly observed; it is inferred from the proven write plus the now-observed dialog. The RUN_A No arm is directly observed.',
+} as const;
+
+/**
+ * Solver stages DoWin logs per solve. Recorded because simulated annealing is
+ * a stochastic metaheuristic and is therefore the candidate mechanism for any
+ * topology non-repeatability FP-024C.3 might find. Observation only: no seed,
+ * RNG, or determinism guarantee is exposed, so this proves nothing on its own.
+ */
+export const DOWIN_OBSERVED_SOLVER_STAGES = {
+  stages: [
+    'HİBRİT Column Generation Loop (High-Performance Modu)',
+    'Tamsayılı Çözücü (MIP Solver) — Maliyet ve Stok Limiti Odaklı',
+    'TAVLAMA BENZETİMİ (simulated annealing)',
+  ],
+  annealingParameters: { maxIterObserved: [210, 220], temperatureObserved: 100 },
+  seedExposed: false,
+  determinismDocumented: false,
+  note: 'Simulated annealing is stochastic by construction. Whether DoWin seeds it deterministically is UNPROVEN and is exactly what the controlled triplicate tests.',
+} as const;
+
+export type OverproductionObservation =
+  | 'OVERPRODUCTION_BEYOND_REQUIRED_QUANTITY'
+  | 'NOT_OBSERVED'
+  | 'UNPROVEN';
+
+export interface OverproductionSurplusRow {
+  packedLengthMm: number;
+  requiredQuantity: number;
+  producedQuantity: number;
+  surplusQuantity: number;
+  surplusLengthMm: number;
+}
+
+/**
+ * Compares pieces the cutting plan actually cuts against pieces the design
+ * requires, matched on packed length. A plan that cuts more than required
+ * inflates yield and understates the reusable remainder, so it must never be
+ * read as a packing improvement.
+ */
+export function observeOverproductionBeyondRequired(args: {
+  bars: readonly ExternalBarPattern[] | null | undefined;
+  pieces: readonly DowinPhysicalLengthGoldenRow[] | null | undefined;
+}): {
+  observation: OverproductionObservation;
+  surplus: OverproductionSurplusRow[];
+  producedPieceCount: number;
+  requiredPieceCount: number;
+} {
+  const empty = { surplus: [], producedPieceCount: 0, requiredPieceCount: 0 };
+  if (args.bars == null || args.pieces == null || args.bars.length === 0) {
+    return { observation: 'UNPROVEN', ...empty };
+  }
+  const required = new Map<number, number>();
+  let requiredPieceCount = 0;
+  for (const piece of args.pieces) {
+    if (piece.category === 'glass' || piece.category === 'angle_compensation') continue;
+    if (piece.expectedPackedSegmentMm == null) {
+      return { observation: 'UNPROVEN', ...empty };
+    }
+    const key = piece.expectedPackedSegmentMm;
+    required.set(key, (required.get(key) ?? 0) + 1);
+    requiredPieceCount += 1;
+  }
+  const produced = new Map<number, number>();
+  let producedPieceCount = 0;
+  for (const bar of args.bars) {
+    const applications = bar.applicationCount > 0 ? bar.applicationCount : 1;
+    for (const segment of bar.packedSegmentMm) {
+      produced.set(segment, (produced.get(segment) ?? 0) + applications);
+      producedPieceCount += applications;
+    }
+  }
+  const surplus: OverproductionSurplusRow[] = [];
+  for (const [packedLengthMm, producedQuantity] of [...produced.entries()].sort(
+    (a, b) => a[0] - b[0]
+  )) {
+    const requiredQuantity = required.get(packedLengthMm) ?? 0;
+    if (producedQuantity > requiredQuantity) {
+      const surplusQuantity = producedQuantity - requiredQuantity;
+      surplus.push({
+        packedLengthMm,
+        requiredQuantity,
+        producedQuantity,
+        surplusQuantity,
+        surplusLengthMm: surplusQuantity * packedLengthMm,
+      });
+    }
+  }
+  return {
+    observation:
+      surplus.length > 0 ? 'OVERPRODUCTION_BEYOND_REQUIRED_QUANTITY' : 'NOT_OBSERVED',
+    surplus,
+    producedPieceCount,
+    requiredPieceCount,
+  };
+}
+
 export interface ControlledFixtureRow {
   category: DowinLengthCategory;
   nominalLengthMm: number;
