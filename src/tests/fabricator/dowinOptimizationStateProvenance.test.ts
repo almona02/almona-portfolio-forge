@@ -44,9 +44,13 @@ import {
   FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION,
   FP024C8_WELD0_CONTROL_REPLICATION,
   FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE,
+  FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR,
+  FP024C10_THREE_POINT_TABLE,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
   evaluateCitaWeldCausalityFromExistingArtifacts,
+  classifyWeldThreePointDeltas,
+  evaluateWeldLinearityAcrossRows,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
   evaluateIndependentNinetyControlFixtureSpec,
@@ -2008,7 +2012,7 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
   });
 
   it('reconciles CITA Design Report from the existing C.6 PDF without a formula', () => {
-    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.status).toBe('MEASURED');
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.status).toBe('ACCEPTED');
     expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.independentReviewOfFp024c8).toBe(
       'ACCEPTED'
     );
@@ -2102,6 +2106,57 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
         weld0RequiredPartsVerticalMm: 1116,
       }).citaDesignReportLayer
     ).toBe('UNPROVEN');
+  });
+
+  it('measures Weld=2 Required Parts on both fixtures without encoding a formula', () => {
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.status).toBe('MEASURED');
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.independentReviewOfFp024c9).toBe(
+      'ACCEPTED'
+    );
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.newSolveCreated).toBe(false);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.stockUnchanged).toBe(true);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.authorizesFormulaChange).toBe(false);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.weldingWasteRestoredToZero).toBe(true);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.precheck.weldingWasteMm).toBe(0);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.weld2Persistence.weldingWasteMm).toBe(2);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.asdd.kasa.requiredParts.short).toBe(1002);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.asdd.kanat.requiredParts.short).toBe(453);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.asdd.orta.requiredParts).toBe(1416);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.c5.kasa.requiredParts).toBe(1202);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.c5.cita.requiredParts.short).toBe(539);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.c5.orta.requiredParts).toBe(1116);
+    expect(FP024C10_THREE_POINT_TABLE).toHaveLength(9);
+    expect(
+      FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.intermediateValueResponse
+    ).toBe('LINEAR_AT_MEASURED_0_2_3_POINTS');
+    expect(
+      FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.directWeldTermLinearity
+    ).toBe('PROVEN_FOR_MEASURED_0_2_3_DECEUNINCK70_45_CONDITIONS');
+    expect(
+      FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.generalizedCompensationFormula
+    ).toBe('UNPROVEN');
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.discardedTodayWork1940.classification).toBe(
+      'INVALID_FOR_CAUSAL_AUTHORITY'
+    );
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.fp027.rootCause).toBe('UNPROVEN');
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.lastOptimizationRunIdUnchanged).toBe(13);
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.physicalLengthScore).toBe('6.0/10');
+    expect(classifyWeldThreePointDeltas({ weld0DeltaMm: 0, weld2DeltaMm: 2, weld3DeltaMm: 3 })).toBe(
+      'LINEAR_AT_MEASURED_0_2_3_POINTS'
+    );
+    expect(classifyWeldThreePointDeltas({ weld0DeltaMm: 0, weld2DeltaMm: 3, weld3DeltaMm: 3 })).toBe(
+      'NONLINEAR_OR_THRESHOLD_RESPONSE_OBSERVED'
+    );
+    expect(classifyWeldThreePointDeltas({ weld0DeltaMm: 0, weld2DeltaMm: 0, weld3DeltaMm: 3 })).toBe(
+      'NONLINEAR_OR_THRESHOLD_RESPONSE_OBSERVED'
+    );
+    const linear = evaluateWeldLinearityAcrossRows(FP024C10_THREE_POINT_TABLE);
+    expect(linear.intermediateValueResponse).toBe('LINEAR_AT_MEASURED_0_2_3_POINTS');
+    expect(linear.twoFixtureReplication).toBe('REPLICATED_ACROSS_TWO_FIXTURES');
+    expect(linear.ninetyStatus).toBe(
+      'WELD2_90_NO_OBSERVED_EFFECT_REPLICATED_ACROSS_TWO_FIXTURES'
+    );
+    expect(linear.authorizesFormulaChange).toBe(false);
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

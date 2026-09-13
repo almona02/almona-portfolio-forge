@@ -307,6 +307,25 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
     });
   });
 
+  describe('AICS-001 FP-024C.10: Weld=2 linearity does not encode a formula', () => {
+    test('three-point 0/2/3 evidence stays frozen and does not authorize RequiredParts = Report + Weld', async () => {
+      const {
+        FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR,
+        evaluateWeldLinearityAcrossRows,
+        FP024C10_THREE_POINT_TABLE,
+      } = await import('@/lib/fabricator/dowinParity/optimizerStateProvenance');
+
+      expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.authorizesFormulaChange).toBe(false);
+      expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.formulasModified).toBe(false);
+      expect(
+        FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.generalizedCompensationFormula
+      ).toBe('UNPROVEN');
+      expect(
+        evaluateWeldLinearityAcrossRows(FP024C10_THREE_POINT_TABLE).authorizesFormulaChange
+      ).toBe(false);
+    });
+  });
+
   describe('AICS-001 FP-024C.9: artifact-only CITA coverage does not encode a formula', () => {
     test('CITA report pairing stays evidence-only and does not authorize RequiredParts = Report + Weld', async () => {
       const {

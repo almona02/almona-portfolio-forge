@@ -3219,7 +3219,7 @@ export function evaluateCitaWeldCausalityFromExistingArtifacts(args: {
  */
 export const FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE = {
   id: 'FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE',
-  status: 'MEASURED',
+  status: 'ACCEPTED',
   scientificQuestion:
     'Does the already-exported C.6 Design Preview PDF establish the CITA Design Report layer strongly enough to pair existing Weld=3 and Weld=0 Required Parts?',
   independentReviewOfFp024c7: 'ACCEPTED',
@@ -3327,6 +3327,292 @@ export const FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE = {
   },
   limitation:
     'Even with KASA/KANAT/CITA coverage, do not claim all 45° pieces use Welding Waste. Do not implement RequiredParts = Report + WeldingWaste. Do not introduce an angle conditional.',
+  physicalLengthScore: '6.0/10',
+} as const;
+
+export type Fp024c10ThreePointRow = {
+  fixture: 'asdd' | 'c5';
+  profile: 'KASA' | 'KANAT' | 'CITA' | 'ORTA';
+  variant: 'short' | 'long' | 'single';
+  angles: '45/45' | '90/90';
+  reportLengthMm: number;
+  weld0RequiredPartsMm: number;
+  weld0DeltaMm: number;
+  weld2RequiredPartsMm: number;
+  weld2DeltaMm: number;
+  weld3RequiredPartsMm: number;
+  weld3DeltaMm: number;
+};
+
+/**
+ * FP-024C.10 — classify a 0/2/3 Welding Waste delta series.
+ * AICS-001: evidence classification only. Does not encode a formula.
+ */
+export function classifyWeldThreePointDeltas(args: {
+  weld0DeltaMm: number;
+  weld2DeltaMm: number;
+  weld3DeltaMm: number;
+}):
+  | 'LINEAR_AT_MEASURED_0_2_3_POINTS'
+  | 'NONLINEAR_OR_THRESHOLD_RESPONSE_OBSERVED' {
+  if (
+    args.weld0DeltaMm === 0 &&
+    args.weld2DeltaMm === 2 &&
+    args.weld3DeltaMm === 3
+  ) {
+    return 'LINEAR_AT_MEASURED_0_2_3_POINTS';
+  }
+  return 'NONLINEAR_OR_THRESHOLD_RESPONSE_OBSERVED';
+}
+
+export function evaluateWeldLinearityAcrossRows(rows: readonly Fp024c10ThreePointRow[]): {
+  intermediateValueResponse:
+    | 'LINEAR_AT_MEASURED_0_2_3_POINTS'
+    | 'NONLINEAR_OR_THRESHOLD_RESPONSE_OBSERVED'
+    | 'PROFILE_DEPENDENT_RESPONSE_OBSERVED'
+    | 'CROSS_FIXTURE_INTERMEDIATE_VALUE_DIVERGENCE';
+  weldDeltaEqualsSettingValue:
+    | 'STRONGLY_SUPPORTED_FOR_MEASURED_DECEUNINCK70_45_CONDITIONS'
+    | 'CONTRADICTED'
+    | 'UNPROVEN';
+  directWeldTermLinearity:
+    | 'PROVEN_FOR_MEASURED_0_2_3_DECEUNINCK70_45_CONDITIONS'
+    | 'UNPROVEN';
+  twoFixtureReplication:
+    | 'REPLICATED_ACROSS_TWO_FIXTURES'
+    | 'CROSS_FIXTURE_INTERMEDIATE_VALUE_DIVERGENCE'
+    | 'UNPROVEN';
+  ninetyStatus:
+    | 'WELD2_90_NO_OBSERVED_EFFECT_REPLICATED_ACROSS_TWO_FIXTURES'
+    | 'CONTRADICTION'
+    | 'UNPROVEN';
+  authorizesFormulaChange: false;
+  generalizedCompensationFormula: 'UNPROVEN';
+} {
+  const fortyFive = rows.filter((row) => row.angles === '45/45');
+  const ninety = rows.filter((row) => row.angles === '90/90');
+  const fortyFiveLinear = fortyFive.every(
+    (row) =>
+      classifyWeldThreePointDeltas(row) === 'LINEAR_AT_MEASURED_0_2_3_POINTS'
+  );
+  const uniqueWeld2Deltas = [...new Set(fortyFive.map((row) => row.weld2DeltaMm))];
+  const asddKasa = fortyFive.find((row) => row.fixture === 'asdd' && row.profile === 'KASA');
+  const c5Kasa = fortyFive.find((row) => row.fixture === 'c5' && row.profile === 'KASA');
+  const kasaDiverged =
+    asddKasa != null &&
+    c5Kasa != null &&
+    asddKasa.weld2DeltaMm !== c5Kasa.weld2DeltaMm;
+  const ninetyZero = ninety.every(
+    (row) =>
+      row.weld0DeltaMm === 0 && row.weld2DeltaMm === 0 && row.weld3DeltaMm === 0
+  );
+  const ninetyBothFixtures =
+    ninety.some((row) => row.fixture === 'asdd') &&
+    ninety.some((row) => row.fixture === 'c5');
+
+  let intermediateValueResponse:
+    | 'LINEAR_AT_MEASURED_0_2_3_POINTS'
+    | 'NONLINEAR_OR_THRESHOLD_RESPONSE_OBSERVED'
+    | 'PROFILE_DEPENDENT_RESPONSE_OBSERVED'
+    | 'CROSS_FIXTURE_INTERMEDIATE_VALUE_DIVERGENCE' =
+    'NONLINEAR_OR_THRESHOLD_RESPONSE_OBSERVED';
+  if (kasaDiverged) {
+    intermediateValueResponse = 'CROSS_FIXTURE_INTERMEDIATE_VALUE_DIVERGENCE';
+  } else if (uniqueWeld2Deltas.length > 1) {
+    intermediateValueResponse = 'PROFILE_DEPENDENT_RESPONSE_OBSERVED';
+  } else if (fortyFiveLinear) {
+    intermediateValueResponse = 'LINEAR_AT_MEASURED_0_2_3_POINTS';
+  }
+
+  return {
+    intermediateValueResponse,
+    weldDeltaEqualsSettingValue:
+      intermediateValueResponse === 'LINEAR_AT_MEASURED_0_2_3_POINTS'
+        ? 'STRONGLY_SUPPORTED_FOR_MEASURED_DECEUNINCK70_45_CONDITIONS'
+        : intermediateValueResponse === 'NONLINEAR_OR_THRESHOLD_RESPONSE_OBSERVED'
+          ? 'CONTRADICTED'
+          : 'UNPROVEN',
+    directWeldTermLinearity:
+      intermediateValueResponse === 'LINEAR_AT_MEASURED_0_2_3_POINTS'
+        ? 'PROVEN_FOR_MEASURED_0_2_3_DECEUNINCK70_45_CONDITIONS'
+        : 'UNPROVEN',
+    twoFixtureReplication: kasaDiverged
+      ? 'CROSS_FIXTURE_INTERMEDIATE_VALUE_DIVERGENCE'
+      : fortyFiveLinear
+        ? 'REPLICATED_ACROSS_TWO_FIXTURES'
+        : 'UNPROVEN',
+    ninetyStatus:
+      ninetyZero && ninetyBothFixtures
+        ? 'WELD2_90_NO_OBSERVED_EFFECT_REPLICATED_ACROSS_TWO_FIXTURES'
+        : ninety.some((row) => row.weld2DeltaMm !== 0)
+          ? 'CONTRADICTION'
+          : 'UNPROVEN',
+    authorizesFormulaChange: false,
+    generalizedCompensationFormula: 'UNPROVEN',
+  };
+}
+
+function fp024c10Row(
+  fixture: Fp024c10ThreePointRow['fixture'],
+  profile: Fp024c10ThreePointRow['profile'],
+  variant: Fp024c10ThreePointRow['variant'],
+  angles: Fp024c10ThreePointRow['angles'],
+  reportLengthMm: number,
+  weld0RequiredPartsMm: number,
+  weld2RequiredPartsMm: number,
+  weld3RequiredPartsMm: number
+): Fp024c10ThreePointRow {
+  return {
+    fixture,
+    profile,
+    variant,
+    angles,
+    reportLengthMm,
+    weld0RequiredPartsMm,
+    weld0DeltaMm: weld0RequiredPartsMm - reportLengthMm,
+    weld2RequiredPartsMm,
+    weld2DeltaMm: weld2RequiredPartsMm - reportLengthMm,
+    weld3RequiredPartsMm,
+    weld3DeltaMm: weld3RequiredPartsMm - reportLengthMm,
+  };
+}
+
+export const FP024C10_THREE_POINT_TABLE = [
+  fp024c10Row('asdd', 'KASA', 'short', '45/45', 1000, 1000, 1002, 1003),
+  fp024c10Row('asdd', 'KASA', 'long', '45/45', 1500, 1500, 1502, 1503),
+  fp024c10Row('asdd', 'KANAT', 'short', '45/45', 451, 451, 453, 454),
+  fp024c10Row('asdd', 'KANAT', 'long', '45/45', 1430, 1430, 1432, 1433),
+  fp024c10Row('asdd', 'ORTA', 'single', '90/90', 1416, 1416, 1416, 1416),
+  fp024c10Row('c5', 'KASA', 'single', '45/45', 1200, 1200, 1202, 1203),
+  fp024c10Row('c5', 'CITA', 'short', '45/45', 537, 537, 539, 540),
+  fp024c10Row('c5', 'CITA', 'long', '45/45', 1116, 1116, 1118, 1119),
+  fp024c10Row('c5', 'ORTA', 'single', '90/90', 1116, 1116, 1116, 1116),
+] as const satisfies readonly Fp024c10ThreePointRow[];
+
+/**
+ * FP-024C.10 — Welding Waste linearity discriminator at Weld=2.
+ * Required Parts only. No solve. Restore Weld to 0. AICS-001.
+ * Do not implement RequiredParts = Report + WeldingWaste.
+ */
+export const FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR = {
+  id: 'FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR',
+  status: 'MEASURED',
+  scientificQuestion:
+    'At Welding Waste = 2 mm, does Design Report → Required Parts equal +2 on measured Deceuninck 70 45° profiles, with 90° ORTA remaining 0?',
+  independentReviewOfFp024c9: 'ACCEPTED',
+  protocolPreserved: true,
+  newSolveCreated: false,
+  stockUnchanged: true,
+  formulasModified: false,
+  authorizesFormulaChange: false,
+  doNotPatchFormulas: true,
+  weldingWasteRestoredToZero: true,
+  dc550SkhGloballyEnabled: true,
+  dc550SkhUnchanged: true,
+  precheck: {
+    weldingWasteMm: 0,
+    sawThicknessMm: 4,
+    trimCutMm: 0,
+    sashOffsetMm: 7,
+    glazingClearanceMm: 2.5,
+    minimumOffcutMm: 500,
+    machineId: 'DC-600',
+    sha256: '85b007e5f690c05e16af280e81ff40af1490c9a722f512f49b96ae3e3b6c9ef3',
+  },
+  weld2Persistence: {
+    weldingWasteMm: 2,
+    persisted: true,
+    saveToastObserved: true,
+    reopenConfirmed: true,
+    persistSha256: '457ca5bb26af41266ac2f89e087d056e248377d71cbaf112a4a79326564497c4',
+    afterSaveSha256: '6deb1634f002d04a5565877fd26e94f5edf552cf08d752496c46138d0af2a9e0',
+  },
+  asdd: {
+    project: 'asdasd / 100001',
+    design: 'asdd',
+    designDbId: 1,
+    productionPlan: 'FP024C10_WELD2_ASDD',
+    productionPlanId: 10,
+    generatedAt: '2026-09-13T21:35:58',
+    cutListRows: 21,
+    totalLengthMm: 20544,
+    newSolveCreated: false,
+    cutListSha256: '55523d4e82229deb2a45c1409e2cb33bc07070a67db26cf7bbc764009aa68dac',
+    kasa: { report: { short: 1000, long: 1500 }, requiredParts: { short: 1002, long: 1502 }, delta: { short: 2, long: 2 } },
+    kanat: { report: { short: 451, long: 1430 }, requiredParts: { short: 453, long: 1432 }, delta: { short: 2, long: 2 } },
+    orta: { report: 1416, requiredParts: 1416, delta: 0 },
+    citaObservedNotPrimary: { requiredParts: { short: 333, long: 1312 }, reportLayer: 'NOT_USED_AS_PRIMARY' },
+  },
+  midpointCheck: {
+    weldingWasteMm: 2,
+    confirmed: true,
+    sha256: '15cb6154eb167d46d101e3178106cc8754db6028bc43f6612b12f2c3a35d7198',
+  },
+  c5: {
+    project: 'FP024C_90_CONTROL',
+    projectDbId: 9,
+    projectNo: '100009',
+    design: 'FP024C_90_CONTROL_DESIGN',
+    designDbId: 11,
+    productionPlan: 'FP024C10_WELD2_C5',
+    productionPlanId: 11,
+    generatedAt: '2026-09-13T21:39:44',
+    cutListRows: 13,
+    totalLengthMm: 12552,
+    newSolveCreated: false,
+    existingPlan7AndRun13NotReusedAsFreshEvidence: true,
+    cutListSha256: '6b33a987b376f4977ab58003fcc0d3cd09735d4d940eb9794e1f56ab7feeb693',
+    kasa: { report: 1200, requiredParts: 1202, delta: 2 },
+    cita: { report: { short: 537, long: 1116 }, requiredParts: { short: 539, long: 1118 }, delta: { short: 2, long: 2 } },
+    orta: { report: 1116, requiredParts: 1116, delta: 0 },
+  },
+  postMeasurementCheck: {
+    weldingWasteMm: 2,
+    confirmed: true,
+    sha256: 'b5098578b3cf92b7382afa487714adb8d8d73dbc00a674c21b6012aa7d97352f',
+  },
+  restore: {
+    weldingWasteMm: 0,
+    restored: true,
+    persistConfirmed: true,
+    afterSaveSha256: 'd6e4fadd4f48e56844296b7c29d08d2c80bfef31a2666e633a100d60b6a22b09',
+    persistSha256: '27345d9e2f50075a5c7e4fe69c269eba0d7e8e5f9930060ead96296f257aa682',
+  },
+  threePointTable: FP024C10_THREE_POINT_TABLE,
+  discardedTodayWork1940: {
+    classification: 'INVALID_FOR_CAUSAL_AUTHORITY',
+    reason: 'Weld=0 had not persisted',
+    usedInPositiveConclusion: false,
+    preservedInAuditHistory: true,
+  },
+  fp027: {
+    authorityChanged: false,
+    rootCause: 'UNPROVEN',
+    conservationWorkTouched: false,
+  },
+  findings: {
+    intermediateValueResponse: 'LINEAR_AT_MEASURED_0_2_3_POINTS',
+    weldDeltaEqualsSettingValue:
+      'STRONGLY_SUPPORTED_FOR_MEASURED_DECEUNINCK70_45_CONDITIONS',
+    directWeldTermLinearity:
+      'PROVEN_FOR_MEASURED_0_2_3_DECEUNINCK70_45_CONDITIONS',
+    twoFixtureReplication: 'REPLICATED_ACROSS_TWO_FIXTURES',
+    ninetyStatus: 'WELD2_90_NO_OBSERVED_EFFECT_REPLICATED_ACROSS_TWO_FIXTURES',
+    universalFortyFiveRule: 'UNPROVEN',
+    generalizedCompensationFormula: 'UNPROVEN',
+    stillUnproven: [
+      'other systems',
+      'other profile families',
+      'mixed angles',
+      'other Weld values',
+      'negative/invalid values',
+      'interaction with Saw/Trim',
+      'non-Deceuninck profiles',
+    ],
+  },
+  limitation:
+    'Three measured points 0/2/3 on Deceuninck 70 KASA, KANAT, and CITA 45° do not authorize a production formula. Do not implement RequiredParts = Report + WeldingWaste. Do not introduce an angle conditional.',
+  lastOptimizationRunIdUnchanged: 13,
   physicalLengthScore: '6.0/10',
 } as const;
 

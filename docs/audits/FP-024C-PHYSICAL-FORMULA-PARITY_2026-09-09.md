@@ -807,3 +807,87 @@ Allowed: for measured Deceuninck 70 45° KASA, KANAT, and CITA conditions, Weldi
 
 Not allowed: `RequiredParts = Report + WeldingWaste`, an angle conditional, or “all 45° pieces use Welding Waste.” Other systems, other families, mixed angles, other Weld values, and linearity beyond 0 and 3 remain **UNPROVEN**.
 
+Independent review (13 September 2026, 21:17): **FP-024C.9 = ACCEPTED**. Measured 45° coverage KASA + KANAT + CITA is accepted. Linearity / exact generalized formula remains **UNPROVEN**.
+
+## FP-024C.10 — Welding Waste linearity discriminator (13 September 2026)
+
+Required Parts only. **No solve.** Welding Waste temporarily 0→**2**, then restored 2→**0**. No machine export. No formula change. FP-027 untouched.
+
+### Pre-state
+
+Weld **0**, Saw 4, Trim 0, Sash 7, Glazing 2.5, min offcut 500, DC-600. DC-550 SKH globally enabled (unchanged). Precheck SHA-256 `85b007e5…`.
+
+### Weld 0→2 persistence
+
+Save All Changes toast observed. Closed and reopened Management Panel. Welding Waste **2**. Persist SHA-256 `457ca5bb…`.
+
+### asdd Required Parts (plan `FP024C10_WELD2_ASDD` Id=10)
+
+No OptimizationRun. 21 rows / 20544 mm.
+
+| Piece | Report | Required Parts | delta |
+|-------|--------|----------------|-------|
+| KASA 45° | 1000 / 1500 | **1002 / 1502** | **+2 / +2** |
+| KANAT 45° | 451 / 1430 | **453 / 1432** | **+2 / +2** |
+| ORTA 90° | 1416 | **1416** | **0** |
+
+CITA 333 / 1312 observed; not a primary discriminator (no established asdd CITA Design Report used here).
+
+Mid-check after asdd: Weld still **2** (SHA-256 `15cb6154…`).
+
+### C.5 Required Parts (plan `FP024C10_WELD2_C5` Id=11)
+
+Project 9 / Design 11 loaded VALID. No OptimizationRun. Plan 7 / Run 13 unused as fresh evidence. 13 rows / 12552 mm.
+
+| Piece | Report | Required Parts | delta |
+|-------|--------|----------------|-------|
+| KASA 45° | 1200 | **1202** | **+2** |
+| CITA 45° | 537 / 1116 | **539 / 1118** | **+2 / +2** |
+| ORTA 90° | 1116 | **1116** | **0** |
+
+Post-measurement check: Weld still **2** (SHA-256 `b5098578…`).
+
+### Restore 2→0
+
+Save All Changes toast SHA-256 `d6e4fadd…`. Reopen confirmed Welding Waste **0** (SHA-256 `27345d9e…`). Other settings unchanged.
+
+Last `OptimizationRun created` remains Id=13. No `ExecuteStockUpdate`.
+
+### Three-point deltas (report → Required Parts)
+
+| Fixture | Profile | 0 | 2 | 3 |
+|---------|---------|---|---|---|
+| asdd | KASA | 0 | **2** | 3 |
+| asdd | KANAT | 0 | **2** | 3 |
+| asdd | ORTA 90° | 0 | **0** | 0 |
+| C.5 | KASA | 0 | **2** | 3 |
+| C.5 | CITA | 0 | **2** | 3 |
+| C.5 | ORTA 90° | 0 | **0** | 0 |
+
+`WELD_INTERMEDIATE_VALUE_RESPONSE = LINEAR_AT_MEASURED_0_2_3_POINTS`  
+`WELD_DELTA_EQUALS_SETTING_VALUE = STRONGLY_SUPPORTED_FOR_MEASURED_DECEUNINCK70_45_CONDITIONS`  
+`DIRECT_WELD_TERM_LINEARITY = PROVEN_FOR_MEASURED_0_2_3_DECEUNINCK70_45_CONDITIONS`  
+`WELD2_90_NO_OBSERVED_EFFECT = REPLICATED_ACROSS_TWO_FIXTURES`
+
+### Authority after this measurement
+
+```text
+FP-024C.9 = ACCEPTED
+FP-024C.10 = MEASURED
+45° 0/2/3 = LINEAR_AT_MEASURED_0_2_3_POINTS
+direct weld term linearity = PROVEN FOR MEASURED 0/2/3 DECEUNINCK70 45° CONDITIONS
+90° Weld=2 = NO OBSERVED EFFECT, REPLICATED
+universal 45° rule = UNPROVEN
+generalized formula = UNPROVEN
+19:40 today work = INVALID_FOR_CAUSAL_AUTHORITY
+FP-027 root cause = UNPROVEN
+score = 6.0/10
+formulas = FROZEN
+PR #32 = DRAFT / DO NOT MERGE
+```
+
+Allowed: for measured Deceuninck 70 45° KASA, KANAT, and CITA conditions, the Design Report → Required Parts delta matched the Welding Waste setting at 0, 2, and 3 mm. Measured 90° ORTA remained 0 at all three values.
+
+Not allowed: `RequiredParts = Report + WeldingWaste`, an angle conditional, other systems, other Weld values, or interaction with Saw/Trim.
+
+

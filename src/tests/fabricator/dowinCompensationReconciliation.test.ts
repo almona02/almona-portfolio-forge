@@ -60,9 +60,13 @@ import {
   FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION,
   FP024C8_WELD0_CONTROL_REPLICATION,
   FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE,
+  FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR,
+  FP024C10_THREE_POINT_TABLE,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
   evaluateCitaWeldCausalityFromExistingArtifacts,
+  classifyWeldThreePointDeltas,
+  evaluateWeldLinearityAcrossRows,
   evaluateControlFixtureAuthorization,
   evaluateBaselineReset,
   overallUtilizationPercent,
@@ -827,6 +831,19 @@ describe('FP-024B DoWin compensation reconciliation', () => {
       FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.generalizedCompensationFormula
     ).toBe('UNPROVEN');
     expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.authorizesFormulaChange).toBe(false);
+    expect(
+      FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.intermediateValueResponse
+    ).toBe('LINEAR_AT_MEASURED_0_2_3_POINTS');
+    expect(
+      FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.directWeldTermLinearity
+    ).toBe('PROVEN_FOR_MEASURED_0_2_3_DECEUNINCK70_45_CONDITIONS');
+    expect(
+      FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.generalizedCompensationFormula
+    ).toBe('UNPROVEN');
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.authorizesFormulaChange).toBe(false);
+    expect(evaluateWeldLinearityAcrossRows(FP024C10_THREE_POINT_TABLE).authorizesFormulaChange).toBe(
+      false
+    );
     expect(
       evaluateCitaWeldCausalityFromExistingArtifacts({
         citaIdentifiedUnambiguously: true,
