@@ -347,6 +347,43 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
     });
   });
 
+  describe('AICS-001 FP-024C.12: bounded weld rule stays off the production engines', () => {
+    test('parity-adapter helper is isolated from canonical cut generation', async () => {
+      const { FP024C12_BOUNDED_PARITY_WELD_RULE } = await import(
+        '@/lib/fabricator/dowinParity/optimizerStateProvenance'
+      );
+      const { evaluateDowinRequiredPartsWeldAdjustment } = await import(
+        '@/lib/fabricator/dowinParity/evaluateDowinRequiredPartsWeldAdjustment'
+      );
+      const { calculateKFactor } = await import('@/lib/fabricator/UPVCCuttingEngine');
+
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.implementationScope).toBe('PARITY_ADAPTER_ONLY');
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.authorizesProductionEngineChange).toBe(false);
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoCanonicalCutGeneration).toBe(false);
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.fp027.rootCause).toBe('UNPROVEN');
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.physicalLengthScore).toBe('6.0/10');
+      expect(
+        evaluateDowinRequiredPartsWeldAdjustment({
+          profileSystem: "Deceuninck 70'lik PVC Sistemi",
+          profileCode: 'Deceuninck-KASA-70',
+          sourceLayer: 'DESIGN_REPORT',
+          targetLayer: 'REQUIRED_PARTS',
+          leftAngleDeg: 45,
+          rightAngleDeg: 45,
+          weldingWasteMm: 3,
+          designReportLengthMm: 1200,
+        }).authoritativeLengthMm
+      ).toBe(1203);
+      expect(
+        calculateKFactor({
+          profileWidthMm: 70,
+          wallThicknessMm: 2.5,
+          miterAngleDegrees: 45,
+        })
+      ).toBeGreaterThan(0);
+    });
+  });
+
   describe('AICS-001 FP-024C.9: artifact-only CITA coverage does not encode a formula', () => {
     test('CITA report pairing stays evidence-only and does not authorize RequiredParts = Report + Weld', async () => {
       const {

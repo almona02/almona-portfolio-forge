@@ -48,6 +48,7 @@ import {
   FP024C10_THREE_POINT_TABLE,
   FP024C11_FORMULA_SCOPE_AUTHORIZATION,
   evaluateFormulaScopeAuthorization,
+  FP024C12_BOUNDED_PARITY_WELD_RULE,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
   evaluateCitaWeldCausalityFromExistingArtifacts,
@@ -2213,6 +2214,10 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
         parityAdapterCanFailClosedOnMixedAngles: false,
       }).classification
     ).toBe('PRODUCTION_IMPLEMENTATION_UNSAFE');
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.implementationScope).toBe('PARITY_ADAPTER_ONLY');
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoCanonicalCutGeneration).toBe(false);
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.doubleCountPath).toBe('ISOLATED');
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.physicalLengthScore).toBe('6.0/10');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

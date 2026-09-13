@@ -3892,6 +3892,44 @@ export const FP024C11_FORMULA_SCOPE_AUTHORIZATION = {
   scoreMayMoveOnlyAfter: ['implementation', 'tests', 'golden replay', 'independent review'],
 } as const;
 
+/**
+ * FP-024C.12 — bounded parity-adapter implementation of the C.11 weld contract.
+ * Not a canonical production formula. AICS-001. Score stays 6.0/10 until
+ * golden replay + C.13 closeout + independent review.
+ */
+export const FP024C12_BOUNDED_PARITY_WELD_RULE = {
+  id: 'FP024C12_BOUNDED_PARITY_WELD_RULE',
+  status: 'IMPLEMENTED_PARITY_ADAPTER_ONLY',
+  independentReviewOfFp024c11: 'ACCEPTED',
+  implementationScope: 'PARITY_ADAPTER_ONLY',
+  generalizedManufacturingFormula: 'UNPROVEN',
+  authorizesProductionEngineChange: false,
+  wiredIntoComputeDowinParityLengths: false,
+  wiredIntoSashBasmaKaynakFormula: false,
+  wiredIntoCanonicalCutGeneration: false,
+  helper: 'src/lib/fabricator/dowinParity/evaluateDowinRequiredPartsWeldAdjustment.ts',
+  helperFunction: 'evaluateDowinRequiredPartsWeldAdjustment',
+  reexport: 'src/lib/fabricator/dowinParity/DowinParityLengthEngine.ts',
+  supportedSystem: FP024C11_CANONICAL_PROFILE_SYSTEM,
+  supported45ProfileCodes: FP024C11_MEASURED_45_PROFILE_CODES,
+  supported90ProfileCodes: FP024C11_MEASURED_90_PROFILE_CODES,
+  supportedWeldingWasteMm: FP024C11_MEASURED_WELDING_WASTE_MM,
+  sourceLayer: 'DESIGN_REPORT',
+  targetLayer: 'REQUIRED_PARTS',
+  doubleCountPath: 'ISOLATED',
+  mixedAngleStatus: 'UNPROVEN',
+  fp027: {
+    authorityChanged: false,
+    rootCause: 'UNPROVEN',
+    conservationWorkTouched: false,
+  },
+  discardedTodayWork1940: {
+    classification: 'INVALID_FOR_CAUSAL_AUTHORITY',
+    usedInPositiveConclusion: false,
+  },
+  physicalLengthScore: '6.0/10',
+} as const;
+
 export function evaluateNinetyControlFixtureSelection(args: {
   selectedToObserveOrtaSurplus: boolean;
 }): 'FIXTURE_SELECTION_BIAS' | 'COMPENSATION_PRIMARY' {

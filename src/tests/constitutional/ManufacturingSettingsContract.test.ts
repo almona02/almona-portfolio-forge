@@ -102,4 +102,22 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
     expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.physicalLengthScore).toBe('6.0/10');
     expect(evaluateFormulaScopeAuthorization().authorizesProductionEngineChange).toBe(false);
   });
+
+  test('FP-024C.12 bounded weld helper does not unfreeze canonical production engines', async () => {
+    const { FP024C12_BOUNDED_PARITY_WELD_RULE } = await import(
+      '@/lib/fabricator/dowinParity/optimizerStateProvenance'
+    );
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.authorizesProductionEngineChange).toBe(false);
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoCanonicalCutGeneration).toBe(false);
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.implementationScope).toBe('PARITY_ADAPTER_ONLY');
+    expect(sourceOf('src/lib/fabricator/UPVCCuttingEngine.ts')).not.toContain(
+      'evaluateDowinRequiredPartsWeldAdjustment'
+    );
+    expect(sourceOf('src/lib/fabricator/AlmonaCuttingEngine.ts')).not.toContain(
+      'evaluateDowinRequiredPartsWeldAdjustment'
+    );
+    expect(sourceOf('src/lib/fabricator/barPackAccounting.ts')).not.toContain(
+      'evaluateDowinRequiredPartsWeldAdjustment'
+    );
+  });
 });

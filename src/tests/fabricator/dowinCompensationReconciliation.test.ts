@@ -64,6 +64,7 @@ import {
   FP024C10_THREE_POINT_TABLE,
   FP024C11_FORMULA_SCOPE_AUTHORIZATION,
   evaluateFormulaScopeAuthorization,
+  FP024C12_BOUNDED_PARITY_WELD_RULE,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
   evaluateCitaWeldCausalityFromExistingArtifacts,
@@ -858,6 +859,9 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     );
     expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.mixedAngleStatus).toBe('UNPROVEN');
     expect(evaluateFormulaScopeAuthorization().classification).toBe('PARITY_ADAPTER_ONLY_SAFE');
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.implementationScope).toBe('PARITY_ADAPTER_ONLY');
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.generalizedManufacturingFormula).toBe('UNPROVEN');
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoSashBasmaKaynakFormula).toBe(false);
     expect(
       evaluateCitaWeldCausalityFromExistingArtifacts({
         citaIdentifiedUnambiguously: true,
