@@ -1923,15 +1923,15 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
   fillTheBarHypothesis: 'WEAKENED',
   simpleSpareCapacityGeneralization: 'NOT_SUPPORTED_BY_E3',
   fixtureDiscriminatingPower: 'INSUFFICIENT',
-  nextSpecifiedExperiment: 'E2',
+  nextSpecifiedExperiment: 'REASSESS_GATED_NINETY_CONTROL',
   statement:
     'The +3 ORTA surplus is repeatable across all three measured-identical runs and is not correlated with the observed stochastic CITA topology variation. Evidence therefore supports a deterministic or upstream conservation defect, but root cause remains UNPROVEN.',
   notProven: [
     'Three identical surplus outcomes make a stochastic explanation unsupported and increasingly unlikely; they do not mathematically exclude it.',
     'A blanket bar-filling mechanism is weakened: KANAT and CITA in A/B/C, and both KASA and CITA in E3, left room for further pieces and produced exactly the demanded quantity. That does not mathematically exclude bar-fill on every profile.',
-    'ORTA remains the only overproducing profile in the measured set. Demand=1, 90/90, mullion role, and zero-price / 6.50 cost treatment are still live and still confounded.',
+    'ORTA remains the only overproducing profile in the measured set. Demand=1, 90/90, mullion role, and zero-price / 6.50 cost treatment are still live and still confounded. E2 could not unconfound 90/90 from ORTA: the only naturally generated 90/90 linear piece on the two-panel template is the ORTA mullion.',
   ],
-  /** E3 conserved; E1 is a negative fixture, not a failed experiment; E2 is specified only. */
+  /** E3 conserved; E1 and E2 are negative fixtures, not failed experiments. */
   discriminatingExperiments: [
     {
       id: 'E3',
@@ -1956,15 +1956,17 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
       fixture:
         'naturally generated non-ORTA 90/90 linear piece; demand is whatever the design system produces. Do not inject rows. If no valid non-ORTA 90 fixture exists, STOP with E2_FIXTURE_NOT_OBTAINABLE_NATURALLY. Does not test demand=1. Separates 90-degree semantics from ORTA/profile-specific handling.',
       separates: '90-degree semantics vs ORTA / profile-specific handling',
-      authorized: false,
-      executed: false,
-      classification: null,
+      authorized: true,
+      executed: true,
+      classification: 'E2_FIXTURE_NOT_OBTAINABLE_NATURALLY',
+      isFailedExperiment: false,
     },
   ],
   demand1Hypothesis: 'UNRESOLVED',
   ortaSpecificHypothesis: 'STILL_LIVE',
   ninetyDegreeHypothesis: 'STILL_LIVE',
   e1IsFailedExperiment: false,
+  e2IsFailedExperiment: false,
   e3Generalization: 'GENERALIZATION_NOT_SUPPORTED_BY_E3',
   e3ClosesGate: false,
   e3AuthorizesFormulaChange: false,
@@ -1972,6 +1974,10 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
   e1ClosesGate: false,
   e1AuthorizesFormulaChange: false,
   e1ProvesDemandInequality: false,
+  e2ClosesGate: false,
+  e2AuthorizesFormulaChange: false,
+  e2ProvesDemandInequality: false,
+  e2AuthorizesNinetyControl: false,
   injectedSyntheticRowIsValidEvidence: false,
   almonaExposure: 'NOT_EXPOSED_BY_CONSTRUCTION',
   almonaInvariantAsserted: false,
@@ -2210,6 +2216,133 @@ export const FP027_E1_DEMAND1_NONORTA = {
   closesFp027: false,
   authorizesFormulaChange: false,
   provesDemandInequality: false,
+  demand1Hypothesis: 'UNRESOLVED',
+  isFailedExperiment: false,
+  ortaSpecificHypothesis: 'STILL_LIVE',
+  ninetyDegreeHypothesis: 'UNRESOLVED',
+  physicalLengthScore: '6.0/10',
+} as const;
+
+/**
+ * A valid E2 target is a naturally generated linear-cut piece whose
+ * both ends are 90° and whose profile is not ORTA. Injecting a
+ * synthetic 90/90 row, or editing a generated angle, is invalid
+ * evidence. Demand count is not a validity condition.
+ */
+export function evaluateNonOrtaNinetyDegreeFixture(
+  pieces:
+    | readonly {
+        profileCode: string;
+        leftAngleDeg?: number;
+        rightAngleDeg?: number;
+        quantity?: number;
+      }[]
+    | null
+    | undefined
+): {
+  fixtureValid: boolean;
+  classification: 'E2_FIXTURE_VALID' | 'E2_FIXTURE_NOT_OBTAINABLE_NATURALLY' | 'UNPROVEN';
+  ninetyDegreeRows: readonly { profileCode: string; quantity: number }[];
+  candidateProfile: string | null;
+} {
+  if (pieces == null) {
+    return {
+      fixtureValid: false,
+      classification: 'UNPROVEN',
+      ninetyDegreeRows: [],
+      candidateProfile: null,
+    };
+  }
+  const ninetyDegreeRows = pieces
+    .filter((piece) => piece.leftAngleDeg === 90 && piece.rightAngleDeg === 90)
+    .map((piece) => ({
+      profileCode: piece.profileCode,
+      quantity: piece.quantity ?? 1,
+    }));
+  const candidates = ninetyDegreeRows.filter((row) => row.profileCode !== ORTA_PROFILE_CODE);
+  if (candidates.length === 0) {
+    return {
+      fixtureValid: false,
+      classification: 'E2_FIXTURE_NOT_OBTAINABLE_NATURALLY',
+      ninetyDegreeRows,
+      candidateProfile: null,
+    };
+  }
+  return {
+    fixtureValid: true,
+    classification: 'E2_FIXTURE_VALID',
+    ninetyDegreeRows,
+    candidateProfile: candidates[0].profileCode,
+  };
+}
+
+/** E2 required rows as generated. The only 90/90 piece is the ORTA mullion. */
+export const FP027_E2_GENERATED_ROWS: readonly {
+  assembly: string;
+  profileCode: string;
+  packedLengthMm: number;
+  leftAngleDeg: number;
+  rightAngleDeg: number;
+  quantity: number;
+}[] = [
+  { assembly: 'Frame Top', profileCode: 'Deceuninck-KASA-70', packedLengthMm: 1003, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Frame Bottom', profileCode: 'Deceuninck-KASA-70', packedLengthMm: 1003, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Frame Leftt', profileCode: 'Deceuninck-KASA-70', packedLengthMm: 1503, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Frame Right', profileCode: 'Deceuninck-KASA-70', packedLengthMm: 1503, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Mullion Vertical', profileCode: 'Deceuninck-ORTA-KAYIT-70', packedLengthMm: 1416, leftAngleDeg: 90, rightAngleDeg: 90, quantity: 1 },
+  { assembly: 'Left Area.GlazingBead Top', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 440, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Left Area.GlazingBead Bottom', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 440, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Left Area.GlazingBead Left', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 1419, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Left Area.GlazingBead Right', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 1419, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Right Area (Sash).Top', profileCode: 'Deceuninck-KANAT-70', packedLengthMm: 454, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Right Area (Sash).Bottom', profileCode: 'Deceuninck-KANAT-70', packedLengthMm: 454, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Right Area (Sash).Left', profileCode: 'Deceuninck-KANAT-70', packedLengthMm: 1433, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Right Area (Sash).Right', profileCode: 'Deceuninck-KANAT-70', packedLengthMm: 1433, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Right Area (Sash).GlazingBead Top', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 334, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Right Area (Sash).GlazingBead Bottom', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 334, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Right Area (Sash).GlazingBead Left', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 1313, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Right Area (Sash).GlazingBead Right', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 1313, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+];
+
+export const FP027_E2_NONORTA_90 = {
+  id: 'FP027_E2_NONORTA_90',
+  fixtureValid: false,
+  solved: false,
+  classification: 'E2_FIXTURE_NOT_OBTAINABLE_NATURALLY',
+  projectId: '100008',
+  projectDbId: 8,
+  designId: 'E2_NONORTA_90',
+  designDbId: 10,
+  widthMm: 1000,
+  heightMm: 1500,
+  profileSystem: "Deceuninck 70'lik PVC Sistemi",
+  template: 'two_panel_fixed_plus_sash',
+  generatedRowCount: 17,
+  cutListLogLine: 'E2_NONORTA_90 için 17 satır cut list üretildi.',
+  profileTotals: {
+    'Deceuninck-KASA-70': 4,
+    'Deceuninck-KANAT-70': 4,
+    'Deceuninck-CITA-20': 8,
+    'Deceuninck-ORTA-KAYIT-70': 1,
+  },
+  ortaPresent: true,
+  onlyNinetyDegreeProfile: 'Deceuninck-ORTA-KAYIT-70',
+  injectedRow: false,
+  anglesEdited: false,
+  warehouseSha256:
+    'ba488c66e73be4b605a54a7e13e8024c7d7ab9691fc269db7aaf756fddfa6445',
+  warehouseQuantitiesIdenticalToV2: true,
+  warehouseSelectionTintNote:
+    'CITA card highlight changed pixels vs V2 hash c8626da5…; quantities remain CITA 46 / KANAT 96 / KASA 13 / ORTA 100.',
+  settingsCaptureId: 'e2-settings-20260913-171102',
+  settingsFullWindowSha256:
+    '8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae',
+  settingsContentSha256:
+    'e000c1ce6cebfe080dd76b8125119d3676a28667befb20133b58a0fa125f0760',
+  closesFp027: false,
+  authorizesFormulaChange: false,
+  provesDemandInequality: false,
+  authorizesNinetyControl: false,
   demand1Hypothesis: 'UNRESOLVED',
   isFailedExperiment: false,
   ortaSpecificHypothesis: 'STILL_LIVE',

@@ -1,10 +1,10 @@
-# FP-027 — Optimization Required-Parts Conservation (E3)
+# FP-027 — Optimization Required-Parts Conservation (E3 / E1 / E2)
 
 | Field | Value |
 |-------|--------|
 | Date | 13 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
-| Experiment | E3 measured; **E1 fixture discovery complete** — no solve |
+| Experiment | E3 measured; **E1 and E2 fixture discovery complete** — no solve on either |
 | Gate | 🔓 **FORENSICS OPEN** |
 | Root cause | **UNPROVEN** |
 | Fix | **NOT IMPLEMENTED** |
@@ -14,7 +14,7 @@
 | FP-026 | NAME ONLY / **NOT IMPLEMENTED** |
 | PR #32 | Draft / **DO NOT MERGE** |
 
-Predecessor: `docs/audits/FP-027-REQUIRED-PARTS-CONSERVATION-FORENSICS_2026-09-13.md`. E1 and E2 were not run.
+Predecessor: `docs/audits/FP-027-REQUIRED-PARTS-CONSERVATION-FORENSICS_2026-09-13.md`. E1 and E2 are accepted as negative fixtures (not solved).
 
 ---
 
@@ -188,7 +188,7 @@ Remaining confounds (unchanged by one no-surplus result): demand-of-one special 
 | Export remainder-copy finding | **SUPPORTED** — not patched |
 | Formula change authorized | **no** |
 | Demand-inequality formulation proven | **no** |
-| E1 / E2 | **not authorized, not run** |
+| E1 / E2 | **NEGATIVE FIXTURES** — neither solved |
 | 90° | **GATED** |
 | FP-026 | **not implemented** |
 | ALMONA engines | still structurally quantity-bounded; invariant still unasserted |
@@ -199,7 +199,7 @@ Remaining confounds (unchanged by one no-surplus result): demand-of-one special 
 
 - `npm run type-check` — clean
 - vitest: `dowinOptimizationStateProvenance.test.ts`, `dowinCompensationReconciliation.test.ts`
-- Pins: root cause `UNPROVEN`; E3 exact conservation cannot close FP-027; E3 cannot authorize formula changes; E3 cannot prove a `>=` constraint; 90° stays gated; FP-026 stays unimplemented
+- Pins: root cause `UNPROVEN`; E3 exact conservation cannot close FP-027; E1/E2 negative fixtures cannot close FP-027; E2 cannot authorize the 90° control; injected rows are invalid evidence; 90° stays gated; FP-026 stays unimplemented
 - Formula freeze: no changes to `ManufacturingSettings.ts`, `barPackAccounting.ts`, `UPVCCuttingEngine.ts`, `src/lib/fabricator/production`
 
 ---
@@ -333,7 +333,7 @@ Demand=1 as a mechanism is therefore **not tested**. It is **not eliminated**. S
 | Blanket bar-fill | unchanged from E3: **WEAKENED** |
 | Root cause | **UNPROVEN** |
 
-E1 does not close FP-027. E2 remains **not authorized**. 90° remains **GATED**. Stock was not mutated (no export, no Stock Update modal). Offcut/remnant axis still **UNPROVEN**.
+E1 does not close FP-027. E2 was later authorized as fixture discovery only and is also a negative fixture. 90° remains **GATED**. Stock was not mutated (no export, no Stock Update modal). Offcut/remnant axis still **UNPROVEN**.
 
 Solver-stage / machine export / REMAINING_LENGTH: **not measured** — no solve.
 
@@ -355,24 +355,92 @@ Accepted authority:
 
 The useful new fact: a valid single-sash Deceuninck 70 design naturally generated **4 KASA / 4 KANAT / 4 CITA**, so E1 could not isolate demand=1 without manufacturing synthetic evidence.
 
-### Next specified experiment — E2 (not authorized)
+### Next specified experiment — E2 (authorized as fixture discovery)
 
-Because demand=1 could not be isolated naturally, the next discriminator targets **angle / profile semantics**.
+Because demand=1 could not be isolated naturally, the next discriminator targeted **angle / profile semantics**. That experiment is now recorded below.
 
-Question: does overproduction appear on a **naturally generated non-ORTA 90°/90°** linear piece, at whatever demand the design system produces?
+---
 
-That does **not** test demand=1. It can separate **90° semantics** from **ORTA / profile-specific handling**.
+## E2 — non-ORTA 90°/90° fixture discovery
 
-If a valid non-ORTA 90° fixture cannot be created naturally: **STOP** with `E2_FIXTURE_NOT_OBTAINABLE_NATURALLY`. Do not inject rows.
+Executed 13 September 2026. **Not solved.** Natural-fixture requirement is mandatory. Does **not** test demand=1. Does **not** test compensation formulas. The original 90° `CONTROL_FIXTURE` was **not** run.
 
-Then reassess whether the original 90° compensation control can also serve as FP-027 evidence **without contaminating the compensation experiment**. That control stays **GATED** and separate until that reassessment.
+### Pre-run stock / settings
+
+| Axis | Result |
+|------|--------|
+| Warehouse quantities | **IDENTICAL to V2** — CITA 46 / KANAT 96 / KASA 13 / ORTA 100 |
+| Warehouse capture | `e2-stock-20260913-171022` SHA-256 `ba488c66…` — CITA card highlight changed pixels vs V2 `c8626da5…`; this is **not** `STOCK_STATE_CHANGED` |
+| Settings | Fresh capture `e2-settings-20260913-171102`. Full-window SHA-256 `8597b36c…` — **byte-identical** to A/B/C. Content region `e000c1ce…`. Weld 3 / Saw 4 / Trim 0 / Sash 7 / Glazing 2.5 / min offcut 500 / DC-600. DC-550 SKH enabled globally |
+
+### Identities (project/design only)
+
+| Item | Value |
+|------|-------|
+| Project | Id=8, No **100008**, `FP027_E2_NONORTA_90`, OrderNo 10008 |
+| Design | Id=10, `E2_NONORTA_90`, 1000 × 1500, two panels (fixed + sash + divider), `DESIGN_VALIDATION VALID` at 17:13:47 |
+| Production plan | **not created** |
+| OptimizationRun | **not created** — no solve |
+
+### Fixture discovery process
+
+Principled, one native template. Not an edge-case hunt.
+
+1. E3 (fixed single panel) and E1 (single sash) both emit only 45°/45° on KASA / KANAT / CITA.
+2. E2 used the native **two-panel** template — the first drawing that naturally emits a 90° linear cut (the vertical divider).
+3. Angles were **not** edited. Mullion count was **not** increased. No optimizer row was injected.
+4. Support sheet / hardware were not present as linear-cut Required Parts rows.
+
+Log: `E2_NONORTA_90 için 17 satır cut list üretildi.` (17:15:01). The Production footer showed Total Quantity 21 / Total Length 17214 mm; the log and the unique assembly walk are authoritative at **17** rows. Length 17214 mm matches the 17 packed pieces below.
+
+### Generated required parts (not optimized)
+
+| Profile | Rows | Lengths (mm) | Angles | requiredCount |
+|---------|------|--------------|--------|---------------|
+| Deceuninck-KASA-70 | 4 | 1003, 1003, 1503, 1503 | 45 / 45 | **4** |
+| Deceuninck-KANAT-70 | 4 | 454, 454, 1433, 1433 | 45 / 45 | **4** |
+| Deceuninck-CITA-20 | 8 | 440, 440, 1419, 1419, 334, 334, 1313, 1313 | 45 / 45 | **8** |
+| Deceuninck-ORTA-KAYIT-70 | 1 | 1416 | **90 / 90** | **1** |
+
+The only 90°/90° linear-cut piece is the ORTA mullion. No non-ORTA profile has 90/90.
 
 ```text
-E2 non-ORTA 90 discriminator
-  -> if obtainable, classify conservation
-  -> if not obtainable, record negative fixture
-  -> reassess whether the original 90 compensation control can also serve FP-027
-     without contaminating the compensation experiment
+E2_FIXTURE_VALID = NO
+E2 classification = E2_FIXTURE_NOT_OBTAINABLE_NATURALLY
+solved = no
+injected row = no
+angles edited = no
 ```
 
-Controls unchanged: warehouse V2; Weld 3 / Saw 4 / Trim 0; DC-600; no manual stock edits; No on Stock Update; required vs plan before export; no formula changes; score 6.0/10; PR #32 Draft / DO NOT MERGE.
+### Why this stops
+
+In this system the native odd-count, square-cut linear role is Mullion, and Mullion is ORTA. Fixed frames and sashes emit 45°/45° on KASA / KANAT / CITA. Manufacturing a non-ORTA 90/90 row by typing it into the optimizer, or by editing a generated angle, would be invalid evidence.
+
+90° as a separated mechanism is therefore **not tested**. It is **not eliminated**. Status: **UNRESOLVED** (isolation) / **still live** (hypothesis). E2 is a **negative-fixture result**, not a failed experiment.
+
+### Hypothesis update (no solve, so no conservation reading)
+
+| Hypothesis | After E2 fixture failure |
+|------------|--------------------------|
+| demand=1 alone | **UNRESOLVED** — unchanged from E1 |
+| ORTA / profile-specific | **still live** |
+| 90° | **UNRESOLVED** as an isolated variable; **still live** as a hypothesis |
+| Blanket bar-fill | unchanged from E3: **WEAKENED** |
+| Root cause | **UNPROVEN** |
+
+E2 does not close FP-027. E2 does **not** authorize the original 90° `CONTROL_FIXTURE`. That control stays **GATED** and separate. Stock was not mutated (no export, no Stock Update modal). Offcut/remnant axis still **UNPROVEN**.
+
+Solver-stage / machine export / REMAINING_LENGTH: **not measured** — no solve.
+
+### Specified next — reassessment only, not authorized
+
+```text
+REASSESS_GATED_NINETY_CONTROL
+  -> whether the original 90 compensation control can also serve FP-027
+     without contaminating the compensation experiment
+  -> that control stays GATED until that reassessment
+```
+
+Do **not** run the original 90° control. Do **not** merge E2 with compensation. Do **not** implement an FP-027 fix. Do **not** start FP-026 / FP-016 / FP-017. PR #32 stays Draft / **DO NOT MERGE**.
+
+Controls unchanged: warehouse V2 quantities; Weld 3 / Saw 4 / Trim 0; DC-600; no manual stock edits; no formula changes; score 6.0/10.

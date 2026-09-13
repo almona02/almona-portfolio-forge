@@ -34,12 +34,15 @@ import {
   FP027_CONSERVATION_TRACE_LAYERS,
   FP027_E1_DEMAND1_NONORTA,
   FP027_E1_GENERATED_ROWS,
+  FP027_E2_NONORTA_90,
+  FP027_E2_GENERATED_ROWS,
   FP027_E3_BARS,
   FP027_E3_KASA_SPARE,
   FP027_E3_REQUIRED_PIECES,
   FP027_REQUIRED_PARTS_CONSERVATION_GATE,
   classifyRequiredVsPlanConservation,
   evaluateDemandOneNonOrtaFixture,
+  evaluateNonOrtaNinetyDegreeFixture,
   STOCK_COMMIT_DIALOG_TRIGGER,
   barContentFingerprint,
   barSequenceFingerprint,
@@ -1214,7 +1217,7 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(gate.leadingHypothesisAuthority).toBe('CONSISTENT_WITH_ALL_OBSERVED_DATA');
     expect(gate.fillTheBarHypothesis).toBe('WEAKENED');
     expect(gate.simpleSpareCapacityGeneralization).toBe('NOT_SUPPORTED_BY_E3');
-    expect(gate.nextSpecifiedExperiment).toBe('E2');
+    expect(gate.nextSpecifiedExperiment).toBe('REASSESS_GATED_NINETY_CONTROL');
     expect(gate.fixtureDiscriminatingPower).toBe('INSUFFICIENT');
     expect(gate.statement).toContain('root cause remains UNPROVEN');
     // Three identical outcomes are not a proof of determinism.
@@ -1227,11 +1230,14 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(e1?.classification).toBe('E1_FIXTURE_NOT_OBTAINABLE_NATURALLY');
     expect(e1?.fixture).toContain('non-ORTA');
     expect(e1?.fixture).toContain('do not inject');
-    expect(e2?.authorized).toBe(false);
-    expect(e2?.executed).toBe(false);
+    expect(e2?.authorized).toBe(true);
+    expect(e2?.executed).toBe(true);
+    expect(e2?.classification).toBe('E2_FIXTURE_NOT_OBTAINABLE_NATURALLY');
     expect(e2?.fixture).toContain('non-ORTA 90');
     expect(e2?.fixture).toContain('Do not inject');
     expect(gate.e1ClosesGate).toBe(false);
+    expect(gate.e2ClosesGate).toBe(false);
+    expect(gate.e2AuthorizesNinetyControl).toBe(false);
     expect(gate.injectedSyntheticRowIsValidEvidence).toBe(false);
   });
 
@@ -1363,6 +1369,52 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
       false
     );
     expect(e1.injectedRow).toBe(false);
+  });
+
+  it('records E2 as a natural-fixture failure and does not treat that as a solve', () => {
+    const e2 = FP027_E2_NONORTA_90;
+    expect(e2.fixtureValid).toBe(false);
+    expect(e2.solved).toBe(false);
+    expect(e2.injectedRow).toBe(false);
+    expect(e2.anglesEdited).toBe(false);
+    expect(e2.classification).toBe('E2_FIXTURE_NOT_OBTAINABLE_NATURALLY');
+    expect(e2.closesFp027).toBe(false);
+    expect(e2.authorizesFormulaChange).toBe(false);
+    expect(e2.provesDemandInequality).toBe(false);
+    expect(e2.authorizesNinetyControl).toBe(false);
+    expect(e2.physicalLengthScore).toBe('6.0/10');
+    expect(e2.ninetyDegreeHypothesis).toBe('UNRESOLVED');
+    expect(e2.isFailedExperiment).toBe(false);
+    expect(e2.onlyNinetyDegreeProfile).toBe('Deceuninck-ORTA-KAYIT-70');
+    expect(e2.generatedRowCount).toBe(17);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.e2IsFailedExperiment).toBe(false);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.e2ClosesGate).toBe(false);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.e2AuthorizesNinetyControl).toBe(false);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.demand1Hypothesis).toBe('UNRESOLVED');
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ortaSpecificHypothesis).toBe('STILL_LIVE');
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ninetyDegreeHypothesis).toBe('STILL_LIVE');
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
+    expect(isControlFixtureAuthorized()).toBe(false);
+
+    const discovered = evaluateNonOrtaNinetyDegreeFixture(FP027_E2_GENERATED_ROWS);
+    expect(discovered.fixtureValid).toBe(false);
+    expect(discovered.classification).toBe('E2_FIXTURE_NOT_OBTAINABLE_NATURALLY');
+    expect(discovered.candidateProfile).toBeNull();
+    expect(discovered.ninetyDegreeRows).toEqual([
+      { profileCode: 'Deceuninck-ORTA-KAYIT-70', quantity: 1 },
+    ]);
+
+    // A manufactured non-ORTA 90/90 row would look valid to the detector
+    // and still be rejected as evidence.
+    const fakeKasaNinety = evaluateNonOrtaNinetyDegreeFixture([
+      { profileCode: 'Deceuninck-KASA-70', leftAngleDeg: 90, rightAngleDeg: 90, quantity: 1 },
+    ]);
+    expect(fakeKasaNinety.fixtureValid).toBe(true);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.injectedSyntheticRowIsValidEvidence).toBe(
+      false
+    );
+    expect(e2.injectedRow).toBe(false);
+    expect(evaluateNonOrtaNinetyDegreeFixture(null).classification).toBe('UNPROVEN');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {
