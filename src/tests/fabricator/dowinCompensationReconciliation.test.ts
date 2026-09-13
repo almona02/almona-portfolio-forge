@@ -62,6 +62,8 @@ import {
   FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE,
   FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR,
   FP024C10_THREE_POINT_TABLE,
+  FP024C11_FORMULA_SCOPE_AUTHORIZATION,
+  evaluateFormulaScopeAuthorization,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
   evaluateCitaWeldCausalityFromExistingArtifacts,
@@ -844,6 +846,18 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(evaluateWeldLinearityAcrossRows(FP024C10_THREE_POINT_TABLE).authorizesFormulaChange).toBe(
       false
     );
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.status).toBe('ACCEPTED');
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.implementationClassification).toBe(
+      'PARITY_ADAPTER_ONLY_SAFE'
+    );
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesFormulaChange).toBe(false);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesProductionEngineChange).toBe(false);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.generalizedManufacturingFormula).toBe('UNPROVEN');
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.boundedDeceuninck70FortyFiveWeldRule).toBe(
+      'ELIGIBLE_FOR_IMPLEMENTATION_REVIEW'
+    );
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.mixedAngleStatus).toBe('UNPROVEN');
+    expect(evaluateFormulaScopeAuthorization().classification).toBe('PARITY_ADAPTER_ONLY_SAFE');
     expect(
       evaluateCitaWeldCausalityFromExistingArtifacts({
         citaIdentifiedUnambiguously: true,

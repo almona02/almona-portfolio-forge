@@ -46,6 +46,8 @@ import {
   FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE,
   FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR,
   FP024C10_THREE_POINT_TABLE,
+  FP024C11_FORMULA_SCOPE_AUTHORIZATION,
+  evaluateFormulaScopeAuthorization,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
   evaluateCitaWeldCausalityFromExistingArtifacts,
@@ -2109,7 +2111,7 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
   });
 
   it('measures Weld=2 Required Parts on both fixtures without encoding a formula', () => {
-    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.status).toBe('MEASURED');
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.status).toBe('ACCEPTED');
     expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.independentReviewOfFp024c9).toBe(
       'ACCEPTED'
     );
@@ -2157,6 +2159,60 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
       'WELD2_90_NO_OBSERVED_EFFECT_REPLICATED_ACROSS_TWO_FIXTURES'
     );
     expect(linear.authorizesFormulaChange).toBe(false);
+  });
+
+  it('authorizes only a fail-closed parity-adapter weld-rule review, without implementing it', () => {
+    expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.status).toBe('ACCEPTED');
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.independentReviewOfFp024c10).toBe('ACCEPTED');
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.repositoryAuditOnly).toBe(true);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.formulasModified).toBe(false);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesFormulaChange).toBe(false);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesProductionEngineChange).toBe(false);
+    expect(
+      FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesParityAdapterImplementationThisCheckpoint
+    ).toBe(false);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.implementationClassification).toBe(
+      'PARITY_ADAPTER_ONLY_SAFE'
+    );
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.boundedDeceuninck70FortyFiveWeldRule).toBe(
+      'ELIGIBLE_FOR_IMPLEMENTATION_REVIEW'
+    );
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.generalizedManufacturingFormula).toBe('UNPROVEN');
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.mixedAngleStatus).toBe('UNPROVEN');
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.operationalWeldingWasteMm).toBe(0);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.fp027.rootCause).toBe('UNPROVEN');
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.fp027.combinedWithC11).toBe(false);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.discardedTodayWork1940.classification).toBe(
+      'INVALID_FOR_CAUSAL_AUTHORITY'
+    );
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.physicalLengthScore).toBe('6.0/10');
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.boundedImplementationContract.implementedThisCheckpoint).toBe(
+      false
+    );
+    const authorized = evaluateFormulaScopeAuthorization();
+    expect(authorized.classification).toBe('PARITY_ADAPTER_ONLY_SAFE');
+    expect(authorized.authorizesFormulaChange).toBe(false);
+    expect(authorized.authorizesProductionEngineChange).toBe(false);
+    expect(authorized.mixedAngleStatus).toBe('UNPROVEN');
+    expect(
+      evaluateFormulaScopeAuthorization({ c6ThroughC10Accepted: false }).classification
+    ).toBe('UNPROVEN');
+    expect(
+      evaluateFormulaScopeAuthorization({
+        productionHasDualEndAnglePair: true,
+        productionHasDesignReportToRequiredPartsBoundary: true,
+        productionHasCanonicalDeceuninck70Identity: true,
+        unsupportedProfilesCannotInheritSilentlyInProduction: true,
+      }).classification
+    ).toBe('BOUNDED_IMPLEMENTATION_SAFE');
+    expect(
+      evaluateFormulaScopeAuthorization({
+        parityAdapterHasWeldingWasteConsumer: false,
+        parityAdapterHasDualEndAngles: false,
+        parityAdapterHasDeceuninckProfileCodes: false,
+        parityAdapterCanFailClosedOnMixedAngles: false,
+      }).classification
+    ).toBe('PRODUCTION_IMPLEMENTATION_UNSAFE');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

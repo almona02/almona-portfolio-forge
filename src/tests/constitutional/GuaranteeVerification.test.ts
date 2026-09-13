@@ -326,6 +326,27 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
     });
   });
 
+  describe('AICS-001 FP-024C.11: formula-scope authorization does not encode a production formula', () => {
+    test('bounded Deceuninck 70 weld rule stays review-only on the parity adapter', async () => {
+      const {
+        FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR,
+        FP024C11_FORMULA_SCOPE_AUTHORIZATION,
+        evaluateFormulaScopeAuthorization,
+      } = await import('@/lib/fabricator/dowinParity/optimizerStateProvenance');
+
+      expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.status).toBe('ACCEPTED');
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesFormulaChange).toBe(false);
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesProductionEngineChange).toBe(false);
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.formulasModified).toBe(false);
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.implementationClassification).toBe(
+        'PARITY_ADAPTER_ONLY_SAFE'
+      );
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.generalizedManufacturingFormula).toBe('UNPROVEN');
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.fp027.rootCause).toBe('UNPROVEN');
+      expect(evaluateFormulaScopeAuthorization().authorizesFormulaChange).toBe(false);
+    });
+  });
+
   describe('AICS-001 FP-024C.9: artifact-only CITA coverage does not encode a formula', () => {
     test('CITA report pairing stays evidence-only and does not authorize RequiredParts = Report + Weld', async () => {
       const {

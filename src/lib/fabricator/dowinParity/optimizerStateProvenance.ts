@@ -3496,7 +3496,7 @@ export const FP024C10_THREE_POINT_TABLE = [
  */
 export const FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR = {
   id: 'FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR',
-  status: 'MEASURED',
+  status: 'ACCEPTED',
   scientificQuestion:
     'At Welding Waste = 2 mm, does Design Report → Required Parts equal +2 on measured Deceuninck 70 45° profiles, with 90° ORTA remaining 0?',
   independentReviewOfFp024c9: 'ACCEPTED',
@@ -3614,6 +3614,282 @@ export const FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR = {
     'Three measured points 0/2/3 on Deceuninck 70 KASA, KANAT, and CITA 45° do not authorize a production formula. Do not implement RequiredParts = Report + WeldingWaste. Do not introduce an angle conditional.',
   lastOptimizationRunIdUnchanged: 13,
   physicalLengthScore: '6.0/10',
+} as const;
+
+/**
+ * FP-024C.11 — narrowest formula-scope authorization justified by C.6–C.10.
+ * Repository/audit only. No production formula change. AICS-001.
+ *
+ * C.10 remains accepted evidence. This checkpoint classifies where a bounded
+ * weld rule may later be reviewed — not implemented here.
+ */
+export const FP024C11_CANONICAL_PROFILE_SYSTEM =
+  "Deceuninck 70'lik PVC Sistemi" as const;
+
+export const FP024C11_MEASURED_45_PROFILE_CODES = [
+  'Deceuninck-KASA-70',
+  'Deceuninck-KANAT-70',
+  'Deceuninck-CITA-20',
+] as const;
+
+export const FP024C11_MEASURED_90_PROFILE_CODES = [
+  'Deceuninck-ORTA-KAYIT-70',
+] as const;
+
+export const FP024C11_MEASURED_WELDING_WASTE_MM = [0, 2, 3] as const;
+
+export type Fp024c11ImplementationClassification =
+  | 'BOUNDED_IMPLEMENTATION_SAFE'
+  | 'PARITY_ADAPTER_ONLY_SAFE'
+  | 'PRODUCTION_IMPLEMENTATION_UNSAFE'
+  | 'UNPROVEN';
+
+export interface Fp024c11ArchitectureFacts {
+  c6ThroughC10Accepted: boolean;
+  directWeldTermLinearityProvenForMeasuredDeceuninck70_45: boolean;
+  mixedAnglesProven: boolean;
+  productionHasDualEndAnglePair: boolean;
+  productionHasDesignReportToRequiredPartsBoundary: boolean;
+  productionHasCanonicalDeceuninck70Identity: boolean;
+  weldingWasteAlreadyAppliedInProductionCutLength: boolean;
+  unsupportedProfilesCannotInheritSilentlyInProduction: boolean;
+  parityAdapterHasWeldingWasteConsumer: boolean;
+  parityAdapterHasDualEndAngles: boolean;
+  parityAdapterHasDeceuninckProfileCodes: boolean;
+  parityAdapterCanFailClosedOnMixedAngles: boolean;
+}
+
+export const FP024C11_ALMONA_PIPELINE_FACTS: Fp024c11ArchitectureFacts = {
+  c6ThroughC10Accepted: true,
+  directWeldTermLinearityProvenForMeasuredDeceuninck70_45: true,
+  mixedAnglesProven: false,
+  productionHasDualEndAnglePair: false,
+  productionHasDesignReportToRequiredPartsBoundary: false,
+  productionHasCanonicalDeceuninck70Identity: false,
+  weldingWasteAlreadyAppliedInProductionCutLength: false,
+  unsupportedProfilesCannotInheritSilentlyInProduction: false,
+  parityAdapterHasWeldingWasteConsumer: true,
+  parityAdapterHasDualEndAngles: true,
+  parityAdapterHasDeceuninckProfileCodes: true,
+  parityAdapterCanFailClosedOnMixedAngles: true,
+};
+
+export function evaluateFormulaScopeAuthorization(
+  args: Partial<Fp024c11ArchitectureFacts> = {}
+): {
+  classification: Fp024c11ImplementationClassification;
+  authorizesFormulaChange: false;
+  authorizesProductionEngineChange: false;
+  boundedDeceuninck70FortyFiveWeldRule: 'ELIGIBLE_FOR_IMPLEMENTATION_REVIEW' | 'UNPROVEN';
+  generalizedManufacturingFormula: 'UNPROVEN';
+  mixedAngleStatus: 'UNPROVEN';
+  reason: string;
+} {
+  const facts: Fp024c11ArchitectureFacts = {
+    ...FP024C11_ALMONA_PIPELINE_FACTS,
+    ...args,
+  };
+
+  const evidenceSufficient =
+    facts.c6ThroughC10Accepted &&
+    facts.directWeldTermLinearityProvenForMeasuredDeceuninck70_45;
+
+  if (!evidenceSufficient) {
+    return {
+      classification: 'UNPROVEN',
+      authorizesFormulaChange: false,
+      authorizesProductionEngineChange: false,
+      boundedDeceuninck70FortyFiveWeldRule: 'UNPROVEN',
+      generalizedManufacturingFormula: 'UNPROVEN',
+      mixedAngleStatus: 'UNPROVEN',
+      reason: 'C.6–C.10 evidence is insufficient to authorize even a bounded weld rule.',
+    };
+  }
+
+  const productionCanExpressFailClosed =
+    facts.productionHasDualEndAnglePair &&
+    facts.productionHasDesignReportToRequiredPartsBoundary &&
+    facts.productionHasCanonicalDeceuninck70Identity &&
+    !facts.weldingWasteAlreadyAppliedInProductionCutLength &&
+    facts.unsupportedProfilesCannotInheritSilentlyInProduction &&
+    !facts.mixedAnglesProven;
+
+  const adapterCanExpressFailClosed =
+    facts.parityAdapterHasWeldingWasteConsumer &&
+    facts.parityAdapterHasDualEndAngles &&
+    facts.parityAdapterHasDeceuninckProfileCodes &&
+    facts.parityAdapterCanFailClosedOnMixedAngles &&
+    !facts.mixedAnglesProven;
+
+  if (productionCanExpressFailClosed) {
+    return {
+      classification: 'BOUNDED_IMPLEMENTATION_SAFE',
+      authorizesFormulaChange: false,
+      authorizesProductionEngineChange: false,
+      boundedDeceuninck70FortyFiveWeldRule: 'ELIGIBLE_FOR_IMPLEMENTATION_REVIEW',
+      generalizedManufacturingFormula: 'UNPROVEN',
+      mixedAngleStatus: 'UNPROVEN',
+      reason:
+        'Production architecture could express an explicit fail-closed scope. C.11 still does not implement it.',
+    };
+  }
+
+  if (adapterCanExpressFailClosed) {
+    return {
+      classification: 'PARITY_ADAPTER_ONLY_SAFE',
+      authorizesFormulaChange: false,
+      authorizesProductionEngineChange: false,
+      boundedDeceuninck70FortyFiveWeldRule: 'ELIGIBLE_FOR_IMPLEMENTATION_REVIEW',
+      generalizedManufacturingFormula: 'UNPROVEN',
+      mixedAngleStatus: 'UNPROVEN',
+      reason:
+        'Evidence supports a fail-closed DoWin parity-adapter contract only. Canonical production engines lack dual-end angles, a Design Report → Required Parts boundary, and a canonical Deceuninck 70 identity.',
+    };
+  }
+
+  return {
+    classification: 'PRODUCTION_IMPLEMENTATION_UNSAFE',
+    authorizesFormulaChange: false,
+    authorizesProductionEngineChange: false,
+    boundedDeceuninck70FortyFiveWeldRule: 'UNPROVEN',
+    generalizedManufacturingFormula: 'UNPROVEN',
+    mixedAngleStatus: 'UNPROVEN',
+    reason:
+      'Evidence is real, but neither production nor the parity adapter can express the proven scope without guessing.',
+  };
+}
+
+export const FP024C11_FORMULA_SCOPE_AUTHORIZATION = {
+  id: 'FP024C11_FORMULA_SCOPE_AUTHORIZATION',
+  status: 'AUTHORIZATION_CHECKPOINT',
+  independentReviewOfFp024c10: 'ACCEPTED',
+  repositoryAuditOnly: true,
+  formulasModified: false,
+  authorizesFormulaChange: false,
+  authorizesProductionEngineChange: false,
+  authorizesParityAdapterImplementationThisCheckpoint: false,
+  boundedDeceuninck70FortyFiveWeldRule: 'ELIGIBLE_FOR_IMPLEMENTATION_REVIEW',
+  generalizedManufacturingFormula: 'UNPROVEN',
+  implementationClassification: evaluateFormulaScopeAuthorization().classification,
+  mixedAngleStatus: 'UNPROVEN',
+  fp027: {
+    authorityChanged: false,
+    rootCause: 'UNPROVEN',
+    conservationWorkTouched: false,
+    combinedWithC11: false,
+  },
+  discardedTodayWork1940: {
+    classification: 'INVALID_FOR_CAUSAL_AUTHORITY',
+    reason: 'Weld=0 had not persisted',
+    usedInPositiveConclusion: false,
+    preservedInAuditHistory: true,
+  },
+  operationalWeldingWasteMm: 0,
+  weldingWasteMustNotBeChangedThisCheckpoint: true,
+  acceptedC10: {
+    status: FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.status,
+    directWeldTermLinearity:
+      FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.directWeldTermLinearity,
+    weld2NinetyNoObservedEffect:
+      FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.ninetyStatus,
+    weldCausalityProfileCoverage: 'KASA + KANAT + CITA',
+    threePointTable: FP024C10_THREE_POINT_TABLE,
+  },
+  provenScope: {
+    system: FP024C11_CANONICAL_PROFILE_SYSTEM,
+    profiles45: FP024C11_MEASURED_45_PROFILE_CODES,
+    profiles90: FP024C11_MEASURED_90_PROFILE_CODES,
+    weldingWasteMm: FP024C11_MEASURED_WELDING_WASTE_MM,
+    fortyFiveReportToRequiredParts: 'tracks Welding Waste at 0→0, 2→+2, 3→+3',
+    ninetyOrtaReportToRequiredParts: '0 / 0 / 0 at Welding Waste 0/2/3',
+  },
+  unprovenScope: [
+    'every 45° profile in every system',
+    'mixed-angle cuts (45/90, 90/45, other)',
+    'other profile systems',
+    'non-Deceuninck families',
+    'interaction with Saw Thickness',
+    'interaction with Trim',
+    'arbitrary Welding Waste values outside measured {0, 2, 3}',
+    'universal mathematical rule',
+    'FP-027 root cause',
+  ],
+  pipeline: {
+    designReportSemantic:
+      'src/lib/fabricator/cutLengthSemantics.ts:18-22 nominalLengthMm; src/types/fabricator.ts:708-714 reportedWeldedLengthMm/nominalLengthMm',
+    designReportGeneratorEquivalent:
+      'src/lib/fabricator/UnitProfileGatherer.ts:489-490 plannedLength = finished dimension; src/lib/fabricator/OptimizationEngine.ts:31 plannedLength',
+    cutGeneration:
+      'src/lib/fabricator/CuttingListGenerator.ts:36-63,134-148; src/lib/fabricator/UPVCCuttingEngine.ts:243-314 generateOptimizedCutList; src/lib/fabricator/HardenedCuttingListGenerator.ts; src/lib/reports/CuttingListGenerator.ts:24-33 report transform only',
+    angleRepresentation:
+      'src/types/fabricator.ts:697 Cut.angle (single end); src/lib/fabricator/production/CutSheetGenerator.ts:81 angleDeg: cut.angle ?? 0; src/lib/fabricator/UPVCCuttingEngine.ts:269,281 hardcoded miter 45; src/lib/fabricator/dowinParity/DowinParityLengthEngine.ts:165-166 left/right with ?? 45 default',
+    profileSystemIdentity:
+      'src/types/fabricator.ts:755 MeasurementData.systemPackId; src/lib/fabricator/golden/dowinPhysicalLengthFixture.ts:272 profileSystem "Deceuninck 70\'lik PVC Sistemi"; SYSTEM_PACKS has no Deceuninck pack',
+    weldingWasteSettingAccess:
+      'canonical manufacturing-settings module: weldingWasteMm field ~:36, platform/yilmazcad-parity defaults 3 ~:100/:121, resolver ~:187-211. Exact path recorded in docs/audits/FP-024C11-FORMULA-SCOPE-AUTHORIZATION_2026-09-13.md',
+    weldingWasteConsumers:
+      'src/lib/fabricator/dowinParity/DowinParityLengthEngine.ts:85-99,139-150 sash packed = inner + Basma + Kaynak + weldingWasteMm. Not consumed by UPVCCuttingEngine, AlmonaCuttingEngine, barPackAccounting, or production/*',
+    requiredPartsSemantic:
+      'src/lib/fabricator/cutLengthSemantics.ts:24-26 packedSegmentMm; src/types/fabricator.ts:715-719 packedSegmentMm (DoWin Required Parts graphic)',
+    packedPhysicalLength:
+      'src/lib/fabricator/barPackAccounting.ts kerf/trim only; historical Cut.length packing; CutSheetGenerator.ts:71-76 uses cut.length',
+    machineCncLength:
+      'src/types/fabricator.ts:725-729 machineInstructionLengthMm; src/lib/fabricator/production/machineExportPreflight.ts export gate only (no length formula); DowinParityLengthEngine.ts:261-268 machineInstructionMm null',
+  },
+  answers: {
+    designReportToRequiredPartsBoundary:
+      'Closest equivalent is cutLengthSemantics nominalLengthMm (Design Report) → packedSegmentMm (Required Parts). Production generators do not populate that split; they emit fused plannedLength/finalLength/Cut.length.',
+    weldingWasteCurrentlyApplied:
+      'Stored as a first-class manufacturing setting. Applied only in isolated DowinParityLengthEngine sash packed formula. Not applied in canonical production cut length.',
+    doubleCountingRisk:
+      'HIGH if stacked on UPVCCuttingEngine K-factor+burnOff, or on parity sashInner+Basma+Kaynak+Weld. Geometric role offsets (L+50 / L-40) and bar kerf are different layers.',
+    angleCanonicality:
+      'Production Cut.angle is a single number and generators often hardcode 45. Not sufficient to distinguish 45/45 vs 90/90 vs mixed. Evidence/parity leftAngleDeg+rightAngleDeg can distinguish if both ends are required and missing angles are not defaulted to 45.',
+    deceuninckIdentity:
+      'Deterministic in evidence as profileSystem "Deceuninck 70\'lik PVC Sistemi" plus profileCode allowlist. Not a canonical SYSTEM_PACKS id. A hidden production includes("Deceuninck") branch would be an unsafe Tier-3 special case.',
+    deceuninckOnlyHiddenSpecialCase:
+      'UNSAFE in production without an explicit fail-closed allowlist. Eligible only as a named parity-adapter contract with FAIL_CLOSED outside measured scope.',
+  },
+  doubleCounting: {
+    productionKFactorBurnOff:
+      'src/lib/fabricator/UPVCCuttingEngine.ts:169-208 calculateUPVCCutLength adds burnOffMm + K-factor + cooling. Independent of weldingWasteMm. Adding weld on this path would double-count weld-like allowance.',
+    paritySashFormula:
+      'DowinParityLengthEngine sash already adds weldingWasteMm with Basma/Kaynak. C.6–C.10 proved DoWin Required Parts − Design Report = Welding Waste alone. Stacking Report+Weld on that packed sash path would double-count weld.',
+    roleGeometricOffsets:
+      'src/lib/fabricator/roleDetection.ts:121-193 and cuttingFormulaConstants.ts:19-38 (frame +50 / sash −40) are geometric, not Welding Waste.',
+    barPackKerf: 'src/lib/fabricator/barPackAccounting.ts saw kerf + trim only. Not weld.',
+    naiveSilentRule: 'if (angle == 45) length += weldingWaste is FORBIDDEN.',
+  },
+  requiredGuardrails: [
+    'Fail closed unless profileSystem is exactly Deceuninck 70\'lik PVC Sistemi',
+    'Fail closed unless profileCode is in the measured 45° or 90° allowlist',
+    'Require both leftAngleDeg and rightAngleDeg; never default missing to 45',
+    'Treat 45/90, 90/45, and other mixed angles as UNPROVEN / FAIL_CLOSED',
+    'Apply weld only at Design Report → Required Parts; do not stack on K-factor, burnOff, or Basma+Kaynak+Weld',
+    'Fail closed for Welding Waste values outside measured {0, 2, 3}',
+    'Do not implement in UPVCCuttingEngine, CuttingListGenerator, AlmonaCuttingEngine, or production/*',
+    'Do not encode a silent if (angle == 45) production rule',
+    'Keep GENERALIZED_MANUFACTURING_FORMULA = UNPROVEN',
+    'Keep FP-027 root cause = UNPROVEN; do not combine defects',
+  ],
+  boundedImplementationContract: {
+    appliesTo: 'DoWin compatibility/parity adapter only; not canonical production engines',
+    fortyFive:
+      'IF system+profile allowlist AND left=45 AND right=45 AND weld∈{0,2,3} THEN requiredPartsMm = designReportPhysicalMm + weldingWasteMm',
+    ninetyOrta:
+      'IF system+ORTA-KAYIT-70 AND left=90 AND right=90 THEN requiredPartsMm = designReportPhysicalMm (no weld term)',
+    otherwise: 'FAIL_CLOSED',
+    implementedThisCheckpoint: false,
+  },
+  remainingRisks: [
+    'Parity adapter currently defaults missing angles to 45 (DowinParityLengthEngine.ts:165-166). Future impl must reject missing angles.',
+    'Parity adapter does not currently ingest Design Report millimetres (nominalLengthMm is null in almonaParityActualsForAsdd).',
+    'Production Cut has no dual-end angle pair; a 45-only check would silently misclassify mixed cuts.',
+    'Deceuninck 70 is evidence-canonical, not a SYSTEM_PACKS identity.',
+    'Measured weld domain is {0, 2, 3} only.',
+  ],
+  physicalLengthScore: '6.0/10',
+  scoreMayMoveOnlyAfter: ['implementation', 'tests', 'golden replay', 'independent review'],
 } as const;
 
 export function evaluateNinetyControlFixtureSelection(args: {
