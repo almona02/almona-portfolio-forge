@@ -32,11 +32,14 @@ import {
   DOWIN_FP024C3_RUN_C_RUN,
   DOWIN_OBSERVED_SOLVER_STAGES,
   FP027_CONSERVATION_TRACE_LAYERS,
+  FP027_E1_DEMAND1_NONORTA,
+  FP027_E1_GENERATED_ROWS,
   FP027_E3_BARS,
   FP027_E3_KASA_SPARE,
   FP027_E3_REQUIRED_PIECES,
   FP027_REQUIRED_PARTS_CONSERVATION_GATE,
   classifyRequiredVsPlanConservation,
+  evaluateDemandOneNonOrtaFixture,
   STOCK_COMMIT_DIALOG_TRIGGER,
   barContentFingerprint,
   barSequenceFingerprint,
@@ -1211,7 +1214,7 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(gate.leadingHypothesisAuthority).toBe('CONSISTENT_WITH_ALL_OBSERVED_DATA');
     expect(gate.fillTheBarHypothesis).toBe('WEAKENED');
     expect(gate.simpleSpareCapacityGeneralization).toBe('NOT_SUPPORTED_BY_E3');
-    expect(gate.nextSpecifiedExperiment).toBe('E1');
+    expect(gate.nextSpecifiedExperiment).toBe('E2');
     expect(gate.fixtureDiscriminatingPower).toBe('INSUFFICIENT');
     expect(gate.statement).toContain('root cause remains UNPROVEN');
     // Three identical outcomes are not a proof of determinism.
@@ -1221,12 +1224,13 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(gate.e3ProvesDemandInequality).toBe(false);
     const e1 = gate.discriminatingExperiments.find((e) => e.id === 'E1');
     const e2 = gate.discriminatingExperiments.find((e) => e.id === 'E2');
-    expect(e1?.authorized).toBe(false);
+    expect(e1?.classification).toBe('E1_FIXTURE_NOT_OBTAINABLE_NATURALLY');
     expect(e1?.fixture).toContain('non-ORTA');
-    expect(e1?.fixture).toContain('demand exactly 1');
     expect(e1?.fixture).toContain('do not inject');
     expect(e2?.authorized).toBe(false);
     expect(e2?.fixture).toContain('after E1');
+    expect(gate.e1ClosesGate).toBe(false);
+    expect(gate.injectedSyntheticRowIsValidEvidence).toBe(false);
   });
 
   it('bounds the conservation divergence to the layers DoWin does not expose', () => {
@@ -1317,6 +1321,41 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(classifyRequiredVsPlanConservation({ requiredCount: null, planCount: 4 })).toBe(
       'UNPROVEN'
     );
+  });
+
+  it('records E1 as a natural-fixture failure and does not treat that as a solve', () => {
+    const e1 = FP027_E1_DEMAND1_NONORTA;
+    expect(e1.fixtureValid).toBe(false);
+    expect(e1.solved).toBe(false);
+    expect(e1.injectedRow).toBe(false);
+    expect(e1.classification).toBe('E1_FIXTURE_NOT_OBTAINABLE_NATURALLY');
+    expect(e1.closesFp027).toBe(false);
+    expect(e1.authorizesFormulaChange).toBe(false);
+    expect(e1.provesDemandInequality).toBe(false);
+    expect(e1.physicalLengthScore).toBe('6.0/10');
+    expect(e1.demand1Hypothesis).toBe('UNRESOLVED_FIXTURE_UNOBTAINABLE');
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
+    expect(isControlFixtureAuthorized()).toBe(false);
+
+    const discovered = evaluateDemandOneNonOrtaFixture(FP027_E1_GENERATED_ROWS);
+    expect(discovered.fixtureValid).toBe(false);
+    expect(discovered.classification).toBe('E1_FIXTURE_NOT_OBTAINABLE_NATURALLY');
+    expect(discovered.profileCounts).toEqual({
+      'Deceuninck-KASA-70': 4,
+      'Deceuninck-KANAT-70': 4,
+      'Deceuninck-CITA-20': 4,
+    });
+    expect(discovered.candidateProfile).toBeNull();
+
+    // Even a lone non-ORTA row would be rejected as E1 evidence if it was injected.
+    const fakeLoneKasa = evaluateDemandOneNonOrtaFixture([
+      { profileCode: 'Deceuninck-KASA-70', quantity: 1 },
+    ]);
+    expect(fakeLoneKasa.fixtureValid).toBe(true);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.injectedSyntheticRowIsValidEvidence).toBe(
+      false
+    );
+    expect(e1.injectedRow).toBe(false);
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

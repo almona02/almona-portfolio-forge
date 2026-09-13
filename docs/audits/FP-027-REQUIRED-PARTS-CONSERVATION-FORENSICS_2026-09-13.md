@@ -146,7 +146,7 @@ Each changes **only the design fixture**. None changes stock, settings, machine 
 | Id | Fixture | Purpose | Status |
 |----|---------|---------|--------|
 | **E3** | 500 × 500 fixed frame — KASA 4 × 503 and CITA 4 × 419, both one-bar with large spare, 45°, non-zero price | structural spare-fill vs ORTA-specific | **MEASURED — EXACT_CONSERVATION** on both profiles |
-| **E1** | demand exactly 1 on a **non-ORTA** profile: one physical piece, spare room for duplicates, 45° if a valid design emits it, non-zero cost. Natural design only | demand=1 vs ORTA / 90° / profile-specific | **SPECIFIED, NOT AUTHORIZED** — next |
+| **E1** | demand exactly 1 on a **non-ORTA** profile. Native single-sash 1000×1500 inspected: KASA 4 / KANAT 4 / CITA 4 / ORTA 0 | demand=1 vs ORTA / 90° / profile-specific | **E1_FIXTURE_NOT_OBTAINABLE_NATURALLY** — not solved |
 | **E2** | 90° non-ORTA or ORTA geometry discriminator | angle / ORTA-geometry vs remaining demand=1 residue | **SPECIFIED AFTER E1, NOT AUTHORIZED** |
 
 **E3 has been run** (13 September 2026) and independently reviewed: KASA and CITA conserved; blanket bar-fill is **WEAKENED**; simple spare-capacity generalization is **NOT SUPPORTED BY E3**. That is not `ROOT_CAUSE_SOLVED`. See `docs/audits/FP-027-OPTIMIZATION-REQUIRED-PARTS-CONSERVATION_2026-09-13.md`.

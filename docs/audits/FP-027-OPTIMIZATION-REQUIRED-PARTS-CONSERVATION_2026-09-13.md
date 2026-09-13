@@ -4,7 +4,7 @@
 |-------|--------|
 | Date | 13 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
-| Experiment | **FP-027-E3 only** — KASA spare-capacity discrimination |
+| Experiment | E3 measured; **E1 fixture discovery complete** — no solve |
 | Gate | 🔓 **FORENSICS OPEN** |
 | Root cause | **UNPROVEN** |
 | Fix | **NOT IMPLEMENTED** |
@@ -265,3 +265,74 @@ E1 demand=1 non-ORTA
 ```
 
 Restrictions unchanged: no formula changes; score 6.0/10; PR #32 Draft / DO NOT MERGE; root cause UNPROVEN.
+
+---
+
+## E1 — demand=1 non-ORTA fixture discovery
+
+Executed 13 September 2026. **Not solved.** Natural-fixture requirement is mandatory.
+
+### Pre-run stock / settings
+
+| Axis | Result |
+|------|--------|
+| Warehouse | **IDENTICAL to V2** — `c8626da5…`, cards unchanged |
+| Settings | Fresh capture `e1-settings-20260913-164948`. Controlled values match (Weld 3 / Saw 4 / Trim 0 / Sash 7 / Glazing 2.5 / min offcut 500 / DC-600). DC-550 SKH enabled globally. Pixel diff vs E3 is 241 px on the General Settings tab chrome only |
+
+### Identities (project/design only)
+
+| Item | Value |
+|------|-------|
+| Project | Id=7, No **100007**, `FP027_E1_DEMAND1_NONORTA` |
+| Design | Id=9, `E1_DEMAND1_NONORTA`, 1000 × 1500, single-sash, `DESIGN_VALIDATION VALID` |
+| Production plan | **not created** |
+| OptimizationRun | **not created** — no solve |
+
+### Fixture discovery process
+
+Principled, one native template. Not an edge-case hunt.
+
+1. Catalog: Deceuninck 70 linear-cut roles are Frame (KASA), Sash (KANAT), Mullion (ORTA), Glazing bead (CITA). Support sheet and corner connections are accessories / non-target.
+2. E3 already measured a native **fixed single panel**: KASA 4 + CITA 4. No demand=1.
+3. E1 used the native **Single sash** template — the first drawing that includes the three preferred non-ORTA profiles together (KASA, then KANAT, then CITA).
+4. Add Mullion was **not** used: it would emit ORTA demand=1, which fails the non-ORTA requirement.
+
+Log: `E1_DEMAND1_NONORTA için 12 satır cut list üretildi.` Footer: Total Quantity 12, Total Length 13996 mm.
+
+### Generated required parts (not optimized)
+
+| Profile | Rows | Lengths (mm) | Angles | requiredCount |
+|---------|------|--------------|--------|---------------|
+| Deceuninck-KASA-70 | 4 | 1003, 1003, 1503, 1503 | 45 / 45 | **4** |
+| Deceuninck-KANAT-70 | 4 | 933, 933, 1433, 1433 | 45 / 45 | **4** |
+| Deceuninck-CITA-20 | 4 | 813, 813, 1313, 1313 | 45 / 45 | **4** |
+| Deceuninck-ORTA-KAYIT-70 | 0 | — | — | **0** |
+
+No profile has `requiredCount = 1`. No accessories counted.
+
+```text
+E1_FIXTURE_VALID = NO
+E1 classification = E1_FIXTURE_NOT_OBTAINABLE_NATURALLY
+solved = no
+injected row = no
+```
+
+### Why this stops
+
+Window geometry in this system pairs members. The only native odd-count linear-cut role is Mullion, and Mullion is ORTA. Manufacturing a lone KASA/KANAT/CITA row by typing it into the optimizer would be invalid evidence.
+
+Demand=1 as a mechanism is therefore **not tested**. It is **not eliminated**. Status: `UNRESOLVED_FIXTURE_UNOBTAINABLE`.
+
+### Hypothesis update (no solve, so no conservation reading)
+
+| Hypothesis | After E1 fixture failure |
+|------------|--------------------------|
+| demand=1 alone | **UNRESOLVED** — fixture could not isolate it |
+| ORTA / profile-specific | **still live** |
+| 90° | **UNRESOLVED** |
+| Blanket bar-fill | unchanged from E3: **WEAKENED** |
+| Root cause | **UNPROVEN** |
+
+E1 does not close FP-027. E2 remains **not authorized**. 90° remains **GATED**. Stock was not mutated (no export, no Stock Update modal). Offcut/remnant axis still **UNPROVEN**.
+
+Solver-stage / machine export / REMAINING_LENGTH: **not measured** — no solve.

@@ -1923,7 +1923,7 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
   fillTheBarHypothesis: 'WEAKENED',
   simpleSpareCapacityGeneralization: 'NOT_SUPPORTED_BY_E3',
   fixtureDiscriminatingPower: 'INSUFFICIENT',
-  nextSpecifiedExperiment: 'E1',
+  nextSpecifiedExperiment: 'E2',
   statement:
     'The +3 ORTA surplus is repeatable across all three measured-identical runs and is not correlated with the observed stochastic CITA topology variation. Evidence therefore supports a deterministic or upstream conservation defect, but root cause remains UNPROVEN.',
   notProven: [
@@ -1946,9 +1946,9 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
       fixture:
         'demand exactly 1 on a non-ORTA profile: one physical piece, spare room for duplicates on the same bar, 45 degrees if a valid design emits it, non-zero cost. Natural design only — do not inject cut rows. If no valid design emits demand=1, STOP with UNPROVEN fixture.',
       separates: 'demand=1 mechanism vs ORTA / 90-degree / profile-specific handling',
-      authorized: false,
-      executed: false,
-      classification: null,
+      authorized: true,
+      executed: true,
+      classification: 'E1_FIXTURE_NOT_OBTAINABLE_NATURALLY',
     },
     {
       id: 'E2',
@@ -1964,6 +1964,10 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
   e3ClosesGate: false,
   e3AuthorizesFormulaChange: false,
   e3ProvesDemandInequality: false,
+  e1ClosesGate: false,
+  e1AuthorizesFormulaChange: false,
+  e1ProvesDemandInequality: false,
+  injectedSyntheticRowIsValidEvidence: false,
   almonaExposure: 'NOT_EXPOSED_BY_CONSTRUCTION',
   almonaInvariantAsserted: false,
   almonaNote:
@@ -2100,6 +2104,111 @@ export const FP027_E3_KASA_SPARE = {
     H2_barFill: 'FURTHER_WEAKENED',
     H3_ortaSpecific: 'STRENGTHENED_AS_REMAINING_LIVE_SET',
   },
+} as const;
+
+const ORTA_PROFILE_CODE = 'Deceuninck-ORTA-KAYIT-70';
+
+/**
+ * Counts required linear-cut pieces by profile. Accessories and
+ * non-cut metadata must not be passed in. A valid E1 target is a
+ * non-ORTA profile whose count is exactly 1. Injecting a synthetic
+ * row to manufacture that count is invalid evidence.
+ */
+export function evaluateDemandOneNonOrtaFixture(
+  pieces: readonly { profileCode: string; quantity?: number }[] | null | undefined
+): {
+  fixtureValid: boolean;
+  classification: 'E1_FIXTURE_VALID' | 'E1_FIXTURE_NOT_OBTAINABLE_NATURALLY' | 'UNPROVEN';
+  profileCounts: Readonly<Record<string, number>>;
+  candidateProfile: string | null;
+} {
+  if (pieces == null) {
+    return {
+      fixtureValid: false,
+      classification: 'UNPROVEN',
+      profileCounts: {},
+      candidateProfile: null,
+    };
+  }
+  const profileCounts: Record<string, number> = {};
+  for (const piece of pieces) {
+    const qty = piece.quantity ?? 1;
+    profileCounts[piece.profileCode] = (profileCounts[piece.profileCode] ?? 0) + qty;
+  }
+  const candidates = Object.entries(profileCounts).filter(
+    ([code, count]) => code !== ORTA_PROFILE_CODE && count === 1
+  );
+  if (candidates.length === 0) {
+    return {
+      fixtureValid: false,
+      classification: 'E1_FIXTURE_NOT_OBTAINABLE_NATURALLY',
+      profileCounts,
+      candidateProfile: null,
+    };
+  }
+  return {
+    fixtureValid: true,
+    classification: 'E1_FIXTURE_VALID',
+    profileCounts,
+    candidateProfile: candidates[0][0],
+  };
+}
+
+/** E1 required rows as generated. Quantity is 1 per assembly row; profile totals are 4/4/4. */
+export const FP027_E1_GENERATED_ROWS: readonly {
+  assembly: string;
+  profileCode: string;
+  packedLengthMm: number;
+  leftAngleDeg: number;
+  rightAngleDeg: number;
+  quantity: number;
+}[] = [
+  { assembly: 'Frame Top', profileCode: 'Deceuninck-KASA-70', packedLengthMm: 1003, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Frame Bottom', profileCode: 'Deceuninck-KASA-70', packedLengthMm: 1003, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Frame Leftt', profileCode: 'Deceuninck-KASA-70', packedLengthMm: 1503, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: 'Frame Right', profileCode: 'Deceuninck-KASA-70', packedLengthMm: 1503, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: '(sash) Top', profileCode: 'Deceuninck-KANAT-70', packedLengthMm: 933, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: '(sash) Bottom', profileCode: 'Deceuninck-KANAT-70', packedLengthMm: 933, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: '(sash) Leftt', profileCode: 'Deceuninck-KANAT-70', packedLengthMm: 1433, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: '(sash) Right', profileCode: 'Deceuninck-KANAT-70', packedLengthMm: 1433, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: '(sash) GlazingBead Top', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 813, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: '(sash) GlazingBead Bottom', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 813, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: '(sash) GlazingBead Leftt', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 1313, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+  { assembly: '(sash) GlazingBead Right', profileCode: 'Deceuninck-CITA-20', packedLengthMm: 1313, leftAngleDeg: 45, rightAngleDeg: 45, quantity: 1 },
+];
+
+export const FP027_E1_DEMAND1_NONORTA = {
+  id: 'FP027_E1_DEMAND1_NONORTA',
+  fixtureValid: false,
+  solved: false,
+  classification: 'E1_FIXTURE_NOT_OBTAINABLE_NATURALLY',
+  projectId: '100007',
+  projectDbId: 7,
+  designId: 'E1_DEMAND1_NONORTA',
+  designDbId: 9,
+  widthMm: 1000,
+  heightMm: 1500,
+  profileSystem: "Deceuninck 70'lik PVC Sistemi",
+  generatedRowCount: 12,
+  profileTotals: {
+    'Deceuninck-KASA-70': 4,
+    'Deceuninck-KANAT-70': 4,
+    'Deceuninck-CITA-20': 4,
+  },
+  ortaPresent: false,
+  injectedRow: false,
+  warehouseSha256:
+    'c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012',
+  settingsCaptureId: 'e1-settings-20260913-164948',
+  settingsFullWindowSha256:
+    '3393d0a6e3205334e36326fa1f4954ff2aa9a8096f2c4817848bc94befefff22',
+  closesFp027: false,
+  authorizesFormulaChange: false,
+  provesDemandInequality: false,
+  demand1Hypothesis: 'UNRESOLVED_FIXTURE_UNOBTAINABLE',
+  ortaSpecificHypothesis: 'STILL_LIVE',
+  ninetyDegreeHypothesis: 'UNRESOLVED',
+  physicalLengthScore: '6.0/10',
 } as const;
 
 export interface ControlledFixtureRow {
