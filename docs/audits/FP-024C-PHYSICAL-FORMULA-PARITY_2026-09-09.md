@@ -384,24 +384,25 @@ Classification: **`NO_OBSERVED_COMPENSATION_ON_90_CONTROL`**.
 
 Preferred KASA frames:
 
-| Layer | mm |
-|-------|----|
-| Design outer (canvas / FRAME_X) | 1200 |
-| NOMINAL (required-parts) | 1203.0 |
-| PACKED | 1203.0 |
-| MACHINE | 1203.0 |
+| Layer | mm | Semantic status |
+|-------|----|-----------------|
+| Design outer (canvas / FRAME_X) | 1200 | measured design geometry |
+| Design Preview PDF report | **NOT_EXPORTED** | asdd nominal/report analog |
+| Cut List (Preview) / Required Parts | 1203.0 | ingested as “nominal” in C.5 — **not accepted as asdd nominal** |
+| PACKED | 1203.0 | measured |
+| MACHINE LENGTH | 1203.0 | measured |
 
-Required-parts → packed → machine deltas: **0**. Design-outer → generated +3 is recorded only; **not encoded** as `45° = +3`; **not assigned** to Welding Waste.
+Required-parts → packed → machine: **OBSERVED 0**. Independent review does **not** accept this as the same “0 compensation” as asdd 1000 → 1003. Design-outer → required-parts +3 is **NOT_YET_RECONCILED**. Not encoded as `45° = +3`. Not assigned to Welding Waste.
 
-CITA 540 / 1119: nominal = packed; machine **NOT_MEASURED** (not in DC-600 export).
+CITA 540 / 1119: required-parts = packed; machine **NOT_MEASURED**.
 
-### Cross-angle observation
+### Cross-angle observation — revised
 
-90° class observed inter-layer delta: **0**  
-45° class observed inter-layer delta (required-parts / packed / machine): **0**  
-Difference between classes on those layers: **NOT_OBSERVED**
-
-Do not conclude why design-outer and required-parts differ for frames.
+90° required-parts → packed → machine: **PROVEN 0**  
+45° required-parts → packed: **OBSERVED 0**  
+45° true design/report nominal → required-parts: **NOT_YET_RECONCILED**  
+“90° and 45° have the same compensation”: **UNPROVEN**  
+Generalized compensation formula: **UNPROVEN**
 
 ### Machine export
 
@@ -412,3 +413,50 @@ Do not conclude why design-outer and required-parts differ for frames.
 Record A is primary. Record B is passive only. Shared hashes do not share verdicts. FP-027 root cause stays **UNPROVEN**. Production formulas stay **FROZEN**. Physical-length score stays **6.0/10**. This run does not raise the score. PR #32 stays Draft / **DO NOT MERGE**.
 
 Licensed screenshots and the `.dw` file are **not committed**.
+
+---
+
+## FP-024C.6 — length-layer semantics (13 September 2026)
+
+Existing C.5 artifacts only. **Do not rerun DoWin. Do not patch formulas.**
+
+### Single question
+
+Where exactly does the 1200 → 1203 frame transformation occur: Design geometry, Design Preview/report, Required Parts, packed plan, or machine export?
+
+### asdd reference (already exported)
+
+`OptimizationReport_20260909_181432_DesignPreview.pdf` lists KASA Length (mm) **1000** and ORTA **1416**. Packed/machine frames on that job were 1003 / 1503. That is the three-layer model: report nominal → packed +3 → machine follows packed.
+
+### C.5 package (this control)
+
+| Layer | KASA | ORTA |
+|-------|------|------|
+| Design canvas outer | 1200 | (no pre-encoded mullion length) |
+| Design Preview PDF | **NOT_EXPORTED** | **NOT_EXPORTED** |
+| Cut List for `FP024C_90_CONTROL_DESIGN` (Preview) | 1203 | 1116 |
+| Optimizer Required Parts | 1203 | 1116 |
+| Packed plan | 1203 | 1116 |
+| DC-600 LENGTH | 1203 | 1116 |
+| DC-600 FRAME_X/Y | 1200 | 1200 |
+
+C.5 ingested `after-design-save` canvas as `designPreview` hash. That is **not** the asdd Design Preview PDF.
+
+The +3 first appears on the Production **Cut List (Preview)** / Required Parts. It is already present before packed/machine. Whether a Design Preview *report* would still say 1200 (asdd model) or already 1203 is **unknown** until that PDF is exported from the **existing** package, without a new solve.
+
+### Authority after this pass
+
+```text
+FP-024C.5 control = MEASURED
+90° required-parts→packed→machine = PROVEN 0
+45° required-parts→packed = OBSERVED 0
+45° packed→machine = OBSERVED 0
+45° design/report nominal→required-parts = NOT_YET_RECONCILED
+cross-angle same compensation = UNPROVEN
+generalized formula = UNPROVEN
+score = 6.0/10
+formulas = FROZEN
+PR #32 = DRAFT / DO NOT MERGE
+```
+
+Possible later evidence action: export Design Preview PDF from the existing `FP024C_90_CONTROL` package without a new solve. **Not authorized by this checkpoint.** Do not infer the missing Design Preview value.

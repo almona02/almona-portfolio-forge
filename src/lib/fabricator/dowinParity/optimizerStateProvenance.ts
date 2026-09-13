@@ -2581,9 +2581,17 @@ export const FP024C_90_CONTROL_COMPENSATION = {
     },
   ],
   classification: FP024C_90_CONTROL_ORTA_LAYERS.classification,
+  ninetyRequiredPartsToPacked: 'PROVEN',
+  ninetyPackedToMachine: 'PROVEN',
+  fortyFiveRequiredPartsToPacked: 'OBSERVED',
+  fortyFivePackedToMachine: 'OBSERVED',
+  fortyFiveDesignOrReportNominalToRequiredParts: 'NOT_YET_RECONCILED',
   fortyFiveClassObservedInterLayerDeltaMm: 0,
   ninetyClassObservedInterLayerDeltaMm: 0,
-  crossAngleDifference: 'NOT_OBSERVED_ON_REQUIRED_PACKED_MACHINE_LAYERS',
+  crossAngleDifference: 'UNPROVEN',
+  crossAngleCompensationSame: 'UNPROVEN',
+  generalizedCompensationFormula: 'UNPROVEN',
+  nextGate: 'FP024C6_LENGTH_LAYER_SEMANTICS',
   cannotCiteFp027Conservation: true,
   authorizesFormulaChange: false,
   physicalLengthScore: '6.0/10',
@@ -2639,6 +2647,10 @@ export const FP027_90_CONTROL_CONSERVATION_OBSERVATION = {
   cannotCloseFp027: true,
   cannotProveRootCause: true,
   variableBundle: 'ORTA + demand=1 + 90/90 + single-length + cost/profile',
+  repeatability: 'REPEATABLE_ACROSS_INDEPENDENT_GEOMETRY',
+  asddAndControlledSurplusDelta: 3,
+  thisFixtureSurplusDelta: 4,
+  alwaysDuplicateToFour: 'WEAKENED',
   fp027RootCause: 'UNPROVEN',
 } as const;
 
@@ -2661,6 +2673,58 @@ export const FP024C_NINETY_CONTROL_DUAL_USE = {
   fp027RootCause: 'UNPROVEN',
   physicalLengthScore: '6.0/10',
   formulaFreeze: true,
+} as const;
+
+/**
+ * FP-024C.6 — length-layer semantics. Existing C.5 artifacts only.
+ * Do not rerun DoWin. Do not patch formulas. The missing discriminator
+ * is the Optimization Design Preview PDF for FP024C_90_CONTROL.
+ */
+export const FP024C6_LENGTH_LAYER_SEMANTICS = {
+  id: 'FP024C6_LENGTH_LAYER_SEMANTICS',
+  status: 'OPEN',
+  scientificQuestion:
+    'Where exactly does the 1200 → 1203 frame transformation occur: Design geometry, Design Preview/report, Required Parts, packed plan, or machine export?',
+  fixtureIdentity: 'FP024C_90_CONTROL',
+  doNotRerunDowin: true,
+  doNotPatchFormulas: true,
+  asddDesignPreviewReport: {
+    document: 'OptimizationReport_20260909_181432_DesignPreview.pdf',
+    kasaLengthMm: 1000,
+    ortaLengthMm: 1416,
+    note: 'asdd nominal/report layer. Packed/machine frames were 1003 / 1503.',
+  },
+  controlLayers: {
+    designGeometryOuterMm: { kasa: 1200, orta: null, source: 'design canvas 1200×1200' },
+    designPreviewReportMm: { kasa: null, orta: null, source: 'NOT_EXPORTED' },
+    cutListPreviewMm: { kasa: 1203, orta: 1116, source: "Cut List for FP024C_90_CONTROL_DESIGN (Preview)" },
+    requiredPartsMm: { kasa: 1203, orta: 1116, source: 'optimizer Required Parts' },
+    packedPlanMm: { kasa: 1203, orta: 1116, source: 'optimization bar strip' },
+    machineLengthMm: { kasa: 1203, orta: 1116, source: 'DC-600 Table1.LENGTH/10' },
+    machineFrameXYMm: { kasa: 1200, orta: 1200, source: 'DC-600 FRAME_X/Y' },
+  },
+  designPreviewPdf: {
+    status: 'NOT_EXPORTED',
+    kasaLengthMm: null,
+    ingestedHashWas: 'after-design-save canvas, not OptimizationReport_*_DesignPreview.pdf',
+  },
+  firstPass: 'EXISTING_ARTIFACTS_ONLY',
+  transformation1200To1203FirstObservedAt: 'CUT_LIST_PREVIEW_OR_REQUIRED_PARTS',
+  transformationNotYetIsolatedFrom: 'DESIGN_PREVIEW_REPORT',
+  authority: {
+    ninetyRequiredPartsToPacked: 'PROVEN',
+    ninetyPackedToMachine: 'PROVEN',
+    fortyFiveRequiredPartsToPacked: 'OBSERVED',
+    fortyFivePackedToMachine: 'OBSERVED',
+    fortyFiveDesignOrReportNominalToRequiredParts: 'NOT_YET_RECONCILED',
+    sameCompensationAcrossAngles: 'UNPROVEN',
+    generalizedCompensationFormula: 'UNPROVEN',
+  },
+  nextPossibleEvidenceAction:
+    'Export Design Preview PDF from the existing FP024C_90_CONTROL package without a new solve. Transcribe KASA and ORTA. Do not rerun optimization.',
+  designPreviewExportAuthorizedByThisCheckpoint: false,
+  authorizesFormulaChange: false,
+  physicalLengthScore: '6.0/10',
 } as const;
 
 export function evaluateNinetyControlFixtureSelection(args: {

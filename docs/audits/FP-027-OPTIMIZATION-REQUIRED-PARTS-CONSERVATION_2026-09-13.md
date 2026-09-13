@@ -544,7 +544,7 @@ Same run as `FP024C_90_CONTROL_COMPENSATION`. This section cannot change fixture
 
 REMAINING_LENGTH: ORTA **900.0** (plan remainder after 5 cuts); KASA **1165.4**. Remainder was not recomputed after the export match filter.
 
-ORTA surplus **appeared**. That does **not** prove a cause. Variable bundle remains `ORTA + demand=1 + 90/90 + single-length + cost/profile`.
+ORTA surplus **appeared** on independently selected 1200 × 1200 geometry: required 1 → plan 5 → machine 1. asdd / A/B/C surplus was **+3**; this fixture is **+4**. Conservation is a **REPEATABLE OBSERVATION**. “Always duplicate to four pieces” is **WEAKENED**. Variable bundle remains `ORTA + demand=1 + 90/90 + single-length + cost/profile`.
 
 ```text
 FP-027 root cause = UNPROVEN

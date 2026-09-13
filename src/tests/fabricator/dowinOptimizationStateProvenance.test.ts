@@ -40,6 +40,7 @@ import {
   FP024C_90_CONTROL_COMPENSATION,
   FP024C_NINETY_CONTROL_DUAL_USE,
   FP024C_NINETY_CONTROL_SPEC,
+  FP024C6_LENGTH_LAYER_SEMANTICS,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
   evaluateIndependentNinetyControlFixtureSpec,
@@ -1694,6 +1695,15 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C_90_CONTROL_COMPENSATION.classification).toBe(
       'NO_OBSERVED_COMPENSATION_ON_90_CONTROL'
     );
+    expect(FP024C_90_CONTROL_COMPENSATION.ninetyRequiredPartsToPacked).toBe('PROVEN');
+    expect(FP024C_90_CONTROL_COMPENSATION.ninetyPackedToMachine).toBe('PROVEN');
+    expect(FP024C_90_CONTROL_COMPENSATION.fortyFiveRequiredPartsToPacked).toBe('OBSERVED');
+    expect(FP024C_90_CONTROL_COMPENSATION.fortyFivePackedToMachine).toBe('OBSERVED');
+    expect(FP024C_90_CONTROL_COMPENSATION.fortyFiveDesignOrReportNominalToRequiredParts).toBe(
+      'NOT_YET_RECONCILED'
+    );
+    expect(FP024C_90_CONTROL_COMPENSATION.crossAngleCompensationSame).toBe('UNPROVEN');
+    expect(FP024C_90_CONTROL_COMPENSATION.generalizedCompensationFormula).toBe('UNPROVEN');
     expect(FP024C_90_CONTROL_COMPENSATION.physicalLengthScore).toBe('6.0/10');
     expect(FP024C_90_CONTROL_COMPENSATION.authorizesFormulaChange).toBe(false);
     expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.classification).toBe('OVERPRODUCTION');
@@ -1714,6 +1724,53 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(firewall.conservationProvenBecauseCompensationMatched).toBe(false);
     expect(firewall.fp027RootCause).toBe('UNPROVEN');
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
+  });
+
+  it('opens FP-024C.6 layer-semantics reconciliation without a new DoWin run', () => {
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.status).toBe('OPEN');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.doNotRerunDowin).toBe(true);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.doNotPatchFormulas).toBe(true);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.authorizesFormulaChange).toBe(false);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.physicalLengthScore).toBe('6.0/10');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.asddDesignPreviewReport.kasaLengthMm).toBe(1000);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.asddDesignPreviewReport.ortaLengthMm).toBe(1416);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.designGeometryOuterMm.kasa).toBe(1200);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.designPreviewReportMm.kasa).toBeNull();
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.cutListPreviewMm.kasa).toBe(1203);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.requiredPartsMm.kasa).toBe(1203);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.packedPlanMm.kasa).toBe(1203);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.machineLengthMm.kasa).toBe(1203);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.machineFrameXYMm.kasa).toBe(1200);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.designPreviewPdf.status).toBe('NOT_EXPORTED');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.ninetyRequiredPartsToPacked).toBe('PROVEN');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.ninetyPackedToMachine).toBe('PROVEN');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.fortyFiveRequiredPartsToPacked).toBe(
+      'OBSERVED'
+    );
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.fortyFivePackedToMachine).toBe('OBSERVED');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.designPreviewExportAuthorizedByThisCheckpoint).toBe(
+      false
+    );
+    expect(
+      FP024C6_LENGTH_LAYER_SEMANTICS.authority.fortyFiveDesignOrReportNominalToRequiredParts
+    ).toBe('NOT_YET_RECONCILED');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.sameCompensationAcrossAngles).toBe(
+      'UNPROVEN'
+    );
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.generalizedCompensationFormula).toBe(
+      'UNPROVEN'
+    );
+    expect(FP024C_90_CONTROL_COMPENSATION.nextGate).toBe('FP024C6_LENGTH_LAYER_SEMANTICS');
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.repeatability).toBe(
+      'REPEATABLE_ACROSS_INDEPENDENT_GEOMETRY'
+    );
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.thisFixtureSurplusDelta).toBe(4);
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.asddAndControlledSurplusDelta).toBe(3);
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.alwaysDuplicateToFour).toBe('WEAKENED');
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.fp027RootCause).toBe('UNPROVEN');
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.nextSpecifiedExperiment).toBe(
+      'INDEPENDENT_REVIEW_ONLY'
+    );
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

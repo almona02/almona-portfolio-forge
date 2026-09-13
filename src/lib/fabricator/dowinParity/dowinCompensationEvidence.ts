@@ -58,6 +58,7 @@ import {
   FP024C_90_CONTROL_COMPENSATION,
   FP024C_NINETY_CONTROL_DUAL_USE,
   FP024C_NINETY_CONTROL_SPEC,
+  FP024C6_LENGTH_LAYER_SEMANTICS,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
   evaluateIndependentNinetyControlFixtureSpec,
@@ -172,6 +173,7 @@ export {
   FP024C_90_CONTROL_COMPENSATION,
   FP024C_NINETY_CONTROL_DUAL_USE,
   FP024C_NINETY_CONTROL_SPEC,
+  FP024C6_LENGTH_LAYER_SEMANTICS,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
   evaluateIndependentNinetyControlFixtureSpec,
@@ -1754,8 +1756,9 @@ export const DOWIN_FP024C3_RUN_C_RUN: DowinCalibrationRun = {
 
 /**
  * FP-024C.5 independent 90° CONTROL_FIXTURE pieces.
- * NOMINAL = required-parts / Design Preview generated length, not canvas outer.
- * 90°/90° mullion is ORTA; that role is allowed. CITA machine = NOT_MEASURED.
+ * expectedNominalLengthMm here is Required Parts / Cut List (Preview),
+ * not the asdd Design Preview PDF report layer (asdd KASA report = 1000).
+ * Design Preview PDF was not exported for this package. CITA machine = NOT_MEASURED.
  */
 export const FP024C_90_CONTROL_PIECES: DowinPhysicalLengthGoldenRow[] = [
   {
