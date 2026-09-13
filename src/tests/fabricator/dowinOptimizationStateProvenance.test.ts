@@ -32,7 +32,11 @@ import {
   DOWIN_FP024C3_RUN_C_RUN,
   DOWIN_OBSERVED_SOLVER_STAGES,
   FP027_CONSERVATION_TRACE_LAYERS,
+  FP027_E3_BARS,
+  FP027_E3_KASA_SPARE,
+  FP027_E3_REQUIRED_PIECES,
   FP027_REQUIRED_PARTS_CONSERVATION_GATE,
+  classifyRequiredVsPlanConservation,
   STOCK_COMMIT_DIALOG_TRIGGER,
   barContentFingerprint,
   barSequenceFingerprint,
@@ -1210,7 +1214,13 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(gate.statement).toContain('root cause remains UNPROVEN');
     // Three identical outcomes are not a proof of determinism.
     expect(gate.notProven.join(' ')).toContain('do not mathematically exclude it');
-    expect(gate.discriminatingExperiments.every((e) => e.authorized === false)).toBe(true);
+    expect(gate.e3ClosesGate).toBe(false);
+    expect(gate.e3AuthorizesFormulaChange).toBe(false);
+    expect(gate.e3ProvesDemandInequality).toBe(false);
+    const e1 = gate.discriminatingExperiments.find((e) => e.id === 'E1');
+    const e2 = gate.discriminatingExperiments.find((e) => e.id === 'E2');
+    expect(e1?.authorized).toBe(false);
+    expect(e2?.authorized).toBe(false);
   });
 
   it('bounds the conservation divergence to the layers DoWin does not expose', () => {
@@ -1249,6 +1259,57 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     // Holding by construction is not the same as being guarded by a test.
     expect(gate.almonaInvariantAsserted).toBe(false);
     expect(gate.almonaNote).toContain('nowhere asserted');
+  });
+
+  it('classifies E3 as exact KASA conservation without closing FP-027', () => {
+    const e3 = FP027_E3_KASA_SPARE;
+    expect(e3.status).toBe('MEASURED');
+    expect(e3.classification).toBe('EXACT_CONSERVATION');
+    expect(
+      classifyRequiredVsPlanConservation({
+        requiredCount: e3.requiredKasaCount,
+        planCount: e3.planKasaCount,
+      })
+    ).toBe('EXACT_CONSERVATION');
+    expect(
+      classifyRequiredVsPlanConservation({
+        requiredCount: e3.requiredCitaCount,
+        planCount: e3.planCitaCount,
+      })
+    ).toBe('EXACT_CONSERVATION');
+    expect(observeOverproductionBeyondRequired({
+      bars: FP027_E3_BARS,
+      pieces: FP027_E3_REQUIRED_PIECES,
+    }).observation).toBe('NOT_OBSERVED');
+    expect(e3.generalization).toBe('GENERALIZATION_NOT_SUPPORTED_BY_E3');
+    expect(e3.crossProfileConservationViolation).toBe('NOT_OBSERVED');
+    expect(e3.closesFp027).toBe(false);
+    expect(e3.authorizesFormulaChange).toBe(false);
+    expect(e3.provesDemandInequality).toBe(false);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.status).toBe('OPEN_FORENSICS_ONLY');
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
+  });
+
+  it('refuses to let E3 exact conservation authorize formulas, 90°, or a >= constraint claim', () => {
+    const gate = FP027_REQUIRED_PARTS_CONSERVATION_GATE;
+    const e3 = gate.discriminatingExperiments.find((e) => e.id === 'E3');
+    expect(e3?.executed).toBe(true);
+    expect(e3?.classification).toBe('EXACT_CONSERVATION');
+    expect(gate.e3AuthorizesFormulaChange).toBe(false);
+    expect(gate.e3ProvesDemandInequality).toBe(false);
+    expect(gate.e3ClosesGate).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(STOCK_COMMIT_DIALOG_TRIGGER.id).toBe(
+      'POST_EXPORT_STOCK_UPDATE_DIALOG_IS_THE_WRITE_TRIGGER'
+    );
+    // E3 conserved; that does not invert the A/B/C ORTA surplus.
+    expect(gate.conservationViolation).toBe('REPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS');
+    expect(classifyRequiredVsPlanConservation({ requiredCount: 1, planCount: 4 })).toBe(
+      'OVERPRODUCTION'
+    );
+    expect(classifyRequiredVsPlanConservation({ requiredCount: null, planCount: 4 })).toBe(
+      'UNPROVEN'
+    );
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

@@ -6,7 +6,7 @@
 | Branch | `feature/fp024c-physical-parity` |
 | Opened by | independent review of FP-024C.3, which reprioritised this above the 90° compensation control |
 | Predecessor evidence | `docs/audits/FP-024C3-CONTROLLED-REPEATABILITY_2026-09-12.md` — three controlled fresh solves |
-| Gate | 🔓 **OPEN — FORENSICS ONLY** |
+| Gate | 🔓 **OPEN — FORENSICS ONLY** — E3 measured 13 September 2026; see `docs/audits/FP-027-OPTIMIZATION-REQUIRED-PARTS-CONSERVATION_2026-09-13.md` |
 | Fix status | **NOT FIXED.** No invariant implemented, no formula changed, no export changed |
 | Production formulas | **FROZEN** |
 | 90° CONTROL_FIXTURE | **GATED** — reopens after this gate closes |
@@ -147,7 +147,7 @@ Each changes **only the design fixture**. None changes stock, settings, machine 
 | **E1** | 3-lite window — ORTA demand 2 | separates "fills the bar" from "demand = 1 special case" | 4 planned, surplus +2 | 2 planned, no surplus |
 | **E2** | 5-lite window — ORTA demand 5, forcing 2 bars | tests whether the multi-bar path is demand-capped, as KANAT/CITA suggest | surplus on the second bar | no surplus |
 
-Run **E3 first**. A surplus on KASA would promote the defect from an ORTA curiosity to a structural fault affecting every small order, and would sharply raise the severity of importing DoWin plans for material accounting. No surplus on E3 would eliminate both leading hypotheses and redirect the trace to the ORTA-specific variables.
+Run **E3 first**. A surplus on KASA would promote the defect from an ORTA curiosity to a structural fault affecting every small order. **E3 has now been run** (13 September 2026): KASA conserved exactly, as did the unavoidable CITA beads on the same fixture. That is `GENERALIZATION_NOT_SUPPORTED_BY_E3`, not `ROOT_CAUSE_SOLVED`. See `docs/audits/FP-027-OPTIMIZATION-REQUIRED-PARTS-CONSERVATION_2026-09-13.md`. E1 and E2 remain unauthorized.
 
 Explicitly **not** proposed here: changing ORTA stock quantity back toward 0. That was the original candidate, it requires mutating the warehouse, and it would destroy baseline V2 — the same reason FP-024C.3 refused it.
 
@@ -228,7 +228,8 @@ This is also a constitutional point under AICS-001. Required-parts conservation 
 | Exported ORTA **piece list** | **CORRECT** — one mullion; no wrong-parts cutting risk on this path |
 | `ALMONA_CONSERVATION_EXPOSURE` | **NOT_EXPOSED_BY_CONSTRUCTION** |
 | `ALMONA_CONSERVATION_INVARIANT_ASSERTED` | **NO** |
-| E1 / E2 / E3 | **SPECIFIED, NOT AUTHORIZED** |
+| E3 | **MEASURED — EXACT_CONSERVATION** — does not close this gate |
+| E1 / E2 | **SPECIFIED, NOT AUTHORIZED** |
 | Fix | **NOT IMPLEMENTED** |
 
 ---

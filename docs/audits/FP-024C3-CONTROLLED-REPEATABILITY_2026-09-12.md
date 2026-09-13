@@ -1094,6 +1094,6 @@ The 90° control stays **GATED**. PR #32 stays **DO NOT MERGE**: the branch has 
 | FP-025B | do not start |
 | Fourth controlled solve | **not authorized** |
 | FP-026 | future finding, not implemented |
-| FP-027 | 🔓 **OPEN — forensics only**, next gate; no fix, no invariant implementation yet |
+| FP-027 | 🔓 **OPEN — forensics only**; E3 = `EXACT_CONSERVATION` / `GENERALIZATION_NOT_SUPPORTED_BY_E3`; root cause still UNPROVEN; no fix |
 | +3 ORTA root cause | **UNPROVEN** — deterministic or upstream conservation defect supported, not proven |
 | PR #32 | **Draft / DO NOT MERGE** |

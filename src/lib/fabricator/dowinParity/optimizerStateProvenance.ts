@@ -1929,18 +1929,158 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
     'A blanket bar-filling mechanism is contradicted: KANAT and CITA left room for further pieces in the same runs and produced exactly the demanded quantity.',
     'ORTA is simultaneously the only single-bar-satisfiable profile with spare capacity, the only 90/90 piece, the only single-length profile, the only demand-of-one profile and the only near-zero-cost stage, so the fixture confounds all five candidates.',
   ],
-  /** Design-only experiments. None changes stock, settings, machine or formulas. */
+  /** Design-only experiments. E3 is measured; E1/E2 remain unauthorized. */
   discriminatingExperiments: [
-    { id: 'E3', fixture: 'small frame, single-bar KASA with spare capacity, all 45 degrees, non-zero price', separates: 'structural single-bar fill vs ORTA-specific', authorized: false },
-    { id: 'E1', fixture: 'ORTA demand 2', separates: 'fills the bar vs demand-of-one special case', authorized: false },
-    { id: 'E2', fixture: 'ORTA demand 5, forcing two bars', separates: 'single-bar path vs profile-wide', authorized: false },
+    {
+      id: 'E3',
+      fixture: 'small frame, single-bar KASA with spare capacity, all 45 degrees, non-zero price',
+      separates: 'structural single-bar fill vs ORTA-specific',
+      authorized: true,
+      executed: true,
+      classification: 'EXACT_CONSERVATION',
+    },
+    { id: 'E1', fixture: 'ORTA demand 2', separates: 'fills the bar vs demand-of-one special case', authorized: false, executed: false, classification: null },
+    { id: 'E2', fixture: 'ORTA demand 5, forcing two bars', separates: 'single-bar path vs profile-wide', authorized: false, executed: false, classification: null },
   ],
+  e3Generalization: 'GENERALIZATION_NOT_SUPPORTED_BY_E3',
+  e3ClosesGate: false,
+  e3AuthorizesFormulaChange: false,
+  e3ProvesDemandInequality: false,
   almonaExposure: 'NOT_EXPOSED_BY_CONSTRUCTION',
   almonaInvariantAsserted: false,
   almonaNote:
     'SimplifiedOptimizationEngine and AlmonaCuttingEngine both emit exactly one piece per demanded unit, so overproduction is structurally impossible today. The invariant is nowhere asserted, so a future pattern-based or column-generation optimizer built for DoWin parity could introduce this defect class silently.',
   auditPath:
-    'docs/audits/FP-027-REQUIRED-PARTS-CONSERVATION-FORENSICS_2026-09-13.md',
+    'docs/audits/FP-027-OPTIMIZATION-REQUIRED-PARTS-CONSERVATION_2026-09-13.md',
+} as const;
+
+export type Fp027ConservationClassification =
+  | 'EXACT_CONSERVATION'
+  | 'OVERPRODUCTION'
+  | 'UNDERPRODUCTION'
+  | 'UNPROVEN';
+
+/**
+ * Piece-count conservation only. Utilization, remainder and bar count are
+ * not inputs — using them here would reintroduce the exact category error
+ * the protocol forbids.
+ */
+export function classifyRequiredVsPlanConservation(args: {
+  requiredCount: number | null | undefined;
+  planCount: number | null | undefined;
+}): Fp027ConservationClassification {
+  if (
+    args.requiredCount == null ||
+    args.planCount == null ||
+    !Number.isFinite(args.requiredCount) ||
+    !Number.isFinite(args.planCount)
+  ) {
+    return 'UNPROVEN';
+  }
+  if (args.planCount > args.requiredCount) return 'OVERPRODUCTION';
+  if (args.planCount < args.requiredCount) return 'UNDERPRODUCTION';
+  return 'EXACT_CONSERVATION';
+}
+
+/**
+ * E3 required parts, generated from a valid 500×500 Deceuninck 70 fixed
+ * frame (no sash, no mullion). Dimensions were not tuned after the solve.
+ * Glazing beads were generated automatically and could not be avoided
+ * without abandoning a valid design; they are recorded rather than hidden.
+ */
+export const FP027_E3_REQUIRED_PIECES: readonly DowinPhysicalLengthGoldenRow[] = [
+  { pieceId: 'e3-kasa-top', externalAssemblyLabel: 'E3_KASA_SPARE.Frame Top', profileCode: 'Deceuninck-KASA-70', category: 'frame_horizontal', leftAngleDeg: 45, rightAngleDeg: 45, expectedNominalLengthMm: 500, expectedPackedSegmentMm: 503, expectedMachineLengthMm: 503, sourceDocument: 'assembly_report', sourcePage: null },
+  { pieceId: 'e3-kasa-bottom', externalAssemblyLabel: 'E3_KASA_SPARE.Frame Bottom', profileCode: 'Deceuninck-KASA-70', category: 'frame_horizontal', leftAngleDeg: 45, rightAngleDeg: 45, expectedNominalLengthMm: 500, expectedPackedSegmentMm: 503, expectedMachineLengthMm: 503, sourceDocument: 'assembly_report', sourcePage: null },
+  { pieceId: 'e3-kasa-left', externalAssemblyLabel: 'E3_KASA_SPARE.Frame Leftt', profileCode: 'Deceuninck-KASA-70', category: 'frame_vertical', leftAngleDeg: 45, rightAngleDeg: 45, expectedNominalLengthMm: 500, expectedPackedSegmentMm: 503, expectedMachineLengthMm: 503, sourceDocument: 'assembly_report', sourcePage: null },
+  { pieceId: 'e3-kasa-right', externalAssemblyLabel: 'E3_KASA_SPARE.Frame Right', profileCode: 'Deceuninck-KASA-70', category: 'frame_vertical', leftAngleDeg: 45, rightAngleDeg: 45, expectedNominalLengthMm: 500, expectedPackedSegmentMm: 503, expectedMachineLengthMm: 503, sourceDocument: 'assembly_report', sourcePage: null },
+  { pieceId: 'e3-cita-top', externalAssemblyLabel: 'E3_KASA_SPARE.GlazingBead Top', profileCode: 'Deceuninck-CITA-20', category: 'glazing_bead_horizontal', leftAngleDeg: 45, rightAngleDeg: 45, expectedNominalLengthMm: null, expectedPackedSegmentMm: 419, expectedMachineLengthMm: null, sourceDocument: 'assembly_report', sourcePage: null },
+  { pieceId: 'e3-cita-bottom', externalAssemblyLabel: 'E3_KASA_SPARE.GlazingBead Bottom', profileCode: 'Deceuninck-CITA-20', category: 'glazing_bead_horizontal', leftAngleDeg: 45, rightAngleDeg: 45, expectedNominalLengthMm: null, expectedPackedSegmentMm: 419, expectedMachineLengthMm: null, sourceDocument: 'assembly_report', sourcePage: null },
+  { pieceId: 'e3-cita-left', externalAssemblyLabel: 'E3_KASA_SPARE.GlazingBead Left', profileCode: 'Deceuninck-CITA-20', category: 'glazing_bead_vertical', leftAngleDeg: 45, rightAngleDeg: 45, expectedNominalLengthMm: null, expectedPackedSegmentMm: 419, expectedMachineLengthMm: null, sourceDocument: 'assembly_report', sourcePage: null },
+  { pieceId: 'e3-cita-right', externalAssemblyLabel: 'E3_KASA_SPARE.GlazingBead Right', profileCode: 'Deceuninck-CITA-20', category: 'glazing_bead_vertical', leftAngleDeg: 45, rightAngleDeg: 45, expectedNominalLengthMm: null, expectedPackedSegmentMm: 419, expectedMachineLengthMm: null, sourceDocument: 'assembly_report', sourcePage: null },
+];
+
+/** Cutting-plan bars measured after the single authorized E3 solve. */
+export const FP027_E3_BARS: readonly ExternalBarPattern[] = [
+  {
+    id: 'e3-cita-6500',
+    profileCode: 'Deceuninck-CITA-20',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: [
+      'E3_KASA_SPARE.GlazingBead Top',
+      'E3_KASA_SPARE.GlazingBead Bottom',
+      'E3_KASA_SPARE.GlazingBead Left',
+      'E3_KASA_SPARE.GlazingBead Right',
+    ],
+    packedSegmentMm: [419, 419, 419, 419],
+    remainingMm: 4801.37,
+    reportedYieldPercent: 26.7,
+  },
+  {
+    id: 'e3-kasa-6000',
+    profileCode: 'Deceuninck-KASA-70',
+    stockLengthMm: 6000,
+    applicationCount: 1,
+    pieceExternalIds: [
+      'E3_KASA_SPARE.Frame Top',
+      'E3_KASA_SPARE.Frame Bottom',
+      'E3_KASA_SPARE.Frame Leftt',
+      'E3_KASA_SPARE.Frame Right',
+    ],
+    packedSegmentMm: [503, 503, 503, 503],
+    remainingMm: 3965.37,
+    reportedYieldPercent: 33.9,
+  },
+];
+
+export const FP027_E3_KASA_SPARE = {
+  id: 'FP027_E3_KASA_SPARE',
+  status: 'MEASURED',
+  solveDisposition: 'NEWLY_SOLVED',
+  projectId: '100006',
+  projectDbId: 6,
+  designId: 'E3_KASA_SPARE',
+  designDbId: 8,
+  productionPlanId: 'E3_KASA_SPARE_PLAN',
+  productionPlanDbId: 6,
+  optimizationRunId: 12,
+  solverId: 'b5445400',
+  timestampIso: '2026-09-13T13:26:34.000Z',
+  widthMm: 500,
+  heightMm: 500,
+  profileSystem: "Deceuninck 70'lik PVC Sistemi",
+  settingsFullWindowSha256:
+    'ff5fcf4384a15790b5f28a202e2b1df4c716d43e834e7f0a217c91336fbb0623',
+  settingsContentSha256:
+    'e000c1ce6cebfe080dd76b8125119d3676a28667befb20133b58a0fa125f0760',
+  settingsCaptureId: 'e3-settings-20260913-160944',
+  warehouseSha256:
+    'c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012',
+  machineExportSha256:
+    'e06a1e6d406c2fd04906f99e020510f6bec0fb411f71e4f367f7a7e0355f5953',
+  requiredKasaCount: 4,
+  planKasaCount: 4,
+  requiredCitaCount: 4,
+  planCitaCount: 4,
+  classification: 'EXACT_CONSERVATION' as Fp027ConservationClassification,
+  generalization: 'GENERALIZATION_NOT_SUPPORTED_BY_E3',
+  crossProfileConservationViolation: 'NOT_OBSERVED',
+  unmatchedExportWarning: false,
+  machineKasaCount: 4,
+  machineCitaCount: 0,
+  machineKasaRemainingLengthMm: 3965.4,
+  planKasaRemainingMm: 3965.37,
+  stockUpdateResponse: 'NO',
+  warehouseImmutability: 'IMMUTABLE_VERIFIED',
+  seedExposed: false,
+  closesFp027: false,
+  authorizesFormulaChange: false,
+  provesDemandInequality: false,
+  hypotheses: {
+    H1_demandInequality: 'WEAKENED_SIMPLE_INTERPRETATION',
+    H2_barFill: 'FURTHER_WEAKENED',
+    H3_ortaSpecific: 'STRENGTHENED_AS_REMAINING_LIVE_SET',
+  },
 } as const;
 
 export interface ControlledFixtureRow {
