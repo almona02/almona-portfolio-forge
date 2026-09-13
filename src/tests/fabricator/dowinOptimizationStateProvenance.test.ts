@@ -1209,7 +1209,9 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(gate.rootCause).toBe('UNPROVEN');
     expect(gate.firstDivergenceLayer).toBeNull();
     expect(gate.leadingHypothesisAuthority).toBe('CONSISTENT_WITH_ALL_OBSERVED_DATA');
-    expect(gate.fillTheBarHypothesis).toBe('CONTRADICTED');
+    expect(gate.fillTheBarHypothesis).toBe('WEAKENED');
+    expect(gate.simpleSpareCapacityGeneralization).toBe('NOT_SUPPORTED_BY_E3');
+    expect(gate.nextSpecifiedExperiment).toBe('E1');
     expect(gate.fixtureDiscriminatingPower).toBe('INSUFFICIENT');
     expect(gate.statement).toContain('root cause remains UNPROVEN');
     // Three identical outcomes are not a proof of determinism.
@@ -1220,7 +1222,11 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     const e1 = gate.discriminatingExperiments.find((e) => e.id === 'E1');
     const e2 = gate.discriminatingExperiments.find((e) => e.id === 'E2');
     expect(e1?.authorized).toBe(false);
+    expect(e1?.fixture).toContain('non-ORTA');
+    expect(e1?.fixture).toContain('demand exactly 1');
+    expect(e1?.fixture).toContain('do not inject');
     expect(e2?.authorized).toBe(false);
+    expect(e2?.fixture).toContain('after E1');
   });
 
   it('bounds the conservation divergence to the layers DoWin does not expose', () => {
@@ -1265,6 +1271,7 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     const e3 = FP027_E3_KASA_SPARE;
     expect(e3.status).toBe('MEASURED');
     expect(e3.classification).toBe('EXACT_CONSERVATION');
+    expect(e3.citaClassification).toBe('EXACT_CONSERVATION');
     expect(
       classifyRequiredVsPlanConservation({
         requiredCount: e3.requiredKasaCount,

@@ -163,7 +163,7 @@ warehouse immutability = IMMUTABLE_VERIFIED
 | Hypothesis | After E3 | Why |
 |------------|----------|-----|
 | H1 — demand `>=` / over-satisfaction | **WEAKENED** as the simple “any spare capacity will visibly overproduce” reading | KASA (and CITA) had room for many extra pieces on a already-paid bar and conserved. A `>=` constraint whose objective still discourages KASA surplus remains live. E3 does **not** prove the constraint is `=`. |
-| H2 — pattern / bar-fill | **FURTHER WEAKENED** | Now contradicted by KASA in E3 in addition to KANAT/CITA in A/B/C. Not mathematically ruled out for every profile. |
+| H2 — pattern / bar-fill | **WEAKENED** | KASA and CITA both conserved under large spare capacity in E3, in addition to KANAT/CITA in A/B/C. Not mathematically ruled out for every profile. |
 | H3 — ORTA-specific condition | **STRENGTHENED as the remaining live set** | Still unresolved. Surviving candidates include 90°/90°, demand = 1, single-length demand, mullion role, zero unit price / 6.50 objective, and opaque post-processing. |
 
 E3 does **not** say “both leading hypotheses are disproven.” Root cause remains **UNPROVEN**.
@@ -178,7 +178,8 @@ Remaining confounds (unchanged by one no-surplus result): demand-of-one special 
 |---------|---------|
 | E3 created / solved | **yes / yes** — one fresh solve |
 | E3 KASA conservation | **EXACT_CONSERVATION** |
-| Cross-profile conservation violation | **NOT_OBSERVED** |
+| E3 CITA conservation | **EXACT_CONSERVATION** |
+| Cross-profile overproduction | **NOT OBSERVED** |
 | Generalization of the A/B/C ORTA surplus | **NOT_SUPPORTED_BY_E3** |
 | A/B/C `21 → 24` ORTA surplus | **unchanged** — `REPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS` |
 | FP-027 root cause | **UNPROVEN** |
@@ -208,3 +209,59 @@ Remaining confounds (unchanged by one no-surplus result): demand-of-one special 
 Committed: transcriptions, SHA-256 values, structured evidence, tests, this audit.
 
 Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation. Encrypted shop database not opened.
+
+---
+
+## Independent review — 13 September 2026
+
+E3 is accepted as a **valid discriminator**. FP-027 remains **open**.
+
+The accepted point is not merely that KASA conserved. Under the same solver family, the same controlled stock state, large spare capacity, and 45° pieces, **neither KASA nor CITA overproduced**. That materially weakens a simple “fill spare bar capacity” explanation.
+
+Accepted authority:
+
+| Finding | Verdict |
+|---------|---------|
+| E3 KASA conservation | **EXACT_CONSERVATION** |
+| E3 CITA conservation | **EXACT_CONSERVATION** |
+| Cross-profile overproduction | **NOT OBSERVED** |
+| Blanket bar-fill hypothesis | **WEAKENED** |
+| Simple spare-capacity generalization | **NOT SUPPORTED BY E3** |
+| FP-027 root cause | **UNPROVEN** |
+| ORTA-specific / demand=1 / 90° / cost interaction | **still live** |
+
+### Next specified experiment — E1 (not authorized)
+
+Target the strongest remaining confound: **demand = 1 vs ORTA / 90° semantics**, on a **non-ORTA** profile.
+
+Required of the fixture, generated from a valid design (no injected cut rows):
+
+- demand exactly 1
+- one physical piece
+- plenty of room for duplicates on the same bar
+- 45° if a valid design emits it
+- non-zero cost
+- same controlled settings / stock discipline as E3
+- answer **No** to Stock Update
+- no manual stock edits
+- capture required vs plan counts before export
+
+Question: does overproduction appear when demand is 1 on a non-ORTA profile?
+
+| Outcome | Reading |
+|---------|---------|
+| Yes | demand=1 becomes a strong candidate mechanism |
+| No | remaining evidence shifts toward ORTA / 90° / profile-specific handling |
+
+If no valid Deceuninck 70 design naturally emits a single unique 45° non-ORTA piece (window parts usually pair), **STOP** with `UNPROVEN` fixture. Do not inject a row to manufacture demand=1.
+
+E2 is reserved for a 90° non-ORTA or ORTA geometry discriminator **after** E1. The original 90° compensation control stays gated until FP-027's conservation root cause is bounded.
+
+```text
+E1 demand=1 non-ORTA
+  -> E2 90 non-ORTA or ORTA geometry discriminator
+  -> decide whether the original 90 compensation control is still necessary
+  -> only after FP-027 conservation root cause is bounded does formula parity resume
+```
+
+Restrictions unchanged: no formula changes; score 6.0/10; PR #32 Draft / DO NOT MERGE; root cause UNPROVEN.

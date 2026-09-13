@@ -1920,14 +1920,16 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
   remainderRecomputedAfterExportMatchFilter: 'SUPPORTED_NOT_RECOMPUTED',
   leadingHypothesis: 'INEQUALITY_DEMAND_CONSTRAINT_PLUS_OBJECTIVE_INDIFFERENCE',
   leadingHypothesisAuthority: 'CONSISTENT_WITH_ALL_OBSERVED_DATA',
-  fillTheBarHypothesis: 'CONTRADICTED',
+  fillTheBarHypothesis: 'WEAKENED',
+  simpleSpareCapacityGeneralization: 'NOT_SUPPORTED_BY_E3',
   fixtureDiscriminatingPower: 'INSUFFICIENT',
+  nextSpecifiedExperiment: 'E1',
   statement:
     'The +3 ORTA surplus is repeatable across all three measured-identical runs and is not correlated with the observed stochastic CITA topology variation. Evidence therefore supports a deterministic or upstream conservation defect, but root cause remains UNPROVEN.',
   notProven: [
     'Three identical surplus outcomes make a stochastic explanation unsupported and increasingly unlikely; they do not mathematically exclude it.',
-    'A blanket bar-filling mechanism is contradicted: KANAT and CITA left room for further pieces in the same runs and produced exactly the demanded quantity.',
-    'ORTA is simultaneously the only single-bar-satisfiable profile with spare capacity, the only 90/90 piece, the only single-length profile, the only demand-of-one profile and the only near-zero-cost stage, so the fixture confounds all five candidates.',
+    'A blanket bar-filling mechanism is weakened: KANAT and CITA in A/B/C, and both KASA and CITA in E3, left room for further pieces and produced exactly the demanded quantity. That does not mathematically exclude bar-fill on every profile.',
+    'ORTA remains the only overproducing profile in the measured set. Demand=1, 90/90, mullion role, and zero-price / 6.50 cost treatment are still live and still confounded.',
   ],
   /** Design-only experiments. E3 is measured; E1/E2 remain unauthorized. */
   discriminatingExperiments: [
@@ -1939,8 +1941,24 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
       executed: true,
       classification: 'EXACT_CONSERVATION',
     },
-    { id: 'E1', fixture: 'ORTA demand 2', separates: 'fills the bar vs demand-of-one special case', authorized: false, executed: false, classification: null },
-    { id: 'E2', fixture: 'ORTA demand 5, forcing two bars', separates: 'single-bar path vs profile-wide', authorized: false, executed: false, classification: null },
+    {
+      id: 'E1',
+      fixture:
+        'demand exactly 1 on a non-ORTA profile: one physical piece, spare room for duplicates on the same bar, 45 degrees if a valid design emits it, non-zero cost. Natural design only — do not inject cut rows. If no valid design emits demand=1, STOP with UNPROVEN fixture.',
+      separates: 'demand=1 mechanism vs ORTA / 90-degree / profile-specific handling',
+      authorized: false,
+      executed: false,
+      classification: null,
+    },
+    {
+      id: 'E2',
+      fixture:
+        '90-degree non-ORTA or ORTA geometry discriminator — specified after E1, not before',
+      separates: 'angle / ORTA-geometry vs remaining demand=1 residue',
+      authorized: false,
+      executed: false,
+      classification: null,
+    },
   ],
   e3Generalization: 'GENERALIZATION_NOT_SUPPORTED_BY_E3',
   e3ClosesGate: false,
@@ -2063,6 +2081,7 @@ export const FP027_E3_KASA_SPARE = {
   requiredCitaCount: 4,
   planCitaCount: 4,
   classification: 'EXACT_CONSERVATION' as Fp027ConservationClassification,
+  citaClassification: 'EXACT_CONSERVATION' as Fp027ConservationClassification,
   generalization: 'GENERALIZATION_NOT_SUPPORTED_BY_E3',
   crossProfileConservationViolation: 'NOT_OBSERVED',
   unmatchedExportWarning: false,

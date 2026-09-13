@@ -131,7 +131,9 @@ INEQUALITY_DEMAND_CONSTRAINT_PLUS_OBJECTIVE_INDIFFERENCE
   = CONSISTENT_WITH_ALL_OBSERVED_DATA (hypothesis only)
 ```
 
-If the demand constraint is `>= required` rather than `= required`, overproduction is *feasible*, and it then becomes *observable* only where the objective cannot distinguish it. Adding three mullions to a bar already paid for changes neither the bar count nor a near-zero cost, so the solver is indifferent and a utilisation-maximising step is free to fill. For KANAT and CITA, overproducing would change bar count or cost, so the objective rejects it; for KASA there is no room. This explains all five patterns without contradiction.
+If the demand constraint is `>= required` rather than `= required`, overproduction is *feasible*, and it then becomes *observable* only where the objective cannot distinguish it. Adding three mullions to a bar already paid for changes neither the bar count nor a near-zero cost, so the solver is indifferent and a utilisation-maximising step is free to fill. For KANAT and CITA in A/B/C, overproducing would change bar count or cost, so the objective can reject it.
+
+E3 removes the “KASA has no room” clause of that story: KASA on a 6000 mm bar with ~3970 mm spare, and CITA with ~4800 mm spare, both conserved. A utilisation-maximising fill of an already-paid KASA bar would have been cost-indifferent in the same way ORTA was, and it did not happen. The hypothesis therefore cannot stand as a complete explanation without an additional ORTA / demand=1 / 90° / price condition.
 
 It remains a **hypothesis**. The constraint formulation is inside the licensed binary, no decompilation is permitted, and consistency with four observations is not proof.
 
@@ -141,13 +143,15 @@ It remains a **hypothesis**. The constraint formulation is inside the licensed b
 
 Each changes **only the design fixture**. None changes stock, settings, machine or formulas, so all are compatible with the standing freeze and the V2 baseline. All require explicit authorization and the FP-024C.3 freshness protocol, including answering **No** to the Stock Update dialog.
 
-| Id | Fixture | Purpose | Prediction if structural (single-bar fill) | Prediction if ORTA/angle/price-specific |
-|----|---------|---------|--------------------------------------------|------------------------------------------|
-| **E3** | small frame, e.g. 500 × 500, no mullion — KASA demand ≈ 4 × 503 on a 6000 bar, ≈3988 spare, all 45°, non-zero price | strongest single discriminator: tests the mechanism on a completely different profile | surplus appears on KASA | no surplus |
-| **E1** | 3-lite window — ORTA demand 2 | separates "fills the bar" from "demand = 1 special case" | 4 planned, surplus +2 | 2 planned, no surplus |
-| **E2** | 5-lite window — ORTA demand 5, forcing 2 bars | tests whether the multi-bar path is demand-capped, as KANAT/CITA suggest | surplus on the second bar | no surplus |
+| Id | Fixture | Purpose | Status |
+|----|---------|---------|--------|
+| **E3** | 500 × 500 fixed frame — KASA 4 × 503 and CITA 4 × 419, both one-bar with large spare, 45°, non-zero price | structural spare-fill vs ORTA-specific | **MEASURED — EXACT_CONSERVATION** on both profiles |
+| **E1** | demand exactly 1 on a **non-ORTA** profile: one physical piece, spare room for duplicates, 45° if a valid design emits it, non-zero cost. Natural design only | demand=1 vs ORTA / 90° / profile-specific | **SPECIFIED, NOT AUTHORIZED** — next |
+| **E2** | 90° non-ORTA or ORTA geometry discriminator | angle / ORTA-geometry vs remaining demand=1 residue | **SPECIFIED AFTER E1, NOT AUTHORIZED** |
 
-Run **E3 first**. A surplus on KASA would promote the defect from an ORTA curiosity to a structural fault affecting every small order. **E3 has now been run** (13 September 2026): KASA conserved exactly, as did the unavoidable CITA beads on the same fixture. That is `GENERALIZATION_NOT_SUPPORTED_BY_E3`, not `ROOT_CAUSE_SOLVED`. See `docs/audits/FP-027-OPTIMIZATION-REQUIRED-PARTS-CONSERVATION_2026-09-13.md`. E1 and E2 remain unauthorized.
+**E3 has been run** (13 September 2026) and independently reviewed: KASA and CITA conserved; blanket bar-fill is **WEAKENED**; simple spare-capacity generalization is **NOT SUPPORTED BY E3**. That is not `ROOT_CAUSE_SOLVED`. See `docs/audits/FP-027-OPTIMIZATION-REQUIRED-PARTS-CONSERVATION_2026-09-13.md`.
+
+The original E1 (ORTA demand 2) and E2 (ORTA demand 5) specifications are **superseded**. Independent review retargeted E1 at demand=1 on a non-ORTA profile, which is the strongest remaining confound. Do not inject cut rows. If no valid design emits demand=1, stop with an `UNPROVEN` fixture.
 
 Explicitly **not** proposed here: changing ORTA stock quantity back toward 0. That was the original candidate, it requires mutating the warehouse, and it would destroy baseline V2 — the same reason FP-024C.3 refused it.
 
