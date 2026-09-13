@@ -73,7 +73,7 @@ export interface ManufacturingSettingsInput {
   namedProfileId?: NamedManufacturingProfileId;
 }
 
-const SETTING_KEYS: (keyof ManufacturingSettings)[] = [
+export const MANUFACTURING_SETTING_KEYS: (keyof ManufacturingSettings)[] = [
   'sawKerfMm',
   'weldingWasteMm',
   'glazingClearanceMm',
@@ -154,7 +154,7 @@ export const MACHINE_MANUFACTURING_OVERRIDES: Record<string, ManufacturingSettin
 };
 
 function emptyProvenance(source: ManufacturingSettingsSource): ManufacturingSettingsProvenance {
-  return SETTING_KEYS.reduce((acc, key) => {
+  return MANUFACTURING_SETTING_KEYS.reduce((acc, key) => {
     acc[key] = source;
     return acc;
   }, {} as ManufacturingSettingsProvenance);
@@ -170,7 +170,7 @@ function applyOverride(
     ...base,
     provenance: { ...base.provenance },
   };
-  for (const key of SETTING_KEYS) {
+  for (const key of MANUFACTURING_SETTING_KEYS) {
     const value = override[key];
     if (value !== undefined) {
       (next as ManufacturingSettings)[key] = value;
@@ -247,7 +247,60 @@ export function visualBarUsedMm(cutLengthsMm: number[], sawKerfMm: number): numb
 export function manufacturingSettingsSignature(
   settings: ManufacturingSettings
 ): string {
-  return SETTING_KEYS.map((key) => `${key}=${settings[key]}`).join('|');
+  return MANUFACTURING_SETTING_KEYS.map((key) => `${key}=${settings[key]}`).join('|');
+}
+
+/**
+ * Immutable resolved-settings snapshot for a production/optimization run.
+ * No Date.now — timestamp belongs in audit metadata, not the signature.
+ */
+export interface ManufacturingSettingsSnapshot {
+  values: ManufacturingSettings;
+  provenance: ManufacturingSettingsProvenance;
+  namedProfileId: NamedManufacturingProfileId;
+  machineId?: string;
+  signature: string;
+}
+
+export interface ManufacturingSettingsProvenanceRow {
+  key: keyof ManufacturingSettings;
+  valueMm: number;
+  source: ManufacturingSettingsSource;
+}
+
+export function manufacturingSettingsProvenanceRows(
+  resolved: ResolvedManufacturingSettings
+): ManufacturingSettingsProvenanceRow[] {
+  return MANUFACTURING_SETTING_KEYS.map((key) => ({
+    key,
+    valueMm: resolved[key],
+    source: resolved.provenance[key],
+  }));
+}
+
+export function freezeManufacturingSettings(
+  resolved: ResolvedManufacturingSettings
+): ManufacturingSettingsSnapshot {
+  const values = MANUFACTURING_SETTING_KEYS.reduce((acc, key) => {
+    acc[key] = resolved[key];
+    return acc;
+  }, {} as ManufacturingSettings);
+  return {
+    values,
+    provenance: { ...resolved.provenance },
+    namedProfileId: resolved.namedProfileId,
+    machineId: resolved.machineId,
+    signature: manufacturingSettingsSignature(values),
+  };
+}
+
+export function barYieldPercent(pieceLengthTotalMm: number, stockLengthMm: number): number {
+  if (stockLengthMm <= 0) return 0;
+  return roundManufacturingMm((pieceLengthTotalMm / stockLengthMm) * 100);
+}
+
+export function barWastePercent(pieceLengthTotalMm: number, stockLengthMm: number): number {
+  return roundManufacturingMm(100 - barYieldPercent(pieceLengthTotalMm, stockLengthMm));
 }
 
 /** Microns on FenestrationSystem.fabricationRules.cutting → mm override. */
