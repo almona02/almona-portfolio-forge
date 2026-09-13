@@ -102,15 +102,15 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(REQUIRED_ISOLATION_MACHINE_ID).toBe('DC-600');
     expect(isBaselineSettingsSnapshotClassified(DOWIN_ASDD_BASELINE_RUN.observedSettings)).toBe(true);
     expect(isCausalIsolationAuthorized()).toBe(true);
-    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(true);
     expect(FP027_E2_NONORTA_90.authorizesNinetyControl).toBe(false);
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.e2AuthorizesNinetyControl).toBe(false);
     expect(FP024C_NINETY_CONTROL_DUAL_USE.classification).toBe('DUAL_USE_CONDITIONAL');
     expect(FP024C_NINETY_CONTROL_DUAL_USE.authorizesControl).toBe(false);
-    expect(evaluateControlFixtureAuthorization().blockers).toEqual([
-      'FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY',
-    ]);
-    expect(evaluateControlFixtureAuthorization().authorized).toBe(false);
+    expect(evaluateControlFixtureAuthorization().blockers).toEqual([]);
+    expect(evaluateControlFixtureAuthorization().authorized).toBe(true);
+    expect(evaluateControlFixtureAuthorization().verdict).toBe('READY_FOR_OPERATOR_RUN');
+    expect(evaluateControlFixtureAuthorization().controlRunStatus).toBe('NOT_RUN');
     expect(DOWIN_ASDD_BASELINE_RESET_RUN.reproductionVerdict).toBe('REPRODUCTION_FAILED');
     expect(
       evaluateBaselineReset(DOWIN_ASDD_BASELINE_REPRODUCTION_RUN, DOWIN_ASDD_BASELINE_RESET_RUN).verdict
@@ -296,7 +296,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(report.provenanceAuditQuestion).toBe(FP024C1_AUDIT_QUESTION);
     expect(report.provenanceAuditVerdict).toBe('AMBIGUOUS');
     expect(report.causalIsolationAuthorized).toBe(true);
-    expect(report.controlFixtureAuthorized).toBe(false);
+    expect(report.controlFixtureAuthorized).toBe(true);
     expect(report.knownExportIdentifiers.generalSettingsScreenshotSha256).toBe(
       '95652321b98d682eb07cc46d1e13e464fee21ee31e323e83089231688a72c18a'
     );
@@ -433,7 +433,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     }
   });
 
-  it('rejects 90° CONTROL_FIXTURE until BASELINE_RESET_VALIDATION recovers 1B', () => {
+  it('rejects a 90° CONTROL_FIXTURE package that does not match the 1200×1200 spec', () => {
     const blocked = ingestOperatorCalibrationRun(DOWIN_ASDD_BASELINE_RUN, {
       runId: 'dowin-90-control-asdd-sibling',
       timestampIso: '2026-09-09T18:30:00.000Z',
@@ -467,7 +467,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(blocked.ok).toBe(false);
     if (!blocked.ok) {
       expect(
-        blocked.reasons.some((r) => r.includes('90° CONTROL_FIXTURE stays gated'))
+        blocked.reasons.some((r) => r.includes('does not match independent spec'))
       ).toBe(true);
     }
   });
@@ -530,9 +530,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
       );
       expect(control.reasons.some((r) => r.includes('Fresh A/B/C'))).toBe(false);
       expect(
-        control.reasons.some((r) =>
-          r.includes('FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY')
-        )
+        control.reasons.some((r) => r.includes('FP024C3_EVIDENCE_CHECKPOINT_ACCEPTED'))
       ).toBe(true);
     }
 

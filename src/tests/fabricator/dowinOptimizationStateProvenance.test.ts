@@ -41,6 +41,7 @@ import {
   FP024C_NINETY_CONTROL_SPEC,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
+  evaluateIndependentNinetyControlFixtureSpec,
   evaluateDualUseVerdictFirewall,
   evaluateNinetyControlFixtureSelection,
   FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION,
@@ -363,10 +364,14 @@ describe('FP-024C.1 optimization state provenance', () => {
     ).toBe('AMBIGUOUS');
   });
 
-  it('keeps the 90° CONTROL_FIXTURE gated while FP-024C.1 is unresolved', () => {
-    expect(isControlFixtureAuthorized()).toBe(false);
+  it('does not let an unresolved FP-024C.1 verdict deadlock 90° readiness', () => {
+    expect(classifyProvenanceFreshStateExperiment(DOWIN_CALIBRATION_RUNS).verdict).toBe(
+      'AMBIGUOUS'
+    );
+    expect(isControlFixtureAuthorized()).toBe(true);
     const fresh = provenanceRun('fresh-original', DOWIN_ASDD_EXTERNAL_BAR_PATTERNS, equivalent());
-    expect(isControlFixtureAuthorized([...DOWIN_CALIBRATION_RUNS, fresh])).toBe(false);
+    expect(isControlFixtureAuthorized([...DOWIN_CALIBRATION_RUNS, fresh])).toBe(true);
+    expect(evaluateControlFixtureAuthorization().controlRunStatus).toBe('NOT_RUN');
   });
 
   it('does not mutate ManufacturingSettings, barPackAccounting, or production cut lengths', () => {
@@ -417,7 +422,8 @@ describe('FP-024C.1 optimization state provenance', () => {
       optimizerProvenance: equivalent({ solveKind: 'REOPENED_REUSED', solveDisposition: 'REOPENED' }),
     });
     expect(reused.ok).toBe(false);
-    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(true);
+    expect(evaluateControlFixtureAuthorization().controlRunStatus).toBe('NOT_RUN');
   });
 
   it('treats REOPENED and REUSED as not fresh, independently', () => {
@@ -617,7 +623,7 @@ describe('FP-024C.1 optimization state provenance', () => {
     expect(classifyProvenanceFreshStateExperiment(DOWIN_CALIBRATION_RUNS).verdict).toBe(
       'AMBIGUOUS'
     );
-    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(true);
   });
 
   it('excludes timestamp and result IDs from optimizer-input fingerprints', () => {
@@ -989,7 +995,10 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     ).toBe(true);
 
     // A complete triplicate does NOT open the 90° control on its own.
-    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(
+      evaluateControlFixtureAuthorization({ fixtureIndependentlySpecified: false }).authorized
+    ).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(true);
   });
 
   it('classifies the triplicate as nonrepeatable without claiming nondeterminism', () => {
@@ -1330,7 +1339,8 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(gate.e3AuthorizesFormulaChange).toBe(false);
     expect(gate.e3ProvesDemandInequality).toBe(false);
     expect(gate.e3ClosesGate).toBe(false);
-    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(gate.e3AuthorizesFormulaChange).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(true);
     expect(STOCK_COMMIT_DIALOG_TRIGGER.id).toBe(
       'POST_EXPORT_STOCK_UPDATE_DIALOG_IS_THE_WRITE_TRIGGER'
     );
@@ -1361,7 +1371,8 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ortaSpecificHypothesis).toBe('STILL_LIVE');
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ninetyDegreeHypothesis).toBe('STILL_LIVE');
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
-    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(e1.authorizesFormulaChange).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(true);
 
     const discovered = evaluateDemandOneNonOrtaFixture(FP027_E1_GENERATED_ROWS);
     expect(discovered.fixtureValid).toBe(false);
@@ -1407,7 +1418,8 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ortaSpecificHypothesis).toBe('STILL_LIVE');
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ninetyDegreeHypothesis).toBe('STILL_LIVE');
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
-    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(e2.authorizesNinetyControl).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(true);
 
     const discovered = evaluateNonOrtaNinetyDegreeFixture(FP027_E2_GENERATED_ROWS);
     expect(discovered.fixtureValid).toBe(false);
@@ -1439,11 +1451,13 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(dual.fp027RootCause).toBe('UNPROVEN');
     expect(dual.physicalLengthScore).toBe('6.0/10');
     expect(dual.formulaFreeze).toBe(true);
-    expect(FP024C_NINETY_CONTROL_SPEC.geometryIndependentlySpecified).toBe(false);
+    expect(FP024C_NINETY_CONTROL_SPEC.geometryIndependentlySpecified).toBe(true);
     expect(FP024C_NINETY_CONTROL_SPEC.asddMullionIsThisControl).toBe(false);
-    expect(FP024C_NINETY_CONTROL_SPEC.widthMm).toBe(0);
-    expect(FP024C_NINETY_CONTROL_SPEC.heightMm).toBe(0);
-    expect(FP024C_NINETY_CONTROL_SPEC.ortaDemandNaturallyEquals1).toBe('UNPROVEN');
+    expect(FP024C_NINETY_CONTROL_SPEC.widthMm).toBe(1200);
+    expect(FP024C_NINETY_CONTROL_SPEC.heightMm).toBe(1200);
+    expect(FP024C_NINETY_CONTROL_SPEC.ortaDemandNaturallyEquals1).toBe(
+      'NOT_AN_ACCEPTANCE_FIELD'
+    );
     expect(FP024C_NINETY_CONTROL_SPEC.quantityConservationInOriginalAcceptanceGate).toBe(
       false
     );
@@ -1489,7 +1503,8 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     );
     expect(compensationNamedConservationOpen.fp027RootCause).toBe('UNPROVEN');
 
-    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(true);
+    expect(FP024C_90_CONTROL_COMPENSATION.status).toBe('NOT_RUN');
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ninetyControlDualUseAuthorizesControl).toBe(
       false
     );
@@ -1503,9 +1518,9 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
       'NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS'
     );
     expect(isFp024c3ControlledTriplicateComplete()).toBe(true);
-    expect(catalog.blockers).toEqual(['FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY']);
-    expect(catalog.authorized).toBe(false);
-    expect(catalog.verdict).toBe('BLOCKED');
+    expect(catalog.blockers).toEqual([]);
+    expect(catalog.authorized).toBe(true);
+    expect(catalog.verdict).toBe('READY_FOR_OPERATOR_RUN');
     expect(catalog.controlRunStatus).toBe('NOT_RUN');
     expect(catalog.physicalLengthScore).toBe('6.0/10');
     expect(FP024C_90_CONTROL_COMPENSATION.status).toBe('NOT_RUN');
@@ -1552,11 +1567,11 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
       'FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY'
     );
     expect(specified.authorized).toBe(true);
-    expect(specified.verdict).toBe('AUTHORIZED');
+    expect(specified.verdict).toBe('READY_FOR_OPERATOR_RUN');
     expect(specified.physicalLengthScore).toBe('6.0/10');
     expect(specified.controlRunStatus).toBe('NOT_RUN');
-    expect(isControlFixtureAuthorized()).toBe(false);
-    expect(FP024C_NINETY_CONTROL_SPEC.geometryIndependentlySpecified).toBe(false);
+    expect(isControlFixtureAuthorized()).toBe(true);
+    expect(FP024C_NINETY_CONTROL_SPEC.geometryIndependentlySpecified).toBe(true);
 
     expect(
       evaluateControlFixtureAuthorization({
@@ -1582,6 +1597,71 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(firewall.conservationProvenBecauseCompensationMatched).toBe(false);
     expect(firewall.compensationProvenBecauseConservationMatched).toBe(false);
     expect(firewall.fp027RootCause).toBe('UNPROVEN');
+  });
+
+  it('accepts the independent 1200×1200 90° fixture and keeps the run unexecuted (FP-024C.5)', () => {
+    const catalog = evaluateIndependentNinetyControlFixtureSpec();
+    expect(catalog.specifiedIndependently).toBe(true);
+    expect(catalog.failures).toEqual([]);
+    expect(FP024C_NINETY_CONTROL_SPEC.widthMm).toBe(1200);
+    expect(FP024C_NINETY_CONTROL_SPEC.heightMm).toBe(1200);
+    expect(FP024C_NINETY_CONTROL_SPEC.centeredVerticalMullion).toBe(true);
+    expect(FP024C_NINETY_CONTROL_SPEC.requiredOrtaCount).toBeNull();
+    expect(FP024C_NINETY_CONTROL_SPEC.requiredOrtaSurplus).toBe(false);
+    expect(FP024C_NINETY_CONTROL_SPEC.expectedMullionNominalLengthMm).toBeNull();
+    expect(FP024C_NINETY_CONTROL_SPEC.selectedForCompensationOnly).toBe(true);
+
+    expect(evaluateIndependentNinetyControlFixtureSpec({ widthMm: 0, heightMm: 0 }).failures).toContain(
+      'GEOMETRY_MUST_BE_1200x1200'
+    );
+    expect(
+      evaluateIndependentNinetyControlFixtureSpec({ centeredVerticalMullion: false }).failures
+    ).toContain('CENTERED_VERTICAL_MULLION_REQUIRED');
+    expect(
+      evaluateIndependentNinetyControlFixtureSpec({ selectedToObserveOrtaSurplus: true }).failures
+    ).toContain('FP027_TARGETING_CANNOT_AUTHORIZE_FP024C_CONTROL');
+    expect(
+      evaluateIndependentNinetyControlFixtureSpec({ requiredOrtaCount: 1 }).failures
+    ).toContain('REQUIRED_ORTA_COUNT_MUST_NOT_BE_ENCODED');
+    expect(
+      evaluateIndependentNinetyControlFixtureSpec({ requiredOrtaSurplus: true }).failures
+    ).toContain('REQUIRED_ORTA_SURPLUS_MUST_NOT_BE_ENCODED');
+    expect(
+      evaluateIndependentNinetyControlFixtureSpec({ settingsFrozen: false }).failures
+    ).toContain('SETTINGS_MUST_REMAIN_FROZEN');
+    expect(
+      evaluateIndependentNinetyControlFixtureSpec({ formulaFreeze: false }).failures
+    ).toContain('PRODUCTION_FORMULAS_FROZEN');
+    expect(
+      evaluateIndependentNinetyControlFixtureSpec({ stockUpdateNo: false }).failures
+    ).toContain('STOCK_UPDATE_MUST_BE_NO');
+    expect(
+      evaluateIndependentNinetyControlFixtureSpec({ authorityFirewallActive: false }).failures
+    ).toContain('AUTHORITY_FIREWALL_REQUIRED');
+
+    const ready = evaluateControlFixtureAuthorization();
+    expect(ready.authorized).toBe(true);
+    expect(ready.verdict).toBe('READY_FOR_OPERATOR_RUN');
+    expect(ready.blockers).toEqual([]);
+    expect(ready.controlRunStatus).toBe('NOT_RUN');
+    expect(ready.physicalLengthScore).toBe('6.0/10');
+    expect(FP024C_90_CONTROL_COMPENSATION.status).toBe('NOT_RUN');
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.status).toBe('NOT_RUN');
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.cannotAffectFixtureValidity).toBe(true);
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.cannotAuthorizeRerun).toBe(true);
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.cannotChangeGeometry).toBe(true);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
+
+    const surplusFirewall = evaluateDualUseVerdictFirewall({
+      compensationClassification: null,
+      conservationClassification: 'OVERPRODUCTION',
+    });
+    expect(surplusFirewall.compensationProvenBecauseConservationMatched).toBe(false);
+    const lengthFirewall = evaluateDualUseVerdictFirewall({
+      compensationClassification: 'OBSERVED_DELTA',
+      conservationClassification: 'UNPROVEN',
+    });
+    expect(lengthFirewall.fp027RootCause).toBe('UNPROVEN');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

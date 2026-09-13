@@ -79,6 +79,8 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
     expect(FP024C_NINETY_CONTROL_DUAL_USE.authorizesControl).toBe(false);
     expect(FP024C_NINETY_CONTROL_DUAL_USE.physicalLengthScore).toBe('6.0/10');
     expect(evaluateControlFixtureAuthorization().physicalLengthScore).toBe('6.0/10');
+    expect(evaluateControlFixtureAuthorization().controlRunStatus).toBe('NOT_RUN');
+    expect(evaluateControlFixtureAuthorization().verdict).toBe('READY_FOR_OPERATOR_RUN');
     expect(
       evaluateControlFixtureAuthorization({
         fixtureIndependentlySpecified: true,

@@ -59,6 +59,7 @@ import {
   FP024C_NINETY_CONTROL_SPEC,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
+  evaluateIndependentNinetyControlFixtureSpec,
   evaluateDualUseVerdictFirewall,
   evaluateNinetyControlFixtureSelection,
   FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION,
@@ -171,6 +172,7 @@ export {
   FP024C_NINETY_CONTROL_SPEC,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
+  evaluateIndependentNinetyControlFixtureSpec,
   evaluateDualUseVerdictFirewall,
   evaluateNinetyControlFixtureSelection,
   FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION,
@@ -845,13 +847,13 @@ function pendingTemplate(
     status: 'PENDING_OPERATOR_RUN',
     designName:
       runKind === 'CONTROL_FIXTURE'
-        ? 'pending-90-control'
+        ? FP024C_NINETY_CONTROL_SPEC.designId
         : runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT'
           ? fixtureId
           : 'asdd',
     profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
-    widthMm: runKind === 'CONTROL_FIXTURE' ? 0 : 1000,
-    heightMm: runKind === 'CONTROL_FIXTURE' ? 0 : 1500,
+    widthMm: runKind === 'CONTROL_FIXTURE' ? FP024C_NINETY_CONTROL_SPEC.widthMm : 1000,
+    heightMm: runKind === 'CONTROL_FIXTURE' ? FP024C_NINETY_CONTROL_SPEC.heightMm : 1500,
     machineId: REQUIRED_ISOLATION_MACHINE_ID,
     observedSettings: emptyObservedSettings(null),
     intendedIsolation,
@@ -1770,14 +1772,14 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     'Operator template Fresh C. Completes the A/B/C package. 90° stays gated.'
   ),
   pendingTemplate(
-    'dowin-asdd-90-control-pending',
+    'FP024C_90_CONTROL',
     'ninetyDegreeControl',
     {
       field: null,
       instructedToMm: null,
-      note: 'CONTROL_FIXTURE: separate 90°/90° design. Keep General Settings, system, and DC-600 unchanged. Geometry and cut-angle may differ. Not a single-setting isolation. Gated until FP-024C.1 completes A/B/C.',
+      note: 'CONTROL_FIXTURE: 1200×1200 Deceuninck 70 with one centered vertical mullion. Settings unchanged. Compensation geometry only — not an FP-027 surplus target. READY_FOR_OPERATOR_RUN; not yet executed.',
     },
-    'Operator CONTROL_FIXTURE template. The asdd mullion is a same-job 90° observation, not this control fixture. GATED.'
+    'Operator CONTROL_FIXTURE template. Independent of asdd. The asdd mullion is a same-job 90° observation, not this control fixture. NOT_RUN.'
   ),
 ];
 
@@ -1843,9 +1845,8 @@ export function findBaselineReset(
 
 /**
  * Boolean view of evaluateControlFixtureAuthorization.
- * Fresh B/C pending and a failed asdd remainder reset no longer deadlock
- * this helper. Catalog authorization stays false while the 90° fixture
- * geometry is unspecified.
+ * Catalog readiness is READY_FOR_OPERATOR_RUN after FP-024C.5 fixture
+ * specification. That is not a measured result and does not raise the score.
  */
 export function isControlFixtureAuthorized(
   runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
@@ -2299,6 +2300,16 @@ export function ingestOperatorCalibrationRun(
       });
       reasons.push(
         `90° CONTROL_FIXTURE stays gated: ${gate.blockers.join(', ') || 'unspecified current prerequisite'}.`
+      );
+    }
+    const specCheck = evaluateIndependentNinetyControlFixtureSpec({
+      widthMm: pkg.widthMm,
+      heightMm: pkg.heightMm,
+      profileSystem: pkg.profileSystem,
+    });
+    if (!specCheck.specifiedIndependently) {
+      reasons.push(
+        `CONTROL_FIXTURE package does not match independent spec: ${specCheck.failures.join(', ')}.`
       );
     }
     if (!pkg.controlFixtureNote) {

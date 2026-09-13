@@ -449,8 +449,8 @@ The Test 5 control exists to ask whether **angle / geometry** changes nominal / 
 | Spec field | Documented value | Citation |
 |------------|------------------|----------|
 | Kind | `CONTROL_FIXTURE` / `ninetyDegreeControl` | `dowinCompensationEvidence.ts:276`, `:310–311`; audit table Test 5 |
-| Design name / id | `pending-90-control` / `dowin-asdd-90-control-pending` | `dowinCompensationEvidence.ts:836–837`, `:1762` |
-| Intended geometry | **unspecified** — `widthMm: 0`, `heightMm: 0`; “geometry/cut-angle **may** differ” | `dowinCompensationEvidence.ts:842–843`, `:1767`; `FP-024C-PHYSICAL-FORMULA-PARITY_2026-09-09.md:65` |
+| Design name / id | `FP024C_90_CONTROL_DESIGN` / `FP024C_90_CONTROL` (FP-024C.5) | `FP024C_NINETY_CONTROL_SPEC` |
+| Intended geometry | **1200 × 1200**, centered vertical mullion; asdd 1000 × 1500 is not this control | `FP024C_NINETY_CONTROL_SPEC`; historical unspecified 0 × 0 was the C.4 blocker |
 | Profile / system | Template inherits Deceuninck 70 from the golden fixture; not an independently drawn design | `dowinCompensationEvidence.ts:841` |
 | asdd 90° mullion | **not this control** — “same-job 90° observation” | `dowinCompensationEvidence.ts:1769`, `:2029–2032` |
 | ORTA demand = 1 | **UNPROVEN** for this control (geometry not specified). asdd / E2 / A/B/C two-panel jobs do generate ORTA × 1, but those jobs are not this control | E2 / `FP024C3_EXPECTED_FIXTURE_ROWS` |
@@ -461,7 +461,7 @@ The Test 5 control exists to ask whether **angle / geometry** changes nominal / 
 | Machine export | Machine **length layer** is required on transcribed pieces; MDB/`.dw` only “if generated” | `dowinCompensationEvidence.ts:2289–2290`; `FP-024C-PHYSICAL-FORMULA-PARITY_2026-09-09.md:75–76` |
 | Quantity conservation in original acceptance? | **No.** `canProve` is angle/geometry under unchanged settings. Ingest does not compare required vs plan counts | `dowinCompensationEvidence.ts:310–311` |
 
-`isControlFixtureAuthorized()` is still **false** for FP-024C reasons that predate this reassessment: `BASELINE_RESET_VALIDATION` is `REPRODUCTION_FAILED`; Fresh B/C templates are pending; FP-024C.1 is not a settled non-`AMBIGUOUS` verdict (`dowinCompensationEvidence.ts:1834–1858`).
+`isControlFixtureAuthorized()` is **true** after FP-024C.5 (`READY_FOR_OPERATOR_RUN`). Failed remainder reset, pending Fresh B/C, and an unsettled C.1 verdict no longer deadlock the gate. The control remains **NOT_RUN**.
 
 ### Why 90° and ORTA remain confounded
 
@@ -513,4 +513,6 @@ Do not modify formulas.
 
 FP-027 root cause UNPROVEN is **IRRELEVANT_TO_CONTROL** as a blocker and **cannot authorize** the control (`FP027_TARGETING_CANNOT_AUTHORIZE_FP024C_CONTROL`). Dual-use stays `DUAL_USE_CONDITIONAL`, which is not `DUAL_USE_SAFE`.
 
-Current authorization contract lives in `evaluateControlFixtureAuthorization`. Catalog verdict: **BLOCKED** solely by `FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY`. Obsolete C.1 Fresh B/C / remainder-reset predicates are superseded as blockers and remain historically visible. Records A/B stay `NOT_RUN`. Score **6.0/10**. Formulas **FROZEN**. PR #32 Draft / **DO NOT MERGE**.
+Current authorization contract lives in `evaluateControlFixtureAuthorization`. After FP-024C.5 the catalog verdict is **READY_FOR_OPERATOR_RUN** (fixture 1200 × 1200, centered vertical mullion, compensation-only). Obsolete C.1 Fresh B/C / remainder-reset predicates remain historically visible and do not deadlock the gate.
+
+The 1200 × 1200 fixture was **not** selected to observe conservation behavior. A future operator run may populate Record B passively. That cannot change geometry, authorize a rerun, or close FP-027. Root cause stays **UNPROVEN**. Records A/B stay `NOT_RUN` until that run exists. Score **6.0/10**. Formulas **FROZEN**. PR #32 Draft / **DO NOT MERGE**.

@@ -267,12 +267,47 @@ Repository/audit only. The control was **not** run.
 
 `isControlFixtureAuthorized()` no longer deadlocks on failed asdd remainder reset, pending Fresh B/C, or an unsettled C.1 verdict. Those predicates are `SUPERSEDED_BY_FP024C3` for **authorization**. Historical C.1 rows remain `PENDING_OPERATOR_RUN` / `REPRODUCTION_FAILED` / `AMBIGUOUS`.
 
-Current catalog evaluation of `evaluateControlFixtureAuthorization()`:
+Current catalog evaluation after FP-024C.5:
 
 ```text
-authorized = false
-verdict = BLOCKED
-blockers = [FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY]
+authorized = true
+verdict = READY_FOR_OPERATOR_RUN
+blockers = []
+controlRunStatus = NOT_RUN
 ```
 
 C.3 accepted checkpoint is recognized. Formula freeze, stock-update **No** protocol, dual-use CONDITIONAL ≠ SAFE, and the FP-027 firewall remain required. FP-027 root cause UNPROVEN does **not** block compensation science. FP-027 targeting cannot authorize the control. Score stays **6.0/10**. Formulas stay **FROZEN**. PR #32 stays Draft / **DO NOT MERGE**.
+
+---
+
+## FP-024C.5 — independent 90° fixture specification (13 September 2026)
+
+Repository/audit only. The control was **not** run.
+
+### Why 1200 × 1200
+
+The asdd 1000 × 1500 job already contains a same-job 90° ORTA mullion. That observation is **not** this control. A new square frame is specified so the operator draws a simple, reproducible two-panel design whose only unusual angle is the centered vertical divider.
+
+1200 × 1200 is **not** tuned to FP-027 surplus, demand=1, or spare-stock capacity. It is large enough for a valid Deceuninck 70 frame + mullion and small enough to keep the cut list short. Mullion nominal length is **not** pre-encoded.
+
+### Geometry
+
+- System: Deceuninck 70
+- Outer frame 1200 × 1200 mm
+- One centered vertical mullion, two equal panels
+- No sash unless the native design system requires one for `DESIGN_VALIDATION VALID`
+- Expected naturally: ≥1 piece 90°/90° (may be ORTA) and ≥1 piece 45°/45° (frame reference)
+
+ORTA quantity is **not** an acceptance field. Do not require required ORTA = 1 or plan ORTA = 4.
+
+### Measurement layers (eventual run)
+
+For each physical piece: profile, role, nominal, packed, machine, both end angles. Classify each class as `NO_OBSERVED_EFFECT` / `OBSERVED_DELTA` / `UNPROVEN`. Do not assume 90° delta = 0, 45° delta = Welding Waste, or machine = packed. Do not patch formulas from this run.
+
+### Dual-use firewall
+
+Record A (`FP024C_90_CONTROL_COMPENSATION`) is primary. Record B may passively transcribe conservation later. Shared hashes do not share verdicts. A surprising conservation result cannot change geometry, rerun the control, or close FP-027.
+
+### Authorization
+
+`evaluateIndependentNinetyControlFixtureSpec()` passes. `evaluateControlFixtureAuthorization()` is `READY_FOR_OPERATOR_RUN`. That permits the evidence run. It does not mean the control passed, parity passed, a formula is proven, or the score may move. Score stays **6.0/10**. Formulas stay **FROZEN**. Control status **NOT_RUN**. Do not open DoWin from this specification.

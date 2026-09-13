@@ -1087,7 +1087,7 @@ The 90° control stays **GATED**. PR #32 stays **DO NOT MERGE**: the branch has 
 | Repeatability verdict | **NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS** |
 | `ORTA_ZERO_QTY_CONTROL_OBSERVABILITY` | **LOST_BY_MANUAL_STOCK_EDIT** |
 | `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` | **PROVEN FOR OBSERVED PATH** |
-| 90° CONTROL_FIXTURE | **BLOCKED** (FP-024C.4) — C.3 checkpoint recognized; remaining blocker is independent fixture specification, not Fresh B/C |
+| 90° CONTROL_FIXTURE | **READY_FOR_OPERATOR_RUN** (FP-024C.5) — 1200×1200 independent fixture specified; not executed |
 | Physical-length correctness | **6.0/10** |
 | Production formulas | **FROZEN** |
 | FP-016 / FP-017 | not started |
@@ -1100,4 +1100,4 @@ The 90° control stays **GATED**. PR #32 stays **DO NOT MERGE**: the branch has 
 
 ### FP-024C.4 note (13 September 2026)
 
-The accepted C.3 checkpoint is now a **required** authorization predicate for the original 90° compensation control. It is **not sufficient**. Fresh B/C remaining pending must not deadlock that gate (`SUPERSEDED_BY_FP024C3` for authorization only). Geometry is still unspecified, so the control stays **BLOCKED** and **NOT_RUN**. Score 6.0/10. Formulas frozen.
+The accepted C.3 checkpoint is a **required** authorization predicate for the original 90° compensation control. Fresh B/C remaining pending must not deadlock that gate (`SUPERSEDED_BY_FP024C3` for authorization only). FP-024C.5 specified the independent 1200 × 1200 fixture; catalog verdict is **READY_FOR_OPERATOR_RUN**. The control is still **NOT_RUN**. Score 6.0/10. Formulas frozen.

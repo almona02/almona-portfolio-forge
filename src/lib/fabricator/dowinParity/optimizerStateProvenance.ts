@@ -2359,23 +2359,45 @@ export type Fp024cNinetyControlDualUseClassification =
   | 'UNPROVEN';
 
 /**
- * Original Test 5 CONTROL_FIXTURE as specified before FP-027 existed.
- * Geometry is not a measured design: width/height are 0 and the note
- * allows them to differ. The asdd 90° mullion is a same-job observation,
- * not this control. Quantity conservation was never an acceptance field.
+ * FP-024C.5 independent 90° compensation fixture.
+ * Chosen for a clear 90/90 mullion plus 45/45 frame references — not to
+ * trigger ORTA surplus, demand=1, or the asdd 1→4 observation. Mullion
+ * packed/nominal lengths are not pre-encoded; DoWin must generate them.
  */
 export const FP024C_NINETY_CONTROL_SPEC = {
-  fixtureId: 'dowin-asdd-90-control-pending',
-  designName: 'pending-90-control',
+  fixtureId: 'FP024C_90_CONTROL',
+  projectTemplate: 'FP024C_90_CONTROL',
+  designId: 'FP024C_90_CONTROL_DESIGN',
   purpose: 'ANGLE_GEOMETRY_COMPENSATION',
   scientificQuestion:
-    'nominal / packed / machine length under unchanged Weld 3 / Saw 4 / Trim 0',
+    'Does a naturally generated 90° piece receive the same, different, or no packed/machine compensation relative to its nominal layer?',
   profileSystem: "Deceuninck 70'lik PVC Sistemi",
-  widthMm: 0,
-  heightMm: 0,
-  geometryIndependentlySpecified: false,
+  widthMm: 1200,
+  heightMm: 1200,
+  geometryDescription:
+    'single centered vertical mullion / two-panel symmetric frame',
+  centeredVerticalMullion: true,
+  sashRequired: false,
+  selectedForCompensationOnly: true,
+  geometryIndependentlySpecified: true,
   asddMullionIsThisControl: false,
-  ortaDemandNaturallyEquals1: 'UNPROVEN',
+  requiredOrtaCount: null,
+  requiredOrtaSurplus: false,
+  ortaDemandNaturallyEquals1: 'NOT_AN_ACCEPTANCE_FIELD',
+  expectedMullionNominalLengthMm: null,
+  expectedCompensationDeltaMm: null,
+  ninetyDegreeAcceptance: { leftAngleDeg: 90, rightAngleDeg: 90, minCount: 1 },
+  fortyFiveReferenceAcceptance: { leftAngleDeg: 45, rightAngleDeg: 45, minCount: 1 },
+  settings: {
+    weldingWasteMm: 3,
+    sawThicknessMm: 4,
+    trimCutMm: 0,
+    sashOffsetMm: 7,
+    glazingClearanceMm: 2.5,
+    remnantThresholdMm: 500,
+    machineId: 'DC-600',
+  },
+  dc550SkhGloballyEnabled: true,
   settingsUnchangedFromParent: true,
   stockSpecified: false,
   topologyRequiredForCompensationClassification: false,
@@ -2384,18 +2406,24 @@ export const FP024C_NINETY_CONTROL_SPEC = {
   quantityConservationInOriginalAcceptanceGate: false,
 } as const;
 
-/** Record A — compensation only. Empty until an independently authorized control run. */
+/** Record A — compensation only. Specified, not measured. */
 export const FP024C_90_CONTROL_COMPENSATION = {
   id: 'FP024C_90_CONTROL_COMPENSATION',
   status: 'NOT_RUN',
   purpose: 'COMPENSATION_PRIMARY',
-  fixtureIdentity: 'dowin-asdd-90-control-pending',
-  settings: null,
-  geometry: null,
-  nominalMm: null,
-  packedMm: null,
-  machineMm: null,
-  angleCondition: '90/90',
+  fixtureIdentity: 'FP024C_90_CONTROL',
+  projectId: 'FP024C_90_CONTROL',
+  designId: 'FP024C_90_CONTROL_DESIGN',
+  productionPlanId: null,
+  runId: null,
+  widthMm: 1200,
+  heightMm: 1200,
+  profileSystem: "Deceuninck 70'lik PVC Sistemi",
+  geometryDescription:
+    'single centered vertical mullion / two-panel symmetric frame',
+  settingsSnapshot: FP024C_NINETY_CONTROL_SPEC.settings,
+  machine: 'DC-600',
+  pieces: [] as const,
   classification: null,
   cannotCiteFp027Conservation: true,
   physicalLengthScore: '6.0/10',
@@ -2406,7 +2434,7 @@ export const FP027_90_CONTROL_CONSERVATION_OBSERVATION = {
   id: 'FP027_90_CONTROL_CONSERVATION_OBSERVATION',
   status: 'NOT_RUN',
   purpose: 'CONSERVATION_SECONDARY',
-  fixtureIdentity: 'dowin-asdd-90-control-pending',
+  fixtureIdentity: 'FP024C_90_CONTROL',
   requiredCount: null,
   planCount: null,
   deltaCount: null,
@@ -2415,7 +2443,10 @@ export const FP027_90_CONTROL_CONSERVATION_OBSERVATION = {
   machineExportCount: null,
   remainderPropagation: null,
   classification: null,
+  cannotAffectFixtureValidity: true,
   cannotCiteFp024cCompensation: true,
+  cannotAuthorizeRerun: true,
+  cannotChangeGeometry: true,
   cannotCloseFp027: true,
   cannotProveRootCause: true,
   variableBundle: 'ORTA + demand=1 + 90/90 + single-length + cost/profile',
@@ -2448,6 +2479,74 @@ export function evaluateNinetyControlFixtureSelection(args: {
   return args.selectedToObserveOrtaSurplus
     ? 'FIXTURE_SELECTION_BIAS'
     : 'COMPENSATION_PRIMARY';
+}
+
+export interface IndependentNinetyControlFixtureArgs {
+  widthMm?: number;
+  heightMm?: number;
+  profileSystem?: string;
+  centeredVerticalMullion?: boolean;
+  selectedForCompensationOnly?: boolean;
+  requiredOrtaCount?: number | null;
+  requiredOrtaSurplus?: boolean;
+  selectedToObserveOrtaSurplus?: boolean;
+  settingsFrozen?: boolean;
+  machineId?: string;
+  stockUpdateNo?: boolean;
+  authorityFirewallActive?: boolean;
+  formulaFreeze?: boolean;
+}
+
+/**
+ * Compensation-only independence check. ORTA quantity and surplus are
+ * not acceptance fields. A naturally generated ORTA 90/90 piece is
+ * allowed; requiring those counts is not.
+ */
+export function evaluateIndependentNinetyControlFixtureSpec(
+  args: IndependentNinetyControlFixtureArgs = {}
+): { specifiedIndependently: boolean; failures: string[] } {
+  const width = args.widthMm ?? FP024C_NINETY_CONTROL_SPEC.widthMm;
+  const height = args.heightMm ?? FP024C_NINETY_CONTROL_SPEC.heightMm;
+  const system = args.profileSystem ?? FP024C_NINETY_CONTROL_SPEC.profileSystem;
+  const mullion =
+    args.centeredVerticalMullion ?? FP024C_NINETY_CONTROL_SPEC.centeredVerticalMullion;
+  const compensationOnly =
+    args.selectedForCompensationOnly ??
+    FP024C_NINETY_CONTROL_SPEC.selectedForCompensationOnly;
+  const requiredOrta = args.requiredOrtaCount ?? FP024C_NINETY_CONTROL_SPEC.requiredOrtaCount;
+  const requiredSurplus =
+    args.requiredOrtaSurplus ?? FP024C_NINETY_CONTROL_SPEC.requiredOrtaSurplus;
+  const selectedForOrta = args.selectedToObserveOrtaSurplus ?? false;
+  const settingsFrozen = args.settingsFrozen ?? true;
+  const machine = args.machineId ?? FP024C_NINETY_CONTROL_SPEC.settings.machineId;
+  const stockUpdateNo =
+    args.stockUpdateNo ?? FP024C_90_CONTROL_STOCK_PROTOCOL.stockUpdateResponse === 'NO';
+  const firewall =
+    args.authorityFirewallActive ??
+    FP024C_NINETY_CONTROL_DUAL_USE.sharedVerdictAuthorityForbidden;
+  const freeze = args.formulaFreeze ?? FP024C_NINETY_CONTROL_DUAL_USE.formulaFreeze;
+
+  const failures: string[] = [];
+  if (width !== 1200 || height !== 1200) {
+    failures.push('GEOMETRY_MUST_BE_1200x1200');
+  }
+  if (!system.includes('Deceuninck 70')) failures.push('SYSTEM_MUST_BE_DECEUNINCK_70');
+  if (!mullion) failures.push('CENTERED_VERTICAL_MULLION_REQUIRED');
+  if (!compensationOnly || selectedForOrta) {
+    failures.push('FP027_TARGETING_CANNOT_AUTHORIZE_FP024C_CONTROL');
+  }
+  if (requiredOrta === 1) failures.push('REQUIRED_ORTA_COUNT_MUST_NOT_BE_ENCODED');
+  if (requiredSurplus) failures.push('REQUIRED_ORTA_SURPLUS_MUST_NOT_BE_ENCODED');
+  if (!settingsFrozen) failures.push('SETTINGS_MUST_REMAIN_FROZEN');
+  if (machine !== 'DC-600') failures.push('MACHINE_MUST_BE_DC-600');
+  if (!stockUpdateNo) failures.push('STOCK_UPDATE_MUST_BE_NO');
+  if (!firewall) failures.push('AUTHORITY_FIREWALL_REQUIRED');
+  if (!freeze) failures.push('PRODUCTION_FORMULAS_FROZEN');
+
+  return {
+    specifiedIndependently: failures.length === 0,
+    failures,
+  };
 }
 
 /**
@@ -2548,6 +2647,7 @@ export const FP024C_90_CONTROL_AUTHORIZATION_CONTRACT = {
 
 export type ControlFixtureAuthorizationVerdict =
   | 'AUTHORIZED'
+  | 'READY_FOR_OPERATOR_RUN'
   | 'BLOCKED'
   | 'CONDITIONAL'
   | 'UNPROVEN';
@@ -2586,7 +2686,7 @@ export function evaluateControlFixtureAuthorization(
 } {
   const fixtureSpecified =
     args.fixtureIndependentlySpecified ??
-    FP024C_NINETY_CONTROL_SPEC.geometryIndependentlySpecified;
+    evaluateIndependentNinetyControlFixtureSpec().specifiedIndependently;
   const selectedForOrta = args.selectedToObserveOrtaSurplus ?? false;
   const freeze = args.formulaFreeze ?? FP024C_NINETY_CONTROL_DUAL_USE.formulaFreeze;
   const stockProtocol =
@@ -2622,7 +2722,7 @@ export function evaluateControlFixtureAuthorization(
 
   return {
     authorized: blockers.length === 0,
-    verdict: blockers.length === 0 ? 'AUTHORIZED' : 'BLOCKED',
+    verdict: blockers.length === 0 ? 'READY_FOR_OPERATOR_RUN' : 'BLOCKED',
     blockers,
     supersededConditions: FP024C_90_CONTROL_AUTHORIZATION_CONTRACT.supersededAsBlockers,
     fp027RootCauseBlocksCompensation: false,

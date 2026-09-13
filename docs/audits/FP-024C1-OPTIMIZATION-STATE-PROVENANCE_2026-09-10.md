@@ -500,4 +500,4 @@ Status: `SUPERSEDED_BY_FP024C3` **for controlled repeatability and for 90° cont
 
 The 90° compensation control does not need optimizer-topology determinism, completion of the unexecuted Fresh B/C slots, or recovery of asdd remainder topology. Those were C.1 scientific questions. FP-024C.3 accepted `NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS` with `COMPLETE_INPUT_EQUIVALENCE = UNPROVEN`.
 
-`isControlFixtureAuthorized()` therefore no longer treats pending Fresh B/C or `REPRODUCTION_FAILED` reset as deadlock. Authorization stays **BLOCKED** on the unspecified independent 90° fixture spec. Do not run the control from this note.
+`isControlFixtureAuthorized()` therefore no longer treats pending Fresh B/C or `REPRODUCTION_FAILED` reset as deadlock. FP-024C.5 specified the independent 1200 × 1200 fixture; catalog verdict is **READY_FOR_OPERATOR_RUN**. The control is still **NOT_RUN**. Do not run it from this note.
