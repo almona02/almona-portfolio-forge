@@ -56,6 +56,7 @@ import {
   isControlFixtureAuthorized,
   FP027_E2_NONORTA_90,
   FP027_REQUIRED_PARTS_CONSERVATION_GATE,
+  FP024C_NINETY_CONTROL_DUAL_USE,
   evaluateBaselineReset,
   overallUtilizationPercent,
   type DowinCalibrationRun,
@@ -103,6 +104,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(isControlFixtureAuthorized()).toBe(false);
     expect(FP027_E2_NONORTA_90.authorizesNinetyControl).toBe(false);
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.e2AuthorizesNinetyControl).toBe(false);
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.classification).toBe('DUAL_USE_CONDITIONAL');
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.authorizesControl).toBe(false);
     expect(DOWIN_ASDD_BASELINE_RESET_RUN.reproductionVerdict).toBe('REPRODUCTION_FAILED');
     expect(
       evaluateBaselineReset(DOWIN_ASDD_BASELINE_REPRODUCTION_RUN, DOWIN_ASDD_BASELINE_RESET_RUN).verdict

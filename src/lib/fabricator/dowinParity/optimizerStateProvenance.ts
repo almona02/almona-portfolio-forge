@@ -1923,7 +1923,7 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
   fillTheBarHypothesis: 'WEAKENED',
   simpleSpareCapacityGeneralization: 'NOT_SUPPORTED_BY_E3',
   fixtureDiscriminatingPower: 'INSUFFICIENT',
-  nextSpecifiedExperiment: 'REASSESS_GATED_NINETY_CONTROL',
+  nextSpecifiedExperiment: 'INDEPENDENT_REVIEW_ONLY',
   statement:
     'The +3 ORTA surplus is repeatable across all three measured-identical runs and is not correlated with the observed stochastic CITA topology variation. Evidence therefore supports a deterministic or upstream conservation defect, but root cause remains UNPROVEN.',
   notProven: [
@@ -1978,6 +1978,8 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
   e2AuthorizesFormulaChange: false,
   e2ProvesDemandInequality: false,
   e2AuthorizesNinetyControl: false,
+  ninetyControlDualUseClassification: 'DUAL_USE_CONDITIONAL',
+  ninetyControlDualUseAuthorizesControl: false,
   injectedSyntheticRowIsValidEvidence: false,
   almonaExposure: 'NOT_EXPOSED_BY_CONSTRUCTION',
   almonaInvariantAsserted: false,
@@ -2349,6 +2351,142 @@ export const FP027_E2_NONORTA_90 = {
   ninetyDegreeHypothesis: 'UNRESOLVED',
   physicalLengthScore: '6.0/10',
 } as const;
+
+export type Fp024cNinetyControlDualUseClassification =
+  | 'DUAL_USE_SAFE'
+  | 'DUAL_USE_UNSAFE'
+  | 'DUAL_USE_CONDITIONAL'
+  | 'UNPROVEN';
+
+/**
+ * Original Test 5 CONTROL_FIXTURE as specified before FP-027 existed.
+ * Geometry is not a measured design: width/height are 0 and the note
+ * allows them to differ. The asdd 90° mullion is a same-job observation,
+ * not this control. Quantity conservation was never an acceptance field.
+ */
+export const FP024C_NINETY_CONTROL_SPEC = {
+  fixtureId: 'dowin-asdd-90-control-pending',
+  designName: 'pending-90-control',
+  purpose: 'ANGLE_GEOMETRY_COMPENSATION',
+  scientificQuestion:
+    'nominal / packed / machine length under unchanged Weld 3 / Saw 4 / Trim 0',
+  profileSystem: "Deceuninck 70'lik PVC Sistemi",
+  widthMm: 0,
+  heightMm: 0,
+  geometryIndependentlySpecified: false,
+  asddMullionIsThisControl: false,
+  ortaDemandNaturallyEquals1: 'UNPROVEN',
+  settingsUnchangedFromParent: true,
+  stockSpecified: false,
+  topologyRequiredForCompensationClassification: false,
+  topologyRequiredForPackageIngest: true,
+  machineExportRequiredForCompensation: 'MACHINE_LENGTH_LAYER',
+  quantityConservationInOriginalAcceptanceGate: false,
+} as const;
+
+/** Record A — compensation only. Empty until an independently authorized control run. */
+export const FP024C_90_CONTROL_COMPENSATION = {
+  id: 'FP024C_90_CONTROL_COMPENSATION',
+  status: 'NOT_RUN',
+  purpose: 'COMPENSATION_PRIMARY',
+  fixtureIdentity: 'dowin-asdd-90-control-pending',
+  settings: null,
+  geometry: null,
+  nominalMm: null,
+  packedMm: null,
+  machineMm: null,
+  angleCondition: '90/90',
+  classification: null,
+  cannotCiteFp027Conservation: true,
+  physicalLengthScore: '6.0/10',
+} as const;
+
+/** Record B — conservation only. Empty until the same independently authorized run. */
+export const FP027_90_CONTROL_CONSERVATION_OBSERVATION = {
+  id: 'FP027_90_CONTROL_CONSERVATION_OBSERVATION',
+  status: 'NOT_RUN',
+  purpose: 'CONSERVATION_SECONDARY',
+  fixtureIdentity: 'dowin-asdd-90-control-pending',
+  requiredCount: null,
+  planCount: null,
+  deltaCount: null,
+  requiredLengthMm: null,
+  planLengthMm: null,
+  machineExportCount: null,
+  remainderPropagation: null,
+  classification: null,
+  cannotCiteFp024cCompensation: true,
+  cannotCloseFp027: true,
+  cannotProveRootCause: true,
+  variableBundle: 'ORTA + demand=1 + 90/90 + single-length + cost/profile',
+} as const;
+
+/**
+ * Dual-use reassessment. CONDITIONAL: a future independently authorized
+ * compensation run may be transcribed into Record B, but FP-027 must not
+ * choose the geometry, and this reassessment does not open the gate.
+ */
+export const FP024C_NINETY_CONTROL_DUAL_USE = {
+  classification: 'DUAL_USE_CONDITIONAL' as Fp024cNinetyControlDualUseClassification,
+  authorizesControl: false,
+  targetingOrtaOneToFourChangesFixtureSelection: true,
+  targetingOrtaOneToFourIsUnsafe: true,
+  passiveObservationAllowedAfterIndependentAuthorization: true,
+  fixtureSelectionBiasIfFp027ChoosesGeometry: true,
+  stockStateLimitsConservationAuthority: true,
+  lengthLayersIndependentOfTopology: true,
+  quantityFeedbackRerunForbidden: true,
+  sharedVerdictAuthorityForbidden: true,
+  fp027RootCause: 'UNPROVEN',
+  physicalLengthScore: '6.0/10',
+  formulaFreeze: true,
+} as const;
+
+export function evaluateNinetyControlFixtureSelection(args: {
+  selectedToObserveOrtaSurplus: boolean;
+}): 'FIXTURE_SELECTION_BIAS' | 'COMPENSATION_PRIMARY' {
+  return args.selectedToObserveOrtaSurplus
+    ? 'FIXTURE_SELECTION_BIAS'
+    : 'COMPENSATION_PRIMARY';
+}
+
+/**
+ * Shared artifact hashes do not merge verdict authority. Conservation
+ * matching expectation cannot prove compensation, and the reverse is
+ * also forbidden. FP-027 root cause stays UNPROVEN.
+ */
+export function evaluateDualUseVerdictFirewall(args: {
+  compensationClassification: string | null | undefined;
+  conservationClassification: Fp027ConservationClassification | null | undefined;
+  compensationArtifactSha256?: string | null;
+  conservationArtifactSha256?: string | null;
+}): {
+  observedCompensation: string | null;
+  observedConservation: Fp027ConservationClassification | null;
+  compensationAuthority: 'INDEPENDENT';
+  conservationAuthority: 'INDEPENDENT';
+  sharedHashImpliesSharedVerdict: false;
+  compensationProvenBecauseConservationMatched: false;
+  conservationProvenBecauseCompensationMatched: false;
+  artifactsShared: boolean;
+  fp027RootCause: 'UNPROVEN';
+} {
+  const artifactsShared =
+    !!args.compensationArtifactSha256 &&
+    !!args.conservationArtifactSha256 &&
+    args.compensationArtifactSha256 === args.conservationArtifactSha256;
+  return {
+    observedCompensation: args.compensationClassification ?? null,
+    observedConservation: args.conservationClassification ?? null,
+    compensationAuthority: 'INDEPENDENT',
+    conservationAuthority: 'INDEPENDENT',
+    sharedHashImpliesSharedVerdict: false,
+    compensationProvenBecauseConservationMatched: false,
+    conservationProvenBecauseCompensationMatched: false,
+    artifactsShared,
+    fp027RootCause: 'UNPROVEN',
+  };
+}
 
 export interface ControlledFixtureRow {
   category: DowinLengthCategory;

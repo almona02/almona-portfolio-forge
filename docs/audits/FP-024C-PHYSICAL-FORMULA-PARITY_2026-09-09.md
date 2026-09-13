@@ -224,3 +224,37 @@ Physical-length score stays **6.0/10**. It must not move until FP-024C.1 explain
 ## Legal / IP
 
 Licensed PDFs and readable MDB table fields only. No binary decompilation, no SQLCipher/DPAPI, no guessed Basma/Kaynak, no DoWin UI clone.
+
+---
+
+## Dual-use reassessment vs FP-027 (13 September 2026)
+
+FP-027 asked whether this Test 5 `CONTROL_FIXTURE` can also observe required-vs-plan conservation without contaminating compensation. **No control run was executed for that question.**
+
+### Original purpose (unchanged)
+
+Angle / geometry compensation: nominal, packed, and machine length under unchanged Weld 3 / Saw 4 / Trim 0. Not optimizer quantity conservation. `CONTROL_FIXTURE` still cannot yield `PROVEN EFFECT` for a setting (`dowinCompensationEvidence.ts:310–311`, this file line 65 / 85).
+
+### Original fixture (as specified — nothing invented)
+
+| Field | Value |
+|-------|--------|
+| Geometry | **Not specified.** Template `widthMm: 0`, `heightMm: 0`. Note: geometry/cut-angle **may** differ. |
+| Profile system | Inherits Deceuninck 70 from the golden template; no separate design drawing exists. |
+| asdd 90° ORTA mullion | Explicitly **not** this control. |
+| ORTA demand = 1 | **UNPROVEN** on this control. |
+| Stock | Not specified for `CONTROL_FIXTURE`. |
+| Machine export | Required as the machine length layer on transcribed pieces; MDB only if generated. |
+| Quantity conservation | **Not** part of the original acceptance gate. |
+
+### Decision
+
+`DUAL_USE_CONDITIONAL`. This reassessment does **not** authorize the control (`authorizesControl = false`). `isControlFixtureAuthorized()` remains false until the original FP-024C gates recover (reset 1B, Fresh B/C, non-ambiguous C.1).
+
+Choosing geometry so FP-027 can reproduce `ORTA 1 → 4` is fixture-selection bias and is **unsafe as a targeting rule**. Passive conservation transcription from a later independently authorized compensation run is allowed into a **separate** Record B. Shared hashes do not share verdicts. A surprising conservation result must not rerun or alter the compensation record.
+
+E2 showed the only native 90°/90° linear piece on the two-panel template is ORTA, so 90° and ORTA stay confounded. Even a later +3 ORTA observation would leave FP-027 root cause **UNPROVEN**.
+
+Physical-length score stays **6.0/10**. Production formulas stay **FROZEN**. PR #32 stays Draft / **DO NOT MERGE**. Do not run the 90° control from this reassessment.
+
+See `docs/audits/FP-027-OPTIMIZATION-REQUIRED-PARTS-CONSERVATION_2026-09-13.md` (dual-use section) and `FP024C_NINETY_CONTROL_DUAL_USE`.

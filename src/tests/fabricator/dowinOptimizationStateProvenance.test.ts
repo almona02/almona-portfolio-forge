@@ -36,6 +36,12 @@ import {
   FP027_E1_GENERATED_ROWS,
   FP027_E2_NONORTA_90,
   FP027_E2_GENERATED_ROWS,
+  FP024C_90_CONTROL_COMPENSATION,
+  FP024C_NINETY_CONTROL_DUAL_USE,
+  FP024C_NINETY_CONTROL_SPEC,
+  FP027_90_CONTROL_CONSERVATION_OBSERVATION,
+  evaluateDualUseVerdictFirewall,
+  evaluateNinetyControlFixtureSelection,
   FP027_E3_BARS,
   FP027_E3_KASA_SPARE,
   FP027_E3_REQUIRED_PIECES,
@@ -1217,7 +1223,7 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(gate.leadingHypothesisAuthority).toBe('CONSISTENT_WITH_ALL_OBSERVED_DATA');
     expect(gate.fillTheBarHypothesis).toBe('WEAKENED');
     expect(gate.simpleSpareCapacityGeneralization).toBe('NOT_SUPPORTED_BY_E3');
-    expect(gate.nextSpecifiedExperiment).toBe('REASSESS_GATED_NINETY_CONTROL');
+    expect(gate.nextSpecifiedExperiment).toBe('INDEPENDENT_REVIEW_ONLY');
     expect(gate.fixtureDiscriminatingPower).toBe('INSUFFICIENT');
     expect(gate.statement).toContain('root cause remains UNPROVEN');
     // Three identical outcomes are not a proof of determinism.
@@ -1238,6 +1244,8 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(gate.e1ClosesGate).toBe(false);
     expect(gate.e2ClosesGate).toBe(false);
     expect(gate.e2AuthorizesNinetyControl).toBe(false);
+    expect(gate.ninetyControlDualUseClassification).toBe('DUAL_USE_CONDITIONAL');
+    expect(gate.ninetyControlDualUseAuthorizesControl).toBe(false);
     expect(gate.injectedSyntheticRowIsValidEvidence).toBe(false);
   });
 
@@ -1415,6 +1423,72 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     );
     expect(e2.injectedRow).toBe(false);
     expect(evaluateNonOrtaNinetyDegreeFixture(null).classification).toBe('UNPROVEN');
+  });
+
+  it('keeps 90° dual-use conditional and does not merge verdict authority', () => {
+    const dual = FP024C_NINETY_CONTROL_DUAL_USE;
+    expect(dual.classification).toBe('DUAL_USE_CONDITIONAL');
+    expect(dual.authorizesControl).toBe(false);
+    expect(dual.targetingOrtaOneToFourIsUnsafe).toBe(true);
+    expect(dual.passiveObservationAllowedAfterIndependentAuthorization).toBe(true);
+    expect(dual.fp027RootCause).toBe('UNPROVEN');
+    expect(dual.physicalLengthScore).toBe('6.0/10');
+    expect(dual.formulaFreeze).toBe(true);
+    expect(FP024C_NINETY_CONTROL_SPEC.geometryIndependentlySpecified).toBe(false);
+    expect(FP024C_NINETY_CONTROL_SPEC.asddMullionIsThisControl).toBe(false);
+    expect(FP024C_NINETY_CONTROL_SPEC.widthMm).toBe(0);
+    expect(FP024C_NINETY_CONTROL_SPEC.heightMm).toBe(0);
+    expect(FP024C_NINETY_CONTROL_SPEC.ortaDemandNaturallyEquals1).toBe('UNPROVEN');
+    expect(FP024C_NINETY_CONTROL_SPEC.quantityConservationInOriginalAcceptanceGate).toBe(
+      false
+    );
+    expect(FP024C_90_CONTROL_COMPENSATION.status).toBe('NOT_RUN');
+    expect(FP024C_90_CONTROL_COMPENSATION.cannotCiteFp027Conservation).toBe(true);
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.status).toBe('NOT_RUN');
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.cannotCiteFp024cCompensation).toBe(
+      true
+    );
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.cannotCloseFp027).toBe(true);
+    expect(evaluateNinetyControlFixtureSelection({ selectedToObserveOrtaSurplus: true })).toBe(
+      'FIXTURE_SELECTION_BIAS'
+    );
+    expect(
+      evaluateNinetyControlFixtureSelection({ selectedToObserveOrtaSurplus: false })
+    ).toBe('COMPENSATION_PRIMARY');
+
+    const sameHash = 'abc123';
+    const conservationExactCompensationOpen = evaluateDualUseVerdictFirewall({
+      compensationClassification: null,
+      conservationClassification: 'EXACT_CONSERVATION',
+      compensationArtifactSha256: sameHash,
+      conservationArtifactSha256: sameHash,
+    });
+    expect(conservationExactCompensationOpen.artifactsShared).toBe(true);
+    expect(conservationExactCompensationOpen.sharedHashImpliesSharedVerdict).toBe(false);
+    expect(conservationExactCompensationOpen.compensationProvenBecauseConservationMatched).toBe(
+      false
+    );
+    expect(conservationExactCompensationOpen.observedCompensation).toBeNull();
+    expect(conservationExactCompensationOpen.fp027RootCause).toBe('UNPROVEN');
+
+    const compensationNamedConservationOpen = evaluateDualUseVerdictFirewall({
+      compensationClassification: 'WITHIN_FIXTURE_LAYERS',
+      conservationClassification: 'UNPROVEN',
+    });
+    expect(compensationNamedConservationOpen.observedCompensation).toBe(
+      'WITHIN_FIXTURE_LAYERS'
+    );
+    expect(compensationNamedConservationOpen.observedConservation).toBe('UNPROVEN');
+    expect(compensationNamedConservationOpen.conservationProvenBecauseCompensationMatched).toBe(
+      false
+    );
+    expect(compensationNamedConservationOpen.fp027RootCause).toBe('UNPROVEN');
+
+    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ninetyControlDualUseAuthorizesControl).toBe(
+      false
+    );
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

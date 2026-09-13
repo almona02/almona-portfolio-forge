@@ -4,7 +4,7 @@
 |-------|--------|
 | Date | 13 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
-| Experiment | E3 measured; **E1 and E2 fixture discovery complete** — no solve on either |
+| Experiment | E3 measured; E1/E2 negative fixtures; **90° dual-use = CONDITIONAL** — control not run |
 | Gate | 🔓 **FORENSICS OPEN** |
 | Root cause | **UNPROVEN** |
 | Fix | **NOT IMPLEMENTED** |
@@ -199,7 +199,7 @@ Remaining confounds (unchanged by one no-surplus result): demand-of-one special 
 
 - `npm run type-check` — clean
 - vitest: `dowinOptimizationStateProvenance.test.ts`, `dowinCompensationReconciliation.test.ts`
-- Pins: root cause `UNPROVEN`; E3 exact conservation cannot close FP-027; E1/E2 negative fixtures cannot close FP-027; E2 cannot authorize the 90° control; injected rows are invalid evidence; 90° stays gated; FP-026 stays unimplemented
+- Pins: root cause `UNPROVEN`; E3 exact conservation cannot close FP-027; E1/E2 negative fixtures cannot close FP-027; E2 cannot authorize the 90° control; dual-use is `DUAL_USE_CONDITIONAL` and does not authorize the control; compensation and conservation verdicts do not share authority; injected rows are invalid evidence; 90° stays gated; FP-026 stays unimplemented
 - Formula freeze: no changes to `ManufacturingSettings.ts`, `barPackAccounting.ts`, `UPVCCuttingEngine.ts`, `src/lib/fabricator/production`
 
 ---
@@ -434,13 +434,75 @@ Solver-stage / machine export / REMAINING_LENGTH: **not measured** — no solve.
 
 ### Specified next — reassessment only, not authorized
 
+Completed below. The 90° control was **not** run.
+
+---
+
+## Dual-use reassessment — original 90° CONTROL_FIXTURE vs FP-027
+
+Repository/audit reasoning only. 13 September 2026. No DoWin session. No project, solve, export, stock, or settings change.
+
+### Original FP-024C purpose (must not be rewritten)
+
+The Test 5 control exists to ask whether **angle / geometry** changes nominal / packed / machine length under **unchanged** Weld 3 / Saw 4 / Trim 0. It is not a setting isolation and it cannot yield `PROVEN EFFECT` for a setting.
+
+| Spec field | Documented value | Citation |
+|------------|------------------|----------|
+| Kind | `CONTROL_FIXTURE` / `ninetyDegreeControl` | `dowinCompensationEvidence.ts:276`, `:310–311`; audit table Test 5 |
+| Design name / id | `pending-90-control` / `dowin-asdd-90-control-pending` | `dowinCompensationEvidence.ts:836–837`, `:1762` |
+| Intended geometry | **unspecified** — `widthMm: 0`, `heightMm: 0`; “geometry/cut-angle **may** differ” | `dowinCompensationEvidence.ts:842–843`, `:1767`; `FP-024C-PHYSICAL-FORMULA-PARITY_2026-09-09.md:65` |
+| Profile / system | Template inherits Deceuninck 70 from the golden fixture; not an independently drawn design | `dowinCompensationEvidence.ts:841` |
+| asdd 90° mullion | **not this control** — “same-job 90° observation” | `dowinCompensationEvidence.ts:1769`, `:2029–2032` |
+| ORTA demand = 1 | **UNPROVEN** for this control (geometry not specified). asdd / E2 / A/B/C two-panel jobs do generate ORTA × 1, but those jobs are not this control | E2 / `FP024C3_EXPECTED_FIXTURE_ROWS` |
+| Settings | Must stay identical to the parent (Weld 3 / Saw 4 / Trim 0, DC-600) | `dowinCompensationEvidence.ts:2307–2308` |
+| Stock specified? | **No.** Stock identity is enforced on `SINGLE_SETTING_ISOLATION`, not on `CONTROL_FIXTURE` | `dowinCompensationEvidence.ts:2433` vs `:2298–2309` |
+| Topology required for compensation classification? | **No** — “within-fixture layers only” | `dowinCompensationEvidence.ts:2920–2931` |
+| Topology required for package ingest? | **Yes** — empty `bars` is rejected | `dowinCompensationEvidence.ts:2292–2293` |
+| Machine export | Machine **length layer** is required on transcribed pieces; MDB/`.dw` only “if generated” | `dowinCompensationEvidence.ts:2289–2290`; `FP-024C-PHYSICAL-FORMULA-PARITY_2026-09-09.md:75–76` |
+| Quantity conservation in original acceptance? | **No.** `canProve` is angle/geometry under unchanged settings. Ingest does not compare required vs plan counts | `dowinCompensationEvidence.ts:310–311` |
+
+`isControlFixtureAuthorized()` is still **false** for FP-024C reasons that predate this reassessment: `BASELINE_RESET_VALIDATION` is `REPRODUCTION_FAILED`; Fresh B/C templates are pending; FP-024C.1 is not a settled non-`AMBIGUOUS` verdict (`dowinCompensationEvidence.ts:1834–1858`).
+
+### Why 90° and ORTA remain confounded
+
+E2’s only 90°/90° linear piece is the ORTA mullion. The original control does not specify a different non-ORTA 90° design. Using the control to chase `required ORTA = 1` / `plan ORTA = 4` would select asdd-like two-panel geometry — the job the spec says is **not** this control. Even a later passive observation of +3 ORTA would still be the bundle `ORTA + demand=1 + 90/90 + single-length + cost/profile`. It would only strengthen **repeatability of the ORTA surplus**, not isolate a cause.
+
+### Dual-use risk analysis
+
+| Risk | Finding |
+|------|---------|
+| A. Fixture-selection bias | **Material.** Geometry is not independently fixed. Choosing a fixture so FP-027 can see ORTA 1→4 is `FIXTURE_SELECTION_BIAS` and is classified **unsafe as a targeting rule**. |
+| B. Stock-state confound | **Limits FP-027 authority.** Current warehouse is V2; the original control specified no stock baseline. Nominal/packed/machine can be read from pieces independently of topology (`topologyRequiredForCompensationClassification = false`). Conservation counts cannot. |
+| C. Optimizer-state confound | **CONDITIONAL.** Length-layer question is answerable from pieces before topology is interpreted. Conservation is not. Package ingest still requires bars. |
+| D. Quantity-conservation feedback | **Forbidden in the model.** A surprising Record B result must not rerun or alter Record A. `quantityFeedbackRerunForbidden = true`. |
+| E. Authority collapse | **Forbidden.** Record A and Record B may share fixture identity, timestamps, hashes, and IDs. They must not share verdict authority. |
+
+### Decision
+
 ```text
-REASSESS_GATED_NINETY_CONTROL
-  -> whether the original 90 compensation control can also serve FP-027
-     without contaminating the compensation experiment
-  -> that control stays GATED until that reassessment
+DUAL_USE_CONDITIONAL
+authorizesControl = false
+targeting ORTA 1→4 as fixture-selection criterion = DUAL_USE_UNSAFE
+passive conservation transcription after independent FP-024C authorization = allowed
 ```
 
-Do **not** run the original 90° control. Do **not** merge E2 with compensation. Do **not** implement an FP-027 fix. Do **not** start FP-026 / FP-016 / FP-017. PR #32 stays Draft / **DO NOT MERGE**.
+Not `DUAL_USE_SAFE`: the fixture is not independently specified; protocol would have to be extended to lock geometry. Not blanket `DUAL_USE_UNSAFE`: forbidding even passive transcription of an independently authorized compensation run would over-claim contamination. Not `UNPROVEN`: the spec is sufficient to decide these limits.
 
-Controls unchanged: warehouse V2 quantities; Weld 3 / Saw 4 / Trim 0; DC-600; no manual stock edits; no formula changes; score 6.0/10.
+This reassessment does **not** authorize the control. Independent FP-024C authorization (reset recovery, Fresh B/C, non-ambiguous C.1, C.3 complete) must still happen first. When that run exists, operators must choose geometry for compensation isolation only.
+
+### Authority firewall (implemented, not executed)
+
+| Record | Id | Status | May conclude |
+|--------|----|--------|----------------|
+| A | `FP024C_90_CONTROL_COMPENSATION` | `NOT_RUN` | length-layer / angle compensation only |
+| B | `FP027_90_CONTROL_CONSERVATION_OBSERVATION` | `NOT_RUN` | required vs plan counts only |
+
+`evaluateDualUseVerdictFirewall` returns independent authorities even when artifact hashes match and even when one side looks exact. FP-027 root cause stays **UNPROVEN**. Score stays **6.0/10**. Formulas stay **FROZEN**. PR #32 stays Draft / **DO NOT MERGE**.
+
+```text
+STOP
+Do not run the 90° control.
+Do not run another FP-027 experiment.
+Do not implement FP-027 or FP-026.
+Do not modify formulas.
+```

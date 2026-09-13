@@ -12,6 +12,7 @@ import {
 import {
   DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
+import { FP024C_NINETY_CONTROL_DUAL_USE } from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
 
 function sourceOf(rel: string): string {
   return readFileSync(resolve(process.cwd(), rel), 'utf8');
@@ -68,5 +69,11 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
   test('DoWin golden fixture is READY_EXTERNAL_FIXTURE but the gate does not pass', () => {
     expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe('READY_EXTERNAL_FIXTURE');
     expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows.length).toBeGreaterThan(0);
+  });
+
+  test('90° dual-use reassessment does not unfreeze production formulas', () => {
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.formulaFreeze).toBe(true);
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.authorizesControl).toBe(false);
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.physicalLengthScore).toBe('6.0/10');
   });
 });
