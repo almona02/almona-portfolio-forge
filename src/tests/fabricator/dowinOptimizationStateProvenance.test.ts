@@ -31,6 +31,8 @@ import {
   DOWIN_FP024C3_RUN_B_RUN,
   DOWIN_FP024C3_RUN_C_RUN,
   DOWIN_OBSERVED_SOLVER_STAGES,
+  FP027_CONSERVATION_TRACE_LAYERS,
+  FP027_REQUIRED_PARTS_CONSERVATION_GATE,
   STOCK_COMMIT_DIALOG_TRIGGER,
   barContentFingerprint,
   barSequenceFingerprint,
@@ -1191,6 +1193,62 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(DOWIN_OBSERVED_SOLVER_STAGES.seedExposed).toBe(false);
     expect(DOWIN_OBSERVED_SOLVER_STAGES.determinismDocumented).toBe(false);
     expect(DOWIN_OBSERVED_SOLVER_STAGES.stages.join(' ')).toContain('TAVLAMA');
+  });
+
+  it('opens FP-027 as forensics without naming a root cause or a divergence layer', () => {
+    const gate = FP027_REQUIRED_PARTS_CONSERVATION_GATE;
+    expect(gate.status).toBe('OPEN_FORENSICS_ONLY');
+    expect(gate.fixImplemented).toBe(false);
+    expect(gate.invariantImplemented).toBe(false);
+    expect(gate.conservationViolation).toBe('REPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS');
+    // The violation repeats; its cause does not follow from that.
+    expect(gate.rootCause).toBe('UNPROVEN');
+    expect(gate.firstDivergenceLayer).toBeNull();
+    expect(gate.leadingHypothesisAuthority).toBe('CONSISTENT_WITH_ALL_OBSERVED_DATA');
+    expect(gate.fillTheBarHypothesis).toBe('CONTRADICTED');
+    expect(gate.fixtureDiscriminatingPower).toBe('INSUFFICIENT');
+    expect(gate.statement).toContain('root cause remains UNPROVEN');
+    // Three identical outcomes are not a proof of determinism.
+    expect(gate.notProven.join(' ')).toContain('do not mathematically exclude it');
+    expect(gate.discriminatingExperiments.every((e) => e.authorized === false)).toBe(true);
+  });
+
+  it('bounds the conservation divergence to the layers DoWin does not expose', () => {
+    const layers = FP027_CONSERVATION_TRACE_LAYERS;
+    const observed = layers.filter((l) => l.observable);
+    const opaque = layers.filter((l) => !l.observable);
+
+    // Every observable layer carries a measured count; no opaque layer may.
+    expect(observed.every((l) => typeof l.observedCount === 'number')).toBe(true);
+    expect(opaque.every((l) => l.observedCount === null)).toBe(true);
+    expect(opaque.map((l) => l.layer)).toEqual([
+      'COLUMN_GENERATION_PATTERNS',
+      'MIP_DEMAND_CONSTRAINTS',
+      'POST_MIP_ANNEALING',
+    ]);
+
+    const countAt = (layer: string) =>
+      layers.find((l) => l.layer === layer)?.observedCount ?? null;
+    expect(countAt('OPTIMIZATION_INPUT')).toBe(1);
+    expect(countAt('CUTTING_PLAN_REPORT')).toBe(4);
+    // Export writes the correct single piece, so the piece list is not the defect.
+    expect(countAt('DC600_EXPORT')).toBe(1);
+
+    const gate = FP027_REQUIRED_PARTS_CONSERVATION_GATE;
+    const lower = layers.findIndex((l) => l.layer === gate.divergenceBoundedAfter);
+    const upper = layers.findIndex((l) => l.layer === gate.divergenceBoundedAtOrBefore);
+    expect(lower).toBeGreaterThanOrEqual(0);
+    expect(upper).toBeGreaterThan(lower);
+    // The bound must contain only opaque layers, or it would name a layer.
+    expect(layers.slice(lower + 1, upper).every((l) => !l.observable)).toBe(true);
+  });
+
+  it('records ALMONA conservation as structural but unasserted', () => {
+    const gate = FP027_REQUIRED_PARTS_CONSERVATION_GATE;
+    expect(gate.almonaExposure).toBe('NOT_EXPOSED_BY_CONSTRUCTION');
+    // Holding by construction is not the same as being guarded by a test.
+    expect(gate.almonaInvariantAsserted).toBe(false);
+    expect(gate.almonaNote).toContain('nowhere asserted');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

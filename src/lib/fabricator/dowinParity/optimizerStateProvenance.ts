@@ -1880,6 +1880,69 @@ export function observeOverproductionBeyondRequired(args: {
   };
 }
 
+/**
+ * Pipeline layers the FP-027 forensic trace must localise the count change in.
+ * `observedCount` is the ORTA-KAYIT-70 1416 mm count measured at that layer in
+ * all three FP-024C.3 runs; `null` means the layer exposes no piece
+ * multiplicity at all and therefore cannot be assigned a count without
+ * decompilation, which is forbidden.
+ */
+export const FP027_CONSERVATION_TRACE_LAYERS = [
+  { layer: 'DESIGN_REQUIRED_PARTS', observable: true, observedCount: 1 },
+  { layer: 'PRODUCTION_PLAN', observable: true, observedCount: 1 },
+  { layer: 'OPTIMIZATION_INPUT', observable: true, observedCount: 1 },
+  { layer: 'COLUMN_GENERATION_PATTERNS', observable: false, observedCount: null },
+  { layer: 'MIP_DEMAND_CONSTRAINTS', observable: false, observedCount: null },
+  { layer: 'POST_MIP_ANNEALING', observable: false, observedCount: null },
+  { layer: 'CUTTING_PLAN_REPORT', observable: true, observedCount: 4 },
+  { layer: 'DC600_EXPORT', observable: true, observedCount: 1 },
+] as const;
+
+export type Fp027TraceLayer = (typeof FP027_CONSERVATION_TRACE_LAYERS)[number]['layer'];
+
+/**
+ * FP-027 gate state. Declarative only: this records what the FP-024C.3
+ * triplicate established about the required-parts conservation failure and
+ * what remains unproven. It implements no invariant and no fix — the gate is
+ * open for localisation, and naming a layer before the evidence supports it is
+ * exactly the overclaim this record exists to prevent.
+ */
+export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
+  id: 'FP027_OPTIMIZATION_REQUIRED_PARTS_CONSERVATION_FORENSICS',
+  status: 'OPEN_FORENSICS_ONLY',
+  fixImplemented: false,
+  invariantImplemented: false,
+  conservationViolation: 'REPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS',
+  rootCause: 'UNPROVEN',
+  firstDivergenceLayer: null,
+  divergenceBoundedAfter: 'OPTIMIZATION_INPUT',
+  divergenceBoundedAtOrBefore: 'CUTTING_PLAN_REPORT',
+  remainderRecomputedAfterExportMatchFilter: 'SUPPORTED_NOT_RECOMPUTED',
+  leadingHypothesis: 'INEQUALITY_DEMAND_CONSTRAINT_PLUS_OBJECTIVE_INDIFFERENCE',
+  leadingHypothesisAuthority: 'CONSISTENT_WITH_ALL_OBSERVED_DATA',
+  fillTheBarHypothesis: 'CONTRADICTED',
+  fixtureDiscriminatingPower: 'INSUFFICIENT',
+  statement:
+    'The +3 ORTA surplus is repeatable across all three measured-identical runs and is not correlated with the observed stochastic CITA topology variation. Evidence therefore supports a deterministic or upstream conservation defect, but root cause remains UNPROVEN.',
+  notProven: [
+    'Three identical surplus outcomes make a stochastic explanation unsupported and increasingly unlikely; they do not mathematically exclude it.',
+    'A blanket bar-filling mechanism is contradicted: KANAT and CITA left room for further pieces in the same runs and produced exactly the demanded quantity.',
+    'ORTA is simultaneously the only single-bar-satisfiable profile with spare capacity, the only 90/90 piece, the only single-length profile, the only demand-of-one profile and the only near-zero-cost stage, so the fixture confounds all five candidates.',
+  ],
+  /** Design-only experiments. None changes stock, settings, machine or formulas. */
+  discriminatingExperiments: [
+    { id: 'E3', fixture: 'small frame, single-bar KASA with spare capacity, all 45 degrees, non-zero price', separates: 'structural single-bar fill vs ORTA-specific', authorized: false },
+    { id: 'E1', fixture: 'ORTA demand 2', separates: 'fills the bar vs demand-of-one special case', authorized: false },
+    { id: 'E2', fixture: 'ORTA demand 5, forcing two bars', separates: 'single-bar path vs profile-wide', authorized: false },
+  ],
+  almonaExposure: 'NOT_EXPOSED_BY_CONSTRUCTION',
+  almonaInvariantAsserted: false,
+  almonaNote:
+    'SimplifiedOptimizationEngine and AlmonaCuttingEngine both emit exactly one piece per demanded unit, so overproduction is structurally impossible today. The invariant is nowhere asserted, so a future pattern-based or column-generation optimizer built for DoWin parity could introduce this defect class silently.',
+  auditPath:
+    'docs/audits/FP-027-REQUIRED-PARTS-CONSERVATION-FORENSICS_2026-09-13.md',
+} as const;
+
 export interface ControlledFixtureRow {
   category: DowinLengthCategory;
   nominalLengthMm: number;

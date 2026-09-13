@@ -9,7 +9,7 @@
 | PR #32 | Draft / **DO NOT MERGE** |
 | Question | Do multiple genuinely fresh optimization solves under the same current input state produce the same bar-assignment topology? |
 | Active baseline | **V2** — frozen 12 Sep 23:58:45 +03, `MANUAL_STOCK_CARD_EDIT_CONTAMINATED_V1` |
-| Gate | ⏸ **TRIPLICATE COMPLETE** — 3 of 3 controlled runs ingested; awaiting independent review |
+| Gate | ✅ **ACCEPTED AS EVIDENCE CHECKPOINT** — 3 of 3 controlled runs ingested; independent review 13 September 2026 accepted the verdict with one wording correction, applied below |
 | Physical-length score | **Unchanged at 6.0/10** |
 | Production formulas | **FROZEN** |
 | 90° CONTROL_FIXTURE | **GATED** |
@@ -22,7 +22,8 @@
 FP-024C   ⏸ STATE PROVENANCE INVESTIGATION
 FP-024C.1 PAUSED BY STOCK_STATE_CHANGED
 FP-024C.2 ✅ STOCK MUTATION PROVENANCE AUDIT COMPLETE
-FP-024C.3 ⏸ READY_FOR_RUN_A_ON_BASELINE_V2
+FP-024C.3 ✅ PROVEN as NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS
+          (accepted at independent review, 13 September 2026)
 
 Controlled baseline V1:
 INVALIDATED BEFORE RUN_A — HISTORICAL_ONLY
@@ -72,7 +73,13 @@ RUN_A warehouse immutability:
 IMMUTABLE_VERIFIED (UI byte-identical to V2 + zero stock-write log lines)
 
 OVERPRODUCTION_BEYOND_REQUIRED_QUANTITY:
-OBSERVED on RUN_A — 24 pieces cut against 21 required
+OBSERVED on RUN_A, RUN_B, RUN_C — 24 pieces planned against 21 required
+
++3 ORTA ROOT CAUSE:
+UNPROVEN — repeatable, uncorrelated with the stochastic CITA
+variation, so a deterministic or upstream conservation defect is
+supported; the layer that introduces 1 -> 4 is not yet identified.
+Next gate: FP-027 (forensics only, no fix).
 
 POST_EXPORT_STOCK_UPDATE_DIALOG_IS_THE_WRITE_TRIGGER:
 SUPPORTED_BY_CONTROLLED_COMPARISON (resolves the FP-024C.2 AMBIGUOUS trigger)
@@ -761,11 +768,15 @@ OPTIMIZATION_REQUIRED_PARTS_CONSERVATION_VIOLATION
   = REPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS
 ```
 
-This is the sharpest contrast in the triplicate: the surplus is perfectly repeatable while the bar assignment is not. Whatever causes the over-production is therefore **not** the stochastic component — a stochastic cause would not reproduce a byte-identical surplus three times out of three.
+This is the sharpest contrast in the triplicate: the surplus is perfectly repeatable while the bar assignment is not.
 
-Root cause is **not** proven. The ORTA stock limit lifting from 0 to 100 remains the obvious candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids.
+The +3 ORTA surplus is repeatable across all three measured-identical runs and is **not correlated** with the observed stochastic CITA topology variation. Evidence therefore supports a deterministic or upstream conservation defect, but root cause remains **UNPROVEN**.
 
-Candidate future gate: **FP-027 OPTIMIZATION_REQUIRED_PARTS_CONSERVATION** — `SUPPORTED`, and deliberately **NOT IMPLEMENTED**.
+That wording is deliberate and replaces an earlier overclaim in this document. Three identical surplus outcomes make a stochastic explanation unsupported and increasingly unlikely; they do not mathematically rule it out. A stochastic mechanism whose output distribution is degenerate over the sampled region, or one sampled three times at the same point, would produce the same observation. Three samples do not exclude that.
+
+The ORTA stock limit lifting from 0 to 100 remains a candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids.
+
+Next gate: **FP-027 — Optimization Required-Parts Conservation Forensics** — opened as a forensic gate, deliberately **NOT FIXED**. See `docs/audits/FP-027-REQUIRED-PARTS-CONSERVATION-FORENSICS_2026-09-13.md`.
 
 ---
 
@@ -962,7 +973,7 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 - **Three of three** controlled runs are measured. The triplicate is complete, and the verdict is `NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS`.
 - The topology divergence is **observed but unexplained**. It is confined to CITA-20 intra-bar assignment after an identical MIP allocation in all three runs. Localisation after bar-count allocation is `SUPPORTED`, not `PROVEN` — the logs expose the allocation and the annealing invocation but not the assignment step's internal state.
 - **Three samples is a small sample.** Two topologies were seen; nothing here bounds how many exist, nor their relative frequency. `X / Y / X` is an observed sequence, not a distribution.
-- The over-production has no proven cause. It reproduced byte-identically in all three runs, which rules the stochastic component *out* as its cause — a stochastic mechanism would not reproduce three times out of three. The ORTA stock limit lifting from 0 to 100 remains the obvious candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids. Candidate future gate name only: **FP-027 OPTIMIZATION_REQUIRED_PARTS_CONSERVATION** — not implemented.
+- The over-production has **no proven cause**. It is repeatable across all three measured-identical runs and is not correlated with the observed stochastic CITA topology variation, which supports a deterministic or upstream conservation defect — but root cause remains `UNPROVEN`. Three identical outcomes make a stochastic explanation unsupported and increasingly unlikely; they do not mathematically exclude it. The ORTA stock limit lifting from 0 to 100 remains a candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids. Next gate: **FP-027 — Optimization Required-Parts Conservation Forensics**, opened as forensics, not fixed.
 - DoWin's solver includes simulated annealing, it operates exactly where the divergence is localised, and no seed is exposed in any run. That makes a stochastic cause plausible and consistent with the evidence. It is **not** proven, and it is not the only candidate: because one input axis is unproven, an unobserved input difference remains a live alternative explanation. Authority stays `POSSIBLE_NONDETERMINISTIC_MECHANISM`.
 - The offcut/remnant **inventory** axis has no evidence surface, so complete input equivalence remains `UNPROVEN` after three valid runs — this is precisely what caps the verdict. RUN_C inspected the solver's own Stock Items panel, which is the list it actually consumes, and found whole-bar rows only, with `Add Offcuts to Stock` greyed pre-solve. That is the strongest available statement and it is still not proof of absence: DoWin exposes no remnant surface and no row ids. The offcut **policy** surface is now known (Reusable Offcut Settings, Minimum Offcut Length 500 mm, with *Add Offcuts to Stock* as a separate explicit ribbon action — which explains why the proven 22:17:20 stock write created no remnant rows despite remainders far above 500 mm). Knowing the policy does not prove the inventory is empty; that axis stays `UNPROVEN`.
 - The user-visible trigger of the 22:17:20 warehouse write is now **resolved**: the post-export **Stock Update** dialog. Fresh A's `Yes` is inferred from the proven write plus the observed dialog, not directly observed; RUN_A's `No` arm is directly observed. See FP-024C.2.
@@ -991,11 +1002,75 @@ The triplicate held every setting constant, so it carries no information about a
 
 ---
 
+## Independent review — 13 September 2026
+
+FP-024C.3 was submitted for independent review and **accepted as an evidence checkpoint**.
+
+Accepted verdict: `FP-024C.3 = PROVEN as NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS`, on the grounds that A/B/C are fresh solves; geometry, required parts, settings, machine, optimizer stock, warehouse stock and freshness are measured-identical; the offcut/remnant axis remains `UNPROVEN` so escalation to `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING` was correctly withheld; CITA topology is `X / Y / X`; total utilization and remainder equality did not mask the grouping difference because the bar-sequence comparison catches it; the warehouse remained immutable because `No` was answered to every Stock Update dialog; and the formula freeze held.
+
+The three evidence-code corrections were accepted as correct abstractions rather than convenience changes:
+
+| Correction | Accepted reason |
+|-----------|-----------------|
+| `topologyFingerprint` restricted to within-run use | run-scoped piece ids contaminated cross-run identity |
+| `barSequenceFingerprint` added for cross-run comparison | correct abstraction for geometric bar topology |
+| `settingsCaptureId` added | identical screenshot content hashes alone do not prove independent contemporaneous captures |
+
+### Wording correction — applied
+
+One sentence was rejected as an overclaim and has been removed from this document:
+
+> ~~"That rules the stochastic component out as the cause of the over-production."~~
+
+Three identical surplus outcomes make a stochastic explanation unsupported and increasingly unlikely, but they do not mathematically rule it out. The recorded finding is now:
+
+> The +3 ORTA surplus is repeatable across all three measured-identical runs and is not correlated with the observed stochastic CITA topology variation. Evidence therefore supports a deterministic or upstream conservation defect, but root cause remains **UNPROVEN**.
+
+Both occurrences (Step 23 section and Limitations) were rewritten to this wording. No other finding changed.
+
+### Authority after review
+
+| Finding | Verdict |
+|---------|---------|
+| A/B/C measured inputs | **IDENTICAL** |
+| Complete inputs | **UNPROVEN** — remnant axis |
+| CITA topology | **NONREPEATABLE** under measured-identical inputs |
+| Stochastic mechanism | **POSSIBLE** mechanism only |
+| 21 → 24 conservation failure | **REPEATABLE UNDER MEASURED-IDENTICAL INPUTS** |
+| +3 ORTA root cause | **UNPROVEN** |
+| Wrong ORTA remainder propagates to machine file | **REPEATABLE OBSERVATION** |
+| Welding Waste effect | **PROVEN FOR FIXTURE ONLY** |
+| Saw remainder | **AMBIGUOUS / UNPROVEN** |
+| Trim remainder | **AMBIGUOUS** |
+| Physical-length score | **6.0/10** unchanged |
+| Production formulas | **FROZEN** |
+| PR #32 | **DRAFT / DO NOT MERGE** |
+
+### Next gate reordered
+
+The review reprioritised the conservation failure above the pending compensation control. The reasoning is that `21 → 24` with `+3 × 1416 mm` ORTA surplus, propagating into `REMAINING_LENGTH = 820 mm` instead of the remainder associated with the one required mullion, is a manufacturing-safety invariant violation, and therefore a stronger correctness problem than the 90° compensation question.
+
+Recorded sequence:
+
+```text
+FP-027 forensic root-cause audit
+  -> conservation invariant and fix
+  -> re-run controlled conservation test
+  -> return to 90 CONTROL_FIXTURE
+  -> FP-024C physical formula conclusion
+  -> FP-016
+  -> FP-017
+```
+
+The 90° control stays **GATED**. PR #32 stays **DO NOT MERGE**: the branch has exposed a manufacturing-safety invariant violation that should be understood before the parity branch closes.
+
+---
+
 ## Gating
 
 | Item | Status |
 |------|--------|
-| FP-024C.3 | ⚠️ **NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS** — triplicate complete, awaiting independent review |
+| FP-024C.3 | ✅ **PROVEN as NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS** — accepted as evidence checkpoint, 13 September 2026 |
 | Controlled baseline | **V2 frozen** — CITA 46 / KANAT 96 / KASA 13 / ORTA 100 |
 | Baseline V1 | **HISTORICAL_ONLY** — invalidated before RUN_A, not a restoration target |
 | FP024C3_RUN_A | **MEASURED** — `OptimizationRun` Id=9, `IMMUTABLE_VERIFIED` |
@@ -1012,12 +1087,13 @@ The triplicate held every setting constant, so it carries no information about a
 | Repeatability verdict | **NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS** |
 | `ORTA_ZERO_QTY_CONTROL_OBSERVABILITY` | **LOST_BY_MANUAL_STOCK_EDIT** |
 | `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` | **PROVEN FOR OBSERVED PATH** |
-| 90° CONTROL_FIXTURE | **GATED** pending independent review — a complete triplicate does not authorize it |
+| 90° CONTROL_FIXTURE | **GATED** — deprioritized below FP-027 at review; a complete triplicate does not authorize it |
 | Physical-length correctness | **6.0/10** |
 | Production formulas | **FROZEN** |
 | FP-016 / FP-017 | not started |
 | FP-025B | do not start |
 | Fourth controlled solve | **not authorized** |
 | FP-026 | future finding, not implemented |
-| FP-027 | **SUPPORTED** candidate, not implemented |
+| FP-027 | 🔓 **OPEN — forensics only**, next gate; no fix, no invariant implementation yet |
+| +3 ORTA root cause | **UNPROVEN** — deterministic or upstream conservation defect supported, not proven |
 | PR #32 | **Draft / DO NOT MERGE** |
