@@ -59,8 +59,10 @@ import {
   FP024C_NINETY_CONTROL_DUAL_USE,
   FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION,
   FP024C8_WELD0_CONTROL_REPLICATION,
+  FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
+  evaluateCitaWeldCausalityFromExistingArtifacts,
   evaluateControlFixtureAuthorization,
   evaluateBaselineReset,
   overallUtilizationPercent,
@@ -811,6 +813,31 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(FP024C8_WELD0_CONTROL_REPLICATION.findings.generalizedCompensationFormula).toBe(
       'UNPROVEN'
     );
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.status).toBe('ACCEPTED');
+    expect(
+      FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.weld3To0EffectOnCitaReportToRequiredParts
+    ).toBe('PROVEN_FOR_C5_FIXTURE');
+    expect(
+      FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.weldCausalityProfileCoverage
+    ).toBe('REPLICATED_ON_KASA_AND_CITA_45_DEGREE_PROFILES');
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.kanatWeldCausality).toBe(
+      'PROVEN_FOR_ASDD_FIXTURE'
+    );
+    expect(
+      FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.generalizedCompensationFormula
+    ).toBe('UNPROVEN');
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.authorizesFormulaChange).toBe(false);
+    expect(
+      evaluateCitaWeldCausalityFromExistingArtifacts({
+        citaIdentifiedUnambiguously: true,
+        designReportHorizontalMm: 537,
+        designReportVerticalMm: 1116,
+        weld3RequiredPartsHorizontalMm: 540,
+        weld3RequiredPartsVerticalMm: 1119,
+        weld0RequiredPartsHorizontalMm: 537,
+        weld0RequiredPartsVerticalMm: 1116,
+      }).authorizesFormulaChange
+    ).toBe(false);
     expect(evaluateTwoFixtureWeldCausality({
       asddWeld3KasaReportToRequiredPartsDeltaMm: 3,
       asddWeld0KasaReportToRequiredPartsDeltaMm: 0,

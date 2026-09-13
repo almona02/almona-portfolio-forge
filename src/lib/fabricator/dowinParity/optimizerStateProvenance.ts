@@ -3081,7 +3081,7 @@ export function evaluateTwoFixtureWeldCausality(args: {
  */
 export const FP024C8_WELD0_CONTROL_REPLICATION = {
   id: 'FP024C8_WELD0_CONTROL_REPLICATION',
-  status: 'MEASURED',
+  status: 'ACCEPTED',
   scientificQuestion:
     'At Weld=0 on C.5, does KASA Required Parts become 1200 and ORTA stay 1116?',
   independentReviewOfFp024c7: 'ACCEPTED',
@@ -3146,6 +3146,187 @@ export const FP024C8_WELD0_CONTROL_REPLICATION = {
   },
   limitation:
     'Replication is for measured Deceuninck 70 KASA 45° and ORTA 90° on asdd and C.5. Do not implement RequiredParts = Report + WeldingWaste. Do not generalize to unmeasured profiles or angles.',
+  physicalLengthScore: '6.0/10',
+} as const;
+
+/**
+ * FP-024C.9 — pair CITA Design Report from the existing C.6 PDF with
+ * already-measured Weld=3 / Weld=0 Required Parts. Artifact-only.
+ * AICS-001: evidence classification. Does not encode a production formula.
+ */
+export function evaluateCitaWeldCausalityFromExistingArtifacts(args: {
+  citaIdentifiedUnambiguously: boolean;
+  designReportHorizontalMm: number | null;
+  designReportVerticalMm: number | null;
+  weld3RequiredPartsHorizontalMm: number;
+  weld3RequiredPartsVerticalMm: number;
+  weld0RequiredPartsHorizontalMm: number;
+  weld0RequiredPartsVerticalMm: number;
+}): {
+  citaDesignReportLayer: 'PROVEN' | 'UNPROVEN';
+  weld3To0EffectOnCitaReportToRequiredParts:
+    | 'PROVEN_FOR_C5_FIXTURE'
+    | 'UNPROVEN';
+  weldCausalityProfileCoverage:
+    | 'REPLICATED_ON_KASA_AND_CITA_45_DEGREE_PROFILES'
+    | 'UNPROVEN';
+  authorizesFormulaChange: false;
+  universalFortyFiveRule: 'UNPROVEN';
+  generalizedCompensationFormula: 'UNPROVEN';
+} {
+  const reportH = args.designReportHorizontalMm;
+  const reportV = args.designReportVerticalMm;
+  if (
+    !args.citaIdentifiedUnambiguously ||
+    reportH == null ||
+    reportV == null
+  ) {
+    return {
+      citaDesignReportLayer: 'UNPROVEN',
+      weld3To0EffectOnCitaReportToRequiredParts: 'UNPROVEN',
+      weldCausalityProfileCoverage: 'UNPROVEN',
+      authorizesFormulaChange: false,
+      universalFortyFiveRule: 'UNPROVEN',
+      generalizedCompensationFormula: 'UNPROVEN',
+    };
+  }
+
+  const proven =
+    args.weld3RequiredPartsHorizontalMm - reportH === 3 &&
+    args.weld3RequiredPartsVerticalMm - reportV === 3 &&
+    args.weld0RequiredPartsHorizontalMm - reportH === 0 &&
+    args.weld0RequiredPartsVerticalMm - reportV === 0;
+
+  return {
+    citaDesignReportLayer: 'PROVEN',
+    weld3To0EffectOnCitaReportToRequiredParts: proven
+      ? 'PROVEN_FOR_C5_FIXTURE'
+      : 'UNPROVEN',
+    weldCausalityProfileCoverage: proven
+      ? 'REPLICATED_ON_KASA_AND_CITA_45_DEGREE_PROFILES'
+      : 'UNPROVEN',
+    authorizesFormulaChange: false,
+    universalFortyFiveRule: 'UNPROVEN',
+    generalizedCompensationFormula: 'UNPROVEN',
+  };
+}
+
+/**
+ * FP-024C.9 — existing-artifact profile coverage. CITA Design Report
+ * transcribed from the already-exported C.6 Design Preview PDF.
+ * Do not open DoWin. Do not change settings. Do not solve. Do not
+ * implement RequiredParts = Report + WeldingWaste. AICS-001.
+ */
+export const FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE = {
+  id: 'FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE',
+  status: 'MEASURED',
+  scientificQuestion:
+    'Does the already-exported C.6 Design Preview PDF establish the CITA Design Report layer strongly enough to pair existing Weld=3 and Weld=0 Required Parts?',
+  independentReviewOfFp024c7: 'ACCEPTED',
+  independentReviewOfFp024c8: 'ACCEPTED',
+  artifactOnlyProtocolPreserved: true,
+  doWinOpened: false,
+  settingsChanged: false,
+  weldingWasteLeftAtPersistedZero: true,
+  newSolveCreated: false,
+  newPlanCreated: false,
+  newExportCreated: false,
+  formulasModified: false,
+  authorizesFormulaChange: false,
+  doNotPatchFormulas: true,
+  licensedPdfCommitted: false,
+  designPreviewPdf: {
+    filename: 'OptimizationReport_20260913_191321_DesignPreview.pdf',
+    sha256: '2c2e558cba2016b2924266ba63768cd3ffe9e8bc2bba8d9b2880770d32c9e0f7',
+    renderPngSha256: '115698c570479e999b4e334bc3a50847a0a5758ac2c5d284dbf30ef04c610da5',
+    sourceLayer: 'Optimization Export as PDF / Design preview report Profile Cutting List',
+    capturedAtIso: '2026-09-13T16:14:00.000Z',
+  },
+  citaDesignPreviewRows: [
+    {
+      profile: 'Deceuninck-CITA-20',
+      pieceName: "Deceuninck-Standart Cam Çitası",
+      roleIfShown: null,
+      quantity: 4,
+      leftAngleDeg: 45,
+      rightAngleDeg: 45,
+      designReportLengthMm: 537,
+    },
+    {
+      profile: 'Deceuninck-CITA-20',
+      pieceName: "Deceuninck-Standart Cam Çitası",
+      roleIfShown: null,
+      quantity: 4,
+      leftAngleDeg: 45,
+      rightAngleDeg: 45,
+      designReportLengthMm: 1116,
+    },
+  ],
+  citaIdentifiedUnambiguously: true,
+  citaDesignReportLayer: 'PROVEN',
+  cita: {
+    designReport: { horizontal: 537, vertical: 1116 },
+    weld3RequiredParts: { horizontal: 540, vertical: 1119 },
+    weld0RequiredParts: { horizontal: 537, vertical: 1116 },
+    weld3DeltaMm: { horizontal: 3, vertical: 3 },
+    weld0DeltaMm: { horizontal: 0, vertical: 0 },
+    weld3Source: 'C.5 Required Parts / C.6 citaRequiredPartsMm',
+    weld0Source: 'C.8 weld0Measurement citaHorizontal/citaVertical',
+    reportSource: 'C.6 Design Preview PDF Profile Cutting List',
+  },
+  kanat: {
+    fixture: 'asdd',
+    designReport: { horizontal: 451, vertical: 1430 },
+    weld3RequiredParts: { horizontal: 454, vertical: 1433 },
+    weld0RequiredParts: { horizontal: 451, vertical: 1430 },
+    source: 'existing accepted asdd C.7 paired layers',
+    newEvidenceManufactured: false,
+    kanatWeldCausality: 'PROVEN_FOR_ASDD_FIXTURE',
+  },
+  kasa: {
+    asdd: 'PROVEN_FOR_ASDD_FIXTURE',
+    c5: 'PROVEN_FOR_C5_FIXTURE',
+    twoFixture: 'PROVEN_FOR_MEASURED_KASA_CONDITIONS',
+  },
+  discardedTodayWork1940: {
+    classification: 'INVALID_FOR_CAUSAL_AUTHORITY',
+    reason: 'Weld=0 had not persisted',
+    usedInPositiveConclusion: false,
+    preservedInAuditHistory: true,
+  },
+  fp027: {
+    authorityChanged: false,
+    rootCause: 'UNPROVEN',
+    conservationWorkTouched: false,
+  },
+  findings: {
+    citaDesignReportLayer: 'PROVEN',
+    weld3To0EffectOnCitaReportToRequiredParts: 'PROVEN_FOR_C5_FIXTURE',
+    weldCausalityProfileCoverage:
+      'REPLICATED_ON_KASA_AND_CITA_45_DEGREE_PROFILES',
+    kanatWeldCausality: 'PROVEN_FOR_ASDD_FIXTURE',
+    measuredFortyFiveProfileCoverage: {
+      kasa: 'PROVEN_ACROSS_TWO_GEOMETRIES',
+      kanat: 'PROVEN_FOR_ASDD_FIXTURE',
+      cita: 'PROVEN_FOR_C5_FIXTURE',
+    },
+    ninetyOrtaWeldEffect: 'NO_OBSERVED_EFFECT_REPLICATED_ACROSS_TWO_FIXTURES',
+    boundedWeldCausality:
+      'For measured Deceuninck 70 45° KASA, KANAT, and CITA conditions, Welding Waste 3→0 controls the observed +3 mm Design Report → Required Parts delta. For measured 90° ORTA conditions, no Weld effect was observed.',
+    universalFortyFiveRule: 'UNPROVEN',
+    generalizedCompensationFormula: 'UNPROVEN',
+    stillUnproven: [
+      'other systems',
+      'other profile families',
+      'mixed angles',
+      'non-Deceuninck systems',
+      'other Welding Waste values',
+      'interaction with other settings',
+      'whether +Weld remains linear for values other than 0 and 3',
+    ],
+  },
+  limitation:
+    'Even with KASA/KANAT/CITA coverage, do not claim all 45° pieces use Welding Waste. Do not implement RequiredParts = Report + WeldingWaste. Do not introduce an angle conditional.',
   physicalLengthScore: '6.0/10',
 } as const;
 

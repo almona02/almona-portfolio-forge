@@ -748,3 +748,62 @@ Allowed: for the measured Deceuninck 70 KASA 45° conditions across two independ
 Not allowed: `RequiredParts = Report + WeldingWaste` or any equivalent production formula.
 
 FP-027 authority is unchanged: ORTA 1→5→1 surplus +4; root cause **UNPROVEN**.
+
+Independent review (13 September 2026, 21:10): **FP-024C.8 = ACCEPTED**. Weld 3→0 on C.5 KASA is **PROVEN FOR C.5 FIXTURE**. Two-fixture Weld causality is **PROVEN FOR MEASURED KASA CONDITIONS**. Generalized formula remains **UNPROVEN**.
+
+## FP-024C.9 — existing-artifact profile coverage (13 September 2026)
+
+Existing artifacts only. **DoWin was not opened.** Settings unchanged. Welding Waste left at persisted **0 mm**. No plan. No solve. No new export. No formula change.
+
+Source PDF: `OptimizationReport_20260913_191321_DesignPreview.pdf`  
+SHA-256 `2c2e558cba2016b2924266ba63768cd3ffe9e8bc2bba8d9b2880770d32c9e0f7` (re-hashed). Render PNG SHA-256 `115698c570479e999b4e334bc3a50847a0a5758ac2c5d284dbf30ef04c610da5`. Licensed file **not committed**.
+
+### CITA Design Report rows (Profile Cutting List, measured from the PDF)
+
+| Profile | Piece name | Qty | Angles | Design Report (mm) |
+|---------|------------|-----|--------|--------------------|
+| Deceuninck-CITA-20 | Deceuninck-Standart Cam Çitası | 4 | 45/45 | **537** |
+| Deceuninck-CITA-20 | Deceuninck-Standart Cam Çitası | 4 | 45/45 | **1116** |
+
+CITA identified unambiguously. Role column is not shown on the report; piece name is the glazing-bead label.
+
+### Paired CITA evidence
+
+| Setting | Design Report | Required Parts | delta |
+|---------|---------------|----------------|-------|
+| Weld=3 (C.5 / C.6) | 537 / 1116 | 540 / 1119 | **+3 / +3** |
+| Weld=0 (C.8) | 537 / 1116 | 537 / 1116 | **0 / 0** |
+
+`WELD_3_TO_0_EFFECT_ON_CITA_REPORT_TO_REQUIRED_PARTS = PROVEN FOR C.5 FIXTURE`  
+`WELD_CAUSALITY_PROFILE_COVERAGE = REPLICATED_ON_KASA_AND_CITA_45_DEGREE_PROFILES`
+
+### asdd KANAT (existing accepted layers only)
+
+Design Report 451 / 1430. Weld=3 Required Parts 454 / 1433. Weld=0 Required Parts 451 / 1430.  
+`KANAT_WELD_CAUSALITY = PROVEN FOR ASDD FIXTURE`. No new KANAT evidence manufactured.
+
+### Authority after this reconciliation
+
+```text
+FP-024C.7 = ACCEPTED
+FP-024C.8 = ACCEPTED
+FP-024C.9 = MEASURED
+CITA Design Report layer = PROVEN (537 / 1116)
+CITA Weld3→0 report→Required Parts = PROVEN FOR C.5 FIXTURE
+KANAT Weld causality = PROVEN FOR ASDD FIXTURE
+KASA = PROVEN across two geometries
+measured 45° coverage = KASA + KANAT + CITA
+90° ORTA = NO OBSERVED EFFECT, REPLICATED ACROSS TWO FIXTURES
+universal 45° rule = UNPROVEN
+generalized formula = UNPROVEN
+19:40 today work = INVALID_FOR_CAUSAL_AUTHORITY
+FP-027 root cause = UNPROVEN
+score = 6.0/10
+formulas = FROZEN
+PR #32 = DRAFT / DO NOT MERGE
+```
+
+Allowed: for measured Deceuninck 70 45° KASA, KANAT, and CITA conditions, Welding Waste 3→0 controls the observed +3 mm Design Report → Required Parts delta. For measured 90° ORTA conditions, no Weld effect was observed.
+
+Not allowed: `RequiredParts = Report + WeldingWaste`, an angle conditional, or “all 45° pieces use Welding Waste.” Other systems, other families, mixed angles, other Weld values, and linearity beyond 0 and 3 remain **UNPROVEN**.
+

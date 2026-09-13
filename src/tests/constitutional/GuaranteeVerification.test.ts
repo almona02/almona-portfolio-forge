@@ -307,6 +307,32 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
     });
   });
 
+  describe('AICS-001 FP-024C.9: artifact-only CITA coverage does not encode a formula', () => {
+    test('CITA report pairing stays evidence-only and does not authorize RequiredParts = Report + Weld', async () => {
+      const {
+        FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE,
+        evaluateCitaWeldCausalityFromExistingArtifacts,
+      } = await import('@/lib/fabricator/dowinParity/optimizerStateProvenance');
+
+      expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.authorizesFormulaChange).toBe(false);
+      expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.formulasModified).toBe(false);
+      expect(
+        FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.generalizedCompensationFormula
+      ).toBe('UNPROVEN');
+      expect(
+        evaluateCitaWeldCausalityFromExistingArtifacts({
+          citaIdentifiedUnambiguously: true,
+          designReportHorizontalMm: 537,
+          designReportVerticalMm: 1116,
+          weld3RequiredPartsHorizontalMm: 540,
+          weld3RequiredPartsVerticalMm: 1119,
+          weld0RequiredPartsHorizontalMm: 537,
+          weld0RequiredPartsVerticalMm: 1116,
+        }).authorizesFormulaChange
+      ).toBe(false);
+    });
+  });
+
   describe('AICS-001: Pose measures are stored millimetres, not inferred', () => {
     test('Position mapping uses overall_width_mm / overall_height_mm without a window_unit blob', async () => {
       const { mapPositionRowToWindowUnit } = await import('@/lib/supabase/fabricatorClientV2');

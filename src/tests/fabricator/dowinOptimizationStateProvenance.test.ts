@@ -43,8 +43,10 @@ import {
   FP024C6_LENGTH_LAYER_SEMANTICS,
   FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION,
   FP024C8_WELD0_CONTROL_REPLICATION,
+  FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
+  evaluateCitaWeldCausalityFromExistingArtifacts,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
   evaluateIndependentNinetyControlFixtureSpec,
@@ -1943,7 +1945,7 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
   });
 
   it('replicates the Weld=0 Required Parts boundary on the C.5 fixture without a formula', () => {
-    expect(FP024C8_WELD0_CONTROL_REPLICATION.status).toBe('MEASURED');
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.status).toBe('ACCEPTED');
     expect(FP024C8_WELD0_CONTROL_REPLICATION.independentReviewOfFp024c7).toBe('ACCEPTED');
     expect(FP024C8_WELD0_CONTROL_REPLICATION.newSolveCreated).toBe(false);
     expect(FP024C8_WELD0_CONTROL_REPLICATION.stockUnchanged).toBe(true);
@@ -2003,6 +2005,103 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
       }).weldCausalityReplicatedAcrossTwoFixtures
     ).toBe('CROSS_FIXTURE_WELD_CAUSALITY_CONTRADICTION');
     expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.fp027RootCause).toBe('UNPROVEN');
+  });
+
+  it('reconciles CITA Design Report from the existing C.6 PDF without a formula', () => {
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.status).toBe('MEASURED');
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.independentReviewOfFp024c8).toBe(
+      'ACCEPTED'
+    );
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.doWinOpened).toBe(false);
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.newSolveCreated).toBe(false);
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.newExportCreated).toBe(false);
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.formulasModified).toBe(false);
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.authorizesFormulaChange).toBe(false);
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.licensedPdfCommitted).toBe(false);
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.designPreviewPdf.sha256).toBe(
+      '2c2e558cba2016b2924266ba63768cd3ffe9e8bc2bba8d9b2880770d32c9e0f7'
+    );
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.citaDesignPreviewRows).toEqual([
+      {
+        profile: 'Deceuninck-CITA-20',
+        pieceName: "Deceuninck-Standart Cam Çitası",
+        roleIfShown: null,
+        quantity: 4,
+        leftAngleDeg: 45,
+        rightAngleDeg: 45,
+        designReportLengthMm: 537,
+      },
+      {
+        profile: 'Deceuninck-CITA-20',
+        pieceName: "Deceuninck-Standart Cam Çitası",
+        roleIfShown: null,
+        quantity: 4,
+        leftAngleDeg: 45,
+        rightAngleDeg: 45,
+        designReportLengthMm: 1116,
+      },
+    ]);
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.cita.designReport).toEqual({
+      horizontal: 537,
+      vertical: 1116,
+    });
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.cita.weld3RequiredParts).toEqual({
+      horizontal: 540,
+      vertical: 1119,
+    });
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.cita.weld0RequiredParts).toEqual({
+      horizontal: 537,
+      vertical: 1116,
+    });
+    expect(
+      FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.weld3To0EffectOnCitaReportToRequiredParts
+    ).toBe('PROVEN_FOR_C5_FIXTURE');
+    expect(
+      FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.weldCausalityProfileCoverage
+    ).toBe('REPLICATED_ON_KASA_AND_CITA_45_DEGREE_PROFILES');
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.kanatWeldCausality).toBe(
+      'PROVEN_FOR_ASDD_FIXTURE'
+    );
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.kanat.newEvidenceManufactured).toBe(
+      false
+    );
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.universalFortyFiveRule).toBe(
+      'UNPROVEN'
+    );
+    expect(
+      FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.generalizedCompensationFormula
+    ).toBe('UNPROVEN');
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.discardedTodayWork1940.classification).toBe(
+      'INVALID_FOR_CAUSAL_AUTHORITY'
+    );
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.fp027.rootCause).toBe('UNPROVEN');
+    expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.physicalLengthScore).toBe('6.0/10');
+    const proven = evaluateCitaWeldCausalityFromExistingArtifacts({
+      citaIdentifiedUnambiguously: true,
+      designReportHorizontalMm: 537,
+      designReportVerticalMm: 1116,
+      weld3RequiredPartsHorizontalMm: 540,
+      weld3RequiredPartsVerticalMm: 1119,
+      weld0RequiredPartsHorizontalMm: 537,
+      weld0RequiredPartsVerticalMm: 1116,
+    });
+    expect(proven.citaDesignReportLayer).toBe('PROVEN');
+    expect(proven.weld3To0EffectOnCitaReportToRequiredParts).toBe('PROVEN_FOR_C5_FIXTURE');
+    expect(proven.weldCausalityProfileCoverage).toBe(
+      'REPLICATED_ON_KASA_AND_CITA_45_DEGREE_PROFILES'
+    );
+    expect(proven.authorizesFormulaChange).toBe(false);
+    expect(
+      evaluateCitaWeldCausalityFromExistingArtifacts({
+        citaIdentifiedUnambiguously: false,
+        designReportHorizontalMm: 537,
+        designReportVerticalMm: 1116,
+        weld3RequiredPartsHorizontalMm: 540,
+        weld3RequiredPartsVerticalMm: 1119,
+        weld0RequiredPartsHorizontalMm: 537,
+        weld0RequiredPartsVerticalMm: 1116,
+      }).citaDesignReportLayer
+    ).toBe('UNPROVEN');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {
