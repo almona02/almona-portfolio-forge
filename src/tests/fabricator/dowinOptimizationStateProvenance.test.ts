@@ -29,10 +29,13 @@ import {
   DOWIN_FP024C1_FRESH_A_RUN,
   DOWIN_FP024C3_RUN_A_RUN,
   DOWIN_FP024C3_RUN_B_RUN,
+  DOWIN_FP024C3_RUN_C_RUN,
   DOWIN_OBSERVED_SOLVER_STAGES,
   STOCK_COMMIT_DIALOG_TRIGGER,
   barContentFingerprint,
+  barSequenceFingerprint,
   compareBarTopology,
+  DOWIN_BAR_STRIP_ORDER_IS_NOT_MACHINE_ORDER,
   observeOverproductionBeyondRequired,
   asddEquivalentInputProvenance,
   assignmentSignaturesEqual,
@@ -896,42 +899,188 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(withRemnant.unexpectedCards).toEqual(['Deceuninck-CITA-20|6160']);
   });
 
-  it('holds RUN_A and RUN_B measured while RUN_C stays pending and the 90° gate stays closed', () => {
+  /**
+   * Builds classifier evidence from an ingested controlled run. Every value is
+   * measured: all three runs were verified byte-identical to baseline V2 both
+   * before and after export, each with its own live re-read, and the whole
+   * session log contains no stock-write line.
+   */
+  const CONTROLLED_CAPTURE_IDS: Record<string, string> = {
+    FP024C3_RUN_A: 'runA-settings-20260913-004212',
+    FP024C3_RUN_B: 'runB-settings-20260913-012655',
+    FP024C3_RUN_C: 'runC-settings-20260913-145945',
+  };
+
+  const controlledRunFrom = (run: DowinCalibrationRun): ControlledRunEvidence => ({
+    runId: run.fixtureId,
+    provenance: run.optimizerProvenance ?? null,
+    observedWarehouseStock: FP024C3_FROZEN_WAREHOUSE_BASELINE_V2,
+    offcutRemnantEvidence: 'UNPROVEN',
+    settingsScreenshotSha256: run.optimizerProvenance?.settingsSnapshotSha256 ?? null,
+    settingsCaptureId: CONTROLLED_CAPTURE_IDS[run.fixtureId] ?? null,
+    bars: run.bars,
+    pieces: run.pieces,
+    baselineVersion: 2,
+    stockWriteLogReview: 'NO_STOCK_WRITE_LOGGED',
+  });
+
+  it('accepts independent settings captures that render byte-identically', () => {
+    const runs = fp024c3ControlledRuns().map((run) => controlledRunFrom(run));
+    // All three captures share a content hash because the page never changed.
+    expect(new Set(runs.map((run) => run.settingsScreenshotSha256)).size).toBe(1);
+    // Distinct capture identities, so this is pixel-level equality, not reuse.
+    expect(new Set(runs.map((run) => run.settingsCaptureId)).size).toBe(3);
+    expect(classifyControlledRepeatability({ runs }).measuredInputEquivalence).toBe('IDENTICAL');
+
+    // Drop the capture identities and the same hashes must fail closed again.
+    const reused = runs.map((run) => ({ ...run, settingsCaptureId: null }));
+    expect(classifyControlledRepeatability({ runs: reused }).measuredInputEquivalence).toBe(
+      'UNPROVEN'
+    );
+    // A single screenshot cited three times is still rejected.
+    const sameCapture = runs.map((run) => ({ ...run, settingsCaptureId: 'one-screenshot' }));
+    expect(classifyControlledRepeatability({ runs: sameCapture }).measuredInputEquivalence).toBe(
+      'UNPROVEN'
+    );
+  });
+
+  it('completes the controlled triplicate with three distinct fresh solves', () => {
     const controlled = fp024c3ControlledRuns();
     expect(controlled).toHaveLength(3);
+    expect(controlled.every((run) => run.status === 'MEASURED')).toBe(true);
+    expect(isFp024c3ControlledTriplicateComplete()).toBe(true);
+
+    const runC = controlled.find((run) => run.fixtureId === 'FP024C3_RUN_C');
+    expect(runC).toBe(DOWIN_FP024C3_RUN_C_RUN);
+    expect(runC?.optimizerProvenance?.projectId).toBe('100005');
+    expect(runC?.optimizerProvenance?.designId).toBe('RUN_C');
+    expect(runC?.optimizerProvenance?.productionPlanId).toBe('RUN_C_PLAN');
+    expect(runC?.bars).toHaveLength(5);
+
+    // Every run is a genuinely separate solve: distinct identities throughout.
+    const ids = controlled.map((run) => run.optimizerProvenance?.optimizationResultId);
+    expect(new Set(ids).size).toBe(3);
+    expect(new Set(controlled.map((run) => run.optimizerProvenance?.projectId)).size).toBe(3);
+    expect(
+      controlled.every((run) => run.optimizerProvenance?.solveDisposition === 'NEWLY_SOLVED')
+    ).toBe(true);
+
+    // A complete triplicate does NOT open the 90° control on its own.
+    expect(isControlFixtureAuthorized()).toBe(false);
+  });
+
+  it('classifies the triplicate as nonrepeatable without claiming nondeterminism', () => {
+    const a = DOWIN_FP024C3_RUN_A_RUN.bars;
+    const b = DOWIN_FP024C3_RUN_B_RUN.bars;
+    const c = DOWIN_FP024C3_RUN_C_RUN.bars;
+
+    // C reproduces A exactly and still diverges from B on CITA only.
+    expect(compareBarTopology(a, c).comparison).toBe('IDENTICAL');
+    expect(barSequenceFingerprint(a)).toBe(barSequenceFingerprint(c));
+    const bc = compareBarTopology(b, c);
+    expect(bc.comparison).toBe('CONTENT_DIVERGENT');
+    expect(bc.reasons.join(' ')).toContain('Deceuninck-CITA-20');
+    expect(bc.reasons.join(' ')).not.toContain('Deceuninck-KANAT-70');
+
+    // Two topologies over three solves, and utilization cannot tell them apart.
+    expect(new Set([a, b, c].map((bars) => barSequenceFingerprint(bars))).size).toBe(2);
+    for (const bars of [b, c]) {
+      expect(overallUtilizationPercent(bars)).toBe(overallUtilizationPercent(a));
+      expect(Math.abs(totalRemainingMm(bars) - totalRemainingMm(a))).toBeLessThan(0.005);
+      expect(totalStockMm(bars)).toBe(totalStockMm(a));
+    }
+
+    // Ceiling: more than one topology under identical measured inputs, but the
+    // offcut/remnant axis is UNPROVEN, so nondeterminism must NOT be claimed.
+    const verdict = classifyControlledRepeatability({
+      runs: fp024c3ControlledRuns().map((run) => controlledRunFrom(run)),
+    });
+    expect(verdict.runCount).toBe(3);
+    expect(verdict.uniqueTopologyCount).toBe(2);
+    expect(verdict.measuredInputEquivalence).toBe('IDENTICAL');
+    expect(verdict.completeInputEquivalence).toBe('UNPROVEN');
+    expect(verdict.verdict).toBe('NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS');
+    expect(verdict.verdict).not.toBe('OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING');
+    expect(verdict.fullDeterminismClaimAllowed).toBe(false);
+    expect(verdict.immutability.every((check) => check.verdict === 'IMMUTABLE_VERIFIED')).toBe(
+      true
+    );
+  });
+
+  it('reproduces the required-parts conservation violation in all three runs', () => {
+    const runs = [
+      DOWIN_FP024C3_RUN_A_RUN,
+      DOWIN_FP024C3_RUN_B_RUN,
+      DOWIN_FP024C3_RUN_C_RUN,
+    ];
+    const observations = runs.map((run) =>
+      observeOverproductionBeyondRequired({ bars: run.bars, pieces: run.pieces })
+    );
+    for (const observed of observations) {
+      expect(observed.observation).toBe('OVERPRODUCTION_BEYOND_REQUIRED_QUANTITY');
+      expect(observed.requiredPieceCount).toBe(FP024C3_EXPECTED_PIECE_COUNT);
+      expect(observed.producedPieceCount).toBe(24);
+      expect(observed.surplus).toEqual(observations[0].surplus);
+    }
+    expect(observations[0].surplus).toHaveLength(1);
+    expect(observations[0].surplus[0]).toMatchObject({
+      packedLengthMm: 1416,
+      requiredQuantity: 1,
+      producedQuantity: 4,
+      surplusQuantity: 3,
+      surplusLengthMm: 4248,
+    });
+  });
+
+  it('refuses to treat the bar layout strip order as a topology axis', () => {
+    expect(DOWIN_BAR_STRIP_ORDER_IS_NOT_MACHINE_ORDER.classification).toBe(
+      'PROVEN_BY_DIRECT_COMPARISON'
+    );
+    expect(DOWIN_BAR_STRIP_ORDER_IS_NOT_MACHINE_ORDER.evidence.length).toBeGreaterThanOrEqual(3);
+
+    // Order-only reshuffles never escalate to a divergence.
+    const reordered = DOWIN_FP024C3_RUN_C_RUN.bars.map((bar) => ({
+      ...bar,
+      packedSegmentMm: [...bar.packedSegmentMm].reverse(),
+    }));
+    expect(compareBarTopology(DOWIN_FP024C3_RUN_C_RUN.bars, reordered).comparison).toBe(
+      'ORDER_ONLY_DIFFERENCE'
+    );
+    // ...and the B/C divergence survives an order-insensitive comparison, so it
+    // is not an artifact of presentation order.
+    expect(barContentFingerprint(DOWIN_FP024C3_RUN_B_RUN.bars)).not.toBe(
+      barContentFingerprint(DOWIN_FP024C3_RUN_C_RUN.bars)
+    );
+    expect(barContentFingerprint(DOWIN_FP024C3_RUN_A_RUN.bars)).toBe(
+      barContentFingerprint(DOWIN_FP024C3_RUN_C_RUN.bars)
+    );
+  });
+
+  it('keeps every controlled run identity distinct across the triplicate', () => {
+    const controlled = fp024c3ControlledRuns();
     expect(controlled.map((run) => run.fixtureId)).toEqual([...FP024C3_RUN_IDS]);
 
-    const runA = controlled.find((run) => run.fixtureId === 'FP024C3_RUN_A');
-    expect(runA).toBe(DOWIN_FP024C3_RUN_A_RUN);
-    expect(runA?.status).toBe('MEASURED');
-    expect(runA?.optimizerProvenance?.solveDisposition).toBe('NEWLY_SOLVED');
-    expect(runA?.optimizerProvenance?.projectId).toBe('100003');
-    expect(runA?.bars).toHaveLength(5);
+    const byId = new Map(controlled.map((run) => [run.fixtureId, run]));
+    expect(byId.get('FP024C3_RUN_A')?.optimizerProvenance?.projectId).toBe('100003');
+    expect(byId.get('FP024C3_RUN_B')?.optimizerProvenance?.projectId).toBe('100004');
+    expect(byId.get('FP024C3_RUN_C')?.optimizerProvenance?.projectId).toBe('100005');
+    expect(byId.get('FP024C3_RUN_A')?.bars).toHaveLength(5);
+    expect(byId.get('FP024C3_RUN_B')?.bars).toHaveLength(4);
+    expect(byId.get('FP024C3_RUN_C')?.bars).toHaveLength(5);
 
-    const runB = controlled.find((run) => run.fixtureId === 'FP024C3_RUN_B');
-    expect(runB).toBe(DOWIN_FP024C3_RUN_B_RUN);
-    expect(runB?.status).toBe('MEASURED');
-    expect(runB?.optimizerProvenance?.solveDisposition).toBe('NEWLY_SOLVED');
-    expect(runB?.optimizerProvenance?.projectId).toBe('100004');
-    expect(runB?.optimizerProvenance?.designId).toBe('RUN_B');
-    expect(runB?.optimizerProvenance?.productionPlanId).toBe('RUN_B_PLAN');
-    expect(runB?.bars).toHaveLength(4);
-
-    // Distinct identities and distinct solver results; nothing reused.
-    expect(runB?.optimizerProvenance?.optimizationResultId).not.toBe(
-      runA?.optimizerProvenance?.optimizationResultId
+    // Bar-count alone is not topology: A and C share a count AND a geometry,
+    // while B differs — but a matching count would not have proven anything.
+    expect(barSequenceFingerprint(byId.get('FP024C3_RUN_A')!.bars)).toBe(
+      barSequenceFingerprint(byId.get('FP024C3_RUN_C')!.bars)
+    );
+    expect(barSequenceFingerprint(byId.get('FP024C3_RUN_B')!.bars)).not.toBe(
+      barSequenceFingerprint(byId.get('FP024C3_RUN_A')!.bars)
     );
 
-    const pending = controlled.filter((run) => run.status === 'PENDING_OPERATOR_RUN');
-    expect(pending.map((run) => run.fixtureId)).toEqual(['FP024C3_RUN_C']);
-    expect(pending.every((run) => run.bars.length === 0)).toBe(true);
-    expect(pending.every((run) => run.optimizerProvenance == null)).toBe(true);
-
-    // Two of three proves nothing, and 90° stays gated.
-    expect(isFp024c3ControlledTriplicateComplete()).toBe(false);
-    expect(isControlFixtureAuthorized()).toBe(false);
-    expect(classifyControlledRepeatability({ runs: [] }).verdict).toBe(
-      'CONTROLLED_REPEATABILITY_IN_PROGRESS'
+    // The within-run fingerprint embeds run-scoped piece ids, so it must never
+    // be used to compare two runs: it separates even A from C.
+    expect(topologyFingerprint(byId.get('FP024C3_RUN_A')!.bars)).not.toBe(
+      topologyFingerprint(byId.get('FP024C3_RUN_C')!.bars)
     );
   });
 

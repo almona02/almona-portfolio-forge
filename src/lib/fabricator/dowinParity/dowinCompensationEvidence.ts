@@ -73,7 +73,9 @@ import {
   isOptimizerProvenanceComplete,
   missingOptimizerProvenanceFields,
   barContentFingerprint,
+  barSequenceFingerprint,
   compareBarTopology,
+  DOWIN_BAR_STRIP_ORDER_IS_NOT_MACHINE_ORDER,
   observeOverproductionBeyondRequired,
   observeWarehouseQtyVsOptimizerAvailability,
   totalRemainingMm,
@@ -159,7 +161,9 @@ export {
   isOptimizerProvenanceComplete,
   missingOptimizerProvenanceFields,
   barContentFingerprint,
+  barSequenceFingerprint,
   compareBarTopology,
+  DOWIN_BAR_STRIP_ORDER_IS_NOT_MACHINE_ORDER,
   observeOverproductionBeyondRequired,
   observeWarehouseQtyVsOptimizerAvailability,
   totalRemainingMm,
@@ -1275,7 +1279,7 @@ export const FP024C3_RUN_A_BARS: readonly ExternalBarPattern[] = [
     applicationCount: 1,
     pieceExternalIds: [],
     packedSegmentMm: [1313, 1313, 1313, 1313, 334, 334, 334],
-    remainingMm: 206.43,
+    remainingMm: 206.4,
     reportedYieldPercent: 96.8,
   },
   {
@@ -1503,7 +1507,7 @@ export const DOWIN_FP024C3_RUN_B_RUN: DowinCalibrationRun = {
   pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
   bars: FP024C3_RUN_B_BARS,
   provenance:
-    'FP024C3_RUN_B 2026-09-13 01:42:08 +03, OptimizationRun Id=10, solver id 343040d6. Baseline V2 verified live before the run: Management Panel reloaded (RawMaterialsViewModel SERVICE_INIT 01:25:37, new hwnd), capture SHA-256 c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012 — byte-identical to V2. Settings re-captured (NOT reused): SHA-256 8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae, a new capture that renders byte-identical to RUN_A, so the settings axis is IDENTICAL at pixel level; Weld 3 / Saw 4 / Trim 0, Sash Offset 7, Glazing Clearance 2.5, Minimum Offcut Length 500, DC-600 + DC-550 SKH enabled. Design saved 01:32:04 with DESIGN_VALIDATION VALID, logged Boyut 1000x1500. Cut list 21 rows / 20564 mm, all 21 rows visually measured across three captures, IDENTICAL to RUN_A on every length/angle/quantity. Optimizer offered the same 7 SKUs mirroring V2 including ORTA 6500 qty 100, and the optimizer Required Parts view showed ORTA qty 1, proving the surplus does not originate in the input. NEWLY_SOLVED, previous results cleared on send. 4 patterns / 6 bars, yield 66.2%, total offcut 12559 mm, 0 unplaced. OVER-PRODUCTION REPRODUCED: 24 plan pieces against 21 required, surplus 3 x ORTA 1416 mm = 4248 mm, same DoWin warning "3 piece(s) in the optimization plan could not be matched to the detailed production list". TOPOLOGY DIVERGED from RUN_A on CITA-20 only: RUN_A packed 1313x4+334x3 (rem 206.43) plus 334x1 (rem 6160.34); RUN_B packed two identical bars of 1313x2+334x2 (rem 3183.37 each). Total remainder 6366.74 vs 6366.77 and overall yield 66.2% are the same, so utilization hid the difference. MIP stages were identical stage-for-stage in both runs (costs 6000.00 / 6.50 / 18000.00 / 6500.00, annealing MaxIter 210/210/220/220 at temperature 100) and both allocated 2 CITA bars, so the divergence arose in intra-bar assignment after MIP allocation, where simulated annealing operates. DC-600 export wrote 13 pieces, artifact SHA-256 25734a04aa0e61c796bae8afc3a7c755f413f36bf4f8adb2d5f478b2c1f31a71, MachineExportRecord RunId=10. Machine Table1 read directly and compared to RUN_A: 13 rows identical field-for-field including BAR_NO/PICE_NO order, LENGTH, angles, FRAME_X/Y, TOTAL_SIZE and REMAINING_LENGTH, so MACHINE_LENGTH_LAYER = IDENTICAL. The ORTA row carries REMAINING_LENGTH 820.0 in both files, so the surplus misstatement reaches the machine file even though the piece list is correct. Post-export Stock Update dialog SHOWN and answered NO. Post-export stock byte-identical to V2 after a full DoWin restart (session a1377777268a); zero ExecuteStockUpdateCoreAsync lines in app-20260913.log across both runs. Offcut/remnant inventory axis remains UNPROVEN. Licensed PDFs/.dw/screenshots not committed.',
+    'FP024C3_RUN_B 2026-09-13 01:42:08 +03, OptimizationRun Id=10, solver id 343040d6. Baseline V2 verified live before the run: Management Panel reloaded (RawMaterialsViewModel SERVICE_INIT 01:25:37, new hwnd), capture SHA-256 c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012 — byte-identical to V2. Settings re-captured (NOT reused): SHA-256 8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae, a new capture that renders byte-identical to RUN_A, so the settings axis is IDENTICAL at pixel level; Weld 3 / Saw 4 / Trim 0, Sash Offset 7, Glazing Clearance 2.5, Minimum Offcut Length 500, DC-600 + DC-550 SKH enabled. Design saved 01:32:04 with DESIGN_VALIDATION VALID, logged Boyut 1000x1500. Cut list 21 rows / 20564 mm, all 21 rows visually measured across three captures, IDENTICAL to RUN_A on every length/angle/quantity. Optimizer offered the same 7 SKUs mirroring V2 including ORTA 6500 qty 100, and the optimizer Required Parts view showed ORTA qty 1, proving the surplus does not originate in the input. NEWLY_SOLVED, previous results cleared on send. 4 patterns / 6 bars, yield 66.2%, total offcut 12559 mm, 0 unplaced. OVER-PRODUCTION REPRODUCED: 24 plan pieces against 21 required, surplus 3 x ORTA 1416 mm = 4248 mm, same DoWin warning "3 piece(s) in the optimization plan could not be matched to the detailed production list". TOPOLOGY DIVERGED from RUN_A on CITA-20 only: RUN_A packed 1313x4+334x3 (rem 206.40) plus 334x1 (rem 6160.34); RUN_B packed two identical bars of 1313x2+334x2 (rem 3183.37 each). CITA total remainder is 6366.74 in BOTH and overall yield is 66.2% in both, so utilization hid the difference entirely. (Corrected during RUN_C: RUN_A bar 1 was first transcribed as 206.43 from a selection-obscured cell; re-magnifying the original RUN_A capture reads 206.40, so the 0.03 mm A/B gap reported earlier never existed and the totals are exactly equal.) MIP stages were identical stage-for-stage in both runs (costs 6000.00 / 6.50 / 18000.00 / 6500.00, annealing MaxIter 210/210/220/220 at temperature 100) and both allocated 2 CITA bars, so the divergence arose in intra-bar assignment after MIP allocation, where simulated annealing operates. DC-600 export wrote 13 pieces, artifact SHA-256 25734a04aa0e61c796bae8afc3a7c755f413f36bf4f8adb2d5f478b2c1f31a71, MachineExportRecord RunId=10. Machine Table1 read directly and compared to RUN_A: 13 rows identical field-for-field including BAR_NO/PICE_NO order, LENGTH, angles, FRAME_X/Y, TOTAL_SIZE and REMAINING_LENGTH, so MACHINE_LENGTH_LAYER = IDENTICAL. The ORTA row carries REMAINING_LENGTH 820.0 in both files, so the surplus misstatement reaches the machine file even though the piece list is correct. Post-export Stock Update dialog SHOWN and answered NO. Post-export stock byte-identical to V2 after a full DoWin restart (session a1377777268a); zero ExecuteStockUpdateCoreAsync lines in app-20260913.log across both runs. Offcut/remnant inventory axis remains UNPROVEN. Licensed PDFs/.dw/screenshots not committed.',
   reproductionVerdict: null,
   lengthLayerVerdict: 'REPRODUCED',
   topologyVerdict: null,
@@ -1551,6 +1555,152 @@ export const DOWIN_FP024C3_RUN_B_RUN: DowinCalibrationRun = {
   }),
 };
 
+/**
+ * FP024C3_RUN_C cutting plan, 2026-09-13 15:14:48 +03, OptimizationRun Id=11.
+ *
+ * Third controlled solve. Reproduces RUN_A's CITA grouping exactly, so the
+ * controlled triplicate holds two distinct topologies over three fresh solves.
+ * Every bar strip was captured for this run, including KANAT and KASA.
+ */
+export const FP024C3_RUN_C_BARS: readonly ExternalBarPattern[] = [
+  {
+    id: 'run-c-bead-cita-6500-7pc',
+    profileCode: 'Deceuninck-CITA-20',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: [],
+    packedSegmentMm: [1313, 1313, 1313, 1313, 334, 334, 334],
+    remainingMm: 206.4,
+    reportedYieldPercent: 96.8,
+  },
+  {
+    id: 'run-c-bead-cita-6500-1pc',
+    profileCode: 'Deceuninck-CITA-20',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: [],
+    packedSegmentMm: [334],
+    remainingMm: 6160.34,
+    reportedYieldPercent: 5.2,
+  },
+  {
+    id: 'run-c-sash-kanat-6000',
+    profileCode: 'Deceuninck-KANAT-70',
+    stockLengthMm: 6000,
+    applicationCount: 2,
+    pieceExternalIds: [
+      'RUN_C.Left Area (Sash).Left',
+      'RUN_C.Left Area (Sash).Right',
+      'RUN_C.Left Area (Sash).Top',
+      'RUN_C.Left Area (Sash).Bottom',
+      'RUN_C.Right Area (Sash).Left',
+      'RUN_C.Right Area (Sash).Right',
+      'RUN_C.Right Area (Sash).Top',
+      'RUN_C.Right Area (Sash).Bottom',
+    ],
+    packedSegmentMm: [1433, 1433, 454, 454],
+    remainingMm: 2203.37,
+    reportedYieldPercent: 63.3,
+  },
+  {
+    id: 'run-c-frame-kasa-6000',
+    profileCode: 'Deceuninck-KASA-70',
+    stockLengthMm: 6000,
+    applicationCount: 1,
+    pieceExternalIds: [
+      'RUN_C.Frame Leftt',
+      'RUN_C.Frame Right',
+      'RUN_C.Frame Top',
+      'RUN_C.Frame Bottom',
+    ],
+    packedSegmentMm: [1503, 1503, 1003, 1003],
+    remainingMm: 965.37,
+    reportedYieldPercent: 83.9,
+  },
+  {
+    id: 'run-c-mullion-orta-6500',
+    profileCode: 'Deceuninck-ORTA-KAYIT-70',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: ['RUN_C.Mullion Vertical'],
+    packedSegmentMm: [1416, 1416, 1416, 1416],
+    remainingMm: 820.0,
+    reportedYieldPercent: 87.4,
+  },
+];
+
+/** Optimizer Stock Items before Run — mirrors frozen baseline V2 exactly. */
+export const FP024C3_RUN_C_OPTIMIZER_STOCK = FP024C3_RUN_A_OPTIMIZER_STOCK;
+
+export const DOWIN_FP024C3_RUN_C_RUN: DowinCalibrationRun = {
+  fixtureId: 'FP024C3_RUN_C',
+  parentFixtureId: DOWIN_ASDD_BASELINE_REPRODUCTION_RUN.fixtureId,
+  runKind: 'OPTIMIZATION_STATE_PROVENANCE_AUDIT',
+  isolationVariable: 'optimizationStateProvenance',
+  status: 'MEASURED',
+  designName: 'RUN_C',
+  profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
+  widthMm: 1000,
+  heightMm: 1500,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  observedSettings: { ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings },
+  intendedIsolation: {
+    field: null,
+    instructedToMm: null,
+    note: 'FP-024C.3 controlled Run C against frozen baseline V2, completing the triplicate. New project FP024C3_RUN_C (Id=5) / design RUN_C (Id=7) / plan RUN_C_PLAN (Id=5) / OptimizationRun Id=11. No warehouse write.',
+  },
+  changedSetting: null,
+  pieces: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows,
+  bars: FP024C3_RUN_C_BARS,
+  provenance:
+    'FP024C3_RUN_C 2026-09-13 15:14:48 +03, OptimizationRun Id=11, solver id 5efde5d4. Strongest pre-run liveness of the triplicate: baseline V2 survived a ~13 hour gap and two full application restarts (sessions dd38bbb2fcf2 at 14:50:52 and 927e98bb02f6 at 14:58:12), re-read live with a fresh RawMaterialsViewModel SERVICE_INIT at 14:58:21 on a new hwnd, capture SHA-256 c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012 — byte-identical to V2, and all seven cards re-verified visually. Settings re-captured (NOT reused): SHA-256 8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae, a new post-restart capture on a new hwnd that renders byte-identical to RUN_A and RUN_B, so the settings axis is IDENTICAL at pixel level; Weld 3 / Saw 4 / Trim 0, Sash Offset 7, Glazing Clearance 2.5, Minimum Offcut Length 500, DC-600 enabled and DC-550 SKH enabled, CDC-600 / CK-412 / NC-X disabled. Design saved 15:03:46 with DESIGN_VALIDATION VALID, logged Boyut 1000x1500. Cut list 21 rows / 20564 mm, all 21 rows visually measured across three captures and IDENTICAL to RUN_A and RUN_B on every length/angle/quantity; sum independently checked to 20564 mm. Optimizer offered the same 7 SKUs in the same ordinal order mirroring V2 including ORTA 6500 qty 100 (captures byte-identical to A and B), and the optimizer Required Parts view again showed ORTA qty 1, so the surplus does not originate in the input. NEWLY_SOLVED, previous results cleared on send. 5 patterns / 6 bars, yield 66.2%, total offcut 12559 mm, 0 unplaced, duration 0.57 s. OVER-PRODUCTION REPRODUCED A THIRD TIME: 24 plan pieces against 21 required, surplus 3 x ORTA 1416 mm = 4248 mm, same DoWin warning "3 piece(s) in the optimization plan could not be matched to the detailed production list". TOPOLOGY REPRODUCES RUN_A EXACTLY and diverges from RUN_B on CITA-20: 1313x4+334x3 (rem 206.40) plus 334x1 (rem 6160.34), where RUN_B used two identical bars of 1313x2+334x2 (rem 3183.37 each). CITA total remainder 6366.74 and total remainder 12558.85 are identical in all three runs, as is yield, so utilization cannot distinguish them. MIP stages identical stage-for-stage across all three runs (costs 6000.00 / 6.50 / 18000.00 / 6500.00, annealing MaxIter 210/210/220/220 at temperature 100, all OPTIMAL, 2 CITA bars allocated every time), so the A/B divergence is localized after bar-count allocation. DC-600 export wrote 13 pieces, artifact SHA-256 fc244acbafe90dd655d559e08f05603c6cc383e4130020533e2aa42ba6e52dcd, MachineExportRecord RunId=11. Machine Table1 read directly from all three .dw files: 13 rows identical field-for-field across A/B/C on all 39 columns except CUSTOMER_CODE, ORDER_NO, EXPLANATION2 and IMAGE, so MACHINE_LENGTH_LAYER = IDENTICAL. The ORTA row carries REMAINING_LENGTH 8200 (820.0 mm) in all three files against one required mullion, so SURPLUS_PLAN_REMAINDER_PROPAGATES_TO_MACHINE_OUTPUT is a repeatable observation. RUN_C also proves the visual bar strip is NOT the machine cut sequence: its KANAT strip renders 1433,1433,454,454 while its machine PICE_NO order is 454,454,1433,1433, identical to A and B — so display ordering is not a topology axis and RUN_A uncaptured strip order is immaterial. Post-export Stock Update dialog SHOWN and answered NO. Post-export stock re-read live (RawMaterialsViewModel SERVICE_INIT 15:32:18, new hwnd) and byte-identical to V2; zero ExecuteStockUpdateCoreAsync lines across the whole of app-20260913.log covering all three runs. Offcut/remnant inventory axis remains UNPROVEN: the solver Stock Items panel it actually consumes shows only whole-bar rows and Add Offcuts to Stock is greyed pre-solve, but DoWin exposes no remnant surface or row ids, so absence is not proven. Licensed PDFs/.dw/screenshots not committed.',
+  reproductionVerdict: null,
+  lengthLayerVerdict: 'REPRODUCED',
+  topologyVerdict: null,
+  optimizerProvenance: attachOptimizerInputFingerprints({
+    runId: 'FP024C3_RUN_C',
+    timestampIso: '2026-09-13T12:14:48.000Z',
+    projectId: '100005',
+    designId: 'RUN_C',
+    productionPlanId: 'RUN_C_PLAN',
+    optimizationResultId: 'OptimizationRun_11_5efde5d4',
+    optimizationHistoryId: null,
+    solveKind: 'NEWLY_SOLVED',
+    solveDisposition: 'NEWLY_SOLVED',
+    optimizerId: null,
+    optimizerVersion: null,
+    algorithm: null,
+    seed: null,
+    requiredPartsSnapshotId: 'run-c-required-parts-20260913',
+    stockSnapshotId: 'run-c-optimizer-stock-items-20260913',
+    offcutRemnantSnapshotId: 'UNPROVEN-no-remnant-source-row-exposed',
+    machineId: 'DC-600',
+    settingsSnapshotSha256:
+      '8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae',
+    settingsSnapshot: settingsSnapshotFromObserved(
+      DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings
+    ),
+    geometrySnapshot: {
+      widthMm: 1000,
+      heightMm: 1500,
+      profileSystem: "Deceuninck 70'lik PVC Sistemi",
+    },
+    requiredPartsSnapshot: requiredPartsSnapshotFromPieces(
+      DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows
+    ),
+    stockSnapshot: [...FP024C3_RUN_C_OPTIMIZER_STOCK],
+    offcutRemnantSnapshot: [],
+    sourceHashesSha256: {
+      generalSettingsScreenshot:
+        '8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae',
+      designPreview: 'cf30d6b2de7e03a10209ad3d713d9e6f9e0256c85c2619dddac2975ea0e0fe02',
+      assemblyLabels: 'a5429416f120e56ee7a7f8a2de3406a1b04a5e724d81246729c9e2b2ee7f3182',
+      optimization: '55fd5937968fade03aa50c1604d6fb0a3ab8dc0f7b3ab146780e8d0f56390cdc',
+      machineExport: 'fc244acbafe90dd655d559e08f05603c6cc383e4130020533e2aa42ba6e52dcd',
+    },
+  }),
+};
+
 export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
   pendingTemplate(
     'FP024C1_FRESH_B',
@@ -1571,16 +1721,6 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
       note: 'FP-024C.1 Fresh C: third independent fresh solve. Required before repeatability or nondeterminism classification.',
     },
     'Operator template Fresh C. Completes the A/B/C package. 90° stays gated.'
-  ),
-  pendingTemplate(
-    'FP024C3_RUN_C',
-    'optimizationStateProvenance',
-    {
-      field: null,
-      instructedToMm: null,
-      note: 'FP-024C.3 controlled Run C: authorized only after RUN_B post-stock check PASSes. Completes the controlled triplicate.',
-    },
-    'Operator template FP024C3_RUN_C. No fourth run without explicit authorization. 90° stays gated until the repeatability verdict exists.'
   ),
   pendingTemplate(
     'dowin-asdd-90-control-pending',
@@ -1604,6 +1744,7 @@ export const DOWIN_CALIBRATION_RUNS: readonly DowinCalibrationRun[] = [
   DOWIN_FP024C1_FRESH_A_RUN,
   DOWIN_FP024C3_RUN_A_RUN,
   DOWIN_FP024C3_RUN_B_RUN,
+  DOWIN_FP024C3_RUN_C_RUN,
   ...DOWIN_CALIBRATION_TEMPLATES,
 ];
 

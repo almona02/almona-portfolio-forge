@@ -2,14 +2,14 @@
 
 | Field | Value |
 |-------|--------|
-| Date | 12 September 2026, re-baselined 13 September 2026, RUN_A and RUN_B executed 13 September 2026 |
+| Date | 12 September 2026, re-baselined 13 September 2026, controlled triplicate executed 13 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
 | HEAD at start | `243558a` — `audit: trace Fresh A stock mutation provenance` |
 | HEAD at re-baseline | `cb05ab0` |
 | PR #32 | Draft / **DO NOT MERGE** |
 | Question | Do multiple genuinely fresh optimization solves under the same current input state produce the same bar-assignment topology? |
 | Active baseline | **V2** — frozen 12 Sep 23:58:45 +03, `MANUAL_STOCK_CARD_EDIT_CONTAMINATED_V1` |
-| Gate | ⏸ **PENDING_RUN_C** — 2 of 3 controlled runs ingested |
+| Gate | ⏸ **TRIPLICATE COMPLETE** — 3 of 3 controlled runs ingested; awaiting independent review |
 | Physical-length score | **Unchanged at 6.0/10** |
 | Production formulas | **FROZEN** |
 | 90° CONTROL_FIXTURE | **GATED** |
@@ -32,26 +32,41 @@ Controlled baseline V2:
 FROZEN — CITA 46 / KANAT 96 / KASA 13 / ORTA 100
 source hash: c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012
 
-FP024C3_RUN_A: MEASURED (OptimizationRun Id=9, NEWLY_SOLVED)
+FP024C3_RUN_A: MEASURED (OptimizationRun Id=9,  NEWLY_SOLVED)
 FP024C3_RUN_B: MEASURED (OptimizationRun Id=10, NEWLY_SOLVED)
-FP024C3_RUN_C: CLOSED pending authorization
+FP024C3_RUN_C: MEASURED (OptimizationRun Id=11, NEWLY_SOLVED)
 
 Repeatability classification:
-NOT YET CLASSIFIABLE (2 of 3 runs)
-NONREPEATABLE_OBSERVATION_PENDING_RUN_C
+NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS
 
-A_B_TOPOLOGY_DIVERGENCE:
-OBSERVED — CITA-20 assignment differs under
-proven-identical measured inputs
+  runCount                    3
+  uniqueTopologyCount         2
+  topology distribution       X / Y / X
+  MEASURED_INPUT_EQUIVALENCE  IDENTICAL  (all three pairs)
+  COMPLETE_INPUT_EQUIVALENCE  UNPROVEN   (offcut/remnant axis)
+  fullDeterminismClaimAllowed false
 
-A_B_MEASURED_INPUT_EQUIVALENCE:
-IDENTICAL
+NOT OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING
+— that requires complete input equivalence.
 
-A_B_MACHINE_LENGTH_LAYER:
-IDENTICAL (Table1 read directly, 13 rows field-for-field)
+Stochastic mechanism authority:
+POSSIBLE_NONDETERMINISTIC_MECHANISM
+(NOT PROVEN_NONDETERMINISM)
 
-SURPLUS_ORIGINAL_PARTS_BEHAVIOR:
-REPRODUCED_IN_RUN_B (identical surplus signature)
+A_B_C_MACHINE_LENGTH_LAYER:
+IDENTICAL (Table1 read from all three .dw files,
+13 rows field-for-field, 39 columns compared)
+
+OPTIMIZATION_REQUIRED_PARTS_CONSERVATION_VIOLATION:
+REPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS
+(21 required → 24 planned, +3 ORTA, all three runs)
+
+SURPLUS_PLAN_REMAINDER_PROPAGATES_TO_MACHINE_OUTPUT:
+REPEATABLE_OBSERVATION
+(ORTA REMAINING_LENGTH 820.0 mm in all three files)
+
+Warehouse immutability:
+IMMUTABLE_VERIFIED (all three runs) (identical surplus signature)
 
 RUN_A warehouse immutability:
 IMMUTABLE_VERIFIED (UI byte-identical to V2 + zero stock-write log lines)
@@ -90,7 +105,7 @@ PR #32:
 DRAFT / DO NOT MERGE
 ```
 
-This checkpoint establishes the controlled baseline, the stock-isolation rules, the intake gate, and the classification logic, and ingests **RUN_A and RUN_B**. RUN_C is not authorized by this document. The three controlled solves require the licensed DoWin application on the operator PC and cannot be produced from this repository. No topology, hash, or provenance value below is invented.
+This checkpoint establishes the controlled baseline, the stock-isolation rules, the intake gate, and the classification logic, and ingests the **complete controlled triplicate**. No fourth solve is authorized. The three controlled solves require the licensed DoWin application on the operator PC and cannot be produced from this repository. No topology, hash, or provenance value below is invented.
 
 ---
 
@@ -265,11 +280,11 @@ Three new experiments. These are **not** Fresh B / Fresh C from the previous pro
 |------|---------|--------|------|--------|
 | `FP024C3_RUN_A` | `FP024C3_RUN_A` Id=3 (No 100003) | `RUN_A` Id=5 | `RUN_A_PLAN` Id=3 | **MEASURED** — `OptimizationRun` Id=9 |
 | `FP024C3_RUN_B` | `FP024C3_RUN_B` Id=4 (No 100004) | `RUN_B` Id=6 | `RUN_B_PLAN` Id=4 | **MEASURED** — `OptimizationRun` Id=10 |
-| `FP024C3_RUN_C` | `FP024C3_RUN_C` | `RUN_C` | `RUN_C_PLAN` | **CLOSED** until explicitly authorized |
+| `FP024C3_RUN_C` | `FP024C3_RUN_C` Id=5 (No 100005) | `RUN_C` Id=7 | `RUN_C_PLAN` Id=5 | **MEASURED** — `OptimizationRun` Id=11 |
 
 All three must be solved against baseline **V2**. A run declaring baseline V1 is rejected at intake, and classification returns `BASELINE_SUPERSEDED`.
 
-The old `FP024C1_FRESH_B` remains **INVALID_PRE_RUN / STOCK_STATE_CHANGED** and `FP024C1_FRESH_C` remains closed. All three FP-024C.3 slots are registered in the existing catalog (`DOWIN_CALIBRATION_RUNS`, 13 entries, 4 pending). RUN_A carries five bar patterns and RUN_B four, both with full `optimizerProvenance`. RUN_C keeps empty pieces, empty bars, and `optimizerProvenance = null`; no placeholder topology exists.
+The old `FP024C1_FRESH_B` remains **INVALID_PRE_RUN / STOCK_STATE_CHANGED** and `FP024C1_FRESH_C` remains closed. All three FP-024C.3 slots are registered in the existing catalog (`DOWIN_CALIBRATION_RUNS`, 13 entries, 3 pending — Fresh B, Fresh C and the 90° control). RUN_A and RUN_C carry five bar patterns each and RUN_B four, all with full `optimizerProvenance`. No placeholder topology exists anywhere.
 
 RUN_A is deliberately **excluded** from `classifyProvenanceFreshStateExperiment`. Fresh A solved against V1-era optimizer stock (48 / 98 / 14 / 0) and RUN_A against V2 (46 / 96 / 13 / 100), so comparing them would be a cross-baseline category error — the same error `BASELINE_SUPERSEDED` guards at intake. FP-024C.3 runs are classified only by `classifyControlledRepeatability`.
 
@@ -360,7 +375,7 @@ Reported result: yield **66.2 %**, 6 stock bars used, **0 unplaced**, total offc
 
 | Bar | Profile | Stock | Applications | Packed segments (mm) | Remaining (mm) | Yield |
 |-----|---------|-------|--------------|----------------------|----------------|-------|
-| 1 | CITA-20 | 6500 | 1 | 1313 × 4, 334 × 3 | 206.43 | 96.8 % |
+| 1 | CITA-20 | 6500 | 1 | 1313 × 4, 334 × 3 | 206.40 | 96.8 % |
 | 2 | CITA-20 | 6500 | 1 | 334 | 6160.34 | 5.2 % |
 | 3 | KANAT-70 | 6000 | 2 | 1433 × 2, 454 × 2 | 2203.37 each | 63.3 % |
 | 4 | KASA-70 | 6000 | 1 | 1503 × 2, 1003 × 2 | 965.37 | 83.9 % |
@@ -496,15 +511,15 @@ Note the deliberate omission: **total utilization is not used as evidence of equ
 
 | | RUN_A | RUN_B |
 |---|-------|-------|
-| CITA bar 1 | 1313×4 + 334×3, remaining **206.43** | 1313×2 + 334×2, remaining **3183.37** |
+| CITA bar 1 | 1313×4 + 334×3, remaining **206.40** | 1313×2 + 334×2, remaining **3183.37** |
 | CITA bar 2 | 334×1, remaining **6160.34** | 1313×2 + 334×2, remaining **3183.37** |
 | CITA patterns | 2 distinct | 1 pattern × 2 |
 | Plan patterns | 5 | 4 |
-| CITA total remainder | 6366.77 | 6366.74 |
+| CITA total remainder | 6366.74 | 6366.74 |
 | Total offcut | 12 559 mm | 12 559 mm |
 | Overall yield | 66.2 % | 66.2 % |
 
-Same eight glazing beads, same two 6500 mm bars, same total remainder to within 0.03 mm — distributed differently. RUN_A concentrated the beads into one nearly-full bar plus one nearly-empty bar; RUN_B split them evenly.
+Same eight glazing beads, same two 6500 mm bars, exactly the same total remainder — distributed differently. RUN_A concentrated the beads into one nearly-full bar plus one nearly-empty bar; RUN_B split them evenly.
 
 **These are not economically equivalent.** RUN_A yields one 6160 mm offcut, reusable and long enough to host another full bead set, plus a 206 mm piece that falls below the 500 mm minimum and is therefore scrap. RUN_B yields two 3183 mm offcuts, both above the minimum but neither able to host a full bead set. Identical yield, materially different value.
 
@@ -523,20 +538,22 @@ Both runs allocated **two** CITA bars at the same cost. The divergence is theref
 
 ### What is NOT claimed
 
-- **Not** `OPTIMIZER_NONDETERMINISM`. Two runs cannot support that; RUN_C is required. Recorded as `NONREPEATABLE_OBSERVATION_PENDING_RUN_C`.
+- **Not** `OPTIMIZER_NONDETERMINISM`. Two runs cannot support that; RUN_C is required. Recorded as `NONREPEATABLE_OBSERVATION_PENDING_RUN_C`. *(Correct as written after RUN_B. Superseded by the triplicate verdict below, which is `NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS` — still not `OPTIMIZER_NONDETERMINISM`.)*
 - **Not** attributable to the annealing seed. No seed is logged. Simulated annealing is a *plausible mechanism*, not a demonstrated cause.
 - **Not** a claim that either plan is "correct". Both are valid solver outputs of equal reported yield.
 - **Not** full determinism in either direction — the offcut/remnant axis stays `UNPROVEN`.
 
 ---
 
-## Bar-sequence measurement limitation (RUN_A)
+## Bar-sequence measurement limitation (RUN_A) — RESOLVED by RUN_C
 
-Only the CITA and ORTA bar strips were captured for RUN_A, so the **within-bar cut sequence** for its KANAT and KASA bars was never measured; the recorded order came from the asdd baseline convention. RUN_B measured all four strips and shows DoWin uses no single convention — its CITA and KASA bars render longest-first while its KANAT bar renders shortest-first.
+*Recorded after RUN_B, resolved after RUN_C. Retained for the audit trail.*
 
-The bar *contents* are nonetheless fixed by unique arithmetic: 4 pieces totalling 3774 mm drawn from {454, 1433} admits only {1433, 1433, 454, 454}, and 5012 mm from {1003, 1503} admits only {1503, 1503, 1003, 1003}.
+Only the CITA and ORTA bar strips were captured for RUN_A, so the within-bar strip order for its KANAT and KASA bars was never measured; the recorded order came from the asdd baseline convention. After RUN_B this was carried as an open limitation, since RUN_B showed DoWin uses no single rendering convention.
 
-Consequence: the A↔B topology verdict is taken from `compareBarTopology`, which returns `CONTENT_DIVERGENT` only on genuinely different contents, remainders or grouping, and `ORDER_ONLY_DIFFERENCE` when just the sequence differs. The divergence above rests entirely on the CITA regrouping — a difference in bar count and remainders — **not** on any unmeasured ordering.
+RUN_C resolves it: the strip order is **presentation only** and is not the machine cut sequence — see *The bar layout strip is not the machine cut sequence* below. An uncaptured strip order therefore cannot affect any verdict, and this limitation is closed rather than merely mitigated.
+
+The bar *contents* were in any case fixed by unique arithmetic: 4 pieces totalling 3774 mm drawn from {454, 1433} admits only {1433, 1433, 454, 454}, and 5012 mm from {1003, 1503} admits only {1503, 1503, 1003, 1003}.
 
 ---
 
@@ -551,9 +568,225 @@ So the 4260 mm misstatement does reach the machine file. The DC-600 does not cut
 
 ---
 
-### FP024C3_RUN_C
+### FP024C3_RUN_C — MEASURED
 
-Identical intake requirements. **PENDING_OPERATOR_RUN.** RUN_B's postcheck is `PASS`, so RUN_C is unblocked but still requires explicit operator authorization. RUN_C is the run that decides whether the A/B divergence becomes `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING` or stays an unexplained two-run observation. A geometric copy is acceptable only if no optimization state or history is inherited; a reused `optimizationResultId` is rejected by intake.
+| Axis | Value |
+|------|-------|
+| Project / design / plan identity | Project Id=5 `FP024C3_RUN_C` (No 100005, CustomerCode 1000005, OrderNo 10005) / Design Id=7 `RUN_C` / Plan Id=5 `RUN_C_PLAN` ItemCount=1 |
+| `optimizationResultId` | `OptimizationRun_11_5efde5d4` |
+| `solveDisposition` | `NEWLY_SOLVED` — solved 15:14:48 +03; `önceki sonuçlar temizlendi` confirms no inherited state |
+| Settings screenshot SHA-256 | `8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae` — **new post-restart capture** (`runC-settings-20260913-145945`) |
+| Required-parts list | 21 rows / 20 564 mm — all 21 rows measured, **IDENTICAL** to A and B |
+| Optimizer Stock Items | 7 SKUs in the same ordinal order mirroring V2; captures byte-identical to A and B |
+| Optimizer Required Parts view | ORTA qty **1** — the surplus does not originate in the input |
+| Offcut / remnant surface | **UNPROVEN** — solver Stock Items shows whole bars only; `Add Offcuts to Stock` greyed pre-solve |
+| Machine | DC-600 double head cutting machine; DC-550 SKH globally enabled = **yes** |
+| Artifact hashes | Cut list `cf30d6b2…` / `fbcf1947…` / `a5429416…` · Optimizer stock `22dbf885…` / `4dc06de6…` · Result `55fd5937…` · DC-600 `.dw` `fc244acb…` |
+| Bar-strip hashes | CITA-1pc `467283ab…` · KANAT `e6eae6b0…` · KASA `4ebd1ac3…` · ORTA `4574b49e…` |
+| Pre-run stock check | **PASS** — `c8626da5…`, byte-identical to V2, all seven cards re-verified visually |
+| Post-export stock check | **PASS** — `c8626da5…`, live re-read (`SERVICE_INIT` 15:32:18, new hwnd) |
+| Stock Update modal | **SHOWN**; response **NO** |
+| Warehouse immutability | **IMMUTABLE_VERIFIED** |
+
+Reported result: yield **66.2 %**, 6 stock bars, **5 patterns**, **0 unplaced**, total offcut **12 559 mm**, duration 0.57 s.
+
+RUN_C carries the strongest pre-run liveness of the triplicate: baseline V2 survived a ~13 hour gap and **two** full application restarts (sessions `dd38bbb2fcf2` at 14:50:52 and `927e98bb02f6` at 14:58:12) and still rendered byte-identical, re-read live with a fresh `RawMaterialsViewModel` load on a new window handle.
+
+#### Measured topology — every strip captured
+
+| Bar | Profile | Stock | Applications | Packed segments, strip order (mm) | Used | Remaining | Yield |
+|-----|---------|-------|--------------|-----------------------------------|------|-----------|-------|
+| 1 | CITA-20 | 6500 | 1 | 1313, 1313, 1313, 1313, 334, 334, 334 | 6254.00 | **206.40** | 96.8 % |
+| 2 | CITA-20 | 6500 | 1 | 334 | 334.00 | **6160.34** | 5.2 % |
+| 3 | KANAT-70 | 6000 | 2 | 1433, 1433, 454, 454 | 3774.00 | 2203.37 | 63.3 % |
+| 4 | KASA-70 | 6000 | 1 | 1503, 1503, 1003, 1003 | 5012.00 | 965.37 | 83.9 % |
+| 5 | ORTA-KAYIT-70 | 6500 | 1 | 1416, 1416, 1416, 1416 | 5664.00 | 820.00 | 87.4 % |
+
+6 bars, 24 pieces, 24 812 mm used, 12 558.85 mm remaining — reconciles with the reported totals. Unlike RUN_A, **all five strips were captured**, including KANAT and KASA.
+
+#### Solver-stage trace (Step 11)
+
+All four MIP stages are identical across **all three** runs — same stock counts, same layout counts, same objective costs, same annealing parameters, all `OPTIMAL`:
+
+| Stage | Cost | Stock / layouts | Annealing | Profile (by unit price) |
+|-------|------|-----------------|-----------|------------------------|
+| 1 | 6000.00 | 1 / 1 | MaxIter 210, T 100 | KASA-70 (6 m × 1000) |
+| 2 | 6.50 | 1 / 1 | MaxIter 210, T 100 | ORTA-KAYIT-70 |
+| 3 | 18000.00 | 2 / 2 | MaxIter 220, T 100 | KANAT-70 (2 × 6 m × 1500) |
+| 4 | 6500.00 | 2 / 2 | MaxIter 220, T 100 | CITA-20 (2 × 6.5 m × 500) |
+
+Every run allocated **two** CITA bars at the same cost, then produced different intra-bar groupings (A and C: 7 + 1; B: 4 + 4).
+
+`DIVERGENCE_LOCALIZED_AFTER_BAR_COUNT_ALLOCATION = SUPPORTED`. Not `PROVEN`: the logs show the allocation and the annealing invocation, but they do not expose the assignment step's internal state, so the localisation is inferred from identical allocations plus differing outcomes rather than demonstrated directly.
+
+No seed is logged in any run.
+
+---
+
+## Correction — RUN_A CITA bar 1 remainder was misread
+
+RUN_A's first CITA bar was recorded as remaining **206.43**. During RUN_C the same cell read **206.40**, so the original RUN_A capture was re-magnified: it also reads **206.40**. The cell sits under the row-selection highlight in both runs, and the first transcription was made without magnifying it.
+
+| Value | As committed | Corrected |
+|-------|--------------|-----------|
+| RUN_A CITA bar 1 remainder | 206.43 | **206.40** |
+| RUN_A CITA total remainder | 6366.77 | **6366.74** |
+| RUN_A total remainder | 12 558.88 | **12 558.85** |
+
+Consequences:
+
+- All three runs share **exactly** 12 558.85 mm total remainder and **exactly** 6366.74 mm CITA remainder. The 0.03 mm A/B gap previously reported never existed.
+- The A↔B divergence is unaffected — it rests on grouping, bar count and per-bar remainders, not on a hundredth of a millimetre. Exactly equal totals make the "same utilization ≠ same topology" point stronger.
+- This is a correction of a measurement transcription, evidenced by re-reading the original RUN_A artifact. No RUN_A verdict changed.
+
+---
+
+## The bar layout strip is not the machine cut sequence
+
+RUN_C settles a question left open after RUN_B. Its KANAT strip renders **1433, 1433, 454, 454**, while the same run's DC-600 `Table1` carries `PICE_NO` order **454, 454, 1433, 1433** — the same machine order as RUN_A and RUN_B. RUN_B's strip had rendered 454-first.
+
+So the on-screen strip order is presentation only. It is not stable between runs that emit identical machine files, and it is not what the saw receives.
+
+Consequences, recorded as `DOWIN_BAR_STRIP_ORDER_IS_NOT_MACHINE_ORDER`:
+
+- A strip-order difference is **not** evidence of a topology divergence.
+- RUN_A's uncaptured KANAT/KASA strip order is **immaterial**; the gap noted after RUN_B cannot affect any verdict.
+- Cross-run topology comparison uses contents, remainders and grouping (`barSequenceFingerprint` / `barContentFingerprint`); the authoritative sequence comes from the machine file, which is captured and identical for all three runs.
+
+A second, separate correction follows from this: `topologyFingerprint` embeds run-scoped piece ids (`RUN_A.Frame Leftt` versus `RUN_C.Frame Leftt`), so it can never match across runs and must not be used to compare them — it separates even A from C, which are geometrically identical. Cross-run counting in `classifyControlledRepeatability` now uses the geometry-only fingerprint.
+
+---
+
+## Three-way input equivalence (Step 17)
+
+| Axis | A↔B | A↔C | B↔C | Basis |
+|------|-----|-----|-----|-------|
+| geometry | IDENTICAL | IDENTICAL | IDENTICAL | 1000×1500, Deceuninck 70 (Id 1), `DESIGN_VALIDATION VALID` in all three |
+| required parts | IDENTICAL | IDENTICAL | IDENTICAL | 21 rows / 20 564 mm, every length, angle and quantity measured per run |
+| settings | IDENTICAL | IDENTICAL | IDENTICAL | three independent captures, all rendering to `8597b36c…` |
+| machine | IDENTICAL | IDENTICAL | IDENTICAL | DC-600 selected; DC-550 SKH enabled |
+| optimizer stock | IDENTICAL | IDENTICAL | IDENTICAL | same 7 SKUs, same ordinals, same quantities |
+| warehouse stock | IDENTICAL | IDENTICAL | IDENTICAL | all `c8626da5…` = baseline V2, before and after each run |
+| offcut / remnant | **UNPROVEN** | **UNPROVEN** | **UNPROVEN** | no evidence surface in any run |
+| freshness | IDENTICAL | IDENTICAL | IDENTICAL | all `NEWLY_SOLVED`, new project/design/plan/result each time |
+
+`MEASURED_INPUT_EQUIVALENCE = IDENTICAL` on all three pairs.
+
+`COMPLETE_INPUT_EQUIVALENCE = UNPROVEN` on all three pairs, because the offcut/remnant axis has no evidence surface. This is **not** upgraded, and it is what caps the final verdict.
+
+### A note on the settings axis
+
+All three settings captures share one content hash. A content hash cannot distinguish *one screenshot cited three times* from *three independent captures of an unchanged page*, and the classifier previously failed both cases closed to `UNPROVEN`. A `settingsCaptureId` axis was added to separate them: distinct capture identities with an identical hash is pixel-level proof of equality; a shared or absent capture identity still fails closed. RUN_C's capture was taken after a full application restart on a new window handle, so its independence is not in doubt.
+
+---
+
+## Three-way topology matrix (Step 18)
+
+| Pair | Verdict |
+|------|---------|
+| A vs B | **CONTENT_DIVERGENT** |
+| A vs C | **SAME** |
+| B vs C | **CONTENT_DIVERGENT** |
+
+Profile-wise:
+
+| Profile | A vs B | A vs C | B vs C |
+|---------|--------|--------|--------|
+| CITA-20 | **DIFFERENT** | SAME | **DIFFERENT** |
+| KANAT-70 | SAME | SAME | SAME |
+| KASA-70 | SAME | SAME | SAME |
+| ORTA-KAYIT-70 | SAME | SAME | SAME |
+
+Every divergence is confined to CITA-20. No axis is recorded as `ORDER_ONLY_DIFFERENCE`, because strip order has been shown to carry no information; RUN_A's incomplete strip capture is therefore not a gap in this matrix.
+
+### The two topologies
+
+| | Topology X (RUN_A, RUN_C) | Topology Y (RUN_B) |
+|---|---|---|
+| CITA bar 1 | 1313×4 + 334×3, remaining **206.40** | 1313×2 + 334×2, remaining **3183.37** |
+| CITA bar 2 | 334×1, remaining **6160.34** | 1313×2 + 334×2, remaining **3183.37** |
+| CITA patterns | 2 distinct | 1 pattern × 2 |
+| Plan patterns | 5 | 4 |
+| CITA total remainder | 6366.74 | 6366.74 |
+| Total remainder | 12 558.85 | 12 558.85 |
+| Total used | 24 812 mm | 24 812 mm |
+| Overall yield | 66.2 % | 66.2 % |
+
+Observed distribution over three controlled fresh solves: **X / Y / X**.
+
+Utilization, bar count, total used length and total remainder are *exactly* equal between the two topologies. Nothing in the summary figures distinguishes them.
+
+**They are not economically equivalent.** Topology X leaves one 6160 mm offcut — reusable, and long enough to host another full bead set — plus a 206 mm piece below the 500 mm minimum, which is scrap. Topology Y leaves two 3183 mm offcuts, both above the minimum but neither able to host a full bead set. Same yield, materially different reuse value.
+
+### Interpretation (Steps 19–22)
+
+RUN_C matching RUN_A does **not** demote RUN_B to an anomaly. A and B had already produced two different outcomes under measured-identical inputs; a third solve reproducing one of them does not retract the second. Nor is X the "correct" topology by virtue of occurring twice — frequency over three samples is not a correctness argument, and both are valid solver outputs of equal reported yield.
+
+No input difference was discovered that would invalidate RUN_B's divergence. Had one been found, the classification would have followed that concrete difference instead.
+
+---
+
+## Repeatability verdict
+
+```text
+FP-024C.3 = NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS
+
+runCount:                     3
+uniqueTopologyCount:          2
+MEASURED_INPUT_EQUIVALENCE:   IDENTICAL
+COMPLETE_INPUT_EQUIVALENCE:   UNPROVEN
+warehouse immutability:       IMMUTABLE_VERIFIED (all three)
+fullDeterminismClaimAllowed:  false
+```
+
+**Not** `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING`. That classification requires every relevant optimizer-input axis to be proven equivalent, and the offcut/remnant axis is `UNPROVEN`. The classifier gates it behind `COMPLETE_INPUT_EQUIVALENCE === 'IDENTICAL'` and therefore cannot reach it from this evidence.
+
+Stochastic mechanism authority: **`POSSIBLE_NONDETERMINISTIC_MECHANISM`**. Simulated annealing is present, it operates exactly where the divergence is localised, and no seed is exposed. That makes a stochastic cause plausible and consistent with the evidence — it does not make it proven. Architecture plus three runs is not causal proof, and an unobserved input difference remains a live alternative explanation precisely because one input axis is unproven.
+
+---
+
+## Required-parts conservation (Step 23)
+
+All three runs:
+
+| | Required | Optimization plan | Surplus |
+|---|---|---|---|
+| Pieces | 21 | 24 | +3 |
+| ORTA-KAYIT-70 1416 mm | 1 | 4 | +3 (4248 mm) |
+
+Identical surplus signature in every run, with the identical DoWin warning `3 piece(s) in the optimization plan could not be matched to the detailed production list.`
+
+```text
+OPTIMIZATION_REQUIRED_PARTS_CONSERVATION_VIOLATION
+  = REPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS
+```
+
+This is the sharpest contrast in the triplicate: the surplus is perfectly repeatable while the bar assignment is not. Whatever causes the over-production is therefore **not** the stochastic component — a stochastic cause would not reproduce a byte-identical surplus three times out of three.
+
+Root cause is **not** proven. The ORTA stock limit lifting from 0 to 100 remains the obvious candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids.
+
+Candidate future gate: **FP-027 OPTIMIZATION_REQUIRED_PARTS_CONSERVATION** — `SUPPORTED`, and deliberately **NOT IMPLEMENTED**.
+
+---
+
+## Machine remainder propagation (Step 24)
+
+`Table1` was read directly from all three `.dw` files and compared column by column. Of 39 columns, the only differences across A/B/C are `CUSTOMER_CODE`, `ORDER_NO`, `EXPLANATION2` (project name and timestamp) and `IMAGE` (label bitmap). Every measured field matches exactly, including `BAR_NO`/`PICE_NO` order, `LENGTH`, both angles, `TOTAL_SIZE`, `FRAME_X`/`FRAME_Y` and `REMAINING_LENGTH`.
+
+`A_B_C_MACHINE_LENGTH_LAYER = IDENTICAL`.
+
+The ORTA row carries `REMAINING_LENGTH` `8200` → **820.0 mm** in all three files, against one physically required mullion; the correct physical remainder would be roughly 5080 mm. This was measured in each file, not assumed to repeat.
+
+```text
+SURPLUS_PLAN_REMAINDER_PROPAGATES_TO_MACHINE_OUTPUT
+  = REPEATABLE_OBSERVATION
+```
+
+The exported **piece list** is correct — one mullion — so there is no wrong-parts risk on this path, and the DC-600 does not cut from `REMAINING_LENGTH`. But any downstream offcut tracking that reads that field inherits a ~4260 mm misstatement. Machine export is **not** changed.
+
+---
+
+### FP024C3_RUN_C — closed
 
 ---
 
@@ -643,10 +876,11 @@ This is **not** a blocker for the controlled repeatability experiment. It remove
 |-------|--------|
 | `npm run type-check` | **Pass** (`tsc --noEmit`) |
 | `npx vitest run src/tests/fabricator/dowinCompensationReconciliation.test.ts` | **Pass** — 18 tests |
-| `npx vitest run src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | **Pass** — 45 tests (23 FP-024C.3 cases) |
+| `npx vitest run src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | **Pass** — 50 tests (28 FP-024C.3 cases) |
 | `npx vitest run src/tests/fabricator/dowinPhysicalLengthGolden.pending.test.ts` | **Pass** — 20 tests |
-| `npx vitest run src/tests/fabricator/manufacturingSettingsContract.test.ts` | **Pass** — 15 tests |
-| Combined | 4 files, **98 tests passed** |
+| `npx vitest run src/tests/constitutional/ManufacturingSettingsContract.test.ts` | **Pass** — 15 tests |
+| Combined (4 protocol suites) | **93 tests passed** |
+| `npx vitest run src/tests/constitutional src/tests/fabricator` | **Pass** — 18 files, **243 tests** |
 | `npm run build` | **Pass** (`vite build --mode production`) |
 
 FP-024C.3 coverage: frozen baseline values; postcheck PASS / mutated / partial / remnant-row-added / uncaptured; catalog slots pending and 90° gate closed; refusal to claim repeatability from A or A+B; measured repeatability separated from full determinism; no nondeterminism overclaim while offcuts are unproven; stop on stock movement or warehouse write; reused settings hash and reused result rejected; `HIDDEN_INPUT_DIFFERENCE` on a concrete optimizer-stock difference; fixture-signature match / drift / unproven; ORTA availability observation; and a no-mutation assertion on `resolveManufacturingSettings`.
@@ -660,6 +894,17 @@ Re-baseline coverage added 13 September 2026:
 | RUN_A cannot claim equivalence to V1 | `evaluateBaselineEquivalenceClaim(1)` is `REJECTED_BASELINE_SUPERSEDED`; intake rejects a V1 run; classification returns `BASELINE_SUPERSEDED` |
 | exact V2 snapshot passes the pre-run gate | `PASS`, and ORTA 100 is the accepted controlled value |
 | any later delta fails the run | ORTA ±1 and a KASA consumption of −1 all return `STOCK_STATE_MUTATED` |
+
+RUN_C ingest coverage added 13 September 2026:
+
+| Test | Proves |
+|------|--------|
+| the triplicate is complete with three distinct solves | all three runs `MEASURED` and `NEWLY_SOLVED`; three distinct `optimizationResultId` and three distinct project ids; `isFp024c3ControlledTriplicateComplete()` true — and the 90° control is **still** not authorized by completion alone |
+| the triplicate is nonrepeatable without overclaim | `compareBarTopology(A, C)` is `IDENTICAL` while `B↔C` is `CONTENT_DIVERGENT` naming CITA-20 and not KANAT; two topologies over three solves; utilization, total stock and total remainder equal across all three; verdict is `NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS`, explicitly **not** `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING`; `completeInputEquivalence` `UNPROVEN`; `fullDeterminismClaimAllowed` false; all three `IMMUTABLE_VERIFIED` |
+| conservation is violated in all three runs | 24 produced against 21 required in every run with a byte-identical surplus row of 3 × 1416 mm = 4248 mm |
+| strip order is not a topology axis | `DOWIN_BAR_STRIP_ORDER_IS_NOT_MACHINE_ORDER` is `PROVEN_BY_DIRECT_COMPARISON`; reversing every segment yields `ORDER_ONLY_DIFFERENCE`; the B/C divergence survives an order-insensitive fingerprint while A and C match under it |
+| run identities never collide | per-run project ids 100003 / 100004 / 100005; A and C share a geometry fingerprint while B differs; `topologyFingerprint` separates even A from C, proving it is unusable across runs |
+| independent captures are not mistaken for reuse | three distinct `settingsCaptureId` values with one shared content hash yield `IDENTICAL`; dropping the capture ids, or sharing one, falls back to `UNPROVEN` |
 | log silence cannot override a UI mismatch | UI mismatch with a silent log is still `STOCK_STATE_MUTATED`; a logged write is a mutation even when quantities match; an observed manual card edit is a mutation regardless of the log |
 | both sources are required to proceed | UI match with an unreviewed log is `UNPROVEN`; UI match plus reviewed silent log is `IMMUTABLE_VERIFIED` and permits the triplicate to classify |
 | ORTA-0 observation is historical only | discrepancy under V1, `NOT_OBSERVED` under V2 |
@@ -693,9 +938,9 @@ Changes are confined to:
 | Path | Role |
 |------|------|
 | `src/lib/fabricator/dowinParity/optimizerStateProvenance.ts` | FP-024C.3 baselines V1/V2, postcheck, two-source immutability check, equivalence matrix, classifier, fixture-signature gate, intake gate |
-| `src/lib/fabricator/dowinParity/dowinCompensationEvidence.ts` | RUN_A and RUN_B ingest, RUN_C pending slot, re-exports, FP-024C.1 classifier scoped away from controlled runs, 90° gate now also requires the controlled triplicate |
+| `src/lib/fabricator/dowinParity/dowinCompensationEvidence.ts` | full A/B/C ingest, re-exports, FP-024C.1 classifier scoped away from controlled runs, 90° gate now also requires the controlled triplicate |
 | `src/tests/fabricator/dowinOptimizationStateProvenance.test.ts` | FP-024C.3 test block |
-| `src/tests/fabricator/dowinCompensationReconciliation.test.ts` | catalog counts 10 → 13, pending 3 → 6 → 4 as RUN_A and RUN_B were ingested |
+| `src/tests/fabricator/dowinCompensationReconciliation.test.ts` | catalog counts 10 → 13, pending 3 → 6 → 3 as the triplicate was ingested |
 | `docs/audits/*` | this audit, the FP-024C.2 correction, and the FP-024C.1 update |
 
 Test 2 authority is unchanged: Welding Waste affects packed/machine KASA/KANAT in the observed `asdd` fixture only. No generalization.
@@ -714,16 +959,17 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 
 ## Limitations
 
-- **Two** of three controlled runs have been executed. RUN_A and RUN_B are measured; RUN_C is `PENDING_OPERATOR_RUN`. Two runs cannot establish or refute repeatability, and no repeatability claim is made.
-- The remaining solve requires the licensed DoWin application on the operator PC and cannot be generated from this repository.
-- The A/B topology divergence is **observed but unexplained**. It is confined to CITA-20 intra-bar assignment after an identical MIP allocation. RUN_C decides whether this becomes `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING` or remains a two-run anomaly.
-- RUN_A's within-bar cut sequence for KANAT and KASA was never captured, so sequence-level comparison on those bars is `UNPROVEN`. Bar contents are fixed by unique arithmetic and the divergence verdict does not depend on ordering.
-- The over-production has no proven cause. It reproduced exactly in RUN_B, so it is deterministic across these two runs and not a stochastic artifact. The ORTA stock limit lifting from 0 to 100 remains the obvious candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids. Candidate future gate name only: **FP-027 OPTIMIZATION_REQUIRED_PARTS_CONSERVATION** — not implemented.
-- DoWin's solver includes simulated annealing, and RUN_B **did** differ from RUN_A in bar assignment, so a stochastic mechanism is now mechanically plausible rather than speculative. It is still not proven: the annealing seed is not exposed, the MIP stages were identical, and `POSSIBLE_NONDETERMINISTIC_MECHANISM` must not be upgraded from architecture plus two runs.
-- The offcut/remnant **inventory** axis still has no evidence surface, so complete input equivalence can stay `UNPROVEN` even after three valid runs. The offcut **policy** surface is now known (Reusable Offcut Settings, Minimum Offcut Length 500 mm, with *Add Offcuts to Stock* as a separate explicit ribbon action — which explains why the proven 22:17:20 stock write created no remnant rows despite remainders far above 500 mm). Knowing the policy does not prove the inventory is empty; that axis stays `UNPROVEN`.
+- **Three of three** controlled runs are measured. The triplicate is complete, and the verdict is `NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS`.
+- The topology divergence is **observed but unexplained**. It is confined to CITA-20 intra-bar assignment after an identical MIP allocation in all three runs. Localisation after bar-count allocation is `SUPPORTED`, not `PROVEN` — the logs expose the allocation and the annealing invocation but not the assignment step's internal state.
+- **Three samples is a small sample.** Two topologies were seen; nothing here bounds how many exist, nor their relative frequency. `X / Y / X` is an observed sequence, not a distribution.
+- The over-production has no proven cause. It reproduced byte-identically in all three runs, which rules the stochastic component *out* as its cause — a stochastic mechanism would not reproduce three times out of three. The ORTA stock limit lifting from 0 to 100 remains the obvious candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids. Candidate future gate name only: **FP-027 OPTIMIZATION_REQUIRED_PARTS_CONSERVATION** — not implemented.
+- DoWin's solver includes simulated annealing, it operates exactly where the divergence is localised, and no seed is exposed in any run. That makes a stochastic cause plausible and consistent with the evidence. It is **not** proven, and it is not the only candidate: because one input axis is unproven, an unobserved input difference remains a live alternative explanation. Authority stays `POSSIBLE_NONDETERMINISTIC_MECHANISM`.
+- The offcut/remnant **inventory** axis has no evidence surface, so complete input equivalence remains `UNPROVEN` after three valid runs — this is precisely what caps the verdict. RUN_C inspected the solver's own Stock Items panel, which is the list it actually consumes, and found whole-bar rows only, with `Add Offcuts to Stock` greyed pre-solve. That is the strongest available statement and it is still not proof of absence: DoWin exposes no remnant surface and no row ids. The offcut **policy** surface is now known (Reusable Offcut Settings, Minimum Offcut Length 500 mm, with *Add Offcuts to Stock* as a separate explicit ribbon action — which explains why the proven 22:17:20 stock write created no remnant rows despite remainders far above 500 mm). Knowing the policy does not prove the inventory is empty; that axis stays `UNPROVEN`.
 - The user-visible trigger of the 22:17:20 warehouse write is now **resolved**: the post-export **Stock Update** dialog. Fresh A's `Yes` is inferred from the proven write plus the observed dialog, not directly observed; RUN_A's `No` arm is directly observed. See FP-024C.2.
-- The V2 source hash is a pre-run capture. Each run still needs its own contemporaneous post-run capture; RUN_A and RUN_B both supplied one.
-- Machine-length equality was established by reading `Table1` from the two `.dw` files. The files themselves are licensed output and are **not** committed; only their SHA-256 values are recorded. The differing file hashes reflect the embedded project name and timestamp, not a length difference.
+- The V2 source hash is a pre-run capture. Each run supplied its own contemporaneous pre- and post-run capture, all byte-identical to V2.
+- Machine-length equality was established by reading `Table1` from all three `.dw` files. The files themselves are licensed output and are **not** committed; only their SHA-256 values are recorded. The differing file hashes reflect the embedded project name, order number and label bitmap, not a length difference — which is why the comparison is column-by-column rather than hash-based.
+- The on-screen bar strip order is presentation only, proven by RUN_C rendering 1433-first while its own machine file carries 454-first. Strip order is therefore excluded from topology comparison, and `topologyFingerprint` is documented as within-run only because it embeds run-scoped piece ids.
+- A pre-protocol session briefly opened project 4 (RUN_B) at 14:51:03 and was shut down at 14:51:23 without saving a design, plan or optimization. RUN_C was created afterwards in a new session, so no optimizer state could carry over, but the visit is recorded rather than omitted.
 - Production-plan "approved" versus "optimized" UI flags remain `UNPROVEN` because Production Status is not to be clicked.
 - Baseline V1 was invalidated by a manual stock edit before RUN_A existed. Nothing was measured against V1, so no result was lost — but the ORTA-0 side observation is not recoverable under V2.
 - The manual Stock Management edit path is **unlogged**. Warehouse drift between runs is therefore detectable only by contemporaneous UI capture, which is why the two-source check treats the log as supplementary. An unobserved manual edit between two runs would surface as `STOCK_STATE_MUTATED` at the next capture, not at the moment it happened.
@@ -731,27 +977,47 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 
 ---
 
+## Test 2 / 3 / 4 authority — unchanged (Step 25)
+
+The A/B/C topology work does **not** touch the FP-024B isolation findings, and they are restated here only to record that they were not reinterpreted:
+
+| Finding | Authority | Unchanged because |
+|---------|-----------|-------------------|
+| Test 2 — Welding Waste 3→0, packed/machine effect | **PROVEN FOR FIXTURE ONLY** | established on a single isolated fixture; the triplicate varied no setting |
+| Test 3 — Saw Thickness 4→5, remainder | **AMBIGUOUS / UNPROVEN** | remainder evidence was never sufficient; nothing in A/B/C addresses saw thickness |
+| Test 4 — Trim Cut 0→10, remainder | **AMBIGUOUS** | same; piece-length inert, remainder unresolved |
+
+The triplicate held every setting constant, so it carries no information about any setting's effect and cannot raise or lower these.
+
+---
+
 ## Gating
 
 | Item | Status |
 |------|--------|
-| FP-024C.3 | **PENDING_RUN_C** |
+| FP-024C.3 | ⚠️ **NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS** — triplicate complete, awaiting independent review |
 | Controlled baseline | **V2 frozen** — CITA 46 / KANAT 96 / KASA 13 / ORTA 100 |
 | Baseline V1 | **HISTORICAL_ONLY** — invalidated before RUN_A, not a restoration target |
 | FP024C3_RUN_A | **MEASURED** — `OptimizationRun` Id=9, `IMMUTABLE_VERIFIED` |
 | FP024C3_RUN_B | **MEASURED** — `OptimizationRun` Id=10, `IMMUTABLE_VERIFIED` |
-| FP024C3_RUN_C | **CLOSED** until explicitly authorized |
-| `A_B_TOPOLOGY_DIVERGENCE` | **OBSERVED** — CITA-20 only, under proven-identical measured inputs |
-| `SURPLUS_ORIGINAL_PARTS_BEHAVIOR` | **REPRODUCED_IN_RUN_B** |
-| `A_B_MACHINE_LENGTH_LAYER` | **IDENTICAL** |
-| Repeatability verdict | **NOT YET CLASSIFIABLE** — `NONREPEATABLE_OBSERVATION_PENDING_RUN_C` |
+| FP024C3_RUN_C | **MEASURED** — `OptimizationRun` Id=11, `IMMUTABLE_VERIFIED` |
+| Topology distribution | **X / Y / X** — two topologies over three fresh solves, CITA-20 only |
+| `A_B_C_MACHINE_LENGTH_LAYER` | **IDENTICAL** — 39 columns compared across three `.dw` files |
+| `OPTIMIZATION_REQUIRED_PARTS_CONSERVATION_VIOLATION` | **REPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS** |
+| `SURPLUS_PLAN_REMAINDER_PROPAGATES_TO_MACHINE_OUTPUT` | **REPEATABLE_OBSERVATION** |
+| `DIVERGENCE_LOCALIZED_AFTER_BAR_COUNT_ALLOCATION` | **SUPPORTED** (not proven) |
+| Stochastic mechanism authority | **POSSIBLE_NONDETERMINISTIC_MECHANISM** (not `PROVEN_NONDETERMINISM`) |
+| `COMPLETE_INPUT_EQUIVALENCE` | **UNPROVEN** — offcut/remnant axis; caps the verdict |
+| `DOWIN_BAR_STRIP_ORDER_IS_NOT_MACHINE_ORDER` | **PROVEN_BY_DIRECT_COMPARISON** |
+| Repeatability verdict | **NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS** |
 | `ORTA_ZERO_QTY_CONTROL_OBSERVABILITY` | **LOST_BY_MANUAL_STOCK_EDIT** |
 | `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` | **PROVEN FOR OBSERVED PATH** |
-| 90° CONTROL_FIXTURE | **GATED** — not to be run during FP-024C.3; the repeatability verdict comes first, then authorization is requested |
+| 90° CONTROL_FIXTURE | **GATED** pending independent review — a complete triplicate does not authorize it |
 | Physical-length correctness | **6.0/10** |
 | Production formulas | **FROZEN** |
 | FP-016 / FP-017 | not started |
 | FP-025B | do not start |
+| Fourth controlled solve | **not authorized** |
 | FP-026 | future finding, not implemented |
-| FP-027 | candidate name only, not implemented |
+| FP-027 | **SUPPORTED** candidate, not implemented |
 | PR #32 | **Draft / DO NOT MERGE** |

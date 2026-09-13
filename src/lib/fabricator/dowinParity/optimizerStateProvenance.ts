@@ -650,10 +650,43 @@ export function topologyFingerprint(
 }
 
 /**
+ * Geometry-only, order-sensitive bar identity for comparing two different runs.
+ *
+ * `topologyFingerprint` deliberately includes per-piece provenance, and those
+ * ids are scoped to the design name (`RUN_A.Frame Leftt` vs `RUN_C.Frame
+ * Leftt`), so it can never match across runs and must not be used to compare
+ * them. This fingerprint keeps the packing geometry — profile, stock length,
+ * application count, segment sequence and remainder — and drops the labels.
+ */
+export function barSequenceFingerprint(bars: readonly ExternalBarPattern[]): string {
+  const payload = bars
+    .map((bar) => ({
+      profileCode: bar.profileCode,
+      stockLengthMm: bar.stockLengthMm,
+      applicationCount: bar.applicationCount,
+      packedSegmentMm: [...bar.packedSegmentMm],
+      remainingMm: bar.remainingMm,
+    }))
+    .map((entry) => ({
+      entry,
+      key: [
+        entry.profileCode,
+        entry.stockLengthMm,
+        entry.applicationCount,
+        entry.packedSegmentMm.join(','),
+        entry.remainingMm,
+      ].join('|'),
+    }))
+    .sort((x, y) => (x.key < y.key ? -1 : x.key > y.key ? 1 : 0))
+    .map((wrapped) => wrapped.entry);
+  return fingerprintSha256({ unit: 'mm', barSequence: payload });
+}
+
+/**
  * Order-insensitive view of a bar pack: segments sorted within each bar and
  * bars sorted canonically. Two plans with the same contents but a different
  * cut sequence share this fingerprint while differing under
- * `topologyFingerprint`.
+ * `barSequenceFingerprint`.
  */
 export function barContentFingerprint(bars: readonly ExternalBarPattern[]): string {
   const payload = bars
@@ -679,6 +712,30 @@ export function barContentFingerprint(bars: readonly ExternalBarPattern[]): stri
   return fingerprintSha256({ unit: 'mm', barContents: payload });
 }
 
+/**
+ * Proven by RUN_C: the on-screen bar layout strip is a presentation order, not
+ * the machine cut sequence. RUN_C rendered its KANAT bar 1433,1433,454,454
+ * while the same run's DC-600 `Table1` carries PICE_NO order 454,454,1433,1433
+ * — the same machine order as RUN_A and RUN_B.
+ *
+ * Consequence for FP-024C.3: a difference in strip order is NOT evidence of a
+ * topology divergence, and an uncaptured strip order is not a gap that can
+ * affect a verdict. Compare bar contents, remainders and grouping, and take the
+ * authoritative sequence from the machine file.
+ */
+export const DOWIN_BAR_STRIP_ORDER_IS_NOT_MACHINE_ORDER = {
+  id: 'BAR_LAYOUT_STRIP_ORDER_IS_PRESENTATION_ONLY',
+  classification: 'PROVEN_BY_DIRECT_COMPARISON',
+  evidence: [
+    'RUN_C KANAT layout strip renders 1433,1433,454,454 (screenshot e6eae6b0…).',
+    'RUN_C DC-600 Table1 KANAT bars carry PICE_NO order 454,454,1433,1433.',
+    'RUN_A, RUN_B and RUN_C machine PICE_NO orders are identical field-for-field.',
+    'RUN_B KANAT strip rendered 454,454,1433,1433, so the strip order is not even stable between runs with identical machine output.',
+  ],
+  consequence:
+    'Strip-order differences are presentation-only. Topology comparison must use contents, remainders and grouping; the machine file supplies the authoritative sequence.',
+} as const;
+
 export type TopologyComparison =
   | 'IDENTICAL'
   | 'ORDER_ONLY_DIFFERENCE'
@@ -701,7 +758,7 @@ export function compareBarTopology(
       reasons: ['Bar-by-bar topology is missing for at least one run.'],
     };
   }
-  if (topologyFingerprint(a) === topologyFingerprint(b)) {
+  if (barSequenceFingerprint(a) === barSequenceFingerprint(b)) {
     return { comparison: 'IDENTICAL', reasons: [] };
   }
   if (barContentFingerprint(a) === barContentFingerprint(b)) {
@@ -1315,6 +1372,13 @@ export interface ControlledRunEvidence {
   offcutRemnantEvidence: OffcutRemnantEvidenceState;
   /** New screenshot per run. A reused hash is not evidence of current state. */
   settingsScreenshotSha256: string | null;
+  /**
+   * Identity of the capture itself (file name / timestamp), distinct from its
+   * content hash. Two independent captures of an unchanged settings page render
+   * byte-identically, so only the capture identity separates that from an
+   * operator reusing a single screenshot. Absent means fail closed.
+   */
+  settingsCaptureId?: string | null;
   bars: readonly ExternalBarPattern[] | null;
   pieces: readonly DowinPhysicalLengthGoldenRow[];
   warehouseWriteActionInvoked?: boolean;
@@ -1366,9 +1430,22 @@ function compareSettingsAxis(
   if (!nonempty(a.settingsScreenshotSha256) || !nonempty(b.settingsScreenshotSha256)) {
     return 'UNPROVEN';
   }
-  // A shared hash means one screenshot was reused across runs, so the second
-  // run has no contemporaneous settings evidence.
-  if (a.settingsScreenshotSha256 === b.settingsScreenshotSha256) return 'UNPROVEN';
+  if (a.settingsScreenshotSha256 === b.settingsScreenshotSha256) {
+    // A shared content hash has two very different causes, and the hash alone
+    // cannot tell them apart: either one screenshot was cited twice (the second
+    // run then has no contemporaneous evidence), or two independent captures of
+    // an unchanged page rendered byte-identically (which is pixel-level proof of
+    // equality). Distinguish them by capture identity, and fail closed when it
+    // is absent.
+    if (
+      nonempty(a.settingsCaptureId) &&
+      nonempty(b.settingsCaptureId) &&
+      a.settingsCaptureId !== b.settingsCaptureId
+    ) {
+      return 'IDENTICAL';
+    }
+    return 'UNPROVEN';
+  }
   return 'IDENTICAL';
 }
 
@@ -1506,7 +1583,7 @@ export function classifyControlledRepeatability(args: {
     matrix.map((entry) => entry.completeInputEquivalence)
   );
   const topologyFingerprints = runs.map((run) =>
-    run.bars == null ? null : topologyFingerprint(run.bars, run.pieces)
+    run.bars == null ? null : barSequenceFingerprint(run.bars)
   );
   const uniqueTopologyCount = new Set(
     topologyFingerprints.filter((value): value is string => value != null)
