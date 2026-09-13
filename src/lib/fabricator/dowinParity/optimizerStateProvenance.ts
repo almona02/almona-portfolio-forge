@@ -3899,16 +3899,20 @@ export const FP024C11_FORMULA_SCOPE_AUTHORIZATION = {
  */
 export const FP024C12_BOUNDED_PARITY_WELD_RULE = {
   id: 'FP024C12_BOUNDED_PARITY_WELD_RULE',
-  status: 'IMPLEMENTED_PARITY_ADAPTER_ONLY',
+  status: 'WIRED_PARITY_ADAPTER_ONLY',
   independentReviewOfFp024c11: 'ACCEPTED',
   implementationScope: 'PARITY_ADAPTER_ONLY',
   generalizedManufacturingFormula: 'UNPROVEN',
   authorizesProductionEngineChange: false,
+  wiringClassification: 'PARITY_API_NEEDS_EXPLICIT_ENTRY_POINT',
+  parityWiring: 'PROVEN',
   wiredIntoComputeDowinParityLengths: false,
   wiredIntoSashBasmaKaynakFormula: false,
   wiredIntoCanonicalCutGeneration: false,
   helper: 'src/lib/fabricator/dowinParity/evaluateDowinRequiredPartsWeldAdjustment.ts',
   helperFunction: 'evaluateDowinRequiredPartsWeldAdjustment',
+  parityEntryPoint:
+    'src/lib/fabricator/dowinParity/evaluateDowinRequiredPartsWeldAdjustment.ts computeDowinRequiredPartsFromDesignReport',
   reexport: 'src/lib/fabricator/dowinParity/DowinParityLengthEngine.ts',
   supportedSystem: FP024C11_CANONICAL_PROFILE_SYSTEM,
   supported45ProfileCodes: FP024C11_MEASURED_45_PROFILE_CODES,

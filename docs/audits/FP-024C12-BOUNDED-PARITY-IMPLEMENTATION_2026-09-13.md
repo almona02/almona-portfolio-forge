@@ -4,9 +4,9 @@
 |-------|--------|
 | Date | 13 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
-| Starting HEAD | `892f6f2` — `FP-024C.11: authorize bounded formula scope` |
+| Starting HEAD | `39ce286` — `FP-024C.12: implement bounded DoWin Weld parity rule` |
 | PR #32 | Draft / **DO NOT MERGE** |
-| Gate | **IMPLEMENTED_PARITY_ADAPTER_ONLY** |
+| Gate | **WIRED_PARITY_ADAPTER_ONLY** |
 | Physical-length score | **Unchanged at 6.0/10** |
 | Canonical production formulas | **FROZEN** |
 | FP-027 | Root cause remains **UNPROVEN** |
@@ -18,11 +18,14 @@
 ```
 FP-024C.10 ✅ ACCEPTED
 FP-024C.11 ✅ ACCEPTED
-FP-024C.12 IMPLEMENTED_PARITY_ADAPTER_ONLY
+FP-024C.12 helper ACCEPTED
+FP-024C.12.1 wiring classification B. PARITY_API_NEEDS_EXPLICIT_ENTRY_POINT
+FP-024C.12.1 FP024C12_PARITY_WIRING = PROVEN
 
 FP024C12_IMPLEMENTATION_SCOPE = PARITY_ADAPTER_ONLY
 GENERALIZED_MANUFACTURING_FORMULA = UNPROVEN
 
+Call site: computeDowinRequiredPartsFromDesignReport
 Double-count path: ISOLATED
 Canonical production engines: unchanged
 ```
@@ -58,10 +61,13 @@ Identifiers match `FP024C11_CANONICAL_PROFILE_SYSTEM` and the C.11 allowlists. N
 | Item | Location |
 |------|----------|
 | Helper | `src/lib/fabricator/dowinParity/evaluateDowinRequiredPartsWeldAdjustment.ts:110-173` `evaluateDowinRequiredPartsWeldAdjustment` |
-| Re-export only (no call) | `src/lib/fabricator/dowinParity/DowinParityLengthEngine.ts:33-40` |
-| Isolation comment | `DowinParityLengthEngine.ts:18-20` |
-| Existing sash weld (untouched) | `DowinParityLengthEngine.ts:99-109` `sashHorizontalCutMm` / `:111-121` `sashVerticalCutMm` |
-| Authority object | `FP024C12_BOUNDED_PARITY_WELD_RULE` in `optimizerStateProvenance.ts` |
+| **C.12.1 parity entry point** | `evaluateDowinRequiredPartsWeldAdjustment.ts:196-209` `computeDowinRequiredPartsFromDesignReport` |
+| Public re-export | `DowinParityLengthEngine.ts:33-42` (re-export only; no call from sash/compute) |
+| Isolation comment | `DowinParityLengthEngine.ts:18-22` |
+| Existing sash weld (untouched) | `DowinParityLengthEngine.ts:104-114` `sashHorizontalCutMm` / `:116-126` `sashVerticalCutMm` |
+| Fused packed sash API | `DowinParityLengthEngine.ts` `computeDowinParityLengths` — geometry → packed sash; **not** Report → Required Parts |
+| asdd packed actuals | `DowinParityLengthEngine.ts` `almonaParityActualsForAsdd` — `nominalLengthMm: null`, packed from sash formula |
+| Authority object | `FP024C12_BOUNDED_PARITY_WELD_RULE` (`parityWiring: PROVEN`) |
 
 `computeDowinParityLengths` does **not** call the helper. `almonaParityActualsForAsdd` is unchanged.
 
@@ -203,9 +209,59 @@ Zero intended diff:
 - optimization algorithms
 - FP-027 modules
 
-Those files must not import `evaluateDowinRequiredPartsWeldAdjustment`. No production route calls the helper.
+Those files must not import `evaluateDowinRequiredPartsWeldAdjustment` or `computeDowinRequiredPartsFromDesignReport`. No production route calls either.
 
-Allowed diff: parity helper, `DowinParityLengthEngine` re-export/comment, parity tests/evidence, this audit.
+Allowed diff: parity helper + entry point, `DowinParityLengthEngine` re-export/comment, parity tests/evidence, this audit.
+
+---
+
+## C.12.1 wiring closure
+
+### Candidate entry points (traced)
+
+| Function | File | Input layer | Output layer | Verdict |
+|----------|------|-------------|--------------|---------|
+| `sashHorizontalCutMm` / `sashVerticalCutMm` | `DowinParityLengthEngine.ts:104-126` | finished geometry + Basma/Kaynak + Weld | packed sash | **Not** Report → Required Parts. Already includes Weld. |
+| `computeDowinParityLengths` | `DowinParityLengthEngine.ts` | finished W/H; angles default `?? 45` | fused `lengthMm` (packed sash, unevidenced frame) | Fuses geometry into packed. **Do not wire.** |
+| `almonaParityActualsForAsdd` | engine `almonaParityActualsForAsdd` | sash packed from above | `packedSegmentMm`; `nominalLengthMm = null` | No Design Report input. **Do not wire.** |
+| `compareDowinGoldenLengths` | `dowinPhysicalLengthFixture.ts` | expected vs actual layers | comparison | Not a transformation. |
+| `cutLengthSemantics` | `cutLengthSemantics.ts` | canonical `Cut` fields | accessors | Production Cut. **Do not wire.** |
+| `evaluateDowinRequiredPartsWeldAdjustment` | helper `:110` | explicit DESIGN_REPORT | REQUIRED_PARTS | Formula only; was unwired. |
+| **`computeDowinRequiredPartsFromDesignReport`** | helper `:196-209`, re-exported from engine | explicit DESIGN_REPORT + all authority fields | `requiredPartsLengthMm` | **C.12.1 call site.** |
+
+Classification: **B. PARITY_API_NEEDS_EXPLICIT_ENTRY_POINT** (no pre-existing correct call site). Entry point added. Not C: layers and identity are supplied by the caller; no guessing.
+
+### Semantic contract
+
+- source: `DESIGN_REPORT`
+- target: `REQUIRED_PARTS`
+- Caller must pass system, profile, both angles, Welding Waste, `designReportLengthMm`, `sourceLayer`, `targetLayer`. No `?? 45`. No substring system.
+
+### Call graph
+
+```
+computeDowinRequiredPartsFromDesignReport
+  → evaluateDowinRequiredPartsWeldAdjustment
+
+sashHorizontalCutMm ↛ helper
+sashVerticalCutMm ↛ helper
+computeDowinParityLengths → sashHorizontalCutMm / sashVerticalCutMm ↛ helper
+almonaParityActualsForAsdd → computeDowinParityLengths ↛ helper
+```
+
+Engine source after the re-export block does not contain `evaluateDowinRequiredPartsWeldAdjustment(` or `computeDowinRequiredPartsFromDesignReport(`.
+
+### Double-count proof
+
+Packed sash still `inner + Basma + Kaynak + Weld = 444` for the asdd sash fixture. Feeding that millimetre with `sourceLayer: PACKED` or `priorCompensationPath: SASH_BASMA_KAYNAK_WELD` returns fail-closed (`UNSUPPORTED_SOURCE_LAYER` / `DOUBLE_COUNT_PATH_DETECTED`), not 444+3.
+
+### Integration tests
+
+`src/tests/fabricator/computeDowinRequiredPartsFromDesignReport.test.ts` hits the **engine re-export**, not only the helper unit.
+
+Positive: KASA 1200 → 1200/1202/1203; KANAT 451 → 451/453/454; CITA 537 → 537/539/540; ORTA 1116 → 1116/1116/1116.
+
+Negative at the same API: missing left/right; 45/90; 90/45; unsupported profile/system; Weld 1/4; packed/machine/Required-Parts source; wrong target; sash packed stack.
 
 ---
 

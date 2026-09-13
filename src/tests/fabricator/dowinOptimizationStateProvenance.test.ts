@@ -2217,6 +2217,7 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.implementationScope).toBe('PARITY_ADAPTER_ONLY');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoCanonicalCutGeneration).toBe(false);
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.doubleCountPath).toBe('ISOLATED');
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.parityWiring).toBe('PROVEN');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.physicalLengthScore).toBe('6.0/10');
   });
 

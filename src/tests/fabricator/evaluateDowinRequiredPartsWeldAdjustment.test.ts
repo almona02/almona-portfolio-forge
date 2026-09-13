@@ -57,6 +57,7 @@ describe('FP-024C.12 bounded DoWin Required Parts weld adjustment', () => {
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.implementationScope).toBe('PARITY_ADAPTER_ONLY');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.generalizedManufacturingFormula).toBe('UNPROVEN');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoSashBasmaKaynakFormula).toBe(false);
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.parityWiring).toBe('PROVEN');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.physicalLengthScore).toBe('6.0/10');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.fp027.rootCause).toBe('UNPROVEN');
   });
@@ -250,12 +251,15 @@ describe('FP-024C.12 bounded DoWin Required Parts weld adjustment', () => {
     for (const rel of forbidden) {
       const source = readFileSync(resolve(process.cwd(), rel), 'utf8');
       expect(source).not.toContain('evaluateDowinRequiredPartsWeldAdjustment');
+      expect(source).not.toContain('computeDowinRequiredPartsFromDesignReport');
     }
     const engine = readFileSync(
       resolve(process.cwd(), 'src/lib/fabricator/dowinParity/DowinParityLengthEngine.ts'),
       'utf8'
     );
     expect(engine).toContain('evaluateDowinRequiredPartsWeldAdjustment');
+    expect(engine).toContain('computeDowinRequiredPartsFromDesignReport');
     expect(engine).not.toContain('evaluateDowinRequiredPartsWeldAdjustment(');
+    expect(engine).not.toContain('computeDowinRequiredPartsFromDesignReport(');
   });
 });

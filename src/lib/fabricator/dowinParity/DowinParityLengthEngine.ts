@@ -15,9 +15,11 @@
  * Unevidenced (DoWin seed Basma/Kaynak null on frame; mullion formula incomplete):
  *   frame horizontal / vertical, PVC mullion full length.
  *
- * FP-024C.12 bounded weld rule lives in evaluateDowinRequiredPartsWeldAdjustment.
- * That helper is DESIGN_REPORT → REQUIRED_PARTS only. Do not stack it on
- * sashHorizontalCutMm / sashVerticalCutMm (those already add WeldingWaste).
+ * FP-024C.12 bounded weld rule: evaluateDowinRequiredPartsWeldAdjustment.
+ * FP-024C.12.1 public DESIGN_REPORT → REQUIRED_PARTS API:
+ *   computeDowinRequiredPartsFromDesignReport
+ * Do not call either from sashHorizontalCutMm / sashVerticalCutMm /
+ * computeDowinParityLengths / almonaParityActualsForAsdd.
  */
 
 import {
@@ -31,8 +33,10 @@ import {
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
 
 export {
+  computeDowinRequiredPartsFromDesignReport,
   evaluateDowinRequiredPartsWeldAdjustment,
   FP024C12_IMPLEMENTATION_SCOPE,
+  FP024C12_PARITY_ENTRY_POINT,
   FP024C12_SUPPORTED_45_PROFILE_CODES,
   FP024C12_SUPPORTED_90_PROFILE_CODES,
   FP024C12_SUPPORTED_PROFILE_SYSTEM,
@@ -41,6 +45,7 @@ export {
 export type {
   DowinParityLengthLayer,
   DowinParityPriorCompensationPath,
+  DowinRequiredPartsParityResult,
   DowinRequiredPartsWeldInput,
   DowinRequiredPartsWeldRejection,
   DowinRequiredPartsWeldResult,

@@ -171,3 +171,39 @@ export function evaluateDowinRequiredPartsWeldAdjustment(
     weldingWasteAppliedMm: input.weldingWasteMm,
   };
 }
+
+export const FP024C12_PARITY_ENTRY_POINT = 'computeDowinRequiredPartsFromDesignReport' as const;
+
+export interface DowinRequiredPartsParityResult {
+  sourceLayer: DowinParityLengthLayer;
+  targetLayer: DowinParityLengthLayer;
+  designReportLengthMm: number;
+  requiredPartsLengthMm: number | null;
+  supported: boolean;
+  reason: DowinRequiredPartsWeldResult['reason'];
+  weldingWasteAppliedMm: number | null;
+}
+
+/**
+ * Public DoWin parity API for DESIGN_REPORT → REQUIRED_PARTS.
+ *
+ * This is the C.12.1 wiring point. Callers must supply system, profile,
+ * both end angles, Welding Waste, design-report millimetres, and layer
+ * authority. Missing fields fail closed; nothing is defaulted to 45°.
+ *
+ * Do not call from sash packed formulas, bar packing, or production engines.
+ */
+export function computeDowinRequiredPartsFromDesignReport(
+  input: DowinRequiredPartsWeldInput
+): DowinRequiredPartsParityResult {
+  const weld = evaluateDowinRequiredPartsWeldAdjustment(input);
+  return {
+    sourceLayer: input.sourceLayer,
+    targetLayer: input.targetLayer,
+    designReportLengthMm: input.designReportLengthMm,
+    requiredPartsLengthMm: weld.authoritativeLengthMm,
+    supported: weld.supported,
+    reason: weld.reason,
+    weldingWasteAppliedMm: weld.supported ? weld.weldingWasteAppliedMm : null,
+  };
+}

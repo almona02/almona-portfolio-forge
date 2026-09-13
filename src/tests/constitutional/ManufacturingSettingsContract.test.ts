@@ -110,14 +110,24 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.authorizesProductionEngineChange).toBe(false);
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoCanonicalCutGeneration).toBe(false);
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.implementationScope).toBe('PARITY_ADAPTER_ONLY');
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.parityWiring).toBe('PROVEN');
     expect(sourceOf('src/lib/fabricator/UPVCCuttingEngine.ts')).not.toContain(
       'evaluateDowinRequiredPartsWeldAdjustment'
+    );
+    expect(sourceOf('src/lib/fabricator/UPVCCuttingEngine.ts')).not.toContain(
+      'computeDowinRequiredPartsFromDesignReport'
     );
     expect(sourceOf('src/lib/fabricator/AlmonaCuttingEngine.ts')).not.toContain(
       'evaluateDowinRequiredPartsWeldAdjustment'
     );
+    expect(sourceOf('src/lib/fabricator/AlmonaCuttingEngine.ts')).not.toContain(
+      'computeDowinRequiredPartsFromDesignReport'
+    );
     expect(sourceOf('src/lib/fabricator/barPackAccounting.ts')).not.toContain(
       'evaluateDowinRequiredPartsWeldAdjustment'
+    );
+    expect(sourceOf('src/lib/fabricator/barPackAccounting.ts')).not.toContain(
+      'computeDowinRequiredPartsFromDesignReport'
     );
   });
 });
