@@ -1228,7 +1228,9 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(e1?.fixture).toContain('non-ORTA');
     expect(e1?.fixture).toContain('do not inject');
     expect(e2?.authorized).toBe(false);
-    expect(e2?.fixture).toContain('after E1');
+    expect(e2?.executed).toBe(false);
+    expect(e2?.fixture).toContain('non-ORTA 90');
+    expect(e2?.fixture).toContain('Do not inject');
     expect(gate.e1ClosesGate).toBe(false);
     expect(gate.injectedSyntheticRowIsValidEvidence).toBe(false);
   });
@@ -1333,7 +1335,12 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(e1.authorizesFormulaChange).toBe(false);
     expect(e1.provesDemandInequality).toBe(false);
     expect(e1.physicalLengthScore).toBe('6.0/10');
-    expect(e1.demand1Hypothesis).toBe('UNRESOLVED_FIXTURE_UNOBTAINABLE');
+    expect(e1.demand1Hypothesis).toBe('UNRESOLVED');
+    expect(e1.isFailedExperiment).toBe(false);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.e1IsFailedExperiment).toBe(false);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.demand1Hypothesis).toBe('UNRESOLVED');
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ortaSpecificHypothesis).toBe('STILL_LIVE');
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.ninetyDegreeHypothesis).toBe('STILL_LIVE');
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
     expect(isControlFixtureAuthorized()).toBe(false);
 

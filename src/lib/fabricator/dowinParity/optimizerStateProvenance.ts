@@ -1931,7 +1931,7 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
     'A blanket bar-filling mechanism is weakened: KANAT and CITA in A/B/C, and both KASA and CITA in E3, left room for further pieces and produced exactly the demanded quantity. That does not mathematically exclude bar-fill on every profile.',
     'ORTA remains the only overproducing profile in the measured set. Demand=1, 90/90, mullion role, and zero-price / 6.50 cost treatment are still live and still confounded.',
   ],
-  /** Design-only experiments. E3 is measured; E1/E2 remain unauthorized. */
+  /** E3 conserved; E1 is a negative fixture, not a failed experiment; E2 is specified only. */
   discriminatingExperiments: [
     {
       id: 'E3',
@@ -1949,17 +1949,22 @@ export const FP027_REQUIRED_PARTS_CONSERVATION_GATE = {
       authorized: true,
       executed: true,
       classification: 'E1_FIXTURE_NOT_OBTAINABLE_NATURALLY',
+      isFailedExperiment: false,
     },
     {
       id: 'E2',
       fixture:
-        '90-degree non-ORTA or ORTA geometry discriminator — specified after E1, not before',
-      separates: 'angle / ORTA-geometry vs remaining demand=1 residue',
+        'naturally generated non-ORTA 90/90 linear piece; demand is whatever the design system produces. Do not inject rows. If no valid non-ORTA 90 fixture exists, STOP with E2_FIXTURE_NOT_OBTAINABLE_NATURALLY. Does not test demand=1. Separates 90-degree semantics from ORTA/profile-specific handling.',
+      separates: '90-degree semantics vs ORTA / profile-specific handling',
       authorized: false,
       executed: false,
       classification: null,
     },
   ],
+  demand1Hypothesis: 'UNRESOLVED',
+  ortaSpecificHypothesis: 'STILL_LIVE',
+  ninetyDegreeHypothesis: 'STILL_LIVE',
+  e1IsFailedExperiment: false,
   e3Generalization: 'GENERALIZATION_NOT_SUPPORTED_BY_E3',
   e3ClosesGate: false,
   e3AuthorizesFormulaChange: false,
@@ -2205,7 +2210,8 @@ export const FP027_E1_DEMAND1_NONORTA = {
   closesFp027: false,
   authorizesFormulaChange: false,
   provesDemandInequality: false,
-  demand1Hypothesis: 'UNRESOLVED_FIXTURE_UNOBTAINABLE',
+  demand1Hypothesis: 'UNRESOLVED',
+  isFailedExperiment: false,
   ortaSpecificHypothesis: 'STILL_LIVE',
   ninetyDegreeHypothesis: 'UNRESOLVED',
   physicalLengthScore: '6.0/10',

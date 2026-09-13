@@ -321,7 +321,7 @@ injected row = no
 
 Window geometry in this system pairs members. The only native odd-count linear-cut role is Mullion, and Mullion is ORTA. Manufacturing a lone KASA/KANAT/CITA row by typing it into the optimizer would be invalid evidence.
 
-Demand=1 as a mechanism is therefore **not tested**. It is **not eliminated**. Status: `UNRESOLVED_FIXTURE_UNOBTAINABLE`.
+Demand=1 as a mechanism is therefore **not tested**. It is **not eliminated**. Status: **UNRESOLVED**. E1 is a **negative-fixture result**, not a failed experiment.
 
 ### Hypothesis update (no solve, so no conservation reading)
 
@@ -336,3 +336,43 @@ Demand=1 as a mechanism is therefore **not tested**. It is **not eliminated**. S
 E1 does not close FP-027. E2 remains **not authorized**. 90° remains **GATED**. Stock was not mutated (no export, no Stock Update modal). Offcut/remnant axis still **UNPROVEN**.
 
 Solver-stage / machine export / REMAINING_LENGTH: **not measured** — no solve.
+
+---
+
+## Independent review — E1, 13 September 2026
+
+E1 is accepted as a **negative-fixture result**, not a failed experiment. Stopping before optimization was correct.
+
+Accepted authority:
+
+| Finding | Verdict |
+|---------|---------|
+| E1 | `E1_FIXTURE_NOT_OBTAINABLE_NATURALLY` |
+| demand=1 hypothesis | **UNRESOLVED** |
+| ORTA-specific hypothesis | **still live** |
+| 90° hypothesis | **still live** |
+| FP-027 root cause | **UNPROVEN** |
+
+The useful new fact: a valid single-sash Deceuninck 70 design naturally generated **4 KASA / 4 KANAT / 4 CITA**, so E1 could not isolate demand=1 without manufacturing synthetic evidence.
+
+### Next specified experiment — E2 (not authorized)
+
+Because demand=1 could not be isolated naturally, the next discriminator targets **angle / profile semantics**.
+
+Question: does overproduction appear on a **naturally generated non-ORTA 90°/90°** linear piece, at whatever demand the design system produces?
+
+That does **not** test demand=1. It can separate **90° semantics** from **ORTA / profile-specific handling**.
+
+If a valid non-ORTA 90° fixture cannot be created naturally: **STOP** with `E2_FIXTURE_NOT_OBTAINABLE_NATURALLY`. Do not inject rows.
+
+Then reassess whether the original 90° compensation control can also serve as FP-027 evidence **without contaminating the compensation experiment**. That control stays **GATED** and separate until that reassessment.
+
+```text
+E2 non-ORTA 90 discriminator
+  -> if obtainable, classify conservation
+  -> if not obtainable, record negative fixture
+  -> reassess whether the original 90 compensation control can also serve FP-027
+     without contaminating the compensation experiment
+```
+
+Controls unchanged: warehouse V2; Weld 3 / Saw 4 / Trim 0; DC-600; no manual stock edits; No on Stock Update; required vs plan before export; no formula changes; score 6.0/10; PR #32 Draft / DO NOT MERGE.

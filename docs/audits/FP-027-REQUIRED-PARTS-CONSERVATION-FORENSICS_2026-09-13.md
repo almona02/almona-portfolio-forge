@@ -146,12 +146,12 @@ Each changes **only the design fixture**. None changes stock, settings, machine 
 | Id | Fixture | Purpose | Status |
 |----|---------|---------|--------|
 | **E3** | 500 × 500 fixed frame — KASA 4 × 503 and CITA 4 × 419, both one-bar with large spare, 45°, non-zero price | structural spare-fill vs ORTA-specific | **MEASURED — EXACT_CONSERVATION** on both profiles |
-| **E1** | demand exactly 1 on a **non-ORTA** profile. Native single-sash 1000×1500 inspected: KASA 4 / KANAT 4 / CITA 4 / ORTA 0 | demand=1 vs ORTA / 90° / profile-specific | **E1_FIXTURE_NOT_OBTAINABLE_NATURALLY** — not solved |
-| **E2** | 90° non-ORTA or ORTA geometry discriminator | angle / ORTA-geometry vs remaining demand=1 residue | **SPECIFIED AFTER E1, NOT AUTHORIZED** |
+| **E1** | demand exactly 1 on a **non-ORTA** profile. Native single-sash 1000×1500 inspected: KASA 4 / KANAT 4 / CITA 4 / ORTA 0 | demand=1 vs ORTA / 90° / profile-specific | **NEGATIVE FIXTURE** — `E1_FIXTURE_NOT_OBTAINABLE_NATURALLY`; not a failed experiment; demand=1 **UNRESOLVED** |
+| **E2** | naturally generated **non-ORTA 90°/90°** linear piece; demand is whatever the design produces | 90° semantics vs ORTA / profile-specific | **SPECIFIED, NOT AUTHORIZED** |
 
 **E3 has been run** (13 September 2026) and independently reviewed: KASA and CITA conserved; blanket bar-fill is **WEAKENED**; simple spare-capacity generalization is **NOT SUPPORTED BY E3**. That is not `ROOT_CAUSE_SOLVED`. See `docs/audits/FP-027-OPTIMIZATION-REQUIRED-PARTS-CONSERVATION_2026-09-13.md`.
 
-The original E1 (ORTA demand 2) and E2 (ORTA demand 5) specifications are **superseded**. Independent review retargeted E1 at demand=1 on a non-ORTA profile, which is the strongest remaining confound. Do not inject cut rows. If no valid design emits demand=1, stop with an `UNPROVEN` fixture.
+The original E1 (ORTA demand 2) and E2 (ORTA demand 5) specifications are **superseded**. E1 as demand=1 non-ORTA was executed and independently reviewed as a negative fixture. E2 is now a non-ORTA 90° discriminator. If that fixture is not naturally obtainable, stop again. Do not inject cut rows. Do not use the gated 90° compensation control as a stealth E2.
 
 Explicitly **not** proposed here: changing ORTA stock quantity back toward 0. That was the original candidate, it requires mutating the warehouse, and it would destroy baseline V2 — the same reason FP-024C.3 refused it.
 
