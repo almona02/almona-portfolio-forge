@@ -554,3 +554,9 @@ sharedHashImpliesSharedVerdict = false
 ```
 
 Do not implement FP-027. Do not implement FP-026. Do not run another discriminator.
+
+---
+
+## FP-024C.6 Design Preview export — no FP-027 authority change (13 September 2026)
+
+Artifact-only PDF export from existing Project Id=9 / Design Id=11 / Plan Id=7 / OptimizationRun Id=13. No new solve, no new plan, no stock write. Conservation observation remains ORTA required 1 / plan 5 / machine 1 / surplus **+4**. Root cause stays **UNPROVEN**. This export does not change FP-027 authority.

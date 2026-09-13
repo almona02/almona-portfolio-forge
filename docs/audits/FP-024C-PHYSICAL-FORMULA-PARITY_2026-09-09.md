@@ -387,12 +387,12 @@ Preferred KASA frames:
 | Layer | mm | Semantic status |
 |-------|----|-----------------|
 | Design outer (canvas / FRAME_X) | 1200 | measured design geometry |
-| Design Preview PDF report | **NOT_EXPORTED** | asdd nominal/report analog |
-| Cut List (Preview) / Required Parts | 1203.0 | ingested as “nominal” in C.5 — **not accepted as asdd nominal** |
+| Design Preview PDF report | **1200** | measured C.6; asdd-analog nominal/report layer |
+| Cut List (Preview) / Required Parts | 1203.0 | ingested as “nominal” in C.5 — **not accepted as asdd nominal**; do not call this layer nominal |
 | PACKED | 1203.0 | measured |
 | MACHINE LENGTH | 1203.0 | measured |
 
-Required-parts → packed → machine: **OBSERVED 0**. Independent review does **not** accept this as the same “0 compensation” as asdd 1000 → 1003. Design-outer → required-parts +3 is **NOT_YET_RECONCILED**. Not encoded as `45° = +3`. Not assigned to Welding Waste.
+Required-parts → packed → machine: **OBSERVED 0**. Design Preview/report → Required Parts: **+3 OBSERVED FOR THIS FIXTURE**. Independent review does **not** accept this as a generalized `45° = +3` rule. Not assigned to Welding Waste.
 
 CITA 540 / 1119: required-parts = packed; machine **NOT_MEASURED**.
 
@@ -400,7 +400,8 @@ CITA 540 / 1119: required-parts = packed; machine **NOT_MEASURED**.
 
 90° required-parts → packed → machine: **PROVEN 0**  
 45° required-parts → packed: **OBSERVED 0**  
-45° true design/report nominal → required-parts: **NOT_YET_RECONCILED**  
+45° Design Preview/report → required-parts: **+3 OBSERVED FOR THIS FIXTURE** (C.6)  
+Cross-angle layer comparison: **SUPPORTED**  
 “90° and 45° have the same compensation”: **UNPROVEN**  
 Generalized compensation formula: **UNPROVEN**
 
@@ -418,40 +419,102 @@ Licensed screenshots and the `.dw` file are **not committed**.
 
 ## FP-024C.6 — length-layer semantics (13 September 2026)
 
-Existing C.5 artifacts only. **Do not rerun DoWin. Do not patch formulas.**
+### Checkpoint (HEAD `a7c70be`)
 
-### Single question
+Existing C.5 artifacts only. Design Preview PDF was **NOT_EXPORTED**. 45° report → Required Parts was **NOT_YET_RECONCILED**. Export was **not** authorized by that checkpoint.
 
-Where exactly does the 1200 → 1203 frame transformation occur: Design geometry, Design Preview/report, Required Parts, packed plan, or machine export?
+### Artifact-only Design Preview export (13 September 2026, 19:14 +03)
 
-### asdd reference (already exported)
+Opened existing Project Id=**9** / Design Id=**11**. Plan Id=**7** and OptimizationRun Id=**13** unchanged. Send-to-Optimization dialog opened accidentally and was **Cancelled** (plan unchecked). Export as PDF from the existing Optimization result. Stock Update dialog did **not** appear. Log: last `OptimizationRun created` remains Id=13 at 18:06:44; no `ProductionPlan created`; no `ExecuteStockUpdate` after 19:00. CurrentProjectId **9**; design load ID **11**.
 
-`OptimizationReport_20260909_181432_DesignPreview.pdf` lists KASA Length (mm) **1000** and ORTA **1416**. Packed/machine frames on that job were 1003 / 1503. That is the three-layer model: report nominal → packed +3 → machine follows packed.
+| Item | Value |
+|------|-------|
+| Filename | `OptimizationReport_20260913_191321_DesignPreview.pdf` |
+| SHA-256 | `2c2e558cba2016b2924266ba63768cd3ffe9e8bc2bba8d9b2880770d32c9e0f7` |
+| Capture | 2026-09-13 19:14 +03 |
+| Source layer | Optimization **Export as PDF** / Design preview report |
+| Licensed file committed | **no** |
 
-### C.5 package (this control)
+Profile Cutting List (measured from the PDF, not inferred):
 
-| Layer | KASA | ORTA |
-|-------|------|------|
-| Design canvas outer | 1200 | (no pre-encoded mullion length) |
-| Design Preview PDF | **NOT_EXPORTED** | **NOT_EXPORTED** |
-| Cut List for `FP024C_90_CONTROL_DESIGN` (Preview) | 1203 | 1116 |
-| Optimizer Required Parts | 1203 | 1116 |
-| Packed plan | 1203 | 1116 |
-| DC-600 LENGTH | 1203 | 1116 |
-| DC-600 FRAME_X/Y | 1200 | 1200 |
+| Piece | Qty | Angles | Design Preview Length (mm) |
+|-------|-----|--------|----------------------------|
+| Deceuninck-KASA-70 | 4 | 45/45 | **1200** |
+| Deceuninck-ORTA-KAYIT-70 | 1 | 90/90 | **1116** |
+| Deceuninck-CITA-20 | 4 | 45/45 | 537 |
+| Deceuninck-CITA-20 | 4 | 45/45 | 1116 |
 
-C.5 ingested `after-design-save` canvas as `designPreview` hash. That is **not** the asdd Design Preview PDF.
+Basic Information Width/Height: **1200 / 1200**.
 
-The +3 first appears on the Production **Cut List (Preview)** / Required Parts. It is already present before packed/machine. Whether a Design Preview *report* would still say 1200 (asdd model) or already 1203 is **unknown** until that PDF is exported from the **existing** package, without a new solve.
+### Five-layer chain
 
-### Authority after this pass
+KASA (45°):
+
+| Layer | mm | Adjacent delta |
+|-------|----|----------------|
+| GEOMETRY | 1200 | |
+| DESIGN_REPORT | 1200 | geometry→report **0** |
+| REQUIRED_PARTS | 1203 | report→required **+3** |
+| PACKED | 1203 | required→packed **0** |
+| MACHINE | 1203 | packed→machine **0** |
+
+ORTA (90°):
+
+| Layer | mm | Adjacent delta |
+|-------|----|----------------|
+| GEOMETRY | (no pre-encoded mullion length) | |
+| DESIGN_REPORT | 1116 | |
+| REQUIRED_PARTS | 1116 | report→required **0** |
+| PACKED | 1116 | required→packed **0** |
+| MACHINE | 1116 | packed→machine **0** |
+
+First observed 1200→1203 transition: **DESIGN_REPORT → REQUIRED_PARTS**.
+
+Outcome **A**. Classification: **`LAYER_SEMANTICS_RECONCILED`**.  
+`DESIGN_REPORT_TO_REQUIRED_PARTS_DELTA = +3 OBSERVED FOR THIS FIXTURE`.  
+Required Parts → packed = 0. Packed → machine = 0.
+
+Do **not** call Required Parts “nominal”. Do **not** generalize a +3 rule.
+
+### asdd comparison (historical fixture kept separate)
+
+| | asdd KASA | asdd ORTA | C.6 KASA | C.6 ORTA |
+|--|-----------|-----------|----------|----------|
+| Design Preview/report | 1000 | 1416 | 1200 | 1116 |
+| Required Parts | (not separated in asdd three-layer writeup) | | 1203 | 1116 |
+| Packed | 1003 | 1416 | 1203 | 1116 |
+| Machine | 1003 | 1416 | 1203 | 1116 |
+
+Semantic layer position: both fixtures place the 45° +3 **after** Design Preview/report and **before** packed/machine. asdd wrote report→packed; this fixture isolates report→Required Parts. Do not collapse fixtures.
+
+### Cross-angle authority
+
+Equivalent layers now exist for both pieces (Design/report, Required Parts, packed, machine).
+
+Classification: **`CROSS_ANGLE_LAYER_COMPARISON_SUPPORTED`**.
+
+45° KASA report→required = +3; 90° ORTA report→required = 0. Same-compensation-across-angles remains **UNPROVEN**. Generalized compensation formula remains **UNPROVEN**.
+
+### Remaining limitations
+
+- CITA Design Preview 537 / 1116 vs Required Parts 540 / 1119 is another +3 at the same layer. Recorded only. No formula inferred.
+- Cut List (Preview) and Required Parts remain the same 1203 / 1116 values; they are not further split.
+- FRAME_X/Y 1200 is design geometry, not a production length.
+- Score stays **6.0/10** until independent review.
+- Production formulas stay **FROZEN**.
+- FP-027 root cause stays **UNPROVEN**. This export does not change conservation authority.
+
+### Authority after ingest
 
 ```text
-FP-024C.5 control = MEASURED
+FP-024C.6 = LAYER_SEMANTICS_RECONCILED
+Design Preview layer = EXPORTED / 1200 KASA / 1116 ORTA
+first 1200→1203 = DESIGN_REPORT_TO_REQUIRED_PARTS (+3 this fixture)
 90° required-parts→packed→machine = PROVEN 0
 45° required-parts→packed = OBSERVED 0
 45° packed→machine = OBSERVED 0
-45° design/report nominal→required-parts = NOT_YET_RECONCILED
+45° Design Preview/report→required-parts = +3 OBSERVED FOR THIS FIXTURE
+cross-angle layer comparison = SUPPORTED
 cross-angle same compensation = UNPROVEN
 generalized formula = UNPROVEN
 score = 6.0/10
@@ -459,4 +522,4 @@ formulas = FROZEN
 PR #32 = DRAFT / DO NOT MERGE
 ```
 
-Possible later evidence action: export Design Preview PDF from the existing `FP024C_90_CONTROL` package without a new solve. **Not authorized by this checkpoint.** Do not infer the missing Design Preview value.
+STOP. Independent review only. Do not solve again. Do not implement formulas. Do not implement FP-027 or FP-026. Do not merge PR #32.

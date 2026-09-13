@@ -1700,9 +1700,12 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C_90_CONTROL_COMPENSATION.fortyFiveRequiredPartsToPacked).toBe('OBSERVED');
     expect(FP024C_90_CONTROL_COMPENSATION.fortyFivePackedToMachine).toBe('OBSERVED');
     expect(FP024C_90_CONTROL_COMPENSATION.fortyFiveDesignOrReportNominalToRequiredParts).toBe(
-      'NOT_YET_RECONCILED'
+      'OBSERVED_PLUS_3_THIS_FIXTURE'
     );
     expect(FP024C_90_CONTROL_COMPENSATION.crossAngleCompensationSame).toBe('UNPROVEN');
+    expect(FP024C_90_CONTROL_COMPENSATION.crossAngleLayerComparison).toBe(
+      'CROSS_ANGLE_LAYER_COMPARISON_SUPPORTED'
+    );
     expect(FP024C_90_CONTROL_COMPENSATION.generalizedCompensationFormula).toBe('UNPROVEN');
     expect(FP024C_90_CONTROL_COMPENSATION.physicalLengthScore).toBe('6.0/10');
     expect(FP024C_90_CONTROL_COMPENSATION.authorizesFormulaChange).toBe(false);
@@ -1726,8 +1729,17 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
   });
 
-  it('opens FP-024C.6 layer-semantics reconciliation without a new DoWin run', () => {
-    expect(FP024C6_LENGTH_LAYER_SEMANTICS.status).toBe('OPEN');
+  it('ingests FP-024C.6 Design Preview layer without a new solve', () => {
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.status).toBe('LAYER_SEMANTICS_RECONCILED');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.outcome).toBe('A');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.artifactOnlyProtocolPreserved).toBe(true);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.projectDbId).toBe(9);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.designDbId).toBe(11);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.productionPlanDbId).toBe(7);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.optimizationRunDbId).toBe(13);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.newSolveCreated).toBe(false);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.newPlanCreated).toBe(false);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.stockUnchanged).toBe(true);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.doNotRerunDowin).toBe(true);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.doNotPatchFormulas).toBe(true);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authorizesFormulaChange).toBe(false);
@@ -1735,13 +1747,30 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.asddDesignPreviewReport.kasaLengthMm).toBe(1000);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.asddDesignPreviewReport.ortaLengthMm).toBe(1416);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.designGeometryOuterMm.kasa).toBe(1200);
-    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.designPreviewReportMm.kasa).toBeNull();
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.designPreviewReportMm.kasa).toBe(1200);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.designPreviewReportMm.orta).toBe(1116);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.cutListPreviewMm.kasa).toBe(1203);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.requiredPartsMm.kasa).toBe(1203);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.packedPlanMm.kasa).toBe(1203);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.machineLengthMm.kasa).toBe(1203);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.controlLayers.machineFrameXYMm.kasa).toBe(1200);
-    expect(FP024C6_LENGTH_LAYER_SEMANTICS.designPreviewPdf.status).toBe('NOT_EXPORTED');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.geometryToReportDeltaMm.kasa).toBe(0);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.reportToRequiredDeltaMm.kasa).toBe(3);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.requiredToPackedDeltaMm.kasa).toBe(0);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.packedToMachineDeltaMm.kasa).toBe(0);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.reportToRequiredDeltaMm.orta).toBe(0);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.requiredToPackedDeltaMm.orta).toBe(0);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.packedToMachineDeltaMm.orta).toBe(0);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.designPreviewPdf.status).toBe('EXPORTED');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.designPreviewPdf.kasaLengthMm).toBe(1200);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.designPreviewPdf.ortaLengthMm).toBe(1116);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.designPreviewPdf.sha256).toBe(
+      '2c2e558cba2016b2924266ba63768cd3ffe9e8bc2bba8d9b2880770d32c9e0f7'
+    );
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.designPreviewPdf.licensedFileCommitted).toBe(false);
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.firstObserved1200To1203Transition).toBe(
+      'DESIGN_REPORT_TO_REQUIRED_PARTS'
+    );
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.ninetyRequiredPartsToPacked).toBe('PROVEN');
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.ninetyPackedToMachine).toBe('PROVEN');
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.fortyFiveRequiredPartsToPacked).toBe(
@@ -1749,18 +1778,21 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     );
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.fortyFivePackedToMachine).toBe('OBSERVED');
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.designPreviewExportAuthorizedByThisCheckpoint).toBe(
-      false
+      true
     );
     expect(
       FP024C6_LENGTH_LAYER_SEMANTICS.authority.fortyFiveDesignOrReportNominalToRequiredParts
-    ).toBe('NOT_YET_RECONCILED');
+    ).toBe('OBSERVED_PLUS_3_THIS_FIXTURE');
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.sameCompensationAcrossAngles).toBe(
       'UNPROVEN'
+    );
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.crossAngleLayerComparison).toBe(
+      'CROSS_ANGLE_LAYER_COMPARISON_SUPPORTED'
     );
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.generalizedCompensationFormula).toBe(
       'UNPROVEN'
     );
-    expect(FP024C_90_CONTROL_COMPENSATION.nextGate).toBe('FP024C6_LENGTH_LAYER_SEMANTICS');
+    expect(FP024C_90_CONTROL_COMPENSATION.nextGate).toBe('INDEPENDENT_REVIEW_ONLY');
     expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.repeatability).toBe(
       'REPEATABLE_ACROSS_INDEPENDENT_GEOMETRY'
     );
