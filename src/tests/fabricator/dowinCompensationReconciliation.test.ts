@@ -58,7 +58,9 @@ import {
   FP027_REQUIRED_PARTS_CONSERVATION_GATE,
   FP024C_NINETY_CONTROL_DUAL_USE,
   FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION,
+  FP024C8_WELD0_CONTROL_REPLICATION,
   evaluateWeldingWasteLayerCausality,
+  evaluateTwoFixtureWeldCausality,
   evaluateControlFixtureAuthorization,
   evaluateBaselineReset,
   overallUtilizationPercent,
@@ -801,6 +803,24 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weldMovesReportToRequiredParts).toBe(
       'PROVEN_FOR_ASDD_FIXTURE'
     );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.status).toBe('ACCEPTED');
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.findings.c5Weld0ReportToRequiredPartsDelta45).toBe(0);
+    expect(
+      FP024C8_WELD0_CONTROL_REPLICATION.findings.weldCausalityReplicatedAcrossTwoFixtures
+    ).toBe('PROVEN_FOR_MEASURED_KASA_CONDITIONS');
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.findings.generalizedCompensationFormula).toBe(
+      'UNPROVEN'
+    );
+    expect(evaluateTwoFixtureWeldCausality({
+      asddWeld3KasaReportToRequiredPartsDeltaMm: 3,
+      asddWeld0KasaReportToRequiredPartsDeltaMm: 0,
+      c5Weld3KasaReportToRequiredPartsDeltaMm: 3,
+      c5Weld0KasaReportToRequiredPartsDeltaMm: 0,
+      asddOrtaReportToRequiredPartsDeltaAtWeld3Mm: 0,
+      asddOrtaReportToRequiredPartsDeltaAtWeld0Mm: 0,
+      c5OrtaReportToRequiredPartsDeltaAtWeld3Mm: 0,
+      c5OrtaReportToRequiredPartsDeltaAtWeld0Mm: 0,
+    }).authorizesFormulaChange).toBe(false);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.generalizedCompensationFormula).toBe(
       'UNPROVEN'
     );

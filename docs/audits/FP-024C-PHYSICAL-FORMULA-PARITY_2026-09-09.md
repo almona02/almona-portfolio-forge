@@ -699,3 +699,52 @@ Allowed: on measured 45° KASA/KANAT pieces of the asdd fixture, Welding Waste 3
 Not allowed: `packed = nominal + WeldingWaste` or any equivalent production formula. C.5 has no Weld=0 Required Parts row. Do not generalize beyond the measured fixture/profile/angles.
 
 FP-027 authority is unchanged: ORTA 1→5→1 surplus +4; root cause **UNPROVEN**.
+
+Independent review (13 September 2026, 20:00): **FP-024C.7 = ACCEPTED**. The 19:40 `today work` capture remains **`INVALID_FOR_CAUSAL_AUTHORITY`** (Weld=0 had not persisted). Its 1003 values must not support any positive conclusion.
+
+## FP-024C.8 — C.5 Weld=0 Required Parts replication (13 September 2026, 20:06)
+
+Existing C.5 fixture only. Welding Waste left at the persisted **0 mm**. New production plan `FP024C8_WELD0_RP` (Id=9) created only to regenerate Required Parts. **No solve. Plan 7 / OptimizationRun 13 not reused as fresh evidence. No stock mutation. No formula change.**
+
+Project Id=9 `FP024C_90_CONTROL` / Design Id=11 `FP024C_90_CONTROL_DESIGN` / 1200×1200 Deceuninck 70 / VALID load.
+
+### Settings
+
+Precheck and post-cut: Weld **0**, Saw 4, Trim 0, Sash 7, Glazing 2.5, min offcut 500, DC-600. Post-cut SHA-256 `78f75452…` (byte-identical to the C.7 persist capture).
+
+### Required Parts at Weld=0 (live cut list 20:06:13, 13 rows / 12528 mm)
+
+| Piece | DESIGN_REPORT | REQUIRED_PARTS | delta |
+|-------|---------------|----------------|-------|
+| KASA 45° | 1200 | **1200** | **0** |
+| ORTA 90° | 1116 | **1116** | **0** |
+
+CITA 537 / 1116 observed on the same list. Not used as the primary causal discriminator.
+
+Locked Weld=3 C.5 reference unchanged: KASA 1200→1203, ORTA 1116→1116.
+
+### Authority after this measurement
+
+```text
+FP-024C.6 = ACCEPTED
+FP-024C.7 = ACCEPTED
+FP-024C.8 = MEASURED
+C5_WELD0_REPORT_TO_REQUIRED_PARTS_DELTA_45 = 0
+C5_WELD0_REPORT_TO_REQUIRED_PARTS_DELTA_90 = 0
+WELD_3_TO_0_EFFECT_ON_45_REPORT_TO_REQUIRED_PARTS = PROVEN FOR C.5 FIXTURE
+WELD_3_TO_0_EFFECT_ON_90_REPORT_TO_REQUIRED_PARTS = NO_OBSERVED_EFFECT FOR C.5 FIXTURE
+WELD_CAUSALITY_REPLICATED_ACROSS_TWO_FIXTURES = PROVEN FOR MEASURED KASA CONDITIONS
+90° replication = REPLICATED_NO_OBSERVED_EFFECT
+19:40 today work = INVALID_FOR_CAUSAL_AUTHORITY
+universal +Weld rule = UNPROVEN
+generalized formula = UNPROVEN
+score = 6.0/10
+formulas = FROZEN
+PR #32 = DRAFT / DO NOT MERGE
+```
+
+Allowed: for the measured Deceuninck 70 KASA 45° conditions across two independent geometries, the 3 mm Welding Waste setting controls the observed +3 mm Design Report → Required Parts delta. 90° ORTA remains 0 on both fixtures.
+
+Not allowed: `RequiredParts = Report + WeldingWaste` or any equivalent production formula.
+
+FP-027 authority is unchanged: ORTA 1→5→1 surplus +4; root cause **UNPROVEN**.

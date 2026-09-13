@@ -42,7 +42,9 @@ import {
   FP024C_NINETY_CONTROL_SPEC,
   FP024C6_LENGTH_LAYER_SEMANTICS,
   FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION,
+  FP024C8_WELD0_CONTROL_REPLICATION,
   evaluateWeldingWasteLayerCausality,
+  evaluateTwoFixtureWeldCausality,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
   evaluateIndependentNinetyControlFixtureSpec,
@@ -1835,9 +1837,10 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
   });
 
   it('measures the asdd Weld=0 Required Parts boundary without authorizing a formula', () => {
-    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.status).toBe(
-      'WELD0_REQUIRED_PARTS_BOUNDARY_MEASURED'
-    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.status).toBe('ACCEPTED');
+    expect(
+      FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.protocol.discardedTodayWork1940Classification
+    ).toBe('INVALID_FOR_CAUSAL_AUTHORITY');
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.doNotRerunDowin).toBe(true);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.doNotPatchFormulas).toBe(true);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.authorizesWeld0Rerun).toBe(false);
@@ -1936,6 +1939,69 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(mapped.requiredPartsMeasuredAtBothWeldSettings).toBe(true);
     expect(mapped.weldMovesReportToRequiredParts).toBe('PROVEN_FOR_ASDD_FIXTURE');
     expect(mapped.authorizesFormulaChange).toBe(false);
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.fp027RootCause).toBe('UNPROVEN');
+  });
+
+  it('replicates the Weld=0 Required Parts boundary on the C.5 fixture without a formula', () => {
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.status).toBe('MEASURED');
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.independentReviewOfFp024c7).toBe('ACCEPTED');
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.newSolveCreated).toBe(false);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.stockUnchanged).toBe(true);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.weldingWasteLeftAtPersistedZero).toBe(true);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.existingPlan7AndRun13NotReusedAsFreshEvidence).toBe(
+      true
+    );
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.authorizesFormulaChange).toBe(false);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.physicalLengthScore).toBe('6.0/10');
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.protocol.projectDbId).toBe(9);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.protocol.designDbId).toBe(11);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.protocol.settings.weldingWasteMm).toBe(0);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.weld0Measurement.kasa.REQUIRED_PARTS).toBe(1200);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.weld0Measurement.orta.REQUIRED_PARTS).toBe(1116);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.findings.c5Weld0ReportToRequiredPartsDelta45).toBe(0);
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.findings.c5Weld0ReportToRequiredPartsDelta90).toBe(0);
+    expect(
+      FP024C8_WELD0_CONTROL_REPLICATION.findings.weld3To0EffectOn45ReportToRequiredParts
+    ).toBe('PROVEN_FOR_C5_FIXTURE');
+    expect(
+      FP024C8_WELD0_CONTROL_REPLICATION.findings.weldCausalityReplicatedAcrossTwoFixtures
+    ).toBe('PROVEN_FOR_MEASURED_KASA_CONDITIONS');
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.findings.ninetyReplication).toBe(
+      'REPLICATED_NO_OBSERVED_EFFECT'
+    );
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.findings.generalizedCompensationFormula).toBe(
+      'UNPROVEN'
+    );
+    expect(FP024C8_WELD0_CONTROL_REPLICATION.discardedTodayWork1940.classification).toBe(
+      'INVALID_FOR_CAUSAL_AUTHORITY'
+    );
+    const replicated = evaluateTwoFixtureWeldCausality({
+      asddWeld3KasaReportToRequiredPartsDeltaMm: 3,
+      asddWeld0KasaReportToRequiredPartsDeltaMm: 0,
+      c5Weld3KasaReportToRequiredPartsDeltaMm: 3,
+      c5Weld0KasaReportToRequiredPartsDeltaMm: 0,
+      asddOrtaReportToRequiredPartsDeltaAtWeld3Mm: 0,
+      asddOrtaReportToRequiredPartsDeltaAtWeld0Mm: 0,
+      c5OrtaReportToRequiredPartsDeltaAtWeld3Mm: 0,
+      c5OrtaReportToRequiredPartsDeltaAtWeld0Mm: 0,
+    });
+    expect(replicated.weldCausalityReplicatedAcrossTwoFixtures).toBe(
+      'PROVEN_FOR_MEASURED_KASA_CONDITIONS'
+    );
+    expect(replicated.ninetyReplication).toBe('REPLICATED_NO_OBSERVED_EFFECT');
+    expect(replicated.authorizesFormulaChange).toBe(false);
+    expect(
+      evaluateTwoFixtureWeldCausality({
+        asddWeld3KasaReportToRequiredPartsDeltaMm: 3,
+        asddWeld0KasaReportToRequiredPartsDeltaMm: 0,
+        c5Weld3KasaReportToRequiredPartsDeltaMm: 3,
+        c5Weld0KasaReportToRequiredPartsDeltaMm: 3,
+        asddOrtaReportToRequiredPartsDeltaAtWeld3Mm: 0,
+        asddOrtaReportToRequiredPartsDeltaAtWeld0Mm: 0,
+        c5OrtaReportToRequiredPartsDeltaAtWeld3Mm: 0,
+        c5OrtaReportToRequiredPartsDeltaAtWeld0Mm: 0,
+      }).weldCausalityReplicatedAcrossTwoFixtures
+    ).toBe('CROSS_FIXTURE_WELD_CAUSALITY_CONTRADICTION');
     expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.fp027RootCause).toBe('UNPROVEN');
   });
 

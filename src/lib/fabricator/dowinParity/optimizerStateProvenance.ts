@@ -2921,7 +2921,7 @@ export function evaluateWeldingWasteLayerCausality(args: {
  */
 export const FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION = {
   id: 'FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION',
-  status: 'WELD0_REQUIRED_PARTS_BOUNDARY_MEASURED',
+  status: 'ACCEPTED',
   scientificQuestion:
     'At Welding Waste = 0, does the 45° Design Report → Required Parts delta become 0?',
   firstPass: 'EXISTING_WELD_3_TO_0_ONLY',
@@ -2936,6 +2936,8 @@ export const FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION = {
     productionPlan: 'FP024C7_WELD0_RP',
     productionPlanId: 8,
     discardedStaleTodayWorkCutList: true,
+    discardedTodayWork1940Classification: 'INVALID_FOR_CAUSAL_AUTHORITY',
+    discardedTodayWork1940Reason: 'Weld=0 had not persisted',
     newSolveCreated: false,
     stockUnchanged: true,
     settings: {
@@ -3015,9 +3017,135 @@ export const FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION = {
     generalizedCompensationFormula: 'UNPROVEN',
   },
   limitation:
-    'Paired Design Report → Required Parts proof is for measured 45° KASA/KANAT and 90° ORTA on the asdd fixture. C.5 has no Weld=0 Required Parts measurement. Do not encode packed = nominal + WeldingWaste. Do not generalize to unmeasured profiles or angles.',
+    'Paired Design Report → Required Parts proof on asdd is accepted. The 19:40 today work 1003 list remains INVALID_FOR_CAUSAL_AUTHORITY. Do not encode packed = nominal + WeldingWaste.',
   nextPossibleEvidenceAction:
-    'Do not implement a Welding Waste formula. Profile/angle applicability remains UNPROVEN.',
+    'FP-024C.8 second-fixture Weld=0 Required Parts replication on C.5. Do not implement a formula.',
+  physicalLengthScore: '6.0/10',
+} as const;
+
+export function evaluateTwoFixtureWeldCausality(args: {
+  asddWeld3KasaReportToRequiredPartsDeltaMm: number;
+  asddWeld0KasaReportToRequiredPartsDeltaMm: number;
+  c5Weld3KasaReportToRequiredPartsDeltaMm: number;
+  c5Weld0KasaReportToRequiredPartsDeltaMm: number;
+  asddOrtaReportToRequiredPartsDeltaAtWeld3Mm: number;
+  asddOrtaReportToRequiredPartsDeltaAtWeld0Mm: number;
+  c5OrtaReportToRequiredPartsDeltaAtWeld3Mm: number;
+  c5OrtaReportToRequiredPartsDeltaAtWeld0Mm: number;
+}): {
+  weldCausalityReplicatedAcrossTwoFixtures:
+    | 'PROVEN_FOR_MEASURED_KASA_CONDITIONS'
+    | 'CROSS_FIXTURE_WELD_CAUSALITY_CONTRADICTION'
+    | 'UNPROVEN';
+  ninetyReplication:
+    | 'REPLICATED_NO_OBSERVED_EFFECT'
+    | 'CONTRADICTION'
+    | 'UNPROVEN';
+  authorizesFormulaChange: false;
+} {
+  const fortyFiveReplicated =
+    args.asddWeld3KasaReportToRequiredPartsDeltaMm === 3 &&
+    args.asddWeld0KasaReportToRequiredPartsDeltaMm === 0 &&
+    args.c5Weld3KasaReportToRequiredPartsDeltaMm === 3 &&
+    args.c5Weld0KasaReportToRequiredPartsDeltaMm === 0;
+  const fortyFiveContradicted =
+    args.c5Weld0KasaReportToRequiredPartsDeltaMm === 3 &&
+    args.asddWeld0KasaReportToRequiredPartsDeltaMm === 0;
+  const ninetyReplicated =
+    args.asddOrtaReportToRequiredPartsDeltaAtWeld3Mm === 0 &&
+    args.asddOrtaReportToRequiredPartsDeltaAtWeld0Mm === 0 &&
+    args.c5OrtaReportToRequiredPartsDeltaAtWeld3Mm === 0 &&
+    args.c5OrtaReportToRequiredPartsDeltaAtWeld0Mm === 0;
+  const ninetyContradicted =
+    args.c5OrtaReportToRequiredPartsDeltaAtWeld0Mm !== 0 ||
+    args.asddOrtaReportToRequiredPartsDeltaAtWeld0Mm !== 0;
+
+  return {
+    weldCausalityReplicatedAcrossTwoFixtures: fortyFiveReplicated
+      ? 'PROVEN_FOR_MEASURED_KASA_CONDITIONS'
+      : fortyFiveContradicted
+        ? 'CROSS_FIXTURE_WELD_CAUSALITY_CONTRADICTION'
+        : 'UNPROVEN',
+    ninetyReplication: ninetyReplicated
+      ? 'REPLICATED_NO_OBSERVED_EFFECT'
+      : ninetyContradicted
+        ? 'CONTRADICTION'
+        : 'UNPROVEN',
+    authorizesFormulaChange: false,
+  };
+}
+
+/**
+ * FP-024C.8 — replicate the Weld=0 Required Parts boundary on C.5.
+ * No solve. No Welding Waste change. No formula patch. AICS-001.
+ */
+export const FP024C8_WELD0_CONTROL_REPLICATION = {
+  id: 'FP024C8_WELD0_CONTROL_REPLICATION',
+  status: 'MEASURED',
+  scientificQuestion:
+    'At Weld=0 on C.5, does KASA Required Parts become 1200 and ORTA stay 1116?',
+  independentReviewOfFp024c7: 'ACCEPTED',
+  doNotPatchFormulas: true,
+  authorizesFormulaChange: false,
+  newSolveCreated: false,
+  stockUnchanged: true,
+  weldingWasteLeftAtPersistedZero: true,
+  existingPlan7AndRun13NotReusedAsFreshEvidence: true,
+  protocol: {
+    projectName: 'FP024C_90_CONTROL',
+    projectDbId: 9,
+    projectNo: '100009',
+    designName: 'FP024C_90_CONTROL_DESIGN',
+    designDbId: 11,
+    productionPlan: 'FP024C8_WELD0_RP',
+    productionPlanId: 9,
+    generatedAt: '2026-09-13T20:06:13',
+    cutListRows: 13,
+    totalLengthMm: 12528,
+    settings: {
+      weldingWasteMm: 0,
+      sawThicknessMm: 4,
+      trimCutMm: 0,
+      sashOffsetMm: 7,
+      glazingClearanceMm: 2.5,
+      minimumOffcutMm: 500,
+      machineId: 'DC-600',
+    },
+    settingsPrecheckSha256:
+      'd7914c5dc78406e720561fca2556c7b6a0e81ed5cb65cd486e779430ba453e41',
+    settingsPostCutSha256:
+      '78f75452ee322f8f89d4e15a7f3162ffc5ecd424b74fbec6b03427b2ae216f7e',
+    cutListSha256:
+      'c8d8add5045622a767a397d906c3ef60da2c9b0c60c3d98291a921cfc30984d6',
+  },
+  discardedTodayWork1940: {
+    classification: 'INVALID_FOR_CAUSAL_AUTHORITY',
+    reason: 'Weld=0 had not persisted',
+    kasaValuesMustNotSupportPositiveConclusion: [1003],
+    preservedInAuditHistory: true,
+  },
+  lockedWeld3Reference: {
+    kasa: { DESIGN_REPORT: 1200, REQUIRED_PARTS: 1203 },
+    orta: { DESIGN_REPORT: 1116, REQUIRED_PARTS: 1116 },
+  },
+  weld0Measurement: {
+    kasa: { DESIGN_REPORT: 1200, REQUIRED_PARTS: 1200, angles: '45/45' },
+    orta: { DESIGN_REPORT: 1116, REQUIRED_PARTS: 1116, angles: '90/90' },
+    citaHorizontal: { REQUIRED_PARTS: 537, angles: '45/45', reportLayer: 'NOT_USED_AS_PRIMARY' },
+    citaVertical: { REQUIRED_PARTS: 1116, angles: '45/45', reportLayer: 'NOT_USED_AS_PRIMARY' },
+  },
+  findings: {
+    c5Weld0ReportToRequiredPartsDelta45: 0,
+    c5Weld0ReportToRequiredPartsDelta90: 0,
+    weld3To0EffectOn45ReportToRequiredParts: 'PROVEN_FOR_C5_FIXTURE',
+    weld3To0EffectOn90ReportToRequiredParts: 'NO_OBSERVED_EFFECT_FOR_C5_FIXTURE',
+    weldCausalityReplicatedAcrossTwoFixtures: 'PROVEN_FOR_MEASURED_KASA_CONDITIONS',
+    ninetyReplication: 'REPLICATED_NO_OBSERVED_EFFECT',
+    universalPlusWeldRuleForAll45Profiles: 'UNPROVEN',
+    generalizedCompensationFormula: 'UNPROVEN',
+  },
+  limitation:
+    'Replication is for measured Deceuninck 70 KASA 45° and ORTA 90° on asdd and C.5. Do not implement RequiredParts = Report + WeldingWaste. Do not generalize to unmeasured profiles or angles.',
   physicalLengthScore: '6.0/10',
 } as const;
 
