@@ -77,8 +77,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'BASELINE_REPRODUCTION_RUN')).toHaveLength(1);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'BASELINE_RESET_VALIDATION')).toHaveLength(1);
     expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT')).toHaveLength(6);
-    // The FP-024C.3 triplicate is MEASURED; FRESH_B/C and the 90° control stay pending.
-    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(3);
+    // The FP-024C.3 triplicate and 90° control are MEASURED; FRESH_B/C stay pending.
+    expect(DOWIN_CALIBRATION_RUNS.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(2);
     expect(DOWIN_CALIBRATION_RUNS.map((r) => r.fixtureId)).toEqual(
       expect.arrayContaining([
         'FP024C1_FRESH_A',
@@ -110,7 +110,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(evaluateControlFixtureAuthorization().blockers).toEqual([]);
     expect(evaluateControlFixtureAuthorization().authorized).toBe(true);
     expect(evaluateControlFixtureAuthorization().verdict).toBe('READY_FOR_OPERATOR_RUN');
-    expect(evaluateControlFixtureAuthorization().controlRunStatus).toBe('NOT_RUN');
+    expect(evaluateControlFixtureAuthorization().controlRunStatus).toBe('MEASURED');
     expect(DOWIN_ASDD_BASELINE_RESET_RUN.reproductionVerdict).toBe('REPRODUCTION_FAILED');
     expect(
       evaluateBaselineReset(DOWIN_ASDD_BASELINE_REPRODUCTION_RUN, DOWIN_ASDD_BASELINE_RESET_RUN).verdict
@@ -191,7 +191,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(baseline?.interpretation).toBe('AMBIGUOUS');
     expect(baseline?.packedMinusNominalValuesMm).toEqual([0, 3]);
     expect(baseline?.machineDeltaMm).toBe(0);
-    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(3);
+    expect(a.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(2);
     expect(a.every((r) => r.interpretation !== 'PROVEN EFFECT')).toBe(true);
   });
 
@@ -280,10 +280,10 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(FP024C1_DECISIVE_EXPERIMENT).toContain('fresh project/design');
     const isolation = buildIsolationDeltaTable();
     expect(isolation).toHaveLength(13);
-    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(3);
-    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(3);
+    expect(isolation.filter((r) => r.status === 'PENDING_OPERATOR_RUN')).toHaveLength(2);
+    expect(isolation.filter((r) => r.interpretation === 'NOT MEASURED')).toHaveLength(2);
     expect(isolation.filter((r) => r.runKind === 'CONTROL_FIXTURE')[0]?.interpretation).toBe(
-      'NOT MEASURED'
+      'AMBIGUOUS'
     );
     expect(isolation.filter((r) => r.runKind === 'BASELINE_RESET_VALIDATION')[0]?.status).toBe(
       'MEASURED'

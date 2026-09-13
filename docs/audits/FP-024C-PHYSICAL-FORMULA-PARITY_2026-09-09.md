@@ -311,3 +311,104 @@ Record A (`FP024C_90_CONTROL_COMPENSATION`) is primary. Record B may passively t
 ### Authorization
 
 `evaluateIndependentNinetyControlFixtureSpec()` passes. `evaluateControlFixtureAuthorization()` is `READY_FOR_OPERATOR_RUN`. That permits the evidence run. It does not mean the control passed, parity passed, a formula is proven, or the score may move. Score stays **6.0/10**. Formulas stay **FROZEN**. Control status **NOT_RUN**. Do not open DoWin from this specification.
+
+---
+
+## FP-024C.5 — independent 90° control executed (13 September 2026)
+
+Live licensed DoWin run. Evidence only. No formula implementation.
+
+### Fixture validity
+
+**yes.** Naturally generated required parts included:
+
+- A. one physical linear 90°/90° piece: ORTA-KAYIT-70 Mullion Vertical, 1116 mm, qty 1
+- B. ordinary 45°/45° references: KASA-70 frames 1203 mm qty 4 (preferred); CITA-20 540 mm ×4 and 1119 mm ×4
+
+ORTA role is acceptable. ORTA count was not an acceptance field. Geometry was not tuned after optimizer behavior. Sash was not required (`DESIGN_VALIDATION VALID`).
+
+### Identities
+
+| Item | Value |
+|------|-------|
+| Project | Id=9, No **100009**, Name `FP024C_90_CONTROL`, CustomerCode 1000009, OrderNo 10009 |
+| Design | Id=11, `FP024C_90_CONTROL_DESIGN`, 1200 × 1200 mm, Deceuninck 70, no sash |
+| Production plan | Id=7, `FP024C_90_CONTROL_PLAN`, ItemCount=1 |
+| OptimizationRun | **Id=13**, solver id `ae9c45f0` |
+| `solveDisposition` | `NEWLY_SOLVED` — 18:08:11 +03, logged duration 0.033 s |
+| Algorithm / CG / MIP / annealing / seed | opaque internals logged; seed **null** |
+| Machine | DC-600; DC-550 SKH globally enabled (unchanged) |
+| `.dw` | `FP024C_90_CONTROL_2026.09.13_18.12.dw`, SHA-256 `4b386aa792a7f427a5ad30a9562cdf1bc8dbc1507f6ebd065c3a2ea2249047a9` |
+
+Did not open asdd / A/B/C / E1/E2/E3. Did not reuse optimization history.
+
+### Settings / stock
+
+| Axis | Result |
+|------|--------|
+| Warehouse pre-run | V2 quantities CITA 46 / KANAT 96 / KASA 13 / ORTA 100 plus accessories. Screenshot SHA-256 `82a46e09854d46f18b923f6592e137212fb8a5b2e54bfcfadf4e549ab1644f6d` (highlight differs from `c8626da5…`; quantities match). Not `STOCK_STATE_CHANGED`. |
+| Settings | New capture SHA-256 `8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae` — byte-identical render to A/B/C. Weld 3 / Saw 4 / Trim 0 / Sash Offset 7 / Glazing 2.5 / min offcut 500 / DC-600 checked. No silent change. |
+| Warehouse post-run | Same V2 quantities after Stock Update **No**. Screenshot SHA-256 `0013acd5b38c816ab7c1d93337700dd83ab2709695b079f809d7ce29a50639cc`. Not `STOCK_STATE_MUTATED`. |
+| Stock Update modal | **shown = true**, response = **NO** |
+
+### Required parts (pre-solve)
+
+13 rows / 12564 mm. `requiredPartsFingerprint` = `47bc59442a7cd03187fad02e4160e1f7b08206eaf1a55f9d80edee1176717a63`.
+
+| Role | Profile | Nominal mm | Angles | Qty |
+|------|---------|------------|--------|-----|
+| Frame Top/Bottom/Left/Right | KASA-70 | 1203.0 | 45/45 | 4 |
+| Mullion Vertical | ORTA-KAYIT-70 | 1116.0 | 90/90 | 1 |
+| GlazingBead H | CITA-20 | 540.0 | 45/45 | 4 |
+| GlazingBead V | CITA-20 | 1119.0 | 45/45 | 4 |
+
+### Optimizer stock (pre-Run)
+
+7 whole-bar SKUs mirroring V2. `stockFingerprint` = `3f1e1798429ff3e6c416d76014a77de4a4c05dca9d7cc9ea9825b0cdf66725c1`. Offcut/remnant dedicated source: **UNPROVEN** (not converted to NONE). `offcutRemnantFingerprint` of the empty ingest-gate array is not proven-none.
+
+### Primary 90° layers
+
+ORTA Mullion Vertical, the only naturally generated 90°/90° required piece:
+
+| Layer | mm |
+|-------|----|
+| NOMINAL (required-parts) | 1116.0 |
+| PACKED (bar strip) | 1116.0 |
+| MACHINE (DC-600 LENGTH/10) | 1116.0 |
+
+Deltas: packed−nominal **0**; machine−packed **0**; machine−nominal **0**. Observation: `NO_OBSERVED_EFFECT`.
+
+Classification: **`NO_OBSERVED_COMPENSATION_ON_90_CONTROL`**.
+
+### 45° reference layers
+
+Preferred KASA frames:
+
+| Layer | mm |
+|-------|----|
+| Design outer (canvas / FRAME_X) | 1200 |
+| NOMINAL (required-parts) | 1203.0 |
+| PACKED | 1203.0 |
+| MACHINE | 1203.0 |
+
+Required-parts → packed → machine deltas: **0**. Design-outer → generated +3 is recorded only; **not encoded** as `45° = +3`; **not assigned** to Welding Waste.
+
+CITA 540 / 1119: nominal = packed; machine **NOT_MEASURED** (not in DC-600 export).
+
+### Cross-angle observation
+
+90° class observed inter-layer delta: **0**  
+45° class observed inter-layer delta (required-parts / packed / machine): **0**  
+Difference between classes on those layers: **NOT_OBSERVED**
+
+Do not conclude why design-outer and required-parts differ for frames.
+
+### Machine export
+
+5 rows: 4× KASA 1203 45/45 REMAINING_LENGTH 1165.4; 1× ORTA 1116 90/90 REMAINING_LENGTH 900.0. Warning: 4 unmatched plan pieces. CITA not exported.
+
+### Authority / freeze / score
+
+Record A is primary. Record B is passive only. Shared hashes do not share verdicts. FP-027 root cause stays **UNPROVEN**. Production formulas stay **FROZEN**. Physical-length score stays **6.0/10**. This run does not raise the score. PR #32 stays Draft / **DO NOT MERGE**.
+
+Licensed screenshots and the `.dw` file are **not committed**.

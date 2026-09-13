@@ -30,6 +30,7 @@ import {
   type DowinPhysicalLengthGoldenRow,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
 import {
+  classifyNinetyControlCompensationLayers,
   FP024C1_AUDIT_QUESTION,
   FP024C1_DECISIVE_EXPERIMENT,
   FP024C1_FRESH_RUN_IDS,
@@ -143,6 +144,7 @@ import {
 } from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
 
 export {
+  classifyNinetyControlCompensationLayers,
   FP024C1_AUDIT_QUESTION,
   FP024C1_DECISIVE_EXPERIMENT,
   FP024C1_FRESH_RUN_IDS,
@@ -1750,6 +1752,312 @@ export const DOWIN_FP024C3_RUN_C_RUN: DowinCalibrationRun = {
   }),
 };
 
+/**
+ * FP-024C.5 independent 90° CONTROL_FIXTURE pieces.
+ * NOMINAL = required-parts / Design Preview generated length, not canvas outer.
+ * 90°/90° mullion is ORTA; that role is allowed. CITA machine = NOT_MEASURED.
+ */
+export const FP024C_90_CONTROL_PIECES: DowinPhysicalLengthGoldenRow[] = [
+  {
+    pieceId: 'fp024c5-kasa-top',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Frame Top',
+    profileCode: 'Deceuninck-KASA-70',
+    category: 'frame_horizontal',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 1203,
+    expectedPackedSegmentMm: 1203,
+    expectedMachineLengthMm: 1203,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-kasa-bottom',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Frame Bottom',
+    profileCode: 'Deceuninck-KASA-70',
+    category: 'frame_horizontal',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 1203,
+    expectedPackedSegmentMm: 1203,
+    expectedMachineLengthMm: 1203,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-kasa-left',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Frame Leftt',
+    profileCode: 'Deceuninck-KASA-70',
+    category: 'frame_vertical',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 1203,
+    expectedPackedSegmentMm: 1203,
+    expectedMachineLengthMm: 1203,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-kasa-right',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Frame Right',
+    profileCode: 'Deceuninck-KASA-70',
+    category: 'frame_vertical',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 1203,
+    expectedPackedSegmentMm: 1203,
+    expectedMachineLengthMm: 1203,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-orta-mullion',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Mullion Vertical',
+    profileCode: 'Deceuninck-ORTA-KAYIT-70',
+    category: 'mullion',
+    leftAngleDeg: 90,
+    rightAngleDeg: 90,
+    expectedNominalLengthMm: 1116,
+    expectedPackedSegmentMm: 1116,
+    expectedMachineLengthMm: 1116,
+    sourceDocument: 'machine_export',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-cita-left-top',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Left Area.GlazingBead Top',
+    profileCode: 'Deceuninck-CITA-20',
+    category: 'glazing_bead_horizontal',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 540,
+    expectedPackedSegmentMm: 540,
+    expectedMachineLengthMm: null,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-cita-left-bottom',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Left Area.GlazingBead Bottom',
+    profileCode: 'Deceuninck-CITA-20',
+    category: 'glazing_bead_horizontal',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 540,
+    expectedPackedSegmentMm: 540,
+    expectedMachineLengthMm: null,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-cita-left-left',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Left Area.GlazingBead Left',
+    profileCode: 'Deceuninck-CITA-20',
+    category: 'glazing_bead_vertical',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 1119,
+    expectedPackedSegmentMm: 1119,
+    expectedMachineLengthMm: null,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-cita-left-right',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Left Area.GlazingBead Right',
+    profileCode: 'Deceuninck-CITA-20',
+    category: 'glazing_bead_vertical',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 1119,
+    expectedPackedSegmentMm: 1119,
+    expectedMachineLengthMm: null,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-cita-right-top',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Right Area.GlazingBead Top',
+    profileCode: 'Deceuninck-CITA-20',
+    category: 'glazing_bead_horizontal',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 540,
+    expectedPackedSegmentMm: 540,
+    expectedMachineLengthMm: null,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-cita-right-bottom',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Right Area.GlazingBead Bottom',
+    profileCode: 'Deceuninck-CITA-20',
+    category: 'glazing_bead_horizontal',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 540,
+    expectedPackedSegmentMm: 540,
+    expectedMachineLengthMm: null,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-cita-right-left',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Right Area.GlazingBead Left',
+    profileCode: 'Deceuninck-CITA-20',
+    category: 'glazing_bead_vertical',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 1119,
+    expectedPackedSegmentMm: 1119,
+    expectedMachineLengthMm: null,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+  {
+    pieceId: 'fp024c5-cita-right-right',
+    externalAssemblyLabel: 'FP024C_90_CONTROL_DESIGN.Right Area.GlazingBead Right',
+    profileCode: 'Deceuninck-CITA-20',
+    category: 'glazing_bead_vertical',
+    leftAngleDeg: 45,
+    rightAngleDeg: 45,
+    expectedNominalLengthMm: 1119,
+    expectedPackedSegmentMm: 1119,
+    expectedMachineLengthMm: null,
+    sourceDocument: 'assembly_report',
+    sourcePage: null,
+  },
+];
+
+/**
+ * FP-024C.5 cutting plan, 2026-09-13 18:08:11 +03, OptimizationRun Id=13.
+ * ORTA bar is a passive FP-027 surplus observation (5×1116 vs required 1).
+ */
+export const FP024C_90_CONTROL_BARS: readonly ExternalBarPattern[] = [
+  {
+    id: 'fp024c5-bead-cita-6500-7pc',
+    profileCode: 'Deceuninck-CITA-20',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: [],
+    packedSegmentMm: [1119, 1119, 1119, 1119, 540, 540, 540],
+    remainingMm: 364.4,
+    reportedYieldPercent: 94.4,
+  },
+  {
+    id: 'fp024c5-bead-cita-6500-1pc',
+    profileCode: 'Deceuninck-CITA-20',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: [],
+    packedSegmentMm: [540],
+    remainingMm: 5954.34,
+    reportedYieldPercent: 8.4,
+  },
+  {
+    id: 'fp024c5-frame-kasa-6000',
+    profileCode: 'Deceuninck-KASA-70',
+    stockLengthMm: 6000,
+    applicationCount: 1,
+    pieceExternalIds: [
+      'FP024C_90_CONTROL_DESIGN.Frame Top',
+      'FP024C_90_CONTROL_DESIGN.Frame Bottom',
+      'FP024C_90_CONTROL_DESIGN.Frame Leftt',
+      'FP024C_90_CONTROL_DESIGN.Frame Right',
+    ],
+    packedSegmentMm: [1203, 1203, 1203, 1203],
+    remainingMm: 1165.37,
+    reportedYieldPercent: 80.6,
+  },
+  {
+    id: 'fp024c5-mullion-orta-6500',
+    profileCode: 'Deceuninck-ORTA-KAYIT-70',
+    stockLengthMm: 6500,
+    applicationCount: 1,
+    pieceExternalIds: ['FP024C_90_CONTROL_DESIGN.Mullion Vertical'],
+    packedSegmentMm: [1116, 1116, 1116, 1116, 1116],
+    remainingMm: 900.0,
+    reportedYieldPercent: 86.2,
+  },
+];
+
+export const FP024C_90_CONTROL_OPTIMIZER_STOCK = [
+  { profileCode: 'Deceuninck-KOSE-METAL-05', stockLengthMm: 6500, ordinal: 0, quantity: 100 },
+  { profileCode: 'Deceuninck-KOSE-PLASTIK-01', stockLengthMm: 6500, ordinal: 1, quantity: 50 },
+  { profileCode: 'Deceuninck-DESTEK-SACI-2.0MM', stockLengthMm: 6500, ordinal: 2, quantity: 15 },
+  { profileCode: 'Deceuninck-CITA-20', stockLengthMm: 6500, ordinal: 3, quantity: 46 },
+  { profileCode: 'Deceuninck-ORTA-KAYIT-70', stockLengthMm: 6500, ordinal: 4, quantity: 100 },
+  { profileCode: 'Deceuninck-KANAT-70', stockLengthMm: 6000, ordinal: 5, quantity: 96 },
+  { profileCode: 'Deceuninck-KASA-70', stockLengthMm: 6000, ordinal: 6, quantity: 13 },
+] as const;
+
+export const DOWIN_FP024C_90_CONTROL_RUN: DowinCalibrationRun = {
+  fixtureId: 'FP024C_90_CONTROL',
+  parentFixtureId: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.id,
+  runKind: 'CONTROL_FIXTURE',
+  isolationVariable: 'ninetyDegreeControl',
+  status: 'MEASURED',
+  designName: FP024C_NINETY_CONTROL_SPEC.designId,
+  profileSystem: DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.profileSystem,
+  widthMm: 1200,
+  heightMm: 1200,
+  machineId: REQUIRED_ISOLATION_MACHINE_ID,
+  observedSettings: { ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings },
+  intendedIsolation: {
+    field: null,
+    instructedToMm: null,
+    note: 'CONTROL_FIXTURE: 1200×1200 Deceuninck 70 with one centered vertical mullion. Settings unchanged. Compensation geometry only — not an FP-027 surplus target. MEASURED; classification NO_OBSERVED_COMPENSATION_ON_90_CONTROL.',
+  },
+  changedSetting: null,
+  pieces: FP024C_90_CONTROL_PIECES,
+  bars: FP024C_90_CONTROL_BARS,
+  provenance:
+    'FP024C_90_CONTROL 2026-09-13 18:08:11 +03, OptimizationRun Id=13, solver id ae9c45f0. Project Id=9 No=100009 / Design Id=11 FP024C_90_CONTROL_DESIGN / Plan Id=7 FP024C_90_CONTROL_PLAN qty 1. Fixed single-panel 1200×1200 Deceuninck 70, native Add Vertical, DESIGN_VALIDATION VALID without sash. Cut list 13 rows / 12564 mm: KASA 1203 45/45 ×4, ORTA 1116 90/90 ×1, CITA 540 ×4, CITA 1119 ×4. Settings SHA-256 8597b36c… byte-identical to A/B/C; DC-550 SKH globally enabled (unchanged). Warehouse V2 quantities CITA 46 / KANAT 96 / KASA 13 / ORTA 100; pre-run screenshot 82a46e09… (selection-sensitive, quantities match). Optimizer stock 7 SKUs mirroring V2. NEWLY_SOLVED 0.033 s, 4 patterns, 4 bars, yield 66.8%, offcut 8334 mm, 0 unplaced. Packed strips: KASA 4×1203 rem 1165.37; ORTA 5×1116 rem 900; CITA 4×1119+3×540 rem 364.40 and 1×540 rem 5954.34. 90° layers 1116=1116=1116. 45° KASA layers 1203=1203=1203; design outer 1200 recorded separately and not encoded as +3. CITA machine NOT_MEASURED. DC-600 .dw SHA-256 4b386aa7… exported 5 pieces (4 KASA + 1 ORTA). Stock Update answered NO. Post-run stock quantities unchanged (screenshot 0013acd5…). Licensed screenshots/.dw not committed. Offcut/remnant dedicated source UNPROVEN. Seed null. No formula change.',
+  reproductionVerdict: null,
+  lengthLayerVerdict: 'REPRODUCED',
+  topologyVerdict: null,
+  optimizerProvenance: attachOptimizerInputFingerprints({
+    runId: 'FP024C_90_CONTROL',
+    timestampIso: '2026-09-13T15:08:11.000Z',
+    projectId: '100009',
+    designId: 'FP024C_90_CONTROL_DESIGN',
+    productionPlanId: 'FP024C_90_CONTROL_PLAN',
+    optimizationResultId: 'OptimizationRun_13_ae9c45f0',
+    optimizationHistoryId: null,
+    solveKind: 'NEWLY_SOLVED',
+    solveDisposition: 'NEWLY_SOLVED',
+    optimizerId: null,
+    optimizerVersion: null,
+    algorithm: null,
+    seed: null,
+    requiredPartsSnapshotId: 'fp024c5-required-parts-20260913',
+    stockSnapshotId: 'fp024c5-optimizer-stock-items-20260913',
+    offcutRemnantSnapshotId: 'UNPROVEN-no-dedicated-remnant-ui',
+    machineId: 'DC-600',
+    settingsSnapshotSha256:
+      '8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae',
+    settingsSnapshot: settingsSnapshotFromObserved(
+      DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.jobSettings
+    ),
+    geometrySnapshot: {
+      widthMm: 1200,
+      heightMm: 1200,
+      profileSystem: "Deceuninck 70'lik PVC Sistemi",
+    },
+    requiredPartsSnapshot: requiredPartsSnapshotFromPieces(FP024C_90_CONTROL_PIECES),
+    stockSnapshot: [...FP024C_90_CONTROL_OPTIMIZER_STOCK],
+    offcutRemnantSnapshot: [],
+    sourceHashesSha256: {
+      generalSettingsScreenshot:
+        '8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae',
+      designPreview: 'f5f7ef0f35585a13ca147abb9f005512e33ca66c20cb2f8d2077492172fc3d54',
+      assemblyLabels: '08141419a85012c2aadd727c6fd79d8c48937febaa773f0769591d3ffe539b7d',
+      optimization: 'aa1a1373ff0e6b9eb04e24613f76b83a8b6b5985375c2740f68020b39effa587',
+      machineExport: '4b386aa792a7f427a5ad30a9562cdf1bc8dbc1507f6ebd065c3a2ea2249047a9',
+    },
+  }),
+};
+
 export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
   pendingTemplate(
     'FP024C1_FRESH_B',
@@ -1771,16 +2079,6 @@ export const DOWIN_CALIBRATION_TEMPLATES: readonly DowinCalibrationRun[] = [
     },
     'Operator template Fresh C. Completes the A/B/C package. 90° stays gated.'
   ),
-  pendingTemplate(
-    'FP024C_90_CONTROL',
-    'ninetyDegreeControl',
-    {
-      field: null,
-      instructedToMm: null,
-      note: 'CONTROL_FIXTURE: 1200×1200 Deceuninck 70 with one centered vertical mullion. Settings unchanged. Compensation geometry only — not an FP-027 surplus target. READY_FOR_OPERATOR_RUN; not yet executed.',
-    },
-    'Operator CONTROL_FIXTURE template. Independent of asdd. The asdd mullion is a same-job 90° observation, not this control fixture. NOT_RUN.'
-  ),
 ];
 
 export const DOWIN_CALIBRATION_RUNS: readonly DowinCalibrationRun[] = [
@@ -1794,6 +2092,7 @@ export const DOWIN_CALIBRATION_RUNS: readonly DowinCalibrationRun[] = [
   DOWIN_FP024C3_RUN_A_RUN,
   DOWIN_FP024C3_RUN_B_RUN,
   DOWIN_FP024C3_RUN_C_RUN,
+  DOWIN_FP024C_90_CONTROL_RUN,
   ...DOWIN_CALIBRATION_TEMPLATES,
 ];
 
@@ -2929,17 +3228,29 @@ export function buildIsolationDeltaTable(
       };
     }
     if (run.runKind === 'CONTROL_FIXTURE') {
+      const ninety = run.pieces.find(
+        (piece) => piece.leftAngleDeg === 90 && piece.rightAngleDeg === 90
+      );
+      const layers = ninety
+        ? classifyNinetyControlCompensationLayers({
+            nominalMm: ninety.expectedNominalLengthMm ?? Number.NaN,
+            packedMm: ninety.expectedPackedSegmentMm ?? Number.NaN,
+            machineMm: ninety.expectedMachineLengthMm,
+          })
+        : null;
       return {
         runKind: run.runKind,
         variableChanged: run.isolationVariable,
         status: 'MEASURED',
         nominalDeltaMm: null,
-        packedDeltaMm: null,
-        machineDeltaMm: null,
+        packedDeltaMm: layers?.packedMinusNominalMm ?? null,
+        machineDeltaMm: layers?.machineMinusPackedMm ?? null,
         remainderDeltaMm: null,
         interpretation: 'AMBIGUOUS',
         findings: [],
-        note: 'CONTROL_FIXTURE is not a single-setting delta vs asdd. Report within-fixture layers only; do not encode a production formula.',
+        note: layers
+          ? `CONTROL_FIXTURE within-fixture layers only: ${layers.classification}. Not a setting effect. Do not encode a production formula.`
+          : 'CONTROL_FIXTURE is not a single-setting delta vs asdd. Report within-fixture layers only; do not encode a production formula.',
       };
     }
     const comparisonParent =

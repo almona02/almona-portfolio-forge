@@ -2406,43 +2406,232 @@ export const FP024C_NINETY_CONTROL_SPEC = {
   quantityConservationInOriginalAcceptanceGate: false,
 } as const;
 
-/** Record A — compensation only. Specified, not measured. */
+export type Fp024cNinetyControlCompensationClassification =
+  | 'NO_OBSERVED_COMPENSATION_ON_90_CONTROL'
+  | 'PACKED_COMPENSATION_OBSERVED_MACHINE_FOLLOWS_PACKED'
+  | 'MACHINE_LAYER_DIFFERENCE_OBSERVED'
+  | 'NOMINAL_PACKED_ONLY_MACHINE_NOT_MEASURED';
+
+export type Fp024cNinetyControlLayerObservation =
+  | 'NO_OBSERVED_EFFECT'
+  | 'OBSERVED_DELTA'
+  | 'MACHINE_NOT_MEASURED'
+  | 'UNPROVEN';
+
+/**
+ * Layer classification only. Does not encode a production formula and
+ * must not be cited as FP-027 root cause.
+ */
+export function classifyNinetyControlCompensationLayers(args: {
+  nominalMm: number;
+  packedMm: number;
+  machineMm: number | null;
+}): {
+  packedMinusNominalMm: number;
+  machineMinusPackedMm: number | null;
+  machineMinusNominalMm: number | null;
+  observation: Fp024cNinetyControlLayerObservation;
+  classification: Fp024cNinetyControlCompensationClassification;
+} {
+  const packedMinusNominalMm = args.packedMm - args.nominalMm;
+  if (args.machineMm == null) {
+    return {
+      packedMinusNominalMm,
+      machineMinusPackedMm: null,
+      machineMinusNominalMm: null,
+      observation: packedMinusNominalMm === 0 ? 'MACHINE_NOT_MEASURED' : 'OBSERVED_DELTA',
+      classification: 'NOMINAL_PACKED_ONLY_MACHINE_NOT_MEASURED',
+    };
+  }
+  const machineMinusPackedMm = args.machineMm - args.packedMm;
+  const machineMinusNominalMm = args.machineMm - args.nominalMm;
+  if (machineMinusPackedMm !== 0) {
+    return {
+      packedMinusNominalMm,
+      machineMinusPackedMm,
+      machineMinusNominalMm,
+      observation: 'OBSERVED_DELTA',
+      classification: 'MACHINE_LAYER_DIFFERENCE_OBSERVED',
+    };
+  }
+  if (packedMinusNominalMm !== 0) {
+    return {
+      packedMinusNominalMm,
+      machineMinusPackedMm,
+      machineMinusNominalMm,
+      observation: 'OBSERVED_DELTA',
+      classification: 'PACKED_COMPENSATION_OBSERVED_MACHINE_FOLLOWS_PACKED',
+    };
+  }
+  return {
+    packedMinusNominalMm: 0,
+    machineMinusPackedMm: 0,
+    machineMinusNominalMm: 0,
+    observation: 'NO_OBSERVED_EFFECT',
+    classification: 'NO_OBSERVED_COMPENSATION_ON_90_CONTROL',
+  };
+}
+
+const FP024C_90_CONTROL_ORTA_LAYERS = classifyNinetyControlCompensationLayers({
+  nominalMm: 1116,
+  packedMm: 1116,
+  machineMm: 1116,
+});
+const FP024C_90_CONTROL_KASA_LAYERS = classifyNinetyControlCompensationLayers({
+  nominalMm: 1203,
+  packedMm: 1203,
+  machineMm: 1203,
+});
+const FP024C_90_CONTROL_CITA_H_LAYERS = classifyNinetyControlCompensationLayers({
+  nominalMm: 540,
+  packedMm: 540,
+  machineMm: null,
+});
+const FP024C_90_CONTROL_CITA_V_LAYERS = classifyNinetyControlCompensationLayers({
+  nominalMm: 1119,
+  packedMm: 1119,
+  machineMm: null,
+});
+
+/** Record A — compensation only. Independent 90° control, MEASURED. */
 export const FP024C_90_CONTROL_COMPENSATION = {
   id: 'FP024C_90_CONTROL_COMPENSATION',
-  status: 'NOT_RUN',
+  status: 'MEASURED',
   purpose: 'COMPENSATION_PRIMARY',
   fixtureIdentity: 'FP024C_90_CONTROL',
+  fixtureValid: true,
   projectId: 'FP024C_90_CONTROL',
+  projectNo: '100009',
+  projectDbId: 9,
   designId: 'FP024C_90_CONTROL_DESIGN',
-  productionPlanId: null,
-  runId: null,
+  designDbId: 11,
+  productionPlanId: 'FP024C_90_CONTROL_PLAN',
+  productionPlanDbId: 7,
+  runId: 'OptimizationRun_13_ae9c45f0',
+  optimizationRunId: 13,
+  solverId: 'ae9c45f0',
+  solveDisposition: 'NEWLY_SOLVED',
+  timestampIso: '2026-09-13T15:08:11.000Z',
   widthMm: 1200,
   heightMm: 1200,
   profileSystem: "Deceuninck 70'lik PVC Sistemi",
   geometryDescription:
     'single centered vertical mullion / two-panel symmetric frame',
+  sashPresent: false,
   settingsSnapshot: FP024C_NINETY_CONTROL_SPEC.settings,
+  dc550SkhGloballyEnabled: true,
   machine: 'DC-600',
-  pieces: [] as const,
-  classification: null,
+  settingsFullWindowSha256:
+    '8597b36c1dba0e0d21113597bdeaba6e0a09d5d8eb0c83dcd3b09b8c3c92a3ae',
+  stockPreSha256:
+    '82a46e09854d46f18b923f6592e137212fb8a5b2e54bfcfadf4e549ab1644f6d',
+  stockPostSha256:
+    '0013acd5b38c816ab7c1d93337700dd83ab2709695b079f809d7ce29a50639cc',
+  stockQuantitiesMatchV2: true,
+  stockUpdateModalShown: true,
+  stockUpdateResponse: 'NO',
+  warehouseImmutability: 'IMMUTABLE_VERIFIED',
+  machineExportSha256:
+    '4b386aa792a7f427a5ad30a9562cdf1bc8dbc1507f6ebd065c3a2ea2249047a9',
+  pieces: [
+    {
+      profile: 'Deceuninck-ORTA-KAYIT-70',
+      role: 'mullion',
+      requiredCount: 1,
+      nominalLengthMm: 1116,
+      packedLengthMm: 1116,
+      machineLengthMm: 1116,
+      leftAngleDeg: 90,
+      rightAngleDeg: 90,
+      ...FP024C_90_CONTROL_ORTA_LAYERS,
+    },
+    {
+      profile: 'Deceuninck-KASA-70',
+      role: 'frame',
+      requiredCount: 4,
+      designOuterMm: 1200,
+      nominalLengthMm: 1203,
+      packedLengthMm: 1203,
+      machineLengthMm: 1203,
+      leftAngleDeg: 45,
+      rightAngleDeg: 45,
+      ...FP024C_90_CONTROL_KASA_LAYERS,
+    },
+    {
+      profile: 'Deceuninck-CITA-20',
+      role: 'glazing_bead_horizontal',
+      requiredCount: 4,
+      nominalLengthMm: 540,
+      packedLengthMm: 540,
+      machineLengthMm: null,
+      leftAngleDeg: 45,
+      rightAngleDeg: 45,
+      ...FP024C_90_CONTROL_CITA_H_LAYERS,
+    },
+    {
+      profile: 'Deceuninck-CITA-20',
+      role: 'glazing_bead_vertical',
+      requiredCount: 4,
+      nominalLengthMm: 1119,
+      packedLengthMm: 1119,
+      machineLengthMm: null,
+      leftAngleDeg: 45,
+      rightAngleDeg: 45,
+      ...FP024C_90_CONTROL_CITA_V_LAYERS,
+    },
+  ],
+  classification: FP024C_90_CONTROL_ORTA_LAYERS.classification,
+  fortyFiveClassObservedInterLayerDeltaMm: 0,
+  ninetyClassObservedInterLayerDeltaMm: 0,
+  crossAngleDifference: 'NOT_OBSERVED_ON_REQUIRED_PACKED_MACHINE_LAYERS',
   cannotCiteFp027Conservation: true,
+  authorizesFormulaChange: false,
   physicalLengthScore: '6.0/10',
 } as const;
 
-/** Record B — conservation only. Empty until the same independently authorized run. */
+/** Record B — conservation only. Passive transcription of the same run. */
 export const FP027_90_CONTROL_CONSERVATION_OBSERVATION = {
   id: 'FP027_90_CONTROL_CONSERVATION_OBSERVATION',
-  status: 'NOT_RUN',
+  status: 'MEASURED',
   purpose: 'CONSERVATION_SECONDARY',
   fixtureIdentity: 'FP024C_90_CONTROL',
-  requiredCount: null,
-  planCount: null,
-  deltaCount: null,
-  requiredLengthMm: null,
-  planLengthMm: null,
-  machineExportCount: null,
-  remainderPropagation: null,
-  classification: null,
+  requiredCount: 13,
+  planCount: 17,
+  deltaCount: 4,
+  requiredLengthMm: 12564,
+  planLengthMm: 17028,
+  machineExportCount: 5,
+  profiles: [
+    {
+      profile: 'Deceuninck-KASA-70',
+      requiredCount: 4,
+      planCount: 4,
+      deltaCount: 0,
+      machineExportCount: 4,
+    },
+    {
+      profile: 'Deceuninck-ORTA-KAYIT-70',
+      requiredCount: 1,
+      planCount: 5,
+      deltaCount: 4,
+      machineExportCount: 1,
+    },
+    {
+      profile: 'Deceuninck-CITA-20',
+      requiredCount: 8,
+      planCount: 8,
+      deltaCount: 0,
+      machineExportCount: 0,
+    },
+  ],
+  remainderPropagation:
+    'ORTA REMAINING_LENGTH 900.0 matches plan remainder after 5×1116; KASA 1165.4. Remainder not recomputed after export match filter.',
+  warningText:
+    '4 piece(s) in the optimization plan could not be matched to the detailed production list',
+  classification: classifyRequiredVsPlanConservation({
+    requiredCount: 13,
+    planCount: 17,
+  }),
   cannotAffectFixtureValidity: true,
   cannotCiteFp024cCompensation: true,
   cannotAuthorizeRerun: true,
@@ -2450,6 +2639,7 @@ export const FP027_90_CONTROL_CONSERVATION_OBSERVATION = {
   cannotCloseFp027: true,
   cannotProveRootCause: true,
   variableBundle: 'ORTA + demand=1 + 90/90 + single-length + cost/profile',
+  fp027RootCause: 'UNPROVEN',
 } as const;
 
 /**
@@ -2682,7 +2872,7 @@ export function evaluateControlFixtureAuthorization(
   fp027TargetingAuthorizedControl: false;
   dualUseIsSafe: boolean;
   physicalLengthScore: '6.0/10';
-  controlRunStatus: 'NOT_RUN';
+  controlRunStatus: 'NOT_RUN' | 'MEASURED';
 } {
   const fixtureSpecified =
     args.fixtureIndependentlySpecified ??
@@ -2729,7 +2919,8 @@ export function evaluateControlFixtureAuthorization(
     fp027TargetingAuthorizedControl: false,
     dualUseIsSafe: dualUse === 'DUAL_USE_SAFE',
     physicalLengthScore: '6.0/10',
-    controlRunStatus: 'NOT_RUN',
+    controlRunStatus:
+      FP024C_90_CONTROL_COMPENSATION.status === 'MEASURED' ? 'MEASURED' : 'NOT_RUN',
   };
 }
 

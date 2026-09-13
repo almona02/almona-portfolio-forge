@@ -4,13 +4,13 @@
 |-------|--------|
 | Date | 13 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
-| Experiment | E3 measured; E1/E2 negative fixtures; **90° dual-use = CONDITIONAL** — control not run |
+| Experiment | E3 measured; E1/E2 negative fixtures; **90° dual-use = CONDITIONAL** — control executed; conservation **passive only** |
 | Gate | 🔓 **FORENSICS OPEN** |
 | Root cause | **UNPROVEN** |
 | Fix | **NOT IMPLEMENTED** |
 | Production formulas | **FROZEN** |
 | Physical-length score | **6.0/10** unchanged |
-| 90° CONTROL_FIXTURE | **GATED** |
+| 90° CONTROL_FIXTURE | **MEASURED** (compensation Record A independent; this file records Record B only) |
 | FP-026 | NAME ONLY / **NOT IMPLEMENTED** |
 | PR #32 | Draft / **DO NOT MERGE** |
 
@@ -515,4 +515,42 @@ FP-027 root cause UNPROVEN is **IRRELEVANT_TO_CONTROL** as a blocker and **canno
 
 Current authorization contract lives in `evaluateControlFixtureAuthorization`. After FP-024C.5 the catalog verdict is **READY_FOR_OPERATOR_RUN** (fixture 1200 × 1200, centered vertical mullion, compensation-only). Obsolete C.1 Fresh B/C / remainder-reset predicates remain historically visible and do not deadlock the gate.
 
-The 1200 × 1200 fixture was **not** selected to observe conservation behavior. A future operator run may populate Record B passively. That cannot change geometry, authorize a rerun, or close FP-027. Root cause stays **UNPROVEN**. Records A/B stay `NOT_RUN` until that run exists. Score **6.0/10**. Formulas **FROZEN**. PR #32 Draft / **DO NOT MERGE**.
+The 1200 × 1200 fixture was **not** selected to observe conservation behavior. The independently authorized FP-024C.5 run later populated Record B passively (section below). That cannot change geometry, authorize a rerun, or close FP-027. Root cause stays **UNPROVEN**. Score **6.0/10**. Formulas **FROZEN**. PR #32 Draft / **DO NOT MERGE**.
+
+---
+
+## FP027_90_CONTROL_CONSERVATION_OBSERVATION — passive only (13 September 2026)
+
+Same run as `FP024C_90_CONTROL_COMPENSATION`. This section cannot change fixture validity, compensation classification, geometry, settings, or authorize a rerun.
+
+| Item | Value |
+|------|-------|
+| Project / design / plan / run | Id=9 / Design Id=11 / Plan Id=7 / OptimizationRun Id=13 / solver `ae9c45f0` |
+| Shared machine artifact | SHA-256 `4b386aa7…` |
+| requiredCount | **13** |
+| planCount | **17** |
+| deltaCount | **+4** |
+| requiredLengthMm | 12564 |
+| planLengthMm | 17028 |
+| machineExportCount | **5** |
+| Warning | `4 piece(s) in the optimization plan could not be matched to the detailed production list` |
+| Classification | `OVERPRODUCTION` (count only) |
+
+| Profile | requiredCount | planCount | deltaCount | machineExportCount |
+|---------|---------------|-----------|------------|--------------------|
+| KASA-70 1203 45/45 | 4 | 4 | 0 | 4 |
+| ORTA-KAYIT-70 1116 90/90 | 1 | 5 | +4 | 1 |
+| CITA-20 (540 + 1119) | 8 | 8 | 0 | 0 |
+
+REMAINING_LENGTH: ORTA **900.0** (plan remainder after 5 cuts); KASA **1165.4**. Remainder was not recomputed after the export match filter.
+
+ORTA surplus **appeared**. That does **not** prove a cause. Variable bundle remains `ORTA + demand=1 + 90/90 + single-length + cost/profile`.
+
+```text
+FP-027 root cause = UNPROVEN
+cannotCloseFp027 = true
+cannotCiteFp024cCompensation = true
+sharedHashImpliesSharedVerdict = false
+```
+
+Do not implement FP-027. Do not implement FP-026. Do not run another discriminator.
