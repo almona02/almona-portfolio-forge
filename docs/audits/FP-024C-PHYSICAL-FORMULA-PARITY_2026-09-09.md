@@ -249,7 +249,7 @@ Angle / geometry compensation: nominal, packed, and machine length under unchang
 
 ### Decision
 
-`DUAL_USE_CONDITIONAL`. This reassessment does **not** authorize the control (`authorizesControl = false`). `isControlFixtureAuthorized()` remains false until the original FP-024C gates recover (reset 1B, Fresh B/C, non-ambiguous C.1).
+`DUAL_USE_CONDITIONAL`. This reassessment does **not** authorize the control (`authorizesControl = false`). FP-024C.4 later replaced the obsolete C.1 reset / Fresh B/C deadlock: the remaining catalog blocker is an independently specified 90° fixture.
 
 Choosing geometry so FP-027 can reproduce `ORTA 1 → 4` is fixture-selection bias and is **unsafe as a targeting rule**. Passive conservation transcription from a later independently authorized compensation run is allowed into a **separate** Record B. Shared hashes do not share verdicts. A surprising conservation result must not rerun or alter the compensation record.
 
@@ -258,3 +258,21 @@ E2 showed the only native 90°/90° linear piece on the two-panel template is OR
 Physical-length score stays **6.0/10**. Production formulas stay **FROZEN**. PR #32 stays Draft / **DO NOT MERGE**. Do not run the 90° control from this reassessment.
 
 See `docs/audits/FP-027-OPTIMIZATION-REQUIRED-PARTS-CONSERVATION_2026-09-13.md` (dual-use section) and `FP024C_NINETY_CONTROL_DUAL_USE`.
+
+---
+
+## FP-024C.4 — 90° control-gate reconciliation (13 September 2026)
+
+Repository/audit only. The control was **not** run.
+
+`isControlFixtureAuthorized()` no longer deadlocks on failed asdd remainder reset, pending Fresh B/C, or an unsettled C.1 verdict. Those predicates are `SUPERSEDED_BY_FP024C3` for **authorization**. Historical C.1 rows remain `PENDING_OPERATOR_RUN` / `REPRODUCTION_FAILED` / `AMBIGUOUS`.
+
+Current catalog evaluation of `evaluateControlFixtureAuthorization()`:
+
+```text
+authorized = false
+verdict = BLOCKED
+blockers = [FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY]
+```
+
+C.3 accepted checkpoint is recognized. Formula freeze, stock-update **No** protocol, dual-use CONDITIONAL ≠ SAFE, and the FP-027 firewall remain required. FP-027 root cause UNPROVEN does **not** block compensation science. FP-027 targeting cannot authorize the control. Score stays **6.0/10**. Formulas stay **FROZEN**. PR #32 stays Draft / **DO NOT MERGE**.

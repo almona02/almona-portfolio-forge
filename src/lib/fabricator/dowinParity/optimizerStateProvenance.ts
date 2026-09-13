@@ -2488,6 +2488,151 @@ export function evaluateDualUseVerdictFirewall(args: {
   };
 }
 
+/**
+ * FP-024C.1 asked why identical visible inputs produced different remainder
+ * topology. That repeatability question was answered by the accepted
+ * FP-024C.3 triplicate. Historical C.1 rows stay visible; they must not
+ * deadlock the 90° compensation-control gate.
+ */
+export const FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION = {
+  experiment: 'FP024C1_OPTIMIZATION_STATE_PROVENANCE',
+  status: 'SUPERSEDED_BY_FP024C3',
+  supersededFor: 'controlled_repeatability_and_control_authorization',
+  historicalEvidencePreserved: true,
+  freshBFixtureId: 'FP024C1_FRESH_B',
+  freshCFixtureId: 'FP024C1_FRESH_C',
+  freshBStatus: 'PENDING_OPERATOR_RUN',
+  freshCStatus: 'PENDING_OPERATOR_RUN',
+  baselineResetVerdict: 'REPRODUCTION_FAILED',
+  cannotDeadlockControlAuthorization: true,
+} as const;
+
+export const FP024C3_EVIDENCE_CHECKPOINT = {
+  accepted: true,
+  verdict: 'NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS',
+  completeInputEquivalence: 'UNPROVEN',
+  offcutRemnant: 'UNPROVEN',
+} as const;
+
+export const FP024C_90_CONTROL_STOCK_PROTOCOL = {
+  present: true,
+  captureStockBeforeRun: true,
+  noMutationDuringRun: true,
+  stockUpdateResponse: 'NO',
+} as const;
+
+export const FP024C_90_CONTROL_AUTHORIZATION_CONTRACT = {
+  id: 'FP024C4_CONTROL_AUTHORIZATION',
+  required: [
+    'FP024C3_EVIDENCE_CHECKPOINT_ACCEPTED',
+    'PRODUCTION_FORMULAS_FROZEN',
+    'FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY',
+    'SETTINGS_WELD_3_SAW_4_TRIM_0',
+    'MACHINE_PROVENANCE_DEFINED',
+    'NO_SYNTHETIC_REQUIRED_PART_MANIPULATION',
+    'COMPENSATION_AND_FP027_AUTHORITY_SEPARATED',
+    'STOCK_MUTATION_PROTOCOL_PRESENT',
+    'FP027_TARGETING_CANNOT_AUTHORIZE_FP024C_CONTROL',
+  ],
+  supersededAsBlockers: [
+    'BASELINE_RESET_RECOVERS_1B_REMAINDERS',
+    'FP024C1_FRESH_B_C_MEASURED',
+    'FP024C1_VERDICT_NOT_PENDING_OR_AMBIGUOUS',
+    'FP027_ROOT_CAUSE_CLOSED',
+  ],
+  fp027TargetingCannotAuthorize: true,
+  dualUseConditionalDoesNotEqualSafe: true,
+  fp027ObservationPassiveOnly: true,
+  scoreUnchangedByAuthorization: '6.0/10',
+} as const;
+
+export type ControlFixtureAuthorizationVerdict =
+  | 'AUTHORIZED'
+  | 'BLOCKED'
+  | 'CONDITIONAL'
+  | 'UNPROVEN';
+
+export interface ControlFixtureAuthorizationArgs {
+  controlledTriplicateComplete?: boolean;
+  fixtureIndependentlySpecified?: boolean;
+  selectedToObserveOrtaSurplus?: boolean;
+  formulaFreeze?: boolean;
+  stockMutationProtocolPresent?: boolean;
+  settingsWeld3Saw4Trim0?: boolean;
+  machineProvenanceDefined?: boolean;
+  syntheticRowRejected?: boolean;
+  authoritySeparated?: boolean;
+  dualUseClassification?: Fp024cNinetyControlDualUseClassification;
+  fp027TargetingAuthorize?: boolean;
+}
+
+/**
+ * Current scientific gate for the original 90° compensation control.
+ * Does not ask whether optimizer topology is deterministic, whether the
+ * asdd remainder reset recovered, or whether FP-027 root cause is closed.
+ */
+export function evaluateControlFixtureAuthorization(
+  args: ControlFixtureAuthorizationArgs = {}
+): {
+  authorized: boolean;
+  verdict: ControlFixtureAuthorizationVerdict;
+  blockers: string[];
+  supersededConditions: readonly string[];
+  fp027RootCauseBlocksCompensation: false;
+  fp027TargetingAuthorizedControl: false;
+  dualUseIsSafe: boolean;
+  physicalLengthScore: '6.0/10';
+  controlRunStatus: 'NOT_RUN';
+} {
+  const fixtureSpecified =
+    args.fixtureIndependentlySpecified ??
+    FP024C_NINETY_CONTROL_SPEC.geometryIndependentlySpecified;
+  const selectedForOrta = args.selectedToObserveOrtaSurplus ?? false;
+  const freeze = args.formulaFreeze ?? FP024C_NINETY_CONTROL_DUAL_USE.formulaFreeze;
+  const stockProtocol =
+    args.stockMutationProtocolPresent ?? FP024C_90_CONTROL_STOCK_PROTOCOL.present;
+  const settings = args.settingsWeld3Saw4Trim0 ?? true;
+  const machine = args.machineProvenanceDefined ?? true;
+  const noSynthetic =
+    args.syntheticRowRejected ??
+    !FP027_REQUIRED_PARTS_CONSERVATION_GATE.injectedSyntheticRowIsValidEvidence;
+  const separated =
+    args.authoritySeparated ??
+    FP024C_NINETY_CONTROL_DUAL_USE.sharedVerdictAuthorityForbidden;
+  const dualUse =
+    args.dualUseClassification ?? FP024C_NINETY_CONTROL_DUAL_USE.classification;
+  const c3Accepted =
+    args.controlledTriplicateComplete ?? FP024C3_EVIDENCE_CHECKPOINT.accepted;
+  const fp027Wants = args.fp027TargetingAuthorize ?? false;
+
+  const blockers: string[] = [];
+  if (!c3Accepted) blockers.push('FP024C3_EVIDENCE_CHECKPOINT_ACCEPTED');
+  if (!freeze) blockers.push('PRODUCTION_FORMULAS_FROZEN');
+  if (!fixtureSpecified) {
+    blockers.push('FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY');
+  }
+  if (selectedForOrta || fp027Wants) {
+    blockers.push('FP027_TARGETING_CANNOT_AUTHORIZE_FP024C_CONTROL');
+  }
+  if (!settings) blockers.push('SETTINGS_WELD_3_SAW_4_TRIM_0');
+  if (!machine) blockers.push('MACHINE_PROVENANCE_DEFINED');
+  if (!noSynthetic) blockers.push('NO_SYNTHETIC_REQUIRED_PART_MANIPULATION');
+  if (!separated) blockers.push('COMPENSATION_AND_FP027_AUTHORITY_SEPARATED');
+  if (!stockProtocol) blockers.push('STOCK_MUTATION_PROTOCOL_PRESENT');
+
+  return {
+    authorized: blockers.length === 0,
+    verdict: blockers.length === 0 ? 'AUTHORIZED' : 'BLOCKED',
+    blockers,
+    supersededConditions: FP024C_90_CONTROL_AUTHORIZATION_CONTRACT.supersededAsBlockers,
+    fp027RootCauseBlocksCompensation: false,
+    fp027TargetingAuthorizedControl: false,
+    dualUseIsSafe: dualUse === 'DUAL_USE_SAFE',
+    physicalLengthScore: '6.0/10',
+    controlRunStatus: 'NOT_RUN',
+  };
+}
+
 export interface ControlledFixtureRow {
   category: DowinLengthCategory;
   nominalLengthMm: number;

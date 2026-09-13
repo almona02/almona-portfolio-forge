@@ -40,8 +40,13 @@ import {
   FP024C_NINETY_CONTROL_DUAL_USE,
   FP024C_NINETY_CONTROL_SPEC,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
+  evaluateControlFixtureAuthorization,
   evaluateDualUseVerdictFirewall,
   evaluateNinetyControlFixtureSelection,
+  FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION,
+  FP024C3_EVIDENCE_CHECKPOINT,
+  FP024C_90_CONTROL_AUTHORIZATION_CONTRACT,
+  FP024C_90_CONTROL_STOCK_PROTOCOL,
   FP027_E3_BARS,
   FP027_E3_KASA_SPARE,
   FP027_E3_REQUIRED_PIECES,
@@ -1489,6 +1494,94 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
       false
     );
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
+  });
+
+  it('reconciles the 90° control gate to current scientific prerequisites (FP-024C.4)', () => {
+    const catalog = evaluateControlFixtureAuthorization();
+    expect(FP024C3_EVIDENCE_CHECKPOINT.accepted).toBe(true);
+    expect(FP024C3_EVIDENCE_CHECKPOINT.verdict).toBe(
+      'NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS'
+    );
+    expect(isFp024c3ControlledTriplicateComplete()).toBe(true);
+    expect(catalog.blockers).toEqual(['FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY']);
+    expect(catalog.authorized).toBe(false);
+    expect(catalog.verdict).toBe('BLOCKED');
+    expect(catalog.controlRunStatus).toBe('NOT_RUN');
+    expect(catalog.physicalLengthScore).toBe('6.0/10');
+    expect(FP024C_90_CONTROL_COMPENSATION.status).toBe('NOT_RUN');
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.classification).toBe('DUAL_USE_CONDITIONAL');
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.classification).not.toBe('DUAL_USE_SAFE');
+    expect(catalog.dualUseIsSafe).toBe(false);
+
+    expect(FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION.status).toBe('SUPERSEDED_BY_FP024C3');
+    expect(FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION.historicalEvidencePreserved).toBe(true);
+    expect(FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION.cannotDeadlockControlAuthorization).toBe(
+      true
+    );
+    const freshPending = DOWIN_CALIBRATION_RUNS.filter(
+      (run) =>
+        run.fixtureId === 'FP024C1_FRESH_B' || run.fixtureId === 'FP024C1_FRESH_C'
+    );
+    expect(freshPending).toHaveLength(2);
+    expect(freshPending.every((run) => run.status === 'PENDING_OPERATOR_RUN')).toBe(true);
+    expect(DOWIN_ASDD_BASELINE_RESET_RUN.reproductionVerdict).toBe('REPRODUCTION_FAILED');
+    expect(classifyProvenanceFreshStateExperiment(DOWIN_CALIBRATION_RUNS).verdict).toBe(
+      'AMBIGUOUS'
+    );
+    expect(catalog.supersededConditions).toEqual(
+      FP024C_90_CONTROL_AUTHORIZATION_CONTRACT.supersededAsBlockers
+    );
+    expect(catalog.blockers).not.toContain('FP024C1_FRESH_B_C_MEASURED');
+    expect(catalog.blockers).not.toContain('BASELINE_RESET_RECOVERS_1B_REMAINDERS');
+    expect(catalog.fp027RootCauseBlocksCompensation).toBe(false);
+    expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.rootCause).toBe('UNPROVEN');
+
+    const targeting = evaluateControlFixtureAuthorization({
+      fixtureIndependentlySpecified: true,
+      fp027TargetingAuthorize: true,
+    });
+    expect(targeting.authorized).toBe(false);
+    expect(targeting.fp027TargetingAuthorizedControl).toBe(false);
+    expect(targeting.blockers).toContain('FP027_TARGETING_CANNOT_AUTHORIZE_FP024C_CONTROL');
+
+    const specified = evaluateControlFixtureAuthorization({
+      fixtureIndependentlySpecified: true,
+      selectedToObserveOrtaSurplus: false,
+    });
+    expect(specified.blockers).not.toContain(
+      'FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY'
+    );
+    expect(specified.authorized).toBe(true);
+    expect(specified.verdict).toBe('AUTHORIZED');
+    expect(specified.physicalLengthScore).toBe('6.0/10');
+    expect(specified.controlRunStatus).toBe('NOT_RUN');
+    expect(isControlFixtureAuthorized()).toBe(false);
+    expect(FP024C_NINETY_CONTROL_SPEC.geometryIndependentlySpecified).toBe(false);
+
+    expect(
+      evaluateControlFixtureAuthorization({
+        fixtureIndependentlySpecified: true,
+        formulaFreeze: false,
+      }).blockers
+    ).toContain('PRODUCTION_FORMULAS_FROZEN');
+    expect(
+      evaluateControlFixtureAuthorization({
+        fixtureIndependentlySpecified: true,
+        stockMutationProtocolPresent: false,
+      }).blockers
+    ).toContain('STOCK_MUTATION_PROTOCOL_PRESENT');
+    expect(FP024C_90_CONTROL_STOCK_PROTOCOL.stockUpdateResponse).toBe('NO');
+
+    const firewall = evaluateDualUseVerdictFirewall({
+      compensationClassification: 'WITHIN_FIXTURE_LAYERS',
+      conservationClassification: 'OVERPRODUCTION',
+      compensationArtifactSha256: 'same',
+      conservationArtifactSha256: 'same',
+    });
+    expect(firewall.sharedHashImpliesSharedVerdict).toBe(false);
+    expect(firewall.conservationProvenBecauseCompensationMatched).toBe(false);
+    expect(firewall.compensationProvenBecauseConservationMatched).toBe(false);
+    expect(firewall.fp027RootCause).toBe('UNPROVEN');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

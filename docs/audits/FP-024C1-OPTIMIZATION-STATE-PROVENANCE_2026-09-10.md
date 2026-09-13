@@ -491,3 +491,13 @@ The old `FP024C1_FRESH_B` keeps its classification **INVALID_PRE_RUN / STOCK_STA
 **Implication of the controlled triplicate for FP-024C.1.** The original FP-024C.1 question was whether the Fresh A / historical 1B difference came from stale optimizer state. The triplicate does not answer that question — it was run under baseline V2 and cannot be compared across baselines — but it does change what the FP-024C.1 evidence can be read to mean. Two controlled fresh solves under measured-identical inputs produced different bar assignments, so a topology difference between two DoWin runs is **no longer sufficient on its own** to infer inherited state or a hidden input difference. Any future state-provenance claim must therefore rule out the run-to-run variation now documented in FP-024C.3, and `evaluateFreshRunIntake` remains the required gate. This weakens FP-024C.1's inferential power; it does not resolve it. The FP-024C.3 verdict now exists and was accepted at independent review on 13 September 2026, but 90° stays **GATED**: the same review reprioritised **FP-027 — Optimization Required-Parts Conservation Forensics** ahead of the compensation control, because the repeatable `21 → 24` required-parts surplus is a manufacturing-safety invariant violation. 90° reopens after FP-027 closes.
 5. RUN_A is deliberately **not** comparable to Fresh A. Fresh A solved against V1-era optimizer stock (48 / 98 / 14 / 0) and RUN_A against V2 (46 / 96 / 13 / 100), so `classifyProvenanceFreshStateExperiment` excludes FP-024C.3 runs. Fresh A's `warehouseStock` axis can never again be `IDENTICAL` to any later run, exactly as this audit already recorded.
 5. Do not merge PR #32. Physical-length score stays 6.0/10. Production formulas stay FROZEN.
+
+---
+
+## FP-024C.4 — supersession for control authorization (13 September 2026)
+
+Status: `SUPERSEDED_BY_FP024C3` **for controlled repeatability and for 90° control authorization**. This does **not** rewrite Fresh B/C, the failed remainder reset, or `classifyProvenanceFreshStateExperiment`. Those remain historically visible.
+
+The 90° compensation control does not need optimizer-topology determinism, completion of the unexecuted Fresh B/C slots, or recovery of asdd remainder topology. Those were C.1 scientific questions. FP-024C.3 accepted `NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS` with `COMPLETE_INPUT_EQUIVALENCE = UNPROVEN`.
+
+`isControlFixtureAuthorized()` therefore no longer treats pending Fresh B/C or `REPRODUCTION_FAILED` reset as deadlock. Authorization stays **BLOCKED** on the unspecified independent 90° fixture spec. Do not run the control from this note.

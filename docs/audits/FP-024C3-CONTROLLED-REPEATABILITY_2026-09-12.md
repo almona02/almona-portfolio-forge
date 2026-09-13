@@ -1087,7 +1087,7 @@ The 90° control stays **GATED**. PR #32 stays **DO NOT MERGE**: the branch has 
 | Repeatability verdict | **NONREPEATABLE_UNDER_MEASURED_IDENTICAL_INPUTS** |
 | `ORTA_ZERO_QTY_CONTROL_OBSERVABILITY` | **LOST_BY_MANUAL_STOCK_EDIT** |
 | `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` | **PROVEN FOR OBSERVED PATH** |
-| 90° CONTROL_FIXTURE | **GATED** — deprioritized below FP-027 at review; a complete triplicate does not authorize it |
+| 90° CONTROL_FIXTURE | **BLOCKED** (FP-024C.4) — C.3 checkpoint recognized; remaining blocker is independent fixture specification, not Fresh B/C |
 | Physical-length correctness | **6.0/10** |
 | Production formulas | **FROZEN** |
 | FP-016 / FP-017 | not started |
@@ -1097,3 +1097,7 @@ The 90° control stays **GATED**. PR #32 stays **DO NOT MERGE**: the branch has 
 | FP-027 | 🔓 **OPEN**; E3 `EXACT`; E1 and E2 negative fixtures (not failed experiments); non-ORTA 90° unobtainable naturally; 90° CONTROL_FIXTURE still GATED; root cause UNPROVEN |
 | +3 ORTA root cause | **UNPROVEN** — deterministic or upstream conservation defect supported, not proven |
 | PR #32 | **Draft / DO NOT MERGE** |
+
+### FP-024C.4 note (13 September 2026)
+
+The accepted C.3 checkpoint is now a **required** authorization predicate for the original 90° compensation control. It is **not sufficient**. Fresh B/C remaining pending must not deadlock that gate (`SUPERSEDED_BY_FP024C3` for authorization only). Geometry is still unspecified, so the control stays **BLOCKED** and **NOT_RUN**. Score 6.0/10. Formulas frozen.

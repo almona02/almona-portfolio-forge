@@ -12,7 +12,10 @@ import {
 import {
   DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
-import { FP024C_NINETY_CONTROL_DUAL_USE } from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
+import {
+  evaluateControlFixtureAuthorization,
+  FP024C_NINETY_CONTROL_DUAL_USE,
+} from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
 
 function sourceOf(rel: string): string {
   return readFileSync(resolve(process.cwd(), rel), 'utf8');
@@ -75,5 +78,12 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
     expect(FP024C_NINETY_CONTROL_DUAL_USE.formulaFreeze).toBe(true);
     expect(FP024C_NINETY_CONTROL_DUAL_USE.authorizesControl).toBe(false);
     expect(FP024C_NINETY_CONTROL_DUAL_USE.physicalLengthScore).toBe('6.0/10');
+    expect(evaluateControlFixtureAuthorization().physicalLengthScore).toBe('6.0/10');
+    expect(
+      evaluateControlFixtureAuthorization({
+        fixtureIndependentlySpecified: true,
+        formulaFreeze: false,
+      }).blockers
+    ).toContain('PRODUCTION_FORMULAS_FROZEN');
   });
 });

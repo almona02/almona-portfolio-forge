@@ -57,6 +57,7 @@ import {
   FP027_E2_NONORTA_90,
   FP027_REQUIRED_PARTS_CONSERVATION_GATE,
   FP024C_NINETY_CONTROL_DUAL_USE,
+  evaluateControlFixtureAuthorization,
   evaluateBaselineReset,
   overallUtilizationPercent,
   type DowinCalibrationRun,
@@ -106,6 +107,10 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.e2AuthorizesNinetyControl).toBe(false);
     expect(FP024C_NINETY_CONTROL_DUAL_USE.classification).toBe('DUAL_USE_CONDITIONAL');
     expect(FP024C_NINETY_CONTROL_DUAL_USE.authorizesControl).toBe(false);
+    expect(evaluateControlFixtureAuthorization().blockers).toEqual([
+      'FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY',
+    ]);
+    expect(evaluateControlFixtureAuthorization().authorized).toBe(false);
     expect(DOWIN_ASDD_BASELINE_RESET_RUN.reproductionVerdict).toBe('REPRODUCTION_FAILED');
     expect(
       evaluateBaselineReset(DOWIN_ASDD_BASELINE_REPRODUCTION_RUN, DOWIN_ASDD_BASELINE_RESET_RUN).verdict
@@ -467,7 +472,7 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     }
   });
 
-  it('keeps the 90° CONTROL_FIXTURE gated even if a reset recovers 1B', () => {
+  it('keeps the 90° CONTROL_FIXTURE gated even if a reset recovers 1B (C.1 reset is superseded)', () => {
     const recoveredReset: DowinCalibrationRun = {
       ...DOWIN_ASDD_BASELINE_REPRODUCTION_RUN,
       fixtureId: 'BASELINE_RESET_VALIDATION',
@@ -520,7 +525,15 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     );
     expect(control.ok).toBe(false);
     if (!control.ok) {
-      expect(control.reasons.some((r) => r.includes('Fresh A/B/C'))).toBe(true);
+      expect(control.reasons.some((r) => r.includes('90° CONTROL_FIXTURE stays gated'))).toBe(
+        true
+      );
+      expect(control.reasons.some((r) => r.includes('Fresh A/B/C'))).toBe(false);
+      expect(
+        control.reasons.some((r) =>
+          r.includes('FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY')
+        )
+      ).toBe(true);
     }
 
     const controlWithSettingChange = ingestOperatorCalibrationRun(

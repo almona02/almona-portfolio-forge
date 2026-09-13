@@ -488,7 +488,7 @@ passive conservation transcription after independent FP-024C authorization = all
 
 Not `DUAL_USE_SAFE`: the fixture is not independently specified; protocol would have to be extended to lock geometry. Not blanket `DUAL_USE_UNSAFE`: forbidding even passive transcription of an independently authorized compensation run would over-claim contamination. Not `UNPROVEN`: the spec is sufficient to decide these limits.
 
-This reassessment does **not** authorize the control. Independent FP-024C authorization (reset recovery, Fresh B/C, non-ambiguous C.1, C.3 complete) must still happen first. When that run exists, operators must choose geometry for compensation isolation only.
+This reassessment does **not** authorize the control. FP-024C.4 later superseded C.1 reset / Fresh B/C as authorization blockers. The remaining catalog blocker is `FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY`. When a compensation-only fixture is specified, operators must still choose geometry for compensation isolation only.
 
 ### Authority firewall (implemented, not executed)
 
@@ -506,3 +506,11 @@ Do not run another FP-027 experiment.
 Do not implement FP-027 or FP-026.
 Do not modify formulas.
 ```
+
+---
+
+## FP-024C.4 — control-gate reconciliation (13 September 2026)
+
+FP-027 root cause UNPROVEN is **IRRELEVANT_TO_CONTROL** as a blocker and **cannot authorize** the control (`FP027_TARGETING_CANNOT_AUTHORIZE_FP024C_CONTROL`). Dual-use stays `DUAL_USE_CONDITIONAL`, which is not `DUAL_USE_SAFE`.
+
+Current authorization contract lives in `evaluateControlFixtureAuthorization`. Catalog verdict: **BLOCKED** solely by `FP024C_90_CONTROL_FIXTURE_SPECIFIED_INDEPENDENTLY`. Obsolete C.1 Fresh B/C / remainder-reset predicates are superseded as blockers and remain historically visible. Records A/B stay `NOT_RUN`. Score **6.0/10**. Formulas **FROZEN**. PR #32 Draft / **DO NOT MERGE**.

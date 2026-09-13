@@ -7,8 +7,9 @@
  * → FP-024C.1 OPTIMIZATION_STATE_PROVENANCE_AUDIT (one question: why
  *   identical visible geometry/settings can produce different remainder
  *   topology; compare bar-assignment signatures, not utilization)
- * → Test 5 CONTROL_FIXTURE. Isolation is not authorized until 1B reproduces.
- * CONTROL_FIXTURE is not authorized until reset recovers. Do not encode
+ * → Test 5 CONTROL_FIXTURE. FP-024C.4: authorization is evaluateControlFixtureAuthorization
+ * (C.3 checkpoint + independent fixture spec + freeze + stock protocol). C.1 reset /
+ * Fresh B/C are superseded as blockers. Do not encode
  * packed = nominal + 3, do not absorb a hidden +7 mm, and do not feed these
  * values into runtime manufacturing.
  *
@@ -57,8 +58,13 @@ import {
   FP024C_NINETY_CONTROL_DUAL_USE,
   FP024C_NINETY_CONTROL_SPEC,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
+  evaluateControlFixtureAuthorization,
   evaluateDualUseVerdictFirewall,
   evaluateNinetyControlFixtureSelection,
+  FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION,
+  FP024C3_EVIDENCE_CHECKPOINT,
+  FP024C_90_CONTROL_AUTHORIZATION_CONTRACT,
+  FP024C_90_CONTROL_STOCK_PROTOCOL,
   FP027_E3_BARS,
   FP027_E3_KASA_SPARE,
   FP027_E3_REQUIRED_PIECES,
@@ -164,8 +170,13 @@ export {
   FP024C_NINETY_CONTROL_DUAL_USE,
   FP024C_NINETY_CONTROL_SPEC,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
+  evaluateControlFixtureAuthorization,
   evaluateDualUseVerdictFirewall,
   evaluateNinetyControlFixtureSelection,
+  FP024C1_CONTROLLED_REPEATABILITY_SUPERSESSION,
+  FP024C3_EVIDENCE_CHECKPOINT,
+  FP024C_90_CONTROL_AUTHORIZATION_CONTRACT,
+  FP024C_90_CONTROL_STOCK_PROTOCOL,
   FP027_E3_BARS,
   FP027_E3_KASA_SPARE,
   FP027_E3_REQUIRED_PIECES,
@@ -1831,31 +1842,17 @@ export function findBaselineReset(
 }
 
 /**
- * 90° CONTROL_FIXTURE stays gated until:
- * 1. BASELINE_RESET_VALIDATION recovers the 1B remainder topology, and
- * 2. Fresh A/B/C and the FP-024C.3 controlled triplicate are no longer pending, and
- * 3. FP-024C.1 is not still PENDING_OPERATOR_RUN or AMBIGUOUS.
- * A single Fresh A recovery of original topology does not open this gate.
- * The FP-024C.3 repeatability verdict must exist before 90° is requested.
+ * Boolean view of evaluateControlFixtureAuthorization.
+ * Fresh B/C pending and a failed asdd remainder reset no longer deadlock
+ * this helper. Catalog authorization stays false while the 90° fixture
+ * geometry is unspecified.
  */
 export function isControlFixtureAuthorized(
   runs: readonly DowinCalibrationRun[] = DOWIN_CALIBRATION_RUNS
 ): boolean {
-  const reset = findBaselineReset(runs);
-  if (!(reset?.status === 'MEASURED' && reset.reproductionVerdict === 'REPRODUCED')) {
-    return false;
-  }
-  const pendingFresh = runs.filter(
-    (run) =>
-      run.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT' &&
-      run.status === 'PENDING_OPERATOR_RUN'
-  );
-  if (pendingFresh.length > 0) return false;
-  if (!isFp024c3ControlledTriplicateComplete(runs)) return false;
-  const provenance = classifyProvenanceFreshStateExperiment(runs);
-  return (
-    provenance.verdict !== 'PENDING_OPERATOR_RUN' && provenance.verdict !== 'AMBIGUOUS'
-  );
+  return evaluateControlFixtureAuthorization({
+    controlledTriplicateComplete: isFp024c3ControlledTriplicateComplete(runs),
+  }).authorized;
 }
 
 const ASDD_RESET_MULLION_PAIR = {
@@ -2297,8 +2294,11 @@ export function ingestOperatorCalibrationRun(
 
   if (runKind === 'CONTROL_FIXTURE') {
     if (!isControlFixtureAuthorized(runs)) {
+      const gate = evaluateControlFixtureAuthorization({
+        controlledTriplicateComplete: isFp024c3ControlledTriplicateComplete(runs),
+      });
       reasons.push(
-        '90° CONTROL_FIXTURE stays gated until BASELINE_RESET_VALIDATION recovers 1B remainders (KASA 965 / KANAT 2203 / ORTA 5080 / CITA 206/6160) and machine lengths 454 / 1433 / 1003 / 1503 / 1416, Fresh A/B/C are measured, and FP-024C.1 is no longer PENDING_OPERATOR_RUN or AMBIGUOUS.'
+        `90° CONTROL_FIXTURE stays gated: ${gate.blockers.join(', ') || 'unspecified current prerequisite'}.`
       );
     }
     if (!pkg.controlFixtureNote) {
@@ -2898,8 +2898,8 @@ export function buildIsolationDeltaTable(
         findings: [],
         note:
           reset.verdict === 'REPRODUCED'
-            ? 'BASELINE_RESET_VALIDATION recovered 1B: KASA 965 / KANAT 2203 / ORTA 5080 / CITA 206/6160 and machine 454 / 1433 / 1003 / 1503 / 1416. 90° CONTROL_FIXTURE may proceed.'
-            : `REPRODUCTION_FAILED. Persistent optimizer/application state. Missing length pairs: ${reset.missingPairs.join('; ') || 'none'}. Remainder mismatches: ${reset.remainderMismatches.join('; ') || 'none'}. STOP — FP-024C.1 provenance audit next. Do not run the 90° CONTROL_FIXTURE.`,
+            ? 'BASELINE_RESET_VALIDATION recovered 1B remainders and machine lengths. Historical C.1 evidence. Superseded as a 90° authorization blocker by FP-024C.3 (FP-024C.4).'
+            : `REPRODUCTION_FAILED. Persistent optimizer/application state. Missing length pairs: ${reset.missingPairs.join('; ') || 'none'}. Remainder mismatches: ${reset.remainderMismatches.join('; ') || 'none'}. Historical C.1 evidence preserved (SUPERSEDED_BY_FP024C3). Does not deadlock 90° CONTROL_FIXTURE authorization.`,
       };
     }
     if (run.runKind === 'OPTIMIZATION_STATE_PROVENANCE_AUDIT') {
