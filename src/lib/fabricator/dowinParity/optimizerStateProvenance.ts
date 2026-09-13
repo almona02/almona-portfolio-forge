@@ -2800,9 +2800,17 @@ export interface Fp024c7LayerMeasurement {
   machineMm: number | null;
 }
 
+function reportToRequiredPartsDeltaMm(
+  layer: Fp024c7LayerMeasurement
+): number | null {
+  return layer.requiredPartsMm == null
+    ? null
+    : layer.requiredPartsMm - layer.designReportMm;
+}
+
 /**
- * Map an already-isolated Welding Waste 3→0 pair onto the C.6 five-layer
- * position. Does not infer a missing Required Parts value. Does not encode
+ * Map a Welding Waste 3→0 pair onto the C.6 five-layer position.
+ * Does not infer a missing Required Parts value. Does not encode
  * a production formula. AICS-001: evidence classification only.
  */
 export function evaluateWeldingWasteLayerCausality(args: {
@@ -2816,10 +2824,17 @@ export function evaluateWeldingWasteLayerCausality(args: {
   fortyFiveReportToPackedDeltaAtWeld0Mm: number;
   ninetyReportToPackedDeltaAtWeld3Mm: number;
   ninetyReportToPackedDeltaAtWeld0Mm: number;
+  fortyFiveReportToRequiredPartsDeltaAtWeld3Mm: number | null;
+  fortyFiveReportToRequiredPartsDeltaAtWeld0Mm: number | null;
+  ninetyReportToRequiredPartsDeltaAtWeld3Mm: number | null;
+  ninetyReportToRequiredPartsDeltaAtWeld0Mm: number | null;
   weldMovesFortyFiveReportToPacked: boolean;
   weldMovesNinetyReportToPacked: boolean;
   requiredPartsMeasuredAtBothWeldSettings: boolean;
-  weldMovesReportToRequiredParts: 'UNPROVEN';
+  weldMovesReportToRequiredParts:
+    | 'UNPROVEN'
+    | 'PROVEN_FOR_ASDD_FIXTURE'
+    | 'NO_OBSERVED_EFFECT';
   sameCompensationAcrossAngles: 'REJECTED_BY_OBSERVATION';
   authorizesFormulaChange: false;
 } {
@@ -2835,11 +2850,45 @@ export function evaluateWeldingWasteLayerCausality(args: {
     args.weld3Orta.packedMm - args.weld3Orta.designReportMm;
   const ninetyReportToPackedDeltaAtWeld0Mm =
     args.weld0Orta.packedMm - args.weld0Orta.designReportMm;
+  const fortyFiveReportToRequiredPartsDeltaAtWeld3Mm = reportToRequiredPartsDeltaMm(
+    args.weld3Kasa
+  );
+  const fortyFiveReportToRequiredPartsDeltaAtWeld0Mm = reportToRequiredPartsDeltaMm(
+    args.weld0Kasa
+  );
+  const ninetyReportToRequiredPartsDeltaAtWeld3Mm = reportToRequiredPartsDeltaMm(
+    args.weld3Orta
+  );
+  const ninetyReportToRequiredPartsDeltaAtWeld0Mm = reportToRequiredPartsDeltaMm(
+    args.weld0Orta
+  );
   const requiredPartsMeasuredAtBothWeldSettings =
-    args.weld3Kasa.requiredPartsMm != null &&
-    args.weld0Kasa.requiredPartsMm != null &&
-    args.weld3Orta.requiredPartsMm != null &&
-    args.weld0Orta.requiredPartsMm != null;
+    fortyFiveReportToRequiredPartsDeltaAtWeld3Mm != null &&
+    fortyFiveReportToRequiredPartsDeltaAtWeld0Mm != null &&
+    ninetyReportToRequiredPartsDeltaAtWeld3Mm != null &&
+    ninetyReportToRequiredPartsDeltaAtWeld0Mm != null;
+
+  let weldMovesReportToRequiredParts:
+    | 'UNPROVEN'
+    | 'PROVEN_FOR_ASDD_FIXTURE'
+    | 'NO_OBSERVED_EFFECT' = 'UNPROVEN';
+  if (requiredPartsMeasuredAtBothWeldSettings) {
+    if (
+      fortyFiveReportToRequiredPartsDeltaAtWeld3Mm === 3 &&
+      fortyFiveReportToRequiredPartsDeltaAtWeld0Mm === 0 &&
+      ninetyReportToRequiredPartsDeltaAtWeld3Mm === 0 &&
+      ninetyReportToRequiredPartsDeltaAtWeld0Mm === 0
+    ) {
+      weldMovesReportToRequiredParts = 'PROVEN_FOR_ASDD_FIXTURE';
+    } else if (
+      fortyFiveReportToRequiredPartsDeltaAtWeld3Mm ===
+        fortyFiveReportToRequiredPartsDeltaAtWeld0Mm &&
+      ninetyReportToRequiredPartsDeltaAtWeld3Mm ===
+        ninetyReportToRequiredPartsDeltaAtWeld0Mm
+    ) {
+      weldMovesReportToRequiredParts = 'NO_OBSERVED_EFFECT';
+    }
+  }
 
   return {
     designReportUnchanged: kasaReportUnchanged && ortaReportUnchanged,
@@ -2847,6 +2896,10 @@ export function evaluateWeldingWasteLayerCausality(args: {
     fortyFiveReportToPackedDeltaAtWeld0Mm,
     ninetyReportToPackedDeltaAtWeld3Mm,
     ninetyReportToPackedDeltaAtWeld0Mm,
+    fortyFiveReportToRequiredPartsDeltaAtWeld3Mm,
+    fortyFiveReportToRequiredPartsDeltaAtWeld0Mm,
+    ninetyReportToRequiredPartsDeltaAtWeld3Mm,
+    ninetyReportToRequiredPartsDeltaAtWeld0Mm,
     weldMovesFortyFiveReportToPacked:
       kasaReportUnchanged &&
       fortyFiveReportToPackedDeltaAtWeld3Mm === 3 &&
@@ -2856,42 +2909,73 @@ export function evaluateWeldingWasteLayerCausality(args: {
       ninetyReportToPackedDeltaAtWeld3Mm !== 0 ||
       ninetyReportToPackedDeltaAtWeld0Mm !== 0,
     requiredPartsMeasuredAtBothWeldSettings,
-    weldMovesReportToRequiredParts: 'UNPROVEN',
+    weldMovesReportToRequiredParts,
     sameCompensationAcrossAngles: 'REJECTED_BY_OBSERVATION',
     authorizesFormulaChange: false,
   };
 }
 
 /**
- * FP-024C.7 — compensation causality. Existing Test 2 Weld 3→0 first.
- * Do not rerun DoWin. Do not patch formulas.
+ * FP-024C.7 — compensation causality. Weld=0 Required Parts boundary
+ * measured on the existing asdd fixture. Do not patch formulas.
  */
 export const FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION = {
   id: 'FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION',
-  status: 'EXISTING_EVIDENCE_MAPPED',
+  status: 'WELD0_REQUIRED_PARTS_BOUNDARY_MEASURED',
   scientificQuestion:
-    'Does Welding Waste 3→0 move the proven Design Report → Required Parts +3 on 45° pieces while leaving 90° at 0?',
+    'At Welding Waste = 0, does the 45° Design Report → Required Parts delta become 0?',
   firstPass: 'EXISTING_WELD_3_TO_0_ONLY',
+  weld0RequiredPartsMeasurement: '2026-09-13T19:54:17',
   doNotRerunDowin: true,
   doNotPatchFormulas: true,
   authorizesWeld0Rerun: false,
   authorizesFormulaChange: false,
   independentReviewOfFp024c6: 'ACCEPTED',
+  protocol: {
+    fixture: 'asdd / asdasd 100001',
+    productionPlan: 'FP024C7_WELD0_RP',
+    productionPlanId: 8,
+    discardedStaleTodayWorkCutList: true,
+    newSolveCreated: false,
+    stockUnchanged: true,
+    settings: {
+      weldingWasteMm: 0,
+      sawThicknessMm: 4,
+      trimCutMm: 0,
+      sashOffsetMm: 7,
+      glazingClearanceMm: 2.5,
+      minimumOffcutMm: 500,
+      machineId: 'DC-600',
+    },
+    settingsPersistSha256:
+      '78f75452ee322f8f89d4e15a7f3162ffc5ecd424b74fbec6b03427b2ae216f7e',
+    settingsSavedToastSha256:
+      'd6e4fadd4f48e56844296b7c29d08d2c80bfef31a2666e633a100d60b6a22b09',
+    settingsPostCutSha256:
+      '94ebca8707358f1eeb523aaf9b150596dcb0f52eae8a9a69d233789099aad8bd',
+    weld0CutListSha256:
+      'e18a96e92dccfc8eabcf35337c72113e106f8cbf1b88ec391ef40b910552dd16',
+    weld3AsddCutListArtifactSha256:
+      'de94f6253e414a738a71cc137fd68fb93ca69aa33396821177b9b645369981f8',
+    weld3AsddSupportingCutListSha256:
+      'fe916f3fac8296201ea2e7e8060ac2b4a4831a30caba30e54d7c006711a3e1d7',
+  },
   asddWeld3: {
-    source: 'BASELINE_REPRODUCTION_RUN / asdd Design Preview + packed + machine',
-    kasa: { GEOMETRY: 1000, DESIGN_REPORT: 1000, REQUIRED_PARTS: null, PACKED: 1003, MACHINE: 1003 },
-    kasaVertical: { DESIGN_REPORT: 1500, REQUIRED_PARTS: null, PACKED: 1503, MACHINE: 1503 },
-    kanatHorizontal: { DESIGN_REPORT: 451, REQUIRED_PARTS: null, PACKED: 454, MACHINE: 454 },
-    kanatVertical: { DESIGN_REPORT: 1430, REQUIRED_PARTS: null, PACKED: 1433, MACHINE: 1433 },
-    orta: { DESIGN_REPORT: 1416, REQUIRED_PARTS: null, PACKED: 1416, MACHINE: 1416 },
+    source:
+      'BASELINE_REPRODUCTION_RUN packed/machine + artifact-only asdd Cut List transcription',
+    kasa: { GEOMETRY: 1000, DESIGN_REPORT: 1000, REQUIRED_PARTS: 1003, PACKED: 1003, MACHINE: 1003 },
+    kasaVertical: { DESIGN_REPORT: 1500, REQUIRED_PARTS: 1503, PACKED: 1503, MACHINE: 1503 },
+    kanatHorizontal: { DESIGN_REPORT: 451, REQUIRED_PARTS: 454, PACKED: 454, MACHINE: 454 },
+    kanatVertical: { DESIGN_REPORT: 1430, REQUIRED_PARTS: 1433, PACKED: 1433, MACHINE: 1433 },
+    orta: { DESIGN_REPORT: 1416, REQUIRED_PARTS: 1416, PACKED: 1416, MACHINE: 1416 },
   },
   asddWeld0: {
-    source: 'WELDING_WASTE_0 2026-09-10 21:54',
-    kasa: { GEOMETRY: 1000, DESIGN_REPORT: 1000, REQUIRED_PARTS: null, PACKED: 1000, MACHINE: 1000 },
-    kasaVertical: { DESIGN_REPORT: 1500, REQUIRED_PARTS: null, PACKED: 1500, MACHINE: 1500 },
-    kanatHorizontal: { DESIGN_REPORT: 451, REQUIRED_PARTS: null, PACKED: 451, MACHINE: 451 },
-    kanatVertical: { DESIGN_REPORT: 1430, REQUIRED_PARTS: null, PACKED: 1430, MACHINE: 1430 },
-    orta: { DESIGN_REPORT: 1416, REQUIRED_PARTS: null, PACKED: 1416, MACHINE: 1416 },
+    source: 'FP024C7_WELD0_RP live Required Parts 2026-09-13 19:54:17; packed/machine from WELDING_WASTE_0 2026-09-10 21:54',
+    kasa: { GEOMETRY: 1000, DESIGN_REPORT: 1000, REQUIRED_PARTS: 1000, PACKED: 1000, MACHINE: 1000 },
+    kasaVertical: { DESIGN_REPORT: 1500, REQUIRED_PARTS: 1500, PACKED: 1500, MACHINE: 1500 },
+    kanatHorizontal: { DESIGN_REPORT: 451, REQUIRED_PARTS: 451, PACKED: 451, MACHINE: 451 },
+    kanatVertical: { DESIGN_REPORT: 1430, REQUIRED_PARTS: 1430, PACKED: 1430, MACHINE: 1430 },
+    orta: { DESIGN_REPORT: 1416, REQUIRED_PARTS: 1416, PACKED: 1416, MACHINE: 1416 },
   },
   controlWeld3: {
     source: 'FP024C_90_CONTROL C.5/C.6',
@@ -2907,24 +2991,33 @@ export const FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION = {
     ninetyPackedToMachineAtBothWeldSettingsMm: 0,
     fortyFiveReportToPackedTwoFixtures: 'OBSERVED_PLUS_3',
     ninetyReportToPackedTwoFixtures: 'OBSERVED_0',
-    fortyFiveReportToRequiredParts: 'OBSERVED_PLUS_3_FOR_C5_FIXTURE',
-    ninetyReportToRequiredParts: 'OBSERVED_0_FOR_C5_FIXTURE',
+    fortyFiveReportToRequiredPartsAtWeld3: 'OBSERVED_PLUS_3_ASDD_AND_C5',
+    fortyFiveReportToRequiredPartsAtWeld0: 'OBSERVED_0_FOR_ASDD_FIXTURE',
+    ninetyReportToRequiredPartsAtWeld3: 'OBSERVED_0_ASDD_AND_C5',
+    ninetyReportToRequiredPartsAtWeld0: 'OBSERVED_0_FOR_ASDD_FIXTURE',
+    weld0ReportToRequiredPartsDelta45: 0,
+    weld0ReportToRequiredPartsDelta90: 0,
     weld3To0EffectOn45ReportToPacked: 'PROVEN_FOR_ASDD_FIXTURE',
     weld3To0EffectOn90ReportToPacked: 'NO_OBSERVED_EFFECT_FOR_ASDD_FIXTURE',
-    weld0RequiredPartsLayer: 'NOT_MEASURED',
-    requiredPartsAtWeld0: 'NOT_MEASURED',
-    weldCausesDesignReportToRequiredPartsPlus3: 'UNPROVEN',
+    weld3To0EffectOn45ReportToRequiredParts: 'PROVEN_FOR_ASDD_FIXTURE',
+    weld3To0EffectOn90ReportToRequiredParts: 'NO_OBSERVED_EFFECT_FOR_ASDD_FIXTURE',
+    weld0RequiredPartsLayer: 'MEASURED',
+    requiredPartsAtWeld0: 'DELTA_0',
+    existingWeld3RequiredPartsArtifactFound: true,
+    pairedWeld3To0BoundaryProof: true,
+    weldCausesDesignReportToRequiredPartsPlus3: 'PROVEN_FOR_ASDD_FIXTURE',
     weldMovesFortyFiveReportToPacked: 'PROVEN_FOR_ASDD_FIXTURE',
     weldMovesNinety: 'NO_OBSERVED_EFFECT_FOR_ASDD_FIXTURE',
-    weldMovesReportToRequiredParts: 'UNPROVEN',
+    weldMovesReportToRequiredParts: 'PROVEN_FOR_ASDD_FIXTURE',
+    weldCausalityAtRequiredPartsBoundary: 'PROVEN_FOR_ASDD_FIXTURE',
     consistentWithC6LayerPosition: true,
     sameCompensationAcrossAngles: 'REJECTED_BY_OBSERVATION',
     generalizedCompensationFormula: 'UNPROVEN',
   },
   limitation:
-    'asdd Required Parts was never transcribed. C.5 is the only fixture with an explicit Design Report → Required Parts measurement. Two-fixture authority is report → packed only. Do not substitute packed for Required Parts at Weld=0.',
+    'Paired Design Report → Required Parts proof is for measured 45° KASA/KANAT and 90° ORTA on the asdd fixture. C.5 has no Weld=0 Required Parts measurement. Do not encode packed = nominal + WeldingWaste. Do not generalize to unmeasured profiles or angles.',
   nextPossibleEvidenceAction:
-    'Measure Required Parts at Welding Waste 0 on an authorized isolation. Not authorized by this checkpoint.',
+    'Do not implement a Welding Waste formula. Profile/angle applicability remains UNPROVEN.',
   physicalLengthScore: '6.0/10',
 } as const;
 

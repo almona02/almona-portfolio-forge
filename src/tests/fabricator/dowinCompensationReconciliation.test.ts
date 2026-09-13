@@ -799,13 +799,16 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(weldTerm?.authority).toBe('UNPROVEN');
     expect(weldTerm?.proposedForFp024c).toBe(false);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weldMovesReportToRequiredParts).toBe(
+      'PROVEN_FOR_ASDD_FIXTURE'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.generalizedCompensationFormula).toBe(
       'UNPROVEN'
     );
     expect(evaluateWeldingWasteLayerCausality({
-      weld3Kasa: { designReportMm: 1000, requiredPartsMm: null, packedMm: 1003, machineMm: 1003 },
-      weld0Kasa: { designReportMm: 1000, requiredPartsMm: null, packedMm: 1000, machineMm: 1000 },
-      weld3Orta: { designReportMm: 1416, requiredPartsMm: null, packedMm: 1416, machineMm: 1416 },
-      weld0Orta: { designReportMm: 1416, requiredPartsMm: null, packedMm: 1416, machineMm: 1416 },
+      weld3Kasa: { designReportMm: 1000, requiredPartsMm: 1003, packedMm: 1003, machineMm: 1003 },
+      weld0Kasa: { designReportMm: 1000, requiredPartsMm: 1000, packedMm: 1000, machineMm: 1000 },
+      weld3Orta: { designReportMm: 1416, requiredPartsMm: 1416, packedMm: 1416, machineMm: 1416 },
+      weld0Orta: { designReportMm: 1416, requiredPartsMm: 1416, packedMm: 1416, machineMm: 1416 },
     }).authorizesFormulaChange).toBe(false);
   });
 

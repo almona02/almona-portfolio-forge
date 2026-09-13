@@ -1834,22 +1834,31 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     );
   });
 
-  it('maps existing Weld 3→0 evidence onto the C.6 layer position without inferring Required Parts', () => {
+  it('measures the asdd Weld=0 Required Parts boundary without authorizing a formula', () => {
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.status).toBe(
-      'EXISTING_EVIDENCE_MAPPED'
+      'WELD0_REQUIRED_PARTS_BOUNDARY_MEASURED'
     );
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.doNotRerunDowin).toBe(true);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.doNotPatchFormulas).toBe(true);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.authorizesWeld0Rerun).toBe(false);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.authorizesFormulaChange).toBe(false);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.physicalLengthScore).toBe('6.0/10');
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.protocol.newSolveCreated).toBe(false);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.protocol.stockUnchanged).toBe(true);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.protocol.settings.weldingWasteMm).toBe(0);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.kasa.DESIGN_REPORT).toBe(1000);
-    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.kasa.REQUIRED_PARTS).toBeNull();
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.kasa.REQUIRED_PARTS).toBe(1003);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.kasa.PACKED).toBe(1003);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.kasa.PACKED).toBe(1000);
-    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.kasa.REQUIRED_PARTS).toBeNull();
-    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.orta.PACKED).toBe(1416);
-    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.orta.PACKED).toBe(1416);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.kasa.REQUIRED_PARTS).toBe(1000);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.kanatHorizontal.REQUIRED_PARTS).toBe(
+      451
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.kanatVertical.REQUIRED_PARTS).toBe(
+      1430
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.orta.REQUIRED_PARTS).toBe(1416);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.orta.REQUIRED_PARTS).toBe(1416);
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weldMovesFortyFiveReportToPacked).toBe(
       'PROVEN_FOR_ASDD_FIXTURE'
     );
@@ -1865,23 +1874,35 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.ninetyReportToPackedTwoFixtures).toBe(
       'OBSERVED_0'
     );
-    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.fortyFiveReportToRequiredParts).toBe(
-      'OBSERVED_PLUS_3_FOR_C5_FIXTURE'
+    expect(
+      FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.fortyFiveReportToRequiredPartsAtWeld0
+    ).toBe('OBSERVED_0_FOR_ASDD_FIXTURE');
+    expect(
+      FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.ninetyReportToRequiredPartsAtWeld0
+    ).toBe('OBSERVED_0_FOR_ASDD_FIXTURE');
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weld0ReportToRequiredPartsDelta45).toBe(
+      0
     );
-    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.ninetyReportToRequiredParts).toBe(
-      'OBSERVED_0_FOR_C5_FIXTURE'
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weld0ReportToRequiredPartsDelta90).toBe(
+      0
     );
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weldMovesReportToRequiredParts).toBe(
-      'UNPROVEN'
+      'PROVEN_FOR_ASDD_FIXTURE'
     );
     expect(
+      FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weld3To0EffectOn45ReportToRequiredParts
+    ).toBe('PROVEN_FOR_ASDD_FIXTURE');
+    expect(
       FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weldCausesDesignReportToRequiredPartsPlus3
-    ).toBe('UNPROVEN');
+    ).toBe('PROVEN_FOR_ASDD_FIXTURE');
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.requiredPartsAtWeld0).toBe(
-      'NOT_MEASURED'
+      'DELTA_0'
     );
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weld0RequiredPartsLayer).toBe(
-      'NOT_MEASURED'
+      'MEASURED'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.pairedWeld3To0BoundaryProof).toBe(
+      true
     );
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.sameCompensationAcrossAngles).toBe(
       'REJECTED_BY_OBSERVATION'
@@ -1889,21 +1910,31 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.generalizedCompensationFormula).toBe(
       'UNPROVEN'
     );
-    const mapped = evaluateWeldingWasteLayerCausality({
+    const unmeasured = evaluateWeldingWasteLayerCausality({
       weld3Kasa: { designReportMm: 1000, requiredPartsMm: null, packedMm: 1003, machineMm: 1003 },
       weld0Kasa: { designReportMm: 1000, requiredPartsMm: null, packedMm: 1000, machineMm: 1000 },
       weld3Orta: { designReportMm: 1416, requiredPartsMm: null, packedMm: 1416, machineMm: 1416 },
       weld0Orta: { designReportMm: 1416, requiredPartsMm: null, packedMm: 1416, machineMm: 1416 },
     });
+    expect(unmeasured.requiredPartsMeasuredAtBothWeldSettings).toBe(false);
+    expect(unmeasured.weldMovesReportToRequiredParts).toBe('UNPROVEN');
+    const mapped = evaluateWeldingWasteLayerCausality({
+      weld3Kasa: { designReportMm: 1000, requiredPartsMm: 1003, packedMm: 1003, machineMm: 1003 },
+      weld0Kasa: { designReportMm: 1000, requiredPartsMm: 1000, packedMm: 1000, machineMm: 1000 },
+      weld3Orta: { designReportMm: 1416, requiredPartsMm: 1416, packedMm: 1416, machineMm: 1416 },
+      weld0Orta: { designReportMm: 1416, requiredPartsMm: 1416, packedMm: 1416, machineMm: 1416 },
+    });
     expect(mapped.designReportUnchanged).toBe(true);
     expect(mapped.fortyFiveReportToPackedDeltaAtWeld3Mm).toBe(3);
     expect(mapped.fortyFiveReportToPackedDeltaAtWeld0Mm).toBe(0);
-    expect(mapped.ninetyReportToPackedDeltaAtWeld3Mm).toBe(0);
-    expect(mapped.ninetyReportToPackedDeltaAtWeld0Mm).toBe(0);
+    expect(mapped.fortyFiveReportToRequiredPartsDeltaAtWeld3Mm).toBe(3);
+    expect(mapped.fortyFiveReportToRequiredPartsDeltaAtWeld0Mm).toBe(0);
+    expect(mapped.ninetyReportToRequiredPartsDeltaAtWeld3Mm).toBe(0);
+    expect(mapped.ninetyReportToRequiredPartsDeltaAtWeld0Mm).toBe(0);
     expect(mapped.weldMovesFortyFiveReportToPacked).toBe(true);
     expect(mapped.weldMovesNinetyReportToPacked).toBe(false);
-    expect(mapped.requiredPartsMeasuredAtBothWeldSettings).toBe(false);
-    expect(mapped.weldMovesReportToRequiredParts).toBe('UNPROVEN');
+    expect(mapped.requiredPartsMeasuredAtBothWeldSettings).toBe(true);
+    expect(mapped.weldMovesReportToRequiredParts).toBe('PROVEN_FOR_ASDD_FIXTURE');
     expect(mapped.authorizesFormulaChange).toBe(false);
     expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.fp027RootCause).toBe('UNPROVEN');
   });

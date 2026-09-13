@@ -627,3 +627,75 @@ PR #32 = DRAFT / DO NOT MERGE
 Next discriminator, **not authorized by this checkpoint**: measure Required Parts at Welding Waste 0 on the existing asdd fixture, with Design Report held as the reference. If report → Required Parts changes +3 → 0 while 90° stays 0, weld causality at the C.5 insertion boundary would strengthen. Do not implement a +3 or Welding Waste formula now.
 
 FP-027 authority is unchanged: ORTA 1→5→1 surplus +4; root cause **UNPROVEN**.
+
+## FP-024C.7 — Weld=0 Required Parts boundary (13 September 2026, 19:54)
+
+Existing asdd fixture. Welding Waste set to 0 and persisted (`Save All Changes`). New production plan `FP024C7_WELD0_RP` (Id=8) created only to regenerate Required Parts. **No solve. No stock mutation. No formula change.**
+
+The first `today work` cut list at 19:40 (KASA 1003 / 20564 mm) is **discarded**. Settings had not persisted; that list is not Weld=0 evidence.
+
+### Contemporaneous settings
+
+Welding Waste **0**. Saw Thickness 4. Trim Cut 0. Sash Offset 7. Glazing Clearance 2.5. Minimum offcut 500. DC-600 + DC-550 SKH. Persist SHA-256 `78f75452…`. Post-cut reverify still Weld=0 (`94ebca87…`).
+
+### Design Report (established asdd reference; not re-inferred)
+
+| Piece | DESIGN_REPORT | angles |
+|-------|---------------|--------|
+| KASA H | 1000 | 45/45 |
+| KASA V | 1500 | 45/45 |
+| KANAT H | 451 | 45/45 |
+| KANAT V | 1430 | 45/45 |
+| ORTA | 1416 | 90/90 |
+
+### Required Parts at Weld=0 (live cut list 19:54:17)
+
+| Piece | REQUIRED_PARTS | delta vs report |
+|-------|----------------|-----------------|
+| KASA H 45° | 1000 | **0** |
+| KASA V 45° | 1500 | **0** |
+| KANAT H 45° | 451 | **0** |
+| KANAT V 45° | 1430 | **0** |
+| ORTA 90° | 1416 | **0** |
+
+`WELD0_REPORT_TO_REQUIRED_PARTS_DELTA_45 = 0`  
+`WELD0_REPORT_TO_REQUIRED_PARTS_DELTA_90 = 0`
+
+CITA 331 / 1310 was observed on the same list. No established CITA Design Report is used here.
+
+### Artifact-only Weld=3 asdd Required Parts
+
+Existing Cut List `dowin-1b-production-asdd.png` (`de94f625…`) and supporting `dowin-t2-production.png` (`fe916f3f…`; filename says Test 2, values are Weld=3-class):
+
+| Piece | REQUIRED_PARTS | delta vs report |
+|-------|----------------|-----------------|
+| KASA H 45° | 1003 | +3 |
+| KASA V 45° | 1503 | +3 |
+| KANAT H 45° | 454 | +3 |
+| KANAT V 45° | 1433 | +3 |
+| ORTA 90° | 1416 | 0 |
+
+### Authority after this measurement
+
+```text
+FP-024C.6 = ACCEPTED
+FP-024C.7 = WELD0_REQUIRED_PARTS_BOUNDARY_MEASURED
+WELD0_REQUIRED_PARTS_LAYER = MEASURED
+WELD0_REPORT_TO_REQUIRED_PARTS_DELTA_45 = 0
+WELD0_REPORT_TO_REQUIRED_PARTS_DELTA_90 = 0
+existing Weld=3 asdd Required Parts artifact = YES
+paired Weld3→0 boundary proof = YES
+WELD_3_TO_0_EFFECT_ON_45_REPORT_TO_REQUIRED_PARTS = PROVEN FOR ASDD FIXTURE
+WELD_3_TO_0_EFFECT_ON_90_REPORT_TO_REQUIRED_PARTS = NO_OBSERVED_EFFECT FOR ASDD FIXTURE
+WELD_CAUSALITY_AT_REQUIRED_PARTS_BOUNDARY = PROVEN FOR ASDD FIXTURE
+generalized formula = UNPROVEN
+score = 6.0/10
+formulas = FROZEN
+PR #32 = DRAFT / DO NOT MERGE
+```
+
+Allowed: on measured 45° KASA/KANAT pieces of the asdd fixture, Welding Waste 3→0 controls the +3 difference downstream of Design Report and at or before Required Parts. 90° ORTA shows no observed effect.
+
+Not allowed: `packed = nominal + WeldingWaste` or any equivalent production formula. C.5 has no Weld=0 Required Parts row. Do not generalize beyond the measured fixture/profile/angles.
+
+FP-027 authority is unchanged: ORTA 1→5→1 surplus +4; root cause **UNPROVEN**.
