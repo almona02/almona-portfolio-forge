@@ -137,6 +137,8 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
     );
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorizesCanonicalFormula).toBe(false);
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.goldenReplay).toBe('PASS');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.independentReview).toBe('ACCEPTED');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('7.5/10');
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorityMatrix.canonicalProductionIntegration).toBe(
       'NONE'
     );

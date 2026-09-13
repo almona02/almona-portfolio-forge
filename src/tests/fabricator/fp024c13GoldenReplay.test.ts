@@ -48,9 +48,20 @@ describe('FP-024C.13 bounded parity golden replay closeout', () => {
       'PROVEN_AND_IMPLEMENTED_IN_PARITY_ADAPTER'
     );
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.generalizedManufacturingFormula).toBe('UNPROVEN');
-    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('6.0/10');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.independentReview).toBe('ACCEPTED');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('7.5/10');
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.recommendedPhysicalLengthScore).toBe('7.5/10');
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prRecommendation).toBe('KEEP_DRAFT_DO_NOT_MERGE');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prMergeBlocker).toBe('FP-027_UNRESOLVED');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prMergeBlockerIsFp024c).toBe(false);
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.furtherFp024cExperiments).toBe(false);
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.repositoryCheckpoint).toEqual({
+      fp024c: 'COMPLETE_BOUNDED_PARITY_SCOPE',
+      physicalLengthCorrectness: '7.5/10',
+      fp027: 'OPEN_ROOT_CAUSE_UNPROVEN',
+      pr32: 'KEEP_DRAFT_DO_NOT_MERGE',
+      furtherFp024cExperiments: false,
+    });
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.status).toBe('WIRED_PARITY_ADAPTER_ONLY');
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.wiredParityAdapterOnlyMeans).toContain(
       'Canonical Fabricator production does not consume it'

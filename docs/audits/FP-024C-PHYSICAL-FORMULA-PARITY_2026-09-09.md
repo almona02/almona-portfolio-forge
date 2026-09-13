@@ -7,12 +7,23 @@
 | Branch | `feature/fp024c-physical-parity` (from `main` after FP-025A; merged `feature/fp024-dowin-external-golden`) |
 | Depends on | FP-023A, FP-023B, FP-024A, FP-024B, operator isolation evidence |
 | Scope | Identify which **this-run** settings drive nominal → packed → machine length, then implement only those proven terms and re-run ±0.1 mm parity. Not FP-016, FP-017, or FP-025B. |
-| Gate | ✅ **FP-024C bounded parity stage COMPLETE** (parity adapter only). Canonical production unchanged. PR #32 remains **DRAFT / DO NOT MERGE** |
-| Physical-length score | **Authoritative 6.0/10** until independent review. C.13 recommends **7.5/10** |
+| Gate | ✅ **FP-024C bounded parity COMPLETE** (parity adapter only). Canonical production unchanged. PR #32 remains **DRAFT / DO NOT MERGE** because FP-027 is unresolved |
+| Physical-length correctness | **7.5/10** — bounded Deceuninck 70 parity proven and implemented; canonical production/generalized formula still incomplete |
 
 ---
 
-## C.13 closeout (13 September 2026)
+## Independent review (13 September 2026)
+
+C.13 golden replay is **ACCEPTED**. Bounded FP-024C parity is **finished**. Score moved 6.0 → **7.5/10**. Zero further DoWin experiments for FP-024C.
+
+```
+FP-024C = COMPLETE (bounded parity scope)
+Physical-length correctness = 7.5/10
+FP-027 = OPEN / root cause UNPROVEN
+PR #32 = DRAFT / DO NOT MERGE  (blocker = FP-027, not FP-024C)
+No more FP-024C experiments
+Next stage if any = Canonical Production Length Authority (not started)
+```
 
 Replay of accepted asdd / C.5 Weld 0/2/3 evidence through `computeDowinRequiredPartsFromDesignReport`: **27/27 PASS**, 16/16 fail-closed PASS, ORTA 90° negative control PASS.
 

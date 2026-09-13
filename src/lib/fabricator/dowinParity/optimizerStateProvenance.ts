@@ -3946,11 +3946,16 @@ const FP024C13_REPLAY = evaluateFp024c13GoldenReplay();
 /**
  * FP-024C.13 — bounded parity golden replay and stage closeout.
  * WIRED_PARITY_ADAPTER_ONLY means the parity API is callable, not that
- * canonical live production consumes it. AICS-001. Authoritative score
- * stays 6.0/10 until independent review.
+ * canonical live production consumes it. AICS-001.
+ * Independent review accepted 13 September 2026: physical-length
+ * correctness is 7.5/10 for bounded Deceuninck 70 parity scope.
  */
 export const FP024C13_GOLDEN_REPLAY_CLOSEOUT = {
   id: 'FP024C13_GOLDEN_REPLAY_CLOSEOUT',
+  independentReview: 'ACCEPTED',
+  fp024cBoundedParityStage: 'COMPLETE',
+  furtherFp024cExperiments: false,
+  furtherDowinExperimentsRequired: 0,
   c12ClosedForAuthorizedScope: true,
   c121Wiring: 'PROVEN',
   wiredParityAdapterOnlyMeans:
@@ -4002,16 +4007,32 @@ export const FP024C13_GOLDEN_REPLAY_CLOSEOUT = {
     'REQUIRED_PARTS → PACKED as a formula operation',
     'PACKED → MACHINE as a formula operation',
   ],
-  authoritativePhysicalLengthScore: '6.0/10',
+  authoritativePhysicalLengthScore: '7.5/10',
   recommendedPhysicalLengthScore: '7.5/10',
+  physicalLengthScoreScope:
+    'bounded Deceuninck 70 parity scope proven and implemented; canonical production/generalized formula still incomplete',
+  scoreNotEightFiveOrNine:
+    'Live canonical production still does not consume the proven parity behavior. Mixed angles, other systems, Weld outside {0,2,3}, and Saw/Trim physical-piece semantics remain outside authority.',
   scoreRecommendationNote:
-    'Material improvement from 6.0 because measured Deceuninck 70 45°/90° weld behavior is implemented, fail-closed, and golden-replayed on the parity adapter. Not 9/10 or 10/10: canonical production does not consume the API, mixed angles and other systems remain unproven, and the generalized formula is UNPROVEN.',
+    'Independent review accepted 7.5/10. Not 8.5–9: the remaining limiter is architectural, not experimental.',
   prRecommendation: 'KEEP_DRAFT_DO_NOT_MERGE',
+  prMergeBlocker: 'FP-027_UNRESOLVED',
+  prMergeBlockerIsFp024c: false,
   prRecommendationReason:
-    'FP-027 root cause remains UNPROVEN on this branch; C.13 does not make the full PR merge-ready.',
+    'FP-024C bounded parity is closed. The merge blocker is unresolved FP-027 experimental/conservation work on the same PR/branch. Do not reopen FP-024C to make PR #32 mergeable.',
+  repositoryCheckpoint: {
+    fp024c: 'COMPLETE_BOUNDED_PARITY_SCOPE',
+    physicalLengthCorrectness: '7.5/10',
+    fp027: 'OPEN_ROOT_CAUSE_UNPROVEN',
+    pr32: 'KEEP_DRAFT_DO_NOT_MERGE',
+    furtherFp024cExperiments: false,
+  },
+  nextStageIfAny: 'CANONICAL_PRODUCTION_LENGTH_AUTHORITY',
+  nextStageStarted: false,
   fp027: {
     authorityChanged: false,
     rootCause: 'UNPROVEN',
+    status: 'OPEN',
     conservationWorkTouched: false,
     usedInReplay: false,
   },

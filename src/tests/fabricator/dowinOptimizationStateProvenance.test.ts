@@ -2222,6 +2222,9 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.goldenReplay).toBe('PASS');
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.boundedParityStage).toBe('COMPLETE');
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prRecommendation).toBe('KEEP_DRAFT_DO_NOT_MERGE');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.independentReview).toBe('ACCEPTED');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('7.5/10');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prMergeBlocker).toBe('FP-027_UNRESOLVED');
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.fp027.rootCause).toBe('UNPROVEN');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.physicalLengthScore).toBe('6.0/10');
   });

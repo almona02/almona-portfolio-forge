@@ -865,6 +865,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoSashBasmaKaynakFormula).toBe(false);
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.parityWiring).toBe('PROVEN');
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.goldenReplay).toBe('PASS');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.independentReview).toBe('ACCEPTED');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('7.5/10');
     expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.generalizedManufacturingFormula).toBe('UNPROVEN');
     expect(
       evaluateCitaWeldCausalityFromExistingArtifacts({

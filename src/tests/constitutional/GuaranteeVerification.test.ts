@@ -398,8 +398,11 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
         'NONE'
       );
       expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.fp027.rootCause).toBe('UNPROVEN');
-      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('6.0/10');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.fp027.status).toBe('OPEN');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.independentReview).toBe('ACCEPTED');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('7.5/10');
       expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prRecommendation).toBe('KEEP_DRAFT_DO_NOT_MERGE');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prMergeBlockerIsFp024c).toBe(false);
     });
   });
 

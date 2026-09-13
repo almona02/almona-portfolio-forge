@@ -5,10 +5,10 @@
 | Date | 13 September 2026 |
 | Branch | `feature/fp024c-physical-parity` |
 | Starting HEAD | `6bb2f1d` — `FP-024C.12.1: wire bounded Weld parity rule` |
-| PR #32 | Draft / **DO NOT MERGE** |
+| PR #32 | Draft / **DO NOT MERGE** — blocker is FP-027, not FP-024C |
 | Gate | **FP024C_BOUNDED_PARITY_STAGE = COMPLETE** (parity adapter only) |
-| Authoritative physical-length score | **6.0/10** until independent review |
-| Recommended score | **7.5/10** (not applied here) |
+| Independent review | ✅ **ACCEPTED** (13 September 2026) |
+| Physical-length correctness | **7.5/10** — bounded Deceuninck 70 parity proven and implemented; canonical production/generalized formula still incomplete |
 | Canonical production | **UNCHANGED / does not consume the parity API** |
 | Generalized formula | **UNPROVEN** |
 | FP-027 | Root cause **UNPROVEN**; unused in this replay |
@@ -34,9 +34,30 @@ WIRED_PARITY_ADAPTER_ONLY =
 
 GENERALIZED_MANUFACTURING_FORMULA = UNPROVEN
 PR #32 = KEEP_DRAFT_DO_NOT_MERGE
+PR merge blocker = FP-027_UNRESOLVED (not FP-024C)
+Physical-length correctness = 7.5/10
+Independent review = ACCEPTED
 ```
 
-Replay used `computeDowinRequiredPartsFromDesignReport` only. No new DoWin run. No expected-evidence patch.
+## Independent review (13 September 2026)
+
+C.13 is **ACCEPTED**. Bounded FP-024C parity is **finished**. Zero further DoWin experiments for this stage.
+
+Physical-length correctness moved **6.0/10 → 7.5/10**. Not 8.5–9: live canonical production still does not consume the proven parity behavior.
+
+PR #32 stays **KEEP_DRAFT_DO_NOT_MERGE** because the same branch still contains unresolved FP-027 work. Do not reopen FP-024C to make the PR mergeable.
+
+Repository checkpoint:
+
+```
+FP-024C = COMPLETE (bounded parity scope)
+Physical-length correctness = 7.5/10
+FP-027 = OPEN / root cause UNPROVEN
+PR #32 = DRAFT / DO NOT MERGE
+No more FP-024C experiments
+```
+
+Anything after this is a new stage: Canonical Production Length Authority. That stage is **not started**.
 
 ---
 
@@ -170,9 +191,9 @@ Canonical Fabricator production formula; other systems; mixed-angle cuts; Weld o
 
 ---
 
-## Score recommendation (not authoritative)
+## Score (accepted)
 
-**Recommended: 7.5/10.** Authoritative remains **6.0/10** until independent review.
+**Physical-length correctness = 7.5/10** — bounded Deceuninck 70 parity scope proven and implemented; canonical production/generalized formula still incomplete.
 
 | Dimension | Note |
 |-----------|------|
@@ -183,11 +204,9 @@ Canonical Fabricator production formula; other systems; mixed-angle cuts; Weld o
 | Intermediate-value linearity | 0/2/3 on 45° |
 | Fail-closed implementation | PASS |
 | Golden replay | 27/27 PASS |
-| Canonical production coverage | NONE — limiter |
+| Canonical production coverage | NONE — limiter; keeps the score below 8.5–9 |
 | Cross-system coverage | None |
 | Mixed-angle coverage | Fail closed / UNPROVEN |
-
-Not 9/10 or 10/10: production does not consume the API; generalization remains UNPROVEN.
 
 ---
 
@@ -195,7 +214,7 @@ Not 9/10 or 10/10: production does not consume the API; generalization remains U
 
 **KEEP_DRAFT_DO_NOT_MERGE**
 
-FP-027 remains UNPROVEN on this branch. C.13 does not make the full PR merge-ready.
+The reason is no longer FP-024C. FP-024C is closed for its bounded scope. The merge blocker is unresolved FP-027 experimental/conservation work on the same PR/branch.
 
 ---
 
