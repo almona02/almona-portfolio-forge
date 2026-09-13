@@ -65,6 +65,7 @@ import {
   FP024C11_FORMULA_SCOPE_AUTHORIZATION,
   evaluateFormulaScopeAuthorization,
   FP024C12_BOUNDED_PARITY_WELD_RULE,
+  FP024C13_GOLDEN_REPLAY_CLOSEOUT,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
   evaluateCitaWeldCausalityFromExistingArtifacts,
@@ -863,6 +864,8 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.generalizedManufacturingFormula).toBe('UNPROVEN');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoSashBasmaKaynakFormula).toBe(false);
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.parityWiring).toBe('PROVEN');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.goldenReplay).toBe('PASS');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.generalizedManufacturingFormula).toBe('UNPROVEN');
     expect(
       evaluateCitaWeldCausalityFromExistingArtifacts({
         citaIdentifiedUnambiguously: true,

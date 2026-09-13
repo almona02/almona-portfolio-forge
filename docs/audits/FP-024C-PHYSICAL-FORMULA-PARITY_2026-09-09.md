@@ -7,8 +7,25 @@
 | Branch | `feature/fp024c-physical-parity` (from `main` after FP-025A; merged `feature/fp024-dowin-external-golden`) |
 | Depends on | FP-023A, FP-023B, FP-024A, FP-024B, operator isolation evidence |
 | Scope | Identify which **this-run** settings drive nominal → packed → machine length, then implement only those proven terms and re-run ±0.1 mm parity. Not FP-016, FP-017, or FP-025B. |
-| Gate | ⏸ **BLOCKED** — FP-024C.1 state provenance investigation. Do not merge |
-| Physical-length score | **Unchanged at 6.0/10** |
+| Gate | ✅ **FP-024C bounded parity stage COMPLETE** (parity adapter only). Canonical production unchanged. PR #32 remains **DRAFT / DO NOT MERGE** |
+| Physical-length score | **Authoritative 6.0/10** until independent review. C.13 recommends **7.5/10** |
+
+---
+
+## C.13 closeout (13 September 2026)
+
+Replay of accepted asdd / C.5 Weld 0/2/3 evidence through `computeDowinRequiredPartsFromDesignReport`: **27/27 PASS**, 16/16 fail-closed PASS, ORTA 90° negative control PASS.
+
+```
+FP024C13_GOLDEN_REPLAY = PASS
+FP024C_BOUNDED_PARITY_STAGE = COMPLETE
+FP024C_DECEUNINCK70_MEASURED_SCOPE = PROVEN_AND_IMPLEMENTED_IN_PARITY_ADAPTER
+GENERALIZED_MANUFACTURING_FORMULA = UNPROVEN
+WIRED_PARITY_ADAPTER_ONLY = callable parity API; NOT canonical live production
+PR #32 = KEEP_DRAFT_DO_NOT_MERGE
+```
+
+See `docs/audits/FP-024C13-GOLDEN-REPLAY-CLOSEOUT_2026-09-13.md`. Historical C.1–C.12 narrative below is retained.
 
 ---
 

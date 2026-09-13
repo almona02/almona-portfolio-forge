@@ -49,6 +49,7 @@ import {
   FP024C11_FORMULA_SCOPE_AUTHORIZATION,
   evaluateFormulaScopeAuthorization,
   FP024C12_BOUNDED_PARITY_WELD_RULE,
+  FP024C13_GOLDEN_REPLAY_CLOSEOUT,
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
   evaluateCitaWeldCausalityFromExistingArtifacts,
@@ -2218,6 +2219,10 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoCanonicalCutGeneration).toBe(false);
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.doubleCountPath).toBe('ISOLATED');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.parityWiring).toBe('PROVEN');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.goldenReplay).toBe('PASS');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.boundedParityStage).toBe('COMPLETE');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prRecommendation).toBe('KEEP_DRAFT_DO_NOT_MERGE');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.fp027.rootCause).toBe('UNPROVEN');
     expect(FP024C12_BOUNDED_PARITY_WELD_RULE.physicalLengthScore).toBe('6.0/10');
   });
 

@@ -385,6 +385,24 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
     });
   });
 
+  describe('AICS-001 FP-024C.13: golden replay does not authorize canonical production formulas', () => {
+    test('bounded parity stage closeout stays adapter-only', async () => {
+      const { FP024C13_GOLDEN_REPLAY_CLOSEOUT } = await import(
+        '@/lib/fabricator/dowinParity/optimizerStateProvenance'
+      );
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.goldenReplay).toBe('PASS');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorizesCanonicalFormula).toBe(false);
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorizesProductionEngineChange).toBe(false);
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.generalizedManufacturingFormula).toBe('UNPROVEN');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorityMatrix.canonicalProductionIntegration).toBe(
+        'NONE'
+      );
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.fp027.rootCause).toBe('UNPROVEN');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('6.0/10');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prRecommendation).toBe('KEEP_DRAFT_DO_NOT_MERGE');
+    });
+  });
+
   describe('AICS-001 FP-024C.9: artifact-only CITA coverage does not encode a formula', () => {
     test('CITA report pairing stays evidence-only and does not authorize RequiredParts = Report + Weld', async () => {
       const {

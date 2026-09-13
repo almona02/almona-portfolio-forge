@@ -130,4 +130,18 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
       'computeDowinRequiredPartsFromDesignReport'
     );
   });
+
+  test('FP-024C.13 golden replay does not unfreeze canonical production engines', async () => {
+    const { FP024C13_GOLDEN_REPLAY_CLOSEOUT } = await import(
+      '@/lib/fabricator/dowinParity/optimizerStateProvenance'
+    );
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorizesCanonicalFormula).toBe(false);
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.goldenReplay).toBe('PASS');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorityMatrix.canonicalProductionIntegration).toBe(
+      'NONE'
+    );
+    expect(sourceOf('src/lib/fabricator/OptimizationEngine.ts')).not.toContain(
+      'computeDowinRequiredPartsFromDesignReport'
+    );
+  });
 });

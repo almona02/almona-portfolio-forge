@@ -13,6 +13,13 @@ import {
   fingerprintSha256,
   optimizerInputFingerprintSha256,
 } from '@/lib/fabricator/dowinParity/canonicalFingerprint';
+import {
+  evaluateFp024c13GoldenReplay,
+  FP024C13_FAIL_CLOSED_CASES,
+  FP024C13_GOLDEN_CASES,
+  FP024C13_SOURCE_LAYER,
+  FP024C13_TARGET_LAYER,
+} from '@/lib/fabricator/dowinParity/fp024c13GoldenReplay';
 import type {
   DowinJobObservedSettings,
   DowinLengthCategory,
@@ -3932,6 +3939,86 @@ export const FP024C12_BOUNDED_PARITY_WELD_RULE = {
     usedInPositiveConclusion: false,
   },
   physicalLengthScore: '6.0/10',
+} as const;
+
+const FP024C13_REPLAY = evaluateFp024c13GoldenReplay();
+
+/**
+ * FP-024C.13 — bounded parity golden replay and stage closeout.
+ * WIRED_PARITY_ADAPTER_ONLY means the parity API is callable, not that
+ * canonical live production consumes it. AICS-001. Authoritative score
+ * stays 6.0/10 until independent review.
+ */
+export const FP024C13_GOLDEN_REPLAY_CLOSEOUT = {
+  id: 'FP024C13_GOLDEN_REPLAY_CLOSEOUT',
+  c12ClosedForAuthorizedScope: true,
+  c121Wiring: 'PROVEN',
+  wiredParityAdapterOnlyMeans:
+    'Parity API is implemented and callable. Canonical Fabricator production does not consume it.',
+  goldenReplay: FP024C13_REPLAY.status,
+  boundedParityStage: FP024C13_REPLAY.status === 'PASS' ? 'COMPLETE' : 'BLOCKED',
+  deceuninck70MeasuredScope:
+    FP024C13_REPLAY.status === 'PASS'
+      ? 'PROVEN_AND_IMPLEMENTED_IN_PARITY_ADAPTER'
+      : 'REPLAY_FAILED',
+  implementationScope: 'PARITY_ADAPTER_ONLY',
+  generalizedManufacturingFormula: 'UNPROVEN',
+  authorizesProductionEngineChange: false,
+  authorizesCanonicalFormula: false,
+  sourceLayer: FP024C13_SOURCE_LAYER,
+  targetLayer: FP024C13_TARGET_LAYER,
+  supportedCaseCount: FP024C13_REPLAY.supportedCaseCount,
+  passedCount: FP024C13_REPLAY.passedCount,
+  mismatchCount: FP024C13_REPLAY.mismatchCount,
+  failClosedCaseCount: FP024C13_REPLAY.failClosed.caseCount,
+  failClosedPassCount: FP024C13_REPLAY.failClosed.passCount,
+  failClosedFailureCount: FP024C13_REPLAY.failClosed.failureCount,
+  failClosedStatus: FP024C13_REPLAY.failClosed.status,
+  ortaNegativeControl: FP024C13_REPLAY.ortaNegativeControl,
+  noFallbackStatus: FP024C13_REPLAY.noFallback.status,
+  goldenCaseCount: FP024C13_GOLDEN_CASES.length,
+  failClosedCatalogCount: FP024C13_FAIL_CLOSED_CASES.length,
+  authorityMatrix: {
+    layerSemantics: 'PROVEN_FOR_C5',
+    weldCausality: 'PROVEN_FOR_MEASURED_CONDITIONS',
+    profileCoverage: 'KASA + KANAT + CITA',
+    intermediateValueLinearity: 'PROVEN_FOR_MEASURED_DECEUNINCK70_45_CONDITIONS',
+    ninetyOrtaNoEffect: 'REPLICATED_ACROSS_TWO_FIXTURES',
+    parityHelper: 'IMPLEMENTED',
+    parityApiWiring: 'PROVEN',
+    goldenReplay: FP024C13_REPLAY.status,
+    failClosedUnsupportedScope: FP024C13_REPLAY.failClosed.status,
+    canonicalProductionIntegration: 'NONE',
+    generalizedFormula: 'UNPROVEN',
+    fp027RootCause: 'UNPROVEN',
+  },
+  remainingUnprovenScope: [
+    'canonical Fabricator production formula',
+    'all profile systems',
+    'mixed-angle cuts',
+    'Welding Waste outside {0, 2, 3}',
+    'Saw/Trim piece-length formulas',
+    'FP-027 conservation root cause',
+    'REQUIRED_PARTS → PACKED as a formula operation',
+    'PACKED → MACHINE as a formula operation',
+  ],
+  authoritativePhysicalLengthScore: '6.0/10',
+  recommendedPhysicalLengthScore: '7.5/10',
+  scoreRecommendationNote:
+    'Material improvement from 6.0 because measured Deceuninck 70 45°/90° weld behavior is implemented, fail-closed, and golden-replayed on the parity adapter. Not 9/10 or 10/10: canonical production does not consume the API, mixed angles and other systems remain unproven, and the generalized formula is UNPROVEN.',
+  prRecommendation: 'KEEP_DRAFT_DO_NOT_MERGE',
+  prRecommendationReason:
+    'FP-027 root cause remains UNPROVEN on this branch; C.13 does not make the full PR merge-ready.',
+  fp027: {
+    authorityChanged: false,
+    rootCause: 'UNPROVEN',
+    conservationWorkTouched: false,
+    usedInReplay: false,
+  },
+  discardedTodayWork1940: {
+    classification: 'INVALID_FOR_CAUSAL_AUTHORITY',
+    usedInPositiveConclusion: false,
+  },
 } as const;
 
 export function evaluateNinetyControlFixtureSelection(args: {
