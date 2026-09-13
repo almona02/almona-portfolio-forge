@@ -41,6 +41,8 @@ import {
   FP024C_NINETY_CONTROL_DUAL_USE,
   FP024C_NINETY_CONTROL_SPEC,
   FP024C6_LENGTH_LAYER_SEMANTICS,
+  FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION,
+  evaluateWeldingWasteLayerCausality,
   FP027_90_CONTROL_CONSERVATION_OBSERVATION,
   evaluateControlFixtureAuthorization,
   evaluateIndependentNinetyControlFixtureSpec,
@@ -1700,9 +1702,20 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C_90_CONTROL_COMPENSATION.fortyFiveRequiredPartsToPacked).toBe('OBSERVED');
     expect(FP024C_90_CONTROL_COMPENSATION.fortyFivePackedToMachine).toBe('OBSERVED');
     expect(FP024C_90_CONTROL_COMPENSATION.fortyFiveDesignOrReportNominalToRequiredParts).toBe(
-      'OBSERVED_PLUS_3_THIS_FIXTURE'
+      'OBSERVED_PLUS_3_FOR_C5_FIXTURE'
     );
-    expect(FP024C_90_CONTROL_COMPENSATION.crossAngleCompensationSame).toBe('UNPROVEN');
+    expect(FP024C_90_CONTROL_COMPENSATION.ninetyDesignOrReportToRequiredParts).toBe(
+      'OBSERVED_0_FOR_C5_FIXTURE'
+    );
+    expect(FP024C_90_CONTROL_COMPENSATION.fortyFiveDesignReportToPackedTwoFixtures).toBe(
+      'OBSERVED_PLUS_3'
+    );
+    expect(FP024C_90_CONTROL_COMPENSATION.ninetyDesignReportToPackedTwoFixtures).toBe(
+      'OBSERVED_0'
+    );
+    expect(FP024C_90_CONTROL_COMPENSATION.crossAngleCompensationSame).toBe(
+      'REJECTED_BY_OBSERVATION'
+    );
     expect(FP024C_90_CONTROL_COMPENSATION.crossAngleLayerComparison).toBe(
       'CROSS_ANGLE_LAYER_COMPARISON_SUPPORTED'
     );
@@ -1730,7 +1743,9 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
   });
 
   it('ingests FP-024C.6 Design Preview layer without a new solve', () => {
-    expect(FP024C6_LENGTH_LAYER_SEMANTICS.status).toBe('LAYER_SEMANTICS_RECONCILED');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.status).toBe('ACCEPTED');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.classification).toBe('LAYER_SEMANTICS_RECONCILED');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.independentReview).toBe('ACCEPTED');
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.outcome).toBe('A');
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.artifactOnlyProtocolPreserved).toBe(true);
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.projectDbId).toBe(9);
@@ -1782,9 +1797,21 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     );
     expect(
       FP024C6_LENGTH_LAYER_SEMANTICS.authority.fortyFiveDesignOrReportNominalToRequiredParts
-    ).toBe('OBSERVED_PLUS_3_THIS_FIXTURE');
+    ).toBe('OBSERVED_PLUS_3_FOR_C5_FIXTURE');
+    expect(
+      FP024C6_LENGTH_LAYER_SEMANTICS.authority.ninetyDesignOrReportToRequiredParts
+    ).toBe('OBSERVED_0_FOR_C5_FIXTURE');
+    expect(
+      FP024C6_LENGTH_LAYER_SEMANTICS.authority.fortyFiveDesignReportToPackedTwoFixtures
+    ).toBe('OBSERVED_PLUS_3');
+    expect(
+      FP024C6_LENGTH_LAYER_SEMANTICS.authority.ninetyDesignReportToPackedTwoFixtures
+    ).toBe('OBSERVED_0');
+    expect(FP024C6_LENGTH_LAYER_SEMANTICS.reportToRequiredClassification).toBe(
+      'DESIGN_REPORT_TO_REQUIRED_PARTS_DELTA_+3_OBSERVED_FOR_C5_FIXTURE'
+    );
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.sameCompensationAcrossAngles).toBe(
-      'UNPROVEN'
+      'REJECTED_BY_OBSERVATION'
     );
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.crossAngleLayerComparison).toBe(
       'CROSS_ANGLE_LAYER_COMPARISON_SUPPORTED'
@@ -1792,7 +1819,9 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP024C6_LENGTH_LAYER_SEMANTICS.authority.generalizedCompensationFormula).toBe(
       'UNPROVEN'
     );
-    expect(FP024C_90_CONTROL_COMPENSATION.nextGate).toBe('INDEPENDENT_REVIEW_ONLY');
+    expect(FP024C_90_CONTROL_COMPENSATION.nextGate).toBe(
+      'FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION'
+    );
     expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.repeatability).toBe(
       'REPEATABLE_ACROSS_INDEPENDENT_GEOMETRY'
     );
@@ -1803,6 +1832,80 @@ describe('FP-024C.3 controlled fresh-solve repeatability', () => {
     expect(FP027_REQUIRED_PARTS_CONSERVATION_GATE.nextSpecifiedExperiment).toBe(
       'INDEPENDENT_REVIEW_ONLY'
     );
+  });
+
+  it('maps existing Weld 3→0 evidence onto the C.6 layer position without inferring Required Parts', () => {
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.status).toBe(
+      'EXISTING_EVIDENCE_MAPPED'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.doNotRerunDowin).toBe(true);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.doNotPatchFormulas).toBe(true);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.authorizesWeld0Rerun).toBe(false);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.authorizesFormulaChange).toBe(false);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.physicalLengthScore).toBe('6.0/10');
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.kasa.DESIGN_REPORT).toBe(1000);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.kasa.REQUIRED_PARTS).toBeNull();
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.kasa.PACKED).toBe(1003);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.kasa.PACKED).toBe(1000);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.kasa.REQUIRED_PARTS).toBeNull();
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld3.orta.PACKED).toBe(1416);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.asddWeld0.orta.PACKED).toBe(1416);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weldMovesFortyFiveReportToPacked).toBe(
+      'PROVEN_FOR_ASDD_FIXTURE'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weld3To0EffectOn45ReportToPacked).toBe(
+      'PROVEN_FOR_ASDD_FIXTURE'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weld3To0EffectOn90ReportToPacked).toBe(
+      'NO_OBSERVED_EFFECT_FOR_ASDD_FIXTURE'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.fortyFiveReportToPackedTwoFixtures).toBe(
+      'OBSERVED_PLUS_3'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.ninetyReportToPackedTwoFixtures).toBe(
+      'OBSERVED_0'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.fortyFiveReportToRequiredParts).toBe(
+      'OBSERVED_PLUS_3_FOR_C5_FIXTURE'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.ninetyReportToRequiredParts).toBe(
+      'OBSERVED_0_FOR_C5_FIXTURE'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weldMovesReportToRequiredParts).toBe(
+      'UNPROVEN'
+    );
+    expect(
+      FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weldCausesDesignReportToRequiredPartsPlus3
+    ).toBe('UNPROVEN');
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.requiredPartsAtWeld0).toBe(
+      'NOT_MEASURED'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weld0RequiredPartsLayer).toBe(
+      'NOT_MEASURED'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.sameCompensationAcrossAngles).toBe(
+      'REJECTED_BY_OBSERVATION'
+    );
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.generalizedCompensationFormula).toBe(
+      'UNPROVEN'
+    );
+    const mapped = evaluateWeldingWasteLayerCausality({
+      weld3Kasa: { designReportMm: 1000, requiredPartsMm: null, packedMm: 1003, machineMm: 1003 },
+      weld0Kasa: { designReportMm: 1000, requiredPartsMm: null, packedMm: 1000, machineMm: 1000 },
+      weld3Orta: { designReportMm: 1416, requiredPartsMm: null, packedMm: 1416, machineMm: 1416 },
+      weld0Orta: { designReportMm: 1416, requiredPartsMm: null, packedMm: 1416, machineMm: 1416 },
+    });
+    expect(mapped.designReportUnchanged).toBe(true);
+    expect(mapped.fortyFiveReportToPackedDeltaAtWeld3Mm).toBe(3);
+    expect(mapped.fortyFiveReportToPackedDeltaAtWeld0Mm).toBe(0);
+    expect(mapped.ninetyReportToPackedDeltaAtWeld3Mm).toBe(0);
+    expect(mapped.ninetyReportToPackedDeltaAtWeld0Mm).toBe(0);
+    expect(mapped.weldMovesFortyFiveReportToPacked).toBe(true);
+    expect(mapped.weldMovesNinetyReportToPacked).toBe(false);
+    expect(mapped.requiredPartsMeasuredAtBothWeldSettings).toBe(false);
+    expect(mapped.weldMovesReportToRequiredParts).toBe('UNPROVEN');
+    expect(mapped.authorizesFormulaChange).toBe(false);
+    expect(FP027_90_CONTROL_CONSERVATION_OBSERVATION.fp027RootCause).toBe('UNPROVEN');
   });
 
   it('refuses a repeatability claim from Run A or Run A + Run B', () => {

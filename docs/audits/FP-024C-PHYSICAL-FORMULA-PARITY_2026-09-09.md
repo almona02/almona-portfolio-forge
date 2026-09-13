@@ -523,3 +523,107 @@ PR #32 = DRAFT / DO NOT MERGE
 ```
 
 STOP. Independent review only. Do not solve again. Do not implement formulas. Do not implement FP-027 or FP-026. Do not merge PR #32.
+
+---
+
+## Independent review — FP-024C.6 accepted (13 September 2026)
+
+Independent review accepted the Design Preview artifact and the five-layer chain.
+
+| Finding | Verdict |
+|---------|---------|
+| FP-024C.6 layer semantics | **ACCEPTED** / **RECONCILED for C.5** |
+| 45° KASA Design Report → Required Parts | **+3 mm OBSERVED FOR C.5 FIXTURE only** |
+| 90° ORTA Design Report → Required Parts | **0 mm OBSERVED FOR C.5 FIXTURE only** |
+| 45° Design Report → Packed | **+3 mm OBSERVED on two fixtures** (asdd and C.5) |
+| 90° Design Report → Packed | **0 mm OBSERVED on two fixtures** (asdd and C.5) |
+| Packed → Machine | **0 mm OBSERVED** for represented KASA/ORTA machine rows |
+| Cross-angle layer comparison | **SUPPORTED** |
+| Same compensation across angles | **REJECTED BY OBSERVATION** (report→packed class difference) |
+| Generalized compensation formula | **UNPROVEN** |
+
+asdd never transcribed Required Parts. Do **not** treat report→Required Parts as a two-fixture result. Why the 45°/90° report→packed difference occurs, and whether +3 generalizes, stay unproven. Score stays **6.0/10**. Formulas stay **FROZEN**.
+
+---
+
+## FP-024C.7 — compensation causality reconciliation (13 September 2026)
+
+Existing Test 2 Welding Waste 3→0 evidence only. **No new solve. No formula change.** AICS-001: evidence classification only.
+
+### Question
+
+Does Weld 3→0 move the proven Design Report → Required Parts +3 on 45° pieces while leaving 90° at 0?
+
+### Existing asdd layers (not inferred)
+
+Weld = 3 (`BASELINE_REPRODUCTION_RUN`):
+
+| Piece | DESIGN_REPORT | REQUIRED_PARTS | PACKED | MACHINE |
+|-------|---------------|----------------|--------|---------|
+| KASA H | 1000 | **not transcribed** | 1003 | 1003 |
+| KASA V | 1500 | **not transcribed** | 1503 | 1503 |
+| KANAT H | 451 | **not transcribed** | 454 | 454 |
+| KANAT V | 1430 | **not transcribed** | 1433 | 1433 |
+| ORTA 90° | 1416 | **not transcribed** | 1416 | 1416 |
+
+Weld = 0 (`WELDING_WASTE_0` 2026-09-10 21:54):
+
+| Piece | DESIGN_REPORT | REQUIRED_PARTS | PACKED | MACHINE |
+|-------|---------------|----------------|--------|---------|
+| KASA H | 1000 | **not transcribed** | 1000 | 1000 |
+| KASA V | 1500 | **not transcribed** | 1500 | 1500 |
+| KANAT H | 451 | **not transcribed** | 451 | 451 |
+| KANAT V | 1430 | **not transcribed** | 1430 | 1430 |
+| ORTA 90° | 1416 | **not transcribed** | 1416 | 1416 |
+
+Design Preview/report lengths were **unchanged** (Test 2: NO OBSERVED EFFECT). Packed and machine on 45° KASA/KANAT moved **−3 mm**. 90° ORTA did not move.
+
+### Mapping onto the C.6 position
+
+| Adjacent pair | Weld 3 | Weld 0 | Authority |
+|---------------|--------|--------|-----------|
+| 45° DESIGN_REPORT → PACKED | +3 | 0 | **`WELD_3_TO_0_EFFECT_ON_45_REPORT_TO_PACKED` = PROVEN FOR ASDD FIXTURE** |
+| 45° PACKED → MACHINE | 0 | 0 | **PROVEN FOR ASDD FIXTURE** |
+| 90° DESIGN_REPORT → PACKED | 0 | 0 | **`WELD_3_TO_0_EFFECT_ON_90_REPORT_TO_PACKED` = NO_OBSERVED_EFFECT FOR ASDD FIXTURE** |
+| 45° DESIGN_REPORT → REQUIRED_PARTS | +3 on C.5 only | **`WELD0_REQUIRED_PARTS_LAYER` = NOT_MEASURED** | **`WELD_CAUSES_DESIGN_REPORT_TO_REQUIRED_PARTS_PLUS3` = UNPROVEN** |
+
+Allowed: changing Welding Waste 3→0 on asdd left Design Report unchanged and removed the +3 mm Design Report → Packed difference for the measured 45° KASA/KANAT pieces.
+
+Allowed: existing evidence is **consistent with** Welding Waste introducing the +3 mm downstream of Design Report.
+
+Not allowed: claiming Weld writes the Design Report → Required Parts boundary. That boundary was measured only on C.5 at Weld=3. asdd Required Parts was never captured. Do not substitute packed for Required Parts at Weld=0. Do not generalize the 90° no-effect result to all 90° pieces/profiles.
+
+### Two-fixture downstream vs one-fixture Required Parts
+
+| Boundary | Fixtures | Authority |
+|----------|----------|-----------|
+| 45° Design Report → Packed | asdd and C.5 | **+3 OBSERVED** |
+| 90° Design Report → Packed | asdd and C.5 | **0 OBSERVED** |
+| Packed → Machine | represented KASA/ORTA rows | **0 OBSERVED** |
+| 45° Design Report → Required Parts | C.5 only | **+3 OBSERVED FOR C.5 FIXTURE** |
+| 90° Design Report → Required Parts | C.5 only | **0 OBSERVED FOR C.5 FIXTURE** |
+
+### Authority after this pass
+
+```text
+FP-024C.6 = ACCEPTED
+LAYER_SEMANTICS_RECONCILED = YES for C.5
+FP-024C.7 = EXISTING_EVIDENCE_MAPPED
+45° report→packed two fixtures = +3 OBSERVED
+90° report→packed two fixtures = 0 OBSERVED
+45° report→Required Parts = +3 OBSERVED FOR C.5 FIXTURE
+90° report→Required Parts = 0 OBSERVED FOR C.5 FIXTURE
+WELD_3_TO_0_EFFECT_ON_45_REPORT_TO_PACKED = PROVEN FOR ASDD FIXTURE
+WELD_3_TO_0_EFFECT_ON_90_REPORT_TO_PACKED = NO_OBSERVED_EFFECT FOR ASDD FIXTURE
+WELD0_REQUIRED_PARTS_LAYER = NOT_MEASURED
+WELD_CAUSES_DESIGN_REPORT_TO_REQUIRED_PARTS_PLUS3 = UNPROVEN
+same compensation across angles = REJECTED BY OBSERVATION
+generalized formula = UNPROVEN
+score = 6.0/10
+formulas = FROZEN
+PR #32 = DRAFT / DO NOT MERGE
+```
+
+Next discriminator, **not authorized by this checkpoint**: measure Required Parts at Welding Waste 0 on the existing asdd fixture, with Design Report held as the reference. If report → Required Parts changes +3 → 0 while 90° stays 0, weld causality at the C.5 insertion boundary would strengthen. Do not implement a +3 or Welding Waste formula now.
+
+FP-027 authority is unchanged: ORTA 1→5→1 surplus +4; root cause **UNPROVEN**.

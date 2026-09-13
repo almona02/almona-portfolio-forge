@@ -57,6 +57,8 @@ import {
   FP027_E2_NONORTA_90,
   FP027_REQUIRED_PARTS_CONSERVATION_GATE,
   FP024C_NINETY_CONTROL_DUAL_USE,
+  FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION,
+  evaluateWeldingWasteLayerCausality,
   evaluateControlFixtureAuthorization,
   evaluateBaselineReset,
   overallUtilizationPercent,
@@ -796,6 +798,15 @@ describe('FP-024B DoWin compensation reconciliation', () => {
     const weldTerm = DOWIN_COMPENSATION_TERM_AUTHORITY.find((t) => t.term === 'Welding Waste');
     expect(weldTerm?.authority).toBe('UNPROVEN');
     expect(weldTerm?.proposedForFp024c).toBe(false);
+    expect(FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION.findings.weldMovesReportToRequiredParts).toBe(
+      'UNPROVEN'
+    );
+    expect(evaluateWeldingWasteLayerCausality({
+      weld3Kasa: { designReportMm: 1000, requiredPartsMm: null, packedMm: 1003, machineMm: 1003 },
+      weld0Kasa: { designReportMm: 1000, requiredPartsMm: null, packedMm: 1000, machineMm: 1000 },
+      weld3Orta: { designReportMm: 1416, requiredPartsMm: null, packedMm: 1416, machineMm: 1416 },
+      weld0Orta: { designReportMm: 1416, requiredPartsMm: null, packedMm: 1416, machineMm: 1416 },
+    }).authorizesFormulaChange).toBe(false);
   });
 
   it('classifies Test 3 Saw Thickness 4→5 as piece-length inert and remainder AMBIGUOUS', () => {

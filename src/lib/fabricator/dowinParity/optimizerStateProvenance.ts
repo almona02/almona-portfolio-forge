@@ -2585,14 +2585,17 @@ export const FP024C_90_CONTROL_COMPENSATION = {
   ninetyPackedToMachine: 'PROVEN',
   fortyFiveRequiredPartsToPacked: 'OBSERVED',
   fortyFivePackedToMachine: 'OBSERVED',
-  fortyFiveDesignOrReportNominalToRequiredParts: 'OBSERVED_PLUS_3_THIS_FIXTURE',
+  fortyFiveDesignOrReportNominalToRequiredParts: 'OBSERVED_PLUS_3_FOR_C5_FIXTURE',
+  ninetyDesignOrReportToRequiredParts: 'OBSERVED_0_FOR_C5_FIXTURE',
+  fortyFiveDesignReportToPackedTwoFixtures: 'OBSERVED_PLUS_3',
+  ninetyDesignReportToPackedTwoFixtures: 'OBSERVED_0',
   fortyFiveClassObservedInterLayerDeltaMm: 0,
   ninetyClassObservedInterLayerDeltaMm: 0,
-  crossAngleDifference: 'UNPROVEN',
-  crossAngleCompensationSame: 'UNPROVEN',
+  crossAngleDifference: 'REJECTED_BY_OBSERVATION',
+  crossAngleCompensationSame: 'REJECTED_BY_OBSERVATION',
   crossAngleLayerComparison: 'CROSS_ANGLE_LAYER_COMPARISON_SUPPORTED',
   generalizedCompensationFormula: 'UNPROVEN',
-  nextGate: 'INDEPENDENT_REVIEW_ONLY',
+  nextGate: 'FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION',
   cannotCiteFp027Conservation: true,
   authorizesFormulaChange: false,
   physicalLengthScore: '6.0/10',
@@ -2682,7 +2685,7 @@ export const FP024C_NINETY_CONTROL_DUAL_USE = {
  */
 export const FP024C6_LENGTH_LAYER_SEMANTICS = {
   id: 'FP024C6_LENGTH_LAYER_SEMANTICS',
-  status: 'LAYER_SEMANTICS_RECONCILED',
+  status: 'ACCEPTED',
   outcome: 'A',
   classification: 'LAYER_SEMANTICS_RECONCILED',
   scientificQuestion:
@@ -2758,26 +2761,170 @@ export const FP024C6_LENGTH_LAYER_SEMANTICS = {
   firstPass: 'ARTIFACT_ONLY_DESIGN_PREVIEW_EXPORT',
   firstObserved1200To1203Transition: 'DESIGN_REPORT_TO_REQUIRED_PARTS',
   transformation1200To1203FirstObservedAt: 'DESIGN_REPORT_TO_REQUIRED_PARTS',
-  reportToRequiredClassification: 'DESIGN_REPORT_TO_REQUIRED_PARTS_DELTA_+3_OBSERVED_FOR_THIS_FIXTURE',
+  reportToRequiredClassification: 'DESIGN_REPORT_TO_REQUIRED_PARTS_DELTA_+3_OBSERVED_FOR_C5_FIXTURE',
+  ninetyReportToRequiredClassification: 'DESIGN_REPORT_TO_REQUIRED_PARTS_DELTA_0_OBSERVED_FOR_C5_FIXTURE',
+  fortyFiveReportToPackedTwoFixtures: 'OBSERVED_PLUS_3',
+  ninetyReportToPackedTwoFixtures: 'OBSERVED_0',
   requiredPartsToPackedDelta: 0,
   packedToMachineDelta: 0,
   citaDesignPreviewMm: { horizontal: 537, vertical: 1116 },
   citaRequiredPartsMm: { horizontal: 540, vertical: 1119 },
   citaNote:
     'CITA also shows Design Preview 537/1116 vs Required Parts 540/1119. Recorded only. No formula inferred.',
+  independentReview: 'ACCEPTED',
   authority: {
     ninetyRequiredPartsToPacked: 'PROVEN',
     ninetyPackedToMachine: 'PROVEN',
     fortyFiveRequiredPartsToPacked: 'OBSERVED',
     fortyFivePackedToMachine: 'OBSERVED',
-    fortyFiveDesignOrReportNominalToRequiredParts: 'OBSERVED_PLUS_3_THIS_FIXTURE',
-    sameCompensationAcrossAngles: 'UNPROVEN',
+    fortyFiveDesignOrReportNominalToRequiredParts: 'OBSERVED_PLUS_3_FOR_C5_FIXTURE',
+    ninetyDesignOrReportToRequiredParts: 'OBSERVED_0_FOR_C5_FIXTURE',
+    fortyFiveDesignReportToPackedTwoFixtures: 'OBSERVED_PLUS_3',
+    ninetyDesignReportToPackedTwoFixtures: 'OBSERVED_0',
+    packedToMachineRepresentedRows: 'OBSERVED_0',
+    sameCompensationAcrossAngles: 'REJECTED_BY_OBSERVATION',
     crossAngleLayerComparison: 'CROSS_ANGLE_LAYER_COMPARISON_SUPPORTED',
     generalizedCompensationFormula: 'UNPROVEN',
   },
-  nextPossibleEvidenceAction: 'INDEPENDENT_REVIEW_ONLY. Do not solve again. Do not implement formulas.',
+  nextPossibleEvidenceAction:
+    'FP-024C.7 Compensation Causality Reconciliation using existing Weld 3→0 evidence first. Do not implement formulas.',
   designPreviewExportAuthorizedByThisCheckpoint: true,
   authorizesFormulaChange: false,
+  physicalLengthScore: '6.0/10',
+} as const;
+
+export interface Fp024c7LayerMeasurement {
+  designReportMm: number;
+  requiredPartsMm: number | null;
+  packedMm: number;
+  machineMm: number | null;
+}
+
+/**
+ * Map an already-isolated Welding Waste 3→0 pair onto the C.6 five-layer
+ * position. Does not infer a missing Required Parts value. Does not encode
+ * a production formula. AICS-001: evidence classification only.
+ */
+export function evaluateWeldingWasteLayerCausality(args: {
+  weld3Kasa: Fp024c7LayerMeasurement;
+  weld0Kasa: Fp024c7LayerMeasurement;
+  weld3Orta: Fp024c7LayerMeasurement;
+  weld0Orta: Fp024c7LayerMeasurement;
+}): {
+  designReportUnchanged: boolean;
+  fortyFiveReportToPackedDeltaAtWeld3Mm: number;
+  fortyFiveReportToPackedDeltaAtWeld0Mm: number;
+  ninetyReportToPackedDeltaAtWeld3Mm: number;
+  ninetyReportToPackedDeltaAtWeld0Mm: number;
+  weldMovesFortyFiveReportToPacked: boolean;
+  weldMovesNinetyReportToPacked: boolean;
+  requiredPartsMeasuredAtBothWeldSettings: boolean;
+  weldMovesReportToRequiredParts: 'UNPROVEN';
+  sameCompensationAcrossAngles: 'REJECTED_BY_OBSERVATION';
+  authorizesFormulaChange: false;
+} {
+  const kasaReportUnchanged =
+    args.weld3Kasa.designReportMm === args.weld0Kasa.designReportMm;
+  const ortaReportUnchanged =
+    args.weld3Orta.designReportMm === args.weld0Orta.designReportMm;
+  const fortyFiveReportToPackedDeltaAtWeld3Mm =
+    args.weld3Kasa.packedMm - args.weld3Kasa.designReportMm;
+  const fortyFiveReportToPackedDeltaAtWeld0Mm =
+    args.weld0Kasa.packedMm - args.weld0Kasa.designReportMm;
+  const ninetyReportToPackedDeltaAtWeld3Mm =
+    args.weld3Orta.packedMm - args.weld3Orta.designReportMm;
+  const ninetyReportToPackedDeltaAtWeld0Mm =
+    args.weld0Orta.packedMm - args.weld0Orta.designReportMm;
+  const requiredPartsMeasuredAtBothWeldSettings =
+    args.weld3Kasa.requiredPartsMm != null &&
+    args.weld0Kasa.requiredPartsMm != null &&
+    args.weld3Orta.requiredPartsMm != null &&
+    args.weld0Orta.requiredPartsMm != null;
+
+  return {
+    designReportUnchanged: kasaReportUnchanged && ortaReportUnchanged,
+    fortyFiveReportToPackedDeltaAtWeld3Mm,
+    fortyFiveReportToPackedDeltaAtWeld0Mm,
+    ninetyReportToPackedDeltaAtWeld3Mm,
+    ninetyReportToPackedDeltaAtWeld0Mm,
+    weldMovesFortyFiveReportToPacked:
+      kasaReportUnchanged &&
+      fortyFiveReportToPackedDeltaAtWeld3Mm === 3 &&
+      fortyFiveReportToPackedDeltaAtWeld0Mm === 0,
+    weldMovesNinetyReportToPacked:
+      !ortaReportUnchanged ||
+      ninetyReportToPackedDeltaAtWeld3Mm !== 0 ||
+      ninetyReportToPackedDeltaAtWeld0Mm !== 0,
+    requiredPartsMeasuredAtBothWeldSettings,
+    weldMovesReportToRequiredParts: 'UNPROVEN',
+    sameCompensationAcrossAngles: 'REJECTED_BY_OBSERVATION',
+    authorizesFormulaChange: false,
+  };
+}
+
+/**
+ * FP-024C.7 — compensation causality. Existing Test 2 Weld 3→0 first.
+ * Do not rerun DoWin. Do not patch formulas.
+ */
+export const FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION = {
+  id: 'FP024C7_COMPENSATION_CAUSALITY_RECONCILIATION',
+  status: 'EXISTING_EVIDENCE_MAPPED',
+  scientificQuestion:
+    'Does Welding Waste 3→0 move the proven Design Report → Required Parts +3 on 45° pieces while leaving 90° at 0?',
+  firstPass: 'EXISTING_WELD_3_TO_0_ONLY',
+  doNotRerunDowin: true,
+  doNotPatchFormulas: true,
+  authorizesWeld0Rerun: false,
+  authorizesFormulaChange: false,
+  independentReviewOfFp024c6: 'ACCEPTED',
+  asddWeld3: {
+    source: 'BASELINE_REPRODUCTION_RUN / asdd Design Preview + packed + machine',
+    kasa: { GEOMETRY: 1000, DESIGN_REPORT: 1000, REQUIRED_PARTS: null, PACKED: 1003, MACHINE: 1003 },
+    kasaVertical: { DESIGN_REPORT: 1500, REQUIRED_PARTS: null, PACKED: 1503, MACHINE: 1503 },
+    kanatHorizontal: { DESIGN_REPORT: 451, REQUIRED_PARTS: null, PACKED: 454, MACHINE: 454 },
+    kanatVertical: { DESIGN_REPORT: 1430, REQUIRED_PARTS: null, PACKED: 1433, MACHINE: 1433 },
+    orta: { DESIGN_REPORT: 1416, REQUIRED_PARTS: null, PACKED: 1416, MACHINE: 1416 },
+  },
+  asddWeld0: {
+    source: 'WELDING_WASTE_0 2026-09-10 21:54',
+    kasa: { GEOMETRY: 1000, DESIGN_REPORT: 1000, REQUIRED_PARTS: null, PACKED: 1000, MACHINE: 1000 },
+    kasaVertical: { DESIGN_REPORT: 1500, REQUIRED_PARTS: null, PACKED: 1500, MACHINE: 1500 },
+    kanatHorizontal: { DESIGN_REPORT: 451, REQUIRED_PARTS: null, PACKED: 451, MACHINE: 451 },
+    kanatVertical: { DESIGN_REPORT: 1430, REQUIRED_PARTS: null, PACKED: 1430, MACHINE: 1430 },
+    orta: { DESIGN_REPORT: 1416, REQUIRED_PARTS: null, PACKED: 1416, MACHINE: 1416 },
+  },
+  controlWeld3: {
+    source: 'FP024C_90_CONTROL C.5/C.6',
+    kasa: { GEOMETRY: 1200, DESIGN_REPORT: 1200, REQUIRED_PARTS: 1203, PACKED: 1203, MACHINE: 1203 },
+    orta: { DESIGN_REPORT: 1116, REQUIRED_PARTS: 1116, PACKED: 1116, MACHINE: 1116 },
+  },
+  findings: {
+    designReportUnchangedUnderWeld3To0: 'NO_OBSERVED_EFFECT',
+    fortyFiveReportToPackedAtWeld3Mm: 3,
+    fortyFiveReportToPackedAtWeld0Mm: 0,
+    fortyFivePackedToMachineAtBothWeldSettingsMm: 0,
+    ninetyReportToPackedAtBothWeldSettingsMm: 0,
+    ninetyPackedToMachineAtBothWeldSettingsMm: 0,
+    fortyFiveReportToPackedTwoFixtures: 'OBSERVED_PLUS_3',
+    ninetyReportToPackedTwoFixtures: 'OBSERVED_0',
+    fortyFiveReportToRequiredParts: 'OBSERVED_PLUS_3_FOR_C5_FIXTURE',
+    ninetyReportToRequiredParts: 'OBSERVED_0_FOR_C5_FIXTURE',
+    weld3To0EffectOn45ReportToPacked: 'PROVEN_FOR_ASDD_FIXTURE',
+    weld3To0EffectOn90ReportToPacked: 'NO_OBSERVED_EFFECT_FOR_ASDD_FIXTURE',
+    weld0RequiredPartsLayer: 'NOT_MEASURED',
+    requiredPartsAtWeld0: 'NOT_MEASURED',
+    weldCausesDesignReportToRequiredPartsPlus3: 'UNPROVEN',
+    weldMovesFortyFiveReportToPacked: 'PROVEN_FOR_ASDD_FIXTURE',
+    weldMovesNinety: 'NO_OBSERVED_EFFECT_FOR_ASDD_FIXTURE',
+    weldMovesReportToRequiredParts: 'UNPROVEN',
+    consistentWithC6LayerPosition: true,
+    sameCompensationAcrossAngles: 'REJECTED_BY_OBSERVATION',
+    generalizedCompensationFormula: 'UNPROVEN',
+  },
+  limitation:
+    'asdd Required Parts was never transcribed. C.5 is the only fixture with an explicit Design Report → Required Parts measurement. Two-fixture authority is report → packed only. Do not substitute packed for Required Parts at Weld=0.',
+  nextPossibleEvidenceAction:
+    'Measure Required Parts at Welding Waste 0 on an authorized isolation. Not authorized by this checkpoint.',
   physicalLengthScore: '6.0/10',
 } as const;
 
