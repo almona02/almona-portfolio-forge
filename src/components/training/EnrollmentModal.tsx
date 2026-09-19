@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -37,6 +38,7 @@ type FormValues = z.infer<typeof schema>;
 
 export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenChange, selectedProgram, cohorts, material }) => {
   const { t } = useTranslation();
+  const copy = usePublicCopy();
 
   const defaultValues: FormValues = useMemo(()=>({
     name: '', email: '', company: '', phone: '', program: selectedProgram || '', material, cohortId: cohorts[0]?.id?.toString() || '', notes: ''
@@ -75,14 +77,10 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-almona-dark border-almona-light/20 text-white">
+      <DialogContent className="public-enquiry-dialog max-w-2xl max-h-[90dvh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-300">
-            Training enquiry
-          </DialogTitle>
-          <DialogDescription className="text-gray-400">
-            Ask about fees, course scope and available dates. This enquiry does not confirm a booking or accredited certification.
-          </DialogDescription>
+          <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-300">{copy("Training enquiry")}</DialogTitle>
+          <DialogDescription className="text-gray-400">{copy("Ask about fees, course scope and available dates. This enquiry does not confirm a booking or accredited certification.")}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="grid md:grid-cols-2 gap-4">
@@ -93,7 +91,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
             </div>
             <div>
               <label htmlFor="enrollment-email" className="typography-label text-sm font-medium">{t('trainingPage.form.email')}</label>
-              <Input id="enrollment-email" {...register('email')} className="mt-1 bg-almona-dark/50" />
+              <Input id="enrollment-email" type="email" dir="ltr" {...register('email')} className="mt-1 bg-almona-dark/50" />
               {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>}
             </div>
             <div>
@@ -102,7 +100,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
             </div>
             <div>
               <label htmlFor="enrollment-phone" className="typography-label text-sm font-medium">{t('trainingPage.form.phone')}</label>
-              <Input id="enrollment-phone" {...register('phone')} className="mt-1 bg-almona-dark/50" />
+              <Input id="enrollment-phone" type="tel" dir="ltr" {...register('phone')} className="mt-1 bg-almona-dark/50" />
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
@@ -110,7 +108,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
               <label htmlFor="enrollment-program" className="typography-label text-sm font-medium">{t('trainingPage.form.program')}</label>
               <select id="enrollment-program" {...register('program')} className="mt-1 w-full bg-almona-dark/50 border border-almona-light/20 rounded px-2 py-2 text-sm">
                 <option value="">{t('trainingPage.form.selectProgram')}</option>
-                {trainingLevels.map(p => <option key={p.level} value={p.level}>{p.title}</option>)}
+                {trainingLevels.map(p => <option key={p.level} value={p.level}>{copy(p.title)}</option>)}
               </select>
               {errors.program && <p className="text-xs text-red-400 mt-1">{errors.program.message}</p>}
             </div>

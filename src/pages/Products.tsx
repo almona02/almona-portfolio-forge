@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 // PHASE 4: Use lazyRetry for better reliability and chunk loading
 import { lazyRetry } from '@/utils/lazyImport';
@@ -75,6 +76,7 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => {
 };
 
 const Products = function ProductsPage() {
+  const copy = usePublicCopy();
   const { addCatalogueToQuote } = useQuote();
   const navigate = useNavigate();
   const { t } = useTranslation('products');
@@ -398,13 +400,11 @@ const Products = function ProductsPage() {
             className="relative z-10 fade-in-up"
           >
             <h1 className="typography-h1 md:text-6xl mb-6">
-              <span className="text-gradient-orange">Industrial Machinery</span>
+              <span className="text-gradient-orange">{copy("Industrial Machinery")}</span>
               <br />
-              <span className="text-white">For Aluminium &amp; UPVC Workshops</span>
+              <span className="text-white">{copy("For Aluminium & UPVC Workshops")}</span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed">
-              Browse machine models and discuss your production requirements with ALMONA.
-            </p>
+            <p className="text-xl text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed">{copy("Browse machine models and discuss your production requirements with ALMONA.")}</p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
@@ -587,7 +587,7 @@ const Products = function ProductsPage() {
           style={{ animationDelay: '0.5s' }}
         >
           <h2 className="typography-h2 mb-6 text-center">
-            <span className="text-gradient-orange">Discuss your machine requirements</span>
+            <span className="text-gradient-orange">{copy("Discuss your machine requirements")}</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -807,7 +807,7 @@ const Products = function ProductsPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
-              <p className="text-white">Loading 3D Engine...</p>
+              <p className="text-white">{copy("Loading 3D Engine...")}</p>
             </div>
           </div>
         }>

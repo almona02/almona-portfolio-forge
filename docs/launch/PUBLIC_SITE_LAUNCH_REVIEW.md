@@ -32,9 +32,11 @@ The 3D gallery displayed its content, but WebGL/AR behaviour was not fully verif
 4. **Content evidence — mitigated locally:** unsupported outcome counters, blanket certification/technology claims and implied institutional endorsements are removed or rewritten. Used-machine drafts are unpublished. Digital Egypt is explicitly an independent proposal. Owner-provided company history and dealership details still need documentary verification; see [commercial content review](COMMERCIAL_CONTENT_REVIEW.md).
 5. **Language/accessibility — partially checked:** the public spare-parts page now provides English/Arabic enquiry guidance without requiring sign-in. The quote page was verified at 390px with no horizontal overflow. Full Arabic translation, other phone sizes and all public routes still need a release sweep.
 6. **Release checks:** resolve the existing repository lint/type-check failures with the responsible module owners. Fabricator files were left untouched.
-7. **Hosting:** choose the production domain and verify Vercel production settings, public access, redirects, metadata/canonical URLs and a rollback deployment. Neither supplied deployment URL alone establishes the intended production domain.
+7. **Hosting:** the owner confirmed almona02.com and retained Vercel hosting; the domain redirects to www.almona02.com. Verify Vercel production settings, public access, metadata/canonical URLs and a rollback deployment before promotion.
 
 ## Verification evidence
+
+- Follow-up on requested items 7 and 4: the full dependency audit now reports zero known vulnerabilities after a compatible Storybook/Vitest upgrade. Arabic public enquiries, shared language state and mobile training-dialog behaviour have been improved. See [mobile, Arabic and toolchain review](MOBILE_ARABIC_AND_TOOLCHAIN_REVIEW.md) for checks and remaining language gaps. This supersedes the earlier 16-moderate development-tool finding below.
 
 - Follow-up dependency audit (19 September 2026): removed the unused service coverage map and its vulnerable MapLibre dependency; updated colord to 2.10.0. Production-only npm audit reports zero known vulnerabilities. The full audit still reports 16 moderate development-tool findings involving Storybook/Vitest; these require a separate tested toolchain upgrade. This is not a complete security certification.
 - Mobile preview testing reproduced a language-selection failure: the navbar treated its portalled language menu as an outside click and unmounted it before selection. The handler now preserves clicks within that menu. Two regression tests cover selection and normal outside-click dismissal; both pass. The follow-up build passes and targeted navigation lint has zero errors (three existing warnings).
@@ -54,4 +56,4 @@ The 3D gallery displayed its content, but WebGL/AR behaviour was not fully verif
 
 ## Suggested release sequence
 
-First prepare a Vercel preview containing the public-site fixes and approved business content. Verify contact delivery, catalogue enquiries, Arabic/English layouts and mobile behaviour there. Approve the policy text and production domain, then promote the tested deployment and check its public routes and enquiry flow. Keep the Fabricator release separate from this public-site launch.
+First prepare a Vercel preview containing the public-site fixes and approved business content. Verify contact delivery, catalogue enquiries, Arabic/English layouts and mobile behaviour there. Approve the policy text, then promote the tested deployment to the confirmed almona02.com domain and check its public routes and enquiry flow. Keep the Fabricator release separate from this public-site launch.

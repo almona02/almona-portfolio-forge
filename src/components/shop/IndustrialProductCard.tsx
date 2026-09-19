@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/ui/card";
@@ -48,6 +49,7 @@ export const IndustrialProductCard = ({
   durabilityInfo,
   onDurabilityClick: _onDurabilityClick,
 }: IndustrialProductCardProps) => {
+  const copy = usePublicCopy();
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleActionClick = (action: () => void) => {
@@ -132,7 +134,7 @@ export const IndustrialProductCard = ({
                   : "bg-green-600/90"
               }`}
             >
-              {stock === undefined ? "Confirm availability" : stock === 0 ? "Out of Stock" : stock <= 5 ? `Low (${stock})` : "In Stock"}
+              {stock === undefined ? copy("Confirm availability") : stock === 0 ? copy("Out of Stock") : stock <= 5 ? `${copy('Low stock')} (${stock})` : copy("In Stock")}
             </Badge>
           </div>
         )}
@@ -168,7 +170,7 @@ export const IndustrialProductCard = ({
             </div>
           </div>
         )}
-        <div className="text-lg sm:text-xl font-bold text-amber-500 mt-auto">{price}</div>
+        <div className="text-lg sm:text-xl font-bold text-amber-500 mt-auto">{copy(price)}</div>
       </CardContent>
       <CardFooter className="p-3 sm:p-4 pt-0">
         <div className="flex flex-col gap-1.5 w-full">
@@ -180,7 +182,7 @@ export const IndustrialProductCard = ({
               onClick={() => handleActionClick(action.action)}
               className={`text-xs sm:text-sm ${i === 0 ? "bg-amber-600 hover:bg-amber-700" : ""}`}
             >
-              {action.label}
+              {copy(action.label)}
             </Button>
           ))}
         </div>

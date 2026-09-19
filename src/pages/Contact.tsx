@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import SEO from "@/components/SEO";
 import { EmailDraftDownload } from '@/components/contact/EmailDraftDownload';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
@@ -25,6 +26,7 @@ const contactSchema = z.object({
 type ContactFormValues = z.infer<typeof contactSchema>;
 
 const Contact = () => {
+  const copy = usePublicCopy();
   const location = useLocation();
   const [emailDraft, setEmailDraft] = useState<string | null>(null);
   const {
@@ -63,54 +65,48 @@ const Contact = () => {
         <div className="container mx-auto px-4 py-12">
           <div className="mb-16 text-center fade-in-up">
             <h1 className="typography-h1 mb-4">
-              <span className="text-gradient-orange">Contact Us</span>
+              <span className="text-gradient-orange">{copy("Contact Us")}</span>
             </h1>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Have questions or need assistance? Our team is ready to help you
-              with any inquiries.
-            </p>
+            <p className="text-gray-400 max-w-2xl mx-auto">{copy("Have questions or need assistance? Our team is ready to help you with any inquiries.")}</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
-            <div className="bg-almona-darker p-8 rounded-xl border border-almona-light/20 fade-in-up">
-              <h2 className="typography-h2 font-semibold mb-6">Send us a message</h2>
+            <div className="bg-almona-darker p-5 sm:p-8 rounded-xl border border-almona-light/20 fade-in-up">
+              <h2 className="typography-h2 font-semibold mb-6">{copy("Send us a message")}</h2>
 
-              <p className="text-gray-300 mb-6">
-                Prepare your enquiry here, then send it from your email app to almona02@yahoo.com.
-              </p>
+              <p className="text-gray-300 mb-6">{copy("Prepare your enquiry here, then send it from your email app to almona02@yahoo.com.")}</p>
               {emailDraft && (
                 <div role="status" className="mb-6 p-4 bg-blue-900/30 border border-blue-500 rounded-lg">
-                  <p className="text-gray-200">
-                    Your email draft is ready. Your message has not been sent. Open your email app to review and send it.
-                  </p>
-                  <a href={emailDraft} className="inline-block mt-3 text-amber-400 underline">Open email draft</a>
+                  <p className="text-gray-200">{copy("Your email draft is ready. Your message has not been sent. Open your email app to review and send it.")}</p>
+                  <a href={emailDraft} className="inline-block mt-3 text-amber-400 underline">{copy("Open email draft")}</a>
                   <EmailDraftDownload mailto={emailDraft} />
-                  <p className="mt-2 text-sm text-gray-300">No email app? Email almona02@yahoo.com directly or call +20 100 309 7177.</p>
+                  <p className="mt-2 text-sm text-gray-300">{copy("No email app? Email almona02@yahoo.com directly or call +20 100 309 7177.")}</p>
                 </div>
               )}
 
               <form onSubmit={handleSubmit(onSubmit)} onChange={() => setEmailDraft(null)} className="space-y-6" noValidate>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="name" className="typography-label">Full Name</Label>
+                    <Label htmlFor="name" className="typography-label">{copy("Full Name")}</Label>
                     <Input
                       id="name"
                       className="mt-2 bg-almona-dark border-almona-light/30"
-                      placeholder="Your name"
+                      placeholder={copy("Your name")}
                       {...register("name")}
                     />
                     {errors.name && (
                       <p className="text-red-400 text-sm mt-1">
-                        {errors.name.message}
+                        {copy(errors.name.message || "")}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <Label htmlFor="email" className="typography-label">Email Address</Label>
+                    <Label htmlFor="email" className="typography-label">{copy("Email Address")}</Label>
                     <Input
                       id="email"
+                      dir="ltr"
                       type="email"
                       className="mt-2 bg-almona-dark border-almona-light/30"
                       placeholder="you@example.com"
@@ -118,7 +114,7 @@ const Contact = () => {
                     />
                     {errors.email && (
                       <p className="text-red-400 text-sm mt-1">
-                        {errors.email.message}
+                        {copy(errors.email.message || "")}
                       </p>
                     )}
                   </div>
@@ -126,47 +122,49 @@ const Contact = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="phone" className="typography-label">Phone Number</Label>
+                    <Label htmlFor="phone" className="typography-label">{copy("Phone Number")}</Label>
                     <Input
                       id="phone"
+                      type="tel"
+                      dir="ltr"
                       className="mt-2 bg-almona-dark border-almona-light/30"
                       placeholder="+20XXXXXXXXXX"
                       {...register("phone")}
                     />
                     {errors.phone && (
                       <p className="text-red-400 text-sm mt-1">
-                        {errors.phone.message}
+                        {copy(errors.phone.message || "")}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <Label htmlFor="subject" className="typography-label">Subject</Label>
+                    <Label htmlFor="subject" className="typography-label">{copy("Subject")}</Label>
                     <Input
                       id="subject"
                       className="mt-2 bg-almona-dark border-almona-light/30"
-                      placeholder="How can we help?"
+                      placeholder={copy("How can we help?")}
                       {...register("subject")}
                     />
                     {errors.subject && (
                       <p className="text-red-400 text-sm mt-1">
-                        {errors.subject.message}
+                        {copy(errors.subject.message || "")}
                       </p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="message" className="typography-label">Message</Label>
+                  <Label htmlFor="message" className="typography-label">{copy("Message")}</Label>
                   <Textarea
                     id="message"
                     className="mt-2 bg-almona-dark border-almona-light/30 min-h-[150px]"
-                    placeholder="Your message here..."
+                    placeholder={copy("Your message here...")}
                     {...register("message")}
                   />
                   {errors.message && (
                     <p className="text-red-400 text-sm mt-1">
-                      {errors.message.message}
+                      {copy(errors.message.message || "")}
                     </p>
                   )}
                 </div>
@@ -174,38 +172,29 @@ const Contact = () => {
                 <Button
                   type="submit"
                   className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white py-3"
-                >
-                  Prepare Email
-                </Button>
+                >{copy("Prepare Email")}</Button>
               </form>
             </div>
 
             {/* Contact Info & Map */}
             <div className="fade-in-up space-y-8"
             >
-              <div className="bg-almona-darker p-8 rounded-xl border border-almona-light/20">
-                <h2 className="typography-h2 font-semibold mb-6">
-                  Contact Information
-                </h2>
+              <div className="bg-almona-darker p-5 sm:p-8 rounded-xl border border-almona-light/20">
+                <h2 className="typography-h2 font-semibold mb-6">{copy("Contact Information")}</h2>
 
                 <div className="space-y-6">
                   <div className="flex items-start">
-                    <MapPin className="h-6 w-6 text-almona-orange mr-4 mt-1" />
+                    <MapPin className="h-6 w-6 text-almona-orange me-4 mt-1" />
                     <div>
-                      <h3 className="typography-h3 font-medium text-lg mb-1">Our Location</h3>
-                      <p className="text-gray-400">
-                        ALMONA Co. 13B/18 Tarik Ibn Ziad st. Taawen , Haram ,
-                        Giza, Egypt
-                        <br />
-                        Giza Governorate, Egypt
-                      </p>
+                      <h3 className="typography-h3 font-medium text-lg mb-1">{copy("Our Location")}</h3>
+                      <p className="text-gray-400">{copy("ALMONA Co. 13B/18 Tarik Ibn Ziad st. Taawen , Haram , Giza, Egypt")}<br />{copy("Giza Governorate, Egypt")}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start">
-                    <Phone className="h-6 w-6 text-almona-orange mr-4 mt-1" />
+                    <Phone className="h-6 w-6 text-almona-orange me-4 mt-1" />
                     <div>
-                      <h3 className="typography-h3 font-medium text-lg mb-1">Phone</h3>
+                      <h3 className="typography-h3 font-medium text-lg mb-1">{copy("Phone")}</h3>
                       <p className="text-gray-400">
                         +20 100 309 7177,
                         +20 102 800 3520
@@ -216,9 +205,9 @@ const Contact = () => {
                   </div>
 
                   <div className="flex items-start">
-                    <Mail className="h-6 w-6 text-almona-orange mr-4 mt-1" />
+                    <Mail className="h-6 w-6 text-almona-orange me-4 mt-1" />
                     <div>
-                      <h3 className="typography-h3 font-medium text-lg mb-1">Email</h3>
+                      <h3 className="typography-h3 font-medium text-lg mb-1">{copy("Email")}</h3>
                       <p className="text-gray-400">
                         almona02@yahoo.com
                         <br />
@@ -228,16 +217,10 @@ const Contact = () => {
                   </div>
 
                   <div className="flex items-start">
-                    <Clock className="h-6 w-6 text-almona-orange mr-4 mt-1" />
+                    <Clock className="h-6 w-6 text-almona-orange me-4 mt-1" />
                     <div>
-                      <h3 className="typography-h3 font-medium text-lg mb-1">
-                        Working Hours
-                      </h3>
-                      <p className="text-gray-400">
-                        Saturday - Thursday: 10:00 AM - 8:00 PM
-                        <br />
-                        Friday: Closed
-                      </p>
+                      <h3 className="typography-h3 font-medium text-lg mb-1">{copy("Working Hours")}</h3>
+                      <p className="text-gray-400">{copy("Saturday - Thursday: 10:00 AM - 8:00 PM")}<br />{copy("Friday: Closed")}</p>
                     </div>
                   </div>
                 </div>
@@ -251,9 +234,9 @@ const Contact = () => {
                       <svg className="w-16 h-16 mx-auto mb-4 text-almona-orange" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                       </svg>
-                      <h3 className="typography-h3 mb-2">Almona Industrial</h3>
-                      <p className="text-gray-300 mb-4">Cairo, Egypt</p>
-                      <p className="text-sm text-gray-400">Click to view on Google Maps</p>
+                      <h3 className="typography-h3 mb-2">{copy("Almona Industrial")}</h3>
+                      <p className="text-gray-300 mb-4">{copy("Cairo, Egypt")}</p>
+                      <p className="text-sm text-gray-400">{copy("Click to view on Google Maps")}</p>
                     </div>
                   </div>
                   
@@ -263,7 +246,7 @@ const Contact = () => {
                       <svg className="w-12 h-12 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                       </svg>
-                      <p className="text-lg font-semibold">Open in Google Maps</p>
+                      <p className="text-lg font-semibold">{copy("Open in Google Maps")}</p>
                     </div>
                   </div>
                 </div>
@@ -271,9 +254,7 @@ const Contact = () => {
               
               {/* Neighborhood Discovery Button */}
               <div className="mt-4 text-center">
-                <Button variant="outline" className="w-full border-almona-light/30 hover:bg-almona-light/10" onClick={handleNeighborhoodClick}>
-                  Explore Our Neighborhood
-                </Button>
+                <Button variant="outline" className="w-full border-almona-light/30 hover:bg-almona-light/10" onClick={handleNeighborhoodClick}>{copy("Explore Our Neighborhood")}</Button>
               </div>
             </div>
           </div>

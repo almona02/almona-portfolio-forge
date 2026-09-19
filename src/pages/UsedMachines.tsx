@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -27,6 +28,7 @@ import { ParsedQuery } from '@/services/NaturalLanguageProcessor';
  * @returns {JSX.Element} The UsedMachines page component
  */
 const UsedMachines = () => {
+  const copy = usePublicCopy();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('browse');
@@ -107,6 +109,18 @@ const UsedMachines = () => {
 
   // Get machines to display
   const _machinesToShow = searchResults.map(result => result.machine);
+
+  if (usedMachines.length === 0) {
+    return <main className="pt-28 pb-16 px-4">
+      <MachineSEO machines={usedMachines} isListingPage={true} />
+      <section className="max-w-3xl mx-auto space-y-6">
+        <h1 className="typography-h1 text-amber-400">{copy('Used Machines Marketplace')}</h1>
+        <p className="text-gray-300">{copy('Ask about used aluminium and UPVC machinery. Availability, condition and seller details require confirmation.')}</p>
+        <p className="rounded-lg border border-gray-700 p-5">{copy('No approved listings are currently published.')}</p>
+        <Button onClick={() => navigate('/contact?subject=Used%20machine%20enquiry')}>{copy('Discuss availability')}</Button>
+      </section>
+    </main>;
+  }
 
   return (
     <>

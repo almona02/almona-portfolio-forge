@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 // Enhanced Shop Component for Almona Portfolio
 
 import SEO from "@/components/SEO";
@@ -176,6 +177,7 @@ const ProductGrid = ({
   formatPrice,
   setFilters
 }: ProductGridProps) => {
+  const copy = usePublicCopy();
   if (isLoading) {
     return (
       <div className={`grid items-stretch ${
@@ -193,10 +195,8 @@ const ProductGrid = ({
       <div className="text-center py-16">
   <div className="bg-almona-darker p-8 rounded-lg border border-almona-light/20">
           <Search className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-          <h3 className="typography-h3 mb-2">No products found</h3>
-          <p className="text-gray-400 mb-6">
-            Try adjusting your filters or search terms
-          </p>
+          <h3 className="typography-h3 mb-2">{copy("No products found")}</h3>
+          <p className="text-gray-400 mb-6">{copy("Try adjusting your filters or search terms")}</p>
           <Button onClick={() => setFilters({
             searchTerm: "",
             category: "all",
@@ -205,9 +205,7 @@ const ProductGrid = ({
             inStock: false,
             hasDiscount: false,
             rating: 0
-          })}>
-            Reset Filters
-          </Button>
+          })}>{copy("Reset Filters")}</Button>
         </div>
       </div>
     );
@@ -280,9 +278,7 @@ const ProductGrid = ({
           <Button
             onClick={() => setDisplayedProductCount((prev: number) => prev + 12)}
             className="bg-almona-orange hover:bg-almona-orange-dark px-8 py-3"
-          >
-            Load More Products
-          </Button>
+          >{copy("Load More Products")}</Button>
         </div>
       )}
     </>
@@ -292,6 +288,7 @@ const ProductGrid = ({
 
 // Enhanced Shop Component
 const Shop = () => {
+  const copy = usePublicCopy();
   const { addCatalogueToQuote: addToQuote, quoteItems } = useQuote();
   const { toast } = useToast();
   
@@ -526,11 +523,9 @@ const Shop = () => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="typography-h1 md:text-5xl lg:text-6xl mb-6">
-                <span className="text-gradient-orange">Industrial Equipment Hub</span>
+                <span className="text-gradient-orange">{copy("Industrial Equipment Hub")}</span>
               </h1>
-              <p className="text-xl text-gray-300 mb-8">
-                Premium machinery, genuine parts, and expert support for Egypt&#39;s manufacturing industry
-              </p>
+              <p className="text-xl text-gray-300 mb-8">{copy("Premium machinery, genuine parts, and expert support for Egypt's manufacturing industry")}</p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <NeonButton 
@@ -539,23 +534,19 @@ const Shop = () => {
                   onClick={useCallback(() => setAdvisorOpen(true), [])}
                   className="px-8 py-4"
                 >
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  AI Equipment Advisor
-                </NeonButton>
+                  <Sparkles className="mr-2 h-5 w-5" />{copy("AI Equipment Advisor")}</NeonButton>
                 
                 <Button 
-                  className="border-almona-light text-white hover:bg-almona-light/10 px-8 py-4"
-                >
-                  Explore Catalog
-                </Button>
-                <Button asChild variant="outline"><Link to="/quote">View enquiry basket ({quoteItems.length})</Link></Button>
+                  onClick={() => document.getElementById("catalogue")?.scrollIntoView({ behavior: "smooth" })} className="border-almona-light text-white hover:bg-almona-light/10 px-8 py-4"
+                >{copy("Explore Catalog")}</Button>
+                <Button asChild variant="outline"><Link to="/quote">{copy("View enquiry basket (")}{quoteItems.length})</Link></Button>
               </div>
             </div>
           </div>
         </section>
 
         {/* Main Shop Content */}
-        <section className="container mx-auto px-4 py-12">
+        <section id="catalogue" className="container mx-auto px-4 py-12 scroll-mt-24">
           <div className="flex flex-col xl:flex-row gap-6 xl:gap-8">
             {/* Smart Category Navigation Sidebar */}
             <aside 
@@ -583,8 +574,8 @@ const Shop = () => {
                   <CardContent className="p-4 flex items-center gap-3">
                     <Truck className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="typography-h4 font-medium text-white">Delivery Planning</h4>
-                      <p className="text-sm text-gray-300">Delivery costs and timing confirmed in your quote</p>
+                      <h4 className="typography-h4 font-medium text-white">{copy("Delivery Planning")}</h4>
+                      <p className="text-sm text-gray-300">{copy("Delivery costs and timing confirmed in your quote")}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -593,8 +584,8 @@ const Shop = () => {
                   <CardContent className="p-4 flex items-center gap-3">
                     <Shield className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="typography-h4 font-medium text-white">Warranty Details</h4>
-                      <p className="text-sm text-gray-300">Request model-specific written warranty terms</p>
+                      <h4 className="typography-h4 font-medium text-white">{copy("Warranty Details")}</h4>
+                      <p className="text-sm text-gray-300">{copy("Request model-specific written warranty terms")}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -603,8 +594,8 @@ const Shop = () => {
                   <CardContent className="p-4 flex items-center gap-3">
                     <RotateCcw className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="typography-h4 font-medium text-white">Technical Support</h4>
-                      <p className="text-sm text-gray-300">Contact us to confirm service availability</p>
+                      <h4 className="typography-h4 font-medium text-white">{copy("Technical Support")}</h4>
+                      <p className="text-sm text-gray-300">{copy("Contact us to confirm service availability")}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -631,8 +622,8 @@ const Shop = () => {
               >
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
                   <h2 className="typography-h2 text-xl lg:text-2xl">
-                    {activeTab === 'industrial-machines' && 'Industrial Machinery'}
-                    {activeTab === 'industrial-parts' && 'Spare Parts'}
+                    {activeTab === 'industrial-machines' && copy('Industrial Machinery')}
+                    {activeTab === 'industrial-parts' && copy('Spare Parts')}
                     {activeTab === 'egypt-standards' && 'Egyptian Standards'}
                     {activeTab === 'nile-logistics' && 'Logistics Services'}
                     {activeTab === 'local-support' && 'Technical Support'}
@@ -662,12 +653,12 @@ const Shop = () => {
                         <SelectValue placeholder="Sort by" />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-800 border-slate-600">
-                        <SelectItem value="featured" className="btn-secondary">Featured</SelectItem>
-                        <SelectItem value="newest" className="btn-secondary">Newest</SelectItem>
-                        <SelectItem value="price-low" className="btn-secondary">Price: Low to High</SelectItem>
-                        <SelectItem value="price-high" className="btn-secondary">Price: High to Low</SelectItem>
-                        <SelectItem value="rating" className="btn-secondary">Top Rated</SelectItem>
-                        <SelectItem value="name" className="btn-secondary">Name A-Z</SelectItem>
+                        <SelectItem value="featured" className="btn-secondary">{copy("Featured")}</SelectItem>
+                        <SelectItem value="newest" className="btn-secondary">{copy("Newest")}</SelectItem>
+                        <SelectItem value="price-low" className="btn-secondary">{copy("Price: Low to High")}</SelectItem>
+                        <SelectItem value="price-high" className="btn-secondary">{copy("Price: High to Low")}</SelectItem>
+                        <SelectItem value="rating" className="btn-secondary">{copy("Top Rated")}</SelectItem>
+                        <SelectItem value="name" className="btn-secondary">{copy("Name A-Z")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

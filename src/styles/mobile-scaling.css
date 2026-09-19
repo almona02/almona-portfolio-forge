@@ -69,6 +69,13 @@
   }
 }
 
+@media screen and (max-width: 768px) {
+  /* This dialog is already centred with translate; margins offset it off-screen. */
+  [role="dialog"].public-enquiry-dialog {
+    margin: 0 !important;
+  }
+}
+
 /* Fix product card scaling */
 @media screen and (max-width: 640px) {
   .product-card,
