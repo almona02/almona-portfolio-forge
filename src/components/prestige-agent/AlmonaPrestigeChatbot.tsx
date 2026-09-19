@@ -310,7 +310,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               </h1>
               <p className="text-gray-600 flex items-center gap-2">
                 <Shield className="w-4 h-4  status-valid" />
-                <span className="font-semibold text-green-600">Online</span>
+                <span className="font-semibold text-green-600">Assistant interface</span>
                 • Nervous System + Professor + Doctor + Tour Guide
               </p>
             </div>
@@ -386,7 +386,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               <div className="text-right">
                 <div className="inline-flex items-center px-4 py-2 bg-white bg-opacity-10 rounded-full">
                   <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse mr-2"></div>
-                  <span className="text-sm text-gray-300">Real-time Connected</span>
+                  <span className="text-sm text-gray-300">Connection checked when you send</span>
                 </div>
               </div>
             </div>
@@ -477,7 +477,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                   </span>
                   <div className="flex items-center space-x-1">
                     <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span className="text-xs text-gray-500">Connected to YDT Knowledge Base</span>
+                    <span className="text-xs text-gray-500">YDT assistance — verify guidance before use</span>
                   </div>
                 </div>
               </div>
@@ -523,20 +523,20 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               </div>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold">1,193</div>
+              <div className="text-2xl font-bold">On request</div>
               <div className="text-sm text-gray-500">Components & Parts</div>
             </div>
           </div>
           
           <div className="bg-white p-4 rounded-2xl shadow">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Accuracy</span>
+              <span className="text-sm font-medium text-gray-600">Guidance</span>
               <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                 <Shield className="w-4 h-4 text-blue-600" />
               </div>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold">Active</div>
+              <div className="text-2xl font-bold">Verify</div>
               <div className="text-sm text-gray-500">Knowledge Base</div>
             </div>
           </div>
@@ -562,8 +562,8 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               </div>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold">0.8s</div>
-              <div className="text-sm text-gray-500">Real-time Analysis</div>
+              <div className="text-2xl font-bold">Variable</div>
+              <div className="text-sm text-gray-500">Depends on service availability</div>
             </div>
           </div>
         </div>

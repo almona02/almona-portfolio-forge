@@ -26,7 +26,7 @@ interface IndustrialProductCardProps {
   features: string[];
   badges?: string[];
   egyptCertifications?: string[];
-  stock: number;
+  stock?: number;
   actions: {
     label: string;
     action: () => void;
@@ -118,19 +118,21 @@ export const IndustrialProductCard = ({
           </div>
         )}
         {/* Stock badge positioned at bottom right of image */}
-        {stock !== undefined && (
+        {(
           <div className="absolute bottom-2 right-2">
             <Badge
               variant="secondary"
               className={`text-[10px] px-1.5 py-0.5 ${
-                stock === 0
+                stock === undefined
+                  ? "bg-slate-600/90"
+                  : stock === 0
                   ? "bg-red-600/90"
                   : stock <= 5
                   ? "bg-yellow-600/90"
                   : "bg-green-600/90"
               }`}
             >
-              {stock === 0 ? "Out of Stock" : stock <= 5 ? `Low (${stock})` : "In Stock"}
+              {stock === undefined ? "Confirm availability" : stock === 0 ? "Out of Stock" : stock <= 5 ? `Low (${stock})` : "In Stock"}
             </Badge>
           </div>
         )}

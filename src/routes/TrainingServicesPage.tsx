@@ -52,7 +52,7 @@ const TrainingServicesPage: React.FC = () => {
           <div className="flex items-center gap-3 mb-4">
             <GraduationCap className="h-10 w-10 text-amber-400" />
             <h1 className="typography-h1 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300">
-              Technical Training & Certification
+              Technical Training Enquiries
             </h1>
           </div>
           <p className="text-gray-300 max-w-3xl">
@@ -103,12 +103,12 @@ const TrainingServicesPage: React.FC = () => {
                 <p className="text-sm text-gray-400 mb-4">{level.description}</p>
                 <div className="flex items-center gap-4 mb-4 text-sm">
                   <span className="px-2 py-0.5 rounded bg-almona-dark/50 border border-almona-light/20">{level.duration}</span>
-                  <span className="btn-primary">EGP {Number(level.price).toLocaleString()}</span>
+                  <span className="btn-primary">{level.price}</span>
                 </div>
                 <ul className="space-y-2 text-sm mb-6">
                   {level.features.map(f => <li key={f} className="flex gap-2 items-start"><span className="text-amber-400 mt-0.5">✓</span><span className="text-gray-300">{f}</span></li>)}
                 </ul>
-                <Button onClick={() => handleSelectProgram(level.level)} className="btn-primary-gradient">Enroll</Button>
+                <Button onClick={() => handleSelectProgram(level.level)} className="btn-primary-gradient">Enquire about this programme</Button>
               </motion.div>
             ))}
           </div>
@@ -117,33 +117,14 @@ const TrainingServicesPage: React.FC = () => {
         {/* Cohort Timeline */}
         <section className="mb-24">
           <h2 className="typography-h2 font-semibold mb-6 flex items-center gap-2"><Calendar className="h-5 w-5 text-amber-400" /> Upcoming Cohorts</h2>
-          <div className="overflow-x-auto pb-4">
-            <div className="flex gap-6 min-w-[640px]">
-              {cohorts.map(c => (
-                <div key={c.id} className="relative p-4 w-52 rounded-lg border border-almona-light/15 bg-almona-dark/60 hover:border-amber-400/50 transition">
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-3xl font-bold text-amber-400">{c.day}</span>
-                    <span className="uppercase tracking-wide text-sm text-gray-400">{c.month}</span>
-                  </div>
-                  <div className="text-xs text-gray-400 mb-3">Starts {c.start.toLocaleDateString()}</div>
-                  <div className="flex flex-wrap gap-1">
-                    {trainingLevels.map(l => (
-                      <span key={l.level} className="text-[10px] px-1.5 py-0.5 rounded bg-almona-dark/40 border border-almona-light/10 text-gray-300">
-                        {l.level}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <p className="text-gray-300">Dates are confirmed directly with ALMONA. Contact us for the next available session, location, fees and course scope. An enquiry does not reserve a place.</p>
         </section>
 
         {/* Market Adaptation */}
         <section className="mb-12 grid gap-10 lg:grid-cols-2 items-start">
           <div className="space-y-6">
             <h2 className="typography-h2 font-semibold mb-4">Egyptian Market Focus</h2>
-            <p className="text-gray-300 text-sm max-w-lg">Programs explicitly integrate climatic, material sourcing, and regulatory realities from the Egyptian fabrication ecosystem—ensuring rapid ROI and operator retention.</p>
+            <p className="text-gray-300 text-sm max-w-lg">Programs explicitly integrate climatic, material sourcing, and regulatory realities from the Egyptian fabrication ecosystem. Course scope is confirmed before booking.</p>
             <ul className="space-y-3 text-sm">
               {['Dust & sand mitigation procedures','High-temperature process stability','Local supply chain optimization','Arabic localized training assets'].map(item => (
                 <li key={item} className="flex gap-2 items-start"><span className="text-amber-400 mt-0.5">✓</span><span className="text-gray-300">{item}</span></li>
@@ -152,8 +133,8 @@ const TrainingServicesPage: React.FC = () => {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {[
-              { title: 'Subsidy Ready', desc: 'Structured to qualify for industrial training incentives.' },
-              { title: 'Certification Path', desc: 'Tiered credentialing for operator career ladders.' },
+              { title: 'Fees and funding', desc: 'Ask for a written fee quote; no subsidy eligibility is promised.' },
+              { title: 'Completion documents', desc: 'Confirm any completion document and its issuer before booking.' },
               { title: 'Performance Metrics', desc: 'Embedded efficiency + quality tracking hooks.' },
               { title: 'Scalable Delivery', desc: 'Hybrid onsite / virtual deployment architecture.' }
             ].map(card => (
@@ -166,7 +147,7 @@ const TrainingServicesPage: React.FC = () => {
         </section>
 
         <div className="text-center">
-          <Button className="px-10 py-6 text-lg font-semibold bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-300 text-black hover:from-amber-400 hover:via-amber-300 hover:to-yellow-200 shadow-lg">Request Custom Plan</Button>
+          <Button onClick={() => handleSelectProgram('basic')} className="px-10 py-6 text-lg font-semibold bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-300 text-black hover:from-amber-400 hover:via-amber-300 hover:to-yellow-200 shadow-lg">Request Custom Plan</Button>
         </div>
       </main>
       <EnrollmentModal

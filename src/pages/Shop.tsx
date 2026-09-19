@@ -1,11 +1,11 @@
 // Enhanced Shop Component for Almona Portfolio
 
 import SEO from "@/components/SEO";
+import { Link } from 'react-router-dom';
 import { useQuote } from "@/context/QuoteContext";
 import { inventory } from "@/data/inventory";
 import { useToast } from "@/hooks/useToast";
-import i18n from "@/lib/i18n";
-import { machinePricingService } from '@/lib/pricing/MachinePricingService';
+
 import {
   Grid,
   List,
@@ -48,7 +48,7 @@ import { smartCategoryMapping } from "@/constants/smartCategories";
 import { uniqueProducts } from "@/constants/uniqueProductsData";
 import { yilmazMachines as yilmazMachinesSpecs } from "@/constants/yilmazMachines";
 import type { Machine as TypesMachine } from "@/types";
-import type { Database, ProductCategory } from "@/types/database";
+
 
 // Types
 interface Machine {
@@ -61,7 +61,7 @@ interface Machine {
   certifications: { standard: string }[];
   tags: string[];
   category: string;
-  stock: number;
+  stock?: number;
   rating?: number;
   reviewCount?: number;
   isFeatured?: boolean;
@@ -75,7 +75,7 @@ interface Product {
   description?: string;
   imageUrl: string;
   price: number;
-  stock: number;
+  stock?: number;
   tags: string[];
   category: string;
   rating?: number;
@@ -147,63 +147,6 @@ function toTypesMachine(m: Machine): TypesMachine {
   };
 }
 
-// Adapter: map ShopProduct to Database products Row shape used by QuoteContext
-function shopProductToDbProduct(product: ShopProduct): Database['public']['Tables']['products']['Row'] {
-  const now = new Date().toISOString();
-  const price = (isMachine(product) ? product.pricing?.basePrice : ('price' in product ? product.price : null)) ?? null;
-  const category: ProductCategory = ((): ProductCategory => {
-    const c = product.category as string | undefined;
-    const allowed: ProductCategory[] = ['machine', 'spare_part', 'raw_material', 'tool', 'accessory'];
-    if (c && (allowed as string[]).includes(c)) return c as ProductCategory;
-    // Heuristic: machines tab -> 'machine', parts -> 'spare_part'
-    return isMachine(product) ? 'machine' : 'spare_part';
-  })();
-  const specs: Record<string, string | number | boolean> = {};
-  if (isMachine(product)) {
-    (product.specifications || []).forEach(s => { specs[s.key] = s.value; });
-  }
-  return {
-    id: product.id,
-    sku: product.id,
-    name_ar: product.name,
-    name_en: product.name,
-    description_ar: product.description ?? null,
-    description_en: product.description ?? null,
-    short_description_ar: null,
-    short_description_en: null,
-    category,
-    subcategory: null,
-    brand: null,
-    model: null,
-    price,
-    cost_price: null,
-    currency: 'EGP',
-    stock_quantity: 'stock' in product ? product.stock : 0,
-    min_stock_level: 0,
-    max_stock_level: 0,
-    weight_kg: null,
-    dimensions: null,
-    specifications: specs,
-    features: {},
-    compatible_machines: null,
-    image_urls: 'imageUrl' in product && product.imageUrl ? [product.imageUrl] : null,
-    video_urls: null,
-    document_urls: null,
-    model_3d_url: null,
-    meta_title_ar: null,
-    meta_title_en: null,
-    meta_description_ar: null,
-    meta_description_en: null,
-    keywords: 'tags' in product ? product.tags : null,
-    is_active: true,
-  is_featured: isMachine(product) ? !!product.isFeatured : false,
-  is_new: isMachine(product) ? !!product.isNew : false,
-  is_on_sale: isMachine(product) ? !!product.discount : false,
-    created_at: now,
-    updated_at: now,
-  };
-}
-
 interface ProductGridProps {
   isLoading: boolean;
   filteredProducts: ShopProduct[];
@@ -211,7 +154,7 @@ interface ProductGridProps {
   setDisplayedProductCount: (value: number | ((prev: number) => number)) => void;
   viewMode: ViewMode;
   setQuickViewProduct: (product: Machine | null) => void;
-  addToQuote: (product: ShopProduct) => void;
+  addToQuote: (product: ShopProduct) => Promise<void>;
   toast: (options: { title: string; description: string; variant?: "default" | "destructive" }) => void;
   comparisonList: Machine[];
   handleToggleCompare: (product: Machine) => void;
@@ -258,7 +201,7 @@ const ProductGrid = ({
             searchTerm: "",
             category: "all",
             sortBy: "featured",
-            priceRange: [0, 50000],
+            priceRange: [0, Number.POSITIVE_INFINITY],
             inStock: false,
             hasDiscount: false,
             rating: 0
@@ -295,8 +238,8 @@ const ProductGrid = ({
                 ...('isNew' in product && (product).isNew ? ['New'] : []),
                 ...('discount' in product && (product).discount ? [`${(product).discount}% Off`] : [])
               ].filter((badge, index, array) => array.indexOf(badge) === index)}
-              egyptCertifications={isMachine(product) ? product.certifications.map(c => c.standard) : []}
-              stock={'stock' in product ? product.stock : 0}
+              egyptCertifications={[]}
+              stock={'stock' in product ? product.stock : undefined}
               actions={[
                   ...(isMachine(product)
                     ? [
@@ -309,10 +252,10 @@ const ProductGrid = ({
                   {
                     label: "Add to Quote",
                     action: () => {
-                      addToQuote(product);
-                      toast({
-                        title: "Added to quote",
-                        description: `${product.name} has been added to your quote`,
+                      void addToQuote(product).then(() => {
+                        toast({ title: "Added to quote", description: `${product.name} has been added to your quote` });
+                      }).catch(() => {
+                        toast({ title: "Unable to add to quote", description: "Please contact ALMONA to confirm availability.", variant: "destructive" });
                       });
                     },
                   },
@@ -349,7 +292,7 @@ const ProductGrid = ({
 
 // Enhanced Shop Component
 const Shop = () => {
-  const { addToQuote } = useQuote();
+  const { addCatalogueToQuote: addToQuote, quoteItems } = useQuote();
   const { toast } = useToast();
   
   const [activeTab, setActiveTab] = useState<ProductTab>('industrial-machines');
@@ -362,7 +305,7 @@ const Shop = () => {
     searchTerm: "",
     category: "all",
     sortBy: "featured",
-    priceRange: [0, 50000],
+    priceRange: [0, Number.POSITIVE_INFINITY],
     inStock: false,
     hasDiscount: false,
     rating: 0
@@ -373,8 +316,8 @@ const Shop = () => {
   const enhancedProducts = useMemo(() => {
     return yilmazMachines.map(product => {
       const machineSpecs = yilmazMachinesSpecs.find(spec => spec.id === product.id);
-      const stock = inventory[product.id] ?? 0;
-      const priceInfo = machinePricingService.getMachinePrice(product.id);
+      const stock = inventory[product.id];
+
 
       const parsedSpecifications = (machineSpecs?.specifications || product.specifications || []).map(spec => {
         if (typeof spec === 'string') {
@@ -397,13 +340,9 @@ const Shop = () => {
         ...product,
         specifications: parsedSpecifications,
         certifications: parsedCertifications,
-        pricing: priceInfo ? { basePrice: priceInfo.basePrice } : product.pricing,
+        pricing: undefined,
         stock,
-        rating: Math.random() * 2 + 3, // Random rating between 3-5
-        reviewCount: Math.floor(Math.random() * 50) + 5,
-        isFeatured: Math.random() > 0.7,
-        isNew: Math.random() > 0.8,
-        discount: Math.random() > 0.9 ? Math.floor(Math.random() * 30) + 5 : undefined
+        isFeatured: product.featured
       };
     });
   }, []);
@@ -411,16 +350,8 @@ const Shop = () => {
   const uniqueProductsArray = useMemo(() => uniqueProducts, []);
   const allParts = useMemo(() => yilmazParts, []);
 
-  // Format price with proper localization
-  const formatPrice = useCallback((price?: number) => {
-    if (!price) return "Contact for Quote";
-    const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: "EGP",
-      minimumFractionDigits: 0
-    }).format(price);
-  }, []);
+  // Public prices are confirmed in a written quotation.
+  const formatPrice = useCallback((_price?: number) => "Contact for Quote", []);
 
   // Map smart category to legacy category for filtering
   const getLegacyCategoryFilter = useCallback((smartCategory: string) => {
@@ -516,7 +447,7 @@ const Shop = () => {
     }
 
     if (filters.inStock) {
-      filtered = filtered.filter(p => 'stock' in p && p.stock > 0);
+      filtered = filtered.filter(p => 'stock' in p && (p.stock ?? 0) > 0);
     }
 
     if (filters.hasDiscount) {
@@ -617,6 +548,7 @@ const Shop = () => {
                 >
                   Explore Catalog
                 </Button>
+                <Button asChild variant="outline"><Link to="/quote">View enquiry basket ({quoteItems.length})</Link></Button>
               </div>
             </div>
           </div>
@@ -651,8 +583,8 @@ const Shop = () => {
                   <CardContent className="p-4 flex items-center gap-3">
                     <Truck className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="typography-h4 font-medium text-white">Free Shipping in Cairo</h4>
-                      <p className="text-sm text-gray-300">On orders over 150,000 EGP</p>
+                      <h4 className="typography-h4 font-medium text-white">Delivery Planning</h4>
+                      <p className="text-sm text-gray-300">Delivery costs and timing confirmed in your quote</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -661,8 +593,8 @@ const Shop = () => {
                   <CardContent className="p-4 flex items-center gap-3">
                     <Shield className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="typography-h4 font-medium text-white">1-Year Warranty</h4>
-                      <p className="text-sm text-gray-300">On all machinery</p>
+                      <h4 className="typography-h4 font-medium text-white">Warranty Details</h4>
+                      <p className="text-sm text-gray-300">Request model-specific written warranty terms</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -671,8 +603,8 @@ const Shop = () => {
                   <CardContent className="p-4 flex items-center gap-3">
                     <RotateCcw className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="typography-h4 font-medium text-white">24/7 Support</h4>
-                      <p className="text-sm text-gray-300">quality guaranteed</p>
+                      <h4 className="typography-h4 font-medium text-white">Technical Support</h4>
+                      <p className="text-sm text-gray-300">Contact us to confirm service availability</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -772,7 +704,7 @@ const Shop = () => {
                     setDisplayedProductCount={setDisplayedProductCount}
                     viewMode={viewMode}
                     setQuickViewProduct={setQuickViewProduct}
-                    addToQuote={(product) => { void addToQuote(shopProductToDbProduct(product)); }}
+                    addToQuote={(product) => addToQuote(product)}
                     toast={toast}
                     comparisonList={comparisonList}
                     handleToggleCompare={handleToggleCompare}
@@ -809,6 +741,9 @@ const Shop = () => {
         {quickViewProduct && (
           <ProductQuickView 
             product={toTypesMachine(quickViewProduct)}
+            priceLabel={formatPrice(quickViewProduct.pricing?.basePrice)}
+            stock={quickViewProduct.stock}
+            onAddToQuote={() => addToQuote(quickViewProduct)}
             isOpen={!!quickViewProduct}
             onClose={() => setQuickViewProduct(null)}
           />

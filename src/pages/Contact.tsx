@@ -1,4 +1,5 @@
 import SEO from "@/components/SEO";
+import { EmailDraftDownload } from '@/components/contact/EmailDraftDownload';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
@@ -24,28 +25,22 @@ const contactSchema = z.object({
 type ContactFormValues = z.infer<typeof contactSchema>;
 
 const Contact = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const location = useLocation();
+  const [emailDraft, setEmailDraft] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
+    defaultValues: { subject: new URLSearchParams(location.search).get('subject')?.slice(0, 120) || '' },
   });
 
-  const onSubmit = useCallback((_data: ContactFormValues) => {
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitSuccess(true);
-      // Reset form after 3 seconds
-      setTimeout(() => setSubmitSuccess(false), 3000);
-    }, 1500);
+  const onSubmit = useCallback((data: ContactFormValues) => {
+    const body = `Name: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\n\n${data.message}`;
+    setEmailDraft(`mailto:almona02@yahoo.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(body)}`);
   }, []);
 
-  const location = useLocation();
   const currentUrl = useMemo(() => `https://www.almona02.com${location.pathname}`, [location.pathname]);
 
   const handleMapClick = useCallback(() => {
@@ -81,15 +76,21 @@ const Contact = () => {
             <div className="bg-almona-darker p-8 rounded-xl border border-almona-light/20 fade-in-up">
               <h2 className="typography-h2 font-semibold mb-6">Send us a message</h2>
 
-              {submitSuccess && (
-                <div className="mb-6 p-4 bg-green-900/30 border border-green-500 rounded-lg">
-                  <p className="text-green-400">
-                    Your message has been sent successfully!
+              <p className="text-gray-300 mb-6">
+                Prepare your enquiry here, then send it from your email app to almona02@yahoo.com.
+              </p>
+              {emailDraft && (
+                <div role="status" className="mb-6 p-4 bg-blue-900/30 border border-blue-500 rounded-lg">
+                  <p className="text-gray-200">
+                    Your email draft is ready. Your message has not been sent. Open your email app to review and send it.
                   </p>
+                  <a href={emailDraft} className="inline-block mt-3 text-amber-400 underline">Open email draft</a>
+                  <EmailDraftDownload mailto={emailDraft} />
+                  <p className="mt-2 text-sm text-gray-300">No email app? Email almona02@yahoo.com directly or call +20 100 309 7177.</p>
                 </div>
               )}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+              <form onSubmit={handleSubmit(onSubmit)} onChange={() => setEmailDraft(null)} className="space-y-6" noValidate>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="name" className="typography-label">Full Name</Label>
@@ -173,9 +174,8 @@ const Contact = () => {
                 <Button
                   type="submit"
                   className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white py-3"
-                  disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Sending..." : "Send Message"}
+                  Prepare Email
                 </Button>
               </form>
             </div>

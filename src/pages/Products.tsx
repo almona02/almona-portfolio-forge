@@ -12,7 +12,7 @@ import { MobileOptimizedGrid } from "@/components/optimized/MobileOptimizedGrid"
 import { VirtualizedMachineGrid } from "@/components/optimized/VirtualizedMachineGrid";
 import CategoryBreadcrumb from "@/components/products/CategoryBreadcrumb";
 import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigation";
-import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
+import { useQuote } from '@/context/QuoteContext';
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
 import { smartCategoryMapping } from "@/constants/smartCategories";
@@ -23,7 +23,7 @@ import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { useToast } from "@/hooks/useToast";
 import { useVirtualizedMachines } from "@/hooks/useVirtualizedMachines";
 import { loadComparisons, saveComparison } from "@/lib/comparisonStorage";
-import { machinePricingService } from '@/lib/pricing/MachinePricingService';
+
 import { debounce } from "@/lib/utils";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
@@ -33,7 +33,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import type { Machine as UiMachine } from "@/types/index";
 import { Eye, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
 
 interface SourceMachineLike {
   id: string; name: string; description?: string; imageUrl?: string; image_url?: string;
@@ -48,7 +48,7 @@ interface SourceMachineLike {
 
 // UI wrapper union ensures compatibility with comparison + quote components expecting UiMachine shape
 const mapToUiMachine = (m: SourceMachineLike): UiMachine => {
-  const priceInfo = machinePricingService.getMachinePrice(m.id);
+
   return {
     id: m.id,
     name: m.name,
@@ -58,7 +58,7 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => {
     releaseDate: m.releaseDate || m.release_date || new Date().toISOString(),
     type: m.type || 'machine',
     tags: m.tags || [],
-    certifications: m.certifications || [],
+    certifications: [],
     powerSpec: {
       consumption: m.powerSpec?.consumption || m.power || '0 kW',
       voltage: m.powerSpec?.voltage || '380V',
@@ -70,11 +70,13 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => {
     safetyFeatures: (m.safetyFeatures || []).filter((s): s is 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop' =>
       ['TwoHandOperation','AutomaticGuards','EmergencyStop'].includes(s as 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop')
     ),
-    price: priceInfo?.basePrice,
+    price: undefined,
   };
 };
 
 const Products = function ProductsPage() {
+  const { addCatalogueToQuote } = useQuote();
+  const navigate = useNavigate();
   const { t } = useTranslation('products');
   const { toast } = useToast();
   const { user: _user } = useAuth();
@@ -153,8 +155,6 @@ const Products = function ProductsPage() {
 
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
-  const [showQuoteDialog, setShowQuoteDialog] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Machine | null>(null);
   const [show3DModel, setShow3DModel] = useState(false);
   const [selectedMachineFor3D, setSelectedMachineFor3D] = useState<Machine | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -333,9 +333,10 @@ const Products = function ProductsPage() {
   }, [t]);
 
   const handleQuoteRequest = useCallback((machine: Machine) => {
-    setSelectedProduct(machine);
-    setShowQuoteDialog(true);
-  }, []);
+    void addCatalogueToQuote(machine).then(() => navigate('/quote')).catch(() => {
+      toast({ title: 'Unable to add this machine', description: 'Please try again or contact ALMONA.', variant: 'destructive' });
+    });
+  }, [addCatalogueToQuote, navigate, toast]);
 
   const handle3DView = useCallback((machine: Machine) => {
     setSelectedMachineFor3D(machine);
@@ -373,102 +374,11 @@ const Products = function ProductsPage() {
   }, []);
 
   // Industry 4.0 Features - memoized to prevent recreation on every render
-  const industry40Features = useMemo(() => [
-    {
-      icon: "🤖",
-      title: t('industry40.features.aiSearch.title'),
-      description: t('industry40.features.aiSearch.description'),
-      color: "text-blue-400"
-    },
-    {
-      icon: "📊",
-      title: t('industry40.features.analytics.title'),
-      description: t('industry40.features.analytics.description'),
-      color: "text-green-400"
-    },
-    {
-      icon: "🔗",
-      title: t('industry40.features.iot.title'),
-      description: t('industry40.features.iot.description'),
-      color: "text-amber-400"
-    },
-    {
-      icon: "⚡",
-      title: t('industry40.features.automation.title'),
-      description: t('industry40.features.automation.description'),
-      color: "text-amber-400"
-    },
-    {
-      icon: "🌐",
-      title: t('industry40.features.digitalTwin.title'),
-      description: t('industry40.features.digitalTwin.description'),
-      color: "text-cyan-400"
-    },
-    {
-      icon: "🔒",
-      title: t('industry40.features.blockchain.title'),
-      description: t('industry40.features.blockchain.description'),
-      color: "text-red-400"
-    }
-  ], [t]);
-
-  // Customer testimonials
-  const _testimonials = [
-    {
-      name: "Ahmed Hassan",
-      company: "Aluminum Solutions Ltd",
-      role: "Operations Manager",
-      content: "The YILMAZ machines have transformed our production efficiency. We've seen a 40% increase in output with the Industry 4.0 features.",
-      rating: 5,
-      avatar: "👨‍💼"
-    },
-    {
-      name: "Sarah Johnson",
-      company: "Modern Windows Co",
-      role: "CEO",
-      content: "Outstanding quality and support. The AI recommendations helped us choose exactly the right equipment for our needs.",
-      rating: 5,
-      avatar: "👩‍💼"
-    },
-    {
-      name: "Mohammed Al-Rashid",
-      company: "Gulf Manufacturing",
-      role: "Technical Director",
-      content: "The predictive maintenance features have saved us thousands in downtime costs. Highly recommended.",
-      rating: 5,
-      avatar: "👨‍🔧"
-    }
+  const faqs = [
+    { question: 'How do I confirm a machine specification?', answer: 'Request the manufacturer documentation for the exact model and configuration. Connectivity, software and accessories vary by machine.' },
+    { question: 'What does a quotation include?', answer: 'Ask ALMONA to confirm price, taxes, delivery, installation, availability and payment terms in writing.' },
+    { question: 'What warranty and certificates are supplied?', answer: 'Request the applicable warranty terms and conformity documents for the exact machine before purchase.' },
   ];
-
-  // Certifications - memoized to prevent recreation on every render
-  const certifications = useMemo(() => [
-    { name: "ISO 9001", description: t('certifications.iso9001') },
-    { name: "CE Mark", description: t('certifications.ceMark') },
-    { name: "Industry 4.0", description: t('certifications.industry40') },
-    { name: "Energy Star", description: t('certifications.energyStar') },
-    { name: "RoHS", description: t('certifications.rohs') },
-    { name: "UL Listed", description: t('certifications.ulListed') }
-  ], [t]);
-
-  // FAQ data - memoized to prevent recreation on every render
-  const faqs = useMemo(() => [
-    {
-      question: t('faq.industry40.question'),
-      answer: t('faq.industry40.answer')
-    },
-    {
-      question: t('faq.installation.question'),
-      answer: t('faq.installation.answer')
-    },
-    {
-      question: t('faq.warranty.question'),
-      answer: t('faq.warranty.answer')
-    },
-    {
-      question: t('faq.customization.question'),
-      answer: t('faq.customization.answer')
-    }
-  ], [t]);
 
   const currentUrl = `https://www.almona02.com${location.pathname}${location.search}`;
 
@@ -476,41 +386,11 @@ const Products = function ProductsPage() {
     <>
       <SEO
         title={t('page.title')}
-        description={t('page.description')}
+        description="Browse aluminium and UPVC machinery. Contact ALMONA for model-specific specifications and a written quotation."
         url={currentUrl}
         keywords={t('page.keywords')}
       />
       <main className="flex-grow pt-24">
-        {/* SEO Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            "name": "YILMAZ Industrial Machinery",
-            "description": "Premium aluminum & PVC processing machines with Industry 4.0 capabilities",
-            "brand": {
-              "@type": "Brand",
-              "name": "YILMAZ"
-            },
-            "manufacturer": {
-              "@type": "Organization",
-              "name": "YILMAZ Makina"
-            },
-            "offers": {
-              "@type": "AggregateOffer",
-              "availability": "https://schema.org/InStock"
-            },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.9",
-              "reviewCount": "150"
-            }
-          })
-        }}
-      />
-
       <div className="mx-auto px-4 xl:px-8 py-12 max-w-screen-2xl">
         {/* Industry 4.0 Hero Section */}
         <div className="mb-16 text-center relative overflow-hidden">
@@ -518,28 +398,13 @@ const Products = function ProductsPage() {
             className="relative z-10 fade-in-up"
           >
             <h1 className="typography-h1 md:text-6xl mb-6">
-              <span className="text-gradient-orange">{t('hero.title')}</span>
+              <span className="text-gradient-orange">Industrial Machinery</span>
               <br />
-              <span className="text-white">{t('hero.subtitle')}</span>
+              <span className="text-white">For Aluminium &amp; UPVC Workshops</span>
             </h1>
             <p className="text-xl text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed">
-              {t('hero.description')}
+              Browse machine models and discuss your production requirements with ALMONA.
             </p>
-
-            {/* Industry 4.0 Feature Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8 max-w-6xl mx-auto">
-              {industry40Features.map((feature, index) => (
-                <div
-                  key={feature.title}
-                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg p-4 hover:bg-gray-800/70 transition-all duration-300 hover:scale-105 fade-in-up"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className={`text-2xl mb-2 ${feature.color}`}>{feature.icon}</div>
-                  <h3 className="typography-h3 text-sm text-white mb-1">{feature.title}</h3>
-                  <p className="text-xs text-gray-400 leading-tight">{feature.description}</p>
-                </div>
-              ))}
-            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
@@ -573,52 +438,7 @@ const Products = function ProductsPage() {
           </div>
         </div>
 
-        {/* Smart Manufacturing Stats */}
-        <div
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 fade-in-up"
-          style={{ animationDelay: '0.3s' }}
-        >
-          <div className="text-center bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-lg p-6">
-            <div className="text-3xl font-bold text-blue-400 mb-2">99.9%</div>
-            <div className="text-sm text-gray-300">{t('industry40.stats.uptime')}</div>
-          </div>
-          <div className="text-center bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 rounded-lg p-6">
-            <div className="text-3xl font-bold text-green-400 mb-2">45%</div>
-            <div className="text-sm text-gray-300">{t('industry40.stats.energySavings')}</div>
-          </div>
-          <div className="text-center bg-gradient-to-br from-amber-500/10 to-amber-600/10 border border-amber-500/20 rounded-lg p-6">
-            <div className="text-3xl font-bold text-amber-400 mb-2">24/7</div>
-            <div className="text-sm text-gray-300">{t('industry40.stats.monitoring')}</div>
-          </div>
-          <div className="btn-primary-gradient">
-            <div className="text-3xl font-bold text-amber-400 mb-2">AI</div>
-            <div className="text-sm text-gray-300">{t('industry40.stats.powered')}</div>
-          </div>
-        </div>
-
-
-
-        {/* Certifications */}
-        <div
-          className="mb-16 fade-in-up"
-          style={{ animationDelay: '0.5s' }}
-        >
-          <h2 className="typography-h2 text-center mb-8">
-            <span className="text-gradient-orange">{t('certifications.title')}</span>
-          </h2>
-          <div className="flex flex-wrap justify-center gap-4">
-              {certifications.map((cert, index) => (
-              <div
-                key={cert.name}
-                className="bg-gradient-to-r from-gray-800 to-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-center hover:from-gray-700 hover:to-gray-600 transition-all duration-300 fade-in-up"
-                style={{ animationDelay: `${0.6 + index * 0.05}s` }}
-              >
-                <div className="text-sm font-semibold text-white">{cert.name}</div>
-                <div className="text-xs text-gray-400">{cert.description}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <p className="max-w-3xl mx-auto mb-12 text-center text-gray-300">Prices, stock, delivery, warranty and model-specific certificates are confirmed in a written quotation. Digital integrations depend on the exact machine and configuration.</p>
 
         {/* Existing Products page content */}
         <div ref={productsSectionRef} id="products-section" className="scroll-mt-24 mb-12 text-center">
@@ -767,7 +587,7 @@ const Products = function ProductsPage() {
           style={{ animationDelay: '0.5s' }}
         >
           <h2 className="typography-h2 mb-6 text-center">
-            <span className="text-gradient-orange">{t('technology.title')}</span>
+            <span className="text-gradient-orange">Discuss your machine requirements</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -775,9 +595,9 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🤖</span>
               </div>
-              <h3 className="typography-h3 mb-2 text-blue-400">{t('technology.aiRecommendations.title')}</h3>
+              <h3 className="typography-h3 mb-2 text-blue-400">Equipment selection</h3>
               <p className="text-gray-400">
-                {t('technology.aiRecommendations.description')}
+                Compare catalogue information, then confirm suitability with the technical team.
               </p>
             </div>
 
@@ -785,9 +605,9 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">📡</span>
               </div>
-              <h3 className="typography-h3 mb-2 text-green-400">{t('technology.iotConnectivity.title')}</h3>
+              <h3 className="typography-h3 mb-2 text-green-400">Connectivity requirements</h3>
               <p className="text-gray-400">
-                {t('technology.iotConnectivity.description')}
+                Ask which interfaces and software options are supported by the exact model. Connectivity is not included by default.
               </p>
             </div>
 
@@ -795,9 +615,9 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎯</span>
               </div>
-              <h3 className="typography-h3 mb-2 text-amber-400">{t('technology.digitalTwins.title')}</h3>
+              <h3 className="typography-h3 mb-2 text-amber-400">Model previews</h3>
               <p className="text-gray-400">
-                {t('technology.digitalTwins.description')}
+                Available 3D previews help you explore a model. They do not verify installation dimensions or production performance.
               </p>
             </div>
           </div>
@@ -857,12 +677,10 @@ const Products = function ProductsPage() {
             <div className="space-y-3">
               <h2 className="typography-h2 sm:text-3xl text-gradient-orange">{t('whyChoose.title')}</h2>
               <p className="text-gray-300 leading-relaxed">
-                {t('whyChoose.description')}
+                Explore YILMAZ machinery and request the manufacturer documentation for your selected model.
               </p>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">{t('whyChoose.badges.industry40')}</Badge>
-                <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">{t('whyChoose.badges.digitalQA')}</Badge>
-                <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">{t('whyChoose.badges.ceCertified')}</Badge>
+                <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">Request conformity documents</Badge>
               </div>
               <div className="flex gap-3 pt-2">
                 <Button asChild className="btn-primary">
@@ -931,7 +749,7 @@ const Products = function ProductsPage() {
                 {t('whyChoose.premiumQuality.title')}
               </h3>
               <p className="text-gray-400">
-                {t('whyChoose.premiumQuality.description')}
+                Request specifications and conformity documents for the exact model and configuration.
               </p>
             </div>
             <div>
@@ -942,7 +760,7 @@ const Products = function ProductsPage() {
                 {t('whyChoose.technicalSupport.title')}
               </h3>
               <p className="text-gray-400">
-                {t('whyChoose.technicalSupport.description')}
+                Discuss maintenance needs and confirm service availability with ALMONA.
               </p>
             </div>
             <div>
@@ -953,7 +771,7 @@ const Products = function ProductsPage() {
                 {t('whyChoose.genuineParts.title')}
               </h3>
               <p className="text-gray-400">
-                {t('whyChoose.genuineParts.description')}
+                Provide your machine model and serial number so ALMONA can check part compatibility, origin and warranty terms.
               </p>
             </div>
           </div>
@@ -967,6 +785,7 @@ const Products = function ProductsPage() {
           isOpen={!!quickViewProduct}
           onClose={handleCloseQuickView}
           position="right"
+          onAddToQuote={() => addCatalogueToQuote(quickViewProduct)}
         />
       )}
 
@@ -981,18 +800,6 @@ const Products = function ProductsPage() {
         onOpenChange={setShowCompareDialog}
         machines={selectedMachines as unknown as UiMachine[]}
       />
-
-      <Suspense fallback={null}>
-        <QuoteRequestDialog
-          open={showQuoteDialog}
-          onOpenChange={setShowQuoteDialog}
-          initialData={{
-            products: selectedProduct ? [selectedProduct as unknown as UiMachine] : (selectedMachines as unknown as UiMachine[]),
-            services: [],
-            contactInfo: {},
-          }}
-        />
-      </Suspense>
 
       {/* Enhanced 3D Dialog - Lazy loaded to save 2.2MB on initial load */}
       {selectedMachineFor3D && (
@@ -1045,7 +852,7 @@ const Products = function ProductsPage() {
                 <span className="text-gradient-orange">{t('configurator.title')}</span>
               </h2>
               <p className="text-gray-300 mb-8">
-                {t('configurator.description')}
+                Interactive configuration is not available yet. Contact ALMONA to confirm machine options and pricing.
               </p>
 
               {/* Placeholder for configurator content */}

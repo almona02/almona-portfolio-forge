@@ -17,13 +17,19 @@ interface ProductQuickViewProps {
   isOpen: boolean;
   onClose: () => void;
   position?: 'right' | 'left';
+  priceLabel?: string;
+  stock?: number;
+  onAddToQuote?: () => Promise<void>;
 }
 
 export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
   product,
   isOpen,
   onClose,
-  position = 'right'
+  position = 'right',
+  priceLabel = 'Contact for Quote',
+  stock,
+  onAddToQuote
 }) => {
   const { t } = useTranslation('shop');
   const { addToQuote } = useQuote();
@@ -85,9 +91,15 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
     }
   }, [isOpen]);
 
-  const handleAddToQuote = () => {
+  const handleAddToQuote = async () => {
     const conversionTime = Date.now() - openTime;
-    addToQuote(product);
+    try {
+      if (onAddToQuote) await onAddToQuote();
+      else await addToQuote(product);
+    } catch {
+      toast.error('Unable to add this machine to your quote. Please contact us for availability.');
+      return;
+    }
     setActionsTaken(prev => [...prev, 'quote_request']);
     quickViewAnalytics.trackQuickViewConversion(product, 'quote_request', conversionTime, 'quick_view_panel');
     toast.success(`${product.name} has been added to your quote.`, {
@@ -247,13 +259,13 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 sm:p-4">
                     <div>
                       <p className="text-lg sm:text-xl lg:text-2xl font-bold text-amber-400">
-                        Price on Request
+                        {priceLabel}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500 text-[10px] sm:text-xs px-1.5 py-0.5">
-                          In Stock
+                        <Badge variant="outline" className="text-gray-200 border-gray-500 text-[10px] sm:text-xs px-1.5 py-0.5">
+                          {stock === undefined ? 'Confirm availability' : stock <= 0 ? 'Out of Stock' : stock <= 5 ? `Low (${stock})` : 'In Stock'}
                         </Badge>
-                        <span className="text-[10px] sm:text-xs text-gray-300">2-4 weeks delivery</span>
+                        <span className="text-[10px] sm:text-xs text-gray-300">Contact us for delivery timing</span>
                       </div>
                     </div>
                   </div>
@@ -772,11 +784,11 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                           </div>
                           <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                             <span className="text-gray-400">Warranty</span>
-                            <span className="text-white">1 Year</span>
+                            <span className="text-white">Confirm written terms</span>
                           </div>
                           <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                             <span className="text-gray-400">Delivery</span>
-                            <span className="text-white">2-4 weeks</span>
+                            <span className="text-white">Confirm in quotation</span>
                           </div>
                         </div>
                       </div>
@@ -787,13 +799,13 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                     <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
                       <div className="bg-gray-800/70 p-2 sm:p-3 lg:p-4 rounded-lg text-center">
                         <Truck className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-amber-500 mx-auto mb-1 sm:mb-2" />
-                        <h4 className="typography-h4 text-white text-[10px] sm:text-xs lg:text-sm mb-0.5">Free Shipping</h4>
-                        <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400">Cairo area</p>
+                        <h4 className="typography-h4 text-white text-[10px] sm:text-xs lg:text-sm mb-0.5">Delivery</h4>
+                        <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400">Confirm cost and timing</p>
                       </div>
                       <div className="bg-gray-800/70 p-2 sm:p-3 lg:p-4 rounded-lg text-center">
                         <Shield className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-amber-500 mx-auto mb-1 sm:mb-2" />
                         <h4 className="typography-h4 text-white text-[10px] sm:text-xs lg:text-sm mb-0.5">Warranty</h4>
-                        <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400">1-year</p>
+                        <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400">Confirm written terms</p>
                       </div>
                       <div className="bg-gray-800/70 p-2 sm:p-3 lg:p-4 rounded-lg text-center">
                         <Zap className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-amber-500 mx-auto mb-1 sm:mb-2" />
@@ -810,7 +822,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                         <div className="space-y-1.5 sm:space-y-2">
                           <div className="flex items-center gap-2 text-[10px] sm:text-xs lg:text-sm">
                             <Monitor className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />
-                            <span className="text-gray-300">Online: 24/7</span>
+                            <span className="text-gray-300">Contact us to confirm support hours</span>
                           </div>
                           <div className="flex items-center gap-2 text-[10px] sm:text-xs lg:text-sm">
                             <Smartphone className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />

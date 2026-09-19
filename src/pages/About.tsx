@@ -256,7 +256,7 @@ const About = () => {
               <CardTitle className="text-base sm:text-lg md:text-xl leading-tight text-white" style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.7)' }}>Quality Assurance</CardTitle>
             </CardHeader>
             <CardContent className="text-center pt-0 px-0 pb-0">
-              <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>Certified equipment with comprehensive warranty and support</p>
+              <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>Request model-specific conformity documents, warranty terms and support options</p>
             </CardContent>
           </Card>
         </div>
