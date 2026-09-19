@@ -36,6 +36,11 @@ The 3D gallery displayed its content, but WebGL/AR behaviour was not fully verif
 
 ## Verification evidence
 
+- Follow-up dependency audit (19 September 2026): removed the unused service coverage map and its vulnerable MapLibre dependency; updated colord to 2.10.0. Production-only npm audit reports zero known vulnerabilities. The full audit still reports 16 moderate development-tool findings involving Storybook/Vitest; these require a separate tested toolchain upgrade. This is not a complete security certification.
+- The security follow-up passed all 20 focused launch tests and the production build. The initial public-site commit deployed successfully to Vercel Preview, and its homepage rendered in the browser. Production has not been promoted.
+- Preview inspection found additional unsupported homepage banner/service-card claims. English, Arabic and Turkish copy now removes the national-asset designation, verified-marketplace/logistics promises and numerical waste-reduction promise.
+- Changes are tracked in draft PR https://github.com/almona02/almona-portfolio-forge/pull/33 against the existing feature branch; this does not merge the Fabricator work into production.
+
 - Seven focused regression files pass: 20 tests across contact, quote, enrolment, service packages, quick view, public content and catalogue-basket persistence/validation.
 - Targeted lint on the changed public components/pages: zero errors; existing warnings remain.
 - The final production build passed after the enquiry changes (357 precache entries). Existing large-bundle and `manualChunks` configuration warnings remain.
