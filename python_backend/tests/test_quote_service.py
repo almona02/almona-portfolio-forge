@@ -106,3 +106,29 @@ def test_quote_service_create_with_items():
     assert result["total_amount"] in (31, None)
 
 
+@pytest.mark.parametrize("price", [None, 0])
+def test_unpriced_or_zero_quote_preserves_non_null_total_and_contact(price):
+    supabase = DummySupabase()
+    service = QuoteService(supabase)  # type: ignore
+    service.create_quote_with_items({
+        "contact_name": "Guest",
+        "contact_email": "guest@example.invalid",
+        "services": [{"service_id": "maintenance", "quantity": 1, "unit_price": price}],
+    })
+    header = supabase._client.store["quotes"][0]
+    assert header["total_amount"] == 0
+    assert "user_id" not in header
+    assert header["contact_info"]["email"] == "guest@example.invalid"
+
+
+def test_authenticated_quote_keeps_owner():
+    supabase = DummySupabase()
+    QuoteService(supabase).create_quote_with_items({
+        "contact_name": "Customer",
+        "contact_email": "customer@example.invalid",
+        "user_id": "00000000-0000-0000-0000-000000000001",
+        "products": [{"product_id": "p1", "quantity": 2, "unit_price": 10}],
+    })
+    assert supabase._client.store["quotes"][0]["user_id"] == "00000000-0000-0000-0000-000000000001"
+
+

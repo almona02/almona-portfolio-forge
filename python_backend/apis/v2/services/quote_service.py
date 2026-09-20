@@ -60,7 +60,13 @@ class QuoteService:
                     "related_service_ticket_id"
                 ),
                 "machine_id": payload.get("machine_id"),
-                "total_amount": header_estimated_total or None,
+                "total_amount": header_estimated_total,
+                "contact_info": {
+                    "name": payload.get("contact_name"),
+                    "email": payload.get("contact_email"),
+                    "phone": payload.get("contact_phone"),
+                    "company": payload.get("company"),
+                },
             }
             if payload.get("user_id"):
                 insert_data["user_id"] = payload.get("user_id")
