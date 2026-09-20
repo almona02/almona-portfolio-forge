@@ -4,6 +4,7 @@ from typing import Any, Dict
 
 import pytest
 
+from apis.v2.core.errors import SupabaseError
 from apis.v2.services.quote_service import QuoteService
 
 
@@ -19,6 +20,8 @@ class DummyTable:
             items = data
         else:
             items = [data]
+        if self.name == "quotes":
+            items = [{**item, "id": "00000000-0000-0000-0000-000000000010"} for item in items]
         self.store.setdefault(self.name, []).extend(items)
 
         class R:
@@ -101,9 +104,27 @@ def test_quote_service_create_with_items():
 
     result = service.create_quote_with_items(payload)
     assert result["status"] == "pending"
-    assert "id" in result
+    assert result["id"] == "00000000-0000-0000-0000-000000000010"
+    assert all(item["quote_id"] == result["id"] for item in supabase._client.store["quote_items"])
     # Estimated total: (2*10)+(1*5)+(3*2) = 20+5+6 = 31
-    assert result["total_amount"] in (31, None)
+    assert result["total_amount"] == 31
+
+
+@pytest.mark.parametrize("row", [{}, {"id": None}, {"id": ""}, {"id": "dummy-id"}, {"id": 123}])
+def test_invalid_persisted_id_stops_before_item_writes(row, monkeypatch):
+    supabase = DummySupabase()
+    service = QuoteService(supabase)
+    monkeypatch.setattr(service._repo, "insert_quote", lambda _payload: row)
+
+    with pytest.raises(SupabaseError) as failure:
+        service.create_quote_with_items({
+            "contact_name": "Customer",
+            "contact_email": "customer@example.invalid",
+            "products": [{"product_id": "p1", "quantity": 1, "unit_price": 10}],
+        })
+
+    assert failure.value.status_code == 502
+    assert "quote_items" not in supabase._client.store
 
 
 @pytest.mark.parametrize("price", [None, 0])

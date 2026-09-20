@@ -87,11 +87,15 @@ class QuoteService:
                 )
 
             quote_id = row.get("id")
-            if not quote_id:
-                # In local/tests with DummySupabase we may not get an id back.
-                # Generate a fallback id so downstream inserts work.
-                quote_id = f"dummy-{uuid.uuid4()}"
-                row["id"] = quote_id
+            try:
+                if not isinstance(quote_id, str):
+                    raise ValueError("Missing persisted quote ID")
+                uuid.UUID(quote_id)
+            except ValueError as exc:
+                raise SupabaseError(
+                    message="Quote insert returned an invalid record ID",
+                    operation="insert_quote",
+                ) from exc
 
             # 3) Prepare and insert items
             items_payload: List[Dict[str, Any]] = []
