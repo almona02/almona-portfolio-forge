@@ -1,8 +1,8 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 /**
  * YDT Prestige Agent: Interactive Chatbot with Almona Style
  * University-grade interface with animations and professional design
  */
-
 import { usePrestigeAgent } from '@/hooks/usePrestigeAgent';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { PrestigeMicroInteractions } from './PrestigeMicroInteractions';
 import './prestige-animations.css';
@@ -96,12 +97,27 @@ const quickActions = [
   { text: 'Explore applications', icon: Compass, persona: 'tourGuide' as PersonaType }
 ];
 
+  const getWelcomeMessage = (lang: LanguageType): string => {
+    const welcomes = {
+      en: "Welcome! I'm your YDT Agent. I can help you learn, diagnose, explore, and program AIM 7510. How can I assist you today?",
+      tr: "Hoş geldiniz! YDT Agent'ınızım. AIM 7510'u öğrenmenize, teşhis etmenize, keşfetmenize ve programlamanıza yardımcı olabilirim. Bugün size nasıl yardımcı olabilirim?",
+      ru: "Добро пожаловать! Я ваш YDT Agent. Я могу помочь вам изучать, диагностировать, исследовать и программировать AIM 7510. Чем я могу помочь вам сегодня?",
+      ar: "أهلاً وسهلاً! أنا YDT المساعد. يمكنني مساعدتك في تعلم وتشخيص واستكشاف وبرمجة AIM 7510. كيف يمكنني مساعدتك اليوم؟"
+    };
+    return welcomes[lang];
+  };
+
+
 export const AlmonaPrestigeChatbot: React.FC = () => {
+  const copy = usePublicCopy();
+  const { i18n } = useTranslation();
+  const selectedLanguage = (i18n.resolvedLanguage || i18n.language).split('-')[0];
+  const language: LanguageType = ['ar', 'en', 'tr', 'ru'].includes(selectedLanguage) ? selectedLanguage as LanguageType : 'en';
   const location = useLocation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [agentPersona, setAgentPersona] = useState<PersonaType>('professor');
-  const [language, setLanguage] = useState<LanguageType>('en');
+
   const [typing, setTyping] = useState(false);
   const [_confidence, setConfidence] = useState(95);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -135,8 +151,11 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
         teachingPoints: []
       }
     };
-    setMessages([welcomeMessage]);
-    
+    setMessages(previous => previous.length ? previous.map(message => message.id === 'welcome' ? welcomeMessage : message) : [welcomeMessage]);
+  }, [language]);
+
+  useEffect(() => {
+
     // Load initial data (silently fail if backend unavailable)
     const loadInitialData = async () => {
       try {
@@ -156,48 +175,38 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
 
   // Removed auto-scroll - user controls scrolling manually
 
-  const getWelcomeMessage = (lang: LanguageType): string => {
-    const welcomes = {
-      en: "Welcome! I'm your YDT Agent. I can help you learn, diagnose, explore, and program AIM 7510. How can I assist you today?",
-      tr: "Hoş geldiniz! YDT Agent'ınızım. AIM 7510'u öğrenmenize, teşhis etmenize, keşfetmenize ve programlamanıza yardımcı olabilirim. Bugün size nasıl yardımcı olabilirim?",
-      ru: "Добро пожаловать! Я ваш YDT Agent. Я могу помочь вам изучать, диагностировать, исследовать и программировать AIM 7510. Чем я могу помочь вам сегодня?",
-      ar: "أهلاً وسهلاً! أنا YDT المساعد. يمكنني مساعدتك في تعلم وتشخيص واستكشاف وبرمجة AIM 7510. كيف يمكنني مساعدتك اليوم؟"
-    };
-    return welcomes[lang];
-  };
-
-  const handleSend = async () => {
-    if (!input.trim() || typing || backendLoading) return;
+  const handleSend = async (messageText = input, persona = agentPersona) => {
+    if (!messageText.trim() || typing || backendLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       type: 'user',
-      text: input,
+      text: messageText,
       timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const userInput = input;
+    const userInput = messageText;
     setInput('');
     setTyping(true);
 
     // Show knowledge recall
-    microInteractions.current.showKnowledgeRecall();
+    microInteractions.current.showKnowledgeRecall(copy);
 
     try {
       // Send to backend
-      const response = await sendMessageToBackend(userInput, agentPersona, language);
-      
+      const response = await sendMessageToBackend(userInput, persona, language);
+
       if (response.success && response.data) {
         // Response received successfully
-        
+
         // Add assistant message
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           type: 'assistant',
           text: response.data.response,
           timestamp: new Date(),
-          persona: agentPersona,
+          persona,
           extras: {
             confidence: response.data.confidence,
             references: response.data.knowledge_sources || [],
@@ -213,26 +222,26 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
         const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
           type: 'assistant',
-          text: `I apologize, but I encountered an error: ${response.error || 'Unknown error'}. Please try again.`,
+          text: copy('The assistant could not respond. Please try again or contact ALMONA.'),
           timestamp: new Date(),
-          persona: agentPersona,
+          persona,
           extras: { confidence: 70 }
         };
         setMessages(prev => [...prev, errorMessage]);
-        toast.error('Failed to get response. Please try again.');
+        toast.error(copy('Failed to get response. Please try again.'));
       }
     } catch (error: any) {
       console.error('Send message error:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        text: 'Sorry, I encountered a connection issue. Please check your internet connection and try again.',
+        text: copy('Sorry, I encountered a connection issue. Please check your internet connection and try again.'),
         timestamp: new Date(),
-        persona: agentPersona,
+        persona,
         extras: { confidence: 60 }
       };
       setMessages(prev => [...prev, errorMessage]);
-      toast.error('Connection error. Please try again.');
+      toast.error(copy('Connection error. Please try again.'));
     } finally {
       setTyping(false);
       // No auto-scroll - user controls scrolling manually
@@ -241,23 +250,19 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
 
   const handleQuickAction = async (action: typeof quickActions[0]) => {
     setAgentPersona(action.persona);
-    setInput(action.text);
-    microInteractions.current.showPersonaTransition(personas[action.persona]);
-    // Auto-send the quick action
-    setTimeout(() => {
-      handleSend();
-    }, 100);
+    microInteractions.current.showPersonaTransition(personas[action.persona], copy);
+    await handleSend(copy(action.text), action.persona);
   };
 
   const handlePersonaChange = (persona: PersonaType) => {
     setAgentPersona(persona);
-    microInteractions.current.showPersonaTransition(personas[persona]);
+    microInteractions.current.showPersonaTransition(personas[persona], copy);
   };
 
   const handleLanguageChange = (lang: LanguageType) => {
     // Smooth language transition
-    setLanguage(lang);
-    
+    void i18n.changeLanguage(lang);
+
     // Update welcome message in current language
     const welcomeMessage: Message = {
       id: 'welcome',
@@ -271,7 +276,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
         teachingPoints: []
       }
     };
-    
+
     // Update first message if it's the welcome message
     setMessages(prev => {
       if (prev.length > 0 && prev[0].id === 'welcome') {
@@ -279,9 +284,9 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
       }
       return prev;
     });
-    
+
     // Subtle notification
-    toast.success(`Language: ${lang.toUpperCase()}`, { duration: 1500 });
+
   };
 
   const currentPersona = personas[agentPersona];
@@ -291,7 +296,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
       <div className="max-w-6xl mx-auto" style={{ marginTop: '2.5cm' }}>
         {/* Prestige Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <motion.div
               animate={{ rotate: 360 }}
@@ -303,16 +308,13 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               </div>
               <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400" />
             </motion.div>
-            
+
             <div>
-              <h1 className="typography-h1 text-gray-900">
-                YDT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-amber-600">Agent</span>
+              <h1 className="typography-h1 text-gray-900">{copy("YDT")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-amber-600">{copy("Agent")}</span>
               </h1>
               <p className="text-gray-600 flex items-center gap-2">
                 <Shield className="w-4 h-4  status-valid" />
-                <span className="font-semibold text-green-600">Assistant interface</span>
-                • Nervous System + Professor + Doctor + Tour Guide
-              </p>
+                <span className="font-semibold text-green-600">{copy("Assistant interface")}</span>{copy("• Nervous System + Professor + Doctor + Tour Guide")}</p>
             </div>
           </div>
 
@@ -354,7 +356,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                     : 'bg-white text-gray-800 hover:shadow-xl'
                 }`}
               >
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap gap-4 items-center justify-between">
                   <Icon className={`w-6 h-6 ${
                     isActive ? 'text-white' : 'text-gray-600'
                   }`} />
@@ -362,8 +364,8 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                     <Zap className="w-4 h-4 animate-pulse" />
                   )}
                 </div>
-                <h3 className="typography-h3 mt-2 text-sm">{persona.title}</h3>
-                <p className="text-xs opacity-80 mt-1">{persona.subtitle}</p>
+                <h3 className="typography-h3 mt-2 text-sm">{copy(persona.title)}</h3>
+                <p className="text-xs opacity-80 mt-1">{copy(persona.subtitle)}</p>
               </motion.button>
             );
           })}
@@ -373,20 +375,20 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Chat Header */}
           <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap gap-4 items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className={`w-12 h-12 rounded-full ${currentPersona.color} flex items-center justify-center`}>
                   <PersonaIcon className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="typography-h2 text-xl text-white">{currentPersona.title}</h2>
-                  <p className="text-gray-300 text-sm">{currentPersona.subtitle}</p>
+                  <h2 className="typography-h2 text-xl text-white">{copy(currentPersona.title)}</h2>
+                  <p className="text-gray-300 text-sm">{copy(currentPersona.subtitle)}</p>
                 </div>
               </div>
               <div className="text-right">
                 <div className="inline-flex items-center px-4 py-2 bg-white bg-opacity-10 rounded-full">
                   <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse mr-2"></div>
-                  <span className="text-sm text-gray-300">Connection checked when you send</span>
+                  <span className="text-sm text-gray-300">{copy("Connection checked when you send")}</span>
                 </div>
               </div>
             </div>
@@ -413,17 +415,17 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                         <div className={`w-6 h-6 rounded-full ${personas[message.persona].color} flex items-center justify-center mr-2`}>
                           {React.createElement(personas[message.persona].icon, { className: 'w-3 h-3 text-white' })}
                         </div>
-                        <span className="text-sm font-medium">{personas[message.persona].title}</span>
+                        <span className="text-sm font-medium">{copy(personas[message.persona].title)}</span>
                       </div>
                     )}
-                    <p 
+                    <p
                       className="text-sm leading-relaxed whitespace-pre-wrap"
-                      dir={language === 'ar' ? 'rtl' : 'ltr'}
-                      style={language === 'ar' ? { textAlign: 'right' } : {}}
+                      dir="auto"
+
                     >
                       {message.text}
                     </p>
-                    
+
                   </div>
                 </motion.div>
               ))}
@@ -451,49 +453,42 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
 
           {/* Input Area */}
           <div className="border-t border-gray-200 p-6">
-            <div className="flex space-x-4">
-              <div className="flex-1">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1 min-w-0">
                 <div className="relative">
-                  <input
-                    type="text"
+                  <textarea
+                    rows={2}
+                    aria-label={copy('Message to the assistant')}
+                    dir="auto"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder={`Ask ${currentPersona.title} about AIM 7510...`}
+                    placeholder={copy('Ask about AIM 7510...')}
                     className="w-full px-6 py-4 bg-white rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-400 text-gray-900 placeholder:text-gray-400 text-base font-medium"
-                    onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void handleSend(); } }}
                   />
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
-                    <button className="p-2 hover:bg-gray-200 rounded-full transition">
-                      <BookOpen className="w-5 h-5 text-gray-500" />
-                    </button>
-                    <button className="p-2 hover:bg-gray-200 rounded-full transition">
-                      <Code className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
+
                 </div>
-                <div className="flex justify-between items-center mt-2 px-2">
-                  <span className="text-xs text-gray-500">
-                    Press Enter to send • Shift+Enter for new line
-                  </span>
+                <div className="flex flex-wrap gap-2 justify-between items-center mt-2 px-2">
+                  <span className="text-xs text-gray-500">{copy("Press Enter to send • Shift+Enter for new line")}</span>
                   <div className="flex items-center space-x-1">
                     <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span className="text-xs text-gray-500">YDT assistance — verify guidance before use</span>
+                    <span className="text-xs text-gray-500">{copy("YDT assistance — verify guidance before use")}</span>
                   </div>
                 </div>
               </div>
-              
+
               <button
-                onClick={handleSend}
-                disabled={!input.trim() || typing}
+                onClick={() => void handleSend()}
+                disabled={!input.trim() || typing || backendLoading}
                 className="px-6 py-4 bg-gradient-to-r from-blue-600 to-amber-600 text-white rounded-2xl font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
               >
                 <div className="flex items-center space-x-2">
                   <Send className="w-5 h-5" />
-                  <span>Send</span>
+                  <span>{copy("Send")}</span>
                 </div>
               </button>
             </div>
-            
+
             {/* Quick Actions */}
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
               {quickActions.map((action, index) => {
@@ -502,10 +497,11 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                   <button
                     key={index}
                     onClick={() => handleQuickAction(action)}
+                    disabled={typing || backendLoading}
                     className="flex items-center justify-center space-x-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition text-sm font-medium text-gray-700"
                   >
                     <ActionIcon className="w-4 h-4" />
-                    <span>{action.text}</span>
+                    <span>{copy(action.text)}</span>
                   </button>
                 );
               })}
@@ -516,54 +512,54 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
         {/* Knowledge Status Footer */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white p-4 rounded-2xl shadow">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Knowledge Base</span>
+            <div className="flex flex-wrap gap-4 items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">{copy("Knowledge Base")}</span>
               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                 <BookOpen className="w-4 h-4 text-green-600" />
               </div>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold">On request</div>
-              <div className="text-sm text-gray-500">Components & Parts</div>
+              <div className="text-2xl font-bold">{copy("On request")}</div>
+              <div className="text-sm text-gray-500">{copy("Components & Parts")}</div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-2xl shadow">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Guidance</span>
+            <div className="flex flex-wrap gap-4 items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">{copy("Guidance")}</span>
               <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                 <Shield className="w-4 h-4 text-blue-600" />
               </div>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold">Verify</div>
-              <div className="text-sm text-gray-500">Knowledge Base</div>
+              <div className="text-2xl font-bold">{copy("Verify")}</div>
+              <div className="text-sm text-gray-500">{copy("Knowledge Base")}</div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-2xl shadow">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Languages</span>
+            <div className="flex flex-wrap gap-4 items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">{copy("Languages")}</span>
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
                 <Languages className="w-4 h-4 text-amber-600" />
               </div>
             </div>
             <div className="mt-2">
               <div className="text-2xl font-bold">4</div>
-              <div className="text-sm text-gray-500">TR/EN/RU/AR</div>
+              <div className="text-sm text-gray-500">{copy("TR/EN/RU/AR")}</div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-2xl shadow">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Response Time</span>
+            <div className="flex flex-wrap gap-4 items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">{copy("Response Time")}</span>
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
                 <Zap className="w-4 h-4 text-amber-600" />
               </div>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold">Variable</div>
-              <div className="text-sm text-gray-500">Depends on service availability</div>
+              <div className="text-2xl font-bold">{copy("Variable")}</div>
+              <div className="text-sm text-gray-500">{copy("Depends on service availability")}</div>
             </div>
           </div>
         </div>

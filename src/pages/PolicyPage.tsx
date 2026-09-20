@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 
@@ -30,33 +31,32 @@ const policies = {
 };
 
 export default function PolicyPage({ kind }: { kind: keyof typeof policies }) {
+  const copy = usePublicCopy();
   const policy = policies[kind];
   return (
     <main className="pt-24 pb-16 px-4">
       <Helmet>
-        <title>{policy.title} — Draft | ALMONA</title>
+        <title>{`${copy(policy.title)} ${copy("— Draft | ALMONA")}`}</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <article className="max-w-3xl mx-auto space-y-8">
         <header className="space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white">{policy.title}</h1>
-          <div role="note" className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-amber-100">
-            Draft for review — not an approved or effective policy. Business and legal review is required before publication.
-          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white">{copy(policy.title)}</h1>
+          <div role="note" className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-amber-100">{copy("Draft for review — not an approved or effective policy. Business and legal review is required before publication.")}</div>
         </header>
         {policy.sections.map(([title, content]) => (
           <section key={title} className="space-y-3">
-            <h2 className="text-xl font-semibold text-white">{title}</h2>
-            <p className="text-gray-300 leading-relaxed">{content}</p>
+            <h2 className="text-xl font-semibold text-white">{copy(title)}</h2>
+            <p className="text-gray-300 leading-relaxed">{copy(content)}</p>
           </section>
         ))}
         <section className="rounded-lg border border-gray-700 p-5 space-y-3">
-          <h2 className="text-xl font-semibold text-white">Before this draft is approved</h2>
-          <p className="text-gray-300 leading-relaxed">{policy.pending}</p>
+          <h2 className="text-xl font-semibold text-white">{copy("Before this draft is approved")}</h2>
+          <p className="text-gray-300 leading-relaxed">{copy(policy.pending)}</p>
         </section>
-        <nav className="flex gap-6 text-amber-400" aria-label="Policy navigation">
-          <Link to="/contact" className="underline">Contact ALMONA</Link>
-          <Link to={kind === 'privacy' ? '/terms' : '/privacy'} className="underline">{kind === 'privacy' ? 'Website Terms' : 'Privacy Notice'}</Link>
+        <nav className="flex gap-6 text-amber-400" aria-label={copy("Policy navigation")}>
+          <Link to="/contact" className="underline">{copy("Contact ALMONA")}</Link>
+          <Link to={kind === 'privacy' ? '/terms' : '/privacy'} className="underline">{copy(kind === 'privacy' ? 'Website Terms' : 'Privacy Notice')}</Link>
         </nav>
       </article>
     </main>

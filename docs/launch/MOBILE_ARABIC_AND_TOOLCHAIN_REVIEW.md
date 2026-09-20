@@ -33,3 +33,13 @@ After the language fixes, the contact page was visually inspected at 360px. Arab
 This is **not a complete Arabic translation sign-off**. About-page body/components, detailed manufacturer descriptions and catalogue/helper modules, Prestige Agent content, and the draft legal policy bodies still contain English. The legal pages remain review drafts pending business details. Full keyboard/screen-reader checks, physical iOS/Android testing and external embedded 3D experiences remain unverified.
 
 The broad test run excludes Fabricator-path and golden-master tests. Repository-wide lint/type failures documented in the main launch review remain separate. Do not interpret focused public checks as a full platform certification.
+
+## Arabic completion follow-up — 20 September 2026
+
+Translated the About page and its team, values, testimonial and timeline content; the complete draft Terms/Privacy text; catalogue descriptions, types, specifications, tags and accessories for all 39 machine records; quick-view labels; mobile filters; category navigation; machine-selection steps and report labels; and Prestige Agent controls, prompts and error feedback. Model identifiers and canonical machine records remain unchanged. Translation does not independently validate manufacturer specifications, company history or testimonial claims. Manufacturer PDFs, third-party 3D experiences and backend-generated replies are outside this translation pass.
+
+The assistant now follows the shared site language, retains conversation history when switching language, and sends quick actions using the selected translated prompt and persona. Arabic catalogue search matches translated descriptions and handles Arabic diacritics and common alef variants. Policy draft warnings and no-index metadata remain in place.
+
+Validation: 11 focused test files pass, with 35 tests, including full catalogue-resource coverage, policy draft warnings in both languages, About language switching, Arabic catalogue search and a mocked Arabic assistant request/error response. The production build passes. Targeted source lint has zero errors; pre-existing warnings remain. Browser checks at 390px confirmed Arabic About, Privacy, catalogue and assistant content, RTL direction, no horizontal document overflow, and Arabic/English assistant switching. No live assistant question, email or training enquiry was sent.
+
+Vercel inspection found the previous commit `5dcfda2` already assigned to production under deployment `B8WjnYptxUuSPkQmhUyuup1MBBV3`. Production branch tracking remains `main`; this update stays on `codex/public-site-launch` for Preview. No hosting settings were changed during this follow-up.

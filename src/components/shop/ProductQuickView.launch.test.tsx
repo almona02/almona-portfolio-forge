@@ -5,7 +5,7 @@ import type { Machine } from '@/types';
 
 const mocks = vi.hoisted(() => ({ add: vi.fn(), close: vi.fn(), success: vi.fn(), error: vi.fn() }));
 vi.mock('@/context/QuoteContext', () => ({ useQuote: () => ({ addToQuote: mocks.add }) }));
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string, fallback?: string) => fallback || key }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string, fallback?: string | { defaultValue?: string }) => typeof fallback === 'string' ? fallback : fallback?.defaultValue || key }) }));
 vi.mock('sonner', () => ({ toast: { success: mocks.success, error: mocks.error } }));
 vi.mock('@/lib/analytics/quickViewAnalytics', () => ({ quickViewAnalytics: {
   trackQuickViewOpen: vi.fn(), trackQuickViewClose: vi.fn(), trackQuickViewConversion: vi.fn(), trackTabSwitch: vi.fn(),

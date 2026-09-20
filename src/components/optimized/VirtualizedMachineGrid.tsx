@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 /**
  * Machine Grid Component
  * Simple grid layout for machine cards with proper spacing and alignment
@@ -32,6 +33,7 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
   onLoadMore,
   isLoading
 }) => {
+  const copy = usePublicCopy();
   return (
     <div className="w-full">
       {/* Simple CSS Grid - cards auto-size to content with equal heights per row */}
@@ -53,7 +55,7 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
           );
         })}
       </div>
-      
+
       {hasMore && (
         <div className="flex justify-center mt-8">
           <Button
@@ -64,11 +66,9 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
           >
             {isLoading ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Loading...
-              </>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />{copy("Loading...")}</>
             ) : (
-              'Load More Machines'
+              copy('Load More Machines')
             )}
           </Button>
         </div>

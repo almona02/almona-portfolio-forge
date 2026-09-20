@@ -143,7 +143,7 @@ function toTypesMachine(m: Machine): TypesMachine {
     type: m.category || "Machine",
     powerSpec: { voltage: "", frequency: "", phase: "3", consumption: "" },
     tags: m.tags,
-    specifications: (m.specifications || []).map(s => `${s.key}: ${s.value}`),
+    specifications: (m.specifications || []).map(s => s.value ? `${s.key}: ${s.value}` : s.key),
     certifications: (m.certifications || []).map(c => c.standard),
   };
 }
@@ -230,7 +230,7 @@ const ProductGrid = ({
                 'pricing' in product ? product.pricing?.basePrice : 
                 'price' in product ? product.price : undefined
               )}
-              features={isMachine(product) ? product.specifications.slice(0, 3).map(s => `${s.key}: ${s.value}`) : []}
+              features={isMachine(product) ? product.specifications.slice(0, 3).map(s => s.value ? `${s.key}: ${s.value}` : s.key) : []}
               badges={[
                 ...('tags' in product ? product.tags : []),
                 ...('isNew' in product && (product).isNew ? ['New'] : []),
@@ -556,7 +556,7 @@ const Shop = () => {
               <SmartCategoryNavigation
                 machines={enhancedProducts.map(m => ({
                   ...m,
-                  specifications: m.specifications.map(s => `${s.key}: ${s.value}`)
+                  specifications: m.specifications.map(s => s.value ? `${s.key}: ${s.value}` : s.key)
                 })) as any}
                 selectedCategory={filters.category}
                 onCategorySelect={(categoryId) => handleFilterChange('category', categoryId)}

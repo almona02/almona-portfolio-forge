@@ -104,40 +104,40 @@ const Products = function ProductsPage() {
     const urlCategory = searchParams.get('category') || 'all';
     const urlSort = searchParams.get('sort') || 'featured';
     const shouldScroll = searchParams.get('scroll') === 'results';
-    
+
     setFilters(prev => {
       const updated = {
         searchTerm: urlSearch,
         category: urlCategory,
         sortOption: urlSort
       };
-      
+
       // Only update if something changed
       if (prev.searchTerm !== urlSearch || prev.category !== urlCategory || prev.sortOption !== urlSort) {
         return updated;
       }
       return prev;
     });
-    
+
     // Scroll to results if scroll param is present and we haven't scrolled yet
     if (shouldScroll && !hasScrolledToResults.current && resultsRef.current) {
       // Wait for results to render, then scroll
       const scrollTimer = setTimeout(() => {
         if (resultsRef.current) {
-          resultsRef.current.scrollIntoView({ 
-            behavior: 'smooth', 
+          resultsRef.current.scrollIntoView({
+            behavior: 'smooth',
             block: 'center',
             inline: 'nearest'
           });
           hasScrolledToResults.current = true;
-          
+
           // Remove scroll param from URL after scrolling
           const newParams = new URLSearchParams(searchParams);
           newParams.delete('scroll');
           setSearchParams(newParams, { replace: true });
         }
       }, 500); // Wait for results to load
-      
+
       return () => clearTimeout(scrollTimer);
     }
   }, [searchParams, setSearchParams]);
@@ -336,50 +336,50 @@ const Products = function ProductsPage() {
 
   const handleQuoteRequest = useCallback((machine: Machine) => {
     void addCatalogueToQuote(machine).then(() => navigate('/quote')).catch(() => {
-      toast({ title: 'Unable to add this machine', description: 'Please try again or contact ALMONA.', variant: 'destructive' });
+      toast({ title: copy("Unable to add this machine"), description: copy("Please try again or contact ALMONA."), variant: 'destructive' });
     });
-  }, [addCatalogueToQuote, navigate, toast]);
+  }, [addCatalogueToQuote, navigate, toast, copy]);
 
   const handle3DView = useCallback((machine: Machine) => {
     setSelectedMachineFor3D(machine);
     setShow3DModel(true);
   }, []);
-  
+
   const _handleQuickPreview = useCallback((machine: Machine) => {
     setQuickViewProduct(machine);
   }, []);
-  
+
   const handleClose3DModel = useCallback(() => {
     setShow3DModel(false);
     // Clear selection after a brief delay to allow animation
     setTimeout(() => setSelectedMachineFor3D(null), 300);
   }, []);
-  
+
   const handleCloseQuickView = useCallback(() => {
     setQuickViewProduct(null);
   }, []);
-  
+
   const handleWizardOpen = useCallback(() => {
     setWizardOpen(true);
   }, []);
-  
+
   const handleConfiguratorOpen = useCallback(() => {
     setShowConfigurator(true);
   }, []);
-  
+
   const handleConfiguratorClose = useCallback(() => {
     setShowConfigurator(false);
   }, []);
-  
+
   const handleTourToggle = useCallback(() => {
     setIsTourPlaying(prev => !prev);
   }, []);
 
   // Industry 4.0 Features - memoized to prevent recreation on every render
   const faqs = [
-    { question: 'How do I confirm a machine specification?', answer: 'Request the manufacturer documentation for the exact model and configuration. Connectivity, software and accessories vary by machine.' },
-    { question: 'What does a quotation include?', answer: 'Ask ALMONA to confirm price, taxes, delivery, installation, availability and payment terms in writing.' },
-    { question: 'What warranty and certificates are supplied?', answer: 'Request the applicable warranty terms and conformity documents for the exact machine before purchase.' },
+    { question: copy("How do I confirm a machine specification?"), answer: copy("Request the manufacturer documentation for the exact model and configuration. Connectivity, software and accessories vary by machine.") },
+    { question: copy("What does a quotation include?"), answer: copy("Ask ALMONA to confirm price, taxes, delivery, installation, availability and payment terms in writing.") },
+    { question: copy("What warranty and certificates are supplied?"), answer: copy("Request the applicable warranty terms and conformity documents for the exact machine before purchase.") },
   ];
 
   const currentUrl = `https://www.almona02.com${location.pathname}${location.search}`;
@@ -388,7 +388,7 @@ const Products = function ProductsPage() {
     <>
       <SEO
         title={t('page.title')}
-        description="Browse aluminium and UPVC machinery. Contact ALMONA for model-specific specifications and a written quotation."
+        description={copy("Browse aluminium and UPVC machinery. Contact ALMONA for model-specific specifications and a written quotation.")}
         url={currentUrl}
         keywords={t('page.keywords')}
       />
@@ -438,7 +438,7 @@ const Products = function ProductsPage() {
           </div>
         </div>
 
-        <p className="max-w-3xl mx-auto mb-12 text-center text-gray-300">Prices, stock, delivery, warranty and model-specific certificates are confirmed in a written quotation. Digital integrations depend on the exact machine and configuration.</p>
+        <p className="max-w-3xl mx-auto mb-12 text-center text-gray-300">{copy("Prices, stock, delivery, warranty and model-specific certificates are confirmed in a written quotation. Digital integrations depend on the exact machine and configuration.")}</p>
 
         {/* Existing Products page content */}
         <div ref={productsSectionRef} id="products-section" className="scroll-mt-24 mb-12 text-center">
@@ -595,30 +595,24 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🤖</span>
               </div>
-              <h3 className="typography-h3 mb-2 text-blue-400">Equipment selection</h3>
-              <p className="text-gray-400">
-                Compare catalogue information, then confirm suitability with the technical team.
-              </p>
+              <h3 className="typography-h3 mb-2 text-blue-400">{copy("Equipment selection")}</h3>
+              <p className="text-gray-400">{copy("Compare catalogue information, then confirm suitability with the technical team.")}</p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">📡</span>
               </div>
-              <h3 className="typography-h3 mb-2 text-green-400">Connectivity requirements</h3>
-              <p className="text-gray-400">
-                Ask which interfaces and software options are supported by the exact model. Connectivity is not included by default.
-              </p>
+              <h3 className="typography-h3 mb-2 text-green-400">{copy("Connectivity requirements")}</h3>
+              <p className="text-gray-400">{copy("Ask which interfaces and software options are supported by the exact model. Connectivity is not included by default.")}</p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎯</span>
               </div>
-              <h3 className="typography-h3 mb-2 text-amber-400">Model previews</h3>
-              <p className="text-gray-400">
-                Available 3D previews help you explore a model. They do not verify installation dimensions or production performance.
-              </p>
+              <h3 className="typography-h3 mb-2 text-amber-400">{copy("Model previews")}</h3>
+              <p className="text-gray-400">{copy("Available 3D previews help you explore a model. They do not verify installation dimensions or production performance.")}</p>
             </div>
           </div>
         </div>
@@ -676,11 +670,9 @@ const Products = function ProductsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
             <div className="space-y-3">
               <h2 className="typography-h2 sm:text-3xl text-gradient-orange">{t('whyChoose.title')}</h2>
-              <p className="text-gray-300 leading-relaxed">
-                Explore YILMAZ machinery and request the manufacturer documentation for your selected model.
-              </p>
+              <p className="text-gray-300 leading-relaxed">{copy("Explore YILMAZ machinery and request the manufacturer documentation for your selected model.")}</p>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">Request conformity documents</Badge>
+                <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">{copy("Request conformity documents")}</Badge>
               </div>
               <div className="flex gap-3 pt-2">
                 <Button asChild className="btn-primary">
@@ -697,7 +689,7 @@ const Products = function ProductsPage() {
                 <>
                   <img
                     src="/images/factory .png"
-                    alt="YILMAZ Factory"
+                    alt={copy("YILMAZ Factory")}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />
@@ -705,19 +697,17 @@ const Products = function ProductsPage() {
                     type="button"
                     onClick={handleTourToggle}
                     className="absolute inset-0 flex items-center justify-center"
-                    aria-label="Play factory tour inline"
+                    aria-label={copy("Play factory tour inline")}
                   >
                     <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/65 border text-white text-sm card-glass-dark">
-                      <Eye className="h-4 w-4" />
-                      Play Tour
-                    </div>
+                      <Eye className="h-4 w-4" />{copy("Play Tour")}</div>
                   </button>
                 </>
               ) : (
                 <div className="absolute inset-0">
                   <iframe
                     src="https://www.youtube.com/embed/Q0i1AOCOUgo?si=boDqL2T7eFgtny4w&autoplay=1&rel=0&modestbranding=1"
-                    title="Factory tour video"
+                    title={copy("Factory tour video")}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
                     className="w-full h-full"
@@ -726,7 +716,7 @@ const Products = function ProductsPage() {
                     type="button"
                     onClick={handleTourToggle}
                     className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-white/90 text-slate-800 shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-white"
-                    aria-label="Close factory tour video"
+                    aria-label={copy("Close factory tour video")}
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -748,9 +738,7 @@ const Products = function ProductsPage() {
                 </Badge>
                 {t('whyChoose.premiumQuality.title')}
               </h3>
-              <p className="text-gray-400">
-                Request specifications and conformity documents for the exact model and configuration.
-              </p>
+              <p className="text-gray-400">{copy("Request specifications and conformity documents for the exact model and configuration.")}</p>
             </div>
             <div>
               <h3 className="typography-h3 text-lg mb-2 text-gradient-orange">
@@ -759,9 +747,7 @@ const Products = function ProductsPage() {
                 </Badge>
                 {t('whyChoose.technicalSupport.title')}
               </h3>
-              <p className="text-gray-400">
-                Discuss maintenance needs and confirm service availability with ALMONA.
-              </p>
+              <p className="text-gray-400">{copy("Discuss maintenance needs and confirm service availability with ALMONA.")}</p>
             </div>
             <div>
               <h3 className="typography-h3 text-lg mb-2 text-gradient-orange">
@@ -770,9 +756,7 @@ const Products = function ProductsPage() {
                 </Badge>
                 {t('whyChoose.genuineParts.title')}
               </h3>
-              <p className="text-gray-400">
-                Provide your machine model and serial number so ALMONA can check part compatibility, origin and warranty terms.
-              </p>
+              <p className="text-gray-400">{copy("Provide your machine model and serial number so ALMONA can check part compatibility, origin and warranty terms.")}</p>
             </div>
           </div>
         </div>
@@ -851,9 +835,7 @@ const Products = function ProductsPage() {
               <h2 className="typography-h2 mb-4">
                 <span className="text-gradient-orange">{t('configurator.title')}</span>
               </h2>
-              <p className="text-gray-300 mb-8">
-                Interactive configuration is not available yet. Contact ALMONA to confirm machine options and pricing.
-              </p>
+              <p className="text-gray-300 mb-8">{copy("Interactive configuration is not available yet. Contact ALMONA to confirm machine options and pricing.")}</p>
 
               {/* Placeholder for configurator content */}
               <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 mb-6">

@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { yilmazMachines, type Machine } from '@/constants/yilmazMachines';
 import { useQuote } from '@/context/QuoteContext';
 import { useToast } from '@/hooks/useToast';
@@ -42,6 +43,7 @@ interface WizardAnswers {
 }
 
 const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = ({ open, onOpenChange }) => {
+  const copy = usePublicCopy();
   const [step, setStep] = useState<Step>('material');
   const [answers, setAnswers] = useState<WizardAnswers>({ 
     material: 'both', 
@@ -55,58 +57,58 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
   const { toast } = useToast();
 
   const steps = [
-    { id: 'material', title: 'Material Type', icon: Building2 },
-    { id: 'application', title: 'Application', icon: Square },
-    { id: 'automation', title: 'Automation Level', icon: Cpu },
-    { id: 'production', title: 'Production Scale', icon: TrendingUp },
-    { id: 'results', title: 'Recommendations', icon: Award }
+    { id: 'material', title: copy("Material Type"), icon: Building2 },
+    { id: 'application', title: copy("Application"), icon: Square },
+    { id: 'automation', title: copy("Automation Level"), icon: Cpu },
+    { id: 'production', title: copy("Production Scale"), icon: TrendingUp },
+    { id: 'results', title: copy("Recommendations"), icon: Award }
   ];
 
   const categoryMeta: Record<string, { label: string; icon: string; description: string }> = {
     'processing-centers': {
-      label: 'Processing Centers',
+      label: copy("Processing Centers"),
       icon: '🧠',
-      description: 'CNC machining, drilling, and profile processing lines'
+      description: copy("CNC machining, drilling, and profile processing lines")
     },
     'cutting-machines': {
-      label: 'Cutting & Mitre',
+      label: copy("Cutting & Mitre"),
       icon: '✂️',
-      description: 'Mitre saws, compound cutting, and high-precision length cuts'
+      description: copy("Mitre saws, compound cutting, and high-precision length cuts")
     },
     'welding-machines': {
-      label: 'Welding Lines',
+      label: copy("Welding Lines"),
       icon: '🔗',
-      description: 'UPVC welding, seamless finish, and multi-head production'
+      description: copy("UPVC welding, seamless finish, and multi-head production")
     },
     'corner-crimping': {
-      label: 'Corner Crimping',
+      label: copy("Corner Crimping"),
       icon: '🧱',
-      description: 'Aluminium corner joining with deformation-free results'
+      description: copy("Aluminium corner joining with deformation-free results")
     },
     'end-milling': {
-      label: 'End Milling',
+      label: copy("End Milling"),
       icon: '🛠️',
-      description: 'End preparation for tight joints and tolerance control'
+      description: copy("End preparation for tight joints and tolerance control")
     },
     'copy-routers': {
-      label: 'Copy Routers',
+      label: copy("Copy Routers"),
       icon: '📐',
-      description: 'Lock/hinge routing with multi-side accuracy'
+      description: copy("Lock/hinge routing with multi-side accuracy")
     },
     'fabrication-equipment': {
-      label: 'Fabrication Lines',
+      label: copy("Fabrication Lines"),
       icon: '🏭',
-      description: 'Integrated welding/cleaning lines for high throughput'
+      description: copy("Integrated welding/cleaning lines for high throughput")
     },
     routers: {
-      label: 'Routers',
+      label: copy("Routers"),
       icon: '🌀',
-      description: 'NC routing and multi-surface machining'
+      description: copy("NC routing and multi-surface machining")
     },
     accessories: {
-      label: 'Accessories',
+      label: copy("Accessories"),
       icon: '⚙️',
-      description: 'Cooling units, robot transfer, and supporting equipment'
+      description: copy("Cooling units, robot transfer, and supporting equipment")
     }
   };
 
@@ -285,7 +287,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
     return filtered;
   }, [categoryKeywordMap]);
 
-  const categoryStats = useMemo(() => {
+  const categoryStats = (() => {
     const counts = new Map<string, number>();
     yilmazMachines.forEach((machine) => {
       counts.set(machine.category, (counts.get(machine.category) || 0) + 1);
@@ -296,29 +298,25 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
         const meta = categoryMeta[id] ?? {
           label: id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
           icon: '🛠️',
-          description: 'Industrial machinery'
+          description: copy("Industrial machinery")
         };
         return { id, count, ...meta };
       })
       .sort((a, b) => b.count - a.count);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  })();
 
   const totalMachines = yilmazMachines.length;
   const previewMatches = useMemo(() => filterMachines(answers, { allowIncomplete: true }), [answers, filterMachines]);
   const SelectionStrip = () => (
     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-300">
-      <Badge variant="outline" className="border-gray-600 text-gray-200">Material: {answers.material || '—'}</Badge>
-      <Badge variant="outline" className="border-gray-600 text-gray-200">Operation: {answers.application || '—'}</Badge>
-      <Badge variant="outline" className="border-gray-600 text-gray-200">Automation: {answers.automation || '—'}</Badge>
-      <Badge variant="outline" className="border-gray-600 text-gray-200">Production: {answers.production || '—'}</Badge>
-      <Badge variant="secondary" className="bg-gray-700/60 text-gray-100 border-gray-600">
-        Matching: {previewMatches.length} / {totalMachines}
+      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Material:")}{copy(answers.material || '—')}</Badge>
+      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Operation:")}{copy(answers.application || '—')}</Badge>
+      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Automation:")}{copy(answers.automation || '—')}</Badge>
+      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Production:")}{copy(answers.production || '—')}</Badge>
+      <Badge variant="secondary" className="bg-gray-700/60 text-gray-100 border-gray-600">{copy("Matching:")}{previewMatches.length} / {totalMachines}
       </Badge>
       {usePresetBundle && (
-        <Badge variant="secondary" className="btn-primary">
-          Preset bundles on
-        </Badge>
+        <Badge variant="secondary" className="btn-primary">{copy("Preset bundles on")}</Badge>
       )}
     </div>
   );
@@ -337,13 +335,13 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
       document.body.removeChild(link);
       
       toast({
-        title: "Download Started",
-        description: `Downloading specifications for ${machine.name}`,
+        title: copy("Download Started"),
+        description: `${copy('Downloading specifications')}: ${machine.name}`,
       });
     } else {
       toast({
-        title: "No Specifications Available",
-        description: "Specifications are not available for this machine",
+        title: copy("No Specifications Available"),
+        description: copy("Specifications are not available for this machine"),
         variant: "destructive"
       });
     }
@@ -368,8 +366,8 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
     
     addToQuote(shopProduct);
     toast({
-      title: "Added to Quote",
-      description: `${machine.name} has been added to your quote`,
+      title: copy("Added to Quote"),
+      description: `${copy('Added to your quote')}: ${machine.name}`,
     });
   };
 
@@ -383,7 +381,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
         .map((m) => selector(m) || '—')
         .map((v) => `<td>${v}</td>`)
         .join('');
-      return `<tr><th>${label}</th>${cells}</tr>`;
+      return `<tr><th>${copy(label)}</th>${cells}</tr>`;
     };
 
     const headCells = recommendations
@@ -391,40 +389,40 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
       .join('');
 
     const html = `
-      <html>
+      <html dir="${document.documentElement.dir}" lang="${document.documentElement.lang}">
         <head>
-          <title>Machine Comparison Report</title>
+          <title>${copy('Machine Comparison Report')}</title>
           <style>
             * { box-sizing: border-box; }
             body { font-family: "Inter", Arial, sans-serif; padding: 16px; color: #0f172a; }
             h1 { margin: 0 0 4px 0; }
             h2 { margin: 0 0 12px 0; font-size: 14px; color: #475569; }
             table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-            th, td { border: 1px solid #e2e8f0; padding: 8px; font-size: 12px; text-align: left; vertical-align: top; }
+            th, td { border: 1px solid #e2e8f0; padding: 8px; font-size: 12px; text-align: start; vertical-align: top; }
             th { background: #f8fafc; font-weight: 600; }
             tr:nth-child(even) td { background: #fbfdff; }
             .tag { display: inline-block; padding: 2px 6px; margin: 2px; border-radius: 6px; background: #fee9d7; color: #9a3412; font-size: 11px; }
           </style>
         </head>
         <body>
-          <h1>Machine Comparison (${recommendations.length})</h1>
-          <h2>Side-by-side specifications and power/safety highlights</h2>
+          <h1>${copy('Machine Comparison')} (${recommendations.length})</h1>
+          <h2>${copy('Side-by-side specifications and power/safety highlights')}</h2>
           <table>
             <thead>
               <tr>
-                <th>Specification</th>
+                <th>${copy('Specification')}</th>
                 ${headCells}
               </tr>
             </thead>
             <tbody>
-              ${specRow('Type', (m) => m.type)}
-              ${specRow('Category', (m) => m.category)}
+              ${specRow('Type', (m) => copy(m.type))}
+              ${specRow('Category', (m) => copy(m.category))}
               ${specRow('Power', (m) => m.powerSpec?.consumption)}
               ${specRow('Voltage', (m) => m.powerSpec?.voltage)}
               ${specRow('Dimensions', (m) => m.dimensions ? `${m.dimensions.length} × ${m.dimensions.width} × ${m.dimensions.height}` : undefined)}
               ${specRow('Air', (m) => m.airSpec?.consumption ? `${m.airSpec.consumption}${m.airSpec.pressure ? ` @ ${m.airSpec.pressure}` : ''}` : undefined)}
-              ${specRow('Safety', (m) => (m.safetyFeatures || []).join(', '))}
-              ${specRow('Tags', (m) => (m.tags || []).map(t => `<span class="tag">${t}</span>`).join(' '))}
+              ${specRow('Safety', (m) => (m.safetyFeatures || []).map(copy).join(', '))}
+              ${specRow('Tags', (m) => (m.tags || []).map(t => `<span class="tag">${copy(t)}</span>`).join(' '))}
             </tbody>
           </table>
         </body>
@@ -441,19 +439,19 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
   const handleExportSummary = () => {
     // Create a simple text-based summary for now
     const summaryText = `
-PRECISION MACHINE BRIEF
-Generated: ${new Date().toLocaleDateString()}
+${copy('Machine selection brief')}
+${copy('Generated')}: ${new Date().toLocaleDateString(document.documentElement.lang || 'en')}
 
-SELECTIONS:
-- Material: ${answers.material}
-- Application: ${answers.application}
-- Automation: ${answers.automation}
-- Production Scale: ${answers.production}
+${copy('Selections')}:
+- ${copy('Material:')} ${copy(answers.material)}
+- ${copy('Application:')} ${copy(answers.application)}
+- ${copy('Automation:')} ${copy(answers.automation)}
+- ${copy('Production Scale')}: ${copy(answers.production)}
 
-RECOMMENDED MACHINES:
-${recommendations.map((m, i) => `${i + 1}. ${m.name} - ${m.description}`).join('\n')}
+${copy('Recommended machines')}:
+${recommendations.map((m, i) => `${i + 1}. ${m.name} - ${copy(m.description)}`).join('\n')}
 
-Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
+${copy('Prepared with the ALMONA machine selection assistant.')}
     `.trim();
 
     // Create and download the summary as a text file
@@ -468,8 +466,8 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
     URL.revokeObjectURL(url);
 
     toast({
-      title: "Summary Exported",
-      description: "Your recommendation summary has been downloaded",
+      title: copy("Summary Exported"),
+      description: copy("Your recommendation summary has been downloaded"),
     });
   };
 
@@ -537,11 +535,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <Building2 className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 sm:text-2xl mb-2">Select Primary Substrate</h3>
-              <p className="text-gray-400 text-sm sm:text-base">What substrate dominates your current or planned production mix?</p>
+              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Select Primary Substrate")}</h3>
+              <p className="text-gray-400 text-sm sm:text-base">{copy("What substrate dominates your current or planned production mix?")}</p>
             </div>
             <SelectionStrip />
-            <RadioGroup value={answers.material} onValueChange={(v) => handleValueChange('material', v)}>
+            <RadioGroup value={copy(answers.material)} onValueChange={(v) => handleValueChange('material', v)}>
               <div className="grid gap-3 sm:gap-4">
                 <Card 
                   className={`cursor-pointer transition-all ${answers.material === 'aluminum' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
@@ -551,11 +549,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-start space-x-3 sm:space-x-4">
                       <RadioGroupItem value="aluminum" id="aluminum" className="mt-1" />
                       <div className="flex-1 min-w-0">
-                        <Label htmlFor="aluminum" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">Aluminum</Label>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1">High-rigidity frames with premium finishing and corrosion resistance</p>
+                        <Label htmlFor="aluminum" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Aluminum")}</Label>
+                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("High-rigidity frames with premium finishing and corrosion resistance")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
-                          <Badge variant="secondary" className="text-xs">High Strength</Badge>
-                          <Badge variant="secondary" className="text-xs">Weather Resistant</Badge>
+                          <Badge variant="secondary" className="text-xs">{copy("High Strength")}</Badge>
+                          <Badge variant="secondary" className="text-xs">{copy("Weather Resistant")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -569,11 +567,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-start space-x-3 sm:space-x-4">
                       <RadioGroupItem value="upvc" id="upvc" className="mt-1" />
                       <div className="flex-1 min-w-0">
-                        <Label htmlFor="upvc" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">UPVC</Label>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1">Thermal-first systems with low maintenance and superior acoustic insulation</p>
+                        <Label htmlFor="upvc" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("UPVC")}</Label>
+                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Thermal-first systems with low maintenance and superior acoustic insulation")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
-                          <Badge variant="secondary" className="text-xs">Energy Efficient</Badge>
-                          <Badge variant="secondary" className="text-xs">Low Maintenance</Badge>
+                          <Badge variant="secondary" className="text-xs">{copy("Energy Efficient")}</Badge>
+                          <Badge variant="secondary" className="text-xs">{copy("Low Maintenance")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -587,11 +585,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-start space-x-3 sm:space-x-4">
                       <RadioGroupItem value="both" id="both" className="mt-1" />
                       <div className="flex-1 min-w-0">
-                        <Label htmlFor="both" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">Both Materials</Label>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1">Dual-line capability for mixed aluminum and UPVC portfolios</p>
+                        <Label htmlFor="both" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Both Materials")}</Label>
+                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Dual-line capability for mixed aluminum and UPVC portfolios")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
-                          <Badge variant="secondary" className="text-xs">Versatile</Badge>
-                          <Badge variant="secondary" className="text-xs">Multi-Material</Badge>
+                          <Badge variant="secondary" className="text-xs">{copy("Versatile")}</Badge>
+                          <Badge variant="secondary" className="text-xs">{copy("Multi-Material")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -611,10 +609,8 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <Square className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 sm:text-2xl mb-2">Core Operation Focus</h3>
-              <p className="text-gray-400 text-sm sm:text-base">
-                Choose the operation family that drives your current workload.
-              </p>
+              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Core Operation Focus")}</h3>
+              <p className="text-gray-400 text-sm sm:text-base">{copy("Choose the operation family that drives your current workload.")}</p>
             </div>
             <SelectionStrip />
             <Card
@@ -632,18 +628,13 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                       }`}
                       aria-hidden="true"
                     />
-                    <Label className="typography-label text-base sm:text-lg font-semibold cursor-pointer">
-                      Workshop Bundle (recommended)
-                    </Label>
+                    <Label className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Workshop Bundle (recommended)")}</Label>
                   </div>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-400 mt-2">
-                  Auto-selects a complete workshop set based on your production scale:
-                  1-50 units/day ≈ 7 machines, 50-100 units/day ≈ 12 machines, 100+ units/day scales up accordingly.
-                </p>
+                <p className="text-xs sm:text-sm text-gray-400 mt-2">{copy("Auto-selects a complete workshop set based on your production scale: 1-50 units/day ≈ 7 machines, 50-100 units/day ≈ 12 machines, 100+ units/day scales up accordingly.")}</p>
               </CardContent>
             </Card>
-            <RadioGroup value={answers.application} onValueChange={(v) => handleValueChange('application', v)}>
+            <RadioGroup value={copy(answers.application)} onValueChange={(v) => handleValueChange('application', v)}>
               <div className="grid gap-3 sm:gap-4">
                 {categoryStats.map((category) => {
                   const isSelected = answers.application === category.id;
@@ -663,25 +654,20 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                               {category.label}
                             </Label>
                             <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                              {category.description}
+                              {copy(category.description)}
                             </p>
                             <div className="flex flex-wrap gap-1 sm:gap-2 mt-2 items-center">
                               <Badge variant="secondary" className="text-xs flex items-center gap-1">
                                 <span>{category.icon}</span>
-                                <span>Category</span>
+                                <span>{copy("Category")}</span>
                               </Badge>
                               <Badge variant="secondary" className="text-xs">
-                                {category.count} machines
-                              </Badge>
+                                {category.count}{copy("machines")}</Badge>
                               {category.id === 'fabrication-equipment' && (
-                                <Badge variant="outline" className="text-[11px] border-amber-400/50 text-amber-300">
-                                  Full line (recommended)
-                                </Badge>
+                                <Badge variant="outline" className="text-[11px] border-amber-400/50 text-amber-300">{copy("Full line (recommended)")}</Badge>
                               )}
                               {usePresetBundle && category.id === 'fabrication-equipment' && (
-                                <Badge variant="secondary" className="btn-primary">
-                                  Workshop set active
-                                </Badge>
+                                <Badge variant="secondary" className="btn-primary">{copy("Workshop set active")}</Badge>
                               )}
                             </div>
                           </div>
@@ -704,11 +690,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <Cpu className="h-12 w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 mb-2">Automation Level</h3>
-              <p className="text-gray-400">Select the control philosophy that matches your quality and throughput targets.</p>
+              <h3 className="typography-h3 mb-2">{copy("Automation Level")}</h3>
+              <p className="text-gray-400">{copy("Select the control philosophy that matches your quality and throughput targets.")}</p>
             </div>
             <SelectionStrip />
-            <RadioGroup value={answers.automation} onValueChange={(v) => handleValueChange('automation', v)}>
+            <RadioGroup value={copy(answers.automation)} onValueChange={(v) => handleValueChange('automation', v)}>
               <div className="grid gap-4">
                 <Card 
                   className={`cursor-pointer transition-all ${answers.automation === 'manual' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
@@ -718,11 +704,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="manual" id="manual" />
                       <div className="flex-1">
-                        <Label htmlFor="manual" className="typography-label text-lg font-semibold cursor-pointer">Manual Operation</Label>
-                        <p className="text-sm text-gray-400 mt-1">Operator-first cells for bespoke work and low-volume series</p>
+                        <Label htmlFor="manual" className="typography-label text-lg font-semibold cursor-pointer">{copy("Manual Operation")}</Label>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Operator-first cells for bespoke work and low-volume series")}</p>
                         <div className="flex gap-2 mt-2">
-                          <Badge variant="secondary">Operator Control</Badge>
-                          <Badge variant="secondary">Custom Work</Badge>
+                          <Badge variant="secondary">{copy("Operator Control")}</Badge>
+                          <Badge variant="secondary">{copy("Custom Work")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -736,11 +722,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="automatic" id="automatic" />
                       <div className="flex-1">
-                        <Label htmlFor="automatic" className="typography-label text-lg font-semibold cursor-pointer">Semi-Automatic</Label>
-                        <p className="text-sm text-gray-400 mt-1">Assisted automation with safeguarded repeatability and human oversight</p>
+                        <Label htmlFor="automatic" className="typography-label text-lg font-semibold cursor-pointer">{copy("Semi-Automatic")}</Label>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Assisted automation with safeguarded repeatability and human oversight")}</p>
                         <div className="flex gap-2 mt-2">
-                          <Badge variant="secondary">Automated Process</Badge>
-                          <Badge variant="secondary">Operator Supervised</Badge>
+                          <Badge variant="secondary">{copy("Automated Process")}</Badge>
+                          <Badge variant="secondary">{copy("Operator Supervised")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -754,11 +740,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="optimized" id="optimized" />
                       <div className="flex-1">
-                        <Label htmlFor="optimized" className="typography-label text-lg font-semibold cursor-pointer">Optimized (Recommended)</Label>
-                        <p className="text-sm text-gray-400 mt-1">Auto-prioritize CNC/automatic cells for throughput and quality.</p>
+                        <Label htmlFor="optimized" className="typography-label text-lg font-semibold cursor-pointer">{copy("Optimized (Recommended)")}</Label>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Auto-prioritize CNC/automatic cells for throughput and quality.")}</p>
                         <div className="flex gap-2 mt-2">
-                          <Badge variant="secondary">Preset</Badge>
-                          <Badge variant="secondary">Balanced Speed/QA</Badge>
+                          <Badge variant="secondary">{copy("Preset")}</Badge>
+                          <Badge variant="secondary">{copy("Balanced Speed/QA")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -772,11 +758,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="cnc" id="cnc" />
                       <div className="flex-1">
-                        <Label htmlFor="cnc" className="typography-label text-lg font-semibold cursor-pointer">CNC & Fully Automatic</Label>
-                        <p className="text-sm text-gray-400 mt-1">Closed-loop CNC control for high-volume output and micron-level fidelity</p>
+                        <Label htmlFor="cnc" className="typography-label text-lg font-semibold cursor-pointer">{copy("CNC & Fully Automatic")}</Label>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Closed-loop CNC control for high-volume output and micron-level fidelity")}</p>
                         <div className="flex gap-2 mt-2">
-                          <Badge variant="secondary">CNC Control</Badge>
-                          <Badge variant="secondary">High Precision</Badge>
+                          <Badge variant="secondary">{copy("CNC Control")}</Badge>
+                          <Badge variant="secondary">{copy("High Precision")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -796,11 +782,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <TrendingUp className="h-12 w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 mb-2">Production Scale</h3>
-              <p className="text-gray-400">Align capacity with demand to right-size the cell and investment.</p>
+              <h3 className="typography-h3 mb-2">{copy("Production Scale")}</h3>
+              <p className="text-gray-400">{copy("Align capacity with demand to right-size the cell and investment.")}</p>
             </div>
             <SelectionStrip />
-            <RadioGroup value={answers.production} onValueChange={(v) => handleValueChange('production', v)}>
+            <RadioGroup value={copy(answers.production)} onValueChange={(v) => handleValueChange('production', v)}>
               <div className="grid gap-4">
                 <Card 
                   className={`cursor-pointer transition-all ${answers.production === 'small-scale' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
@@ -810,11 +796,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="small-scale" id="small-scale" />
                       <div className="flex-1">
-                        <Label htmlFor="small-scale" className="typography-label text-lg font-semibold cursor-pointer">Small Scale (1-50 units/day)</Label>
-                        <p className="text-sm text-gray-400 mt-1">Custom work, prototyping, and boutique fabrication lines</p>
+                        <Label htmlFor="small-scale" className="typography-label text-lg font-semibold cursor-pointer">{copy("Small Scale (1-50 units/day)")}</Label>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Custom work, prototyping, and boutique fabrication lines")}</p>
                         <div className="flex gap-2 mt-2">
-                          <Badge variant="secondary">Custom Work</Badge>
-                          <Badge variant="secondary">Flexible</Badge>
+                          <Badge variant="secondary">{copy("Custom Work")}</Badge>
+                          <Badge variant="secondary">{copy("Flexible")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -828,11 +814,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="medium-scale" id="medium-scale" />
                       <div className="flex-1">
-                        <Label htmlFor="medium-scale" className="typography-label text-lg font-semibold cursor-pointer">Medium Scale (50-200 units/day)</Label>
-                        <p className="text-sm text-gray-400 mt-1">Balanced throughput for regional demand with disciplined quality</p>
+                        <Label htmlFor="medium-scale" className="typography-label text-lg font-semibold cursor-pointer">{copy("Medium Scale (50-200 units/day)")}</Label>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Balanced throughput for regional demand with disciplined quality")}</p>
                         <div className="flex gap-2 mt-2">
-                          <Badge variant="secondary">Regional Scale</Badge>
-                          <Badge variant="secondary">Growing Business</Badge>
+                          <Badge variant="secondary">{copy("Regional Scale")}</Badge>
+                          <Badge variant="secondary">{copy("Growing Business")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -846,11 +832,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="high-volume" id="high-volume" />
                       <div className="flex-1">
-                        <Label htmlFor="high-volume" className="typography-label text-lg font-semibold cursor-pointer">High Volume (200+ units/day)</Label>
-                        <p className="text-sm text-gray-400 mt-1">Integrated production lines for sustained volume with QA checkpoints</p>
+                        <Label htmlFor="high-volume" className="typography-label text-lg font-semibold cursor-pointer">{copy("High Volume (200+ units/day)")}</Label>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Integrated production lines for sustained volume with QA checkpoints")}</p>
                         <div className="flex gap-2 mt-2">
-                          <Badge variant="secondary">Production Line</Badge>
-                          <Badge variant="secondary">High Volume</Badge>
+                          <Badge variant="secondary">{copy("Production Line")}</Badge>
+                          <Badge variant="secondary">{copy("High Volume")}</Badge>
                         </div>
                       </div>
                     </div>
@@ -859,22 +845,18 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           </div>
             </RadioGroup>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-2">
-              <p className="text-xs text-gray-400">
-                Production scale is mandatory — it drives the final recommendation set.
-              </p>
+              <p className="text-xs text-gray-400">{copy("Production scale is mandatory — it drives the final recommendation set.")}</p>
               <Button
                 size="sm"
                 variant={usePresetBundle ? 'default' : 'outline'}
                 className="flex items-center gap-2"
                 onClick={() => setUsePresetBundle(prev => !prev)}
               >
-                {usePresetBundle ? 'Preset bundles enabled' : 'Enable preset bundles'}
+                {copy(usePresetBundle ? 'Preset bundles enabled' : 'Enable preset bundles')}
               </Button>
             </div>
             {answers.production && usePresetBundle && (
-              <div className="text-xs text-gray-300 bg-gray-800/60 border border-gray-700/60 rounded-lg p-3">
-                We’ll prioritize a balanced production set for {answers.production.replace('-', ' ')}. Example bundle for high-volume could include dual cutters, routers, milling, cleaning, and welding stations sized to ~100 units/day.
-              </div>
+              <div className="text-xs text-gray-300 bg-gray-800/60 border border-gray-700/60 rounded-lg p-3">{copy("We’ll prioritize a balanced production set for")}{answers.production.replace('-', ' ')}{copy(". Example bundle for high-volume could include dual cutters, routers, milling, cleaning, and welding stations sized to ~100 units/day.")}</div>
             )}
           </LazyMotionDiv>
         );
@@ -888,8 +870,8 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <Award className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 sm:text-2xl mb-2">Precision-Fit Recommendations</h3>
-              <p className="text-gray-400 text-sm sm:text-base">Curated to your inputs with CE/ISO-grade alignment and production readiness.</p>
+              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Precision-Fit Recommendations")}</h3>
+              <p className="text-gray-400 text-sm sm:text-base">{copy("Curated to your inputs with CE/ISO-grade alignment and production readiness.")}</p>
             </div>
 
             {/* Summary Report */}
@@ -897,34 +879,30 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="typography-h4 flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-almona-orange" />
-                    Selection Brief
-                  </h4>
+                    <FileText className="h-5 w-5 text-almona-orange" />{copy("Selection Brief")}</h4>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={handleExportSummary}
                     className="flex items-center gap-2"
                   >
-                    <Download className="h-4 w-4" />
-                    Export Brief
-                  </Button>
+                    <Download className="h-4 w-4" />{copy("Export Brief")}</Button>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-400">Material:</span>
-                    <p className="font-medium capitalize">{answers.material}</p>
+                    <span className="text-gray-400">{copy("Material:")}</span>
+                    <p className="font-medium capitalize">{copy(answers.material)}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400">Application:</span>
+                    <span className="text-gray-400">{copy("Application:")}</span>
                     <p className="font-medium capitalize">{answers.application.replace('-', ' ')}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400">Automation:</span>
-                    <p className="font-medium capitalize">{answers.automation}</p>
+                    <span className="text-gray-400">{copy("Automation:")}</span>
+                    <p className="font-medium capitalize">{copy(answers.automation)}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400">Production:</span>
+                    <span className="text-gray-400">{copy("Production:")}</span>
                     <p className="font-medium capitalize">{answers.production.replace('-', ' ')}</p>
                   </div>
                 </div>
@@ -941,7 +919,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="typography-h4 text-base sm:text-lg">{machine.name}</h4>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1 line-clamp-2">{machine.description}</p>
+                        <p className="text-xs sm:text-sm text-gray-400 mt-1 line-clamp-2">{copy(machine.description)}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           {machine.tags?.slice(0, 3).map(tag => (
                             <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
@@ -954,18 +932,14 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                           className="bg-almona-orange hover:bg-almona-orange-dark text-xs sm:text-sm"
                           onClick={() => handleDownloadSpecs(machine)}
                         >
-                          <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                          View Specs
-                        </Button>
+                          <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />{copy("View Specs")}</Button>
                         <Button 
                           size="sm" 
                           variant="outline"
                           className="text-xs sm:text-sm"
                           onClick={() => handleAddToQuote(machine)}
                         >
-                          <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                          Add to Quote
-                        </Button>
+                          <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />{copy("Add to Quote")}</Button>
                       </div>
                     </div>
                   </CardContent>
@@ -974,12 +948,10 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                 <Card>
                   <CardContent className="p-8 text-center">
                     <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h4 className="typography-h4 mb-2">Let’s Curate This Together</h4>
-                    <p className="text-gray-400 mb-4">Share your project constraints and we will build a precision short-list for you.</p>
+                    <h4 className="typography-h4 mb-2">{copy("Let’s Curate This Together")}</h4>
+                    <p className="text-gray-400 mb-4">{copy("Share your project constraints and we will build a precision short-list for you.")}</p>
                     <Button asChild className="bg-almona-orange hover:bg-almona-orange-dark">
-                      <Link to="/contact">
-                        Contact Our Experts
-                      </Link>
+                      <Link to="/contact">{copy("Contact Our Experts")}</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -998,14 +970,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
             <div className="flex-1">
               <DialogTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
                 <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-almona-orange" />
-                <span className="truncate">Precision AI Machine Wizard</span>
+                <span className="truncate">{copy("Precision AI Machine Wizard")}</span>
               </DialogTitle>
-              <p className="text-gray-400 mt-1 text-sm sm:text-base">
-                ISO-grade, Industry 4.0 aligned guidance for aluminum & UPVC production investments.
-              </p>
+              <p className="text-gray-400 mt-1 text-sm sm:text-base">{copy("ISO-grade, Industry 4.0 aligned guidance for aluminum & UPVC production investments.")}</p>
             </div>
-            <div className="text-sm text-gray-400 flex-shrink-0">
-              Step {currentStepIndex + 1} of {steps.length}
+            <div className="text-sm text-gray-400 flex-shrink-0">{copy("Step")} {currentStepIndex + 1} {copy("of")} {steps.length}
             </div>
           </div>
           
@@ -1060,14 +1029,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-300">
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="bg-gray-700/60 text-gray-100 border-gray-600">
-                  {previewMatches.length} matching now
-                </Badge>
-                <span className="text-[11px] text-gray-400">Filters stay active through the wizard.</span>
+                  {previewMatches.length}{copy("matching now")}</Badge>
+                <span className="text-[11px] text-gray-400">{copy("Filters stay active through the wizard.")}</span>
               </div>
               {usePresetBundle && (
-                <Badge variant="outline" className="text-[11px] border-amber-400/50 text-amber-200">
-                  Preset bundles enabled
-                </Badge>
+                <Badge variant="outline" className="text-[11px] border-amber-400/50 text-amber-200">{copy("Preset bundles enabled")}</Badge>
               )}
             </div>
             <div className="flex flex-col sm:flex-row justify-between w-full gap-3">
@@ -1077,9 +1043,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                 disabled={currentStepIndex === 0}
                 className="flex items-center gap-2 w-full sm:w-auto"
               >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
+                <ArrowLeft className="h-4 w-4" />{copy("Back")}</Button>
               
               <div className="flex gap-2 w-full sm:w-auto">
                 {step === 'results' ? (
@@ -1090,13 +1054,9 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                       onClick={handlePrintReport}
                       className="bg-almona-orange hover:bg-almona-orange-dark flex items-center gap-2 flex-1 sm:flex-none"
                     >
-                      <Printer className="h-4 w-4" />
-                      Print Report
-                    </Button>
+                      <Printer className="h-4 w-4" />{copy("Print Report")}</Button>
                     <Button variant="outline" onClick={resetWizard} className="flex items-center gap-2 flex-1 sm:flex-none">
-                      <Sparkles className="h-4 w-4" />
-                      Start Over
-                    </Button>
+                      <Sparkles className="h-4 w-4" />{copy("Start Over")}</Button>
                   </>
                 ) : (
                   <Button 
@@ -1105,10 +1065,10 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     className="bg-almona-orange hover:bg-almona-orange-dark flex items-center gap-2 flex-1 sm:flex-none"
                   >
                     <span className="hidden sm:inline">
-                      {currentStepIndex === steps.length - 2 ? 'Get Recommendations' : 'Next'}
+                      {copy(currentStepIndex === steps.length - 2 ? 'Get Recommendations' : 'Next')}
                     </span>
                     <span className="sm:hidden">
-                      {currentStepIndex === steps.length - 2 ? 'Get Results' : 'Next'}
+                      {copy(currentStepIndex === steps.length - 2 ? 'Get Results' : 'Next')}
                     </span>
                     <ArrowRight className="h-4 w-4" />
                   </Button>
