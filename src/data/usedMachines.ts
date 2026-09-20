@@ -18,7 +18,7 @@ export interface UsedMachine {
   seller: Seller;
 }
 
-export const usedMachines: UsedMachine[] = [
+const unapprovedUsedMachines: UsedMachine[] = [
   {
     id: '1',
     title: 'Yılmaz K 139 Copy Router',
@@ -71,3 +71,8 @@ export const usedMachines: UsedMachine[] = [
     }
   }
 ];
+
+// Existing draft listings lack verified photographs and seller approval.
+// Keep them unpublished until each listing is reviewed.
+export const usedMachines: UsedMachine[] = [];
+export const usedMachineDraftCount = unapprovedUsedMachines.length;

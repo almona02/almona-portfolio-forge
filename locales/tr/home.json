@@ -4,8 +4,8 @@
       "fabricator_pro": {
         "title": "Fabricator Pro",
         "subtitle": "Mısır'ın Endüstriyel Dönüşümünü Güçlendirme",
-        "description": "Mısır Vizyonu 2030'u Destekleme",
-        "badge_national": "Ulusal Stratejik Varlık",
+        "description": "Atölye planlaması için dijital araçlar",
+        "badge_national": "Bir ALMONA girişimi",
         "cta_primary": "Dijital Dönüşümünüze Başlayın",
         "cta_secondary": "Bize Ulaşın"
       },
@@ -103,7 +103,7 @@
       },
       "used_machines": {
         "title": "İkinci El Makineler",
-        "description": "Lojistik desteği ile doğrulanmış B2B ikinci el makine pazarı."
+        "description": "İkinci el makine bulunabilirliği ve inceleme gereksinimleri için ALMONA ile görüşün."
       },
       "maintenance_support": {
         "title": "Bakım ve Destek",
@@ -123,11 +123,11 @@
       },
       "remnant_marketplace": {
         "title": "Artık Pazarı",
-        "description": "Doğrulama, fiyatlandırma ve lojistik ile B2B artık değişim pazarı."
+        "description": "Artık malzeme yönetimi araçlarını keşfedin ve atölyenizin ihtiyaçlarını görüşün."
       },
       "analytics_optimization": {
         "title": "Analitik ve Optimizasyon",
-        "description": "Atık azaltma (%15-30), OEE panelleri ve işler için AI danışmanlığı."
+        "description": "Planlama ve analiz araçlarını keşfedin. Sonuçlar malzemelerinize ve iş akışınıza bağlıdır."
       }
     },
     "learn_more": "Daha Fazla Bilgi",

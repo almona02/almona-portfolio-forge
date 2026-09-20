@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { useState } from 'react';
 import { LazyAnimatePresence, LazyMotionDiv, LazyMotion } from '@/utils/lazyMotion';
 import { Badge } from "@/shared/ui/ui/badge";
@@ -5,7 +6,6 @@ import { Button } from "@/shared/ui/ui/button";
 import { Eye, ShoppingCart, GitCompare, Play, Pause, Download } from "lucide-react";
 import { OptimizedImage } from "@/components/optimized/OptimizedImage";
 import { ProductVideoPlayer } from "@/components/ui/ProductVideoPlayer";
-import { machinePricingService } from '@/lib/pricing/MachinePricingService';
 // ProductHoverPreview removed to avoid duplicate info popup
 import type { Machine } from "@/constants/yilmazMachines";
 
@@ -21,8 +21,8 @@ interface EnhancedProductCardProps {
 
 // Animation variants for gentle, professional animations
 const cardVariants = {
-  initial: { 
-    opacity: 0, 
+  initial: {
+    opacity: 0,
     y: 20,
     scale: 0.95
   },
@@ -52,7 +52,7 @@ const cardVariants = {
 };
 
 const imageVariants = {
-  initial: { 
+  initial: {
     opacity: 0,
     scale: 1.1
   },
@@ -68,7 +68,7 @@ const imageVariants = {
 
 
 const badgeVariants = {
-  initial: { 
+  initial: {
     opacity: 0,
     scale: 0.8,
     y: -10
@@ -85,7 +85,7 @@ const badgeVariants = {
 };
 
 const contentVariants = {
-  initial: { 
+  initial: {
     opacity: 0,
     y: 10
   },
@@ -109,8 +109,8 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
   onQuickPreview,
   show3DBadge = true
 }) => {
+  const copy = usePublicCopy();
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const priceInfo = machinePricingService.getMachinePrice(machine.id);
 
   const handleSelect = () => {
     onSelect?.(machine, !isSelected);
@@ -140,15 +140,15 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         whileHover="hover"
         whileTap="tap"
         className={`group relative h-full flex flex-col bg-gradient-to-br from-gray-900 to-black rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
-          isSelected 
-            ? 'border-amber-500 shadow-lg shadow-amber-500/20' 
+          isSelected
+            ? 'border-amber-500 shadow-lg shadow-amber-500/20'
             : 'border-gray-700 hover:border-amber-400/50'
         }`}
       >
       {/* 3D Model Badge - Clickable */}
       <LazyAnimatePresence>
         {show3DBadge && machine.has3DModel && (
-          <LazyMotionDiv 
+          <LazyMotionDiv
             className="absolute top-3 left-3 z-10"
             variants={badgeVariants}
             initial="initial"
@@ -161,12 +161,10 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               }
             }}
           >
-            <Badge 
+            <Badge
               className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0 shadow-lg cursor-pointer transition-all"
             >
-              <Eye className="w-3 h-3 mr-1" />
-              3D View
-            </Badge>
+              <Eye className="w-3 h-3 mr-1" />{copy("3D View")}</Badge>
           </LazyMotionDiv>
         )}
       </LazyAnimatePresence>
@@ -181,27 +179,23 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               animate="animate"
               exit="exit"
             >
-              <Badge 
+              <Badge
                 onClick={(e) => {
                   e.stopPropagation();
                   handleVideoToggle();
                 }}
                 className={`cursor-pointer border-0 shadow-lg transition-all ${
-                  isVideoPlaying 
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-500 hover:from-amber-600 hover:to-amber-600' 
+                  isVideoPlaying
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-500 hover:from-amber-600 hover:to-amber-600'
                     : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
                 } text-white`}
               >
                 {isVideoPlaying ? (
                   <>
-                    <Pause className="w-3 h-3 mr-1" />
-                    Playing
-                  </>
+                    <Pause className="w-3 h-3 mr-1" />{copy("Playing")}</>
                 ) : (
                   <>
-                    <Play className="w-3 h-3 mr-1" />
-                    Video
-                  </>
+                    <Play className="w-3 h-3 mr-1" />{copy("Video")}</>
                 )}
               </Badge>
             </LazyMotionDiv>
@@ -216,9 +210,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               animate="animate"
               exit="exit"
             >
-              <Badge variant="secondary" className="bg-gradient-to-r from-amber-500 to-red-500 text-white border-0 shadow-lg">
-                Featured
-              </Badge>
+              <Badge variant="secondary" className="bg-gradient-to-r from-amber-500 to-red-500 text-white border-0 shadow-lg">{copy("Featured")}</Badge>
             </LazyMotionDiv>
           )}
         </LazyAnimatePresence>
@@ -255,7 +247,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             autoPlay={true}
           />
         )}
-        
+
         {/* Quick Preview Overlay - CSS hover instead of Framer Motion for reliability */}
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
           <div className="flex gap-2 scale-90 group-hover:scale-100 transition-transform duration-200">
@@ -265,9 +257,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 className="btn-primary"
                 onClick={handleQuickPreview}
               >
-                <Eye className="w-4 h-4 mr-1" />
-                Quick View
-              </Button>
+                <Eye className="w-4 h-4 mr-1" />{copy("Quick View")}</Button>
             )}
             {machine.has3DModel && on3DView && (
               <Button
@@ -276,16 +266,14 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 className="bg-cyan-500/80 hover:bg-cyan-600 border-0 text-white"
                 onClick={handle3DView}
               >
-                <Eye className="w-4 h-4 mr-1" />
-                3D View
-              </Button>
+                <Eye className="w-4 h-4 mr-1" />{copy("3D View")}</Button>
             )}
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <LazyMotionDiv 
+      <LazyMotionDiv
         className="p-4 space-y-3 flex-1 flex flex-col"
         variants={contentVariants}
         initial="initial"
@@ -293,7 +281,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
       >
         {/* Title and Description */}
         <div className="space-y-2">
-          <LazyMotion component="h3" 
+          <LazyMotion component="h3"
             className="font-semibold text-white text-lg leading-tight line-clamp-2"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}
@@ -301,43 +289,41 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             {machine.name}
           </LazyMotion>
           <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">
-            {machine.description}
+            {copy(machine.description)}
           </p>
         </div>
 
         {/* Price Display */}
-        {priceInfo && (
+        {(
           <LazyMotionDiv
             className="bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/30 rounded-lg p-3"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="text-gray-400 text-xs mb-1">Price</div>
-            <div className="text-amber-400 font-bold text-xl">
-              {machinePricingService.formatPrice(priceInfo.basePrice, priceInfo.currency)}
-            </div>
+            <div className="text-gray-400 text-xs mb-1">{copy("Price")}</div>
+            <div className="text-amber-400 font-bold text-xl">{copy("Contact for a quote")}</div>
           </LazyMotionDiv>
         )}
 
         {/* Specifications */}
         <div className="grid grid-cols-2 gap-2 text-xs">
           {machine.powerSpec?.consumption && (
-            <LazyMotionDiv 
+            <LazyMotionDiv
               className="text-gray-400"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="text-gray-500 text-xs">Power</div>
+              <div className="text-gray-500 text-xs">{copy("Power")}</div>
               <div className="text-white font-medium">{machine.powerSpec.consumption}</div>
             </LazyMotionDiv>
           )}
           {machine.category && (
-            <LazyMotionDiv 
+            <LazyMotionDiv
               className="text-gray-400"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="text-gray-500 text-xs">Category</div>
+              <div className="text-gray-500 text-xs">{copy("Category")}</div>
               <div className="text-white font-medium capitalize">{machine.category}</div>
             </LazyMotionDiv>
           )}
@@ -351,15 +337,15 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 key={index}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ 
-                  duration: 0.3, 
+                transition={{
+                  duration: 0.3,
                   delay: index * 0.1,
                   ease: "easeOut"
                 }}
                 whileHover={{ scale: 1.1 }}
               >
                 <Badge variant="outline" className="text-xs text-gray-400 border-gray-600">
-                  {tag}
+                  {copy(tag)}
                 </Badge>
               </LazyMotionDiv>
             ))}
@@ -374,8 +360,8 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <a 
-                href={machine.specPdf} 
+              <a
+                href={machine.specPdf}
                 download={`${machine.name.replace(/\s+/g, '-')}-specs.pdf`}
                 className="block"
               >
@@ -384,9 +370,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                   variant="outline"
                   className="w-full border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300"
                 >
-                  <Download className="w-4 h-4 mr-1" />
-                  PDF
-                </Button>
+                  <Download className="w-4 h-4 mr-1" />{copy("PDF")}</Button>
               </a>
             </LazyMotionDiv>
           )}
@@ -407,7 +391,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 onClick={handleSelect}
               >
                 <GitCompare className="w-4 h-4 mr-1" />
-                {isSelected ? 'Remove' : 'Compare'}
+                {copy(isSelected ? 'Remove' : 'Compare')}
               </Button>
             </LazyMotionDiv>
           )}
@@ -424,9 +408,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 className="w-full border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300"
                 onClick={handleQuote}
               >
-                <ShoppingCart className="w-4 h-4 mr-1" />
-                Quote
-              </Button>
+                <ShoppingCart className="w-4 h-4 mr-1" />{copy("Quote")}</Button>
             </LazyMotionDiv>
           )}
         </div>

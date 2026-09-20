@@ -14,7 +14,7 @@ export interface TrainingLevel {
   title: string;
   description: string;
   duration: string; // e.g. "5 Days"
-  price: string; // numeric string without currency sign for flexibility
+  price: string; // Public commercial label; fees require a written quote.
   features: string[];
   isPopular?: boolean;
 }
@@ -125,59 +125,47 @@ export const upvcStages: FabricationStage[] = [
 export const trainingLevels: TrainingLevel[] = [
   {
     level: 'basic',
-    title: 'Operator Certification',
+    title: 'Machine Operation',
     description: 'Fundamental machine operation skills',
-    duration: '5 Days',
-    price: '8500',
+    duration: 'Duration on request',
+    price: 'Contact for a quote',
     features: [
       'Machine safety protocols',
       'Basic operation training',
       'Quality control fundamentals',
-      'Certificate of completion'
+      'Ask about completion documentation'
     ]
   },
   {
     level: 'advanced',
-    title: 'Master Fabricator',
+    title: 'Advanced Fabrication',
     description: 'Advanced fabrication techniques',
-    duration: '10 Days',
-    price: '15000',
+    duration: 'Duration on request',
+    price: 'Contact for a quote',
     features: [
       'Precision measurement techniques',
       'Advanced troubleshooting',
       'Efficiency optimization',
-      'Gold certification',
+      'Completion document subject to course agreement',
       'Maintenance basics'
     ],
-    isPopular: true
+    isPopular: false
   },
   {
     level: 'expert',
     title: 'Production Specialist',
     description: 'Complete production line mastery',
-    duration: '15 Days',
-    price: '22000',
+    duration: 'Duration on request',
+    price: 'Contact for a quote',
     features: [
       'Full process optimization',
       'Team leadership training',
       'Custom fabrication techniques',
-      'Platinum certification',
+      'Completion document subject to course agreement',
       'Maintenance diagnostics'
     ]
   }
 ];
 
-// Sample rolling cohort start dates generation (next 6 weeks)
-export const generateUpcomingCohorts = () => {
-  const today = new Date();
-  return Array.from({ length: 6 }).map((_, i) => {
-    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i * 7);
-    return {
-      id: i,
-      start,
-      month: start.toLocaleString('default', { month: 'short' }),
-      day: start.getDate(),
-      levels: trainingLevels.map(l => l.level)
-    };
-  });
-};
+// Publish dated cohorts only after an approved schedule is supplied.
+export const generateUpcomingCohorts = (): { id: number; start: Date; month: string; day: number; levels: string[] }[] => [];

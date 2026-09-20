@@ -278,14 +278,14 @@ const Services = () => {
 
   const handlePackageSelection = useCallback((packageId: string, estimatedPrice?: number) => {
     if (!user) {
-      navigate('/login', { state: { redirect: '/services', package: packageId } });
+      navigate(`/contact?subject=${encodeURIComponent(`Service plan enquiry: ${packageId}`)}`);
       return;
     }
 
     // Show success message with package recommendation
     toast({
       title: 'Package Recommendation',
-      description: `We recommend the ${packageId} package for your needs. Estimated cost: $${estimatedPrice?.toLocaleString() || 'Contact for pricing'}`,
+      description: `We recommend the ${packageId} package for your needs. Estimated cost: ${estimatedPrice ? `${estimatedPrice.toLocaleString()} EGP` : 'Contact for pricing'}`,
       duration: 5000,
     });
 
@@ -338,8 +338,8 @@ const Services = () => {
   return (
     <>
       <SEO
-        title="Industrial Services - AI-Powered Solutions | Almona Co."
-        description="Comprehensive industrial services including AI equipment advisor, machine sales, technical training, and fabrication services. Industry 4.0 solutions for smart manufacturing."
+        title="Machine Services and Training | Almona Co."
+        description="Contact ALMONA for machine maintenance, spare parts and training. Service scope, availability and fees are confirmed in a written quotation."
         url={currentUrl}
         keywords="industrial services, AI advisor, machine training, fabrication services, maintenance services Egypt"
       />
@@ -348,17 +348,18 @@ const Services = () => {
         <div className="container mx-auto px-4 py-12 fade-in-up">
           {/* View Toggle and Language Toggle */}
           <div className="flex justify-between items-center mb-6">
-            <ServiceViewToggle viewMode={viewMode} onViewChange={handleViewModeChange} />
+            {user && <ServiceViewToggle viewMode={viewMode} onViewChange={handleViewModeChange} />}
             <LanguageToggle />
           </div>
 
           {/* Conditional Rendering */}
-          {viewMode === 'simple' ? (
+          {!user || viewMode === 'simple' ? (
             <>
               <SimpleServicesView onPackageSelect={handlePackageSelection} />
             </>
           ) : (
             <>
+              <p role="note" className="rounded-lg border border-amber-500 p-4 text-amber-200">Demonstration dashboard: the metrics and alerts below are sample data, not measured site performance or service commitments.</p>
               {/* Enhanced Hero Section with AI Focus */}
               <div className="mb-16 text-center">
                 <div className="inline-flex items-center gap-3 mb-6 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500/10 to-amber-500/10 border border-amber-500/20 fade-in-up">
@@ -390,7 +391,7 @@ const Services = () => {
                   className={realTimeData ? "bg-green-500 hover:bg-green-600" : "electric-border"}
                 >
                   <Activity className="h-4 w-4 mr-2" />
-                  {realTimeData ? t('services.live_data_active') : t('services.enable_live_data')}
+                  {realTimeData ? 'Sample animation active' : 'Animate sample data'}
                 </Button>
                 <Link to="/portal">
                   <Button variant="outline" className="text-white electric-border">

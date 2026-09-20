@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React from 'react';
 import { ChevronRight, Home } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
@@ -18,6 +19,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
   className = '',
   showHome = true
 }) => {
+  const copy = usePublicCopy();
   const breadcrumb = getCategoryBreadcrumb(currentCategoryId);
   
   if (breadcrumb.length === 0) {
@@ -25,7 +27,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
   }
 
   return (
-    <nav className={`flex items-center space-x-1 text-sm ${className}`} aria-label="Breadcrumb">
+    <nav className={`flex items-center space-x-1 text-sm ${className}`} aria-label={copy("Breadcrumb")}>
       {showHome && (
         <>
           <Button
@@ -58,7 +60,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
               `}
               disabled={isLast}
             >
-              {category.name}
+              {copy(category.name)}
             </Button>
             
             {!isLast && (

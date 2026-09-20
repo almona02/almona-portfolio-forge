@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import { playwright } from '@vitest/browser-playwright';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
@@ -23,8 +24,10 @@ export default defineConfig({
       reporter: ['text', 'json', 'html']
     },
     css: true,
-    deps: {
-      inline: ['@testing-library/user-event', '@testing-library/react', '@testing-library/jest-dom']
+    server: {
+      deps: {
+        inline: ['@testing-library/user-event', '@testing-library/react', '@testing-library/jest-dom']
+      }
     },
     environmentOptions: {
       jsdom: {
@@ -59,7 +62,7 @@ export default defineConfig({
           browser: {
             enabled: true,
             headless: true,
-            provider: 'playwright',
+            provider: playwright(),
             instances: [{ browser: 'chromium' }]
           },
           setupFiles: ['.storybook/vitest.setup.ts']

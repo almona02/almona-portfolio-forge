@@ -35,6 +35,7 @@ const Index = lazy(() => import("./pages/Index.tsx"));
 const Products = lazy(() => import("./pages/Products.tsx"));
 const Services = lazyRetry(() => import("./pages/Services.tsx"), "Services"); // Heavy page
 const Contact = lazy(() => import("./pages/Contact.tsx"));
+const PolicyPage = lazy(() => import("./pages/PolicyPage.tsx"));
 const About = lazy(() => import("./pages/About.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
@@ -265,9 +266,11 @@ const getLoadingComponent = (path: string) => {
 // Phase 1.5: Enhanced with critical Egypt route prefetching
 const RoutePrefetchingHelper = () => {
   const { prefetchRoute } = useRoutePrefetching();
+  const { pathname } = useLocation();
 
   // Prefetch critical Egypt workflow routes after initial load
   useEffect(() => {
+    if (!pathname.startsWith('/fabricator')) return;
     // Wait for initial render to complete before prefetching
     const timer = setTimeout(() => {
       const criticalRoutes = [
@@ -284,7 +287,7 @@ const RoutePrefetchingHelper = () => {
     }, 3000); // 3 seconds after initial load
 
     return () => clearTimeout(timer);
-  }, [prefetchRoute]);
+  }, [prefetchRoute, pathname]);
 
   return null;
 };
@@ -317,13 +320,18 @@ const GlobalDynamicImportGuard = () => {
   return null;
 };
 
+// Public pages do not need the simulated manufacturing boot sequence.
+const EntryLoader = ({ children }: { children: React.ReactNode }) =>
+  window.location.pathname.startsWith('/fabricator')
+    ? <Prestige3DLoader show3DAnimation={import.meta.env.PROD}>{children}</Prestige3DLoader>
+    : <>{children}</>;
+
 // Memoize App component to prevent unnecessary re-renders
 const App = memo(() => {
   return (
     <ChunkLoadingErrorBoundary>
       <ErrorBoundary>
-        {/* Disable 3D loader in dev: Three.js/R3F adds ~100s to first load (9612 modules). Prod keeps cinematic experience. */}
-        <Prestige3DLoader show3DAnimation={import.meta.env.PROD}>
+        <EntryLoader>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
               <TooltipProvider>
@@ -358,6 +366,8 @@ const App = memo(() => {
                                   <Route path="/settings" element={<Suspense fallback={getLoadingComponent('/settings')}><SettingsPage /></Suspense>} />
                                   <Route path="/about" element={<Suspense fallback={getLoadingComponent('/about')}><About /></Suspense>} />
                                   <Route path="/contact" element={<Suspense fallback={getLoadingComponent('/contact')}><Contact /></Suspense>} />
+                                  <Route path="/privacy" element={<Suspense fallback={getLoadingComponent('/privacy')}><PolicyPage kind="privacy" /></Suspense>} />
+                                  <Route path="/terms" element={<Suspense fallback={getLoadingComponent('/terms')}><PolicyPage kind="terms" /></Suspense>} />
 
                                   {/* Test routes */}
                                   <Route path="/test/localization" element={<Suspense fallback={getLoadingComponent('/test/localization')}><LocalizationTest /></Suspense>} />
@@ -677,7 +687,7 @@ const App = memo(() => {
               </TooltipProvider>
             </ThemeProvider>
           </QueryClientProvider>
-        </Prestige3DLoader>
+        </EntryLoader>
       </ErrorBoundary>
       {isProd && isVercel && <SpeedInsights />}
     </ChunkLoadingErrorBoundary>
