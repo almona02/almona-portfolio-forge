@@ -55,9 +55,9 @@ export interface ManufacturingSettings {
 
 export type ManufacturingSettingsOverride = Partial<ManufacturingSettings>;
 
-export interface ManufacturingSettingsProvenance {
+export type ManufacturingSettingsProvenance = {
   [K in keyof ManufacturingSettings]: ManufacturingSettingsSource;
-}
+};
 
 export interface ResolvedManufacturingSettings extends ManufacturingSettings {
   namedProfileId: NamedManufacturingProfileId;

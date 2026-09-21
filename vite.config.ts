@@ -132,7 +132,7 @@ export default defineConfig(({ mode }) => {
       {
         name: 'fix-long-package',
         configureServer(server) {
-          server.middlewares.use((req, res, next) => {
+          server.middlewares.use((req, _res, next) => {
             // Ensure long is available before TensorFlow.js loads
             if (req.url?.includes('@tensorflow') || req.url?.includes('tfjs')) {
               // This ensures long is pre-loaded
@@ -356,7 +356,7 @@ export default defineConfig(({ mode }) => {
         plugins: [
           {
             name: 'exclude-md-editor-css',
-            generateBundle(options, bundle) {
+            generateBundle(_options, bundle) {
               Object.keys(bundle).forEach(fileName => {
                 const asset = bundle[fileName];
                 if ((asset as any).type === 'chunk' && (asset as any).code) {
