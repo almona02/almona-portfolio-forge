@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/useToast';
 import { useAuth } from '@/context/AuthContext';
 import { getApiBase } from '@/lib/apiBase';
+import { getQuoteRequestHeaders } from '@/lib/quoteRequestAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { LazyMotionDiv } from '@/utils/lazyMotion';
 
@@ -110,7 +111,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
 
       const resp = await fetch(`${getApiBase()}/api/v2/quotes/create`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getQuoteRequestHeaders(user.id),
         body: JSON.stringify(payload),
       });
 
