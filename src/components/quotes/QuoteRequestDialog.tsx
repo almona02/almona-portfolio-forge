@@ -10,6 +10,7 @@ import { QuoteRequestStepper } from './QuoteRequestStepper';
 import { useToast } from '@/hooks/useToast';
 import { useClipboard } from '@/hooks/useClipboard';
 import { getApiBase } from '@/lib/apiBase';
+import { getQuoteRequestHeaders } from '@/lib/quoteRequestAuth';
 import { useAuth } from '@/context/AuthContext';
 import { Copy, Check } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
@@ -92,7 +93,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
 
       const resp = await fetch(`${getApiBase()}/api/v2/quotes/create`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getQuoteRequestHeaders(user?.id),
         body: JSON.stringify(payload),
       });
       if (!resp.ok) {

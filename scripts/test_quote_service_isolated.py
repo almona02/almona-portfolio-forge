@@ -23,4 +23,5 @@ for name, path in (("apis", backend / "apis"), ("apis.v2", backend / "apis/v2"))
 raise SystemExit(pytest.main([
     "--noconftest", "-o", "addopts=", "-p", "no:cacheprovider", "-q",
     str(backend / "tests/test_quote_service.py"),
+    str(backend / "tests/test_quote_ownership.py"),
 ]))
