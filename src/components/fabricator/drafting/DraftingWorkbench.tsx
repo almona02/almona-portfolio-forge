@@ -202,17 +202,19 @@ export const DraftingWorkbench: React.FC<{
     return project?.systemPackId || state.preferences.selectedSystemPackId || undefined;
   })();
 
-  // Live size from current drafting design (first frame or first rect) so top bar Size badge stays in sync
+  // Live size from the complete drafting bounds so multi-cell layouts retain
+  // their authoritative overall dimensions.
   const liveSize = (() => {
     const mw = draftingEngine.getMaterialAwareWindows?.() ?? [];
     if (mw.length > 0) {
       const first = mw[0] as { width?: number; height?: number };
       if (first.width != null && first.height != null) return { width: first.width, height: first.height };
     }
-    const geom = draftingEngine.getGeometry();
-    const rects = (geom?.rectangles ?? []) as { width?: number; height?: number }[];
-    if (rects.length > 0 && rects[0]?.width != null && rects[0]?.height != null) {
-      return { width: rects[0].width, height: rects[0].height };
+    if (draftingEngine.hasGeometry()) {
+      return {
+        width: draftingEngine.getProperty('width'),
+        height: draftingEngine.getProperty('height'),
+      };
     }
     return undefined;
   })();
