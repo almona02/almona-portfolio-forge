@@ -48,35 +48,14 @@ jobs:
 
       - name: Deploy to Vercel (Production)
         id: vercel-deploy
-        uses: amondnet/vercel-action@v25
-        continue-on-error: true
-        with:
-          # IMPORTANT: Do NOT paste raw tokens or IDs here. Store them in repository Secrets
-          # Settings > Secrets and variables > Actions:
-          #   VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./
-          vercel-args: '--prod'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          github-deployment: true
-          github-comment: false
-        env:
-          # Some tools still look for env var VERCEL_TOKEN
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Check deployment result
-        if: steps.vercel-deploy.outcome == 'failure'
         run: |
-          echo "⚠️ Vercel deployment failed. This may be due to:"
-          echo "  - Free tier limit (100 deployments/day) - wait a few minutes and retry"
-          echo "  - Network issues - check Vercel dashboard"
-          echo "  - Configuration errors - check workflow logs"
-          echo ""
-          echo "Workflow will continue. To deploy manually, use: vercel --prod"
-          echo "Or wait for the rate limit to reset (usually resets daily)"
+          deployment_url="$(npx --yes vercel@47.2.2 deploy --prod --yes --token="$VERCEL_TOKEN")"
+          echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
+          echo "Production deployment: $deployment_url"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Output deployment url
-        if: steps.vercel-deploy.outcome == 'success'
-        run: echo "✅ Deployment complete."
+        run: echo "Deployment complete at ${{ steps.vercel-deploy.outputs.url }}"
