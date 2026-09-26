@@ -7,12 +7,12 @@ import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { findBestMatchingPattern, getPatternById } from '@/lib/fabricator/presetUtils';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
-import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
+import { validateOptimizationResult, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { AdaptiveSolverConfig, OptimizationResult } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
 import { AlertCircle, Loader2 } from 'lucide-react';
-import React, { Suspense, useCallback, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const OptimizationEqualizer = lazyRetry(
@@ -33,6 +33,11 @@ export const OptimizationPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [isOptimizing, setIsOptimizing] = useState(false);
+    const [optimizationError, setOptimizationError] = useState<string | null>(null);
+    const activeRunRef = useRef(0);
+    const submissionLockedRef = useRef(false);
+    const projectIdentityRef = useRef<string | null>(null);
+    const mountedRef = useRef(true);
     const {
         measurementData,
         currentProject,
@@ -41,7 +46,14 @@ export const OptimizationPage: React.FC = () => {
         completeStep,
         setOptimizationResult,
         setBOM,
+        invalidateStep,
     } = useWorkflowStore();
+    const activeProjectRef = useRef(currentProject);
+
+    const projectIdentity = currentProject ? `${currentProject.id}:${currentProject.updatedAt instanceof Date ? currentProject.updatedAt.toISOString() : String(currentProject.updatedAt ?? '')}` : null;
+    useEffect(() => { projectIdentityRef.current = projectIdentity; }, [projectIdentity]);
+    useEffect(() => { activeProjectRef.current = currentProject; }, [currentProject]);
+    useEffect(() => () => { mountedRef.current = false; activeRunRef.current += 1; }, []);
 
     const optimizationValidation = useMemo(
         () =>
@@ -67,44 +79,28 @@ export const OptimizationPage: React.FC = () => {
     const hasRequiredData = currentProject !== null;
 
     const handleOptimizationComplete = useCallback(async (_payload: { strategy?: unknown; minRemnantLength?: number; maxRemnantAge?: number }) => {
-        if (!currentProject || !profiles.length) return;
+        if (submissionLockedRef.current) return;
+        if (!currentProject || !profiles.length) {
+            setOptimizationError('Resolve the system pack and component profiles before retrying.');
+            return;
+        }
 
+        const runId = ++activeRunRef.current;
+        const runProjectIdentity = projectIdentity;
+        const runProject = currentProject;
+        submissionLockedRef.current = true;
+        invalidateStep('optimization');
+        setOptimizationError(null);
         setIsOptimizing(true);
         try {
             const components = currentProject.components ?? [];
-            let optimizationResult: OptimizationResult;
-
-            if (components.length > 0) {
-                const job: CuttingJob = {
-                    components,
-                    profiles,
-                    defaultStockLength: 6000,
-                    systemPackId: currentProject.systemPackId ?? undefined,
-                };
-                const solverConfig: AdaptiveSolverConfig = {
-                    maxSolvingTime: 30,
-                    complexityThresholds: { simple: 50, medium: 500 },
-                };
-                const solver = new AdaptiveSolver(solverConfig);
-                optimizationResult = await solver.solve(job, profiles);
-            } else {
-                optimizationResult = {
-                    materialUsage: 0,
-                    wastePercentage: 0,
-                    estimatedProductionTime: 0,
-                    cuttingPlan: [],
-                    nestingEfficiency: 0,
-                    costBreakdown: {
-                        materialCost: 0,
-                        laborCost: 0,
-                        hardwareCost: 0,
-                        glazingCost: 0,
-                        totalCost: 0,
-                    },
-                };
-            }
-
-            setOptimizationResult(optimizationResult);
+            if (!components.length) throw new Error('No manufacturing components are available.');
+            const job: CuttingJob = { components, profiles, defaultStockLength: 6000, systemPackId: currentProject.systemPackId ?? undefined };
+            const solverConfig: AdaptiveSolverConfig = { maxSolvingTime: 30, complexityThresholds: { simple: 50, medium: 500 } };
+            const optimizationResult: OptimizationResult = await new AdaptiveSolver(solverConfig).solve(job, profiles);
+            if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
+            const resultValidation = validateOptimizationResult(optimizationResult);
+            if (!resultValidation.valid) throw new Error(resultValidation.errors[0]?.message ?? 'Optimization result is invalid.');
 
             if (systemPack && currentProject.grid) {
                 try {
@@ -116,6 +112,7 @@ export const OptimizationPage: React.FC = () => {
                         const bomGenerator = new PresetAwareBOMGenerator();
                         const bom = await bomGenerator.generateCompleteBOM(currentProject, pattern, systemPack)
                             .catch(() => null);
+                        if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
                         if (bom) setBOM(bom);
                     }
                 } catch {
@@ -123,31 +120,30 @@ export const OptimizationPage: React.FC = () => {
                 }
             }
 
-            completeStep('optimization');
+            if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
+            setOptimizationResult(optimizationResult);
+            if (!completeStep('optimization')) throw new Error('Optimization evidence could not be verified.');
 
             const projId = projectId ?? currentProject.id;
             const posId = poseId ?? projId;
             setTimeout(() => {
-                navigate(fabricatorRoutes.poseCommercial(projId, posId));
+                if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
+                void navigate(fabricatorRoutes.poseCommercial(projId, posId));
             }, 100);
         } catch (err) {
+            if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current) return;
             console.error('[OptimizationPage] Optimization failed:', err);
-            setOptimizationResult({
-                materialUsage: 0,
-                wastePercentage: 0,
-                estimatedProductionTime: 0,
-                cuttingPlan: [],
-                nestingEfficiency: 0,
-                costBreakdown: { materialCost: 0, laborCost: 0, hardwareCost: 0, glazingCost: 0, totalCost: 0 },
-            });
-            completeStep('optimization');
-            const projId = projectId ?? currentProject.id;
-            const posId = poseId ?? projId;
-            setTimeout(() => navigate(fabricatorRoutes.poseCommercial(projId, posId)), 100);
+            invalidateStep('optimization');
+            setOptimizationError(err instanceof Error ? err.message : 'Optimization failed. Review the design and retry.');
         } finally {
-            setIsOptimizing(false);
+            if (runId === activeRunRef.current) {
+                submissionLockedRef.current = false;
+                if (mountedRef.current) setIsOptimizing(false);
+            }
         }
-    }, [currentProject, profiles, projectId, poseId, systemPack, completeStep, setOptimizationResult, setBOM, navigate]);
+    }, [currentProject, profiles, projectId, poseId, systemPack, completeStep, setOptimizationResult, setBOM, navigate, invalidateStep, projectIdentity]);
+
+    const validOptimization = validateOptimizationResult(optimizationResult).valid;
 
     const LoadingFallback = (
         <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
@@ -175,9 +171,9 @@ export const OptimizationPage: React.FC = () => {
                             const projId = projectId ?? currentProject?.id;
                             const posId = poseId ?? projId;
                             if (projId && posId) {
-                                navigate(fabricatorRoutes.poseDesign(projId, posId));
+                                void navigate(fabricatorRoutes.poseDesign(projId, posId));
                             } else {
-                                navigate(fabricatorRoutes.studioProjects());
+                                void navigate(fabricatorRoutes.studioProjects());
                             }
                         }}
                         backLabel="Go to Design"
@@ -202,16 +198,21 @@ export const OptimizationPage: React.FC = () => {
                             <span>Running cutting optimization...</span>
                         </div>
                     )}
+                    {optimizationError && (
+                        <div role="alert" className="mx-4 mb-4 rounded border border-red-500/40 bg-red-950/40 p-3 text-sm text-red-200">
+                            {optimizationError} Retry optimization after correcting the input.
+                        </div>
+                    )}
                 </OptimizationCockpit>
 
-                {optimizationResult && projectId && poseId && (
+                {validOptimization && projectId && poseId && (
                     <div className="p-2 flex justify-end">
                         <button
                             type="button"
                             onClick={() => {
-                                completeStep('optimization');
-                                navigate(fabricatorRoutes.poseCommercial(projectId, poseId));
+                                if (completeStep('optimization')) void navigate(fabricatorRoutes.poseCommercial(projectId, poseId));
                             }}
+                            disabled={isOptimizing}
                             className="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white text-sm rounded"
                         >
                             Continue to Quote

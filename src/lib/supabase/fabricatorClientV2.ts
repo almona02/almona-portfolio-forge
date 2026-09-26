@@ -44,6 +44,14 @@ export interface FabricatorPositionV2 {
   updated_at: string;
 }
 
+export interface AuthoritativePositionIdentity {
+  ownerUserId: string;
+  projectId: string;
+  positionId: string;
+  source: 'v2';
+  revision: number;
+}
+
 /** Map v2 position row to WindowUnit for UI (exported for use in hooks/components).
  * AICS-001: sizes come from stored millimetre columns, not inferred values.
  * `window_unit` JSON is optional overlay — missing blob must not hide a pose.
@@ -55,16 +63,16 @@ export function mapPositionRowToWindowUnit(row: PositionV2Row): WindowUnit | nul
   const hardwareRaw = wu.hardware ?? row.hardware;
   return {
     id: row.id,
-    orderNumber: (wu.orderNumber as string) ?? row.order_number ?? '',
-    posNumber: (wu.posNumber as string) ?? row.pos_number ?? '',
-    type: (wu.type as string) ?? row.type ?? 'window',
+    orderNumber: row.order_number ?? (wu.orderNumber as string) ?? '',
+    posNumber: row.pos_number ?? (wu.posNumber as string) ?? '',
+    type: row.type ?? (wu.type as string) ?? 'window',
     components: Array.isArray(components) ? components : [],
-    overallWidth: Number(wu.overallWidth ?? row.overall_width_mm ?? 0) || 0,
-    overallHeight: Number(wu.overallHeight ?? row.overall_height_mm ?? 0) || 0,
-    color: (wu.color as string) ?? row.color ?? '',
-    glazing: (wu.glazing as WindowUnit['glazing']) ?? row.glazing ?? {},
+    overallWidth: Number(row.overall_width_mm),
+    overallHeight: Number(row.overall_height_mm),
+    color: row.color ?? (wu.color as string) ?? '',
+    glazing: (row.glazing ?? wu.glazing ?? {}) as WindowUnit['glazing'],
     hardware: (Array.isArray(hardwareRaw) ? hardwareRaw : []) as WindowUnit['hardware'],
-    status: (wu.status as WindowUnit['status']) ?? row.status ?? 'measuring',
+    status: row.status as WindowUnit['status'],
     optimization: (row.optimization ?? wu.optimization) as WindowUnit['optimization'],
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
@@ -74,6 +82,11 @@ export function mapPositionRowToWindowUnit(row: PositionV2Row): WindowUnit | nul
     quantity: row.quantity ?? 1,
     systemPackId: (row.system_pack_id ?? wu.systemPackId) as string | undefined,
     projectId: (row.project_id ?? wu.projectId) ?? undefined,
+    grid: (row.grid ?? wu.grid) as WindowUnit['grid'],
+    presetId: (row.selected_preset ?? wu.presetId) as string | undefined,
+    measurementMode: wu.measurementMode as WindowUnit['measurementMode'],
+    manufacturingWidth: row.overall_width_mm ?? undefined,
+    manufacturingHeight: row.overall_height_mm ?? undefined,
   } as WindowUnit;
 }
 
@@ -244,6 +257,18 @@ export const fabricatorClientV2 = {
     if (error) throw error;
     if (!data) return null;
     return mapPositionRowToWindowUnit(data as PositionV2Row);
+  },
+
+  async getAuthoritativePosition(projectId: string, positionId: string, ownerUserId: string): Promise<{ identity: AuthoritativePositionIdentity; position: WindowUnit }> {
+    if (!isUuid(projectId) || !isUuid(positionId)) throw new Error('Authoritative project and position IDs are required.');
+    const { data, error } = await supabase.from('fabricator_positions_v2').select('*')
+      .eq('id', positionId).eq('project_id', projectId).eq('owner_user_id', ownerUserId).maybeSingle();
+    if (error) throw new Error(persistenceErrorMessage(error));
+    if (!data) throw new Error('Position was not found for this owner and project.');
+    const position = mapPositionRowToWindowUnit(data as PositionV2Row);
+    if (!position || !Number.isFinite(position.overallWidth) || position.overallWidth <= 0 || !Number.isFinite(position.overallHeight) || position.overallHeight <= 0 || !Number.isInteger(data.qc_revision) || data.qc_revision < 1) throw new Error('Authoritative position dimensions, source, or revision are unavailable.');
+    if (position.id !== positionId || position.projectId !== projectId || data.owner_user_id !== ownerUserId) throw new Error('Authoritative position identity does not match the requested route.');
+    return { identity: { ownerUserId, projectId, positionId, source: 'v2', revision: data.qc_revision }, position };
   },
 
   /** Atomic save: upsert project + position from WindowUnit; returns saved pose id. */

@@ -8,18 +8,16 @@
  * - Manages profile data from context or props
  */
 
-import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { usePose as usePoseV2, useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
+import { useProjectPositions } from '@/hooks/useFabricatorQueries';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
-import { isFabricatorUuid, persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
+import { isFabricatorUuid } from '@/lib/supabase/fabricatorClientV2';
 import { useJobsStore } from '@/store/jobsStore';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
 import { DesignWorkspaceShell } from './shell/DesignWorkspaceShell';
 import { EngineeringBay } from './EngineeringBay';
 
@@ -36,29 +34,24 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
   const useV2 = FeatureFlags.FABRICATOR_READ_V2;
   const { state, dispatch } = useFabricatorWorkspace();
   const { jobs, setSelectedJob } = useJobsStore();
-  const upsertPose = useUpsertPose();
-  const { user } = useAuth();
-  const { setCurrentProject, setDesignData, completeStep } = useWorkflowStore();
-  const effectivePoseId = poseId ?? projectId;
-  const { data: poseV2, isLoading: loadingPoseV2 } = usePoseV2(effectivePoseId ?? undefined);
+  const { currentProject: authoritativeProject, setCurrentProject, setDesignData, completeStep } = useWorkflowStore();
+  const effectivePoseId = useV2 ? poseId : (poseId ?? projectId);
 
   // Pose-centric: when v2 and route has poseId, load from usePose(poseId); else jobs + context
   const currentProject = useMemo<WindowUnit | null>(() => {
-    if (useV2 && effectivePoseId && poseV2) return poseV2;
+    if (useV2) return authoritativeProject?.id === effectivePoseId ? authoritativeProject : null;
     if (effectivePoseId) {
       const foundJob = jobs.find((job) => job.id === effectivePoseId);
       if (foundJob) return foundJob;
     }
     return state.currentProject;
-  }, [useV2, effectivePoseId, poseV2, jobs, state.currentProject]);
+  }, [useV2, effectivePoseId, authoritativeProject, jobs, state.currentProject]);
 
   useEffect(() => {
     if (effectivePoseId) {
-      if (useV2 && poseV2) {
-        dispatch({ type: 'SET_CURRENT_PROJECT', payload: poseV2 });
+      if (useV2 && currentProject) {
+        dispatch({ type: 'SET_CURRENT_PROJECT', payload: currentProject });
         setSelectedJob(effectivePoseId);
-        setCurrentProject(poseV2);
-        setDesignData(poseV2);
       } else {
         const foundJob = jobs.find((job) => job.id === effectivePoseId);
         if (foundJob) {
@@ -69,7 +62,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
         }
       }
     }
-  }, [useV2, effectivePoseId, poseV2, jobs, dispatch, setSelectedJob, setCurrentProject, setDesignData]);
+  }, [useV2, effectivePoseId, currentProject, jobs, dispatch, setSelectedJob, setCurrentProject, setDesignData]);
 
   // Get profiles from project or use empty array
   // Note: WindowUnit doesn't have a profiles property - profiles come from context or props
@@ -141,51 +134,8 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     }
   }, [useV2, resolvedProjectId, jobs, navigate, dispatch, setSelectedJob]);
 
-  const handleAddNewPose = useCallback(async () => {
-    if (!currentProject || !useV2 || !resolvedProjectId || !user?.id) return;
-    try {
-      const savedCurrent = await upsertPose.mutateAsync({ windowUnit: currentProject });
-      const nextPosNum = String(
-        (allSiblingPositions.reduce((max, p) => {
-          const n = Number(p.posNumber);
-          return Number.isFinite(n) ? Math.max(max, n) : max;
-        }, 0) || allSiblingPositions.length) + 1,
-      );
-      const newUnit: WindowUnit = {
-        ...currentProject,
-        id: crypto.randomUUID(),
-        projectId: savedCurrent.projectId,
-        orderNumber: currentProject.orderNumber ?? currentProject.projectCode ?? '1',
-        projectCode: currentProject.projectCode ?? currentProject.orderNumber,
-        posNumber: nextPosNum,
-        status: 'measuring',
-        quantity: 1,
-        overallWidth: 1200,
-        overallHeight: 1400,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        components: [],
-        grid: { rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }] },
-        glazing: currentProject.glazing ?? {},
-        hardware: [],
-      } as WindowUnit;
-      const result = await upsertPose.mutateAsync({ windowUnit: newUnit });
-      toast.success(`Pose ${currentProject.posNumber} saved. Measuring pose ${nextPosNum}.`);
-      navigate(fabricatorRoutes.poseMeasuring(result.projectId, result.poseId));
-    } catch (err) {
-      toast.error(`Failed to add pose: ${persistenceErrorMessage(err)}`);
-    }
-  }, [currentProject, useV2, resolvedProjectId, user?.id, allSiblingPositions, upsertPose, navigate]);
-
-  if (useV2 && effectivePoseId && loadingPoseV2) {
-    return (
-      <div className="h-full w-full flex items-center justify-center bg-[#0a0a0a]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-500" />
-          <span className="text-amber-500 font-mono text-sm">Loading pose...</span>
-        </div>
-      </div>
-    );
+  if (useV2 && (!projectId || !effectivePoseId || !currentProject)) {
+    return <div role="alert" className="h-full w-full bg-[#0a0a0a] p-8 text-red-300">Authoritative project and position data is unavailable.</div>;
   }
 
   return (
@@ -194,7 +144,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
         positions={relatedPositions}
         project={currentProject}
         onSelectPosition={handleSelectPosition}
-        onAddPosition={useV2 && resolvedProjectId && user?.id ? handleAddNewPose : undefined}
+        onAddPosition={undefined}
       >
         <EngineeringBay
           project={currentProject}
@@ -203,7 +153,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
           relatedPositions={relatedPositions}
           onSelectPosition={handleSelectPosition}
           onBackToMeasuring={handleBackToMeasuring}
-          onAddNewPose={useV2 && resolvedProjectId && user?.id ? handleAddNewPose : undefined}
+          onAddNewPose={undefined}
         />
       </DesignWorkspaceShell>
     </div>

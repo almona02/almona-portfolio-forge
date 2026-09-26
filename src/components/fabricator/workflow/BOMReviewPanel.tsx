@@ -4,7 +4,7 @@ import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { useWorkflowStore } from '@/store/workflowStore';
+import { useWorkflowStore, workflowIdentityMatches } from '@/store/workflowStore';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import {
@@ -23,7 +23,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 export const BOMReviewPanel: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
-  const { currentProject, bom, setBOM, completeStep } = useWorkflowStore();
+  const { currentProject, workflowIdentity, bom, setBOM, completeStep } = useWorkflowStore();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,11 +41,15 @@ export const BOMReviewPanel: React.FC = () => {
 
   const generateBOM = useCallback(async () => {
     if (!currentProject || !systemPack || !pattern) return;
+    const generationProject = currentProject;
+    const generationIdentity = workflowIdentity;
     setIsGenerating(true);
     setError(null);
     try {
       const generator = new PresetAwareBOMGenerator();
       const result = await generator.generateCompleteBOM(currentProject, pattern, systemPack);
+      const latest = useWorkflowStore.getState();
+      if (!generationIdentity || latest.currentProject !== generationProject || !workflowIdentityMatches(latest.workflowIdentity, generationIdentity)) return;
       setBOM(result);
       completeStep('bom');
     } catch (err) {
@@ -53,13 +57,13 @@ export const BOMReviewPanel: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [currentProject, systemPack, pattern, setBOM, completeStep]);
+  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM, completeStep]);
 
   useEffect(() => {
     if (!bom && currentProject && systemPack && pattern) {
       void generateBOM();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [bom, currentProject, systemPack, pattern, generateBOM]);
 
   const handleContinue = () => {
     completeStep('bom');
@@ -69,7 +73,7 @@ export const BOMReviewPanel: React.FC = () => {
     navigate(`${base}/optimization`);
   };
 
-  if (!currentProject) {
+  if (!projectId || !poseId || !currentProject) {
     return (
       <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
         <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">

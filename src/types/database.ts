@@ -1127,6 +1127,7 @@ export interface Database {
           optimization: Record<string, unknown> | null
           created_at: string
           updated_at: string
+          qc_revision: number
         }
         Insert: {
           id?: string
@@ -1144,6 +1145,7 @@ export interface Database {
           quantity?: number
           position_meta?: Record<string, unknown> | null
           optimization?: Record<string, unknown> | null
+          qc_revision?: number
         }
         Update: {
           project_id?: string
@@ -1160,6 +1162,7 @@ export interface Database {
           position_meta?: Record<string, unknown> | null
           optimization?: Record<string, unknown> | null
           updated_at?: string
+          qc_revision?: number
         }
       }
       fabricator_projects_v2: {
@@ -1249,6 +1252,7 @@ export interface Database {
           last_validated_at: string | null
           created_at: string
           updated_at: string
+          qc_revision: number
         }
         Insert: {
           id?: string
@@ -1277,6 +1281,7 @@ export interface Database {
           constitutional_hash?: string | null
           audit_trail?: unknown
           last_validated_at?: string | null
+          qc_revision?: number
         }
         Update: {
           project_id?: string | null
@@ -1304,6 +1309,7 @@ export interface Database {
           audit_trail?: unknown
           last_validated_at?: string | null
           updated_at?: string
+          qc_revision?: number
         }
       }
       fabricator_customers: {
@@ -1448,6 +1454,34 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
+      get_fabricator_qc_context: {
+        Args: { p_position_id: string }
+        Returns: {
+          project_id: string
+          position_id: string
+          position_source: 'v1' | 'v2'
+          revision: number
+          target_width_mm: number
+          target_height_mm: number
+          tolerance_mm: number
+        }[]
+      }
+      approve_fabricator_quality_control: {
+        Args: {
+          p_position_id: string
+          p_expected_revision: number
+          p_evidence: Record<string, unknown>
+          p_idempotency_key: string
+        }
+        Returns: {
+          approval_id: string
+          project_id: string
+          position_id: string
+          revision: number
+          inspector_id: string
+          approved_at: string
+        }[]
+      }
       search_products: {
         Args: {
           search_term: string

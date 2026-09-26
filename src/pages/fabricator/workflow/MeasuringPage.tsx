@@ -1,6 +1,6 @@
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useAuth } from '@/context/AuthContext';
-import { usePose, useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
+import { useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
 import { useWorkflowStore } from '@/store/workflowStore';
@@ -72,8 +72,7 @@ export const MeasuringPage: React.FC = () => {
     const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { setMeasurementData, completeStep, measurementData } = useWorkflowStore();
-    const { data: pose, isLoading: loadingPose } = usePose(poseId);
+    const { setMeasurementData, completeStep, currentProject: pose } = useWorkflowStore();
     const siblings = useProjectPositions(projectId);
     const upsertPose = useUpsertPose();
 
@@ -106,29 +105,9 @@ export const MeasuringPage: React.FC = () => {
         if (!projectId || !poseId || !user?.id) return;
         try {
             const posNumber = pose?.posNumber || String(siblings.length || 1);
-            const saved = await persistPose(data, poseId, posNumber);
-            const nextNum = String(Math.max(siblings.length, Number(posNumber) || siblings.length) + 1);
-            const nextId = crypto.randomUUID();
-            const nextUnit = unitFromMeasurement(
-                { ...(pose ?? {} as WindowUnit), components: [], overallWidth: 1200, overallHeight: 1400, id: nextId, posNumber: nextNum, status: 'measuring' },
-                {
-                    ...data,
-                    width: '1200',
-                    height: '1400',
-                    manufacturingWidth: 1200,
-                    manufacturingHeight: 1400,
-                    flatNumber: '',
-                    windowIndex: '',
-                    remarks: '',
-                },
-                saved.projectId,
-                nextId,
-                nextNum,
-            );
-            nextUnit.components = [];
-            const created = await upsertPose.mutateAsync({ windowUnit: nextUnit });
-            toast.success(`Pose ${posNumber} saved. Measuring pose ${nextNum}.`);
-            navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
+            await persistPose(data, poseId, posNumber);
+            toast.success(`Pose ${posNumber} saved. Create the next position from the project screen.`);
+            navigate(fabricatorRoutes.studioProjects());
         } catch (err) {
             toast.error(`Failed to add next pose: ${persistenceErrorMessage(err)}`);
         }
@@ -136,9 +115,9 @@ export const MeasuringPage: React.FC = () => {
 
     const initialData: MeasurementData | undefined = pose
         ? {
-            width: String(pose.overallWidth || measurementData?.width || 1200),
-            height: String(pose.overallHeight || measurementData?.height || 1400),
-            windowType: pose.type || measurementData?.windowType || 'sliding_window_2sash',
+            width: String(pose.overallWidth),
+            height: String(pose.overallHeight),
+            windowType: pose.type,
             color: pose.color,
             glazingType: 'type' in (pose.glazing ?? {}) ? (pose.glazing as { type?: string }).type : undefined,
             glassColor: 'color' in (pose.glazing ?? {}) ? (pose.glazing as { color?: string }).color : undefined,
@@ -152,7 +131,9 @@ export const MeasuringPage: React.FC = () => {
             grid: pose.grid,
             presetId: pose.presetId,
         }
-        : measurementData ?? undefined;
+        : undefined;
+
+    if (!projectId || !poseId) return <div role="alert" className="p-8 text-red-300">Authoritative project and position identifiers are required.</div>;
 
     return (
         <div className="flex flex-col h-full bg-slate-950">
@@ -174,21 +155,7 @@ export const MeasuringPage: React.FC = () => {
                     onSelect={(id) => {
                         if (projectId) navigate(fabricatorRoutes.poseMeasuring(projectId, id));
                     }}
-                    onAdd={user?.id ? () => {
-                        if (!pose) {
-                            toast.error('Save this pose before adding another.');
-                            return;
-                        }
-                        void handleSaveAndNext({
-                            width: String(pose.overallWidth || 1200),
-                            height: String(pose.overallHeight || 1400),
-                            windowType: pose.type || 'window',
-                            systemPackId: pose.systemPackId,
-                            measurementMode: 'manufacturing',
-                            manufacturingWidth: pose.overallWidth,
-                            manufacturingHeight: pose.overallHeight,
-                        });
-                    } : undefined}
+                    onAdd={undefined}
                 />
             </div>
             <Suspense fallback={
@@ -196,11 +163,6 @@ export const MeasuringPage: React.FC = () => {
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400" />
                 </div>
             }>
-                {loadingPose ? (
-                    <div className="flex items-center justify-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400" />
-                    </div>
-                ) : (
                 <SmartMeasuringInterface
                     key={poseId ?? 'new'}
                     onMeasurementComplete={handleMeasurementComplete}
@@ -209,7 +171,6 @@ export const MeasuringPage: React.FC = () => {
                     systemPackId={pose?.systemPackId}
                     poseLabel={`Pose ${pose?.posNumber || '1'}`}
                 />
-                )}
             </Suspense>
         </div>
     );

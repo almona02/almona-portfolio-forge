@@ -16,6 +16,7 @@ export type WorkflowStep =
   | 'design'
   | 'preview3d'
   | 'optimization'
+  | 'commercial'
   | 'inventory'
   | 'production'
   | 'quality-control';
@@ -48,11 +49,58 @@ export interface WorkflowState {
   optimizationResult: OptimizationResult | null;
 }
 
+const finitePositive = (value: number): boolean => Number.isFinite(value) && value > 0;
+const finiteNonNegative = (value: number): boolean => Number.isFinite(value) && value >= 0;
+
+export function validateOptimizationInputs(project: WindowUnit | null): WorkflowValidationResult {
+  const errors: ValidationIssue[] = [];
+  if (!project) {
+    errors.push({ type: 'error', code: 'MISSING_PROJECT', message: 'Design data is required before optimization.', step: 'design' });
+  } else if (!project.components?.length) {
+    errors.push({ type: 'error', code: 'INVALID_DESIGN', message: 'Design must have at least one component.', step: 'design' });
+  } else {
+    project.components.forEach((component, index) => {
+      if (!component.profile?.id) errors.push({ type: 'error', code: 'UNRESOLVED_PROFILE', message: `Component ${index + 1} has no resolved profile.`, step: 'design' });
+      if (!finitePositive(component.quantity) || !component.cuttingLengths?.length || component.cuttingLengths.some(length => !finitePositive(length))) {
+        errors.push({ type: 'error', code: 'INVALID_COMPONENT_VALUES', message: `Component ${index + 1} has invalid manufacturing values.`, step: 'design' });
+      }
+    });
+  }
+  return { valid: errors.length === 0, errors, warnings: [] };
+}
+
+export function validateOptimizationResult(result: OptimizationResult | null): WorkflowValidationResult {
+  const errors: ValidationIssue[] = [];
+  if (!result) {
+    errors.push({ type: 'error', code: 'MISSING_OPTIMIZATION', message: 'Optimization must complete before continuing.', step: 'optimization' });
+    return { valid: false, errors, warnings: [] };
+  }
+  const metrics = [result.materialUsage, result.wastePercentage, result.estimatedProductionTime, result.nestingEfficiency,
+    result.costBreakdown?.materialCost, result.costBreakdown?.laborCost, result.costBreakdown?.hardwareCost,
+    result.costBreakdown?.glazingCost, result.costBreakdown?.totalCost];
+  if (metrics.some(value => typeof value !== 'number' || !finiteNonNegative(value))) {
+    errors.push({ type: 'error', code: 'NON_FINITE_OPTIMIZATION', message: 'Optimization contains invalid manufacturing values.', step: 'optimization' });
+  }
+  if (!result.cuttingPlan?.length) {
+    errors.push({ type: 'error', code: 'EMPTY_CUTTING_PLAN', message: 'Optimization produced no cutting plan.', step: 'optimization' });
+  } else {
+    result.cuttingPlan.forEach((plan, index) => {
+      if (!plan.profile?.id || !finitePositive(plan.stockLength) || !finiteNonNegative(plan.totalWaste) || !finiteNonNegative(plan.utilization) || !plan.cuts?.length) {
+        errors.push({ type: 'error', code: 'INVALID_CUTTING_PLAN', message: `Cutting plan ${index + 1} is incomplete.`, step: 'optimization' });
+      } else if (plan.cuts.some(cut => !finitePositive(cut.length) || !Number.isFinite(cut.angle) || !finiteNonNegative(cut.waste) || !cut.componentId)) {
+        errors.push({ type: 'error', code: 'INVALID_CUT', message: `Cutting plan ${index + 1} contains an invalid cut.`, step: 'optimization' });
+      }
+    });
+  }
+  return { valid: errors.length === 0, errors, warnings: [] };
+}
+
 const STEP_ORDER: WorkflowStep[] = [
   'measuring',
   'design',
   'preview3d',
   'optimization',
+  'commercial',
   'inventory',
   'production',
   'quality-control',
@@ -71,7 +119,7 @@ export function validateStepTransition(
 
   const targetIndex = STEP_ORDER.indexOf(targetStep);
   if (targetIndex < 0) {
-    return { valid: true, errors: [], warnings: [] };
+    return { valid: false, errors: [{ type: 'error', code: 'UNKNOWN_STEP', message: 'Unknown workflow step.' }], warnings: [] };
   }
 
   // Measuring → Design: need measurementData with width/height
@@ -109,53 +157,20 @@ export function validateStepTransition(
 
   // Design → Optimization: need currentProject with components
   if (targetStep === 'optimization') {
-    if (!state.currentProject) {
+    errors.push(...validateOptimizationInputs(state.currentProject).errors);
+    if (state.currentProject && !state.currentProject.systemPackId) {
       errors.push({
         type: 'error',
-        code: 'MISSING_PROJECT',
-        message: 'Design data is required before optimization.',
+        code: 'NO_SYSTEM_PACK',
+        message: 'A system pack is required to resolve manufacturing profiles.',
         step: 'design',
       });
-    } else {
-      const comps = state.currentProject.components;
-
-      if (!comps || comps.length === 0) {
-        errors.push({
-          type: 'error',
-          code: 'INVALID_DESIGN',
-          message: 'Design must have at least one component.',
-          step: 'design',
-        });
-      }
-
-      if (!state.currentProject.systemPackId) {
-        warnings.push({
-          type: 'warning',
-          code: 'NO_SYSTEM_PACK',
-          message: 'No system pack selected. BOM may be incomplete.',
-          step: 'design',
-        });
-      }
     }
   }
 
   // Optimization → Commercial: need optimizationResult (BOM optional but recommended)
   if (targetStep === 'commercial' || targetStep === 'production') {
-    if (!state.optimizationResult) {
-      errors.push({
-        type: 'error',
-        code: 'MISSING_OPTIMIZATION',
-        message: 'Optimization must be completed before commercial.',
-        step: 'optimization',
-      });
-    } else if (!state.optimizationResult.cuttingPlan?.length) {
-      errors.push({
-        type: 'error',
-        code: 'EMPTY_CUTTING_PLAN',
-        message: 'Optimization produced no cutting plan.',
-        step: 'optimization',
-      });
-    }
+    errors.push(...validateOptimizationResult(state.optimizationResult).errors);
 
     if (targetStep === 'production' && !state.bom) {
       warnings.push({
@@ -169,14 +184,7 @@ export function validateStepTransition(
 
   // Production → Quality Control: optimization already validated above
   if (targetStep === 'quality-control') {
-    if (!state.optimizationResult) {
-      errors.push({
-        type: 'error',
-        code: 'MISSING_OPTIMIZATION',
-        message: 'Optimization is required before production.',
-        step: 'optimization',
-      });
-    }
+    errors.push(...validateOptimizationResult(state.optimizationResult).errors);
   }
 
   return {
@@ -289,9 +297,7 @@ export class WorkflowValidator {
       if (optimization.wastePercentage > 30) {
         issues.push({ code: 'O002', severity: 'warning', message: `Waste is ${optimization.wastePercentage.toFixed(1)}% — consider adjusting stock lengths or batching` });
       }
-      if (!optimization.cuttingPlan || optimization.cuttingPlan.length === 0) {
-        issues.push({ code: 'O003', severity: 'warning', message: 'Cutting plan is empty — production documents will have no data' });
-      }
+      issues.push(...validateOptimizationResult(optimization).errors.map(issue => ({ ...issue, severity: 'error' as const })));
     }
 
     const errors = issues.filter((i) => i.severity === 'error');
@@ -311,6 +317,8 @@ export class WorkflowValidator {
     }
     if (!optimization) {
       issues.push({ code: 'P002', severity: 'error', message: 'Optimization result is required for production' });
+    } else {
+      issues.push(...validateOptimizationResult(optimization).errors.map(issue => ({ ...issue, severity: 'error' as const })));
     }
 
     const errors = issues.filter((i) => i.severity === 'error');

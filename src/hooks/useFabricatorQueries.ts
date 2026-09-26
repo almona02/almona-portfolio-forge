@@ -7,7 +7,8 @@ import { useAuth } from '@/context/AuthContext';
 import { fabricatorClientV2, mapPositionRowToWindowUnit } from '@/lib/supabase/fabricatorClientV2';
 import type { WindowUnit } from '@/types/fabricator';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo } from 'react';
+import { useWorkflowStore, workflowIdentityMatches, type WorkflowIdentity } from '@/store/workflowStore';
 
 const FABRICATOR_KEY = ['fabricator', 'v2'] as const;
 
@@ -55,8 +56,6 @@ export function usePositions(projectId: string | undefined | null) {
     enabled: !!user?.id,
     staleTime: STALE_TIME,
     gcTime: GC_TIME,
-    // Keep previous data visible while refetching (prevents flash of empty state)
-    placeholderData: (prev: unknown) => prev,
   });
 }
 
@@ -68,13 +67,51 @@ export function usePose(poseId: string | undefined) {
     enabled: !!user?.id && !!poseId,
     staleTime: STALE_TIME,
     gcTime: GC_TIME,
-    placeholderData: (prev: unknown) => prev,
   });
+}
+
+export function useAuthoritativePosition(projectId: string | undefined, positionId: string | undefined) {
+  const { user } = useAuth();
+  const hydrate = useWorkflowStore(state => state.hydrateAuthoritativePosition);
+  const workflowIdentity = useWorkflowStore(state => state.workflowIdentity);
+  const currentProject = useWorkflowStore(state => state.currentProject);
+  const clearWorkflow = useWorkflowStore(state => state.clearWorkflow);
+  useLayoutEffect(() => {
+    if (!workflowIdentity) return;
+    if (!user?.id || workflowIdentity.ownerUserId !== user.id || workflowIdentity.projectId !== projectId || workflowIdentity.positionId !== positionId) clearWorkflow();
+  }, [clearWorkflow, positionId, projectId, user?.id, workflowIdentity]);
+  const query = useQuery({
+    queryKey: [...FABRICATOR_KEY, 'authoritative-position', user?.id ?? '', projectId ?? '', positionId ?? '', 'v2'],
+    queryFn: () => fabricatorClientV2.getAuthoritativePosition(projectId!, positionId!, user!.id),
+    enabled: Boolean(user?.id && projectId && positionId),
+    staleTime: 0,
+    gcTime: GC_TIME,
+  });
+  useLayoutEffect(() => {
+    if (!query.data) return;
+    const identity: WorkflowIdentity = {
+      ownerUserId: query.data.identity.ownerUserId,
+      projectId: query.data.identity.projectId,
+      positionId: query.data.identity.positionId,
+      source: query.data.identity.source,
+      revision: query.data.identity.revision,
+    };
+    hydrate(identity, query.data.position);
+  }, [hydrate, query.data]);
+  const expectedIdentity = query.data?.identity ?? null;
+  const isHydrated = Boolean(
+    expectedIdentity &&
+    workflowIdentityMatches(workflowIdentity, expectedIdentity) &&
+    currentProject?.id === expectedIdentity.positionId &&
+    (currentProject as (WindowUnit & { projectId?: string }) | null)?.projectId === expectedIdentity.projectId,
+  );
+  return { ...query, isHydrated };
 }
 
 export function useUpsertPose() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const markWorkflowDraftSaved = useWorkflowStore(state => state.markWorkflowDraftSaved);
 
   return useMutation({
     mutationFn: async (payload: {
@@ -90,11 +127,13 @@ export function useUpsertPose() {
       );
     },
     onSuccess: (_data, variables) => {
+      markWorkflowDraftSaved();
       void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'projects'] });
       void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'positions'] });
       void queryClient.invalidateQueries({
         queryKey: [...FABRICATOR_KEY, 'pose', variables.windowUnit.id],
       });
+      void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'authoritative-position'] });
     },
   });
 }
