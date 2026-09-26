@@ -231,15 +231,17 @@ export function useModeSwitch(options: UseModeSwitchOptions): UseModeSwitchRetur
       isSwitching.current = true;
       
       // Preserve current mode state (§9.3.I)
-      await positionStateSync.preserveBeforeModeSwitch(
+      const preservation = positionStateSync.preserveBeforeModeSwitch(
         poseId,
         currentMode,
         newMode,
         currentState
       );
       
-      // Notify parent to switch mode
+      // The snapshot is captured above. Do not hold the UI transition behind
+      // IndexedDB/audit persistence, which can remain pending in browsers.
       onModeChanged?.(newMode);
+      await preservation;
       
     } catch (error) {
       console.error('[useModeSwitch] Mode switch failed:', error);
