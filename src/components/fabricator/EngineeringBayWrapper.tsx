@@ -31,7 +31,9 @@ interface EngineeringBayWrapperProps {
 export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
-  const useV2 = FeatureFlags.FABRICATOR_READ_V2;
+  // Owner/project/position routes are authoritative by contract. The rollout
+  // flag applies only to legacy routes that do not carry the full identity.
+  const useV2 = Boolean(projectId && poseId) || FeatureFlags.FABRICATOR_READ_V2;
   const { state, dispatch } = useFabricatorWorkspace();
   const { jobs, setSelectedJob } = useJobsStore();
   const { currentProject: authoritativeProject, setCurrentProject, setDesignData, completeStep } = useWorkflowStore();
