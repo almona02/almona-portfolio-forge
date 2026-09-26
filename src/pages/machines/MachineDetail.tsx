@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { useState, useEffect } from "react";
 import { ReviewForm } from "@/components/shop/ReviewForm";
 import { ReviewList } from "@/components/shop/ReviewList";
@@ -35,6 +36,7 @@ interface ViewReview {
 }
 
 const MachineDetail: React.FC = () => {
+  const copy = usePublicCopy();
   const { machineId } = useParams<{ machineId: string }>();
   const [show3DModel, setShow3DModel] = useState(false);
   const [reviews, setReviews] = useState<ViewReview[]>([]);
@@ -78,31 +80,29 @@ const MachineDetail: React.FC = () => {
   if (!machine) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <h1 className="typography-h1 mb-4">Machine Not Found</h1>
-        <p className="mb-4">The machine you are looking for does not exist.</p>
-        <Link to="/products/machines" className="text-blue-600 underline">
-          Back to Machines
-        </Link>
+        <h1 className="typography-h1 mb-4">{copy("Machine Not Found")}</h1>
+        <p className="mb-4">{copy("The machine you are looking for does not exist.")}</p>
+        <Link to="/products/machines" className="text-blue-600 underline">{copy("Back to Machines")}</Link>
       </div>
     );
   }
 
   // Show 3D model button for FR-223 machine and its variants
-  const isFR223 = machine.id === "ym-028" || 
-                  machine.id === "ym-029" || 
-                  machine.id === "ym-030" || 
+  const isFR223 = machine.id === "ym-028" ||
+                  machine.id === "ym-029" ||
+                  machine.id === "ym-030" ||
                   machine.name.toLowerCase().includes("fr 223") ||
                   machine.name.toLowerCase().includes("fr223");
 
   // Check if this is FR222 (has 3D model)
-  const isFR222 = machine.id === "ym-030" || 
+  const isFR222 = machine.id === "ym-030" ||
                    machine.name.toLowerCase().includes("fr 222") ||
                    machine.name.toLowerCase().includes("fr222");
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="typography-h1 mb-4">{machine.name}</h1>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div>
           <img
@@ -111,20 +111,18 @@ const MachineDetail: React.FC = () => {
             className="w-full max-h-96 object-contain rounded-lg shadow-lg"
             loading="lazy"
           />
-          
+
           {isFR223 && (
             <div className="mt-4">
               <Button
                 onClick={() => setShow3DModel(true)}
                 className="w-full flex items-center justify-center gap-2"
               >
-                <Eye className="w-5 h-5" />
-                View 3D Model
-              </Button>
+                <Eye className="w-5 h-5" />{copy("View 3D Model")}</Button>
             </div>
           )}
         </div>
-        
+
         <div>
           {machine.youtubeUrl && (
             <div className="mb-6 aspect-video w-full">
@@ -140,23 +138,23 @@ const MachineDetail: React.FC = () => {
         </div>
       </div>
 
-      <p className="mb-6 text-lg">{machine.description}</p>
+      <p className="mb-6 text-lg">{copy(machine.description)}</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="typography-h3 text-lg mb-2">Technical Details</h3>
+          <h3 className="typography-h3 text-lg mb-2">{copy("Technical Details")}</h3>
           <div className="space-y-2">
-            <div><strong>Type:</strong> {machine.type}</div>
-            <div><strong>Power:</strong> {machine.powerSpec.consumption} ({machine.powerSpec.voltage})</div>
-            <div><strong>Dimensions:</strong> {`${machine.dimensions.length} × ${machine.dimensions.width} × ${machine.dimensions.height}`}</div>
+            <div><strong>{copy("Type:")}</strong> {copy(machine.type)}</div>
+            <div><strong>{copy("Power:")}</strong> {machine.powerSpec.consumption} ({machine.powerSpec.voltage})</div>
+            <div><strong>{copy("Dimensions:")}</strong> {`${machine.dimensions.length} × ${machine.dimensions.width} × ${machine.dimensions.height}`}</div>
           </div>
         </div>
-        
+
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="typography-h3 text-lg mb-2">Specifications</h3>
+          <h3 className="typography-h3 text-lg mb-2">{copy("Specifications")}</h3>
           <ul className="list-disc list-inside space-y-1">
             {machine.specifications.map((spec, index) => (
-              <li key={index}>{spec}</li>
+              <li key={index}>{copy(spec)}</li>
             ))}
           </ul>
         </div>
@@ -165,22 +163,18 @@ const MachineDetail: React.FC = () => {
       {machine.specPdf && (
         <div className="mb-6">
           <Button asChild>
-            <a 
-              href={machine.specPdf} 
+            <a
+              href={machine.specPdf}
               download
               className="flex items-center gap-2"
             >
-              <Download size={16} />
-              Download Technical Specifications (PDF)
-            </a>
+              <Download size={16} />{copy("Download Technical Specifications (PDF)")}</a>
           </Button>
         </div>
       )}
 
       <div className="flex gap-4">
-        <Link to="/products/machines" className="text-blue-600 underline">
-          Back to Machines
-        </Link>
+        <Link to="/products/machines" className="text-blue-600 underline">{copy("Back to Machines")}</Link>
       </div>
 
       {/* SwiftXR Iframe for FR222 */}
@@ -189,13 +183,11 @@ const MachineDetail: React.FC = () => {
           <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
-                <Eye className="w-5 h-5 text-amber-500" />
-                SwiftXR Interactive Experience
-              </CardTitle>
+                <Eye className="w-5 h-5 text-amber-500" />{copy("SwiftXR Interactive Experience")}</CardTitle>
             </CardHeader>
             <CardContent>
               <SwiftXRIframe
-                title="Almona"
+                title={copy("Almona")}
                 projectUrl="https://almona.swiftxr.site/almona"
                 height="480px"
               />

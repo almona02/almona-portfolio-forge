@@ -13,7 +13,7 @@
  * 6. Error handling for invalid data
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { YilmazExportPipeline, type ExportPipelineConfig } from '@/services/export/YilmazExportPipeline';
 import { YilmazFileFormats } from '@/services/export/YilmazFileFormats';
 import { MACHINE_SPECS, type YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
@@ -247,12 +247,17 @@ describe('YilmazExportPipeline', () => {
       expect(result.checksum).toMatch(/^[0-9A-F]{8}$/);
     });
 
-    it('should produce deterministic checksums', async () => {
-      const result1 = await pipeline.execute(project, optimization);
-      const result2 = await pipeline.execute(project, optimization);
-
-      // Same input → same checksum (deterministic)
-      expect(result1.checksum).toBe(result2.checksum);
+    it('should produce identical checksums for the same input and export time', async () => {
+      // Export headers contain the current time, which is part of the file bytes.
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date('2026-09-19T12:00:00Z'));
+      try {
+        const result1 = await pipeline.execute(project, optimization);
+        const result2 = await pipeline.execute(project, optimization);
+        expect(result1.checksum).toBe(result2.checksum);
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     it('should include constitutional metadata', async () => {
@@ -368,11 +373,11 @@ describe('YilmazFileFormats', () => {
       expect(bundle.manifest).not.toBeNull();
 
       expect(bundle.gcode!.filename).toContain('AIM-3410');
-      expect(bundle.gcode!.filename).toEndWith('.nc');
+      expect(bundle.gcode!.filename.endsWith('.nc')).toBe(true);
       expect(bundle.csv!.filename).toContain('cutlist');
-      expect(bundle.csv!.filename).toEndWith('.csv');
+      expect(bundle.csv!.filename.endsWith('.csv')).toBe(true);
       expect(bundle.manifest!.filename).toContain('manifest');
-      expect(bundle.manifest!.filename).toEndWith('.json');
+      expect(bundle.manifest!.filename.endsWith('.json')).toBe(true);
     });
 
     it('should handle null files gracefully', () => {

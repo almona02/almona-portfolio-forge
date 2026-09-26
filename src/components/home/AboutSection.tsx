@@ -30,24 +30,6 @@ const AboutSection = () => {
             <p className="text-muted-foreground dark:text-gray-300/90 sm:dark:text-gray-300 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm md:text-base leading-relaxed">
               {t('about.description_2')}
             </p>
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6 md:mb-8">
-              <div className="bg-gradient-to-br from-card/80 via-card/60 to-card/80 dark:from-slate-900/80 dark:via-slate-800/60 dark:to-slate-900/80 p-2.5 sm:p-3 md:p-4 rounded-lg border border-border/50 dark:border-slate-700/50 backdrop-blur-sm hover:border-amber-500/30 transition-colors">
-                <div className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-500 text-lg sm:text-xl md:text-2xl font-bold">30+</div>
-                <div className="text-muted-foreground dark:text-gray-400/90 sm:dark:text-gray-400 text-[10px] sm:text-xs md:text-sm">{t('about.stats.years_experience')}</div>
-              </div>
-              <div className="bg-gradient-to-br from-card/80 via-card/60 to-card/80 dark:from-slate-900/80 dark:via-slate-800/60 dark:to-slate-900/80 p-2.5 sm:p-3 md:p-4 rounded-lg border border-border/50 dark:border-slate-700/50 backdrop-blur-sm hover:border-amber-500/30 transition-colors">
-                <div className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-500 text-lg sm:text-xl md:text-2xl font-bold">1000+</div>
-                <div className="text-muted-foreground dark:text-gray-400/90 sm:dark:text-gray-400 text-[10px] sm:text-xs md:text-sm">{t('about.stats.projects_completed')}</div>
-              </div>
-              <div className="bg-gradient-to-br from-card/80 via-card/60 to-card/80 dark:from-slate-900/80 dark:via-slate-800/60 dark:to-slate-900/80 p-2.5 sm:p-3 md:p-4 rounded-lg border border-border/50 dark:border-slate-700/50 backdrop-blur-sm hover:border-amber-500/30 transition-colors">
-                <div className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-500 text-lg sm:text-xl md:text-2xl font-bold">500+</div>
-                <div className="text-muted-foreground dark:text-gray-400/90 sm:dark:text-gray-400 text-[10px] sm:text-xs md:text-sm">{t('about.stats.satisfied_clients')}</div>
-              </div>
-              <div className="bg-gradient-to-br from-card/80 via-card/60 to-card/80 dark:from-slate-900/80 dark:via-slate-800/60 dark:to-slate-900/80 p-2.5 sm:p-3 md:p-4 rounded-lg border border-border/50 dark:border-slate-700/50 backdrop-blur-sm hover:border-amber-500/30 transition-colors">
-                <div className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-500 text-lg sm:text-xl md:text-2xl font-bold">24/7</div>
-                <div className="text-muted-foreground dark:text-gray-400/90 sm:dark:text-gray-400 text-[10px] sm:text-xs md:text-sm">{t('about.stats.customer_support')}</div>
-              </div>
-            </div>
             <Button asChild className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white dark:text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transition-all duration-300">
               <Link to="/about" onClick={handleAboutClick} className="flex items-center gap-2">
                 {t('about.cta')}

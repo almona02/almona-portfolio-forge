@@ -1,3 +1,4 @@
+import { getServicePackages } from '@/data/servicePackages';
 import React from 'react';
 import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { useLanguage } from '@/context/LanguageContext';
@@ -46,57 +47,8 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
 }) => {
   const { t, language } = useLanguage();
 
-  const isArabic = language === 'ar';
-  const label = (en: string, ar: string) => (isArabic ? ar : en);
-  
   // Package data based on packageId
-  const packageData = {
-    basic: {
-      title: label('Starter Workshop Care', 'خدمة الورش المبتدئة'),
-      machines: label('1-3 machines · Cairo & Giza', '١-٣ ماكينات · القاهرة والجيزة'),
-      price: label('3,200 EGP / month', '٣٬٢٠٠ جم / شهر'),
-      features: [
-        label('Quarterly on-site health check (Cairo/Giza 48h)', 'زيارة فحص ربع سنوية (القاهرة/الجيزة خلال ٤٨ ساعة)'),
-        label('10% discount on core aluminium & UPVC spares', 'خصم ١٠٪ على قطع الغيار الأساسية للألومنيوم و UPVC'),
-        label('Phone/WhatsApp support in Arabic & English', 'دعم هاتف/واتساب بالعربية والإنجليزية'),
-        label('Calibration for common UPVC & aluminium cuts', 'معايرة للقصات الشائعة للألومنيوم و UPVC'),
-        label('Digital machine passport and service history', 'جواز صيانة رقمي وسجل زيارات')
-      ],
-      actionText: label('Start with Starter', 'ابدأ بالخدمة الأساسية'),
-      popular: false
-    },
-    professional: {
-      title: label('Growth Factory Care', 'خدمة المصانع النامية'),
-      machines: label('4-10 machines · Multi-line', '٤-١٠ ماكينات · خطوط متعددة'),
-      price: label('7,200 EGP / month', '٧٬٢٠٠ جم / شهر'),
-      features: [
-        label('Monthly on-site preventive maintenance (24h Cairo/Giza, 48h Delta)', 'صيانة وقائية شهرية (٢٤ ساعة القاهرة/الجيزة، ٤٨ ساعة الدلتا)'),
-        label('Priority spares with 20% discount & local stock check', 'أولوية في قطع الغيار مع خصم ٢٠٪ ومخزون محلي'),
-        label('Operator refresh training twice a year', 'تدريب تحديث للمشغلين مرتين سنوياً'),
-        label('Remote diagnostics & firmware updates', 'تشخيصات عن بعد وتحديثات للبرمجيات'),
-        label('Production tuning for aluminium & UPVC lines', 'ضبط الإنتاج لخطوط الألومنيوم و UPVC'),
-        label('Emergency hotline in Arabic/English', 'خط طوارئ بالعربية والإنجليزية')
-      ],
-      actionText: label('Choose Growth Care', 'اختر خدمة النمو'),
-      popular: true
-    },
-    enterprise: {
-      title: label('Enterprise Plant Care', 'خدمة المصانع الكبرى'),
-      machines: label('10+ machines · Multi-site Egypt', '١٠+ ماكينات · مواقع متعددة داخل مصر'),
-      price: label('14,500 EGP+ / month', '١٤٬٥٠٠ جم+ / شهر'),
-      features: [
-        label('4h emergency response Cairo/Giza, 8h nationwide', '٤ ساعات طوارئ القاهرة/الجيزة، ٨ ساعات لباقي المحافظات'),
-        label('Dedicated customer success engineer & quarterly QBR', 'مهندس مخصص ولقاء مراجعة ربع سنوي'),
-        label('Predictive maintenance with sensor insights', 'صيانة تنبؤية بتحليل الحساسات'),
-        label('30% discount on strategic spares & stocking plans', 'خصم ٣٠٪ على القطع الإستراتيجية وخطط التخزين'),
-        label('Unlimited operator trainings & safety refreshers', 'تدريبات غير محدودة للمشغلين وتحديثات السلامة'),
-        label('Line balancing & throughput optimization for aluminium/UPVC', 'موازنة الخطوط وتحسين الإنتاج للألومنيوم و UPVC'),
-        label('Compliance-ready reporting for exports and audits', 'تقارير جاهزة للتدقيق والتصدير')
-      ],
-      actionText: label('Talk to Enterprise', 'تواصل مع فريق المؤسسات'),
-      popular: false
-    }
-  }[packageId];
+  const packageData = getServicePackages(language)[packageId];
   const colors = packageColors[packageId];
   const icon = packageIcons[packageId];
   const isPopular = packageData?.popular || false;
@@ -138,9 +90,6 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
           <div className="mt-4">
             <div className="text-4xl font-bold text-white">
               {packageData?.price || 'N/A'}
-            </div>
-            <div className="text-gray-400 text-sm">
-              {language === 'ar' ? 'شهرياً' : 'per month'}
             </div>
           </div>
         </CardHeader>

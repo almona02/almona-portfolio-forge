@@ -11,6 +11,8 @@ import { useAuth } from './AuthContext';
 
 // Enhanced QuoteItem interface
 interface QuoteItem {
+  enquiry_only?: boolean;
+  catalogue_image?: string;
   id: string;
   product_id: string;
   product_name_ar: string;
@@ -28,6 +30,7 @@ interface QuoteItem {
 interface QuoteContextType {
   // Quote items management
   quoteItems: QuoteItem[];
+  addCatalogueToQuote: (product: { id: string; name: string; imageUrl?: string }, quantity?: number) => Promise<void>;
   addToQuote: (
     product: Database['public']['Tables']['products']['Row'] | ShopProductInput,
     quantity?: number,
@@ -92,6 +95,7 @@ interface QuoteProviderProps {
 
 export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
+  const [storageReady, setStorageReady] = useState(false);
   const [currentQuote, setCurrentQuote] = useState<Database['public']['Tables']['quotes']['Row'] | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -125,31 +129,60 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
 
   // Load quote items from localStorage on mount
   useEffect(() => {
-    const savedItems = localStorage.getItem('almona_quote_items');
-    if (savedItems) {
-      try {
+    try {
+      const savedItems = localStorage.getItem('almona_quote_items');
+      if (savedItems) {
         const parsed = JSON.parse(savedItems) as unknown;
         if (Array.isArray(parsed) && parsed.every(isQuoteItemShape)) {
           setQuoteItems(parsed);
         }
-      } catch (error) {
-        console.error('Error loading saved quote items:', error);
       }
+    } catch {
+      // A denied or corrupt browser store must not prevent an in-memory enquiry.
+    } finally {
+      setStorageReady(true);
     }
   }, []);
 
   // Save quote items to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('almona_quote_items', JSON.stringify(quoteItems));
-  }, [quoteItems]);
+    if (!storageReady) return;
+    try {
+      localStorage.setItem('almona_quote_items', JSON.stringify(quoteItems));
+    } catch {
+      // The basket remains usable for this visit if browser storage is unavailable.
+    }
+  }, [quoteItems, storageReady]);
 
   // ShopProductInput is imported from '@/types/shopProduct'
 
   const isQuoteItemShape = (v: unknown): v is QuoteItem => {
     if (!v || typeof v !== 'object') return false;
     const o = v as Record<string, unknown>;
-    return typeof o.id === 'string' && typeof o.product_id === 'string' && typeof o.quantity === 'number';
+    return typeof o.id === 'string' && typeof o.product_id === 'string'
+      && typeof o.product_name_en === 'string'
+      && typeof o.quantity === 'number' && Number.isSafeInteger(o.quantity) && o.quantity > 0
+      && typeof o.unit_price === 'number' && Number.isFinite(o.unit_price) && o.unit_price >= 0
+      && typeof o.total_price === 'number' && Number.isFinite(o.total_price) && o.total_price >= 0;
   };
+
+  // Catalogue enquiries neither reserve stock nor create database quote records.
+  const addCatalogueToQuote = useCallback(async (product: { id: string; name: string; imageUrl?: string }, quantity = 1) => {
+    if (!product.id || !product.name || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 9999) {
+      throw new Error('Choose a product and a whole-number quantity between 1 and 9999.');
+    }
+    setQuoteItems(items => {
+      const existing = items.find(item => item.enquiry_only && item.product_id === product.id);
+      if (existing) return items.map(item => item.id === existing.id
+        ? { ...item, quantity: item.quantity + quantity } : item);
+      return [...items, {
+        id: `catalogue-${product.id}`, product_id: product.id,
+        product_name_en: product.name, product_name_ar: product.name,
+        product_sku: product.id, quantity, unit_price: 0, total_price: 0,
+        enquiry_only: true, catalogue_image: product.imageUrl,
+      }];
+    });
+  }, []);
 
   const isDbProduct = (p: unknown): p is Database['public']['Tables']['products']['Row'] => {
     if (typeof p !== 'object' || p === null) return false;
@@ -324,6 +357,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   }, []);
 
   const updateQuantity = useCallback((itemId: string, quantity: number) => {
+    if (!Number.isSafeInteger(quantity) || quantity > 9999) return;
     if (quantity <= 0) {
       removeFromQuote(itemId);
       return;
@@ -356,10 +390,11 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const clearQuote = useCallback(() => {
     setQuoteItems([]);
     setCurrentQuote(null);
-    localStorage.removeItem('almona_quote_items');
+    try { localStorage.removeItem('almona_quote_items'); } catch { /* Optional persistence. */ }
   }, []);
 
   const createNewQuote = useCallback(async (): Promise<string> => {
+    if (quoteItems.some(item => item.enquiry_only)) throw new Error('Send catalogue enquiries from the quote basket email draft. Stock and pricing require confirmation.');
     if (!user) {
       throw new Error('User must be logged in to create a quote');
     }
@@ -425,6 +460,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     delivery_timeline?: string;
     payment_terms?: string;
   }) => {
+    if (quoteItems.some(item => item.enquiry_only)) throw new Error('Send catalogue enquiries from the quote basket email draft.');
     if (!currentQuote) {
       throw new Error('No current quote to save');
     }
@@ -463,6 +499,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   }, [currentQuote, subtotal, taxAmount, shippingCost, discountAmount, totalAmount, quoteItems]);
 
   const submitQuote = useCallback(async () => {
+    if (quoteItems.some(item => item.enquiry_only)) throw new Error('Send catalogue enquiries from the quote basket email draft.');
     if (!currentQuote) {
       await createNewQuote();
     }
@@ -483,7 +520,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     } finally {
       setSaving(false);
     }
-  }, [currentQuote, createNewQuote, clearQuote]);
+  }, [currentQuote, createNewQuote, clearQuote, quoteItems]);
 
   const loadQuote = useCallback(async (quoteId: string) => {
     setLoading(true);
@@ -570,6 +607,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const value: QuoteContextType = {
     // Quote items management
     quoteItems,
+    addCatalogueToQuote,
     addToQuote,
     removeFromQuote,
     updateQuantity,

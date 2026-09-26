@@ -93,6 +93,7 @@ export const LanguageSwitcher: React.FC<{
           )}
       </DropdownMenuTrigger>
       <DropdownMenuContent
+        data-language-switcher-menu="true"
         align={isRTLMode ? 'start' : 'end'}
         side="bottom"
         sideOffset={8}
@@ -190,4 +191,3 @@ export const LanguageSwitcher: React.FC<{
 };
 
 export default LanguageSwitcher;
-

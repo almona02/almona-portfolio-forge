@@ -11,8 +11,11 @@ import {
 } from '@/lib/fabricator/ManufacturingSettings';
 import {
   DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
-  DOWIN_GOLDEN_FIXTURE_STATUS,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
+import {
+  evaluateControlFixtureAuthorization,
+  FP024C_NINETY_CONTROL_DUAL_USE,
+} from '@/lib/fabricator/dowinParity/optimizerStateProvenance';
 
 function sourceOf(rel: string): string {
   return readFileSync(resolve(process.cwd(), rel), 'utf8');
@@ -66,8 +69,81 @@ describe('AICS-001 FP-023A manufacturing settings contract', () => {
     expect(k).toBeGreaterThan(0);
   });
 
-  test('DoWin golden fixture remains PENDING_EXTERNAL_FIXTURE', () => {
-    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe(DOWIN_GOLDEN_FIXTURE_STATUS);
-    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows).toEqual([]);
+  test('DoWin golden fixture is READY_EXTERNAL_FIXTURE but the gate does not pass', () => {
+    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe('READY_EXTERNAL_FIXTURE');
+    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows.length).toBeGreaterThan(0);
+  });
+
+  test('90° dual-use reassessment does not unfreeze production formulas', () => {
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.formulaFreeze).toBe(true);
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.authorizesControl).toBe(false);
+    expect(FP024C_NINETY_CONTROL_DUAL_USE.physicalLengthScore).toBe('6.0/10');
+    expect(evaluateControlFixtureAuthorization().physicalLengthScore).toBe('6.0/10');
+    expect(evaluateControlFixtureAuthorization().controlRunStatus).toBe('MEASURED');
+    expect(evaluateControlFixtureAuthorization().verdict).toBe('READY_FOR_OPERATOR_RUN');
+    expect(
+      evaluateControlFixtureAuthorization({
+        fixtureIndependentlySpecified: true,
+        formulaFreeze: false,
+      }).blockers
+    ).toContain('PRODUCTION_FORMULAS_FROZEN');
+  });
+
+  test('FP-024C.11 formula-scope checkpoint does not unfreeze production formulas', async () => {
+    const { FP024C11_FORMULA_SCOPE_AUTHORIZATION, evaluateFormulaScopeAuthorization } = await import(
+      '@/lib/fabricator/dowinParity/optimizerStateProvenance'
+    );
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.formulasModified).toBe(false);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesFormulaChange).toBe(false);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesProductionEngineChange).toBe(false);
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.implementationClassification).toBe(
+      'PARITY_ADAPTER_ONLY_SAFE'
+    );
+    expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.physicalLengthScore).toBe('6.0/10');
+    expect(evaluateFormulaScopeAuthorization().authorizesProductionEngineChange).toBe(false);
+  });
+
+  test('FP-024C.12 bounded weld helper does not unfreeze canonical production engines', async () => {
+    const { FP024C12_BOUNDED_PARITY_WELD_RULE } = await import(
+      '@/lib/fabricator/dowinParity/optimizerStateProvenance'
+    );
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.authorizesProductionEngineChange).toBe(false);
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoCanonicalCutGeneration).toBe(false);
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.implementationScope).toBe('PARITY_ADAPTER_ONLY');
+    expect(FP024C12_BOUNDED_PARITY_WELD_RULE.parityWiring).toBe('PROVEN');
+    expect(sourceOf('src/lib/fabricator/UPVCCuttingEngine.ts')).not.toContain(
+      'evaluateDowinRequiredPartsWeldAdjustment'
+    );
+    expect(sourceOf('src/lib/fabricator/UPVCCuttingEngine.ts')).not.toContain(
+      'computeDowinRequiredPartsFromDesignReport'
+    );
+    expect(sourceOf('src/lib/fabricator/AlmonaCuttingEngine.ts')).not.toContain(
+      'evaluateDowinRequiredPartsWeldAdjustment'
+    );
+    expect(sourceOf('src/lib/fabricator/AlmonaCuttingEngine.ts')).not.toContain(
+      'computeDowinRequiredPartsFromDesignReport'
+    );
+    expect(sourceOf('src/lib/fabricator/barPackAccounting.ts')).not.toContain(
+      'evaluateDowinRequiredPartsWeldAdjustment'
+    );
+    expect(sourceOf('src/lib/fabricator/barPackAccounting.ts')).not.toContain(
+      'computeDowinRequiredPartsFromDesignReport'
+    );
+  });
+
+  test('FP-024C.13 golden replay does not unfreeze canonical production engines', async () => {
+    const { FP024C13_GOLDEN_REPLAY_CLOSEOUT } = await import(
+      '@/lib/fabricator/dowinParity/optimizerStateProvenance'
+    );
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorizesCanonicalFormula).toBe(false);
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.goldenReplay).toBe('PASS');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.independentReview).toBe('ACCEPTED');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('7.5/10');
+    expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorityMatrix.canonicalProductionIntegration).toBe(
+      'NONE'
+    );
+    expect(sourceOf('src/lib/fabricator/OptimizationEngine.ts')).not.toContain(
+      'computeDowinRequiredPartsFromDesignReport'
+    );
   });
 });

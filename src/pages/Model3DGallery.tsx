@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { Model3DGallery as Model3DGalleryComponent } from '@/components/3d-model/Model3DGallery';
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
 import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
@@ -21,6 +22,7 @@ const EnhancedModel3DDialog = React.lazy(() => import('@/components/3d-model/Enh
 import modelsData from '@/data/models.json';
 
 export default function Model3DGalleryPage() {
+  const copy = usePublicCopy();
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [show3DDialog, setShow3DDialog] = useState(false);
   const [showMeasurementTool, setShowMeasurementTool] = useState(false);
@@ -114,14 +116,9 @@ export default function Model3DGalleryPage() {
           transition={{ duration: 0.6 }}
         >
           <h1 className="typography-h1 md:text-5xl mb-4">
-            <span className="bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">
-              3D Model Gallery
-            </span>
+            <span className="bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">{copy("3D Model Gallery")}</span>
           </h1>
-          <p className="text-gray-400 text-lg max-w-3xl mx-auto mb-8">
-            Explore our collection of interactive 3D models. View, measure, and interact with industrial machinery 
-            in immersive 3D environments with AR support.
-          </p>
+          <p className="text-gray-400 text-lg max-w-3xl mx-auto mb-8">{copy("Explore our collection of interactive 3D models. View, measure, and interact with industrial machinery in immersive 3D environments with AR support.")}</p>
 
           {/* Feature Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -135,10 +132,8 @@ export default function Model3DGalleryPage() {
                   <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Eye className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="typography-h3 text-lg text-white mb-2">Interactive 3D Viewing</h3>
-                  <p className="text-gray-400 text-sm">
-                    Rotate, zoom, and explore models with smooth controls and realistic lighting
-                  </p>
+                  <h3 className="typography-h3 text-lg text-white mb-2">{copy("Interactive 3D Viewing")}</h3>
+                  <p className="text-gray-400 text-sm">{copy("Rotate, zoom, and explore models with smooth controls and realistic lighting")}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -153,10 +148,8 @@ export default function Model3DGalleryPage() {
                   <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Ruler className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="typography-h3 text-lg text-white mb-2">Precision Measurements</h3>
-                  <p className="text-gray-400 text-sm">
-                    Measure distances, angles, and dimensions with professional-grade tools
-                  </p>
+                  <h3 className="typography-h3 text-lg text-white mb-2">{copy("Precision Measurements")}</h3>
+                  <p className="text-gray-400 text-sm">{copy("Measure distances, angles, and dimensions with professional-grade tools")}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -171,10 +164,8 @@ export default function Model3DGalleryPage() {
                   <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Move3D className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="typography-h3 text-lg text-white mb-2">AR Integration</h3>
-                  <p className="text-gray-400 text-sm">
-                    View models in augmented reality on supported devices
-                  </p>
+                  <h3 className="typography-h3 text-lg text-white mb-2">{copy("AR Integration")}</h3>
+                  <p className="text-gray-400 text-sm">{copy("View models in augmented reality on supported devices")}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -191,11 +182,9 @@ export default function Model3DGalleryPage() {
           <div className="flex items-center gap-4">
             <Badge className="bg-gradient-to-r from-amber-500 to-red-500 text-white border-0">
               <Star className="w-3 h-3 mr-1" />
-              {featuredCount} Featured
-            </Badge>
+              {featuredCount}{copy("Featured")}</Badge>
             <Badge variant="secondary" className="bg-gray-800 text-gray-300">
-              {modelsData.length} 3D Models Available
-            </Badge>
+              {modelsData.length}{copy("3D Models Available")}</Badge>
           </div>
 
           <div className="flex items-center gap-2">
@@ -205,17 +194,13 @@ export default function Model3DGalleryPage() {
               onClick={handleToggleMeasurementTool}
               className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
             >
-              <Ruler className="w-4 h-4 mr-2" />
-              Measurement Tool
-            </Button>
+              <Ruler className="w-4 h-4 mr-2" />{copy("Measurement Tool")}</Button>
             <Button
               size="sm"
               variant="outline"
               className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
             >
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
+              <Settings className="w-4 h-4 mr-2" />{copy("Settings")}</Button>
           </div>
         </motion.div>
 
@@ -242,7 +227,7 @@ export default function Model3DGalleryPage() {
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
-                <p className="text-white">Loading 3D Engine...</p>
+                <p className="text-white">{copy("Loading 3D Engine...")}</p>
               </div>
             </div>
           }>

@@ -5,14 +5,14 @@ import { PositionStateSyncService } from '../PositionStateSyncService';
 // Mock IndexedDBStore
 vi.mock('../IndexedDBStore', () => {
     return {
-        IndexedDBStore: vi.fn().mockImplementation(() => ({
+        IndexedDBStore: vi.fn(function () { return {
             init: vi.fn(),
             saveState: vi.fn().mockResolvedValue(undefined),
             loadState: vi.fn().mockResolvedValue(null),
             deleteState: vi.fn(),
             addAuditEntry: vi.fn().mockResolvedValue(undefined),
             getAuditLog: vi.fn().mockResolvedValue([]),
-        })),
+        }; }),
     };
 });
 

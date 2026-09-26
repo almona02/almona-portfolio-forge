@@ -4,8 +4,8 @@
       "fabricator_pro": {
         "title": "Fabricator Pro",
         "subtitle": "Empowering Egypt's Industrial Transformation",
-        "description": "Supporting Egypt Vision 2030",
-        "badge_national": "National Strategic Asset",
+        "description": "Digital tools for workshop planning",
+        "badge_national": "An ALMONA initiative",
         "cta_primary": "Start Your Digital Transformation",
         "cta_secondary": "Contact Us"
       },
@@ -103,7 +103,7 @@
       },
       "used_machines": {
         "title": "Used Machines",
-        "description": "Verified B2B used-machine marketplace with logistics support."
+        "description": "Ask ALMONA about used-machine availability and inspection requirements."
       },
       "maintenance_support": {
         "title": "Maintenance & Support",
@@ -123,11 +123,11 @@
       },
       "remnant_marketplace": {
         "title": "Remnant Marketplace",
-        "description": "B2B remnant exchange with verification, pricing, and logistics baked in."
+        "description": "Explore remnant-management tools and discuss your workshop requirements."
       },
       "analytics_optimization": {
         "title": "Analytics & Optimization",
-        "description": "Waste reduction (15–30%), OEE dashboards, and AI advisory for jobs."
+        "description": "Explore planning and analysis tools. Results depend on your materials and workflow."
       }
     },
     "learn_more": "Learn More",

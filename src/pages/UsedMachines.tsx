@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -27,6 +28,7 @@ import { ParsedQuery } from '@/services/NaturalLanguageProcessor';
  * @returns {JSX.Element} The UsedMachines page component
  */
 const UsedMachines = () => {
+  const copy = usePublicCopy();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('browse');
@@ -108,6 +110,18 @@ const UsedMachines = () => {
   // Get machines to display
   const _machinesToShow = searchResults.map(result => result.machine);
 
+  if (usedMachines.length === 0) {
+    return <main className="pt-28 pb-16 px-4">
+      <MachineSEO machines={usedMachines} isListingPage={true} />
+      <section className="max-w-3xl mx-auto space-y-6">
+        <h1 className="typography-h1 text-amber-400">{copy('Used Machines Marketplace')}</h1>
+        <p className="text-gray-300">{copy('Ask about used aluminium and UPVC machinery. Availability, condition and seller details require confirmation.')}</p>
+        <p className="rounded-lg border border-gray-700 p-5">{copy('No approved listings are currently published.')}</p>
+        <Button onClick={() => navigate('/contact?subject=Used%20machine%20enquiry')}>{copy('Discuss availability')}</Button>
+      </section>
+    </main>;
+  }
+
   return (
     <>
       {/* SEO Component */}
@@ -121,7 +135,7 @@ const UsedMachines = () => {
               <span className="text-white">Used Machines Marketplace</span>
             </h1>
             <p className="text-xl text-amber-100 max-w-3xl mx-auto mb-8">
-              A trusted platform for buying and selling used aluminum and uPVC machinery in Egypt.
+              Ask about used aluminium and UPVC machinery. Availability, condition and seller details require confirmation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -131,9 +145,9 @@ const UsedMachines = () => {
                 Sell Your Used Machines
               </Button>
               <Button 
-                className="text-white border-white hover:bg-amber-800"
+                onClick={() => navigate('/contact')} className="text-white border-white hover:bg-amber-800"
               >
-                Get a Free Consultation
+                Discuss availability
               </Button>
             </div>
           </div>
@@ -271,7 +285,7 @@ const UsedMachines = () => {
               ) : searchResults.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4">🔍</div>
-                  <p className="text-xl text-gray-400 mb-2">No machines found matching your search.</p>
+                  <p className="text-xl text-gray-400 mb-2">No approved listings are currently published.</p>
                   <p className="text-sm text-gray-500 mb-6">Try adjusting your filters or search terms</p>
                   <Button 
                     className="btn-primary"

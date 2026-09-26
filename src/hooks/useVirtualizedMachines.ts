@@ -1,6 +1,8 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useYilmazMachines } from './useYilmazMachines';
-import { intelligentSearch, categorizeMachine } from '@/constants/smartCategories';
+import { categorizeMachine } from '@/constants/smartCategories';
+import { searchPublicMachines } from '@/lib/publicMachineSearch';
+import { usePublicCopy } from './usePublicCopy';
 import type { Machine } from '@/constants/yilmazMachines';
 
 interface UseVirtualizedMachinesOptions {
@@ -24,6 +26,7 @@ export function useVirtualizedMachines({
   sortOption = 'featured',
   pageSize = 12
 }: UseVirtualizedMachinesOptions = {}): VirtualizedResult {
+  const copy = usePublicCopy();
   const [currentPage, setCurrentPage] = useState(1);
   const { data: yilmazMachines = [], isLoading: isDataLoading } = useYilmazMachines();
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +38,7 @@ export function useVirtualizedMachines({
 
     // Apply AI-powered search if search term exists
     if (searchTerm.trim()) {
-      filtered = intelligentSearch(searchTerm, filtered);
+      filtered = searchPublicMachines(searchTerm, filtered, copy);
     }
 
     // Apply category filter
@@ -63,7 +66,7 @@ export function useVirtualizedMachines({
           return a.featured ? -1 : b.featured ? 1 : 0;
       }
     });
-  }, [yilmazMachines, searchTerm, categoryFilter, sortOption]);
+  }, [yilmazMachines, searchTerm, categoryFilter, sortOption, copy]);
 
   // Get current page of machines
   const machines = useMemo(() => {
