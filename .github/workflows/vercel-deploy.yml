@@ -49,7 +49,7 @@ jobs:
       - name: Deploy to Vercel (Production)
         id: vercel-deploy
         run: |
-          deployment_url="$(npx --yes vercel@47.2.2 deploy --prod --yes --token="$VERCEL_TOKEN")"
+          deployment_url="$(npx --yes vercel@60.1.3 deploy --prod --yes --token="$VERCEL_TOKEN")"
           echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
           echo "Production deployment: $deployment_url"
         env:
