@@ -40,18 +40,21 @@ export const MaterialSystemSelector: React.FC<MaterialSystemSelectorProps> = ({
     });
   }, [selectedMaterial]);
 
-  const defaultSystemPack = useMemo(() => {
-    if (selectedSystemPackId && compatibleSystemPacks.find(p => p.id === selectedSystemPackId)) {
-      return selectedSystemPackId;
-    }
-    // Default to first available or empty
-    return compatibleSystemPacks[0]?.id || '';
-  }, [selectedSystemPackId, compatibleSystemPacks]);
+  const effectiveSystemPack = useMemo(
+    () => selectedSystemPackId ?? compatibleSystemPacks[0]?.id ?? '',
+    [selectedSystemPackId, compatibleSystemPacks],
+  );
+  const selectedPackIsRegistered = compatibleSystemPacks.some(
+    (pack) => pack.id === effectiveSystemPack,
+  );
 
-  // Use Registry to get specs
-  const materialSpec = useMemo(() => {
-    return ProfileRegistry.getInstance().getSpecs(defaultSystemPack);
-  }, [defaultSystemPack]);
+  // Never substitute another system's specifications for an authoritative pack.
+  const materialSpec = useMemo(
+    () => selectedPackIsRegistered
+      ? ProfileRegistry.getInstance().getSpecs(effectiveSystemPack)
+      : undefined,
+    [effectiveSystemPack, selectedPackIsRegistered],
+  );
 
   return (
     <div className="space-y-3">
@@ -94,10 +97,15 @@ export const MaterialSystemSelector: React.FC<MaterialSystemSelectorProps> = ({
             System Pack
           </label>
           <select
-            value={defaultSystemPack}
+            value={effectiveSystemPack}
             onChange={(e) => onSystemPackChange(e.target.value)}
             className="w-full border border-slate-700 bg-slate-900 rounded px-2 py-1 text-sm text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
           >
+            {!selectedPackIsRegistered && effectiveSystemPack && (
+              <option value={effectiveSystemPack} className="bg-slate-900 text-amber-300">
+                {effectiveSystemPack === 'rock60' ? 'ROCK 60' : effectiveSystemPack} (specifications unavailable)
+              </option>
+            )}
             {compatibleSystemPacks.map(pack => (
               <option key={pack.id} value={pack.id} className="bg-slate-900 text-slate-200">
                 {pack.name} ({pack.manufacturer})
