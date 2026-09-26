@@ -116,14 +116,18 @@ export interface UseDraftingWorkbenchStateReturn {
  * Consolidates all state management logic into a single, organized hook.
  * Groups related state variables and provides clean action interfaces.
  */
-export function useDraftingWorkbenchState(initialSystemPackId?: string): UseDraftingWorkbenchStateReturn {
+export function useDraftingWorkbenchState(
+  initialSystemPackId?: string,
+  storageScope = 'legacy-unscoped',
+  hasInitialGeometry = false,
+): UseDraftingWorkbenchStateReturn {
   // Safety check for React hooks availability
   if (typeof useState !== 'function') {
     throw new Error('React hooks are not available. This may indicate the component is being rendered outside of a React context.');
   }
 
   // UI State
-  const [activeTab, setActiveTab] = useState<'2d' | '3d' | 'validation' | 'templates'>('templates');
+  const [activeTab, setActiveTab] = useState<'2d' | '3d' | 'validation' | 'templates'>(hasInitialGeometry ? '2d' : 'templates');
   const [selectedTool, setSelectedTool] = useState<DraftingTool>('select');
   const [viewport, setViewport] = useState<Viewport>(DEFAULT_VIEWPORT);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
@@ -171,8 +175,9 @@ export function useDraftingWorkbenchState(initialSystemPackId?: string): UseDraf
       maxVersions: 50,
       enableVersioning: true,
       enableRecovery: true,
+      storageScope,
     });
-  }, []);
+  }, [storageScope]);
 
   // Check for recovery point on mount
   useEffect(() => {

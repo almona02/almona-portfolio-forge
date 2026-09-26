@@ -112,7 +112,6 @@ export const DesignWorkflowWrapper: React.FC = () => {
               // Convert drafting output to components
               handleDesignComplete(output.components || []);
             }}
-            initialTemplate={currentProject?.systemPackId || undefined}
           />
         </div>
       </div>

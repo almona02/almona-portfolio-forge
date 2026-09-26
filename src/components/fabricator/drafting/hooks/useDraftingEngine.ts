@@ -96,17 +96,18 @@ const INITIAL_STATE: DraftingState = {
 const EGYPTIAN_TEMPLATES: EgyptianTemplate[] = EXPANDED_EGYPTIAN_TEMPLATES;
 
 export const useDraftingEngine = (options?: {
-  initialTemplate?: string;
+  initialState?: DraftingState;
   onStateChange?: (state: DraftingState) => void;
 }) => {
-  const [state, setState] = useState<DraftingState>(INITIAL_STATE);
+  const initialStateRef = useRef<DraftingState>(options?.initialState ?? INITIAL_STATE);
+  const [state, setState] = useState<DraftingState>(() => initialStateRef.current);
   const [previewRect, setPreviewRect] = useState<Rectangle | null>(null);
   const undoRedoManager = useRef(new UndoRedoManager());
   const isUndoRedoOperation = useRef(false);
   
   // Initialize undo/redo with initial state
   useEffect(() => {
-    undoRedoManager.current.initialize(INITIAL_STATE);
+    undoRedoManager.current.initialize(initialStateRef.current);
   }, []);
   
   // Save state on change (but not during undo/redo operations)
@@ -1024,6 +1025,12 @@ export const useDraftingEngine = (options?: {
   }, [state.geometry, suggestSystemPackByRule]);
 
   // Getters
+  const replaceState = useCallback((nextState: DraftingState) => {
+    undoRedoManager.current.initialize(nextState);
+    isUndoRedoOperation.current = true;
+    setState(nextState);
+  }, []);
+
   const getGeometry = useCallback((): Geometry2D => state.geometry, [state.geometry]);
   const getDimensions = useCallback((): Dimension[] => state.dimensions, [state.dimensions]);
   const getAnnotations = useCallback(() => state.annotations, [state.annotations]);
@@ -1509,6 +1516,9 @@ export const useDraftingEngine = (options?: {
     canUndo,
     canRedo,
     
+    // State replacement
+    replaceState,
+
     // Getters
     getGeometry,
     getDimensions,

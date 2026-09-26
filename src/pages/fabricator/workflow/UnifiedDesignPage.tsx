@@ -482,7 +482,6 @@ export const UnifiedDesignPage: React.FC = () => {
                                             <div className="h-full">
                                                 <DraftingWorkbench
                                                     onDesignValidated={handleDraftingComplete}
-                                                    initialTemplate={undefined}
                                                     onExit={() => navigate('/fabricator/studio/projects')}
                                                 />
                                             </div>

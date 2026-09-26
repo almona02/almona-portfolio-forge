@@ -1,5 +1,6 @@
 // src/components/fabricator/drafting/DraftingWorkbench.tsx
 import { useAuth } from '@/context/AuthContext';
+import { useWorkflowStore } from '@/store/workflowStore';
 import { FabricatorSectionProvider } from '@/contexts/FabricatorSectionContext';
 import { Button } from '@/shared/ui/ui/button';
 import type { Profile, WindowUnit } from '@/types/fabricator';
@@ -22,6 +23,12 @@ import { useCollaborativeDrafting } from './hooks/useCollaborativeDrafting';
 import { useDraftingEngine } from './hooks/useDraftingEngine';
 import { useDraftingWorkbenchHandlers } from './hooks/useDraftingWorkbenchHandlers';
 import { useDraftingWorkbenchState } from './hooks/useDraftingWorkbenchState';
+import {
+  authoritativeGridToDraftingState,
+  draftingIdentityKey,
+  hasDraftingGeometry,
+  isDraftingState,
+} from './utils/authoritativeDraftingHydration';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import type { DraftingOutput, DraftingState } from './types/drafting'; // Added types
 
@@ -47,7 +54,6 @@ const ImportDialog = lazy(() =>
 
 export const DraftingWorkbench: React.FC<{
   onDesignValidated: (output: DraftingOutput) => void;
-  initialTemplate?: string;
   profiles?: Profile[]; // Optional profiles for optimization
   onOptimizeRequest?: (windowUnit: WindowUnit) => void; // Optional callback for optimization
   onExit?: () => void;
@@ -56,7 +62,7 @@ export const DraftingWorkbench: React.FC<{
   onMoveToNext?: () => void;
   /** Open pose quick-edit modal (profile color, quantity). */
   onOpenPoseQuickEdit?: () => void;
-}> = ({ onDesignValidated, initialTemplate, profiles = [], onOptimizeRequest, onExit, project, onMoveToNext, onOpenPoseQuickEdit }) => {
+}> = ({ onDesignValidated, profiles = [], onOptimizeRequest, onExit, project, onMoveToNext, onOpenPoseQuickEdit }) => {
   const { user } = useAuth();
   const { isCompactMode } = useOutletContext<{ isCompactMode?: boolean }>() || {};
 
@@ -66,24 +72,49 @@ export const DraftingWorkbench: React.FC<{
   const [mode, setMode] = useState<'window' | 'facade'>('window');
   const [facadeModel, setFacadeModel] = useState<FacadeModel | null>(null);
 
-  const { state, actions } = useDraftingWorkbenchState(project?.systemPackId);
+  const workflowIdentity = useWorkflowStore((workflowState) => workflowState.workflowIdentity);
+  const draftingScope = React.useMemo(() => {
+    if (workflowIdentity && workflowIdentity.positionId === project?.id) {
+      return draftingIdentityKey(workflowIdentity);
+    }
+    return ['legacy', user?.id ?? 'anonymous', project?.projectId ?? 'unknown', project?.id ?? 'unknown']
+      .map(encodeURIComponent)
+      .join(':');
+  }, [project?.id, project?.projectId, user?.id, workflowIdentity]);
+  const authoritativeState = React.useMemo(
+    () => project ? authoritativeGridToDraftingState(project) : null,
+    [project],
+  );
+  const { state, actions } = useDraftingWorkbenchState(
+    project?.systemPackId,
+    draftingScope,
+    Boolean(authoritativeState && hasDraftingGeometry(authoritativeState)),
+  );
+  const initialDraftingState = React.useMemo(() => {
+    const saved = actions.persistenceManager.loadCurrentDraft();
+    if (isDraftingState(saved) && hasDraftingGeometry(saved)) return saved;
+    return authoritativeState ?? undefined;
+  }, [actions.persistenceManager, authoritativeState]);
 
   // Initialize drafting engine and collaboration
   const draftingEngine = useDraftingEngine({
-    initialTemplate,
-    onStateChange: useCallback((state: DraftingState) => {
-      // Enhanced auto-save with versioning
-      if (actions.persistenceManager) {
-        actions.persistenceManager.saveState(state, false);
-      }
-    }, [actions])
+    initialState: initialDraftingState,
+    onStateChange: useCallback((draftingState: DraftingState) => {
+      actions.persistenceManager.saveState(draftingState, false);
+    }, [actions.persistenceManager])
   });
+  const hydratedScopeRef = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    if (!initialDraftingState || hydratedScopeRef.current === draftingScope) return;
+    draftingEngine.replaceState(initialDraftingState);
+    hydratedScopeRef.current = draftingScope;
+  }, [draftingEngine, draftingScope, initialDraftingState]);
 
   // Constitutional state sync for drafting mode
   const { hasUnsavedChanges, metadata } = usePoseSync({
-    poseId: project?.id || '',
+    poseId: draftingScope,
     mode: 'drafting',
-    currentState: state,
+    currentState: draftingEngine.state,
     autoSync: true,
     debounceMs: 500
   });

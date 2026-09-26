@@ -412,7 +412,6 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             <div className="h-full">
                 <DraftingWorkbench
                     onDesignValidated={handleDraftingValidated}
-                    initialTemplate={activeSystemPackId || undefined}
                     onExit={() => switchMode('smartdraw')}
                     project={project}
                     onMoveToNext={moveToNextForDrafting}

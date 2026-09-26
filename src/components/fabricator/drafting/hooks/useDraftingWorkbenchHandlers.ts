@@ -21,6 +21,7 @@ import { throttle } from '../utils/performanceUtils';
 import { sanitizeFilename } from '../utils/securityUtils';
 import { zoomIn, zoomOut, zoomToFit, zoomToSelection } from '../utils/viewportUtils';
 import type { StatePersistenceManager } from '../utils/statePersistence';
+import { isDraftingState } from '../utils/authoritativeDraftingHydration';
 import type { DraftingWorkbenchState, DraftingWorkbenchStateActions } from './useDraftingWorkbenchState';
 
 /** Minimal collaboration API used by handlers */
@@ -712,8 +713,8 @@ export function useDraftingWorkbenchHandlers({
     try {
       if (persistenceManager.hasRecoveryPoint()) {
         const recovered = persistenceManager.restoreFromRecovery();
-        if (recovered) {
-          // Recovery successful - close dialog
+        if (isDraftingState(recovered)) {
+          draftingEngine.replaceState(recovered);
           actions.setRecoveryDialogOpen(false);
           toast.success('Recovery point restored');
         }
@@ -723,7 +724,7 @@ export function useDraftingWorkbenchHandlers({
       trackError('DraftingWorkbench', 'recovery_restore', err.message);
       toast.error('Failed to restore recovery point');
     }
-  }, [persistenceManager, actions]);
+  }, [persistenceManager, actions, draftingEngine]);
 
   const handleRecoveryDiscard = useCallback(() => {
     try {

@@ -15,6 +15,13 @@ export interface Rectangle {
   type?: 'fixed' | 'casement' | 'tilt-turn' | 'pivot' | 'sash' | 'panel' | 'sliding';
   id?: string;
   layerId?: string; // Layer assignment
+  /** Authoritative grid metadata retained across SmartDraw/Drafting mode changes. */
+  sourceCellId?: string;
+  sourceCellType?: 'fixed' | 'sash' | 'panel' | 'empty' | 'sliding';
+  sourceRow?: number;
+  sourceCol?: number;
+  sourceRowSpan?: number;
+  sourceColSpan?: number;
 }
 
 export interface Line {

@@ -38,6 +38,8 @@ export interface PersistenceConfig {
   enableVersioning?: boolean;
   /** Enable crash recovery (default: true) */
   enableRecovery?: boolean;
+  /** Full authenticated drafting identity used to isolate local persistence. */
+  storageScope?: string;
 }
 
 const DEFAULT_CONFIG: Required<PersistenceConfig> = {
@@ -47,6 +49,7 @@ const DEFAULT_CONFIG: Required<PersistenceConfig> = {
   maxWait: 10000, // 10 seconds
   enableVersioning: true,
   enableRecovery: true,
+  storageScope: 'legacy-unscoped',
 };
 
 /** Version metadata stored in versions list (state loaded on demand) */
@@ -76,9 +79,12 @@ export class StatePersistenceManager {
   private autoSaveTimer: NodeJS.Timeout | null = null;
   private debouncedSave: (state: unknown) => void;
   private sessionId: string;
+  private storageScope: string;
+  private beforeUnloadHandler: (() => void) | null = null;
 
   constructor(config: PersistenceConfig = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
+    this.storageScope = this.config.storageScope;
     this.sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     // Create debounced save function
@@ -100,6 +106,15 @@ export class StatePersistenceManager {
     if (this.config.enableRecovery) {
       this.setupCrashRecovery();
     }
+  }
+
+
+  private storageKey(key: string): string {
+    return 'draft:' + this.storageScope + ':' + key;
+  }
+
+  private versionKey(versionId: string): string {
+    return this.storageKey('version-' + versionId);
   }
 
   /**
@@ -139,19 +154,19 @@ export class StatePersistenceManager {
       if (this.versions.length > this.config.maxVersions) {
         const removed = this.versions.shift();
         if (removed) {
-          SafeLocalStorage.removeItem(`version-${removed.id}`);
+          SafeLocalStorage.removeItem(this.versionKey(removed.id));
         }
       }
 
       // Save current draft
-      SafeLocalStorage.setItem(STORAGE_KEYS.CURRENT_DRAFT, stateString);
+      SafeLocalStorage.setItem(this.storageKey(STORAGE_KEYS.CURRENT_DRAFT), stateString);
 
       // Save versions metadata
       this.saveVersionsMetadata();
 
       // Save individual version if versioning enabled
       if (this.config.enableVersioning && isCheckpoint) {
-        SafeLocalStorage.setItem(`version-${version.id}`, stateString);
+        SafeLocalStorage.setItem(this.versionKey(version.id), stateString);
       }
 
       // Save recovery point
@@ -171,7 +186,7 @@ export class StatePersistenceManager {
    */
   loadCurrentDraft(): unknown {
     try {
-      const stateString = SafeLocalStorage.getItem(STORAGE_KEYS.CURRENT_DRAFT);
+      const stateString = SafeLocalStorage.getItem(this.storageKey(STORAGE_KEYS.CURRENT_DRAFT));
       if (!stateString) return null;
       
       return safeJsonParse<unknown>(stateString);
@@ -179,7 +194,7 @@ export class StatePersistenceManager {
       // Clear corrupted data if prototype pollution detected
       if (error instanceof Error && error.message === 'Prototype pollution detected') {
         console.warn('Clearing corrupted current draft due to prototype pollution');
-        SafeLocalStorage.removeItem(STORAGE_KEYS.CURRENT_DRAFT);
+        SafeLocalStorage.removeItem(this.storageKey(STORAGE_KEYS.CURRENT_DRAFT));
       }
       console.error('Failed to load current draft:', error);
       return null;
@@ -195,7 +210,7 @@ export class StatePersistenceManager {
       if (!version) return null;
 
       if (this.config.enableVersioning) {
-        const stateString = SafeLocalStorage.getItem(`version-${versionId}`);
+        const stateString = SafeLocalStorage.getItem(this.versionKey(versionId));
         if (stateString) {
           return safeJsonParse<unknown>(stateString);
         }
@@ -221,15 +236,16 @@ export class StatePersistenceManager {
    */
   getRecoveryPoint(): { state: unknown; timestamp?: number; sessionId?: string } | null {
     try {
-      const recoveryString = SafeLocalStorage.getItem(STORAGE_KEYS.RECOVERY);
+      const recoveryString = SafeLocalStorage.getItem(this.storageKey(STORAGE_KEYS.RECOVERY));
       if (!recoveryString) return null;
       
-      return safeJsonParse<{ state: unknown; timestamp?: number; sessionId?: string }>(recoveryString);
+      const recovery = safeJsonParse<{ state: unknown; timestamp?: number; sessionId?: string; storageScope?: string }>(recoveryString);
+      return recovery.storageScope === this.storageScope ? recovery : null;
     } catch (error) {
       // Clear corrupted data if prototype pollution detected
       if (error instanceof Error && error.message === 'Prototype pollution detected') {
         console.warn('Clearing corrupted recovery point due to prototype pollution');
-        SafeLocalStorage.removeItem(STORAGE_KEYS.RECOVERY);
+        SafeLocalStorage.removeItem(this.storageKey(STORAGE_KEYS.RECOVERY));
       }
       console.error('Failed to load recovery point:', error);
       return null;
@@ -240,14 +256,14 @@ export class StatePersistenceManager {
    * Check if recovery is available
    */
   hasRecoveryPoint(): boolean {
-    return SafeLocalStorage.getItem(STORAGE_KEYS.RECOVERY) !== null;
+    return this.getRecoveryPoint() !== null;
   }
 
   /**
    * Clear recovery point (after successful recovery)
    */
   clearRecoveryPoint(): void {
-    SafeLocalStorage.removeItem(STORAGE_KEYS.RECOVERY);
+    SafeLocalStorage.removeItem(this.storageKey(STORAGE_KEYS.RECOVERY));
   }
 
   /**
@@ -284,7 +300,7 @@ export class StatePersistenceManager {
       this.versions.splice(index, 1);
 
       // Remove from storage
-      SafeLocalStorage.removeItem(`version-${versionId}`);
+      SafeLocalStorage.removeItem(this.versionKey(versionId));
       this.saveVersionsMetadata();
 
       return true;
@@ -299,7 +315,7 @@ export class StatePersistenceManager {
    */
   private loadVersions(): void {
     try {
-      const metadataString = SafeLocalStorage.getItem(STORAGE_KEYS.VERSIONS);
+      const metadataString = SafeLocalStorage.getItem(this.storageKey(STORAGE_KEYS.VERSIONS));
       if (!metadataString) {
         this.versions = [];
         return;
@@ -312,7 +328,7 @@ export class StatePersistenceManager {
       // Clear corrupted data if prototype pollution detected
       if (error instanceof Error && error.message === 'Prototype pollution detected') {
         console.warn('Clearing corrupted versions metadata due to prototype pollution');
-        SafeLocalStorage.removeItem(STORAGE_KEYS.VERSIONS);
+        SafeLocalStorage.removeItem(this.storageKey(STORAGE_KEYS.VERSIONS));
       }
       console.error('Failed to load versions metadata:', error);
       this.versions = [];
@@ -336,7 +352,7 @@ export class StatePersistenceManager {
         currentVersionId: this.currentVersionId,
       };
       
-      SafeLocalStorage.setItem(STORAGE_KEYS.VERSIONS, JSON.stringify(metadata));
+      SafeLocalStorage.setItem(this.storageKey(STORAGE_KEYS.VERSIONS), JSON.stringify(metadata));
     } catch (error) {
       console.error('Failed to save versions metadata:', error);
     }
@@ -351,9 +367,10 @@ export class StatePersistenceManager {
         state,
         timestamp: Date.now(),
         sessionId: this.sessionId,
+        storageScope: this.storageScope,
       };
       
-      SafeLocalStorage.setItem(STORAGE_KEYS.RECOVERY, JSON.stringify(recoveryData));
+      SafeLocalStorage.setItem(this.storageKey(STORAGE_KEYS.RECOVERY), JSON.stringify(recoveryData));
     } catch (error) {
       console.error('Failed to save recovery point:', error);
     }
@@ -370,7 +387,7 @@ export class StatePersistenceManager {
         versionCount: this.versions.length,
       };
       
-      SafeLocalStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(sessionInfo));
+      SafeLocalStorage.setItem(this.storageKey(STORAGE_KEYS.SESSION), JSON.stringify(sessionInfo));
     } catch (error) {
       console.error('Failed to save session info:', error);
     }
@@ -382,13 +399,14 @@ export class StatePersistenceManager {
   private setupCrashRecovery(): void {
     // Save recovery point on page unload
     if (typeof window !== 'undefined') {
-      window.addEventListener('beforeunload', () => {
+      this.beforeUnloadHandler = () => {
         // This is a best-effort save - may not always work
         const currentState = this.loadCurrentDraft();
         if (currentState) {
           this.saveRecoveryPoint(currentState);
         }
-      });
+      };
+      window.addEventListener('beforeunload', this.beforeUnloadHandler);
     }
   }
 
@@ -423,6 +441,10 @@ export class StatePersistenceManager {
    */
   destroy(): void {
     this.stopAutoSave();
+    if (typeof window !== 'undefined' && this.beforeUnloadHandler) {
+      window.removeEventListener('beforeunload', this.beforeUnloadHandler);
+      this.beforeUnloadHandler = null;
+    }
   }
 
   /**
