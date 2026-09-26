@@ -1,0 +1,114 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications alt+T"
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e13]:
+            - paragraph [ref=e14]: CROSS-EMPIRE FABRICATOR BRIDGE
+            - generic [ref=e15]:
+              - generic [ref=e16] [cursor=pointer]: Ottoman
+              - generic [ref=e17]: Egyptian
+              - generic [ref=e18]: YILMAZ
+          - generic [ref=e22]: Active Innovation
+        - generic [ref=e23]:
+          - generic [ref=e24]:
+            - generic [ref=e25]: Efficiency
+            - generic [ref=e26]: 92.5%
+          - generic [ref=e27]:
+            - generic [ref=e28]: Waste
+            - generic [ref=e29]: 7.5%
+          - generic [ref=e30]:
+            - generic [ref=e31]: Empire Fusion
+            - generic [ref=e32]: Active
+          - generic [ref=e33]:
+            - generic [ref=e34]: Innovation Score
+            - generic [ref=e35]: "94.2"
+        - generic [ref=e44]:
+          - button "STEP 1 Smart Measuring Digital measurement capture" [ref=e45] [cursor=pointer]:
+            - generic [ref=e47]: STEP 1
+            - img [ref=e50]
+            - heading "Smart Measuring" [level=3] [ref=e56]
+            - paragraph [ref=e57]: Digital measurement capture
+          - button "STEP 2 Technical Design Component specification" [ref=e58] [cursor=pointer]:
+            - generic [ref=e60]: STEP 2
+            - img [ref=e63]
+            - heading "Technical Design" [level=3] [ref=e66]
+            - paragraph [ref=e67]: Component specification
+          - button "STEP 3 3D Preview Visual model preview" [ref=e68] [cursor=pointer]:
+            - generic [ref=e70]: STEP 3
+            - img [ref=e73]
+            - heading "3D Preview" [level=3] [ref=e76]
+            - paragraph [ref=e77]: Visual model preview
+          - button "STEP 4 Cutting Optimization Material optimization" [ref=e78] [cursor=pointer]:
+            - generic [ref=e80]: STEP 4
+            - img [ref=e83]
+            - heading "Cutting Optimization" [level=3] [ref=e89]
+            - paragraph [ref=e90]: Material optimization
+          - button "STEP 5 Inventory Check Stock management" [ref=e91] [cursor=pointer]:
+            - generic [ref=e93]: STEP 5
+            - img [ref=e96]
+            - heading "Inventory Check" [level=3] [ref=e100]
+            - paragraph [ref=e101]: Stock management
+          - button "STEP 6 Production Planning Scheduling & machining" [ref=e102] [cursor=pointer]:
+            - generic [ref=e104]: STEP 6
+            - img [ref=e107]
+            - heading "Production Planning" [level=3] [ref=e109]
+            - paragraph [ref=e110]: Scheduling & machining
+          - button "STEP 7 Quality Control Inspection & validation" [ref=e111] [cursor=pointer]:
+            - generic [ref=e113]: STEP 7
+            - img [ref=e116]
+            - heading "Quality Control" [level=3] [ref=e118]
+            - paragraph [ref=e119]: Inspection & validation
+        - generic [ref=e122] [cursor=pointer]:
+          - generic [ref=e123]: Cross-Empire Innovation Index
+          - generic [ref=e124]:
+            - generic [ref=e125]:
+              - text: Step 2 of 7
+              - generic [ref=e126]: 29%
+            - img [ref=e127]
+      - main [ref=e129]:
+        - generic [ref=e134]:
+          - img [ref=e135]
+          - heading "No Project Data" [level=3] [ref=e138]
+          - paragraph [ref=e139]: Please complete the measurement phase first to create a project.
+    - button [ref=e142] [cursor=pointer]:
+      - img [ref=e143]
+  - generic [ref=e145]:
+    - generic [ref=e146]:
+      - heading "Phase 1 Performance Dashboard" [level=3] [ref=e147]
+      - button "Close dashboard" [ref=e148] [cursor=pointer]: ×
+    - generic [ref=e149]:
+      - generic [ref=e150]:
+        - generic [ref=e151]: 376ms
+        - generic [ref=e152]: FCP
+        - generic [ref=e153]: "Target: <1400ms"
+      - generic [ref=e154]:
+        - generic [ref=e155]: 844ms
+        - generic [ref=e156]: LCP
+        - generic [ref=e157]: "Target: <2400ms"
+      - generic [ref=e158]:
+        - generic [ref=e159]: 174ms
+        - generic [ref=e160]: TBT
+        - generic [ref=e161]: "Target: <400ms"
+      - generic [ref=e162]:
+        - generic [ref=e163]: "0.014"
+        - generic [ref=e164]: CLS
+        - generic [ref=e165]: "Target: <0.1"
+    - generic [ref=e166]:
+      - generic [ref=e167]:
+        - strong [ref=e168]: "Connection:"
+        - text: 4g
+      - generic [ref=e169]:
+        - strong [ref=e170]: "Load Time:"
+        - text: 311ms
+    - generic [ref=e171]:
+      - strong [ref=e172]: "Active Optimizations (3/6):"
+      - list [ref=e173]:
+        - listitem [ref=e174]: ✅ Critical CSS
+        - listitem [ref=e175]: ✅ Service Worker
+        - listitem [ref=e176]: ✅ Font Optimization
+```
