@@ -66,7 +66,7 @@ export const DraftingWorkbench: React.FC<{
   const [mode, setMode] = useState<'window' | 'facade'>('window');
   const [facadeModel, setFacadeModel] = useState<FacadeModel | null>(null);
 
-  const { state, actions } = useDraftingWorkbenchState();
+  const { state, actions } = useDraftingWorkbenchState(project?.systemPackId);
 
   // Initialize drafting engine and collaboration
   const draftingEngine = useDraftingEngine({
@@ -168,7 +168,7 @@ export const DraftingWorkbench: React.FC<{
       const packId = (mw[0] as { systemPackId?: string }).systemPackId;
       if (packId) return packId;
     }
-    return state.preferences.selectedSystemPackId || project?.systemPackId || undefined;
+    return project?.systemPackId || state.preferences.selectedSystemPackId || undefined;
   })();
 
   // Live size from current drafting design (first frame or first rect) so top bar Size badge stays in sync

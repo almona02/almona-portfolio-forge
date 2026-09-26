@@ -116,7 +116,7 @@ export interface UseDraftingWorkbenchStateReturn {
  * Consolidates all state management logic into a single, organized hook.
  * Groups related state variables and provides clean action interfaces.
  */
-export function useDraftingWorkbenchState(): UseDraftingWorkbenchStateReturn {
+export function useDraftingWorkbenchState(initialSystemPackId?: string): UseDraftingWorkbenchStateReturn {
   // Safety check for React hooks availability
   if (typeof useState !== 'function') {
     throw new Error('React hooks are not available. This may indicate the component is being rendered outside of a React context.');
@@ -139,7 +139,9 @@ export function useDraftingWorkbenchState(): UseDraftingWorkbenchStateReturn {
   const [gridVisible, setGridVisible] = useState<boolean>(userPreferences.gridVisible);
   const [snapEnabled, setSnapEnabled] = useState<boolean>(userPreferences.snapEnabled);
   const [selectedMaterial, setSelectedMaterial] = useState<MaterialType>('aluminum');
-  const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>('caluminium_ps_v3');
+  const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(
+    initialSystemPackId ?? userPreferences.lastSystemPackId ?? 'caluminium_ps_v3',
+  );
 
   // Operations State
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);

@@ -155,13 +155,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   });
 
   // Grid State for Phase 4
-  const [grid, setGrid] = useState<WindowGrid>({
+  const hasAuthoritativeGrid = Boolean(initialData?.grid);
+  const [grid, setGrid] = useState<WindowGrid>(() => initialData?.grid ?? ({
     rows: DEFAULT_GRID.DEFAULT_ROWS,
     cols: DEFAULT_GRID.DEFAULT_COLS,
     cells: [{ id: DEFAULT_GRID.DEFAULT_CELL_ID, row: 0, col: 0, type: 'fixed' }]
-  });
+  }));
 
-  const [isGridLocked, setIsGridLocked] = useState(false);
+  const [isGridLocked, setIsGridLocked] = useState(hasAuthoritativeGrid);
 
   // Predictive Grid Logic (Phase 3)
   const { suggestedGrid, predictionReason } = useEgyptianPredictiveGrid({
@@ -182,7 +183,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
   }, [suggestedGrid, isGridLocked]);
 
-  const [isGridMode, setIsGridMode] = useState(false);
+  const [isGridMode, setIsGridMode] = useState(hasAuthoritativeGrid);
   const [isSystemPackCollapsed, setIsSystemPackCollapsed] = useState(false);
 
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(() => {
@@ -205,7 +206,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [_validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedPatternId, setSelectedPatternId] = useState<string>(''); // Empty string is OK here - not used in Select value
+  const [selectedPatternId, setSelectedPatternId] = useState<string>(initialData?.presetId ?? ''); // Empty string is OK here - not used in Select value
   const [blueprintZoom, setBlueprintZoom] = useState<number>(BLUEPRINT_VIEW.DEFAULT_ZOOM); // Zoom level (1 = 100%, 1.2 = 120%, etc.)
   const [blueprintFullscreen, setBlueprintFullscreen] = useState<boolean>(false);
 
