@@ -112,7 +112,10 @@ export const ActiveProjectHeader: React.FC<ActiveProjectHeaderProps> = ({
     },
     {
       label: t('industrial.context.revision', 'Revision'),
-      value: NOT_RECORDED,
+      value: Number.isInteger(project.revision) && (project.revision ?? 0) > 0
+        ? `R${project.revision}`
+        : NOT_RECORDED,
+      ltr: true,
     },
     {
       label: t('industrial.context.machine', 'Machine'),

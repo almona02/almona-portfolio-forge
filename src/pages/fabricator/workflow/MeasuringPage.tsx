@@ -68,6 +68,36 @@ export function unitFromMeasurement(
     } as WindowUnit;
 }
 
+export function nextPoseNumber(poses: WindowUnit[]): string {
+    const numericPositions = poses
+        .map(candidate => Number(candidate.posNumber))
+        .filter(value => Number.isInteger(value) && value > 0);
+    return String((numericPositions.length ? Math.max(...numericPositions) : poses.length) + 1);
+}
+
+export function nextPoseDraft(
+    base: WindowUnit,
+    data: MeasurementData,
+    projectId: string,
+    poseId: string,
+    posNumber: string,
+): WindowUnit {
+    const now = new Date();
+    return {
+        ...unitFromMeasurement(base, data, projectId, poseId, posNumber),
+        posNumber,
+        status: 'measuring',
+        createdAt: now,
+        updatedAt: now,
+        positionMeta: {
+            buildingBlock: base.positionMeta?.buildingBlock,
+        },
+        optimization: null,
+        components: [],
+        hardware: [],
+    };
+}
+
 export const MeasuringPage: React.FC = () => {
     const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
     const navigate = useNavigate();
@@ -114,8 +144,22 @@ export const MeasuringPage: React.FC = () => {
             await persistPose(data, poseId, posNumber);
             setMeasurementData(data);
             completeStep('measuring');
-            toast.success(`Pose ${posNumber} saved. Create the next position from the project screen.`);
-            navigate(fabricatorRoutes.studioProjects());
+            if (!pose) throw new Error('Authoritative position is unavailable');
+            const newPositionNumber = nextPoseNumber(layoutPoses);
+            const draft = nextPoseDraft(
+                pose,
+                data,
+                projectId,
+                crypto.randomUUID(),
+                newPositionNumber,
+            );
+            const created = await upsertPose.mutateAsync({
+                windowUnit: draft,
+                grid: draft.grid as Record<string, unknown> | undefined,
+                selectedPreset: draft.presetId,
+            });
+            toast.success(`Pose ${posNumber} saved. Pose ${newPositionNumber} is ready to measure.`);
+            navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
         } catch (err) {
             toast.error(`Failed to add next pose: ${persistenceErrorMessage(err)}`);
         }

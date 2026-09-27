@@ -1,5 +1,5 @@
 import { ValidationGate } from '@/components/fabricator/workflow/ValidationGate';
-import React from 'react';
+import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import { useAuthoritativePosition } from '@/hooks/useFabricatorQueries';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
@@ -9,7 +9,32 @@ import { useEffect } from 'react';
  * PoseWorkflowLayout — pose-centric content + validation gate.
  * Workflow bar lives on StudioLayout (FP-025A) so it is not duplicated.
  */
-const PoseWorkflowLayout: React.FC = () => {
+class PoseRouteBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo): void {
+    console.error('Pose workflow route failed:', error, info);
+  }
+
+  render(): ReactNode {
+    if (this.state.failed) {
+      return (
+        <div role="alert" className="flex h-full flex-col items-center justify-center gap-4 bg-slate-950 p-8 text-center">
+          <h2 className="text-lg font-semibold text-red-300">Position unavailable</h2>
+          <p className="max-w-lg text-sm text-slate-400">This position could not be loaded for the current owner and project. No manufacturing data was changed.</p>
+          <a href="/fabricator/studio/projects" className="rounded-md border border-amber-500/40 px-4 py-2 text-sm text-amber-300 hover:bg-amber-500/10">Return to projects</a>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const PoseWorkflowCoordinator: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { dispatch } = useFabricatorWorkspace();
   const { data, isLoading, error, isHydrated } = useAuthoritativePosition(projectId, poseId);
@@ -26,6 +51,15 @@ const PoseWorkflowLayout: React.FC = () => {
         <Outlet />
       </div>
     </div>
+  );
+};
+
+const PoseWorkflowLayout: React.FC = () => {
+  const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
+  return (
+    <PoseRouteBoundary key={`${projectId ?? 'missing'}:${poseId ?? 'missing'}`}>
+      <PoseWorkflowCoordinator />
+    </PoseRouteBoundary>
   );
 };
 

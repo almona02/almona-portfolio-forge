@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import type { MeasurementData, WindowUnit } from '@/types/fabricator';
 
-import { unitFromMeasurement } from './MeasuringPage';
+import { nextPoseDraft, nextPoseNumber, unitFromMeasurement } from './MeasuringPage';
 
 const pose = {
   id: 'position-1',
@@ -64,5 +64,35 @@ describe('Measuring pose integrity', () => {
       roomOrZone: 'Kitchen',
       windowIndex: 'W-07',
     });
+  });
+
+  it('creates the next isolated measuring draft with a collision-free number', () => {
+    const measurement = {
+      width: '1210',
+      height: '1550',
+      manufacturingWidth: 1210,
+      manufacturingHeight: 1550,
+      windowType: 'sliding_window_2sash',
+    } as MeasurementData;
+    const number = nextPoseNumber([
+      pose,
+      { ...pose, id: 'position-2', posNumber: '9' },
+    ]);
+    const draft = nextPoseDraft(pose, measurement, 'project-1', 'position-3', number);
+
+    expect(number).toBe('10');
+    expect(draft).toMatchObject({
+      id: 'position-3',
+      projectId: 'project-1',
+      posNumber: '10',
+      status: 'measuring',
+      overallWidth: 1210,
+      overallHeight: 1550,
+      grid: pose.grid,
+      components: [],
+      hardware: [],
+      optimization: null,
+    });
+    expect(draft.positionMeta).toEqual({ buildingBlock: undefined });
   });
 });

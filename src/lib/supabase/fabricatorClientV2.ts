@@ -87,6 +87,7 @@ export function mapPositionRowToWindowUnit(row: PositionV2Row): WindowUnit | nul
     measurementMode: wu.measurementMode as WindowUnit['measurementMode'],
     manufacturingWidth: row.overall_width_mm ?? undefined,
     manufacturingHeight: row.overall_height_mm ?? undefined,
+    revision: row.qc_revision,
   } as WindowUnit;
 }
 

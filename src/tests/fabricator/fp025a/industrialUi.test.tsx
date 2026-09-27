@@ -85,6 +85,7 @@ const sampleProject: WindowUnit = {
   customer: 'Al-Noor',
   projectCode: 'PRJ-25',
   systemPackId: 'rock60',
+  revision: 3,
 };
 
 function renderAt(ui: React.ReactElement, path = '/fabricator/studio/projects/p1/positions/pose-1/design') {
@@ -137,6 +138,7 @@ describe('FP-025A industrial Studio UI', () => {
     expect(header).toHaveTextContent('PRJ-25');
     expect(header).toHaveTextContent('P01');
     expect(header).toHaveTextContent('Al-Noor');
+    expect(header).toHaveTextContent('R3');
     expect(header).toHaveTextContent('Not recorded');
   });
 

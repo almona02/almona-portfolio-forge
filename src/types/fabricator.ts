@@ -121,6 +121,8 @@ export interface WindowUnit {
   customerCode?: string;
   /** Optional position/pose twin code for machine labels & reports */
   positionCode?: string;
+  /** Authoritative database revision used to bind derived artifacts. */
+  revision?: number;
   /** Optional system pack (e.g. rock60, jumbo100) used for this position */
   systemPackId?: string;
   /**
