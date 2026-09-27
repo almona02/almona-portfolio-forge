@@ -28,7 +28,6 @@ import {
 } from '@/lib/fabricator/ManufacturingSettings';
 import {
   DOWIN_ASDD_JOB,
-  type DowinLengthCategory,
   type DowinProfileOverlap,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
 

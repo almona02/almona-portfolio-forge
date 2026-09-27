@@ -1,5 +1,4 @@
 import { isCadDesktopLayout, useStudioBreakpoint } from '@/hooks/useStudioBreakpoint';
-import { NOT_RECORDED } from '@/lib/fabricator/studioWorkflow';
 import { cn } from '@/lib/utils';
 import type { OptimizationResult } from '@/types/fabricator';
 import React from 'react';

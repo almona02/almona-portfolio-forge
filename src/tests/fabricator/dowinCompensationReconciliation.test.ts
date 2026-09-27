@@ -7,7 +7,6 @@ import { describe, expect, it } from 'vitest';
 import { calculateKFactor } from '@/lib/fabricator/UPVCCuttingEngine';
 import {
   PLATFORM_MANUFACTURING_DEFAULTS,
-  YILMAZCAD_PARITY_MANUFACTURING_SETTINGS,
   resolveManufacturingSettings,
 } from '@/lib/fabricator/ManufacturingSettings';
 import {
@@ -69,7 +68,6 @@ import {
   evaluateWeldingWasteLayerCausality,
   evaluateTwoFixtureWeldCausality,
   evaluateCitaWeldCausalityFromExistingArtifacts,
-  classifyWeldThreePointDeltas,
   evaluateWeldLinearityAcrossRows,
   evaluateControlFixtureAuthorization,
   evaluateBaselineReset,

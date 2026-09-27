@@ -1,7 +1,7 @@
 /**
  * Production runtime path integration tests — prove Tier-3 governance executes via ticketApi.
  */
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   buildGovernedTransitionPatch,
   computeSlaFields,

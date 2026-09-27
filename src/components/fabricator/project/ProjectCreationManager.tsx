@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
-import { fabricatorClientV2, persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
+import { fabricatorClientV2 } from '@/lib/supabase/fabricatorClientV2';
 import { useJobsStore } from '@/store/jobsStore';
 import { WindowUnit } from '@/types/fabricator';
 import React, { useEffect, useState } from 'react';
