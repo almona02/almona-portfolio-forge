@@ -23,7 +23,7 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
           {t('services.service_packages')}
         </h2>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-          Egypt-ready care plans for aluminium &amp; UPVC workshops—reliable SLAs, fast spares, and bilingual support.
+          Discuss a service scope for your aluminium or UPVC workshop. Coverage, timing and fees require a written quotation.
         </p>
       </div>
 
@@ -39,29 +39,6 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
         ))}
       </div>
 
-      {/* Trust Indicators */}
-      <div className="text-center mt-16 p-8 bg-white/5 rounded-2xl backdrop-blur-sm border border-white/10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-300">
-          <div className="flex items-center justify-center space-x-3">
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">✓</span>
-            </div>
-            <span className="text-lg">{t('services.sla_guarantee')}</span>
-          </div>
-          <div className="flex items-center justify-center space-x-3">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">24</span>
-            </div>
-            <span className="text-lg">{t('services.twenty_four_seven_support')}</span>
-          </div>
-          <div className="flex items-center justify-center space-x-3">
-            <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">📊</span>
-            </div>
-            <span className="text-lg">{t('services.performance_tracking')}</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

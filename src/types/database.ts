@@ -433,9 +433,19 @@ export interface Database {
       }
       quotes: {
         Row: {
+          contact_name: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          company: string | null
+          project_description: string | null
+          urgency: string | null
+          delivery_location: string | null
+          special_requirements: string | null
+          related_service_ticket_id: string | null
+          machine_id: string | null
           id: string
           quote_number: string
-          user_id: string
+          user_id: string | null
           status: QuoteStatus
           title: string | null
           description: string | null
@@ -458,7 +468,17 @@ export interface Database {
           accepted_at: string | null
         }
         Insert: {
-          user_id: string
+          contact_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          company?: string | null
+          project_description?: string | null
+          urgency?: string | null
+          delivery_location?: string | null
+          special_requirements?: string | null
+          related_service_ticket_id?: string | null
+          machine_id?: string | null
+          user_id?: string | null
           status?: QuoteStatus
           title?: string | null
           description?: string | null
@@ -477,6 +497,16 @@ export interface Database {
           payment_terms?: string | null
         }
         Update: {
+          contact_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          company?: string | null
+          project_description?: string | null
+          urgency?: string | null
+          delivery_location?: string | null
+          special_requirements?: string | null
+          related_service_ticket_id?: string | null
+          machine_id?: string | null
           status?: QuoteStatus
           title?: string | null
           description?: string | null
@@ -646,6 +676,8 @@ export interface Database {
       }
       quote_items: {
         Row: {
+          service_id: string | null
+          price_pending: boolean
           id: string
           quote_id: string | null
           product_id: string | null
@@ -662,6 +694,8 @@ export interface Database {
           created_at: string
         }
         Insert: {
+          service_id?: string | null
+          price_pending?: boolean
           quote_id?: string | null
           product_id?: string | null
           variant_id?: string | null
@@ -676,6 +710,8 @@ export interface Database {
           notes?: string | null
         }
         Update: {
+          service_id?: string | null
+          price_pending?: boolean
           quote_id?: string | null
           product_id?: string | null
           variant_id?: string | null

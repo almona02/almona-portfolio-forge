@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
@@ -28,7 +29,7 @@ export { MILESTONES } from './timelineData';
 
 const TimelineNode = ({ milestone, active, onClick }: { milestone: Milestone; active: boolean; onClick: () => void }) => {
   const meshRef = useRef<THREE.Mesh>(null);
-  
+
   useFrame(() => {
     if (meshRef.current) {
       meshRef.current.scale.lerp(
@@ -60,11 +61,10 @@ const TimelineNode = ({ milestone, active, onClick }: { milestone: Milestone; ac
 };
 
 const MediaGallery = ({ media }: { media: Milestone['media'] }) => {
+  const copy = usePublicCopy();
   if (!media || media.length === 0) {
     return (
-      <div className="mt-4 rounded-lg border border-almona-light/10 bg-gradient-to-br from-almona-dark to-almona-dark/80 px-4 py-6 text-sm text-gray-400">
-        Media coming soon for this milestone.
-      </div>
+      <div className="mt-4 rounded-lg border border-almona-light/10 bg-gradient-to-br from-almona-dark to-almona-dark/80 px-4 py-6 text-sm text-gray-400">{copy("Media coming soon for this milestone.")}</div>
     );
   }
 
@@ -73,9 +73,9 @@ const MediaGallery = ({ media }: { media: Milestone['media'] }) => {
       {media.map((item, index) => (
         <div key={index} className="relative aspect-[4/3] sm:aspect-video bg-almona-dark rounded-lg overflow-hidden border border-almona-light/10">
           {item.type === 'image' ? (
-            <img 
-              src={item.url} 
-              alt={item.thumbnail ?? item.url} 
+            <img
+              src={item.url}
+              alt={item.thumbnail ?? item.url}
               className="w-full h-full object-cover"
               loading="lazy"
               onError={(e) => {
@@ -99,6 +99,7 @@ const MediaGallery = ({ media }: { media: Milestone['media'] }) => {
 };
 
 const ComparisonSlider = ({ before, after }: { before: string; after: string }) => {
+  const copy = usePublicCopy();
   const [sliderPosition, setSliderPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -106,7 +107,7 @@ const ComparisonSlider = ({ before, after }: { before: string; after: string }) 
     e.preventDefault();
     const startX = e.clientX;
     const startWidth = sliderPosition;
-    
+
     const handleMouseMove = (e: MouseEvent) => {
       if (!containerRef.current) return;
       const containerWidth = containerRef.current.clientWidth;
@@ -114,12 +115,12 @@ const ComparisonSlider = ({ before, after }: { before: string; after: string }) 
       const newWidth = startWidth + (deltaX / containerWidth * 100);
       setSliderPosition(Math.min(100, Math.max(0, newWidth)));
     };
-    
+
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-    
+
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
   };
@@ -128,26 +129,26 @@ const ComparisonSlider = ({ before, after }: { before: string; after: string }) 
     <div className="relative w-full h-64 mt-4 rounded-lg overflow-hidden" ref={containerRef}>
       <div className="absolute inset-0 flex">
         <div className="w-full h-full">
-          <img 
-            src={before} 
-            alt="Before" 
+          <img
+            src={before}
+            alt={copy("Before")}
             className="w-full h-full object-cover"
           />
         </div>
-        <div 
+        <div
           className="absolute top-0 left-0 bottom-0 w-full"
           style={{ width: `${sliderPosition}%` }}
         >
-          <img 
-            src={after} 
-            alt="After" 
+          <img
+            src={after}
+            alt={copy("After")}
             className="w-full h-full object-cover"
           />
                         <div
                           className="absolute top-0 right-0 bottom-0 w-1 bg-white cursor-ew-resize"
                           onMouseDown={handleMouseDown}
                           role="slider"
-                          aria-label="Image comparison slider"
+                          aria-label={copy("Image comparison slider")}
                           aria-valuenow={sliderPosition}
                           aria-valuemin={0}
                           aria-valuemax={100}
@@ -168,12 +169,13 @@ const ComparisonSlider = ({ before, after }: { before: string; after: string }) 
 };
 
 export const CompanyTimeline = () => {
+  const copy = usePublicCopy();
   const [activeMilestone, setActiveMilestone] = useState<Milestone>(MILESTONES[0]);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
   return (
-    <div 
+    <div
       ref={ref}
       className="flex flex-col lg:flex-row gap-4 sm:gap-6 md:gap-8"
       style={{
@@ -195,7 +197,7 @@ export const CompanyTimeline = () => {
               />
             ))}
           </group>
-          <OrbitControls 
+          <OrbitControls
             enableZoom={false}
             minPolarAngle={Math.PI / 4}
             maxPolarAngle={Math.PI / 2}
@@ -206,11 +208,11 @@ export const CompanyTimeline = () => {
       <div className="flex-1">
         <ScrollArea className="h-[320px] sm:h-[420px] md:h-[460px] lg:h-[520px] pr-2 sm:pr-4 bg-almona-dark/60 rounded-lg sm:rounded-xl border border-almona-light/10 p-3 sm:p-4">
           <div className="space-y-3 sm:space-y-4">
-            <h3 className="typography-h3 text-lg sm:text-xl md:text-2xl text-white leading-tight">{activeMilestone.title}</h3>
-            <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{activeMilestone.description}</p>
-            
+            <h3 className="typography-h3 text-lg sm:text-xl md:text-2xl text-white leading-tight">{copy(activeMilestone.title)}</h3>
+            <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{copy(activeMilestone.description)}</p>
+
             {activeMilestone.comparison && (
-              <ComparisonSlider 
+              <ComparisonSlider
                 before={activeMilestone.comparison.before}
                 after={activeMilestone.comparison.after}
               />
@@ -220,33 +222,29 @@ export const CompanyTimeline = () => {
 
             <Tabs value="details" onValueChange={() => {}} className="mt-4 sm:mt-6">
               <TabsList className="grid w-full grid-cols-2 bg-almona-darker h-9 sm:h-10">
-                <TabsTrigger value="details" className="text-xs sm:text-sm">Details</TabsTrigger>
-                <TabsTrigger value="impact" className="text-xs sm:text-sm">Impact</TabsTrigger>
+                <TabsTrigger value="details" className="text-xs sm:text-sm">{copy("Details")}</TabsTrigger>
+                <TabsTrigger value="impact" className="text-xs sm:text-sm">{copy("Impact")}</TabsTrigger>
               </TabsList>
               <TabsContent value="details" className="mt-3 sm:mt-4">
                 {activeMilestone.details && activeMilestone.details.length > 0 ? (
                   <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
                     {activeMilestone.details.map((item, idx) => (
-                      <li key={idx}>{item}</li>
+                      <li key={idx}>{copy(item)}</li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
-                    Additional details about this milestone will be added soon.
-                  </p>
+                  <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{copy("Additional details about this milestone will be added soon.")}</p>
                 )}
               </TabsContent>
               <TabsContent value="impact" className="mt-3 sm:mt-4">
                 {activeMilestone.impact && activeMilestone.impact.length > 0 ? (
                   <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
                     {activeMilestone.impact.map((item, idx) => (
-                      <li key={idx}>{item}</li>
+                      <li key={idx}>{copy(item)}</li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
-                    Impact highlights will be documented here.
-                  </p>
+                  <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{copy("Impact highlights will be documented here.")}</p>
                 )}
               </TabsContent>
             </Tabs>

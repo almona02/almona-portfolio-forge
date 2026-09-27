@@ -1,5 +1,5 @@
 /**
- * FP-024 — DoWin physical-length golden. No invented expected millimetres.
+ * FP-024A — licensed DoWin asdd three-layer golden. Not accepted.
  */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -7,155 +7,326 @@ import { describe, expect, it } from 'vitest';
 import { calculateKFactor } from '@/lib/fabricator/UPVCCuttingEngine';
 import {
   DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
-  DOWIN_GOLDEN_FIXTURE_STATUS,
+  DOWIN_ASDD_FIXTURE_SLUG,
+  DOWIN_ASDD_MDB_PROFILE_CUTS,
+  DOWIN_ASDD_REPRESENTED_CATEGORIES,
+  DOWIN_ASDD_SOURCE_HASHES,
   DOWIN_LENGTH_CATEGORIES,
   DOWIN_PARITY_TOLERANCE_MM,
   compareDowinGoldenLengths,
+  dowinMachineParityPasses,
   dowinParityGatePasses,
   isWithinDowinParityTolerance,
-  type DowinPhysicalLengthGoldenFixture,
 } from '@/lib/fabricator/golden/dowinPhysicalLengthFixture';
 import {
-  computeDowinParityLengths,
-  deceuninck70zParityInput,
-  glassSizeMm,
+  DOWIN_ASDD_EXTERNAL_BAR_PATTERNS,
+  reconcileExternalBarPattern,
+} from '@/lib/fabricator/barPackExternalReconciliation';
+import {
+  machineInstructionLengthMm,
+  packedSegmentLengthMm,
+  physicalSawCutLengthMm,
+} from '@/lib/fabricator/cutLengthSemantics';
+import {
+  freezeManufacturingSettings,
+  isReusableRemnantLength,
+  manufacturingSettingsProvenanceRows,
+  resolveManufacturingSettings,
+} from '@/lib/fabricator/ManufacturingSettings';
+import {
+  almonaParityActualsForAsdd,
   sashHorizontalCutMm,
-  sashInnerOpeningMm,
-  sashVerticalCutMm,
 } from '@/lib/fabricator/dowinParity/DowinParityLengthEngine';
+import { evaluateMachineExportPreflight } from '@/lib/fabricator/production/machineExportPreflight';
+import { generateCutSheets } from '@/lib/fabricator/production/CutSheetGenerator';
+import type { Cut } from '@/types/fabricator';
 
-describe('FP-024 DoWin physical-length golden', () => {
-  it('requires all length categories and keeps expected rows empty until a real export', () => {
-    expect(DOWIN_LENGTH_CATEGORIES).toEqual([
-      'frame_horizontal',
-      'frame_vertical',
-      'sash_horizontal',
-      'sash_vertical',
-      'mullion',
-      'glass',
-      'angle_compensation',
-    ]);
-    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe(DOWIN_GOLDEN_FIXTURE_STATUS);
-    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallWidthMm).toBeNull();
-    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.overallHeightMm).toBeNull();
-    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows).toEqual([]);
-    expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows.every((r) => r.expectedLengthMm == null)).toBe(
-      true
-    );
+const fixture = DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION;
+
+function physicalRows() {
+  return fixture.rows.filter(
+    (r) => r.category !== 'glass' && r.category !== 'angle_compensation'
+  );
+}
+
+function expectedNominals(category: (typeof fixture.rows)[number]['category']) {
+  return fixture.rows
+    .filter((r) => r.category === category)
+    .map((r) => r.expectedNominalLengthMm);
+}
+
+describe('FP-024 DoWin external golden', () => {
+  it('stores provenance and 21 design-list physical pieces plus UNPROVEN rows', () => {
+    expect(fixture.id).toBe('dowin-deceuninck70z-asdd-1000x1500-20260909');
+    expect(DOWIN_ASDD_FIXTURE_SLUG).toBe('deceuninck70-asdd-1000x1500-dowin-2026-09-09');
+    expect(fixture.status).toBe('READY_EXTERNAL_FIXTURE');
+    expect(fixture.orderNo).toBe('10001');
+    expect(fixture.sourceHashesSha256).toEqual(DOWIN_ASDD_SOURCE_HASHES);
+    expect(physicalRows()).toHaveLength(21);
+    expect(new Set(physicalRows().map((r) => r.pieceId)).size).toBe(21);
+    expect(DOWIN_LENGTH_CATEGORIES).toHaveLength(9);
   });
 
-  it('compare helper stays PENDING and does not invent a ±0.1 mm pass', () => {
-    const compared = compareDowinGoldenLengths(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION, [
-      { pieceId: 'invented', category: 'sash_horizontal', actualLengthMm: 1207 },
-    ]);
-    expect(compared.status).toBe(DOWIN_GOLDEN_FIXTURE_STATUS);
-    expect(compared.allCategoriesRepresented).toBe(false);
+  it('transcribes this-run General Settings from the live screenshot, not from platform defaults', () => {
+    expect(fixture.jobSettings.sawThicknessMm).toBe(4);
+    expect(fixture.jobSettings.weldingWasteMm).toBe(3);
+    expect(fixture.jobSettings.sashOffsetMm).toBe(7);
+    expect(fixture.jobSettings.trimCutMm).toBe(0);
+    expect(fixture.jobSettings.remnantThresholdMm).toBe(500);
+    expect(fixture.jobSettings.glazingClearanceMm).toBe(2.5);
+    expect(fixture.jobSettings.machineId).toBe('DC-600');
+    expect(fixture.jobSettings.compLessThan90LeftMm).toBeNull();
+    expect(fixture.sourceHashesSha256['dowin-general-settings.png']).toMatch(/^95652321b98d/);
+  });
+
+  it('keeps repeated lengths as distinct physical records', () => {
+    const sashH = fixture.rows.filter((r) => r.category === 'sash_horizontal');
+    expect(sashH).toHaveLength(4);
+    expect(sashH.every((r) => r.expectedPackedSegmentMm === 454)).toBe(true);
+    expect(new Set(sashH.map((r) => r.pieceId)).size).toBe(4);
+    expect(new Set(sashH.map((r) => r.externalAssemblyLabel)).size).toBe(4);
+  });
+
+  it('records frame 2×1000 and 2×1500 nominal expectations', () => {
+    expect(expectedNominals('frame_horizontal')).toEqual([1000, 1000]);
+    expect(expectedNominals('frame_vertical')).toEqual([1500, 1500]);
+  });
+
+  it('records sash 4×451 and 4×1430 nominal expectations', () => {
+    expect(expectedNominals('sash_horizontal')).toEqual([451, 451, 451, 451]);
+    expect(expectedNominals('sash_vertical')).toEqual([1430, 1430, 1430, 1430]);
+  });
+
+  it('records mullion 1×1416', () => {
+    expect(expectedNominals('mullion')).toEqual([1416]);
+  });
+
+  it('records glazing bead 4×331 and 4×1310', () => {
+    expect(expectedNominals('glazing_bead_horizontal')).toEqual([331, 331, 331, 331]);
+    expect(expectedNominals('glazing_bead_vertical')).toEqual([1310, 1310, 1310, 1310]);
+  });
+
+  it('matches DC-600 MDB LENGTH to the machine layer only; beads stay null', () => {
+    expect(DOWIN_ASDD_MDB_PROFILE_CUTS).toHaveLength(13);
+    expect(DOWIN_ASDD_MDB_PROFILE_CUTS.filter((c) => c.lengthMm === 1003)).toHaveLength(2);
+    expect(DOWIN_ASDD_MDB_PROFILE_CUTS.some((c) => c.lengthMm === 1000)).toBe(false);
+    const beads = fixture.rows.filter((r) => r.category.startsWith('glazing_bead'));
+    expect(beads).toHaveLength(8);
+    expect(beads.every((r) => r.expectedMachineLengthMm === null)).toBe(true);
+  });
+
+  it('fails represented categories and keeps glass/angle UNPROVEN, not PASS', () => {
+    const compared = compareDowinGoldenLengths(fixture, almonaParityActualsForAsdd());
     expect(dowinParityGatePasses(compared)).toBe(false);
-    for (const category of DOWIN_LENGTH_CATEGORIES) {
-      expect(compared.categoryScorecard[category]).toBe('PENDING');
+    expect(compared.representedCategoriesPass).toBe(false);
+    expect(compared.fullSuitePasses).toBe(false);
+    expect(compared.categoryScorecard.glass).toBe('UNPROVEN');
+    expect(compared.categoryScorecard.angle_compensation).toBe('UNPROVEN');
+    expect(compared.categoryScorecard.glass).not.toBe('PASS');
+    expect(compared.categoryScorecard.angle_compensation).not.toBe('PASS');
+    expect(fixture.categoryAvailability.glass).toBe('PENDING_EXTERNAL_FIXTURE');
+    expect(fixture.categoryAvailability.angle_compensation).toBe('NOT_APPLICABLE');
+    for (const category of DOWIN_ASDD_REPRESENTED_CATEGORIES) {
+      expect(compared.categoryScorecard[category]).toBe('FAIL');
     }
-    expect(isWithinDowinParityTolerance(100.0, 100.1)).toBe(true);
-    expect(isWithinDowinParityTolerance(100.0, 100.11)).toBe(false);
+    const sashH = compared.results.find((r) => r.pieceId === 'asdd.Left.Sash.Top');
+    expect(sashH?.packed.expectedMm).toBe(454);
+    expect(sashH?.packed.actualMm).toBe(444);
+    expect(sashH?.nominal.expectedMm).toBe(451);
+    expect(sashH?.nominal.actualMm).toBeNull();
+    expect(sashH?.machine.expectedMm).toBe(454);
+    expect(sashH?.machine.actualMm).toBeNull();
+  });
+
+  it('uses ±0.1 mm per piece: 0.10 passes, 0.11 fails, no averaging', () => {
+    expect(isWithinDowinParityTolerance(1000, 1000.1)).toBe(true);
+    expect(isWithinDowinParityTolerance(1000, 1000.11)).toBe(false);
     expect(DOWIN_PARITY_TOLERANCE_MM).toBe(0.1);
-  });
-
-  it('scores the seven length categories independently and refuses a blended pass', () => {
-    const pendingFixture: DowinPhysicalLengthGoldenFixture = {
-      ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
-      rows: DOWIN_LENGTH_CATEGORIES.map((category) => ({
-        pieceId: `pending-${category}`,
-        profileCode: 'PENDING',
-        category,
-        expectedLengthMm: null,
-      })),
-    };
-    const pendingCompared = compareDowinGoldenLengths(
-      pendingFixture,
-      pendingFixture.rows.map((row) => ({
-        pieceId: row.pieceId,
-        category: row.category,
-        actualLengthMm: 0,
-      }))
-    );
-    expect(pendingCompared.allCategoriesRepresented).toBe(true);
-    expect(pendingCompared.status).toBe(DOWIN_GOLDEN_FIXTURE_STATUS);
-    expect(dowinParityGatePasses(pendingCompared)).toBe(false);
-    expect(pendingCompared.categoryScorecard.frame_horizontal).toBe('PENDING');
-    expect(pendingCompared.categoryScorecard.sash_horizontal).toBe('PENDING');
-    expect(pendingCompared.categoryScorecard.glass).toBe('PENDING');
-
-    // Synthetic harness only — not a DoWin export. Proves sash PASS cannot hide frame FAIL.
-    const readyFixture: DowinPhysicalLengthGoldenFixture = {
-      ...DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
-      status: 'READY',
-      rows: [
-        { pieceId: 'fh', profileCode: 'F', category: 'frame_horizontal', expectedLengthMm: 1000 },
-        { pieceId: 'fv', profileCode: 'F', category: 'frame_vertical', expectedLengthMm: 1400 },
-        { pieceId: 'sh', profileCode: 'S', category: 'sash_horizontal', expectedLengthMm: 1207 },
-        { pieceId: 'sv', profileCode: 'S', category: 'sash_vertical', expectedLengthMm: 1411 },
-        { pieceId: 'm', profileCode: 'M', category: 'mullion', expectedLengthMm: 1300 },
-        { pieceId: 'g', profileCode: 'G', category: 'glass', expectedLengthMm: 1181 },
-        { pieceId: 'a', profileCode: 'A', category: 'angle_compensation', expectedLengthMm: 0 },
-      ],
-    };
-    const mixed = compareDowinGoldenLengths(readyFixture, [
-      { pieceId: 'fh', category: 'frame_horizontal', actualLengthMm: 1000.5 },
-      { pieceId: 'fv', category: 'frame_vertical', actualLengthMm: 1400 },
-      { pieceId: 'sh', category: 'sash_horizontal', actualLengthMm: 1207 },
-      { pieceId: 'sv', category: 'sash_vertical', actualLengthMm: 1411 },
-      { pieceId: 'm', category: 'mullion', actualLengthMm: 1300 },
-      { pieceId: 'g', category: 'glass', actualLengthMm: 1181 },
-      { pieceId: 'a', category: 'angle_compensation', actualLengthMm: 0 },
+    const mixed = compareDowinGoldenLengths(fixture, [
+      ...almonaParityActualsForAsdd(),
+      {
+        pieceId: 'asdd.Frame.Top',
+        nominalLengthMm: 1000,
+        packedSegmentMm: 1003,
+        machineInstructionMm: 1003,
+      },
     ]);
-    expect(mixed.status).toBe('COMPARED');
-    expect(mixed.categoryScorecard.sash_horizontal).toBe('PASS');
     expect(mixed.categoryScorecard.frame_horizontal).toBe('FAIL');
-    expect(dowinParityGatePasses(mixed)).toBe(false);
   });
 
-  it('implements evidenced sash formula without treating the result as a DoWin expected length', () => {
-    // ALMONA model of the documented dealer formula — not a DoWin export.
-    expect(sashInnerOpeningMm(1200, 7)).toBe(1186);
+  it('matching is by pieceId, so array reorder does not collapse identity', () => {
+    const actuals = almonaParityActualsForAsdd().reverse();
+    const a = compareDowinGoldenLengths(fixture, actuals);
+    const b = compareDowinGoldenLengths(fixture, almonaParityActualsForAsdd());
+    expect(a.results.find((r) => r.pieceId === 'asdd.Left.Sash.Top')?.packed.actualMm).toBe(
+      b.results.find((r) => r.pieceId === 'asdd.Left.Sash.Top')?.packed.actualMm
+    );
+  });
+
+  it('does not silently substitute nominal and packed millimetres', () => {
+    const swapped = compareDowinGoldenLengths(fixture, [
+      {
+        pieceId: 'asdd.Frame.Top',
+        nominalLengthMm: 1003,
+        packedSegmentMm: 1000,
+        machineInstructionMm: 1003,
+      },
+    ]);
+    const row = swapped.results.find((r) => r.pieceId === 'asdd.Frame.Top');
+    expect(row?.nominal.withinTolerance).toBe(false);
+    expect(row?.packed.withinTolerance).toBe(false);
+    expect(packedSegmentLengthMm({ packedSegmentMm: 1003 })).toBe(1003);
+    expect(packedSegmentLengthMm({ packedSegmentMm: undefined })).toBeNull();
+  });
+
+  it('does not treat a null machine expected as machine-parity PASS', () => {
+    const bead = fixture.rows.find((r) => r.pieceId === 'asdd.Left.Bead.Top');
+    expect(bead?.expectedMachineLengthMm).toBeNull();
+    const compared = compareDowinGoldenLengths(fixture, [
+      {
+        pieceId: 'asdd.Left.Bead.Top',
+        nominalLengthMm: 331,
+        packedSegmentMm: 334,
+        machineInstructionMm: 334,
+      },
+    ]);
+    const row = compared.results.find((r) => r.pieceId === 'asdd.Left.Bead.Top');
+    expect(dowinMachineParityPasses(row!.machine)).toBe(false);
+    expect(machineInstructionLengthMm({ machineInstructionLengthMm: undefined })).toBeNull();
+  });
+
+  it('does not adopt outer+2×SashOffset+weld to force 454', () => {
+    expect(437 + 14 + 3).toBe(454);
+    expect(sashHorizontalCutMm(437, 7, { horizontalBasmaMm: 12, horizontalKaynakMm: 6 }, 3)).toBe(
+      444
+    );
+  });
+
+  it('Cut.length stays saw-oriented when sawCutLengthMm is omitted', () => {
+    const cut: Cut = { length: 1003, angle: 45, componentId: 'c', waste: 0 };
+    expect(physicalSawCutLengthMm(cut)).toBe(1003);
     expect(
-      sashHorizontalCutMm(1200, 7, { horizontalBasmaMm: 12, horizontalKaynakMm: 6 }, 3)
-    ).toBe(1207);
-    expect(sashVerticalCutMm(1400, 7, { verticalBasmaMm: 16, verticalKaynakMm: 6 }, 3)).toBe(1411);
-
-    expect(glassSizeMm(1186, 2.5, 50).lengthMm).toBe(1181);
-    expect(glassSizeMm(40, 2.5, 50).rejected).toBe(true);
-
-    const result = computeDowinParityLengths(deceuninck70zParityInput(1200, 1400));
-    const sashH = result.lines.find((l) => l.category === 'sash_horizontal');
-    const sashV = result.lines.find((l) => l.category === 'sash_vertical');
-    const frameH = result.lines.find((l) => l.category === 'frame_horizontal');
-    const mullion = result.lines.find((l) => l.category === 'mullion');
-    const glass = result.lines.find((l) => l.category === 'glass');
-    const angle = result.lines.find((l) => l.category === 'angle_compensation');
-    expect(sashH?.status).toBe('evidenced');
-    expect(sashH?.lengthMm).toBe(1207);
-    expect(sashV?.lengthMm).toBe(1411);
-    expect(glass?.status).toBe('evidenced');
-    expect(glass?.lengthMm).toBe(1181);
-    expect(angle?.status).toBe('evidenced');
-    expect(angle?.lengthMm).toBe(0);
-    expect(frameH?.status).toBe('unevidenced');
-    expect(frameH?.lengthMm).toBeNull();
-    expect(mullion?.status).toBe('unevidenced');
-    expect(mullion?.lengthMm).toBeNull();
+      physicalSawCutLengthMm({ ...cut, sawCutLengthMm: 1003, reportedWeldedLengthMm: 1000 })
+    ).toBe(1003);
   });
 
-  it('does not delete calculateKFactor and does not wire parity into UPVCCuttingEngine', () => {
-    const k = calculateKFactor({
-      profileWidthMm: 70,
-      wallThicknessMm: 2.5,
-      miterAngleDegrees: 45,
-    });
-    expect(k).toBeGreaterThan(0);
-    const upvc = readFileSync(
-      resolve(process.cwd(), 'src/lib/fabricator/UPVCCuttingEngine.ts'),
+  it('external bar patterns report unexplained delta; mullion is RECONCILED', () => {
+    const settings = { sawKerfMm: 4, trimCutMm: 0 };
+    const reports = DOWIN_ASDD_EXTERNAL_BAR_PATTERNS.map((p) =>
+      reconcileExternalBarPattern(p, settings)
+    );
+    const mullion = reports.find((r) => r.patternId === 'asdd-mullion-orta-6500');
+    expect(mullion?.status).toBe('RECONCILED');
+    expect(mullion?.unexplainedDeltaMm).toBe(0);
+    const frame = reports.find((r) => r.patternId === 'asdd-frame-kasa-6000');
+    expect(frame?.status).toBe('UNRECONCILED');
+    expect(frame?.unexplainedDeltaMm).toBe(7);
+    const sash = reports.find((r) => r.patternId === 'asdd-sash-kanat-6000');
+    expect(sash?.unexplainedDeltaMm).toBe(7);
+    expect(reports.filter((r) => r.status === 'UNRECONCILED').length).toBeGreaterThan(0);
+  });
+
+  it('settings freeze is deterministic and remnant floors stay 300 / 500', () => {
+    const a = freezeManufacturingSettings(
+      resolveManufacturingSettings({ namedProfileId: 'yilmazcad-parity' })
+    );
+    const b = freezeManufacturingSettings(
+      resolveManufacturingSettings({ namedProfileId: 'yilmazcad-parity' })
+    );
+    expect(a.signature).toBe(b.signature);
+    expect(a.values.minimumReusableLengthMm).toBe(500);
+    expect(isReusableRemnantLength(499.9, a.values)).toBe(false);
+    expect(isReusableRemnantLength(500, a.values)).toBe(true);
+    const platform = resolveManufacturingSettings({ namedProfileId: 'platform' });
+    expect(isReusableRemnantLength(299.9, platform)).toBe(false);
+    expect(isReusableRemnantLength(300, platform)).toBe(true);
+    const rows = manufacturingSettingsProvenanceRows(platform);
+    expect(rows.find((r) => r.key === 'sawKerfMm')?.source).toBe('platform');
+  });
+
+  it('VisualCuttingPlan and CutSheet still consume canonical ManufacturingSettings', () => {
+    const visual = readFileSync(
+      resolve(process.cwd(), 'src/components/fabricator/VisualCuttingPlan.tsx'),
       'utf8'
     );
+    const cutSheet = readFileSync(
+      resolve(process.cwd(), 'src/lib/fabricator/production/CutSheetGenerator.ts'),
+      'utf8'
+    );
+    const provenance = readFileSync(
+      resolve(process.cwd(), 'src/components/fabricator/ManufacturingSettingsProvenancePanel.tsx'),
+      'utf8'
+    );
+    expect(visual).toContain('isReusableRemnantLength');
+    expect(visual).not.toMatch(/minimumReusableLengthMm\s*=\s*500/);
+    expect(cutSheet).toContain('resolveManufacturingSettings');
+    expect(provenance).toContain('manufacturingSettingsProvenanceRows');
+    expect(provenance).not.toContain('DowinParityLengthEngine');
+    const sheet = generateCutSheets(
+      [
+        {
+          profile: {
+            id: 'p',
+            name: 'Frame',
+            material: 'aluminum',
+            width: 50,
+            height: 20,
+            thickness: 1.4,
+            color: 'White',
+            costPerMeter: 10,
+            cuttingAllowance: 0,
+            stockQuantity: 1,
+            minStockLevel: 0,
+            supplier: 'T',
+            specifications: {},
+          },
+          stockLength: 6000,
+          totalWaste: 0,
+          utilization: 0,
+          cuts: [
+            {
+              length: 1003,
+              angle: 45,
+              componentId: 'frame-top',
+              waste: 0,
+              nominalLengthMm: 1000,
+              packedSegmentMm: 1003,
+            },
+          ],
+        },
+      ],
+      { namedProfileId: 'platform' }
+    );
+    expect(sheet.bars[0].cuts[0].lengthMm).toBe(1003);
+    expect(sheet.bars[0].cuts[0].nominalLengthMm).toBe(1000);
+    expect(sheet.bars[0].cuts[0].packedSegmentMm).toBe(1003);
+  });
+
+  it('unplaced physical cuts and unsupported NCW prevent production export', () => {
+    const blocked = evaluateMachineExportPreflight({
+      unplacedPhysicalCuts: [{ pieceId: 'asdd.Frame.Top' }],
+      requestedFormat: 'mdb',
+    });
+    expect(blocked.allowed).toBe(false);
+    expect(blocked.blockingReasons[0]).toContain('asdd.Frame.Top');
+    const ncw = evaluateMachineExportPreflight({
+      unplacedPhysicalCuts: [],
+      requestedFormat: 'ncw',
+    });
+    expect(ncw.allowed).toBe(false);
+    expect(ncw.ncwSupported).toBe(false);
+    const ok = evaluateMachineExportPreflight({
+      unplacedPhysicalCuts: [],
+      requestedFormat: 'mdb',
+    });
+    expect(ok.allowed).toBe(true);
+  });
+
+  it('does not delete calculateKFactor or wire parity into UPVCCuttingEngine', () => {
+    expect(
+      calculateKFactor({ profileWidthMm: 70, wallThicknessMm: 2.5, miterAngleDegrees: 45 })
+    ).toBeGreaterThan(0);
+    const upvc = readFileSync(resolve(process.cwd(), 'src/lib/fabricator/UPVCCuttingEngine.ts'), 'utf8');
     expect(upvc).not.toContain('DowinParityLengthEngine');
-    expect(upvc).toContain('calculateKFactor');
   });
 });

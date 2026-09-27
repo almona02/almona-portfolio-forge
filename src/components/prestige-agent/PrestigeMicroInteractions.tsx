@@ -82,7 +82,7 @@ export class PrestigeMicroInteractions {
     });
   }
 
-  showKnowledgeRecall() {
+  showKnowledgeRecall(copy: (text: string) => string = text => text) {
     return toast.custom((_t: any) => (
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
@@ -95,8 +95,8 @@ export class PrestigeMicroInteractions {
           <BookOpen className="w-4 h-4 text-blue-600" />
         </div>
         <div>
-          <p className="font-medium text-sm">Accessing Knowledge Base</p>
-          <p className="text-xs text-gray-500">Accessing knowledge base</p>
+          <p className="font-medium text-sm">{copy('Accessing Knowledge Base')}</p>
+          <p className="text-xs text-gray-500">{copy('Accessing knowledge base')}</p>
         </div>
       </motion.div>
     ), {
@@ -109,7 +109,7 @@ export class PrestigeMicroInteractions {
     });
   }
 
-  showPersonaTransition(persona: PersonaConfig) {
+  showPersonaTransition(persona: PersonaConfig, copy: (text: string) => string = text => text) {
     const PersonaIcon = persona.icon;
     
     return toast.custom((_t: any) => (
@@ -124,8 +124,8 @@ export class PrestigeMicroInteractions {
           <PersonaIcon className="w-5 h-5 text-white" />
         </div>
         <div>
-          <p className="font-bold text-sm">Switched to {persona.title}</p>
-          <p className="text-xs text-gray-500">{persona.subtitle}</p>
+          <p className="font-bold text-sm">{copy('Switched to')} {copy(persona.title)}</p>
+          <p className="text-xs text-gray-500">{copy(persona.subtitle)}</p>
         </div>
       </motion.div>
     ), {

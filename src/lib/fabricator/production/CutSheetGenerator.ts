@@ -29,7 +29,12 @@ export interface CutSheetBar {
 
 export interface CutSheetCut {
   sequence: number;
+  /** Historical planned/saw-oriented millimetres. Not a collapsed FP-024 layer. */
   lengthMm: number;
+  nominalLengthMm?: number | null;
+  packedSegmentMm?: number | null;
+  machineInstructionLengthMm?: number | null;
+  externalAssemblyLabel?: string;
   angleDeg: number;
   componentId: string;
   /** Physical-cut identity when present on source Cut (FP-017) */
@@ -69,6 +74,10 @@ export function generateCutSheets(
     const cuts: CutSheetCut[] = plan.cuts.map((cut: Cut, cutIndex: number) => ({
       sequence: cutIndex + 1,
       lengthMm: cut.length,
+      nominalLengthMm: cut.nominalLengthMm ?? cut.reportedWeldedLengthMm ?? null,
+      packedSegmentMm: cut.packedSegmentMm ?? null,
+      machineInstructionLengthMm: cut.machineInstructionLengthMm ?? null,
+      externalAssemblyLabel: cut.externalAssemblyLabel,
       angleDeg: cut.angle ?? 0,
       componentId: cut.componentId ?? `cut-${cutIndex + 1}`,
       cutId: cut.cutId,

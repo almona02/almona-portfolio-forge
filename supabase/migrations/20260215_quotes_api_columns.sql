@@ -14,11 +14,9 @@ DO $$ BEGIN
   ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS urgency TEXT DEFAULT 'standard';
   ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS delivery_location TEXT;
   ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS special_requirements TEXT;
-EXCEPTION WHEN others THEN NULL;
 END $$;
 
--- Make user_id nullable for anonymous/API-created quotes (optional)
--- Uncomment if you need to support quote creation without authenticated user:
--- ALTER TABLE public.quotes ALTER COLUMN user_id DROP NOT NULL;
+-- Guest creation is performed by the backend service role, not anonymous RLS.
+ALTER TABLE public.quotes ALTER COLUMN user_id DROP NOT NULL;
 
 COMMIT;

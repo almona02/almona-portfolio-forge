@@ -1,9 +1,9 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import {
     detectMaterialType,
     getCategoryMachineCounts,
     getPopularCategories,
     getSmartRecommendations,
-    intelligentSearch,
     smartCategories,
     trackCategoryUsage,
     type Machine
@@ -15,6 +15,7 @@ import { LazyAnimatePresence, LazyMotionButton, LazyMotionDiv } from '@/utils/la
 import { Brain, ChevronDown, Filter, Lightbulb, Search, Sparkles, TrendingUp } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ShareFilteredResults } from './ShareFilteredResults';
+import { searchPublicMachines } from '@/lib/publicMachineSearch';
 
 interface SmartCategoryNavigationProps {
   machines: Machine[];
@@ -45,6 +46,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
   desktopMode = 'full',
   sortOption
 }) => {
+  const copy = usePublicCopy();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Machine[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -175,14 +177,14 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
     
     // Debounce search
     const timeoutId = setTimeout(() => {
-      const results = intelligentSearch(query, machines);
+      const results = searchPublicMachines(query, machines, copy);
       setSearchResults(results);
       setIsSearching(false);
       onSearchResults?.(results);
     }, 300);
     
     return () => clearTimeout(timeoutId);
-  }, [machines, onSearchResults, onSearchChange, generateAiSuggestions]);
+  }, [machines, onSearchResults, onSearchChange, generateAiSuggestions, copy]);
 
   // Handle category selection with usage tracking
   const handleCategorySelect = useCallback((categoryId: string) => {
@@ -220,7 +222,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
         {/* Compact Dropdown Trigger */}
         <LazyMotionButton
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          aria-label="Toggle AI Smart Categories"
+          aria-label={copy("Toggle AI Smart Categories")}
           className="relative w-full flex items-center justify-between p-4 rounded-xl border border-gray-700/60 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-800/70 shadow-[0_10px_40px_rgba(0,0,0,0.35)] overflow-hidden transition-all duration-200 group card-premium"
           whileHover={{ scale: 1.01, y: -1 }}
           whileTap={{ scale: 0.99 }}
@@ -231,11 +233,11 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               <Brain className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[11px] uppercase tracking-[0.08em] text-amber-200">AI Smart Categories</span>
+              <span className="text-[11px] uppercase tracking-[0.08em] text-amber-200">{copy("AI Smart Categories")}</span>
               <span className="text-sm font-semibold text-white">
-                {selectedCategoryInfo ? `${selectedCategoryInfo.icon} ${selectedCategoryInfo.name}` : 'All Machines'}
+                {selectedCategoryInfo ? `${selectedCategoryInfo.icon} ${copy(selectedCategoryInfo.name)}` : copy('All Machines')}
               </span>
-              <span className="text-[11px] text-gray-400">Industry 4.0 tuned filters</span>
+              <span className="text-[11px] text-gray-400">{copy("Industry 4.0 tuned filters")}</span>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 relative z-10">
@@ -251,7 +253,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                 <ChevronDown className="h-4 w-4" />
               </LazyMotionDiv>
             </div>
-            <span className="text-[11px] text-gray-400">Tap to personalize</span>
+            <span className="text-[11px] text-gray-400">{copy("Tap to personalize")}</span>
           </div>
         </LazyMotionButton>
 
@@ -273,7 +275,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                       <Input
-                        placeholder="AI-powered search... (e.g., 'aluminum cutting')"
+                        placeholder={copy("AI-powered search... (e.g., 'aluminum cutting')")}
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
                         className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
@@ -298,7 +300,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                       >
                         <div className="flex items-center gap-2 text-xs text-amber-400">
                           <Sparkles className="h-3 w-3" />
-                          <span>AI Suggestions</span>
+                          <span>{copy("AI Suggestions")}</span>
                         </div>
                         {aiSuggestions.map((suggestion, index) => (
                           <LazyMotionButton
@@ -326,7 +328,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         className="mt-3 space-y-2"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-xs text-gray-400">Found {searchResults.length} machines:</p>
+                          <p className="text-xs text-gray-400">{copy("Found")}{searchResults.length}{copy("machines:")}</p>
                           <ShareFilteredResults
                             searchQuery={searchQuery}
                             resultCount={searchResults.length}
@@ -348,7 +350,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                             >
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                                <p className="text-xs text-gray-400 truncate">{machine.description}</p>
+                                <p className="text-xs text-gray-400 truncate">{copy(machine.description)}</p>
                               </div>
                               {getMaterialBadge(machine)}
                             </div>
@@ -386,8 +388,8 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                           <div className="flex items-center gap-3">
                             <span className="text-lg">{category.icon}</span>
                             <div>
-                              <div className="font-medium">{category.name}</div>
-                              <div className="text-xs text-gray-400">{category.description}</div>
+                              <div className="font-medium">{copy(category.name)}</div>
+                              <div className="text-xs text-gray-400">{copy(category.description)}</div>
                             </div>
                           </div>
                           <Badge variant="secondary" className="text-xs bg-gray-600/50 text-gray-300">
@@ -404,7 +406,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   <div className="mt-4 pt-4 border-t border-gray-700/50">
                     <div className="flex items-center gap-2 mb-3">
                       <Lightbulb className="h-4 w-4 text-yellow-400" />
-                      <h3 className="typography-h3 text-sm font-medium text-white">AI Recommendations</h3>
+                      <h3 className="typography-h3 text-sm font-medium text-white">{copy("AI Recommendations")}</h3>
                     </div>
                     <div className="space-y-2 max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500" style={{ scrollBehavior: 'smooth' }}>
                       {recommendations.map(machine => (
@@ -418,7 +420,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         >
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                            <p className="text-xs text-gray-400 truncate">{machine.description}</p>
+                            <p className="text-xs text-gray-400 truncate">{copy(machine.description)}</p>
                           </div>
                           {getMaterialBadge(machine)}
                         </div>
@@ -442,7 +444,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Search machines... (e.g., 'aluminum cutting', 'UPVC welding')"
+              placeholder={copy("Search machines... (e.g., 'aluminum cutting', 'UPVC welding')")}
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
@@ -462,7 +464,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               className="mt-3 space-y-2"
             >
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-gray-400">Found {searchResults.length} machines:</p>
+                <p className="text-xs text-gray-400">{copy("Found")}{searchResults.length}{copy("machines:")}</p>
                 <ShareFilteredResults
                   searchQuery={searchQuery}
                   resultCount={searchResults.length}
@@ -485,7 +487,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                      <p className="text-xs text-gray-400 truncate">{machine.description}</p>
+                      <p className="text-xs text-gray-400 truncate">{copy(machine.description)}</p>
                     </div>
                     {getMaterialBadge(machine)}
                   </div>
@@ -501,7 +503,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
         <div className="p-4 border-b border-gray-700/50">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="h-4 w-4 text-amber-400" />
-            <h3 className="typography-h3 text-sm font-medium text-white">Popular</h3>
+            <h3 className="typography-h3 text-sm font-medium text-white">{copy("Popular")}</h3>
           </div>
           <div className="flex flex-wrap gap-2">
             {popularCategories.map(categoryId => {
@@ -516,7 +518,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   onClick={() => handleCategorySelect(categoryId)}
                   className="btn-primary"
                 >
-                  {category.icon} {category.name}
+                  {category.icon} {copy(category.name)}
                 </Button>
               );
             })}
@@ -528,7 +530,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       <div className="p-4">
         <div className="flex items-center gap-2 mb-4">
           <Filter className="h-4 w-4 text-amber-400" />
-          <h3 className="typography-h3 text-lg text-white">Smart Categories</h3>
+          <h3 className="typography-h3 text-lg text-white">{copy("Smart Categories")}</h3>
         </div>
         
         <div className="space-y-2">
@@ -554,10 +556,10 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   <div className="flex items-center gap-3">
                     <span className="text-lg">{category.icon}</span>
                     <div>
-                      <div className="font-medium">{category.name}</div>
+                      <div className="font-medium">{copy(category.name)}</div>
                       {!compact && (
                         <div className="text-xs text-gray-400 mt-1">
-                          {category.description}
+                          {copy(category.description)}
                         </div>
                       )}
                     </div>
@@ -577,7 +579,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
         <div className="p-4 border-t border-gray-700/50">
           <div className="flex items-center gap-2 mb-3">
             <Lightbulb className="h-4 w-4 text-yellow-400" />
-            <h3 className="typography-h3 text-sm font-medium text-white">Recommended</h3>
+            <h3 className="typography-h3 text-sm font-medium text-white">{copy("Recommended")}</h3>
           </div>
           <div className="space-y-2 max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500" style={{ scrollBehavior: 'smooth' }}>
             {recommendations.map(machine => (
@@ -588,7 +590,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                  <p className="text-xs text-gray-400 truncate">{machine.description}</p>
+                  <p className="text-xs text-gray-400 truncate">{copy(machine.description)}</p>
                 </div>
                 {getMaterialBadge(machine)}
               </div>

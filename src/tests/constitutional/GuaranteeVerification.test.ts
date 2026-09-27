@@ -272,23 +272,30 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
   });
 
   describe('AICS-001 FP-024: DoWin physical-length gate stays isolated', () => {
-    test('golden expected lengths stay null and calculateKFactor is not deleted', async () => {
+    test('golden asdd fixture is READY but the ±0.1 mm gate does not pass', async () => {
       const {
         DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
-        DOWIN_GOLDEN_FIXTURE_STATUS,
         DOWIN_LENGTH_CATEGORIES,
         DOWIN_PARITY_TOLERANCE_MM,
         compareDowinGoldenLengths,
         dowinParityGatePasses,
       } = await import('@/lib/fabricator/golden/dowinPhysicalLengthFixture');
+      const { almonaParityActualsForAsdd } = await import(
+        '@/lib/fabricator/dowinParity/DowinParityLengthEngine'
+      );
       const { calculateKFactor } = await import('@/lib/fabricator/UPVCCuttingEngine');
 
       expect(DOWIN_PARITY_TOLERANCE_MM).toBe(0.1);
-      expect(DOWIN_LENGTH_CATEGORIES).toHaveLength(7);
-      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe(DOWIN_GOLDEN_FIXTURE_STATUS);
-      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows).toEqual([]);
+      expect(DOWIN_LENGTH_CATEGORIES).toHaveLength(9);
+      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.status).toBe('READY_EXTERNAL_FIXTURE');
+      expect(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION.rows.length).toBeGreaterThan(0);
       expect(
-        dowinParityGatePasses(compareDowinGoldenLengths(DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION, []))
+        dowinParityGatePasses(
+          compareDowinGoldenLengths(
+            DECEUNINCK_70Z_SASH_GOLDEN_PREPARATION,
+            almonaParityActualsForAsdd()
+          )
+        )
       ).toBe(false);
       expect(
         calculateKFactor({
@@ -297,6 +304,131 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
           miterAngleDegrees: 45,
         })
       ).toBeGreaterThan(0);
+    });
+  });
+
+  describe('AICS-001 FP-024C.10: Weld=2 linearity does not encode a formula', () => {
+    test('three-point 0/2/3 evidence stays frozen and does not authorize RequiredParts = Report + Weld', async () => {
+      const {
+        FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR,
+        evaluateWeldLinearityAcrossRows,
+        FP024C10_THREE_POINT_TABLE,
+      } = await import('@/lib/fabricator/dowinParity/optimizerStateProvenance');
+
+      expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.authorizesFormulaChange).toBe(false);
+      expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.formulasModified).toBe(false);
+      expect(
+        FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.findings.generalizedCompensationFormula
+      ).toBe('UNPROVEN');
+      expect(
+        evaluateWeldLinearityAcrossRows(FP024C10_THREE_POINT_TABLE).authorizesFormulaChange
+      ).toBe(false);
+    });
+  });
+
+  describe('AICS-001 FP-024C.11: formula-scope authorization does not encode a production formula', () => {
+    test('bounded Deceuninck 70 weld rule stays review-only on the parity adapter', async () => {
+      const {
+        FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR,
+        FP024C11_FORMULA_SCOPE_AUTHORIZATION,
+        evaluateFormulaScopeAuthorization,
+      } = await import('@/lib/fabricator/dowinParity/optimizerStateProvenance');
+
+      expect(FP024C10_WELDING_WASTE_LINEARITY_DISCRIMINATOR.status).toBe('ACCEPTED');
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesFormulaChange).toBe(false);
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.authorizesProductionEngineChange).toBe(false);
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.formulasModified).toBe(false);
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.implementationClassification).toBe(
+        'PARITY_ADAPTER_ONLY_SAFE'
+      );
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.generalizedManufacturingFormula).toBe('UNPROVEN');
+      expect(FP024C11_FORMULA_SCOPE_AUTHORIZATION.fp027.rootCause).toBe('UNPROVEN');
+      expect(evaluateFormulaScopeAuthorization().authorizesFormulaChange).toBe(false);
+    });
+  });
+
+  describe('AICS-001 FP-024C.12: bounded weld rule stays off the production engines', () => {
+    test('parity-adapter helper is isolated from canonical cut generation', async () => {
+      const { FP024C12_BOUNDED_PARITY_WELD_RULE } = await import(
+        '@/lib/fabricator/dowinParity/optimizerStateProvenance'
+      );
+      const { computeDowinRequiredPartsFromDesignReport } = await import(
+        '@/lib/fabricator/dowinParity/DowinParityLengthEngine'
+      );
+      const { calculateKFactor } = await import('@/lib/fabricator/UPVCCuttingEngine');
+
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.implementationScope).toBe('PARITY_ADAPTER_ONLY');
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.parityWiring).toBe('PROVEN');
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.authorizesProductionEngineChange).toBe(false);
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.wiredIntoCanonicalCutGeneration).toBe(false);
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.fp027.rootCause).toBe('UNPROVEN');
+      expect(FP024C12_BOUNDED_PARITY_WELD_RULE.physicalLengthScore).toBe('6.0/10');
+      expect(
+        computeDowinRequiredPartsFromDesignReport({
+          profileSystem: "Deceuninck 70'lik PVC Sistemi",
+          profileCode: 'Deceuninck-KASA-70',
+          sourceLayer: 'DESIGN_REPORT',
+          targetLayer: 'REQUIRED_PARTS',
+          leftAngleDeg: 45,
+          rightAngleDeg: 45,
+          weldingWasteMm: 3,
+          designReportLengthMm: 1200,
+        }).requiredPartsLengthMm
+      ).toBe(1203);
+      expect(
+        calculateKFactor({
+          profileWidthMm: 70,
+          wallThicknessMm: 2.5,
+          miterAngleDegrees: 45,
+        })
+      ).toBeGreaterThan(0);
+    });
+  });
+
+  describe('AICS-001 FP-024C.13: golden replay does not authorize canonical production formulas', () => {
+    test('bounded parity stage closeout stays adapter-only', async () => {
+      const { FP024C13_GOLDEN_REPLAY_CLOSEOUT } = await import(
+        '@/lib/fabricator/dowinParity/optimizerStateProvenance'
+      );
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.goldenReplay).toBe('PASS');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorizesCanonicalFormula).toBe(false);
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorizesProductionEngineChange).toBe(false);
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.generalizedManufacturingFormula).toBe('UNPROVEN');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authorityMatrix.canonicalProductionIntegration).toBe(
+        'NONE'
+      );
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.fp027.rootCause).toBe('UNPROVEN');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.fp027.status).toBe('OPEN');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.independentReview).toBe('ACCEPTED');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.authoritativePhysicalLengthScore).toBe('7.5/10');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prRecommendation).toBe('KEEP_DRAFT_DO_NOT_MERGE');
+      expect(FP024C13_GOLDEN_REPLAY_CLOSEOUT.prMergeBlockerIsFp024c).toBe(false);
+    });
+  });
+
+  describe('AICS-001 FP-024C.9: artifact-only CITA coverage does not encode a formula', () => {
+    test('CITA report pairing stays evidence-only and does not authorize RequiredParts = Report + Weld', async () => {
+      const {
+        FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE,
+        evaluateCitaWeldCausalityFromExistingArtifacts,
+      } = await import('@/lib/fabricator/dowinParity/optimizerStateProvenance');
+
+      expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.authorizesFormulaChange).toBe(false);
+      expect(FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.formulasModified).toBe(false);
+      expect(
+        FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE.findings.generalizedCompensationFormula
+      ).toBe('UNPROVEN');
+      expect(
+        evaluateCitaWeldCausalityFromExistingArtifacts({
+          citaIdentifiedUnambiguously: true,
+          designReportHorizontalMm: 537,
+          designReportVerticalMm: 1116,
+          weld3RequiredPartsHorizontalMm: 540,
+          weld3RequiredPartsVerticalMm: 1119,
+          weld0RequiredPartsHorizontalMm: 537,
+          weld0RequiredPartsVerticalMm: 1116,
+        }).authorizesFormulaChange
+      ).toBe(false);
     });
   });
 

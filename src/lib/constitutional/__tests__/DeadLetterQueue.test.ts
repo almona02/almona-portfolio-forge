@@ -13,13 +13,13 @@ const { mockSaveState, mockLoadState } = vi.hoisted(() => {
 
 vi.mock('../IndexedDBStore', () => {
     return {
-        IndexedDBStore: vi.fn().mockImplementation(() => ({
+        IndexedDBStore: vi.fn(function () { return {
             init: vi.fn(),
             saveState: mockSaveState,
             loadState: mockLoadState,
             addAuditEntry: vi.fn().mockResolvedValue(undefined),
             getAuditLog: vi.fn(),
-        })),
+        }; }),
     };
 });
 

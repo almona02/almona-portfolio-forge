@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { useState } from 'react';
 import { Share2, Copy, Check, MessageCircle } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
@@ -24,6 +25,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
   sortOption,
   className = ''
 }) => {
+  const copy = usePublicCopy();
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
 
@@ -59,15 +61,15 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
       await navigator.clipboard.writeText(url);
       setCopied(true);
       toast({
-        title: 'Link copied!',
-        description: 'Shareable link copied to clipboard',
+        title: copy("Link copied!"),
+        description: copy("Shareable link copied to clipboard"),
         duration: 2000,
       });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast({
-        title: 'Failed to copy',
-        description: 'Please try again',
+        title: copy("Failed to copy"),
+        description: copy("Please try again"),
         variant: 'destructive',
       });
     }
@@ -76,15 +78,15 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
   // Share via WhatsApp
   const handleShareWhatsApp = () => {
     const url = generateShareUrl();
-    const message = `Check out these ${resultCount} recommended machines:\n\n${url}`;
+    const message = `${copy('Recommended machines')} (${resultCount}):\n\n${url}`;
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
     
     window.open(whatsappUrl, '_blank');
     
     toast({
-      title: 'Opening WhatsApp...',
-      description: 'Share the link with your customer',
+      title: copy("Opening WhatsApp..."),
+      description: copy("Share the link with your customer"),
       duration: 2000,
     });
   };
@@ -93,8 +95,8 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
   const handleNativeShare = async () => {
     const url = generateShareUrl();
     const shareData = {
-      title: `${resultCount} Recommended Machines`,
-      text: `Check out these ${resultCount} recommended machines: ${searchQuery}`,
+      title: `${copy('Recommended machines')} (${resultCount})`,
+      text: `${copy('Recommended machines')} (${resultCount}): ${searchQuery}`,
       url: url,
     };
 
@@ -102,7 +104,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
       if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
         toast({
-          title: 'Shared successfully!',
+          title: copy("Shared successfully!"),
           duration: 2000,
         });
       } else {
@@ -137,8 +139,8 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
           className={`gap-2 border-amber-500/30 hover:border-amber-500/60 hover:bg-amber-500/10 ${className}`}
         >
           <Share2 className="h-4 w-4" />
-          <span className="hidden sm:inline">Share Results</span>
-          <span className="sm:hidden">Share</span>
+          <span className="hidden sm:inline">{copy("Share Results")}</span>
+          <span className="sm:hidden">{copy("Share")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-gray-700">
@@ -149,12 +151,12 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
           {copied ? (
             <>
               <Check className="mr-2 h-4 w-4  status-valid" />
-              <span>Copied!</span>
+              <span>{copy("Copied!")}</span>
             </>
           ) : (
             <>
               <Copy className="mr-2 h-4 w-4" />
-              <span>Copy Link</span>
+              <span>{copy("Copy Link")}</span>
             </>
           )}
         </DropdownMenuItem>
@@ -163,7 +165,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
           className="cursor-pointer hover:bg-gray-800"
         >
           <MessageCircle className="mr-2 h-4 w-4  status-valid" />
-          <span>Share via WhatsApp</span>
+          <span>{copy("Share via WhatsApp")}</span>
         </DropdownMenuItem>
         {navigator.share && (
           <DropdownMenuItem
@@ -171,7 +173,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
             className="cursor-pointer hover:bg-gray-800"
           >
             <Share2 className="mr-2 h-4 w-4" />
-            <span>Share via...</span>
+            <span>{copy("Share via...")}</span>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

@@ -164,8 +164,8 @@ BEGIN
       SET search_path = public, pg_temp
       AS $body$
       BEGIN
-        INSERT INTO public.subscriptions (user_id, plan_id, status, current_period_start, current_period_end)
-        VALUES (NEW.id, 'free', 'active', NOW(), NOW() + INTERVAL '100 years')
+        INSERT INTO public.subscriptions (user_id, plan_type, projects_limit, status)
+        VALUES (NEW.id, 'free', 3, 'active')
         ON CONFLICT (user_id) DO NOTHING;
         RETURN NEW;
       END;

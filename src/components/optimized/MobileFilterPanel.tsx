@@ -1,3 +1,4 @@
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
@@ -26,26 +27,27 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
   resultCount,
   className = ''
 }) => {
+  const copy = usePublicCopy();
   const [isOpen, setIsOpen] = useState(false);
 
   const categories = [
-    { value: 'all', label: 'All Categories' },
-    { value: 'cutting-machines', label: 'Cutting Machines' },
-    { value: 'welding-machines', label: 'Welding Machines' },
-    { value: 'processing-centers', label: 'Processing Centers' },
-    { value: 'milling-machines', label: 'Milling Machines' },
-    { value: 'cnc-machines', label: 'CNC Machines' },
-    { value: 'production-lines', label: 'Production Lines' },
-    { value: 'cleaning-machines', label: 'Cleaning Machines' },
-    { value: 'routing-machines', label: 'Routing Machines' },
-    { value: 'accessories', label: 'Accessories' },
+    { value: 'all', label: copy("All Categories") },
+    { value: 'cutting-machines', label: copy("Cutting Machines") },
+    { value: 'welding-machines', label: copy("Welding Machines") },
+    { value: 'processing-centers', label: copy("Processing Centers") },
+    { value: 'milling-machines', label: copy("Milling Machines") },
+    { value: 'cnc-machines', label: copy("CNC Machines") },
+    { value: 'production-lines', label: copy("Production Lines") },
+    { value: 'cleaning-machines', label: copy("Cleaning Machines") },
+    { value: 'routing-machines', label: copy("Routing Machines") },
+    { value: 'accessories', label: copy("Accessories") },
   ];
 
   const sortOptions = [
-    { value: 'featured', label: 'Featured' },
-    { value: 'name-asc', label: 'Name (A-Z)' },
-    { value: 'name-desc', label: 'Name (Z-A)' },
-    { value: 'newest', label: 'Newest' },
+    { value: 'featured', label: copy("Featured") },
+    { value: 'name-asc', label: copy("Name (A-Z)") },
+    { value: 'name-desc', label: copy("Name (Z-A)") },
+    { value: 'newest', label: copy("Newest") },
   ];
 
   const hasActiveFilters = searchTerm || categoryFilter !== 'all' || sortOption !== 'featured';
@@ -63,7 +65,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
-            placeholder="Search machines..."
+            placeholder={copy("Search machines...")}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 placeholder:text-gray-400"
@@ -81,9 +83,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
                 size="sm"
                 className="flex items-center gap-2 bg-black/90 md:bg-black/70 border-gray-600 hover:bg-black/95 md:hover:bg-black/80"
               >
-                <Filter className="h-4 w-4" />
-                Filters
-                {hasActiveFilters && (
+                <Filter className="h-4 w-4" />{copy("Filters")}{hasActiveFilters && (
                   <span className="btn-primary" />
                 )}
               </Button>
@@ -93,7 +93,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
               <div className="flex flex-col h-full">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-800">
-                  <h3 className="typography-h3 text-lg text-white">Filters</h3>
+                  <h3 className="typography-h3 text-lg text-white">{copy("Filters")}</h3>
                   <div className="flex items-center gap-2">
                     {hasActiveFilters && (
                       <Button
@@ -101,9 +101,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
                         size="sm"
                         onClick={clearFilters}
                         className="text-amber-400 hover:text-amber-300"
-                      >
-                        Clear All
-                      </Button>
+                      >{copy("Clear All")}</Button>
                     )}
                     <Button
                       variant="ghost"
@@ -120,9 +118,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
                 <div className="flex-1 p-4 space-y-6 overflow-y-auto">
                   {/* Category Filter */}
                   <div>
-                    <label className="typography-label block text-sm font-medium text-gray-300 mb-2">
-                      Category
-                    </label>
+                    <label className="typography-label block text-sm font-medium text-gray-300 mb-2">{copy("Category")}</label>
                     <Select value={categoryFilter} onValueChange={onCategoryChange}>
                       <SelectTrigger className="bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500">
                         <SelectValue />
@@ -143,9 +139,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
 
                   {/* Sort Options */}
                   <div>
-                    <label className="typography-label block text-sm font-medium text-gray-300 mb-2">
-                      Sort By
-                    </label>
+                    <label className="typography-label block text-sm font-medium text-gray-300 mb-2">{copy("Sort By")}</label>
                     <Select value={sortOption} onValueChange={onSortChange}>
                       <SelectTrigger className="bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500">
                         <SelectValue />
@@ -170,9 +164,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
                   <Button
                     onClick={() => setIsOpen(false)}
                     className="w-full bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600"
-                  >
-                    Apply Filters
-                  </Button>
+                  >{copy("Apply Filters")}</Button>
                 </div>
               </div>
             </SheetContent>
@@ -181,7 +173,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
 
         {/* Results Count */}
         <div className="text-sm text-gray-400">
-          {resultCount} {resultCount === 1 ? 'machine' : 'machines'}
+          {resultCount} {copy(resultCount === 1 ? 'machine' : 'machines')}
         </div>
       </div>
 
@@ -190,7 +182,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
         <div className="flex flex-wrap gap-2 mb-4">
           {searchTerm && (
             <div className="btn-primary">
-              <span>Search: "{searchTerm}"</span>
+              <span>{copy("Search: \"")}{searchTerm}"</span>
               <button
                 onClick={() => onSearchChange('')}
                 className="hover:text-amber-300"
@@ -201,7 +193,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
           )}
           {categoryFilter !== 'all' && (
             <div className="btn-primary">
-              <span>Category: {categories.find(c => c.value === categoryFilter)?.label}</span>
+              <span>{copy("Category:")}{categories.find(c => c.value === categoryFilter)?.label}</span>
               <button
                 onClick={() => onCategoryChange('all')}
                 className="hover:text-amber-300"
@@ -212,7 +204,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
           )}
           {sortOption !== 'featured' && (
             <div className="btn-primary">
-              <span>Sort: {sortOptions.find(s => s.value === sortOption)?.label}</span>
+              <span>{copy("Sort:")}{sortOptions.find(s => s.value === sortOption)?.label}</span>
               <button
                 onClick={() => onSortChange('featured')}
                 className="hover:text-amber-300"

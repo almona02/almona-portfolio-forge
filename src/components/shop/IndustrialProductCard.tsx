@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/ui/card";
@@ -26,7 +27,7 @@ interface IndustrialProductCardProps {
   features: string[];
   badges?: string[];
   egyptCertifications?: string[];
-  stock: number;
+  stock?: number;
   actions: {
     label: string;
     action: () => void;
@@ -48,6 +49,7 @@ export const IndustrialProductCard = ({
   durabilityInfo,
   onDurabilityClick: _onDurabilityClick,
 }: IndustrialProductCardProps) => {
+  const copy = usePublicCopy();
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleActionClick = (action: () => void) => {
@@ -85,7 +87,7 @@ export const IndustrialProductCard = ({
             className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105" 
             aspectRatio="video"
             loading="lazy"
-            loadingMessage="Loading product image..."
+            loadingMessage={copy('Loading product image...')}
           />
         </div>
         {/* Badges - compact styling, limited to 3 badges max to avoid covering image */}
@@ -98,7 +100,7 @@ export const IndustrialProductCard = ({
                 variant="secondary"
                 className="btn-primary"
               >
-                {badge}
+                {copy(badge)}
               </Badge>
             ))}
             {/* Show +N if more badges */}
@@ -118,26 +120,28 @@ export const IndustrialProductCard = ({
           </div>
         )}
         {/* Stock badge positioned at bottom right of image */}
-        {stock !== undefined && (
+        {(
           <div className="absolute bottom-2 right-2">
             <Badge
               variant="secondary"
               className={`text-[10px] px-1.5 py-0.5 ${
-                stock === 0
+                stock === undefined
+                  ? "bg-slate-600/90"
+                  : stock === 0
                   ? "bg-red-600/90"
                   : stock <= 5
                   ? "bg-yellow-600/90"
                   : "bg-green-600/90"
               }`}
             >
-              {stock === 0 ? "Out of Stock" : stock <= 5 ? `Low (${stock})` : "In Stock"}
+              {stock === undefined ? copy("Confirm availability") : stock === 0 ? copy("Out of Stock") : stock <= 5 ? `${copy('Low stock')} (${stock})` : copy("In Stock")}
             </Badge>
           </div>
         )}
       </CardHeader>
       <CardContent className="p-3 sm:p-4 flex-grow flex flex-col">
         <h3 className="typography-h3 text-sm sm:text-base lg:text-lg mb-1 line-clamp-2">{title}</h3>
-        <p className="text-gray-400 text-xs sm:text-sm mb-2 line-clamp-2">{description}</p>
+        <p className="text-gray-400 text-xs sm:text-sm mb-2 line-clamp-2">{copy(description)}</p>
         <div className="space-y-1 mb-3 flex-grow">
           {features.slice(0, 3).map((feature, i) => (
             <div key={`feature-${i}-${feature.slice(0, 20)}-${title.slice(0, 10)}`} className="flex items-start">
@@ -154,7 +158,7 @@ export const IndustrialProductCard = ({
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span className="text-gray-300 text-xs line-clamp-1">{feature}</span>
+              <span className="text-gray-300 text-xs line-clamp-1">{copy(feature)}</span>
             </div>
           ))}
         </div>
@@ -166,7 +170,7 @@ export const IndustrialProductCard = ({
             </div>
           </div>
         )}
-        <div className="text-lg sm:text-xl font-bold text-amber-500 mt-auto">{price}</div>
+        <div className="text-lg sm:text-xl font-bold text-amber-500 mt-auto">{copy(price)}</div>
       </CardContent>
       <CardFooter className="p-3 sm:p-4 pt-0">
         <div className="flex flex-col gap-1.5 w-full">
@@ -178,7 +182,7 @@ export const IndustrialProductCard = ({
               onClick={() => handleActionClick(action.action)}
               className={`text-xs sm:text-sm ${i === 0 ? "bg-amber-600 hover:bg-amber-700" : ""}`}
             >
-              {action.label}
+              {copy(action.label)}
             </Button>
           ))}
         </div>

@@ -25,13 +25,12 @@ import { initializePolyfills } from "./lib/polyfills";
 // Performance monitoring will be initialized after isDev is declared (see below)
 
 // Initialize i18n - needed for translations but optimized loading
-import "@/lib/i18n";
+import i18n, { isRTL } from "@/lib/i18n";
 
 // Set initial dir/lang attributes early
 try {
-  const lng = (navigator.languages?.[0]) || navigator.language || 'en';
-  const isRTL = ['ar', 'he', 'fa', 'ur'].some(code => lng.toLowerCase().startsWith(code));
-  document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+  const lng = i18n.resolvedLanguage || i18n.language || 'en';
+  document.documentElement.dir = isRTL(lng) ? 'rtl' : 'ltr';
   document.documentElement.lang = lng.split('-')[0];
 } catch {
   // Safe fallback for dir/lang setup

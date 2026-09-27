@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Language = 'en' | 'ar';
 
@@ -1774,27 +1775,15 @@ const translations: Record<string, Record<Language, string>> = {
 };
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>(() => {
-    if (typeof window === 'undefined') return 'en';
-    const saved = localStorage.getItem('language');
-    return saved === 'ar' || saved === 'en' ? saved : 'en';
-  });
+  // Keep legacy consumers in sync with the site's single language selector.
+  const { i18n } = useTranslation();
+  const language: Language = i18n.language?.startsWith('ar') ? 'ar' : 'en';
+  const setLanguage = useCallback((lang: Language) => {
+    void i18n.changeLanguage(lang);
+  }, [i18n]);
 
   useEffect(() => {
-    // Load language from localStorage
-    const savedLanguage = localStorage.getItem('language') as Language;
-    if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'ar')) {
-      setLanguage(savedLanguage);
-    }
-  }, []);
-
-  useEffect(() => {
-    // Save language to localStorage
-    localStorage.setItem('language', language);
-    
-    // Set document direction
-    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = language;
+    try { localStorage.setItem('language', language); } catch { /* Storage is optional. */ }
   }, [language]);
 
   const t = useCallback((key: string): string => {

@@ -25,6 +25,7 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
   onLoadMore,
   isLoading
 }) => {
+  const copy = usePublicCopy();
   // Optimize grid layout for mobile devices with better aspect ratio support
   const gridClasses = useMemo(() => {
     return `
@@ -91,10 +92,10 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Loading...</span>
+                <span>{copy('Loading...')}</span>
               </div>
             ) : (
-              'Load More Machines'
+              copy('Load More Machines')
             )}
           </button>
         </div>
@@ -104,3 +105,4 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
 });
 
 MobileOptimizedGrid.displayName = 'MobileOptimizedGrid';
+import { usePublicCopy } from '@/hooks/usePublicCopy';

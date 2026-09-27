@@ -67,7 +67,7 @@ const FeaturedProducts = () => {
     imageUrl: machine.imageUrl,
     features: machine.specifications?.slice(0, 3) ?? [],
     tags: machine.tags,
-    badge: machine.certifications?.includes('CE') ? 'CE Certified' : undefined,
+    badge: undefined,
     specPdf: machine.specPdf,
     youtubeUrl: machine.youtubeUrl,
     powerSpec: machine.powerSpec,

@@ -936,6 +936,7 @@ Object.assign(trTranslations, {
     .then(() => {
       if (typeof document !== 'undefined') {
         document.documentElement.dir = isRTL(i18n.language) ? 'rtl' : 'ltr';
+        document.documentElement.lang = i18n.language;
       }
     });
 
@@ -947,6 +948,7 @@ Object.assign(trTranslations, {
   i18n.on('languageChanged', (lng) => {
     if (typeof document !== 'undefined') {
       document.documentElement.dir = isRTL(lng) ? 'rtl' : 'ltr';
+      document.documentElement.lang = lng;
     }
   });
   

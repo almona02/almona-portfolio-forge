@@ -27,6 +27,8 @@ import {
 } from "@/shared/ui/ui/select";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { ProtectedComponent } from "@/components/auth/ProtectedComponent";
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { yilmazMachines } from "@/constants/productsData";
 import { useAuth } from "@/context/AuthContext";
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
@@ -153,6 +155,8 @@ const partCategories: PartCategory[] = [
  * @returns {JSX.Element} The SpareParts page component
  */
 const SpareParts = () => {
+  const { i18n } = useTranslation();
+  const ar = i18n.language.startsWith('ar');
   const { toast } = useToast();
   const { user: _user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
@@ -214,6 +218,12 @@ const SpareParts = () => {
   return (
     <ProtectedComponent 
       message="يجب تسجيل الدخول للوصول إلى قطع الغيار"
+      fallback={<main className="container mx-auto px-4 pt-28 pb-20 max-w-3xl space-y-6" dir={ar ? 'rtl' : 'ltr'}>
+        <h1 className="typography-h1">{ar ? 'استفسارات قطع الغيار' : 'Spare-part enquiries'}</h1>
+        <p className="text-gray-300">{ar ? 'أرسل طراز الماكينة ورقمها التسلسلي ورقم القطعة إن وجد. سيؤكد الفريق التوافق والتوافر والسعر قبل الطلب.' : 'Send the machine model, serial number and part number if available. Our team will confirm compatibility, availability and price before an order.'}</p>
+        <Button asChild><Link to="/contact?subject=Spare-part%20enquiry">{ar ? 'تواصل مع فريق قطع الغيار' : 'Contact the parts team'}</Link></Button>
+        <p><Link to="/login" className="text-amber-400 underline">{ar ? 'تسجيل الدخول إلى حساب العميل' : 'Sign in to your customer account'}</Link></p>
+      </main>}
     >
       <main className="flex-grow pt-20">
         <div id="top" className="sr-only" aria-hidden="true" />

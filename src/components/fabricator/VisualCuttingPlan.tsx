@@ -1,5 +1,9 @@
 import { CutListItem, OptimizedCutList } from '@/lib/fabricator/UPVCCuttingEngine';
-import { PLATFORM_MANUFACTURING_DEFAULTS, barConsumedLengthMm } from '@/lib/fabricator/ManufacturingSettings';
+import {
+    PLATFORM_MANUFACTURING_DEFAULTS,
+    barConsumedLengthMm,
+    isReusableRemnantLength,
+} from '@/lib/fabricator/ManufacturingSettings';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Maximize2, Ruler, ZoomIn, ZoomOut } from 'lucide-react';
@@ -12,6 +16,8 @@ interface VisualCuttingPlanProps {
     /** Saw kerf (mm) used for bar packing — used so "Used" and waste % match the report. */
     sawKerfMm?: number;
     trimCutMm?: number;
+    /** Reusable-remnant threshold from the same resolved ManufacturingSettings object. */
+    minimumReusableLengthMm?: number;
 }
 
 interface VisualSegment extends CutListItem {
@@ -23,6 +29,7 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
     barLengthMm = 6500,
     sawKerfMm = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
     trimCutMm = PLATFORM_MANUFACTURING_DEFAULTS.trimCutMm,
+    minimumReusableLengthMm = PLATFORM_MANUFACTURING_DEFAULTS.minimumReusableLengthMm,
 }) => {
     const [zoomLevel, setZoomLevel] = useState(1);
     const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
@@ -126,8 +133,13 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
                             cuts.map((c) => c.cutLengthMm),
                             packSettings
                         );
-                        const wasteMm = barLengthMm - totalUsed;
-                        const _wastePercent = barLengthMm > 0 ? (wasteMm / barLengthMm) * 100 : 0;
+                        const pieceTotal = cuts.reduce((sum, c) => sum + c.cutLengthMm, 0);
+                        const yieldPercent = barLengthMm > 0 ? (pieceTotal / barLengthMm) * 100 : 0;
+                        const wastePercent = 100 - yieldPercent;
+                        const remainingMm = barLengthMm - totalUsed;
+                        const remnantReusable = isReusableRemnantLength(remainingMm, {
+                            minimumReusableLengthMm,
+                        });
                         const visualEndUsed = cuts.reduce(
                             (acc, c) => Math.max(acc, c.positionOnBarMm + c.cutLengthMm),
                             0
@@ -322,14 +334,14 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
                                                 );
                                             })}
 
-                                            {/* Waste / Remnant */}
+                                            {/* Remaining / offcut — reusable vs scrap from resolved remnant threshold */}
                                             {wasteRectWidth > 0 && (
                                                 <g>
                                                     <rect
                                                         x={visualEndUsed} y="0"
                                                         width={wasteRectWidth} height={BAR_HEIGHT}
-                                                        fill="url(#stripe-pattern)"
-                                                        stroke="#cbd5e1"
+                                                        fill={remnantReusable ? '#dbeafe' : 'url(#stripe-pattern)'}
+                                                        stroke={remnantReusable ? '#3b82f6' : '#cbd5e1'}
                                                     />
                                                     {wasteRectWidth > 400 && (
                                                         <text
@@ -340,7 +352,7 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
                                                             fontWeight="600"
                                                             className="uppercase tracking-widest"
                                                         >
-                                                            Waste: {Math.round(wasteRectWidth)}mm
+                                                            {remnantReusable ? 'Reusable remnant' : 'Scrap'}: {Math.round(remainingMm)}mm · Yield {yieldPercent.toFixed(1)}% · Waste {wastePercent.toFixed(1)}%
                                                         </text>
                                                     )}
                                                 </g>

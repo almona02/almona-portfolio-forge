@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field  # type: ignore
 from typing import List as _List
 from apis.v2.deps import get_supabase
 from apis.v2.services.quote_service import QuoteService
+from apis.v2.services.quote_ownership import resolve_quote_owner
 from apis.v2.core.errors import (
     QuoteValidationError,
     QuoteAlreadyExistsError,
@@ -129,7 +130,7 @@ class QuoteCreateRequest(BaseModel):
     )
     user_id: Optional[str] = Field(
         None,
-        description="Authenticated user ID for portal visibility (auth.uid())",
+        description="Optional legacy owner hint; must match the verified Bearer session",
         example="550e8400-e29b-41d4-a716-446655440002",
     )
     dispatch_to_erp: bool = Field(
@@ -318,6 +319,9 @@ def create_quote(
     supabase: Client = Depends(get_supabase),
 ):
     """Create a new quote with items."""
+    owner_id = resolve_quote_owner(
+        supabase, request.headers.get("Authorization"), payload.user_id
+    )
     service = QuoteService(supabase)
 
     # Validate payload
@@ -344,7 +348,7 @@ def create_quote(
                 "special_requirements": payload.special_requirements,
                 "related_service_ticket_id": payload.related_service_ticket_id,
                 "machine_id": payload.machine_id,
-                "user_id": payload.user_id,
+                "user_id": owner_id,
             }
         )
     except (QuoteValidationError, QuoteAlreadyExistsError):

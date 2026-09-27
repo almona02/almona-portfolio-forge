@@ -279,6 +279,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
   // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // The language menu is portalled outside the navbar. Keep its parent
+      // mounted until the selected language has received the click.
+      if (event.target instanceof Element && event.target.closest('[data-language-switcher-menu]')) return;
       if (navbarRef.current && !navbarRef.current.contains(event.target as Node)) {
         closeAllDropdowns();
       }

@@ -44,15 +44,9 @@ const MachineSEO: React.FC<MachineSEOProps> = ({
         "@type": "Offer",
         "price": numericPrice,
         "priceCurrency": "EGP",
-        "availability": "https://schema.org/InStock",
         "seller": {
           "@type": "Organization",
-          "name": machine.seller.name,
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": machine.seller.rating,
-            "bestRating": 5
-          }
+          "name": machine.seller.name
         },
         "itemLocation": {
           "@type": "Place",
@@ -94,7 +88,7 @@ const MachineSEO: React.FC<MachineSEOProps> = ({
       "@context": "https://schema.org",
       "@type": "CollectionPage",
       "name": "Used Industrial Machinery - Egypt",
-      "description": "Browse and buy verified used aluminum and uPVC machinery in Egypt. CNC centers, cutting machines, welding equipment and more.",
+      "description": "Browse and buy used aluminum and uPVC machinery in Egypt. CNC centers, cutting machines, welding equipment and more.",
       "url": "https://www.almona02.com/used-machines",
       "mainEntity": {
         "@type": "ItemList",
@@ -128,7 +122,7 @@ const MachineSEO: React.FC<MachineSEOProps> = ({
   // SEO content for individual machine page
   if (machine && !isListingPage) {
     const machineTitle = `${machine.title} - Used Industrial Machinery in ${machine.location}`;
-    const machineDescription = `${machine.description} Year: ${machine.year}, Hours: ${machine.hours.toLocaleString()}. Price: ${machine.price}. Contact verified seller ${machine.seller.name} in ${machine.location}, Egypt.`;
+    const machineDescription = `${machine.description} Year: ${machine.year}, Hours: ${machine.hours.toLocaleString()}. Price: ${machine.price}. Contact seller ${machine.seller.name} in ${machine.location}, Egypt.`;
     
     return (
       <Helmet>
@@ -171,15 +165,15 @@ const MachineSEO: React.FC<MachineSEOProps> = ({
   return (
     <Helmet>
       {/* Primary Meta Tags */}
-      <title>Used Industrial Machinery for Sale in Egypt - Verified Sellers | Almona</title>
-      <meta name="description" content="Browse verified used aluminum and uPVC machinery in Egypt. CNC centers, cutting machines, welding equipment. Trusted sellers, secure transactions, technical inspections." />
-      <meta name="keywords" content="used machinery Egypt, industrial equipment, aluminum machinery, CNC machines, cutting machines, welding equipment, manufacturing tools, verified sellers" />
+      <title>Used Machinery Enquiries in Egypt | Almona</title>
+      <meta name="description" content="Browse used aluminum and uPVC machinery in Egypt. CNC centers, cutting machines, welding equipment. Trusted sellers, secure transactions, technical inspections." />
+      <meta name="keywords" content="used machinery Egypt, industrial equipment, aluminum machinery, CNC machines, cutting machines, welding equipment, manufacturing tools" />
       <link rel="canonical" href="https://www.almona02.com/used-machines" />
 
       {/* Open Graph */}
       <meta property="og:type" content="website" />
       <meta property="og:title" content="Used Industrial Machinery Marketplace - Egypt" />
-      <meta property="og:description" content="Trusted platform for buying and selling used industrial machinery in Egypt. Browse verified equipment from aluminum and uPVC fabricators." />
+      <meta property="og:description" content="Ask ALMONA about used industrial machinery. Availability and condition require confirmation." />
       <meta property="og:image" content="https://www.almona02.com/images/machinery-marketplace-og.jpg" />
       <meta property="og:url" content="https://www.almona02.com/used-machines" />
       <meta property="og:site_name" content="Almona Industrial" />
@@ -187,7 +181,7 @@ const MachineSEO: React.FC<MachineSEOProps> = ({
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="Used Industrial Machinery Marketplace - Egypt" />
-      <meta name="twitter:description" content="Browse and buy verified used machinery from trusted sellers in Egypt." />
+      <meta name="twitter:description" content="Ask ALMONA about used machinery availability in Egypt." />
       <meta name="twitter:image" content="https://www.almona02.com/images/machinery-marketplace-twitter.jpg" />
 
       {/* JSON-LD Structured Data */}
