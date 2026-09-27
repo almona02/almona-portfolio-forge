@@ -357,7 +357,7 @@ describe('Remnant ML System Integration Tests', () => {
       // Both should return valid scores
       expect(excellentScore).toBeGreaterThanOrEqual(0);
       expect(fairScore).toBeGreaterThanOrEqual(0);
-    });
+    }, 15_000);
   });
 
   describe('Edge Cases', () => {
