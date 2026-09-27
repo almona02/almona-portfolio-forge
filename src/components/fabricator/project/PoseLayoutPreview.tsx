@@ -47,6 +47,15 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
         const widthPx = Math.max(36, Math.round((w / maxW) * box));
         const heightPx = Math.max(36, Math.round((h / maxH) * box));
         const active = pose.id === activeId;
+        const grid = pose.grid;
+        const colWeights = grid?.colWidths?.length === grid.cols
+          ? grid.colWidths
+          : Array.from({ length: grid?.cols ?? 1 }, () => 1);
+        const rowWeights = grid?.rowHeights?.length === grid.rows
+          ? grid.rowHeights
+          : Array.from({ length: grid?.rows ?? 1 }, () => 1);
+        const totalColWeight = colWeights.reduce((sum, value) => sum + value, 0);
+        const totalRowWeight = rowWeights.reduce((sum, value) => sum + value, 0);
         return (
           <button
             key={pose.id}
@@ -59,10 +68,32 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
             }`}
           >
             <div
-              className={`rounded-sm border ${active ? 'border-amber-400 bg-amber-400/15' : 'border-cyan-500/50 bg-cyan-500/10'}`}
+              className={`relative overflow-hidden rounded-sm border ${active ? 'border-amber-400 bg-amber-400/15' : 'border-cyan-500/50 bg-cyan-500/10'}`}
               style={{ width: widthPx, height: heightPx }}
-              aria-hidden
-            />
+              role="img"
+              aria-label={`Pose ${pose.posNumber || i + 1}: ${Math.round(w)} by ${Math.round(h)} millimetres, ${grid?.cols ?? 1} columns by ${grid?.rows ?? 1} rows`}
+            >
+              {grid?.cells.map(cell => {
+                const leftWeight = colWeights.slice(0, cell.col).reduce((sum, value) => sum + value, 0);
+                const topWeight = rowWeights.slice(0, cell.row).reduce((sum, value) => sum + value, 0);
+                const cellWidthWeight = colWeights.slice(cell.col, cell.col + (cell.colSpan ?? 1)).reduce((sum, value) => sum + value, 0);
+                const cellHeightWeight = rowWeights.slice(cell.row, cell.row + (cell.rowSpan ?? 1)).reduce((sum, value) => sum + value, 0);
+                return (
+                  <span
+                    key={cell.id}
+                    data-cell-type={cell.type}
+                    className={`absolute border border-slate-400/60 ${cell.type === 'sliding' ? 'bg-amber-400/25' : cell.type === 'sash' ? 'bg-emerald-400/20' : 'bg-cyan-400/10'}`}
+                    style={{
+                      left: `${(leftWeight / totalColWeight) * 100}%`,
+                      top: `${(topWeight / totalRowWeight) * 100}%`,
+                      width: `${(cellWidthWeight / totalColWeight) * 100}%`,
+                      height: `${(cellHeightWeight / totalRowWeight) * 100}%`,
+                    }}
+                    aria-hidden
+                  />
+                );
+              })}
+            </div>
             <div className="text-center">
               <div className="text-[10px] uppercase tracking-wide text-slate-500">
                 Pose {pose.posNumber || i + 1}

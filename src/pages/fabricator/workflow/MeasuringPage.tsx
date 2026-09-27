@@ -6,7 +6,7 @@ import { persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { MeasurementData, WindowUnit } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
-import React, { Suspense, useCallback } from 'react';
+import React, { Suspense, useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -17,7 +17,7 @@ const SmartMeasuringInterface = lazyRetry(
     'SmartMeasuringInterface'
 );
 
-function unitFromMeasurement(
+export function unitFromMeasurement(
     base: WindowUnit | null,
     data: MeasurementData,
     projectId: string,
@@ -37,9 +37,9 @@ function unitFromMeasurement(
         overallHeight: height,
         color: data.color || base?.color || '#FFFFFF',
         glazing: {
+            ...(base?.glazing ?? {}),
             type: data.glazingType,
             color: data.glassColor,
-            ...(base?.glazing ?? {}),
         },
         hardware: base?.hardware ?? [],
         status: 'draft',
@@ -75,6 +75,12 @@ export const MeasuringPage: React.FC = () => {
     const { setMeasurementData, completeStep, currentProject: pose } = useWorkflowStore();
     const siblings = useProjectPositions(projectId);
     const upsertPose = useUpsertPose();
+    const layoutPoses = useMemo(() => {
+        if (!pose) return siblings;
+        const index = siblings.findIndex(candidate => candidate.id === pose.id);
+        if (index < 0) return [...siblings, pose];
+        return siblings.map(candidate => candidate.id === pose.id ? pose : candidate);
+    }, [pose, siblings]);
 
     const persistPose = useCallback(async (data: MeasurementData, targetPoseId: string, posNumber: string) => {
         if (!projectId || !user?.id) throw new Error('Not authenticated');
@@ -83,15 +89,17 @@ export const MeasuringPage: React.FC = () => {
     }, [pose, projectId, user?.id, upsertPose]);
 
     const handleMeasurementComplete = async (data: MeasurementData) => {
-        setMeasurementData(data);
-        completeStep('measuring');
         if (!projectId || !poseId) {
+            setMeasurementData(data);
+            completeStep('measuring');
             navigate('/fabricator/workflow/design');
             return;
         }
         try {
             const posNumber = pose?.posNumber || String(siblings.length || 1);
             const result = await persistPose(data, poseId, posNumber);
+            setMeasurementData(data);
+            completeStep('measuring');
             toast.success(`Pose ${posNumber} saved: ${data.width} × ${data.height} mm`);
             navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
         } catch (err) {
@@ -100,12 +108,12 @@ export const MeasuringPage: React.FC = () => {
     };
 
     const handleSaveAndNext = async (data: MeasurementData) => {
-        setMeasurementData(data);
-        completeStep('measuring');
         if (!projectId || !poseId || !user?.id) return;
         try {
             const posNumber = pose?.posNumber || String(siblings.length || 1);
             await persistPose(data, poseId, posNumber);
+            setMeasurementData(data);
+            completeStep('measuring');
             toast.success(`Pose ${posNumber} saved. Create the next position from the project screen.`);
             navigate(fabricatorRoutes.studioProjects());
         } catch (err) {
@@ -125,8 +133,12 @@ export const MeasuringPage: React.FC = () => {
             measurementMode: pose.measurementMode ?? 'manufacturing',
             wallDeduction: '0',
             flatNumber: pose.positionMeta?.flatNumber,
+            buildingBlock: pose.positionMeta?.buildingBlock,
             floor: pose.positionMeta?.floor,
+            unitOrApartment: pose.positionMeta?.unitOrApartment,
             elevation: pose.positionMeta?.elevation,
+            roomOrZone: pose.positionMeta?.roomOrZone,
+            windowIndex: pose.positionMeta?.windowIndex,
             remarks: pose.positionMeta?.remarks,
             grid: pose.grid,
             presetId: pose.presetId,
@@ -149,7 +161,7 @@ export const MeasuringPage: React.FC = () => {
                     </div>
                 </div>
                 <PoseLayoutPreview
-                    poses={siblings.length ? siblings : (pose ? [pose] : [])}
+                    poses={layoutPoses}
                     activeId={poseId}
                     compact
                     onSelect={(id) => {

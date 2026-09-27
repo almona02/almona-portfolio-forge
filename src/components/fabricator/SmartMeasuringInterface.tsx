@@ -25,7 +25,6 @@ import { ArrowLeft, ArrowRight, Box, CheckCircle2, ChevronDown, ChevronUp, Contr
 import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { useDebouncedCallback } from 'use-debounce';
 import { CustomSystemManager } from './CustomSystemManager';
 import { Enhanced3DPreview } from './Enhanced3DPreview';
 import { EnhancedMeasurementTools } from './EnhancedMeasurementTools';
@@ -359,16 +358,6 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     };
   }, [measurements.width, measurements.height, grid, selectedPatternId]);
 
-  // ✅ PERFORMANCE: Debounced input handler to reduce re-renders during rapid typing
-  // Clear errors immediately for better UX, but debounce state updates
-  const debouncedSetMeasurements = useDebouncedCallback(
-    (field: string, value: string) => {
-      setMeasurements(prev => ({ ...prev, [field]: value }));
-    },
-    200, // 200ms debounce delay - balances responsiveness and performance
-    { maxWait: 1000 } // Ensure update happens even during continuous typing
-  );
-
   const handleInputChange = (field: string, value: string) => {
     // Clear field error immediately when user starts typing (no debounce for UX)
     if (fieldErrors[field]) {
@@ -378,8 +367,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         return newErrors;
       });
     }
-    // Debounce the state update to reduce re-renders
-    debouncedSetMeasurements(field, value);
+    setMeasurements(prev => ({ ...prev, [field]: value }));
   };
 
   const nextStep = () => {
@@ -723,9 +711,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         )}
       </div>
 
-      {/* Smart Draw Card - Below System Pack */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(420px,auto)_minmax(520px,1fr)]">
+      {/* Smart Draw Card - Alongside the guided measuring form */}
       {selectedSystemPackId && (
-        <div className="w-full card-glass-dark rounded-lg overflow-hidden flex-1 min-h-0 flex flex-col">
+        <div className="order-2 w-full card-glass-dark rounded-lg overflow-hidden min-h-[420px] flex flex-col lg:col-start-2 lg:row-start-1">
           <div className="p-4 border-b-2 border-amber-600/30 flex-shrink-0">
             <h3 className="typography-h3 text-amber-200 flex items-center gap-2">
               <Grid3X3 className="h-5 w-5 text-amber-500" />
@@ -768,7 +757,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       )}
 
       {/* Left Panel: The Guided Form */}
-      <div className="w-full lg:w-[32%] xl:w-[28%] flex flex-col card-glass-dark rounded-lg overflow-hidden min-h-0 relative flex-shrink-0">
+      <div className="order-1 w-full flex flex-col card-glass-dark rounded-lg overflow-hidden min-h-0 relative lg:col-start-1 lg:row-start-1 lg:row-span-2">
         {/* Classical texture overlay */}
         <div className="absolute inset-0 opacity-10" style={{
           backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(245, 158, 11, 0.1) 2px, rgba(245, 158, 11, 0.1) 4px)'
@@ -860,10 +849,6 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           setSelectedPatternId(patternId);
                           const pattern = availablePatterns.find(p => p.id === patternId);
                           if (pattern) {
-                            const midWidth = Math.round((pattern.typicalWidthMm[0] + pattern.typicalWidthMm[1]) / 2);
-                            const midHeight = Math.round((pattern.typicalHeightMm[0] + pattern.typicalHeightMm[1]) / 2);
-                            handleInputChange('width', String(midWidth));
-                            handleInputChange('height', String(midHeight));
                             setGrid(grid);
                           }
                         }}
@@ -1338,7 +1323,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       </div>
 
       {/* Right Panel: Clean Blueprint Preview - Responsive */}
-      <div className="flex-1 w-full lg:w-auto bg-white rounded-xl border border-gray-200 relative overflow-hidden shadow-sm min-h-0 min-w-0 flex flex-col">
+      <div className="order-3 w-full bg-white rounded-xl border border-gray-200 relative overflow-hidden shadow-sm min-h-[520px] min-w-0 flex flex-col lg:col-start-2 lg:row-start-2">
         {/* Header with Zoom Controls */}
         <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
           <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-medium text-xs px-2 sm:px-3 py-1">
@@ -2591,6 +2576,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             </motion.div>
           </div>
         )}
+      </div>
       </div>
 
       <SystemTuningStudio
