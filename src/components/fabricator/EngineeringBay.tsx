@@ -412,7 +412,10 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             <div className="h-full">
                 <DraftingWorkbench
                     onDesignValidated={handleDraftingValidated}
-                    onExit={() => switchMode('smartdraw')}
+                    onExit={() => {
+                        setDesignMode('smartdraw');
+                        void switchMode('smartdraw');
+                    }}
                     project={project}
                     onMoveToNext={moveToNextForDrafting}
                     onOpenPoseQuickEdit={project ? () => setShowQuickEditModal(true) : undefined}
