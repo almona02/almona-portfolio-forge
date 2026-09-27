@@ -118,23 +118,62 @@ export class ProfileBOMCalculator {
             'Sash Profile',
             DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM
         );
-        const sashPerimeter = (width / pattern.gridSpec.cols + height / pattern.gridSpec.rows) * GEOMETRIC_CONSTANTS.PERIMETER_MULTIPLIER;
-        const sashLength = ProductionUtils.applyKerfCompensation(sashPerimeter, kerf, MITER_ANGLES.STRAIGHT_CUT);
+        const columnWeights = pattern.gridSpec.colWidths ?? Array.from(
+          { length: pattern.gridSpec.cols },
+          () => 1,
+        );
+        const rowWeights = pattern.gridSpec.rowHeights ?? Array.from(
+          { length: pattern.gridSpec.rows },
+          () => 1,
+        );
+        const totalColumnWeight = columnWeights.reduce((sum, value) => sum + value, 0);
+        const totalRowWeight = rowWeights.reduce((sum, value) => sum + value, 0);
+        const sashCells = pattern.gridSpec.cells.filter(
+          cell => cell.type === 'sash' || cell.type === 'sliding',
+        );
+        const sashCuttingLengths = sashCells.flatMap(cell => {
+          const cellWidth = width * (
+            columnWeights.slice(cell.col, cell.col + (cell.colSpan ?? 1))
+              .reduce((sum, value) => sum + value, 0) / totalColumnWeight
+          );
+          const cellHeight = height * (
+            rowWeights.slice(cell.row, cell.row + (cell.rowSpan ?? 1))
+              .reduce((sum, value) => sum + value, 0) / totalRowWeight
+          );
+
+          if (!Number.isFinite(cellWidth) || !Number.isFinite(cellHeight)
+            || cellWidth <= 0 || cellHeight <= 0) {
+            return [];
+          }
+
+          const horizontalCut = ProductionUtils.applyKerfCompensation(
+            cellWidth,
+            kerf,
+            MITER_ANGLES.CORNER_MITER,
+          );
+          const verticalCut = ProductionUtils.applyKerfCompensation(
+            cellHeight,
+            kerf,
+            MITER_ANGLES.CORNER_MITER,
+          );
+          return [horizontalCut, horizontalCut, verticalCut, verticalCut];
+        });
+        const sashLength = sashCuttingLengths.reduce((sum, value) => sum + value, 0);
 
         profiles.push({
           id: `sash-${systemPackId}`,
           systemPack: systemPackId,
           profileCode: sashProfile.id || PROFILE_CODE_PREFIXES.SASH,
           role: 'sash',
-          length: sashLength * sashCount,
+          length: sashLength,
           quantity: sashCount,
-          cuttingLengths: Array.from<number>({ length: sashCount }, () => sashLength),
+          cuttingLengths: sashCuttingLengths,
           angles: Array.from<number>({ length: sashCount * GEOMETRIC_CONSTANTS.CORNERS_PER_SASH }, () => MITER_ANGLES.CORNER_MITER),
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
-          wasteLength: ProductionUtils.calculateWaste(sashLength * sashCount, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
+          wasteLength: ProductionUtils.calculateWaste(sashLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: [],
-          weight: ProductionUtils.calculateProfileWeight(sashLength * sashCount, this.profileToSpec(sashProfile)),
-          cost: ProductionUtils.calculateMaterialCost(sashLength * sashCount, this.profileToSpec(sashProfile))
+          weight: ProductionUtils.calculateProfileWeight(sashLength, this.profileToSpec(sashProfile)),
+          cost: ProductionUtils.calculateMaterialCost(sashLength, this.profileToSpec(sashProfile))
         });
       }
     }
