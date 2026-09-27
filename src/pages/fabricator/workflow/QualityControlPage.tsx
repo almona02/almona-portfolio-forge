@@ -78,7 +78,12 @@ export const QualityControlPage: React.FC = () => {
         try {
             const acknowledgement = await approveQualityControl(currentProject.id, authority.revision, evidence, requestKey);
             if (contextRef.current !== requestContext) return;
-            if (acknowledgement.inspectorId !== user.id || acknowledgement.projectId !== authority.projectId) throw new Error('Approval acknowledgement does not match the inspection context.');
+            if (
+                acknowledgement.inspectorId !== user.id ||
+                acknowledgement.projectId !== authority.projectId ||
+                acknowledgement.positionId !== authority.positionId ||
+                acknowledgement.revision !== authority.revision
+            ) throw new Error('Approval acknowledgement does not match the inspection context.');
             setQualityApproval(acknowledgement);
             if (!completeStep('quality-control')) throw new Error('Workflow completion guard rejected the approval.');
             void navigate(fabricatorRoutes.studioProjects());

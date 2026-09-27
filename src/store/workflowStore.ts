@@ -1,5 +1,5 @@
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import { validateOptimizationInputs, validateOptimizationResult } from '@/lib/fabricator/validation/WorkflowValidator';
+import { validateOptimizationInputs, validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
 import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fabricator';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -160,11 +160,11 @@ export function canCompleteWorkflowStep(state: CompletionState, step: string): b
   }
   if (step === 'design' || step === 'preview3d' || step === 'bom') return validateOptimizationInputs(state.currentProject).valid;
   if (step === 'optimization' || step === 'commercial' || step === 'inventory' || step === 'production') {
-    return validateOptimizationResult(state.optimizationResult).valid;
+    return validateOptimizationReconciliation(state.optimizationResult, state.currentProject).valid;
   }
   if (step === 'quality-control') {
     const approval = state.qualityApproval;
-    return validateOptimizationResult(state.optimizationResult).valid && Boolean(
+    return validateOptimizationReconciliation(state.optimizationResult, state.currentProject).valid && Boolean(
       approval?.approvalId && approval.projectId && approval.positionId === state.currentProject?.id &&
       Number.isInteger(approval.revision) && approval.revision > 0 && approval.inspectorId && approval.approvedAt
     );

@@ -7,7 +7,7 @@ import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { findBestMatchingPattern, getPatternById } from '@/lib/fabricator/presetUtils';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
-import { validateOptimizationResult, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
+import { validateOptimizationReconciliation, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { AdaptiveSolverConfig, OptimizationResult } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
@@ -99,7 +99,7 @@ export const OptimizationPage: React.FC = () => {
             const solverConfig: AdaptiveSolverConfig = { maxSolvingTime: 30, complexityThresholds: { simple: 50, medium: 500 } };
             const optimizationResult: OptimizationResult = await new AdaptiveSolver(solverConfig).solve(job, profiles);
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
-            const resultValidation = validateOptimizationResult(optimizationResult);
+            const resultValidation = validateOptimizationReconciliation(optimizationResult, runProject);
             if (!resultValidation.valid) throw new Error(resultValidation.errors[0]?.message ?? 'Optimization result is invalid.');
 
             if (systemPack && currentProject.grid) {
@@ -143,7 +143,7 @@ export const OptimizationPage: React.FC = () => {
         }
     }, [currentProject, profiles, projectId, poseId, systemPack, completeStep, setOptimizationResult, setBOM, navigate, invalidateStep, projectIdentity]);
 
-    const validOptimization = validateOptimizationResult(optimizationResult).valid;
+    const validOptimization = validateOptimizationReconciliation(optimizationResult, currentProject).valid;
 
     const LoadingFallback = (
         <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">

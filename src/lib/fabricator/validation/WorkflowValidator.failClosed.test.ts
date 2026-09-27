@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { OptimizationResult, Profile, WindowUnit } from '@/types/fabricator';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import { validateOptimizationInputs, validateOptimizationResult, validateStepTransition, WorkflowValidator } from './WorkflowValidator';
+import { validateOptimizationInputs, validateOptimizationReconciliation, validateOptimizationResult, validateStepTransition, WorkflowValidator } from './WorkflowValidator';
 
 const profile = { id: 'profile-1' } as Profile;
 const validResult: OptimizationResult = {
@@ -28,6 +28,30 @@ describe('workflow fail-closed validation', () => {
 
   it('accepts a finite nonempty cutting result', () => {
     expect(validateOptimizationResult(validResult).valid).toBe(true);
+    expect(validateOptimizationReconciliation(validResult, project).valid).toBe(true);
+  });
+
+  it('rejects missing, duplicate, unknown and wrong-profile optimized pieces', () => {
+    const missing = { ...validResult, cuttingPlan: [{ ...validResult.cuttingPlan[0], cuts: [] }] };
+    const duplicate = {
+      ...validResult,
+      cuttingPlan: [{ ...validResult.cuttingPlan[0], cuts: [
+        { ...validResult.cuttingPlan[0].cuts[0], cutId: 'component-1:0', occurrenceIndex: 0 },
+        { ...validResult.cuttingPlan[0].cuts[0], cutId: 'component-1:0', occurrenceIndex: 0 },
+      ] }],
+    };
+    const unknown = {
+      ...validResult,
+      cuttingPlan: [{ ...validResult.cuttingPlan[0], cuts: [{ ...validResult.cuttingPlan[0].cuts[0], componentId: 'other' }] }],
+    };
+    const wrongProfile = {
+      ...validResult,
+      cuttingPlan: [{ ...validResult.cuttingPlan[0], profile: { id: 'other-profile' } as Profile }],
+    };
+    expect(validateOptimizationReconciliation(missing, project).valid).toBe(false);
+    expect(validateOptimizationReconciliation(duplicate, project).errors.map(issue => issue.code)).toContain('DUPLICATE_OPTIMIZED_PIECE');
+    expect(validateOptimizationReconciliation(unknown, project).errors.map(issue => issue.code)).toContain('UNKNOWN_OPTIMIZED_PIECE');
+    expect(validateOptimizationReconciliation(wrongProfile, project).errors.map(issue => issue.code)).toContain('OPTIMIZED_PROFILE_MISMATCH');
   });
 
   it('blocks BOM generation without authoritative geometry', () => {

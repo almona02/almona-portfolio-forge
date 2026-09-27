@@ -60,7 +60,12 @@ export function validateOptimizationInputs(project: WindowUnit | null): Workflow
   } else if (!project.components?.length) {
     errors.push({ type: 'error', code: 'INVALID_DESIGN', message: 'Design must have at least one component.', step: 'design' });
   } else {
+    const componentIds = new Set<string>();
     project.components.forEach((component, index) => {
+      if (!component.id || componentIds.has(component.id)) {
+        errors.push({ type: 'error', code: 'INVALID_COMPONENT_IDENTITY', message: `Component ${index + 1} has a missing or duplicate identity.`, step: 'design' });
+      }
+      componentIds.add(component.id);
       if (!component.profile?.id) errors.push({ type: 'error', code: 'UNRESOLVED_PROFILE', message: `Component ${index + 1} has no resolved profile.`, step: 'design' });
       if (!finitePositive(component.quantity) || !component.cuttingLengths?.length || component.cuttingLengths.some(length => !finitePositive(length))) {
         errors.push({ type: 'error', code: 'INVALID_COMPONENT_VALUES', message: `Component ${index + 1} has invalid manufacturing values.`, step: 'design' });
@@ -93,6 +98,60 @@ export function validateOptimizationResult(result: OptimizationResult | null): W
       }
     });
   }
+  return { valid: errors.length === 0, errors, warnings: [] };
+}
+
+export function validateOptimizationReconciliation(
+  result: OptimizationResult | null,
+  project: WindowUnit | null,
+): WorkflowValidationResult {
+  const base = validateOptimizationResult(result);
+  const input = validateOptimizationInputs(project);
+  const errors = [...base.errors, ...input.errors];
+  if (!result || !project || errors.length > 0) return { valid: false, errors, warnings: [] };
+
+  const expected = new Map(
+    project.components.map(component => [
+      component.id,
+      { count: component.cuttingLengths.length, profileId: component.profile.id },
+    ]),
+  );
+  const actualCounts = new Map<string, number>();
+  const physicalCutIds = new Set<string>();
+
+  result.cuttingPlan.forEach((plan, planIndex) => {
+    plan.cuts.forEach((cut, cutIndex) => {
+      const component = expected.get(cut.componentId);
+      if (!component) {
+        errors.push({ type: 'error', code: 'UNKNOWN_OPTIMIZED_PIECE', message: `Cut ${planIndex + 1}.${cutIndex + 1} does not belong to the authoritative design.`, step: 'optimization' });
+        return;
+      }
+      if (plan.profile.id !== component.profileId) {
+        errors.push({ type: 'error', code: 'OPTIMIZED_PROFILE_MISMATCH', message: `Cut ${planIndex + 1}.${cutIndex + 1} uses the wrong profile.`, step: 'optimization' });
+      }
+      actualCounts.set(cut.componentId, (actualCounts.get(cut.componentId) ?? 0) + 1);
+      if (cut.occurrenceIndex !== undefined) {
+        if (!Number.isInteger(cut.occurrenceIndex) || cut.occurrenceIndex < 0 || cut.occurrenceIndex >= component.count) {
+          errors.push({ type: 'error', code: 'INVALID_CUT_OCCURRENCE', message: `Cut ${planIndex + 1}.${cutIndex + 1} has an invalid occurrence index.`, step: 'optimization' });
+        }
+        const expectedCutId = `${cut.componentId}:${cut.occurrenceIndex}`;
+        if (cut.cutId !== undefined && cut.cutId !== expectedCutId) {
+          errors.push({ type: 'error', code: 'INVALID_CUT_IDENTITY', message: `Cut ${planIndex + 1}.${cutIndex + 1} has inconsistent physical identity.`, step: 'optimization' });
+        }
+        if (physicalCutIds.has(expectedCutId)) {
+          errors.push({ type: 'error', code: 'DUPLICATE_OPTIMIZED_PIECE', message: `Physical cut ${expectedCutId} appears more than once.`, step: 'optimization' });
+        }
+        physicalCutIds.add(expectedCutId);
+      }
+    });
+  });
+
+  expected.forEach((component, componentId) => {
+    if ((actualCounts.get(componentId) ?? 0) !== component.count) {
+      errors.push({ type: 'error', code: 'PIECE_RECONCILIATION_FAILED', message: `Component ${componentId} requires ${component.count} cuts but optimization produced ${actualCounts.get(componentId) ?? 0}.`, step: 'optimization' });
+    }
+  });
+
   return { valid: errors.length === 0, errors, warnings: [] };
 }
 
@@ -179,7 +238,7 @@ export function validateStepTransition(
 
   // Optimization → Commercial: need optimizationResult (BOM optional but recommended)
   if (targetStep === 'commercial' || targetStep === 'production') {
-    errors.push(...validateOptimizationResult(state.optimizationResult).errors);
+    errors.push(...validateOptimizationReconciliation(state.optimizationResult, state.currentProject).errors);
 
     if (targetStep === 'production' && !isQualifiedBOM(state.bom)) {
       errors.push({
@@ -193,7 +252,7 @@ export function validateStepTransition(
 
   // Production → Quality Control: optimization already validated above
   if (targetStep === 'quality-control') {
-    errors.push(...validateOptimizationResult(state.optimizationResult).errors);
+    errors.push(...validateOptimizationReconciliation(state.optimizationResult, state.currentProject).errors);
   }
 
   return {

@@ -3,6 +3,7 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { OptimizationResult, WindowUnit } from '@/types/fabricator';
 
@@ -19,13 +20,16 @@ if (!pack) throw new Error('Test requires a system pack with profiles.');
 const profile = pack.profiles[0];
 const project = { id: 'position-1', updatedAt: new Date('2026-09-26'), systemPackId: pack.meta.id, components: [{ id: 'component-1', profile, quantity: 1, cuttingLengths: [1000] }] } as WindowUnit;
 const result: OptimizationResult = { materialUsage: 1, wastePercentage: 0, estimatedProductionTime: 1, nestingEfficiency: 100, cuttingPlan: [{ profile, stockLength: 6000, totalWaste: 0, utilization: 100, cuts: [{ length: 1000, angle: 90, componentId: 'component-1', waste: 0 }] }], costBreakdown: { materialCost: 1, laborCost: 0, hardwareCost: 0, glazingCost: 0, totalCost: 1 } };
+const qualifiedBom = {
+  qualification: { status: 'qualified', unplacedPieceCount: 0 },
+} as CompleteBOM;
 
 describe('OptimizationPage fail-closed execution', () => {
   beforeEach(() => {
     mocks.solve.mockReset();
     mocks.onComplete = undefined;
     useWorkflowStore.getState().clearWorkflow();
-    useWorkflowStore.setState({ currentProject: project });
+    useWorkflowStore.setState({ currentProject: project, bom: qualifiedBom });
   });
 
   it('prevents duplicate submissions and ignores a late result after the position changes', async () => {

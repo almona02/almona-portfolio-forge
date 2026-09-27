@@ -25,7 +25,7 @@ CREATE TEMP TABLE qc_test_output (
   result text NOT NULL
 ) ON COMMIT DROP;
 
-INSERT INTO qc_test_output(result) SELECT plan(9);
+INSERT INTO qc_test_output(result) SELECT plan(12);
 
 INSERT INTO auth.users(id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
 VALUES ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'qc-owner@example.test', '', now(), now()),
@@ -34,7 +34,8 @@ INSERT INTO public.fabricator_projects_v2(id, owner_user_id, project_code, proje
 VALUES ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'QC-TEST', 'QC Test', 'Test', 'rock60');
 INSERT INTO public.fabricator_positions_v2(id, project_id, owner_user_id, overall_width_mm, overall_height_mm, system_pack_id, qc_revision)
 VALUES ('30000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 1210, 1550, 'rock60', 4),
-       ('30000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 1210, 1550, 'rock60', 4);
+       ('30000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 1210, 1550, 'rock60', 4),
+       ('30000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 1210, 1550, 'no-approved-rule', 4);
 INSERT INTO public.fabricator_qc_tolerance_rules(system_pack_id, dimensional_tolerance_mm, approved, approved_by, approved_at)
 VALUES ('rock60', 2, true, '10000000-0000-0000-0000-000000000001', now());
 
@@ -52,6 +53,9 @@ INSERT INTO qc_test_output(result) SELECT lives_ok($$SELECT * FROM public.approv
 INSERT INTO qc_test_output(result) SELECT lives_ok($$SELECT * FROM public.approve_fabricator_quality_control('30000000-0000-0000-0000-000000000001',4,'{"checks":{"measurements":true,"design":true,"model":true,"optimization":true,"materials":true,"commands":true,"documents":true},"measurements":{"width":{"actualMm":1210},"height":{"actualMm":1551}},"notes":"dimensions verified"}','40000000-0000-0000-0000-000000000006')$$, 'identical retry succeeds');
 INSERT INTO qc_test_output(result) SELECT is((SELECT count(*) FROM public.fabricator_quality_approvals WHERE position_id = '30000000-0000-0000-0000-000000000001'), 1::BIGINT, 'identical retry creates one approval record');
 INSERT INTO qc_test_output(result) SELECT throws_ok($$SELECT * FROM public.approve_fabricator_quality_control('30000000-0000-0000-0000-000000000002',4,'{"checks":{"measurements":true,"design":true,"model":true,"optimization":true,"materials":true,"commands":true,"documents":true},"measurements":{"width":{"actualMm":1210},"height":{"actualMm":1551}},"notes":"dimensions verified"}','40000000-0000-0000-0000-000000000006')$$, 'idempotency key was reused for a different approval request', 'mismatched retry key rejected');
+INSERT INTO qc_test_output(result) SELECT is((SELECT evidence #>> '{measurements,width,targetMm}' FROM public.fabricator_quality_approvals WHERE position_id = '30000000-0000-0000-0000-000000000001'), '1210', 'authoritative target stored');
+INSERT INTO qc_test_output(result) SELECT is((SELECT evidence #>> '{measurements,width,toleranceMm}' FROM public.fabricator_quality_approvals WHERE position_id = '30000000-0000-0000-0000-000000000001'), '2', 'approved tolerance stored');
+INSERT INTO qc_test_output(result) SELECT throws_ok($$SELECT * FROM public.approve_fabricator_quality_control('30000000-0000-0000-0000-000000000003',4,'{"checks":{"measurements":true,"design":true,"model":true,"optimization":true,"materials":true,"commands":true,"documents":true},"measurements":{"width":{"actualMm":1210},"height":{"actualMm":1550}},"notes":"dimensions verified"}','40000000-0000-0000-0000-000000000007')$$, 'approved dimensional tolerance rule is unavailable', 'missing approved tolerance blocks approval');
 
 INSERT INTO qc_test_output(result) SELECT * FROM finish();
 SELECT result FROM qc_test_output ORDER BY sequence_no;
