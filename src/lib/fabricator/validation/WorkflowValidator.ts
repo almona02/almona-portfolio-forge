@@ -9,6 +9,7 @@
  */
 
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
+import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
 import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fabricator';
 
 export type WorkflowStep =
@@ -158,6 +159,14 @@ export function validateStepTransition(
   // Design → Optimization: need currentProject with components
   if (targetStep === 'optimization') {
     errors.push(...validateOptimizationInputs(state.currentProject).errors);
+    if (!isQualifiedBOM(state.bom)) {
+      errors.push({
+        type: 'error',
+        code: 'BOM_NOT_QUALIFIED',
+        message: state.bom?.qualification?.reasons.join('; ') || 'A manufacturing-qualified BOM is required before optimization.',
+        step: 'bom',
+      });
+    }
     if (state.currentProject && !state.currentProject.systemPackId) {
       errors.push({
         type: 'error',
@@ -172,12 +181,12 @@ export function validateStepTransition(
   if (targetStep === 'commercial' || targetStep === 'production') {
     errors.push(...validateOptimizationResult(state.optimizationResult).errors);
 
-    if (targetStep === 'production' && !state.bom) {
-      warnings.push({
-        type: 'warning',
-        code: 'NO_BOM',
-        message: 'BOM not generated. Assembly sequence may be unavailable.',
-        step: 'optimization',
+    if (targetStep === 'production' && !isQualifiedBOM(state.bom)) {
+      errors.push({
+        type: 'error',
+        code: 'BOM_NOT_QUALIFIED',
+        message: 'A manufacturing-qualified BOM is required for production release.',
+        step: 'bom',
       });
     }
   }
@@ -253,7 +262,7 @@ export class WorkflowValidator {
         issues.push({ code: 'D004', severity: 'error', message: 'System pack is not selected', field: 'systemPackId' });
       }
       if (!project.grid && !project.presetId) {
-        issues.push({ code: 'D005', severity: 'warning', message: 'No grid layout or preset pattern defined — BOM will use defaults' });
+        issues.push({ code: 'D005', severity: 'error', message: 'An authoritative grid or preset is required before BOM generation' });
       }
     }
 
@@ -277,6 +286,13 @@ export class WorkflowValidator {
       }
       if (bom.cost.totalCost <= 0) {
         issues.push({ code: 'B004', severity: 'warning', message: 'Total cost is zero — pricing data may be missing' });
+      }
+      if (!isQualifiedBOM(bom)) {
+        issues.push({
+          code: 'B005',
+          severity: 'error',
+          message: bom.qualification?.reasons.join('; ') || 'BOM lacks manufacturing qualification evidence',
+        });
       }
     }
 

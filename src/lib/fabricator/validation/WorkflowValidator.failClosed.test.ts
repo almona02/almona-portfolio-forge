@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { OptimizationResult, Profile, WindowUnit } from '@/types/fabricator';
+import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { validateOptimizationInputs, validateOptimizationResult, validateStepTransition, WorkflowValidator } from './WorkflowValidator';
 
 const profile = { id: 'profile-1' } as Profile;
@@ -27,5 +28,33 @@ describe('workflow fail-closed validation', () => {
 
   it('accepts a finite nonempty cutting result', () => {
     expect(validateOptimizationResult(validResult).valid).toBe(true);
+  });
+
+  it('blocks BOM generation without authoritative geometry', () => {
+    const result = WorkflowValidator.validateDesignToBOM(project);
+    expect(result.passed).toBe(false);
+    expect(result.issues.map(issue => issue.code)).toContain('D005');
+  });
+
+  it('blocks an unqualified BOM from optimization', () => {
+    const bom = {
+      profiles: [{ id: 'frame' }],
+      confidence: 1,
+      cost: { totalCost: 100 },
+      qualification: {
+        status: 'estimate',
+        unplacedPieceCount: 6,
+        reasons: ['Piece ledger mismatch'],
+      },
+    } as CompleteBOM;
+    const result = WorkflowValidator.validateBOMToOptimization(bom);
+    expect(result.passed).toBe(false);
+    expect(result.issues.map(issue => issue.code)).toContain('B005');
+    expect(validateStepTransition({
+      measurementData: null,
+      currentProject: project,
+      bom,
+      optimizationResult: null,
+    }, 'optimization').errors.map(issue => issue.code)).toContain('BOM_NOT_QUALIFIED');
   });
 });

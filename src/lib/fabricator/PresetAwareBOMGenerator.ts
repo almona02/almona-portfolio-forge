@@ -25,6 +25,11 @@ import { GlassBOMCalculator } from './bom/GlassBOMCalculator';
 import { HardwareBOMCalculator } from './bom/HardwareBOMCalculator';
 import { ProfileBOMCalculator } from './bom/ProfileBOMCalculator';
 import {
+    assessBOMQualification,
+    type BOMQualification,
+    type BOMQualificationContext,
+} from './bom/bomQualification';
+import {
     BOM_ACCURACY_TARGETS,
     CHECKSUM_CONSTANTS,
     CONFIDENCE_WEIGHTS,
@@ -54,6 +59,7 @@ export interface CompleteBOM {
   };
   accuracy: number; // 0.998 (99.8%)
   confidence: number; // 0.95+ (95%+)
+  qualification?: BOMQualification;
   metadata: {
     generationTimestamp: string;
     patternUsed: string;
@@ -133,13 +139,15 @@ export class PresetAwareBOMGenerator {
     windowUnit: WindowUnit,
     pattern: EgyptianPattern,
     systemPack: SystemPack,
-    useCache: boolean = true
+    useCache: boolean = true,
+    qualificationContext: BOMQualificationContext = {},
   ): Promise<CompleteBOM> {
     // Prepare inputs for replay tracking
     const bomInputs = {
       windowUnit,
       pattern,
-      systemPack
+      systemPack,
+      qualificationContext,
     };
 
     // Create cache key from inputs
@@ -153,6 +161,9 @@ export class PresetAwareBOMGenerator {
         width: windowUnit.overallWidth,
         height: windowUnit.overallHeight,
       },
+      identity: qualificationContext.identity,
+      catalogueVersion: qualificationContext.catalogueVersion,
+      ruleVersion: qualificationContext.ruleVersion,
     });
 
     // Check cache (5 second expiration)
@@ -167,7 +178,17 @@ export class PresetAwareBOMGenerator {
     const replayResult: ComputationResult<CompleteBOM> = await DeterministicReplayEngine.executeWithReplayTracking(
       bomInputs,
       async (inputs: unknown) => {
-        const { windowUnit: wu, pattern: pat, systemPack: sp } = inputs as { windowUnit: WindowUnit; pattern: EgyptianPattern; systemPack: SystemPack };
+        const {
+          windowUnit: wu,
+          pattern: pat,
+          systemPack: sp,
+          qualificationContext: qualification,
+        } = inputs as {
+          windowUnit: WindowUnit;
+          pattern: EgyptianPattern;
+          systemPack: SystemPack;
+          qualificationContext: BOMQualificationContext;
+        };
         
         // Generate all BOM components in parallel for performance
         const [profiles, hardware, glazing, accessories] = await Promise.all([
@@ -206,6 +227,7 @@ export class PresetAwareBOMGenerator {
           cost,
           accuracy: BOM_ACCURACY_TARGETS.TARGET_ACCURACY,
           confidence: this.calculateConfidence(profiles, hardware, glazing),
+          qualification: assessBOMQualification(wu, pat, profiles, qualification),
           metadata: {
             generationTimestamp: new Date().toISOString(),
             patternUsed: pat.id,

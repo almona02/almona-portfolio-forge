@@ -7,9 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { useWorkflowStore, workflowIdentityMatches } from '@/store/workflowStore';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
+import { gridMatchesPattern } from '@/lib/fabricator/presetUtils';
+import { WorkflowValidator } from '@/lib/fabricator/validation/WorkflowValidator';
 import {
   AlertCircle,
-  CheckCircle2,
   ClipboardList,
   Cog,
   GlassWater,
@@ -34,10 +35,15 @@ export const BOMReviewPanel: React.FC = () => {
   }, [currentProject?.systemPackId]);
 
   const pattern = useMemo(() => {
-    const presetId = currentProject?.presetId;
-    if (!presetId) return EGYPTIAN_PATTERNS[0] ?? null;
-    return EGYPTIAN_PATTERNS.find((p) => p.id === presetId) ?? EGYPTIAN_PATTERNS[0] ?? null;
-  }, [currentProject?.presetId]);
+    if (!currentProject?.grid) return null;
+    const candidates = currentProject.presetId
+      ? EGYPTIAN_PATTERNS.filter(candidate => candidate.id === currentProject.presetId)
+      : EGYPTIAN_PATTERNS;
+    return candidates.find(candidate => {
+      const match = gridMatchesPattern(currentProject.grid!, candidate);
+      return match.confidence === 100 && match.differences.length === 0;
+    }) ?? null;
+  }, [currentProject?.grid, currentProject?.presetId]);
 
   const generateBOM = useCallback(async () => {
     if (!currentProject || !systemPack || !pattern) return;
@@ -47,17 +53,22 @@ export const BOMReviewPanel: React.FC = () => {
     setError(null);
     try {
       const generator = new PresetAwareBOMGenerator();
-      const result = await generator.generateCompleteBOM(currentProject, pattern, systemPack);
+      const result = await generator.generateCompleteBOM(
+        currentProject,
+        pattern,
+        systemPack,
+        true,
+        { identity: generationIdentity },
+      );
       const latest = useWorkflowStore.getState();
       if (!generationIdentity || latest.currentProject !== generationProject || !workflowIdentityMatches(latest.workflowIdentity, generationIdentity)) return;
       setBOM(result);
-      completeStep('bom');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'BOM generation failed');
     } finally {
       setIsGenerating(false);
     }
-  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM, completeStep]);
+  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM]);
 
   useEffect(() => {
     if (!bom && currentProject && systemPack && pattern) {
@@ -66,6 +77,11 @@ export const BOMReviewPanel: React.FC = () => {
   }, [bom, currentProject, systemPack, pattern, generateBOM]);
 
   const handleContinue = () => {
+    const validation = WorkflowValidator.validateBOMToOptimization(bom);
+    if (!validation.passed) {
+      setError(validation.issues.map(issue => issue.message).join('; '));
+      return;
+    }
     completeStep('bom');
     const base = projectId && poseId
       ? `/fabricator/studio/projects/${projectId}/positions/${poseId}`
@@ -97,7 +113,7 @@ export const BOMReviewPanel: React.FC = () => {
         <div className="text-center space-y-4">
           <Loader2 className="w-12 h-12 text-amber-400 animate-spin mx-auto" />
           <p className="text-slate-400">Generating Bill of Materials...</p>
-          <p className="text-xs text-slate-500">99.8% accuracy | Deterministic replay enabled</p>
+          <p className="text-xs text-slate-500">Generating a revision-bound BOM estimate...</p>
         </div>
       </div>
     );
@@ -136,12 +152,10 @@ export const BOMReviewPanel: React.FC = () => {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Badge className="bg-green-500/20 text-green-300 border-green-500/40">
-                <CheckCircle2 className="w-3 h-3 mr-1" />
-                {(bom.accuracy * 100).toFixed(1)}% Accuracy
-              </Badge>
-              <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/40">
-                Confidence: {(bom.confidence * 100).toFixed(0)}%
+              <Badge className={bom.qualification?.status === 'qualified'
+                ? 'bg-green-500/20 text-green-300 border-green-500/40'
+                : 'bg-amber-500/20 text-amber-300 border-amber-500/40'}>
+                {bom.qualification?.status === 'qualified' ? 'Manufacturing qualified' : 'Estimate only'}
               </Badge>
             </div>
           </div>
@@ -214,6 +228,7 @@ export const BOMReviewPanel: React.FC = () => {
         </Button>
         <button
           onClick={handleContinue}
+          disabled={!WorkflowValidator.validateBOMToOptimization(bom).passed}
           className="group relative px-8 py-4 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
         >
           <span className="relative z-10 flex items-center gap-2">

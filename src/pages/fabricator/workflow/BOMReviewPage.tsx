@@ -9,9 +9,11 @@
 
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import { findBestMatchingPattern, getPatternById } from '@/lib/fabricator/presetUtils';
+import { gridMatchesPattern } from '@/lib/fabricator/presetUtils';
+import { WorkflowValidator } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { ArrowRight, Layers, Loader2 } from 'lucide-react';
@@ -20,23 +22,32 @@ import { useNavigate, useParams } from 'react-router-dom';
 export const BOMReviewPage: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
-  const { currentProject, bom, setBOM } = useWorkflowStore();
+  const { currentProject, workflowIdentity, bom, setBOM, completeStep } = useWorkflowStore();
   const [isGenerating, setIsGenerating] = useState(false);
 
   const systemPack = SYSTEM_PACKS.find(
-    (p) => p.meta?.id === (currentProject?.systemPackId ?? 'generic-60')
-  ) ?? SYSTEM_PACKS[0];
+    (p) => p.meta?.id === currentProject?.systemPackId
+  ) ?? null;
 
   const generateBOM = useCallback(async () => {
     if (!currentProject || !systemPack || !currentProject.grid) return null;
-    const pattern =
-      (currentProject as { presetId?: string }).presetId
-        ? getPatternById((currentProject as { presetId: string }).presetId)
-        : findBestMatchingPattern(currentProject.grid, currentProject.systemPackId ?? null)?.pattern;
+    const candidates = currentProject.presetId
+      ? EGYPTIAN_PATTERNS.filter(candidate => candidate.id === currentProject.presetId)
+      : EGYPTIAN_PATTERNS;
+    const pattern = candidates.find(candidate => {
+      const match = gridMatchesPattern(currentProject.grid!, candidate);
+      return match.confidence === 100 && match.differences.length === 0;
+    });
     if (!pattern) return null;
     const generator = new PresetAwareBOMGenerator();
-    return generator.generateCompleteBOM(currentProject, pattern, systemPack).catch(() => null);
-  }, [currentProject, systemPack]);
+    return generator.generateCompleteBOM(
+      currentProject,
+      pattern,
+      systemPack,
+      true,
+      { identity: workflowIdentity },
+    ).catch(() => null);
+  }, [currentProject, systemPack, workflowIdentity]);
 
   useEffect(() => {
     if (bom || !currentProject) return;
@@ -50,6 +61,8 @@ export const BOMReviewPage: React.FC = () => {
   }, [currentProject, bom, generateBOM, setBOM]);
 
   const handleContinue = useCallback(() => {
+    if (!WorkflowValidator.validateBOMToOptimization(bom).passed) return;
+    completeStep('bom');
     const projId = projectId ?? currentProject?.id;
     const posId = poseId ?? projId;
     if (projId && posId) {
@@ -57,7 +70,7 @@ export const BOMReviewPage: React.FC = () => {
     } else {
       navigate(fabricatorRoutes.studioProjects());
     }
-  }, [projectId, poseId, currentProject, navigate]);
+  }, [projectId, poseId, currentProject, bom, completeStep, navigate]);
 
   const handleBackToDesign = useCallback(() => {
     const projId = projectId ?? currentProject?.id;
@@ -90,7 +103,8 @@ export const BOMReviewPage: React.FC = () => {
     );
   }
 
-  const hasBOM = bom && (bom.profiles?.length > 0 || bom.hardware?.length > 0 || bom.glazing?.length > 0);
+  const hasBOM = Boolean(bom && (bom.profiles?.length > 0 || bom.hardware?.length > 0 || bom.glazing?.length > 0));
+  const canContinue = WorkflowValidator.validateBOMToOptimization(bom).passed;
 
   return (
     <div className="flex flex-col h-full bg-slate-950 p-6 overflow-y-auto">
@@ -109,7 +123,7 @@ export const BOMReviewPage: React.FC = () => {
             <Button variant="outline" onClick={handleBackToDesign} className="border-slate-600 text-slate-300">
               Back to Design
             </Button>
-            <Button onClick={handleContinue} className="bg-amber-600 hover:bg-amber-700" disabled={!hasBOM}>
+            <Button onClick={handleContinue} className="bg-amber-600 hover:bg-amber-700" disabled={!canContinue}>
               Continue to Optimization <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
@@ -118,13 +132,19 @@ export const BOMReviewPage: React.FC = () => {
           {!hasBOM ? (
             <div className="text-center py-12 text-slate-400">
               <p>No BOM generated. Ensure design has grid and pattern.</p>
-              <p className="text-sm mt-2">You can continue to optimization to generate BOM there.</p>
-              <Button onClick={handleContinue} variant="outline" className="mt-4">
-                Skip to Optimization
-              </Button>
+              <p className="text-sm mt-2">Optimization remains blocked until the BOM is manufacturing-qualified.</p>
             </div>
           ) : (
             <>
+              {bom?.qualification?.status !== 'qualified' && (
+                <div className="border border-amber-600/40 bg-amber-500/10 rounded-lg p-4 text-sm text-amber-200">
+                  <p className="font-semibold">Estimate only — manufacturing release blocked</p>
+                  <ul className="mt-2 list-disc list-inside text-amber-100/80">
+                    {(bom?.qualification?.reasons ?? ['Manufacturing qualification evidence is missing'])
+                      .map(reason => <li key={reason}>{reason}</li>)}
+                  </ul>
+                </div>
+              )}
               {bom?.profiles && bom.profiles.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium text-amber-300 mb-2">Profiles</h4>
