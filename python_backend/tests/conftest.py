@@ -19,6 +19,7 @@ def _stub_module(name: str):
 
 # Mock heavy/unused ML deps before importing the app to avoid long load times and tf spec errors
 os.environ.setdefault("SKIP_RAILWAY", "1")
+os.environ["RATE_LIMIT_ENABLED"] = "false"
 
 sys.modules['ultralytics'] = Mock()
 _stub_module('tensorflow')
@@ -30,6 +31,9 @@ _stub_module('torchvision.models')
 _stub_module('easyocr')
 
 # Import after mocking to avoid long load times
+from core.config import settings  # noqa: E402
+
+settings.RATE_LIMIT_ENABLED = False
 from apis.main import app  # noqa: E402
 
 

@@ -134,12 +134,16 @@ def test_ticket_service_update_and_assign():
     user_id = uuid4()
     t = svc.create_ticket(TicketCategory.SUPPORT, build_payload(), user_id)
 
+    assigned = svc.assign_ticket(t.id, uuid4(), user_id)
+    assert assigned is not None
+    assert assigned.status == TicketStatus.ASSIGNED
+
     updated = svc.update_ticket_status(t.id, TicketStatus.IN_PROGRESS)
     assert updated is not None
     assert updated.status == TicketStatus.IN_PROGRESS
 
-    assigned = svc.assign_ticket(t.id, uuid4(), user_id)
-    assert assigned is not None
-    assert assigned.status == TicketStatus.IN_PROGRESS
+    reassigned = svc.assign_ticket(t.id, uuid4(), user_id)
+    assert reassigned is not None
+    assert reassigned.status == TicketStatus.IN_PROGRESS
 
 

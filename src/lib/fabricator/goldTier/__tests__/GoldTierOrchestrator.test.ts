@@ -119,7 +119,7 @@ describe('GoldTierOrchestrator', () => {
     };
 
     // Mock ApexEngineV2
-    vi.mocked(ApexEngineV2).mockImplementation(() => ({
+    vi.mocked(ApexEngineV2).mockImplementation(function () { return {
       generateAssembly: vi.fn().mockReturnValue({ // Synchronous return
         visualGeometry: {
           frame: { outline: [], corners: [] },
@@ -142,10 +142,10 @@ describe('GoldTierOrchestrator', () => {
           cacheHit: false,
         },
       }),
-    }));
+    }; });
 
     // Mock DualOutputGenerator
-    vi.mocked(DualOutputGenerator).mockImplementation(() => ({
+    vi.mocked(DualOutputGenerator).mockImplementation(function () { return {
       generateForWindowUnit: vi.fn().mockResolvedValue({
         geometry: {
           frame: { outline: [], corners: [] },
@@ -160,7 +160,7 @@ describe('GoldTierOrchestrator', () => {
         },
         existingCutList: [],
       }),
-    }));
+    }; });
 
     // Mock environment
     vi.stubGlobal('import', {
@@ -221,7 +221,7 @@ describe('GoldTierOrchestrator', () => {
       mockWindowUnit.presetId = 'sliding-2s';
 
       // Mock error in ApexEngineV2
-      vi.mocked(ApexEngineV2).mockImplementation(() => {
+      vi.mocked(ApexEngineV2).mockImplementation(function () {
         throw new Error('Test error');
       });
 
@@ -280,7 +280,7 @@ describe('GoldTierOrchestrator', () => {
       mockWindowUnit.presetId = 'sliding-2s';
 
       // Mock validation failure
-      vi.mocked(ApexEngineV2).mockImplementation(() => ({
+      vi.mocked(ApexEngineV2).mockImplementation(function () { return {
         generateAssembly: vi.fn().mockReturnValue({
           visualGeometry: {
             frame: { outline: [], corners: [] },
@@ -303,10 +303,10 @@ describe('GoldTierOrchestrator', () => {
             cacheHit: false,
           },
         }),
-      }));
+      }; });
 
       // Mock legacy with different result
-      vi.mocked(DualOutputGenerator).mockImplementation(() => ({
+      vi.mocked(DualOutputGenerator).mockImplementation(function () { return {
         generateForWindowUnit: vi.fn().mockResolvedValue({
           geometry: {
             frame: { outline: [], corners: [] },
@@ -331,7 +331,7 @@ describe('GoldTierOrchestrator', () => {
           },
           existingCutList: [],
         }),
-      }));
+      }; });
 
       const result = await orchestrator.generate(mockWindowUnit);
 

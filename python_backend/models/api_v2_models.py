@@ -5,9 +5,13 @@ from enum import Enum
 
 class TicketStatus(str, Enum):
     OPEN = "open"
+    ASSIGNED = "assigned"
     IN_PROGRESS = "in_progress"
+    AWAITING_PARTS = "awaiting_parts"
+    AWAITING_CUSTOMER = "awaiting_customer"
     RESOLVED = "resolved"
     CLOSED = "closed"
+    CANCELLED = "cancelled"
 
 
 class TicketCategory(str, Enum):

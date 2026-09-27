@@ -8,7 +8,7 @@ alembic==1.17.2
 amqp==5.3.1
 annotated-doc==0.0.4
 annotated-types==0.7.0
-anyio==4.9.0
+anyio==4.14.2
 astunparse==1.6.3
 asyncpg==0.31.0
 attrs==25.3.0
@@ -26,7 +26,7 @@ certifi==2026.1.4
 cffi==2.0.0
 chardet==5.2.0
 charset-normalizer==3.4.2
-click==8.2.1
+click==8.3.3
 click-didyoumean==0.3.1
 click-plugins==1.1.1.2
 click-repl==0.3.0
@@ -86,7 +86,7 @@ h11==0.16.0
 h2==4.4.1
 h5py==3.14.0
 hf-xet==1.2.0
-hpack==4.1.0
+hpack==4.2.0
 httpcore==1.0.9
 httplib2==0.32.0
 httptools==0.6.4
@@ -192,7 +192,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.2.3
 python-engineio
 python-http-client==3.3.7
-python-jose[cryptography]==3.4.0
+python-jose[cryptography]==3.5.0
 python-multipart==0.0.32
 python-socketio
 pytz==2025.2

@@ -13,9 +13,14 @@ import base64
 import logging
 import ssl
 import time
-import xmlrpc.client
+# defusedxml monkey-patches the parser before any Odoo client is constructed.
+import xmlrpc.client  # nosec B411
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+
+from defusedxml.xmlrpc import monkey_patch
+
+monkey_patch()
 
 logger = logging.getLogger(__name__)
 

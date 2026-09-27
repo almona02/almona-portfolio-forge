@@ -22,7 +22,7 @@ def skip_if_v1_endpoint_not_found(endpoint_path: str, method: str = "GET"):
 class TestAPIEndpoints:
     """Test cases for API endpoints"""
 
-    @patch('core.health_checks.get_health_status', new_callable=AsyncMock)
+    @patch('apis.main.get_health_status', new_callable=AsyncMock)
     def test_health_check(self, mock_health_status):
         """Test health check endpoint with full mock."""
         mock_health_status.return_value = {
