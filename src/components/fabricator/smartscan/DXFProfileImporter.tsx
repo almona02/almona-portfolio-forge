@@ -399,9 +399,25 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
       // Use authenticated user ID to satisfy RLS policy
       profileData.user_id = authenticatedUserId;
 
+      const specs = {
+        ...(typeof profileData.specifications === 'object' && profileData.specifications ? profileData.specifications : {}),
+        profileRole: defaultRole,
+        systemBrand: defaultSystemPack || 'Custom',
+        systemType: defaultWindowType,
+      };
+      const insertRow = {
+        user_id: authenticatedUserId,
+        name: String(profileData.name || profile.fileName.replace(/\.(dxf|dwg)$/i, '')),
+        material: 'aluminum',
+        width: Number(profileData.width || profile.widthMm || 50),
+        height: profileData.height ?? profile.heightMm ?? null,
+        thickness: Number(profileData.thickness || 1.5),
+        specifications: specs,
+      };
+
       const { data, error: saveError } = await supabase
         .from('fabricator_profiles')
-        .insert(profileData)
+        .insert(insertRow)
         .select()
         .single();
 

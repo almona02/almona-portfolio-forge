@@ -65,13 +65,19 @@ export function buildCustomSystemPack(input: BuildPackInput) {
       };
     }
     
-    // Fallback for profiles without dimensions
+    // Keep the imported DXF facts even when width/height were not extracted.
     return {
       id: p.id,
       name: p.name || p.fileName || 'Profile',
       role: p.role || 'unknown',
+      fileName: p.fileName,
       width_mm: p.widthMm,
       height_mm: p.heightMm,
+      areaMm2: p.areaMm2,
+      perimeterMm: p.perimeterMm,
+      weightKgPerM: p.weightKgPerM,
+      isThermalBreak: p.isThermalBreak,
+      svgPreview: p.svgPreview,
     };
   });
   
