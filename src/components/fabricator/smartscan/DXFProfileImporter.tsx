@@ -189,6 +189,8 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
   const [profiles, setProfiles] = useState<ImportedProfile[]>([]);
   const [isParsing, setIsParsing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [profileToSave, setProfileToSave] = useState<ImportedProfile | null>(null);
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -513,14 +515,26 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
               </div>
             </div>
             {userId && (
-              <Button
-                onClick={() => handleSaveProfileClick(selected)}
-                disabled={isSaving}
-                className="btn-primary"
-                size="sm"
-              >
-                {isSaving ? 'Saving...' : 'Save to Library'}
-              </Button>
+              <div className="flex flex-col items-end gap-2">
+                <Button
+                  onClick={() => handleSaveProfileClick(selected)}
+                  disabled={isSaving}
+                  className="btn-primary"
+                  size="sm"
+                >
+                  {isSaving ? 'Saving...' : 'Save to Library'}
+                </Button>
+                {showSaveConfirm && profileToSave?.id === selected.id && (
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => { setShowSaveConfirm(false); setProfileToSave(null); }}>
+                      Cancel
+                    </Button>
+                    <Button size="sm" onClick={() => void _handleSaveProfile(profileToSave)} disabled={isSaving}>
+                      Confirm save
+                    </Button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
           
