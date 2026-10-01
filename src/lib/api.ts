@@ -218,9 +218,10 @@ export const api = {
   uploadMachinePhoto: async (file: File, ownerId: string, serial: string) => {
     const safeSegment = (value: string) =>
       value.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_').slice(0, 80) || 'file';
-    const path = `${safeSegment(ownerId)}/${safeSegment(serial)}/${Date.now()}-${safeSegment(file.name || 'photo')}`;
-     
-    const storage = (supabase as unknown as { storage: any }).storage.from('machine-photos');
+    const path = `${safeSegment(ownerId)}/machine-photos/${safeSegment(serial)}/${Date.now()}-${safeSegment(file.name || 'photo')}`;
+    // profile-thumbnails already allows this user to upload under their id.
+    // The machine-photos bucket has no insert policy, so the browser request returns 400.
+    const storage = (supabase as unknown as { storage: any }).storage.from('profile-thumbnails');
     const { error } = await storage.upload(path, file, {
       upsert: true,
       contentType: file.type || 'application/octet-stream',
