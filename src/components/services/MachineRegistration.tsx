@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, Copy, Check } from "lucide-react";
-import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
+import { LazyAnimatePresence, LazyMotion, LazyMotionDiv } from '@/utils/lazyMotion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { EnhancedOperatorTrainingDialog } from './EnhancedOperatorTrainingDialog';
@@ -361,18 +361,18 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                     <CardHeader><CardTitle className="text-lg">Next Steps</CardTitle></CardHeader>
                     <CardContent>
                       <ul className="space-y-3">
-                        <motion.li className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
+                        <LazyMotion component="li" className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
                           <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
                           <div><p className="font-medium">Machine Registered</p><p className="text-sm text-gray-400">Added to your fleet</p></div>
-                        </motion.li>
-                        <motion.li className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+                        </LazyMotion>
+                        <LazyMotion component="li" className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
                           <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
                           <div><p className="font-medium">Digital Twin Created</p><p className="text-sm text-gray-400">Virtual representation ready</p></div>
-                        </motion.li>
-                        <motion.li className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+                        </LazyMotion>
+                        <LazyMotion component="li" className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                           <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
                           <div><p className="font-medium">Warranty Activated</p><p className="text-sm text-gray-400">Coverage starts immediately</p></div>
-                        </motion.li>
+                        </LazyMotion>
                       </ul>
                     </CardContent>
                   </Card>
