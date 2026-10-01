@@ -79,7 +79,8 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/python_backend
           SKIP_RAILWAY: "1"
-        run: pytest tests/ -v --tb=short
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: pytest -p pytest_asyncio.plugin tests/ -v --tb=short
 
   # ============================================================================
   # Job 2: Build Frontend
