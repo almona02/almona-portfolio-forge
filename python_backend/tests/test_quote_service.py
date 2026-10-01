@@ -47,6 +47,22 @@ class DummyTable:
         # For tests we don't simulate update behavior in depth
         return R([])
 
+    def delete(self):
+        table = self
+
+        class R:
+            def eq(self, column: str, value: Any):
+                table.store[table.name] = [
+                    row for row in table.store.get(table.name, [])
+                    if row.get(column) != value
+                ]
+                return self
+
+            def execute(self):
+                return self
+
+        return R()
+
 
 class DummyClient:
     def __init__(self):
@@ -151,5 +167,22 @@ def test_authenticated_quote_keeps_owner():
         "products": [{"product_id": "p1", "quantity": 2, "unit_price": 10}],
     })
     assert supabase._client.store["quotes"][0]["user_id"] == "00000000-0000-0000-0000-000000000001"
+
+
+def test_item_insert_failure_removes_header():
+    supabase = DummySupabase()
+    service = QuoteService(supabase)
+
+    def fail_items(_items):
+        raise RuntimeError("item write failed")
+
+    service._repo.insert_quote_items = fail_items  # type: ignore[method-assign]
+    with pytest.raises(SupabaseError):
+        service.create_quote_with_items({
+            "contact_name": "Customer",
+            "contact_email": "customer@example.invalid",
+            "products": [{"product_id": "p1", "quantity": 1, "unit_price": 10}],
+        })
+    assert supabase._client.store.get("quotes", []) == []
 
 
