@@ -71,7 +71,13 @@ class QuoteService:
             if payload.get("user_id"):
                 insert_data["user_id"] = payload.get("user_id")
 
-            # 2) Insert header
+            items_payload = self._build_items(payload, quote_id=None)
+
+            atomic_row = self._repo.insert_quote_atomic(insert_data, items_payload)
+            if atomic_row is not None:
+                return self._response(atomic_row, atomic_row.get("total_amount"))
+
+            # 2) Insert header (fallback). Item failure deletes the header.
             try:
                 row = self._repo.insert_quote(insert_data)
             except Exception as e:
@@ -97,59 +103,9 @@ class QuoteService:
                     operation="insert_quote",
                 ) from exc
 
-            # 3) Prepare and insert items
-            items_payload: List[Dict[str, Any]] = []
-            for item in payload.get("products") or []:
-                product_id = item.get("product_id")
-                if not product_id:
-                    continue
-                unit_price = item.get("unit_price")
-                quantity = int(item.get("quantity", 1))
-                items_payload.append(
-                    {
-                        "quote_id": quote_id,
-                        "product_id": product_id,
-                        "quantity": quantity,
-                        "unit_price": unit_price,
-                        "total_price": (
-                            (unit_price or 0) * quantity
-                            if unit_price is not None
-                            else None
-                        ),
-                    }
-                )
+            for item in items_payload:
+                item["quote_id"] = quote_id
 
-            for item in payload.get("services") or []:
-                service_id = item.get("service_id")
-                if not service_id:
-                    continue
-                unit_price = item.get("unit_price")
-                quantity = int(item.get("quantity", 1))
-                items_payload.append(
-                    {
-                        "quote_id": quote_id,
-                        "service_id": service_id,
-                        "quantity": quantity,
-                        "unit_price": unit_price,
-                        "total_price": (
-                            (unit_price or 0) * quantity
-                            if unit_price is not None
-                            else None
-                        ),
-                    }
-                )
-
-            if items_payload:
-                try:
-                    self._repo.insert_quote_items(items_payload)
-                except Exception as e:
-                    raise SupabaseError(
-                        message="Failed to insert quote items",
-                        operation="insert_quote_items",
-                        original_error=e
-                    )
-
-            # 4) Recalculate and persist total when items have prices
             recalculated_total: Optional[float] = None
             if items_payload:
                 recalculated_total = sum(
@@ -157,28 +113,17 @@ class QuoteService:
                     if i.get("total_price")
                 )
                 try:
+                    self._repo.insert_quote_items(items_payload)
                     self._repo.update_quote_total(quote_id, recalculated_total)
-                except Exception:
-                    # non-fatal if update fails
-                    pass
+                except Exception as e:
+                    self._rollback_quote(quote_id)
+                    raise SupabaseError(
+                        message="Failed to insert quote items",
+                        operation="insert_quote_items",
+                        original_error=e
+                    )
 
-            # 5) return full response shape
-            return {
-                "id": row.get("id"),
-                "quote_number": row.get("quote_number"),
-                "digital_twin_code": row.get("digital_twin_code"),
-                "portal_reference": row.get("portal_reference"),
-                "status": row.get("status", "pending"),
-                "total_amount": (
-                    recalculated_total
-                    if recalculated_total is not None
-                    else row.get("total_amount")
-                ),
-                "related_service_ticket_id": row.get(
-                    "related_service_ticket_id"
-                ),
-                "created_at": row.get("created_at"),
-            }
+            return self._response(row, recalculated_total)
         except (QuoteValidationError, QuoteAlreadyExistsError, SupabaseError):
             # Re-raise our custom errors
             raise
@@ -189,3 +134,81 @@ class QuoteService:
                 operation="create_quote_with_items",
                 original_error=e
             )
+
+    def _build_items(
+        self, payload: Dict[str, Any], quote_id: Optional[str]
+    ) -> List[Dict[str, Any]]:
+        items_payload: List[Dict[str, Any]] = []
+        for item in payload.get("products") or []:
+            product_id = item.get("product_id")
+            if not product_id:
+                continue
+            unit_price = item.get("unit_price")
+            quantity = int(item.get("quantity", 1))
+            items_payload.append(
+                {
+                    "quote_id": quote_id,
+                    "product_id": product_id,
+                    "quantity": quantity,
+                    "unit_price": unit_price,
+                    "total_price": (
+                        (unit_price or 0) * quantity
+                        if unit_price is not None
+                        else None
+                    ),
+                }
+            )
+        for item in payload.get("services") or []:
+            service_id = item.get("service_id")
+            if not service_id:
+                continue
+            unit_price = item.get("unit_price")
+            quantity = int(item.get("quantity", 1))
+            items_payload.append(
+                {
+                    "quote_id": quote_id,
+                    "service_id": service_id,
+                    "quantity": quantity,
+                    "unit_price": unit_price,
+                    "total_price": (
+                        (unit_price or 0) * quantity
+                        if unit_price is not None
+                        else None
+                    ),
+                }
+            )
+        return items_payload
+
+    def _rollback_quote(self, quote_id: str) -> None:
+        try:
+            self._repo.delete_quote(quote_id)
+        except Exception:
+            return
+
+    def _response(
+        self, row: Dict[str, Any], recalculated_total: Optional[float]
+    ) -> Dict[str, Any]:
+        quote_id = row.get("id")
+        try:
+            if not isinstance(quote_id, str):
+                raise ValueError("Missing persisted quote ID")
+            uuid.UUID(quote_id)
+        except ValueError as exc:
+            raise SupabaseError(
+                message="Quote insert returned an invalid record ID",
+                operation="insert_quote",
+            ) from exc
+        return {
+            "id": quote_id,
+            "quote_number": row.get("quote_number"),
+            "digital_twin_code": row.get("digital_twin_code"),
+            "portal_reference": row.get("portal_reference"),
+            "status": row.get("status", "pending"),
+            "total_amount": (
+                recalculated_total
+                if recalculated_total is not None
+                else row.get("total_amount")
+            ),
+            "related_service_ticket_id": row.get("related_service_ticket_id"),
+            "created_at": row.get("created_at"),
+        }
