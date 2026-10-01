@@ -6,10 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ProductVideoPlayer } from '@/components/ui/ProductVideoPlayer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/AuthContext';
+import { useYilmazMachines } from '@/hooks/useYilmazMachines';
 import { api } from '@/lib/api';
 import { MaintenanceRulesEngine } from '@/lib/intelligence/MaintenanceRulesEngine';
+import { isWithinStandardWarranty } from '@/lib/machines/registrationWarranty';
+import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { Activity, AlertCircle, ArrowLeft, Cpu, FileText, MoreVertical, RefreshCw, ShieldAlert, ShieldCheck, Zap } from 'lucide-react';
@@ -26,19 +30,28 @@ interface AssetDetails {
     brand: string;
     status: 'online' | 'offline' | 'maintenance' | 'error';
     is_active: boolean;
-    specifications: Record<string, any>;
+    specifications: Record<string, string>;
     installation_date?: string;
     warranty_expiry?: string;
     warranty_valid: boolean;
     image_url?: string;
 }
 
-// Mock Timeline Data (Placeholder until real API connection)
-const MOCK_EVENTS: TimelineEvent[] = [
-    { id: '1', date: '2025-10-15', title: 'Firmware Update v2.1', type: 'maintenance', status: 'completed', description: 'Over-the-air update for motion controller optimization.' },
-    { id: '2', date: '2025-06-01', title: 'Quarterly Audit', type: 'audit', status: 'completed', technician: 'Ahmed Hassan' },
-    { id: '3', date: '2025-01-20', title: 'Installation & Commissioning', type: 'installation', status: 'completed', description: 'Machine installed at Cairo Workshop #4.' },
-];
+interface TicketRow {
+    id: string;
+    ticket_number?: string | null;
+    title: string;
+    type?: string | null;
+    status?: string | null;
+    created_at: string;
+}
+
+interface SparePartLog {
+    id: string;
+    ticket_id: string;
+    created_at: string;
+    parts: Array<{ sku: string; name: string; quantity: number }>;
+}
 
 export const DigitalTwinDashboard = () => {
     const { machineId } = useParams<{ machineId: string }>();
@@ -58,19 +71,76 @@ export const DigitalTwinDashboard = () => {
             if (!found) throw new Error('Machine not found');
 
             return {
-                ...found,
-                brand: 'Yilmaz', // default
-                status: 'online', // mock
-                specifications: {
-                    power: '3.5kW',
-                    voltage: '380V',
-                    axis_count: 3,
-                    controller: 'Fanuc'
-                }
-            } as unknown as AssetDetails;
+                id: found.id,
+                serial_number: found.serial_number,
+                name: found.name,
+                model: found.model,
+                brand: 'Yilmaz',
+                status: 'online',
+                is_active: true,
+                specifications: {},
+                installation_date: found.installation_date || undefined,
+                warranty_valid: Boolean(found.warranty_valid),
+                image_url: found.photo_urls?.[0],
+            } satisfies AssetDetails;
         },
         enabled: !!machineId && !!user
     });
+
+    const { data: catalogMachines = [] } = useYilmazMachines();
+    const catalog = catalogMachines.find((item) => item.name.trim().toLowerCase() === (asset?.model || '').trim().toLowerCase());
+    const [showVideo, setShowVideo] = React.useState(false);
+
+    const { data: tickets = [] } = useQuery({
+        queryKey: ['machine-passport-tickets', user?.id, asset?.serial_number],
+        enabled: !!user && !!asset?.serial_number,
+        queryFn: async () => {
+            const { data, error: ticketError } = await supabase
+                .from('service_tickets')
+                .select('id,ticket_number,title,type,status,created_at,machine_serial_number')
+                .eq('user_id', user!.id)
+                .eq('machine_serial_number', asset!.serial_number)
+                .order('created_at', { ascending: false });
+            if (ticketError) throw ticketError;
+            return (data || []) as TicketRow[];
+        },
+    });
+
+    const { data: spareParts = [] } = useQuery({
+        queryKey: ['machine-passport-parts', tickets.map((ticket) => ticket.id).join(',')],
+        enabled: tickets.length > 0,
+        queryFn: async () => {
+            const { data, error: partsError } = await supabase
+                .from('ticket_messages')
+                .select('id,ticket_id,created_at,spare_parts_details')
+                .in('ticket_id', tickets.map((ticket) => ticket.id))
+                .not('spare_parts_details', 'is', null);
+            if (partsError) throw partsError;
+            return ((data || []) as Array<{ id: string; ticket_id: string; created_at: string; spare_parts_details: SparePartLog['parts'] extends never ? null : { parts?: SparePartLog['parts'] } | null }>)
+                .map((row) => ({
+                    id: row.id,
+                    ticket_id: row.ticket_id,
+                    created_at: row.created_at,
+                    parts: row.spare_parts_details?.parts || [],
+                }))
+                .filter((row) => row.parts.length > 0);
+        },
+    });
+
+    const passportEvents: TimelineEvent[] = tickets.map((ticket) => ({
+        id: ticket.id,
+        date: ticket.created_at,
+        title: ticket.title,
+        description: ticket.ticket_number ? `Ticket ${ticket.ticket_number}` : undefined,
+        type: ticket.type === 'installation' ? 'installation' : ticket.type === 'maintenance' ? 'maintenance' : 'repair',
+        status: ticket.status === 'resolved' || ticket.status === 'closed' ? 'completed' : 'pending',
+    }));
+
+    const productSpecs: Record<string, string> = catalog ? {
+        type: catalog.type,
+        power: catalog.powerSpec?.consumption || '',
+        voltage: catalog.powerSpec?.voltage || '',
+    } : {};
 
     // Calculate Asset Health (Real-time intelligence)
     const healthValues = React.useMemo(() => {
@@ -106,9 +176,7 @@ export const DigitalTwinDashboard = () => {
         );
     }
 
-    // Check if warranty is active (simple check based on expiry date)
-    // Logic: if warranty_valid is true and expiry is in future
-    const isWarrantyActive = asset.warranty_valid && (!asset.warranty_expiry || new Date(asset.warranty_expiry) > new Date());
+    const isWarrantyActive = isWithinStandardWarranty(asset.installation_date || '');
 
     return (
         <div className="min-h-screen bg-almona-dark pb-12">
@@ -165,8 +233,8 @@ export const DigitalTwinDashboard = () => {
                     <Card className="bg-gradient-to-br from-gray-900 to-black border-almona-light/20 overflow-hidden relative group">
                         <div className="aspect-square flex items-center justify-center bg-grid-pattern relative">
                             {/* Placeholder for real 3D model */}
-                            {asset.image_url ? (
-                                <img src={asset.image_url} alt={asset.name} className="w-3/4 object-contain drop-shadow-2xl" />
+                            {asset.image_url || catalog?.imageUrl ? (
+                                <img src={asset.image_url || catalog?.imageUrl} alt={catalog?.name || asset.name} className="w-3/4 object-contain drop-shadow-2xl" />
                             ) : (
                                 <Cpu className="w-32 h-32 text-almona-light/20 group-hover:text-almona-orange/50 transition-colors duration-500" />
                             )}
@@ -174,8 +242,16 @@ export const DigitalTwinDashboard = () => {
                                 <div className="w-3 h-3 bg-green-500 rounded-full shadow-[0_0_10px_#22c55e]"></div>
                             </div>
                         </div>
-                        <CardContent className="p-4 bg-almona-darker border-t border-almona-light/10">
-                            <p className="text-sm text-gray-400 text-center">Real-time Digital Twin Connection Active</p>
+                        <CardContent className="p-4 bg-almona-darker border-t border-almona-light/10 space-y-2">
+                            <p className="text-sm text-gray-400 text-center">{catalog ? catalog.description : 'Catalog product not linked to this model.'}</p>
+                            {catalog?.specPdf && (
+                                <Button variant="outline" className="w-full" asChild>
+                                    <a href={catalog.specPdf} target="_blank" rel="noreferrer">Open product catalog</a>
+                                </Button>
+                            )}
+                            {catalog?.youtubeUrl && (
+                                <Button className="w-full" onClick={() => setShowVideo(true)}>Play product video</Button>
+                            )}
                         </CardContent>
                     </Card>
 
@@ -203,13 +279,13 @@ export const DigitalTwinDashboard = () => {
                             <CardTitle className="text-lg">Specifications</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
-                            {Object.entries(asset.specifications || {}).map(([key, value]) => (
+                            {Object.entries(productSpecs).filter(([, value]) => value).map(([key, value]) => (
                                 <div key={key} className="flex justify-between text-sm py-1 border-b border-gray-800 last:border-0">
                                     <span className="text-gray-400 capitalize">{key.replace(/_/g, ' ')}</span>
                                     <span className="font-mono text-almona-light">{String(value)}</span>
                                 </div>
                             ))}
-                            {!asset.specifications && <p className="text-gray-500 italic">No detailed specs available.</p>}
+                            {!catalog && <p className="text-gray-500 italic">No product catalog match for this model.</p>}
                         </CardContent>
                     </Card>
 
@@ -235,8 +311,22 @@ export const DigitalTwinDashboard = () => {
                             <TabsTrigger value="docs" className="flex-1">Documents</TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="timeline" className="mt-6">
-                            <ServiceTimeline events={MOCK_EVENTS} />
+                        <TabsContent value="timeline" className="mt-6 space-y-6">
+                            <ServiceTimeline events={passportEvents} />
+                            <Card className="bg-almona-darker border-almona-light/10">
+                                <CardHeader><CardTitle>Spare parts log</CardTitle></CardHeader>
+                                <CardContent className="space-y-3">
+                                    {spareParts.length === 0 && <p className="text-sm text-gray-400">No spare parts have been logged against tickets for this machine.</p>}
+                                    {spareParts.map((entry) => (
+                                        <div key={entry.id} className="border-b border-gray-800 pb-2">
+                                            <p className="text-xs text-gray-500">{new Date(entry.created_at).toLocaleDateString()}</p>
+                                            {entry.parts.map((part) => (
+                                                <p key={`${entry.id}-${part.sku}`} className="text-sm">{part.name} ({part.sku}) × {part.quantity}</p>
+                                            ))}
+                                        </div>
+                                    ))}
+                                </CardContent>
+                            </Card>
                         </TabsContent>
 
                         <TabsContent value="health" className="mt-6 space-y-6">
@@ -321,26 +411,36 @@ export const DigitalTwinDashboard = () => {
 
                         <TabsContent value="docs" className="mt-6">
                             <Card className="bg-almona-darker border-almona-light/10">
-                                <CardHeader><CardTitle>Asset Documentation</CardTitle></CardHeader>
+                                <CardHeader><CardTitle>Product catalog</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                    {[1, 2].map(i => (
-                                        <div key={i} className="flex items-center justify-between p-3 bg-almona-dark rounded-lg border border-almona-light/5 hover:border-almona-orange/30 transition-colors">
+                                    {catalog?.specPdf ? (
+                                        <a href={catalog.specPdf} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-almona-dark rounded-lg border border-almona-light/5 hover:border-almona-orange/30">
                                             <div className="flex items-center gap-3">
                                                 <FileText className="w-8 h-8 text-blue-400/80" />
                                                 <div>
-                                                    <p className="font-medium">User Manual v{i}.0.pdf</p>
-                                                    <p className="text-xs text-gray-500">2.4 MB • Uploaded Jan 2025</p>
+                                                    <p className="font-medium">{catalog.name} catalog</p>
+                                                    <p className="text-xs text-gray-500">Product specification sheet</p>
                                                 </div>
                                             </div>
-                                            <Button variant="ghost" size="sm">Download</Button>
-                                        </div>
-                                    ))}
+                                            <span className="text-sm text-almona-orange">Open</span>
+                                        </a>
+                                    ) : (
+                                        <p className="text-sm text-gray-400">No catalog file is attached to this product.</p>
+                                    )}
                                 </CardContent>
                             </Card>
                         </TabsContent>
                     </Tabs>
                 </div>
             </main>
+            {catalog?.youtubeUrl && (
+                <ProductVideoPlayer
+                    youtubeUrl={catalog.youtubeUrl}
+                    productName={catalog.name}
+                    isOpen={showVideo}
+                    onClose={() => setShowVideo(false)}
+                />
+            )}
         </div>
     );
 };

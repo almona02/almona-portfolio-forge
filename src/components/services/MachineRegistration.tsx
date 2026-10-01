@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, Copy, Check } from "lucide-react";
+import { QrCodeIcon, CheckCircle2, ChevronRight, Camera, Upload, Copy, Check } from "lucide-react";
 import { LazyAnimatePresence, LazyMotion, LazyMotionDiv } from '@/utils/lazyMotion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
@@ -12,7 +12,8 @@ import { EnhancedOperatorTrainingDialog } from './EnhancedOperatorTrainingDialog
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useQueryClient } from '@tanstack/react-query';
-import { useClipboard } from '@/hooks/useClipboard';
+import { useYilmazMachines } from '@/hooks/useYilmazMachines';
+import { isWithinStandardWarranty } from '@/lib/machines/registrationWarranty';
 
 interface MachineData {
   serialNumber: string;
@@ -47,6 +48,13 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
   const [showTrainingDialog, setShowTrainingDialog] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const savingRef = useRef(false);
+  const [modelQuery, setModelQuery] = useState('');
+  const [selectedCatalogId, setSelectedCatalogId] = useState<string | null>(null);
+  const { data: catalogMachines = [] } = useYilmazMachines();
+  const catalogMatches = catalogMachines
+    .filter((item) => item.name.toLowerCase().includes(modelQuery.trim().toLowerCase()))
+    .slice(0, 8);
+  const warrantyActive = isWithinStandardWarranty(machine.installationDate);
 
   const warrantyExtensions: WarrantyExtension[] = [
     { months: 12, price: 15000, egyptOnly: true, features: ["Basic coverage", "Parts replacement", "Technical support"] },
@@ -57,10 +65,10 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
   const handleScanQR = () => {
     setQrScanning(true);
     setTimeout(() => {
-      setMachine({ ...machine, serialNumber: "YM-5K-238492", model: "YILMAZ PRO-5000" });
+      const serialNumber = "YM-5K-238492";
+      setMachine((current) => ({ ...current, serialNumber, model: selectedCatalogId ? current.model : '' }));
       setQrScanning(false);
-      setStep("details");
-      toast.success("Machine identified", { description: "YILMAZ PRO-5000 (YM-5K-238492)" });
+      toast.success("Serial captured", { description: `${serialNumber}. Choose the model from the product catalog.` });
     }, 1500);
   };
 
@@ -76,12 +84,17 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
   };
 
   const checkWarranty = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      setMachine({ ...machine, warrantyValid: true });
-      setIsProcessing(false);
-      toast.success("Warranty verified", { description: "This machine has active warranty coverage until 2025" });
-    }, 1000);
+    if (!machine.installationDate) {
+      toast.error("Missing installation date", { description: "Choose the installation date before checking warranty." });
+      return;
+    }
+    const active = isWithinStandardWarranty(machine.installationDate);
+    setMachine((current) => ({ ...current, warrantyValid: active }));
+    if (active) {
+      toast.success("Warranty active", { description: "Installation is within the past year." });
+    } else {
+      toast.error("Warranty not active", { description: "Standard warranty covers installation dates within the past year only." });
+    }
   };
 
   const generateDigitalTwin = () => {
@@ -135,7 +148,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
         serial_number: machine.serialNumber,
         owner_id: user.id,
         installation_date: machine.installationDate || null,
-        warranty_valid: machine.warrantyValid || false,
+        warranty_valid: isWithinStandardWarranty(machine.installationDate),
         photo_urls: uploadedUrls.length ? uploadedUrls : null
       };
 
@@ -151,7 +164,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
             serial_number: machine.serialNumber,
             owner_id: user.id,
             installation_date: machine.installationDate || null,
-            warranty_valid: machine.warrantyValid || false,
+            warranty_valid: isWithinStandardWarranty(machine.installationDate),
             photo_urls: uploadedUrls.length ? uploadedUrls : null
         });
         // Replace optimistic entry
@@ -180,6 +193,8 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       toast.success("Registration Complete", { description: "Machine successfully registered and synced." });
       setStep("scan");
       setMachine({ serialNumber: "", model: "", installationDate: "", warrantyValid: false, photos: [] });
+      setModelQuery('');
+      setSelectedCatalogId(null);
       setRawFiles([]);
     } catch (err) {
       const message = (err as { message?: string }).message || 'Failed to save machine to backend';
@@ -223,9 +238,42 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                       <Label htmlFor="serialNumber" className="typography-label">Serial Number</Label>
                       <Input id="serialNumber" placeholder="Enter machine serial number" value={machine.serialNumber} onChange={(e) => setMachine({ ...machine, serialNumber: e.target.value })} className="bg-almona-darker/50 border-almona-light/20" />
                     </div>
-                    <div>
+                    <div className="relative">
                       <Label htmlFor="model" className="typography-label">Model</Label>
-                      <Input id="model" placeholder="Enter machine model" value={machine.model} onChange={(e) => setMachine({ ...machine, model: e.target.value })} className="bg-almona-darker/50 border-almona-light/20" />
+                      <Input
+                        id="model"
+                        placeholder="Select a catalog model"
+                        value={modelQuery}
+                        autoComplete="off"
+                        onChange={(e) => {
+                          setModelQuery(e.target.value);
+                          setSelectedCatalogId(null);
+                          setMachine((current) => ({ ...current, model: '' }));
+                        }}
+                        className="bg-almona-darker/50 border-almona-light/20"
+                      />
+                      {modelQuery.trim() && !selectedCatalogId && (
+                        <ul className="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded-md border border-almona-light/20 bg-almona-darker shadow-lg">
+                          {catalogMatches.length === 0 ? (
+                            <li className="px-3 py-2 text-sm text-gray-400">No catalog model matches.</li>
+                          ) : catalogMatches.map((item) => (
+                            <li key={item.id}>
+                              <button
+                                type="button"
+                                className="w-full px-3 py-2 text-left text-sm hover:bg-almona-light/10"
+                                onClick={() => {
+                                  setSelectedCatalogId(item.id);
+                                  setModelQuery(item.name);
+                                  setMachine((current) => ({ ...current, model: item.name }));
+                                }}
+                              >
+                                {item.name}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <p className="mt-1 text-xs text-gray-400">Choose a model from the products catalog. Free text is not accepted.</p>
                     </div>
                     <div>
                       <Label htmlFor="photos" className="typography-label">Upload Photos</Label>
@@ -240,7 +288,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                         <div className="mt-2 text-sm text-gray-400">{machine.photos.length} photo(s) uploaded</div>
                       )}
                     </div>
-                    <Button className="w-full" onClick={() => setStep("details")} disabled={!machine.serialNumber || !machine.model}>
+                    <Button className="w-full" onClick={() => setStep("details")} disabled={!machine.serialNumber || !selectedCatalogId || machine.model !== modelQuery}>
                       Continue <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
@@ -269,18 +317,25 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                   </div>
                   <div>
                     <Label htmlFor="installationDate" className="typography-label">Installation Date</Label>
-                    <Input id="installationDate" type="date" value={machine.installationDate} onChange={(e) => setMachine({ ...machine, installationDate: e.target.value })} className="bg-almona-darker/50 border-almona-light/20" />
+                    <Input id="installationDate" type="date" value={machine.installationDate} onChange={(e) => {
+                      const installationDate = e.target.value;
+                      setMachine((current) => ({
+                        ...current,
+                        installationDate,
+                        warrantyValid: isWithinStandardWarranty(installationDate),
+                      }));
+                    }} className="bg-almona-darker/50 border-almona-light/20" />
                   </div>
                   <div>
                     <Label>Warranty Status</Label>
                     <div className="flex items-center gap-2">
-                      <Button onClick={checkWarranty} disabled={machine.warrantyValid || isProcessing} className="flex-1 border border-gray-300">
-                        {isProcessing ? "Checking..." : "Check Warranty"}
+                      <Button onClick={checkWarranty} disabled={!machine.installationDate} className="flex-1 border border-gray-300">
+                        Check Warranty
                       </Button>
-                      {machine.warrantyValid ? (
+                      {warrantyActive ? (
                         <Badge className="flex items-center gap-1 bg-green-500/20 text-green-300"><CheckCircle2 className="h-4 w-4" /> Active</Badge>
                       ) : (
-                        <Badge className="flex items-center gap-1 bg-red-500/20 text-red-300"><AlertCircle className="h-4 w-4" /> Not Verified</Badge>
+                        <Badge className="flex items-center gap-1 bg-red-500/20 text-red-300">{machine.installationDate ? 'Expired' : 'Not Verified'}</Badge>
                       )}
                     </div>
                   </div>
@@ -374,7 +429,10 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                         </LazyMotion>
                         <LazyMotion component="li" className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                           <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
-                          <div><p className="font-medium">Warranty Activated</p><p className="text-sm text-gray-400">Coverage starts immediately</p></div>
+                          <div>
+                            <p className="font-medium">{warrantyActive ? 'Warranty Active' : 'Warranty Not Active'}</p>
+                            <p className="text-sm text-gray-400">{warrantyActive ? 'Installation is within the past year' : 'Installation is outside the one-year warranty window'}</p>
+                          </div>
                         </LazyMotion>
                       </ul>
                     </CardContent>
