@@ -153,7 +153,7 @@ pip-api==0.0.34
 pip-requirements-parser==32.0.1
 pip_audit==2.10.0
 pipdeptree==2.28.0
-platformdirs==4.4.0
+platformdirs==4.11.10
 playwright==1.57.0
 pluggy==1.6.0
 postgrest==0.17.2
@@ -177,7 +177,7 @@ pydantic-settings==2.1.0
 pydantic_core==2.23.2
 pyee==13.0.0
 Pygments==2.21.0
-PyJWT==2.14.0
+PyJWT==2.15.0
 pyodbc==5.3.0
 pyparsing==3.2.3
 pypdf>=6.1.3
