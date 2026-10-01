@@ -82,6 +82,8 @@ COPY python_backend/celery_app.py celery_app.py
 RUN mkdir -p templates/
 # Copy templates if they exist in build context
 COPY python_backend/templates/ templates/
+# Canonical ticket SLA policy consumed at API import time.
+COPY src/lib/ticketing/sla_policy.json /src/lib/ticketing/sla_policy.json
 # Copy startup script
 COPY python_backend/start.sh start.sh
 
