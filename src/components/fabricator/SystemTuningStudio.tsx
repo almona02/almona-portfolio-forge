@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/ui
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
+import { Input } from '@/shared/ui/ui/input';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { CheckCircle2, Wrench, Layers, Package, Scan, Save, X } from 'lucide-react';
@@ -39,6 +40,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
   const [linkedHardware, setLinkedHardware] = useState<any[]>([]);
   const [machiningZones, setMachiningZones] = useState<MachiningZone[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [packName, setPackName] = useState(initialSystem?.meta?.name || 'Custom Egyptian Pack');
 
   useEffect(() => {
     const getUserId = async () => {
@@ -58,7 +60,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
     if (!readyToSave) return;
     setIsSaving(true);
     const pack = buildCustomSystemPack({
-      name: initialSystem?.meta?.name ? `${initialSystem.meta.name} (Tuned)` : 'Custom Egyptian Pack',
+      name: packName.trim() || 'Custom Egyptian Pack',
       profiles: importedProfiles.map((p) => ({
         ...p,
         role: roles[p.id],
@@ -90,10 +92,14 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </DialogHeader>
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs text-gray-400 mt-1">
-            DXF import, role tagging, hardware linking, and machining prep for Egyptian systems.
-          </p>
+        <div className="space-y-2">
+          <label className="text-xs text-gray-400" htmlFor="system-pack-name">System pack name</label>
+          <Input
+            id="system-pack-name"
+            value={packName}
+            onChange={(event) => setPackName(event.target.value)}
+            className="bg-gray-900 border-gray-700 text-white"
+          />
         </div>
         <Button disabled={!readyToSave || isSaving} onClick={handleSave} className="bg-green-600 hover:bg-green-500">
           {isSaving ? 'Saving…' : 'Save System Pack'}

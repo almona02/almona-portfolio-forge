@@ -287,7 +287,13 @@ export const SystemPacksPage: React.FC = () => {
             {filteredSystems.map((system, index) => {
               const tuningStatus = getSystemPackTuningStatus(system);
               const isUPVC = !!(system).upvcSpec;
-              const profiles = (system).profiles || [];
+              const profiles = Array.isArray((system as { profiles?: unknown[] }).profiles) && (system as { profiles?: unknown[] }).profiles!.length
+                ? (system as { profiles: Array<{ profileRole?: string; type?: string }> }).profiles
+                : ((system as { windowSystemSpec?: { profiles_cutting_list?: Array<{ profileRole?: string; type?: string; role?: string }> } }).windowSystemSpec?.profiles_cutting_list || []).map((profile) => ({
+                    ...profile,
+                    profileRole: profile.profileRole || profile.role,
+                    type: profile.type || profile.role,
+                  }));
               const frameProfiles = profiles.filter((p: any) => 
                 p.profileRole === 'frame' || p.type === 'frame'
               );
@@ -424,17 +430,15 @@ export const SystemPacksPage: React.FC = () => {
                           </Button>
                         )}
                         
-                        {profiles.length > 0 && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="w-full text-slate-300 hover:text-white hover:bg-slate-800/50"
-                            onClick={() => handleTuneProfile(system.meta.id)}
-                          >
-                            <Layers className="h-4 w-4 mr-2" />
-                            View Profiles ({profiles.length})
-                          </Button>
-                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="w-full text-slate-300 hover:text-white hover:bg-slate-800/50"
+                          onClick={() => handleTuneProfile(system.meta.id)}
+                        >
+                          <Layers className="h-4 w-4 mr-2" />
+                          {profiles.length > 0 ? `View Profiles (${profiles.length})` : 'Add Profile'}
+                        </Button>
                       </div>
                     </div>
 

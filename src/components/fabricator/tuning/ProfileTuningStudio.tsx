@@ -2332,24 +2332,45 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                         <CardContent className="pt-0">
                           <DXFProfileImporter
                             onImported={(profiles: ImportedProfile[]) => {
-                              if (profiles.length > 0) {
-                                const firstProfile = profiles[0];
-                                setSelectedProfileId(firstProfile.id);
-                                setImportedProfileData(firstProfile);
-
-                                const dimsText = firstProfile.widthMm && firstProfile.heightMm
-                                  ? `${firstProfile.widthMm} × ${firstProfile.heightMm} mm`
-                                  : 'dimensions pending';
-                                toast.success(
-                                  t('profile_tuning_studio.dxf_import.success',
-                                    `Imported ${profiles.length} profile(s). ${dimsText}`,
-                                    { count: profiles.length, width: firstProfile.widthMm, height: firstProfile.heightMm }
-                                  )
-                                );
-
-                                // Auto-configuration is handled by DXFProfileImporter component
-                                // No additional action needed here
-                              }
+                              if (profiles.length === 0) return;
+                              const firstProfile = profiles[0];
+                              setSelectedProfileId(firstProfile.id);
+                              setImportedProfileData(firstProfile);
+                              const dimsText = firstProfile.widthMm && firstProfile.heightMm
+                                ? `${firstProfile.widthMm} × ${firstProfile.heightMm} mm`
+                                : 'dimensions pending';
+                              toast.success(`DXF preview ready. ${dimsText}`);
+                              void (async () => {
+                                if (!userId || !firstProfile.widthMm) return;
+                                const nextSpecs = {
+                                  ...specs,
+                                  dxfImported: true,
+                                  previewSvg: firstProfile.svgPreview,
+                                  geometryConfig: {
+                                    ...geo,
+                                    source: 'dxf',
+                                    scannedWidth: firstProfile.widthMm,
+                                    scannedHeight: firstProfile.heightMm,
+                                    svgPath: firstProfile.svgPreview,
+                                  },
+                                };
+                                const { error } = await supabase
+                                  .from('fabricator_profiles')
+                                  .update({
+                                    name: firstProfile.name || profile.name,
+                                    width: firstProfile.widthMm,
+                                    height: firstProfile.heightMm ?? profile.height,
+                                    specifications: nextSpecs,
+                                  })
+                                  .eq('id', profile.id)
+                                  .eq('user_id', userId);
+                                if (error) {
+                                  toast.error('Preview is visible, but saving the DXF dimensions failed.');
+                                  return;
+                                }
+                                toast.success('DXF dimensions imported into this profile.');
+                                onProfileUpdated?.();
+                              })();
                             }}
                             selectedProfileId={selectedProfileId}
                             onSelectProfile={(id) => {
