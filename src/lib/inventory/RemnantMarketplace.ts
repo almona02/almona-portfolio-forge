@@ -120,10 +120,11 @@ export class RemnantMarketplace {
     filters: MarketplaceSearchFilters = {}
   ): Promise<MarketplaceListing[]> {
     try {
+      const sellerEmbed = 'seller:profiles!seller_id (full_name, company_name)';
       let selectString = `
         *,
         fabricator_profiles!inner (name, material),
-        seller:profiles!seller_id (name)
+        ${sellerEmbed}
       `;
 
       if (filters.material) {
@@ -133,7 +134,7 @@ export class RemnantMarketplace {
         selectString = `
           *,
           fabricator_profiles (name, material),
-          seller:profiles!seller_id (name)
+          ${sellerEmbed}
         `;
       }
 
@@ -366,7 +367,11 @@ export class RemnantMarketplace {
       id: data.id,
       remnantId: data.remnant_id,
       sellerId: data.seller_id,
-      sellerName: data.profiles?.name,
+      sellerName:
+        data.seller?.company_name ||
+        data.seller?.full_name ||
+        data.profiles?.company_name ||
+        data.profiles?.full_name,
       profileId: data.profile_id,
       profileName: data.fabricator_profiles?.name,
       length: parseFloat(data.length),

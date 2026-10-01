@@ -10,7 +10,8 @@
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
-import { addCustomSystem } from '@/lib/fabricator/customSystemStorage';
+import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { detectRoleFromName } from '@/lib/fabricator/roleDetection';
 import { getReturnUrl } from '@/lib/fabricator/systemTuningUtils';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
@@ -73,15 +74,16 @@ export const NoDXFTuningStudio: React.FC = () => {
   // Load system pack
   useEffect(() => {
     if (!systemPackId) {
-      navigate('/fabricator/system-packs');
+      navigate(fabricatorRoutes.studioData());
       return;
     }
 
     const pack = SYSTEM_PACKS.find((p) => p.meta?.id === systemPackId) ||
-                 EGYPTIAN_UPVC_SYSTEMS.find((p) => (p as any).meta?.id === systemPackId);
+                 EGYPTIAN_UPVC_SYSTEMS.find((p) => (p as any).meta?.id === systemPackId) ||
+                 loadCustomSystems().find((p) => p.meta?.id === systemPackId);
     
     if (!pack) {
-      navigate('/fabricator/system-packs');
+      navigate(fabricatorRoutes.studioData());
       return;
     }
 
@@ -89,7 +91,18 @@ export const NoDXFTuningStudio: React.FC = () => {
 
     // Initialize profiles from system pack
     const isUPVC = !!(pack as any).upvcSpec;
-    const existingProfiles = (pack as any).profiles || [];
+    const listed = (pack as any).profiles;
+    const existingProfiles = Array.isArray(listed) && listed.length
+      ? listed
+      : ((pack as any).windowSystemSpec?.profiles_cutting_list || []).map((p: any) => ({
+          ...p,
+          name: p.name || p.profile || 'Profile',
+          profileRole: p.profileRole || p.role,
+          type: p.type || p.role,
+          width: p.width || p.width_mm || p.widthMm,
+          height: p.height || p.height_mm || p.heightMm,
+          material: p.material || (isUPVC ? 'upvc' : 'aluminum'),
+        }));
     
     if (existingProfiles.length > 0) {
       // Use existing profiles
@@ -297,7 +310,7 @@ export const NoDXFTuningStudio: React.FC = () => {
             } 
           });
         } else {
-          navigate('/fabricator/system-packs', {
+          navigate(fabricatorRoutes.studioData(), {
             state: {
               systemPackId: tunedPack.meta.id,
               systemTuned: true,
@@ -352,7 +365,7 @@ export const NoDXFTuningStudio: React.FC = () => {
               if (returnUrl) {
                 navigate(returnUrl.url, { state: returnUrl.params });
               } else {
-                navigate('/fabricator/system-packs');
+                navigate(fabricatorRoutes.studioData());
               }
             }}
           >

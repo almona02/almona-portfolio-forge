@@ -7,6 +7,8 @@
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
+import { loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import {
@@ -118,7 +120,7 @@ export const SystemPackTuningStudio: React.FC = () => {
   // Load system pack from localStorage or original systems
   useEffect(() => {
     if (!systemPackId) {
-      navigate('/fabricator/system-packs');
+      navigate(fabricatorRoutes.studioData());
       return;
     }
 
@@ -140,23 +142,33 @@ export const SystemPackTuningStudio: React.FC = () => {
         return;
       }
 
-      // Try original system pack from SYSTEM_PACKS or EGYPTIAN_UPVC_SYSTEMS
-      const originalPack = SYSTEM_PACKS.find((p: any) => p.meta?.id === systemPackId) ||
+      const customPack = loadCustomSystems().find((p) => p.meta?.id === systemPackId);
+      const originalPack = customPack ||
+        SYSTEM_PACKS.find((p: any) => p.meta?.id === systemPackId) ||
         EGYPTIAN_UPVC_SYSTEMS.find((p: any) => p.meta?.id === systemPackId);
 
       if (originalPack) {
         // Convert to SystemPack format
         const packMeta = (originalPack as any).meta || {};
-        const profiles = (originalPack as any).profiles || [];
+        const listed = (originalPack as any).profiles;
+        const profiles = Array.isArray(listed) && listed.length
+          ? listed
+          : ((originalPack as any).windowSystemSpec?.profiles_cutting_list || []);
+        const roleOf = (p: any): SystemPackProfile['type'] => {
+          const role = p.profileRole || p.type || p.role;
+          if (role === 'glazing_bead' || role === 'bead') return 'bead';
+          if (role === 'sash' || role === 'mullion' || role === 'transom' || role === 'frame') return role;
+          return 'frame';
+        };
         const systemPackProfiles: SystemPackProfile[] = profiles.map((p: any) => ({
           id: p.id,
-          name: p.name,
-          type: (p.profileRole || p.type || 'frame') as 'frame' | 'sash' | 'mullion' | 'transom' | 'bead',
-          material: p.material || 'upvc',
-          unitWeight: p.weightPerMeter,
+          name: p.name || p.profile || 'Profile',
+          type: roleOf(p),
+          material: p.material || ((originalPack as any).upvcSpec ? 'upvc' : 'aluminum'),
+          unitWeight: p.weightPerMeter || p.weightKgPerM,
           barLength: p.specifications?.barLength || 6000,
-          width: p.width,
-          height: p.height,
+          width: p.width || p.width_mm || p.widthMm,
+          height: p.height || p.height_mm || p.heightMm,
           thickness: p.thickness,
           tuningStatus: 'untuned',
         }));
@@ -178,10 +190,10 @@ export const SystemPackTuningStudio: React.FC = () => {
       }
 
       // Pack not found, redirect back
-      navigate('/fabricator/system-packs');
+      navigate(fabricatorRoutes.studioData());
     } catch (error) {
       console.error('Error loading system pack:', error);
-      navigate('/fabricator/system-packs');
+      navigate(fabricatorRoutes.studioData());
     }
   }, [systemPackId, navigate]);
 
@@ -325,7 +337,7 @@ export const SystemPackTuningStudio: React.FC = () => {
     setTuningProfile(null);
 
     // Always navigate back to system packs gallery after closing
-    navigate('/fabricator/system-packs');
+    navigate(fabricatorRoutes.studioData());
   };
 
   const handleExit = () => {
@@ -345,10 +357,10 @@ export const SystemPackTuningStudio: React.FC = () => {
         sessionStorage.removeItem('tuning_return_url');
         navigate(data.url, { state: data.params || {} });
       } catch {
-        navigate('/fabricator/system-packs');
+        navigate(fabricatorRoutes.studioData());
       }
     } else {
-      navigate('/fabricator/system-packs');
+      navigate(fabricatorRoutes.studioData());
     }
   };
 
@@ -518,7 +530,7 @@ export const SystemPackTuningStudio: React.FC = () => {
           }
         });
       } catch {
-        navigate('/fabricator/system-packs', {
+        navigate(fabricatorRoutes.studioData(), {
           state: {
             systemPackId: systemPackId,
             systemTuned: true,
@@ -527,7 +539,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         });
       }
     } else {
-      navigate('/fabricator/system-packs', {
+      navigate(fabricatorRoutes.studioData(), {
         state: {
           systemPackId: systemPackId,
           systemTuned: true,
