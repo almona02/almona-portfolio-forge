@@ -207,6 +207,17 @@ export const api = {
         .eq('serial_number', machineData.serial_number)
         .maybeSingle();
       if (!lookupError && existing && existing.owner_id === machineData.owner_id) {
+        const incoming = machineData.photo_urls || [];
+        if (incoming.length) {
+          const merged = Array.from(new Set([...(existing.photo_urls || []), ...incoming]));
+          const { data: updated } = await client
+            .from('machines')
+            .update({ photo_urls: merged })
+            .eq('id', existing.id)
+            .select()
+            .single();
+          if (updated) return updated;
+        }
         return existing;
       }
       throw new Error('This serial number is already registered to another account.');
