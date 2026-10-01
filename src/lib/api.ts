@@ -189,22 +189,42 @@ export const api = {
     photo_urls?: string[] | null;
   }) => {
    
-  const { data, error } = await (supabase as unknown as { from: (table: string) => any })
+  const client = supabase as unknown as { from: (table: string) => any };
+  const { data, error } = await client
       .from('machines')
       .insert([machineData])
       .select()
       .single();
-    
-    if (error) throw error;
-    return data;
+
+    if (!error) return data;
+
+    const message = String(error.message || '');
+    const duplicate = error.code === '23505' || message.includes('machines_serial_number_key');
+    if (duplicate) {
+      const { data: existing, error: lookupError } = await client
+        .from('machines')
+        .select('*')
+        .eq('serial_number', machineData.serial_number)
+        .maybeSingle();
+      if (!lookupError && existing && existing.owner_id === machineData.owner_id) {
+        return existing;
+      }
+      throw new Error('This serial number is already registered to another account.');
+    }
+    throw new Error(message || 'Failed to register machine');
   },
 
   // Upload a machine photo (returns public URL). Bucket must exist in Supabase storage.
   uploadMachinePhoto: async (file: File, ownerId: string, serial: string) => {
-    const path = `${ownerId}/${serial}/${Date.now()}-${file.name}`;
+    const safeSegment = (value: string) =>
+      value.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_').slice(0, 80) || 'file';
+    const path = `${safeSegment(ownerId)}/${safeSegment(serial)}/${Date.now()}-${safeSegment(file.name || 'photo')}`;
      
     const storage = (supabase as unknown as { storage: any }).storage.from('machine-photos');
-    const { error } = await storage.upload(path, file, { upsert: true });
+    const { error } = await storage.upload(path, file, {
+      upsert: true,
+      contentType: file.type || 'application/octet-stream',
+    });
     if (error) throw error;
     const { data: pub } = storage.getPublicUrl(path);
     return pub.publicUrl as string;

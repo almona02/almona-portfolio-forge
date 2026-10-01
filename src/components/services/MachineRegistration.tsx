@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,6 +46,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showTrainingDialog, setShowTrainingDialog] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const savingRef = useRef(false);
 
   const warrantyExtensions: WarrantyExtension[] = [
     { months: 12, price: 15000, egyptOnly: true, features: ["Basic coverage", "Parts replacement", "Technical support"] },
@@ -102,9 +103,10 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       toast.error('Not signed in', { description: 'Please log in again to register the machine.' });
       return;
     }
-    if (isSaving) return; // guard double click
+    if (savingRef.current) return;
 
     try {
+      savingRef.current = true;
       setIsSaving(true);
       const derivedName = machine.model || `Machine ${machine.serialNumber || ''}`.trim();
 
@@ -183,6 +185,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       const message = (err as { message?: string }).message || 'Failed to save machine to backend';
       toast.error('Save Failed', { description: message });
     } finally {
+      savingRef.current = false;
       setIsSaving(false);
     }
   };
