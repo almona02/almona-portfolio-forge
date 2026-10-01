@@ -12,6 +12,7 @@ import { EnhancedOperatorTrainingDialog } from './EnhancedOperatorTrainingDialog
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useQueryClient } from '@tanstack/react-query';
+import { useClipboard } from '@/hooks/useClipboard';
 import { useYilmazMachines } from '@/hooks/useYilmazMachines';
 import { isWithinStandardWarranty } from '@/lib/machines/registrationWarranty';
 
