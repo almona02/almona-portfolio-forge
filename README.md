@@ -1,424 +1,143 @@
 # ALMONA Portfolio Forge
 
-**Industrial Computing Platform for Aluminum & UPVC Fabrication**
+ALMONA is a web platform for aluminium and UPVC workshops in Egypt and the Middle East. It combines Almona Co.'s machinery catalogue, spare-parts and service workflows with Fabricator Pro, a workspace for measuring openings, designing positions, generating bills of materials, optimizing stock, preparing quotes, and producing workshop documents.
 
-[![Tier 3 Protected Determinism](https://img.shields.io/badge/Tier%203-Protected%20Determinism-green)](CONSTITUTIONAL_COMPLIANCE_COMPLETE.md)
-[![No ML/AI](https://img.shields.io/badge/ML%2FAI-None-blue)](CONSTITUTIONAL_COMPLIANCE_COMPLETE.md)
-[![Constitutional Guarantees](https://img.shields.io/badge/Constitutional-Guarantees-orange)](CONSTITUTIONAL_COMPLIANCE_COMPLETE.md)
+- Website: [www.almona02.com](https://www.almona02.com/)
+- Repository: [github.com/almona02/almona-portfolio-forge](https://github.com/almona02/almona-portfolio-forge)
+- Backend health: [Railway health endpoint](https://almona-portfolio-forge-production.up.railway.app/health)
 
----
+## Current state
 
-## 🎯 What ALMONA Is
+The public website and backend are deployed. The main CI, production, constitutional, hardening, and shipability workflows pass on the current release branch.
 
-ALMONA is an **industrial execution authority** for aluminum and UPVC fabrication, providing:
+Fabricator Pro has a working position-based flow:
 
-- ✅ **Deterministic BOM Generation** - Identical inputs → identical outputs on the Tier-3 manufacturing path (greedy / linear)
-- ✅ **Rule-Based Optimization** - No AI, no ML, no black boxes on the protected execution path
-- ✅ **Constitutional Guarantees** - Provable accuracy, auditable decisions
-- ✅ **Human-Validated Outputs** - No engineering authority claims
-- ⚠️ **Genetic search (optional)** - Advisory/search-only; explicitly excluded from Tier-3 manufacturing truth (FP-016 Option B)
+`Measure → Design → Drafting/BOM → Optimization → Commercial → Production`
 
-### What ALMONA Is NOT
+The codebase includes authoritative position hydration, identity-scoped workflow state, deterministic manufacturing calculations, cutting-plan conservation checks, server-enforced QC approval, quote generation, production documents, Arabic/English interfaces, and digital machine/service features.
 
-- ❌ "Smart design tool" - No AI/ML claims
-- ❌ "Engineering software" - No structural authority
-- ❌ "Predictive system" - No confidence scores or learning
+This is still an actively hardened industrial product. Passing CI means the software builds and its automated gates pass; it does not replace workshop validation. Production output must be checked by an authorized operator before material is cut or released.
 
----
+## Product areas
 
-## 🏛️ Constitutional Framework
+- **Machinery and spare parts** — product catalogue, machine comparison, requests, and after-sales support.
+- **Service operations** — tickets, SLA plans, technician workflows, and digital machine passports.
+- **Fabricator Pro** — project and position management, measurement, SmartDraw and drafting, BOM, stock optimization, quoting, QC, and production documents.
+- **Advisory tools** — AI-assisted support and analysis kept separate from manufacturing authority.
 
-ALMONA operates under **Tier 3 Protected Determinism** (AICS-001):
+## Manufacturing boundaries
 
-### Core Principles
+Manufacturing-critical paths are designed to be deterministic and auditable. Identical validated inputs should produce identical protected-path outputs. Advisory search or AI output must not silently become manufacturing truth.
 
-1. **No ML/AI in Execution Path**
-   - Algorithm selection uses deterministic rules only
-   - No training data, no confidence scores, no learning
-   - Rule-based Tier-3 path: `<50 cuts → greedy`, `50–499 → linear`, `500+ → greedy`
-   - Genetic optimization is advisory/search-only (FP-016 Option B) — not manufacturing truth
+The platform does not claim structural engineering authority. Profile-system rules, tolerances, formulas, and workshop output require approved source data and human sign-off. Accuracy percentages are not published as guarantees until they are supported by representative, independently reviewed production evidence.
 
-2. **Deterministic Replay Guarantee**
-   - Identical inputs produce identical outputs on the Tier-3 (greedy/linear) path
-   - Genetic search is non-deterministic and must not be treated as shop-floor authority
-   - No external dependencies required
-   - Offline operation guaranteed
-   - Cryptographically verifiable (when enabled)
+See [Institutional Overview](docs/INSTITUTIONAL_OVERVIEW.md) and [Fabricator V2 Constitutional Migration Runbook](docs/FABRICATOR_V2_CONSTITUTIONAL_MIGRATION_RUNBOOK.md).
 
-3. **Human Validation Required**
-   - All outputs include constitutional disclaimers
-   - No engineering judgment or design authority claimed
-   - Manufacturable instructions only
+## Architecture
 
-4. **Auditable Decisions**
-   - Every algorithm selection includes rule ID
-   - Full decision trace available
-   - Constitutional compliance tests automated
+| Area | Main technology |
+| --- | --- |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui |
+| Data and auth | Supabase PostgreSQL, Row Level Security |
+| Backend | Python 3.11, FastAPI, Uvicorn |
+| Cache and jobs | Redis, Celery where required |
+| Hosting | Vercel for the frontend, Railway for the backend |
+| Tests | Vitest, React Testing Library, Playwright, pytest |
 
-### Constitutional Test Suite
+The frontend runs on port `3000` during development and proxies `/api` to the backend on port `8000`.
 
-ALMONA includes governance-grade tests that prove (not claim) constitutional compliance:
-
-```bash
-# Run constitutional verification
-npm run test -- src/tests/constitutional/
-
-# Tests verify:
-# - Deterministic replay (AICS-001 §7.5)
-# - 99.8% accuracy framework
-# - No engineering authority claims
-# - No prohibited terminology
-# - Tier 3 purity (no AI/ML markers)
-```
-
-See [CONSTITUTIONAL_COMPLIANCE_COMPLETE.md](CONSTITUTIONAL_COMPLIANCE_COMPLETE.md) for full details.
-
----
-
-## 🚀 Quick Start
+## Local development
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
-- Python 3.9+ (for backend services)
+- Node.js `20.19` or newer, below Node 23
+- npm
+- Python 3.11
 
-### Installation
+### Frontend
 
 ```bash
-# Clone repository
-git clone https://github.com/your-org/almona-portfolio-forge.git
+git clone https://github.com/almona02/almona-portfolio-forge.git
 cd almona-portfolio-forge
-
-# Install dependencies
 npm install
-
-# Set up environment
 cp .env.example .env
-
-# Start development server
 npm run dev
 ```
 
-### Development
+### Backend
 
 ```bash
-# Run tests
-npm run test
+cd python_backend
+python -m venv .venv
+# Activate .venv using your shell, then:
+pip install -r requirements-dev.txt
+cp .env.example .env
+python -m uvicorn api.prestige_endpoints:app --host 0.0.0.0 --port 8000
+```
 
-# Run linter
+Environment files contain credentials and must stay outside commits. Use separate development credentials; never reuse production service keys locally.
+
+## Verification
+
+```bash
+npm run security:gate1
+npm run type-check
 npm run lint
-
-# Build for production
+npm run test
 npm run build
 
-# Run constitutional verification
-npm run test -- src/tests/constitutional/
+cd python_backend
+python -m pytest tests/test_api.py -v
 ```
 
----
+Remote PostgreSQL and Redis may be unavailable in an isolated local environment. In that case, dependency health checks can report degraded while API tests that do not require those services still run. Production readiness requires the hosted dependencies to pass.
 
-## 📊 Features
-
-### Core Capabilities
-
-- **BIM Import** - DXF/DWG file processing
-- **Geometry Generation** - Window/door/facade layouts
-- **BOM Generation** - Bill of materials with Tier 3 compliance
-- **Cut List Optimization** - Deterministic material optimization
-- **3D Visualization** - Real-time preview with hardware
-- **Multi-Language** - Arabic (RTL) and English (LTR)
-- **CAD Tools** - Professional drafting workbench with layers, blocks, and optimization (95-97% complete)
-  - ✅ Layers System - Full layer management with visibility, locking, and styling
-  - ✅ Blocks System - Reusable geometry blocks with click-to-place insertion
-  - ✅ Real-time Waste Metrics - Live efficiency and cost calculations
-  - ✅ Canvas Layer-Aware Rendering - Full support for layer colors, line types, and weights
-  - ✅ Cutting Optimization Integration - Direct connection from drafting to optimization
-  - ✅ Code Hardening - Production-ready validation and error handling
-- **Gold Tier Calculation Engine** - Engineering-grade parametric system (January 2026)
-  - ✅ ApexEngineV2 - Micron-level precision calculations
-  - ✅ Material-specific physics (Aluminum, UPVC, Steel)
-  - ✅ Region-aware manufacturing rules (GCC thermal, Turkish seismic)
-  - ✅ FenestrationSystem schema with comprehensive validation
-  - ✅ Pattern migration service with rollback capability
-- **Constitutional AI Governance** - Three-tier decision architecture (January 2026)
-  - ✅ Tier 1 (Strategic): 100% coverage with YDT mandatory
-  - ✅ Tier 3 (Deterministic): 100% purity maintained
-  - ✅ Real-time governance monitoring and violation alerts
-  - ✅ IntelligenceGate enforcement service
-
-### System Packs
-
-- Caluminium PS v3
-- Egyptian market profiles
-- Custom profile support
-
-### Optimization Algorithms
-
-All algorithms are **deterministic and rule-based**:
-
-1. **Greedy** - Fast optimization for simple jobs (<50 cuts)
-2. **Linear Programming** - Balanced approach (50-500 cuts)
-3. **Genetic** - Advanced optimization for complex jobs (500+ cuts)
-
-Algorithm selection is **rule-based**, not ML-based. See `src/lib/fabricator/AlgorithmSelector.ts`.
-
-**Recent Update (January 2026)**: Migrated from AlgorithmPredictor to AlgorithmSelector for constitutional compliance. All algorithm selection is now explicitly Tier 3 (Protected Determinism) with no AI/ML claims.
-
----
-
-## 🏗️ Architecture
-
-### Technology Stack
-
-**Frontend:**
-- React 18 + TypeScript
-- Vite (build tool)
-- Tailwind CSS + shadcn/ui
-- Three.js (3D visualization)
-
-**Backend:**
-- Python FastAPI
-- PostgreSQL (with RLS)
-- Redis (caching)
-- Celery (task queue)
-
-**Testing:**
-- Vitest + React Testing Library
-- Constitutional test suite
-- Golden master validation
-
-### Project Structure
-
-```
-almona-portfolio-forge/
-├── src/
-│   ├── algorithms/          # Optimization algorithms (deterministic)
-│   ├── lib/
-│   │   ├── fabricator/      # BOM, cut list, optimization
-│   │   └── ml/              # ⚠️ Legacy ML code (being removed)
-│   ├── tests/
-│   │   ├── constitutional/  # Constitutional compliance tests
-│   │   └── fixtures/        # Golden master test data
-│   ├── components/          # React components
-│   └── pages/              # Application pages
-├── docs/                   # Documentation
-└── CONSTITUTIONAL_COMPLIANCE_COMPLETE.md
-```
-
----
-
-## 🧪 Testing
-
-### Test Categories
-
-1. **Constitutional Tests** - Governance-grade compliance verification
-2. **Unit Tests** - Component and function testing
-3. **Integration Tests** - End-to-end workflow testing
-4. **Golden Master Tests** - Accuracy validation against known-good outputs
-
-### Running Tests
+Useful focused gates:
 
 ```bash
-# All tests
-npm run test
-
-# Constitutional tests only
-npm run test -- src/tests/constitutional/
-
-# Watch mode
-npm run test:watch
-
-# Coverage
-npm run test:coverage
+npm run validate:constitutional
+npm run verify:shipability
+npm run test:e2e
 ```
 
----
-
-## 📈 Accuracy Claims
-
-### 99.8% Accuracy Guarantee
-
-ALMONA claims **99.8% accuracy** for BOM generation. This is:
-
-- ✅ **Provable** - Golden master test suite validates against real projects
-- ✅ **Auditable** - Test data and results are version-controlled
-- ✅ **Repeatable** - Same inputs always produce same outputs
-
-**Current Status:** Framework established, awaiting anchor client validation data.
-
-See `src/tests/fixtures/golden-masters/` for test cases.
-
----
-
-## 🔒 Security & Compliance
-
-### Data Protection
-
-- Row-Level Security (RLS) in PostgreSQL
-- Role-based access control (RBAC)
-- Audit logging for all operations
-- GDPR compliance ready
-
-### Constitutional Compliance
-
-- Tier 3 Protected Determinism enforced
-- No ML/AI in execution path
-- Human validation required
-- No engineering authority claims
-
----
-
-## 🌍 Internationalization
-
-ALMONA supports:
-
-- **Arabic (RTL)** - Primary language for MENA region
-- **English (LTR)** - International markets
-
-Language switching is seamless with proper text direction handling.
-
----
-
-## 📚 Documentation
-
-- [Constitutional Compliance](CONSTITUTIONAL_COMPLIANCE_COMPLETE.md) - Governance framework
-- [Development Guide](DEVELOPMENT_GUIDE.md) - Setup and workflows
-- [API Documentation](docs/api/) - Backend API reference
-- [Component Library](docs/components/) - UI component docs
-- [CAD Tools Phase 2 & 3 Status](CAD_TOOLS_PHASE_2_3_IMPLEMENTATION_STATUS.md) - Drafting workbench implementation (95-97% complete)
-- [Engineering Bay UI/UX Analysis](ALMONA_ENGINEERING_BAY_UI_UX_FOCUSED_ANALYSIS.md) - Competitive analysis and improvements
-- [Code Hardening Analysis](CAD_TOOLS_HARDENING_ANALYSIS.md) - Production-ready validation and error handling
-
----
-
-## 🤝 Contributing
-
-### Code Standards
-
-- TypeScript for all new code
-- Functional components with hooks
-- Constitutional compliance required
-- No ML/AI logic in Tier 3 operations
-
-### Pull Request Process
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-**Important:** All PRs must pass constitutional compliance tests.
-
----
-
-## 📄 License
-
-[Your License Here]
-
----
-
-## 🏢 Institutional Positioning
-
-### For Workshops
-
-"ALMONA provides deterministic, reproducible results. No black boxes, no surprises. If you input the same project twice, you get the exact same BOM and cut list."
-
-### For Enterprises
-
-"ALMONA's execution path is fully auditable. Every decision is traceable to a specific rule. Constitutional test suite proves deterministic replay. No ML/AI in Tier 3 operations."
-
-### For Government
-
-"ALMONA complies with Tier 3 Protected Determinism. All outputs include constitutional disclaimers. No engineering authority claimed. Human validation explicitly required."
-
----
-
-## 📞 Support
-
-- **Documentation:** [docs/](docs/)
-- **Issues:** [GitHub Issues](https://github.com/your-org/almona-portfolio-forge/issues)
-- **Email:** support@almona.example.com
-
----
-
-## ✨ What Makes ALMONA Different
-
-ALMONA is not another "smart fabrication" tool. It's an **industrial execution authority** that:
-
-- Replaces deceptive AI claims with provable guarantees
-- Provides deterministic, auditable results
-- Respects constitutional boundaries (no engineering authority)
-- Enables institutional trust through transparency
-
-**This is what separates ALMONA from startups.**
-
-We're not selling AI magic; we're providing provable industrial determinism.
-
----
-
-**Built with constitutional integrity. Proven with executable tests.**
-
----
-
-## 🆕 Recent Implementations (January 2026)
-
-### Gold Tier Phase 1 - Engineering-Grade Calculation System
-
-**Status**: ✅ Phase 1, Task 1 & Task 2.1 Complete
-
-**New Components**:
-- **ApexEngineV2** (`src/lib/fabricator/goldTier/ApexEngineV2.ts`) - 849 lines
-  - Micron-level precision calculations
-  - Material-specific physics (Aluminum, UPVC, Steel)
-  - Region-aware manufacturing rules
-  - Hierarchical component system
-- **FenestrationSystem Schema** (`src/types/fenestration.ts`) - Complete TypeScript interface
-- **FenestrationSystemValidator** - 50+ error codes, <1ms cached validation
-- **PatternMigrationService** - Migration from legacy patterns with rollback
-- **PerformanceMonitor** - Real-time performance tracking
-
-**Quality**: Gold Tier Grade - Error-Free, Auditable, Hardened, Performance-Optimized
-
-### Constitutional AI Governance Framework
-
-**Status**: ✅ Operational (Week 1, January 2026)
-
-**Achievement**: 100% Tier 1 coverage, 100% Constitutional Health, 0 violations
-
-**Components**:
-- **IntelligenceGate** - Three-tier decision architecture enforcement
-- **Tier Metrics** - Real-time governance monitoring
-- **Governance Dashboard** - Live metrics and violation alerts
-- **Core Services Refactored** - Pricing, Viability, Optimization Strategy
-
-**Metrics**:
-- Constitutional Health Score: 100/100
-- Tier 1 Coverage: 100%
-- Reasoning Quality: 100%
-- Tier Violations: 0
-- Deterministic Purity: 100%
-
-### Services YDT Integration
-
-**Status**: ✅ Complete (Week 1, January 2026)
-
-**Components**:
-- YDTServiceIntelligence - Ticket assignment and resolution predictions
-- YDTEnforcementService - Circuit breaker with fallback strategies
-- YDTSuggestionsPanel - UI component for YDT suggestions
-- ServicesYDTDashboard - Real-time metrics display
-
-### Constitutional Compliance Fixes
-
-**Status**: ✅ Complete (Week 1, January 2026)
-
-**Achievement**: Fixed AI deception, restored constitutional integrity
-
-**Changes**:
-- AlgorithmPredictor → AlgorithmSelector (rule-based, Tier 3)
-- GuaranteeVerification test structure created
-- EnhancedAdaptiveSolver migrated to constitutional compliance
-
-**Reference**: See [docs/INSTITUTIONAL_OVERVIEW.md](docs/INSTITUTIONAL_OVERVIEW.md#12-recent-implementations-january-2026) for detailed implementation status.
+## Repository map
+
+```text
+src/
+  components/             React UI and Fabricator workspaces
+  lib/fabricator/         Manufacturing models, BOM, validation, optimization
+  pages/                  Application routes and workflow screens
+  store/                  Identity-aware workflow state
+  tests/                  Frontend integration and regression tests
+python_backend/
+  api/                    FastAPI endpoints
+  tests/                  Backend tests
+supabase/
+  migrations/             Database schema, functions, and policies
+docs/
+  audits/                 Evidence and parity audits
+  launch/                 Launch and database repair records
+```
+
+## Remaining release work
+
+The highest-priority work is tracked openly:
+
+1. Complete authenticated live acceptance of the full Fabricator flow, including hard reloads and a second-account isolation run.
+2. Reconcile the backend health response so optional or legacy dependency checks do not contradict authoritative database and Redis checks.
+3. Apply and record every production Supabase migration, then finish the RLS and privileged-function cross-customer audit.
+4. Close open dependency alerts, beginning with critical and high severity findings.
+5. Rotate legacy production credentials through a controlled deployment and verify every consumer afterward.
+6. Validate profile-system formulas, tolerances, piece reconciliation, and production documents against representative workshop jobs before making accuracy claims.
+
+Product improvements that follow the release gates include continuous plausibility checks, thermal/U-value reporting, route and dashboard consolidation, shop-floor scanning/MES, live supplier data, BIM exchange, and ERP integration. See [Deferred Work](docs/DEFERRED_WORK.md) and the dated evidence under [docs/audits](docs/audits/).
+
+## Contributing
+
+Keep changes small and scoped. New TypeScript must remain strict and manufacturing changes need boundary, unit-conversion, and deterministic replay tests. Database changes require additive migrations and policy tests. Pull requests must pass the relevant CI, security, constitutional, and shipability gates.
+
+Do not commit `.env` files, service-role keys, customer data, or production exports. Report security issues privately to the repository owner rather than opening a public issue.
+
+## License
+
+No public license has been declared. All rights are reserved unless the repository owner states otherwise.
