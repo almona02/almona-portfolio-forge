@@ -117,7 +117,13 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
         onClick={handleToggle}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => e.key === 'Enter' && handleToggle()}
+        aria-expanded={!isCollapsed}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleToggle();
+          }
+        }}
         aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${title} panel`}
         title={isCollapsed ? `Click to expand ${title}` : `Click to collapse ${title}`}
       >

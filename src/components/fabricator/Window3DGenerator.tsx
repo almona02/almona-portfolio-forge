@@ -110,14 +110,15 @@ import {
 } from 'lucide-react';
 
 import { FrameGeometry, MiteredFrameData, createChamberedProfileGeometry, generateModelGeometries } from '@/lib/3d/windowGeometry';
+import {
+    buildPreviewRequestKey,
+    isPreviewCommitCurrent,
+} from '@/lib/fabricator/engineering/previewIdentity';
 import { getPatternById } from '@/lib/fabricator/presetUtils';
-// SYSTEM_PACKS imported in mechanismDetection utility
-import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { calculateExplodedTransforms, interpolateExplodedTransform } from '@/lib/3d/explodedViewUtils';
 import { hardwareModelLibrary } from '@/lib/3d/hardware/HardwareModelLibrary';
 import { generateHardwarePlaceholders, getHardwareColor } from '@/lib/3d/hardwarePlaceholder';
 import { track } from '@/lib/analytics';
-import { ApexEngineV6, ApexV6Output } from '@/lib/fabricator/goldTier/ApexEngineV6';
 import { ValidationResult, deriveSystemConstraintsFromProfiles, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
 import { FacadeMember, FacadePanel, Profile, WindowUnit } from '@/types/fabricator';
 import { useTranslation } from 'react-i18next';
@@ -297,7 +298,6 @@ const Window3DModelComponent = (props: {
     clippingPlanes?: Plane[] | null;
     explodedView?: boolean;
     validationResult?: ValidationResult;
-    engineResult?: ApexV6Output | null;
     lightingPreset?: string;
     shadowQuality?: 'low' | 'medium' | 'high';
     onLightingChange?: (preset: string, shadowQuality: string) => void;
@@ -486,7 +486,18 @@ const Window3DModelComponent = (props: {
     const [modelData, setModelData] = useState<FrameGeometry | null>(null);
     const [isModelGenerating, setIsModelGenerating] = useState(false);
     const sashRefs = useRef<Group[]>([]);
-    const prevWindowUnitRef = useRef<{ id?: string; width: number; height: number; componentCount: number; color?: string; grid?: string } | null>(null);
+    const previewRequestKeyRef = useRef<string | null>(null);
+    const prevWindowUnitRef = useRef<{
+        id?: string;
+        width: number;
+        height: number;
+        componentCount: number;
+        color?: string;
+        grid?: string;
+        systemPackId?: string | null;
+        revision?: number | null;
+        presetId?: string | null;
+    } | null>(null);
 
     // Performance & feature flags
     // const _isHighQuality = windowUnit.overallWidth * windowUnit.overallHeight <= 7_000_000; // Unused
@@ -560,9 +571,13 @@ const Window3DModelComponent = (props: {
     const debouncedGenerateModel = useDebouncedCallback(
         () => {
             if (!windowUnit) return;
+            // FP-028 / P5.4: capture identity at schedule execution; reject if stale
+            const requestKey = buildPreviewRequestKey(windowUnit, windowUnit.grid);
             // ✅ FIX: Skip generation if using facade model
             if (windowUnit.facadeModel) {
-                setModelData(null);
+                if (isPreviewCommitCurrent(previewRequestKeyRef.current, requestKey)) {
+                    setModelData(null);
+                }
                 setIsModelGenerating(false);
                 return;
             }
@@ -571,7 +586,9 @@ const Window3DModelComponent = (props: {
             const height = windowUnit.overallHeight / 1000;
 
             if (!width || !height || isNaN(width) || isNaN(height)) {
-                setModelData(null);
+                if (isPreviewCommitCurrent(previewRequestKeyRef.current, requestKey)) {
+                    setModelData(null);
+                }
                 setIsModelGenerating(false);
                 return;
             }
@@ -585,17 +602,26 @@ const Window3DModelComponent = (props: {
                     : null;
 
                 const geometrySpec = generateModelGeometries(windowUnit, pattern || undefined);
+                // FP-028 / P5.4: late preview reject after A→B identity switch
+                if (!isPreviewCommitCurrent(previewRequestKeyRef.current, requestKey)) {
+                    return;
+                }
                 setModelData(geometrySpec);
 
                 if (onModelReady && groupRef.current) {
                     onModelReady(groupRef.current);
                 }
             } catch (error) {
+                if (!isPreviewCommitCurrent(previewRequestKeyRef.current, requestKey)) {
+                    return;
+                }
                 const err = error instanceof Error ? error : new Error(String(error));
                 trackError('Window3DGenerator', 'model_generation', err.message);
                 setModelData(null);
             } finally {
-                setIsModelGenerating(false);
+                if (isPreviewCommitCurrent(previewRequestKeyRef.current, requestKey)) {
+                    setIsModelGenerating(false);
+                }
             }
         },
         DEBOUNCE_CONFIG.GEOMETRY_GENERATION_MS,
@@ -609,13 +635,15 @@ const Window3DModelComponent = (props: {
     useEffect(() => {
         const width = windowUnit.overallWidth / 1000;
         const height = windowUnit.overallHeight / 1000;
+        const previewKey = buildPreviewRequestKey(windowUnit, windowUnit.grid);
+        previewRequestKeyRef.current = previewKey;
 
         if (!width || !height || isNaN(width) || isNaN(height)) {
             setModelData(null);
             return;
         }
 
-        // Check if critical dimensions changed (avoid regeneration for color-only changes)
+        // Check if critical manufacturing identity changed (avoid regeneration for color-only)
         const prev = prevWindowUnitRef.current;
         const currentSnapshot = {
             id: windowUnit.id,
@@ -623,7 +651,10 @@ const Window3DModelComponent = (props: {
             height: windowUnit.overallHeight,
             componentCount: windowUnit.components?.length || 0,
             color: windowUnit.color,
-            grid: windowUnit.grid ? JSON.stringify(windowUnit.grid) : undefined
+            grid: windowUnit.grid ? JSON.stringify(windowUnit.grid) : undefined,
+            systemPackId: windowUnit.systemPackId ?? null,
+            revision: windowUnit.revision ?? null,
+            presetId: windowUnit.presetId ?? null,
         };
 
         const shouldRegenerate = !prev ||
@@ -631,7 +662,10 @@ const Window3DModelComponent = (props: {
             prev.width !== currentSnapshot.width ||
             prev.height !== currentSnapshot.height ||
             prev.componentCount !== currentSnapshot.componentCount ||
-            prev.grid !== currentSnapshot.grid;
+            prev.grid !== currentSnapshot.grid ||
+            prev.systemPackId !== currentSnapshot.systemPackId ||
+            prev.revision !== currentSnapshot.revision ||
+            prev.presetId !== currentSnapshot.presetId;
 
         if (!shouldRegenerate) {
             // Only update color/material if dimensions didn't change
@@ -655,13 +689,28 @@ const Window3DModelComponent = (props: {
             return;
         }
 
+        // FP-028 / P5.4: drop stale preview immediately so A cannot linger under B
+        setModelData(null);
         prevWindowUnitRef.current = currentSnapshot;
         debouncedGenerateModel();
 
         return () => {
             debouncedGenerateModel.cancel();
         };
-    }, [windowUnit.id, windowUnit.overallWidth, windowUnit.overallHeight, windowUnit.components?.length, windowUnit.grid, windowUnit.color, debouncedGenerateModel, onModelReady]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- identity fields drive regenerate; color-only path updates materials
+    }, [
+        windowUnit.id,
+        windowUnit.overallWidth,
+        windowUnit.overallHeight,
+        windowUnit.components?.length,
+        windowUnit.grid,
+        windowUnit.color,
+        windowUnit.systemPackId,
+        windowUnit.revision,
+        windowUnit.presetId,
+        debouncedGenerateModel,
+        onModelReady,
+    ]);
 
     // --- Bridge animation flag to physics when enabled ---
     useEffect(() => {
@@ -2123,31 +2172,6 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     const width = windowUnit.overallWidth / 1000;
     const height = windowUnit.overallHeight / 1000;
 
-    // --- APEX ENGINE V6 INTEGRATION ---
-    const [engineResult, setEngineResult] = useState<ApexV6Output | null>(null);
-
-    // Run Apex V6 Calculation when unit changes
-    useEffect(() => {
-        if (!windowUnit || windowUnit.facadeModel) return;
-
-        const runApex = async () => {
-            try {
-                // Find system (simplified for MVP)
-                const system = Object.values(SYSTEM_PACKS)[0]; // Default system
-                if (system) {
-                    const engine = new ApexEngineV6(system, windowUnit);
-                    const result = engine.generate();
-                    setEngineResult(result);
-                }
-            } catch (e) {
-                console.warn('Apex V6 Calculation Failed', e);
-            }
-        };
-        // Debounce slightly to avoid heavy calc on slider drag
-        const timer = setTimeout(runApex, 300);
-        return () => clearTimeout(timer);
-    }, [windowUnit]);
-
     return (
         <div className={`relative w-full h-full ${className}`}>
             {/* Accessibility Summary - Live Region for Screen Readers */}
@@ -2156,26 +2180,6 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                 {validation.errors.length > 0 ? ` Warning: ${validation.errors.length} design errors detected. ${validation.errors[0].message}` : ' Design is valid.'}
             </div>
 
-            {/* APEX V6 HUD - The "Digital Twin" Data Overlay */}
-            {engineResult && (
-                <div className="absolute top-4 left-4 z-10 bg-black/80 backdrop-blur-md p-3 rounded-lg border border-yellow-500/30 text-xs text-white pointer-events-none">
-                    <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-3 h-3 text-yellow-500" />
-                        <span className="font-bold text-yellow-500">APEX ENGINE V6.0</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 opacity-80">
-                        <span>Strategy:</span> <span className="text-right font-mono text-cyan-400">{engineResult.strategyUsed}</span>
-                        <span>Efficiency:</span> <span className="text-right font-mono text-green-400">{(engineResult.optimization.frameStock.efficiency * 100).toFixed(1)}%</span>
-                        <span>Stock Bars:</span> <span className="text-right font-mono text-white">{engineResult.optimization.frameStock.barsCount}</span>
-                        <span>Est. Cost:</span> <span className="text-right font-mono text-yellow-300 ml-2">${engineResult.financials.totalCost.toFixed(2)}</span>
-                    </div>
-                    {/* Visualizer Link Status */}
-                    <div className="mt-2 pt-2 border-t border-white/10 text-[10px] text-gray-400 flex justify-between">
-                        <span>Sync Status:</span>
-                        <span className="text-green-500">LIVE CONNECTED</span>
-                    </div>
-                </div>
-            )}
             {/* Export Progress Overlay (Simplified) */}
             {isExporting && (
                 <div className="absolute inset-0 bg-black/50 z-20 flex items-center justify-center backdrop-blur-sm">

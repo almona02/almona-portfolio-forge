@@ -15,7 +15,8 @@ import { FeatureFlags } from '@/lib/featureFlags';
 import { isFabricatorUuid } from '@/lib/supabase/fabricatorClientV2';
 import { useJobsStore } from '@/store/jobsStore';
 import { useWorkflowStore } from '@/store/workflowStore';
-import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
+import type { DesignCompletionPayload } from '@/lib/fabricator/engineering/designCompletion';
+import { Profile, WindowUnit } from '@/types/fabricator';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DesignWorkspaceShell } from './shell/DesignWorkspaceShell';
@@ -92,16 +93,19 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     return [currentProject, ...others];
   }, [currentProject, allSiblingPositions]);
 
-  const handleDesignComplete = (components: WindowComponent[]) => {
+  const handleDesignComplete = (payload: DesignCompletionPayload) => {
     if (!currentProject) return;
 
     const updatedProject: WindowUnit = {
       ...currentProject,
-      components: components,
+      components: payload.components,
+      grid: payload.grid,
+      systemPackId: payload.systemPackId ?? undefined,
+      presetId: payload.presetId ?? undefined,
     };
 
     dispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });
-    dispatch({ type: 'UPDATE_PROJECT_COMPONENTS', payload: components });
+    dispatch({ type: 'UPDATE_PROJECT_COMPONENTS', payload: payload.components });
 
     setCurrentProject(updatedProject);
     setDesignData(updatedProject);

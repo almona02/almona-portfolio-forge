@@ -7,7 +7,8 @@ import {
 } from '@/lib/fabricator/CutListExport';
 import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 import { ApexV6Output } from '@/lib/fabricator/goldTier/ApexEngineV6';
-import { runBatchOptimization, type BatchOptimizationResult } from '@/lib/fabricator/production/BatchOptimizationService';
+import type { BatchManufacturingJob, BatchOptimizationResult } from '@/lib/fabricator/production/BatchOptimizationService';
+import { runBatchOptimization } from '@/lib/fabricator/production/BatchOptimizationService';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
@@ -33,12 +34,18 @@ interface ProjectOptimizerProps {
         projectSummary: any;
         unitResults: Map<string, ApexV6Output>;
     } | null;
+    /**
+     * FP-028 / P4.5: Batch optimization requires one approved contract+snapshot job
+     * per position. When omitted, batch mode is blocked (no catalog pack invention).
+     */
+    batchJobs?: readonly BatchManufacturingJob[];
     onReoptimize: () => void;
 }
 
 export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
     project,
     results,
+    batchJobs,
     onReoptimize
 }) => {
     const [selectedUnitId, setSelectedUnitId] = useState<string | null>(
@@ -46,10 +53,21 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
     );
     const [batchMode, setBatchMode] = useState(false);
 
-    const batchResult = useMemo((): BatchOptimizationResult | null => {
+    const batchBlockedReason = useMemo((): string | null => {
         if (!batchMode || !results || project.units.length < 2) return null;
-        return runBatchOptimization(project.units);
-    }, [batchMode, results, project.units]);
+        if (!batchJobs?.length) {
+            return 'Batch optimization requires an approved manufacturing contract and system snapshot for every position.';
+        }
+        if (batchJobs.length !== project.units.length) {
+            return 'Batch optimization blocked: approved job count must match project positions.';
+        }
+        return null;
+    }, [batchMode, results, project.units.length, batchJobs]);
+
+    const batchResult = useMemo((): BatchOptimizationResult | null => {
+        if (!batchMode || !results || project.units.length < 2 || batchBlockedReason) return null;
+        return runBatchOptimization(batchJobs!);
+    }, [batchMode, results, project.units.length, batchJobs, batchBlockedReason]);
 
     if (!results) {
         return (
@@ -161,6 +179,13 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                     </CardContent>
                 </Card>
             </div>
+
+            {batchMode && batchBlockedReason && (
+                <div className="mb-4 px-4 py-2 bg-amber-900/30 border border-amber-700/50 rounded-lg flex items-center gap-4 text-sm">
+                    <Zap className="h-5 w-5 text-amber-400" />
+                    <span className="text-amber-100">{batchBlockedReason}</span>
+                </div>
+            )}
 
             {isBatch && batchResult && (batchResult.barsSaved > 0 || batchResult.wasteSavedMm > 0) && (
                 <div className="mb-4 px-4 py-2 bg-emerald-900/30 border border-emerald-700/50 rounded-lg flex items-center gap-4 text-sm">

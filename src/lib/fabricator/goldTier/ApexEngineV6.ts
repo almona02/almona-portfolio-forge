@@ -22,10 +22,77 @@ import {
 } from '@/lib/fabricator/ManufacturingSettings';
 import { logFabricatorAudit } from '@/lib/audit/fabricatorAudit';
 import type { WindowUnit } from '@/types/fabricator';
-import type { FenestrationSystem, ProfileSpec } from '@/types/fenestration';
+import type { FenestrationSystem } from '@/types/fenestration';
+import { ApexSystemAuthorityError } from './ApexSystemAuthorityError';
+import { buildApexV6CacheKey } from './apexV6CacheKey';
 import { GoldTierPerformanceMonitor } from './PerformanceMonitor';
 import type { Profile } from '@/types/fabricator';
+import type { ManufacturingPhysicalCell } from '@/lib/fabricator/manufacturing/ManufacturingDesignContract';
 import { CutResult, type FabricationContext, FabricationStrategy, getFabricationStrategy } from './strategies/FabricationStrategies';
+
+export { ApexSystemAuthorityError } from './ApexSystemAuthorityError';
+export type { ApexSystemAuthorityErrorCode } from './ApexSystemAuthorityError';
+export { buildApexV6CacheKey } from './apexV6CacheKey';
+
+/** True when input is an authoritative FenestrationSystem (not a SystemPack array-profiles pack). */
+export function isAuthoritativeFenestrationSystem(
+  input: FenestrationSystem | SystemPack
+): input is FenestrationSystem {
+  if (!input || typeof input !== 'object') return false;
+  const candidate = input as Partial<FenestrationSystem> & { profiles?: unknown };
+  if (!candidate.fabricationRules || !candidate.regionalPhysics) return false;
+  const profiles = candidate.profiles;
+  if (!profiles || typeof profiles !== 'object' || Array.isArray(profiles)) return false;
+  const keyed = profiles as Partial<FenestrationSystem['profiles']>;
+  return Boolean(keyed.frame && keyed.sash);
+}
+
+function assertAuthoritativeProfiles(system: FenestrationSystem): void {
+  const frame = system.profiles?.frame;
+  const sash = system.profiles?.sash;
+  if (!frame) {
+    throw new ApexSystemAuthorityError({
+      code: 'MISSING_FRAME_PROFILE',
+      systemId: system.id,
+      missing: ['profiles.frame'],
+      message: `Apex V6 blocked: system "${system.id}" is missing an approved frame profile.`,
+    });
+  }
+  if (!sash) {
+    throw new ApexSystemAuthorityError({
+      code: 'MISSING_SASH_PROFILE',
+      systemId: system.id,
+      missing: ['profiles.sash'],
+      message: `Apex V6 blocked: system "${system.id}" is missing an approved sash profile.`,
+    });
+  }
+
+  for (const profile of [frame, sash]) {
+    const code = (profile.code || '').toUpperCase();
+    if (code.startsWith('GENERIC')) {
+      throw new ApexSystemAuthorityError({
+        code: 'GENERIC_PROFILE_FORBIDDEN',
+        systemId: system.id,
+        missing: [`profiles.${profile.role}.code`],
+        message: `Apex V6 blocked: invented profile code "${profile.code}" is not manufacturing-authoritative.`,
+      });
+    }
+    const widthMm = profile.dimensions?.width;
+    if (
+      !Number.isFinite(widthMm) ||
+      widthMm <= 0 ||
+      !Number.isFinite(profile.standardStockLength) ||
+      profile.standardStockLength <= 0
+    ) {
+      throw new ApexSystemAuthorityError({
+        code: 'INCOMPLETE_SYSTEM_PACK',
+        systemId: system.id,
+        missing: [`profiles.${profile.role}.dimensions|standardStockLength`],
+        message: `Apex V6 blocked: profile "${profile.code}" lacks approved width/stock length.`,
+      });
+    }
+  }
+}
 
 // --- Types ---
 export interface ApexV6Output {
@@ -34,6 +101,7 @@ export interface ApexV6Output {
   manufacturing: {
     frame: CutResult;
     sash: CutResult;
+    sashes: readonly ApexV6SashAssembly[];
   };
   optimization: {
     frameStock: OptimizationResult;
@@ -55,6 +123,12 @@ export interface ApexV6Output {
   };
 }
 
+export interface ApexV6SashAssembly extends CutResult {
+  readonly sourceCellId: string;
+  readonly openingDirection?: ManufacturingPhysicalCell['openingDirection'];
+  readonly boundsMm: ManufacturingPhysicalCell['bounds'];
+}
+
 // --- Cache Architecture ---
 interface CacheEntry {
   hash: string;
@@ -64,104 +138,60 @@ interface CacheEntry {
 const CACHE_TTL_MS = 5000; // 5 seconds hot cache
 const engineCache = new Map<string, CacheEntry>();
 
+/** Test/ops helper: clear the hot manufacturing cache (FP-028 / A3). */
+export function clearApexV6Cache(): void {
+  engineCache.clear();
+}
+
 export class ApexEngineV6 {
   private system: FenestrationSystem;
   private unit: WindowUnit;
   private strategy: FabricationStrategy;
+  private physicalCells?: readonly ManufacturingPhysicalCell[];
+  private cacheIdentity?: string;
 
-  constructor(system: FenestrationSystem | SystemPack, unit: WindowUnit, strategyId: string = 'miter') {
+  constructor(
+    system: FenestrationSystem | SystemPack,
+    unit: WindowUnit,
+    strategyId: string = 'miter',
+    physicalCells?: readonly ManufacturingPhysicalCell[],
+    cacheIdentity?: string
+  ) {
     this.system = this.adaptSystemToGoldTier(system);
     this.unit = unit;
     this.strategy = getFabricationStrategy(strategyId);
+    this.physicalCells = physicalCells;
+    this.cacheIdentity = cacheIdentity;
   }
 
   /**
-   * ADAPTER: Converts MVP SystemPack to Gold Tier FenestrationSystem
-   * Ensures the engine never crashes on missing profile data.
+   * FP-028 / A2: Accept only authoritative FenestrationSystem data.
+   * Never invent GENERIC profiles, stock, tolerances, hardware, or fabrication rules
+   * for incomplete SystemPack inputs.
    */
   private adaptSystemToGoldTier(input: FenestrationSystem | SystemPack): FenestrationSystem {
-    // 1. If it's already a full Gold Tier system, return it.
-    if ('profiles' in input && 'fabricationRules' in input && 'regionalPhysics' in input) {
-        return input;
+    if (isAuthoritativeFenestrationSystem(input)) {
+      assertAuthoritativeProfiles(input);
+      return input;
     }
 
     const pack = input as SystemPack & { meta?: { id?: string; name?: string } };
+    const systemId = pack.meta?.id ?? pack.id ?? 'unknown-system';
 
-    // 2. Extract specific profile data from SystemPack if available, or use defaults
-    // Attempting to find frame/sash from profiles array or windowSystemSpec
-    const defaultProfile: ProfileSpec = {
-        code: 'GENERIC-60',
-        name: 'Generic 60mm Profile',
-        role: 'frame',
-        dimensions: { width: 60 },
-        material: 'aluminum',
-        standardStockLength: 6000,
-        weightPerMeter: 1.2,
-        costPerMeter: 15
-    };
-
-    // Try to map properties from the pack
-    // NOTE: This is a robust fallback to ensure engine runs even with partial data
-    return {
-        id: pack.meta?.id || 'unknown-system',
-        name: pack.meta?.name || 'Unknown System',
-        manufacturer: 'Generic',
-        version: '1.0',
-        region: 'GLOBAL',
-        material: 'aluminum',
-        category: 'window',
-        profiles: {
-            frame: { ...defaultProfile, role: 'frame' },
-            sash: { ...defaultProfile, role: 'sash', dimensions: { width: 72 } }, // Assuming wider sash
-            mullion: { ...defaultProfile, role: 'mullion' },
-            transom: { ...defaultProfile, role: 'transom' },
-            glazingBead: { ...defaultProfile, role: 'glazingBead', dimensions: { width: 20 } },
-        },
-        fabricationRules: {
-            connectionType: 'miter',
-            cutting: {
-                // 0 → ManufacturingSettings platform kerf (do not invent 1.5 mm packing kerf)
-                sawKerf: 0,
-                miterAllowance: 0,
-                barEndTrim: 5000, // 5mm
-                cuttingTolerance: 500 // 0.5mm
-            },
-            assembly: {
-                frameClearance: 5000, // 5mm
-                mullionDeduction: 0,
-                glazingClearance: 3000 // 3mm
-            }
-        },
-        hardwareKit: {
-             hinges: { category: 'hinge', defaultId: 'std-hinge', selectionRules: [], quantityCalculator: () => 2 },
-             lockingSystem: { category: 'lock', defaultId: 'std-lock', selectionRules: [], quantityCalculator: () => 1 },
-             handle: { category: 'handle', defaultId: 'std-handle', selectionRules: [], quantityCalculator: () => 1 },
-             gaskets: {
-                 glazingGasket: { id: 'gasket-glz', category: 'gasket', unitCost: 1, name: 'Glazing Gasket', supplierCode: 'G01', specifications: {} },
-                 weatherSeal: { id: 'gasket-wth', category: 'gasket', unitCost: 1, name: 'Weather Seal', supplierCode: 'W01', specifications: {} }
-             },
-             cornerKeys: [],
-             drainageCaps: []
-        },
-        constraints: {
-            maxWidth: 3000,
-            maxHeight: 3000,
-            maxSashArea: 2.5,
-            maxSashWeight: 80,
-            minSashWidth: 400,
-            aspectRatio: { min: 0.3, max: 3 },
-            windLoadClass: 'C3',
-            requiresReinforcement: () => false
-        },
-        regionalPhysics: {
-            thermalExpansionCoefficient: 0.000023,
-        },
-        metadata: {
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            validationStatus: 'draft'
-        }
-    };
+    throw new ApexSystemAuthorityError({
+      code: 'INCOMPLETE_SYSTEM_PACK',
+      systemId,
+      missing: [
+        'fenestrationSystem.profiles.frame',
+        'fenestrationSystem.profiles.sash',
+        'fabricationRules',
+        'regionalPhysics',
+      ],
+      message:
+        `Apex V6 blocked: system pack "${systemId}" is not manufacturing-authoritative. ` +
+        'Approved FenestrationSystem frame/sash profiles and fabrication rules are required; ' +
+        'generic defaults are forbidden (FP-028 / A2).',
+    });
   }
 
   /**
@@ -231,52 +261,8 @@ export class ApexEngineV6 {
   // --- Internals ---
 
   private generateCacheKey(): string {
-    const manufacturingFingerprint = {
-      system: {
-        id: this.system.id,
-        version: this.system.version,
-        updatedAt: this.system.metadata.updatedAt,
-        validationStatus: this.system.metadata.validationStatus,
-        material: this.system.material,
-        profiles: {
-          frame: this.profileFingerprint(this.system.profiles.frame),
-          sash: this.profileFingerprint(this.system.profiles.sash),
-          mullion: this.profileFingerprint(this.system.profiles.mullion),
-          transom: this.profileFingerprint(this.system.profiles.transom),
-          glazingBead: this.profileFingerprint(this.system.profiles.glazingBead),
-        },
-        fabricationRules: this.system.fabricationRules,
-      },
-      unit: {
-        id: this.unit.id,
-        revision: this.unit.revision ?? null,
-        overallWidth: this.unit.overallWidth,
-        overallHeight: this.unit.overallHeight,
-        quantity: this.unit.quantity ?? 1,
-        type: this.unit.type,
-        grid: this.unit.grid ?? null,
-        glazing: this.unit.glazing,
-        hardware: this.unit.hardware,
-        systemPackId: this.unit.systemPackId ?? null,
-        systemProfileSelections: this.unit.systemProfileSelections ?? null,
-      },
-      strategy: this.strategy.name,
-    };
-
-    return JSON.stringify(manufacturingFingerprint);
-  }
-
-  private profileFingerprint(profile: ProfileSpec | undefined) {
-    if (!profile) return null;
-    return {
-      code: profile.code,
-      role: profile.role,
-      dimensions: profile.dimensions,
-      material: profile.material,
-      standardStockLength: profile.standardStockLength,
-      weightPerMeter: profile.weightPerMeter,
-      costPerMeter: profile.costPerMeter,
-    };
+    // FP-028 / A3: include system rules, profiles, quantity, glazing, revision
+    return `${buildApexV6CacheKey(this.system, this.unit, this.strategy.name)}:${JSON.stringify(this.physicalCells ?? null)}:${this.cacheIdentity ?? 'legacy'}`;
   }
 
   private checkCache(key: string): boolean {
@@ -319,8 +305,68 @@ export class ApexEngineV6 {
     const clearance = (this.system.fabricationRules.assembly.frameClearance || 5) * 1000;
     const sashCtx: FabricationContext = { ...ctx, width: ctx.width - (clearance * 2), height: ctx.height - (clearance * 2) };
     const sashCuts = this.strategy.calculateSashCuts(sashCtx);
+    const sashes = this.resolvePhysicalCells()
+      .filter((cell) => cell.type === 'sash' || cell.type === 'sliding')
+      .map((cell): ApexV6SashAssembly => {
+        const cellCtx: FabricationContext = {
+          ...ctx,
+          width: cell.bounds.widthMm * 1000 - (clearance * 2),
+          height: cell.bounds.heightMm * 1000 - (clearance * 2),
+        };
+        return {
+          sourceCellId: cell.id,
+          ...(cell.openingDirection ? { openingDirection: cell.openingDirection } : {}),
+          boundsMm: cell.bounds,
+          ...this.strategy.calculateSashCuts(cellCtx),
+        };
+      });
 
-    return { frame: frameCuts, sash: sashCuts };
+    return { frame: frameCuts, sash: sashCuts, sashes };
+  }
+
+  private resolvePhysicalCells(): readonly ManufacturingPhysicalCell[] {
+    if (this.physicalCells) return this.physicalCells;
+    const grid = this.unit.grid;
+    if (!grid?.cells.length) return [];
+
+    const segmentSizes = (values: readonly number[] | undefined, count: number, totalMm: number): number[] => {
+      if (!values || values.length !== count || values.some((value) => !Number.isFinite(value) || value <= 0)) {
+        return Array.from({ length: count }, () => totalMm / count);
+      }
+      const sum = values.reduce((total, value) => total + value, 0);
+      return values.map((value) => totalMm * value / sum);
+    };
+    const columns = segmentSizes(grid.colWidths, grid.cols, this.unit.overallWidth);
+    const rows = segmentSizes(grid.rowHeights, grid.rows, this.unit.overallHeight);
+    const offsets = (segments: readonly number[]): number[] => {
+      const result = [0];
+      for (const segment of segments) result.push(result[result.length - 1] + segment);
+      return result;
+    };
+    const x = offsets(columns);
+    const y = offsets(rows);
+
+    return [...grid.cells]
+      .sort((left, right) => left.row - right.row || left.col - right.col || left.id.localeCompare(right.id))
+      .map((cell): ManufacturingPhysicalCell => {
+        const rowSpan = cell.rowSpan ?? 1;
+        const colSpan = cell.colSpan ?? 1;
+        return {
+          id: cell.id,
+          row: cell.row,
+          col: cell.col,
+          rowSpan,
+          colSpan,
+          type: cell.type,
+          ...(cell.openingDirection ? { openingDirection: cell.openingDirection } : {}),
+          bounds: {
+            xMm: x[cell.col],
+            yMm: y[cell.row],
+            widthMm: x[cell.col + colSpan] - x[cell.col],
+            heightMm: y[cell.row + rowSpan] - y[cell.row],
+          },
+        };
+      });
   }
 
   private runOptimizer(manufacturing: { frame: CutResult, sash: CutResult }) {

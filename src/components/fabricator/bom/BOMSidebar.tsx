@@ -21,6 +21,7 @@ import {
     GoldTierCard
 } from '@/components/ui/card-gold-tier';
 import type { SystemPack as SystemPackType } from '@/data/systemPacks';
+import { assessPreviewSurfaceAuthority } from '@/lib/fabricator/engineering/previewIdentity';
 import { systemPricingService } from '@/lib/pricing';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -90,6 +91,10 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
 }) => {
   const { t } = useTranslation('fabricator');
   const [pricingSource, setPricingSource] = useState<'system_pricing' | 'constants' | 'checking'>('checking');
+  const bomSurface = useMemo(
+    () => assessPreviewSurfaceAuthority({ hasApprovedManufacturingContract: false }),
+    []
+  );
 
   // Calculate summary for collapsed view (hooks must be called before early return)
   const summary = useMemo(() => {
@@ -206,6 +211,12 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
             <CardTitle className="flex items-center gap-2 tracking-[0.15em] uppercase text-amber-200 font-semibold">
               <FileText className="h-5 w-5 text-amber-500 text-shadow-glow" />
               {t('engineering_bay.bill_of_materials', 'Real-time Bill of Materials')}
+              <Badge
+                data-testid="bom-estimate-badge"
+                className="bg-amber-500/15 border border-amber-500/40 text-amber-200 text-[10px] tracking-normal normal-case"
+              >
+                {bomSurface.badgeLabel}
+              </Badge>
             </CardTitle>
             {onToggleCollapse && (
               <GoldTierButton
@@ -217,8 +228,11 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
               </GoldTierButton>
             )}
           </div>
-          <CardDescription className="text-xs text-amber-600/80 font-medium flex items-center justify-between gap-2">
-            <span>{t('engineering_bay.bom_precision_note', 'Maalem-grade precision - All components from unit preset')}</span>
+          <CardDescription
+            className="text-xs text-amber-600/80 font-medium flex items-center justify-between gap-2"
+            data-testid="bom-estimate-description"
+          >
+            <span>{bomSurface.description}</span>
             {pricingSource !== 'checking' && (
               <div className="flex items-center gap-2">
                 <Badge

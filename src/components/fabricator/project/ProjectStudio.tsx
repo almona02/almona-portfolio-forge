@@ -1,13 +1,12 @@
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
 import {
     useDeletePose,
     useProject,
     useProjectPositions,
     useUpsertPose,
 } from '@/hooks/useFabricatorQueries';
-import { ApexEngineV6, ApexV6Output } from '@/lib/fabricator/goldTier/ApexEngineV6';
+import type { ApexV6Output } from '@/lib/fabricator/goldTier/ApexEngineV6';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { Button } from '@/shared/ui/ui/button';
 import {
@@ -15,7 +14,8 @@ import {
     TabsList,
     TabsTrigger
 } from '@/shared/ui/ui/tabs';
-import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
+import type { DesignCompletionPayload } from '@/lib/fabricator/engineering/designCompletion';
+import { Profile, WindowUnit } from '@/types/fabricator';
 import {
     Copy,
     FileText,
@@ -103,7 +103,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     // Optimization Results Cache
-    const [optimizationResults, setOptimizationResults] = useState<{
+    const [optimizationResults] = useState<{
         projectSummary: any;
         unitResults: Map<string, ApexV6Output>;
     } | null>(null);
@@ -211,53 +211,26 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         }
     }, [project.units, useV2, upsertPose]);
 
-    const handleDesignComplete = useCallback((components: WindowComponent[]) => {
+    const handleDesignComplete = useCallback((payload: DesignCompletionPayload) => {
         if (activeUnitId) {
-            handleUpdateUnit(activeUnitId, { components });
+            handleUpdateUnit(activeUnitId, {
+                components: payload.components,
+                grid: payload.grid,
+                systemPackId: payload.systemPackId ?? undefined,
+                presetId: payload.presetId ?? undefined,
+            });
         }
     }, [activeUnitId, handleUpdateUnit]);
 
     // --- Optimization Logic ---
-    const runProjectOptimization = useCallback(async () => {
+    const runProjectOptimization = useCallback(() => {
         if (project.units.length === 0) {
             toast.error("No units to optimize");
             return;
         }
-
-        const toastId = toast.loading("Running Apex Engine Optimization...");
-
-        try {
-            // 1. Calculate Per-Unit Manufacturing Data
-            const unitResults = new Map<string, ApexV6Output>();
-
-            for (const unit of project.units) {
-                // Find system pack
-                const pack = SYSTEM_PACKS.find(p => p.meta.id === (unit.systemPackId || 'generic-60')) || SYSTEM_PACKS[0];
-
-                // Init Engine
-                const engine = new ApexEngineV6(pack, unit, 'miter');
-                const result = engine.generate();
-                unitResults.set(unit.id, result);
-            }
-
-            // 2. Global Aggregation (Todo: Implement true global nesting in ProjectOptimizer)
-            // For now, we aggregate the financials
-            const totalCost = Array.from(unitResults.values()).reduce((acc, curr) => acc + curr.financials.totalCost, 0);
-
-            setOptimizationResults({
-                projectSummary: { totalCost, unitCount: project.units.length },
-                unitResults
-            });
-
-            toast.dismiss(toastId);
-            toast.success("Optimization Complete", { description: `Processed ${project.units.length} units.` });
-            setWorkflowStage('optimize');
-
-        } catch (err) {
-            toast.dismiss(toastId);
-            toast.error("Optimization Failed");
-            console.error(err);
-        }
+        toast.error("Optimization blocked", {
+            description: "Every position requires an approved manufacturing contract and system snapshot.",
+        });
     }, [project.units]);
 
     return (

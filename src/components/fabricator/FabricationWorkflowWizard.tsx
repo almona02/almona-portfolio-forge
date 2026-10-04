@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { SmartMeasuringInterface } from './SmartMeasuringInterface';
 import { EngineeringBay } from './EngineeringBay';
 import { VisualBOMDisplay, type BOMDisplayData } from './VisualBOMDisplay';
+import type { DesignCompletionPayload } from '@/lib/fabricator/engineering/designCompletion';
 import type { MeasurementData } from '@/types/fabricator';
 import type { WindowUnit, WindowComponent, Profile } from '@/types/fabricator';
 import { useTranslation } from 'react-i18next';
@@ -311,12 +312,17 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
 
   // Handle design complete
   const handleDesignComplete = useCallback(
-    (components: WindowComponent[]) => {
+    (payload: DesignCompletionPayload) => {
       if (!windowUnit) return;
+
+      const { components, grid, systemPackId, presetId } = payload;
 
       const updatedUnit: WindowUnit = {
         ...windowUnit,
         components,
+        grid,
+        systemPackId: systemPackId ?? undefined,
+        presetId: presetId ?? undefined,
         status: 'optimized',
         updatedAt: new Date(),
       };

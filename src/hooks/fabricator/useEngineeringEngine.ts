@@ -1,9 +1,15 @@
 import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateDesign } from '@/lib/fabricator/ConstraintEngine';
+import type { DesignCompleteHandler } from '@/lib/fabricator/engineering/designCompletion';
+import {
+    createLayoutSuggestionAction,
+    createSystemConversionAction,
+    type PendingGeometryAction,
+} from '@/lib/fabricator/engineering/systemGeometryCompatibility';
 import { connectHardwareForWindowType } from '@/lib/fabricator/hardwareConnector';
-import { Profile, WindowComponent, WindowGrid, WindowUnit } from '@/types/fabricator';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Profile, WindowGrid, WindowUnit } from '@/types/fabricator';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // We need to verify where this utility is located relative to the hook
 // EngineeringBay was in src/components/fabricator/EngineeringBay.tsx
@@ -12,10 +18,33 @@ import { transformWorkerResultToBOMData } from '@/components/fabricator/bom/util
 import { useBOMCalculation } from '@/hooks/useBOMCalculation';
 import { mergeHardwareArrays } from '../../components/fabricator/utils/hardwareMergingUtils';
 
+export type { DesignCompletionPayload, DesignCompleteHandler } from '@/lib/fabricator/engineering/designCompletion';
+
 interface UseEngineeringEngineProps {
     project: WindowUnit | null;
     profiles: Profile[];
-    onDesignComplete: (components: WindowComponent[]) => void;
+    onDesignComplete: DesignCompleteHandler;
+}
+
+/**
+ * FP-028 / D3: Identity token for BOM commits.
+ * Late responses must match the still-current position/system/geometry/revision.
+ */
+export function buildBomRequestKey(
+    unit: Pick<WindowUnit, 'id' | 'revision' | 'overallWidth' | 'overallHeight' | 'quantity' | 'presetId'>,
+    systemPackId: string | null,
+    grid: WindowGrid
+): string {
+    return JSON.stringify({
+        id: unit.id,
+        revision: unit.revision ?? null,
+        systemPackId,
+        overallWidth: unit.overallWidth,
+        overallHeight: unit.overallHeight,
+        quantity: unit.quantity ?? 1,
+        presetId: unit.presetId ?? null,
+        grid,
+    });
 }
 
 export const useEngineeringEngine = ({
@@ -30,13 +59,17 @@ export const useEngineeringEngine = ({
         project?.grid || { rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }] }
     );
     const [activeSystemPackId, setActiveSystemPackId] = useState<string | null>(project?.systemPackId || null);
+    const [activeTemplateId, setActiveTemplateId] = useState<string | null>(project?.presetId || null);
     const [error, setError] = useState<string | null>(null);
+    const [pendingGeometryAction, setPendingGeometryAction] = useState<PendingGeometryAction | null>(null);
 
     // Sync state when the master project object changes
     useEffect(() => {
         if (project) {
             setCurrentGrid(project.grid || { rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }] });
             setActiveSystemPackId(project.systemPackId || null);
+            setActiveTemplateId(project.presetId || null);
+            setPendingGeometryAction(null);
         }
     }, [project]);
 
@@ -132,71 +165,165 @@ export const useEngineeringEngine = ({
             components,
             hardware: allHardware,
             systemPackId: activeSystemPackId || undefined,
+            presetId: activeTemplateId || undefined,
             updatedAt: new Date(),
         };
-    }, [project, currentGrid, selectedProfiles, activeSystemPackId, systemPack]);
+    }, [project, currentGrid, selectedProfiles, activeSystemPackId, activeTemplateId, systemPack]);
 
     // --- BOM Worker Integration (Phase 2) ---
     const { calculateBOM, isCalculating: isBOMCalculating } = useBOMCalculation();
     const [bomData, setBOMData] = useState<any | null>(null); // Type 'any' temporarily to match BOMData interface complexity
+    const bomRequestKeyRef = useRef<string | null>(null);
 
-    // Calculate BOM whenever inputs change
+    /**
+     * FP-028 / D3: Depend on manufacturing identity string, not liveProject object
+     * identity (updatedAt / new arrays must not clear or re-request BOM).
+     */
+    const bomRequestKey = useMemo(() => {
+        if (!liveProject || !activeSystemPackId) return null;
+        if (!liveProject.components || liveProject.components.length === 0) return null;
+        return buildBomRequestKey(
+            liveProject,
+            activeSystemPackId,
+            liveProject.grid ?? currentGrid
+        );
+    }, [liveProject, activeSystemPackId, currentGrid]);
+
+    // Calculate BOM whenever manufacturing identity changes
     useEffect(() => {
-        if (!liveProject || !liveProject.components || liveProject.components.length === 0) {
+        bomRequestKeyRef.current = bomRequestKey;
+
+        if (!bomRequestKey || !liveProject || !activeSystemPackId) {
             setBOMData(null);
             return;
         }
 
-        const runBOMCalculation = async () => {
-            // Check for necessary data
-            if (!activeSystemPackId) return;
+        // Drop prior BOM immediately so a late A response cannot linger under B UI
+        setBOMData(null);
 
-            // Use the liveProject as is (it's already a WindowUnit)
-            // Ideally we pass systemPack too
-            const currentSystemPack = SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId);
-            // Default pattern stub if missing (should be in project)
-            const patternStub = { 
-                id: 'custom', 
+        let cancelled = false;
+        const requestKey = bomRequestKey;
+        const requestSystemPackId = activeSystemPackId;
+        const requestLiveProject = liveProject;
+        const requestGrid = liveProject.grid ?? currentGrid;
+
+        const runBOMCalculation = async () => {
+            const currentSystemPack = SYSTEM_PACKS.find(p => p.meta.id === requestSystemPackId);
+            const patternStub = {
+                id: 'custom',
                 name: 'Custom',
-                gridSpec: currentGrid 
-            } as any; 
+                gridSpec: requestGrid,
+            } as any;
 
             try {
                 const result = await calculateBOM(
-                    liveProject, 
-                    patternStub, 
-                    currentSystemPack as any // simplified cast
+                    requestLiveProject,
+                    patternStub,
+                    currentSystemPack as any
                 );
-                
-                // Transform result for UI
+
+                // FP-028 / D3: reject late commits after identity/system/grid changes
+                if (cancelled || bomRequestKeyRef.current !== requestKey) {
+                    return;
+                }
+
                 const transformed = transformWorkerResultToBOMData(
-                    result, 
-                    currentSystemPack, 
+                    result,
+                    currentSystemPack,
                     (key: string, defaultVal?: string) => t(key, defaultVal || '')
                 );
                 setBOMData(transformed);
-                
             } catch (err) {
-                console.error("BOM Worker Error:", err);
-                // Fallback or error state could be set here
+                if (cancelled || bomRequestKeyRef.current !== requestKey) {
+                    return;
+                }
+                console.error('BOM Worker Error:', err);
             }
         };
 
-        const timeoutId = setTimeout(runBOMCalculation, 50); // Debounce slightly
-        return () => clearTimeout(timeoutId);
+        const timeoutId = setTimeout(() => {
+            void runBOMCalculation();
+        }, 50);
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- currentGrid is intentionally excluded to prevent infinite loop; it's already a dependency of liveProject
-    }, [liveProject, activeSystemPackId, calculateBOM, t]);
+        return () => {
+            cancelled = true;
+            clearTimeout(timeoutId);
+        };
+        // liveProject/currentGrid captured when bomRequestKey changes; t used only for labels
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [bomRequestKey, calculateBOM]);
 
     // --- Actions ---
 
     const updateGrid = useCallback((grid: WindowGrid) => {
+        setPendingGeometryAction(null);
+        // Manual canvas edits unbind the saved template identity
+        setActiveTemplateId(null);
         setCurrentGrid(grid);
     }, []);
 
+    /**
+     * FP-028 / D2 + P5.2: System selection changes manufacturing identity only.
+     * Never replace saved geometry with pack.defaultGrid.
+     * When incompatible, queue an explicit conversion proposal.
+     */
     const selectSystem = useCallback((systemId: string) => {
         setError(null);
         setActiveSystemPackId(systemId);
+
+        const pack = SYSTEM_PACKS.find((p) => p.meta.id === systemId);
+        if (!pack || !project) {
+            setPendingGeometryAction(null);
+            return;
+        }
+
+        const pending = createSystemConversionAction(
+            pack,
+            currentGrid,
+            project.overallWidth,
+            project.overallHeight
+        );
+        setPendingGeometryAction(pending);
+        if (pending) {
+            setError(pending.message);
+        }
+    }, [currentGrid, project]);
+
+    const requestLayoutSuggestion = useCallback(() => {
+        if (!project) {
+            setError('Cannot suggest layout: project data is missing.');
+            return;
+        }
+        const pending = createLayoutSuggestionAction(
+            currentGrid,
+            project.overallWidth,
+            project.overallHeight,
+            activeSystemPackId
+        );
+        if (!pending) {
+            setError(null);
+            setPendingGeometryAction(null);
+            return;
+        }
+        setPendingGeometryAction(pending);
+        setError(pending.message);
+    }, [project, currentGrid, activeSystemPackId]);
+
+    const applyPendingGeometryAction = useCallback(() => {
+        if (!pendingGeometryAction?.canApply) {
+            setPendingGeometryAction(null);
+            setError(null);
+            return;
+        }
+        setCurrentGrid(pendingGeometryAction.proposedGrid);
+        setActiveTemplateId(null);
+        setPendingGeometryAction(null);
+        setError(null);
+    }, [pendingGeometryAction]);
+
+    const dismissPendingGeometryAction = useCallback(() => {
+        setPendingGeometryAction(null);
+        setError(null);
     }, []);
 
     const validate = useCallback((): boolean => {
@@ -222,19 +349,28 @@ export const useEngineeringEngine = ({
         }
 
         setError(null);
-        onDesignComplete(liveProject.components);
+        // FP-028 / P5.3: persist grid + system + template with components
+        onDesignComplete({
+            components: liveProject.components,
+            grid: currentGrid,
+            systemPackId: activeSystemPackId,
+            presetId: activeTemplateId,
+        });
         return true;
-    }, [liveProject, currentGrid, activeSystemPackId, onDesignComplete]);
+    }, [liveProject, currentGrid, activeSystemPackId, activeTemplateId, onDesignComplete]);
 
 
     
     // For handling preset selection externally or other grid updates that shouldn't reset system pack
-    const applyGrid = useCallback((grid: WindowGrid) => {
+    const applyGrid = useCallback((grid: WindowGrid, templateId?: string) => {
+         setPendingGeometryAction(null);
          setCurrentGrid(grid);
+         setActiveTemplateId(templateId ?? null);
     }, []);
 
     // For updates that might come from drafting
     const updateFromDrafting = useCallback((grid: WindowGrid, systemId?: string) => {
+        setPendingGeometryAction(null);
         setCurrentGrid(grid);
         if (systemId) setActiveSystemPackId(systemId);
     }, []);
@@ -244,6 +380,8 @@ export const useEngineeringEngine = ({
         liveProject,
         currentGrid,
         activeSystemPackId,
+        activeTemplateId,
+        pendingGeometryAction,
         bomData,
         error,
         isCalculating: isBOMCalculating,
@@ -251,6 +389,9 @@ export const useEngineeringEngine = ({
         actions: {
             updateGrid,
             selectSystem,
+            requestLayoutSuggestion,
+            applyPendingGeometryAction,
+            dismissPendingGeometryAction,
             validate,
             setError,
             applyGrid,

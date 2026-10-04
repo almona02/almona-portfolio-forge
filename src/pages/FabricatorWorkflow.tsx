@@ -11,6 +11,7 @@ import { usePersona } from '@/hooks/usePersona';
 import { track } from '@/lib/analytics';
 import { enhanceValidationWithConsequences } from '@/lib/authority/consequenceMapper';
 import { generateConstitutionalMetadata, validateConstitutionalCompliance } from '@/lib/authority/constitutionalValidation';
+import type { DesignCompletionPayload } from '@/lib/fabricator/engineering/designCompletion';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -1022,7 +1023,7 @@ export const FabricatorWorkflow: React.FC = () => {
     [addOrUpdateJob, setSelectedJob, projectMeta, setActiveTab, workspaceDispatch, jobs, workshopId, ydtBusinessLayer, setMeasurementSessionId]
   );
 
-  const handleDesignComplete = useCallback(async (components: WindowComponent[]) => {
+  const handleDesignComplete = useCallback(async (payload: DesignCompletionPayload) => {
     if (!currentProject) {
       setProjectError('No project available. Please complete the measurement phase first.');
       return;
@@ -1030,6 +1031,8 @@ export const FabricatorWorkflow: React.FC = () => {
 
     try {
       setProjectError(null);
+
+      const { components, grid, systemPackId, presetId } = payload;
 
       if (!components || components.length === 0) {
         throw new Error('No components provided. Please add at least one component.');
@@ -1063,6 +1066,9 @@ export const FabricatorWorkflow: React.FC = () => {
       const updatedProject: WindowUnit = {
         ...currentProject,
         components,
+        grid,
+        systemPackId: systemPackId ?? undefined,
+        presetId: presetId ?? undefined,
         optimization,
         status: 'optimized',
         updatedAt: new Date(),
@@ -1923,8 +1929,17 @@ export const FabricatorWorkflow: React.FC = () => {
                                   size="sm"
                                   className="btn-primary"
                                   onClick={() => {
-                                    if (pendingLayoutComponents && pendingLayoutComponents.length) {
-                                      void handleDesignComplete(pendingLayoutComponents);
+                                    if (pendingLayoutComponents && pendingLayoutComponents.length && currentProject) {
+                                      void handleDesignComplete({
+                                        components: pendingLayoutComponents,
+                                        grid: currentProject.grid ?? {
+                                          rows: 1,
+                                          cols: 1,
+                                          cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }],
+                                        },
+                                        systemPackId: currentProject.systemPackId ?? null,
+                                        presetId: currentProject.presetId ?? null,
+                                      });
                                     }
                                     setShowLayoutNextStep(false);
                                     setPendingLayoutComponents(null);
@@ -1951,7 +1966,7 @@ export const FabricatorWorkflow: React.FC = () => {
                                 });
                                 setSelectedJob(target.id);
                               }}
-                              onDesignComplete={(components) => void handleDesignComplete(components)}
+                              onDesignComplete={(payload) => void handleDesignComplete(payload)}
                               onSmartDrawApply={handleSmartDrawApply}
                               onHardwareUpdate={handleHardwareUpdate}
                               onBackToMeasuring={() => setActiveTab('measuring')}

@@ -29,6 +29,24 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
     },
     applications: ['Standard apartments', 'Budget renovations', 'Normal residential'],
     pricingTier: 'Local',
+    templateSchema: {
+      version: 1,
+      status: 'selectable',
+      evidenceStatus: 'illustrative',
+      compatibleSystemPackIds: ['panda-50'],
+      grid: {
+        rows: 2,
+        cols: 2,
+        cells: [
+          { id: '0-0', row: 0, col: 0, type: 'sash' },
+          { id: '0-1', row: 0, col: 1, type: 'sash' },
+          { id: '1-0', row: 1, col: 0, type: 'fixed' },
+          { id: '1-1', row: 1, col: 1, type: 'fixed' },
+        ],
+        colWidths: [1, 1],
+        rowHeights: [1, 1],
+      },
+    },
     architecturalDetails: {
       narrative: 'Balanced facade composition maximizing natural light while maintaining structural elegance. Ideal for residential developments.',
       architecturalStyle: 'Contemporary Residential',
@@ -38,14 +56,6 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
         'Cost-effective fabrication'
       ],
       bestFor: 'Residential developments, apartment complexes, standard housing',
-      testimonials: [
-        'Used in 200+ apartment projects',
-        'Recommended for budget-friendly developments'
-      ],
-      certifications: [
-        'Egyptian Housing Authority Approved',
-        'Standard Residential Grade'
-      ]
     }
   },
   {
@@ -62,6 +72,24 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
     },
     applications: ['Villa projects', 'Better quality homes', 'Premium residential'],
     pricingTier: 'Premium',
+    templateSchema: {
+      version: 1,
+      status: 'selectable',
+      evidenceStatus: 'illustrative',
+      compatibleSystemPackIds: ['caluminium-ps'],
+      grid: {
+        rows: 2,
+        cols: 2,
+        cells: [
+          { id: '0-0', row: 0, col: 0, type: 'sash' },
+          { id: '0-1', row: 0, col: 1, type: 'fixed' },
+          { id: '1-0', row: 1, col: 0, type: 'fixed' },
+          { id: '1-1', row: 1, col: 1, type: 'sash' },
+        ],
+        colWidths: [1, 1],
+        rowHeights: [1, 1],
+      },
+    },
     architecturalDetails: {
       narrative: 'Maximize Nile views while maintaining thermal comfort. Contemporary Egyptian Modern architecture with cultural adaptation.',
       architecturalStyle: 'Contemporary Egyptian Modern',
@@ -72,15 +100,6 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
         'Privacy without isolation'
       ],
       bestFor: 'Luxury villas, Nile-view properties, premium residential developments',
-      testimonials: [
-        'Used in 12 Nile-view villas in Zamalek',
-        'Recommended by Egyptian Architects Association'
-      ],
-      certifications: [
-        'Thermal Performance Verified',
-        'Cultural Heritage Approved',
-        'Premium Residential Grade'
-      ]
     }
   },
   {
@@ -97,6 +116,23 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
     },
     applications: ['Large openings', 'Living room windows', 'Main facade', 'Panoramic views'],
     pricingTier: 'Premium',
+    templateSchema: {
+      version: 1,
+      status: 'selectable',
+      evidenceStatus: 'illustrative',
+      compatibleSystemPackIds: ['caluminium-ps'],
+      grid: {
+        rows: 3,
+        cols: 1,
+        cells: [
+          { id: '0-0', row: 0, col: 0, type: 'sash' },
+          { id: '1-0', row: 1, col: 0, type: 'sash' },
+          { id: '2-0', row: 2, col: 0, type: 'fixed' },
+        ],
+        colWidths: [1],
+        rowHeights: [1, 1, 1],
+      },
+    },
     architecturalDetails: {
       narrative: 'Unobstructed city views with structural elegance. Floor-to-ceiling minimal frames with structural glazing integration.',
       architecturalStyle: 'Modern Minimalist',
@@ -107,14 +143,6 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
         'Premium finish quality'
       ],
       bestFor: 'High-rise luxury apartments, penthouses, premium facades',
-      testimonials: [
-        'Used in luxury high-rise developments',
-        'Architectural grade finish'
-      ],
-      certifications: [
-        'High-Rise Certified',
-        'Structural Glazing Approved'
-      ]
     }
   },
   {
@@ -131,6 +159,13 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
     },
     applications: ['Apartment renovations', 'Room replacements', 'Budget projects'],
     pricingTier: 'Local',
+    templateSchema: {
+      version: 1,
+      status: 'blocked',
+      evidenceStatus: 'illustrative',
+      compatibleSystemPackIds: ['panda-50'],
+      blockedReason: 'The source pattern contains two alternative layouts and has no approved cell schema.',
+    },
     architecturalDetails: {
       narrative: 'Cost-effective preset optimized for residential renovations with energy efficiency focus. Market-competitive solution.',
       architecturalStyle: 'Practical Renovation',
@@ -141,14 +176,6 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
         'Minimal disruption'
       ],
       bestFor: 'Renovation projects, residential upgrades, market-competitive bids',
-      testimonials: [
-        'Used in 500+ renovation projects',
-        'Budget-friendly choice'
-      ],
-      certifications: [
-        'Energy Efficiency Certified',
-        'Renovation Grade Approved'
-      ]
     }
   },
 
@@ -169,6 +196,22 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
     },
     applications: ['Retail shops', 'Storefronts', 'Small businesses'],
     pricingTier: 'Standard',
+    templateSchema: {
+      version: 1,
+      status: 'selectable',
+      evidenceStatus: 'illustrative',
+      compatibleSystemPackIds: ['panda-50', 'caluminium-ps'],
+      grid: {
+        rows: 2,
+        cols: 1,
+        cells: [
+          { id: '0-0', row: 0, col: 0, type: 'sash' },
+          { id: '1-0', row: 1, col: 0, type: 'fixed' },
+        ],
+        colWidths: [1],
+        rowHeights: [1, 1],
+      },
+    },
     architecturalDetails: {
       narrative: 'Retail facade optimization balancing visibility with energy efficiency. Modern storefront design principles.',
       architecturalStyle: 'Commercial Retail',
@@ -179,14 +222,6 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
         'Cost-effective operation'
       ],
       bestFor: 'Retail chains, shopping centers, commercial strips',
-      testimonials: [
-        'Used in 100+ retail projects',
-        'Commercial grade performance'
-      ],
-      certifications: [
-        'Commercial Grade Approved',
-        'Retail Standard Certified'
-      ]
     }
   },
   {
@@ -203,6 +238,26 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
     },
     applications: ['Shops', 'Offices', 'Commercial buildings'],
     pricingTier: 'Enterprise',
+    templateSchema: {
+      version: 1,
+      status: 'selectable',
+      evidenceStatus: 'illustrative',
+      compatibleSystemPackIds: ['asas-commercial'],
+      grid: {
+        rows: 3,
+        cols: 2,
+        cells: [
+          { id: '0-0', row: 0, col: 0, type: 'sash' },
+          { id: '0-1', row: 0, col: 1, type: 'sash' },
+          { id: '1-0', row: 1, col: 0, type: 'sash' },
+          { id: '1-1', row: 1, col: 1, type: 'sash' },
+          { id: '2-0', row: 2, col: 0, type: 'fixed' },
+          { id: '2-1', row: 2, col: 1, type: 'fixed' },
+        ],
+        colWidths: [1, 1],
+        rowHeights: [1, 1, 1],
+      },
+    },
     architecturalDetails: {
       narrative: 'Institutional-grade facade for corporate headquarters. Maximum transparency with structural integrity at height.',
       architecturalStyle: 'Corporate Institutional',
@@ -213,16 +268,6 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
         'Institutional quality'
       ],
       bestFor: 'Corporate HQs, financial institutions, institutional buildings',
-      testimonials: [
-        'Used in corporate headquarters',
-        'Institutional grade quality'
-      ],
-      certifications: [
-        'LEED Gold compatible',
-        'Class 5 wind load',
-        '24-hour fire rating',
-        'Institutional Grade'
-      ]
     }
   },
 
@@ -243,6 +288,13 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
     },
     applications: ['Heritage homes', 'Traditional buildings', 'Cultural projects'],
     pricingTier: 'Bespoke',
+    templateSchema: {
+      version: 1,
+      status: 'blocked',
+      evidenceStatus: 'illustrative',
+      compatibleSystemPackIds: [],
+      blockedReason: 'No explicit manufacturable eight-point cell schema or compatible approved system pack exists.',
+    },
     architecturalDetails: {
       narrative: 'Traditional Islamic patterns with modern engineering. Mathematical precision in geometry with cultural pattern authenticity.',
       architecturalStyle: 'Islamic Geometric Heritage',
@@ -253,15 +305,6 @@ export const SIMPLE_PRESETS: ArchitecturalPreset[] = [
         'Heritage preservation'
       ],
       bestFor: 'Mosques, cultural centers, heritage restoration projects',
-      testimonials: [
-        'Used in Al-Azhar restoration project',
-        'Cultural Heritage Ministry approved'
-      ],
-      certifications: [
-        'Heritage Preservation Certified',
-        'Cultural Authenticity Verified',
-        'Bespoke Artisan Grade'
-      ]
     }
   }
 ];

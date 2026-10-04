@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Card, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import type { DesignCompleteHandler } from '@/lib/fabricator/engineering/designCompletion';
 import { WindowUnit, Profile, WindowComponent } from '@/types/fabricator';
 import { EngineeringBay } from './EngineeringBay';
 import { Sparkles } from 'lucide-react';
@@ -9,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 interface DesignInterfaceProps {
   project: WindowUnit | null;
   profiles: Profile[];
-  onDesignComplete: (components: WindowComponent[]) => void;
+  onDesignComplete: DesignCompleteHandler;
   /**
    * Optional list of related positions/poses (e.g. all units for the same order)
    * to allow the designer to switch which pose is currently active.

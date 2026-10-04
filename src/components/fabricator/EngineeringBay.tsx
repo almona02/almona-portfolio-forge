@@ -27,7 +27,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/ui/dropdown-menu';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
+import type { DesignCompleteHandler } from '@/lib/fabricator/engineering/designCompletion';
+import { getEngineeringBayLayoutPolicy } from '@/lib/fabricator/engineering/engineeringBayLayout';
+import { assessPreviewSurfaceAuthority } from '@/lib/fabricator/engineering/previewIdentity';
+import { Profile, WindowUnit } from '@/types/fabricator';
 import { AlertCircle, Box, ChevronDown, ChevronRight, Command, Cpu, Keyboard, Layers, Menu, Ruler, Settings, Sparkles, Wand2 } from 'lucide-react';
 import React, { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +46,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from '@/shared/ui/ui
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/ui/table';
 
 import { BuildingCodeValidator } from '@/components/national/BuildingCodeValidator';
+import {
+    assessPhysicsAuthority,
+    engineeringBayAssumptionInputs,
+} from '@/lib/fabricator/engineering/physicsAuthorityStatus';
 import { StructuralValidator } from '@/lib/physics/StructuralValidator';
 import { ThermalEngine } from '@/lib/physics/ThermalEngine';
 import { PoseQuickEditModal } from './PoseQuickEditModal';
@@ -58,6 +65,7 @@ import { useEngineeringEngine } from '@/hooks/fabricator/useEngineeringEngine';
 import { useModeSwitch } from '@/hooks/fabricator/usePoseSync';
 import { macroRecorder } from '@/lib/keyboard/macro-manager';
 import { MacroRecorderPanel } from './MacroRecorderPanel';
+import { EngineeringBayWorkbenchLayout } from './layout/EngineeringBayWorkbenchLayout';
 import { BOMSidebar } from './bom/BOMSidebar';
 import { WizardModeWrapper } from './wizard/WizardModeWrapper';
 
@@ -75,7 +83,7 @@ import type { PreviewPanelComponent } from '@/lib/fabricator/interfaces/IPreview
 
 interface EngineeringBayProps {
     project: WindowUnit | null;
-    onDesignComplete: (components: WindowComponent[]) => void;
+    onDesignComplete: DesignCompleteHandler;
     onHardwareUpdate?: (hardware: any[]) => void;
     profiles: Profile[];
     relatedPositions?: WindowUnit[];
@@ -108,6 +116,8 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         liveProject: liveProjectImmediate,
         currentGrid,
         activeSystemPackId,
+        activeTemplateId,
+        pendingGeometryAction,
         bomData,
         error: engineError,
         actions
@@ -137,30 +147,39 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
     // --- Rest of UI State ---
     const [isPro3D, setIsPro3D] = useState<boolean>(true);
-    const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+    const [selectedPreset, setSelectedPreset] = useState<string | null>(activeTemplateId);
+    useEffect(() => setSelectedPreset(activeTemplateId), [activeTemplateId]);
     const [showPresetSelector, setShowPresetSelector] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(false);
     const [engineeringMode, setEngineeringMode] = useState<'expert' | 'wizard'>(mode);
     const [mobileTab, setMobileTab] = useState<'design' | '3d'>('design');
     const [showQuickEditModal, setShowQuickEditModal] = useState(false);
+    const [bomCollapsed, setBomCollapsed] = useState(false);
+    const bayLayout = useMemo(() => getEngineeringBayLayoutPolicy(), []);
 
     // Sync internal mode with prop change
     useEffect(() => {
         setEngineeringMode(mode);
     }, [mode]);
 
+    // FP-028 / P5.4 — Design Studio preview/BOM are estimate-only
+    const previewSurface = useMemo(
+        () => assessPreviewSurfaceAuthority({ hasApprovedManufacturingContract: false }),
+        []
+    );
+
     // --- Physics Engine Calculation (Phase 4) ---
     const physicsResults = useMemo(() => {
-        if (!activeSystemPackId) return null;
-
         // Find a representative profile (Frame/Mullion) that has physics data
-        const pack = SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId);
+        const pack = activeSystemPackId
+            ? SYSTEM_PACKS.find((p) => p.meta.id === activeSystemPackId)
+            : undefined;
 
         // Try to find a profile with physics data defined
         // 1. Check top-level profiles array (if enriched)
         // 2. Check windowSystemSpec.profiles_cutting_list (if enriched in-place)
 
-        let representativeProfile: any = pack?.profiles?.find(p => p.physics);
+        let representativeProfile: any = pack?.profiles?.find((p) => p.physics);
 
         if (!representativeProfile) {
             const cuttingList = pack?.windowSystemSpec?.profiles_cutting_list || [];
@@ -168,34 +187,52 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         }
 
         const physics = representativeProfile?.physics;
+        const authority = assessPhysicsAuthority(
+            engineeringBayAssumptionInputs({
+                activeSystemPackId,
+                hasProfilePhysics: Boolean(physics?.ix),
+            }),
+            null
+        );
 
-        if (!physics) return null;
+        if (!physics) {
+            return { structResult: null, uw: null, physics: null, authority };
+        }
 
-        // 1. Structural Validation (Wind Load)
-        // Default to Cairo/High-Rise params if specific project data is missing
+        // 1. Structural estimate (Wind Load) — hardcoded defaults are not approved authority
         const windParams = {
-            windPressure: 1200, // Pa
+            windPressure: 1200, // Pa (assumption — not project-approved)
             mullionSpacing: project?.overallWidth ? project.overallWidth / 2 : 1000,
             mullionHeight: project?.overallHeight || 2000,
-            maxDeflectionRatio: 200, // L/200
-            elasticModulus: 70000 // Aluminum
+            maxDeflectionRatio: 200, // L/200 (assumption)
+            elasticModulus: 70000, // Aluminum (assumption)
         };
 
         const structResult = StructuralValidator.validateProfile(physics.ix, windParams);
 
-        // 2. Thermal Calculation (Uw)
+        // 2. Thermal estimate (Uw) — areas/Ug/Psi are assumptions until approved inputs exist
         const thermalParams = {
-            Ag: 2.5, // Estimate m2
-            Af: 0.8, // Estimate m2
-            Ug: 1.1, // Double Glazing Low-E default
+            Ag: 2.5,
+            Af: 0.8,
+            Ug: 1.1,
             Uf: physics.uf || 2.4,
-            Lg: 6.0, // Perimeter
-            Psi: 0.04 // Warm edge
+            Lg: 6.0,
+            Psi: 0.04,
         };
         const uw = ThermalEngine.calculateUw(thermalParams);
 
-        return { structResult, uw, physics };
-
+        return {
+            structResult,
+            uw,
+            physics,
+            authority: assessPhysicsAuthority(
+                engineeringBayAssumptionInputs({
+                    activeSystemPackId,
+                    hasProfilePhysics: true,
+                }),
+                { isSafe: structResult.isSafe }
+            ),
+        };
     }, [activeSystemPackId, project]);
 
     // --- Performance Monitoring ---
@@ -242,38 +279,48 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             return;
         }
 
-        try {
-            const result = applyPresetIntelligence(
-                preset,
-                project?.overallWidth,
-                project?.overallHeight
-            );
+        // Apply preset intelligence — FP-028 / T2: fail closed; never invent 1×1
+        const result = applyPresetIntelligence(
+            preset,
+            project?.overallWidth,
+            project?.overallHeight
+        );
 
-            actions.applyGrid(result.windowGrid);
-            setSelectedPreset(presetId);
-
-            if (result.recommendedSystem) {
-                const matchingPack = SYSTEM_PACKS.find(p =>
-                    p.meta.id.toLowerCase().includes(result.recommendedSystem.toLowerCase()) ||
-                    p.meta.name.toLowerCase().includes(result.recommendedSystem.toLowerCase())
-                );
-                if (matchingPack) {
-                    actions.setActiveSystemPackId(matchingPack.meta.id);
-                }
-            }
-
-            setShowPresetSelector(false);
-
-            console.log('[Preset Applied]', {
+        if (!result.ok) {
+            actions.setError(result.error.message);
+            console.warn('[Preset Rejected]', {
                 presetId,
                 presetTitle: preset.title,
-                grid: result.windowGrid,
-                recommendedSystem: result.recommendedSystem
+                error: result.error,
             });
-        } catch (error) {
-            actions.setError(error instanceof Error ? error.message : 'Cannot apply template.');
+            return;
         }
-    }, [project, actions]);
+
+        const compatiblePackIds = preset.templateSchema?.compatibleSystemPackIds ?? [];
+        if (activeSystemPackId && !compatiblePackIds.includes(activeSystemPackId)) {
+            actions.setError(`Template ${preset.title} is not compatible with system ${activeSystemPackId}.`);
+            return;
+        }
+
+        const matchingPack = SYSTEM_PACKS.find((pack) => pack.meta.id === result.recommendedSystem);
+        if (!activeSystemPackId && !matchingPack) {
+            actions.setError(`Template ${preset.title} references an unavailable system pack.`);
+            return;
+        }
+
+        actions.applyGrid(result.windowGrid, presetId);
+        setSelectedPreset(presetId);
+        if (!activeSystemPackId && matchingPack) actions.setActiveSystemPackId(matchingPack.meta.id);
+
+        setShowPresetSelector(false);
+
+        console.log('[Preset Applied]', {
+            presetId,
+            presetTitle: preset.title,
+            grid: result.windowGrid,
+            recommendedSystem: result.recommendedSystem
+        });
+    }, [project, actions, activeSystemPackId]);
 
     // --- Event Handlers ---
     const handleSystemPackSelect = useCallback((systemPackId: string) => {
@@ -281,16 +328,8 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     }, [actions]);
 
     const handleSuggestLayout = useCallback(() => {
-        actions.setError(null);
-        actions.updateGrid({
-            rows: 2, cols: 2,
-            cells: [
-                { id: '0-0', row: 0, col: 0, type: 'fixed' },
-                { id: '0-1', row: 0, col: 1, type: 'fixed' },
-                { id: '1-0', row: 1, col: 0, type: 'sash' },
-                { id: '1-1', row: 1, col: 1, type: 'sash' },
-            ]
-        });
+        // FP-028 / P5.2: never silently overwrite saved geometry
+        actions.requestLayoutSuggestion();
     }, [actions]);
 
     const handleSaveAndNext = useCallback(() => {
@@ -628,9 +667,10 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                         </Tabs>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* --- LEFT PANEL: DESIGN CONTROLS --- */}
-                        <div className={`lg:col-span-1 space-y-6 ${mobileTab === 'design' ? 'block' : 'hidden lg:block'}`}>
+                    <EngineeringBayWorkbenchLayout
+                        mobileTab={mobileTab}
+                        controls={
+                            <>
                             <Card className="bg-gray-900/50">
                                 <CardHeader>
                                     <CardTitle className="text-base flex items-center gap-2">
@@ -769,9 +809,54 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
                                     <Alert variant="default" className="border-blue-500/40 bg-blue-900/20 text-blue-100">
                                         <AlertDescription className="text-xs">
-                                            {t('engineering_bay.system_constraints', 'System constraints and presets are applied automatically to SmartDraw and 3D.')}
+                                            {t(
+                                                'engineering_bay.system_constraints',
+                                                'System selection preserves saved geometry. Incompatible packs require an explicit conversion confirmation.'
+                                            )}
                                         </AlertDescription>
                                     </Alert>
+
+                                    {pendingGeometryAction && (
+                                        <Alert
+                                            variant="default"
+                                            className="border-amber-500/50 bg-amber-900/20 text-amber-50"
+                                            data-testid="pending-geometry-action"
+                                        >
+                                            <AlertDescription className="space-y-3 text-xs">
+                                                <p>{pendingGeometryAction.message}</p>
+                                                {pendingGeometryAction.reasons.length > 0 && (
+                                                    <ul className="list-disc pl-4 text-amber-100/90">
+                                                        {pendingGeometryAction.reasons.map((reason) => (
+                                                            <li key={reason}>{reason}</li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+                                                <div className="flex flex-wrap gap-2">
+                                                    {pendingGeometryAction.canApply && (
+                                                        <Button
+                                                            size="sm"
+                                                            className="bg-amber-600 hover:bg-amber-700 text-white"
+                                                            onClick={actions.applyPendingGeometryAction}
+                                                            data-testid="apply-pending-geometry"
+                                                        >
+                                                            {pendingGeometryAction.kind === 'system_conversion'
+                                                                ? t('engineering_bay.apply_conversion', 'Apply pack layout')
+                                                                : t('engineering_bay.apply_suggestion', 'Apply suggested layout')}
+                                                        </Button>
+                                                    )}
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="border-amber-500/50 text-amber-100"
+                                                        onClick={actions.dismissPendingGeometryAction}
+                                                        data-testid="dismiss-pending-geometry"
+                                                    >
+                                                        {t('engineering_bay.keep_geometry', 'Keep current geometry')}
+                                                    </Button>
+                                                </div>
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
 
                                     <Button onClick={handleSuggestLayout} variant="outline" className="w-full">
                                         <Wand2 className="h-4 w-4 mr-2" />
@@ -782,9 +867,23 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
                             {/* P3.2: BuildingCodeValidator - HBRC wind load compliance */}
                             <BuildingCodeValidator />
-
-                            <Card className="bg-gray-900/50">
-                                <CardHeader><CardTitle className="text-base">{t('engineering_bay.structure', 'Structure')}</CardTitle></CardHeader>
+                            </>
+                        }
+                        canvas={
+                            <>
+                            <Card className="bg-gray-900/50 border-orange-500/30">
+                                <CardHeader>
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <Layers className="h-4 w-4 text-orange-400" />
+                                        {t('engineering_bay.structure', 'Structure')}
+                                        <Badge className="bg-orange-500/15 border border-orange-500/40 text-orange-200 text-[10px]">
+                                            {t('engineering_bay.primary_canvas', 'PRIMARY')}
+                                        </Badge>
+                                    </CardTitle>
+                                    <CardDescription className="text-xs text-gray-400">
+                                        {bayLayout.canvasLandmarkLabel}
+                                    </CardDescription>
+                                </CardHeader>
                                 <CardContent>
                                     {CanvasComponent ? (
                                         <CanvasComponent
@@ -808,7 +907,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             {/* --- MACRO RECORDER (Gold Tier) --- */}
                             <MacroRecorderPanel
                                 recorder={macroRecorder}
-                                className="bg-gray-900/50"
+                                className="bg-gray-900/50 mt-4"
                                 onActionExecute={async (type: string, data?: Record<string, any>) => {
                                     if (type === 'custom' && data?.shortcutAction) {
                                         await import('@/lib/keyboard/shortcuts').then(({ shortcutManager }) => {
@@ -817,16 +916,28 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     }
                                 }}
                             />
-                        </div>
-
-                        {/* --- RIGHT PANEL: LIVE 3D PREVIEW --- */}
-                        <div className={`lg:col-span-2 ${mobileTab === '3d' ? 'block' : 'hidden lg:block'}`}>
+                            </>
+                        }
+                        preview={
+                            <>
                             <Card className="bg-gray-900/50 sticky top-4">
                                 <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2">
+                                    <CardTitle className="text-base flex items-center gap-2 flex-wrap">
                                         <Box className="h-4 w-4 text-gray-400" />
                                         {t('engineering_bay.live_digital_twin', 'Live Digital Twin (Apex Engine v6.0)')}
+                                        <Badge
+                                            data-testid="preview-estimate-badge"
+                                            className="bg-amber-500/15 border border-amber-500/40 text-amber-200 text-[10px]"
+                                        >
+                                            {previewSurface.badgeLabel}
+                                        </Badge>
                                     </CardTitle>
+                                    <CardDescription
+                                        className="text-xs text-amber-200/80"
+                                        data-testid="preview-estimate-description"
+                                    >
+                                        {previewSurface.description}
+                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="w-full h-[350px] lg:h-[600px] rounded-lg overflow-hidden border border-gray-800">
@@ -865,8 +976,12 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         <Cpu className="h-4 w-4 text-amber-400" />
                                         {t('engineering_bay.physics_engine', 'Engineering Physics')}
                                     </CardTitle>
-                                    <CardDescription className="text-xs text-gray-400">
-                                        Verified against Eurocode 1 & ISO 10077-1
+                                    <CardDescription
+                                        className="text-xs text-amber-200/90"
+                                        data-testid="physics-authority-description"
+                                    >
+                                        {physicsResults?.authority.description ??
+                                            'Inputs incomplete — physics estimates unavailable until an approved system and profile physics are selected.'}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -878,34 +993,57 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                     <Ruler className="h-4 w-4 text-orange-400" />
                                                     <span className="text-gray-300 font-medium tracking-tight">Wind Load Performance (Ix)</span>
                                                 </div>
-                                                {physicsResults ? (
-                                                    <Badge className={`${physicsResults.structResult.isSafe ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'} border`}>
-                                                        {physicsResults.structResult.isSafe ? 'CONFORMANT' : 'CRITICAL'} (SF: {physicsResults.structResult.safetyFactor})
+                                                {physicsResults?.structResult ? (
+                                                    <Badge
+                                                        data-testid="physics-structural-badge"
+                                                        className={`${
+                                                            physicsResults.authority.canClaimStandardsVerification
+                                                                ? physicsResults.structResult.isSafe
+                                                                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                                                    : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                                                                : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                                                        } border`}
+                                                    >
+                                                        {physicsResults.authority.structuralBadgeLabel}
+                                                        {physicsResults.authority.canClaimStandardsVerification
+                                                            ? ` (SF: ${physicsResults.structResult.safetyFactor})`
+                                                            : ' — not standards-verified'}
                                                     </Badge>
                                                 ) : (
-                                                    <Badge variant="outline" className="text-gray-500 border-gray-800">DATA PENDING</Badge>
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-gray-500 border-gray-800"
+                                                        data-testid="physics-structural-badge"
+                                                    >
+                                                        {physicsResults?.authority.structuralBadgeLabel ?? 'INPUTS INCOMPLETE'}
+                                                    </Badge>
                                                 )}
                                             </div>
                                             <div className="space-y-1.5">
                                                 <div className="flex justify-between text-[10px] text-gray-500 mb-1">
-                                                    <span>Utilization</span>
-                                                    <span>{Math.min((physicsResults?.structResult.utilization || 0), 100).toFixed(1)}%</span>
+                                                    <span>Utilization (estimate)</span>
+                                                    <span>{Math.min((physicsResults?.structResult?.utilization || 0), 100).toFixed(1)}%</span>
                                                 </div>
                                                 <div className="h-1.5 bg-gray-900 rounded-full overflow-hidden border border-gray-800">
                                                     <div
-                                                        className={`h-full transition-all duration-1000 ${physicsResults?.structResult.isSafe ? 'bg-gradient-to-r from-blue-500 to-emerald-400' : 'bg-rose-500'}`}
-                                                        style={{ width: `${Math.min((physicsResults?.structResult.utilization || 0), 100)}%` }}
+                                                        className={`h-full transition-all duration-1000 ${
+                                                            physicsResults?.authority.canClaimStandardsVerification &&
+                                                            physicsResults?.structResult?.isSafe
+                                                                ? 'bg-gradient-to-r from-blue-500 to-emerald-400'
+                                                                : 'bg-amber-500'
+                                                        }`}
+                                                        style={{ width: `${Math.min((physicsResults?.structResult?.utilization || 0), 100)}%` }}
                                                     />
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4 text-[10px]">
                                                 <div className="flex flex-col">
-                                                    <span className="text-gray-500">Required Inertia</span>
-                                                    <span className="text-gray-200 font-mono">{physicsResults?.structResult.requiredIx?.toFixed(2) || '---'} cm⁴</span>
+                                                    <span className="text-gray-500">Required Inertia (estimate)</span>
+                                                    <span className="text-gray-200 font-mono">{physicsResults?.structResult?.requiredIx?.toFixed(2) || '---'} cm⁴</span>
                                                 </div>
                                                 <div className="flex flex-col text-right">
                                                     <span className="text-gray-500">System Inertia</span>
-                                                    <span className="text-sky-300 font-mono">{physicsResults?.structResult.actualIx?.toFixed(2) || '---'} cm⁴</span>
+                                                    <span className="text-sky-300 font-mono">{physicsResults?.structResult?.actualIx?.toFixed(2) || '---'} cm⁴</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -915,23 +1053,29 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <div className="flex justify-between items-center text-sm">
                                                 <div className="flex items-center gap-2">
                                                     <Sparkles className="h-4 w-4 text-blue-400" />
-                                                    <span className="text-gray-300 font-medium tracking-tight">Thermal Performance (Uw)</span>
+                                                    <span className="text-gray-300 font-medium tracking-tight">
+                                                        Thermal Performance (Uw)
+                                                        {physicsResults?.authority.thermalLabelSuffix === 'estimate' ? ' — estimate' : ''}
+                                                    </span>
                                                 </div>
-                                                <span className="font-mono text-blue-300 font-bold bg-blue-900/20 px-2 py-0.5 rounded border border-blue-800/30">
-                                                    {physicsResults?.uw ? physicsResults.uw.toFixed(2) : '---'} W/m²K
+                                                <span
+                                                    className="font-mono text-blue-300 font-bold bg-blue-900/20 px-2 py-0.5 rounded border border-blue-800/30"
+                                                    data-testid="physics-uw-value"
+                                                >
+                                                    {physicsResults?.uw != null ? physicsResults.uw.toFixed(2) : '---'} W/m²K
                                                 </span>
                                             </div>
                                             <div className="grid grid-cols-3 gap-2">
                                                 <div className="bg-gray-900/80 p-1.5 rounded border border-gray-800 text-center">
                                                     <span className="text-[9px] text-gray-500 block">Uf (Frame)</span>
-                                                    <span className="text-[11px] text-gray-300 font-mono">{physicsResults?.physics.uf || '---'}</span>
+                                                    <span className="text-[11px] text-gray-300 font-mono">{physicsResults?.physics?.uf || '---'}</span>
                                                 </div>
                                                 <div className="bg-gray-900/80 p-1.5 rounded border border-gray-800 text-center">
-                                                    <span className="text-[9px] text-gray-500 block">Ug (Glass)</span>
+                                                    <span className="text-[9px] text-gray-500 block">Ug (Glass, assumed)</span>
                                                     <span className="text-[11px] text-gray-300 font-mono">1.10</span>
                                                 </div>
                                                 <div className="bg-gray-900/80 p-1.5 rounded border border-gray-800 text-center">
-                                                    <span className="text-[9px] text-gray-500 block">Ψ (Edge)</span>
+                                                    <span className="text-[9px] text-gray-500 block">Ψ (Edge, assumed)</span>
                                                     <span className="text-[11px] text-gray-300 font-mono">0.04</span>
                                                 </div>
                                             </div>
@@ -947,30 +1091,31 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                 <div className="space-y-1.5">
                                                     <CrossSectionGenerator
                                                         type="frame"
-                                                        width={physicsResults?.physics.faceWidth || 60}
-                                                        depth={physicsResults?.physics.depth || 60}
+                                                        width={physicsResults?.physics?.faceWidth || 60}
+                                                        depth={physicsResults?.physics?.depth || 60}
                                                         glassThickness={24}
                                                         className="w-full bg-gray-950/20 rounded border border-gray-800/50"
                                                     />
-                                                    <div className="text-[9px] text-gray-500 text-center font-mono">Frame: {physicsResults?.physics.faceWidth || 60}x{physicsResults?.physics.depth || 60}mm</div>
+                                                    <div className="text-[9px] text-gray-500 text-center font-mono">Frame: {physicsResults?.physics?.faceWidth || 60}x{physicsResults?.physics?.depth || 60}mm</div>
                                                 </div>
                                                 <div className="space-y-1.5">
                                                     <CrossSectionGenerator
                                                         type="mullion"
-                                                        width={physicsResults?.physics.mullionWidth || 80}
-                                                        depth={physicsResults?.physics.depth || 120}
+                                                        width={physicsResults?.physics?.mullionWidth || 80}
+                                                        depth={physicsResults?.physics?.depth || 120}
                                                         glassThickness={24}
                                                         className="w-full bg-gray-950/20 rounded border border-gray-800/50"
                                                     />
-                                                    <div className="text-[9px] text-gray-500 text-center font-mono">Mullion: {physicsResults?.physics.mullionWidth || 80}x{physicsResults?.physics.depth || 120}mm</div>
+                                                    <div className="text-[9px] text-gray-500 text-center font-mono">Mullion: {physicsResults?.physics?.mullionWidth || 80}x{physicsResults?.physics?.depth || 120}mm</div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
-                        </div>
-                    </div>
+                            </>
+                        }
+                    />
                 </CardContent>
             </Card>
 
@@ -982,7 +1127,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             Keyboard Shortcuts
                         </DialogTitle>
                         <DialogDescription>
-                            Power user controls for rapid engineering.
+                            Power user controls for rapid engineering. Collapse secondary rails to keep the canvas primary.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="py-2">
@@ -1001,6 +1146,14 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <TableRow className="border-gray-800 hover:bg-transparent">
                                     <TableCell className="py-2 font-medium text-gray-200">Confirm & Validate</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Ctrl + Enter</TableCell>
+                                </TableRow>
+                                <TableRow className="border-gray-800 hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-gray-200">Collapse left rail</TableCell>
+                                    <TableCell className="py-2 text-right font-mono text-orange-300">{bayLayout.collapseLeftShortcut}</TableCell>
+                                </TableRow>
+                                <TableRow className="border-gray-800 hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-gray-200">Collapse right rail</TableCell>
+                                    <TableCell className="py-2 text-right font-mono text-orange-300">{bayLayout.collapseRightShortcut}</TableCell>
                                 </TableRow>
                                 <TableRow className="border-gray-800 hover:bg-transparent">
                                     <TableCell className="py-2 font-medium text-gray-200">Toggle Wizard Mode</TableCell>
@@ -1024,14 +1177,15 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                 </DialogContent>
             </Dialog>
 
-            {/* --- BILL OF MATERIALS (Maalem-Grade Precision) --- */}
+            {/* --- BILL OF MATERIALS (estimate-only design surface) --- */}
             <BOMSidebar
                 bomData={bomData}
                 liveProject={liveProject}
                 profiles={profiles}
                 className="mt-6"
-                collapsed={false}
+                collapsed={bomCollapsed}
                 showSummary={true}
+                onToggleCollapse={() => setBomCollapsed((v) => !v)}
             />
         </div>
     );

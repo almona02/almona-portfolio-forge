@@ -62,13 +62,16 @@ export const DesignWorkflowWrapper: React.FC = () => {
     }
     : undefined;
 
-  // Handle design completion
+  // Handle design completion (drafting / legacy path — preserve existing grid/system when present)
   const handleDesignComplete = (components: any[]) => {
     if (!currentProject) return;
 
     const updatedProject = {
       ...currentProject,
-      components: components
+      components,
+      grid: currentProject.grid,
+      systemPackId: currentProject.systemPackId,
+      presetId: currentProject.presetId,
     };
 
     dispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });

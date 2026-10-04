@@ -19,7 +19,13 @@
 import { logFabricatorAudit } from '@/lib/audit/fabricatorAudit';
 import type { WindowUnit } from '@/types/fabricator';
 import type { FenestrationSystem } from '@/types/fenestration';
+import { stockLengthMmToMicrons } from './apexUnitConversion';
+import { inspectThermalExpansionComputation } from './thermalExpansionInspection';
 import { GoldTierPerformanceMonitor } from './PerformanceMonitor';
+
+export { stockLengthMmToMicrons } from './apexUnitConversion';
+export { inspectThermalExpansionComputation } from './thermalExpansionInspection';
+export type { ThermalExpansionInspection } from './thermalExpansionInspection';
 
 /**
  * Manufacturing parameters calculated from system rules and window dimensions
@@ -318,13 +324,16 @@ export class ApexEngineV2 {
     // Material-specific adjustments
     const materialAdjustments: ManufacturingParameters['materialAdjustments'] = {};
 
-    // Thermal expansion (GCC)
+    // Thermal expansion (GCC) — FP-028 / A7: computed but NOT applied to cut lengths.
+    // Stored value unit is inconsistent with claimed microns when α is mm/°C/m.
+    // Do not apply to manufacturing until formula evidence is approved (Phase 4).
     if (regionalPhysics.thermalExpansionCoefficient) {
-      const tempDelta = regionalPhysics.operatingTemperatureRange
-        ? regionalPhysics.operatingTemperatureRange.max - 20 // 20°C reference
-        : 25; // Default 25°C delta
-      const expansion = (widthMicrons / 1000000) * regionalPhysics.thermalExpansionCoefficient * tempDelta;
-      materialAdjustments.thermalExpansion = expansion;
+      const inspection = inspectThermalExpansionComputation({
+        overallWidthMm: overallWidth,
+        thermalExpansionCoefficient: regionalPhysics.thermalExpansionCoefficient,
+        operatingTemperatureRange: regionalPhysics.operatingTemperatureRange,
+      });
+      materialAdjustments.thermalExpansion = inspection.storedValue;
     }
 
     // UPVC welding shrinkage
@@ -463,7 +472,7 @@ export class ApexEngineV2 {
       children: [],
       fabricationData: {
         cutLength: params.frame.cutLengths.top + params.frame.cutLengths.bottom + params.frame.cutLengths.left + params.frame.cutLengths.right,
-        stockLength: this.system.profiles.frame.standardStockLength * 1000, // Convert to microns
+        stockLength: stockLengthMmToMicrons(this.system.profiles.frame.standardStockLength, 'frame'),
         waste: 0, // Calculated later
         weight: 0, // Calculated later
         cost: 0, // Calculated later
@@ -471,22 +480,23 @@ export class ApexEngineV2 {
     };
 
     // Add sashes
+    // FP-028 / A5: sash id = source cell id so openingDirection can be resolved
     if (this.unit.grid) {
-      this.unit.grid.cells.forEach((cell, index) => {
+      this.unit.grid.cells.forEach((cell) => {
         if (cell.type !== 'fixed') {
           const sash: ComponentNode = {
-            id: `sash-${index}`,
+            id: cell.id,
             type: 'sash',
             role: 'sash',
             dimensions: {
               width: params.sash.width,
               height: params.sash.height,
             },
-            position: { x: 0, y: 0 }, // Position calculated from grid
+            position: { x: 0, y: 0 }, // Position calculated from grid (A4 — still defective)
             children: [],
             fabricationData: {
               cutLength: params.sash.cutLengths.top + params.sash.cutLengths.bottom + params.sash.cutLengths.left + params.sash.cutLengths.right,
-              stockLength: this.system.profiles.sash.standardStockLength * 1000,
+              stockLength: stockLengthMmToMicrons(this.system.profiles.sash.standardStockLength, 'sash'),
               waste: 0,
               weight: 0,
               cost: 0,
@@ -495,7 +505,7 @@ export class ApexEngineV2 {
 
           // Add glazing as child
           const glazing: ComponentNode = {
-            id: `glazing-${index}`,
+            id: `glazing-${cell.id}`,
             type: 'glazing',
             role: 'glazing',
             dimensions: {
@@ -536,7 +546,8 @@ export class ApexEngineV2 {
           children: [],
           fabricationData: {
             cutLength: mullion.cutLength,
-            stockLength: this.system.profiles.mullion?.standardStockLength || 6000 * 1000,
+            // FP-028 / A6: stock is mm → microns (was mm-or-invented-microns mix)
+            stockLength: stockLengthMmToMicrons(this.system.profiles.mullion?.standardStockLength, 'mullion'),
             waste: 0,
             weight: 0,
             cost: 0,
@@ -562,7 +573,8 @@ export class ApexEngineV2 {
           children: [],
           fabricationData: {
             cutLength: transom.cutLength,
-            stockLength: this.system.profiles.transom?.standardStockLength || 6000 * 1000,
+            // FP-028 / A6: stock is mm → microns (was mm-or-invented-microns mix)
+            stockLength: stockLengthMmToMicrons(this.system.profiles.transom?.standardStockLength, 'transom'),
             waste: 0,
             cost: 0,
             weight: 0,
@@ -598,17 +610,28 @@ export class ApexEngineV2 {
 
     const sashes = assembly.children
       .filter(c => c.type === 'sash')
-      .map(sash => ({
-        id: sash.id,
-        outline: [
-          { x: toMm(sash.position.x), y: toMm(sash.position.y) },
-          { x: toMm(sash.position.x + sash.dimensions.width), y: toMm(sash.position.y) },
-          { x: toMm(sash.position.x + sash.dimensions.width), y: toMm(sash.position.y + sash.dimensions.height) },
-          { x: toMm(sash.position.x), y: toMm(sash.position.y + sash.dimensions.height) },
-        ],
-        position: { x: toMm(sash.position.x), y: toMm(sash.position.y) },
-        openingDirection: this.unit.grid?.cells.find(c => c.id === sash.id)?.openingDirection as 'left' | 'right' | 'up' | 'down' | undefined,
-      }));
+      .map(sash => {
+        // FP-028 / A5: resolve direction from source cell (sash.id === cell.id)
+        const sourceCell = this.unit.grid?.cells.find(c => c.id === sash.id);
+        const cellDir = sourceCell?.openingDirection;
+        const openingDirection =
+          cellDir === 'top' ? 'up' as const
+          : cellDir === 'bottom' ? 'down' as const
+          : cellDir === 'left' || cellDir === 'right' ? cellDir
+          : undefined;
+
+        return {
+          id: sash.id,
+          outline: [
+            { x: toMm(sash.position.x), y: toMm(sash.position.y) },
+            { x: toMm(sash.position.x + sash.dimensions.width), y: toMm(sash.position.y) },
+            { x: toMm(sash.position.x + sash.dimensions.width), y: toMm(sash.position.y + sash.dimensions.height) },
+            { x: toMm(sash.position.x), y: toMm(sash.position.y + sash.dimensions.height) },
+          ],
+          position: { x: toMm(sash.position.x), y: toMm(sash.position.y) },
+          openingDirection,
+        };
+      });
 
     const glazing = assembly.children
       .flatMap(c => c.type === 'sash' ? c.children : [])
