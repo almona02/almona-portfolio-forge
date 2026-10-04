@@ -197,18 +197,6 @@ export const useEngineeringEngine = ({
     const selectSystem = useCallback((systemId: string) => {
         setError(null);
         setActiveSystemPackId(systemId);
-        
-        // Apply default grid if available
-        const packData = SYSTEM_PACKS.find((p: any) => p.meta.id === systemId);
-        if (packData?.defaultGrid) {
-            setCurrentGrid(packData.defaultGrid);
-        } else {
-             // Fallback
-             setCurrentGrid({ rows: 1, cols: 2, cells: [
-                {id: '0-0', row: 0, col: 0, type: 'sash'},
-                {id: '0-1', row: 0, col: 1, type: 'sash'},
-            ]});
-        }
     }, []);
 
     const validate = useCallback((): boolean => {
