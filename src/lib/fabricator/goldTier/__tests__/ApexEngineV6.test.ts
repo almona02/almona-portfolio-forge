@@ -111,6 +111,47 @@ describe('ApexEngineV6', () => {
     expect(result2.performance.cached).toBe(true);
     // Ideally t3-t2 is very small, likely < 1ms or close to it
   });
+
+  it.each([
+    ['revision', { revision: 2 }],
+    ['quantity', { quantity: 3 }],
+    ['glazing', { glazing: { type: 'triple', thickness: 36 } }],
+    ['profile selection', { systemProfileSelections: { frameProfileCode: 'FRAME-B' } }],
+  ] satisfies Array<[string, Partial<WindowUnit>]>)(
+    'does not reuse cache when unit %s changes',
+    (_field, change) => {
+      const baseUnit = { ...mockUnit, id: `cache-unit-${_field}`, revision: 1 };
+      new ApexEngineV6(mockSystem, baseUnit).generate();
+
+      const changed = new ApexEngineV6(mockSystem, { ...baseUnit, ...change }).generate();
+
+      expect(changed.performance.cached).toBe(false);
+    },
+  );
+
+  it('does not reuse cache across system rule or profile changes', () => {
+    const unit = { ...mockUnit, id: 'cache-system-change', revision: 1 };
+    new ApexEngineV6(mockSystem, unit).generate();
+
+    const changedSystem: FenestrationSystem = {
+      ...mockSystem,
+      version: '2.0',
+      profiles: {
+        ...mockSystem.profiles,
+        frame: { ...mockSystem.profiles.frame, costPerMeter: 22 },
+      },
+      fabricationRules: {
+        ...mockSystem.fabricationRules,
+        cutting: {
+          ...mockSystem.fabricationRules.cutting,
+          sawKerf: 1800,
+        },
+      },
+    };
+    const changed = new ApexEngineV6(changedSystem, unit).generate();
+
+    expect(changed.performance.cached).toBe(false);
+  });
 });
 
 describe('Linear Optimizer', () => {

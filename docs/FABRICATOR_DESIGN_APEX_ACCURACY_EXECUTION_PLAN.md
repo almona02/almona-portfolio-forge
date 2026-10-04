@@ -255,3 +255,4 @@ Windows fallback:
 | 2026-10-04 | Baseline audit | 34 focused tests passed but did not cover physical discrepancies | Source audit of Design Studio, templates, Apex V2/V6, hydration, and identity |
 | 2026-10-04 | Phase 0 / T2 regression | COMPLETE — invalid and ambiguous template patterns fail closed without replacing the current grid | 34 focused tests passed; TypeScript passed; affected lint 0 errors; production build passed |
 | 2026-10-04 | Phase 0 / D2 regression | COMPLETE — system selection preserves authoritative grid geometry | 8 focused tests passed; TypeScript passed; affected lint 0 errors; production build passed |
+| 2026-10-04 | Phase 0 / A3 regression | COMPLETE — Apex V6 cache is bound to revision, quantity, glazing, profiles, system version, costs, and cutting rules | 12 focused tests passed; TypeScript passed; affected lint 0 errors; production build passed |

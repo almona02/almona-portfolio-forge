@@ -231,7 +231,52 @@ export class ApexEngineV6 {
   // --- Internals ---
 
   private generateCacheKey(): string {
-    return `${this.unit.id}-${this.unit.overallWidth}-${this.unit.overallHeight}-${this.strategy.name}-${JSON.stringify(this.unit.grid || {})}`;
+    const manufacturingFingerprint = {
+      system: {
+        id: this.system.id,
+        version: this.system.version,
+        updatedAt: this.system.metadata.updatedAt,
+        validationStatus: this.system.metadata.validationStatus,
+        material: this.system.material,
+        profiles: {
+          frame: this.profileFingerprint(this.system.profiles.frame),
+          sash: this.profileFingerprint(this.system.profiles.sash),
+          mullion: this.profileFingerprint(this.system.profiles.mullion),
+          transom: this.profileFingerprint(this.system.profiles.transom),
+          glazingBead: this.profileFingerprint(this.system.profiles.glazingBead),
+        },
+        fabricationRules: this.system.fabricationRules,
+      },
+      unit: {
+        id: this.unit.id,
+        revision: this.unit.revision ?? null,
+        overallWidth: this.unit.overallWidth,
+        overallHeight: this.unit.overallHeight,
+        quantity: this.unit.quantity ?? 1,
+        type: this.unit.type,
+        grid: this.unit.grid ?? null,
+        glazing: this.unit.glazing,
+        hardware: this.unit.hardware,
+        systemPackId: this.unit.systemPackId ?? null,
+        systemProfileSelections: this.unit.systemProfileSelections ?? null,
+      },
+      strategy: this.strategy.name,
+    };
+
+    return JSON.stringify(manufacturingFingerprint);
+  }
+
+  private profileFingerprint(profile: ProfileSpec | undefined) {
+    if (!profile) return null;
+    return {
+      code: profile.code,
+      role: profile.role,
+      dimensions: profile.dimensions,
+      material: profile.material,
+      standardStockLength: profile.standardStockLength,
+      weightPerMeter: profile.weightPerMeter,
+      costPerMeter: profile.costPerMeter,
+    };
   }
 
   private checkCache(key: string): boolean {
