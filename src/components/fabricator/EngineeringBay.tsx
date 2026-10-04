@@ -31,7 +31,7 @@ import type { DesignCompleteHandler } from '@/lib/fabricator/engineering/designC
 import { getEngineeringBayLayoutPolicy } from '@/lib/fabricator/engineering/engineeringBayLayout';
 import { assessPreviewSurfaceAuthority } from '@/lib/fabricator/engineering/previewIdentity';
 import { Profile, WindowUnit } from '@/types/fabricator';
-import { AlertCircle, Box, ChevronDown, ChevronRight, Command, Cpu, Keyboard, Layers, Menu, Ruler, Settings, Sparkles, Wand2 } from 'lucide-react';
+import { AlertCircle, Box, CheckCircle2, ChevronDown, ChevronRight, Command, Cpu, Grid3x3, Keyboard, Layers, Menu, Ruler, Settings, ShieldCheck, Wand2 } from 'lucide-react';
 import React, { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -583,7 +583,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-gray-700 text-gray-200">
                                             <DropdownMenuItem onClick={handleSaveAndNext} className="text-cyan-400 focus:text-cyan-300 focus:bg-gray-800 cursor-pointer">
-                                                <Sparkles className="h-4 w-4 mr-2" />
+                                                <CheckCircle2 className="h-4 w-4 mr-2" />
                                                 {t('engineering_bay.save_and_next', 'Save & Next')}
                                             </DropdownMenuItem>
                                             <DropdownMenuItem onClick={actions.validate} className="text-green-400 focus:text-green-300 focus:bg-gray-800 cursor-pointer">
@@ -613,7 +613,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     {/* 3D Mode Toggle */}
                     <div className="flex items-center justify-between mb-4 gap-2">
                         <div className="flex items-center gap-2 text-xs text-gray-400">
-                            <Sparkles className="h-4 w-4 text-orange-400" />
+                            <Cpu className="h-4 w-4 text-orange-400" />
                             <span>{t('engineering_bay.3d_engine_mode', '3D Engine Mode')}</span>
                         </div>
                         <div className="inline-flex rounded-md border border-gray-700 bg-gray-900/60 p-1 text-xs">
@@ -687,7 +687,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         {selectedPreset && (
                                             <div className="p-3 bg-gray-950/50 border border-gray-700 rounded-lg">
                                                 <div className="flex items-center gap-2">
-                                                    <Sparkles className="w-4 h-4 text-amber-400" />
+                                                    <Grid3x3 className="w-4 h-4 text-amber-400" />
                                                     <span className="text-sm text-gray-200 font-medium">
                                                         {getPresetById(selectedPreset, SIMPLE_PRESETS)?.title || selectedPreset}
                                                     </span>
@@ -699,20 +699,23 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         <Dialog open={showPresetSelector} onOpenChange={setShowPresetSelector}>
                                             <Button
                                                 onClick={() => setShowPresetSelector(true)}
-                                                className="w-full h-12 bg-gradient-to-r from-amber-600 to-blue-600 hover:from-amber-700 hover:to-blue-700 text-white shadow-lg transition-all duration-300 hover:shadow-xl"
+                                                className="w-full h-12 bg-amber-700 hover:bg-amber-600 text-white shadow-lg transition-all duration-300"
                                             >
-                                                <Sparkles className="w-5 h-5 mr-2" />
+                                                <ShieldCheck className="w-5 h-5 mr-2" />
                                                 <span className="text-base font-semibold">
-                                                    {selectedPreset ? 'Change Pattern' : 'Browse Window Patterns'}
+                                                    {selectedPreset ? 'Change Pattern' : 'Open Pattern Toolkit'}
                                                 </span>
                                                 <ChevronRight className="w-4 h-4 ml-auto" />
                                             </Button>
 
-                                            <DialogContent className="max-w-7xl h-[85vh] overflow-hidden flex flex-col">
+                                            <DialogContent className="max-w-7xl h-[85vh] overflow-hidden flex flex-col bg-slate-950 border-slate-700 text-slate-100">
                                                 <DialogHeader>
-                                                    <DialogTitle className="text-2xl font-bold">Select Window Pattern</DialogTitle>
-                                                    <DialogDescription>
-                                                        Choose from residential, commercial, or heritage window designs
+                                                    <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                                                        <ShieldCheck className="w-6 h-6 text-amber-400" />
+                                                        Pattern reliability toolkit
+                                                    </DialogTitle>
+                                                    <DialogDescription className="text-slate-400">
+                                                        Confirm grid size, system pack fit, and complexity before applying
                                                     </DialogDescription>
                                                 </DialogHeader>
 
@@ -860,7 +863,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
                                     <Button onClick={handleSuggestLayout} variant="outline" className="w-full">
                                         <Wand2 className="h-4 w-4 mr-2" />
-                                        {t('engineering_bay.suggest_ai_layout', 'Suggest AI Layout')}
+                                        {t('engineering_bay.suggest_layout', 'Suggest catalog layout')}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -1052,7 +1055,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         <div className="space-y-3 bg-gray-950/40 p-3 rounded-lg border border-gray-800">
                                             <div className="flex justify-between items-center text-sm">
                                                 <div className="flex items-center gap-2">
-                                                    <Sparkles className="h-4 w-4 text-blue-400" />
+                                                    <Box className="h-4 w-4 text-blue-400" />
                                                     <span className="text-gray-300 font-medium tracking-tight">
                                                         Thermal Performance (Uw)
                                                         {physicsResults?.authority.thermalLabelSuffix === 'estimate' ? ' — estimate' : ''}
@@ -1164,7 +1167,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Alt + D</TableCell>
                                 </TableRow>
                                 <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Suggest AI Layout</TableCell>
+                                    <TableCell className="py-2 font-medium text-gray-200">Suggest catalog layout</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Alt + A</TableCell>
                                 </TableRow>
                                 <TableRow className="border-gray-800 hover:bg-transparent">

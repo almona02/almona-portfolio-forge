@@ -15,6 +15,10 @@ export class UndoRedoManager {
   private currentIndex: number = -1;
   private maxHistorySize: number = 50;
 
+  private statesEqual(left: DraftingState, right: DraftingState): boolean {
+    return JSON.stringify(left) === JSON.stringify(right);
+  }
+
   /**
    * Push a new state to the history
    * Removes any redo history when a new action is taken
@@ -23,6 +27,8 @@ export class UndoRedoManager {
   push(state: DraftingState): void {
     // Remove any redo history when new action is taken
     this.history = this.history.slice(0, this.currentIndex + 1);
+    const current = this.history[this.currentIndex];
+    if (current && this.statesEqual(current, state)) return;
     
     // Use optimized state cloning (structuredClone if available, JSON fallback)
     const clonedState = cloneState(state);
@@ -42,7 +48,15 @@ export class UndoRedoManager {
    * @returns Previous state or null if no undo available
    * Performance: Uses optimized cloneState for faster cloning
    */
-  undo(): DraftingState | null {
+  undo(currentState?: DraftingState): DraftingState | null {
+    const current = this.history[this.currentIndex];
+    if (
+      currentState &&
+      this.currentIndex === this.history.length - 1 &&
+      (!current || !this.statesEqual(current, currentState))
+    ) {
+      this.push(currentState);
+    }
     if (this.canUndo()) {
       this.currentIndex--;
       return cloneState(this.history[this.currentIndex]);

@@ -18,7 +18,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import type { WindowGrid } from '@/types/fabricator';
 import {
   Award,
-  Box,
   Building2,
   CheckCircle2,
   ChevronDown,
@@ -28,8 +27,6 @@ import {
   Info,
   Layers,
   Ruler,
-  Sparkles,
-  TrendingUp,
   Zap
 } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -55,9 +52,6 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
     const saved = localStorage.getItem('almona-pattern-details');
     if (saved !== null) return saved === 'true';
     return defaultShowDetails;
-  });
-  const [hasSeenHint, setHasSeenHint] = useState(() => {
-    return localStorage.getItem('almona-pattern-hint-seen') === 'true';
   });
 
   // Filter patterns by system compatibility
@@ -107,12 +101,7 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
       { showDetails: value },
       `CHECKPOINT-PATTERN-DETAILS-${Date.now()}`
     );
-
-    if (value && !hasSeenHint) {
-      setHasSeenHint(true);
-      localStorage.setItem('almona-pattern-hint-seen', 'true');
-    }
-  }, [showDetails, hasSeenHint]);
+  }, [showDetails]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -142,19 +131,6 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
     );
 
     onSelect(pattern.id, grid);
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'sliding': return Layers;
-      case 'casement': return Box;
-      case 'tilt_turn': return Zap;
-      case 'door': return Box;
-      case 'fixed': return Grid3x3;
-      case 'curtain_wall': return Building2;
-      case 'skylight': return TrendingUp;
-      default: return Box;
-    }
   };
 
   // Map EgyptianPattern IDs to PrestigePatternIcons
@@ -318,73 +294,63 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
   };
 
   return (
-    <div className={cn("space-y-6", className)}>
-      {/* Header with Detail Toggle */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Sparkles className="w-6 h-6 text-amber-400" />
-          <h2 className="typography-h2 text-slate-100">
-            Egyptian Window Patterns
+    <div className={cn("space-y-3 sm:space-y-6", className)}>
+      {/* Header — compact on small screens */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <Grid3x3 className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400 shrink-0" />
+          <h2 className="typography-h2 text-slate-100 text-base sm:text-xl truncate">
+            <span className="sm:hidden">Patterns</span>
+            <span className="hidden sm:inline">Egyptian Window Patterns</span>
           </h2>
         </div>
 
-        <div className="flex items-center gap-2">
-          {!hasSeenHint && !showDetails && (
-            <Badge variant="outline" className="bg-cyan-500/10 border-cyan-500/30 text-cyan-300 text-xs">
-              <Info className="w-3 h-3 mr-1" />
-              Tip: Toggle for technical details
-            </Badge>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleToggleDetails(!showDetails)}
+          className="btn-secondary shrink-0 px-2 sm:px-3"
+          title={showDetails ? "Simple view (Ctrl+D)" : "Details (Ctrl+D)"}
+        >
+          <Info className="w-4 h-4" />
+          <span className="hidden sm:inline ml-1">
+            {showDetails ? 'Simple' : 'Details'}
+          </span>
+          {showDetails ? (
+            <ChevronUp className="w-4 h-4 sm:ml-1" />
+          ) : (
+            <ChevronDown className="w-4 h-4 sm:ml-1" />
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleToggleDetails(!showDetails)}
-            className="btn-secondary"
-            title={showDetails ? "Switch to simple view (Ctrl+D)" : "Show technical details (Ctrl+D)"}
-          >
-            <Info className="w-4 h-4" />
-            {showDetails ? (
-              <>
-                <span>Simple View</span>
-                <ChevronUp className="w-4 h-4" />
-              </>
-            ) : (
-              <>
-                <span>Show Details</span>
-                <ChevronDown className="w-4 h-4" />
-              </>
-            )}
-          </Button>
-        </div>
+        </Button>
       </div>
 
-      {/* Category Tabs */}
+      {/* Category Tabs — short labels on mobile */}
       <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as typeof activeCategory)}>
-        <TabsList className="bg-slate-900/60 -sm border border-slate-700/50 card-glass-dark">
-          <TabsTrigger value="all" className="btn-primary">
-            <Layers className="w-4 h-4" />
-            All ({availablePatterns.length})
+        <TabsList className="bg-slate-900/60 border border-slate-700/50 card-glass-dark w-full h-auto flex-wrap justify-start gap-1 p-1">
+          <TabsTrigger value="all" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
+            All
+            <span className="hidden sm:inline ml-1">({availablePatterns.length})</span>
           </TabsTrigger>
-          <TabsTrigger value="residential" className="btn-primary">
-            <Home className="w-4 h-4" />
-            Residential ({categorizedPatterns.residential.length})
+          <TabsTrigger value="residential" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
+            <Home className="w-3.5 h-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">Residential</span>
           </TabsTrigger>
-          <TabsTrigger value="commercial" className="btn-primary">
-            <Building2 className="w-4 h-4" />
-            Commercial ({categorizedPatterns.commercial.length})
+          <TabsTrigger value="commercial" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
+            <Building2 className="w-3.5 h-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">Commercial</span>
           </TabsTrigger>
-          <TabsTrigger value="villa" className="btn-primary">
-            <Award className="w-4 h-4" />
-            Villa ({categorizedPatterns.villa.length})
+          <TabsTrigger value="villa" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
+            <Award className="w-3.5 h-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">Villa</span>
           </TabsTrigger>
-          <TabsTrigger value="specialty" className="btn-primary">
-            <Zap className="w-4 h-4" />
-            Specialty ({categorizedPatterns.specialty.length})
+          <TabsTrigger value="specialty" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
+            <Zap className="w-3.5 h-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">Specialty</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value={activeCategory} className="mt-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <TabsContent value={activeCategory} className="mt-3 sm:mt-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4">
             {filteredPatterns.map((pattern) => {
               const isSelected = selectedPatternId === pattern.id;
               const typeColor = getTypeColor(pattern.type);
@@ -395,65 +361,54 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
                   key={pattern.id}
                   className={cn(
                     "relative overflow-hidden transition-all duration-300 group cursor-pointer",
-                    "hover:shadow-glow-premium hover:-translate-y-1",
-                    // Premium Gold Card Style - FC Card Gold Old Style
+                    "hover:shadow-glow-premium sm:hover:-translate-y-1",
                     "bg-gradient-to-br from-[#0a0a0a] via-amber-900/20 to-[#0a0a0a] backdrop-blur-xl border",
                     "card-premium",
                     isSelected
                       ? "border-2 border-amber-500/80 bg-gradient-to-br from-amber-500/20 via-amber-600/15 to-amber-500/20 shadow-glow-strong ring-2 ring-amber-500/40"
-                      : "border-amber-600/40 hover:border-amber-500/60 hover:bg-gradient-to-br hover:from-amber-900/30 hover:via-amber-800/20 hover:to-amber-900/30"
+                      : "border-amber-600/40 hover:border-amber-500/60"
                   )}
+                  onClick={() => handleSelect(pattern)}
                 >
-                  {/* Selection Indicator */}
                   {isSelected && (
-                    <div className="absolute top-4 right-4 z-10">
-                      <div className="bg-gradient-to-br from-amber-400 to-amber-600 rounded-full p-1.5 shadow-glow">
-                        <CheckCircle2 className="w-5 h-5 text-slate-900" />
-                      </div>
+                    <div className="absolute top-2 right-2 z-10">
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
                     </div>
                   )}
 
-                  {/* Type Badge */}
-                  <div className="absolute top-4 left-4 z-10">
+                  <div className="absolute top-2 left-2 z-10">
                     <Badge
                       className={cn(
-                        "shadow-md text-xs",
+                        "shadow-md text-[10px] sm:text-xs px-1.5 py-0",
                         typeColor === 'cyan' && "bg-cyan-500/20 border-cyan-500/50 text-cyan-300",
                         typeColor === 'blue' && "bg-blue-500/20 border-blue-500/50 text-blue-300",
-                        typeColor === 'amber' && "bg-amber-500/20 border-amber-500/50 text-amber-300",
                         typeColor === 'amber' && "bg-amber-500/20 border-amber-500/50 text-amber-300",
                         typeColor === 'emerald' && "bg-emerald-500/20 border-emerald-500/50 text-emerald-300",
                         typeColor === 'slate' && "bg-slate-500/20 border-slate-500/50 text-slate-300"
                       )}
                     >
-                      {pattern.type.replace('_', ' ').toUpperCase()}
+                      {pattern.gridSpec.rows}×{pattern.gridSpec.cols}
                     </Badge>
                   </div>
 
-                  <CardContent className="p-6 pt-16">
-                    {/* Premium Pattern Icon & Title */}
-                    <div className="mb-4">
-                      <div className="flex flex-col items-center gap-3 mb-3">
-                        <PatternIconCard pattern={pattern} />
-                        <div className="flex-1 w-full text-center">
-                          <div className="flex items-center justify-center gap-2 mb-1">
-                            {React.createElement(getTypeIcon(pattern.type), {
-                              className: "w-5 h-5 text-amber-400"
-                            })}
-                            <h3 className="typography-h3 text-lg text-amber-200">
-                              {pattern.name}
-                            </h3>
-                          </div>
-                          <p className="text-xs text-amber-600/70 leading-relaxed">
-                            {pattern.layout}
-                          </p>
+                  <CardContent className="p-3 pt-10 sm:p-6 sm:pt-14">
+                    <div className="mb-2 sm:mb-4">
+                      <div className="flex flex-col items-center gap-2 sm:gap-3">
+                        <div className="scale-75 sm:scale-100 origin-center">
+                          <PatternIconCard pattern={pattern} />
                         </div>
+                        <h3 className="typography-h3 text-sm sm:text-lg text-amber-200 text-center leading-tight line-clamp-2">
+                          {pattern.name}
+                        </h3>
+                        {/* Hide long copy on small screens */}
+                        <p className="hidden sm:block text-xs text-amber-600/70 leading-relaxed text-center">
+                          {pattern.layout}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Technical Details (when showDetails = true) */}
                     {showDetails && (
-                      <div className="mb-4 p-3 border border-amber- 500/20 rounded-lg space-y-2 card-premium">
+                      <div className="mb-3 hidden sm:block p-3 border border-amber-500/20 rounded-lg space-y-2 card-premium">
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-slate-400">Grid:</span>
                           <span className="text-amber-300 font-mono">
@@ -485,11 +440,17 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
                             </div>
                           </div>
                         )}
+                        {pattern.notes && (
+                          <div className="p-2 bg-cyan-500/10 border border-cyan-500/20 rounded text-xs text-cyan-300">
+                            <Info className="w-3 h-3 inline mr-1" />
+                            {pattern.notes}
+                          </div>
+                        )}
                       </div>
                     )}
 
-                    {/* Quick Info */}
-                    <div className="mb-4 space-y-2">
+                    {/* Desktop-only meta; mobile shows grid badge only */}
+                    <div className="mb-2 sm:mb-4 hidden sm:block space-y-2">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-slate-400">Complexity:</span>
                         <Badge
@@ -505,82 +466,51 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
                           {complexity}
                         </Badge>
                       </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-400">Typical Size:</span>
-                        <span className="text-slate-300 font-mono">
-                          {Math.round((pattern.typicalWidthMm[0] + pattern.typicalWidthMm[1]) / 2)}×{Math.round((pattern.typicalHeightMm[0] + pattern.typicalHeightMm[1]) / 2)}mm
-                        </span>
-                      </div>
                     </div>
 
-                    {/* Accessories */}
-                    {pattern.accessories && pattern.accessories.length > 0 && (
-                      <div className="mb-4">
+                    {pattern.accessories && pattern.accessories.length > 0 && showDetails && (
+                      <div className="mb-4 hidden md:block">
                         <h4 className="typography-h4 text-xs text-slate-400 mb-2">Accessories</h4>
                         <div className="flex flex-wrap gap-1.5">
                           {pattern.accessories.slice(0, 3).map((acc, i) => (
                             <Badge
                               key={i}
                               variant="secondary"
-                              className="text-xs bg-slate-800/50 text-slate-300 border-slate-700 /50 card-dark"
+                              className="text-xs bg-slate-800/50 text-slate-300 border-slate-700/50 card-dark"
                             >
                               {acc}
                             </Badge>
                           ))}
-                          {pattern.accessories.length > 3 && (
-                            <Badge variant="secondary" className="text-xs bg-slate-800/50 text-slate-400">
-                              +{pattern.accessories.length - 3}
-                            </Badge>
-                          )}
                         </div>
                       </div>
                     )}
 
-                    {/* Notes */}
-                    {pattern.notes && showDetails && (
-                      <div className="mb-4 p-2 bg-cyan-500/10 border border-cyan-500/20 rounded text-xs text-cyan-300">
-                        <Info className="w-3 h-3 inline mr-1" />
-                        {pattern.notes}
-                      </div>
-                    )}
-
-                    {/* Premium Action Button */}
                     <Button
-                      onClick={() => handleSelect(pattern)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelect(pattern);
+                      }}
                       className={cn(
-                        "w-full transition-all duration-300",
+                        "w-full text-xs sm:text-sm h-8 sm:h-10",
                         isSelected
                           ? "btn-primary-gradient text-[#0a0a0a] font-bold shadow-glow-strong"
-                          : "btn-secondary hover:bg-gradient-to-r hover:from-amber-600/20 hover:to-amber-500/20 hover:border-amber-500/50"
+                          : "btn-secondary"
                       )}
                     >
                       {isSelected ? (
                         <>
-                          <CheckCircle2 className="w-4 h-4 mr-2" />
+                          <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                           Selected
                         </>
                       ) : (
                         <>
-                          <Layers className="w-4 h-4 mr-2" />
-                          Select Pattern
+                          <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                          <span className="sm:hidden">Use</span>
+                          <span className="hidden sm:inline">Select Pattern</span>
                         </>
                       )}
                     </Button>
                   </CardContent>
-
-                  {/* Premium Gold Hover Overlay - Ancient Accent */}
-                  <div className={cn(
-                    "absolute inset-0 bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-amber-500/10",
-                    "opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-                    "pointer-events-none"
-                  )} />
-                  {/* Ancient gold texture on hover */}
-                  <div className={cn(
-                    "absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300",
-                    "pointer-events-none"
-                  )} style={{
-                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(245, 158, 11, 0.1) 4px, rgba(245, 158, 11, 0.1) 8px)'
-                  }} />
                 </Card>
               );
             })}

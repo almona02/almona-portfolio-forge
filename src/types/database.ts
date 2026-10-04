@@ -1470,6 +1470,34 @@ export interface Database {
           updated_at?: string
         }
       }
+      fabricator_manufacturing_authority_revisions: {
+        Row: {
+          approval_id: string
+          system_pack_id: string
+          system_pack_revision: number
+          authority_payload: Record<string, unknown>
+          approved_by: string
+          approved_at: string
+          revoked_at: string | null
+          revocation_reason: string | null
+          created_at: string
+        }
+        Insert: {
+          approval_id?: string
+          system_pack_id: string
+          system_pack_revision: number
+          authority_payload: Record<string, unknown>
+          approved_by: string
+          approved_at?: string
+          revoked_at?: string | null
+          revocation_reason?: string | null
+          created_at?: string
+        }
+        Update: {
+          revoked_at?: string | null
+          revocation_reason?: string | null
+        }
+      }
       fabricator_dual_write_consistency_reports: {
         Row: { id: string; sample_size: number; mismatch_count: number; drift_rate: number; report: Record<string, unknown>; reality_os_event_hash: string | null; reality_os_recorded_at: string | null; created_at: string }
         Insert: { sample_size: number; mismatch_count: number; drift_rate: number; report: Record<string, unknown>; reality_os_event_hash?: string | null; reality_os_recorded_at?: string | null }
@@ -1490,6 +1518,19 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
+      get_fabricator_manufacturing_authority: {
+        Args: { p_position_id: string; p_expected_revision: number }
+        Returns: {
+          project_id: string
+          position_id: string
+          position_source: 'v1' | 'v2'
+          position_revision: number
+          authority_approval_id: string
+          system_pack_id: string
+          system_pack_revision: number
+          authority_payload: Record<string, unknown>
+        }[]
+      }
       get_fabricator_qc_context: {
         Args: { p_position_id: string }
         Returns: {

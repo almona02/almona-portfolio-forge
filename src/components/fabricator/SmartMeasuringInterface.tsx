@@ -435,6 +435,34 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   // Gold Tier: Using Data-Driven Hook for Role Options
   const systemPackRoleOptions = useSystemRoleOptions(activeSystemPack);
 
+  const selectedProfileCount = useMemo(
+    () =>
+      systemPackRoleOptions.filter(
+        (role) => Boolean(systemProfileSelections[role.id as keyof SystemProfileSelections]),
+      ).length,
+    [systemPackRoleOptions, systemProfileSelections],
+  );
+
+  const profilesComplete =
+    systemPackRoleOptions.length === 0 || selectedProfileCount === systemPackRoleOptions.length;
+
+  // Catalog defaults: when a role has a single option, select it (ROCK 60).
+  useEffect(() => {
+    if (systemPackRoleOptions.length === 0) return;
+    setSystemProfileSelections((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      for (const role of systemPackRoleOptions) {
+        const key = role.id as keyof SystemProfileSelections;
+        if (!next[key] && role.options.length === 1) {
+          next[key] = role.options[0].code;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [systemPackRoleOptions, selectedSystemPackId]);
+
   const handleSystemProfileChange = (roleId: keyof SystemProfileSelections, code: string) => {
     setSystemProfileSelections((prev) => ({
       ...prev,
@@ -548,16 +576,15 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
   };
 
-  // Auto-collapse system pack section when system pack is selected
+  // Auto-collapse only after pack + required profiles are confirmed
   useEffect(() => {
-    if (selectedSystemPackId && !isSystemPackCollapsed) {
-      // Auto-collapse after a short delay to allow user to see the selection
+    if (selectedSystemPackId && profilesComplete && !isSystemPackCollapsed) {
       const timer = setTimeout(() => {
         setIsSystemPackCollapsed(true);
-      }, 1000);
+      }, 1200);
       return () => clearTimeout(timer);
     }
-  }, [selectedSystemPackId, isSystemPackCollapsed]);
+  }, [selectedSystemPackId, profilesComplete, isSystemPackCollapsed]);
 
   // const startARScan = () => { ... };
 
@@ -686,28 +713,47 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             )}
 
             {region === 'egypt' && (
-              <Alert className="bg-cyan-900/20 border-cyan-500/50 text-cyan-200">
-                <Sparkles className="h-4 w-4" />
+              <Alert className="bg-slate-900/40 border-amber-600/40 text-amber-100">
+                <Factory className="h-4 w-4" />
                 <AlertDescription>
-                  {t('smart_measuring.system_config.ai_recommendation', 'AI Recommendation: Based on your region (Egypt), <strong>ROCK 60</strong> is the optimal choice.', { strong: (chunks: React.ReactNode) => <strong>{chunks}</strong> })}
+                  {t(
+                    'smart_measuring.system_config.catalog_note',
+                    'Egypt catalog default: ROCK 60. Confirm frame, sash, and bead codes before measuring.',
+                  )}
                 </AlertDescription>
               </Alert>
             )}
+            {!profilesComplete && (
+              <p className="text-xs text-amber-300/90">
+                Select all profile codes ({selectedProfileCount}/{systemPackRoleOptions.length}) before collapsing.
+              </p>
+            )}
           </div>
         ) : (
-          <div className="px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Factory className="h-4 w-4 text-amber-500" />
-              <span className="text-sm text-amber-200">
+          <button
+            type="button"
+            onClick={() => setIsSystemPackCollapsed(false)}
+            className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-amber-500/5"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <Factory className="h-4 w-4 text-amber-500 shrink-0" />
+              <span className="text-sm text-amber-200 truncate">
                 {activeSystemPack?.meta.name || 'No system selected'}
               </span>
               {systemPackRoleOptions.length > 0 && (
-                <span className="text-xs text-amber-600/70">
-                  ({Object.keys(systemProfileSelections).filter(k => systemProfileSelections[k as keyof SystemProfileSelections]).length}/{systemPackRoleOptions.length} profiles selected)
+                <span
+                  className={`text-xs shrink-0 ${
+                    profilesComplete ? 'text-emerald-400/80' : 'text-amber-400'
+                  }`}
+                >
+                  ({selectedProfileCount}/{systemPackRoleOptions.length} profiles)
                 </span>
               )}
             </div>
-          </div>
+            {!profilesComplete && (
+              <span className="text-xs text-amber-400 shrink-0 ml-2">Tap to finish</span>
+            )}
+          </button>
         )}
       </div>
 
@@ -790,15 +836,57 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="space-y-6"
             >
-              {/* STEP 1: System - Now moved to top, show message here */}
+              {/* STEP 1: System checklist (controls live in top dropdown) */}
               {currentStep === 0 && (
-                <div className="space-y-6">
-                  <Alert className="bg-amber-900/20 border-amber-500/50 text-amber-200">
-                    <Factory className="h-4 w-4" />
-                    <AlertDescription>
-                      System configuration has been moved to the top of the page. Please select your system pack and profiles there.
-                    </AlertDescription>
-                  </Alert>
+                <div className="space-y-4">
+                  <div className="rounded-lg border border-amber-600/40 bg-slate-950/50 p-4 space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-semibold text-amber-200">System checklist</span>
+                      <Badge
+                        className={
+                          profilesComplete
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                            : 'bg-amber-500/20 text-amber-200 border-amber-500/40'
+                        }
+                      >
+                        {profilesComplete ? 'Ready' : 'Incomplete'}
+                      </Badge>
+                    </div>
+                    <ul className="space-y-2 text-sm text-slate-300">
+                      <li className="flex items-center gap-2">
+                        {selectedSystemPackId ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                        ) : (
+                          <Factory className="h-4 w-4 text-amber-400" />
+                        )}
+                        Pack: {activeSystemPack?.meta.name || 'Not selected'}
+                      </li>
+                      {systemPackRoleOptions.map((role) => {
+                        const code = systemProfileSelections[role.id as keyof SystemProfileSelections];
+                        return (
+                          <li key={role.id} className="flex items-center gap-2">
+                            {code ? (
+                              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                            ) : (
+                              <Box className="h-4 w-4 text-amber-400" />
+                            )}
+                            {role.label}: {code || 'Select above'}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    {!profilesComplete && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full border-amber-500/50 text-amber-100"
+                        onClick={() => setIsSystemPackCollapsed(false)}
+                      >
+                        Open System Configuration
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )}
 

@@ -95,6 +95,31 @@ const INITIAL_STATE: DraftingState = {
 // Expanded from 4 to 50+ templates covering all common Egyptian patterns
 const EGYPTIAN_TEMPLATES: EgyptianTemplate[] = EXPANDED_EGYPTIAN_TEMPLATES;
 
+const preserveAuthoritativeCellMetadata = (previous: Rectangle, next: Rectangle): Rectangle => ({
+  ...next,
+  sourceCellId: previous.sourceCellId,
+  sourceCellType: previous.sourceCellType,
+  sourceOpeningDirection: previous.sourceOpeningDirection,
+  sourceRow: previous.sourceRow,
+  sourceCol: previous.sourceCol,
+  sourceRowSpan: previous.sourceRowSpan,
+  sourceColSpan: previous.sourceColSpan,
+});
+
+const stripAuthoritativeCellMetadata = (rectangle: Rectangle): Rectangle => {
+  const {
+    sourceCellId: _sourceCellId,
+    sourceCellType: _sourceCellType,
+    sourceOpeningDirection: _sourceOpeningDirection,
+    sourceRow: _sourceRow,
+    sourceCol: _sourceCol,
+    sourceRowSpan: _sourceRowSpan,
+    sourceColSpan: _sourceColSpan,
+    ...unbound
+  } = rectangle;
+  return unbound;
+};
+
 export const useDraftingEngine = (options?: {
   initialState?: DraftingState;
   onStateChange?: (state: DraftingState) => void;
@@ -120,13 +145,13 @@ export const useDraftingEngine = (options?: {
 
   // Undo/Redo operations
   const undo = useCallback(() => {
-    const previousState = undoRedoManager.current.undo();
+    const previousState = undoRedoManager.current.undo(state);
     if (previousState) {
       isUndoRedoOperation.current = true;
       setState(previousState);
       logDraftingAction('undo', {}, { historySize: undoRedoManager.current.getHistorySize() }, 'CHECKPOINT-UNDO');
     }
-  }, []);
+  }, [state]);
 
   const redo = useCallback(() => {
     const nextState = undoRedoManager.current.redo();
@@ -578,7 +603,14 @@ export const useDraftingEngine = (options?: {
         constraints: { minWidth: 600, maxWidth: 3000, minHeight: 600, maxHeight: 2600 }
       };
       const newRectangles = prev.geometry.rectangles.filter((_, i) => i !== rectIndex);
-      newRectangles.push({ x: mw.x, y: mw.y, width: mw.width, height: mw.height, type: mw.type, id });
+      newRectangles.push(preserveAuthoritativeCellMetadata(rect, {
+        x: mw.x,
+        y: mw.y,
+        width: mw.width,
+        height: mw.height,
+        type: mw.type,
+        id,
+      }));
       return {
         ...prev,
         geometry: { ...prev.geometry, rectangles: newRectangles },
@@ -705,7 +737,7 @@ export const useDraftingEngine = (options?: {
       const offset = 30;
       const newId = `rect-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
       const duplicate: Rectangle = {
-        ...rect,
+        ...stripAuthoritativeCellMetadata(rect),
         id: newId,
         x: rect.x + offset,
         y: rect.y + offset,
@@ -1216,7 +1248,7 @@ export const useDraftingEngine = (options?: {
         undoRedoManager.current.push(prev);
         
         const updated = [...prev.geometry.rectangles];
-        updated[index] = validatedRect;
+        updated[index] = preserveAuthoritativeCellMetadata(prev.geometry.rectangles[index], validatedRect);
         
         return {
           ...prev,

@@ -125,18 +125,53 @@ export const SystemPackTuningStudio: React.FC = () => {
     }
 
     try {
-      // First try custom/tuned version
+      const roleOf = (p: any): SystemPackProfile['type'] => {
+        const role = p.profileRole || p.type || p.role;
+        if (role === 'glazing_bead' || role === 'bead') return 'bead';
+        if (role === 'sash' || role === 'mullion' || role === 'transom' || role === 'frame') return role;
+        return 'frame';
+      };
+
+      const normalizePack = (raw: any, fallbackMaterial: 'aluminum' | 'upvc' = 'aluminum'): SystemPack => {
+        const packMeta = raw.meta || {};
+        const listed = raw.profiles;
+        const profiles = Array.isArray(listed) && listed.length
+          ? listed
+          : (raw.windowSystemSpec?.profiles_cutting_list || []);
+        const systemPackProfiles: SystemPackProfile[] = profiles.map((p: any) => ({
+          id: p.id,
+          name: p.name || p.profile || 'Profile',
+          type: roleOf(p),
+          material: p.material || fallbackMaterial,
+          unitWeight: p.weightPerMeter || p.weightKgPerM || p.unitWeight,
+          barLength: p.specifications?.barLength || p.barLength || 6000,
+          width: p.width || p.width_mm || p.widthMm,
+          height: p.height || p.height_mm || p.heightMm,
+          thickness: p.thickness,
+          micronConfig: p.micronConfig || p.specifications,
+          tuningStatus: p.tuningStatus || 'untuned',
+        }));
+
+        return {
+          id: raw.id || packMeta.id || systemPackId!,
+          name: raw.name || packMeta.name || 'Unknown System',
+          manufacturer: raw.manufacturer || packMeta.brands?.[0] || 'Unknown',
+          region: raw.region || packMeta.regions?.[0] || 'global',
+          profiles: systemPackProfiles,
+          tuningStatus: raw.tuningStatus || 'untuned',
+          createdAt: raw.createdAt || new Date().toISOString(),
+          isComplete: Boolean(raw.isComplete),
+        };
+      };
+
+      // First try custom/tuned version (may be meta-shaped or studio-shaped)
       const stored = localStorage.getItem(`custom-profile-${systemPackId}`);
       if (stored) {
-        const pack = JSON.parse(stored);
+        const pack = normalizePack(JSON.parse(stored));
         setSystemPack(pack);
-
-        // Initialize tuned profiles
         const tuned = new Set<string>();
         pack.profiles?.forEach((p: SystemPackProfile) => {
-          if (p.tuningStatus === 'tuned') {
-            tuned.add(p.id);
-          }
+          if (p.tuningStatus === 'tuned') tuned.add(p.id);
         });
         setTunedProfiles(tuned);
         return;
@@ -148,42 +183,10 @@ export const SystemPackTuningStudio: React.FC = () => {
         EGYPTIAN_UPVC_SYSTEMS.find((p: any) => p.meta?.id === systemPackId);
 
       if (originalPack) {
-        // Convert to SystemPack format
-        const packMeta = (originalPack as any).meta || {};
-        const listed = (originalPack as any).profiles;
-        const profiles = Array.isArray(listed) && listed.length
-          ? listed
-          : ((originalPack as any).windowSystemSpec?.profiles_cutting_list || []);
-        const roleOf = (p: any): SystemPackProfile['type'] => {
-          const role = p.profileRole || p.type || p.role;
-          if (role === 'glazing_bead' || role === 'bead') return 'bead';
-          if (role === 'sash' || role === 'mullion' || role === 'transom' || role === 'frame') return role;
-          return 'frame';
-        };
-        const systemPackProfiles: SystemPackProfile[] = profiles.map((p: any) => ({
-          id: p.id,
-          name: p.name || p.profile || 'Profile',
-          type: roleOf(p),
-          material: p.material || ((originalPack as any).upvcSpec ? 'upvc' : 'aluminum'),
-          unitWeight: p.weightPerMeter || p.weightKgPerM,
-          barLength: p.specifications?.barLength || 6000,
-          width: p.width || p.width_mm || p.widthMm,
-          height: p.height || p.height_mm || p.heightMm,
-          thickness: p.thickness,
-          tuningStatus: 'untuned',
-        }));
-
-        const pack: SystemPack = {
-          id: packMeta.id || systemPackId,
-          name: packMeta.name || 'Unknown System',
-          manufacturer: packMeta.brands?.[0] || 'Unknown',
-          region: packMeta.regions?.[0] || 'global',
-          profiles: systemPackProfiles,
-          tuningStatus: 'untuned',
-          createdAt: new Date().toISOString(),
-          isComplete: false,
-        };
-
+        const pack = normalizePack(
+          originalPack,
+          (originalPack as any).upvcSpec ? 'upvc' : 'aluminum',
+        );
         setSystemPack(pack);
         setTunedProfiles(new Set());
         return;

@@ -9,13 +9,15 @@
  */
 
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useProjectPositions } from '@/hooks/useFabricatorQueries';
+import type { DesignCompletionPayload } from '@/lib/fabricator/engineering/designCompletion';
+import { resolveSystemPackProfiles } from '@/lib/fabricator/engineering/resolveSystemPackProfiles';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { isFabricatorUuid } from '@/lib/supabase/fabricatorClientV2';
 import { useJobsStore } from '@/store/jobsStore';
 import { useWorkflowStore } from '@/store/workflowStore';
-import type { DesignCompletionPayload } from '@/lib/fabricator/engineering/designCompletion';
 import { Profile, WindowUnit } from '@/types/fabricator';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -67,13 +69,16 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     }
   }, [useV2, effectivePoseId, currentProject, jobs, dispatch, setSelectedJob, setCurrentProject, setDesignData]);
 
-  // Get profiles from project or use empty array
-  // Note: WindowUnit doesn't have a profiles property - profiles come from context or props
+  // FP-028: resolve catalog profiles for the active pack (never invent codes).
+  // Empty profiles previously caused "grid is empty or invalid" on design complete.
   const profiles = useMemo<Profile[]>(() => {
-    // Profiles should come from context or be loaded separately
-    // For now, return empty array (profiles can be loaded separately)
-    return [];
-  }, []);
+    const packId = currentProject?.systemPackId;
+    const pack =
+      (packId ? SYSTEM_PACKS.find((p) => p.meta.id === packId) : undefined) ??
+      SYSTEM_PACKS.find((p) => p.meta.id === 'rock60') ??
+      SYSTEM_PACKS[0];
+    return resolveSystemPackProfiles(pack);
+  }, [currentProject?.systemPackId]);
 
   // Get related positions (sibling poses within the same project)
   const resolvedProjectId = useMemo<string | undefined>(() => {

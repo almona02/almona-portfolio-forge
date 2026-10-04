@@ -34,6 +34,7 @@ export type DraftingAction =
   | 'material_selected'
   | 'system_authority_established'
   | 'preset_intelligence_applied'
+  | 'preset_intelligence_rejected'
   | 'pattern_details_toggle'
   | 'egyptian_pattern_selected'
   | 'undo'

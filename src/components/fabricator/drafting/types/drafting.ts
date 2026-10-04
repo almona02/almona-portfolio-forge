@@ -18,6 +18,7 @@ export interface Rectangle {
   /** Authoritative grid metadata retained across SmartDraw/Drafting mode changes. */
   sourceCellId?: string;
   sourceCellType?: 'fixed' | 'sash' | 'panel' | 'empty' | 'sliding';
+  sourceOpeningDirection?: 'left' | 'right' | 'top' | 'bottom';
   sourceRow?: number;
   sourceCol?: number;
   sourceRowSpan?: number;

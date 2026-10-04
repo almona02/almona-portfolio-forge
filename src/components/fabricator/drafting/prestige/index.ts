@@ -36,7 +36,14 @@ export {
 
 export {
   applyPresetIntelligence,
-  getPresetById
+  getPresetById,
+  parseGridPattern,
 } from './presetApplication';
-export type { PresetApplicationResult } from './presetApplication';
+export type {
+  PresetApplicationResult,
+  PresetGridPatternError,
+  PresetGridPatternErrorCode,
+  ParseGridPatternResult,
+  ParsedGridPattern,
+} from './presetApplication';
 

@@ -11,7 +11,7 @@ import { DXFProfileImporter, ImportedProfile } from './smartscan/DXFProfileImpor
 import { RoleTagger, ProfileRole } from './smartscan/RoleTagger';
 import { HardwareLinker } from './smartscan/HardwareLinker';
 import { MachiningZoneEditor, type MachiningZone } from './smartscan/MachiningZoneEditor';
-import { buildCustomSystemPack } from '@/lib/fabricator/systemPackBuilder';
+import { buildCustomSystemPack, buildStarterSystemPack } from '@/lib/fabricator/systemPackBuilder';
 import { supabase } from '@/lib/supabase';
 import {
   ASYNC_DELAYS,
@@ -74,6 +74,16 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
     }, ASYNC_DELAYS.SAVE_DELAY_MS);
   };
 
+  /** Create pack with catalog-style frame/sash starters — no DXF required. */
+  const handleCreateStarterPack = () => {
+    setIsSaving(true);
+    const pack = buildStarterSystemPack(packName.trim() || 'Custom Workshop Pack');
+    setTimeout(() => {
+      setIsSaving(false);
+      if (onSave) onSave(pack);
+    }, ASYNC_DELAYS.SAVE_DELAY_MS);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className={`${DIALOG_DIMENSIONS.MAX_WIDTH} bg-gray-950 border-gray-800 text-white`}>
@@ -101,11 +111,25 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
             className="bg-gray-900 border-gray-700 text-white"
           />
         </div>
-        <Button disabled={!readyToSave || isSaving} onClick={handleSave} className="bg-green-600 hover:bg-green-500">
-          {isSaving ? 'Saving…' : 'Save System Pack'}
-          <Save className={`${UI_DIMENSIONS.ICON_MEDIUM} ml-2`} />
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isSaving}
+            onClick={handleCreateStarterPack}
+            className="border-amber-500/50 text-amber-100"
+          >
+            {isSaving ? 'Saving…' : 'Create with frame + sash'}
+          </Button>
+          <Button disabled={!readyToSave || isSaving} onClick={handleSave} className="bg-green-600 hover:bg-green-500">
+            {isSaving ? 'Saving…' : 'Save from DXF'}
+            <Save className={`${UI_DIMENSIONS.ICON_MEDIUM} ml-2`} />
+          </Button>
+        </div>
       </div>
+      <p className="text-xs text-slate-400">
+        No DXF? Use <span className="text-amber-300">Create with frame + sash</span> to start a workshop pack, then tune dimensions.
+      </p>
 
       <Tabs defaultValue="import" className="w-full">
         <TabsList className={`grid ${GRID_LAYOUT.TABS_COLS} bg-gray-900`}>

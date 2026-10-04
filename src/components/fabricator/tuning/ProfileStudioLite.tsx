@@ -16,7 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Upload, Save, CheckCircle2, AlertTriangle, Zap, Settings, Sparkles, Factory, FileCode, Gauge, Plus } from 'lucide-react';
+import { addCustomSystem } from '@/lib/fabricator/customSystemStorage';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
+import type { Profile } from '@/types/fabricator';
 import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 
 interface MachiningSlot {
@@ -346,22 +348,64 @@ export const ProfileStudioLite: React.FC = () => {
       const hasSash = updatedImported.some(p => p.type === 'sash');
       const isCompleteSystem = hasFrame && hasSash;
 
-      // Create or update system pack
-      const systemPackId = currentSystemPackId || `system-${profile.manufacturer}-${Date.now()}`;
+      // Create or update system pack (canonical SystemPack shape for gallery + engine)
+      const systemPackId = currentSystemPackId || `custom-${profile.manufacturer.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
       if (!currentSystemPackId) {
         setCurrentSystemPackId(systemPackId);
       }
 
+      const engineProfiles: Profile[] = updatedImported.map((p) => {
+        const data = p.data as {
+          id: string;
+          name: string;
+          type: string;
+          material: Profile['material'];
+          unitWeight?: number;
+          barLength?: number;
+          width?: number;
+          height?: number;
+          thickness?: number;
+          micronConfig?: Record<string, unknown>;
+        };
+        return {
+          id: data.id,
+          name: data.name,
+          material: data.material === 'steel' ? 'aluminum' : data.material,
+          width: data.width ?? 60,
+          height: data.height ?? data.width ?? 60,
+          thickness: data.thickness ?? 1.8,
+          color: '#C0C0C0',
+          costPerMeter: 0,
+          cuttingAllowance: 3,
+          stockQuantity: 0,
+          minStockLevel: 0,
+          maxStockLevel: 1000,
+          supplier: profile.manufacturer,
+          systemBrand: profile.manufacturer,
+          weightPerMeter: data.unitWeight,
+          barLength: data.barLength,
+          profileRole: (data.type || 'frame') as NonNullable<Profile['profileRole']>,
+          systemPackIds: [systemPackId],
+          specifications: {
+            ...(data.micronConfig || {}),
+            partNumber: data.id,
+          },
+        };
+      });
+
       const customPack = {
-        id: systemPackId,
-        name: `${profile.manufacturer} ${profile.name} System`,
-        manufacturer: profile.manufacturer,
-        region: 'turkey',
-        isCustom: true,
-        createdAt: new Date().toISOString(),
-        profiles: updatedImported.map(p => p.data),
-        isComplete: isCompleteSystem,
-        tuningStatus: 'untuned' as const,
+        meta: {
+          id: systemPackId,
+          name: `${profile.manufacturer} Custom System`,
+          brands: [profile.manufacturer],
+          regions: ['turkey', 'egypt', 'global'] as string[],
+          defaultStockLengthMm: profile.barLength || 6500,
+        },
+        profiles: engineProfiles,
+        windowSystemSpec: {
+          window_system: `${profile.manufacturer} Custom`,
+          window_type: 'sliding',
+        },
         smartDrawPreset: {
           defaultMullionSpacingMm: 1000,
           maxSpanWithoutIntermediateMm: 2000,
@@ -371,24 +415,24 @@ export const ProfileStudioLite: React.FC = () => {
           recommendedMullionCounts: [2, 3, 4],
           spacingStrategy: 'equal' as const,
         },
+        tuningStatus: 'untuned' as const,
       };
 
-      // Save to localStorage
-      const storageKey = `custom-profile-${systemPackId}`;
-      localStorage.setItem(storageKey, JSON.stringify(customPack));
-
-      // Dispatch event for other components to reload
+      addCustomSystem(customPack);
+      localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(customPack));
       window.dispatchEvent(new CustomEvent('customProfileAdded', { detail: customPack }));
+      window.dispatchEvent(new CustomEvent('systemPackTuned', {
+        detail: { systemPackId, systemPackName: customPack.meta.name, tuned: false },
+      }));
 
       setSaveStatus('success');
       setIsSaving(false);
 
-      // Reset form for next profile import
       setProfile({
         id: `custom-${Date.now()}`,
         name: '',
-        manufacturer: profile.manufacturer, // Keep manufacturer
-        profileType: hasFrame ? 'sash' : 'frame', // Auto-suggest next type
+        manufacturer: profile.manufacturer,
+        profileType: hasFrame ? 'sash' : 'frame',
         material: profile.material,
         barLength: profile.barLength,
         unitWeight: profile.unitWeight,
@@ -404,13 +448,11 @@ export const ProfileStudioLite: React.FC = () => {
         fileInputRef.current.value = '';
       }
 
-      // If complete system, redirect to tuning studio
       if (isCompleteSystem) {
         setTimeout(() => {
-          window.location.href = `/fabricator/tuning-studio?systemPackId=${systemPackId}`;
+          window.location.href = `/fabricator/studio/data/tuning?systemPackId=${systemPackId}`;
         }, 1500);
       } else {
-        // Show message to import next profile
         setTimeout(() => setSaveStatus('idle'), 2000);
       }
 

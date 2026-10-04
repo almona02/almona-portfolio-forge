@@ -103,6 +103,7 @@ export function authoritativeGridToDraftingState(project: WindowUnit): DraftingS
         layerId: 'frame',
         sourceCellId: cell.id,
         sourceCellType: cell.type,
+        sourceOpeningDirection: cell.openingDirection,
         sourceRow: cell.row,
         sourceCol: cell.col,
         sourceRowSpan: rowSpan,

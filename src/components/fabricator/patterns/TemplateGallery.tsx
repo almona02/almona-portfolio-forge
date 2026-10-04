@@ -61,15 +61,13 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
 
   // Filter templates by search and system pack
   const filteredTemplates = useMemo(() => {
-    let filtered = templates;
+    let filtered = templates.filter((template) => template.templateSchema?.status !== 'blocked');
 
     // Filter by system pack compatibility (if systemPackId provided and template has systemPackId)
     if (systemPackId) {
       filtered = filtered.filter((template) => {
-        // If template has systemPackId, filter by it
-        // Otherwise, show all templates (assume compatibility)
-        const templateSystemPackId = (template as any).systemPackId;
-        return !templateSystemPackId || templateSystemPackId === systemPackId;
+        const compatibleIds = template.templateSchema?.compatibleSystemPackIds;
+        return compatibleIds === undefined || compatibleIds.includes(systemPackId);
       });
     }
 
@@ -101,7 +99,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
         complexity: template.complexity,
         applications: template.applications,
         pricingTier: template.pricingTier,
-        systemPackId: (template as any).systemPackId,
+        systemPackId: template.templateSchema?.compatibleSystemPackIds[0],
       };
       onTemplateSelect(template.id, templateData);
     },

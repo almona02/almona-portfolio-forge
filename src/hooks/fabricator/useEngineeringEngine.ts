@@ -2,6 +2,7 @@ import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateDesign } from '@/lib/fabricator/ConstraintEngine';
 import type { DesignCompleteHandler } from '@/lib/fabricator/engineering/designCompletion';
+import { resolveSystemPackProfiles } from '@/lib/fabricator/engineering/resolveSystemPackProfiles';
 import {
     createLayoutSuggestionAction,
     createSystemConversionAction,
@@ -82,13 +83,17 @@ export const useEngineeringEngine = ({
             : null;
     }, [activeSystemPackId]);
 
-    // Effective Profiles (prioritize system pack)
+    // Effective Profiles (prioritize system pack / catalog-derived profiles)
     const effectiveProfiles = useMemo(() => {
-        if (systemPack?.profiles && systemPack.profiles.length > 0) {
-            const systemProfileIds = new Set(systemPack.profiles.map(p => p.id));
+        const packProfiles =
+            systemPack?.profiles && systemPack.profiles.length > 0
+                ? systemPack.profiles
+                : resolveSystemPackProfiles(systemPack);
+        if (packProfiles.length > 0) {
+            const systemProfileIds = new Set(packProfiles.map((p) => p.id));
             return [
-                ...systemPack.profiles,
-                ...profiles.filter(p => !systemProfileIds.has(p.id))
+                ...packProfiles,
+                ...profiles.filter((p) => !systemProfileIds.has(p.id)),
             ];
         }
         return profiles;
@@ -331,8 +336,22 @@ export const useEngineeringEngine = ({
             setError('Cannot complete design: project data is missing.');
             return false;
         }
+        if (!activeSystemPackId) {
+            setError('Cannot complete design: select a system pack first.');
+            return false;
+        }
+        if (!currentGrid?.cells?.length) {
+            setError('Cannot complete design: the grid has no cells. Apply a pattern or draw the layout.');
+            return false;
+        }
+        if (selectedProfiles.length === 0 && effectiveProfiles.length === 0) {
+            setError('Cannot complete design: no frame/sash profiles resolved for this system pack.');
+            return false;
+        }
         if (liveProject.components.length === 0) {
-            setError('Cannot complete design: the grid is empty or invalid.');
+            setError(
+                'Cannot complete design: no cut components were generated. Check system pack profiles and grid layout.',
+            );
             return false;
         }
 
@@ -357,7 +376,15 @@ export const useEngineeringEngine = ({
             presetId: activeTemplateId,
         });
         return true;
-    }, [liveProject, currentGrid, activeSystemPackId, activeTemplateId, onDesignComplete]);
+    }, [
+        liveProject,
+        currentGrid,
+        activeSystemPackId,
+        activeTemplateId,
+        onDesignComplete,
+        selectedProfiles.length,
+        effectiveProfiles.length,
+    ]);
 
 
     

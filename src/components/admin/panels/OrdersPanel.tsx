@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import OrderDetailDialog from '@/components/admin/dialogs/OrderDetailDialog'
 import { useToast } from '@/hooks/use-toast'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { supabase } from '@/lib/supabase'
 import { table } from '@/lib/data/clientCore'
 import type { Database, OrderStatus } from '@/types/database'
@@ -159,16 +159,16 @@ export const OrdersPanel: React.FC = () => {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
   return (
-    <Card>
+    <Card className="bg-slate-950/60 border-amber-600/20 text-slate-100">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Orders</CardTitle>
+        <CardTitle className="text-amber-200">Orders</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Bulk status:</span>
-            <Select value={bulkStatusValue ?? ''} onValueChange={(v: string) => { setBulkStatusValue(v as Order['status']); if (hasSelection) { setPendingAction({ type: 'status', value: v as Order['status'] }); setConfirmOpen(true) } }}>
-              <SelectTrigger>
+            <span className="text-sm text-slate-400">Bulk status:</span>
+            <Select value={bulkStatusValue ?? undefined} onValueChange={(v: string) => { setBulkStatusValue(v as Order['status']); if (hasSelection) { setPendingAction({ type: 'status', value: v as Order['status'] }); setConfirmOpen(true) } }}>
+              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder={hasSelection ? 'Select status' : 'Select rows first'} />
               </SelectTrigger>
               <SelectContent>
@@ -185,9 +185,9 @@ export const OrdersPanel: React.FC = () => {
             </Select>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Bulk payment:</span>
-            <Select value={bulkPaymentValue ?? ''} onValueChange={(v: string) => { setBulkPaymentValue(v); if (hasSelection) { setPendingAction({ type: 'payment', value: v }); setConfirmOpen(true) } }}>
-              <SelectTrigger>
+            <span className="text-sm text-slate-400">Bulk payment:</span>
+            <Select value={bulkPaymentValue ?? undefined} onValueChange={(v: string) => { setBulkPaymentValue(v); if (hasSelection) { setPendingAction({ type: 'payment', value: v }); setConfirmOpen(true) } }}>
+              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder={hasSelection ? 'Select payment' : 'Select rows first'} />
               </SelectTrigger>
               <SelectContent>
@@ -208,7 +208,7 @@ export const OrdersPanel: React.FC = () => {
           <div>
             <label className="typography-label text-xs text-muted-foreground">Status</label>
             <Select value={status} onValueChange={(v: string) => { setStatus(v as OrderStatus | 'all'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
