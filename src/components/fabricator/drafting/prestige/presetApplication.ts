@@ -21,6 +21,15 @@ export interface PresetApplicationResult {
   };
 }
 
+export class InvalidPresetGridPatternError extends Error {
+  readonly code = 'INVALID_PRESET_GRID_PATTERN';
+
+  constructor(readonly pattern: string) {
+    super(`Template grid pattern is not executable: "${pattern}". Select a template with explicit rows and columns.`);
+    this.name = 'InvalidPresetGridPatternError';
+  }
+}
+
 /**
  * Apply preset intelligence to create WindowGrid
  * Constitutional: Deterministic conversion, no ML
@@ -82,16 +91,17 @@ export function applyPresetIntelligence(
  * Parse grid pattern string to dimensions
  * Examples: "2x2", "3x1", "2x2 asymmetrical"
  */
-function parseGridPattern(pattern: string): { rows: number; cols: number; isAsymmetrical?: boolean } {
-  // Extract numbers (deterministic parsing)
-  const match = pattern.match(/(\d+)x(\d+)/i);
+export function parseGridPattern(pattern: string): { rows: number; cols: number; isAsymmetrical?: boolean } {
+  const match = pattern.match(/^\s*(\d+)\s*x\s*(\d+)(?:\s+[a-z-]+)?\s*$/i);
   if (!match) {
-    // Default to 1x1 if pattern can't be parsed
-    return { rows: 1, cols: 1 };
+    throw new InvalidPresetGridPatternError(pattern);
   }
   
   const rows = parseInt(match[1], 10);
   const cols = parseInt(match[2], 10);
+  if (!Number.isSafeInteger(rows) || !Number.isSafeInteger(cols) || rows < 1 || cols < 1 || rows > 20 || cols > 20) {
+    throw new InvalidPresetGridPatternError(pattern);
+  }
   const isAsymmetrical = pattern.toLowerCase().includes('asymmetrical') || 
                          pattern.toLowerCase().includes('asymmetric');
   

@@ -235,42 +235,44 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     // --- Preset Selection Handler ---
     const handlePresetSelect = useCallback((presetId: string) => {
         actions.setError(null);
-        setSelectedPreset(presetId);
 
         const preset = getPresetById(presetId, SIMPLE_PRESETS);
-        if (!preset) return;
-
-        // Apply preset intelligence
-        const result = applyPresetIntelligence(
-            preset,
-            project?.overallWidth,
-            project?.overallHeight
-        );
-
-        // Update grid via actions
-        actions.applyGrid(result.windowGrid);
-
-        // Update system pack if recommended
-        if (result.recommendedSystem) {
-            // Try to find matching system pack
-            const matchingPack = SYSTEM_PACKS.find(p =>
-                p.meta.id.toLowerCase().includes(result.recommendedSystem.toLowerCase()) ||
-                p.meta.name.toLowerCase().includes(result.recommendedSystem.toLowerCase())
-            );
-            if (matchingPack) {
-                actions.setActiveSystemPackId(matchingPack.meta.id);
-            }
+        if (!preset) {
+            actions.setError('Cannot apply template: the selected template no longer exists.');
+            return;
         }
 
-        // Close preset selector
-        setShowPresetSelector(false);
+        try {
+            const result = applyPresetIntelligence(
+                preset,
+                project?.overallWidth,
+                project?.overallHeight
+            );
 
-        console.log('[Preset Applied]', {
-            presetId,
-            presetTitle: preset.title,
-            grid: result.windowGrid,
-            recommendedSystem: result.recommendedSystem
-        });
+            actions.applyGrid(result.windowGrid);
+            setSelectedPreset(presetId);
+
+            if (result.recommendedSystem) {
+                const matchingPack = SYSTEM_PACKS.find(p =>
+                    p.meta.id.toLowerCase().includes(result.recommendedSystem.toLowerCase()) ||
+                    p.meta.name.toLowerCase().includes(result.recommendedSystem.toLowerCase())
+                );
+                if (matchingPack) {
+                    actions.setActiveSystemPackId(matchingPack.meta.id);
+                }
+            }
+
+            setShowPresetSelector(false);
+
+            console.log('[Preset Applied]', {
+                presetId,
+                presetTitle: preset.title,
+                grid: result.windowGrid,
+                recommendedSystem: result.recommendedSystem
+            });
+        } catch (error) {
+            actions.setError(error instanceof Error ? error.message : 'Cannot apply template.');
+        }
     }, [project, actions]);
 
     // --- Event Handlers ---
