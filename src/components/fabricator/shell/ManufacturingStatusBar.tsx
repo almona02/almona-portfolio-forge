@@ -1,7 +1,7 @@
+import { useActiveStudioProject } from '@/hooks/fabricator/useActiveStudioProject';
 import { NOT_RECORDED } from '@/lib/fabricator/studioWorkflow';
 import { isRTL } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
-import { useWorkflowStore } from '@/store/workflowStore';
 import { Cable, Save, Ruler, Cpu, SlidersHorizontal } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 export const ManufacturingStatusBar: React.FC = () => {
   const { t, i18n } = useTranslation('fabricator');
   const rtl = isRTL(i18n.language);
-  const project = useWorkflowStore((s) => s.currentProject);
+  const project = useActiveStudioProject();
 
   const online =
     typeof navigator === 'undefined' ? true : navigator.onLine;
@@ -57,20 +57,29 @@ export const ManufacturingStatusBar: React.FC = () => {
     <footer
       className={cn(
         'h-7 flex-shrink-0 border-t border-amber-600/20 bg-[#080808]',
-        'flex items-center gap-4 px-3 overflow-x-auto text-[10px] font-mono text-amber-700/90',
+        'flex items-center gap-3 sm:gap-4 px-2 sm:px-3 overflow-x-auto text-[10px] font-mono text-amber-700/90',
+        'scrollbar-thin scrollbar-thumb-amber-900/40',
       )}
       data-testid="manufacturing-status-bar"
       dir={rtl ? 'rtl' : 'ltr'}
     >
-      {cells.map((c) => (
-        <div key={c.label} className="flex items-center gap-1.5 whitespace-nowrap">
+      {cells.map((c, index) => (
+        <div
+          key={c.label}
+          className={cn(
+            'flex items-center gap-1.5 whitespace-nowrap',
+            // Keep connection + system visible; hide quieter cells on very narrow widths
+            index >= 3 && 'hidden sm:flex',
+          )}
+        >
           <span className="text-amber-600/70" aria-hidden>
             {c.icon}
           </span>
-          <span className="uppercase tracking-wider">{c.label}</span>
+          <span className="uppercase tracking-wider hidden md:inline">{c.label}</span>
           <span
             className="text-amber-200/80"
             dir={'ltr' in c && c.ltr ? 'ltr' : undefined}
+            title={`${c.label}: ${c.value}`}
           >
             {c.value}
           </span>

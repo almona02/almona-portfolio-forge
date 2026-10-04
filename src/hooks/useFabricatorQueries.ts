@@ -4,6 +4,11 @@
  */
 
 import { useAuth } from '@/context/AuthContext';
+import {
+  clearActiveProjectIfPoseDeleted,
+  clearActiveProjectIfProjectDeleted,
+  publishActiveProject,
+} from '@/lib/fabricator/activeProjectBridge';
 import { fabricatorClientV2, mapPositionRowToWindowUnit } from '@/lib/supabase/fabricatorClientV2';
 import type { WindowUnit } from '@/types/fabricator';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -127,6 +132,15 @@ export function useUpsertPose() {
       );
     },
     onSuccess: (_data, variables) => {
+      const saved: WindowUnit = {
+        ...variables.windowUnit,
+        updatedAt: new Date(),
+      };
+      const active = useWorkflowStore.getState().currentProject;
+      // Refresh header when saving the active pose (or when none is selected yet)
+      if (!active || active.id === saved.id) {
+        publishActiveProject(saved);
+      }
       markWorkflowDraftSaved();
       void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'projects'] });
       void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'positions'] });
@@ -147,9 +161,14 @@ export function useDeletePose() {
       if (!user?.id) throw new Error('Not authenticated');
       return fabricatorClientV2.deletePose(poseId, user.id);
     },
-    onSuccess: () => {
+    onSuccess: (_data, poseId) => {
+      clearActiveProjectIfPoseDeleted(poseId);
       void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'projects'] });
       void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'positions'] });
+      void queryClient.invalidateQueries({
+        queryKey: [...FABRICATOR_KEY, 'pose', poseId],
+      });
+      void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'authoritative-position'] });
     },
   });
 }
@@ -163,9 +182,14 @@ export function useDeleteProject() {
       if (!user?.id) throw new Error('Not authenticated');
       return fabricatorClientV2.deleteProject(projectId, user.id);
     },
-    onSuccess: () => {
+    onSuccess: (_data, projectId) => {
+      clearActiveProjectIfProjectDeleted(projectId);
       void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'projects'] });
       void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'positions'] });
+      void queryClient.invalidateQueries({
+        queryKey: [...FABRICATOR_KEY, 'project', projectId],
+      });
+      void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'authoritative-position'] });
     },
   });
 }
@@ -216,6 +240,16 @@ export function useUpdateProject() {
       );
     },
     onSuccess: (_data, variables) => {
+      const active = useWorkflowStore.getState().currentProject;
+      const activeProjectId = (active as (WindowUnit & { projectId?: string }) | null)?.projectId;
+      if (active && activeProjectId === variables.projectId) {
+        publishActiveProject({
+          ...active,
+          customer: variables.updates.client_name ?? active.customer,
+          status: (variables.updates.status as WindowUnit['status']) ?? active.status,
+          updatedAt: new Date(),
+        });
+      }
       void queryClient.invalidateQueries({ queryKey: [...FABRICATOR_KEY, 'projects'] });
       void queryClient.invalidateQueries({
         queryKey: [...FABRICATOR_KEY, 'project', variables.projectId],

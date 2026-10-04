@@ -1,12 +1,14 @@
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useAuth } from '@/context/AuthContext';
-import { useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
+import { useDeletePose, useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/ui/collapsible';
 import type { MeasurementData, WindowUnit } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
-import React, { Suspense, useCallback, useMemo } from 'react';
+import { ChevronDown } from 'lucide-react';
+import React, { Suspense, useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -105,12 +107,23 @@ export const MeasuringPage: React.FC = () => {
     const { setMeasurementData, completeStep, currentProject: pose } = useWorkflowStore();
     const siblings = useProjectPositions(projectId);
     const upsertPose = useUpsertPose();
+    const deletePose = useDeletePose();
+    /** Pose layout strip — closed by default so small screens keep measuring form in view */
+    const [poseLayoutOpen, setPoseLayoutOpen] = useState(false);
     const layoutPoses = useMemo(() => {
         if (!pose) return siblings;
         const index = siblings.findIndex(candidate => candidate.id === pose.id);
         if (index < 0) return [...siblings, pose];
         return siblings.map(candidate => candidate.id === pose.id ? pose : candidate);
     }, [pose, siblings]);
+    const activePoseSummary = useMemo(() => {
+        const w = pose?.overallWidth;
+        const h = pose?.overallHeight;
+        const dims = Number(w) > 0 && Number(h) > 0
+            ? `${Math.round(Number(w))} × ${Math.round(Number(h))} mm`
+            : 'Not measured';
+        return `Pose ${pose?.posNumber || '1'} · ${dims} · ${layoutPoses.length} pose${layoutPoses.length === 1 ? '' : 's'}`;
+    }, [pose, layoutPoses.length]);
 
     const persistPose = useCallback(async (data: MeasurementData, targetPoseId: string, posNumber: string) => {
         if (!projectId || !user?.id) throw new Error('Not authenticated');
@@ -165,6 +178,61 @@ export const MeasuringPage: React.FC = () => {
         }
     };
 
+    const handleDuplicatePose = useCallback(async (id: string) => {
+        if (!projectId) return;
+        const source = layoutPoses.find((candidate) => candidate.id === id);
+        if (!source) return;
+        try {
+            const newId = crypto.randomUUID();
+            const posNumber = nextPoseNumber(layoutPoses);
+            const created = await upsertPose.mutateAsync({
+                windowUnit: {
+                    ...source,
+                    id: newId,
+                    projectId,
+                    posNumber,
+                    status: 'measuring',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    optimization: null,
+                },
+                grid: source.grid as Record<string, unknown> | undefined,
+                selectedPreset: source.presetId,
+            });
+            toast.success(`Pose ${posNumber} duplicated`);
+            navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
+            setPoseLayoutOpen(false);
+        } catch (err) {
+            toast.error(`Duplicate failed: ${persistenceErrorMessage(err)}`);
+        }
+    }, [layoutPoses, navigate, projectId, upsertPose]);
+
+    const handleDeletePose = useCallback(async (id: string) => {
+        if (!projectId) return;
+        if (layoutPoses.length <= 1) {
+            toast.error('Keep at least one pose in the project.');
+            return;
+        }
+        const source = layoutPoses.find((candidate) => candidate.id === id);
+        const label = source?.posNumber || 'this pose';
+        if (!window.confirm(`Delete pose ${label}? This cannot be undone.`)) return;
+        try {
+            await deletePose.mutateAsync(id);
+            toast.success(`Pose ${label} deleted`);
+            if (id === poseId) {
+                const fallback = layoutPoses.find((candidate) => candidate.id !== id);
+                if (fallback) {
+                    navigate(fabricatorRoutes.poseMeasuring(projectId, fallback.id));
+                } else {
+                    navigate(fabricatorRoutes.studioProject(projectId));
+                }
+            }
+            setPoseLayoutOpen(false);
+        } catch (err) {
+            toast.error(`Delete failed: ${persistenceErrorMessage(err)}`);
+        }
+    }, [deletePose, layoutPoses, navigate, poseId, projectId]);
+
     const initialData: MeasurementData | undefined = pose
         ? {
             width: String(pose.overallWidth),
@@ -184,7 +252,9 @@ export const MeasuringPage: React.FC = () => {
             roomOrZone: pose.positionMeta?.roomOrZone,
             windowIndex: pose.positionMeta?.windowIndex,
             remarks: pose.positionMeta?.remarks,
-            grid: pose.grid,
+            grid: pose.grid && Number(pose.grid.cols) > 0 && Number(pose.grid.rows) > 0
+              ? pose.grid
+              : undefined,
             presetId: pose.presetId,
         }
         : undefined;
@@ -193,27 +263,55 @@ export const MeasuringPage: React.FC = () => {
 
     return (
         <div className="flex flex-col h-full bg-slate-950">
-            <div className="px-4 pt-4 pb-2 border-b border-amber-600/20">
-                <div className="flex items-center justify-between gap-3 mb-3">
-                    <div>
-                        <h2 className="text-sm font-semibold text-amber-200">
-                            Measuring — Pose {pose?.posNumber || '1'}
-                        </h2>
-                        <p className="text-xs text-slate-500">
+            <Collapsible
+                open={poseLayoutOpen}
+                onOpenChange={setPoseLayoutOpen}
+                className="shrink-0 border-b border-amber-600/20"
+            >
+                <div className="px-3 py-2 sm:px-4 sm:py-2.5">
+                    <CollapsibleTrigger
+                        type="button"
+                        className="flex w-full items-center gap-2 rounded-md px-1 py-1 text-left hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40"
+                        aria-label={poseLayoutOpen ? 'Hide project pose layout' : 'Show project pose layout'}
+                    >
+                        <div className="min-w-0 flex-1">
+                            <h2 className="truncate text-sm font-semibold text-amber-200">
+                                Measuring — Pose {pose?.posNumber || '1'}
+                            </h2>
+                            <p className="truncate font-mono text-[11px] text-slate-500">
+                                {activePoseSummary}
+                            </p>
+                        </div>
+                        <ChevronDown
+                            className={`h-4 w-4 shrink-0 text-amber-500/80 transition-transform ${poseLayoutOpen ? 'rotate-180' : ''}`}
+                            aria-hidden
+                        />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-2 pb-1 data-[state=closed]:animate-none">
+                        <p className="mb-2 hidden text-xs text-slate-500 sm:block">
                             Width and height for this pose are saved on the position record and shown in the project layout.
                         </p>
-                    </div>
+                        <div className="max-h-[40vh] overflow-y-auto overscroll-contain sm:max-h-none">
+                            <PoseLayoutPreview
+                                poses={layoutPoses}
+                                activeId={poseId}
+                                compact
+                                onSelect={(id) => {
+                                    if (projectId) navigate(fabricatorRoutes.poseMeasuring(projectId, id));
+                                    setPoseLayoutOpen(false);
+                                }}
+                                onEdit={(id) => {
+                                    if (projectId) navigate(fabricatorRoutes.poseMeasuring(projectId, id));
+                                    setPoseLayoutOpen(false);
+                                }}
+                                onDuplicate={(id) => { void handleDuplicatePose(id); }}
+                                onDelete={(id) => { void handleDeletePose(id); }}
+                                onAdd={undefined}
+                            />
+                        </div>
+                    </CollapsibleContent>
                 </div>
-                <PoseLayoutPreview
-                    poses={layoutPoses}
-                    activeId={poseId}
-                    compact
-                    onSelect={(id) => {
-                        if (projectId) navigate(fabricatorRoutes.poseMeasuring(projectId, id));
-                    }}
-                    onAdd={undefined}
-                />
-            </div>
+            </Collapsible>
             <Suspense fallback={
                 <div className="flex items-center justify-center h-full">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400" />

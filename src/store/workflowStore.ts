@@ -113,6 +113,8 @@ export interface WorkflowState {
   canAccessStep: (step: string) => boolean;
   clearWorkflow: () => void;
   setCurrentProject: (project: WindowUnit | null) => void;
+  /** Soft align for shell header — does not wipe workflow when updating same pose. */
+  alignShellProject: (project: WindowUnit | null) => void;
   hydrateAuthoritativePosition: (identity: WorkflowIdentity, project: WindowUnit) => void;
   markWorkflowDraftSaved: () => void;
 }
@@ -275,6 +277,38 @@ export const useWorkflowStore = create<WorkflowState>()(
       
       setCurrentProject: (project) => {
         set(state => ({ currentProject: project, workflowDraftDirty: project !== null, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null }));
+      },
+
+      alignShellProject: (project) => {
+        if (!project) {
+          set({
+            currentProject: null,
+            measurementData: null,
+            designData: null,
+            optimizationResult: null,
+            bom: null,
+            quote: null,
+            productionDocuments: null,
+            qualityApproval: null,
+            workflowIdentity: null,
+            workflowDraftDirty: false,
+            completedSteps: new Set(),
+            activeStep: 'measuring',
+          });
+          return;
+        }
+        set((state) => {
+          if (state.currentProject?.id === project.id) {
+            return {
+              currentProject: project,
+              designData:
+                state.designData?.id === project.id
+                  ? { ...state.designData, ...project }
+                  : state.designData,
+            };
+          }
+          return { currentProject: project };
+        });
       },
 
       hydrateAuthoritativePosition: (identity, project) => {

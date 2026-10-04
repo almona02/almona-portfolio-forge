@@ -1,4 +1,8 @@
+import { useAuth } from '@/context/AuthContext';
+import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { FabricatorContext } from '@/contexts/FabricatorContextProvider';
+import { useNarrowStudioShell } from '@/hooks/useNarrowStudioShell';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { cn } from '@/lib/utils';
 import { useFabricatorUIStore } from '@/stores/fabricatorUIStore';
 import {
@@ -10,9 +14,32 @@ import {
     Home,
     Settings
 } from 'lucide-react';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { CollapsiblePanel } from './CollapsiblePanel';
+
+function formatRelativeSaved(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return null;
+  const mins = Math.max(0, Math.round((Date.now() - then) / 60_000));
+  if (mins < 1) return 'Saved just now';
+  if (mins === 1) return 'Saved 1 min ago';
+  if (mins < 60) return `Saved ${mins} min ago`;
+  const hours = Math.round(mins / 60);
+  if (hours === 1) return 'Saved 1 hr ago';
+  if (hours < 48) return `Saved ${hours} hr ago`;
+  return `Saved ${new Date(iso).toISOString().slice(0, 10)}`;
+}
+
+function roleLabel(role: string | undefined | null): string {
+  if (!role) return 'Signed in';
+  return role
+    .split(/[_-]/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
 
 interface NavItem {
   id: string; // Changed to string to allow custom IDs
@@ -34,12 +61,48 @@ interface UniversalNavSidebarProps {
 
 export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ activeStudio }) => {
   const location = useLocation();
-  const { panelStates: _panelStates, togglePanel: _togglePanel } = useFabricatorUIStore();
+  const { user } = useAuth();
+  const { state: workspace } = useFabricatorWorkspace();
+  const narrow = useNarrowStudioShell();
+  const setPanelState = useFabricatorUIStore((s) => s.setPanelState);
+  const panelState = useFabricatorUIStore((s) => s.panelStates.navigation);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const wasNarrow = useRef(narrow);
   // Safely get context - provide defaults if not available (for use outside FabricatorContextProvider)
   const fabricatorContext = useContext(FabricatorContext);
   const contextTools = fabricatorContext?.tools || [];
   const contextSectionId = fabricatorContext?.sectionId || null;
+
+  // Auto-collapse into overlay drawer when entering a narrow viewport
+  useEffect(() => {
+    if (narrow && !wasNarrow.current) {
+      setPanelState('navigation', true, panelState.rightCollapsed);
+    }
+    wasNarrow.current = narrow;
+  }, [narrow, panelState.rightCollapsed, setPanelState]);
+
+  // Close overlay after route changes on narrow screens
+  useEffect(() => {
+    if (!narrow) return;
+    const nav = useFabricatorUIStore.getState().panelStates.navigation;
+    if (!nav.leftCollapsed) {
+      setPanelState('navigation', true, nav.rightCollapsed);
+    }
+  }, [location.pathname, narrow, setPanelState]);
+
+  const displayName =
+    user?.full_name?.trim()
+    || user?.username?.trim()
+    || user?.email?.trim()
+    || 'Signed in';
+  const displayRole = roleLabel(user?.role);
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('') || 'U';
+  const savedLabel = formatRelativeSaved(workspace.lastSaved);
   
   // Navigation items for all fabricator sections (memoized for performance)
   const navItems: NavItem[] = useMemo(() => [
@@ -47,13 +110,13 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       id: 'command',
       label: 'Command Center',
       icon: <Home size={20} />,
-      href: '/fabricator/studio/command',
+      href: fabricatorRoutes.studioCommand(),
     },
     {
       id: 'project',
       label: 'Project Studio',
       icon: <Folder size={20} />,
-      href: '/fabricator/studio/projects',
+      href: fabricatorRoutes.studioProjects(),
     },
     {
       id: 'orders',
@@ -71,24 +134,27 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       id: 'production',
       label: 'Production Studio',
       icon: <Box size={20} />,
-      href: '/fabricator/studio/production',
+      href: fabricatorRoutes.studioProduction(),
       subItems: [
-        { label: 'Dashboard', href: '/fabricator/studio/production' },
-        { label: 'Quality Control', href: '/fabricator/studio/production/quality' },
-        { label: 'Delivery Tracking', href: '/fabricator/studio/production/delivery' },
+        { label: 'Dashboard', href: fabricatorRoutes.studioProduction() },
+        { label: 'Quality Control', href: fabricatorRoutes.studioProductionQuality() },
+        { label: 'Delivery Tracking', href: fabricatorRoutes.studioProductionDelivery() },
+        { label: 'Orders', href: fabricatorRoutes.studioProductionOrders() },
       ],
     },
     {
       id: 'data',
       label: 'Data Studio',
       icon: <BarChart size={20} />,
-      href: '/fabricator/studio/data',
+      href: fabricatorRoutes.studioData(),
       subItems: [
-        { label: 'System library', href: '/fabricator/studio/data' },
-        { label: 'Profiles', href: '/fabricator/studio/data/profiles' },
-        { label: 'Stock / remnants', href: '/fabricator/studio/data/stock' },
-        { label: 'Customers', href: '/fabricator/studio/data/customers' },
-        { label: 'Integrations', href: '/fabricator/studio/data/integrations' },
+        { label: 'System library', href: fabricatorRoutes.studioData() },
+        { label: 'Profiles', href: fabricatorRoutes.studioData('profiles') },
+        { label: 'Operation templates', href: fabricatorRoutes.studioData('tuning') },
+        { label: 'Patterns', href: fabricatorRoutes.studioData('patterns') },
+        { label: 'Stock / remnants', href: fabricatorRoutes.studioDataStock() },
+        { label: 'Customers', href: fabricatorRoutes.studioData('customers') },
+        { label: 'Integrations', href: fabricatorRoutes.studioDataIntegrations() },
       ],
     },
     {
@@ -241,19 +307,24 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       title="Navigation"
       widthExpanded={280}
       widthCollapsed={48}
+      variant={narrow ? 'overlay' : 'docked'}
     >
       <div className="p-4">
-        {/* User Profile Mini */}
+        {/* User Profile Mini — from auth session, not placeholders */}
         <div className="mb-6 p-3 rounded-lg bg-gray-800/30 border border-gray-700/50">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full bg-amber-900/30 flex items-center justify-center">
-              <span className="text-lg font-semibold text-amber-300">F</span>
+              <span className="text-sm font-semibold text-amber-300">{initials}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-100 truncate">Fabricator User</p>
-              <p className="text-xs text-gray-400">Workshop Manager</p>
+              <p className="text-sm font-medium text-gray-100 truncate" title={displayName}>
+                {displayName}
+              </p>
+              <p className="text-xs text-gray-400 truncate" title={displayRole}>
+                {displayRole}
+              </p>
             </div>
-            <Bell size={16} className="text-gray-400" />
+            <Bell size={16} className="text-gray-400" aria-hidden />
           </div>
         </div>
         
@@ -310,17 +381,25 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
           </div>
         )}
         
-        {/* System Status */}
+        {/* Workspace persistence status — only show recorded save time */}
         <div className="mt-8 pt-6 border-t border-gray-800/50">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-gray-400">System Status</span>
+            <span className="text-xs font-medium text-gray-400">Workspace</span>
             <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" aria-label="System online" />
-              <span className="text-xs text-green-400">Online</span>
+              <div
+                className={cn(
+                  'w-2 h-2 rounded-full',
+                  savedLabel ? 'bg-green-500' : 'bg-amber-500',
+                )}
+                aria-hidden
+              />
+              <span className={cn('text-xs', savedLabel ? 'text-green-400' : 'text-amber-400')}>
+                {savedLabel ? 'Saved' : 'Unsaved'}
+              </span>
             </div>
           </div>
           <div className="text-xs text-gray-500">
-            Last sync: 2 min ago
+            {savedLabel ?? 'No local save recorded'}
           </div>
         </div>
       </div>

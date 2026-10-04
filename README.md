@@ -16,6 +16,8 @@ Fabricator Pro has a working position-based flow:
 
 The codebase includes authoritative position hydration, identity-scoped workflow state, deterministic manufacturing calculations, cutting-plan conservation checks, server-enforced QC approval, quote generation, production documents, Arabic/English interfaces, and digital machine/service features.
 
+**Latest workshop UX (2026-10-05):** Measuring after Egyptian project create is hardened for daily use — active-project header syncs on save/delete, empty `grid: {}` no longer crashes pose load, system/pattern pickers are scroll-safe on phone and desktop, cut preview matches the dark amber shell, pose cards support right-click edit/duplicate/delete, and the guided Size flow starts with a compact step strip. Active plan: [FP-028 Fabricator Design Studio Apex Accuracy](docs/plans/FP-028_FABRICATOR_DESIGN_STUDIO_APEX_ACCURACY.md).
+
 This is still an actively hardened industrial product. Passing CI means the software builds and its automated gates pass; it does not replace workshop validation. Production output must be checked by an authorized operator before material is cut or released.
 
 ## Product areas

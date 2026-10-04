@@ -57,19 +57,19 @@
     }
   },
   "dashboard": {
-    "title": "لوحة تحكم Fabricator Pro",
-    "subtitle": "إدارة الورشة المدعومة بالذكاء الاصطناعي مع رؤى في الوقت الفعلي",
+    "title": "مركز القيادة",
+    "subtitle": "قياس · تصميم · مخزون · إنتاج · خدمة",
     "performance": {
-      "title": "ملخص الأداء",
-      "optimization_speed": "سرعة التحسين",
-      "waste_reduction": "تقليل النفايات",
-      "ml_accuracy": "دقة التعلم الآلي"
+      "title": "جاهزية الورشة",
+      "optimization_speed": "تخطيط القطع",
+      "waste_reduction": "انضباط البقايا",
+      "ml_accuracy": "تحقق المشغّل"
     },
     "remnant_marketplace": {
-      "title": "سوق المخلفات",
-      "subtitle": "شراء وبيع المواد الزائدة عبر شبكة المصنعين"
+      "title": "تبادل البقايا",
+      "subtitle": "بقايا موثّقة فقط."
     },
-    "recent_optimizations": "التحسينات الأخيرة",
+    "recent_optimizations": "خطط القطع الأخيرة",
     "quick_actions": "إجراءات سريعة",
     "settings": "الإعدادات"
   },

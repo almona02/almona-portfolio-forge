@@ -82,7 +82,11 @@ export function mapPositionRowToWindowUnit(row: PositionV2Row): WindowUnit | nul
     quantity: row.quantity ?? 1,
     systemPackId: (row.system_pack_id ?? wu.systemPackId) as string | undefined,
     projectId: (row.project_id ?? wu.projectId) ?? undefined,
-    grid: (row.grid ?? wu.grid) as WindowUnit['grid'],
+    grid: (() => {
+      const raw = (row.grid ?? wu.grid) as WindowUnit['grid'] | null | undefined;
+      if (!raw || !(Number(raw.cols) > 0) || !(Number(raw.rows) > 0)) return undefined;
+      return raw;
+    })(),
     presetId: (row.selected_preset ?? wu.presetId) as string | undefined,
     measurementMode: wu.measurementMode as WindowUnit['measurementMode'],
     manufacturingWidth: row.overall_width_mm ?? undefined,
@@ -368,7 +372,11 @@ export const fabricatorClientV2 = {
       position_meta: (windowUnit.positionMeta ?? {}) as Record<string, unknown>,
       meta: { poseId: windowUnit.id, projectCode, saved_at: now },
       optimization: windowUnit.optimization ?? null,
-      grid: options?.grid ?? {},
+      grid: options?.grid && Number(options.grid.cols) > 0 && Number(options.grid.rows) > 0
+        ? options.grid
+        : (windowUnit.grid && Number(windowUnit.grid.cols) > 0 && Number(windowUnit.grid.rows) > 0
+          ? windowUnit.grid as Record<string, unknown>
+          : null),
       components: windowUnit.components ?? [],
       hardware: (windowUnit.hardware ?? {}) as Record<string, unknown>,
       selected_preset: options?.selectedPreset ?? null,

@@ -10,7 +10,7 @@ import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 import { StoredSystemPack, addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { ValidationError, getConstraintsForSystemPack, validateMeasurements } from '@/lib/fabricatorValidation';
 import { trackError } from '@/lib/performance-monitoring';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { cn } from '@/lib/utils';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Checkbox } from '@/shared/ui/ui/checkbox';
@@ -41,31 +41,31 @@ import {
   DEFAULT_MEASUREMENTS,
 } from './measuringConstants';
 
-// ✅ THEME: Centralized Blueprint Theme for Consistency and Accessibility
+// Workshop dark-amber blueprint theme (matches Fabricator shell)
 const DEFAULT_THEME = {
   stroke: {
-    primary: 'var(--blueprint-stroke-primary, #1f2937)', // slate-800
-    secondary: 'var(--blueprint-stroke-secondary, #4b5563)', // slate-600
-    highlight: 'var(--blueprint-stroke-highlight, #2563eb)', // blue-600
-    highlightActive: 'var(--blueprint-stroke-highlight-active, #1e40af)', // blue-800
-    structural: 'var(--blueprint-stroke-structural, #dc2626)', // red-600
-    grid: 'var(--blueprint-stroke-grid, #d1d5db)', // gray-300
-    marker: 'var(--blueprint-stroke-marker, #ffffff)', // white
+    primary: 'var(--blueprint-stroke-primary, #fbbf24)',
+    secondary: 'var(--blueprint-stroke-secondary, #d97706)',
+    highlight: 'var(--blueprint-stroke-highlight, #fcd34d)',
+    highlightActive: 'var(--blueprint-stroke-highlight-active, #f59e0b)',
+    structural: 'var(--blueprint-stroke-structural, #f87171)',
+    grid: 'var(--blueprint-stroke-grid, rgba(245, 158, 11, 0.18))',
+    marker: 'var(--blueprint-stroke-marker, #0a0a0a)',
   },
   fill: {
-    fixed: 'var(--blueprint-fill-fixed, rgba(59, 130, 246, 0.1))',
-    sash: 'var(--blueprint-fill-sash, rgba(34, 197, 94, 0.1))',
-    sliding: 'var(--blueprint-fill-sliding, rgba(234, 179, 8, 0.1))',
-    panel: 'var(--blueprint-fill-panel, rgba(107, 114, 128, 0.1))',
-    empty: 'var(--blueprint-fill-empty, rgba(239, 68, 68, 0.05))',
-    highlight: 'var(--blueprint-fill-highlight, rgba(37, 99, 235, 0.1))', // blue-600/10
+    fixed: 'var(--blueprint-fill-fixed, rgba(59, 130, 246, 0.22))',
+    sash: 'var(--blueprint-fill-sash, rgba(34, 197, 94, 0.22))',
+    sliding: 'var(--blueprint-fill-sliding, rgba(245, 158, 11, 0.28))',
+    panel: 'var(--blueprint-fill-panel, rgba(148, 163, 184, 0.18))',
+    empty: 'var(--blueprint-fill-empty, rgba(239, 68, 68, 0.12))',
+    highlight: 'var(--blueprint-fill-highlight, rgba(251, 191, 36, 0.12))',
   },
   text: {
-    primary: 'var(--blueprint-text-primary, #1f2937)', // slate-800
-    secondary: 'var(--blueprint-text-secondary, #6b7280)', // slate-500
-    highlight: 'var(--blueprint-text-highlight, #1e40af)', // blue-800
-    structural: 'var(--blueprint-text-structural, #dc2626)', // red-600
-  }
+    primary: 'var(--blueprint-text-primary, #fef3c7)',
+    secondary: 'var(--blueprint-text-secondary, #a8a29e)',
+    highlight: 'var(--blueprint-text-highlight, #fbbf24)',
+    structural: 'var(--blueprint-text-structural, #fca5a5)',
+  },
 };
 
 const HIGH_CONTRAST_THEME = {
@@ -153,13 +153,28 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     remarks: initialData?.remarks || '', // Text input - OK
   });
 
-  // Grid State for Phase 4
-  const hasAuthoritativeGrid = Boolean(initialData?.grid);
-  const [grid, setGrid] = useState<WindowGrid>(() => initialData?.grid ?? ({
-    rows: DEFAULT_GRID.DEFAULT_ROWS,
-    cols: DEFAULT_GRID.DEFAULT_COLS,
-    cells: [{ id: DEFAULT_GRID.DEFAULT_CELL_ID, row: 0, col: 0, type: 'fixed' }]
-  }));
+  // Grid State for Phase 4 — empty `{}` from savePose must not count as authoritative
+  const seededGrid = initialData?.grid;
+  const hasAuthoritativeGrid = Boolean(
+    seededGrid
+    && Number(seededGrid.cols) > 0
+    && Number(seededGrid.rows) > 0
+    && Array.isArray(seededGrid.cells),
+  );
+  const [grid, setGrid] = useState<WindowGrid>(() => (
+    hasAuthoritativeGrid && seededGrid
+      ? {
+          ...seededGrid,
+          cells: seededGrid.cells ?? [],
+          colWidths: seededGrid.colWidths,
+          rowHeights: seededGrid.rowHeights,
+        }
+      : {
+          rows: DEFAULT_GRID.DEFAULT_ROWS,
+          cols: DEFAULT_GRID.DEFAULT_COLS,
+          cells: [{ id: DEFAULT_GRID.DEFAULT_CELL_ID, row: 0, col: 0, type: 'fixed' as const }],
+        }
+  ));
 
   const [isGridLocked, setIsGridLocked] = useState(hasAuthoritativeGrid);
 
@@ -184,6 +199,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   const [isGridMode, setIsGridMode] = useState(hasAuthoritativeGrid);
   const [isSystemPackCollapsed, setIsSystemPackCollapsed] = useState(false);
+  /** When true, user opened the panel — stay open until they hide it (no auto-collapse). */
+  const [systemPackPinnedOpen, setSystemPackPinnedOpen] = useState(false);
+  /** Opening layout panel — open on desktop, compact closed bar on small screens. */
+  const [layoutPanelOpen, setLayoutPanelOpen] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches,
+  );
 
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(() => {
     if (systemPackId) return systemPackId;
@@ -204,7 +225,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [_isScanning, _setIsScanning] = useState(false);
   const [_validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [currentStep, setCurrentStep] = useState(0);
+  /** Skip system step when pack already chosen (typical after project create). */
+  const [currentStep, setCurrentStep] = useState(() => (systemPackId ? 1 : 0));
   const [selectedPatternId, setSelectedPatternId] = useState<string>(initialData?.presetId ?? ''); // Empty string is OK here - not used in Select value
   const [blueprintZoom, setBlueprintZoom] = useState<number>(BLUEPRINT_VIEW.DEFAULT_ZOOM); // Zoom level (1 = 100%, 1.2 = 120%, etc.)
   const [blueprintFullscreen, setBlueprintFullscreen] = useState<boolean>(false);
@@ -239,13 +261,13 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [tuningInitialSystem, setTuningInitialSystem] = useState<StoredSystemPack | null>(null);
   const [show3DPreview, setShow3DPreview] = useState(false);
 
-  // Defined Steps
+  // Workshop steps — short labels for daily measuring
   const STEPS = [
-    { id: 'system', title: t('smart_measuring.steps.system', 'System Configuration'), icon: Factory },
-    { id: 'dimensions', title: t('smart_measuring.steps.dimensions', 'Dimensions & Layout'), icon: Ruler },
-    { id: 'specs', title: t('smart_measuring.steps.specs', 'Glass & Specs'), icon: Box },
-    { id: 'location', title: t('smart_measuring.steps.location', 'Location Context'), icon: CheckCircle2 },
-    { id: 'verify', title: t('smart_measuring.steps.verify', 'Verification'), icon: ShieldCheck },
+    { id: 'system', title: t('smart_measuring.steps.system', 'System'), short: 'System', icon: Factory },
+    { id: 'dimensions', title: t('smart_measuring.steps.dimensions', 'Size'), short: 'Size', icon: Ruler },
+    { id: 'specs', title: t('smart_measuring.steps.specs', 'Glass'), short: 'Glass', icon: Box },
+    { id: 'location', title: t('smart_measuring.steps.location', 'Location'), short: 'Place', icon: CheckCircle2 },
+    { id: 'verify', title: t('smart_measuring.steps.verify', 'Confirm'), short: 'Confirm', icon: ShieldCheck },
   ];
 
   // Generate preview window unit from measurements for 3D visualization
@@ -291,12 +313,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   // Force blueprint to update when grid changes - include ALL grid properties for reactivity
   // Use JSON.stringify to ensure any grid change triggers update
   const blueprintKey = useMemo(() => {
-    if (!grid) return `blueprint-no-grid-${isGridMode}`;
+    if (!grid || !(Number(grid.cols) > 0) || !(Number(grid.rows) > 0)) {
+      return `blueprint-no-grid-${isGridMode}`;
+    }
     // Include all grid properties to ensure reactivity
     const gridHash = JSON.stringify({
       cols: grid.cols,
       rows: grid.rows,
-      cells: grid.cells.map(c => ({ id: c.id, row: c.row, col: c.col, type: c.type })),
+      cells: (grid.cells ?? []).map(c => ({ id: c.id, row: c.row, col: c.col, type: c.type })),
       colWidths: grid.colWidths,
       rowHeights: grid.rowHeights
     });
@@ -324,20 +348,22 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     const area = (width * height) / 1_000_000;
 
     const currentGrid = grid;
-    const showGrid = currentGrid && currentGrid.cols > 0 && currentGrid.rows > 0;
+    const showGrid = Boolean(currentGrid && currentGrid.cols > 0 && currentGrid.rows > 0);
     const selectedPattern: EgyptianPattern | undefined = selectedPatternId
       ? EGYPTIAN_PATTERNS.find(p => p.id === selectedPatternId)
       : undefined;
 
-    const colWeights = currentGrid.colWidths && currentGrid.colWidths.length === currentGrid.cols
+    const safeCols = showGrid ? currentGrid.cols : 1;
+    const safeRows = showGrid ? currentGrid.rows : 1;
+    const colWeights = showGrid && currentGrid.colWidths && currentGrid.colWidths.length === currentGrid.cols
       ? currentGrid.colWidths
-      : Array(currentGrid.cols).fill(1);
-    const rowWeights = currentGrid.rowHeights && currentGrid.rowHeights.length === currentGrid.rows
+      : Array(safeCols).fill(1);
+    const rowWeights = showGrid && currentGrid.rowHeights && currentGrid.rowHeights.length === currentGrid.rows
       ? currentGrid.rowHeights
-      : Array(currentGrid.rows).fill(1);
+      : Array(safeRows).fill(1);
 
-    const totalColWeight = colWeights.reduce((a, b) => a + b, 0);
-    const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0);
+    const totalColWeight = colWeights.reduce((a, b) => a + b, 0) || 1;
+    const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0) || 1;
 
     return {
       width,
@@ -576,15 +602,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
   };
 
-  // Auto-collapse only after pack + required profiles are confirmed
+  // Initial peek: auto-hide after 1s. Manual open stays until user clicks Hide.
   useEffect(() => {
-    if (selectedSystemPackId && profilesComplete && !isSystemPackCollapsed) {
-      const timer = setTimeout(() => {
-        setIsSystemPackCollapsed(true);
-      }, 1200);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedSystemPackId, profilesComplete, isSystemPackCollapsed]);
+    if (!selectedSystemPackId || isSystemPackCollapsed || systemPackPinnedOpen) return;
+    const timer = setTimeout(() => {
+      setIsSystemPackCollapsed(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [selectedSystemPackId, isSystemPackCollapsed, systemPackPinnedOpen]);
 
   // const startARScan = () => { ... };
 
@@ -598,44 +623,50 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         />
       )}
 
-      {/* System Pack Section - Full Width at Top */}
-      <div className="w-full card-glass-dark rounded-lg overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b-2 border-amber-600/30">
-          <div className="flex items-center gap-3 flex-1">
-            <Factory className="h-5 w-5 text-amber-500" />
-            <h3 className="typography-h3 text-amber-200">System Configuration</h3>
-            {activeSystemPack && (
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40">
-                {activeSystemPack.meta.name}
-              </Badge>
-            )}
+      {/* System pack — capped height + internal scroll so measuring stays usable on all screens */}
+      <div
+        className={cn(
+          'w-full rounded-lg border border-amber-600/25 bg-slate-950/80 overflow-hidden flex flex-col shrink-0',
+          !isSystemPackCollapsed && 'max-h-[min(70vh,520px)]',
+        )}
+      >
+        {!isSystemPackCollapsed && (
+          <div className="sticky top-0 z-10 flex items-center justify-between gap-2 px-3 py-2 border-b border-amber-600/25 bg-slate-950/95 backdrop-blur-sm">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <Factory className="h-4 w-4 text-amber-500 shrink-0" />
+              <h3 className="text-sm font-semibold text-amber-200 truncate">Change system</h3>
+              {activeSystemPack && (
+                <Badge className="bg-amber-500/15 text-amber-200 border-amber-500/35 shrink-0 text-[10px] max-w-[40%] truncate">
+                  {activeSystemPack.meta.name}
+                </Badge>
+              )}
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSystemPackPinnedOpen(false);
+                setIsSystemPackCollapsed(true);
+              }}
+              className="h-8 text-amber-400 hover:text-amber-300 shrink-0 px-2"
+              aria-label="Hide system picker"
+            >
+              <ChevronUp className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Hide</span>
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsSystemPackCollapsed(!isSystemPackCollapsed)}
-            className="text-amber-400 hover:text-amber-300"
-          >
-            {isSystemPackCollapsed ? (
-              <>
-                <ChevronDown className="h-4 w-4 mr-1" />
-                Expand
-              </>
-            ) : (
-              <>
-                <ChevronUp className="h-4 w-4 mr-1" />
-                Collapse
-              </>
-            )}
-          </Button>
-        </div>
+        )}
 
         {!isSystemPackCollapsed ? (
-          <div className="p-6 space-y-6">
-            {/* Prestige System Pack Selector */}
-            <div className="card-glass-dark p-6 relative z-10">
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 space-y-3">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">
+                Packs — swipe on phone, scroll on desktop
+              </p>
               <PrestigeSystemPackSelector
                 selectedSystemId={selectedSystemPackId}
+                packs={availableSystemPacks}
                 onSelect={(value) => {
                   if (value === 'custom') {
                     const currentPack = availableSystemPacks.find((p) => p.meta.id === selectedSystemPackId);
@@ -645,22 +676,21 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   }
                   setSelectedSystemPackId(value);
                 }}
-                allowedSystemIds={availableSystemPacks.map(p => p.meta.id)}
-                showPatternCount={true}
+                allowedSystemIds={availableSystemPacks.map((p) => p.meta.id)}
+                showPatternCount
               />
             </div>
 
-            {/* System Profile Selections */}
             {systemPackRoleOptions.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                 {systemPackRoleOptions.map((role) => {
                   const fieldKey = `systemProfile.${role.id}`;
                   const error = getFieldError(fieldKey);
                   const value = (systemProfileSelections[role.id as keyof SystemProfileSelections] as string) || undefined;
 
                   return (
-                    <div key={role.id} className="space-y-1.5">
-                      <Label className="typography-label text-[11px]">{role.label}</Label>
+                    <div key={role.id} className="space-y-1 min-w-0">
+                      <Label className="text-[11px] text-slate-400">{role.label}</Label>
                       <Select
                         value={value}
                         onValueChange={(code) =>
@@ -668,43 +698,41 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         }
                       >
                         <SelectTrigger
-                          className={`bg-slate-800/50 border-slate-700/50 h-9 text-xs text-slate-100 focus:ring-amber-500/30 focus:border-amber-500/30 ${error ? 'border-red-500' : ''
-                            }`}
+                          className={`bg-slate-900/80 border-slate-700/60 h-9 text-xs text-slate-100 ${
+                            error ? 'border-red-500' : ''
+                          }`}
                         >
                           <SelectValue placeholder={`Select ${role.label}`} />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50 text-slate-200">
+                        <SelectContent className="bg-slate-900 border-slate-700 text-slate-200 max-h-[40vh]">
                           {role.options.map((opt) => (
                             <SelectItem
                               key={opt.code}
                               value={opt.code}
-                              className="text-xs focus:bg-slate-800/80 focus:text-amber-400"
+                              className="text-xs focus:bg-slate-800 focus:text-amber-300"
                             >
-                              {opt.label} ({opt.code})
+                              {opt.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      {error && (
-                        <p className="text-xs text-red-400">{error}</p>
-                      )}
+                      {error && <p className="text-xs text-red-400">{error}</p>}
                     </div>
                   );
                 })}
               </div>
             )}
 
-            {/* Custom System Manager (if needed) */}
-            {selectedSystemPackId && availableSystemPacks.find(p => p.meta.id === selectedSystemPackId)?.meta.id.startsWith('custom') && (
-              <div className="bg-slate-800/40 border border-slate-700 /50 rounded-lg p-4 card-dark">
+            {selectedSystemPackId?.startsWith('custom') && (
+              <div className="rounded-lg border border-slate-700/60 bg-slate-900/50 p-3">
                 <CustomSystemManager
                   systemId={selectedSystemPackId}
-                  systemName={availableSystemPacks.find(p => p.meta.id === selectedSystemPackId)?.meta.name || 'Custom System'}
+                  systemName={availableSystemPacks.find((p) => p.meta.id === selectedSystemPackId)?.meta.name || 'Custom System'}
                   onDelete={refreshCustomSystems}
                   onArchive={refreshCustomSystems}
                   onDuplicate={refreshCustomSystems}
                   onEdit={() => {
-                    const currentPack = availableSystemPacks.find(p => p.meta.id === selectedSystemPackId);
+                    const currentPack = availableSystemPacks.find((p) => p.meta.id === selectedSystemPackId);
                     setTuningInitialSystem((currentPack as StoredSystemPack) || null);
                     setShowTuningStudio(true);
                   }}
@@ -712,30 +740,23 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               </div>
             )}
 
-            {region === 'egypt' && (
-              <Alert className="bg-slate-900/40 border-amber-600/40 text-amber-100">
-                <Factory className="h-4 w-4" />
-                <AlertDescription>
-                  {t(
-                    'smart_measuring.system_config.catalog_note',
-                    'Egypt catalog default: ROCK 60. Confirm frame, sash, and bead codes before measuring.',
-                  )}
-                </AlertDescription>
-              </Alert>
-            )}
-            {!profilesComplete && (
+            {!profilesComplete && systemPackRoleOptions.length > 0 && (
               <p className="text-xs text-amber-300/90">
-                Select all profile codes ({selectedProfileCount}/{systemPackRoleOptions.length}) before collapsing.
+                Profiles {selectedProfileCount}/{systemPackRoleOptions.length} — finish before production.
               </p>
             )}
           </div>
         ) : (
           <button
             type="button"
-            onClick={() => setIsSystemPackCollapsed(false)}
-            className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-amber-500/5"
+            onClick={() => {
+              setSystemPackPinnedOpen(true);
+              setIsSystemPackCollapsed(false);
+            }}
+            className="w-full px-3 py-2.5 flex items-center justify-between text-left hover:bg-amber-500/5"
+            aria-label="Show system picker"
           >
-            <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-2 min-w-0">
               <Factory className="h-4 w-4 text-amber-500 shrink-0" />
               <span className="text-sm text-amber-200 truncate">
                 {activeSystemPack?.meta.name || 'No system selected'}
@@ -746,86 +767,173 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     profilesComplete ? 'text-emerald-400/80' : 'text-amber-400'
                   }`}
                 >
-                  ({selectedProfileCount}/{systemPackRoleOptions.length} profiles)
+                  ({selectedProfileCount}/{systemPackRoleOptions.length})
                 </span>
               )}
             </div>
-            {!profilesComplete && (
-              <span className="text-xs text-amber-400 shrink-0 ml-2">Tap to finish</span>
-            )}
+            <span className="flex items-center gap-1 text-xs text-amber-400 shrink-0 ml-2">
+              Change
+              <ChevronDown className="h-3.5 w-3.5" />
+            </span>
           </button>
         )}
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(420px,auto)_minmax(520px,1fr)]">
-      {/* Smart Draw Card - Alongside the guided measuring form */}
-      {selectedSystemPackId && (
-        <div className="order-2 w-full card-glass-dark rounded-lg overflow-hidden min-h-[420px] flex flex-col lg:col-start-2 lg:row-start-1">
-          <div className="p-4 border-b-2 border-amber-600/30 flex-shrink-0">
-            <h3 className="typography-h3 text-amber-200 flex items-center gap-2">
-              <Grid3X3 className="h-5 w-5 text-amber-500" />
-              Smart Draw Canvas
-            </h3>
-          </div>
-          <div className="flex-1 overflow-auto p-6">
-            <SmartDrawCanvas
-              width={Number(measurements.width) || 1000}
-              height={Number(measurements.height) || 1000}
-              grid={grid}
-              onGridChange={setGrid}
-              className="btn-secondary-dark"
-              availablePatterns={availablePatterns}
-              selectedPatternId={selectedPatternId}
-              onPatternSelect={(val) => setSelectedPatternId(val || '')}
-              systemPackId={selectedSystemPackId}
-            />
-            {/* Prediction Feedback */}
-            {!isGridLocked && predictionReason && (
-              <div className="absolute top-4 right-4 bg-amber-900/80 backdrop-blur text-amber-100 text-xs px-3 py-1.5 rounded-full border border-amber-500/30 flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
-                <Sparkles className="h-3 w-3 text-amber-400" />
-                {predictionReason}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(280px,auto)_minmax(0,1fr)]">
+      {/* Opening layout — daily workshop preview + edit (alongside guided form) */}
+      {selectedSystemPackId && (() => {
+        const layoutW = Math.max(1, Number(measurements.width) || 1000);
+        const layoutH = Math.max(1, Number(measurements.height) || 1000);
+        const layoutCols = Number(grid?.cols) > 0 ? Number(grid.cols) : 1;
+        const layoutRows = Number(grid?.rows) > 0 ? Number(grid.rows) : 1;
+        const cellCount = Array.isArray(grid?.cells) ? grid.cells.length : 0;
+        return (
+        <div className={`order-2 w-full card-glass-dark rounded-lg overflow-hidden flex flex-col lg:col-start-2 lg:row-start-1 ${layoutPanelOpen ? 'min-h-[280px] lg:min-h-[360px]' : ''}`}>
+          <div className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 border-b-2 border-amber-600/30 flex-shrink-0">
+            <button
+              type="button"
+              className="flex min-w-0 flex-1 items-center gap-2 text-left rounded-md hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40"
+              onClick={() => setLayoutPanelOpen((open) => !open)}
+              aria-expanded={layoutPanelOpen}
+              aria-label={layoutPanelOpen ? 'Hide opening layout' : 'Show opening layout'}
+            >
+              <Grid3X3 className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <h3 className="text-sm font-semibold text-amber-200 truncate">
+                  Opening layout
+                </h3>
+                <p className="truncate font-mono text-[11px] text-slate-500">
+                  {Math.round(layoutW)} × {Math.round(layoutH)} mm · {layoutCols}×{layoutRows}
+                  {cellCount > 0 ? ` · ${cellCount} pane${cellCount === 1 ? '' : 's'}` : ''}
+                  {isGridLocked ? ' · locked' : ' · auto'}
+                </p>
               </div>
-            )}
-
-            {/* Grid Lock Control */}
-            <div className="absolute bottom-4 right-4">
-              <Button
-                size="sm"
-                variant={isGridLocked ? "secondary" : "ghost"}
-                className={`text-xs h-7 ${isGridLocked ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-black/40 text-slate-300 hover:bg-black/60'}`}
-                onClick={() => setIsGridLocked(!isGridLocked)}
-              >
-                {isGridLocked ? <div className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> Grid Locked</div> : "Auto-Layout Active"}
-              </Button>
-            </div>
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 text-amber-500/80 transition-transform lg:hidden ${layoutPanelOpen ? 'rotate-180' : ''}`}
+                aria-hidden
+              />
+            </button>
+            <Button
+              type="button"
+              size="sm"
+              variant={isGridLocked ? 'secondary' : 'outline'}
+              className={`h-8 shrink-0 text-xs ${
+                isGridLocked
+                  ? 'bg-amber-600 hover:bg-amber-700 text-white border-transparent'
+                  : 'border-amber-600/40 text-amber-100 hover:bg-amber-500/10'
+              }`}
+              onClick={() => setIsGridLocked((locked) => !locked)}
+              title={
+                isGridLocked
+                  ? 'Layout is locked — size changes will not rewrite panes'
+                  : 'Auto layout may update panes when width/height change'
+              }
+            >
+              {isGridLocked ? (
+                <>
+                  <ShieldCheck className="h-3.5 w-3.5 mr-1" />
+                  Locked
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-3.5 w-3.5 mr-1" />
+                  Auto
+                </>
+              )}
+            </Button>
           </div>
-        </div>
-      )}
 
-      {/* Left Panel: The Guided Form */}
-      <div className="order-1 w-full flex flex-col card-glass-dark rounded-lg overflow-hidden min-h-0 relative lg:col-start-1 lg:row-start-1 lg:row-span-2">
-        {/* Classical texture overlay */}
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(245, 158, 11, 0.1) 2px, rgba(245, 158, 11, 0.1) 4px)'
-        }} />
-        {/* Step Progress Indicator */}
-        <div className="flex items-center p-4 border-b-2 border-amber-600/30 space-x-2 flex-shrink-0 relative z-10">
-          {STEPS.map((step, idx) => (
-            <div
-              key={step.id}
-              className={`h-1 flex-1 rounded-full transition-all duration-500 ${idx <= currentStep ? 'bg-amber-500 shadow-glow-strong' : 'bg-[#1a1a1a] border border-amber-600/20'
-                }`}
-            />
-          ))}
+          {layoutPanelOpen && (
+            <div className="relative flex-1 min-h-0 flex flex-col">
+              {!isGridLocked && predictionReason && (
+                <div className="px-3 py-1.5 border-b border-amber-600/20 bg-amber-950/40 text-[11px] text-amber-100/90 flex items-start gap-2">
+                  <Sparkles className="h-3 w-3 text-amber-400 shrink-0 mt-0.5" />
+                  <span className="min-w-0 leading-snug">{predictionReason}</span>
+                  <button
+                    type="button"
+                    className="shrink-0 text-amber-300/80 hover:text-amber-200 underline-offset-2 hover:underline"
+                    onClick={() => setIsGridLocked(true)}
+                  >
+                    Keep this
+                  </button>
+                </div>
+              )}
+              <div className="flex-1 overflow-auto p-2 sm:p-3 min-h-[220px]">
+                <SmartDrawCanvas
+                  width={layoutW}
+                  height={layoutH}
+                  grid={grid}
+                  onGridChange={(next) => {
+                    setGrid(next);
+                    setIsGridMode(true);
+                  }}
+                  className="btn-secondary-dark w-full"
+                  availablePatterns={availablePatterns}
+                  selectedPatternId={selectedPatternId}
+                  onPatternSelect={(val) => {
+                    setSelectedPatternId(val || '');
+                    setIsGridMode(true);
+                    if (val) setIsGridLocked(true);
+                  }}
+                  systemPackId={selectedSystemPackId}
+                />
+              </div>
+              <p className="px-3 py-1.5 text-[10px] text-slate-500 border-t border-amber-600/15 shrink-0">
+                Tap a pane to set fixed / sash / sliding. Use Locked so size edits do not rewrite your layout.
+              </p>
+            </div>
+          )}
         </div>
-        <div className="p-4 flex-shrink-0 relative z-10">
-          <h2 className="typography-h2 text-amber-200 flex items-center gap-2 text-shadow-glow-subtle">
-            <span className="text-amber-400 font-bold text-shadow-glow-strong">0{currentStep + 1}.</span> {STEPS[currentStep].title}
-          </h2>
+        );
+      })()}
+
+      {/* Left Panel: Guided measuring form */}
+      <div className="order-1 w-full flex flex-col card-glass-dark rounded-lg overflow-hidden min-h-0 bg-slate-950/80 lg:col-start-1 lg:row-start-1 lg:row-span-2">
+        <div className="flex-shrink-0 border-b border-amber-600/25 px-2 pt-2 pb-2 sm:px-3">
+          <div className="flex items-center justify-between gap-2 mb-2 px-1">
+            <h2 className="text-sm font-semibold text-amber-200 truncate">
+              {STEPS[currentStep].title}
+              {poseLabel ? (
+                <span className="ml-2 font-normal text-slate-500">{poseLabel}</span>
+              ) : null}
+            </h2>
+            <span className="shrink-0 font-mono text-[11px] text-amber-300/90 tabular-nums">
+              {Math.round(Number(measurements.width) || 0)} × {Math.round(Number(measurements.height) || 0)} mm
+            </span>
+          </div>
+          <nav aria-label="Measuring steps" className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-thin">
+            {STEPS.map((step, idx) => {
+              const StepIcon = step.icon;
+              const active = idx === currentStep;
+              const done = idx < currentStep;
+              return (
+                <button
+                  key={step.id}
+                  type="button"
+                  onClick={() => setCurrentStep(idx)}
+                  className={`flex items-center gap-1 shrink-0 rounded-md px-2 py-1.5 text-[11px] font-medium transition-colors ${
+                    active
+                      ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50'
+                      : done
+                        ? 'text-emerald-300/90 border border-transparent hover:bg-amber-500/10'
+                        : 'text-slate-500 border border-transparent hover:bg-slate-800/80 hover:text-slate-300'
+                  }`}
+                  aria-current={active ? 'step' : undefined}
+                >
+                  {done && !active ? (
+                    <CheckCircle2 className="h-3 w-3" aria-hidden />
+                  ) : (
+                    <StepIcon className="h-3 w-3" aria-hidden />
+                  )}
+                  <span>{step.short}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
         {/* Form Content Container */}
-        <div className="flex-1 overflow-y-auto p-4 relative min-h-0">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 relative min-h-0">
           <AnimatePresence mode='wait' custom={currentStep}>
             <motion.div
               key={currentStep}
@@ -836,12 +944,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="space-y-6"
             >
-              {/* STEP 1: System checklist (controls live in top dropdown) */}
+              {/* STEP 1: System checklist (pack selector lives in top bar) */}
               {currentStep === 0 && (
-                <div className="space-y-4">
-                  <div className="rounded-lg border border-amber-600/40 bg-slate-950/50 p-4 space-y-3">
+                <div className="space-y-3">
+                  <div className="rounded-lg border border-amber-600/30 bg-slate-950/60 p-3 space-y-3">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-semibold text-amber-200">System checklist</span>
+                      <span className="text-sm font-semibold text-amber-200">System check</span>
                       <Badge
                         className={
                           profilesComplete
@@ -849,102 +957,78 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                             : 'bg-amber-500/20 text-amber-200 border-amber-500/40'
                         }
                       >
-                        {profilesComplete ? 'Ready' : 'Incomplete'}
+                        {profilesComplete ? 'Ready' : 'Needs profiles'}
                       </Badge>
                     </div>
-                    <ul className="space-y-2 text-sm text-slate-300">
+                    <ul className="space-y-1.5 text-sm text-slate-300">
                       <li className="flex items-center gap-2">
                         {selectedSystemPackId ? (
-                          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                          <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
                         ) : (
-                          <Factory className="h-4 w-4 text-amber-400" />
+                          <Factory className="h-4 w-4 text-amber-400 shrink-0" />
                         )}
-                        Pack: {activeSystemPack?.meta.name || 'Not selected'}
+                        <span className="truncate">{activeSystemPack?.meta.name || 'No pack selected'}</span>
                       </li>
                       {systemPackRoleOptions.map((role) => {
                         const code = systemProfileSelections[role.id as keyof SystemProfileSelections];
                         return (
                           <li key={role.id} className="flex items-center gap-2">
                             {code ? (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
                             ) : (
-                              <Box className="h-4 w-4 text-amber-400" />
+                              <Box className="h-4 w-4 text-amber-400 shrink-0" />
                             )}
-                            {role.label}: {code || 'Select above'}
+                            <span className="truncate">{role.label}: {code || '—'}</span>
                           </li>
                         );
                       })}
                     </ul>
-                    {!profilesComplete && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="w-full border-amber-500/50 text-amber-100"
-                        onClick={() => setIsSystemPackCollapsed(false)}
-                      >
-                        Open System Configuration
-                      </Button>
-                    )}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full border-amber-500/50 text-amber-100"
+                      onClick={() => {
+                        setSystemPackPinnedOpen(true);
+                        setIsSystemPackCollapsed(false);
+                      }}
+                    >
+                      {profilesComplete ? 'Change system' : 'Choose profiles'}
+                    </Button>
                   </div>
                 </div>
               )}
 
               {/* STEP 2: Dimensions & Layout */}
               {currentStep === 1 && (
-                <div className="space-y-6">
-                  {/* Window Dimensions Display - Top of Card */}
-                  <div className="card-dark p-4 border-2 border-amber-600/30 rounded-lg relative z-10">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Ruler className="h-4 w-4 text-amber-400" />
-                        <span className="text-sm font-semibold text-amber-300 uppercase tracking-wide">
-                          {poseLabel ? `${poseLabel} — Window Dimensions` : 'Window Dimensions'}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-center">
-                          <div className="text-xs text-amber-500/80 font-medium">Width</div>
-                          <div className="font-mono text-xl font-bold text-amber-300 text-shadow-glow-subtle">{Number(measurements.width || 0).toFixed(0)} mm</div>
-                        </div>
-                        <div className="text-amber-600/50 text-2xl">×</div>
-                        <div className="text-center">
-                          <div className="text-xs text-amber-500/80 font-medium">Height</div>
-                          <div className="font-mono text-xl font-bold text-amber-300 text-shadow-glow-subtle">{Number(measurements.height || 0).toFixed(0)} mm</div>
-                        </div>
-                        <div className="text-amber-600/30 text-xl">|</div>
-                        <div className="text-center">
-                          <div className="text-xs text-amber-500/80 font-medium">Area</div>
-                          <div className="font-mono text-base font-semibold text-amber-400">
-                            {((Number(measurements.width || 0) * Number(measurements.height || 0)) / 1_000_000).toFixed(2)} m²
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                <div className="space-y-4">
+                  <div className="rounded-lg border border-amber-600/30 bg-slate-950/50 px-3 py-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-[10px] uppercase tracking-wider text-slate-500">Cut size</span>
+                    <span className="font-mono text-lg font-semibold text-amber-200 tabular-nums">
+                      {Math.round(Number(measurements.width) || 0)} × {Math.round(Number(measurements.height) || 0)} mm
+                    </span>
+                    <span className="font-mono text-xs text-slate-500 tabular-nums">
+                      {((Number(measurements.width || 0) * Number(measurements.height || 0)) / 1_000_000).toFixed(2)} m²
+                    </span>
                   </div>
 
-                  {/* Prestige Egyptian Pattern Selector */}
-                  <div className="card-glass-dark p-6 relative z-10">
-                    {availablePatterns.length === 0 ? (
-                      <div className="text-center py-8">
-                        <p className="text-slate-400 mb-2">No patterns available for this system.</p>
-                        <p className="text-sm text-slate-500">Select a different system to see patterns.</p>
-                      </div>
-                    ) : (
+                  {availablePatterns.length > 0 && (
+                    <div className="rounded-lg border border-amber-600/25 bg-slate-950/50 p-2.5 sm:p-3">
                       <EgyptianPatternSelector
                         selectedPatternId={selectedPatternId || undefined}
-                        onSelect={(patternId, grid) => {
+                        onSelect={(patternId, nextGrid) => {
                           setSelectedPatternId(patternId);
-                          const pattern = availablePatterns.find(p => p.id === patternId);
-                          if (pattern) {
-                            setGrid(grid);
-                          }
+                          setGrid(nextGrid);
+                          setIsGridMode(true);
+                          setIsGridLocked(true);
+                        }}
+                        onClear={() => {
+                          setSelectedPatternId('');
                         }}
                         currentSystemId={selectedSystemPackId}
-                        defaultShowDetails={false}
                       />
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Enhanced Measurement Tools with Real-time Validation */}
                   <EnhancedMeasurementTools
@@ -1025,7 +1109,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     <div className="flex items-center justify-between">
                       <Label className="typography-label flex items-center gap-2 cursor-pointer text-slate-200">
                         <Grid3X3 className="h-4 w-4 text-amber-400" />
-                        <span>{t('smart_measuring.dimensions.grid_mode', 'Grid / Multi-Unit Mode')}</span>
+                        <span>{t('smart_measuring.dimensions.grid_mode', 'Multi-pane layout')}</span>
                       </Label>
                       <Toggle
                         pressed={isGridMode}
@@ -1040,7 +1124,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     {isGridMode ? (
                       <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                         <p className="text-xs text-amber-600/70">
-                          {t('smart_measuring.dimensions.grid_description', 'Design complex multi-unit windows by defining rows and columns. The Smart Draw Canvas is now available in the dedicated section above.')}
+                          {t('smart_measuring.dimensions.grid_description', 'Define rows and columns for multi-pane openings. Edit panes in Opening layout (tap panes: fixed / sash / sliding).')}
                         </p>
                       </div>
                     ) : (
@@ -1294,23 +1378,18 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 </div>
               )}
 
-              {/* STEP 5: Verification Gate */}
+              {/* STEP 5: Confirm cut size before save */}
               {currentStep === 4 && (
-                <div className="space-y-6">
-                  <div className="card-dark p-4 shadow-glow-strong">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="typography-h3 text-amber-400 flex items-center gap-2 text-shadow-glow">
-                        <ShieldCheck className="h-5 w-5" /> {t('smart_measuring.verification.trust_verify', 'Trust but Verify')}
-                      </h3>
-                      <Badge variant="outline" className="btn-secondary-dark">
-                        {t('smart_measuring.verification.calibration_accuracy', 'Calibration Accuracy: 98%')}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-amber-300/90 mb-4">
-                      {t('smart_measuring.verification.description', 'The system has calculated cut dimensions based on your inputs and profile calibration data. Please verify these critical dimensions against site conditions to prevent waste.')}
+                <div className="space-y-4">
+                  <div className="rounded-lg border border-amber-600/30 bg-slate-950/60 p-3 space-y-3">
+                    <h3 className="text-sm font-semibold text-amber-200 flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4 text-amber-500" />
+                      Check cut size
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Confirm these millimetres match the site or shop drawing before saving.
                     </p>
-
-                    <div className="space-y-3 text-sm card-dark p-3 rounded">
+                    <div className="space-y-2 text-sm">
                       {(() => {
                         const rawWidth = Number(measurements.width || 0);
                         const rawHeight = Number(measurements.height || 0);
@@ -1320,22 +1399,19 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         const manufacturingHeight = isHoleMode ? rawHeight - deduction : rawHeight;
                         return (
                           <>
-                            <div className="flex justify-between items-center">
-                              <span className="text-amber-500/80 font-semibold">{t('smart_measuring.verification.overall_width', 'Overall Width Input:')}</span>
-                              <span className="font-mono text-amber-200 text-base text-shadow-glow-subtle">{rawWidth} mm</span>
+                            <div className="flex justify-between gap-2">
+                              <span className="text-slate-500">Entered</span>
+                              <span className="font-mono text-amber-100 tabular-nums">{rawWidth} × {rawHeight} mm</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-amber-500/80 font-semibold">{t('smart_measuring.verification.overall_height', 'Overall Height Input:')}</span>
-                              <span className="font-mono text-amber-200 text-base text-shadow-glow-subtle">{rawHeight} mm</span>
+                            <div className="flex justify-between gap-2">
+                              <span className="text-slate-500">Mode</span>
+                              <span className="text-slate-300">{isHoleMode ? `Hole (−${deduction} mm)` : 'Manufacturing'}</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-amber-500/80 font-semibold">{t('smart_measuring.verification.deduction', 'Deduction (Wall Tolerance):')}</span>
-                              <span className="font-mono text-red-400">- {isHoleMode ? deduction : 0} mm</span>
-                            </div>
-                            <div className="btn-primary" />
-                            <div className="flex justify-between items-center font-bold">
-                              <span className="text-amber-400 text-shadow-glow">{t('smart_measuring.verification.calculated_cut', 'Calculated Cut Length:')}</span>
-                              <span className="font-mono text-amber-300 text-lg text-shadow-glow-strong">{manufacturingWidth.toFixed(0)} × {manufacturingHeight.toFixed(0)} mm</span>
+                            <div className="flex justify-between gap-2 border-t border-amber-600/20 pt-2 font-semibold">
+                              <span className="text-amber-200">Cut size</span>
+                              <span className="font-mono text-amber-100 tabular-nums text-base">
+                                {Math.max(0, manufacturingWidth).toFixed(0)} × {Math.max(0, manufacturingHeight).toFixed(0)} mm
+                              </span>
                             </div>
                           </>
                         );
@@ -1343,17 +1419,17 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-3 p-3 card-dark rounded-lg">
+                  <label className="flex items-start gap-3 rounded-lg border border-amber-600/25 bg-slate-950/40 p-3 cursor-pointer">
                     <Checkbox
                       id="verify"
                       checked={verificationConfirmed as boolean}
                       onCheckedChange={setVerificationConfirmed}
-                      className="btn-primary"
+                      className="mt-0.5"
                     />
-                    <Label htmlFor="verify" className="typography-label text-sm text-amber-200 cursor-pointer select-none font-semibold">
-                      {t('smart_measuring.verification.confirm_text', 'I verify these dimensions match site requirements and accept responsibility for production.')}
-                    </Label>
-                  </div>
+                    <span className="text-sm text-amber-100/90 leading-snug">
+                      I checked the cut size against the opening / drawing.
+                    </span>
+                  </label>
                 </div>
               )}
             </motion.div>
@@ -1361,7 +1437,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         </div>
 
         {/* Footer Navigation */}
-        <div className="p-4 border-t-2 border-amber-600/30 flex flex-col sm:flex-row justify-between gap-2 -sm flex-shrink-0 relative z-10 card-glass-dark">
+        <div className="p-2.5 sm:p-3 border-t border-amber-600/25 flex flex-col sm:flex-row justify-between gap-2 flex-shrink-0 bg-slate-950/90">
           <Button variant="ghost" disabled={currentStep === 0} onClick={prevStep} className="btn-secondary-dark">
             <ArrowLeft className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.previous', 'Back')}
           </Button>
@@ -1404,107 +1480,113 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             </div>
           ) : (
             <Button onClick={nextStep} className="btn-primary-gradient font-bold w-full sm:w-auto">
-              {t('smart_measuring.actions.next', 'Next Step')} <ArrowRight className="ml-2 h-4 w-4" />
+              {t('smart_measuring.actions.next', 'Next')} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
         </div>
       </div>
 
-      {/* Right Panel: Clean Blueprint Preview - Responsive */}
-      <div className="order-3 w-full bg-white rounded-xl border border-gray-200 relative overflow-hidden shadow-sm min-h-[520px] min-w-0 flex flex-col lg:col-start-2 lg:row-start-2">
+      {/* Right Panel: Measurement blueprint (dark amber, matches studio) */}
+      <div className="order-3 w-full rounded-lg border border-amber-600/30 bg-slate-950 relative overflow-hidden min-h-[280px] sm:min-h-[360px] lg:min-h-[420px] min-w-0 flex flex-col lg:col-start-2 lg:row-start-2">
         {/* Header with Zoom Controls */}
-        <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-          <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-medium text-xs px-2 sm:px-3 py-1">
+        <div className="absolute top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+          <Badge className="bg-amber-500/15 text-amber-200 border-amber-500/40 font-medium text-xs px-2 sm:px-2.5 py-1 w-fit">
             <Ruler className="h-3 w-3 mr-1 sm:mr-1.5" />
-            <span className="hidden sm:inline">Measurement Preview</span>
+            <span className="hidden sm:inline">Cut preview</span>
             <span className="sm:hidden">Preview</span>
           </Badge>
-          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
             {activeSystemPack && (
-              <div className="text-xs text-gray-600 bg-white/90 backdrop-blur px-3 py-1 rounded border border-gray-200">
-                <span className="font-semibold">{activeSystemPack.meta.name}</span>
+              <div className="text-[11px] text-amber-100/90 bg-slate-900/90 backdrop-blur px-2 py-1 rounded-md border border-amber-600/30 max-w-[9rem] truncate">
+                <span className="font-medium">{activeSystemPack.meta.name}</span>
               </div>
             )}
             {/* Zoom Controls */}
-            <div className="flex items-center gap-1 bg-white/90 backdrop-blur rounded border border-gray-200 p-1 shadow-sm">
+            <div className="flex items-center gap-0.5 bg-slate-900/90 backdrop-blur rounded-md border border-amber-600/30 p-0.5 sm:p-1">
               <button
+                type="button"
                 onClick={() => setHighContrast(!highContrast)}
-                className={`p-1.5 rounded transition-colors ${highContrast ? 'bg-black text-yellow-400 font-bold' : 'hover:bg-gray-100 text-gray-600'}`}
-                title={highContrast ? "Disable High Contrast" : "Enable High Contrast"}
-                aria-label={highContrast ? "Disable High Contrast" : "Enable High Contrast"}
+                className={`p-1.5 rounded transition-colors ${highContrast ? 'bg-amber-500 text-slate-950' : 'hover:bg-amber-500/15 text-slate-400'}`}
+                title={highContrast ? 'Disable High Contrast' : 'Enable High Contrast'}
+                aria-label={highContrast ? 'Disable High Contrast' : 'Enable High Contrast'}
                 aria-pressed={highContrast}
               >
                 <Contrast className="h-4 w-4" />
               </button>
-              <div className="w-px h-4 bg-gray-300 mx-1" />
+              <div className="w-px h-4 bg-amber-600/30 mx-0.5" />
               <button
+                type="button"
                 onClick={() => setBlueprintZoom(prev => Math.max(0.5, prev - 0.1))}
-                className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                className="p-1.5 hover:bg-amber-500/15 rounded transition-colors text-slate-300"
                 title="Zoom Out (Ctrl + Scroll Down)"
                 aria-label="Zoom Out"
               >
-                <ZoomOut className="h-4 w-4 text-gray-600" />
+                <ZoomOut className="h-4 w-4" />
               </button>
               <span
-                className={`text-xs font-mono px-2 min-w-[3rem] text-center transition-colors ${blueprintZoom !== 1
-                  ? 'text-amber-600 font-bold bg-amber-50 rounded px-2 py-0.5'
-                  : 'text-slate-700'
-                  }`}
-                title={blueprintZoom !== 1 ? "Press Escape to reset to 100%" : "Zoom Level"}
+                className={`text-xs font-mono min-w-[2.75rem] text-center tabular-nums ${
+                  blueprintZoom !== 1
+                    ? 'text-amber-300 font-semibold bg-amber-500/15 rounded px-1.5 py-0.5'
+                    : 'text-slate-400'
+                }`}
+                title={blueprintZoom !== 1 ? 'Press Escape to reset to 100%' : 'Zoom Level'}
               >
                 {Math.round(blueprintZoom * 100)}%
               </span>
 
-              {/* 3D Preview Button */}
               <button
-                onClick={() => setShow3DPreview(true)}
-                className="p-1.5 hover:bg-amber-100 text-amber-600 rounded transition-colors flex items-center gap-1 ml-1 border-l border-gray-200 pl-2"
-                title="Open 3D Preview"
-              >
-                <Box className="h-4 w-4" />
-                <span className="text-xs font-bold hidden sm:inline">3D</span>
-              </button>
-
-              <button
+                type="button"
                 onClick={() => setBlueprintZoom(prev => Math.min(2.0, prev + 0.1))}
-                className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                className="p-1.5 hover:bg-amber-500/15 rounded transition-colors text-slate-300"
                 title="Zoom In (Ctrl + Scroll Up)"
                 aria-label="Zoom In"
               >
-                <ZoomIn className="h-4 w-4 text-gray-600" />
+                <ZoomIn className="h-4 w-4" />
               </button>
-              {/* Prominent Reset Button - Highlighted when zoom !== 1 */}
               <button
+                type="button"
                 onClick={() => {
                   setBlueprintZoom(1);
                   if (blueprintFullscreen) {
                     setBlueprintFullscreen(false);
                   }
                 }}
-                className={`p-1.5 rounded transition-all ${blueprintZoom !== 1
-                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-md animate-pulse'
-                  : 'hover:bg-slate-100 text-slate-600'
-                  }`}
-                title={blueprintZoom !== 1 ? "Reset to 100% (Escape)" : "Reset Zoom (currently at 100%)"}
+                className={`p-1.5 rounded transition-colors ${
+                  blueprintZoom !== 1
+                    ? 'bg-amber-500 hover:bg-amber-400 text-slate-950'
+                    : 'hover:bg-amber-500/15 text-slate-400'
+                }`}
+                title={blueprintZoom !== 1 ? 'Reset to 100% (Escape)' : 'Reset Zoom (currently at 100%)'}
                 aria-label="Reset Zoom"
               >
-                <RotateCcw className={`h-4 w-4 ${blueprintZoom !== 1 ? 'text-white' : 'text-gray-600'}`} />
+                <RotateCcw className="h-4 w-4" />
               </button>
               {blueprintZoom !== 1 && (
-                <span className="text-[10px] text-amber-600 font-medium px-1.5 py-0.5 bg-amber-50 rounded border border-amber-200">
+                <span className="text-[10px] text-amber-300/90 font-medium px-1.5 py-0.5 bg-amber-500/10 rounded border border-amber-500/30">
                   ESC
                 </span>
               )}
+              <div className="w-px h-4 bg-amber-600/30 mx-0.5" />
               <button
+                type="button"
+                onClick={() => setShow3DPreview(true)}
+                className="p-1.5 hover:bg-amber-500/20 text-amber-300 rounded transition-colors flex items-center gap-1"
+                title="Open 3D Preview"
+              >
+                <Box className="h-4 w-4" />
+                <span className="text-xs font-semibold hidden sm:inline">3D</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setBlueprintFullscreen(!blueprintFullscreen)}
-                className="p-1.5 hover:bg-gray-100 rounded transition-colors"
-                title={blueprintFullscreen ? "Exit Fullscreen (Escape)" : "Fullscreen Preview"}
-                aria-label={blueprintFullscreen ? "Exit Fullscreen" : "Fullscreen Preview"}
+                className="p-1.5 hover:bg-amber-500/15 rounded transition-colors text-slate-300"
+                title={blueprintFullscreen ? 'Exit Fullscreen (Escape)' : 'Fullscreen Preview'}
+                aria-label={blueprintFullscreen ? 'Exit Fullscreen' : 'Fullscreen Preview'}
               >
                 {blueprintFullscreen ? (
-                  <Minimize2 className="h-4 w-4 text-gray-600" />
+                  <Minimize2 className="h-4 w-4" />
                 ) : (
-                  <Maximize2 className="h-4 w-4 text-gray-600" />
+                  <Maximize2 className="h-4 w-4" />
                 )}
               </button>
             </div>
@@ -1530,7 +1612,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             {blueprintFullscreen && typeof document !== 'undefined' ? (
               // Fullscreen Mode - Render via Portal
               createPortal(
-                <div className="fixed inset-0 z-[9999] bg-white overflow-auto">
+                <div className="fixed inset-0 z-[9999] bg-slate-950 overflow-auto">
                   {/* Fullscreen Mode Top Reset Button */}
                   <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
                     <button
@@ -1547,7 +1629,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     </button>
                   </div>
                   {/* Fullscreen Blueprint Content */}
-                  <div className="w-full h-full flex items-center justify-center p-6 md:p-8">
+                  <div className="w-full h-full flex items-center justify-center p-4 pt-16 md:p-6 md:pt-16">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: blueprintZoom }}
@@ -1561,18 +1643,18 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         viewBox="0 0 1200 900"
                         className="w-full h-full"
                         preserveAspectRatio="xMidYMid meet"
-                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' }}
                       >
                         {/* Background grid - more visible and dynamic */}
                         <defs>
                           <pattern id="blueprint-grid" width="30" height="30" patternUnits="userSpaceOnUse">
-                            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d1d5db" strokeWidth="0.8" opacity="0.6" />
+                            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(245,158,11,0.18)" strokeWidth="0.8" />
                           </pattern>
                           {/* Highlight pattern for active dimension */}
                           <pattern id="highlight-grid" width="30" height="30" patternUnits="userSpaceOnUse">
-                            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#3b82f6" strokeWidth="1" opacity="0.3" />
+                            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.35" />
                           </pattern>
                         </defs>
+                        <rect width="100%" height="100%" fill="#0a0a0a" />
                         <rect width="100%" height="100%" fill="url(#blueprint-grid)" />
                         {highlightedDimension && (
                           <rect width="100%" height="100%" fill="url(#highlight-grid)" opacity="0.5" />
@@ -1717,7 +1799,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                             y={startY + svgHeight / 2 - 20}
                                             textAnchor="end"
                                             dominantBaseline="middle"
-                                            fill={isStructural ? BLUEPRINT_THEME.text.structural : typeof BLUEPRINT_THEME.text.secondary === 'string' ? '#9ca3af' : '#9ca3af'}
+                                            fill={isStructural ? BLUEPRINT_THEME.text.structural : typeof BLUEPRINT_THEME.text.secondary === 'string' ? '#a8a29e' : '#a8a29e'}
                                             fontSize="9"
                                             fontWeight="500"
                                             className="pointer-events-none select-none"
@@ -1846,7 +1928,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                       <>
                                         <text
                                           x={cellX + cellW / 2}
-                                          y={cellY + cellH / 2 - 15}
+                                          y={cellY + cellH / 2 - 28}
                                           textAnchor="middle"
                                           dominantBaseline="middle"
                                           fill={cellStroke}
@@ -1863,10 +1945,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         {cellW > 120 && cellH > 80 && (
                                           <text
                                             x={cellX + cellW / 2}
-                                            y={cellY + cellH / 2 + 18}
+                                            y={cellY + cellH / 2 + 24}
                                             textAnchor="middle"
                                             dominantBaseline="middle"
-                                            fill="#6b7280"
+                                            fill="#a8a29e"
                                             fontSize={Math.max(9, Math.min(cellW, cellH) * 0.08)}
                                             fontWeight="500"
                                             opacity="0.7"
@@ -1880,10 +1962,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         {cellW > 150 && cellH > 100 && cellAreaM2 > 0.5 && (
                                           <text
                                             x={cellX + cellW / 2}
-                                            y={cellY + cellH / 2 + 35}
+                                            y={cellY + cellH / 2 + 56}
                                             textAnchor="middle"
                                             dominantBaseline="middle"
-                                            fill="#9ca3af"
+                                            fill="#78716c"
                                             fontSize={Math.max(8, Math.min(cellW, cellH) * 0.07)}
                                             fontWeight="400"
                                             opacity="0.6"
@@ -1913,7 +1995,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                     cx={c.x}
                                     cy={c.y}
                                     r="4"
-                                    fill="#1f2937"
+                                    fill="#fef3c7"
                                     stroke="white"
                                     strokeWidth="1.5"
                                   />
@@ -1927,7 +2009,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY - 70}
                                   x2={startX + svgWidth}
                                   y2={startY - 70}
-                                  stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"}
+                                  stroke={highlightedDimension === 'width' ? "#fbbf24" : "#f59e0b"}
                                   strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
                                   className="transition-all duration-300"
                                 />
@@ -1936,7 +2018,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY - 75}
                                   x2={startX}
                                   y2={startY - 65}
-                                  stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"}
+                                  stroke={highlightedDimension === 'width' ? "#fbbf24" : "#f59e0b"}
                                   strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
                                 />
                                 <line
@@ -1944,14 +2026,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY - 75}
                                   x2={startX + svgWidth}
                                   y2={startY - 65}
-                                  stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"}
+                                  stroke={highlightedDimension === 'width' ? "#fbbf24" : "#f59e0b"}
                                   strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
                                 />
                                 <text
                                   x={startX + svgWidth / 2}
                                   y={startY - 85}
                                   textAnchor="middle"
-                                  fill={highlightedDimension === 'width' ? "#1e40af" : "#2563eb"}
+                                  fill={highlightedDimension === 'width' ? "#fcd34d" : "#fbbf24"}
                                   fontSize="32"
                                   fontWeight="700"
                                   className="font-mono transition-all duration-300"
@@ -1962,7 +2044,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   x={startX + svgWidth / 2}
                                   y={startY - 110}
                                   textAnchor="middle"
-                                  fill={highlightedDimension === 'width' ? "#1e40af" : "#6b7280"}
+                                  fill={highlightedDimension === 'width' ? "#fcd34d" : "#a8a29e"}
                                   fontSize="12"
                                   fontWeight="700"
                                   letterSpacing="0.1em"
@@ -1979,7 +2061,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY}
                                   x2={startX - 70}
                                   y2={startY + svgHeight}
-                                  stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"}
+                                  stroke={highlightedDimension === 'height' ? "#fbbf24" : "#f59e0b"}
                                   strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
                                 />
                                 <line
@@ -1987,7 +2069,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY}
                                   x2={startX - 65}
                                   y2={startY}
-                                  stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"}
+                                  stroke={highlightedDimension === 'height' ? "#fbbf24" : "#f59e0b"}
                                   strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
                                 />
                                 <line
@@ -1995,14 +2077,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY + svgHeight}
                                   x2={startX - 65}
                                   y2={startY + svgHeight}
-                                  stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"}
+                                  stroke={highlightedDimension === 'height' ? "#fbbf24" : "#f59e0b"}
                                   strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
                                 />
                                 <text
                                   x={startX - 85}
                                   y={startY + svgHeight / 2}
                                   textAnchor="middle"
-                                  fill={highlightedDimension === 'height' ? "#1e40af" : "#2563eb"}
+                                  fill={highlightedDimension === 'height' ? "#fcd34d" : "#fbbf24"}
                                   fontSize="32"
                                   fontWeight="700"
                                   className="font-mono transition-all duration-300"
@@ -2014,7 +2096,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   x={startX - 110}
                                   y={startY + svgHeight / 2}
                                   textAnchor="middle"
-                                  fill={highlightedDimension === 'height' ? "#1e40af" : "#6b7280"}
+                                  fill={highlightedDimension === 'height' ? "#fcd34d" : "#a8a29e"}
                                   fontSize="12"
                                   fontWeight="700"
                                   letterSpacing="0.1em"
@@ -2028,31 +2110,31 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               {/* Area Display - dynamic with more spacing */}
                               <g className="transition-opacity duration-300">
                                 <rect
-                                  x={startX + svgWidth - 200}
-                                  y={startY + svgHeight + 45}
-                                  width="190"
-                                  height="60"
-                                  fill="white"
-                                  stroke="#1f2937"
+                                  x={startX + svgWidth - 250}
+                                  y={startY + svgHeight + 42}
+                                  width="240"
+                                  height="86"
+                                  fill="#111827"
+                                  stroke="#fbbf24"
                                   strokeWidth="2"
-                                  rx="6"
+                                  rx="8"
                                   className="shadow-sm"
                                 />
                                 <text
-                                  x={startX + svgWidth - 195}
-                                  y={startY + svgHeight + 65}
-                                  fill="#374151"
-                                  fontSize="11"
+                                  x={startX + svgWidth - 238}
+                                  y={startY + svgHeight + 68}
+                                  fill="#d6d3d1"
+                                  fontSize="13"
                                   fontWeight="600"
-                                  letterSpacing="0.05em"
+                                  letterSpacing="0.08em"
                                 >
                                   AREA
                                 </text>
                                 <text
-                                  x={startX + svgWidth - 195}
-                                  y={startY + svgHeight + 88}
-                                  fill="#1f2937"
-                                  fontSize="20"
+                                  x={startX + svgWidth - 238}
+                                  y={startY + svgHeight + 104}
+                                  fill="#fef3c7"
+                                  fontSize="26"
                                   fontWeight="700"
                                   className="font-mono"
                                 >
@@ -2067,7 +2149,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY + svgHeight + 30}
                                   x2={startX + 120}
                                   y2={startY + svgHeight + 30}
-                                  stroke="#6b7280"
+                                  stroke="#a8a29e"
                                   strokeWidth="2"
                                 />
                                 <line
@@ -2075,7 +2157,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY + svgHeight + 25}
                                   x2={startX + 20}
                                   y2={startY + svgHeight + 35}
-                                  stroke="#6b7280"
+                                  stroke="#a8a29e"
                                   strokeWidth="2"
                                 />
                                 <line
@@ -2083,14 +2165,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY + svgHeight + 25}
                                   x2={startX + 120}
                                   y2={startY + svgHeight + 35}
-                                  stroke="#6b7280"
+                                  stroke="#a8a29e"
                                   strokeWidth="2"
                                 />
                                 <text
                                   x={startX + 70}
                                   y={startY + svgHeight + 50}
                                   textAnchor="middle"
-                                  fill="#6b7280"
+                                  fill="#a8a29e"
                                   fontSize="10"
                                   fontWeight="500"
                                 >
@@ -2109,7 +2191,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             ) : (
               // Normal View Mode
               <div
-                className="w-full h-full flex items-center justify-center p-6 md:p-8 transition-all duration-300 relative"
+                className="w-full h-full flex items-center justify-center p-3 pt-14 sm:p-4 sm:pt-14 transition-all duration-300 relative"
               >
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -2124,17 +2206,17 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     viewBox="0 0 1200 900"
                     className="w-full h-full"
                     preserveAspectRatio="xMidYMid meet"
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' }}
                   >
                     {/* Background grid */}
                     <defs>
                       <pattern id="blueprint-grid-normal" width="30" height="30" patternUnits="userSpaceOnUse">
-                        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d1d5db" strokeWidth="0.8" opacity="0.6" />
+                        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(245,158,11,0.18)" strokeWidth="0.8" />
                       </pattern>
                       <pattern id="highlight-grid-normal" width="30" height="30" patternUnits="userSpaceOnUse">
-                        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#3b82f6" strokeWidth="1" opacity="0.3" />
+                        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.35" />
                       </pattern>
                     </defs>
+                    <rect width="100%" height="100%" fill="#0a0a0a" />
                     <rect width="100%" height="100%" fill="url(#blueprint-grid-normal)" />
                     {highlightedDimension && (
                       <rect width="100%" height="100%" fill="url(#highlight-grid-normal)" opacity="0.5" />
@@ -2168,7 +2250,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                             width={svgWidth}
                             height={svgHeight}
                             fill="none"
-                            stroke={highlightedDimension ? "#2563eb" : "#1f2937"}
+                            stroke={highlightedDimension ? "#fbbf24" : "#f59e0b"}
                             strokeWidth={highlightedDimension ? "4" : "3"}
                             className="transition-all duration-300"
                             style={{
@@ -2196,7 +2278,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={startY}
                                   x2={xPos}
                                   y2={startY + svgHeight}
-                                  stroke={isStructural ? "#dc2626" : "#4b5563"}
+                                  stroke={isStructural ? "#f87171" : "#d97706"}
                                   strokeWidth={isStructural ? "3" : "2.5"}
                                   strokeDasharray={isStructural ? "6 3" : "4 4"}
                                   opacity="0.7"
@@ -2209,7 +2291,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                       y={startY + svgHeight / 2}
                                       textAnchor="middle"
                                       dominantBaseline="middle"
-                                      fill={isStructural ? "#dc2626" : "#6b7280"}
+                                      fill={isStructural ? "#f87171" : "#a8a29e"}
                                       fontSize="10"
                                       fontWeight="600"
                                       transform={`rotate(-90 ${xPos} ${startY + svgHeight / 2})`}
@@ -2224,7 +2306,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         y1={startY}
                                         x2={xPos - 25}
                                         y2={startY + svgHeight}
-                                        stroke={isStructural ? "#dc2626" : "#6b7280"}
+                                        stroke={isStructural ? "#f87171" : "#a8a29e"}
                                         strokeWidth="1.5"
                                         strokeDasharray="2 2"
                                         opacity="0.5"
@@ -2234,7 +2316,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         y1={startY}
                                         x2={xPos - 20}
                                         y2={startY}
-                                        stroke={isStructural ? "#dc2626" : "#6b7280"}
+                                        stroke={isStructural ? "#f87171" : "#a8a29e"}
                                         strokeWidth="2"
                                       />
                                       <line
@@ -2242,7 +2324,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         y1={startY + svgHeight}
                                         x2={xPos - 20}
                                         y2={startY + svgHeight}
-                                        stroke={isStructural ? "#dc2626" : "#6b7280"}
+                                        stroke={isStructural ? "#f87171" : "#a8a29e"}
                                         strokeWidth="2"
                                       />
                                       <text
@@ -2250,7 +2332,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         y={startY + svgHeight / 2}
                                         textAnchor="end"
                                         dominantBaseline="middle"
-                                        fill={isStructural ? "#dc2626" : "#6b7280"}
+                                        fill={isStructural ? "#f87171" : "#a8a29e"}
                                         fontSize="11"
                                         fontWeight="700"
                                         className="pointer-events-none select-none font-mono"
@@ -2262,7 +2344,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         y={startY + svgHeight / 2 - 20}
                                         textAnchor="end"
                                         dominantBaseline="middle"
-                                        fill={isStructural ? "#dc2626" : "#9ca3af"}
+                                        fill={isStructural ? "#f87171" : "#78716c"}
                                         fontSize="9"
                                         fontWeight="500"
                                         className="pointer-events-none select-none"
@@ -2295,7 +2377,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   y1={yPos}
                                   x2={startX + svgWidth}
                                   y2={yPos}
-                                  stroke={isStructural ? "#dc2626" : "#4b5563"}
+                                  stroke={isStructural ? "#f87171" : "#d97706"}
                                   strokeWidth={isStructural ? "3" : "2.5"}
                                   strokeDasharray={isStructural ? "6 3" : "4 4"}
                                   opacity="0.7"
@@ -2307,7 +2389,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                     y={yPos}
                                     textAnchor="middle"
                                     dominantBaseline="middle"
-                                    fill={isStructural ? "#dc2626" : "#6b7280"}
+                                    fill={isStructural ? "#f87171" : "#a8a29e"}
                                     fontSize="10"
                                     fontWeight="600"
                                     className="pointer-events-none select-none"
@@ -2358,12 +2440,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                             }[cell.type] || 'transparent';
 
                             const cellStroke = {
-                              'fixed': '#3b82f6',
+                              'fixed': '#60a5fa',
                               'sash': '#22c55e',
                               'sliding': '#eab308',
                               'panel': '#6b7280',
                               'empty': '#ef4444',
-                            }[cell.type] || '#4b5563';
+                            }[cell.type] || '#d97706';
 
                             const openingArrow = cell.openingDirection === 'left' ? '←'
                               : cell.openingDirection === 'right' ? '→'
@@ -2389,7 +2471,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   <>
                                     <text
                                       x={cellX + cellW / 2}
-                                      y={cellY + cellH / 2 - 15}
+                                      y={cellY + cellH / 2 - 28}
                                       textAnchor="middle"
                                       dominantBaseline="middle"
                                       fill={cellStroke}
@@ -2405,10 +2487,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                     {cellW > 120 && cellH > 80 && (
                                       <text
                                         x={cellX + cellW / 2}
-                                        y={cellY + cellH / 2 + 18}
+                                        y={cellY + cellH / 2 + 24}
                                         textAnchor="middle"
                                         dominantBaseline="middle"
-                                        fill="#6b7280"
+                                        fill="#a8a29e"
                                         fontSize={Math.max(9, Math.min(cellW, cellH) * 0.08)}
                                         fontWeight="500"
                                         opacity="0.7"
@@ -2421,10 +2503,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                     {cellW > 150 && cellH > 100 && cellAreaM2 > 0.5 && (
                                       <text
                                         x={cellX + cellW / 2}
-                                        y={cellY + cellH / 2 + 35}
+                                        y={cellY + cellH / 2 + 56}
                                         textAnchor="middle"
                                         dominantBaseline="middle"
-                                        fill="#9ca3af"
+                                        fill="#78716c"
                                         fontSize={Math.max(8, Math.min(cellW, cellH) * 0.07)}
                                         fontWeight="400"
                                         opacity="0.6"
@@ -2454,7 +2536,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                 cx={c.x}
                                 cy={c.y}
                                 r="4"
-                                fill="#1f2937"
+                                fill="#fef3c7"
                                 stroke="white"
                                 strokeWidth="1.5"
                               />
@@ -2468,7 +2550,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               y1={startY - 70}
                               x2={startX + svgWidth}
                               y2={startY - 70}
-                              stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"}
+                              stroke={highlightedDimension === 'width' ? "#fbbf24" : "#f59e0b"}
                               strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
                               className="transition-all duration-300"
                             />
@@ -2477,7 +2559,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               y1={startY - 75}
                               x2={startX}
                               y2={startY - 65}
-                              stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"}
+                              stroke={highlightedDimension === 'width' ? "#fbbf24" : "#f59e0b"}
                               strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
                             />
                             <line
@@ -2485,14 +2567,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               y1={startY - 75}
                               x2={startX + svgWidth}
                               y2={startY - 65}
-                              stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"}
+                              stroke={highlightedDimension === 'width' ? "#fbbf24" : "#f59e0b"}
                               strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
                             />
                             <text
                               x={startX + svgWidth / 2}
                               y={startY - 85}
                               textAnchor="middle"
-                              fill={highlightedDimension === 'width' ? "#1e40af" : "#2563eb"}
+                              fill={highlightedDimension === 'width' ? "#fcd34d" : "#fbbf24"}
                               fontSize="32"
                               fontWeight="700"
                               className="font-mono transition-all duration-300"
@@ -2503,7 +2585,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               x={startX + svgWidth / 2}
                               y={startY - 110}
                               textAnchor="middle"
-                              fill={highlightedDimension === 'width' ? "#1e40af" : "#6b7280"}
+                              fill={highlightedDimension === 'width' ? "#fcd34d" : "#a8a29e"}
                               fontSize="12"
                               fontWeight="700"
                               letterSpacing="0.1em"
@@ -2520,7 +2602,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               y1={startY}
                               x2={startX - 70}
                               y2={startY + svgHeight}
-                              stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"}
+                              stroke={highlightedDimension === 'height' ? "#fbbf24" : "#f59e0b"}
                               strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
                             />
                             <line
@@ -2528,7 +2610,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               y1={startY}
                               x2={startX - 65}
                               y2={startY}
-                              stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"}
+                              stroke={highlightedDimension === 'height' ? "#fbbf24" : "#f59e0b"}
                               strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
                             />
                             <line
@@ -2536,14 +2618,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               y1={startY + svgHeight}
                               x2={startX - 65}
                               y2={startY + svgHeight}
-                              stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"}
+                              stroke={highlightedDimension === 'height' ? "#fbbf24" : "#f59e0b"}
                               strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
                             />
                             <text
                               x={startX - 85}
                               y={startY + svgHeight / 2}
                               textAnchor="middle"
-                              fill={highlightedDimension === 'height' ? "#1e40af" : "#2563eb"}
+                              fill={highlightedDimension === 'height' ? "#fcd34d" : "#fbbf24"}
                               fontSize="32"
                               fontWeight="700"
                               className="font-mono transition-all duration-300"
@@ -2555,7 +2637,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               x={startX - 110}
                               y={startY + svgHeight / 2}
                               textAnchor="middle"
-                              fill={highlightedDimension === 'height' ? "#1e40af" : "#6b7280"}
+                              fill={highlightedDimension === 'height' ? "#fcd34d" : "#a8a29e"}
                               fontSize="12"
                               fontWeight="700"
                               letterSpacing="0.1em"
@@ -2569,31 +2651,31 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           {/* Area Display */}
                           <g className="transition-opacity duration-300">
                             <rect
-                              x={startX + svgWidth - 200}
-                              y={startY + svgHeight + 45}
-                              width="190"
-                              height="60"
-                              fill="white"
-                              stroke="#1f2937"
+                              x={startX + svgWidth - 250}
+                              y={startY + svgHeight + 42}
+                              width="240"
+                              height="86"
+                              fill="#111827"
+                              stroke="#fbbf24"
                               strokeWidth="2"
-                              rx="6"
+                              rx="8"
                               className="shadow-sm"
                             />
                             <text
-                              x={startX + svgWidth - 195}
-                              y={startY + svgHeight + 65}
-                              fill="#374151"
-                              fontSize="11"
+                              x={startX + svgWidth - 238}
+                              y={startY + svgHeight + 68}
+                              fill="#d6d3d1"
+                              fontSize="13"
                               fontWeight="600"
-                              letterSpacing="0.05em"
+                              letterSpacing="0.08em"
                             >
                               AREA
                             </text>
                             <text
-                              x={startX + svgWidth - 195}
-                              y={startY + svgHeight + 88}
-                              fill="#1f2937"
-                              fontSize="20"
+                              x={startX + svgWidth - 238}
+                              y={startY + svgHeight + 104}
+                              fill="#fef3c7"
+                              fontSize="26"
                               fontWeight="700"
                               className="font-mono"
                             >
@@ -2608,7 +2690,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               y1={startY + svgHeight + 30}
                               x2={startX + 120}
                               y2={startY + svgHeight + 30}
-                              stroke="#6b7280"
+                              stroke="#a8a29e"
                               strokeWidth="2"
                             />
                             <line
@@ -2616,7 +2698,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               y1={startY + svgHeight + 25}
                               x2={startX + 20}
                               y2={startY + svgHeight + 35}
-                              stroke="#6b7280"
+                              stroke="#a8a29e"
                               strokeWidth="2"
                             />
                             <line
@@ -2624,14 +2706,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               y1={startY + svgHeight + 25}
                               x2={startX + 120}
                               y2={startY + svgHeight + 35}
-                              stroke="#6b7280"
+                              stroke="#a8a29e"
                               strokeWidth="2"
                             />
                             <text
                               x={startX + 70}
                               y={startY + svgHeight + 50}
                               textAnchor="middle"
-                              fill="#6b7280"
+                              fill="#a8a29e"
                               fontSize="10"
                               fontWeight="500"
                             >
@@ -2654,12 +2736,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               transition={{ duration: 0.3 }}
               className="text-center space-y-4"
             >
-              <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center border-2 border-blue-200">
-                <Ruler className="h-10 w-10 text-blue-400" />
+              <div className="mx-auto w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/30">
+                <Ruler className="h-8 w-8 text-amber-400/80" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-1">Enter dimensions to preview</p>
-                <p className="text-xs text-gray-500">Width and height will appear here in real-time</p>
+                <p className="text-sm font-semibold text-amber-200/90 mb-1">Enter dimensions to preview</p>
+                <p className="text-xs text-slate-500">Width and height will appear here in real-time</p>
               </div>
             </motion.div>
           </div>

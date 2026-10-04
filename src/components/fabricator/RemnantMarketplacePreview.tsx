@@ -7,7 +7,7 @@ import type { MarketplaceListing } from '@/lib/inventory/RemnantMarketplace';
 import { RemnantMarketplace } from '@/lib/inventory/RemnantMarketplace';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
-import { Card, CardContent, CardDescription, CardTitle } from '@/shared/ui/ui/card';
+import { Card, CardContent } from '@/shared/ui/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
@@ -79,11 +79,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <CardTitle className="text-lg">Remnant Marketplace</CardTitle>
-          <CardDescription className="text-sm">Buy and sell excess materials</CardDescription>
-        </div>
+      <div className="flex items-center justify-end">
         {remnantId ? (
           <Button
             size="sm"
@@ -92,19 +88,18 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
             className="bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20"
           >
             <Plus className="h-4 w-4 mr-1" />
-            List on Marketplace
+            List remnant
           </Button>
         ) : (
           <Button
             size="sm"
             variant="outline"
             onClick={() => {
-              // Navigate to full marketplace
               window.location.href = '/fabricator/marketplace';
             }}
           >
             <Plus className="h-4 w-4 mr-1" />
-            List Remnant
+            List remnant
           </Button>
         )}
       </div>

@@ -1,523 +1,285 @@
 /**
- * Egyptian Pattern Selector - Prestige Edition
- * 
- * Uses actual patterns from egyptian-window-patterns.ts
- * Displays real Egyptian window patterns with technical specifications
- * 
- * Constitutional: Rule-based, full audit trail
- * Tier: 3 Protected Determinism
+ * Pattern picker for daily measuring — clear selection, compact scroll, shop language.
+ * AICS-001: rule-based catalog only (no ML in the pick path).
  */
 
 import { PrestigePatternIcons } from '@/components/ui/PrestigePatternIcons';
-import { EGYPTIAN_PATTERNS, getPatternsForSystem, patternGridSpecToWindowGrid, type EgyptianPattern } from '@/data/egyptian-window-patterns';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Button } from '@/shared/ui/ui/button';
-import { Card, CardContent } from '@/shared/ui/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import type { WindowGrid } from '@/types/fabricator';
 import {
-  Award,
-  Building2,
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
-  Grid3x3,
-  Home,
-  Info,
-  Layers,
-  Ruler,
-  Zap
-} from 'lucide-react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+  EGYPTIAN_PATTERNS,
+  getPatternsForSystem,
+  patternGridSpecToWindowGrid,
+  type EgyptianPattern,
+} from '@/data/egyptian-window-patterns';
+import { cn } from '@/lib/utils';
+import type { WindowGrid } from '@/types/fabricator';
+import { CheckCircle2, Grid3x3, X } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 import { logDraftingAction } from '../utils/constitutionalAudit';
+
+type PatternFilter = 'all' | 'sliding' | 'casement' | 'fixed' | 'door' | 'other';
 
 interface EgyptianPatternSelectorProps {
   selectedPatternId?: string;
   onSelect: (patternId: string, grid: WindowGrid) => void;
+  /** Clear pattern selection (keeps current grid unless parent resets it). */
+  onClear?: () => void;
   currentSystemId?: string;
+  /** @deprecated Details panel removed for daily UX; ignored. */
   defaultShowDetails?: boolean;
   className?: string;
 }
 
+function shortName(pattern: EgyptianPattern): string {
+  const name = pattern.name.replace(/^Egyptian\s+/i, '').trim();
+  return name.length > 28 ? `${name.slice(0, 26)}…` : name;
+}
+
+function patternFilter(pattern: EgyptianPattern): PatternFilter {
+  const type = (pattern.type || '').toLowerCase();
+  const id = pattern.id.toLowerCase();
+  if (type.includes('sliding') || id.includes('sliding')) return 'sliding';
+  if (type.includes('casement') || type.includes('tilt') || id.includes('casement') || id.includes('tilt')) {
+    return 'casement';
+  }
+  if (type.includes('door') || id.includes('door')) return 'door';
+  if (type.includes('fixed') || id.includes('fixed')) return 'fixed';
+  return 'other';
+}
+
+function resolveIcon(pattern: EgyptianPattern): React.ComponentType<{ className?: string; size?: number }> {
+  const iconMap: Record<string, keyof typeof PrestigePatternIcons> = {
+    'sliding-2s': 'Sliding2Sash',
+    'sliding-4s': 'Sliding4Sash',
+    'sliding-3s-center-fixed': 'Sliding3SashCenterFixed',
+    'casement-double': 'CasementDouble',
+    'casement-2sash': 'CasementDouble',
+    'casement-2sash-fixed': 'FixedSideCasements',
+    'fixed-with-side-casements': 'FixedSideCasements',
+    'sliding-door-2p': 'SlidingDoor2Panel',
+    'fixed': 'FixedWindow',
+    'with-shish': 'WindowWithShish',
+    'kitchen-door-acp': 'KitchenDoorACP',
+    'arched-panda': 'ArchedWindow',
+    'tilt-turn': 'TiltTurn',
+    'casement-single': 'SingleCasementSmall',
+    'with-latish': 'CasementLatish',
+    'with-shish-latish': 'ShishLatishCombo',
+    'french-door': 'FrenchDoor',
+    'awning-window': 'AwningWindow',
+    'corner-window': 'CornerWindow',
+    'picture-window': 'PictureWindow',
+    'bi-fold-door': 'BiFoldDoor',
+  };
+
+  const key = iconMap[pattern.id];
+  if (key && PrestigePatternIcons[key]) return PrestigePatternIcons[key];
+
+  const filter = patternFilter(pattern);
+  if (filter === 'sliding') return PrestigePatternIcons.Sliding2Sash;
+  if (filter === 'casement') return PrestigePatternIcons.CasementDouble;
+  if (filter === 'door') return PrestigePatternIcons.FrenchDoor;
+  return PrestigePatternIcons.FixedWindow;
+}
+
+const FILTERS: { id: PatternFilter; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'sliding', label: 'Sliding' },
+  { id: 'casement', label: 'Casement' },
+  { id: 'fixed', label: 'Fixed' },
+  { id: 'door', label: 'Door' },
+];
+
 export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = ({
   selectedPatternId,
   onSelect,
+  onClear,
   currentSystemId,
-  defaultShowDetails = false,
-  className
+  className,
 }) => {
-  const [activeCategory, setActiveCategory] = useState<'all' | 'residential' | 'commercial' | 'villa' | 'specialty'>('all');
-  const [showDetails, setShowDetails] = useState(() => {
-    const saved = localStorage.getItem('almona-pattern-details');
-    if (saved !== null) return saved === 'true';
-    return defaultShowDetails;
-  });
+  const [filter, setFilter] = useState<PatternFilter>('all');
 
-  // Filter patterns by system compatibility
   const availablePatterns = useMemo(() => {
-    if (currentSystemId) {
-      return getPatternsForSystem(currentSystemId);
-    }
+    if (currentSystemId) return getPatternsForSystem(currentSystemId);
     return EGYPTIAN_PATTERNS;
   }, [currentSystemId]);
 
-  // Categorize patterns
-  const categorizedPatterns = useMemo(() => {
-    const categories: Record<string, EgyptianPattern[]> = {
-      residential: [],
-      commercial: [],
-      villa: [],
-      specialty: []
+  const counts = useMemo(() => {
+    const next: Record<PatternFilter, number> = {
+      all: availablePatterns.length,
+      sliding: 0,
+      casement: 0,
+      fixed: 0,
+      door: 0,
+      other: 0,
     };
-
-    availablePatterns.forEach(pattern => {
-      if (pattern.type === 'curtain_wall' || pattern.type === 'skylight') {
-        categories.commercial.push(pattern);
-      } else if (pattern.type === 'door' || pattern.id.includes('door')) {
-        categories.specialty.push(pattern);
-      } else if (pattern.id.includes('villa') || pattern.id.includes('luxury') || pattern.id.includes('arched')) {
-        categories.villa.push(pattern);
-      } else {
-        categories.residential.push(pattern);
-      }
-    });
-
-    return categories;
+    for (const p of availablePatterns) next[patternFilter(p)] += 1;
+    return next;
   }, [availablePatterns]);
 
   const filteredPatterns = useMemo(() => {
-    if (activeCategory === 'all') return availablePatterns;
-    return categorizedPatterns[activeCategory] || [];
-  }, [activeCategory, availablePatterns, categorizedPatterns]);
+    if (filter === 'all') return availablePatterns;
+    return availablePatterns.filter((p) => patternFilter(p) === filter);
+  }, [availablePatterns, filter]);
 
-  const handleToggleDetails = useCallback((value: boolean) => {
-    setShowDetails(value);
-    localStorage.setItem('almona-pattern-details', value.toString());
-
-    logDraftingAction(
-      'pattern_details_toggle',
-      { from: showDetails, to: value },
-      { showDetails: value },
-      `CHECKPOINT-PATTERN-DETAILS-${Date.now()}`
-    );
-  }, [showDetails]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 'd') {
-        e.preventDefault();
-        handleToggleDetails(!showDetails);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showDetails, handleToggleDetails]);
+  const selected = useMemo(
+    () => availablePatterns.find((p) => p.id === selectedPatternId) ?? null,
+    [availablePatterns, selectedPatternId],
+  );
 
   const handleSelect = (pattern: EgyptianPattern) => {
     const grid = patternGridSpecToWindowGrid(pattern.gridSpec);
-
     logDraftingAction(
       'egyptian_pattern_selected',
       {
         patternId: pattern.id,
         patternName: pattern.name,
         systemId: currentSystemId,
-        gridSpec: pattern.gridSpec
+        gridSpec: pattern.gridSpec,
       },
       { patternId: pattern.id, grid },
-      `CHECKPOINT-EGYPTIAN-PATTERN-${Date.now()}`
+      `CHECKPOINT-EGYPTIAN-PATTERN-${Date.now()}`,
     );
-
     onSelect(pattern.id, grid);
   };
 
-  // Map EgyptianPattern IDs to PrestigePatternIcons
-  const getPatternIcon = (pattern: EgyptianPattern): React.ComponentType<{ className?: string; size?: number }> | null => {
-    const iconMap: Record<string, keyof typeof PrestigePatternIcons> = {
-      'sliding-2s': 'Sliding2Sash',
-      'sliding-4s': 'Sliding4Sash',
-      'sliding-3s-center-fixed': 'Sliding3SashCenterFixed',
-      'casement-double': 'CasementDouble',
-      'casement-2sash': 'CasementDouble',
-      'casement-2sash-fixed': 'FixedSideCasements',
-      'fixed-with-side-casements': 'FixedSideCasements',
-      'sliding-door-2p': 'SlidingDoor2Panel',
-      'fixed': 'FixedWindow',
-      'with-shish': 'WindowWithShish',
-      'kitchen-door-acp': 'KitchenDoorACP',
-      'arched-panda': 'ArchedWindow',
-      'tilt-turn': 'TiltTurn',
-      'casement-single': 'SingleCasementSmall',
-      'with-latish': 'CasementLatish',
-      'with-shish-latish': 'ShishLatishCombo',
-      'french-door': 'FrenchDoor',
-      'awning-window': 'AwningWindow',
-      'corner-window': 'CornerWindow',
-      'picture-window': 'PictureWindow',
-      'bi-fold-door': 'BiFoldDoor',
-    };
-
-    // Try exact match first
-    const iconKey = iconMap[pattern.id];
-    if (iconKey && PrestigePatternIcons[iconKey]) {
-      return PrestigePatternIcons[iconKey];
-    }
-
-    // Try pattern matching by type and layout
-    if (pattern.type === 'sliding' && pattern.layout.includes('2')) {
-      return PrestigePatternIcons.Sliding2Sash;
-    }
-    if (pattern.type === 'sliding' && pattern.layout.includes('4')) {
-      return PrestigePatternIcons.Sliding4Sash;
-    }
-    if (pattern.type === 'casement' && pattern.layout.includes('Double')) {
-      return PrestigePatternIcons.CasementDouble;
-    }
-    if (pattern.type === 'tilt_turn') {
-      return PrestigePatternIcons.TiltTurn;
-    }
-    if (pattern.type === 'fixed' && pattern.layout.includes('Single')) {
-      return PrestigePatternIcons.FixedWindow;
-    }
-    if (pattern.type === 'door' && pattern.layout.includes('French')) {
-      return PrestigePatternIcons.FrenchDoor;
-    }
-    if (pattern.layout.includes('Panda') || pattern.layout.includes('Screen')) {
-      return PrestigePatternIcons.PandaCasementScreen;
-    }
-    if (pattern.layout.includes('Shish') || pattern.id.includes('shish')) {
-      return PrestigePatternIcons.WindowWithShish;
-    }
-    if (pattern.layout.includes('Latish') || pattern.id.includes('latish')) {
-      return PrestigePatternIcons.CasementLatish;
-    }
-    if (pattern.layout.includes('Arched')) {
-      return PrestigePatternIcons.ArchedWindow;
-    }
-    if (pattern.layout.includes('Awning')) {
-      return PrestigePatternIcons.AwningWindow;
-    }
-
-    // Default fallback
-    return PrestigePatternIcons.FixedWindow;
-  };
-
-  // Premium Pattern Icon Component with Gold Card Style
-  const PatternIconCard: React.FC<{ pattern: EgyptianPattern }> = ({ pattern }) => {
-    const IconComponent = getPatternIcon(pattern);
-
-    if (!IconComponent) {
-      // Fallback to grid representation if no icon match
-      const { rows, cols, cells } = pattern.gridSpec;
-      const cellSize = Math.min(40 / Math.max(rows, cols), 8);
-
-      return (
-        <div
-          className="flex items-center justify-center p-2 bg-gradient-to-br from-amber-600/20 to-amber-500/10 rounded-lg border border-amber-600/30 card-premium"
-          style={{ width: `${cols * cellSize + 16}px`, height: `${rows * cellSize + 16}px` }}
-        >
-          <div
-            className="grid gap-0.5"
-            style={{
-              gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
-              gridTemplateRows: `repeat(${rows}, ${cellSize}px)`
-            }}
-          >
-            {Array.from({ length: rows * cols }, (_, i) => {
-              const row = Math.floor(i / cols);
-              const col = i % cols;
-              const cell = cells.find(c => c.row === row && c.col === col);
-              const cellType = cell?.type || 'fixed';
-
-              const cellColors: Record<string, string> = {
-                fixed: 'bg-amber-600/40',
-                sliding: 'bg-amber-500/60',
-                sash: 'bg-amber-400/60',
-                panel: 'bg-amber-500/50',
-                empty: 'bg-slate-600/20'
-              };
-
-              return (
-                <div
-                  key={i}
-                  className={cn(
-                    "border border-amber-600/30",
-                    cellColors[cellType] || cellColors.fixed
-                  )}
-                  style={{ width: `${cellSize}px`, height: `${cellSize}px` }}
-                />
-              );
-            })}
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex items-center justify-center p-3 bg-gradient-to-br from-amber-600/20 via-amber-500/15 to-amber-600/20 rounded-lg border border-amber-600/40 shadow-glow-premium card-premium relative overflow-hidden">
-        {/* Ancient gold texture overlay */}
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(245, 158, 11, 0.1) 2px, rgba(245, 158, 11, 0.1) 4px)'
-        }} />
-        <div className="relative z-10">
-          <IconComponent size={48} className="text-amber-400" />
-        </div>
-      </div>
-    );
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'sliding': return 'cyan';
-      case 'casement': return 'blue';
-      case 'tilt_turn': return 'amber';
-      case 'door': return 'amber';
-      case 'fixed': return 'slate';
-      case 'curtain_wall': return 'emerald';
-      case 'skylight': return 'amber';
-      default: return 'slate';
-    }
-  };
-
-  const getComplexity = (pattern: EgyptianPattern): 'Basic' | 'Moderate' | 'Advanced' | 'Expert' => {
-    const cellCount = pattern.gridSpec.rows * pattern.gridSpec.cols;
-    const hasMullions = (pattern.mullions?.length || 0) > 0;
-    const hasTransoms = (pattern.transoms?.length || 0) > 0;
-    const isMixed = pattern.type === 'mixed';
-
-    if (cellCount === 1 && !hasMullions && !hasTransoms) return 'Basic';
-    if (cellCount <= 2 && !isMixed) return 'Moderate';
-    if (cellCount <= 4 || isMixed) return 'Advanced';
-    return 'Expert';
-  };
+  const visibleFilters = FILTERS.filter((f) => f.id === 'all' || counts[f.id] > 0);
 
   return (
-    <div className={cn("space-y-3 sm:space-y-6", className)}>
-      {/* Header — compact on small screens */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <Grid3x3 className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400 shrink-0" />
-          <h2 className="typography-h2 text-slate-100 text-base sm:text-xl truncate">
-            <span className="sm:hidden">Patterns</span>
-            <span className="hidden sm:inline">Egyptian Window Patterns</span>
-          </h2>
-        </div>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handleToggleDetails(!showDetails)}
-          className="btn-secondary shrink-0 px-2 sm:px-3"
-          title={showDetails ? "Simple view (Ctrl+D)" : "Details (Ctrl+D)"}
-        >
-          <Info className="w-4 h-4" />
-          <span className="hidden sm:inline ml-1">
-            {showDetails ? 'Simple' : 'Details'}
-          </span>
-          {showDetails ? (
-            <ChevronUp className="w-4 h-4 sm:ml-1" />
-          ) : (
-            <ChevronDown className="w-4 h-4 sm:ml-1" />
+    <div className={cn('w-full min-w-0 space-y-2.5', className)} role="group" aria-label="Opening patterns">
+      {/* Selected summary — always visible for daily confirmation */}
+      <div
+        className={cn(
+          'flex items-center gap-2 rounded-md border px-2.5 py-2',
+          selected
+            ? 'border-amber-500/50 bg-amber-500/10'
+            : 'border-amber-600/20 bg-slate-950/50',
+        )}
+      >
+        <Grid3x3 className="h-4 w-4 text-amber-500 shrink-0" aria-hidden />
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] uppercase tracking-wider text-slate-500">Pattern</p>
+          <p className="text-sm font-medium text-amber-100 truncate">
+            {selected ? shortName(selected) : 'None — pick a layout below'}
+          </p>
+          {selected && (
+            <p className="font-mono text-[11px] text-slate-500 tabular-nums">
+              {selected.gridSpec.cols}×{selected.gridSpec.rows} panes
+            </p>
           )}
-        </Button>
+        </div>
+        {selected && onClear && (
+          <button
+            type="button"
+            onClick={onClear}
+            className="inline-flex items-center gap-1 shrink-0 rounded-md border border-amber-600/30 px-2 py-1 text-[11px] text-amber-200/90 hover:bg-amber-500/10"
+            aria-label="Clear pattern selection"
+          >
+            <X className="h-3 w-3" />
+            Clear
+          </button>
+        )}
       </div>
 
-      {/* Category Tabs — short labels on mobile */}
-      <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as typeof activeCategory)}>
-        <TabsList className="bg-slate-900/60 border border-slate-700/50 card-glass-dark w-full h-auto flex-wrap justify-start gap-1 p-1">
-          <TabsTrigger value="all" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
-            All
-            <span className="hidden sm:inline ml-1">({availablePatterns.length})</span>
-          </TabsTrigger>
-          <TabsTrigger value="residential" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
-            <Home className="w-3.5 h-3.5 sm:mr-1" />
-            <span className="hidden sm:inline">Residential</span>
-          </TabsTrigger>
-          <TabsTrigger value="commercial" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
-            <Building2 className="w-3.5 h-3.5 sm:mr-1" />
-            <span className="hidden sm:inline">Commercial</span>
-          </TabsTrigger>
-          <TabsTrigger value="villa" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
-            <Award className="w-3.5 h-3.5 sm:mr-1" />
-            <span className="hidden sm:inline">Villa</span>
-          </TabsTrigger>
-          <TabsTrigger value="specialty" className="btn-primary text-xs sm:text-sm px-2 sm:px-3">
-            <Zap className="w-3.5 h-3.5 sm:mr-1" />
-            <span className="hidden sm:inline">Specialty</span>
-          </TabsTrigger>
-        </TabsList>
+      {/* Type filters */}
+      <div
+        className="flex gap-1 overflow-x-auto overscroll-x-contain pb-0.5 [scrollbar-width:thin]"
+        role="tablist"
+        aria-label="Pattern type"
+      >
+        {visibleFilters.map((f) => {
+          const active = filter === f.id;
+          return (
+            <button
+              key={f.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setFilter(f.id)}
+              className={cn(
+                'shrink-0 rounded-md px-2.5 py-1 text-[11px] font-medium border transition-colors touch-manipulation',
+                active
+                  ? 'border-amber-500/60 bg-amber-500/20 text-amber-100'
+                  : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-800/80',
+              )}
+            >
+              {f.label}
+              <span className="ml-1 tabular-nums opacity-70">{counts[f.id]}</span>
+            </button>
+          );
+        })}
+      </div>
 
-        <TabsContent value={activeCategory} className="mt-3 sm:mt-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4">
-            {filteredPatterns.map((pattern) => {
-              const isSelected = selectedPatternId === pattern.id;
-              const typeColor = getTypeColor(pattern.type);
-              const complexity = getComplexity(pattern);
+      {/* Pattern chips — swipe on phone, capped wrap scroll on desktop */}
+      <div
+        className={cn(
+          'flex gap-2 -mx-0.5 px-0.5 pb-1',
+          'overflow-x-auto overscroll-x-contain snap-x snap-mandatory',
+          '[scrollbar-width:thin]',
+          'md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-2 md:overflow-x-visible md:overflow-y-auto md:max-h-[min(36vh,280px)] md:snap-none md:pb-0',
+        )}
+        role="listbox"
+        aria-label="Available patterns"
+      >
+        {filteredPatterns.map((pattern) => {
+          const isSelected = selectedPatternId === pattern.id;
+          const Icon = resolveIcon(pattern);
+          const cols = pattern.gridSpec.cols;
+          const rows = pattern.gridSpec.rows;
 
-              return (
-                <Card
-                  key={pattern.id}
-                  className={cn(
-                    "relative overflow-hidden transition-all duration-300 group cursor-pointer",
-                    "hover:shadow-glow-premium sm:hover:-translate-y-1",
-                    "bg-gradient-to-br from-[#0a0a0a] via-amber-900/20 to-[#0a0a0a] backdrop-blur-xl border",
-                    "card-premium",
-                    isSelected
-                      ? "border-2 border-amber-500/80 bg-gradient-to-br from-amber-500/20 via-amber-600/15 to-amber-500/20 shadow-glow-strong ring-2 ring-amber-500/40"
-                      : "border-amber-600/40 hover:border-amber-500/60"
-                  )}
-                  onClick={() => handleSelect(pattern)}
-                >
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 z-10">
-                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
-                    </div>
-                  )}
+          return (
+            <button
+              key={pattern.id}
+              type="button"
+              role="option"
+              aria-selected={isSelected}
+              onClick={() => handleSelect(pattern)}
+              className={cn(
+                'relative shrink-0 snap-start rounded-lg border text-left transition-colors',
+                'flex flex-col items-center justify-center gap-1',
+                'w-[7.25rem] min-h-[5.75rem] px-2 py-2',
+                'md:w-auto md:min-h-[6rem]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50',
+                'active:scale-[0.98] touch-manipulation',
+                isSelected
+                  ? 'border-amber-500 bg-amber-500/20 ring-1 ring-amber-500/40'
+                  : 'border-amber-600/30 bg-slate-950/70 hover:border-amber-500/50 hover:bg-amber-500/5',
+              )}
+            >
+              {isSelected && (
+                <span className="absolute top-1.5 right-1.5 text-amber-400" aria-hidden>
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                </span>
+              )}
 
-                  <div className="absolute top-2 left-2 z-10">
-                    <Badge
-                      className={cn(
-                        "shadow-md text-[10px] sm:text-xs px-1.5 py-0",
-                        typeColor === 'cyan' && "bg-cyan-500/20 border-cyan-500/50 text-cyan-300",
-                        typeColor === 'blue' && "bg-blue-500/20 border-blue-500/50 text-blue-300",
-                        typeColor === 'amber' && "bg-amber-500/20 border-amber-500/50 text-amber-300",
-                        typeColor === 'emerald' && "bg-emerald-500/20 border-emerald-500/50 text-emerald-300",
-                        typeColor === 'slate' && "bg-slate-500/20 border-slate-500/50 text-slate-300"
-                      )}
-                    >
-                      {pattern.gridSpec.rows}×{pattern.gridSpec.cols}
-                    </Badge>
-                  </div>
+              <span className="absolute top-1.5 left-1.5 rounded bg-slate-900/80 px-1 py-px font-mono text-[9px] text-amber-300/90 tabular-nums border border-amber-600/25">
+                {cols}×{rows}
+              </span>
 
-                  <CardContent className="p-3 pt-10 sm:p-6 sm:pt-14">
-                    <div className="mb-2 sm:mb-4">
-                      <div className="flex flex-col items-center gap-2 sm:gap-3">
-                        <div className="scale-75 sm:scale-100 origin-center">
-                          <PatternIconCard pattern={pattern} />
-                        </div>
-                        <h3 className="typography-h3 text-sm sm:text-lg text-amber-200 text-center leading-tight line-clamp-2">
-                          {pattern.name}
-                        </h3>
-                        {/* Hide long copy on small screens */}
-                        <p className="hidden sm:block text-xs text-amber-600/70 leading-relaxed text-center">
-                          {pattern.layout}
-                        </p>
-                      </div>
-                    </div>
+              <Icon size={34} className="mt-3 text-amber-400/90 md:hidden" />
+              <span className="mt-3 hidden md:inline-flex">
+                <Icon size={40} className="text-amber-400/90" />
+              </span>
 
-                    {showDetails && (
-                      <div className="mb-3 hidden sm:block p-3 border border-amber-500/20 rounded-lg space-y-2 card-premium">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-slate-400">Grid:</span>
-                          <span className="text-amber-300 font-mono">
-                            {pattern.gridSpec.rows}×{pattern.gridSpec.cols}
-                          </span>
-                        </div>
-                        {pattern.mullions && pattern.mullions.length > 0 && (
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-slate-400">Mullions:</span>
-                            <span className="text-cyan-300">{pattern.mullions.length}</span>
-                          </div>
-                        )}
-                        {pattern.transoms && pattern.transoms.length > 0 && (
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-slate-400">Transoms:</span>
-                            <span className="text-cyan-300">{pattern.transoms.length}</span>
-                          </div>
-                        )}
-                        {pattern.constraints && (
-                          <div className="pt-2 border-t border-slate-700/50">
-                            <div className="text-xs text-slate-400">
-                              <div className="flex items-center gap-1 mb-1">
-                                <Ruler className="w-3 h-3" />
-                                <span>Dimensions:</span>
-                              </div>
-                              <div className="text-amber-300 font-mono pl-4">
-                                {pattern.typicalWidthMm[0]}-{pattern.typicalWidthMm[1]}mm × {pattern.typicalHeightMm[0]}-{pattern.typicalHeightMm[1]}mm
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                        {pattern.notes && (
-                          <div className="p-2 bg-cyan-500/10 border border-cyan-500/20 rounded text-xs text-cyan-300">
-                            <Info className="w-3 h-3 inline mr-1" />
-                            {pattern.notes}
-                          </div>
-                        )}
-                      </div>
-                    )}
+              <span className="w-full truncate text-center text-[11px] font-semibold text-amber-100/95 px-0.5" title={pattern.name}>
+                {shortName(pattern)}
+              </span>
 
-                    {/* Desktop-only meta; mobile shows grid badge only */}
-                    <div className="mb-2 sm:mb-4 hidden sm:block space-y-2">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-400">Complexity:</span>
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "text-xs",
-                            complexity === 'Basic' && "border-emerald-500/50 text-emerald-300",
-                            complexity === 'Moderate' && "border-blue-500/50 text-blue-300",
-                            complexity === 'Advanced' && "border-amber-500/50 text-amber-300",
-                            complexity === 'Expert' && "border-amber-500/50 text-amber-300"
-                          )}
-                        >
-                          {complexity}
-                        </Badge>
-                      </div>
-                    </div>
+              <span
+                className={cn(
+                  'text-[10px] font-medium',
+                  isSelected ? 'text-amber-300' : 'text-slate-500',
+                )}
+              >
+                {isSelected ? 'Selected' : 'Use'}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
-                    {pattern.accessories && pattern.accessories.length > 0 && showDetails && (
-                      <div className="mb-4 hidden md:block">
-                        <h4 className="typography-h4 text-xs text-slate-400 mb-2">Accessories</h4>
-                        <div className="flex flex-wrap gap-1.5">
-                          {pattern.accessories.slice(0, 3).map((acc, i) => (
-                            <Badge
-                              key={i}
-                              variant="secondary"
-                              className="text-xs bg-slate-800/50 text-slate-300 border-slate-700/50 card-dark"
-                            >
-                              {acc}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSelect(pattern);
-                      }}
-                      className={cn(
-                        "w-full text-xs sm:text-sm h-8 sm:h-10",
-                        isSelected
-                          ? "btn-primary-gradient text-[#0a0a0a] font-bold shadow-glow-strong"
-                          : "btn-secondary"
-                      )}
-                    >
-                      {isSelected ? (
-                        <>
-                          <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                          Selected
-                        </>
-                      ) : (
-                        <>
-                          <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                          <span className="sm:hidden">Use</span>
-                          <span className="hidden sm:inline">Select Pattern</span>
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </TabsContent>
-      </Tabs>
+      {filteredPatterns.length === 0 && (
+        <p className="text-xs text-slate-500 text-center py-3">No patterns in this filter for the current system.</p>
+      )}
     </div>
   );
 };
-

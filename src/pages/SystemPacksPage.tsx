@@ -468,6 +468,7 @@ export const SystemPacksPage: React.FC = () => {
       <SystemTuningStudio
         open={showSystemWizard}
         onClose={() => setShowSystemWizard(false)}
+        allowStarterPack
         onSave={async (customPack) => {
           const updated = await addCustomSystemAsync(customPack, userId);
           setCustomSystems(updated);

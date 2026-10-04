@@ -25,6 +25,8 @@ interface SystemTuningStudioProps {
   onClose: () => void;
   onSave?: (systemPack: any) => void;
   initialSystem?: any;
+  /** Workshop starter pack (no DXF). Only for System Packs create flow — not project wizards. */
+  allowStarterPack?: boolean;
 }
 
 export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
@@ -32,6 +34,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
   onClose,
   onSave,
   initialSystem,
+  allowStarterPack = false,
 }) => {
   const [importedProfiles, setImportedProfiles] = useState<ImportedProfile[]>([]);
   const [roles, setRoles] = useState<Record<string, ProfileRole>>({});
@@ -112,24 +115,28 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
           />
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isSaving}
-            onClick={handleCreateStarterPack}
-            className="border-amber-500/50 text-amber-100"
-          >
-            {isSaving ? 'Saving…' : 'Create with frame + sash'}
-          </Button>
+          {allowStarterPack && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isSaving}
+              onClick={handleCreateStarterPack}
+              className="border-amber-500/50 text-amber-100"
+            >
+              {isSaving ? 'Saving…' : 'Create with frame + sash'}
+            </Button>
+          )}
           <Button disabled={!readyToSave || isSaving} onClick={handleSave} className="bg-green-600 hover:bg-green-500">
             {isSaving ? 'Saving…' : 'Save from DXF'}
             <Save className={`${UI_DIMENSIONS.ICON_MEDIUM} ml-2`} />
           </Button>
         </div>
       </div>
-      <p className="text-xs text-slate-400">
-        No DXF? Use <span className="text-amber-300">Create with frame + sash</span> to start a workshop pack, then tune dimensions.
-      </p>
+      {allowStarterPack && (
+        <p className="text-xs text-slate-400">
+          No DXF? Use <span className="text-amber-300">Create with frame + sash</span> to start a workshop pack, then tune dimensions.
+        </p>
+      )}
 
       <Tabs defaultValue="import" className="w-full">
         <TabsList className={`grid ${GRID_LAYOUT.TABS_COLS} bg-gray-900`}>

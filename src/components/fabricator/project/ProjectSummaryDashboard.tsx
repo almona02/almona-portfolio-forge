@@ -1,8 +1,11 @@
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
+import { useDeletePose, useUpsertPose } from '@/hooks/useFabricatorQueries';
 import { PresetAwareBOMGenerator, type CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
+import { nextPoseNumber } from '@/pages/fabricator/workflow/MeasuringPage';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -20,6 +23,7 @@ import {
 } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface ProjectSummaryDashboardProps {
   projectId: string | undefined;
@@ -49,8 +53,59 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
   onOpenStudio,
 }) => {
   const navigate = useNavigate();
+  const deletePose = useDeletePose();
+  const upsertPose = useUpsertPose();
   const [isAggregating, setIsAggregating] = useState(false);
   const [aggregatedBOM, setAggregatedBOM] = useState<AggregatedBOM | null>(null);
+
+  const openPoseMeasuring = useCallback((id: string) => {
+    if (!projectId) return;
+    navigate(fabricatorRoutes.poseMeasuring(projectId, id));
+  }, [navigate, projectId]);
+
+  const handleDuplicatePose = useCallback(async (id: string) => {
+    if (!projectId) return;
+    const source = positions.find((p) => p.id === id);
+    if (!source) return;
+    try {
+      const poseId = crypto.randomUUID();
+      const posNumber = nextPoseNumber(positions);
+      const created = await upsertPose.mutateAsync({
+        windowUnit: {
+          ...source,
+          id: poseId,
+          projectId,
+          posNumber,
+          status: 'measuring',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          optimization: null,
+        },
+        grid: source.grid as Record<string, unknown> | undefined,
+        selectedPreset: source.presetId,
+      });
+      toast.success(`Pose ${posNumber} duplicated`);
+      navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
+    } catch (err) {
+      toast.error(`Duplicate failed: ${persistenceErrorMessage(err)}`);
+    }
+  }, [navigate, positions, projectId, upsertPose]);
+
+  const handleDeletePose = useCallback(async (id: string) => {
+    if (positions.length <= 1) {
+      toast.error('Keep at least one pose in the project.');
+      return;
+    }
+    const source = positions.find((p) => p.id === id);
+    const label = source?.posNumber || 'this pose';
+    if (!window.confirm(`Delete pose ${label}? This cannot be undone.`)) return;
+    try {
+      await deletePose.mutateAsync(id);
+      toast.success(`Pose ${label} deleted`);
+    } catch (err) {
+      toast.error(`Delete failed: ${persistenceErrorMessage(err)}`);
+    }
+  }, [deletePose, positions]);
 
   const totalArea = useMemo(() => {
     return positions.reduce((sum, p) => {
@@ -179,10 +234,10 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
             <div className="space-y-4">
               <PoseLayoutPreview
                 poses={positions}
-                onSelect={(id) => {
-                  if (!projectId) return;
-                  navigate(fabricatorRoutes.poseMeasuring(projectId, id));
-                }}
+                onSelect={openPoseMeasuring}
+                onEdit={openPoseMeasuring}
+                onDuplicate={(id) => { void handleDuplicatePose(id); }}
+                onDelete={(id) => { void handleDeletePose(id); }}
               />
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

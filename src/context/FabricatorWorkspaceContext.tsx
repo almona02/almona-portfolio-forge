@@ -3,9 +3,11 @@ import React, {
   useContext,
   useEffect,
   useReducer,
+  useRef,
   type ReactNode,
 } from 'react';
 
+import { registerActiveWorkspaceProjectBridge } from '@/lib/fabricator/activeProjectBridge';
 import type { ConstitutionalMetadata } from '@/lib/constitutional/PositionStateSyncService';
 import type {
   DraftInvoice,
@@ -326,6 +328,18 @@ const workspaceReducer = (
 
 export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(workspaceReducer, initialState);
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  // Register bridge so save/delete mutations can update the studio header chips
+  useEffect(() => {
+    return registerActiveWorkspaceProjectBridge({
+      get: () => stateRef.current.currentProject,
+      set: (project) => {
+        dispatch({ type: 'SET_CURRENT_PROJECT', payload: project });
+      },
+    });
+  }, []);
 
   // Load workspace from Supabase (with localStorage fallback) on mount
   useEffect(() => {

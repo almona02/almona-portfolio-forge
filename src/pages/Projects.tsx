@@ -6,6 +6,7 @@ import {
   useProjects as useProjectsV2,
   useUpdateProject,
 } from '@/hooks/useFabricatorQueries';
+import { clearActiveProjectIfProjectDeleted } from '@/lib/fabricator/activeProjectBridge';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { supabase } from '@/lib/supabase';
@@ -209,6 +210,7 @@ const ProjectsPage: React.FC = () => {
         }
       }
       jobsToDelete.forEach((job) => deleteJob(job.id));
+      clearActiveProjectIfProjectDeleted(projectToDelete.projectId || projectToDelete.key);
       toast.success(
         `Project ${projectToDelete.orderNumber}${projectToDelete.projectCode ? ` (${projectToDelete.projectCode})` : ''} deleted successfully.`
       );

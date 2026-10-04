@@ -414,3 +414,25 @@ See `docs/plans/FP-028_APEX_CALLERS.md`. V6 production: ProjectStudio, BatchOpti
 - ROCK60 physical-length golden fixture is `PENDING_EXTERNAL_FIXTURE` (all `expectedLengthMm: null`).
 - Divider/glass cut formulas and thermal apply remain blocked pending evidence.
 - Operator must execute: F1 Measure→QC, hard reload, A→B during preview/BOM, second authorized account, golden job document compare.
+
+## Session log — 2026-10-05 (Measure UX / daily shop hardening)
+
+**Status:** COMPLETE (UI/workflow reliability; does not claim manufacturing-ready accuracy)  
+**Scope:** Post-create Measuring path, studio shell, and pose controls used every day after Egyptian Project Wizard.
+
+| Item | Result |
+| --- | --- |
+| Active project header after save/delete | Bridge publishes/clears shell chips (`activeProjectBridge`) |
+| Post-create “Position unavailable” | Empty `grid: {}` crashed `PoseLayoutPreview` / measuring blueprint; null-safe grid mapping + init |
+| System change UI | Capped panel scroll; phone horizontal pack chips; starter pack hidden in Egyptian tune path |
+| Pattern picker | Compact selected strip, type filters, clear selection, swipe/chips layout |
+| Cut preview | Dark amber theme, larger AREA chip, clearer sash label spacing |
+| Guided Size steps | Clickable System/Size/Glass/Place/Confirm; starts on Size when pack preselected |
+| Pose cards | Right-click Edit / Duplicate / Delete on project summary + measuring strip |
+| Opening layout | Collapsible header with Locked/Auto; measuring pose strip closed by default on small screens |
+
+**Primary files:** `SmartMeasuringInterface.tsx`, `EgyptianPatternSelector.tsx`, `PrestigeSystemPackSelector.tsx`, `PoseLayoutPreview.tsx`, `MeasuringPage.tsx`, `ProjectSummaryDashboard.tsx`, `fabricatorClientV2.ts`, `activeProjectBridge.ts`, studio shell/command center.
+
+**AICS-001:** No ML on the pick/save path; pattern/system selection remains rule-based catalog. Empty grids are not treated as authoritative layout.
+
+**Next (unchanged accuracy gate):** P6.2 live Measure→QC runbook with approved ROCK60 authority seed.

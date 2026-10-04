@@ -57,19 +57,19 @@
     }
   },
   "dashboard": {
-    "title": "Fabricator Pro Dashboard",
-    "subtitle": "AI-powered workshop management with real-time insights",
+    "title": "Command Center",
+    "subtitle": "Measure · design · stock · production · service",
     "performance": {
-      "title": "Performance Summary",
-      "optimization_speed": "Optimization Speed",
-      "waste_reduction": "Waste Reduction",
-      "ml_accuracy": "ML Accuracy"
+      "title": "Workshop readiness",
+      "optimization_speed": "Cut planning",
+      "waste_reduction": "Remnant discipline",
+      "ml_accuracy": "Operator validation"
     },
     "remnant_marketplace": {
-      "title": "Remnant Marketplace",
-      "subtitle": "Buy and sell excess materials across the fabricator network"
+      "title": "Remnant exchange",
+      "subtitle": "Verified surplus bars only."
     },
-    "recent_optimizations": "Recent Optimizations",
+    "recent_optimizations": "Recent cut plans",
     "quick_actions": "Quick Actions",
     "settings": "Settings"
   },

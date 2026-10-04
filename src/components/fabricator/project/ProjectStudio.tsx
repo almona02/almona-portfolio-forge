@@ -6,6 +6,7 @@ import {
     useProjectPositions,
     useUpsertPose,
 } from '@/hooks/useFabricatorQueries';
+import { clearActiveProjectIfPoseDeleted } from '@/lib/fabricator/activeProjectBridge';
 import type { ApexV6Output } from '@/lib/fabricator/goldTier/ApexEngineV6';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { Button } from '@/shared/ui/ui/button';
@@ -190,6 +191,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                 ...prev,
                 units: prev.units.filter(u => u.id !== unitId)
             }));
+            clearActiveProjectIfPoseDeleted(unitId);
             toast.success('Unit removed');
         }
         if (activeUnitId === unitId) {

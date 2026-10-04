@@ -1,3 +1,4 @@
+import { useActiveStudioProject } from '@/hooks/fabricator/useActiveStudioProject';
 import {
   STUDIO_WORKFLOW_STAGES,
   deriveStageVisualStatus,
@@ -65,7 +66,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
   const { t, i18n } = useTranslation('fabricator');
   const rtl = isRTL(i18n.language);
 
-  const currentProject = useWorkflowStore((s) => s.currentProject);
+  const currentProject = useActiveStudioProject();
   const measurementData = useWorkflowStore((s) => s.measurementData);
   const designData = useWorkflowStore((s) => s.designData);
   const bom = useWorkflowStore((s) => s.bom);
@@ -152,6 +153,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
                   'text-slate-500 hover:text-slate-300 hover:bg-slate-800/40',
               )}
               aria-current={isActive ? 'step' : undefined}
+              aria-label={`${label} — ${statusLabel(status)}`}
               title={`${label} — ${statusLabel(status)}`}
             >
               <span
