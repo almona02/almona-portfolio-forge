@@ -362,7 +362,7 @@ Windows fallback:
 | 2026-10-04 | Phase 5 / P5.5 layout/a11y | COMPLETE — canvas-primary workbench; collapsible left/right rails; BOM collapse; Ctrl+[/] + Space/Enter + aria-expanded | 4 focused P5.5 + CollapsiblePanel tests; TypeScript; lint 0 errors; production build; commit: none |
 | 2026-10-04 | Phase 5 exit | COMPLETE — physics claims, conversion guards, save identity, late preview, estimate chrome, canvas-primary layout | Phase 5 = 100/100; commit: none |
 | 2026-10-04 | Phase 6 / P6.1 automated | COMPLETE — focused FP-028 acceptance + Phase 5 regressions green; TypeScript; lint 0 errors; production build | Live Measure→QC still open; no manufacturing-ready claim |
-| 2026-10-04 | Phase 6 / P6.2 scaffold | COMPLETE — live runbook; A→B identitySwitch tests; ROCK60 physical-length golden fixture pending external evidence | Operator gates + authority seed still open; commit pending |
+| 2026-10-04 | Phase 6 / P6.2 scaffold | COMPLETE — live runbook; A→B identitySwitch tests; ROCK60 physical-length golden fixture pending external evidence | Operator gates + authority seed still open; commit: `72180d4` |
 
 ### Scorecard (updated after each phase / major slice)
 
