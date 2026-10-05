@@ -1,7 +1,7 @@
 import { ProductionCockpit } from '@/components/fabricator/cockpit/ProductionCockpit';
 import { ProductionDocumentsPanel } from '@/components/fabricator/workflow/ProductionDocumentsPanel';
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { catalogProfilesOrEmpty } from '@/lib/fabricator/catalog/CatalogResolver';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
@@ -55,16 +55,11 @@ export const ProductionPage: React.FC = () => {
     // ✅ GOLD-TIER: Generation state (reserved for future use)
     const [isGenerating, _setIsGenerating] = useState(false);
 
-    // ✅ GOLD-TIER: Resolve profiles from system pack
-    const profiles = useMemo(() => {
-        if (!currentProject?.systemPackId) return [];
-
-        const systemPack = SYSTEM_PACKS.find(
-            pack => pack.meta.id === currentProject.systemPackId
-        );
-
-        return systemPack?.profiles || [];
-    }, [currentProject?.systemPackId]);
+    // UP-06: catalog profiles for the active pack only — no ROCK60/[0] substitute.
+    const profiles = useMemo(
+        () => catalogProfilesOrEmpty(currentProject?.systemPackId),
+        [currentProject?.systemPackId],
+    );
 
     // ✅ GOLD-TIER: Error handling
     const hasRequiredData = currentProject !== null && optimizationResult !== null;

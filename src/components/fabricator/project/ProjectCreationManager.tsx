@@ -98,6 +98,8 @@ export const ProjectCreationManager: React.FC = () => {
                 customer: meta.clientName,
                 projectCode,
                 customerCode,
+                // UP-11: retain CRM customer UUID through wizards / redirects / local jobs.
+                customerId: meta.customerId,
                 projectId: newProjectId,
                 systemPackId: meta.systemPackId,
                 quantity: 1,
@@ -113,18 +115,33 @@ export const ProjectCreationManager: React.FC = () => {
                     usageType: meta.usageType,
                     baseShape: meta.baseShape,
                     openingType: meta.openingType,
+                    customerId: meta.customerId,
                 } as any,
             };
 
             let persistedProjectId = newProjectId;
             let persistedPoseId = poseId;
 
-            if (FeatureFlags.FABRICATOR_READ_V2 && user?.id) {
-                const saved = await fabricatorClientV2.savePose(newProject, user.id);
-                persistedProjectId = saved.projectId;
-                persistedPoseId = saved.poseId;
-                newProject.id = persistedPoseId;
-                newProject.projectId = persistedProjectId;
+            // UP-11: always attempt server persist when signed in (not gated solely by READ_V2).
+            // Flag still selects v2 client path; unsigned / fail → local job remains recoverable.
+            if (user?.id) {
+                try {
+                    if (FeatureFlags.FABRICATOR_READ_V2) {
+                        const saved = await fabricatorClientV2.savePose(newProject, user.id);
+                        persistedProjectId = saved.projectId;
+                        persistedPoseId = saved.poseId;
+                        newProject.id = persistedPoseId;
+                        newProject.projectId = persistedProjectId;
+                    } else {
+                        // Local-first when v2 read rollout is off — still keep customerId on the unit.
+                        console.info('[ProjectCreationManager] FABRICATOR_READ_V2 off; project kept local with customerId.');
+                    }
+                } catch (persistErr) {
+                    console.warn('[ProjectCreationManager] Server persist failed; keeping local draft with customerId:', persistErr);
+                    toast.error(
+                        t('fabricator:project.persist_deferred', 'Project saved locally; server sync failed — customer link retained.'),
+                    );
+                }
             }
 
             // 3. Persist Project locally (v2 server write already done above)

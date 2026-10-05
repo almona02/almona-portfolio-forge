@@ -3,7 +3,7 @@ import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
 import { OptimizationCockpit } from '@/components/fabricator/cockpit/OptimizationCockpit';
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { useAuth } from '@/context/AuthContext';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { catalogProfilesOrEmpty, findSystemPack } from '@/lib/fabricator/catalog/CatalogResolver';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { findBestMatchingPattern, getPatternById } from '@/lib/fabricator/presetUtils';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
@@ -70,11 +70,14 @@ export const OptimizationPage: React.FC = () => {
     );
 
     const systemPack = useMemo(() => {
-        if (!currentProject?.systemPackId) return null;
-        return SYSTEM_PACKS.find(p => p.meta.id === currentProject.systemPackId) ?? null;
+        const resolved = findSystemPack(currentProject?.systemPackId);
+        return resolved.ok ? resolved.pack : null;
     }, [currentProject?.systemPackId]);
 
-    const profiles = useMemo(() => systemPack?.profiles ?? [], [systemPack]);
+    const profiles = useMemo(
+        () => catalogProfilesOrEmpty(currentProject?.systemPackId),
+        [currentProject?.systemPackId],
+    );
 
     const hasRequiredData = currentProject !== null;
 

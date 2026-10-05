@@ -1,10 +1,15 @@
 import { ProjectStudio } from '@/components/fabricator/project/ProjectStudio';
 import { ProjectSummaryDashboard } from '@/components/fabricator/project/ProjectSummaryDashboard';
 import { PageLoadingWrapper } from '@/components/ui/PageLoadingWrapper';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import {
+  catalogProfilesOrEmpty,
+  listResolvableSystemPacks,
+} from '@/lib/fabricator/catalog/CatalogResolver';
+import { resolveSystemPackProfiles } from '@/lib/fabricator/engineering/resolveSystemPackProfiles';
 import { useProject, useProjectPositions } from '@/hooks/useFabricatorQueries';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import type { Profile } from '@/types/fabricator';
 import { BarChart3, Layout } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -17,9 +22,22 @@ export const ProjectStudioWrapper: React.FC = () => {
     const { data: projectMeta, isLoading: loadingProject } = useProject(useV2 ? projectId : undefined);
     const positions = useProjectPositions(useV2 ? projectId : undefined);
 
+    // UP-06: catalog gallery from resolvable packs only (no invented codes / no pack[0] substitute).
     const allProfiles = useMemo(() => {
-        return SYSTEM_PACKS.flatMap(pack => pack.profiles || []);
-    }, []);
+        const packId =
+          (projectMeta as { system_pack_id?: string } | undefined)?.system_pack_id
+          ?? (projectMeta as { systemPackId?: string } | undefined)?.systemPackId;
+        if (packId) {
+            return catalogProfilesOrEmpty(packId);
+        }
+        const byId = new Map<string, Profile>();
+        for (const pack of listResolvableSystemPacks()) {
+            for (const profile of resolveSystemPackProfiles(pack)) {
+                if (!byId.has(profile.id)) byId.set(profile.id, profile);
+            }
+        }
+        return Array.from(byId.values());
+    }, [projectMeta]);
 
     if (useV2 && loadingProject) {
         return <PageLoadingWrapper message="Loading Project..." variant="fullscreen"><div /></PageLoadingWrapper>;

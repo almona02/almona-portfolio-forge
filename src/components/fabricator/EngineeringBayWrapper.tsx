@@ -9,10 +9,9 @@
  */
 
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useProjectPositions } from '@/hooks/useFabricatorQueries';
+import { catalogProfilesOrEmpty } from '@/lib/fabricator/catalog/CatalogResolver';
 import type { DesignCompletionPayload } from '@/lib/fabricator/engineering/designCompletion';
-import { resolveSystemPackProfiles } from '@/lib/fabricator/engineering/resolveSystemPackProfiles';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
 import { isFabricatorUuid } from '@/lib/supabase/fabricatorClientV2';
@@ -69,16 +68,11 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     }
   }, [useV2, effectivePoseId, currentProject, jobs, dispatch, setSelectedJob, setCurrentProject, setDesignData]);
 
-  // FP-028: resolve catalog profiles for the active pack (never invent codes).
-  // Empty profiles previously caused "grid is empty or invalid" on design complete.
-  const profiles = useMemo<Profile[]>(() => {
-    const packId = currentProject?.systemPackId;
-    const pack =
-      (packId ? SYSTEM_PACKS.find((p) => p.meta.id === packId) : undefined) ??
-      SYSTEM_PACKS.find((p) => p.meta.id === 'rock60') ??
-      SYSTEM_PACKS[0];
-    return resolveSystemPackProfiles(pack);
-  }, [currentProject?.systemPackId]);
+  // UP-06: resolve catalog profiles for the active pack only — never substitute ROCK60/first pack.
+  const profiles = useMemo<Profile[]>(
+    () => catalogProfilesOrEmpty(currentProject?.systemPackId),
+    [currentProject?.systemPackId],
+  );
 
   // Get related positions (sibling poses within the same project)
   const resolvedProjectId = useMemo<string | undefined>(() => {

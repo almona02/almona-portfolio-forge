@@ -290,7 +290,7 @@ export const fabricatorClientV2 = {
     const projectName =
       (windowUnit.positionMeta as Record<string, unknown> | undefined)?.projectName as string
       ?? projectCode;
-    const baseProject: Omit<ProjectV2Insert, 'id'> = {
+      const baseProject: Omit<ProjectV2Insert, 'id'> = {
       owner_user_id: ownerUserId,
       project_code: projectCode,
       project_name: projectName,
@@ -300,7 +300,9 @@ export const fabricatorClientV2 = {
       region: 'egypt',
       system_pack_id: windowUnit.systemPackId ?? 'rock60',
       status: windowUnit.status ?? 'draft',
-      meta: {},
+      meta: {
+        ...(windowUnit.customerId ? { customerId: windowUnit.customerId } : {}),
+      },
     };
 
     // Look up project by CODE (not ID) to avoid UUID issues

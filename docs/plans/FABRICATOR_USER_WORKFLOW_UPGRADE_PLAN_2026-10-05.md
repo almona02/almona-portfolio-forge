@@ -1,8 +1,36 @@
 # Fabricator user workflow upgrade plan
 
-Date: 5 October 2026. Status: Batch 1 (UP-01…05) implemented and promoted to production frontend; consultation live; **~85% Batch 1 / ~18% overall program**. Release-close blocked by git sync, Redis honesty, and Batch 0 fixtures. Batches 2–6 remain proposed. Scorecard: [FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md). Implementation: [FABRICATOR_BATCH1_IMPLEMENTATION_2026-10-05.md](FABRICATOR_BATCH1_IMPLEMENTATION_2026-10-05.md).
+Date: 5 October 2026 (revised night — Batch 2 slice + Batch 3 start).  
+Status: **Batch 1 DONE.** **Batch 2 ~70%** (UP-06/09 done; UP-07/08/10 partial). **Batch 3 started** (UP-11/12/13). Batch 0 fixtures still open. Program ≈ **39%**.
 
-Inputs: [extended Fabricator audit](../audits/FABRICATOR_USER_PAGES_WIRING_AUDIT_2026-10-05.md) and [initial fabrication/Stock/Profiles audit](../audits/LIVE_FABRICATION_STOCK_PROFILES_AUDIT_2026-10-05.md).
+| Companion | Role |
+|---|---|
+| [Upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) | Gate-by-gate evidence (refreshed after Batch 2/3 slice) |
+| [Batch 1 implementation](FABRICATOR_BATCH1_IMPLEMENTATION_2026-10-05.md) | What shipped and how it was verified |
+| [Batch 1 readiness](FABRICATOR_BATCH1_READINESS_2026-10-05.md) | Pre-implementation toolchain baseline |
+| [Security remediation](SECURITY_DEPENDABOT_REMEDIATION_BATCH_2026-10-05.md) | Dependabot clearable pins + blocked braces/node-forge |
+| [FP-028 Apex Accuracy](FP-028_FABRICATOR_DESIGN_STUDIO_APEX_ACCURACY.md) | Manufacturing formula authority (orthogonal; do not invent physics in Batch 2) |
+
+Inputs: [extended wiring audit](../audits/FABRICATOR_USER_PAGES_WIRING_AUDIT_2026-10-05.md), [fabrication/Stock/Profiles audit](../audits/LIVE_FABRICATION_STOCK_PROFILES_AUDIT_2026-10-05.md).
+
+---
+
+## Revision audit (what changed since the original plan)
+
+| Plan claim (morning / early) | Reality (night 5 Oct 2026) | Plan action |
+|---|---|---|
+| Batch 1 “acceptance pending” | UP-01…05 shipped: live Studio stage order, consultation UUID receipt, `test:batch1` 30/30, promote + `origin/main` `91802b8` / CI `7a3226a` / security `a599c54` | Mark Batch 1 **DONE** (product). Batch 0 fixtures remain. |
+| Blocked by git sync | Batch 1 committed and pushed | Remove as blocker |
+| Redis reported healthy when missing | Honesty live (`b44a864`): Redis `unhealthy`/`unreachable`; overall `degraded` | Remove honesty blocker; optional Redis **provision** remains ops work |
+| `railway.json` Prestige Dockerfile | Live service uses Industrial `Dockerfile.realistic`; repo `railway.json` aligned in `a599c54` | Document Industrial as canonical Railway path |
+| “First slice = UP-01…04 + UP-06/09” | UP-01…05 complete; UP-06/09 not started | Next slice = **close Batch 0**, then **UP-06 + UP-09** |
+| Scorecard “git FAIL / Redis FAIL” | Stale relative to night commits | Treat scorecard evidence index as outdated until refreshed; this plan is source of truth for sequencing |
+| FUA findings all open | Batch 1 closed/reduced FUA-01, 02, 04, 06, 11, 18 + public calculator/consultation | Keep outstanding FUA mapped to Batches 2–6 |
+| Security not in scope | PyJWT 2.15.1 + npm pins shipped; braces #943/#944 and node-forge #942 blocked upstream | Track as ops/security parallel, not UP tickets |
+
+**Audit verdict:** The original plan’s target journey, contracts, and batch boundaries remain valid. What was wrong was status and sequencing—Batch 1 is no longer the next coding slice.
+
+---
 
 ## Target outcome
 
@@ -10,135 +38,234 @@ A workshop user can create a customer-linked project, measure and design its pos
 
 Upgrade the existing React/FastAPI/Supabase architecture in bounded changes. Preserve authoritative hydration, required-part conservation, manufacturing-rule approval, stale-result rejection, stock provenance and QC acknowledgement. A missing contract should produce a useful blocked state; a visual status must never bypass a manufacturing gate.
 
-## Proposed user journey
+**AICS-001:** No ML on manufacturing execution paths. Catalog/profile resolution and BOM remain rule-based. Batch 2 must not invent ROCK60/physics authority—defer to FP-028 evidence gates.
 
-Primary route sequence: Project → Measure → Design → BOM → Stock check → Optimize → Quote/Order → Production release → QC → Delivery.
+---
 
-Stock check is a position-scoped availability/reservation view backed by the workshop inventory, not a replacement for the global Stock library. A preliminary quote may be produced from an estimate BOM, but must be labeled Draft estimate and never authorize production. Production-backed quotations must reference qualified BOM and reconciled optimization. Standalone workshop pages remain available for Customers, Systems, Profiles, Stock, Orders, Reports and integration setup.
+## Canonical user journey (shipped navigation)
 
-Use one canonical order workspace, with an explicitly separate administrator view when authorized. Design's action should say Review BOM. QC's return action should lead to the same position's production record, and approved QC should offer Delivery for that record.
+Primary Studio sequence (Batch 1):
 
-## Shared contracts to establish before broader UI work
+`Project → Measure → Design → BOM → Stock → Optimize → Quote → Production → QC → Delivery`
 
-| Contract | Required behavior |
+| Rule | Behavior |
 |---|---|
-| Workflow identity | Authenticated owner/workshop, project UUID, position UUID, source revision and content/settings fingerprint. Resolve from route; verify ownership on server. |
-| Profile identity | Separate catalog part code from owned database UUID. Link to versioned system catalog, role, material and verified geometry/physics. |
-| Catalog resolution | One resolver for built-in and persisted custom/tuned systems. Unknown identity is an error; no first-pack substitution. |
-| BOM/optimization | Qualification, required-part ledger, source revision/catalog/rule/settings fingerprints and reconciliation result. Invalidate derived artifacts on relevant edits. |
-| Inventory | Domain adapter for all persisted fields; explicit mm/m/pieces/bar units; authoritative balance, movements and revision-bound reservations. |
-| Quote/order | Currency, priced line items, subtotal/tax/discount/total, customer/project/position links, source quote revision and conversion idempotency. |
-| Production/QC/delivery | Server-acknowledged events against released revision and identities; real operator/machine/evidence provenance. |
-| Save status | One state machine: local draft → pending → server acknowledged; separate offline/error/conflict. Historical updatedAt cannot establish current save success. |
+| Stock step | Position-scoped availability/reservation intent; global Stock library remains under Data. Until UP-09/10, Stock stage stays **Not recorded** (no fake completion). |
+| Draft estimate | May exist from estimate BOM; must never authorize production. |
+| Production quote | Requires qualified BOM + reconciled optimization. |
+| Design CTA | **Review BOM** (not “Proceed to Optimization”). |
+| QC / Delivery hrefs | Carry `projectId` + `poseId` query context (Batch 1). |
+| Orders | One user workspace later (UP-17); admin bulk actions separately gated. |
 
-Keep adapters/repositories centralized. Avoid adding another global store that independently owns the same manufacturing truth. Existing stores should hold route-scoped drafts and validated cache snapshots.
+Standalone pages remain: Customers, Systems, Profiles, Stock, Orders, Reports, Integrations.
 
-## Implementation batches
+---
 
-The effort labels below describe relative scope, not delivery-date commitments. Complete each exit gate before the dependent batch.
+## Shared contracts (still required before Batches 3–5)
 
-### Batch 0 — Establish a repeatable staging baseline (small)
+| Contract | Required behavior | Status after Batch 1 |
+|---|---|---|
+| Workflow identity | Owner/workshop, project UUID, position UUID, revision/fingerprint; route resolve + server ownership | **Partial** — pose hydration + QC context improved; not fully server-bound for all writes |
+| Profile identity | Catalog code ≠ owned UUID; role, material, verified geometry | **Open** — Batch 2 |
+| Catalog resolution | One resolver; unknown ID errors; no first-pack substitution | **Open** — UP-06 |
+| BOM/optimization | Qualification, ledgers, fingerprints, invalidate on edit | **Partial** — fail-closed gates exist; project aggregation still weak (FUA-16) |
+| Inventory | Adapter, units, movements, revision reservations | **Open** — UP-09/10 |
+| Quote/order | Currency, lines, totals, idempotent conversion | **Open** — Batch 4 |
+| Production/QC/delivery | Server ack against released revision; real evidence | **Partial** — demos isolated; real paths Batch 5 |
+| Save status | draft → pending → acknowledged; not `updatedAt` | **Partial** — Batch 1 removed false autosave; UP-14 completes |
 
-Resolve test startup without changing production behavior: fix/reuse a working npm launcher and keep optional Storybook browser imports out of ordinary test startup, or install the already-declared missing package using the repository's dependency policy. Record current build/deployment revision and applicable feature flags without exposing credentials.
+Keep adapters centralized. Do not add another global store that owns manufacturing truth.
 
-Create staging fixtures for two owners, two projects, multiple revisions, Panda/ROCK/UPVC/custom packs, priced and unpriced profiles, empty and populated stock, accepted quotes, a released job and QC approval. Restore points must exist for fixture data. Do not use customer production records for mutation tests.
+---
 
-Exit: targeted identity/validation/QC suites run; failures are classified; a route inventory and deployed commit baseline are recorded. Run type-check/build as the first code changes begin, and separate existing failures from new ones.
+## Batch status rollup
 
-### Batch 1 — Make readiness, navigation and demos truthful (small to medium)
+| Batch | Scope | Status | Score | Exit gate |
+|---|---|---|---|---|
+| **0** | Toolchain + disposable fixtures + deploy baseline | **PARTIAL** | ~45% | Two-owner/multi-revision fixtures + restore points + recorded production SHA |
+| **1** | Truthful readiness / nav / demos / public lead | **DONE** | ~95% | Product exit met; fixtures/Redis provision optional for “release-perfect” |
+| **2** | Profiles / systems / inventory | **IN PROGRESS** | ~70% | UP-06/09 met; UP-07/08/10 partial; reservation open |
+| **3** | Customer / pattern / revision handoffs | **STARTED** | ~35% | UP-11/12/13 coded; UP-14 open |
+| **4** | Quote → order + admin separation | **OPEN** | 0% | One order per accepted quote; admin gated |
+| **5** | Production / QC / delivery release | **OPEN** | ~5% | Release freeze + real QC/delivery ack (demos already isolated) |
+| **6** | Reporting / a11y / integrations | **OPEN** | ~5% | No NaN/green lies; RTL/keyboard journeys |
 
-Tickets:
+---
 
-- **UP-01:** Separate active-page selection from workflow status. Qualification/reconciliation/QC evidence and revision freshness determine readiness. Map warnings to contextual reasons and recovery links. Covers FUA-01/02/19.
-- **UP-02:** Align stage order, Review BOM action, quote empty-state link, QC return link and explicit project/position context. Add Reports navigation; replace legacy dashboard quick links. Covers FUA-02/14/20.
-- **UP-03:** Correct empty-array tuning readiness; stop Save & Return from silently marking profiles approved. Covers FUA-04.
-- **UP-04:** Label kiosk and sample metrics as Demo; separate operational capability from readiness. Disable simulated evidence in normal production paths, and remove production role overrides. Covers FUA-06/11/13/18.
-- **UP-05:** Fix public calculator selectors and deliver consultation through a validated lead handler; implement/remove dead portfolio/resources CTAs. Covers the initial audit.
+## Batch 0 — Staging baseline (PARTIAL — close next)
 
-Exit: estimate BOM never says manufacturing Complete; blocked steps remain navigable for explanation but cannot execute; system with zero required profiles is blocked; tests cannot grant production permissions through URL flags; demos cannot emit operational delivery/release records; public selections affect estimates and consultation acknowledges delivery to its endpoint.
+**Done:** npm/Vitest restored; `npm run test:batch1`; production builds; Railway Redis honesty; git on `main`; release metadata pattern (`batch1-verification.json`).
 
-### Batch 2 — Unify profiles, systems and inventory (large; foundation)
+**Still required:**
 
-Tickets:
+1. Designate disposable two-owner accounts/projects (never mutate customer workshop data).
+2. Fixtures: multi-revision poses, Panda/ROCK/UPVC/custom, priced/unpriced profiles, empty + populated stock, accepted quote, released job, QC approval.
+3. Restore points for fixture data.
+4. Record production commit + Railway image digest + feature-flag inventory (no secrets).
 
-- **UP-06:** Implement shared catalog resolution and profile database adapter. Migrate every consumer: Gallery, Tuning, EngineeringBayWrapper, BOMReviewPanel, OptimizationPage, ProductionPage, ProjectStudioWrapper, project aggregation, Reports and Stock. Covers FUA-03/12/16 and initial inventory identity findings.
-- **UP-07:** Replace creation-only Profiles with persisted library plus create/edit flows, explicit system context and local/server save feedback. Import local-only packs through a reviewed migration, retaining original codes and raw files. Covers initial Profiles audit.
-- **UP-08:** Replace inferred DXF geometry with measured entities and confirmed roles. Require valid positive finite dimensions/weights/bar lengths, valid allowances, actual material and per-system mechanism. Present unverified manual data explicitly. Covers initial import/physics findings.
-- **UP-09:** Load owned stock independently of active position, then expose explicit system filtering. Keep setup, purchase intake, remnants and movement history available in empty states. Eliminate NaN and mixed field/currency assumptions. Covers FUA-03/12.
-- **UP-10:** Make purchase/CSV intake transactional and idempotent; reload/invalidate authoritative inventory after success. Add revision-bound stock check/reservation and release/expiry behavior without double deduction. Covers initial stale/partial stock findings.
+**Exit:** targeted identity/validation/QC suites run against fixtures; failures classified; route inventory + deploy baseline recorded.
 
-Migration: map catalog codes to owned UUIDs with owner+catalog uniqueness; preserve original code aliases and existing UUID foreign keys. Detect duplicates and missing relations before automatic consolidation. Do not silently translate steel into aluminum or upgrade old tuned labels to approved authority. Compare balances from movements and flag unresolved discrepancies for review.
+---
 
-Exit: the same workshop profiles appear on Profiles, Stock and Reports; a saved custom system resolves in design/BOM/optimization/production after reload; catalog IDs are never submitted as profile UUIDs; two sequential/concurrent intakes give correct balances; interrupted/retried imports cannot duplicate stock; invalid/unknown geometry or price blocks affected downstream actions with reasons.
-
-### Batch 3 — Bind customer, pattern and revision handoffs (medium)
-
-Tickets:
-
-- **UP-11:** Persist canonical project creation irrespective of read-rollout flags; retain selected customer UUID through both wizard modes and redirects. Covers FUA-14/17.
-- **UP-12:** Connect PatternLibraryPage to explicit project/position context. Preview compatibility and resulting layout, then apply as a draft with explicit save; Cancel returns to originating context. Covers FUA-15.
-- **UP-13:** Resolve exact project BOM inputs, display per-position qualification/failure, aggregate actual quantities and label partial estimates. Covers FUA-16.
-- **UP-14:** Use one acknowledged revision/save status across sidebar/header/footer. Suppress stale context until route hydration finishes and retain recoverable unsaved drafts. Covers FUA-19.
-
-Exit: customer-started creation produces a project linked to that customer; both feature-flag configurations resolve the created pose; changing position never retains another position's BOM/optimization/quote; applying a pattern invalidates only derived artifacts for the correct draft/revision; a failed position cannot become an apparently complete whole-project BOM.
-
-### Batch 4 — Complete quote → order and separate admin capabilities (medium to large)
+## Batch 1 — Truthful readiness (DONE)
 
 Tickets:
 
-- **UP-15:** Persist quote records and line items bound to project/position/revision; expose draft estimate, priced quote, accepted, superseded and expired states. Reports and commercial lists query the same records. Covers FUA-08.
-- **UP-16:** Add atomic idempotent quote-to-order conversion. Preserve monetary breakdown without adding tax twice; persist quote/customer/project/position relationships and revision snapshots. Covers FUA-09.
-- **UP-17:** Consolidate user Orders with pagination/search and contextual next actions. Restrict admin bulk payment/status operations in UI and server policy; enforce release/QC/delivery transitions with evidence. Calculate totals per currency or explicit dated exchange conversion. Covers FUA-10.
+| Ticket | Status | Evidence |
+|---|---|---|
+| **UP-01** Readiness ≠ selection | **DONE** | `studioWorkflow.ts` + tests; live blocked reasons |
+| **UP-02** Stage order / Review BOM / QC context | **DONE** | Live Studio order; QC query context |
+| **UP-03** Empty tuning / Save&Return | **DONE** | `tuningReadiness` + SystemPackTuningStudio |
+| **UP-04** Demo isolation / no URL role grants | **DONE** | persona tests; kiosk/delivery demos gated |
+| **UP-05** Calculator + consultation + CTAs | **DONE** | Live UUID receipt; migration on Supabase |
 
-Exit: accepted quote creates exactly one linked order after retries/concurrency; PDF/list/order show the same line items and totals; client changes invalidate or supersede affected quotes explicitly; unauthorized writes fail server-side; an order cannot be delivered through a label-only status update.
+**Exit (met):** estimate BOM does not imply manufacturing Complete; blocked steps explain recovery; empty packs not “All Tuned”; demos cannot emit operational completion; consultation returns acknowledged UUID.
 
-### Batch 5 — Connect production, QC and delivery to released records (large)
+**Residual (not Batch 1 scope):** full multi-owner mutation walkthrough (Batch 0); Redis service provision; PWA update prompt on every live tab after promote.
+
+Commits of record: `91802b8` (Batch 1), `7a3226a` (CI test alignment), `b44a864` (Redis honesty), `a599c54` (security + railway.json).
+
+---
+
+## Batch 2 — Unify profiles, systems and inventory (IN PROGRESS ~70%)
+
+**Do not start Batch 5 production/delivery persistence until Batch 2 exit is met (UP-10 reservation still open).**
 
 Tickets:
 
-- **UP-18:** Introduce a released-job/position coordinator. Freeze qualified BOM, reconciled cut ledger, stock reservation and machine/settings versions into the release record. Bind operator scans to known released cut IDs. Covers FUA-03/11.
-- **UP-19:** Preserve/reload existing QC acknowledgements; start an inspection explicitly, bind to released revision, and retain idempotent server validation. Restore contextual back/next actions. Covers FUA-07.
-- **UP-20:** Build Delivery coordinator/queue using explicit unit and approved QC identity. Store real evidence bytes/hashes and actual QR validation; fail on unavailable location unless an authorized exception is recorded. Acknowledge server completion before updating order/unit status. Covers FUA-05/06.
+- **UP-06:** **DONE** — `CatalogResolver` fail-closed; wired EngineeringBay/Optimization/Production/ProjectStudio/BOMReview.
+- **UP-07:** **PARTIAL** — ProfileStudioLite loads saved packs; `addCustomSystemAsync` + local/server feedback. Full owned-UUID materialize still open.
+- **UP-08:** **PARTIAL** — no silent sash invent / steel→aluminum; positive finite dims required. Broader DXF importer paths remain.
+- **UP-09:** **DONE** — Studio Stock + Reports via `loadOwnedWorkshopInventory` + finite mapper.
+- **UP-10:** **PARTIAL** — movements + `sync_stock_from_movements`; query invalidate; empty chrome kept. Revision-bound reservation still open.
 
-Physical machine integration requires an agreed protocol and real acknowledgement source. Until that exists, ship a clearly labeled manual production-recording flow; do not claim timer completion is CNC execution. No physical cut should be attempted as a browser regression test.
+**Exit (remaining):** same workshop UUID profiles across Profiles/Stock/Reports; concurrent intake idempotency keys at DB; revision-bound reservation.
 
-Exit: release refuses stale BOM/settings/reservations; unknown scans are rejected; Pause stops the relevant workflow rather than only showing a toast; QC and Delivery survive refresh/another device and reject stale revisions; fake evidence cannot complete delivery; one delivery acknowledgement advances the correct order/unit.
+**Next coding slice:** finish UP-07 UUID materialize + UP-10 reservation, then close Batch 3 UP-14.
 
-### Batch 6 — Finish operational reporting and usability (medium)
+---
 
-- **UP-21:** Bind Command/Reports metrics to authoritative jobs, inventory, alerts and recorded machine events. Show source, freshness and unknown/error states. Distinguish mock analytics per metric. Covers FUA-12/13.
-- **UP-22:** Add searchable profile/system lists, consistent contextual recovery, accessible dialogs/accordion controls and keyboard-operated pattern/project selection. Verify desktop, narrow tablet and Arabic RTL workflows. Covers FUA-20 and initial accessibility findings.
-- **UP-23:** Make Integrations a useful capability/setup page with native links and honest external availability. Avoid SAP/Odoo implementation until a concrete connector contract exists. Covers FUA-20.
+## Batch 3 — Customer, pattern, revision handoffs (STARTED)
 
-Exit: no hardcoded green operational readiness, NaN, currencyless totals or task-specific implementation copy; keyboard and RTL users can complete supported journeys; every unavailable action explains its prerequisite and recovery.
+- **UP-11:** **PARTIAL** — `customerId` on `WindowUnit` + project `meta`; create path retains UUID. Full always-on server persist (flag-independent) still incomplete.
+- **UP-12:** **DONE** — Pattern library wires apply/cancel to active pose + invalidates BOM/optimize.
+- **UP-13:** **DONE** — Project BOM uses CatalogResolver; failed poses labeled; partial estimate banner.
+- **UP-14:** **OPEN** — unify save/revision chrome.
+
+**Exit (remaining):** customer-linked create under both flag configs with server ack; UP-14 chrome; position switch never retains foreign BOM/quote.
+
+---
+
+## Batch 4 — Quote → order + admin separation
+
+- **UP-15:** Persist quotes/lines bound to project/position/revision; draft estimate vs priced vs accepted/superseded/expired. **FUA-08**
+- **UP-16:** Atomic idempotent quote→order; no double tax; preserve links + revision snapshot. **FUA-09**
+- **UP-17:** One user Orders UX; admin bulk payment/status server-gated; currency-aware totals. **FUA-10**
+
+**Exit:** one order after retries; PDF/list/order match; unauthorized writes fail server-side; label-only “Delivered” impossible.
+
+---
+
+## Batch 5 — Production, QC, delivery on released records
+
+Batch 1 already: demos isolated; simulated delivery cannot complete ops paths.
+
+- **UP-18:** Release coordinator; freeze qualified BOM, cut ledger, reservations, machine/settings versions; scans bind to released cut IDs. **FUA-11**
+- **UP-19:** Reload QC acknowledgements; explicit new inspection; contextual back/next. **FUA-07**
+- **UP-20:** Delivery queue on unit + approved QC; real evidence hashes/QR; server ack before status. **FUA-05/06**
+
+Until a real machine protocol exists: labeled **manual production recording** only—never claim timer = CNC.
+
+**Exit:** stale release refused; unknown scans rejected; Pause stops work; QC/Delivery survive refresh and reject stale revisions; fake evidence cannot complete delivery.
+
+---
+
+## Batch 6 — Reporting and usability
+
+- **UP-21:** Command/Reports from authoritative jobs/inventory/events; freshness + unknown states; mock metrics labeled. **FUA-12/13**
+- **UP-22:** Searchable lists, recovery CTAs, a11y dialogs, keyboard + Arabic RTL. **FUA-20** + initial a11y audit
+- **UP-23:** Integrations as honest capability/setup (no fake SAP/Odoo until a connector contract). **FUA-20**
+
+**Exit:** no green lies, NaN, or currencyless totals; keyboard/RTL can finish supported journeys.
+
+---
+
+## Audit finding disposition (FUA)
+
+| Finding | Priority | Disposition |
+|---|---|---|
+| FUA-01 Readiness vs selection | P1 | **Closed** — Batch 1 / UP-01 |
+| FUA-02 Stage order / CTAs | P1 | **Closed** — Batch 1 / UP-02 |
+| FUA-03 Catalog / Stock vs Reports | P1 | **Reduced** — Batch 2 / UP-06, UP-09 (Stock≠catalog; Reports finite) |
+| FUA-04 Empty pack “All Tuned” | P1 | **Closed** — Batch 1 / UP-03 |
+| FUA-05 Delivery disconnected | P1 | **Open** — Batch 5 / UP-20 (context query only in B1) |
+| FUA-06 Delivery simulations | P1 | **Reduced** — Batch 1 / UP-04; real evidence UP-20 |
+| FUA-07 QC ambient / clear-on-entry | P1 | **Open** — Batch 5 / UP-19 |
+| FUA-08 Quote not persisted | P1 | **Open** — Batch 4 / UP-15 |
+| FUA-09 Double tax on convert | P1 | **Open** — Batch 4 / UP-16 |
+| FUA-10 Dual Orders / admin | P1 | **Open** — Batch 4 / UP-17 |
+| FUA-11 Kiosk simulation | P1 | **Reduced** — Batch 1 / UP-04; release UP-18 |
+| FUA-12 Reports NaN / inventory map | P1 | **Reduced** — Batch 2 / UP-09; remainder Batch 6 / UP-21 |
+| FUA-13 Command static READY | P2 | **Reduced** — Batch 1 demos; full UP-21 |
+| FUA-14 Customer / quick-link loss | P1 | **Reduced** — UP-11 customerId retain; full persist open |
+| FUA-15 Pattern never applies | P1 | **Closed** — Batch 3 / UP-12 |
+| FUA-16 Project BOM fallbacks | P1 | **Closed** — Batch 3 / UP-13 (+ UP-06) |
+| FUA-17 Read flag skips persist | P1 | **Partial** — Batch 3 / UP-11 (local retain; always-on server open) |
+| FUA-18 URL persona override | P1 | **Closed** — Batch 1 / UP-04 |
+| FUA-19 Save status contradiction | P2 | **Partial** — Batch 1; complete UP-14 |
+| FUA-20 Recovery / Integrations copy | P2 | **Partial** — Batch 1 nav; UP-22/23 |
+
+Initial public Fabrication Services findings (calculator / consultation / CTAs): **Closed** — UP-05.
+
+---
 
 ## Required regression scenarios
 
 | Scenario | Acceptance |
 |---|---|
-| Owner/project/position mismatch | Reject hydration/write without leaking another owner's records. |
-| Position switch during solver/save | Discard stale completion and keep the newly selected position intact. |
-| Change geometry, system, rule version or machine settings | Invalidate dependent BOM/optimization/release approval; preserved original evidence remains auditable. |
-| Empty/unknown/custom catalog | Exact resolution or actionable block; no substituted pack/geometry. |
-| Stock intake retry/concurrency | Correct balance and one movement per request; no partial success hidden by a toast. |
-| Quote conversion retry/concurrency | One order, exact preserved money/links and source revision. |
-| QC refresh/revisit | Existing server approval remains visible; new inspection is explicit. |
-| Delivery evidence failure | No fabricated proof; no delivered status without acknowledgement. |
-| Offline/save error/session change | Truthful status, recoverable owned drafts and no stale account context. |
-| Core desktop/tablet/RTL/keyboard journey | Project through recorded delivery with contextual navigation and legible state. |
+| Owner/project/position mismatch | Reject hydration/write; no cross-owner leak |
+| Position switch during solver/save | Discard stale completion; keep selected pose |
+| Change geometry / system / rules / settings | Invalidate BOM/optimize/release; keep audit evidence |
+| Empty/unknown/custom catalog | Exact resolve or actionable block; no substitution |
+| Stock intake retry/concurrency | Correct balance; one movement per request |
+| Quote conversion retry/concurrency | One order; exact money/links/revision |
+| QC refresh/revisit | Existing server approval visible; new inspection explicit |
+| Delivery evidence failure | No fabricated proof; no delivered without ack |
+| Offline/save error/session change | Truthful status; recoverable owned drafts |
+| Desktop / tablet / RTL / keyboard | Project → recorded delivery with legible state |
 
-Run existing targeted identity, measurement, optimization and QC tests after relevant changes; add meaningful contract/integration tests for adapters, transactional stock, quote conversion and approval/release boundaries. Run lint/type-check/build and bounded end-to-end staging tests for each release candidate. Avoid treating mocked unit tests as proof of deployed RPC/RLS or machine behavior.
+After each batch: run `npm run test:batch1` plus new contract tests; lint/type-check/build; bounded staging E2E. Mocked unit tests do not prove RPC/RLS or machine behavior.
+
+---
+
+## Parallel tracks (not UP tickets)
+
+| Track | Status | Note |
+|---|---|---|
+| Dependabot clearable pins | **Shipped** `a599c54` | Await Dependabot re-scan |
+| braces CVE-2026-93687 | **Blocked** | No npm >3.0.3 |
+| node-forge nested DigestAlgorithm | **Blocked** | 1.4.1 not on npm |
+| Redis service provision | **Optional** | Honesty already fails closed |
+| FP-028 ROCK60 live gates | **Blocked** on operator evidence | Must not invent formulas in Batch 2 |
+
+---
 
 ## Rollout and recovery
 
-Use additive schema changes and reviewed backfills first. Keep existing record IDs and legacy URLs; redirect to canonical routes with context preserved. Gate new write paths by explicit capability flags, not ambiguous read flags. Roll out to staging, then a small workshop cohort with reconciliation of stock, quote totals and release evidence before wider adoption.
+Additive schema + reviewed backfills first. Keep record IDs and legacy URLs; redirect with context. Gate new writes by explicit capability flags. Staging → small workshop cohort → wider adoption after stock/quote/release reconciliation.
 
-Rollback disables new UI/write paths while retaining newly created acknowledged records and migration mappings. It must not restore incompatible balances or erase audit evidence. Display an operational block if old clients cannot understand new release contracts.
+Rollback: disable new UI/write paths; retain acknowledged records and migration maps; never restore incompatible balances or erase audit evidence.
 
-Track route-hydration failures, blocked reasons, save acknowledgement latency, unresolved catalog IDs, stock reconciliation errors, duplicate conversions, stale solver results and approval/delivery rejection rates. No credentials, personal customer fields or raw sensitive evidence should be included in diagnostics.
+Metrics (no PII/secrets): hydration failures, blocked reasons, save ack latency, unresolved catalog IDs, stock reconciliation errors, duplicate conversions, stale solver results, approval/delivery rejection rates.
 
-## First implementation slice
+---
 
-Start with UP-01 through UP-04 plus UP-06's database adapter and UP-09's authoritative Stock load. This creates a concrete improvement quickly: honest stage/tuning readiness, explicit demo behavior, and consistent finite inventory values on Stock and Reports. Then finish custom-profile/catalog persistence before connecting production and delivery.
+## Immediate next sequence
 
-Public fabrication conversion repair (UP-05) is independent and can be delivered as a separate change. Estimated sequencing is dependency-driven; no deadline is promised until staging tests, migration scope and machine/ERP boundaries are agreed.
+1. Finish Batch 2 remainders — UP-07 owned UUID materialize + UP-10 revision reservation.  
+2. Finish Batch 3 — UP-14 save/revision chrome; harden UP-11 always-on persist.  
+3. Then Batch 4 → 5 → 6 in order.  
+4. Close Batch 0 fixtures when operators available.  
+5. Keep FP-028 accuracy work on its own track.
+
+No delivery-date commitment until Batch 2 exit (reservation) and Batch 0 fixtures are agreed.

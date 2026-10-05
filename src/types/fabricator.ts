@@ -117,8 +117,10 @@ export interface WindowUnit {
   customer?: string;
   /** Optional short human-friendly project code (for labels, machine fields, etc.) */
   projectCode?: string;
-   /** Optional customer twin code used inside Fabricator (label-friendly) */
+  /** Optional customer twin code used inside Fabricator (label-friendly) */
   customerCode?: string;
+  /** Canonical CRM / customers table UUID retained across wizards and reloads (UP-11). */
+  customerId?: string;
   /** Optional position/pose twin code for machine labels & reports */
   positionCode?: string;
   /** Authoritative database revision used to bind derived artifacts. */

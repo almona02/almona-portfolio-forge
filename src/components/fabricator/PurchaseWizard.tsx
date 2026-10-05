@@ -366,21 +366,11 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
         }
 
         console.log('Stock movement recorded successfully:', movementDataResult);
-
-        // 3. Update Stock Level (use stockAfter from movementData to ensure consistency)
-        const { error: updateError } = await db.from('fabricator_profiles')
-          .update({ 
-            stock_quantity: stockAfter,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', profileId)
-          .eq('user_id', authenticatedUserId);
-
-        if (updateError) {
-          console.error('Error updating stock quantity:', updateError);
-          throw new Error(`Failed to update stock quantity: ${updateError.message || updateError.details || 'Unknown error'}`);
-        }
       }
+
+      // UP-10: recompute stock from movements (authoritative) instead of client stockAfter.
+      const { syncStockFromMovements } = await import('@/lib/inventory/StockCalculator');
+      await syncStockFromMovements(authenticatedUserId);
 
       // Refresh and resolve stock alerts after purchase
       // This will automatically resolve alerts when stock is restored above thresholds

@@ -5,7 +5,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { useWorkflowStore, workflowIdentityMatches } from '@/store/workflowStore';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { findSystemPack } from '@/lib/fabricator/catalog/CatalogResolver';
 import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { gridMatchesPattern } from '@/lib/fabricator/presetUtils';
 import { WorkflowValidator } from '@/lib/fabricator/validation/WorkflowValidator';
@@ -30,8 +30,8 @@ export const BOMReviewPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const systemPack = useMemo(() => {
-    if (!currentProject?.systemPackId) return null;
-    return SYSTEM_PACKS.find((p) => p.meta.id === currentProject.systemPackId) ?? null;
+    const resolved = findSystemPack(currentProject?.systemPackId);
+    return resolved.ok ? resolved.pack : null;
   }, [currentProject?.systemPackId]);
 
   const pattern = useMemo(() => {

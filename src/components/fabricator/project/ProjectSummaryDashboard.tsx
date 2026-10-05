@@ -1,16 +1,18 @@
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useDeletePose, useUpsertPose } from '@/hooks/useFabricatorQueries';
 import { PresetAwareBOMGenerator, type CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
+import { findSystemPack } from '@/lib/fabricator/catalog/CatalogResolver';
 import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
 import { nextPoseNumber } from '@/pages/fabricator/workflow/MeasuringPage';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import type { WindowUnit } from '@/types/fabricator';
 import {
+  AlertTriangle,
   ArrowRight,
   Box,
   CheckCircle2,
@@ -44,6 +46,8 @@ interface AggregatedBOM {
   laborCost: number;
   totalCost: number;
   positionBOMs: Map<string, CompleteBOM>;
+  failedPositionIds: string[];
+  isPartialEstimate: boolean;
 }
 
 export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = ({
@@ -134,18 +138,26 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
     try {
       const generator = new PresetAwareBOMGenerator();
       const positionBOMs = new Map<string, CompleteBOM>();
+      const failedPositionIds: string[] = [];
 
       let materialCost = 0, hardwareCost = 0, glazingCost = 0;
       let accessoriesCost = 0, laborCost = 0;
       let totalProfiles = 0, totalHardware = 0, totalGlazing = 0, totalAccessories = 0;
 
       for (const pos of positions) {
-        const systemPack = SYSTEM_PACKS.find(sp => sp.meta.id === pos.systemPackId) ?? SYSTEM_PACKS[0];
-        const pattern = EGYPTIAN_PATTERNS.find(p => p.id === pos.presetId) ?? EGYPTIAN_PATTERNS[0];
-        if (!systemPack || !pattern) continue;
+        // UP-13: exact pack/pattern only — never SYSTEM_PACKS[0] / EGYPTIAN_PATTERNS[0].
+        const packResult = findSystemPack(pos.systemPackId);
+        const pattern = pos.presetId
+          ? EGYPTIAN_PATTERNS.find((p) => p.id === pos.presetId)
+          : undefined;
+
+        if (!packResult.ok || !pattern) {
+          failedPositionIds.push(pos.id);
+          continue;
+        }
 
         try {
-          const bom = await generator.generateCompleteBOM(pos, pattern, systemPack, false);
+          const bom = await generator.generateCompleteBOM(pos, pattern, packResult.pack, false);
           const qty = pos.quantity || 1;
           positionBOMs.set(pos.id, bom);
 
@@ -159,9 +171,12 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
           accessoriesCost += bom.cost.accessoriesCost * qty;
           laborCost += bom.cost.laborCost * qty;
         } catch {
-          // Skip positions that fail BOM generation
+          failedPositionIds.push(pos.id);
         }
       }
+
+      const isPartialEstimate =
+        failedPositionIds.length > 0 || positionBOMs.size < positions.length;
 
       setAggregatedBOM({
         totalProfiles,
@@ -175,7 +190,15 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
         laborCost,
         totalCost: materialCost + hardwareCost + glazingCost + accessoriesCost + laborCost,
         positionBOMs,
+        failedPositionIds,
+        isPartialEstimate,
       });
+
+      if (isPartialEstimate) {
+        toast.warning(
+          `Partial project BOM: ${positionBOMs.size}/${positions.length} positions resolved. Failed positions are labeled — not a complete manufacturing total.`,
+        );
+      }
     } finally {
       setIsAggregating(false);
     }
@@ -196,6 +219,20 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
           highlight
         />
       </div>
+
+      {aggregatedBOM?.isPartialEstimate ? (
+        <Alert className="border-amber-600/40 bg-amber-500/5">
+          <AlertTriangle className="h-4 w-4 text-amber-400" />
+          <AlertDescription className="text-amber-200 text-sm">
+            Partial estimate only — {aggregatedBOM.positionBOMs.size}/{positions.length} positions
+            resolved
+            {aggregatedBOM.failedPositionIds.length
+              ? ` (${aggregatedBOM.failedPositionIds.length} failed or missing system/pattern)`
+              : ''}
+            . Failed poses cannot look like a complete project BOM.
+          </AlertDescription>
+        </Alert>
+      ) : null}
 
       {/* Positions Table */}
       <Card className="bg-slate-900/40 border-amber-600/20">
@@ -257,6 +294,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                 <tbody>
                   {positions.map((pos, i) => {
                     const posBOM = aggregatedBOM?.positionBOMs.get(pos.id);
+                    const failed = aggregatedBOM?.failedPositionIds.includes(pos.id);
                     return (
                       <tr key={pos.id} className="border-b border-slate-800/50 hover:bg-amber-500/5">
                         <td className="py-2 px-3 text-amber-300 font-mono text-xs">{pos.posNumber || i + 1}</td>
@@ -270,10 +308,20 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                           </Badge>
                         </td>
                         <td className="py-2 px-3">
-                          <StatusBadge status={pos.status} />
+                          {failed ? (
+                            <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-300">
+                              BOM failed
+                            </Badge>
+                          ) : (
+                            <StatusBadge status={pos.status} />
+                          )}
                         </td>
                         <td className="py-2 px-3 text-right text-amber-200 font-mono text-xs">
-                          {posBOM ? `${posBOM.cost.totalCost.toLocaleString('en-EG', { maximumFractionDigits: 0 })}` : '—'}
+                          {failed
+                            ? '—'
+                            : posBOM
+                              ? `${posBOM.cost.totalCost.toLocaleString('en-EG', { maximumFractionDigits: 0 })}`
+                              : '—'}
                         </td>
                         <td className="py-2 px-3 text-right">
                           {projectId && (
@@ -321,6 +369,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
               <Badge className="bg-green-500/20 text-green-300 border-green-500/40 text-[10px]">
                 <CheckCircle2 size={10} className="mr-1" />
                 {aggregatedBOM.positionBOMs.size}/{positions.length} positions calculated
+                {aggregatedBOM.isPartialEstimate ? ' (partial estimate)' : ''}
               </Badge>
             </CardTitle>
           </CardHeader>

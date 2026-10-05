@@ -6,8 +6,9 @@ import { PricingTuningStudio } from '@/components/fabricator/PricingTuningStudio
 import { useAuth } from '@/context/AuthContext';
 import { WorkshopPerformanceAnalytics } from '@/lib/analytics/WorkshopPerformanceAnalytics';
 import { userQueries } from '@/lib/database/optimizedQueries';
+import { loadOwnedWorkshopInventory } from '@/lib/fabricator/inventory/ProfileInventoryAdapter';
+import { profileInventoryValue } from '@/lib/fabricator/inventory/profileInventoryMapper';
 import { pricingAnalyticsService } from '@/lib/pricing/PricingAnalyticsService';
-import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -68,27 +69,15 @@ export const FabricatorReports: React.FC = () => {
     refetchOnWindowFocus: false,
     queryFn: async () => {
       if (!user) return [];
-      const db = supabase as any;
-
-      // Ensure latest stock from movements (same as InventoryPage)
-      try {
-        await db.rpc('sync_stock_from_movements', { p_user_id: user.id });
-      } catch (err) {
-        console.warn('Failed to sync stock from movements for reports:', err);
+      // UP-09: shared owned-inventory adapter (finite costs, camelCase stock fields).
+      const result = await loadOwnedWorkshopInventory({
+        userId: user.id,
+        syncFromMovements: true,
+      });
+      if (!result.ok) {
+        throw new Error(result.error);
       }
-
-      const { data, error } = await db
-        .from('fabricator_profiles')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      return (data || []).map((p: any) => ({
-        ...p,
-        stockQuantity: p.stock_quantity ? parseFloat(p.stock_quantity) : 0,
-        minStockLevel: p.min_stock_level ? parseFloat(p.min_stock_level) : 0,
-      })) as Profile[];
+      return result.profiles;
     },
   });
 
@@ -113,18 +102,17 @@ export const FabricatorReports: React.FC = () => {
     const outOfStock = inventory.filter((p) => (p.stockQuantity || 0) === 0).length;
     const tuned = inventory.filter((p) => getTuningStatus(p) === 'tuned').length;
 
-    const totalValue = inventory.reduce((sum, p) => {
-      const cost = (p as any).costPerMeter || 0;
-      const qty = p.stockQuantity || 0;
-      return sum + cost * qty;
-    }, 0);
+    const totalValue = inventory.reduce(
+      (sum, p) => sum + profileInventoryValue(p),
+      0,
+    );
 
     return {
       totalItems,
       lowStock,
       outOfStock,
       tuned,
-      totalValue: totalValue.toFixed(2),
+      totalValue: Number.isFinite(totalValue) ? totalValue.toFixed(2) : '0.00',
     };
   }, [inventory]);
 

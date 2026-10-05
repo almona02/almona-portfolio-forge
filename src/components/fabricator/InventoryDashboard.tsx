@@ -22,6 +22,10 @@ import { Rock60PricingSetup } from '@/components/fabricator/Rock60PricingSetup';
 import { VirtualizedInventoryList } from '@/components/fabricator/VirtualizedInventoryList';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { JUMBO100_WINDOW_SYSTEM_SPEC, ROCK60_WINDOW_SYSTEM_TEMPLATE, SYSTEM_PACKS } from '@/data/systemPacks';
+import {
+  OWNED_INVENTORY_QUERY_KEYS,
+  recordStockIntakeThenSync,
+} from '@/lib/fabricator/inventory/stockIntake';
 import { remnantManager, type Remnant, type RemnantConsolidationSuggestion, type RemnantStatistics } from '@/lib/inventory/RemnantManager';
 import { syncStockFromMovements } from '@/lib/inventory/StockCalculator';
 import { trackError } from '@/lib/performance-monitoring';
@@ -39,6 +43,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/shared/ui/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Profile, WindowUnit } from '@/types/fabricator';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   AlertCircle,
   AlertTriangle,
@@ -208,6 +213,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   userId,
 }) => {
   const { t } = useTranslation('fabricator');
+  const queryClient = useQueryClient();
   const { state: workspaceState, dispatch } = useFabricatorWorkspace();
   const searchQuery = workspaceState.globalSearchQuery || '';
   const [activeTab, setActiveTab] = useState('overview');
@@ -222,6 +228,14 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [useRemnantsFirst, setUseRemnantsFirst] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [filterMaterial, setFilterMaterial] = useState<string>('all');
+
+  const invalidateOwnedInventory = useCallback(async () => {
+    await Promise.all(
+      OWNED_INVENTORY_QUERY_KEYS.map((key) =>
+        queryClient.invalidateQueries({ queryKey: [key, userId] }),
+      ),
+    );
+  }, [queryClient, userId]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterSystemPackId, setFilterSystemPackId] = useState<string>('all');
   const [invoiceProfileId, setInvoiceProfileId] = useState<string>('');
@@ -526,25 +540,22 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           return;
         }
 
-        const db = supabase as any;
-        const { error } = await (db.from('stock_movements')).insert(inserts as any);
-        if (error) throw error;
-
-        // Update profile stock quantities
-        for (const [profileId, addedLength] of stockUpdates.entries()) {
-          const profile = inventory.find((p) => p.id === profileId);
-          if (profile) {
-            await (db.from('fabricator_profiles'))
-              .update({ 
-                stock_quantity: (profile.stockQuantity || 0) + addedLength,
-                updated_at: new Date().toISOString()
-              } as any)
-              .eq('id', profileId)
-              .eq('user_id', userId);
-          }
+        // UP-10: movements + sync — never patch stock_quantity from stale props.
+        const intake = await recordStockIntakeThenSync(
+          userId,
+          inserts.map((row) => ({
+            profileId: row.profile_id,
+            quantity: row.quantity,
+            unit: row.unit,
+            notes: row.notes,
+            requestId: `csv-${Date.now()}-${row.profile_id}-${row.quantity}`,
+          })),
+        );
+        if (!intake.ok) {
+          throw new Error(intake.error);
         }
 
-        await Promise.all([loadStockMovements(), loadStockAlerts()]);
+        await Promise.all([loadStockMovements(), loadStockAlerts(), invalidateOwnedInventory()]);
 
         toast.success(
           `Imported ${inserts.length} invoice row(s)${
@@ -589,34 +600,23 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       const notes = metaParts.length ? metaParts.join(' – ') : null;
 
-      const db = supabase as any;
-
-      const { error } = await (db.from('stock_movements')).insert({
-        user_id: userId,
-        profile_id: invoiceProfileId,
-        movement_type: 'in', // 'in' is the correct type for stock intake/purchases
-        quantity: movementQuantity,
-        unit: effectiveUnit,
-        notes,
-      } as any);
-
-      if (error) throw error;
-
-      // Update profile stock quantity
-      const { error: updateError } = await (db.from('fabricator_profiles'))
-        .update({ 
-          stock_quantity: (invoiceSelectedProfile.stockQuantity || 0) + lengthM,
-          updated_at: new Date().toISOString()
-        } as any)
-        .eq('id', invoiceProfileId)
-        .eq('user_id', userId);
-
-      if (updateError) throw updateError;
+      // UP-10: movement + sync (authoritative qty), then invalidate owned inventory.
+      const intake = await recordStockIntakeThenSync(userId, [
+        {
+          profileId: invoiceProfileId,
+          quantity: movementQuantity,
+          unit: effectiveUnit as 'meters' | 'pieces',
+          notes,
+          requestId: `inv-${Date.now()}-${invoiceProfileId}`,
+        },
+      ]);
+      if (!intake.ok) {
+        throw new Error(intake.error);
+      }
 
       toast.success('Stock updated from purchase invoice');
 
-      // Reload movements and alerts to reflect new stock levels
-      await Promise.all([loadStockMovements(), loadStockAlerts()]);
+      await Promise.all([loadStockMovements(), loadStockAlerts(), invalidateOwnedInventory()]);
 
       setInvoiceProfileId('');
       setInvoiceQuantity(0);
@@ -971,27 +971,31 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       ? totalInvoiceLengthM * invoiceWeightPerMeter
       : 0;
 
-  if (!inventory || inventory.length === 0) {
-    return (
-      <Card className="bg-gray-700/50 border-gray-600">
-        <CardContent className="p-8 text-center">
-          <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="typography-h3 text-lg mb-2">No Inventory Data Yet</h3>
-          <p className="text-gray-400">
-            Inventory is empty. Add or import profiles in the Profile Management section above to
-            see stock levels and alerts here.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
+  // UP-10: keep Purchases / CSV / remnants / history reachable even when stock is empty.
+  const inventoryEmpty = !inventory || inventory.length === 0;
 
-  const lowStockCount = inventory.filter((p) => getStockStatus(p) === 'low' || getStockStatus(p) === 'out_of_stock').length;
-  const goodStockCount = inventory.filter((p) => getStockStatus(p) === 'high').length;
-  const totalValue = inventory.reduce((sum, p) => sum + (p.stockQuantity * p.costPerMeter), 0);
+  const lowStockCount = inventoryEmpty
+    ? 0
+    : inventory.filter((p) => getStockStatus(p) === 'low' || getStockStatus(p) === 'out_of_stock').length;
+  const goodStockCount = inventoryEmpty
+    ? 0
+    : inventory.filter((p) => getStockStatus(p) === 'high').length;
+  const totalValue = inventoryEmpty
+    ? 0
+    : inventory.reduce((sum, p) => sum + (p.stockQuantity * p.costPerMeter), 0);
 
   return (
     <div className="space-y-6">
+      {inventoryEmpty ? (
+        <Alert>
+          <Package className="h-4 w-4" />
+          <AlertTitle>No workshop inventory yet</AlertTitle>
+          <AlertDescription>
+            Owned fabricator profiles are empty. Create or import profiles in Profiles, then record
+            purchases here. Catalog system packs are not stock balances.
+          </AlertDescription>
+        </Alert>
+      ) : null}
       {/* Header with Actions */}
       <div className="flex items-center justify-between">
         <div>
@@ -2133,10 +2137,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           onOpenChange={setShowPurchaseWizard}
           userId={userId}
           onPurchaseComplete={async () => {
-            // Refresh all dashboard data including alerts
+            // UP-10: refresh dashboard + owned inventory queries after purchase.
             await loadDashboardData();
-            // Explicitly reload alerts to ensure they're resolved
             await loadStockAlerts();
+            await invalidateOwnedInventory();
             setShowPurchaseWizard(false);
           }}
         />

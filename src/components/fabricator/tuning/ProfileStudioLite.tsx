@@ -7,7 +7,7 @@
  * Focus: Physics configuration for MicronEngine accuracy
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
@@ -16,7 +16,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Upload, Save, CheckCircle2, AlertTriangle, Zap, Settings, Sparkles, Factory, FileCode, Gauge, Plus } from 'lucide-react';
-import { addCustomSystem } from '@/lib/fabricator/customSystemStorage';
+import { useAuth } from '@/context/AuthContext';
+import {
+  addCustomSystemAsync,
+  loadCustomSystems,
+  loadCustomSystemsAsync,
+  type StoredSystemPack,
+} from '@/lib/fabricator/customSystemStorage';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
 import type { Profile } from '@/types/fabricator';
 import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
@@ -84,6 +90,7 @@ const TURKISH_PRESETS = {
 };
 
 export const ProfileStudioLite: React.FC = () => {
+  const { user } = useAuth();
   const [profile, setProfile] = useState<TurkishProfileConfig>({
     id: `custom-${Date.now()}`,
     name: '',
@@ -100,7 +107,8 @@ export const ProfileStudioLite: React.FC = () => {
   const [dxfPreview, setDxfPreview] = useState<string>('');
   const [dxfFileName, setDxfFileName] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error' | 'local_only'>('idle');
+  const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [_dxfExtractedData, setDxfExtractedData] = useState<any>(null);
   const [showVerification, setShowVerification] = useState(false);
@@ -119,9 +127,24 @@ export const ProfileStudioLite: React.FC = () => {
     dxfFileName: string;
     data: any;
   }>>([]);
+  const [libraryPacks, setLibraryPacks] = useState<StoredSystemPack[]>([]);
   const [currentSystemPackId, setCurrentSystemPackId] = useState<string | null>(null);
   const [machiningSlots] = useState<MachiningSlot[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // UP-07: load persisted custom packs (local + server) into library list — not create-only.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const packs = user?.id
+        ? await loadCustomSystemsAsync(user.id)
+        : loadCustomSystems();
+      if (!cancelled) setLibraryPacks(packs);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
   const handleDXFUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -178,8 +201,8 @@ export const ProfileStudioLite: React.FC = () => {
             const hasFrame = filenameUpper.includes('FRAME') || filenameUpper.includes('CERCEVE');
             const hasSash = filenameUpper.includes('SASH') || filenameUpper.includes('KANAT');
             
-            // If thermal break detected or multiple polygons, assume frame + sash
-            if (isThermalBreak || (hasFrame && hasSash)) {
+            // UP-08: only emit roles evidenced by filename/metrics — never invent sash dims (*0.9).
+            if (hasFrame && hasSash) {
               detected.push({
                 type: 'frame',
                 name: `${profile.manufacturer || 'Custom'} Frame`,
@@ -191,22 +214,30 @@ export const ProfileStudioLite: React.FC = () => {
               detected.push({
                 type: 'sash',
                 name: `${profile.manufacturer || 'Custom'} Sash`,
-                width: width ? width * 0.9 : undefined, // Sash typically slightly smaller
-                height: height ? height * 0.9 : undefined,
+                width: undefined,
+                height: undefined,
                 thickness: metrics.thickness,
-                unitWeight: metrics.weight_kg_per_m ? metrics.weight_kg_per_m * 0.9 : undefined,
+                unitWeight: undefined,
               });
-            } else {
-              // Single profile - determine type from filename or default to frame
-              const profileType = hasSash ? 'sash' : hasFrame ? 'frame' : 'frame';
+            } else if (hasSash) {
               detected.push({
-                type: profileType,
-                name: `${profile.manufacturer || 'Custom'} ${profileType.charAt(0).toUpperCase() + profileType.slice(1)}`,
+                type: 'sash',
+                name: `${profile.manufacturer || 'Custom'} Sash`,
                 width,
                 height,
                 thickness: metrics.thickness,
                 unitWeight: metrics.weight_kg_per_m,
               });
+            } else {
+              detected.push({
+                type: hasFrame ? 'frame' : 'frame',
+                name: `${profile.manufacturer || 'Custom'} ${hasFrame ? 'Frame' : 'Profile'}`,
+                width,
+                height,
+                thickness: metrics.thickness,
+                unitWeight: metrics.weight_kg_per_m,
+              });
+              // Thermal break is a material property — not proof of a second (sash) profile.
             }
             
             setDetectedProfiles(detected);
@@ -290,10 +321,29 @@ export const ProfileStudioLite: React.FC = () => {
   // const removeMachiningSlot = (slotId: string) => { ... };
   // const updateMachiningSlot = (slotId: string, updates: Partial<MachiningSlot>) => { ... };
 
-  const addImportedProfile = () => {
+  const addImportedProfile = async () => {
     if (!profile.name || !profile.manufacturer) {
       setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      setSaveFeedback('Name and manufacturer are required.');
+      setTimeout(() => { setSaveStatus('idle'); setSaveFeedback(null); }, 3000);
+      return;
+    }
+
+    // UP-08: require positive finite measured dims/weight — no silent defaults as authority.
+    const width = profile.width;
+    const height = profile.height ?? profile.width;
+    const thickness = profile.thickness;
+    const unitWeight = profile.unitWeight;
+    if (
+      !Number.isFinite(width) || (width as number) <= 0 ||
+      !Number.isFinite(height) || (height as number) <= 0 ||
+      !Number.isFinite(thickness) || (thickness as number) <= 0 ||
+      !Number.isFinite(unitWeight) || unitWeight <= 0 ||
+      !Number.isFinite(profile.barLength) || profile.barLength <= 0
+    ) {
+      setSaveStatus('error');
+      setSaveFeedback('Width, height, thickness, unit weight, and bar length must be positive measured values.');
+      setTimeout(() => { setSaveStatus('idle'); setSaveFeedback(null); }, 4000);
       return;
     }
 
@@ -308,9 +358,9 @@ export const ProfileStudioLite: React.FC = () => {
         material: profile.material,
         unitWeight: profile.unitWeight,
         barLength: profile.barLength,
-        width: profile.width,
-        height: profile.height,
-        thickness: profile.thickness,
+        width: width as number,
+        height: height as number,
+        thickness: thickness as number,
         micronConfig: {
           barLength: profile.barLength,
           weldingAllowance: profile.weldingAllowance,
@@ -367,13 +417,29 @@ export const ProfileStudioLite: React.FC = () => {
           thickness?: number;
           micronConfig?: Record<string, unknown>;
         };
+        // UP-08: never coerce steel→aluminum. Workshop Profile supports aluminum|upvc|wood only.
+        const material = data.material as string;
+        if (material === 'steel') {
+          throw new Error(
+            `Profile "${data.name}" is steel — choose aluminum or UPVC explicitly; steel is not silently remapped.`,
+          );
+        }
+        if (material !== 'aluminum' && material !== 'upvc' && material !== 'wood') {
+          throw new Error(`Unsupported material "${material}" — no silent substitute.`);
+        }
+        if (
+          !Number.isFinite(data.width) || (data.width as number) <= 0 ||
+          !Number.isFinite(data.height) || (data.height as number) <= 0
+        ) {
+          throw new Error(`Profile "${data.name}" is missing positive measured width/height.`);
+        }
         return {
           id: data.id,
           name: data.name,
-          material: data.material === 'steel' ? 'aluminum' : data.material,
-          width: data.width ?? 60,
-          height: data.height ?? data.width ?? 60,
-          thickness: data.thickness ?? 1.8,
+          material: material as Profile['material'],
+          width: data.width as number,
+          height: data.height as number,
+          thickness: data.thickness,
           color: '#C0C0C0',
           costPerMeter: 0,
           cuttingAllowance: 3,
@@ -389,6 +455,8 @@ export const ProfileStudioLite: React.FC = () => {
           specifications: {
             ...(data.micronConfig || {}),
             partNumber: data.id,
+            originalCatalogCode: data.id,
+            unverifiedCost: true,
           },
         };
       });
@@ -418,14 +486,26 @@ export const ProfileStudioLite: React.FC = () => {
         tuningStatus: 'untuned' as const,
       };
 
-      addCustomSystem(customPack);
+      // UP-07: local save + async server sync with explicit feedback.
+      await addCustomSystemAsync(customPack, user?.id);
       localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(customPack));
       window.dispatchEvent(new CustomEvent('customProfileAdded', { detail: customPack }));
       window.dispatchEvent(new CustomEvent('systemPackTuned', {
         detail: { systemPackId, systemPackName: customPack.meta.name, tuned: false },
       }));
 
-      setSaveStatus('success');
+      const refreshed = user?.id
+        ? await loadCustomSystemsAsync(user.id)
+        : loadCustomSystems();
+      setLibraryPacks(refreshed);
+
+      if (user?.id) {
+        setSaveStatus('success');
+        setSaveFeedback('Saved locally and queued for server sync.');
+      } else {
+        setSaveStatus('local_only');
+        setSaveFeedback('Saved to this browser only — sign in to sync to the workshop server.');
+      }
       setIsSaving(false);
 
       setProfile({
@@ -453,12 +533,13 @@ export const ProfileStudioLite: React.FC = () => {
           window.location.href = `/fabricator/studio/data/tuning?systemPackId=${systemPackId}`;
         }, 1500);
       } else {
-        setTimeout(() => setSaveStatus('idle'), 2000);
+        setTimeout(() => { setSaveStatus('idle'); setSaveFeedback(null); }, 2500);
       }
 
     } catch (error) {
       console.error('Error saving profile:', error);
       setSaveStatus('error');
+      setSaveFeedback(error instanceof Error ? error.message : 'Save failed');
       setIsSaving(false);
     }
   };
@@ -495,6 +576,11 @@ export const ProfileStudioLite: React.FC = () => {
                       <div className="flex items-center gap-2 text-sm text-slate-400">
                         <span className="text-lg">🇹🇷</span>
                         <span className="font-medium">Turkish Custom Profiles</span>
+                        {libraryPacks.length > 0 ? (
+                          <Badge variant="outline" className="border-amber-600/40 text-amber-300 text-[10px]">
+                            {libraryPacks.length} saved pack{libraryPacks.length === 1 ? '' : 's'}
+                          </Badge>
+                        ) : null}
                       </div>
                     </div>
                   </div>
@@ -936,9 +1022,24 @@ export const ProfileStudioLite: React.FC = () => {
                     <Alert className="bg-green-500/10 border-green-500/30">
                       <CheckCircle2 className="h-4 w-4 text-green-400" />
                       <AlertDescription className="text-green-300">
-                        {importedProfiles.some(p => p.type === 'frame') && importedProfiles.some(p => p.type === 'sash')
+                        {saveFeedback
+                          || (importedProfiles.some(p => p.type === 'frame') && importedProfiles.some(p => p.type === 'sash')
                           ? 'Complete system ready! Redirecting to Tuning Studio...'
-                          : 'Profile added! Import next profile to complete the system.'}
+                          : 'Profile added! Import next profile to complete the system.')}
+                      </AlertDescription>
+                    </Alert>
+                  </LazyMotionDiv>
+                )}
+                {saveStatus === 'local_only' && (
+                  <LazyMotionDiv
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                  >
+                    <Alert className="bg-amber-500/10 border-amber-500/30">
+                      <AlertTriangle className="h-4 w-4 text-amber-400" />
+                      <AlertDescription className="text-amber-300">
+                        {saveFeedback || 'Saved to this browser only.'}
                       </AlertDescription>
                     </Alert>
                   </LazyMotionDiv>
@@ -952,7 +1053,7 @@ export const ProfileStudioLite: React.FC = () => {
                     <Alert className="bg-red-500/10 border-red-500/30">
                       <AlertTriangle className="h-4 w-4 text-red-400" />
                       <AlertDescription className="text-red-300">
-                        Please fill in all required fields (Name and Manufacturer).
+                        {saveFeedback || 'Please fill in all required fields (Name and Manufacturer).'}
                       </AlertDescription>
                     </Alert>
                   </LazyMotionDiv>
