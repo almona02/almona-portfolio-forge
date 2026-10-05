@@ -42,8 +42,15 @@ class HealthCheck:
         self.last_check = datetime.utcnow()
         
         try:
+            prior_message = self.message
             self.status = await self._perform_check()
-            self.message = "Check passed"
+            if self.status == HealthStatus.HEALTHY:
+                self.message = "Check passed"
+            elif self.message and self.message != prior_message:
+                # Subclass set a specific reason (e.g. Redis not configured).
+                pass
+            else:
+                self.message = f"Check {self.status.value}"
         except Exception as e:
             self.status = HealthStatus.UNHEALTHY
             self.message = str(e)
@@ -110,10 +117,25 @@ class RedisHealthCheck(HealthCheck):
     
     async def _perform_check(self) -> HealthStatus:
         """Check Redis connectivity."""
-        # This would be implemented if Redis is used
-        # For now, we'll skip this check
-        self.details = {"status": "not_configured"}
-        return HealthStatus.HEALTHY
+        if not settings.REDIS_URL:
+            self.details = {"status": "not_configured"}
+            self.message = "Redis URL is not configured"
+            return HealthStatus.DEGRADED
+        from redis.asyncio import Redis
+
+        client = None
+        try:
+            client = Redis.from_url(settings.REDIS_URL, socket_connect_timeout=5, socket_timeout=5)
+            await asyncio.wait_for(client.ping(), timeout=6)
+            self.details = {"status": "connected"}
+            return HealthStatus.HEALTHY
+        except Exception as exc:
+            self.details = {"status": "unreachable"}
+            # Connection exceptions can include credentials; keep public health safe.
+            raise RuntimeError(f"Redis connectivity check failed ({type(exc).__name__})") from None
+        finally:
+            if client is not None:
+                await client.aclose()
 
 
 class ExternalServicesHealthCheck(HealthCheck):
@@ -289,13 +311,19 @@ class HealthCheckManager:
                 "critical": check.critical
             }
             
-            # Determine overall status
+            # Determine overall status. Missing optional deps (e.g. Redis) are
+            # DEGRADED — never leave overall HEALTHY while a check is degraded.
             if check.status == HealthStatus.UNHEALTHY:
                 if check.critical:
                     critical_failures += 1
                     overall_status = HealthStatus.UNHEALTHY
-                elif overall_status == HealthStatus.HEALTHY:
+                elif overall_status != HealthStatus.UNHEALTHY:
                     overall_status = HealthStatus.DEGRADED
+            elif (
+                check.status == HealthStatus.DEGRADED
+                and overall_status == HealthStatus.HEALTHY
+            ):
+                overall_status = HealthStatus.DEGRADED
         
         total_time = (time.time() - start_time) * 1000
         
