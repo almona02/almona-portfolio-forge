@@ -1,13 +1,11 @@
 # Fabricator user-workflow upgrade scorecard
 
-Date: 5 October 2026 (Batch 4 near-exit).  
+Date: 5 October 2026 (Batch 5 code shipped — apply release + delivery SQLs).  
 Canonical sequencing: [upgrade plan](FABRICATOR_USER_WORKFLOW_UPGRADE_PLAN_2026-10-05.md).
 
 ## Verdict
 
-**Batch 4 ~75%.** UP-15 pose quotes live (SQL applied). UP-16 pose quote→order (idempotent, no double tax) + link migration. UP-17 owner Orders vs admin bulk gate. Program ≈ **58%**. Local commits ahead of origin — not pushed.
-
-**Apply next SQL:** `supabase/migrations/20261005_orders_pose_quote_link.sql`
+**Batch 5 code EXIT for UP-18/19/20** — QC reload, shop release freeze, delivery server ack. Program ≈ **72%**. Apply two new SQLs before treating Batch 5 as fully closed. Local commits ahead of origin — not pushed.
 
 ## Batch rollup
 
@@ -17,26 +15,23 @@ Canonical sequencing: [upgrade plan](FABRICATOR_USER_WORKFLOW_UPGRADE_PLAN_2026-
 | **1** Truthful readiness | **DONE** | **95%** | |
 | **2** Profiles / inventory | **NEAR EXIT** | **90%** | |
 | **3** Customer / pattern / revision | **NEAR EXIT** | **70%** | |
-| **4** Quote → order | **NEAR EXIT** | **75%** | Apply pose-quote→order link SQL; polish remainders |
-| **5** Production / QC / delivery | OPEN | **5%** | Next after link SQL |
+| **4** Quote → order | **DONE** | **90%** | Pose quotes + convert + Orders gate; SQLs applied |
+| **5** Production / QC / delivery | **CODE DONE** | **85%** | SQLs pending apply: releases + delivery acks |
 | **6** Reports / a11y / integrations | OPEN | **10%** | |
 
-## Batch 4 gates
+## Batch 5 evidence
 
 | Gate | Result |
 |---|---|
-| Pose quote persist (UP-15) | **PASS** (SQL applied) |
-| Convert to Order from pose Commercial | **PASS** (code) |
-| Idempotent convert / no double VAT | **PASS** |
-| `orders.fabricator_pose_quote_id` unique | **READY** — apply link migration |
-| Owner Orders UX + admin gate | **PASS** |
+| UP-19 QC reload (`getLatestQualityApproval`) | **PASS** (code) — no clear-on-entry |
+| UP-18 `fabricator_position_releases` | **PENDING APPLY** |
+| UP-20 `fabricator_delivery_acknowledgements` + RPC | **PENDING APPLY** |
+| Production → release freeze → QC query params | **PASS** (code) |
+| Delivery operational path (QR = `ALMONA_{pose}_R{rev}`) | **PASS** (code) |
+| Demo delivery still cannot complete ops | **PASS** (test) |
 
 ## Next
 
-1. Apply `20261005_orders_pose_quote_link.sql` on Supabase.  
-2. Smoke: Save quote → Convert to Order → Orders list.  
-3. Start Batch 5 (release / QC / delivery).
-
-## Local commits (unpushed)
-
-- `c2b6fa0` / `3ef4d94` / `8a40189` + this Batch 4 close slice  
+1. Apply `20261005_fabricator_position_releases.sql` then `20261005_fabricator_delivery_acks.sql`.  
+2. Batch 6 — reports / a11y / integrations.  
+3. Batch 0 fixtures when operators available.

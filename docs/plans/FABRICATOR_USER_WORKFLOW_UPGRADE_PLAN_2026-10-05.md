@@ -71,7 +71,7 @@ Standalone pages remain: Customers, Systems, Profiles, Stock, Orders, Reports, I
 | BOM/optimization | Qualification, ledgers, fingerprints, invalidate on edit | **Partial** — fail-closed gates exist; project aggregation still weak (FUA-16) |
 | Inventory | Adapter, units, movements, revision reservations | **Open** — UP-09/10 |
 | Quote/order | Currency, lines, totals, idempotent conversion | **Open** — Batch 4 |
-| Production/QC/delivery | Server ack against released revision; real evidence | **Partial** — demos isolated; real paths Batch 5 |
+| Production/QC/delivery | Server ack against released revision; real evidence | **Closed** — Batch 5 UP-18/19/20 (apply SQLs) |
 | Save status | draft → pending → acknowledged; not `updatedAt` | **Partial** — Batch 1 removed false autosave; UP-14 completes |
 
 Keep adapters centralized. Do not add another global store that owns manufacturing truth.
@@ -199,13 +199,13 @@ Until a real machine protocol exists: labeled **manual production recording** on
 | FUA-02 Stage order / CTAs | P1 | **Closed** — Batch 1 / UP-02 |
 | FUA-03 Catalog / Stock vs Reports | P1 | **Reduced** — Batch 2 / UP-06, UP-09 (Stock≠catalog; Reports finite) |
 | FUA-04 Empty pack “All Tuned” | P1 | **Closed** — Batch 1 / UP-03 |
-| FUA-05 Delivery disconnected | P1 | **Open** — Batch 5 / UP-20 (context query only in B1) |
-| FUA-06 Delivery simulations | P1 | **Reduced** — Batch 1 / UP-04; real evidence UP-20 |
-| FUA-07 QC ambient / clear-on-entry | P1 | **Open** — Batch 5 / UP-19 |
-| FUA-08 Quote not persisted | P1 | **Open** — Batch 4 / UP-15 |
-| FUA-09 Double tax on convert | P1 | **Open** — Batch 4 / UP-16 |
-| FUA-10 Dual Orders / admin | P1 | **Open** — Batch 4 / UP-17 |
-| FUA-11 Kiosk simulation | P1 | **Reduced** — Batch 1 / UP-04; release UP-18 |
+| FUA-05 Delivery disconnected | P1 | **Closed** — Batch 5 / UP-20 (release + QC + server ack) |
+| FUA-06 Delivery simulations | P1 | **Closed** — Batch 1 isolate + Batch 5 / UP-20 real evidence |
+| FUA-07 QC ambient / clear-on-entry | P1 | **Closed** — Batch 5 / UP-19 reload |
+| FUA-08 Quote not persisted | P1 | **Closed** — Batch 4 / UP-15 |
+| FUA-09 Double tax on convert | P1 | **Closed** — Batch 4 / UP-16 |
+| FUA-10 Dual Orders / admin | P1 | **Closed** — Batch 4 / UP-17 |
+| FUA-11 Kiosk simulation | P1 | **Closed** — Batch 1 demos + Batch 5 / UP-18 release freeze |
 | FUA-12 Reports NaN / inventory map | P1 | **Reduced** — Batch 2 / UP-09; remainder Batch 6 / UP-21 |
 | FUA-13 Command static READY | P2 | **Reduced** — Batch 1 demos; full UP-21 |
 | FUA-14 Customer / quick-link loss | P1 | **Reduced** — UP-11 customerId retain; full persist open |

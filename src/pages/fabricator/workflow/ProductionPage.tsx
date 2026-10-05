@@ -2,6 +2,7 @@ import { ProductionCockpit } from '@/components/fabricator/cockpit/ProductionCoc
 import { ProductionDocumentsPanel } from '@/components/fabricator/workflow/ProductionDocumentsPanel';
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { catalogProfilesOrEmpty } from '@/lib/fabricator/catalog/CatalogResolver';
+import { freezePositionRelease } from '@/lib/fabricator/positionRelease';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
@@ -9,6 +10,7 @@ import { lazyRetry } from '@/utils/lazyImport';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import React, { Suspense, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const ProductionCommand = lazyRetry(
     () => import('@/components/fabricator/ProductionCommand').then((m) => ({
@@ -19,13 +21,14 @@ const ProductionCommand = lazyRetry(
 
 /**
  * GOLD-TIER PRODUCTION PAGE
- * 
+ *
  * Features:
  * - Complete data flow from workflow store
  * - Error handling for missing optimization
  * - Loading states with premium UX
  * - System pack profile resolution
  * - Generation state management
+ * - UP-18 release freeze before QC
  */
 export const ProductionPage: React.FC = () => {
     const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
@@ -35,7 +38,10 @@ export const ProductionPage: React.FC = () => {
         currentProject,
         optimizationResult,
         bom,
-        completeStep
+        completeStep,
+        workflowIdentity,
+        stockReservation,
+        setPositionRelease,
     } = useWorkflowStore();
 
     const productionValidation = useMemo(
@@ -52,8 +58,9 @@ export const ProductionPage: React.FC = () => {
         [measurementData, currentProject, bom, optimizationResult]
     );
 
-    // ✅ GOLD-TIER: Generation state (reserved for future use)
     const [isGenerating, _setIsGenerating] = useState(false);
+    const [isReleasing, setIsReleasing] = useState(false);
+    const [releaseError, setReleaseError] = useState<string | null>(null);
 
     // UP-06: catalog profiles for the active pack only — no ROCK60/[0] substitute.
     const profiles = useMemo(
@@ -61,20 +68,49 @@ export const ProductionPage: React.FC = () => {
         [currentProject?.systemPackId],
     );
 
-    // ✅ GOLD-TIER: Error handling
     const hasRequiredData = currentProject !== null && optimizationResult !== null;
 
-    // ✅ GOLD-TIER: Navigation handler
-    const handleProductionComplete = () => {
-        completeStep('production');
+    const handleProductionComplete = async () => {
+        if (isReleasing || isGenerating) return;
+        setReleaseError(null);
 
-        // Smooth transition
-        setTimeout(() => {
-            navigate(fabricatorRoutes.studioProductionQuality());
-        }, 100);
+        if (!workflowIdentity) {
+            setReleaseError('Load an authoritative position before releasing to the shop.');
+            return;
+        }
+        if (!stockReservation) {
+            setReleaseError('Acknowledge stock availability for this revision before release.');
+            return;
+        }
+
+        setIsReleasing(true);
+        try {
+            const release = await freezePositionRelease({
+                identity: workflowIdentity,
+                bom,
+                stockReservation,
+                optimizationResult,
+            });
+            setPositionRelease(release);
+            if (!completeStep('production')) {
+                throw new Error('Workflow completion guard rejected production.');
+            }
+            toast.success('Position released for QC', {
+                description: `Release ${release.releaseId.slice(0, 8)}… · R${release.revision}`,
+            });
+            const qcProjectId = workflowIdentity.projectId;
+            const qcPoseId = workflowIdentity.positionId;
+            void navigate(
+                fabricatorRoutes.studioProductionQuality() +
+                    `?${new URLSearchParams({ projectId: qcProjectId, poseId: qcPoseId })}`,
+            );
+        } catch (reason) {
+            setReleaseError(reason instanceof Error ? reason.message : 'Release freeze failed.');
+        } finally {
+            setIsReleasing(false);
+        }
     };
 
-    // ✅ GOLD-TIER: Premium loading state
     const LoadingFallback = (
         <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
             <div className="text-center space-y-4">
@@ -84,7 +120,6 @@ export const ProductionPage: React.FC = () => {
         </div>
     );
 
-    // ✅ P3.1.4: WorkflowValidationGate when production prerequisites missing
     if (!hasRequiredData || !productionValidation.valid) {
         const goBackTarget = !currentProject ? 'design' : 'optimization';
         return (
@@ -137,14 +172,33 @@ export const ProductionPage: React.FC = () => {
                         />
                     }
                 />
-                <div className="p-2 flex justify-end">
+                <div className="p-2 flex flex-col items-end gap-2">
+                    {releaseError ? (
+                        <p role="alert" className="text-sm text-red-300 max-w-lg text-right">
+                            {releaseError}
+                        </p>
+                    ) : (
+                        <p className="text-xs text-slate-500 max-w-lg text-right">
+                            Manual production recording — freezes BOM, stock, and optimization for this
+                            revision before QC. Does not claim CNC completion.
+                        </p>
+                    )}
                     <button
                         type="button"
-                        onClick={handleProductionComplete}
-                        disabled={isGenerating}
-                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white text-sm rounded disabled:opacity-50"
+                        onClick={() => {
+                            void handleProductionComplete();
+                        }}
+                        disabled={isGenerating || isReleasing}
+                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white text-sm rounded disabled:opacity-50 inline-flex items-center gap-2"
                     >
-                        {isGenerating ? 'Generating...' : 'Continue to Quality Control'}
+                        {isReleasing ? (
+                            <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Freezing release…
+                            </>
+                        ) : (
+                            'Release & Continue to QC'
+                        )}
                     </button>
                 </div>
             </Suspense>

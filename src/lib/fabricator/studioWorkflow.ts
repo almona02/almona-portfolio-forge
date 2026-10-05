@@ -53,6 +53,10 @@ export interface StudioWorkflowEvidence {
   workflowDraftDirty?: boolean;
   /** UP-10 soft reservation acknowledgement bound to workflow identity. */
   stockReservation?: import('@/store/workflowStore').StockReservationEvidence | null;
+  /** UP-18 frozen release for the active revision. */
+  positionRelease?: import('@/store/workflowStore').PositionReleaseEvidence | null;
+  /** UP-20 delivery server acknowledgement. */
+  deliveryAcknowledgement?: import('@/store/workflowStore').DeliveryAcknowledgementEvidence | null;
 }
 
 export interface StudioWorkflowStageDef {
@@ -134,8 +138,8 @@ export const STUDIO_WORKFLOW_STAGES: StudioWorkflowStageDef[] = [
     labelKey: 'industrial.stages.production',
     defaultLabel: 'Production',
     shortLabel: 'Production',
-    // Generated documents are capability, not evidence of physical completion.
-    completeWhen: hasCurrentQcApproval,
+    // Manual release freeze is the production completion evidence (not CNC).
+    completeWhen: hasCurrentPositionRelease,
     isActive: (pathname) =>
       pathname.includes('/positions/') && pathname.endsWith('/production'),
   },
@@ -152,7 +156,7 @@ export const STUDIO_WORKFLOW_STAGES: StudioWorkflowStageDef[] = [
     labelKey: 'industrial.stages.delivery',
     defaultLabel: 'Delivery',
     shortLabel: 'Delivery',
-    completeWhen: (e) => e.currentProject?.status === 'delivered',
+    completeWhen: hasCurrentDeliveryAcknowledgement,
     isActive: (pathname) => pathname.includes('/production/delivery'),
   },
 ];
@@ -172,8 +176,31 @@ function hasCurrentManufacturingEvidence(e: StudioWorkflowEvidence): boolean {
   return hasCurrentQualifiedBOM(e) && validateOptimizationReconciliation(e.optimizationResult, e.currentProject).valid;
 }
 
+function hasCurrentPositionRelease(e: StudioWorkflowEvidence): boolean {
+  if (!hasCurrentManufacturingEvidence(e) || !hasCurrentStockReservation(e) || !e.positionRelease || !e.workflowIdentity) {
+    return false;
+  }
+  return (
+    e.positionRelease.projectId === e.workflowIdentity.projectId &&
+    e.positionRelease.positionId === e.workflowIdentity.positionId &&
+    e.positionRelease.revision === e.workflowIdentity.revision &&
+    e.positionRelease.source === e.workflowIdentity.source &&
+    Boolean(e.positionRelease.releaseId && e.positionRelease.releasedAt)
+  );
+}
+
 function hasCurrentQcApproval(e: StudioWorkflowEvidence): boolean {
-  return hasCurrentManufacturingEvidence(e) && Boolean(e.qualityApproval?.approvalId && e.qualityApproval.inspectorId && e.qualityApproval.approvedAt && e.qualityApproval.projectId === e.workflowIdentity?.projectId && e.qualityApproval.positionId === e.workflowIdentity?.positionId && e.qualityApproval.revision === e.workflowIdentity?.revision);
+  return hasCurrentPositionRelease(e) && Boolean(e.qualityApproval?.approvalId && e.qualityApproval.inspectorId && e.qualityApproval.approvedAt && e.qualityApproval.projectId === e.workflowIdentity?.projectId && e.qualityApproval.positionId === e.workflowIdentity?.positionId && e.qualityApproval.revision === e.workflowIdentity?.revision);
+}
+
+function hasCurrentDeliveryAcknowledgement(e: StudioWorkflowEvidence): boolean {
+  return hasCurrentQcApproval(e) && Boolean(
+    e.deliveryAcknowledgement?.acknowledgementId &&
+    e.deliveryAcknowledgement.projectId === e.workflowIdentity?.projectId &&
+    e.deliveryAcknowledgement.positionId === e.workflowIdentity?.positionId &&
+    e.deliveryAcknowledgement.revision === e.workflowIdentity?.revision &&
+    e.deliveryAcknowledgement.acknowledgedAt
+  );
 }
 
 export function stageBlockedReason(stage: StudioWorkflowStageDef, e: StudioWorkflowEvidence): string | null {
@@ -192,7 +219,8 @@ export function stageBlockedReason(stage: StudioWorkflowStageDef, e: StudioWorkf
   if (['optimize', 'production', 'qc'].includes(stage.id) && !hasCurrentQualifiedBOM(e)) return 'Review and qualify the BOM for the saved position revision.';
   if (['optimize', 'production', 'qc'].includes(stage.id) && !hasCurrentStockReservation(e)) return 'Acknowledge stock availability for this revision before optimization.';
   if (['production', 'qc'].includes(stage.id) && !hasCurrentManufacturingEvidence(e)) return 'Reconcile optimization with the current design before production.';
-  if (stage.id === 'delivery' && !STUDIO_WORKFLOW_STAGES.find(s => s.id === 'qc')!.completeWhen(e)) return 'Record acknowledged QC approval for this revision before delivery.';
+  if (['qc', 'delivery'].includes(stage.id) && !hasCurrentPositionRelease(e)) return 'Freeze a shop release for this revision before QC or delivery.';
+  if (stage.id === 'delivery' && !hasCurrentQcApproval(e)) return 'Record acknowledged QC approval for this revision before delivery.';
   return null;
 }
 

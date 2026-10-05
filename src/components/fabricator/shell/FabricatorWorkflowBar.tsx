@@ -81,6 +81,8 @@ export const FabricatorWorkflowBar: React.FC = () => {
   const qualityApproval = useWorkflowStore((s) => s.qualityApproval);
   const workflowDraftDirty = useWorkflowStore((s) => s.workflowDraftDirty);
   const stockReservation = useWorkflowStore((s) => s.stockReservation);
+  const positionRelease = useWorkflowStore((s) => s.positionRelease);
+  const deliveryAcknowledgement = useWorkflowStore((s) => s.deliveryAcknowledgement);
 
   const evidence: StudioWorkflowEvidence = useMemo(
     () => ({
@@ -97,6 +99,8 @@ export const FabricatorWorkflowBar: React.FC = () => {
       qualityApproval,
       workflowDraftDirty,
       stockReservation,
+      positionRelease,
+      deliveryAcknowledgement,
     }),
     [
       currentProject,
@@ -112,6 +116,8 @@ export const FabricatorWorkflowBar: React.FC = () => {
       qualityApproval,
       workflowDraftDirty,
       stockReservation,
+      positionRelease,
+      deliveryAcknowledgement,
     ],
   );
 

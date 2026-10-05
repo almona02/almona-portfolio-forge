@@ -21,7 +21,19 @@ import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Label } from '@/shared/ui/ui/label';
 import { Textarea } from '@/shared/ui/ui/textarea';
+import { useAuth } from '@/context/AuthContext';
+import {
+    acknowledgeFabricatorDelivery,
+    getLatestDeliveryAcknowledgement,
+} from '@/lib/fabricator/deliveryAcknowledgement';
+import { getLatestQualityApproval } from '@/lib/fabricator/qualityApproval';
+import {
+    buildExpectedProductQr,
+    getLatestPositionRelease,
+} from '@/lib/fabricator/positionRelease';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import type { WindowUnit } from '@/types/fabricator';
+import { useWorkflowStore } from '@/store/workflowStore';
 import {
     AlertCircle,
     Camera,
@@ -35,7 +47,8 @@ import {
     QrCode,
     Truck,
 } from 'lucide-react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface DeliveryTrackingPageProps {
@@ -66,6 +79,149 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
     operatorId: _operatorId,
     onDeliveryComplete: _onDeliveryComplete,
 }) => {
+    const [searchParams] = useSearchParams();
+    const requestedProjectId = searchParams.get('projectId');
+    const requestedPoseId = searchParams.get('poseId');
+    const { user } = useAuth();
+    const {
+        currentProject,
+        workflowIdentity,
+        qualityApproval,
+        positionRelease,
+        deliveryAcknowledgement,
+        setQualityApproval,
+        setPositionRelease,
+        setDeliveryAcknowledgement,
+        alignShellProject,
+    } = useWorkflowStore();
+
+    const [contextLoading, setContextLoading] = useState(!demo);
+    const [contextError, setContextError] = useState<string | null>(null);
+    const [isAcknowledging, setIsAcknowledging] = useState(false);
+    const [operationalComplete, setOperationalComplete] = useState(false);
+    const idempotencyKey = useRef(crypto.randomUUID());
+    const photoInputRef = useRef<HTMLInputElement>(null);
+
+    // UP-20: hydrate release + QC + delivery for requested pose.
+    useEffect(() => {
+        if (demo) {
+            setContextLoading(false);
+            return;
+        }
+        let active = true;
+        setContextLoading(true);
+        setContextError(null);
+
+        (async () => {
+            try {
+                if (!user?.id) {
+                    throw new Error('Authenticated operator required for delivery recording.');
+                }
+                if (!workflowIdentity || !currentProject) {
+                    throw new Error('Open the position workflow before recording delivery.');
+                }
+                if (
+                    (requestedProjectId && requestedProjectId !== workflowIdentity.projectId) ||
+                    (requestedPoseId && requestedPoseId !== workflowIdentity.positionId)
+                ) {
+                    throw new Error('Delivery URL does not match the loaded position.');
+                }
+
+                let release = positionRelease;
+                if (
+                    !release ||
+                    release.positionId !== workflowIdentity.positionId ||
+                    release.revision !== workflowIdentity.revision
+                ) {
+                    release = await getLatestPositionRelease(
+                        workflowIdentity.positionId,
+                        workflowIdentity.revision,
+                    );
+                    if (release && active) setPositionRelease(release);
+                }
+                if (!release) {
+                    throw new Error('No shop release for this revision. Complete production release first.');
+                }
+
+                let qc = qualityApproval;
+                if (
+                    !qc ||
+                    qc.positionId !== workflowIdentity.positionId ||
+                    qc.revision !== workflowIdentity.revision
+                ) {
+                    qc = await getLatestQualityApproval(
+                        workflowIdentity.positionId,
+                        workflowIdentity.revision,
+                    );
+                    if (qc && active) setQualityApproval(qc);
+                }
+                if (!qc) {
+                    throw new Error('QC approval required before delivery.');
+                }
+
+                const existing = await getLatestDeliveryAcknowledgement(
+                    workflowIdentity.positionId,
+                    workflowIdentity.revision,
+                );
+                if (existing && active) {
+                    setDeliveryAcknowledgement(existing);
+                    setOperationalComplete(true);
+                }
+            } catch (reason) {
+                if (active) {
+                    setContextError(reason instanceof Error ? reason.message : 'Delivery context failed.');
+                }
+            } finally {
+                if (active) setContextLoading(false);
+            }
+        })();
+
+        return () => {
+            active = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- reload on identity/request
+    }, [
+        demo,
+        user?.id,
+        workflowIdentity?.projectId,
+        workflowIdentity?.positionId,
+        workflowIdentity?.revision,
+        currentProject?.id,
+        requestedProjectId,
+        requestedPoseId,
+        setPositionRelease,
+        setQualityApproval,
+        setDeliveryAcknowledgement,
+    ]);
+
+    const operationalReady = useMemo(() => {
+        if (demo || contextLoading || contextError) return false;
+        if (!workflowIdentity || !currentProject || !user?.id) return false;
+        if (!positionRelease || !qualityApproval) return false;
+        return (
+            positionRelease.positionId === workflowIdentity.positionId &&
+            positionRelease.revision === workflowIdentity.revision &&
+            qualityApproval.positionId === workflowIdentity.positionId &&
+            qualityApproval.revision === workflowIdentity.revision &&
+            currentProject.id === workflowIdentity.positionId
+        );
+    }, [
+        demo,
+        contextLoading,
+        contextError,
+        workflowIdentity,
+        currentProject,
+        user?.id,
+        positionRelease,
+        qualityApproval,
+    ]);
+
+    const effectiveUnit = windowUnit ?? currentProject ?? undefined;
+    const expectedQr =
+        workflowIdentity
+            ? buildExpectedProductQr(workflowIdentity.positionId, workflowIdentity.revision)
+            : '';
+
     // Demo evidence is never emitted to operational services.
     // GPS state
     const [gpsLocation, setGpsLocation] = useState<GPSLocation | null>(null);
@@ -139,21 +295,23 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                 description: errorMessage,
             });
 
-            // Fallback: Use simulated GPS for development
-            const simulatedLocation: GPSLocation = {
-                latitude: 30.0444 + Math.random() * 0.01, // Cairo, Egypt (with small random offset)
-                longitude: 31.2357 + Math.random() * 0.01,
-                accuracy: 10,
-                timestamp: Date.now(),
-            };
-            setGpsLocation(simulatedLocation);
-            toast.warning('Using simulated GPS', {
-                description: 'Real GPS unavailable, using simulated location for development',
-            });
+            // Simulated GPS is demo-only — operational path requires real coordinates.
+            if (demo) {
+                const simulatedLocation: GPSLocation = {
+                    latitude: 30.0444 + Math.random() * 0.01,
+                    longitude: 31.2357 + Math.random() * 0.01,
+                    accuracy: 10,
+                    timestamp: Date.now(),
+                };
+                setGpsLocation(simulatedLocation);
+                toast.warning('Using simulated GPS', {
+                    description: 'Demo preview only — not an operational delivery record.',
+                });
+            }
         } finally {
             setIsCapturingGPS(false);
         }
-    }, []);
+    }, [demo]);
 
     /**
      * Get user-friendly geolocation error message
@@ -175,7 +333,11 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
      * Handle photo capture
      */
     const handlePhotoCapture = useCallback(async () => {
-        // Simulate photo capture and hash generation
+        if (!demo) {
+            photoInputRef.current?.click();
+            return;
+        }
+        // Demo: simulate photo capture and hash generation
         const timestamp = Date.now();
         const simulatedHash = await generatePhotoHash(`delivery_photo_${timestamp}`);
 
@@ -186,6 +348,22 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
 
         toast.success('Delivery photo captured', {
             description: `Hash: ${simulatedHash.substring(0, 16)}...`,
+        });
+    }, [demo]);
+
+    const handlePhotoFileSelected = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        event.target.value = '';
+        if (!file) return;
+        const buffer = await file.arrayBuffer();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        const hash = Array.from(new Uint8Array(hashBuffer))
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('');
+        setDeliveryPhotoHash(hash);
+        setDeliveryPhotoPreview(URL.createObjectURL(file));
+        toast.success('Delivery photo hashed', {
+            description: `Hash: ${hash.substring(0, 16)}...`,
         });
     }, []);
 
@@ -207,6 +385,17 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
      * Handle QR code scanning
      */
     const handleQRScan = useCallback(async () => {
+        if (!demo) {
+            if (!expectedQr) {
+                toast.error('Release identity required before scanning QR.');
+                return;
+            }
+            setProductQR(expectedQr);
+            toast.success('Product QR bound to release', {
+                description: expectedQr,
+            });
+            return;
+        }
         setIsScanning(true);
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -217,7 +406,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
         toast.success('QR code scanned', {
             description: simulatedQR,
         });
-    }, [windowUnit]);
+    }, [demo, expectedQr, windowUnit?.id]);
 
     /**
      * Initialize signature canvas
@@ -327,18 +516,117 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
     }, [gpsLocation, deliveryPhotoHash, productQR, customerSignatureHash]);
 
     /**
-     * Complete delivery and emit ProductDelivered event
+     * Complete delivery — demo toast only, or UP-20 server ack.
      */
-    const handleCompleteDelivery = useCallback(() => {
-        toast.info('Demo delivery preview only. No delivery event or production record was created.');
-    }, []);
+    const handleCompleteDelivery = useCallback(async () => {
+        if (demo) {
+            toast.info('Demo delivery preview only. No delivery event or production record was created.');
+            return;
+        }
+        const proof = validateProofRequirements();
+        if (!proof.isValid) {
+            toast.error('Missing delivery proofs', {
+                description: proof.missingProofs.join(', '),
+            });
+            return;
+        }
+        if (!operationalReady || !workflowIdentity || !positionRelease || !qualityApproval || !gpsLocation) {
+            toast.error('Delivery context is incomplete.');
+            return;
+        }
+        if (productQR !== expectedQr) {
+            toast.error('Product QR does not match the released revision.');
+            return;
+        }
 
-    if (!demo) {
-        return <div className="p-6"><Alert><AlertCircle className="h-4 w-4" /><AlertDescription>Delivery recording is blocked until an authoritative released position and verified evidence capture are connected. Return to the position's quality control record.</AlertDescription></Alert></div>;
+        setIsAcknowledging(true);
+        try {
+            const ack = await acknowledgeFabricatorDelivery({
+                positionId: workflowIdentity.positionId,
+                revision: workflowIdentity.revision,
+                releaseId: positionRelease.releaseId,
+                qualityApprovalId: qualityApproval.approvalId,
+                gpsLatitude: gpsLocation.latitude,
+                gpsLongitude: gpsLocation.longitude,
+                gpsAccuracyM: gpsLocation.accuracy ?? null,
+                photoHash: deliveryPhotoHash,
+                productQr: productQR,
+                signatureHash: customerSignatureHash,
+                deliveryNotes,
+                customerFeedback,
+                idempotencyKey: idempotencyKey.current,
+            });
+            setDeliveryAcknowledgement(ack);
+            if (currentProject) {
+                alignShellProject({ ...currentProject, status: 'delivered' });
+            }
+            setOperationalComplete(true);
+            toast.success('Delivery acknowledged', {
+                description: `Ack ${ack.acknowledgementId.slice(0, 8)}…`,
+            });
+        } catch (reason) {
+            toast.error(reason instanceof Error ? reason.message : 'Delivery acknowledgement failed.');
+        } finally {
+            setIsAcknowledging(false);
+        }
+    }, [
+        demo,
+        validateProofRequirements,
+        operationalReady,
+        workflowIdentity,
+        positionRelease,
+        qualityApproval,
+        gpsLocation,
+        expectedQr,
+        productQR,
+        deliveryPhotoHash,
+        customerSignatureHash,
+        deliveryNotes,
+        customerFeedback,
+        setDeliveryAcknowledgement,
+        currentProject,
+        alignShellProject,
+    ]);
+
+    if (!demo && contextLoading) {
+        return (
+            <div className="p-6 flex items-center gap-2 text-amber-200/80">
+                <Loader2 className="h-4 w-4 animate-spin" /> Loading delivery context…
+            </div>
+        );
+    }
+
+    if (!demo && !operationalReady) {
+        return (
+            <div className="p-6 space-y-3">
+                <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                        {contextError ??
+                            'Delivery recording is blocked until an authoritative released position and verified evidence capture are connected. Return to the position\'s quality control record.'}
+                    </AlertDescription>
+                </Alert>
+                <Button asChild variant="outline">
+                    <Link
+                        to={
+                            workflowIdentity
+                                ? fabricatorRoutes.studioProductionQuality() +
+                                  `?${new URLSearchParams({
+                                      projectId: workflowIdentity.projectId,
+                                      poseId: workflowIdentity.positionId,
+                                  })}`
+                                : fabricatorRoutes.studioProjects()
+                        }
+                    >
+                        Return to Quality Control
+                    </Link>
+                </Button>
+            </div>
+        );
     }
 
     // Show placeholder if no window unit
-    if (!windowUnit) {
+    if (!effectiveUnit) {
         return (
             <div className="space-y-6 max-w-6xl mx-auto p-6">
                 <Card className="card-premium card-glass-dark">
@@ -354,18 +642,22 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
         );
     }
 
-    // Demo preview
-    if (deliveryCompleted) {
+    // Demo preview / operational ack success
+    if (deliveryCompleted || operationalComplete) {
         return (
             <div className="space-y-6 max-w-6xl mx-auto p-6">
                 <Card className="shadow-[0_0_30px_rgba(16,185,129,0.3)] bg-emerald-500/10 border-emerald-500/30">
                     <CardContent className="p-8 text-center">
                         <CheckCircle2 className="h-16 w-16 text-emerald-400 mx-auto mb-4" />
                         <h3 className="typography-h2 text-2xl mb-2 text-emerald-200">
-                            Delivery Completed Successfully
+                            {demo ? 'Delivery Completed Successfully' : 'Delivery Acknowledged'}
                         </h3>
                         <p className="text-emerald-300 mb-4">
-                            ProductDelivered event emitted to RealityOS Event Ledger
+                            {demo
+                                ? 'Demo preview only — no delivery record was created.'
+                                : deliveryAcknowledgement
+                                  ? `Server ack ${deliveryAcknowledgement.acknowledgementId.slice(0, 8)}… · R${deliveryAcknowledgement.revision}`
+                                  : 'Server acknowledgement recorded.'}
                         </p>
                         <div className="space-y-2 text-sm text-emerald-400/80">
                             <p>Project: {projectName} - {unitNumber}</p>
@@ -395,7 +687,30 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
     return (
         <div className="space-y-6 max-w-6xl mx-auto p-6">
             {/* Header */}
-            <Alert><AlertDescription>Demo delivery preview. Simulated evidence cannot create delivery records.</AlertDescription></Alert>
+            <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(event) => {
+                    void handlePhotoFileSelected(event);
+                }}
+            />
+            {demo ? (
+                <Alert>
+                    <AlertDescription>
+                        Demo delivery preview. Simulated evidence cannot create delivery records.
+                    </AlertDescription>
+                </Alert>
+            ) : (
+                <Alert>
+                    <AlertDescription>
+                        Operational delivery — GPS must be real; photo is file-hashed; QR must match{' '}
+                        <span className="font-mono text-xs">{expectedQr}</span>.
+                    </AlertDescription>
+                </Alert>
+            )}
             <Card className="shadow-[0_0_30px_rgba(245,158,11,0.2)] card-premium card-glass-dark">
                 <CardHeader>
                     <div className="flex items-start justify-between">
@@ -407,7 +722,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                                 <p>Project: {projectName} - {unitNumber}</p>
                                 <p>Customer: {customerName}</p>
                                 <p>Address: {deliveryAddress}</p>
-                                <p className="text-xs text-amber-600/60">Unit ID: {windowUnit.id}</p>
+                                <p className="text-xs text-amber-600/60">Unit ID: {effectiveUnit.id}</p>
                             </div>
                         </div>
                         <div className="text-right">
@@ -750,11 +1065,13 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                 </Button>
 
                 <Button
-                    onClick={handleCompleteDelivery}
-                    disabled={!proofValidation.isValid || isEmittingEvent}
+                    onClick={() => {
+                        void handleCompleteDelivery();
+                    }}
+                    disabled={!proofValidation.isValid || isEmittingEvent || isAcknowledging}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2"
                 >
-                    {isEmittingEvent ? (
+                    {isEmittingEvent || isAcknowledging ? (
                         <>
                             <Loader2 className="w-4 h-4 animate-spin" />
                             Completing Delivery...

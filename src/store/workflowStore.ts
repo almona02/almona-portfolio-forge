@@ -91,6 +91,29 @@ export interface StockReservationEvidence {
   availabilityOk: boolean;
 }
 
+/** UP-18: frozen release fingerprint acknowledgement. */
+export interface PositionReleaseEvidence {
+  releaseId: string;
+  projectId: string;
+  positionId: string;
+  source: 'v1' | 'v2';
+  revision: number;
+  bomFingerprint: string;
+  stockFingerprint: string;
+  optimizationFingerprint: string;
+  releasedAt: string;
+}
+
+/** UP-20: server delivery acknowledgement. */
+export interface DeliveryAcknowledgementEvidence {
+  acknowledgementId: string;
+  projectId: string;
+  positionId: string;
+  revision: number;
+  ownerUserId: string;
+  acknowledgedAt: string;
+}
+
 export interface WorkflowState {
   // Project data
   currentProject: WindowUnit | null;
@@ -105,6 +128,10 @@ export interface WorkflowState {
   workflowDraftDirty: boolean;
   /** UP-10: revision-bound stock acknowledgement (no double deduction). */
   stockReservation: StockReservationEvidence | null;
+  /** UP-18: revision-bound release freeze. */
+  positionRelease: PositionReleaseEvidence | null;
+  /** UP-20: revision-bound delivery acknowledgement. */
+  deliveryAcknowledgement: DeliveryAcknowledgementEvidence | null;
 
   // Progress tracking
   completedSteps: Set<string>;
@@ -119,6 +146,8 @@ export interface WorkflowState {
   setProductionDocuments: (docs: ProductionDocuments | null) => void;
   setQualityApproval: (approval: QualityApprovalAcknowledgement | null) => void;
   setStockReservation: (reservation: StockReservationEvidence | null) => void;
+  setPositionRelease: (release: PositionReleaseEvidence | null) => void;
+  setDeliveryAcknowledgement: (ack: DeliveryAcknowledgementEvidence | null) => void;
   invalidateStep: (step: string) => void;
   completeStep: (step: string) => boolean;
   setActiveStep: (step: string) => void;
@@ -210,24 +239,26 @@ export const useWorkflowStore = create<WorkflowState>()(
       workflowIdentity: null,
       workflowDraftDirty: false,
       stockReservation: null,
+      positionRelease: null,
+      deliveryAcknowledgement: null,
       completedSteps: new Set(),
       activeStep: 'measuring',
       
       // Actions
       setMeasurementData: (data) => {
-        set(state => ({ measurementData: data, workflowDraftDirty: true, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, completedSteps: downstreamFrom(state.completedSteps, 'measuring'), qualityApproval: null }));
+        set(state => ({ measurementData: data, workflowDraftDirty: true, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, positionRelease: null, deliveryAcknowledgement: null, completedSteps: downstreamFrom(state.completedSteps, 'measuring'), qualityApproval: null }));
       },
       
       setDesignData: (data) => {
-        set(state => ({ designData: data, currentProject: data, workflowDraftDirty: true, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null }));
+        set(state => ({ designData: data, currentProject: data, workflowDraftDirty: true, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, positionRelease: null, deliveryAcknowledgement: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null }));
       },
       
       setOptimizationResult: (result) => {
-        set(state => ({ optimizationResult: result, quote: null, productionDocuments: null, completedSteps: downstreamFrom(state.completedSteps, 'optimization'), qualityApproval: null }));
+        set(state => ({ optimizationResult: result, quote: null, productionDocuments: null, positionRelease: null, deliveryAcknowledgement: null, completedSteps: downstreamFrom(state.completedSteps, 'optimization'), qualityApproval: null }));
       },
 
       setBOM: (bom) => {
-        set(state => ({ bom, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, completedSteps: downstreamFrom(state.completedSteps, 'bom'), qualityApproval: null }));
+        set(state => ({ bom, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, positionRelease: null, deliveryAcknowledgement: null, completedSteps: downstreamFrom(state.completedSteps, 'bom'), qualityApproval: null }));
       },
 
       setQuote: (quote) => {
@@ -242,11 +273,16 @@ export const useWorkflowStore = create<WorkflowState>()(
 
       setStockReservation: (stockReservation) => set({ stockReservation }),
 
+      setPositionRelease: (positionRelease) => set({ positionRelease }),
+
+      setDeliveryAcknowledgement: (deliveryAcknowledgement) => set({ deliveryAcknowledgement }),
+
       invalidateStep: (step) => set(state => ({
         completedSteps: downstreamFrom(state.completedSteps, step),
-        ...(step === 'optimization' ? { optimizationResult: null, qualityApproval: null } : {}),
-        ...(step === 'quality-control' ? { qualityApproval: null } : {}),
-        ...(step === 'bom' ? { bom: null, stockReservation: null, optimizationResult: null } : {}),
+        ...(step === 'optimization' ? { optimizationResult: null, qualityApproval: null, positionRelease: null, deliveryAcknowledgement: null } : {}),
+        ...(step === 'quality-control' ? { qualityApproval: null, deliveryAcknowledgement: null } : {}),
+        ...(step === 'bom' ? { bom: null, stockReservation: null, optimizationResult: null, positionRelease: null, deliveryAcknowledgement: null } : {}),
+        ...(step === 'production' ? { positionRelease: null, deliveryAcknowledgement: null } : {}),
       })),
 
       completeStep: (step) => {
@@ -286,14 +322,14 @@ export const useWorkflowStore = create<WorkflowState>()(
           qualityApproval: null,
           workflowIdentity: null,
           workflowDraftDirty: false,
-          stockReservation: null,
+          stockReservation: null, positionRelease: null, deliveryAcknowledgement: null,
           completedSteps: new Set(),
           activeStep: 'measuring',
         });
       },
       
       setCurrentProject: (project) => {
-        set(state => ({ currentProject: project, workflowDraftDirty: project !== null, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null }));
+        set(state => ({ currentProject: project, workflowDraftDirty: project !== null, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, positionRelease: null, deliveryAcknowledgement: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null }));
       },
 
       alignShellProject: (project) => {
@@ -309,7 +345,7 @@ export const useWorkflowStore = create<WorkflowState>()(
             qualityApproval: null,
             workflowIdentity: null,
             workflowDraftDirty: false,
-            stockReservation: null,
+            stockReservation: null, positionRelease: null, deliveryAcknowledgement: null,
             completedSteps: new Set(),
             activeStep: 'measuring',
           });
@@ -354,7 +390,7 @@ export const useWorkflowStore = create<WorkflowState>()(
           quote: null,
           productionDocuments: null,
           qualityApproval: null,
-          stockReservation: null,
+          stockReservation: null, positionRelease: null, deliveryAcknowledgement: null,
           completedSteps: new Set<string>(),
           activeStep: 'measuring',
         };
@@ -379,6 +415,8 @@ export const useWorkflowStore = create<WorkflowState>()(
         workflowIdentity: state.workflowIdentity,
         workflowDraftDirty: state.workflowDraftDirty,
         stockReservation: state.stockReservation,
+        positionRelease: state.positionRelease,
+        deliveryAcknowledgement: state.deliveryAcknowledgement,
         completedSteps: Array.from(state.completedSteps),
         activeStep: state.activeStep,
       }),
@@ -389,6 +427,8 @@ export const useWorkflowStore = create<WorkflowState>()(
           if (state.bom === undefined) state.bom = null;
           if (state.quote === undefined) state.quote = null;
           if (state.stockReservation === undefined) state.stockReservation = null;
+          if (state.positionRelease === undefined) state.positionRelease = null;
+          if (state.deliveryAcknowledgement === undefined) state.deliveryAcknowledgement = null;
           if (state.productionDocuments === undefined) state.productionDocuments = null;
           if (state.qualityApproval === undefined) state.qualityApproval = null;
           if (state.workflowIdentity === undefined) state.workflowIdentity = null;

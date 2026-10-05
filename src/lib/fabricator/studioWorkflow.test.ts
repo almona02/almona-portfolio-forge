@@ -61,8 +61,93 @@ describe('Studio readiness', () => {
       stockReservation: { ...reservation, identity: { ...identity, revision: 9 } },
     })).toBe(false);
   });
-  it('blocks optimize until stock reservation matches', () => {
-    const evidence = { ...base, bom: qualified };
-    expect(stageBlockedReason(stage('optimize'), evidence)).toContain('stock');
+  it('completes release / QC / delivery only with matching acknowledgements', () => {
+    const reservation = {
+      identity,
+      profileIds: ['a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'],
+      metersByProfile: { 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11': 6 },
+      reservedAt: new Date().toISOString(),
+      availabilityOk: true,
+    };
+    const manufacturing = {
+      ...base,
+      bom: qualified,
+      stockReservation: reservation,
+      optimizationResult: {
+        materialUsage: 80,
+        wastePercentage: 10,
+        estimatedProductionTime: 30,
+        nestingEfficiency: 0.9,
+        costBreakdown: {
+          materialCost: 1,
+          laborCost: 1,
+          hardwareCost: 1,
+          glazingCost: 1,
+          totalCost: 4,
+        },
+        cuttingPlan: [
+          {
+            profile: { id: 'profile' },
+            stockLength: 6000,
+            totalWaste: 100,
+            utilization: 0.9,
+            cuts: [
+              {
+                length: 500,
+                angle: 45,
+                componentId: 'part',
+                waste: 0,
+                occurrenceIndex: 0,
+                cutId: 'part:0',
+              },
+            ],
+          },
+        ],
+      } as never,
+    };
+    expect(stage('production').completeWhen(manufacturing)).toBe(false);
+    const released = {
+      ...manufacturing,
+      positionRelease: {
+        releaseId: 'rel-1',
+        projectId: identity.projectId,
+        positionId: identity.positionId,
+        source: identity.source,
+        revision: identity.revision,
+        bomFingerprint: 'bom',
+        stockFingerprint: 'stock',
+        optimizationFingerprint: 'opt',
+        releasedAt: new Date().toISOString(),
+      },
+    };
+    expect(stage('production').completeWhen(released)).toBe(true);
+    expect(stage('qc').completeWhen(released)).toBe(false);
+    const qcReady = {
+      ...released,
+      qualityApproval: {
+        approvalId: 'qc-1',
+        projectId: identity.projectId,
+        positionId: identity.positionId,
+        revision: identity.revision,
+        inspectorId: 'owner',
+        approvedAt: new Date().toISOString(),
+      },
+    };
+    expect(stage('qc').completeWhen(qcReady)).toBe(true);
+    expect(stage('delivery').completeWhen(qcReady)).toBe(false);
+    expect(
+      stage('delivery').completeWhen({
+        ...qcReady,
+        deliveryAcknowledgement: {
+          acknowledgementId: 'del-1',
+          projectId: identity.projectId,
+          positionId: identity.positionId,
+          revision: identity.revision,
+          ownerUserId: 'owner',
+          acknowledgedAt: new Date().toISOString(),
+        },
+      }),
+    ).toBe(true);
+    expect(stageBlockedReason(stage('delivery'), released)).toContain('QC');
   });
 });
