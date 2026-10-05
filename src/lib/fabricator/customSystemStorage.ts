@@ -88,35 +88,62 @@ export const addCustomSystem = (system: SystemPack): StoredSystemPack[] => {
   return updated;
 };
 
-// Async version with Supabase sync
+// Async version with Supabase sync + UP-07 owned UUID materialize when signed in
 export const addCustomSystemAsync = async (
   system: SystemPack,
   userId?: string | null
 ): Promise<StoredSystemPack[]> => {
-  await Promise.resolve(); // Satisfy require-await; sync logic with fire-and-forget Supabase
+  let packToStore: SystemPack = system;
+  let materializeNote: string | null = null;
+
+  if (userId) {
+    try {
+      const { materializeOwnedProfilesFromPack } = await import(
+        '@/lib/fabricator/inventory/materializeOwnedProfiles'
+      );
+      const materialized = await materializeOwnedProfilesFromPack(system, userId);
+      if (materialized.ok) {
+        packToStore = materialized.pack;
+        if (materialized.materializedCount > 0) {
+          materializeNote = `Materialized ${materialized.materializedCount} owned profile UUID(s).`;
+        }
+      } else {
+        console.warn('[customSystemStorage] materialize deferred:', materialized.error);
+        materializeNote = materialized.error;
+      }
+    } catch (err) {
+      console.warn('[customSystemStorage] materialize failed:', err);
+    }
+  }
+
   const existing = loadCustomSystems();
   const newSystem: StoredSystemPack = {
-    ...system,
+    ...packToStore,
     meta: {
-      ...system.meta,
-      id: system.meta.id || `custom_${Date.now()}`,
+      ...packToStore.meta,
+      id: packToStore.meta.id || `custom_${Date.now()}`,
     },
     version: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
   const updated = [...existing.filter((s) => s.meta.id !== newSystem.meta.id), newSystem];
-  
-  // Save to localStorage
+
+  // Save to localStorage (with UUID ids when materialize succeeded)
   saveCustomSystems(updated);
-  
-  // Sync to Supabase if enabled (fire and forget)
+
+  // Sync pack to Supabase if enabled
   if (USE_SUPABASE && userId) {
     saveSystemPackToSupabase(newSystem, userId).catch((e) => {
       console.warn('Failed to sync to Supabase, saved to localStorage only:', e);
     });
   }
-  
+
+  if (materializeNote) {
+    (updated as StoredSystemPack[] & { __materializeNote?: string }).__materializeNote =
+      materializeNote;
+  }
+
   return updated;
 };
 

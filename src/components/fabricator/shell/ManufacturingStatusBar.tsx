@@ -1,10 +1,11 @@
 import { useActiveStudioProject } from '@/hooks/fabricator/useActiveStudioProject';
+import { getManufacturingSaveChrome } from '@/lib/fabricator/manufacturingSaveChrome';
 import { NOT_RECORDED } from '@/lib/fabricator/studioWorkflow';
 import { isRTL } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { Cable, Save, Ruler, Cpu, SlidersHorizontal } from 'lucide-react';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const ManufacturingStatusBar: React.FC = () => {
@@ -12,6 +13,12 @@ export const ManufacturingStatusBar: React.FC = () => {
   const rtl = isRTL(i18n.language);
   const project = useActiveStudioProject();
   const draftDirty = useWorkflowStore(s => s.workflowDraftDirty);
+  const workflowIdentity = useWorkflowStore(s => s.workflowIdentity);
+
+  const saveChrome = useMemo(
+    () => getManufacturingSaveChrome({ draftDirty, workflowIdentity, project }),
+    [draftDirty, workflowIdentity, project],
+  );
 
   const online =
     typeof navigator === 'undefined' ? true : navigator.onLine;
@@ -27,7 +34,7 @@ export const ManufacturingStatusBar: React.FC = () => {
     {
       icon: <Save size={11} />,
       label: t('industrial.status.save_status', 'Save status'),
-      value: draftDirty ? t('industrial.status.unsaved_draft', 'Unsaved draft') : NOT_RECORDED,
+      value: saveChrome.label,
     },
     {
       icon: <Ruler size={11} />,
@@ -68,7 +75,6 @@ export const ManufacturingStatusBar: React.FC = () => {
           key={c.label}
           className={cn(
             'flex items-center gap-1.5 whitespace-nowrap',
-            // Keep connection + system visible; hide quieter cells on very narrow widths
             index >= 3 && 'hidden sm:flex',
           )}
         >

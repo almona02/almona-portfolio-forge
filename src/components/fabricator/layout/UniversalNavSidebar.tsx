@@ -2,9 +2,11 @@ import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { FabricatorContext } from '@/contexts/FabricatorContextProvider';
 import { useNarrowStudioShell } from '@/hooks/useNarrowStudioShell';
+import { getManufacturingSaveChrome } from '@/lib/fabricator/manufacturingSaveChrome';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { cn } from '@/lib/utils';
 import { useFabricatorUIStore } from '@/stores/fabricatorUIStore';
+import { useWorkflowStore } from '@/store/workflowStore';
 import {
     BarChart,
     Bell,
@@ -17,20 +19,6 @@ import {
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { CollapsiblePanel } from './CollapsiblePanel';
-
-function formatRelativeSaved(iso: string | null | undefined): string | null {
-  if (!iso) return null;
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return null;
-  const mins = Math.max(0, Math.round((Date.now() - then) / 60_000));
-  if (mins < 1) return 'Saved just now';
-  if (mins === 1) return 'Saved 1 min ago';
-  if (mins < 60) return `Saved ${mins} min ago`;
-  const hours = Math.round(mins / 60);
-  if (hours === 1) return 'Saved 1 hr ago';
-  if (hours < 48) return `Saved ${hours} hr ago`;
-  return `Saved ${new Date(iso).toISOString().slice(0, 10)}`;
-}
 
 function roleLabel(role: string | undefined | null): string {
   if (!role) return 'Signed in';
@@ -102,7 +90,23 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? '')
     .join('') || 'U';
-  const savedLabel = formatRelativeSaved(workspace.lastSaved);
+  const draftDirty = useWorkflowStore((s) => s.workflowDraftDirty);
+  const workflowIdentity = useWorkflowStore((s) => s.workflowIdentity);
+  const currentProject = useWorkflowStore((s) => s.currentProject);
+  const saveChrome = useMemo(
+    () => getManufacturingSaveChrome({
+      draftDirty,
+      workflowIdentity,
+      project: currentProject ?? workspace.currentProject,
+    }),
+    [draftDirty, workflowIdentity, currentProject, workspace.currentProject],
+  );
+  const savedOk = saveChrome.tone === 'saved';
+  const savedLabel = saveChrome.tone === 'dirty'
+    ? 'Unsaved draft'
+    : saveChrome.tone === 'saved'
+      ? saveChrome.label
+      : null;
   
   // Navigation items for all fabricator sections (memoized for performance)
   const navItems: NavItem[] = useMemo(() => [
@@ -386,25 +390,25 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
           </div>
         )}
         
-        {/* Workspace persistence status — only show recorded save time */}
+        {/* Manufacturing save chrome (UP-14) — same source as status bar */}
         <div className="mt-8 pt-6 border-t border-gray-800/50">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-gray-400">Workspace</span>
+            <span className="text-xs font-medium text-gray-400">Manufacturing save</span>
             <div className="flex items-center space-x-1">
               <div
                 className={cn(
                   'w-2 h-2 rounded-full',
-                  savedLabel ? 'bg-green-500' : 'bg-amber-500',
+                  savedOk ? 'bg-green-500' : 'bg-amber-500',
                 )}
                 aria-hidden
               />
-              <span className={cn('text-xs', savedLabel ? 'text-green-400' : 'text-amber-400')}>
-                {savedLabel ? 'Saved' : 'Unsaved'}
+              <span className={cn('text-xs', savedOk ? 'text-green-400' : 'text-amber-400')}>
+                {savedOk ? 'Saved' : saveChrome.tone === 'dirty' ? 'Unsaved' : 'Unknown'}
               </span>
             </div>
           </div>
           <div className="text-xs text-gray-500">
-            {savedLabel ?? 'No local save recorded'}
+            {savedLabel ?? 'Not recorded — open a saved position revision'}
           </div>
         </div>
       </div>

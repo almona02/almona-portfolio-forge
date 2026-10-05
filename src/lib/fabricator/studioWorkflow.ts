@@ -51,6 +51,8 @@ export interface StudioWorkflowEvidence {
   workflowIdentity?: WorkflowIdentity | null;
   qualityApproval?: QualityApprovalAcknowledgement | null;
   workflowDraftDirty?: boolean;
+  /** UP-10 soft reservation acknowledgement bound to workflow identity. */
+  stockReservation?: import('@/store/workflowStore').StockReservationEvidence | null;
 }
 
 export interface StudioWorkflowStageDef {
@@ -105,8 +107,8 @@ export const STUDIO_WORKFLOW_STAGES: StudioWorkflowStageDef[] = [
     labelKey: 'industrial.stages.stock',
     defaultLabel: 'Stock',
     shortLabel: 'Stock',
-    // The global library does not yet provide revision-bound reservation evidence.
-    completeWhen: () => false,
+    // UP-10: complete only when revision-bound reservation evidence matches identity.
+    completeWhen: hasCurrentStockReservation,
     isActive: (pathname) => pathname.includes('/studio/data/stock'),
   },
   {
@@ -159,6 +161,13 @@ function hasCurrentQualifiedBOM(e: StudioWorkflowEvidence): boolean {
   return Boolean(!e.workflowDraftDirty && e.workflowIdentity && e.currentProject?.id === e.workflowIdentity.positionId && (e.currentProject.revision === undefined || e.currentProject.revision === e.workflowIdentity.revision) && isQualifiedBOM(e.bom) && workflowIdentityMatches(e.bom?.qualification?.identity ?? null, e.workflowIdentity));
 }
 
+function hasCurrentStockReservation(e: StudioWorkflowEvidence): boolean {
+  if (e.workflowDraftDirty || !e.workflowIdentity || !e.stockReservation) return false;
+  if (!workflowIdentityMatches(e.stockReservation.identity, e.workflowIdentity)) return false;
+  if (e.currentProject?.id !== e.workflowIdentity.positionId) return false;
+  return e.stockReservation.profileIds.length > 0 && e.stockReservation.availabilityOk;
+}
+
 function hasCurrentManufacturingEvidence(e: StudioWorkflowEvidence): boolean {
   return hasCurrentQualifiedBOM(e) && validateOptimizationReconciliation(e.optimizationResult, e.currentProject).valid;
 }
@@ -169,13 +178,19 @@ function hasCurrentQcApproval(e: StudioWorkflowEvidence): boolean {
 
 export function stageBlockedReason(stage: StudioWorkflowStageDef, e: StudioWorkflowEvidence): string | null {
   if (stage.id === 'project') return null;
-  if (stage.id === 'stock') return null;
+  if (stage.id === 'stock') {
+    if (e.stockReservation && e.workflowIdentity && !workflowIdentityMatches(e.stockReservation.identity, e.workflowIdentity)) {
+      return 'Stock acknowledgement is for a different revision — re-confirm availability.';
+    }
+    return null;
+  }
   if (!e.currentProject) return 'Select a project position to continue.';
   if (e.workflowIdentity && e.currentProject.id !== e.workflowIdentity.positionId) return 'Open the selected position to load its workflow evidence.';
   if (stage.id === 'measure') return null;
   if (stage.id === 'design' && !STUDIO_WORKFLOW_STAGES[1].completeWhen(e)) return 'Record valid measurements before design.';
   if (['bom', 'optimize', 'quote', 'production', 'qc'].includes(stage.id) && !validateOptimizationInputs(e.currentProject).valid) return 'Resolve the design components and profiles in Design.';
   if (['optimize', 'production', 'qc'].includes(stage.id) && !hasCurrentQualifiedBOM(e)) return 'Review and qualify the BOM for the saved position revision.';
+  if (['optimize', 'production', 'qc'].includes(stage.id) && !hasCurrentStockReservation(e)) return 'Acknowledge stock availability for this revision before optimization.';
   if (['production', 'qc'].includes(stage.id) && !hasCurrentManufacturingEvidence(e)) return 'Reconcile optimization with the current design before production.';
   if (stage.id === 'delivery' && !STUDIO_WORKFLOW_STAGES.find(s => s.id === 'qc')!.completeWhen(e)) return 'Record acknowledged QC approval for this revision before delivery.';
   return null;
@@ -250,6 +265,9 @@ export function deriveStageVisualStatus(
   if (stage.id === 'quote' && evidence.quote) return 'warning';
 
   if (stage.id === 'stock') {
+    if (evidence.stockReservation && evidence.workflowIdentity && !workflowIdentityMatches(evidence.stockReservation.identity, evidence.workflowIdentity)) {
+      return 'warning';
+    }
     return 'not_recorded';
   }
   if (stage.id === 'delivery' || stage.id === 'qc' || stage.id === 'production') {

@@ -1,10 +1,12 @@
 import { NOT_RECORDED } from '@/lib/fabricator/studioWorkflow';
+import { getManufacturingSaveChrome } from '@/lib/fabricator/manufacturingSaveChrome';
 import { resolveSystemPackProfiles } from '@/lib/fabricator/engineering/resolveSystemPackProfiles';
 import { loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { isRTL } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { useWorkflowStore } from '@/store/workflowStore';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,13 +15,6 @@ export interface ActiveProjectHeaderProps {
   className?: string;
   /** Compact strip for narrow viewports */
   compact?: boolean;
-}
-
-function formatWhen(value: Date | string | undefined): string {
-  if (!value) return NOT_RECORDED;
-  const d = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(d.getTime())) return NOT_RECORDED;
-  return d.toISOString().slice(0, 16).replace('T', ' ');
 }
 
 function findPack(systemPackId: string | undefined): SystemPack | null {
@@ -93,6 +88,8 @@ export const ActiveProjectHeader: React.FC<ActiveProjectHeaderProps> = ({
 }) => {
   const { t, i18n } = useTranslation('fabricator');
   const rtl = isRTL(i18n.language);
+  const workflowIdentity = useWorkflowStore((s) => s.workflowIdentity);
+  const draftDirty = useWorkflowStore((s) => s.workflowDraftDirty);
 
   const pack = useMemo(
     () => findPack(project?.systemPackId),
@@ -100,6 +97,7 @@ export const ActiveProjectHeader: React.FC<ActiveProjectHeaderProps> = ({
   );
 
   const material = project ? resolveMaterial(pack) : null;
+  const saveChrome = getManufacturingSaveChrome({ draftDirty, workflowIdentity, project });
 
   const machineTarget =
     (project as WindowUnit & { machineTarget?: string })?.machineTarget ??
@@ -124,10 +122,7 @@ export const ActiveProjectHeader: React.FC<ActiveProjectHeaderProps> = ({
   const projectCode = project.projectCode || project.orderNumber || project.id;
   const position = project.posNumber || project.positionCode || NOT_RECORDED;
   const systemName = pack?.meta.name || project.systemPackId || NOT_RECORDED;
-  const revision =
-    Number.isInteger(project.revision) && (project.revision ?? 0) > 0
-      ? `R${project.revision}`
-      : NOT_RECORDED;
+  const revision = saveChrome.revisionLabel;
 
   if (compact) {
     const chips = [
@@ -209,7 +204,7 @@ export const ActiveProjectHeader: React.FC<ActiveProjectHeaderProps> = ({
     },
     {
       label: t('industrial.context.saved', 'Last saved'),
-      value: formatWhen(project.updatedAt),
+      value: saveChrome.tone === 'dirty' ? 'Unsaved draft' : saveChrome.savedAtLabel,
       ltr: true,
     },
   ];

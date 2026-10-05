@@ -3,7 +3,6 @@ import NewProjectWizard, { type ProjectHeaderMeta } from '@/components/fabricato
 import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
-import { FeatureFlags } from '@/lib/featureFlags';
 import { fabricatorClientV2 } from '@/lib/supabase/fabricatorClientV2';
 import { useJobsStore } from '@/store/jobsStore';
 import { WindowUnit } from '@/types/fabricator';
@@ -122,20 +121,14 @@ export const ProjectCreationManager: React.FC = () => {
             let persistedProjectId = newProjectId;
             let persistedPoseId = poseId;
 
-            // UP-11: always attempt server persist when signed in (not gated solely by READ_V2).
-            // Flag still selects v2 client path; unsigned / fail → local job remains recoverable.
+            // UP-11: always persist via v2 when signed in — READ_V2 only gates read paths.
             if (user?.id) {
                 try {
-                    if (FeatureFlags.FABRICATOR_READ_V2) {
-                        const saved = await fabricatorClientV2.savePose(newProject, user.id);
-                        persistedProjectId = saved.projectId;
-                        persistedPoseId = saved.poseId;
-                        newProject.id = persistedPoseId;
-                        newProject.projectId = persistedProjectId;
-                    } else {
-                        // Local-first when v2 read rollout is off — still keep customerId on the unit.
-                        console.info('[ProjectCreationManager] FABRICATOR_READ_V2 off; project kept local with customerId.');
-                    }
+                    const saved = await fabricatorClientV2.savePose(newProject, user.id);
+                    persistedProjectId = saved.projectId;
+                    persistedPoseId = saved.poseId;
+                    newProject.id = persistedPoseId;
+                    newProject.projectId = persistedProjectId;
                 } catch (persistErr) {
                     console.warn('[ProjectCreationManager] Server persist failed; keeping local draft with customerId:', persistErr);
                     toast.error(

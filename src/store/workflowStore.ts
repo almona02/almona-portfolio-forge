@@ -82,6 +82,15 @@ export interface WorkflowIdentity {
   revision: number;
 }
 
+export interface StockReservationEvidence {
+  identity: WorkflowIdentity;
+  profileIds: string[];
+  metersByProfile: Record<string, number>;
+  reservedAt: string;
+  /** Soft availability check only — does not deduct stock. */
+  availabilityOk: boolean;
+}
+
 export interface WorkflowState {
   // Project data
   currentProject: WindowUnit | null;
@@ -94,6 +103,8 @@ export interface WorkflowState {
   qualityApproval: QualityApprovalAcknowledgement | null;
   workflowIdentity: WorkflowIdentity | null;
   workflowDraftDirty: boolean;
+  /** UP-10: revision-bound stock acknowledgement (no double deduction). */
+  stockReservation: StockReservationEvidence | null;
 
   // Progress tracking
   completedSteps: Set<string>;
@@ -107,6 +118,7 @@ export interface WorkflowState {
   setQuote: (quote: WorkflowQuote | null) => void;
   setProductionDocuments: (docs: ProductionDocuments | null) => void;
   setQualityApproval: (approval: QualityApprovalAcknowledgement | null) => void;
+  setStockReservation: (reservation: StockReservationEvidence | null) => void;
   invalidateStep: (step: string) => void;
   completeStep: (step: string) => boolean;
   setActiveStep: (step: string) => void;
@@ -197,16 +209,17 @@ export const useWorkflowStore = create<WorkflowState>()(
       qualityApproval: null,
       workflowIdentity: null,
       workflowDraftDirty: false,
+      stockReservation: null,
       completedSteps: new Set(),
       activeStep: 'measuring',
       
       // Actions
       setMeasurementData: (data) => {
-        set(state => ({ measurementData: data, workflowDraftDirty: true, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, completedSteps: downstreamFrom(state.completedSteps, 'measuring'), qualityApproval: null }));
+        set(state => ({ measurementData: data, workflowDraftDirty: true, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, completedSteps: downstreamFrom(state.completedSteps, 'measuring'), qualityApproval: null }));
       },
       
       setDesignData: (data) => {
-        set(state => ({ designData: data, currentProject: data, workflowDraftDirty: true, bom: null, optimizationResult: null, quote: null, productionDocuments: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null }));
+        set(state => ({ designData: data, currentProject: data, workflowDraftDirty: true, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null }));
       },
       
       setOptimizationResult: (result) => {
@@ -214,7 +227,7 @@ export const useWorkflowStore = create<WorkflowState>()(
       },
 
       setBOM: (bom) => {
-        set(state => ({ bom, optimizationResult: null, quote: null, productionDocuments: null, completedSteps: downstreamFrom(state.completedSteps, 'bom'), qualityApproval: null }));
+        set(state => ({ bom, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, completedSteps: downstreamFrom(state.completedSteps, 'bom'), qualityApproval: null }));
       },
 
       setQuote: (quote) => {
@@ -227,10 +240,13 @@ export const useWorkflowStore = create<WorkflowState>()(
 
       setQualityApproval: (qualityApproval) => set({ qualityApproval }),
 
+      setStockReservation: (stockReservation) => set({ stockReservation }),
+
       invalidateStep: (step) => set(state => ({
         completedSteps: downstreamFrom(state.completedSteps, step),
         ...(step === 'optimization' ? { optimizationResult: null, qualityApproval: null } : {}),
         ...(step === 'quality-control' ? { qualityApproval: null } : {}),
+        ...(step === 'bom' ? { bom: null, stockReservation: null, optimizationResult: null } : {}),
       })),
 
       completeStep: (step) => {
@@ -270,13 +286,14 @@ export const useWorkflowStore = create<WorkflowState>()(
           qualityApproval: null,
           workflowIdentity: null,
           workflowDraftDirty: false,
+          stockReservation: null,
           completedSteps: new Set(),
           activeStep: 'measuring',
         });
       },
       
       setCurrentProject: (project) => {
-        set(state => ({ currentProject: project, workflowDraftDirty: project !== null, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null }));
+        set(state => ({ currentProject: project, workflowDraftDirty: project !== null, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null }));
       },
 
       alignShellProject: (project) => {
@@ -292,6 +309,7 @@ export const useWorkflowStore = create<WorkflowState>()(
             qualityApproval: null,
             workflowIdentity: null,
             workflowDraftDirty: false,
+            stockReservation: null,
             completedSteps: new Set(),
             activeStep: 'measuring',
           });
@@ -336,6 +354,7 @@ export const useWorkflowStore = create<WorkflowState>()(
           quote: null,
           productionDocuments: null,
           qualityApproval: null,
+          stockReservation: null,
           completedSteps: new Set<string>(),
           activeStep: 'measuring',
         };
@@ -359,6 +378,7 @@ export const useWorkflowStore = create<WorkflowState>()(
         qualityApproval: state.qualityApproval,
         workflowIdentity: state.workflowIdentity,
         workflowDraftDirty: state.workflowDraftDirty,
+        stockReservation: state.stockReservation,
         completedSteps: Array.from(state.completedSteps),
         activeStep: state.activeStep,
       }),
@@ -368,6 +388,7 @@ export const useWorkflowStore = create<WorkflowState>()(
           state.completedSteps = new Set(state.completedSteps as unknown as string[]);
           if (state.bom === undefined) state.bom = null;
           if (state.quote === undefined) state.quote = null;
+          if (state.stockReservation === undefined) state.stockReservation = null;
           if (state.productionDocuments === undefined) state.productionDocuments = null;
           if (state.qualityApproval === undefined) state.qualityApproval = null;
           if (state.workflowIdentity === undefined) state.workflowIdentity = null;

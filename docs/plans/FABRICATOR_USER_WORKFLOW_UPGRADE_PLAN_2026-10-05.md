@@ -1,11 +1,11 @@
 # Fabricator user workflow upgrade plan
 
-Date: 5 October 2026 (revised night — Batch 2 slice + Batch 3 start).  
-Status: **Batch 1 DONE.** **Batch 2 ~70%** (UP-06/09 done; UP-07/08/10 partial). **Batch 3 started** (UP-11/12/13). Batch 0 fixtures still open. Program ≈ **39%**.
+Date: 5 October 2026 (Batch 2 near-exit + Batch 3 chrome).  
+Status: **Batch 1 DONE.** **Batch 2 ~90%.** **Batch 3 ~70%.** Next = **Batch 4** (quote→order). Program ≈ **48%**.
 
 | Companion | Role |
 |---|---|
-| [Upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) | Gate-by-gate evidence (refreshed after Batch 2/3 slice) |
+| [Upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) | Gate-by-gate evidence (refreshed) |
 | [Batch 1 implementation](FABRICATOR_BATCH1_IMPLEMENTATION_2026-10-05.md) | What shipped and how it was verified |
 | [Batch 1 readiness](FABRICATOR_BATCH1_READINESS_2026-10-05.md) | Pre-implementation toolchain baseline |
 | [Security remediation](SECURITY_DEPENDABOT_REMEDIATION_BATCH_2026-10-05.md) | Dependabot clearable pins + blocked braces/node-forge |
@@ -84,8 +84,9 @@ Keep adapters centralized. Do not add another global store that owns manufacturi
 |---|---|---|---|---|
 | **0** | Toolchain + disposable fixtures + deploy baseline | **PARTIAL** | ~45% | Two-owner/multi-revision fixtures + restore points + recorded production SHA |
 | **1** | Truthful readiness / nav / demos / public lead | **DONE** | ~95% | Product exit met; fixtures/Redis provision optional for “release-perfect” |
-| **2** | Profiles / systems / inventory | **IN PROGRESS** | ~70% | UP-06/09 met; UP-07/08/10 partial; reservation open |
-| **3** | Customer / pattern / revision handoffs | **STARTED** | ~35% | UP-11/12/13 coded; UP-14 open |
+| **2** | Profiles / systems / inventory | **NEAR EXIT** | ~90% | Materialize + soft reservation; DB reservation deferred |
+| **3** | Customer / pattern / revision handoffs | **NEAR EXIT** | ~70% | UP-11…14 coded |
+| **4** | Quote → order + admin separation | **NEXT** | 0% | UP-15…17 |
 | **4** | Quote → order + admin separation | **OPEN** | 0% | One order per accepted quote; admin gated |
 | **5** | Production / QC / delivery release | **OPEN** | ~5% | Release freeze + real QC/delivery ack (demos already isolated) |
 | **6** | Reporting / a11y / integrations | **OPEN** | ~5% | No NaN/green lies; RTL/keyboard journeys |
@@ -262,10 +263,9 @@ Metrics (no PII/secrets): hydration failures, blocked reasons, save ack latency,
 
 ## Immediate next sequence
 
-1. Finish Batch 2 remainders — UP-07 owned UUID materialize + UP-10 revision reservation.  
-2. Finish Batch 3 — UP-14 save/revision chrome; harden UP-11 always-on persist.  
-3. Then Batch 4 → 5 → 6 in order.  
-4. Close Batch 0 fixtures when operators available.  
-5. Keep FP-028 accuracy work on its own track.
+1. **Start Batch 4** — UP-15 quote persist, UP-16 quote→order, UP-17 Orders UX.  
+2. Polish Batch 2/3 remainders only if they block quote/order.  
+3. Close Batch 0 fixtures when operators available.  
+4. Keep FP-028 accuracy on its own track.
 
-No delivery-date commitment until Batch 2 exit (reservation) and Batch 0 fixtures are agreed.
+No delivery-date commitment until Batch 4 quote/order exit and Batch 0 fixtures are agreed.

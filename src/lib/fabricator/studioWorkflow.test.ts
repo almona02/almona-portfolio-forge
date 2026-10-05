@@ -46,4 +46,23 @@ describe('Studio readiness', () => {
   it('orders BOM, stock and optimization before quotation', () => {
     expect(STUDIO_WORKFLOW_STAGES.map(s => s.id)).toEqual(['project', 'measure', 'design', 'bom', 'stock', 'optimize', 'quote', 'production', 'qc', 'delivery']);
   });
+  it('completes stock only with matching reservation evidence', () => {
+    expect(stage('stock').completeWhen(base)).toBe(false);
+    const reservation = {
+      identity,
+      profileIds: ['a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'],
+      metersByProfile: { 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11': 6 },
+      reservedAt: new Date().toISOString(),
+      availabilityOk: true,
+    };
+    expect(stage('stock').completeWhen({ ...base, stockReservation: reservation })).toBe(true);
+    expect(stage('stock').completeWhen({
+      ...base,
+      stockReservation: { ...reservation, identity: { ...identity, revision: 9 } },
+    })).toBe(false);
+  });
+  it('blocks optimize until stock reservation matches', () => {
+    const evidence = { ...base, bom: qualified };
+    expect(stageBlockedReason(stage('optimize'), evidence)).toContain('stock');
+  });
 });
