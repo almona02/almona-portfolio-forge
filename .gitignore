@@ -95,3 +95,4 @@ nul
 !vendor/
 !vendor/image-size/
 !vendor/image-size/**
+.env.batch0.fixtures

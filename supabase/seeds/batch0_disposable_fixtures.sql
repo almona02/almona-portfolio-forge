@@ -1,52 +1,17 @@
--- Batch 0 disposable staging fixtures (OPERATOR-APPLIED).
--- NEVER run against customer workshop data without replacing owner UUIDs.
+-- Batch 0 disposable staging fixtures — APPLIED 2026-10-05 via operator/agent seed.
+-- Owners (Auth users, confirmed in Supabase Auth UI):
+--   A: batch0.fixture.a@almona.local  1dfae5b1-5299-4737-b1a4-d1bc640950db
+--   B: batch0.fixture.b@almona.local  7c4aa1d9-cbf4-4887-aca3-5a85e0d72df7
+-- Passwords: see local gitignored .env.batch0.fixtures (never commit).
 --
--- Usage:
---   1. Create two disposable auth users in Supabase Auth (fixture-a@…, fixture-b@…).
---   2. Replace :OWNER_A and :OWNER_B below with their auth.users ids.
---   3. Run in a staging project only.
---   4. Restore: DELETE FROM … WHERE (specifications->>'fixture_tag') = 'batch0-2026-10-05'
---      (and matching project/position rows tagged the same way).
---
--- This script is intentionally incomplete for live apply until owners are set.
--- It documents the required row shapes for multi-revision / QC / release / delivery walks.
+-- Restore (staging only):
+--   DELETE FROM public.fabricator_positions_v2 WHERE meta->>'fixture_tag' = 'batch0-2026-10-05';
+--   DELETE FROM public.fabricator_projects_v2  WHERE meta->>'fixture_tag' = 'batch0-2026-10-05';
+--   DELETE FROM public.fabricator_profiles     WHERE specifications->>'fixture_tag' = 'batch0-2026-10-05';
+--   -- Auth users can remain for reuse, or delete in Auth dashboard.
 
-BEGIN;
-
--- Guard: refuse empty placeholders.
-DO $$
-BEGIN
-  IF ':OWNER_A' LIKE ':%' OR ':OWNER_B' LIKE ':%' THEN
-    RAISE NOTICE 'Batch 0 seed: replace :OWNER_A / :OWNER_B before apply. Aborting without writes.';
-  END IF;
-END $$;
-
--- Example owned profile (Owner A) — catalog code retained in specs.
--- INSERT INTO public.fabricator_profiles (
---   user_id, name, material, width, height, thickness, color,
---   cost_per_meter, cutting_allowance, stock_quantity, min_stock_level, specifications
--- ) VALUES (
---   ':OWNER_A'::uuid,
---   'BATCH0 Frame 60',
---   'aluminum',
---   60, 60, 1.5, '#C0C0C0',
---   120, 3, 50, 10,
---   jsonb_build_object(
---     'fixture_tag', 'batch0-2026-10-05',
---     'originalCatalogCode', 'BATCH0-FRAME-60',
---     'partNumber', 'BATCH0-FRAME-60'
---   )
--- );
-
--- Required fixture matrix (create via Studio UI or expand this script once owners exist):
---   Owner A: project with poses R1 (draft), R2 (qualified BOM + stock ack + release + QC)
---   Owner A: empty stock vs populated stock profiles
---   Owner A: accepted pose quote + converted order (fabricator_pose_quote_id)
---   Owner B: separate project — prove cross-owner hydration rejection
---   Materials: aluminum + UPVC + custom pack (materialized UUIDs)
---   Delivery: one ack bound to release + QC for Owner A R2
-
-COMMENT ON SCHEMA public IS
-  'Batch 0 fixture template present: supabase/seeds/batch0_disposable_fixtures.sql (operator-owned).';
-
-COMMIT;
+-- Seed already applied live. This file documents the matrix for re-runs:
+--   Owner A: project BATCH0-A, poses POS-R1 (qc_revision=1) + POS-R2 (qc_revision=2)
+--   Owner A: populated frame stock + empty stock profile
+--   Owner B: project BATCH0-B, pose POS-001 (cross-owner reject target)
+--   Materials: aluminum + UPVC tagged fixture_tag=batch0-2026-10-05
