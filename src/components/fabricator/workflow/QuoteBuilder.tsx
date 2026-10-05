@@ -10,6 +10,7 @@
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { generateFabricatorQuote } from '@/lib/fabricator/commercial/FabricatorQuoteService';
+import { convertPoseQuoteToOrder } from '@/lib/fabricator/commercial/convertPoseQuoteToOrder';
 import { upsertPoseQuote } from '@/lib/fabricator/commercial/poseQuotesClient';
 import { useAuth } from '@/context/AuthContext';
 import { useWorkflowStore } from '@/store/workflowStore';
@@ -27,6 +28,7 @@ import {
   Loader2,
   Percent,
   Receipt,
+  ShoppingCart,
 } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -50,6 +52,7 @@ export const QuoteBuilder: React.FC = () => {
   const [taxRate, setTaxRate] = useState(14);
   const [isExporting, setIsExporting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
 
   const quote = useMemo(() => {
     if (!currentProject) return null;
@@ -61,16 +64,19 @@ export const QuoteBuilder: React.FC = () => {
     );
   }, [currentProject, optimizationResult, bom, markupPercent, taxRate]);
 
+  const resolveIdentity = useCallback(() => {
+    const projId = projectId ?? (currentProject as { projectId?: string } | null)?.projectId;
+    const posId = poseId ?? currentProject?.id;
+    const revision = workflowIdentity?.revision;
+    return { projId, posId, revision };
+  }, [projectId, poseId, currentProject, workflowIdentity]);
+
   const handleSaveQuote = useCallback(async () => {
     if (!quote) return;
     setIsSaving(true);
     try {
-      // Always keep workflow store for stage completion.
       setQuote(quote);
-
-      const projId = projectId ?? (currentProject as { projectId?: string } | null)?.projectId;
-      const posId = poseId ?? currentProject?.id;
-      const revision = workflowIdentity?.revision;
+      const { projId, posId, revision } = resolveIdentity();
 
       if (!user?.id || !projId || !posId || !revision) {
         toast.success('Quote saved locally — open a saved position revision to persist to server.');
@@ -97,16 +103,54 @@ export const QuoteBuilder: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
+  }, [quote, setQuote, resolveIdentity, user?.id, taxRate, markupPercent]);
+
+  const handleConvertToOrder = useCallback(async () => {
+    if (!quote) return;
+    const { projId, posId, revision } = resolveIdentity();
+    if (!user?.id || !projId || !posId || !revision) {
+      toast.error('Open a saved position revision before converting to an order.');
+      return;
+    }
+
+    setIsConverting(true);
+    try {
+      setQuote(quote);
+      const result = await convertPoseQuoteToOrder({
+        ownerUserId: user.id,
+        projectId: projId,
+        positionId: posId,
+        revision,
+        quote,
+        taxRate: taxRate / 100,
+        markupPercent,
+        customerName: currentProject?.customer,
+        projectTitle: currentProject?.projectCode || currentProject?.orderNumber,
+      });
+
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
+
+      toast.success(
+        result.reused
+          ? `Order already exists for this revision (${result.orderId.slice(0, 8)}…).`
+          : `Order created (${result.orderId.slice(0, 8)}…).`,
+      );
+      navigate(fabricatorRoutes.studioOrders());
+    } finally {
+      setIsConverting(false);
+    }
   }, [
     quote,
-    setQuote,
-    projectId,
-    poseId,
-    currentProject,
-    workflowIdentity,
+    resolveIdentity,
     user?.id,
     taxRate,
     markupPercent,
+    currentProject,
+    setQuote,
+    navigate,
   ]);
 
   const handleExportPDF = useCallback(async () => {
@@ -299,11 +343,24 @@ export const QuoteBuilder: React.FC = () => {
             <Button
               variant="outline"
               onClick={() => void handleSaveQuote()}
-              disabled={isSaving || !quote}
+              disabled={isSaving || isConverting || !quote}
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Save Quote
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => void handleConvertToOrder()}
+              disabled={isConverting || isSaving || !quote}
+              className="border-emerald-600/40 text-emerald-300 hover:bg-emerald-500/10"
+            >
+              {isConverting ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <ShoppingCart className="h-4 w-4 mr-2" />
+              )}
+              Convert to Order
             </Button>
             <Button
               variant="outline"

@@ -1,11 +1,13 @@
 # Fabricator user-workflow upgrade scorecard
 
-Date: 5 October 2026 (Batch 4 start).  
+Date: 5 October 2026 (Batch 4 near-exit).  
 Canonical sequencing: [upgrade plan](FABRICATOR_USER_WORKFLOW_UPGRADE_PLAN_2026-10-05.md).
 
 ## Verdict
 
-**Batch 1 DONE. Batch 2 ~90%. Batch 3 ~70%. Batch 4 started** (UP-15 pose quote persist + UP-16 double-tax fix). Program ≈ **52%**. Not pushed.
+**Batch 4 ~75%.** UP-15 pose quotes live (SQL applied). UP-16 pose quote→order (idempotent, no double tax) + link migration. UP-17 owner Orders vs admin bulk gate. Program ≈ **58%**. Local commits ahead of origin — not pushed.
+
+**Apply next SQL:** `supabase/migrations/20261005_orders_pose_quote_link.sql`
 
 ## Batch rollup
 
@@ -13,29 +15,28 @@ Canonical sequencing: [upgrade plan](FABRICATOR_USER_WORKFLOW_UPGRADE_PLAN_2026-
 |---|---|---|---|
 | **0** Staging baseline | PARTIAL | **45%** | Fixtures open |
 | **1** Truthful readiness | **DONE** | **95%** | |
-| **2** Profiles / inventory | **NEAR EXIT** | **90%** | Soft reservation; materialize owned UUIDs |
-| **3** Customer / pattern / revision | **NEAR EXIT** | **70%** | Save chrome unified |
-| **4** Quote → order | **STARTED** | **25%** | UP-15 table+Save; UP-16 tax fix; UP-17 open |
-| **5** Production / QC / delivery | OPEN | **5%** | |
+| **2** Profiles / inventory | **NEAR EXIT** | **90%** | |
+| **3** Customer / pattern / revision | **NEAR EXIT** | **70%** | |
+| **4** Quote → order | **NEAR EXIT** | **75%** | Apply pose-quote→order link SQL; polish remainders |
+| **5** Production / QC / delivery | OPEN | **5%** | Next after link SQL |
 | **6** Reports / a11y / integrations | OPEN | **10%** | |
 
-## Batch 4 gates (in flight)
+## Batch 4 gates
 
 | Gate | Result |
 |---|---|
-| `fabricator_pose_quotes` migration | **READY** (apply on Supabase) |
-| Pose Commercial Save → upsert by project/pose/revision | **PASS** (code) |
-| Workspace convert no double VAT | **PASS** |
-| Atomic pose quote→order + Orders unify | **OPEN** |
+| Pose quote persist (UP-15) | **PASS** (SQL applied) |
+| Convert to Order from pose Commercial | **PASS** (code) |
+| Idempotent convert / no double VAT | **PASS** |
+| `orders.fabricator_pose_quote_id` unique | **READY** — apply link migration |
+| Owner Orders UX + admin gate | **PASS** |
 
 ## Next
 
-1. Apply `supabase/migrations/20261005_fabricator_pose_quotes.sql`.  
-2. Finish UP-16 pose convert + UP-17 Orders.  
-3. Then Batch 5.
+1. Apply `20261005_orders_pose_quote_link.sql` on Supabase.  
+2. Smoke: Save quote → Convert to Order → Orders list.  
+3. Start Batch 5 (release / QC / delivery).
 
-## Commits (local, unpushed)
+## Local commits (unpushed)
 
-- `c2b6fa0` Batch 2 foundation + Batch 3 handoffs  
-- `3ef4d94` Batch 2 remainders + UP-14 chrome  
-- (this) Batch 4 UP-15/16 start  
+- `c2b6fa0` / `3ef4d94` / `8a40189` + this Batch 4 close slice  

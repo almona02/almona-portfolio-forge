@@ -79,11 +79,26 @@ export const OrderManagement: React.FC = () => {
   }, [loadOrders]);
 
   const handleUpdateStatus = useCallback(async (orderId: string, newStatus: OrderStatus) => {
+    if (!user?.id) return;
+    // UP-17: workshop users may only cancel or submit draft→pending. Payment/delivery are admin-gated.
+    const allowedUserTransitions: Partial<Record<OrderStatus, OrderStatus[]>> = {
+      draft: ['pending', 'cancelled'],
+      pending: ['cancelled'],
+      confirmed: ['cancelled'],
+    };
+    const order = orders.find((o) => o.id === orderId);
+    if (!order) return;
+    const allowed = allowedUserTransitions[order.status] || [];
+    if (!allowed.includes(newStatus)) {
+      toast.error('Only workshop cancel/submit is allowed here. Payment and delivery updates require admin.');
+      return;
+    }
     try {
       const { error } = await supabase
         .from('orders')
         .update({ status: newStatus, updated_at: new Date().toISOString() })
-        .eq('id', orderId);
+        .eq('id', orderId)
+        .eq('user_id', user.id);
       if (error) throw error;
       toast.success(`Order status updated to ${STATUS_CONFIG[newStatus].label}`);
       void loadOrders();
@@ -91,7 +106,7 @@ export const OrderManagement: React.FC = () => {
       toast.error('Failed to update order status');
       console.error(err);
     }
-  }, [loadOrders]);
+  }, [loadOrders, user?.id, orders]);
 
   if (loading) {
     return (
@@ -107,7 +122,21 @@ export const OrderManagement: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KPI label="Total Orders" value={orders.length} />
         <KPI label="Active" value={orders.filter(o => !['delivered', 'cancelled', 'refunded'].includes(o.status)).length} />
-        <KPI label="Revenue" value={formatCurrency(orders.filter(o => o.status !== 'cancelled').reduce((s, o) => s + o.total_amount, 0), 'en', 'EGP')} />
+        <KPI
+          label="Revenue"
+          value={(() => {
+            const byCurrency = new Map<string, number>();
+            for (const o of orders) {
+              if (o.status === 'cancelled') continue;
+              const ccy = o.currency || 'EGP';
+              byCurrency.set(ccy, (byCurrency.get(ccy) || 0) + (o.total_amount || 0));
+            }
+            if (byCurrency.size === 0) return formatCurrency(0, 'en', 'EGP');
+            return Array.from(byCurrency.entries())
+              .map(([ccy, sum]) => formatCurrency(sum, 'en', ccy))
+              .join(' · ');
+          })()}
+        />
         <KPI label="Delivered" value={orders.filter(o => o.status === 'delivered').length} />
       </div>
 
@@ -124,7 +153,9 @@ export const OrderManagement: React.FC = () => {
             <div className="text-center py-12 text-slate-500">
               <Package size={40} className="mx-auto mb-3 opacity-30" />
               <p className="text-sm">No orders yet.</p>
-              <p className="text-xs text-slate-600 mt-1">Convert a quote to an order from the Commercial workspace.</p>
+              <p className="text-xs text-slate-600 mt-1">
+                Convert a priced pose quote from Commercial (Save → Convert to Order).
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -188,36 +219,11 @@ export const OrderManagement: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* Actions */}
+                        {/* Actions — UP-17: workshop-limited transitions only */}
                         <div className="flex gap-2 pt-2">
                           {order.status === 'draft' && (
                             <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white text-xs" onClick={() => void handleUpdateStatus(order.id, 'pending')}>
                               Submit Order
-                            </Button>
-                          )}
-                          {order.status === 'pending' && (
-                            <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white text-xs" onClick={() => void handleUpdateStatus(order.id, 'confirmed')}>
-                              Confirm
-                            </Button>
-                          )}
-                          {order.status === 'confirmed' && (
-                            <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white text-xs" onClick={() => void handleUpdateStatus(order.id, 'paid')}>
-                              Mark Paid
-                            </Button>
-                          )}
-                          {order.status === 'paid' && (
-                            <Button size="sm" className="bg-purple-500 hover:bg-purple-600 text-white text-xs" onClick={() => void handleUpdateStatus(order.id, 'processing')}>
-                              Start Production
-                            </Button>
-                          )}
-                          {order.status === 'processing' && (
-                            <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-white text-xs" onClick={() => void handleUpdateStatus(order.id, 'shipped')}>
-                              Mark Shipped
-                            </Button>
-                          )}
-                          {order.status === 'shipped' && (
-                            <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs" onClick={() => void handleUpdateStatus(order.id, 'delivered')}>
-                              Mark Delivered
                             </Button>
                           )}
                           {!['delivered', 'cancelled', 'refunded'].includes(order.status) && (
@@ -225,6 +231,9 @@ export const OrderManagement: React.FC = () => {
                               Cancel
                             </Button>
                           )}
+                          <p className="text-[10px] text-slate-500 self-center">
+                            Payment / ship / deliver updates are admin-only.
+                          </p>
                         </div>
 
                         {/* Notes */}

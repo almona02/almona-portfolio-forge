@@ -50,7 +50,9 @@ export const fabricatorRoutes = {
   studioProductionQuality: () => `${STUDIO_BASE}/production/quality`,
   /** Production: delivery tracking */
   studioProductionDelivery: () => `${STUDIO_BASE}/production/delivery`,
-  /** Production: orders management */
+  /** User Orders workspace (owner-scoped) */
+  studioOrders: () => `${STUDIO_BASE}/orders`,
+  /** Production: orders management (admin bulk — gated in App) */
   studioProductionOrders: () => `${STUDIO_BASE}/production/orders`,
   /** Data: stock / remnants (InventoryDashboard) */
   studioDataStock: () => `${STUDIO_BASE}/data/stock`,

@@ -94,7 +94,7 @@ const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
 const WorkshopPortal = lazy(() => import("./pages/workshop/WorkshopPortal.tsx").then(m => ({ default: m.WorkshopPortal })));
 const DeliveryTrackingPage = lazy(() => import("./pages/DeliveryTrackingPage.tsx").then(m => ({ default: m.DeliveryTrackingPage })));
-const OrdersPanel = lazy(() => import("./components/admin/panels/OrdersPanel.tsx").then(m => ({ default: m.OrdersPanel })));
+const AdminOrdersGate = lazy(() => import("./pages/fabricator/studio/AdminOrdersGate.tsx"));
 // BentProfileDesignerPage removed — page deleted in consolidation
 const FabricationWorkflowWizard = lazy(() => import("./components/fabricator/FabricationWorkflowWizard.tsx").then(m => ({ default: m.FabricationWorkflowWizard })));
 const ValidationDashboardPage = lazy(() => import("./pages/ValidationDashboardPage.tsx").then(m => ({ default: m.default })));
@@ -480,7 +480,7 @@ const App = memo(() => {
                                       <Route path="workshop" element={<Suspense fallback={getLoadingComponent('Workshop')}><WorkshopPortal /></Suspense>} />
                                       <Route path="quality" element={<Suspense fallback={getLoadingComponent('Quality Control')}><QualityControlWorkflowPage /></Suspense>} />
                                       <Route path="delivery" element={<Suspense fallback={getLoadingComponent('Delivery Tracking')}><DeliveryTrackingPage /></Suspense>} />
-                                      <Route path="orders" element={<Suspense fallback={getLoadingComponent('Orders')}><OrdersPanel /></Suspense>} />
+                                      <Route path="orders" element={<Suspense fallback={getLoadingComponent('Orders')}><AdminOrdersGate /></Suspense>} />
                                     </Route>
 
                                     {/* 5. Data Studio */}
