@@ -153,8 +153,13 @@ describe('FP-025A industrial Studio UI', () => {
     expect(hrefs).toContain(fabricatorRoutes.poseOptimization('p1', 'pose-1'));
     expect(hrefs).toContain(fabricatorRoutes.poseProduction('p1', 'pose-1'));
     expect(hrefs).toContain(fabricatorRoutes.studioDataStock());
-    expect(hrefs).toContain(fabricatorRoutes.studioProductionQuality());
-    expect(hrefs).toContain(fabricatorRoutes.studioProductionDelivery());
+    // Batch 1: QC/Delivery keep project+position context in the query string.
+    expect(hrefs).toContain(
+      `${fabricatorRoutes.studioProductionQuality()}?${new URLSearchParams({ projectId: 'p1', poseId: 'pose-1' })}`,
+    );
+    expect(hrefs).toContain(
+      `${fabricatorRoutes.studioProductionDelivery()}?${new URLSearchParams({ projectId: 'p1', poseId: 'pose-1' })}`,
+    );
     expect(hrefs.every((h) => !h.includes('/fabricator/workflow'))).toBe(true);
     expect(hrefs.every((h) => !h.includes('#'))).toBe(true);
   });

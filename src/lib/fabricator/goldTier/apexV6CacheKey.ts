@@ -39,6 +39,7 @@ export function buildApexV6CacheKey(
     strategyName,
     grid: unit.grid ?? null,
     glazing: unit.glazing ?? null,
+    systemProfileSelections: unit.systemProfileSelections ?? null,
     system: {
       id: system.id,
       version: system.version,
