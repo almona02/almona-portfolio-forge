@@ -94,14 +94,14 @@ Keep adapters centralized. Do not add another global store that owns manufacturi
 
 ## Batch 0 — Staging baseline (PARTIAL — close next)
 
-**Done:** npm/Vitest restored; `npm run test:batch1`; production builds; Railway Redis honesty; git on `main`; release metadata pattern (`batch1-verification.json`).
+**Done:** npm/Vitest restored; `npm run test:batch1`; production builds; Railway Redis honesty; git on `main`; release metadata pattern (`batch1-verification.json`); [Batch 0 baseline doc](BATCH0_STAGING_BASELINE_2026-10-05.md) + seed template.
 
 **Still required:**
 
 1. Designate disposable two-owner accounts/projects (never mutate customer workshop data).
-2. Fixtures: multi-revision poses, Panda/ROCK/UPVC/custom, priced/unpriced profiles, empty + populated stock, accepted quote, released job, QC approval.
+2. Expand [`supabase/seeds/batch0_disposable_fixtures.sql`](../../supabase/seeds/batch0_disposable_fixtures.sql) with real owner UUIDs / multi-revision poses.
 3. Restore points for fixture data.
-4. Record production commit + Railway image digest + feature-flag inventory (no secrets).
+4. Record Railway image digest on next staging deploy.
 
 **Exit:** targeted identity/validation/QC suites run against fixtures; failures classified; route inventory + deploy baseline recorded.
 
