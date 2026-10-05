@@ -206,15 +206,15 @@ Until a real machine protocol exists: labeled **manual production recording** on
 | FUA-09 Double tax on convert | P1 | **Closed** — Batch 4 / UP-16 |
 | FUA-10 Dual Orders / admin | P1 | **Closed** — Batch 4 / UP-17 |
 | FUA-11 Kiosk simulation | P1 | **Closed** — Batch 1 demos + Batch 5 / UP-18 release freeze |
-| FUA-12 Reports NaN / inventory map | P1 | **Reduced** — Batch 2 / UP-09; remainder Batch 6 / UP-21 |
-| FUA-13 Command static READY | P2 | **Reduced** — Batch 1 demos; full UP-21 |
+| FUA-12 Reports NaN / inventory map | P1 | **Closed** — Batch 2 UP-09 + Batch 6 UP-21 (EGP + scoped badges) |
+| FUA-13 Command static READY | P2 | **Closed** — Batch 6 / UP-21 (Available / Not recorded) |
 | FUA-14 Customer / quick-link loss | P1 | **Reduced** — UP-11 customerId retain; full persist open |
 | FUA-15 Pattern never applies | P1 | **Closed** — Batch 3 / UP-12 |
 | FUA-16 Project BOM fallbacks | P1 | **Closed** — Batch 3 / UP-13 (+ UP-06) |
 | FUA-17 Read flag skips persist | P1 | **Partial** — Batch 3 / UP-11 (local retain; always-on server open) |
 | FUA-18 URL persona override | P1 | **Closed** — Batch 1 / UP-04 |
 | FUA-19 Save status contradiction | P2 | **Partial** — Batch 1; complete UP-14 |
-| FUA-20 Recovery / Integrations copy | P2 | **Partial** — Batch 1 nav; UP-22/23 |
+| FUA-20 Recovery / Integrations copy | P2 | **Closed** — Batch 6 / UP-22 search + UP-23 native Open links |
 
 Initial public Fabrication Services findings (calculator / consultation / CTAs): **Closed** — UP-05.
 

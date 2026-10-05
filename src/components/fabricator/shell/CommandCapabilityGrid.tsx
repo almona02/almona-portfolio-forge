@@ -15,6 +15,10 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+/**
+ * UP-21: capability availability only — never claim operational "Ready"
+ * without manufacturing evidence (AICS-001 / FUA-13).
+ */
 type Capability = {
   id: string;
   title: string;
@@ -22,7 +26,8 @@ type Capability = {
   href: string;
   icon: React.ReactNode;
   group: 'fabricator' | 'service';
-  status: 'ready' | 'active' | 'standby';
+  /** Route exists and can be opened — not production readiness. */
+  availability: 'available' | 'in_use' | 'not_recorded';
 };
 
 const CAPABILITIES: Capability[] = [
@@ -33,7 +38,7 @@ const CAPABILITIES: Capability[] = [
     href: fabricatorRoutes.studioProjects(),
     icon: <Ruler size={18} />,
     group: 'fabricator',
-    status: 'ready',
+    availability: 'available',
   },
   {
     id: 'design',
@@ -42,7 +47,7 @@ const CAPABILITIES: Capability[] = [
     href: '/fabricator/studio/design',
     icon: <Paintbrush size={18} />,
     group: 'fabricator',
-    status: 'active',
+    availability: 'in_use',
   },
   {
     id: 'systems',
@@ -51,7 +56,7 @@ const CAPABILITIES: Capability[] = [
     href: fabricatorRoutes.studioData(),
     icon: <Settings2 size={18} />,
     group: 'fabricator',
-    status: 'ready',
+    availability: 'available',
   },
   {
     id: 'stock',
@@ -60,7 +65,7 @@ const CAPABILITIES: Capability[] = [
     href: fabricatorRoutes.studioDataStock(),
     icon: <Package size={18} />,
     group: 'fabricator',
-    status: 'ready',
+    availability: 'available',
   },
   {
     id: 'optimize',
@@ -69,7 +74,7 @@ const CAPABILITIES: Capability[] = [
     href: fabricatorRoutes.studioProjects(),
     icon: <Layers size={18} />,
     group: 'fabricator',
-    status: 'standby',
+    availability: 'not_recorded',
   },
   {
     id: 'bom',
@@ -78,7 +83,7 @@ const CAPABILITIES: Capability[] = [
     href: fabricatorRoutes.studioProjects(),
     icon: <ClipboardList size={18} />,
     group: 'fabricator',
-    status: 'standby',
+    availability: 'not_recorded',
   },
   {
     id: 'production',
@@ -87,7 +92,7 @@ const CAPABILITIES: Capability[] = [
     href: fabricatorRoutes.studioProduction(),
     icon: <Factory size={18} />,
     group: 'fabricator',
-    status: 'ready',
+    availability: 'available',
   },
   {
     id: 'tickets',
@@ -96,7 +101,7 @@ const CAPABILITIES: Capability[] = [
     href: '/support',
     icon: <Ticket size={18} />,
     group: 'service',
-    status: 'ready',
+    availability: 'available',
   },
   {
     id: 'machines',
@@ -105,7 +110,7 @@ const CAPABILITIES: Capability[] = [
     href: '/portal/register-machine',
     icon: <Wrench size={18} />,
     group: 'service',
-    status: 'ready',
+    availability: 'available',
   },
   {
     id: 'shield',
@@ -114,18 +119,18 @@ const CAPABILITIES: Capability[] = [
     href: '/ydt',
     icon: <ShieldCheck size={18} />,
     group: 'service',
-    status: 'standby',
+    availability: 'not_recorded',
   },
 ];
 
-function statusLabel(status: Capability['status']): string {
-  switch (status) {
-    case 'active':
+function availabilityLabel(availability: Capability['availability']): string {
+  switch (availability) {
+    case 'in_use':
       return 'In use';
-    case 'ready':
-      return 'Ready';
+    case 'available':
+      return 'Available';
     default:
-      return 'Standby';
+      return 'Not recorded';
   }
 }
 
@@ -135,6 +140,9 @@ export const CommandCapabilityGrid: React.FC<{ className?: string }> = ({ classN
 
   return (
     <div className={cn('space-y-7', className)} data-testid="command-capability-grid">
+      <p className="text-[11px] text-slate-500">
+        Labels show surface availability only — not shop readiness, stock, or machine connection.
+      </p>
       <CapabilitySection title="Workshop engines" items={fabricator} />
       <CapabilitySection title="Ticketing & support" items={service} />
     </div>
@@ -182,12 +190,12 @@ function CapabilitySection({
             <span
               className={cn(
                 'shrink-0 text-[10px] uppercase tracking-wider font-mono px-1.5 py-0.5 border',
-                item.status === 'active' && 'border-emerald-500/40 text-emerald-400',
-                item.status === 'ready' && 'border-amber-600/40 text-amber-500',
-                item.status === 'standby' && 'border-slate-600 text-slate-500',
+                item.availability === 'in_use' && 'border-emerald-500/40 text-emerald-400',
+                item.availability === 'available' && 'border-amber-600/40 text-amber-500',
+                item.availability === 'not_recorded' && 'border-slate-600 text-slate-500',
               )}
             >
-              {statusLabel(item.status)}
+              {availabilityLabel(item.availability)}
             </span>
           </Link>
         ))}

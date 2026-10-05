@@ -64,6 +64,7 @@ const ProjectsPage: React.FC = () => {
   const [editingProjectKey, setEditingProjectKey] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editClient, setEditClient] = useState('');
+  const [projectSearch, setProjectSearch] = useState('');
 
   const startEditing = useCallback((p: ProjectSummaryItem) => {
     setEditingProjectKey(p.key);
@@ -166,6 +167,18 @@ const ProjectsPage: React.FC = () => {
   }, [useV2, jobs, projectsV2, positionsV2]);
 
   const isLoadingList = useV2 ? (loadingProjectsV2 || loadingPositionsV2) : isLoading;
+
+  const filteredProjectsSummary = useMemo(() => {
+    const q = projectSearch.trim().toLowerCase();
+    if (!q) return projectsSummary;
+    return projectsSummary.filter((p) => {
+      const haystack = [p.orderNumber, p.projectCode, p.customer, p.key]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [projectsSummary, projectSearch]);
 
   const handleDeleteProject = useCallback(async () => {
     if (!projectToDelete) return;
@@ -322,6 +335,15 @@ const ProjectsPage: React.FC = () => {
                 </div>
               </CardHeader>
               <CardContent className="px-8 pb-8 space-y-4 text-sm">
+                {projectsSummary.length > 0 ? (
+                  <Input
+                    value={projectSearch}
+                    onChange={(e) => setProjectSearch(e.target.value)}
+                    placeholder={t('projects.projects_tab.search', 'Search projects, codes, customers…')}
+                    aria-label={t('projects.projects_tab.search', 'Search projects, codes, customers…')}
+                    className="max-w-md bg-[#0a0a0a] border-amber-600/30 text-amber-100"
+                  />
+                ) : null}
                 {projectsSummary.length === 0 && !isLoadingList ? (
                   <div className="py-12 text-center space-y-6">
                     <div className="space-y-3">
@@ -345,9 +367,13 @@ const ProjectsPage: React.FC = () => {
                   <div className="py-8">
                     <div className="h-12 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
                   </div>
+                ) : filteredProjectsSummary.length === 0 ? (
+                  <div className="py-8 text-center text-amber-600/70 text-sm">
+                    {t('projects.projects_tab.no_search_matches', 'No projects match this search.')}
+                  </div>
                 ) : (
                   <div className="divide-y divide-amber-600/30 space-y-1">
-                    {projectsSummary.map((p) => {
+                    {filteredProjectsSummary.map((p) => {
                       const handleProjectClick = () => {
                         if (useV2 && p.projectId) {
                           navigate(fabricatorRoutes.studioProject(p.projectId));

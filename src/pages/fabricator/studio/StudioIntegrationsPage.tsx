@@ -1,39 +1,56 @@
 import { NOT_RECORDED } from '@/lib/fabricator/studioWorkflow';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+type IntegrationRow = {
+  domain: string;
+  record: 'Native' | 'Not recorded';
+  note: string;
+  href?: string;
+};
+
 /**
- * Integration registry UI. Does not implement SAP/Odoo. Native Yilmaz export exists elsewhere.
+ * UP-23 — Honest integration capability registry.
+ * No SAP/Odoo product names until a connector contract exists.
+ * Native rows link to existing Studio surfaces.
  */
 export const StudioIntegrationsPage: React.FC = () => {
   const { t } = useTranslation('fabricator');
 
-  const rows = [
+  const rows: IntegrationRow[] = [
     {
       domain: 'Customer',
       record: 'Native',
       note: t('industrial.erp.customers_native', 'Fabricator customers workspace'),
+      href: fabricatorRoutes.studioData('customers'),
     },
     {
       domain: 'Quote',
       record: 'Native',
-      note: t('industrial.erp.quote_native', 'Pose commercial step'),
+      note: t('industrial.erp.quote_native', 'Pose commercial step — open a project position'),
+      href: fabricatorRoutes.studioProjects(),
     },
     {
       domain: 'Order',
       record: 'Native',
-      note: t('industrial.erp.orders_native', 'Studio orders'),
+      note: t('industrial.erp.orders_native', 'Studio orders (owner-scoped)'),
+      href: fabricatorRoutes.studioOrders(),
     },
     {
       domain: 'Stock',
       record: 'Native',
-      note: t('industrial.erp.stock_native', 'Inventory dashboard'),
+      note: t('industrial.erp.stock_native', 'Owned workshop inventory'),
+      href: fabricatorRoutes.studioDataStock(),
     },
     {
-      domain: 'Production',
+      domain: 'Production export',
       record: 'Native',
-      note: t('industrial.erp.yilmaz', 'Yilmaz CNC / G-code / MDB / CSV'),
+      note: t('industrial.erp.yilmaz', 'Yilmaz CNC / G-code / MDB / CSV from production docs'),
+      href: fabricatorRoutes.studioProduction(),
     },
     {
       domain: 'Invoice',
@@ -44,16 +61,7 @@ export const StudioIntegrationsPage: React.FC = () => {
       domain: 'Service',
       record: 'Native',
       note: t('industrial.erp.tickets', 'Existing ticketing'),
-    },
-    {
-      domain: 'SAP',
-      record: 'External',
-      note: t('industrial.erp.planned', 'Not available / planned'),
-    },
-    {
-      domain: 'Odoo',
-      record: 'External',
-      note: t('industrial.erp.planned', 'Not available / planned'),
+      href: '/support',
     },
   ];
 
@@ -65,7 +73,7 @@ export const StudioIntegrationsPage: React.FC = () => {
       <p className="text-xs text-slate-500 mb-4">
         {t(
           'industrial.erp.disclaimer',
-          'System-of-record labels only. SAP and Odoo are not implemented in this task.',
+          'Capability registry only. Native rows open Studio surfaces that already exist. External ERP connectors are not configured — no SAP/Odoo product is claimed until a connector contract is approved.',
         )}
       </p>
       <table className="w-full text-xs">
@@ -74,6 +82,7 @@ export const StudioIntegrationsPage: React.FC = () => {
             <th className="text-start py-1">Domain</th>
             <th className="text-start py-1">System of record</th>
             <th className="text-start py-1">Notes</th>
+            <th className="text-start py-1">Open</th>
           </tr>
         </thead>
         <tbody>
@@ -86,6 +95,15 @@ export const StudioIntegrationsPage: React.FC = () => {
                 </Badge>
               </td>
               <td className="py-2 text-slate-400">{r.note}</td>
+              <td className="py-2">
+                {r.href ? (
+                  <Button asChild variant="outline" size="sm" className="h-7 text-[10px]">
+                    <Link to={r.href}>Open</Link>
+                  </Button>
+                ) : (
+                  <span className="text-slate-600">—</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

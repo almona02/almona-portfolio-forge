@@ -35,14 +35,26 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
   const [parameters, setParameters] = useState<Record<string, any>>({});
   const [width, setWidth] = useState<number>(1800);
   const [height, setHeight] = useState<number>(1500);
+  const [patternSearch, setPatternSearch] = useState('');
 
   const cognitionEngine = useMemo(() => new UnifiedCognitionEngine(), []);
 
   // Get available patterns (filter by availability)
   const availablePatterns = useMemo(() => {
-    // Return all patterns from the library
     return EGYPTIAN_PATTERNS.filter((p: any) => p.available !== false);
   }, []);
+
+  const filteredPatterns = useMemo(() => {
+    const q = patternSearch.trim().toLowerCase();
+    if (!q) return availablePatterns;
+    return availablePatterns.filter((p: any) => {
+      const haystack = [p.id, p.name, p.category, p.description]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [availablePatterns, patternSearch]);
 
   const handlePatternSelect = (pattern: EgyptianPattern) => {
     setSelectedPattern(pattern);
@@ -83,15 +95,26 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
             {!selectedPattern ? (
               // Pattern selection view
               <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
-                  {availablePatterns.map((pattern: any) => (
-                    <PatternCard
-                      key={pattern.id}
-                      pattern={pattern}
-                      onClick={() => handlePatternSelect(pattern)}
-                    />
-                  ))}
-                </div>
+                <Input
+                  value={patternSearch}
+                  onChange={(e) => setPatternSearch(e.target.value)}
+                  placeholder="Search patterns by name, category…"
+                  aria-label="Search patterns"
+                  className="max-w-md bg-gray-950 border-gray-700 text-gray-100"
+                />
+                {filteredPatterns.length === 0 ? (
+                  <p className="text-sm text-gray-500">No patterns match this search.</p>
+                ) : (
+                  <div className="grid grid-cols-3 gap-4">
+                    {filteredPatterns.map((pattern: any) => (
+                      <PatternCard
+                        key={pattern.id}
+                        pattern={pattern}
+                        onClick={() => handlePatternSelect(pattern)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               // Parameter customization view

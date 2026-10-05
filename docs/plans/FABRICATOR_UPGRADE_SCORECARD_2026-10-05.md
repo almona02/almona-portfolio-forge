@@ -1,11 +1,11 @@
 # Fabricator user-workflow upgrade scorecard
 
-Date: 5 October 2026 (Batch 5 code shipped — apply release + delivery SQLs).  
+Date: 5 October 2026 (Batch 6 code shipped).  
 Canonical sequencing: [upgrade plan](FABRICATOR_USER_WORKFLOW_UPGRADE_PLAN_2026-10-05.md).
 
 ## Verdict
 
-**Batch 5 code EXIT for UP-18/19/20** — QC reload, shop release freeze, delivery server ack. Program ≈ **72%**. Apply two new SQLs before treating Batch 5 as fully closed. Local commits ahead of origin — not pushed.
+**Batch 5 EXIT met** (SQLs applied). **Batch 6 code EXIT** for UP-21/22/23 — Command/Reports honesty, list search, integrations capability. Program ≈ **88%**. Local commits ahead of origin — not pushed.
 
 ## Batch rollup
 
@@ -15,23 +15,23 @@ Canonical sequencing: [upgrade plan](FABRICATOR_USER_WORKFLOW_UPGRADE_PLAN_2026-
 | **1** Truthful readiness | **DONE** | **95%** | |
 | **2** Profiles / inventory | **NEAR EXIT** | **90%** | |
 | **3** Customer / pattern / revision | **NEAR EXIT** | **70%** | |
-| **4** Quote → order | **DONE** | **90%** | Pose quotes + convert + Orders gate; SQLs applied |
-| **5** Production / QC / delivery | **CODE DONE** | **85%** | SQLs pending apply: releases + delivery acks |
-| **6** Reports / a11y / integrations | OPEN | **10%** | |
+| **4** Quote → order | **DONE** | **90%** | |
+| **5** Production / QC / delivery | **DONE** | **95%** | SQLs applied |
+| **6** Reports / a11y / integrations | **CODE DONE** | **85%** | Search + honesty; deep RTL/dialog audit still thin |
 
-## Batch 5 evidence
+## Batch 6 evidence
 
 | Gate | Result |
 |---|---|
-| UP-19 QC reload (`getLatestQualityApproval`) | **PASS** (code) — no clear-on-entry |
-| UP-18 `fabricator_position_releases` | **PENDING APPLY** |
-| UP-20 `fabricator_delivery_acknowledgements` + RPC | **PENDING APPLY** |
-| Production → release freeze → QC query params | **PASS** (code) |
-| Delivery operational path (QR = `ALMONA_{pose}_R{rev}`) | **PASS** (code) |
-| Demo delivery still cannot complete ops | **PASS** (test) |
+| UP-21 Command: Available ≠ Ready | **PASS** |
+| UP-21 Material alerts from owned inventory | **PASS** |
+| UP-21 Reports: EGP currency + scoped source badges | **PASS** |
+| UP-22 Search on Projects / Orders / Patterns | **PASS** |
+| UP-22 Job board recovery CTAs → studio routes | **PASS** |
+| UP-23 Integrations: no SAP/Odoo; Native Open links | **PASS** |
 
 ## Next
 
-1. Apply `20261005_fabricator_position_releases.sql` then `20261005_fabricator_delivery_acks.sql`.  
-2. Batch 6 — reports / a11y / integrations.  
-3. Batch 0 fixtures when operators available.
+1. Batch 0 fixtures when operators available.  
+2. Optional: deeper RTL/dialog keyboard audit (UP-22 remainder).  
+3. Push when ready.

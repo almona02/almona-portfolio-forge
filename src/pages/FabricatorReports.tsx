@@ -8,6 +8,7 @@ import { WorkshopPerformanceAnalytics } from '@/lib/analytics/WorkshopPerformanc
 import { userQueries } from '@/lib/database/optimizedQueries';
 import { loadOwnedWorkshopInventory } from '@/lib/fabricator/inventory/ProfileInventoryAdapter';
 import { profileInventoryValue } from '@/lib/fabricator/inventory/profileInventoryMapper';
+import { formatCurrency } from '@/lib/i18n/formatters';
 import { pricingAnalyticsService } from '@/lib/pricing/PricingAnalyticsService';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -112,7 +113,8 @@ export const FabricatorReports: React.FC = () => {
       lowStock,
       outOfStock,
       tuned,
-      totalValue: Number.isFinite(totalValue) ? totalValue.toFixed(2) : '0.00',
+      totalValue: Number.isFinite(totalValue) ? totalValue : 0,
+      hasCost: inventory.some((p) => profileInventoryValue(p) > 0),
     };
   }, [inventory]);
 
@@ -124,14 +126,17 @@ export const FabricatorReports: React.FC = () => {
         won: 0,
         lost: 0,
         draft: 0,
-        totalAmount: '0.00',
+        totalAmount: 0,
+        currency: 'EGP',
+        currencies: [] as string[],
+        byCurrency: new Map<string, number>(),
       };
     }
 
     let won = 0;
     let lost = 0;
     let draft = 0;
-    let amount = 0;
+    const byCurrency = new Map<string, number>();
 
     for (const q of quotes) {
       const status = (q.status || '').toLowerCase();
@@ -139,15 +144,25 @@ export const FabricatorReports: React.FC = () => {
       else if (status === 'lost' || status === 'rejected') lost += 1;
       else draft += 1;
 
-      amount += Number(q.total_amount || 0);
+      const amount = Number(q.total_amount || 0);
+      if (!Number.isFinite(amount)) continue;
+      const ccy = String(q.currency || 'EGP');
+      byCurrency.set(ccy, (byCurrency.get(ccy) || 0) + amount);
     }
+
+    const currencies = Array.from(byCurrency.keys());
+    const primaryCurrency = currencies[0] || 'EGP';
+    const totalAmount = byCurrency.get(primaryCurrency) || 0;
 
     return {
       total: quotes.length,
       won,
       lost,
       draft,
-      totalAmount: amount.toFixed(2),
+      totalAmount,
+      currency: primaryCurrency,
+      currencies,
+      byCurrency,
     };
   }, [profileWithQuotes]);
 
@@ -234,11 +249,19 @@ export const FabricatorReports: React.FC = () => {
                 </Badge>
               </div>
               <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span>Status:</span>
-                <span className="flex items-center gap-2 text-emerald-300">
-                  <span className="w-2 h-2 rounded-full animate-pulse status-valid" />
-                  Live data
-                </span>
+                <span>Sources:</span>
+                <Badge
+                  variant="outline"
+                  className="bg-slate-800/60 text-slate-200 border-slate-600"
+                >
+                  Inventory · owned
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="bg-slate-800/60 text-amber-200/80 border-amber-700/40"
+                >
+                  OEE · sample
+                </Badge>
               </div>
             </div>
           </div>
@@ -267,11 +290,13 @@ export const FabricatorReports: React.FC = () => {
             <div className="bg-slate-900/70 rounded-lg p-4 border border-slate-700/60">
               <div className="text-xs text-slate-400 mb-1">Total Inventory Value</div>
               <div className="text-2xl font-semibold text-green-300">
-                ${materialStats.totalValue}
+                {materialStats.hasCost
+                  ? formatCurrency(materialStats.totalValue, 'en', 'EGP')
+                  : 'Not configured'}
               </div>
             </div>
             <div className="bg-slate-900/70 rounded-lg p-4 border border-slate-700/60 hidden lg:block">
-              <div className="text-xs text-slate-400 mb-1">OEE (Mock Summary)</div>
+              <div className="text-xs text-slate-400 mb-1">OEE (Sample — not live)</div>
               <div className="text-2xl font-semibold text-amber-300">
                 {oeeSummary.oee.toFixed(1)}%
               </div>
@@ -621,7 +646,13 @@ export const FabricatorReports: React.FC = () => {
                       <div className="flex justify-between items-center">
                         <span className="text-[11px] text-slate-400">Total Quoted Amount</span>
                         <span className="text-sm font-semibold text-green-300">
-                          ${quoteStats.totalAmount}
+                          {quoteStats.total === 0
+                            ? 'Not recorded'
+                            : quoteStats.currencies.length > 1
+                              ? Array.from(quoteStats.byCurrency.entries())
+                                  .map(([ccy, sum]) => formatCurrency(sum, 'en', ccy))
+                                  .join(' · ')
+                              : formatCurrency(quoteStats.totalAmount, 'en', quoteStats.currency)}
                         </span>
                       </div>
                     </div>

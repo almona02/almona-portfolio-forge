@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Input } from '@/shared/ui/ui/input';
 import { formatCurrency } from '@/lib/i18n/formatters';
 import {
   CheckCircle2,
@@ -15,7 +16,7 @@ import {
   Truck,
   XCircle,
 } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 interface OrderRow {
@@ -55,6 +56,7 @@ export const OrderManagement: React.FC = () => {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [orderSearch, setOrderSearch] = useState('');
 
   const loadOrders = useCallback(async () => {
     if (!user?.id) return;
@@ -108,6 +110,24 @@ export const OrderManagement: React.FC = () => {
     }
   }, [loadOrders, user?.id, orders]);
 
+  const filteredOrders = useMemo(() => {
+    const q = orderSearch.trim().toLowerCase();
+    if (!q) return orders;
+    return orders.filter((o) => {
+      const haystack = [
+        o.id,
+        o.status,
+        o.currency,
+        o.quote_id,
+        String(o.total_amount ?? ''),
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [orders, orderSearch]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -142,11 +162,21 @@ export const OrderManagement: React.FC = () => {
 
       {/* Orders List */}
       <Card className="bg-slate-900/40 border-amber-600/20">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 space-y-3">
           <CardTitle className="text-sm text-amber-200 flex items-center gap-2">
             <Package size={16} />
-            Orders ({orders.length})
+            Orders ({filteredOrders.length}
+            {orderSearch.trim() ? ` of ${orders.length}` : ''})
           </CardTitle>
+          {orders.length > 0 ? (
+            <Input
+              value={orderSearch}
+              onChange={(e) => setOrderSearch(e.target.value)}
+              placeholder="Search orders by id, status, currency…"
+              aria-label="Search orders"
+              className="max-w-md bg-slate-950 border-amber-600/30 text-amber-100"
+            />
+          ) : null}
         </CardHeader>
         <CardContent>
           {orders.length === 0 ? (
@@ -157,9 +187,11 @@ export const OrderManagement: React.FC = () => {
                 Convert a priced pose quote from Commercial (Save → Convert to Order).
               </p>
             </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="text-center py-8 text-slate-500 text-sm">No orders match this search.</div>
           ) : (
             <div className="space-y-3">
-              {orders.map((order) => {
+              {filteredOrders.map((order) => {
                 const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.draft;
                 const isExpanded = selectedOrder === order.id;
 

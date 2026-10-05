@@ -4,6 +4,7 @@ import { useJobsStore } from '@/store/jobsStore';
 import { JobColumn } from './JobColumn';
 import { Link } from 'react-router-dom';
 import { Button } from '@/shared/ui/ui/button';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 
 const workflowSteps = [
   { id: 'measuring', name: 'Measuring', icon: Ruler },
@@ -53,12 +54,12 @@ export const JobBoardView: React.FC = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-            <Link to="/fabricator-workflow">
+            <Link to={fabricatorRoutes.newProjectWizard()}>
               <Button size="sm" className="btn-primary">
                 Add first project
               </Button>
             </Link>
-            <Link to="/fabricator/customers">
+            <Link to={fabricatorRoutes.studioData('customers')}>
               <Button
                 size="sm"
                 variant="outline"
