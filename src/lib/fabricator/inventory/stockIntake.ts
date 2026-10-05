@@ -57,15 +57,26 @@ export async function recordStockIntakeThenSync(
   const db = supabase as any;
   const { error } = await db.from('stock_movements').insert(rows);
   if (error) {
-    // Unique violation on (user_id, idempotency_key) → treat as already recorded.
-    if (String(error.code) === '23505' || /idempotency/i.test(error.message || '')) {
-      await syncStockFromMovements(userId);
-      return { ok: true, movementCount: rows.length };
+    if (String(error.code) === '23505' && rows.every(row => row.idempotency_key)) {
+      const { data: recorded, error: readError } = await db.from('stock_movements')
+        .select('profile_id,movement_type,quantity,unit,notes,idempotency_key')
+        .eq('user_id', userId).in('idempotency_key', rows.map(row => row.idempotency_key));
+      if (readError || !recorded || recorded.length !== rows.length || !rows.every(row => recorded.some((saved: Record<string, unknown>) =>
+        saved.idempotency_key === row.idempotency_key && saved.profile_id === row.profile_id &&
+        saved.movement_type === row.movement_type && Number(saved.quantity) === row.quantity &&
+        saved.unit === row.unit && saved.notes === row.notes))) {
+        return { ok: false, error: 'Stock retry does not match the persisted intake request.' };
+      }
+    } else {
+      return { ok: false, error: error.message || 'Failed to insert stock movements.' };
     }
-    return { ok: false, error: error.message || 'Failed to insert stock movements.' };
   }
 
-  await syncStockFromMovements(userId);
+  try {
+    await syncStockFromMovements(userId);
+  } catch (err) {
+    return { ok: false, error: `Intake reconciliation failed: ${err instanceof Error ? err.message : 'unknown error'}. Retry the same request.` };
+  }
   return { ok: true, movementCount: rows.length };
 }
 

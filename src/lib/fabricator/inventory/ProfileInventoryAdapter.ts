@@ -53,9 +53,10 @@ export async function loadOwnedWorkshopInventory(
 
   if (syncFromMovements) {
     try {
-      await db.rpc('sync_stock_from_movements', { p_user_id: userId });
+      const { error } = await db.rpc('sync_stock_from_movements', { p_user_id: userId });
+      if (error) throw new Error(error.message || 'Stock reconciliation failed.');
     } catch (err) {
-      console.warn('[ProfileInventoryAdapter] sync_stock_from_movements failed:', err);
+      return { ok: false, error: err instanceof Error ? err.message : 'Stock reconciliation failed.', profiles: [], totalValue: 0 };
     }
   }
 

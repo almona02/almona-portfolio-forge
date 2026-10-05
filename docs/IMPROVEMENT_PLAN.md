@@ -2,8 +2,8 @@
 
 > **Goal**: Transform the fragmented pose-centric workflow into an unbroken pipeline from design to production, aligned with the Logikal gold standard.
 
-**Based on**: [GAP_ANALYSIS_VERIFICATION_REPORT.md](./GAP_ANALYSIS_VERIFICATION_REPORT.md)  
-**Deferred work**: [DEFERRED_WORK.md](./DEFERRED_WORK.md)  
+**Based on**: [GAP_ANALYSIS_VERIFICATION_REPORT.md](GAP_ANALYSIS_VERIFICATION_REPORT.md)
+**Deferred work**: [DEFERRED_WORK.md](DEFERRED_WORK.md)
 **Target flow**: Measuring → Design → BOM → Optimization → Quote → Production Documents
 
 ---

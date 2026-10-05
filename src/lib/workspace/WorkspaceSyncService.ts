@@ -22,7 +22,7 @@ export class WorkspaceSyncService {
   private maxRecoveryAttempts = 3;
   private lastSaveTimestamp: string | null = null;
 
-  constructor(storageKey: string = 'fabricator-workspace-v1') {
+  constructor(storageKey: string = 'fabricator-workspace-v1', private readonly expectedOwnerId?: string) {
     this.storageKey = storageKey;
   }
 
@@ -190,7 +190,7 @@ export class WorkspaceSyncService {
           error: authError,
         } = await supabase.auth.getUser();
 
-        if (authError || !user) {
+        if (authError || !user || (this.expectedOwnerId && user.id !== this.expectedOwnerId)) {
           return { success: false, usedFallback: false };
         }
 
@@ -231,6 +231,10 @@ export class WorkspaceSyncService {
         data: { user },
         error: authError,
       } = await supabase.auth.getUser();
+
+      if (this.expectedOwnerId && user?.id !== this.expectedOwnerId) {
+        return { success: false, usedFallback: false };
+      }
 
       if (authError || !user) {
         // No authenticated user - use localStorage only (with compression)
@@ -313,6 +317,10 @@ export class WorkspaceSyncService {
         data: { user },
         error: authError,
       } = await supabase.auth.getUser();
+
+      if (this.expectedOwnerId && user?.id !== this.expectedOwnerId) {
+        return { data: null, source: 'none' };
+      }
 
       if (!authError && user) {
         // Try Supabase first

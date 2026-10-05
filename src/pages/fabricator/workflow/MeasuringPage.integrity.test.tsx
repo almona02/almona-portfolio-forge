@@ -26,6 +26,10 @@ const pose = {
 } as unknown as WindowUnit;
 
 describe('Measuring pose integrity', () => {
+  it('preserves saved glazing when a partial measurement update omits glazing', () => {
+    const result = unitFromMeasurement(pose, { width: '1210', height: '1550' } as MeasurementData, 'project-1', pose.id, '7');
+    expect(result.glazing).toEqual(pose.glazing);
+  });
   it('renders the authoritative per-pose grid and dimensions', () => {
     const { container } = render(
       <PoseLayoutPreview poses={[pose]} activeId={pose.id} compact />,

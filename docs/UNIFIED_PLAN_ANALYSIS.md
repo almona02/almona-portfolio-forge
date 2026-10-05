@@ -336,7 +336,7 @@ This document provides a comprehensive analysis comparing four major strategic p
 - 🚀 **YDT as Standalone Product** - "Bloomberg Terminal for Aluminum Fabrication"
 - 🚀 **IP Protection** - Encrypt and watermark market intelligence
 
-**See:** [`docs/YDT_AS_CORE_INTELLIGENCE_STRATEGY.md`](./YDT_AS_CORE_INTELLIGENCE_STRATEGY.md) for complete transformation plan.
+**See:** [`docs/YDT_AS_CORE_INTELLIGENCE_STRATEGY.md`](YDT_AS_CORE_INTELLIGENCE_STRATEGY.md) for complete transformation plan.
 
 **Key Achievements:**
 - ✅ Comprehensive knowledge base established (164 chapters, 878 components, 281 parts)
@@ -492,7 +492,7 @@ This document provides a comprehensive analysis comparing four major strategic p
 
 **Competitive Advantage:** 🚀 **YDT Market Intelligence** - This is the nuclear weapon. Protect it, enhance it, build everything around it.
 
-**See:** [`docs/YDT_AS_CORE_INTELLIGENCE_STRATEGY.md`](./YDT_AS_CORE_INTELLIGENCE_STRATEGY.md) for complete transformation roadmap.
+**See:** [`docs/YDT_AS_CORE_INTELLIGENCE_STRATEGY.md`](YDT_AS_CORE_INTELLIGENCE_STRATEGY.md) for complete transformation roadmap.
 
 ---
 

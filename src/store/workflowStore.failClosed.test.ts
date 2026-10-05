@@ -4,7 +4,7 @@ import { canCompleteWorkflowStep, revalidateCompletedSteps, useWorkflowStore } f
 
 const profile = { id: 'profile-1' } as Profile;
 const project = { id: 'position-1', components: [{ id: 'component-1', profile, quantity: 1, cuttingLengths: [1000] }] } as WindowUnit;
-const result = { materialUsage: 1, wastePercentage: 0, estimatedProductionTime: 1, nestingEfficiency: 100, cuttingPlan: [{ profile, stockLength: 6000, totalWaste: 0, utilization: 100, cuts: [{ length: 1000, angle: 90, componentId: 'component-1', waste: 0 }] }], costBreakdown: { materialCost: 1, laborCost: 0, hardwareCost: 0, glazingCost: 0, totalCost: 1 } } satisfies OptimizationResult;
+const result = { materialUsage: 1, wastePercentage: 5000 / 6000 * 100, estimatedProductionTime: 1, nestingEfficiency: 1000 / 6000 * 100, cuttingPlan: [{ profile, stockLength: 6000, totalWaste: 5000, utilization: 1000 / 6000 * 100, cuts: [{ length: 1000, angle: 90, componentId: 'component-1', waste: 0 }] }], costBreakdown: { materialCost: 1, laborCost: 0, hardwareCost: 0, glazingCost: 0, totalCost: 1 } } satisfies OptimizationResult;
 
 describe('workflow completion guards', () => {
   beforeEach(() => useWorkflowStore.getState().clearWorkflow());

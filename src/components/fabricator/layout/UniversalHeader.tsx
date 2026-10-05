@@ -57,12 +57,12 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
   
   return (
     <header className={cn(
-      'flex items-center justify-between w-full h-16 px-4 border-b',
+      'flex flex-wrap items-center justify-between gap-2 w-full min-h-16 px-3 py-2 sm:px-4 border-b',
       'bg-gray-900/80 border-amber-600/30 backdrop-blur-sm',
       className
     )}>
       {/* Left: Breadcrumbs */}
-      <div className="flex items-center space-x-2">
+      <div className="hidden sm:flex min-w-0 items-center space-x-2">
         <nav className="flex items-center space-x-2 text-sm" aria-label="Breadcrumb">
           {breadcrumbs.map((crumb, index) => (
             <React.Fragment key={index}>
@@ -94,8 +94,8 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
       </div>
       
       {/* Center: Title with status */}
-      <div className="flex items-center justify-center flex-1">
-        <div className="flex items-center space-x-3">
+      <div className="flex min-w-0 items-center sm:justify-center flex-1">
+        <div className="flex min-w-0 items-center space-x-3">
           <h1 className="text-lg font-semibold text-gray-100 truncate max-w-md">{title}</h1>
           <div className="flex items-center space-x-2">
             {getStatusIcon()}
@@ -115,7 +115,7 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
       </div>
       
       {/* Right: Actions */}
-      <div className="flex items-center space-x-4">
+      <div className="flex shrink-0 items-center space-x-2 sm:space-x-4">
         {/* Cost Calculator */}
         {showCostCalculator && (
           <div className="flex items-center space-x-2">

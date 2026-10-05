@@ -236,4 +236,4 @@ All Phase 0–4 items from the Improvement Plan are resolved. No remaining P4 ga
 
 ## Deferred Work
 
-Recommended next steps and development work are documented in [DEFERRED_WORK.md](./DEFERRED_WORK.md). All dev work deferred.
+Recommended next steps and development work are documented in [DEFERRED_WORK.md](DEFERRED_WORK.md). All dev work deferred.

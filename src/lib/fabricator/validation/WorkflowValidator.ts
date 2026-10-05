@@ -10,12 +10,14 @@
 
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
+import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physicalCutContract';
 import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fabricator';
 
 export type WorkflowStep =
   | 'measuring'
   | 'design'
   | 'preview3d'
+  | 'bom'
   | 'optimization'
   | 'commercial'
   | 'inventory'
@@ -87,16 +89,31 @@ export function validateOptimizationResult(result: OptimizationResult | null): W
   if (metrics.some(value => typeof value !== 'number' || !finiteNonNegative(value))) {
     errors.push({ type: 'error', code: 'NON_FINITE_OPTIMIZATION', message: 'Optimization contains invalid manufacturing values.', step: 'optimization' });
   }
+  if ([result.wastePercentage, result.nestingEfficiency].some(value => value > 100)) {
+    errors.push({ type: 'error', code: 'INVALID_OPTIMIZATION_PERCENTAGE', message: 'Optimization percentages must be between zero and 100.', step: 'optimization' });
+  }
   if (!result.cuttingPlan?.length) {
     errors.push({ type: 'error', code: 'EMPTY_CUTTING_PLAN', message: 'Optimization produced no cutting plan.', step: 'optimization' });
   } else {
     result.cuttingPlan.forEach((plan, index) => {
+      const consumed = (plan.cuts || []).reduce((sum, cut) => sum + cut.length, 0);
+      if (finitePositive(plan.stockLength) && (Math.abs(plan.stockLength - consumed - plan.totalWaste) > 0.001 || Math.abs(plan.utilization - consumed / plan.stockLength * 100) > 0.011)) {
+        errors.push({ type: 'error', code: 'STOCK_LEDGER_MISMATCH', message: `Cutting plan ${index + 1} waste and utilization do not reconcile to its stock bar.`, step: 'optimization' });
+      }
+      if (plan.utilization > 100 || (plan.cuts || []).reduce((sum, cut) => sum + cut.length, 0) > plan.stockLength + 0.001 || plan.totalWaste > plan.stockLength) {
+        errors.push({ type: 'error', code: 'STOCK_CAPACITY_EXCEEDED', message: `Cutting plan ${index + 1} exceeds its physical stock capacity.`, step: 'optimization' });
+      }
       if (!plan.profile?.id || !finitePositive(plan.stockLength) || !finiteNonNegative(plan.totalWaste) || !finiteNonNegative(plan.utilization) || !plan.cuts?.length) {
         errors.push({ type: 'error', code: 'INVALID_CUTTING_PLAN', message: `Cutting plan ${index + 1} is incomplete.`, step: 'optimization' });
       } else if (plan.cuts.some(cut => !finitePositive(cut.length) || !Number.isFinite(cut.angle) || !finiteNonNegative(cut.waste) || !cut.componentId)) {
         errors.push({ type: 'error', code: 'INVALID_CUT', message: `Cutting plan ${index + 1} contains an invalid cut.`, step: 'optimization' });
       }
     });
+    const stockTotal = result.cuttingPlan.reduce((sum, plan) => sum + plan.stockLength, 0);
+    const wasteTotal = result.cuttingPlan.reduce((sum, plan) => sum + plan.totalWaste, 0);
+    if (finitePositive(stockTotal) && (Math.abs(result.wastePercentage - wasteTotal / stockTotal * 100) > 0.011 || Math.abs(result.nestingEfficiency - (100 - wasteTotal / stockTotal * 100)) > 0.011)) {
+      errors.push({ type: 'error', code: 'OPTIMIZATION_METRIC_MISMATCH', message: 'Optimization percentages do not reconcile to the physical stock ledger.', step: 'optimization' });
+    }
   }
   return { valid: errors.length === 0, errors, warnings: [] };
 }
@@ -108,12 +125,15 @@ export function validateOptimizationReconciliation(
   const base = validateOptimizationResult(result);
   const input = validateOptimizationInputs(project);
   const errors = [...base.errors, ...input.errors];
-  if (!result || !project || errors.length > 0) return { valid: false, errors, warnings: [] };
+  if (!result || !project || input.errors.length > 0 || base.errors.some(error => ['MISSING_OPTIMIZATION', 'EMPTY_CUTTING_PLAN', 'INVALID_CUTTING_PLAN', 'INVALID_CUT'].includes(error.code))) {
+    return { valid: false, errors, warnings: [] };
+  }
 
   const expected = new Map(
     project.components.map(component => [
       component.id,
-      { count: component.cuttingLengths.length, profileId: component.profile.id },
+      { count: component.cuttingLengths.length, profileId: component.profile.id,
+        cuts: component.cuttingLengths.map((_, index) => physicalCutForOccurrence(component, index, component.profile, project.systemPackId)), used: new Set<number>() },
     ]),
   );
   const actualCounts = new Map<string, number>();
@@ -130,6 +150,13 @@ export function validateOptimizationReconciliation(
         errors.push({ type: 'error', code: 'OPTIMIZED_PROFILE_MISMATCH', message: `Cut ${planIndex + 1}.${cutIndex + 1} uses the wrong profile.`, step: 'optimization' });
       }
       actualCounts.set(cut.componentId, (actualCounts.get(cut.componentId) ?? 0) + 1);
+      const occurrence = cut.occurrenceIndex ?? component.cuts.findIndex((expectedCut, index) =>
+        !component.used.has(index) && Math.abs(expectedCut.length - cut.length) <= 0.001 && expectedCut.angle === cut.angle);
+      const expectedCut = component.cuts[occurrence];
+      if (!expectedCut || !Number.isFinite(expectedCut.length) || Math.abs(expectedCut.length - cut.length) > 0.001 || expectedCut.angle !== cut.angle || component.used.has(occurrence)) {
+        errors.push({ type: 'error', code: 'OPTIMIZED_CUT_GEOMETRY_MISMATCH', message: `Cut ${planIndex + 1}.${cutIndex + 1} does not match its manufacturing length and angle.`, step: 'optimization' });
+      }
+      component.used.add(occurrence);
       if (cut.occurrenceIndex !== undefined) {
         if (!Number.isInteger(cut.occurrenceIndex) || cut.occurrenceIndex < 0 || cut.occurrenceIndex >= component.count) {
           errors.push({ type: 'error', code: 'INVALID_CUT_OCCURRENCE', message: `Cut ${planIndex + 1}.${cutIndex + 1} has an invalid occurrence index.`, step: 'optimization' });

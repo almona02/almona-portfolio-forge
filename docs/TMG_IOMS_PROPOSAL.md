@@ -99,7 +99,7 @@ SAP is the **System of Record for Finance**. It is not designed to be the **Syst
 
 **Relationship**: TMG Shield provides the governance guarantees. TMG IOMS delivers the business value. Together, they create an institutional-grade operational platform.
 
-**Reference**: See [TMG Shield vs TMG IOMS Bridge](./TMG_SHIELD_VS_IOMS_BRIDGE.md) for detailed technical relationship.
+**Reference**: See [TMG Shield vs TMG IOMS Bridge](TMG_SHIELD_VS_IOMS_BRIDGE.md) for detailed technical relationship.
 
 ### 2.2 What IOMS Is (And What It Is Not)
 
@@ -684,14 +684,14 @@ IOMS is not software. It is an **institutional governance platform** built on co
 
 ### Appendix A: Constitutional Principles Reference
 
-- [AICS-001 Specification](./AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md)
-- [RealityOS Constitution](../REALITYOS_CONSTITUTION.md)
-- [RealityOS Platform Architecture](./REALITYOS_PLATFORM_ARCHITECTURE.md)
+- [AICS-001 Specification](AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md)
+- [RealityOS Constitution](architecture/REALITYOS_CONSTITUTION.md)
+- [RealityOS Platform Architecture](REALITYOS_PLATFORM_ARCHITECTURE.md)
 
 ### Appendix B: Technical Architecture
 
-- [Implementation Structure](./IMPLEMENTATION_STRUCTURE.md)
-- [RealityOS Phase 6 Preparation](./REALITYOS_PHASE6_TMG_SHIELD_PREPARATION.md)
+- [Implementation Structure](IMPLEMENTATION_STRUCTURE.md)
+- [RealityOS Phase 6 Preparation](REALITYOS_PHASE6_TMG_SHIELD_PREPARATION.md)
 
 ### Appendix C: Validation Evidence
 

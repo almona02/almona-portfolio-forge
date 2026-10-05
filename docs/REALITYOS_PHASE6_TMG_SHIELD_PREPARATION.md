@@ -351,9 +351,9 @@ All TMG rules must:
 
 ## References
 
-- [Phase 5 Completion Report](./REALITYOS_PHASE5_COMPLETE.md)
-- [Almona Vertical Implementation](../vertical_almona/)
-- [RealityOS Constitution](../REALITYOS_CONSTITUTION.md)
+- [Phase 5 Completion Report](REALITYOS_PHASE5_COMPLETE.md)
+- [Almona Vertical Implementation](../vertical_almona)
+- [RealityOS Constitution](architecture/REALITYOS_CONSTITUTION.md)
 - [Vertical Plugin Development Guide](./REALITYOS_VERTICAL_DEVELOPMENT_GUIDE.md) (to be created)
 
 ---

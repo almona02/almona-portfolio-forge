@@ -10,7 +10,7 @@
 
 Phase 0–4 complete. Core pipeline wired: Measuring → Design → BOM → Optimization → Commercial → Production.
 
-See [GAP_ANALYSIS_VERIFICATION_REPORT.md](./GAP_ANALYSIS_VERIFICATION_REPORT.md) for verification details.
+See [GAP_ANALYSIS_VERIFICATION_REPORT.md](GAP_ANALYSIS_VERIFICATION_REPORT.md) for verification details.
 
 ---
 
@@ -61,5 +61,5 @@ See [GAP_ANALYSIS_VERIFICATION_REPORT.md](./GAP_ANALYSIS_VERIFICATION_REPORT.md)
 
 ## References
 
-- [GAP_ANALYSIS_VERIFICATION_REPORT.md](./GAP_ANALYSIS_VERIFICATION_REPORT.md) — Verification status
-- [IMPROVEMENT_PLAN.md](./IMPROVEMENT_PLAN.md) — Original phase plan
+- [GAP_ANALYSIS_VERIFICATION_REPORT.md](GAP_ANALYSIS_VERIFICATION_REPORT.md) — Verification status
+- [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md) — Original phase plan

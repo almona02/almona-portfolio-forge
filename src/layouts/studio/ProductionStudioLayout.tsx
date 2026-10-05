@@ -1,7 +1,20 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useSearchParams } from 'react-router-dom';
+import { useAuthoritativePosition } from '@/hooks/useFabricatorQueries';
+
+const PositionProductionOutlet: React.FC<{ projectId: string; poseId: string }> = ({ projectId, poseId }) => {
+  const position = useAuthoritativePosition(projectId, poseId);
+  if (position.isError || (!position.isLoading && !position.data)) {
+    return <div role="alert">The requested position could not be loaded for this account.</div>;
+  }
+  if (!position.isHydrated) return <div role="status">Loading saved position revision…</div>;
+  return <Outlet />;
+};
 
 const ProductionStudioLayout: React.FC = () => {
+  const [search] = useSearchParams();
+  const projectId = search.get('projectId');
+  const poseId = search.get('poseId');
   return (
     <div className="p-4 h-full w-full bg-[#080808]"> 
       {/* Darker background for high contrast on shop floor */}
@@ -15,7 +28,7 @@ const ProductionStudioLayout: React.FC = () => {
            <span className="text-xs text-slate-400" title="Machine telemetry is not connected">Saw: Not recorded</span>
         </div>
       </div>
-      <Outlet />
+      {projectId && poseId ? <PositionProductionOutlet key={`${projectId}:${poseId}`} projectId={projectId} poseId={poseId} /> : projectId || poseId ? <div role="alert">Both project and position are required to open this production workflow.</div> : <Outlet />}
     </div>
   );
 };

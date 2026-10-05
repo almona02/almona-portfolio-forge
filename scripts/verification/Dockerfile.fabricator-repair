@@ -1,0 +1,22 @@
+# Local verification only. Reuse the previously verified Industrial dependency
+# image while resolving every requirement against the current production file.
+# Railway continues to use python_backend/Dockerfile.realistic.
+ARG VERIFIED_INDUSTRIAL_BASE
+FROM ${VERIFIED_INDUSTRIAL_BASE}
+USER root
+WORKDIR /app
+COPY python_backend/requirements-prod.txt requirements-prod.txt
+RUN python -m pip install --no-cache-dir -r requirements-prod.txt && python -m pip check
+COPY python_backend/apis/ apis/
+COPY python_backend/core/ core/
+COPY python_backend/services/ services/
+COPY python_backend/models/ models/
+COPY python_backend/ai_services/ ai_services/
+COPY python_backend/tasks/ tasks/
+COPY python_backend/middleware/ middleware/
+COPY python_backend/celery_app.py celery_app.py
+COPY python_backend/templates/ templates/
+COPY src/lib/ticketing/sla_policy.json /src/lib/ticketing/sla_policy.json
+COPY python_backend/start.sh start.sh
+RUN chmod +x start.sh && chown -R appuser:appuser /app
+USER appuser

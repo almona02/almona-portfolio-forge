@@ -8,6 +8,14 @@ const identity: WorkflowIdentity = { ownerUserId: 'user-1', projectId: 'project-
 describe('identity-scoped workflow hydration', () => {
   beforeEach(() => useWorkflowStore.getState().clearWorkflow());
 
+  it('recovers glazing without letting metadata replace authoritative dimensions', () => {
+    useWorkflowStore.getState().hydrateAuthoritativePosition(identity, {
+      ...position, glazing: { type: 'double', color: 'clear' },
+      positionMeta: { remarks: 'fixture', width: '9999', manufacturingWidth: 9999 } as never,
+    });
+    expect(useWorkflowStore.getState().measurementData).toMatchObject({ width: '1210', manufacturingWidth: 1210, glazingType: 'double', glassColor: 'clear', remarks: 'fixture' });
+  });
+
   it('hydrates exact authoritative dimensions and preserves them for the same revision', () => {
     useWorkflowStore.getState().hydrateAuthoritativePosition(identity, position);
     expect(useWorkflowStore.getState().measurementData).toMatchObject({ width: '1210', height: '1550', manufacturingWidth: 1210, manufacturingHeight: 1550 });

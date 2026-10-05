@@ -589,6 +589,7 @@ export const FabricatorReports: React.FC = () => {
               {/* Deep dive inventory dashboard reuse */}
               <Suspense fallback={<div className="text-xs text-slate-400">Loading inventory analytics…</div>}>
                 <InventoryDashboard
+                  currency="EGP"
                   inventory={inventory}
                   project={null as WindowUnit | null}
                   userId={user.id}

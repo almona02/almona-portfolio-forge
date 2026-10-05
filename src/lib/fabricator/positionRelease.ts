@@ -26,14 +26,14 @@ export interface PositionReleaseAcknowledgement {
 export function fingerprintBom(bom: CompleteBOM | null): string {
   if (!bom) return '';
   const profiles = (bom.profiles ?? [])
-    .map((p) => `${p.id ?? p.profileCode ?? ''}:${p.length ?? 0}:${p.quantity ?? 1}`)
+    .map((p) => `${p.id ?? p.profileCode ?? ''}:${p.length ?? 0}:${p.quantity ?? 1}:profile=${p.profileCode ?? ''}:cuts=${JSON.stringify(p.cuttingLengths ?? [])}:angles=${JSON.stringify(p.angles ?? [])}`)
     .sort()
     .join('|');
   const hardware = (bom.hardware ?? [])
     .map((h) => `${h.id ?? h.supplierCode ?? ''}:${h.quantity ?? 1}`)
     .sort()
     .join('|');
-  return `bom:${profiles};hw:${hardware}`;
+  return `bom:${profiles};hw:${hardware};glazing:${JSON.stringify(bom.glazing ?? [])};authority:${JSON.stringify(bom.qualification ?? null)}`;
 }
 
 export function fingerprintStock(reservation: StockReservationEvidence | null): string {
@@ -42,7 +42,7 @@ export function fingerprintStock(reservation: StockReservationEvidence | null): 
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([id, m]) => `${id}:${m}`)
     .join('|');
-  return `stock:${reservation.profileIds.slice().sort().join(',')};m:${meters};ok:${reservation.availabilityOk ? 1 : 0}`;
+  return `stock:${reservation.profileIds.slice().sort().join(',')};m:${meters};ok:${reservation.availabilityOk ? 1 : 0};identity:${JSON.stringify(reservation.identity)}`;
 }
 
 export function fingerprintOptimization(result: OptimizationResult | null): string {
@@ -51,12 +51,14 @@ export function fingerprintOptimization(result: OptimizationResult | null): stri
     .flatMap((plan) =>
       (plan.cuts ?? []).map(
         (cut) =>
-          `${cut.cutId ?? cut.componentId ?? ''}:${cut.length ?? 0}:${plan.stockLength ?? 0}`,
+          `${cut.cutId ?? cut.componentId ?? ''}:${cut.length ?? 0}:${plan.stockLength ?? 0}:angle=${cut.angle}:profile=${plan.profile?.id ?? ''}`,
       ),
     )
     .sort()
     .join('|');
-  return `opt:${cuts};waste:${result.wastePercentage ?? 0};usage:${result.materialUsage ?? 0}`;
+  const bars = result.cuttingPlan.map(plan => JSON.stringify({ profile: plan.profile?.id, stockLength: plan.stockLength,
+    cuts: plan.cuts.map(cut => ({ id: cut.cutId ?? cut.componentId, length: cut.length, angle: cut.angle })).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))) })).sort().join('|');
+  return `opt:${cuts};waste:${result.wastePercentage ?? 0};usage:${result.materialUsage ?? 0};bars:${bars}`;
 }
 
 export function buildExpectedProductQr(positionId: string, revision: number): string {

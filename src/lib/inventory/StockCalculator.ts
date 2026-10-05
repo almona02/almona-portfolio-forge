@@ -113,15 +113,15 @@ export async function syncStockFromMovements(userId: string): Promise<number> {
       p_user_id: userId,
     });
 
-    if (error) {
-      console.error('Error syncing stock from movements:', error);
-      return 0;
+      if (error) {
+        throw new Error(error.message || 'Stock reconciliation failed.');
     }
 
-    return parseInt(data || 0);
+      const count = Number(data ?? 0);
+      if (!Number.isInteger(count) || count < 0) throw new Error('Invalid stock reconciliation acknowledgement.');
+      return count;
   } catch (error) {
-    console.error('Error in syncStockFromMovements:', error);
-    return 0;
+      throw error;
   }
 }
 

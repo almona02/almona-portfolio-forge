@@ -261,8 +261,8 @@ All verticals must:
 
 ## References
 
-- [Phase 4 Completion Report](./REALITYOS_PHASE4_COMPLETE.md)
-- [RealityOS Constitution](../REALITYOS_CONSTITUTION.md)
-- [Event Ledger Documentation](./REALITYOS_PHASE2_COMPLETE.md)
-- [Capture Gateway Documentation](./REALITYOS_PHASE3_COMPLETE.md)
+- [Phase 4 Completion Report](REALITYOS_PHASE4_COMPLETE.md)
+- [RealityOS Constitution](architecture/REALITYOS_CONSTITUTION.md)
+- [Event Ledger Documentation](REALITYOS_PHASE2_COMPLETE.md)
+- [Capture Gateway Documentation](REALITYOS_PHASE3_COMPLETE.md)
 

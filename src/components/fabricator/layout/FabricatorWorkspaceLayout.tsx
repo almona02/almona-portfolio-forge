@@ -77,7 +77,7 @@ const FabricatorWorkspaceLayoutComponent: React.FC<FabricatorWorkspaceLayoutProp
       )}
       
       {/* Main Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
         {/* Left Panel - Only show if showLeftPanel is true AND leftPanelContent is provided */}
         {/* When showLeftPanel=false, tools should be integrated into UniversalNavSidebar */}
         {showLeftPanel && leftPanelContent && (
@@ -93,7 +93,7 @@ const FabricatorWorkspaceLayoutComponent: React.FC<FabricatorWorkspaceLayoutProp
         )}
         
         {/* Main Content */}
-        <main className="flex-1 overflow-hidden bg-gray-950">
+        <main className="flex-1 min-h-0 min-w-0 overflow-hidden bg-gray-950">
           {mainContent}
         </main>
         

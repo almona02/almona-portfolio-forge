@@ -828,7 +828,7 @@ All critical systems have been verified error-free, performance-optimized, and i
 ---
 
 **Related Documents:**
-- [Deployment Verification Report](./DEPLOYMENT_VERIFICATION_REPORT_2026-02-03.md)
-- [Detailed Investigation Report](./DEPLOYMENT_VERIFICATION_REPORT_DETAILED_2026-02-03.md)
-- [Deployment Action Plan](./DEPLOYMENT_ACTION_PLAN_2026-02-03.md)
-- [ALMONA Complete README](./ALMONA_COMPLETE_README.md)
+- [Deployment Verification Report](../deployment/DEPLOYMENT_VERIFICATION_REPORT_2026-02-03.md)
+- [Detailed Investigation Report](../deployment/DEPLOYMENT_VERIFICATION_REPORT_DETAILED_2026-02-03.md)
+- [Deployment Action Plan](../deployment/DEPLOYMENT_ACTION_PLAN_2026-02-03.md)
+- [ALMONA Complete README](../notes/ALMONA_COMPLETE_README.md)

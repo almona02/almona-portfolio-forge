@@ -2,8 +2,8 @@
 
 **Industrial Reality Computing Platform for Aluminum & UPVC Fabrication**
 
-[![Constitutional Guarantees](https://img.shields.io/badge/Constitutional-Guarantees-orange)](CONSTITUTIONAL_COMPLIANCE_COMPLETE.md)
-[![Tier 3 Protected Determinism](https://img.shields.io/badge/Tier%203-Protected%20Determinism-green)](CONSTITUTIONAL_COMPLIANCE_COMPLETE.md)
+[![Constitutional Guarantees](https://img.shields.io/badge/Constitutional-Guarantees-orange)](../architecture/CONSTITUTIONAL_COMPLIANCE_COMPLETE.md)
+[![Tier 3 Protected Determinism](https://img.shields.io/badge/Tier%203-Protected%20Determinism-green)](../architecture/CONSTITUTIONAL_COMPLIANCE_COMPLETE.md)
 [![Gold Tier Engineering](https://img.shields.io/badge/Gold%20Tier-Engineering%20Grade-gold)](src/lib/fabricator/goldTier/)
 
 ---
@@ -393,10 +393,10 @@ npm run test:golden-master:accuracy
 
 ## 📄 Documentation
 
-- [Constitutional Compliance](CONSTITUTIONAL_COMPLIANCE_COMPLETE.md) - Governance framework
-- [Gold Tier Competitive Analysis](docs/GOLD_TIER_COMPETITIVE_ANALYSIS.md) - Detailed competitive positioning
-- [ApexEngineV2 Documentation](src/lib/fabricator/goldTier/) - Engineering-grade calculations
-- [RealityOS Constitution](REALITYOS_CONSTITUTION.md) - Platform governance principles
+- [Constitutional Compliance](../architecture/CONSTITUTIONAL_COMPLIANCE_COMPLETE.md) - Governance framework
+- [Gold Tier Competitive Analysis](../GOLD_TIER_COMPETITIVE_ANALYSIS.md) - Detailed competitive positioning
+- [ApexEngineV2 Documentation](../../src/lib/fabricator/goldTier) - Engineering-grade calculations
+- [RealityOS Constitution](../architecture/REALITYOS_CONSTITUTION.md) - Platform governance principles
 
 ---
 

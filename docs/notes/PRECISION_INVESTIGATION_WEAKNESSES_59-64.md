@@ -296,6 +296,6 @@ The analysis document identifies five current weaknesses:
 ---
 
 **Related Documentation:**
-- [ALMONA Engineering Bay UI/UX Focused Analysis](ALMONA_ENGINEERING_BAY_UI_UX_FOCUSED_ANALYSIS.md)
-- [Next Priorities Precision Plan](NEXT_PRIORITIES_PRECISION_PLAN.md)
+- [ALMONA Engineering Bay UI/UX Focused Analysis](../audits/ALMONA_ENGINEERING_BAY_UI_UX_FOCUSED_ANALYSIS.md)
+- [Next Priorities Precision Plan](../plans/NEXT_PRIORITIES_PRECISION_PLAN.md)
 

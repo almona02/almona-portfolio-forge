@@ -1,7 +1,7 @@
 # Fabricator user workflow upgrade plan
 
-Date: 5 October 2026 (Batch 2 near-exit + Batch 3 chrome).  
-Status: **Batch 1 DONE.** **Batch 2 ~90%.** **Batch 3 ~70%.** Next = **Batch 4** (quote→order). Program ≈ **48%**.
+Date: 6 October 2026.
+Status: Batches 1–6 have implementation commits; full live acceptance remains **OPEN**. Earlier percentages describe implementation estimates, not verified production readiness. Current sequence is approval publication/approved BOM inputs → owned-stock and durable optimization contracts → release/QC/delivery live exit. See the [repair and optimization exit plan](FABRICATOR_REPAIR_AND_OPTIMIZATION_EXIT_PLAN_2026-10-05.md) and [latest responsive/PDF audit](../audits/FABRICATOR_OPTIMIZATION_RESPONSIVE_AUDIT_2026-10-06.md).
 
 | Companion | Role |
 |---|---|
@@ -260,9 +260,9 @@ Metrics (no PII/secrets): hydration failures, blocked reasons, save ack latency,
 
 ## Immediate next sequence
 
-1. **Start Batch 4** — UP-15 quote persist, UP-16 quote→order, UP-17 Orders UX.  
-2. Polish Batch 2/3 remainders only if they block quote/order.  
-3. Close Batch 0 fixtures when operators available.  
+1. **Start Batch 4** — UP-15 quote persist, UP-16 quote→order, UP-17 Orders UX.
+2. Polish Batch 2/3 remainders only if they block quote/order.
+3. Close Batch 0 fixtures when operators available.
 4. Keep FP-028 accuracy on its own track.
 
 No delivery-date commitment until Batch 4 quote/order exit and Batch 0 fixtures are agreed.

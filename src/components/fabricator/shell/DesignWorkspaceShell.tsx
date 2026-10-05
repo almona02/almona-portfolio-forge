@@ -1,6 +1,8 @@
 import { isCadDesktopLayout, useStudioBreakpoint } from '@/hooks/useStudioBreakpoint';
 import { isRTL } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import { Link, useParams } from 'react-router-dom';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import {
   Sheet,
   SheetContent,
@@ -37,6 +39,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
   hideOuterInspector = false,
 }) => {
   const bp = useStudioBreakpoint();
+  const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { t, i18n } = useTranslation('fabricator');
   const rtl = isRTL(i18n.language);
   const cadOk = isCadDesktopLayout(bp);
@@ -72,14 +75,6 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
   const inspector = (
     <EngineeringInspector project={project} selectionKind={selectionKind} />
   );
-
-  if (bp === 'mobile') {
-    return (
-      <div className="h-full flex flex-col" data-testid="design-workspace-shell" data-breakpoint="mobile">
-        <DesktopWorkspaceNotice feature={t('industrial.stages.design', 'Design')} />
-      </div>
-    );
-  }
 
   const showInlineRails = bp === 'desktop';
   const collapseLeft = bp === 'laptop';
@@ -121,7 +116,22 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
       )}
 
       <div className={cn('flex-1 min-w-0 min-h-0', !cadOk && 'overflow-auto')}>
-        {cadOk ? children : <DesktopWorkspaceNotice />}
+        {cadOk ? children : (
+          <div className="p-3 space-y-3">
+            {project && (
+              <section aria-label="Position design summary" className="rounded border border-amber-600/30 p-4 text-sm text-amber-100 break-words">
+                <h2 className="font-semibold">{project.posNumber || 'Position'} · Design summary</h2>
+                <p className="mt-2">{project.overallWidth} × {project.overallHeight} mm</p>
+                <p>{project.systemPackId || 'System not selected'}</p>
+                {projectId && poseId && <div className="mt-3 flex flex-wrap gap-3">
+                  <Link className="rounded border border-amber-600/40 px-3 py-2" to={fabricatorRoutes.poseMeasuring(projectId, poseId)}>Edit measurements</Link>
+                  <Link className="rounded border border-amber-600/40 px-3 py-2" to={fabricatorRoutes.poseBOM(projectId, poseId)}>Review BOM</Link>
+                </div>}
+              </section>
+            )}
+            <DesktopWorkspaceNotice />
+          </div>
+        )}
       </div>
 
       {!hideOuterInspector && showInlineRails && (

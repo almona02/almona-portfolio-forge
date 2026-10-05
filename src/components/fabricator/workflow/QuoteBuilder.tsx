@@ -269,24 +269,26 @@ export const QuoteBuilder: React.FC = () => {
           {/* Markup & Tax */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-slate-400">Markup %</Label>
+              <Label htmlFor="quote-markup" className="text-slate-400">Markup %</Label>
               <div className="flex items-center gap-2 mt-1">
                 <Percent className="h-4 w-4 text-amber-500" />
                 <Input
                   type="number"
                   value={markupPercent}
+                  id="quote-markup"
                   onChange={(e) => setMarkupPercent(Number(e.target.value) || 0)}
                   className="bg-slate-800 border-amber-600/30 text-amber-100"
                 />
               </div>
             </div>
             <div>
-              <Label className="text-slate-400">VAT %</Label>
+              <Label htmlFor="quote-vat" className="text-slate-400">VAT %</Label>
               <div className="flex items-center gap-2 mt-1">
                 <Percent className="h-4 w-4 text-amber-500" />
                 <Input
                   type="number"
                   value={taxRate}
+                  id="quote-vat"
                   onChange={(e) => setTaxRate(Number(e.target.value) || 0)}
                   className="bg-slate-800 border-amber-600/30 text-amber-100"
                 />
@@ -296,8 +298,8 @@ export const QuoteBuilder: React.FC = () => {
 
           {/* Line items */}
           {quote?.lineItems && quote.lineItems.length > 0 && (
-            <div className="border border-amber-600/20 rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
+            <div className="border border-amber-600/20 rounded-lg overflow-x-auto">
+              <table className="w-full min-w-[420px] text-sm">
                 <thead>
                   <tr className="bg-amber-900/20 text-amber-300">
                     <th className="text-left p-3">Description</th>

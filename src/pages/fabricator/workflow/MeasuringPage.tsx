@@ -40,8 +40,8 @@ export function unitFromMeasurement(
         color: data.color || base?.color || '#FFFFFF',
         glazing: {
             ...(base?.glazing ?? {}),
-            type: data.glazingType,
-            color: data.glassColor,
+            type: data.glazingType ?? (base?.glazing as { type?: string } | undefined)?.type,
+            color: data.glassColor ?? (base?.glazing as { color?: string } | undefined)?.color,
         },
         hardware: base?.hardware ?? [],
         status: 'draft',

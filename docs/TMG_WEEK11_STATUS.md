@@ -213,10 +213,10 @@ vertical_tmg_shield/
 
 ## References
 
-- [TMG Requirements](./TMG_REQUIREMENTS.md)
-- [Phase 6 Preparation Guide](./REALITYOS_PHASE6_TMG_SHIELD_PREPARATION.md)
-- [RealityOS Platform Architecture](./REALITYOS_PLATFORM_ARCHITECTURE.md)
-- [RealityOS Constitution](../REALITYOS_CONSTITUTION.md)
+- [TMG Requirements](TMG_REQUIREMENTS.md)
+- [Phase 6 Preparation Guide](REALITYOS_PHASE6_TMG_SHIELD_PREPARATION.md)
+- [RealityOS Platform Architecture](REALITYOS_PLATFORM_ARCHITECTURE.md)
+- [RealityOS Constitution](architecture/REALITYOS_CONSTITUTION.md)
 
 ---
 

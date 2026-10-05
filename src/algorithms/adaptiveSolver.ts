@@ -7,7 +7,8 @@
  * Genetic optimization is advisory/search-only and is never selected for Tier-3 execution.
  */
 
-import { calibrationManager } from '@/lib/calibration/CalibrationManager';
+import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physicalCutContract';
+import { validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
 import {
   assertTier3ManufacturingAlgorithm,
   type Tier3ManufacturingAlgorithm,
@@ -91,12 +92,20 @@ export class AdaptiveSolver {
         performance.now() - startTime
       );
 
+      this.assertPhysicalResult(result, job);
       return result;
     } catch (error) {
       // Fallback to greedy if primary algorithm fails
       console.warn('Primary algorithm failed, falling back to greedy:', error);
-      return this.fallbackToGreedy(job, profiles, performance.now() - startTime);
+      const fallback = await this.fallbackToGreedy(job, profiles, performance.now() - startTime);
+      this.assertPhysicalResult(fallback, job);
+      return fallback;
     }
+  }
+
+  private assertPhysicalResult(result: OptimizationResult, job: CuttingJob): void {
+    const validation = validateOptimizationReconciliation(result, { components: job.components, systemPackId: job.systemPackId } as import('@/types/fabricator').WindowUnit);
+    if (!validation.valid) throw new Error(validation.errors[0]?.message || 'Invalid physical cutting result.');
   }
 
   /**
@@ -229,48 +238,9 @@ export class AdaptiveSolver {
       const specs = profile.specifications as { systemPackId?: string } | undefined;
       const systemPackId = job.systemPackId || specs?.systemPackId || '';
 
-      // Get active calibration for this profile and system pack
-      const calibration = systemPackId 
-        ? calibrationManager.getActiveCalibration(profile, systemPackId)
-        : null;
-
       for (const component of components) {
-        const specs = profile.specifications || {};
-        const isMiter45 =
-          specs.cuttingType === 'miter_45' || specs.optimizedFor45Degree === true;
-
-        component.cuttingLengths.forEach((length, index) => {
-          const baseAngle = component.angles[index] || 90;
-          const angle = isMiter45 ? 45 : baseAngle;
-
-          // Extra logic for frame profiles with decorative/border frames
-          const isBorderFrame =
-            (profile.type === 'frame' ||
-              specs.egyptFrameType === 'sliding' ||
-              specs.egyptFrameType === 'casement') &&
-            specs.egyptBorderIncluded === 'with';
-
-          // Base allowance comes from profile.cuttingAllowance.
-          // If this is a frame with border, we add an extra, per-profile border allowance
-          const borderExtraAllowance = isBorderFrame
-            ? (specs.borderExtraAllowanceMm as number | undefined) ?? 5
-            : 0;
-          const allowance = profile.cuttingAllowance + borderExtraAllowance;
-
-          let rawLength = length + allowance;
-
-          // Apply calibration modifiers if available
-          rawLength = calibrationManager.applyCalibration(rawLength, calibration);
-
-          cuts.push({
-            length: rawLength,
-            angle,
-            componentId: component.id,
-            cutId: `${component.id}:${index}`,
-            occurrenceIndex: index,
-            componentType: (specs.profileRole as string | undefined) || component.type,
-            waste: allowance,
-          });
+        component.cuttingLengths.forEach((_, index) => {
+          cuts.push(physicalCutForOccurrence(component, index, profile, systemPackId));
         });
       }
 
@@ -380,16 +350,8 @@ export class AdaptiveSolver {
       if (!profile) continue;
 
       const cuts: Cut[] = [];
-      component.cuttingLengths.forEach((length, index) => {
-        const angle = component.angles[index] || 90;
-        const allowance = profile.cuttingAllowance || 0;
-        cuts.push({
-          length: length + allowance,
-          angle,
-          componentId: component.id,
-          componentType: component.type,
-          waste: allowance,
-        });
+      component.cuttingLengths.forEach((_, index) => {
+        cuts.push(physicalCutForOccurrence(component, index, profile, job.systemPackId));
       });
 
       if (cuts.length === 0) continue;

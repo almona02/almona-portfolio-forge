@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { FabricationData, WindowUnit } from '@/types/fabricator';
-import { assessBOMQualification } from './bomQualification';
+import { assessBOMQualification, isQualifiedBOM } from './bomQualification';
 
 const project = {
   grid: {
@@ -28,6 +28,9 @@ function profiles(pieceCount: number): FabricationData['profiles'] {
 }
 
 describe('BOM manufacturing qualification', () => {
+  it('rejects a bare qualified status without identity, versions and reconciled counts', () => {
+    expect(isQualifiedBOM({ qualification: { status: 'qualified', unplacedPieceCount: 0 } as never })).toBe(false);
+  });
   it('blocks an aggregate ledger and missing approved versions', () => {
     const result = assessBOMQualification(project, pattern, profiles(6), { identity });
 

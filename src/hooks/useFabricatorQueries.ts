@@ -10,6 +10,7 @@ import {
   publishActiveProject,
 } from '@/lib/fabricator/activeProjectBridge';
 import { fabricatorClientV2, mapPositionRowToWindowUnit } from '@/lib/supabase/fabricatorClientV2';
+import { supabase } from '@/lib/supabase';
 import type { WindowUnit } from '@/types/fabricator';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLayoutEffect, useMemo } from 'react';
@@ -93,7 +94,7 @@ export function useAuthoritativePosition(projectId: string | undefined, position
     gcTime: GC_TIME,
   });
   useLayoutEffect(() => {
-    if (!query.data) return;
+    if (!query.data || query.data.identity.ownerUserId !== user?.id || query.data.identity.projectId !== projectId || query.data.identity.positionId !== positionId) return;
     const identity: WorkflowIdentity = {
       ownerUserId: query.data.identity.ownerUserId,
       projectId: query.data.identity.projectId,
@@ -102,7 +103,7 @@ export function useAuthoritativePosition(projectId: string | undefined, position
       revision: query.data.identity.revision,
     };
     hydrate(identity, query.data.position);
-  }, [hydrate, query.data]);
+  }, [hydrate, query.data, user?.id, projectId, positionId]);
   const expectedIdentity = query.data?.identity ?? null;
   const isHydrated = Boolean(
     expectedIdentity &&
@@ -131,7 +132,9 @@ export function useUpsertPose() {
         { grid: payload.grid, selectedPreset: payload.selectedPreset }
       );
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: async (_data, variables) => {
+      const { data: { user: authenticatedOwner } } = await supabase.auth.getUser();
+      if (!user?.id || authenticatedOwner?.id !== user.id) return;
       const saved: WindowUnit = {
         ...variables.windowUnit,
         updatedAt: new Date(),

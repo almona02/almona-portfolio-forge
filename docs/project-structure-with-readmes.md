@@ -1389,9 +1389,9 @@ sss
 | Document | Description | Last Updated |
 |----------|-------------|--------------|
 | [README.md](../README.md) | Main project documentation with features and setup | Latest |
-| [project-structure.md](./project-structure.md) | Comprehensive file structure with descriptions | Latest |
-| [DEVELOPMENT_GUIDE.md](../DEVELOPMENT_GUIDE.md) | Development guidelines and best practices | Current |
-| [MCP_SETUP.md](../MCP_SETUP.md) | Model Context Protocol setup instructions | Current |
+| [project-structure.md](project-structure.md) | Comprehensive file structure with descriptions | Latest |
+| [DEVELOPMENT_GUIDE.md](guides/DEVELOPMENT_GUIDE.md) | Development guidelines and best practices | Current |
+| [MCP_SETUP.md](guides/MCP_SETUP.md) | Model Context Protocol setup instructions | Current |
 | [CODE_PRINCIPLES_EVALUATION.md](../CODE_PRINCIPLES_EVALUATION.md) | Code quality evaluation | Current |
 | [SECURITY_IMPROVEMENTS_SUMMARY.md](../SECURITY_IMPROVEMENTS_SUMMARY.md) | Security enhancements | Current |
 
@@ -1399,8 +1399,8 @@ sss
 
 ### For Developers
 1. **Setup**: Follow the [README.md](../README.md) installation guide
-2. **Structure**: Review [project-structure.md](./project-structure.md) for codebase organization
-3. **Development**: Check [DEVELOPMENT_GUIDE.md](../DEVELOPMENT_GUIDE.md) for coding standards
+2. **Structure**: Review [project-structure.md](project-structure.md) for codebase organization
+3. **Development**: Check [DEVELOPMENT_GUIDE.md](guides/DEVELOPMENT_GUIDE.md) for coding standards
 
 ### For Project Managers
 1. **Overview**: Start with [README.md](../README.md) for feature overview

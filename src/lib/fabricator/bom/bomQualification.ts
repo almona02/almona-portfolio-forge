@@ -66,5 +66,12 @@ export function isQualifiedBOM(
   bom: { qualification?: BOMQualification } | null,
 ): boolean {
   return bom?.qualification?.status === 'qualified'
-    && bom.qualification.unplacedPieceCount === 0;
+    && Boolean(bom.qualification.identity?.ownerUserId)
+    && Boolean(bom.qualification.catalogueVersion)
+    && Boolean(bom.qualification.ruleVersion)
+    && Number.isInteger(bom.qualification.requiredPieceCount)
+    && bom.qualification.requiredPieceCount > 0
+    && bom.qualification.requiredPieceCount === bom.qualification.generatedPieceCount
+    && bom.qualification.unplacedPieceCount === 0
+    && bom.qualification.reasons?.length === 0;
 }

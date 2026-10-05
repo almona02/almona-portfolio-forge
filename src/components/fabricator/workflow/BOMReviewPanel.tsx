@@ -79,10 +79,13 @@ export const BOMReviewPanel: React.FC = () => {
   const handleContinue = () => {
     const validation = WorkflowValidator.validateBOMToOptimization(bom);
     if (!validation.passed) {
-      setError(validation.issues.map(issue => issue.message).join('; '));
+      if (projectId && poseId) navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/optimization`);
       return;
     }
-    completeStep('bom');
+    if (!completeStep('bom')) {
+      setError('The saved revision changed. Regenerate the BOM before continuing.');
+      return;
+    }
     const base = projectId && poseId
       ? `/fabricator/studio/projects/${projectId}/positions/${poseId}`
       : '/fabricator/studio/projects';
@@ -138,10 +141,10 @@ export const BOMReviewPanel: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-slate-950 to-slate-900 overflow-auto">
-      <div className="max-w-7xl mx-auto w-full p-6 space-y-6">
+      <div className="max-w-7xl mx-auto w-full p-3 sm:p-6 space-y-6">
         {/* Header */}
         <div className="bg-slate-900/60 backdrop-blur-sm rounded-lg border border-amber-600/30 p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl font-bold text-amber-200 flex items-center gap-2">
                 <ClipboardList className="w-6 h-6" />
@@ -173,7 +176,7 @@ export const BOMReviewPanel: React.FC = () => {
 
         {/* BOM Tabs */}
         <Tabs defaultValue="profiles" className="w-full">
-          <TabsList className="bg-slate-900/60 border-amber-600/20 grid grid-cols-5 w-full max-w-2xl">
+          <TabsList className="bg-slate-900/60 border-amber-600/20 flex justify-start overflow-x-auto w-full max-w-2xl">
             <TabsTrigger value="profiles" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
               <Package className="w-3 h-3 mr-1" /> Profiles ({bom.profiles.length})
             </TabsTrigger>
@@ -211,7 +214,7 @@ export const BOMReviewPanel: React.FC = () => {
         {/* Metadata */}
         <Card className="bg-slate-900/40 border-amber-600/20">
           <CardContent className="pt-4">
-            <div className="flex items-center justify-between text-xs text-slate-500">
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
               <span>Pattern: {bom.metadata.patternUsed}</span>
               <span>System: {bom.metadata.systemPackUsed}</span>
               <span>Generated: {new Date(bom.metadata.generationTimestamp).toLocaleString()}</span>
@@ -221,18 +224,26 @@ export const BOMReviewPanel: React.FC = () => {
         </Card>
       </div>
 
+      {!WorkflowValidator.validateBOMToOptimization(bom).passed && (
+        <div role="status" className="mx-3 mb-3 rounded border border-amber-600/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+          <p className="font-semibold">Before optimization</p>
+          <ul className="mt-2 list-inside list-disc break-words">
+            {WorkflowValidator.validateBOMToOptimization(bom).issues.map(issue => <li key={issue.code}>{issue.message}</li>)}
+          </ul>
+          <p className="mt-2">Your factory administrator or technical office must provide approved manufacturing rules and profiles. Regenerate the BOM after approval.</p>
+        </div>
+      )}
       {/* Continue Button */}
-      <div className="fixed bottom-8 right-8 z-50 flex gap-3">
+      <div className="sticky bottom-0 z-10 flex flex-wrap justify-end gap-3 border-t border-slate-700 bg-slate-950 p-3 sm:p-4">
         <Button variant="outline" onClick={() => void generateBOM()} className="border-amber-600/30 text-amber-300">
           Regenerate BOM
         </Button>
         <button
           onClick={handleContinue}
-          disabled={!WorkflowValidator.validateBOMToOptimization(bom).passed}
           className="group relative px-8 py-4 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
         >
           <span className="relative z-10 flex items-center gap-2">
-            Continue to Optimization
+            {WorkflowValidator.validateBOMToOptimization(bom).passed ? 'Continue to Optimization' : 'Review optimization prerequisites'}
             <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>

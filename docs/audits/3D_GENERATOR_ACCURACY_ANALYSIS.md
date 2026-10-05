@@ -485,6 +485,6 @@ glassHeight -= transomHeight / 2; // Approximation
 ---
 
 **Related Documentation:**
-- [Enhanced3DPreview.tsx](src/components/fabricator/Enhanced3DPreview.tsx) - Dual-output architecture
-- [windowGeometry.ts](src/lib/3d/windowGeometry.ts) - Core 3D generation engine
-- [egyptian_templates.json](src/lib/fabricator/egyptian_templates.json) - Template specifications
+- [Enhanced3DPreview.tsx](../../src/components/fabricator/Enhanced3DPreview.tsx) - Dual-output architecture
+- [windowGeometry.ts](../../src/lib/3d/windowGeometry.ts) - Core 3D generation engine
+- [egyptian_templates.json](../../src/lib/fabricator/egyptian_templates.json) - Template specifications

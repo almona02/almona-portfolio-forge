@@ -816,7 +816,7 @@ const CommercialPageComponent: React.FC = () => {
           currency={workflowQuote?.currency ?? 'EGP'}
           showLeftPanel={false}
           mainContent={
-            <div className="container mx-auto px-4 py-8">
+            <div className="h-full min-h-0 overflow-y-auto overscroll-contain mx-auto w-full px-3 py-4 sm:px-4 sm:py-8">
               <QuoteBuilder />
             </div>
           }
@@ -837,7 +837,7 @@ const CommercialPageComponent: React.FC = () => {
         currency={displayCurrency}
         showLeftPanel={false}
         mainContent={
-    <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="h-full min-h-0 overflow-y-auto overscroll-contain mx-auto w-full px-3 py-4 sm:px-4 sm:py-8 space-y-6">
 
       {/* Tabs for Workspace and Reports */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'workspace' | 'reports' | 'reconciliation' | 'tax' | 'invoices' | 'templates')} className="w-full">

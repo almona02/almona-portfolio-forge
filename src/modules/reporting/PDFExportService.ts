@@ -7,6 +7,7 @@
 let PDFDocument: any, rgb: any, StandardFonts: any;
 import { generatePatternVisualization, generateWindowUnitsRow } from '@/lib/exports/windowSnapshotGenerator';
 import { supabase } from '@/lib/supabase';
+import { validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
 import { Quote } from '@/modules/commercial/QuotingEngine';
 import { CuttingPlan, isGlazingSpecFlat, OptimizationResult, WindowUnit } from '@/types/fabricator';
 
@@ -340,6 +341,8 @@ export class PDFExportService {
     optimization: OptimizationResult,
     options: PDFOptions
   ): Promise<Blob> {
+    const validation = validateOptimizationReconciliation(optimization, project);
+    if (!validation.valid) throw new Error(`Cannot export an invalid cut list: ${validation.errors.map(issue => issue.message).join('; ')}`);
     await this.initialize();
     this.currentY = this.margin;
 
@@ -1021,6 +1024,13 @@ export class PDFExportService {
     this.currentY += 12;
 
     plan.cuts.forEach((cut, cutIndex) => {
+      if (this.currentY > this.pageHeight - this.margin - 24) {
+        this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+        this.currentY = this.margin;
+        this.pageNumber++;
+        this.currentPage.drawText(`Plan ${index} - cuts continued`, { x: this.margin, y: this.pageHeight - this.currentY, size: 10, font: this.boldFont });
+        this.currentY += 18;
+      }
       const isMiter45 = cut.angle === 45;
       const angleLabel = isMiter45 ? `${cut.angle}° miter` : `${cut.angle}°`;
 
@@ -1175,8 +1185,8 @@ export class PDFExportService {
       ['Nesting Efficiency:', `${optimization.nestingEfficiency.toFixed(1)}%`],
       ['Waste Percentage:', `${optimization.wastePercentage.toFixed(1)}%`],
       ['Estimated Production Time:', `${optimization.estimatedProductionTime.toFixed(1)} minutes`],
-      ['Total Material Cost:', `$${optimization.costBreakdown.materialCost.toFixed(2)}`],
-      ['Total Cost:', `$${optimization.costBreakdown.totalCost.toFixed(2)}`],
+      ['Total Material Cost:', `${optimization.costBreakdown.materialCost.toFixed(2)} EGP`],
+      ['Total Cost:', `${optimization.costBreakdown.totalCost.toFixed(2)} EGP`],
     ];
 
     summary.forEach(([label, value]) => {

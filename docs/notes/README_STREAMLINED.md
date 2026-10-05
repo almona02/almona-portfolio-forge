@@ -14,7 +14,7 @@
 - **Bounded intelligence** operating within deterministic envelopes
 - **Production-ready** - used by real workshops today
 
-**Canonical Specification**: [AICS-001: Almona Industrial Computing Specification](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md)
+**Canonical Specification**: [AICS-001: Almona Industrial Computing Specification](../AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md)
 
 ---
 
@@ -162,7 +162,7 @@ npm run dev
 
 ### Constitutional Guarantees
 
-Almona operates under [AICS-001: Almona Industrial Computing Specification](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md), which provides:
+Almona operates under [AICS-001: Almona Industrial Computing Specification](../AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md), which provides:
 
 - **Deterministic Authority**: Physical laws and engineering standards govern all decisions
 - **Bounded Intelligence**: AI operates within strict validation envelopes
@@ -180,7 +180,7 @@ Almona operates under [AICS-001: Almona Industrial Computing Specification](docs
 - ✅ **Phase 4**: Almona Adapter with Dual-Write (<5% overhead)
 - ✅ **Phase 5**: Vertical Plugin System (Almona as first vertical)
 
-[View RealityOS architecture →](docs/REALITYOS_PLATFORM_ARCHITECTURE.md)
+[View RealityOS architecture →](../REALITYOS_PLATFORM_ARCHITECTURE.md)
 
 ---
 
@@ -192,8 +192,8 @@ Almona operates under [AICS-001: Almona Industrial Computing Specification](docs
 | [Deployment](docs/DEPLOYMENT.md) | Installation and setup guide |
 | [API Reference](docs/API.md) | Complete API documentation |
 | [Case Studies](docs/CASE_STUDIES.md) | Real-world success stories |
-| [AICS-001 Specification](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md) | Canonical source of truth |
-| [Changelog](docs/CHANGELOG.md) | Recent updates and improvements |
+| [AICS-001 Specification](../AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md) | Canonical source of truth |
+| [Changelog](../CHANGELOG.md) | Recent updates and improvements |
 
 ---
 
@@ -236,7 +236,7 @@ Almona operates under [AICS-001: Almona Industrial Computing Specification](docs
 - ✅ Workshop pattern learning
 - ✅ Egyptian-specific intelligence
 
-[View complete changelog →](docs/CHANGELOG.md)
+[View complete changelog →](../CHANGELOG.md)
 
 ---
 

@@ -4,13 +4,13 @@ import type { WindowUnit } from '@/types/fabricator';
 
 const identity = { ownerUserId: 'owner', projectId: 'project', positionId: 'pose', source: 'v2' as const, revision: 4 };
 const base: StudioWorkflowEvidence = {
-  currentProject: { id: 'pose', components: [{ id: 'part', profile: { id: 'profile' }, quantity: 1, cuttingLengths: [500] }] } as WindowUnit,
+  currentProject: { id: 'pose', components: [{ id: 'part', profile: { id: 'profile' }, quantity: 1, cuttingLengths: [500], angles: [45] }] } as WindowUnit,
   measurementData: { width: '1000', height: '1200' } as never,
   designData: null, bom: null, quote: null, optimizationResult: null, productionDocuments: null,
   completedSteps: new Set(), activeStep: 'measuring', workflowIdentity: identity, workflowDraftDirty: false,
 };
 const stage = (id: string) => STUDIO_WORKFLOW_STAGES.find(s => s.id === id)!;
-const qualified = { qualification: { status: 'qualified', identity, unplacedPieceCount: 0 } } as never;
+const qualified = { qualification: { status: 'qualified', identity, catalogueVersion: 'fixture-catalogue', ruleVersion: 'fixture-rules', requiredPieceCount: 1, generatedPieceCount: 1, unplacedPieceCount: 0, reasons: [] } } as never;
 
 describe('Studio readiness', () => {
   it('does not infer activity or stock verification from page selection', () => {
@@ -75,9 +75,9 @@ describe('Studio readiness', () => {
       stockReservation: reservation,
       optimizationResult: {
         materialUsage: 80,
-        wastePercentage: 10,
+        wastePercentage: 5500 / 6000 * 100,
         estimatedProductionTime: 30,
-        nestingEfficiency: 0.9,
+        nestingEfficiency: 500 / 6000 * 100,
         costBreakdown: {
           materialCost: 1,
           laborCost: 1,
@@ -89,8 +89,8 @@ describe('Studio readiness', () => {
           {
             profile: { id: 'profile' },
             stockLength: 6000,
-            totalWaste: 100,
-            utilization: 0.9,
+            totalWaste: 5500,
+            utilization: 500 / 6000 * 100,
             cuts: [
               {
                 length: 500,

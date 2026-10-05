@@ -8,7 +8,7 @@ ALMONA is a web platform for aluminium and UPVC workshops in Egypt and the Middl
 
 ## Current state
 
-The public website and backend are deployed. The main CI, production, constitutional, hardening, and shipability workflows pass on the current release branch.
+The public website and backend are deployed. Repository implementation and deployment verification are tracked separately; automated checks do not establish full live manufacturing acceptance.
 
 Fabricator Pro has a working position-based flow:
 
@@ -16,7 +16,11 @@ Fabricator Pro has a working position-based flow:
 
 The codebase includes authoritative position hydration, identity-scoped workflow state, deterministic manufacturing calculations, cutting-plan conservation checks, server-enforced QC approval, quote generation, production documents, Arabic/English interfaces, and digital machine/service features.
 
-**Latest workshop UX (2026-10-05):** Measuring after Egyptian project create is hardened for daily use — active-project header syncs on save/delete, empty `grid: {}` no longer crashes pose load, system/pattern pickers are scroll-safe on phone and desktop, cut preview matches the dark amber shell, pose cards support right-click edit/duplicate/delete, and the guided Size flow starts with a compact step strip. Active plan: [FP-028 Fabricator Design Studio Apex Accuracy](docs/plans/FP-028_FABRICATOR_DESIGN_STUDIO_APEX_ACCURACY.md).
+**Latest repair status (2026-10-06):** Owner-isolated hydration, reconciled inventory intake/stock demand, physical optimization validation, and responsive workflow repairs are implemented. BOM continuation preserves position identity and explains missing qualification. Optimization retains results for review and cut-list PDF export. QC scrolls on phones; Quote headers/tables fit small screens; Design provides a phone summary with Measure/BOM navigation while CAD editing requires a larger display.
+
+Verification: the repair baseline passed **84 frontend tests**; the latest optimization/qualification/navigation/PDF suite passed **22 tests across 7 files**, and the frontend production build passed. A 75-cut diagnostic PDF was rendered and checked across two pages. Backend evidence is the verified incremental Industrial Docker build/import check and **5 readiness tests**; a clean image rebuild remains unverified after its dependency-download stall. Full application type checking still reports existing repository errors.
+
+**Live exit remains open:** approved manufacturing authority and dimensional tolerance are missing for the disposable fixture. Positive live optimization, stock consumption, release, QC, and delivery cannot be certified from local tests. These latest repairs have not been deployed. See the [repair and optimization exit plan](docs/plans/FABRICATOR_REPAIR_AND_OPTIMIZATION_EXIT_PLAN_2026-10-05.md), [execution record](docs/audits/FABRICATOR_REPAIR_EXECUTION_2026-10-06.md), and [responsive/PDF audit](docs/audits/FABRICATOR_OPTIMIZATION_RESPONSIVE_AUDIT_2026-10-06.md).
 
 This is still an actively hardened industrial product. Passing CI means the software builds and its automated gates pass; it does not replace workshop validation. Production output must be checked by an authorized operator before material is cut or released.
 

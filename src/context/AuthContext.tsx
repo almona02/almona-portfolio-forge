@@ -2,6 +2,9 @@ import { ensureOwnProfile, getProfileById, updateProfile as updateProfileDomain 
 import { handleAuthError, supabase } from '@/lib/supabase';
 import { Database } from '@/types/database';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { useQueryClient } from '@tanstack/react-query';
+import { useWorkflowStore } from '@/store/workflowStore';
+import { invalidatePersonaCache } from '@/lib/persona/personaResolver';
 import React, { createContext, startTransition, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 // Define enhanced User interface based on our database schema
@@ -69,6 +72,23 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = useQueryClient();
+  const activeOwnerRef = useRef<string | null | undefined>(undefined);
+  const adoptOwner = useCallback((ownerId: string | null) => {
+    if (activeOwnerRef.current === ownerId) return;
+    const previousOwner = activeOwnerRef.current;
+    activeOwnerRef.current = ownerId;
+    const draftOwner = useWorkflowStore.getState().workflowIdentity?.ownerUserId;
+    if (previousOwner !== undefined || draftOwner !== ownerId) {
+      void queryClient.cancelQueries();
+      queryClient.clear();
+      useWorkflowStore.getState().clearWorkflow();
+      invalidatePersonaCache();
+      window.dispatchEvent(new Event('almona-owner-changed'));
+    }
+    stableEmailRef.current = undefined;
+    setUser(null);
+  }, [queryClient]);
   const [user, setUser] = useState<User | null>(null);
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);          // initial session probe
@@ -91,6 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Fetch user profile data with improved caching and deduplication
   const fetchUserProfile = useCallback(async (userId: string) => {
+    if (activeOwnerRef.current !== userId) return;
     // Prevent duplicate calls for the same user
     const cacheKey = `profile-${userId}`;
     const lastFetch = sessionStorage.getItem(cacheKey);
@@ -98,7 +119,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // If we fetched this profile less than 60 seconds ago, skip
     if (lastFetch && (now - parseInt(lastFetch)) < 60000) {
-      return;
+      try {
+        const cached: unknown = JSON.parse(sessionStorage.getItem(`${cacheKey}-data`) || 'null');
+        if (isUserShape(cached) && cached.id === userId) {
+          setUser(cached);
+          return;
+        }
+      } catch { /* Invalid cache must fall through to a fresh profile fetch. */ }
     }
 
     // If there's an RLS error for this user, skip fetching to prevent retries
@@ -122,6 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
 
       let profile = await Promise.race([profilePromise, timeoutPromise]);
+      if (activeOwnerRef.current !== userId) return;
 
       if (!profile && supabaseUser && supabaseUser.id === userId) {
         profile = await ensureOwnProfile(userId, {
@@ -132,6 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (profile) {
+        if (activeOwnerRef.current !== userId) return;
         setUser(profile);
         if (!stableEmailRef.current && (profile as User).email) {
           stableEmailRef.current = (profile as User).email;
@@ -141,6 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sessionStorage.setItem(`${cacheKey}-data`, JSON.stringify(profile));
       }
     } catch (error: unknown) {
+      if (activeOwnerRef.current !== userId) return;
       // Handle RLS infinite recursion error - don't retry
       const err = error as { code?: string };
       if (err?.code === '42P17') {
@@ -167,7 +197,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (cachedData) {
         try {
           const parsed = JSON.parse(cachedData) as unknown;
-          if (isUserShape(parsed)) {
+          if (isUserShape(parsed) && parsed.id === userId) {
             setUser(parsed);
           }
           return;
@@ -177,7 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // Build immediate placeholder instead of null to avoid portal flicker
-      if (supabaseUser) {
+      if (supabaseUser?.id === userId) {
         const meta = supabaseUser.user_metadata as Record<string, unknown> | null | undefined;
         setUser({
           id: supabaseUser.id,
@@ -216,6 +246,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes with debouncing to prevent excessive updates
     let authChangeTimeout: NodeJS.Timeout;
+    let authEventRevision = 0;
 
     // Only set up auth listener if Supabase is properly configured
     let subscription: { unsubscribe: () => void } | null = null;
@@ -224,6 +255,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const ongoingFetchesRef = ongoingFetches;
 
     const getInitialSession = async () => {
+      const initialRevision = authEventRevision;
       try {
         if (typeof window !== 'undefined') {
             console.log('[AuthDebug] Env Check:', { 
@@ -291,7 +323,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // made ProtectedRoute send logged-in users to /login, then Login bounced home.
         const { data: { session }, error } = await supabase.auth.getSession();
 
-        if (!isMounted) return;
+        if (!isMounted || authEventRevision !== initialRevision) return;
+        adoptOwner(session?.user?.id ?? null);
 
         if (error) {
           console.error('Error getting session:', error);
@@ -305,7 +338,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const meta = session.user.user_metadata as Record<string, unknown> | null | undefined;
           // Set a placeholder before loading ends so ProtectedRoute does not bounce
           // a valid session to /login while the profile fetch is still deferred.
-          setUser(prev => prev || {
+          setUser(prev => prev?.id === session.user.id ? prev : {
             id: session.user.id,
             email: session.user.email || undefined,
             username: null,
@@ -354,7 +387,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setSupabaseUser(null);
         }
       } finally {
-        if (isMounted) setLoading(false);
+        // A newer auth event owns initialization until its deferred session is installed.
+        if (isMounted && authEventRevision === initialRevision) setLoading(false);
       }
     };
 
@@ -364,6 +398,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const {
         data: { subscription: authSubscription },
       } = supabase.auth.onAuthStateChange((event, session) => {
+        authEventRevision += 1;
+        // Clear identity-sensitive state before any deferred profile fetch/render.
+        adoptOwner(session?.user?.id ?? null);
         // Clear any pending auth change
         if (authChangeTimeout) {
           clearTimeout(authChangeTimeout);
@@ -371,6 +408,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // Debounce auth state changes to prevent rapid updates
         authChangeTimeout = setTimeout(() => {
+          if (!isMounted || activeOwnerRef.current !== (session?.user?.id ?? null)) return;
           // Only log significant auth events, not every state change
           if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
             console.log('[Auth]', event, session?.user?.id ? `user: ${session.user.id}` : 'no user');
@@ -399,7 +437,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setSupabaseUser(session.user);
               const meta = session.user.user_metadata as Record<string, unknown> | null | undefined;
               // Immediate optimistic placeholder if user object not yet built
-              setUser(prev => prev || {
+              setUser(prev => prev?.id === session.user.id ? prev : {
                 id: session.user.id,
                 email: session.user.email || undefined,
                 username: null,
@@ -460,7 +498,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription.unsubscribe();
       }
     };
-  }, []); // Empty deps: getInitialSession only runs on mount, fetchUserProfile accessed via ref
+  }, [adoptOwner]); // Profile fetches use the ref; owner adoption is stable for this query client.
 
   // Absolute safety timeout: never let loading stay true indefinitely
   useEffect(() => {

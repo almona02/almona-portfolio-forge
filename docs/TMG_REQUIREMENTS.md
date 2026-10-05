@@ -535,10 +535,10 @@ TMG Shield is a maintenance and asset management vertical for RealityOS, focusin
 
 ## 10. References
 
-- [RealityOS Constitution](../REALITYOS_CONSTITUTION.md)
-- [Phase 6 Preparation Guide](./REALITYOS_PHASE6_TMG_SHIELD_PREPARATION.md)
-- [RealityOS Platform Architecture](./REALITYOS_PLATFORM_ARCHITECTURE.md)
-- [Almona Vertical Implementation](../vertical_almona/) (reference)
+- [RealityOS Constitution](architecture/REALITYOS_CONSTITUTION.md)
+- [Phase 6 Preparation Guide](REALITYOS_PHASE6_TMG_SHIELD_PREPARATION.md)
+- [RealityOS Platform Architecture](REALITYOS_PLATFORM_ARCHITECTURE.md)
+- [Almona Vertical Implementation](../vertical_almona) (reference)
 
 ---
 

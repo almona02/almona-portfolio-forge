@@ -423,6 +423,6 @@
 ---
 
 **Related Documentation:**
-- [UI/UX Focused Analysis](ALMONA_ENGINEERING_BAY_UI_UX_FOCUSED_ANALYSIS.md) - Current state analysis
+- [UI/UX Focused Analysis](../audits/ALMONA_ENGINEERING_BAY_UI_UX_FOCUSED_ANALYSIS.md) - Current state analysis
 - [Next Priorities Precision Plan](NEXT_PRIORITIES_PRECISION_PLAN.md) - Detailed implementation requirements
 

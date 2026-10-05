@@ -96,3 +96,14 @@ nul
 !vendor/image-size/
 !vendor/image-size/**
 .env.batch0.fixtures
+
+# Local verification and CLI state
+supabase/.temp/
+playwright-report/
+test-results/
+tmp/
+git-status-push-review.txt
+
+# Reproducible deployment bundles
+batch1-release*/
+.vercel/

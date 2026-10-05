@@ -1,16 +1,18 @@
 import { Button } from '@/shared/ui/ui/button';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const Preview3DPage: React.FC = () => {
-    const { projectId } = useParams<{ projectId?: string }>();
+    const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
     const navigate = useNavigate();
-    const { completeStep, currentProject: _currentProject } = useWorkflowStore();
+    const { workflowIdentity } = useWorkflowStore();
 
     const handleContinue = () => {
-        completeStep('preview3d');
-        navigate(projectId ? `/fabricator/workflow/optimization/${projectId}` : '/fabricator/workflow/optimization');
+        const project = projectId ?? workflowIdentity?.projectId;
+        const position = poseId ?? workflowIdentity?.positionId;
+        navigate(project && position ? fabricatorRoutes.poseBOM(project, position) : fabricatorRoutes.studioProjects());
     };
 
     return (
@@ -43,7 +45,7 @@ export const Preview3DPage: React.FC = () => {
                         onClick={handleContinue}
                         className="bg-amber-500 hover:bg-amber-600"
                     >
-                        Continue to Optimization →
+                        Review BOM →
                     </Button>
                 </div>
             </div>

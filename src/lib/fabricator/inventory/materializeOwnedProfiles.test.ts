@@ -46,6 +46,7 @@ describe('materializeOwnedProfilesFromPack (UP-07)', () => {
     from.mockImplementation(() => ({
       select: () => ({
         eq: () => ({
+          contains: () => ({ limit: async () => ({ data: [], error: null }) }),
           eq: () => ({
             maybeSingle,
           }),

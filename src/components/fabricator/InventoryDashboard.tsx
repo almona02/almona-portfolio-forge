@@ -164,6 +164,7 @@ interface InventoryDashboardProps {
   inventory: Profile[];
   project?: WindowUnit | null;
   userId?: string;
+  currency?: string;
   /**
    * Optional view mode hint from higher-level pages (e.g. grid vs table).
    * Current dashboard ignores this for layout but it is kept for future
@@ -211,7 +212,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   inventory,
   project,
   userId,
+  currency = 'USD',
 }) => {
+  const money = (value: number) => Number.isFinite(value)
+    ? new Intl.NumberFormat('en-EG', { style: 'currency', currency }).format(value)
+    : 'Not recorded';
   const { t } = useTranslation('fabricator');
   const queryClient = useQueryClient();
   const { state: workspaceState, dispatch } = useFabricatorWorkspace();
@@ -224,6 +229,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [locations, setLocations] = useState<InventoryLocation[]>([]);
   const [consolidationSuggestions, setConsolidationSuggestions] = useState<RemnantConsolidationSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const pendingIntakeRequests = useRef(new Map<string, string>());
   const isLoadingRef = useRef(false);
   const [useRemnantsFirst, setUseRemnantsFirst] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
@@ -541,14 +547,17 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         }
 
         // UP-10: movements + sync — never patch stock_quantity from stale props.
+        const requestKey = JSON.stringify({ userId, mode: 'csv', rows: inserts });
+        const requestToken = pendingIntakeRequests.current.get(requestKey) ?? crypto.randomUUID();
+        pendingIntakeRequests.current.set(requestKey, requestToken);
         const intake = await recordStockIntakeThenSync(
           userId,
-          inserts.map((row) => ({
+          inserts.map((row, index) => ({
             profileId: row.profile_id,
             quantity: row.quantity,
             unit: row.unit,
             notes: row.notes,
-            requestId: `csv-${Date.now()}-${row.profile_id}-${row.quantity}`,
+            requestId: `${requestToken}:${index}`,
           })),
         );
         if (!intake.ok) {
@@ -556,6 +565,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         }
 
         await Promise.all([loadStockMovements(), loadStockAlerts(), invalidateOwnedInventory()]);
+        pendingIntakeRequests.current.delete(requestKey);
 
         toast.success(
           `Imported ${inserts.length} invoice row(s)${
@@ -601,13 +611,16 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       const notes = metaParts.length ? metaParts.join(' – ') : null;
 
       // UP-10: movement + sync (authoritative qty), then invalidate owned inventory.
+      const requestKey = JSON.stringify({ userId, mode: 'invoice', profileId: invoiceProfileId, quantity: movementQuantity, unit: effectiveUnit, notes });
+      const requestToken = pendingIntakeRequests.current.get(requestKey) ?? crypto.randomUUID();
+      pendingIntakeRequests.current.set(requestKey, requestToken);
       const intake = await recordStockIntakeThenSync(userId, [
         {
           profileId: invoiceProfileId,
           quantity: movementQuantity,
           unit: effectiveUnit as 'meters' | 'pieces',
           notes,
-          requestId: `inv-${Date.now()}-${invoiceProfileId}`,
+          requestId: requestToken,
         },
       ]);
       if (!intake.ok) {
@@ -619,6 +632,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       await Promise.all([loadStockMovements(), loadStockAlerts(), invalidateOwnedInventory()]);
 
       setInvoiceProfileId('');
+      pendingIntakeRequests.current.delete(requestKey);
       setInvoiceQuantity(0);
       setInvoiceNumber('');
       setInvoiceSupplier('');
@@ -1092,7 +1106,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               <div>
                 <p className="text-sm text-gray-400">{t('inventory_dashboard.total_value', 'Total Value')}</p>
                 <p className="text-2xl font-bold text-amber-400">
-                  ${totalValue.toFixed(2)}
+                  {money(totalValue)}
                 </p>
               </div>
               <DollarSign className="h-8 w-8 text-amber-400 opacity-50" />
@@ -1138,7 +1152,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 <div>
                   <p className="text-sm text-gray-400">Remnant Value</p>
                   <p className="text-2xl font-bold text-cyan-400">
-                    ${remnantStats.totalValue.toFixed(2)}
+                    {money(remnantStats.totalValue)}
                   </p>
                 </div>
                 <DollarSign className="h-8 w-8 text-cyan-400 opacity-50" />
@@ -1348,12 +1362,12 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
                               <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
-                                  <span>Stock: {profile.stockQuantity > 0 ? `${profile.stockQuantity.toFixed(2)}m` : '0m'} {profile.stockQuantity > 0 && '(from purchases)'}</span>
+                                  <span>Stock: {profile.stockQuantity > 0 ? `${profile.stockQuantity.toFixed(2)}m` : '0m'} {profile.stockQuantity > 0 && '(recorded balance)'}</span>
                                   <span>Min Level: {profile.minStockLevel || 0}m</span>
                                 </div>
                                 <Progress value={stockPercentage} className="h-2" />
                                 <div className="flex justify-between text-sm text-gray-400">
-                                  <span>Cost: ${profile.costPerMeter}/m</span>
+                                  <span>Cost: {money(profile.costPerMeter)}/m</span>
                                   <span>Supplier: {profile.supplier || 'N/A'}</span>
                                 </div>
                                 {((profile.systemBrand && SYSTEM_PACKS.some(p => p.meta.name === profile.systemBrand)) ||
@@ -1486,7 +1500,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   {consolidationSuggestions.slice(0, 3).map((suggestion, idx) => (
                     <div key={idx} className="text-sm">
                       <strong>{suggestion.profileName}:</strong> {suggestion.suggestedAction}
-                      {' '}Estimated savings: ${suggestion.estimatedSavings.toFixed(2)}
+                      {' '}Estimated savings: {money(suggestion.estimatedSavings)}
                     </div>
                   ))}
                 </div>
@@ -1575,7 +1589,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-gray-400">Value:</span>
-                          <p className="font-semibold">${remnant.estimatedValue.toFixed(2)}</p>
+                          <p className="font-semibold">{money(remnant.estimatedValue)}</p>
                         </div>
                         <div>
                           <span className="text-gray-400">Created:</span>

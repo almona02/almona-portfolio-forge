@@ -1,7 +1,7 @@
 import { InventoryDashboard } from '@/components/fabricator/InventoryDashboard';
 import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { isCatalogProfileCode } from '@/lib/fabricator/catalog/CatalogResolver';
+import { bomStockDemand } from '@/lib/fabricator/inventory/bomStockDemand';
 import { loadOwnedWorkshopInventory } from '@/lib/fabricator/inventory/ProfileInventoryAdapter';
 import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
@@ -54,13 +54,15 @@ export const StudioStockPage: React.FC = () => {
     if (!stockReservation || !workflowIdentity) return false;
     return (
       stockReservation.identity.projectId === workflowIdentity.projectId
+      && stockReservation.identity.ownerUserId === workflowIdentity.ownerUserId
+      && stockReservation.identity.source === workflowIdentity.source
       && stockReservation.identity.positionId === workflowIdentity.positionId
       && stockReservation.identity.revision === workflowIdentity.revision
     );
   }, [stockReservation, workflowIdentity]);
 
   const handleAcknowledgeStock = () => {
-    if (!workflowIdentity) {
+    if (!workflowIdentity || workflowIdentity.ownerUserId !== user?.id) {
       toast.error('Open a saved position revision before acknowledging stock.');
       return;
     }
@@ -70,36 +72,18 @@ export const StudioStockPage: React.FC = () => {
     }
 
     const inventory = data?.profiles ?? [];
-    const metersByProfile: Record<string, number> = {};
-    const profileIds: string[] = [];
-    let availabilityOk = true;
-
-    for (const line of bom?.profiles ?? []) {
-      const profileId = String((line as { profileId?: string }).profileId ?? (line as { id?: string }).id ?? '');
-      const meters = Number(
-        (line as { totalLengthM?: number }).totalLengthM
-          ?? (line as { lengthMm?: number }).lengthMm / 1000
-          ?? (line as { quantity?: number }).quantity
-          ?? 0,
-      );
-      if (!profileId || !Number.isFinite(meters) || meters <= 0) continue;
-      if (isCatalogProfileCode(profileId)) {
-        availabilityOk = false;
-        toast.error(`BOM still references catalog code ${profileId} — materialize owned UUIDs first.`);
-        break;
-      }
-      profileIds.push(profileId);
-      metersByProfile[profileId] = (metersByProfile[profileId] || 0) + meters;
-      const owned = inventory.find((p) => p.id === profileId);
-      if (!owned || (owned.stockQuantity || 0) < meters) {
-        availabilityOk = false;
-      }
-    }
-
-    if (!profileIds.length) {
-      toast.error('BOM has no profile lengths to acknowledge.');
+    if (isLoading || error || data?.error || !data) {
+      toast.error('Reconciled owned inventory must load successfully before acknowledging stock.');
       return;
     }
+    let metersByProfile: Record<string, number>;
+    try { metersByProfile = bomStockDemand(bom!.profiles); }
+    catch (err) { toast.error(err instanceof Error ? err.message : 'Invalid physical cut ledger.'); return; }
+    const profileIds = Object.keys(metersByProfile);
+    const availabilityOk = profileIds.every(id => {
+      const owned = inventory.find(profile => profile.id === id);
+      return owned && Number.isFinite(owned.stockQuantity) && owned.stockQuantity >= metersByProfile[id];
+    });
 
     setStockReservation({
       identity: workflowIdentity,
@@ -184,6 +168,7 @@ export const StudioStockPage: React.FC = () => {
       </div>
 
       <InventoryDashboard
+        currency="EGP"
         inventory={data?.profiles ?? []}
         project={currentProject}
         userId={user.id}

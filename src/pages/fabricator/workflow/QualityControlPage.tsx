@@ -228,7 +228,7 @@ export const QualityControlPage: React.FC = () => {
     : fabricatorRoutes.studioProductionDelivery();
 
   return (
-    <div className="flex h-full flex-col bg-slate-950 p-6">
+    <div className="flex h-full min-h-0 min-w-0 flex-col overflow-y-auto bg-slate-950 p-3 sm:p-6">
       <div className="mx-auto w-full max-w-4xl">
         <div className="mb-6 flex items-center gap-3">
           <CheckCircle2 className="h-8 w-8 text-green-400" />
@@ -288,7 +288,7 @@ export const QualityControlPage: React.FC = () => {
                     onChange={(event) =>
                       setChecks((value) => ({ ...value, [id]: event.target.checked }))
                     }
-                    className="h-5 w-5 rounded border-slate-600 text-amber-500 focus:ring-amber-500"
+                    className="h-5 w-5 shrink-0 rounded border-slate-600 text-amber-500 focus:ring-amber-500"
                   />
                   <span>{LABELS[id]}</span>
                 </label>
@@ -349,7 +349,7 @@ export const QualityControlPage: React.FC = () => {
         {currentProject && (
           <div className="mb-6 rounded-lg border border-slate-700 bg-slate-900 p-6">
             <h3 className="mb-4 text-lg font-semibold text-amber-200">Project Summary</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm break-words [overflow-wrap:anywhere]">
               <div>
                 <span className="text-slate-500">Position ID:</span>
                 <span className="ml-2 text-slate-300">{currentProject.id}</span>
@@ -372,7 +372,7 @@ export const QualityControlPage: React.FC = () => {
           </div>
         )}
 
-        <div className="flex justify-between gap-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
           <Button
             variant="outline"
             onClick={() => {
@@ -388,7 +388,7 @@ export const QualityControlPage: React.FC = () => {
           >
             ← Back to Production
           </Button>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button variant="outline" onClick={handleStartNew}>
               Start New Project
             </Button>

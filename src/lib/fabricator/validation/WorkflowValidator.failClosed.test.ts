@@ -5,11 +5,11 @@ import { validateOptimizationInputs, validateOptimizationReconciliation, validat
 
 const profile = { id: 'profile-1' } as Profile;
 const validResult: OptimizationResult = {
-  materialUsage: 1000, wastePercentage: 5, estimatedProductionTime: 10, nestingEfficiency: 95,
-  cuttingPlan: [{ profile, stockLength: 6000, totalWaste: 300, utilization: 95, cuts: [{ length: 1000, angle: 45, componentId: 'component-1', waste: 0 }] }],
+  materialUsage: 1000, wastePercentage: 5000 / 6000 * 100, estimatedProductionTime: 10, nestingEfficiency: 1000 / 6000 * 100,
+  cuttingPlan: [{ profile, stockLength: 6000, totalWaste: 5000, utilization: 1000 / 6000 * 100, cuts: [{ length: 1000, angle: 45, componentId: 'component-1', waste: 0 }] }],
   costBreakdown: { materialCost: 1, laborCost: 1, hardwareCost: 0, glazingCost: 0, totalCost: 2 },
 };
-const project = { id: 'position-1', systemPackId: 'pack-1', components: [{ id: 'component-1', profile, quantity: 1, cuttingLengths: [1000] }] } as WindowUnit;
+const project = { id: 'position-1', systemPackId: 'pack-1', components: [{ id: 'component-1', profile, quantity: 1, cuttingLengths: [1000], angles: [45] }] } as WindowUnit;
 
 describe('workflow fail-closed validation', () => {
   it('rejects missing profiles and non-finite component lengths', () => {

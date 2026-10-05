@@ -242,9 +242,9 @@ railway up
 
 | Document | Purpose | Audience |
 |----------|---------|----------|
-| [README.md](README.md) | Institutional overview | All audiences |
-| [Institutional Overview](docs/INSTITUTIONAL_OVERVIEW.md) | Constitutional architecture | Academic reviewers, auditors |
-| [AICS-001 Specification](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md) | Canonical specification | Engineers, architects |
+| [README.md](../../README.md) | Institutional overview | All audiences |
+| [Institutional Overview](../INSTITUTIONAL_OVERVIEW.md) | Constitutional architecture | Academic reviewers, auditors |
+| [AICS-001 Specification](../AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md) | Canonical specification | Engineers, architects |
 | [Technical Architecture](docs/ARCHITECTURE.md) | System design | Developers, architects |
 | [API Reference](docs/API.md) | Endpoints & integration | Developers, integrators |
 | [Deployment Guide](docs/DEPLOYMENT.md) | Installation & setup | DevOps, administrators |
@@ -312,7 +312,7 @@ Licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## 🏛️ Institutional Context
 
-> **Note**: This technical README describes the implementation and deployment model. For institutional identity, governance principles, and constitutional architecture, see [README.md](README.md) and [docs/INSTITUTIONAL_OVERVIEW.md](docs/INSTITUTIONAL_OVERVIEW.md).
+> **Note**: This technical README describes the implementation and deployment model. For institutional identity, governance principles, and constitutional architecture, see [README.md](../../README.md) and [docs/INSTITUTIONAL_OVERVIEW.md](../INSTITUTIONAL_OVERVIEW.md).
 
 **Status**: 🟢 **Production-Ready** - Used by real workshops today
 

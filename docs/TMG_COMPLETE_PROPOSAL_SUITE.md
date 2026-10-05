@@ -21,27 +21,27 @@ This document suite presents **TMG Integrated Operations Management System (IOMS
 
 | Document | Audience | Purpose | Status |
 |----------|----------|---------|--------|
-| **[TMG IOMS Proposal](./TMG_IOMS_PROPOSAL.md)** | Board, C-level | Complete business proposal | ✅ Complete |
-| **[Executive Deck](./TMG_IOMS_EXECUTIVE_DECK.md)** | Board, C-level | 10-slide presentation | ✅ Complete |
-| **[POC Scope](./TMG_POC_SCOPE.md)** | Executive sponsors | Politically-astute POC plan | ✅ Complete |
-| **[Stress Test](./TMG_STRESS_TEST.md)** | Auditors, Due-diligence | Hostile questions answered | ✅ Complete |
+| **[TMG IOMS Proposal](TMG_IOMS_PROPOSAL.md)** | Board, C-level | Complete business proposal | ✅ Complete |
+| **[Executive Deck](TMG_IOMS_EXECUTIVE_DECK.md)** | Board, C-level | 10-slide presentation | ✅ Complete |
+| **[POC Scope](TMG_POC_SCOPE.md)** | Executive sponsors | Politically-astute POC plan | ✅ Complete |
+| **[Stress Test](TMG_STRESS_TEST.md)** | Auditors, Due-diligence | Hostile questions answered | ✅ Complete |
 
 ### 🔧 Technical Documents (For Implementation Teams)
 
 | Document | Audience | Purpose | Status |
 |----------|----------|---------|--------|
-| **[TMG Shield Requirements](./TMG_REQUIREMENTS.md)** | Technical team | Business requirements for vertical | ✅ Complete |
-| **[TMG Shield vs IOMS Bridge](./TMG_SHIELD_VS_IOMS_BRIDGE.md)** | All audiences | Relationship clarification | ✅ Complete |
-| **[Technical Architecture Diagrams](./TMG_TECHNICAL_ARCHITECTURE_DIAGRAMS.md)** | Technical teams | Visual architecture | ✅ Complete |
-| **[Week 11 Status](./TMG_WEEK11_STATUS.md)** | Project team | Phase 6 implementation status | ✅ Complete |
+| **[TMG Shield Requirements](TMG_REQUIREMENTS.md)** | Technical team | Business requirements for vertical | ✅ Complete |
+| **[TMG Shield vs IOMS Bridge](TMG_SHIELD_VS_IOMS_BRIDGE.md)** | All audiences | Relationship clarification | ✅ Complete |
+| **[Technical Architecture Diagrams](TMG_TECHNICAL_ARCHITECTURE_DIAGRAMS.md)** | Technical teams | Visual architecture | ✅ Complete |
+| **[Week 11 Status](TMG_WEEK11_STATUS.md)** | Project team | Phase 6 implementation status | ✅ Complete |
 
 ### 🏗️ Platform Documents (For Architects)
 
 | Document | Audience | Purpose | Status |
 |----------|----------|---------|--------|
-| **[RealityOS Platform Architecture](./REALITYOS_PLATFORM_ARCHITECTURE.md)** | Architects | Platform overview | ✅ Complete |
-| **[Phase 6 Preparation](./REALITYOS_PHASE6_TMG_SHIELD_PREPARATION.md)** | Developers | Technical implementation plan | ✅ Complete |
-| **[AICS-001 Specification](./AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md)** | Engineers | Constitutional specification | ✅ Complete |
+| **[RealityOS Platform Architecture](REALITYOS_PLATFORM_ARCHITECTURE.md)** | Architects | Platform overview | ✅ Complete |
+| **[Phase 6 Preparation](REALITYOS_PHASE6_TMG_SHIELD_PREPARATION.md)** | Developers | Technical implementation plan | ✅ Complete |
+| **[AICS-001 Specification](AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md)** | Engineers | Constitutional specification | ✅ Complete |
 
 ---
 

@@ -3,9 +3,6 @@ import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
 import { OptimizationCockpit } from '@/components/fabricator/cockpit/OptimizationCockpit';
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { useAuth } from '@/context/AuthContext';
-import { catalogProfilesOrEmpty, findSystemPack } from '@/lib/fabricator/catalog/CatalogResolver';
-import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import { findBestMatchingPattern, getPatternById } from '@/lib/fabricator/presetUtils';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateOptimizationReconciliation, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
@@ -34,6 +31,7 @@ export const OptimizationPage: React.FC = () => {
     const { user } = useAuth();
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [optimizationError, setOptimizationError] = useState<string | null>(null);
+    const [isExporting, setIsExporting] = useState(false);
     const activeRunRef = useRef(0);
     const submissionLockedRef = useRef(false);
     const projectIdentityRef = useRef<string | null>(null);
@@ -45,7 +43,6 @@ export const OptimizationPage: React.FC = () => {
         optimizationResult,
         completeStep,
         setOptimizationResult,
-        setBOM,
         invalidateStep,
     } = useWorkflowStore();
     const activeProjectRef = useRef(currentProject);
@@ -69,14 +66,9 @@ export const OptimizationPage: React.FC = () => {
         [measurementData, currentProject, bom, optimizationResult]
     );
 
-    const systemPack = useMemo(() => {
-        const resolved = findSystemPack(currentProject?.systemPackId);
-        return resolved.ok ? resolved.pack : null;
-    }, [currentProject?.systemPackId]);
-
     const profiles = useMemo(
-        () => catalogProfilesOrEmpty(currentProject?.systemPackId),
-        [currentProject?.systemPackId],
+        () => Array.from(new Map((currentProject?.components ?? []).filter(component => component.profile?.id).map(component => [component.profile.id, component.profile])).values()),
+        [currentProject?.components],
     );
 
     const hasRequiredData = currentProject !== null;
@@ -105,34 +97,10 @@ export const OptimizationPage: React.FC = () => {
             const resultValidation = validateOptimizationReconciliation(optimizationResult, runProject);
             if (!resultValidation.valid) throw new Error(resultValidation.errors[0]?.message ?? 'Optimization result is invalid.');
 
-            if (systemPack && currentProject.grid) {
-                try {
-                    const pattern =
-                        (currentProject as { presetId?: string }).presetId
-                            ? getPatternById((currentProject as { presetId: string }).presetId)
-                            : findBestMatchingPattern(currentProject.grid, currentProject.systemPackId ?? null)?.pattern;
-                    if (pattern) {
-                        const bomGenerator = new PresetAwareBOMGenerator();
-                        const bom = await bomGenerator.generateCompleteBOM(currentProject, pattern, systemPack)
-                            .catch(() => null);
-                        if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
-                        if (bom) setBOM(bom);
-                    }
-                } catch {
-                    // BOM optional; continue without it
-                }
-            }
-
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
             setOptimizationResult(optimizationResult);
             if (!completeStep('optimization')) throw new Error('Optimization evidence could not be verified.');
 
-            const projId = projectId ?? currentProject.id;
-            const posId = poseId ?? projId;
-            setTimeout(() => {
-                if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
-                void navigate(fabricatorRoutes.poseCommercial(projId, posId));
-            }, 100);
         } catch (err) {
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current) return;
             console.error('[OptimizationPage] Optimization failed:', err);
@@ -144,7 +112,7 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, projectId, poseId, systemPack, completeStep, setOptimizationResult, setBOM, navigate, invalidateStep, projectIdentity]);
+    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, navigate, invalidateStep, projectIdentity]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, currentProject).valid;
 
@@ -159,7 +127,7 @@ export const OptimizationPage: React.FC = () => {
 
     if (!hasRequiredData || !optimizationValidation.valid) {
         return (
-            <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
+            <div className="flex items-start sm:items-center justify-center h-full min-h-0 overflow-y-auto bg-gradient-to-br from-slate-950 to-slate-900 p-3 sm:p-6">
                 <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 space-y-6">
                     <div className="text-center">
                         <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
@@ -209,7 +177,27 @@ export const OptimizationPage: React.FC = () => {
                 </OptimizationCockpit>
 
                 {validOptimization && projectId && poseId && (
-                    <div className="p-2 flex justify-end">
+                    <div className="p-3 flex flex-wrap justify-end gap-3">
+                        <button type="button" disabled={isOptimizing || isExporting} className="px-4 py-2 border border-amber-600 text-amber-200 text-sm rounded disabled:opacity-50"
+                            onClick={async () => {
+                                if (!currentProject || !optimizationResult) return;
+                                setIsExporting(true);
+                                try {
+                                    const { PDFExportService } = await import('@/modules/reporting/PDFExportService');
+                                    const branding = { companyName: 'ALMONA' };
+                                    const blob = await new PDFExportService(branding).generateCuttingListPDF(currentProject, optimizationResult, { branding });
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.download = `cut-list-${currentProject.posNumber || currentProject.id}.pdf`;
+                                    link.click();
+                                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                                } catch (error) {
+                                    setOptimizationError(error instanceof Error ? error.message : 'Cut-list PDF export failed.');
+                                } finally { setIsExporting(false); }
+                            }}>
+                            {isExporting ? 'Generating PDF…' : 'Download cut-list PDF'}
+                        </button>
                         <button
                             type="button"
                             onClick={() => {

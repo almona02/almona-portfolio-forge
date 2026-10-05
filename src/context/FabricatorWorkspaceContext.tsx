@@ -4,10 +4,12 @@ import React, {
   useEffect,
   useReducer,
   useRef,
+  useState,
   type ReactNode,
 } from 'react';
 
 import { registerActiveWorkspaceProjectBridge } from '@/lib/fabricator/activeProjectBridge';
+import { useAuth } from '@/context/AuthContext';
 import type { ConstitutionalMetadata } from '@/lib/constitutional/PositionStateSyncService';
 import type {
   DraftInvoice,
@@ -327,7 +329,14 @@ const workspaceReducer = (
 };
 
 export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  return <OwnerWorkspaceProvider key={user?.id ?? 'anonymous'} ownerId={user?.id ?? null}>{children}</OwnerWorkspaceProvider>;
+};
+
+const OwnerWorkspaceProvider: React.FC<{ children: ReactNode; ownerId: string | null }> = ({ children, ownerId }) => {
+  const storageKey = `${STORAGE_KEY}:${ownerId ?? 'anonymous'}`;
   const [state, dispatch] = useReducer(workspaceReducer, initialState);
+  const [hydrated, setHydrated] = useState(false);
   const stateRef = useRef(state);
   stateRef.current = state;
 
@@ -343,16 +352,17 @@ export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({
 
   // Load workspace from Supabase (with localStorage fallback) on mount
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !ownerId) return;
+    let cancelled = false;
 
     // Lazy import to avoid circular deps at module init time
     void import('@/lib/workspace/WorkspaceSyncService')
       .then(({ WorkspaceSyncService }) => {
-        const service = new WorkspaceSyncService(STORAGE_KEY);
+        const service = new WorkspaceSyncService(storageKey, ownerId);
         return service.loadWorkspaceSnapshot();
       })
       .then((result) => {
-        if (!result || !result.data) return;
+        if (cancelled || !result || !result.data) return;
         const loaded = result.data;
         const hydrated: FabricatorWorkspaceState = {
           ...initialState,
@@ -365,19 +375,23 @@ export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({
       })
       .catch((error) => {
         console.warn('Failed to load fabricator workspace from sync service:', error);
-      });
+      })
+      .finally(() => { if (!cancelled) setHydrated(true); });
 
-  }, []);
+    return () => { cancelled = true; };
+  }, [ownerId, storageKey]);
 
   // Persist workspace to Supabase (with localStorage fallback) using debounced save
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !ownerId || !hydrated) return;
+    let cancelled = false;
 
     let serviceInstance: InstanceType<typeof import('@/lib/workspace/WorkspaceSyncService').WorkspaceSyncService> | null = null;
 
     void import('@/lib/workspace/WorkspaceSyncService')
       .then(({ WorkspaceSyncService }) => {
-        serviceInstance = new WorkspaceSyncService(STORAGE_KEY);
+        if (cancelled) return;
+        serviceInstance = new WorkspaceSyncService(storageKey, ownerId);
 
         // Use debounced save method (3-second delay built-in)
         serviceInstance.saveWorkspaceSnapshotDebounced(state, 3000)
@@ -397,11 +411,12 @@ export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({
 
     // Cleanup: cancel pending debounced save on unmount or state change
     return () => {
+      cancelled = true;
       if (serviceInstance?.cancelDebouncedSave) {
         serviceInstance.cancelDebouncedSave();
       }
     };
-  }, [state]);
+  }, [state, ownerId, storageKey, hydrated]);
 
   return (
     <FabricatorWorkspaceContext.Provider value={{ state, dispatch }}>

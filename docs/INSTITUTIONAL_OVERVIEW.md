@@ -260,8 +260,8 @@ This figure illustrates the three-tier decision architecture that governs all sy
 
 **Reference**:
 - [AICS-001 Section 5.10: Constitutional AI Governance Framework](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md#510-constitutional-ai-governance-framework)
-- [YDT Intelligence Gate Architecture](YDT_INTELLIGENCE_GATE_ARCHITECTURE.md)
-- [Week 1 Constitutional Baseline](WEEK1_CONSTITUTIONAL_BASELINE.md)
+- [YDT Intelligence Gate Architecture](architecture/YDT_INTELLIGENCE_GATE_ARCHITECTURE.md)
+- [Week 1 Constitutional Baseline](architecture/WEEK1_CONSTITUTIONAL_BASELINE.md)
 
 ### 2.5 Constitutional Wiring Implementation (Week 2-4, January 2026)
 
@@ -582,7 +582,7 @@ The following technologies represent the current reference implementation. They 
 5. **Vertical Agnosticism** (Principle 5)
 6. **No Admin Correction Flags** (Principle 6)
 
-**Reference**: [REALITYOS_CONSTITUTION.md](REALITYOS_CONSTITUTION.md)
+**Reference**: [REALITYOS_CONSTITUTION.md](architecture/REALITYOS_CONSTITUTION.md)
 
 ---
 
@@ -779,8 +779,8 @@ The following technologies represent the current reference implementation. They 
 **Quality Standards**: Gold Tier Grade - Error-Free, Auditable, Hardened, Performance-Optimized
 
 **Reference**: 
-- [Gold Tier Phase 1, Task 1 Implementation](GOLD_TIER_PHASE1_TASK1_IMPLEMENTATION_COMPLETE.md)
-- [Gold Tier Task 2.1 Implementation](GOLD_TIER_TASK2_1_COMPLETE.md)
+- [Gold Tier Phase 1, Task 1 Implementation](plans/GOLD_TIER_PHASE1_TASK1_IMPLEMENTATION_COMPLETE.md)
+- [Gold Tier Task 2.1 Implementation](notes/GOLD_TIER_TASK2_1_COMPLETE.md)
 
 ### 12.2 Constitutional AI Governance Framework - Week 1 Implementation
 
@@ -816,8 +816,8 @@ The following technologies represent the current reference implementation. They 
 - **Deterministic Purity**: 100% (no AI in Tier 3 operations)
 
 **Reference**:
-- [Week 1 Constitutional Baseline](WEEK1_CONSTITUTIONAL_BASELINE.md)
-- [YDT Intelligence Gate Architecture](YDT_INTELLIGENCE_GATE_ARCHITECTURE.md)
+- [Week 1 Constitutional Baseline](architecture/WEEK1_CONSTITUTIONAL_BASELINE.md)
+- [YDT Intelligence Gate Architecture](architecture/YDT_INTELLIGENCE_GATE_ARCHITECTURE.md)
 
 ### 12.3 Services YDT Integration - Week 1 Implementation
 
@@ -844,7 +844,7 @@ The following technologies represent the current reference implementation. They 
    - **TicketWizardWithYDT**: Auto-fetch YDT suggestions with debouncing
    - **ServicesYDTDashboard**: Real-time metrics display
 
-**Reference**: [Week 1 Services Implementation](WEEK1_SERVICES_IMPLEMENTATION_COMPLETE.md)
+**Reference**: [Week 1 Services Implementation](notes/WEEK1_SERVICES_IMPLEMENTATION_COMPLETE.md)
 
 ### 12.4 Constitutional Compliance Fixes - Week 1
 

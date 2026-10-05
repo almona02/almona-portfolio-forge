@@ -62,4 +62,20 @@ describe('stockIntake (UP-10)', () => {
     ]);
     expect(syncStockFromMovements).toHaveBeenCalledWith('user-1');
   });
+
+  it('does not acknowledge an inserted movement if reconciliation fails', async () => {
+    const { syncStockFromMovements } = await import('@/lib/inventory/StockCalculator');
+    vi.mocked(syncStockFromMovements).mockRejectedValueOnce(new Error('server unavailable'));
+    const result = await recordStockIntakeThenSync('user-1', [{ profileId: 'p1', quantity: 6, unit: 'meters', requestId: 'retry-same' }]);
+    expect(result.ok).toBe(false);
+    expect(result).toMatchObject({ error: expect.stringContaining('Retry the same request') });
+  });
+
+  it('does not accept a missing idempotency column as a successful retry', async () => {
+    insert.mockResolvedValue({ error: { code: '42703', message: 'idempotency_key does not exist' } });
+    const result = await recordStockIntakeThenSync('user-1', [{ profileId: 'p1', quantity: 6, unit: 'meters', requestId: 'req' }]);
+    expect(result.ok).toBe(false);
+    const { syncStockFromMovements } = await import('@/lib/inventory/StockCalculator');
+    expect(syncStockFromMovements).not.toHaveBeenCalled();
+  });
 });
