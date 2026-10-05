@@ -77,28 +77,53 @@ export async function materializeOwnedProfilesFromPack(
     };
 
     // Prefer match by original catalog code in specs, then by name.
-    const { data: byName } = await db
+    const { data: byCodeRows } = await db
       .from('fabricator_profiles')
       .select('id, specifications')
       .eq('user_id', userId)
-      .eq('name', profile.name)
-      .maybeSingle();
+      .contains('specifications', { originalCatalogCode: originalCode })
+      .limit(1);
+
+    const byCode = Array.isArray(byCodeRows) ? byCodeRows[0] : byCodeRows;
 
     let ownedId: string | null = null;
-    if (byName?.id && isFabricatorUuid(String(byName.id))) {
-      const existingSpecs = (byName.specifications || {}) as Record<string, unknown>;
-      const existingCode = String(existingSpecs.originalCatalogCode ?? existingSpecs.partNumber ?? '');
-      if (!existingCode || existingCode === originalCode) {
-        ownedId = String(byName.id);
-        await db
-          .from('fabricator_profiles')
-          .update({
-            specifications: { ...existingSpecs, ...specs },
-            system_brand: profile.systemBrand ?? pack.meta.brands?.[0] ?? null,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', ownedId)
-          .eq('user_id', userId);
+    if (byCode?.id && isFabricatorUuid(String(byCode.id))) {
+      ownedId = String(byCode.id);
+      const existingSpecs = (byCode.specifications || {}) as Record<string, unknown>;
+      await db
+        .from('fabricator_profiles')
+        .update({
+          specifications: { ...existingSpecs, ...specs },
+          system_brand: profile.systemBrand ?? pack.meta.brands?.[0] ?? null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', ownedId)
+        .eq('user_id', userId);
+    }
+
+    if (!ownedId) {
+      const { data: byName } = await db
+        .from('fabricator_profiles')
+        .select('id, specifications')
+        .eq('user_id', userId)
+        .eq('name', profile.name)
+        .maybeSingle();
+
+      if (byName?.id && isFabricatorUuid(String(byName.id))) {
+        const existingSpecs = (byName.specifications || {}) as Record<string, unknown>;
+        const existingCode = String(existingSpecs.originalCatalogCode ?? existingSpecs.partNumber ?? '');
+        if (!existingCode || existingCode === originalCode) {
+          ownedId = String(byName.id);
+          await db
+            .from('fabricator_profiles')
+            .update({
+              specifications: { ...existingSpecs, ...specs },
+              system_brand: profile.systemBrand ?? pack.meta.brands?.[0] ?? null,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', ownedId)
+            .eq('user_id', userId);
+        }
       }
     }
 

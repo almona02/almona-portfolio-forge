@@ -486,12 +486,19 @@ export const ProfileStudioLite: React.FC = () => {
         tuningStatus: 'untuned' as const,
       };
 
-      // UP-07: local save + async server sync with explicit feedback.
-      await addCustomSystemAsync(customPack, user?.id);
-      localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(customPack));
-      window.dispatchEvent(new CustomEvent('customProfileAdded', { detail: customPack }));
+  // UP-07: local save + async server sync; persist *materialized* pack (UUID ids).
+      const savedPacks = await addCustomSystemAsync(customPack, user?.id);
+      const materializeNote = (savedPacks as StoredSystemPack[] & { __materializeNote?: string })
+        .__materializeNote;
+      const persistedPack =
+        (savedPacks as StoredSystemPack[] & { __savedPack?: StoredSystemPack }).__savedPack
+        ?? savedPacks.find((p) => p.meta.id === systemPackId)
+        ?? customPack;
+
+      localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(persistedPack));
+      window.dispatchEvent(new CustomEvent('customProfileAdded', { detail: persistedPack }));
       window.dispatchEvent(new CustomEvent('systemPackTuned', {
-        detail: { systemPackId, systemPackName: customPack.meta.name, tuned: false },
+        detail: { systemPackId, systemPackName: persistedPack.meta.name, tuned: false },
       }));
 
       const refreshed = user?.id
@@ -501,10 +508,14 @@ export const ProfileStudioLite: React.FC = () => {
 
       if (user?.id) {
         setSaveStatus('success');
-        setSaveFeedback('Saved locally and queued for server sync.');
+        setSaveFeedback(
+          materializeNote
+            ? `Saved locally and queued for server sync. ${materializeNote}`
+            : 'Saved locally and queued for server sync.',
+        );
       } else {
         setSaveStatus('local_only');
-        setSaveFeedback('Saved to this browser only — sign in to sync to the workshop server.');
+        setSaveFeedback('Saved to this browser only — sign in to sync and materialize owned profile UUIDs.');
       }
       setIsSaving(false);
 

@@ -140,9 +140,12 @@ export const addCustomSystemAsync = async (
   }
 
   if (materializeNote) {
-    (updated as StoredSystemPack[] & { __materializeNote?: string }).__materializeNote =
-      materializeNote;
+    (updated as StoredSystemPack[] & {
+      __materializeNote?: string;
+      __savedPack?: StoredSystemPack;
+    }).__materializeNote = materializeNote;
   }
+  (updated as StoredSystemPack[] & { __savedPack?: StoredSystemPack }).__savedPack = newSystem;
 
   return updated;
 };

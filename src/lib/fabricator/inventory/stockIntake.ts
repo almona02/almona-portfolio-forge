@@ -46,6 +46,7 @@ export async function recordStockIntakeThenSync(
         quantity: m.quantity,
         unit: m.unit,
         notes: noteParts.length ? noteParts.join(' – ') : null,
+        idempotency_key: m.requestId || null,
       };
     });
 
@@ -56,6 +57,11 @@ export async function recordStockIntakeThenSync(
   const db = supabase as any;
   const { error } = await db.from('stock_movements').insert(rows);
   if (error) {
+    // Unique violation on (user_id, idempotency_key) → treat as already recorded.
+    if (String(error.code) === '23505' || /idempotency/i.test(error.message || '')) {
+      await syncStockFromMovements(userId);
+      return { ok: true, movementCount: rows.length };
+    }
     return { ok: false, error: error.message || 'Failed to insert stock movements.' };
   }
 

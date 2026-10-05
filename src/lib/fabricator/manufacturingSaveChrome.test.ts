@@ -19,7 +19,7 @@ describe('getManufacturingSaveChrome (UP-14)', () => {
     expect(chrome.revisionLabel).toBe('R2');
   });
 
-  it('shows saved with revision when identity present and clean', () => {
+  it('does not invent Saved from identity alone (FUA-19)', () => {
     const chrome = getManufacturingSaveChrome({
       draftDirty: false,
       workflowIdentity: {
@@ -30,8 +30,25 @@ describe('getManufacturingSaveChrome (UP-14)', () => {
         revision: 3,
       },
     });
-    expect(chrome.tone).toBe('saved');
-    expect(chrome.label).toBe('Saved · R3');
+    expect(chrome.tone).toBe('local');
+    expect(chrome.label).toBe('Revision loaded · R3');
+    expect(chrome.label).not.toMatch(/^Saved/);
+  });
+
+  it('shows acknowledged only with explicit server ack', () => {
+    const chrome = getManufacturingSaveChrome({
+      draftDirty: false,
+      serverAcknowledged: true,
+      workflowIdentity: {
+        ownerUserId: 'u',
+        projectId: 'p',
+        positionId: 'pos',
+        source: 'v2',
+        revision: 3,
+      },
+    });
+    expect(chrome.tone).toBe('acknowledged');
+    expect(chrome.label).toBe('Acknowledged · R3');
   });
 
   it('falls back to Not recorded without identity', () => {

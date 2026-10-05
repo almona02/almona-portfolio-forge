@@ -101,12 +101,14 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
     }),
     [draftDirty, workflowIdentity, currentProject, workspace.currentProject],
   );
-  const savedOk = saveChrome.tone === 'saved';
+  const savedOk = saveChrome.tone === 'acknowledged';
   const savedLabel = saveChrome.tone === 'dirty'
     ? 'Unsaved draft'
-    : saveChrome.tone === 'saved'
+    : saveChrome.tone === 'acknowledged'
       ? saveChrome.label
-      : null;
+      : saveChrome.tone === 'local'
+        ? saveChrome.label
+        : null;
   
   // Navigation items for all fabricator sections (memoized for performance)
   const navItems: NavItem[] = useMemo(() => [
@@ -398,12 +400,23 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
               <div
                 className={cn(
                   'w-2 h-2 rounded-full',
-                  savedOk ? 'bg-green-500' : 'bg-amber-500',
+                  savedOk ? 'bg-green-500' : saveChrome.tone === 'dirty' ? 'bg-amber-500' : 'bg-slate-500',
                 )}
                 aria-hidden
               />
-              <span className={cn('text-xs', savedOk ? 'text-green-400' : 'text-amber-400')}>
-                {savedOk ? 'Saved' : saveChrome.tone === 'dirty' ? 'Unsaved' : 'Unknown'}
+              <span
+                className={cn(
+                  'text-xs',
+                  savedOk ? 'text-green-400' : saveChrome.tone === 'dirty' ? 'text-amber-400' : 'text-slate-400',
+                )}
+              >
+                {savedOk
+                  ? 'Acknowledged'
+                  : saveChrome.tone === 'dirty'
+                    ? 'Unsaved'
+                    : saveChrome.tone === 'local'
+                      ? 'Local'
+                      : 'Unknown'}
               </span>
             </div>
           </div>

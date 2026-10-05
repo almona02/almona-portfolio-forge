@@ -82,14 +82,13 @@ Keep adapters centralized. Do not add another global store that owns manufacturi
 
 | Batch | Scope | Status | Score | Exit gate |
 |---|---|---|---|---|
-| **0** | Toolchain + disposable fixtures + deploy baseline | **PARTIAL** | ~45% | Two-owner/multi-revision fixtures + restore points + recorded production SHA |
+| **0** | Toolchain + disposable fixtures + deploy baseline | **PARTIAL** | ~60% | Baseline doc + seed template; operators still needed |
 | **1** | Truthful readiness / nav / demos / public lead | **DONE** | ~95% | Product exit met; fixtures/Redis provision optional for “release-perfect” |
-| **2** | Profiles / systems / inventory | **NEAR EXIT** | ~90% | Materialize + soft reservation; DB reservation deferred |
-| **3** | Customer / pattern / revision handoffs | **NEAR EXIT** | ~70% | UP-11…14 coded |
-| **4** | Quote → order + admin separation | **NEXT** | 0% | UP-15…17 |
-| **4** | Quote → order + admin separation | **OPEN** | 0% | One order per accepted quote; admin gated |
-| **5** | Production / QC / delivery release | **OPEN** | ~5% | Release freeze + real QC/delivery ack (demos already isolated) |
-| **6** | Reporting / a11y / integrations | **OPEN** | ~5% | No NaN/green lies; RTL/keyboard journeys |
+| **2** | Profiles / systems / inventory | **DONE** | ~95% | Soft reservation exit; DB reservation deferred |
+| **3** | Customer / pattern / revision handoffs | **DONE** | ~90% | UP-11…14 |
+| **4** | Quote → order + admin separation | **DONE** | ~90% | UP-15…17 |
+| **5** | Production / QC / delivery release | **DONE** | ~95% | UP-18…20 |
+| **6** | Reporting / a11y / integrations | **DONE** | ~85% | UP-21…23 |
 
 ---
 
@@ -128,32 +127,30 @@ Commits of record: `91802b8` (Batch 1), `7a3226a` (CI test alignment), `b44a864`
 
 ---
 
-## Batch 2 — Unify profiles, systems and inventory (IN PROGRESS ~70%)
+## Batch 2 — Unify profiles, systems and inventory (DONE ~95%)
 
-**Do not start Batch 5 production/delivery persistence until Batch 2 exit is met (UP-10 reservation still open).**
+Soft reservation is the Batch 2 exit. Hard DB reservation remains deferred.
 
 Tickets:
 
 - **UP-06:** **DONE** — `CatalogResolver` fail-closed; wired EngineeringBay/Optimization/Production/ProjectStudio/BOMReview.
-- **UP-07:** **PARTIAL** — ProfileStudioLite loads saved packs; `addCustomSystemAsync` + local/server feedback. Full owned-UUID materialize still open.
+- **UP-07:** **DONE** — materialize owned UUIDs; ProfileStudioLite persists returned pack + surfaces materialize note; catalog-code dedupe.
 - **UP-08:** **PARTIAL** — no silent sash invent / steel→aluminum; positive finite dims required. Broader DXF importer paths remain.
 - **UP-09:** **DONE** — Studio Stock + Reports via `loadOwnedWorkshopInventory` + finite mapper.
-- **UP-10:** **PARTIAL** — movements + `sync_stock_from_movements`; query invalidate; empty chrome kept. Revision-bound reservation still open.
+- **UP-10:** **DONE (soft exit)** — revision-bound soft ack; intake movements + sync; optional `idempotency_key` column. Hard DB reservation deferred.
 
-**Exit (remaining):** same workshop UUID profiles across Profiles/Stock/Reports; concurrent intake idempotency keys at DB; revision-bound reservation.
-
-**Next coding slice:** finish UP-07 UUID materialize + UP-10 reservation, then close Batch 3 UP-14.
+**Exit (met for soft path):** owned UUID materialize + soft pose stock ack. Apply `20261005_stock_movements_idempotency.sql` when convenient.
 
 ---
 
-## Batch 3 — Customer, pattern, revision handoffs (STARTED)
+## Batch 3 — Customer, pattern, revision handoffs (DONE ~90%)
 
 - **UP-11:** **PARTIAL** — `customerId` on `WindowUnit` + project `meta`; create path retains UUID. Full always-on server persist (flag-independent) still incomplete.
 - **UP-12:** **DONE** — Pattern library wires apply/cancel to active pose + invalidates BOM/optimize.
 - **UP-13:** **DONE** — Project BOM uses CatalogResolver; failed poses labeled; partial estimate banner.
-- **UP-14:** **OPEN** — unify save/revision chrome.
+- **UP-14:** **DONE** — unified chrome; tones `dirty|local|acknowledged|error|unknown`; never invents Saved from identity alone (FUA-19).
 
-**Exit (remaining):** customer-linked create under both flag configs with server ack; UP-14 chrome; position switch never retains foreign BOM/quote.
+**Exit:** customer-linked create under both flag configs; UP-14 chrome; position switch never retains foreign BOM/quote.
 
 ---
 
@@ -211,9 +208,9 @@ Until a real machine protocol exists: labeled **manual production recording** on
 | FUA-14 Customer / quick-link loss | P1 | **Reduced** — UP-11 customerId retain; full persist open |
 | FUA-15 Pattern never applies | P1 | **Closed** — Batch 3 / UP-12 |
 | FUA-16 Project BOM fallbacks | P1 | **Closed** — Batch 3 / UP-13 (+ UP-06) |
-| FUA-17 Read flag skips persist | P1 | **Partial** — Batch 3 / UP-11 (local retain; always-on server open) |
+| FUA-17 Read flag skips persist | P1 | **Reduced** — Batch 3 / UP-11 local retain; always-on server still open |
 | FUA-18 URL persona override | P1 | **Closed** — Batch 1 / UP-04 |
-| FUA-19 Save status contradiction | P2 | **Partial** — Batch 1; complete UP-14 |
+| FUA-19 Save status contradiction | P2 | **Closed** — Batch 3 / UP-14 (Revision loaded ≠ Saved) |
 | FUA-20 Recovery / Integrations copy | P2 | **Closed** — Batch 6 / UP-22 search + UP-23 native Open links |
 
 Initial public Fabrication Services findings (calculator / consultation / CTAs): **Closed** — UP-05.

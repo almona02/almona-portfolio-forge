@@ -20,16 +20,11 @@ export const ManufacturingStatusBar: React.FC = () => {
     [draftDirty, workflowIdentity, project],
   );
 
-  const online =
-    typeof navigator === 'undefined' ? true : navigator.onLine;
-
   const cells = [
     {
       icon: <Cable size={11} />,
       label: t('industrial.status.browser_network', 'Browser network'),
-      value: online
-        ? t('industrial.status.online', 'Online')
-        : t('industrial.status.offline', 'Offline'),
+      value: t('industrial.status.browser_only', 'Browser only'),
     },
     {
       icon: <Save size={11} />,
@@ -55,7 +50,7 @@ export const ManufacturingStatusBar: React.FC = () => {
     {
       icon: <SlidersHorizontal size={11} />,
       label: t('industrial.status.mfg_profile', 'Mfg settings'),
-      value: 'platform-default',
+      value: NOT_RECORDED,
       ltr: true,
     },
   ];
