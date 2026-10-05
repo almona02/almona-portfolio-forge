@@ -1,6 +1,6 @@
 # Fabricator Batch 1 implementation
 
-Date: 5 October 2026. Status: **frontend promoted to production domains**; consultation migration + live UUID receipt verified; Batch 1 suites **30/30** green. **Not release-closed:** Batch 1 source largely uncommitted on `origin/main`, Railway Redis still reported healthy when `not_configured`, Batch 0 two-owner fixtures and full multi-revision walkthrough still open. Scorecard: [FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md).
+Date: 5 October 2026. Status: **frontend promoted**; consultation + Batch 1 suites **30/30**; git synced (`91802b8` / CI `7a3226a`); Redis honesty live (`b44a864`). Security remediation prepared and locally verified (PyJWT 2.15.1 + npm pins); braces/node-forge blocked pending upstream. Scorecard: [FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md). Security batch: [SECURITY_DEPENDABOT_REMEDIATION_BATCH_2026-10-05.md](SECURITY_DEPENDABOT_REMEDIATION_BATCH_2026-10-05.md).
 
 ## Changes
 
@@ -52,15 +52,33 @@ Docker evidence: batch1-docker-build.log, batch1-docker-runtime.log, batch1-dock
 | Vercel promote | Success — `almona-portfolio-forge-97hxhbzfm` / `dpl_7jjAH7uuHjne7WD8CMJ1z3ZfiPUj` |
 | Live consultation browser receipt | PASS then synthetic row removed |
 | Authenticated Studio (earlier same day) | Stage order + QC context + blocked prerequisites observed |
-| `origin/main` contains Batch 1 | **FAIL** — HEAD still Measuring UX (`0e6f0ea`); deploy was artifact-based |
-| Railway public `/health` | **degraded**; Redis `healthy` + `not_configured` (honesty fix not confirmed live) |
+| `origin/main` contains Batch 1 | **PASS** — `91802b8` (+ CI fix `7a3226a`) |
+| Railway public `/health` | **degraded**; Redis `unhealthy` / `unreachable` (honesty live on `b44a864`) |
 | Two-owner / multi-revision fixtures | Still required (Batch 0) |
+
+## Security + Railway follow-up — 5 October 2026 night
+
+Prepared Dependabot remediation batch (see [SECURITY_DEPENDABOT_REMEDIATION_BATCH_2026-10-05.md](SECURITY_DEPENDABOT_REMEDIATION_BATCH_2026-10-05.md)).
+
+| Gate | Result |
+|---|---|
+| PyJWT pins → **2.15.1** (`requirements.txt` / prod / optimized) | Local install reports `PyJWT 2.15.1` |
+| Root npm: `fast-uri` 4.2.1, `serialize-javascript` 7.1.2, `dompurify` 3.4.16, `brace-expansion` 5.0.12 | Lockfile resolved |
+| Mobile npm: `brace-expansion` **2.1.7** | Lockfile resolved; `node-forge` remains 1.4.0 (1.4.1 unpublished) |
+| `braces` 3.0.3 | **Still open** — no patched release (CVE-2026-93687) |
+| `npm run test:batch1` after dependency refresh | **30/30** |
+| Prior CI regressions (Apex / preset / industrial UI) | **28/28** |
+| `npm run build` | **PASS** |
+| Backend Redis readiness tests | **5/5** |
+| Live Railway `/health` | degraded / Redis unhealthy (unchanged ops state) |
+| `python_backend/railway.json` | Aligned to **`Dockerfile.realistic`** + `apis.main` (matches live Industrial service; Prestige Dockerfile was the stale repo pointer) |
 
 ## Staging / release-close still required
 
-1. Commit and push the Batch 1 tree so production tracks a git SHA (exclude secrets, `__pycache__`, `batch1-release*` artifacts).
+1. ~~Commit and push the Batch 1 tree so production tracks a git SHA~~ — done (`91802b8`).
 2. Complete Batch 0 disposable two-owner fixtures and restore points; finish multi-revision walkthrough without customer-record mutation.
-3. Deploy Redis honesty (or provision Redis) and re-run backend readiness; confirm live `/health` no longer green-lights missing Redis.
+3. Optionally provision a real Redis service (URL currently points at missing `redis.railway.internal`) — honesty already reports unhealthy/unreachable.
 4. Confirm PWA update prompt is in the artifact users receive after the next promote.
+5. After Dependabot re-scan: confirm PyJWT / fast-uri / serialize-javascript / DOMPurify / mobile brace-expansion alerts close; track braces + node-forge until upstream publishes.
 
-This batch removes simulated delivery completion. Real delivery persistence and revision-bound release/evidence integration remain Batch 5. Do not treat Batch 1 as release-closed until git sync and Batch 0 fixtures are done.
+This batch removes simulated delivery completion. Real delivery persistence and revision-bound release/evidence integration remain Batch 5. Do not treat Batch 1 as fully release-closed until Batch 0 fixtures and the two blocked security advisories are dispositioned.
