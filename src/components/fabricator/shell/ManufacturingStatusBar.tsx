@@ -2,6 +2,7 @@ import { useActiveStudioProject } from '@/hooks/fabricator/useActiveStudioProjec
 import { NOT_RECORDED } from '@/lib/fabricator/studioWorkflow';
 import { isRTL } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import { useWorkflowStore } from '@/store/workflowStore';
 import { Cable, Save, Ruler, Cpu, SlidersHorizontal } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +11,7 @@ export const ManufacturingStatusBar: React.FC = () => {
   const { t, i18n } = useTranslation('fabricator');
   const rtl = isRTL(i18n.language);
   const project = useActiveStudioProject();
+  const draftDirty = useWorkflowStore(s => s.workflowDraftDirty);
 
   const online =
     typeof navigator === 'undefined' ? true : navigator.onLine;
@@ -17,17 +19,15 @@ export const ManufacturingStatusBar: React.FC = () => {
   const cells = [
     {
       icon: <Cable size={11} />,
-      label: t('industrial.status.connection', 'Connection'),
+      label: t('industrial.status.browser_network', 'Browser network'),
       value: online
         ? t('industrial.status.online', 'Online')
         : t('industrial.status.offline', 'Offline'),
     },
     {
       icon: <Save size={11} />,
-      label: t('industrial.status.autosave', 'Autosave'),
-      value: project?.updatedAt
-        ? t('industrial.status.saved', 'Saved')
-        : NOT_RECORDED,
+      label: t('industrial.status.save_status', 'Save status'),
+      value: draftDirty ? t('industrial.status.unsaved_draft', 'Unsaved draft') : NOT_RECORDED,
     },
     {
       icon: <Ruler size={11} />,

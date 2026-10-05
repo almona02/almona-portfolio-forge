@@ -11,9 +11,8 @@ const ProductionStudioLayout: React.FC = () => {
            <p className="text-amber-600/60 text-[10px] font-mono">BATCHING // CUTTING // ASSEMBLY</p>
         </div>
         <div className="flex gap-2">
-           {/* Quick Machine Status Indicators */}
-           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="CNC Online" />
-           <div className="h-2 w-2 rounded-full bg-emerald-500" title="Saw Online" />
+           <span className="text-xs text-slate-400" title="Machine telemetry is not connected">CNC: Not recorded</span>
+           <span className="text-xs text-slate-400" title="Machine telemetry is not connected">Saw: Not recorded</span>
         </div>
       </div>
       <Outlet />

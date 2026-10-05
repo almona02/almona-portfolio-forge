@@ -28,7 +28,7 @@ import {
     StopCircle,
     XCircle
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -66,7 +66,7 @@ type QCCheckItem = { id: string; labelAr: string; labelEn: string; passed: boole
 export function KioskModeDashboard({ 
   machineId, 
   operatorName,
-  onStateChange 
+  onStateChange: _onStateChange
 }: KioskModeDashboardProps) {
   const { i18n } = useTranslation();
   const locale = i18n.language.startsWith('ar') ? 'ar' : 'en';
@@ -95,9 +95,9 @@ export function KioskModeDashboard({
     };
 
     // Save to localStorage immediately
-    const existingLogs = JSON.parse(localStorage.getItem('production_logs') || '[]');
+    const existingLogs = JSON.parse(localStorage.getItem('fabricator_kiosk_demo_logs') || '[]');
     existingLogs.push(logEntry);
-    localStorage.setItem('production_logs', JSON.stringify(existingLogs));
+    localStorage.setItem('fabricator_kiosk_demo_logs', JSON.stringify(existingLogs));
 
     // TODO: Send to server (background sync)
     console.log('[AUTO-SAVE]', logEntry);
@@ -145,11 +145,6 @@ export function KioskModeDashboard({
     onScan: handleScan,
     onError: handleScanError,
   });
-
-  // Handle workflow state changes
-  useEffect(() => {
-    onStateChange?.(workflowState);
-  }, [workflowState, onStateChange]);
 
   // Handle piece execution start
   const handleStart = useCallback(async () => {
@@ -462,6 +457,7 @@ export function KioskModeDashboard({
 
   return (
     <div className="kiosk-container min-h-screen bg-background p-6">
+      <p role="status" className="mb-4 rounded border border-amber-500 p-4">Demo — simulated scans, cuts and QC. No machine commands or production records are created.</p>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>

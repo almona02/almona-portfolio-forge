@@ -158,6 +158,7 @@ export const QuoteBuilder: React.FC = () => {
       <div className="flex flex-col items-center justify-center p-12 text-center text-slate-400">
         <Receipt className="h-16 w-16 mb-4 opacity-50" />
         <p>No cost data yet. Complete optimization to generate quote.</p>
+        <Button variant="outline" onClick={() => navigate(projectId && poseId ? fabricatorRoutes.poseOptimization(projectId, poseId) : fabricatorRoutes.studioProjects())}>Go to optimization</Button>
       </div>
     );
   }

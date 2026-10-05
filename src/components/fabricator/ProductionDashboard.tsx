@@ -63,14 +63,6 @@ export function ProductionDashboard() {
     persona === 'operator' ? 'kiosk' : (urlMode || 'supervisor')
   );
 
-  // Update mode when persona changes
-  useEffect(() => {
-    if (persona === 'operator' && mode !== 'kiosk') {
-      setMode('kiosk');
-      setSearchParams({ mode: 'kiosk' });
-    }
-  }, [persona, mode, setSearchParams]);
-
   const [metrics, setMetrics] = useState<ProductionMetrics | null>(null);
   const [alerts, setAlerts] = useState<ProductionAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -179,6 +171,7 @@ export function ProductionDashboard() {
 
   return (
     <div className="space-y-6 p-6">
+      <p role="status" className="rounded border border-amber-500 p-3">Demo metrics — these values do not establish machine connectivity or production readiness.</p>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

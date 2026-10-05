@@ -139,7 +139,6 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
         { label: 'Dashboard', href: fabricatorRoutes.studioProduction() },
         { label: 'Quality Control', href: fabricatorRoutes.studioProductionQuality() },
         { label: 'Delivery Tracking', href: fabricatorRoutes.studioProductionDelivery() },
-        { label: 'Orders', href: fabricatorRoutes.studioProductionOrders() },
       ],
     },
     {
@@ -156,6 +155,12 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
         { label: 'Customers', href: fabricatorRoutes.studioData('customers') },
         { label: 'Integrations', href: fabricatorRoutes.studioDataIntegrations() },
       ],
+    },
+    {
+      id: 'reports',
+      label: 'Reports',
+      icon: <BarChart size={20} />,
+      href: fabricatorRoutes.studioReports(),
     },
     {
       id: 'settings',

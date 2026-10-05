@@ -19,6 +19,7 @@ test_report.*
 
 # JSON files (but keep knowledge base JSONs)
 *.json
+!services/sla_policy.json
 !ai_agents/ydt_agent/knowledge/**/*.json
 
 # Logs

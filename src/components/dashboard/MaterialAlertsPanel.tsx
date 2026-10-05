@@ -46,8 +46,7 @@ const MaterialAlertsPanel: React.FC = () => {
           </>
         )}
         <Link
-          to="/fabricator-workflow"
-          state={{ startTab: 'inventory' }}
+          to="/fabricator/studio/data/stock"
         >
           <Button
             variant="outline"
@@ -63,5 +62,4 @@ const MaterialAlertsPanel: React.FC = () => {
 };
 
 export default MaterialAlertsPanel;
-
 

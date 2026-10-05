@@ -54,6 +54,8 @@ RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
 COPY apis ./apis
 COPY core ./core
 COPY models ./models
+COPY services ./services
+COPY tasks ./tasks
 COPY monitoring ./monitoring
 COPY ai_services ./ai_services
 COPY templates ./templates

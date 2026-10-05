@@ -9,6 +9,7 @@ import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
 import { loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { allProfilesExplicitlyTuned } from '@/lib/fabricator/tuningReadiness';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import {
@@ -200,7 +201,7 @@ export const SystemPackTuningStudio: React.FC = () => {
     }
   }, [systemPackId, navigate]);
 
-  const allProfilesTuned = systemPack?.profiles?.every(p => tunedProfiles.has(p.id)) || false;
+  const allProfilesTuned = allProfilesExplicitlyTuned(systemPack?.profiles, tunedProfiles);
 
   // Convert SystemPackProfile to Profile type for ProfileTuningStudio
   const convertToProfile = (packProfile: SystemPackProfile): Profile => {
@@ -481,7 +482,7 @@ export const SystemPackTuningStudio: React.FC = () => {
   };
 
   const handleMarkAllTuned = () => {
-    if (!systemPack) return;
+    if (!systemPack?.profiles.length) return;
 
     const updatedProfiles = systemPack.profiles.map(p => ({
       ...p,
@@ -511,12 +512,7 @@ export const SystemPackTuningStudio: React.FC = () => {
   };
 
   const handleSaveAndReturn = () => {
-    if (!systemPack) return;
-
-    // Mark all as tuned if not already
-    if (!allProfilesTuned) {
-      handleMarkAllTuned();
-    }
+    if (!systemPack || !allProfilesTuned) return;
 
     // Get return URL
     const returnUrl = sessionStorage.getItem('tuning_return_url');
@@ -528,7 +524,7 @@ export const SystemPackTuningStudio: React.FC = () => {
           state: {
             systemPackId: systemPackId,
             systemTuned: true,
-            systemTunedMessage: `System "${systemPack.name}" has been tuned and is ready to use with all profiles configured.`,
+            systemTunedMessage: `System "${systemPack.name}" has saved tuning. Manufacturing approval is separate.`,
             ...data.params
           }
         });
@@ -537,7 +533,7 @@ export const SystemPackTuningStudio: React.FC = () => {
           state: {
             systemPackId: systemPackId,
             systemTuned: true,
-            systemTunedMessage: `System "${systemPack.name}" has been tuned and is ready to use.`,
+            systemTunedMessage: `System "${systemPack.name}" has saved tuning. Manufacturing approval is separate.`,
           }
         });
       }
@@ -546,7 +542,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         state: {
           systemPackId: systemPackId,
           systemTuned: true,
-          systemTunedMessage: `System "${systemPack.name}" has been tuned and is ready to use.`,
+          systemTunedMessage: `System "${systemPack.name}" has saved tuning. Manufacturing approval is separate.`,
         }
       });
     }
@@ -973,14 +969,14 @@ export const SystemPackTuningStudio: React.FC = () => {
               <Alert className="bg-green-500/10 border-green-500/30">
                 <CheckCircle2 className="h-4 w-4 text-green-400" />
                 <AlertDescription className="text-green-300">
-                  All profiles tuned! System pack is ready for design and optimization.
+                  All profiles tuned. Manufacturing still requires approved rules and a qualified BOM.
                 </AlertDescription>
               </Alert>
             ) : (
               <Alert className="btn-primary">
                 <AlertTriangle className="h-4 w-4 text-amber-400" />
                 <AlertDescription className="text-amber-300">
-                  Tune all profiles ({tunedProfiles.size}/{systemPack.profiles.length} complete) before proceeding to design.
+                  {systemPack.profiles.length === 0 ? 'Add and tune the required profiles before continuing.' : `Tune all profiles (${tunedProfiles.size}/${systemPack.profiles.length} complete) before proceeding to design.`}
                 </AlertDescription>
               </Alert>
             )}
@@ -989,7 +985,7 @@ export const SystemPackTuningStudio: React.FC = () => {
             <Button
               variant="outline"
               onClick={handleMarkAllTuned}
-              disabled={allProfilesTuned}
+              disabled={allProfilesTuned || systemPack.profiles.length === 0}
               className="btn-secondary"
             >
               <CheckCircle2 className="h-4 w-4 mr-2" />

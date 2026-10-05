@@ -11,6 +11,9 @@ from typing import Any, Dict, Tuple
 _POLICY_PATH = (
     Path(__file__).resolve().parents[2] / "src" / "lib" / "ticketing" / "sla_policy.json"
 )
+# Backend-only Docker contexts include a checked copy of the canonical policy.
+if not _POLICY_PATH.is_file():
+    _POLICY_PATH = Path(__file__).with_name("sla_policy.json")
 
 with _POLICY_PATH.open(encoding="utf-8") as f:
     _POLICY: Dict[str, Any] = json.load(f)

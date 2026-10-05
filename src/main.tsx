@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import { useJobsStore } from "./store/jobsStore";
+import { showAppUpdate } from './lib/pwaUpdate';
 
 // [DEV/E2E] Ensure critical stores are available globally
 if (import.meta.env?.DEV) {
@@ -595,15 +596,10 @@ const isProdEnv = import.meta.env?.PROD || process.env.NODE_ENV === 'production'
 if ('serviceWorker' in navigator && isProdEnv) {
   // Dynamic import with error handling - virtual module only exists in production
   import('virtual:pwa-register').then(({ registerSW }) => {
-    registerSW({
+    const updateServiceWorker = registerSW({
       immediate: true, // Register immediately
       onNeedRefresh() {
-        // This runs when a new version is deployed
-        // With registerType: "prompt", this will show a notification
-        // User can choose to update now or later - no automatic reload
-        console.log('🔄 New update available. User will be prompted to reload.');
-        // Optional: Show a custom notification instead of default prompt
-        // The default prompt from VitePWA will appear automatically
+        showAppUpdate(() => updateServiceWorker(true));
       },
       onOfflineReady() {
         console.log('✅ App is ready for offline use.');

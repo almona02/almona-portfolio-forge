@@ -5,7 +5,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const LABELS: Record<QualityCheckId, string> = {
     measurements: 'Measurements verified and within tolerance', design: 'Design specifications match requirements',
@@ -16,6 +16,9 @@ const initialChecks = (): Record<QualityCheckId, boolean> => Object.fromEntries(
 
 export const QualityControlPage: React.FC = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const requestedProjectId = searchParams.get('projectId');
+    const requestedPoseId = searchParams.get('poseId');
     const { user } = useAuth();
     const { completeStep, currentProject, clearWorkflow, setQualityApproval, invalidateStep, workflowIdentity } = useWorkflowStore();
     const [checks, setChecks] = useState(initialChecks);
@@ -39,6 +42,10 @@ export const QualityControlPage: React.FC = () => {
         contextRef.current = null;
         setAuthority(null);
         setError(null);
+        if ((requestedProjectId && requestedProjectId !== workflowIdentity?.projectId) || (requestedPoseId && requestedPoseId !== currentProject?.id)) {
+            setError('The requested position is not loaded. Open its production record before inspecting.');
+            return () => { active = false; };
+        }
         if (!user?.id || !currentProject?.id) {
             setError('Authenticated inspector and authoritative position are required.');
             return () => { active = false; };
@@ -52,7 +59,7 @@ export const QualityControlPage: React.FC = () => {
             })
             .catch(reason => { if (active) setError(reason instanceof Error ? reason.message : 'Revision verification failed.'); });
         return () => { active = false; };
-    }, [currentProject?.id, user?.id, workflowIdentity?.revision, invalidateStep]);
+    }, [currentProject?.id, user?.id, workflowIdentity?.revision, workflowIdentity?.projectId, requestedProjectId, requestedPoseId, invalidateStep]);
 
     const evidence = useMemo<QualityEvidence>(() => ({
         checks,
@@ -86,7 +93,7 @@ export const QualityControlPage: React.FC = () => {
             ) throw new Error('Approval acknowledgement does not match the inspection context.');
             setQualityApproval(acknowledgement);
             if (!completeStep('quality-control')) throw new Error('Workflow completion guard rejected the approval.');
-            void navigate(fabricatorRoutes.studioProjects());
+            void navigate(fabricatorRoutes.studioProductionDelivery() + `?${new URLSearchParams({ projectId: authority.projectId, poseId: authority.positionId })}`);
         } catch (reason) {
             if (contextRef.current !== requestContext) return;
             setQualityApproval(null);
@@ -97,7 +104,7 @@ export const QualityControlPage: React.FC = () => {
     };
 
     const handleStartNew = () => {
-        if (confirm('Start a new project? Current progress will be saved.')) { clearWorkflow(); void navigate(fabricatorRoutes.studioProjects()); }
+        if (confirm('Leave this inspection and clear the local workflow draft? Save project changes before continuing.')) { clearWorkflow(); void navigate(fabricatorRoutes.studioProjects()); }
     };
 
     return <div className="flex h-full flex-col bg-slate-950 p-6"><div className="mx-auto w-full max-w-4xl">
@@ -114,6 +121,6 @@ export const QualityControlPage: React.FC = () => {
             {error && <p role="alert" className="mt-4 text-sm text-red-300">{error}</p>}{!error && authority && <p className="mt-4 text-xs text-slate-500">Verified revision {authority.revision}</p>}
         </div>
         {currentProject && <div className="mb-6 rounded-lg border border-slate-700 bg-slate-900 p-6"><h3 className="mb-4 text-lg font-semibold text-amber-200">Project Summary</h3><div className="grid grid-cols-2 gap-4 text-sm"><div><span className="text-slate-500">Position ID:</span><span className="ml-2 text-slate-300">{currentProject.id}</span></div><div><span className="text-slate-500">Order:</span><span className="ml-2 text-slate-300">{currentProject.orderNumber}</span></div><div><span className="text-slate-500">Target:</span><span className="ml-2 text-slate-300">{currentProject.overallWidth} × {currentProject.overallHeight} mm</span></div><div><span className="text-slate-500">Inspector:</span><span className="ml-2 text-slate-300">{user?.id ?? 'Unavailable'}</span></div></div></div>}
-        <div className="flex justify-between gap-4"><Button variant="outline" onClick={() => { void navigate(fabricatorRoutes.studioProduction()); }}>← Back to Production</Button><div className="flex gap-3"><Button variant="outline" onClick={handleStartNew}>Start New Project</Button><Button onClick={() => { void handleQualityApproved(); }} disabled={!authority || !evidenceValid || isApproving} className="bg-green-600 hover:bg-green-700 disabled:opacity-50">{isApproving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Approving…</> : 'Approve & Complete ✓'}</Button></div></div>
+        <div className="flex justify-between gap-4"><Button variant="outline" onClick={() => { void navigate(workflowIdentity ? fabricatorRoutes.poseProduction(workflowIdentity.projectId, workflowIdentity.positionId) : fabricatorRoutes.studioProjects()); }}>← Back to Production</Button><div className="flex gap-3"><Button variant="outline" onClick={handleStartNew}>Start New Project</Button><Button onClick={() => { void handleQualityApproved(); }} disabled={!authority || !evidenceValid || isApproving} className="bg-green-600 hover:bg-green-700 disabled:opacity-50">{isApproving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Approving…</> : 'Approve & Complete ✓'}</Button></div></div>
     </div></div>;
 };

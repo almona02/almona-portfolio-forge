@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/shared/ui/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/shared/ui/ui/radio-group";
 import { 
@@ -33,6 +33,7 @@ import {
   DollarSign,
   RotateCcw
 } from 'lucide-react';
+import { consultationSchema, submitFabricationConsultation } from "@/lib/fabricator/consultation";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 
 const systemsData = {
@@ -160,14 +161,18 @@ const projectTypes = [
   { value: "replacement", label: "Window Replacement" }
 ];
 
+type SystemType = keyof typeof systemsData;
+interface CalculatorValues { width: string; height: string; quantity: string; systemType: SystemType; profileType: string; glassType: string; openingType: string }
+interface CalculatorResults { area: string; totalArea: string; pricePerSqm: number; subtotal: number; installationCost: number; hardwareCost: number; taxes: number; total: number; system: SystemType; profile: string; glass: string; opening: string }
+
 const FabricationServices = () => {
-  const _navigate = useNavigate();
-  const [activeSystem, setActiveSystem] = useState("upvc");
+  const navigate = useNavigate();
+  const [activeSystem, setActiveSystem] = useState<SystemType>("upvc");
   const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
   const [selectedProjectType, setSelectedProjectType] = useState("");
   const [_calculatorActive, setCalculatorActive] = useState(false);
-  const [calculatorValues, setCalculatorValues] = useState({
+  const [calculatorValues, setCalculatorValues] = useState<CalculatorValues>({
     width: "",
     height: "",
     quantity: "1",
@@ -176,22 +181,50 @@ const FabricationServices = () => {
     glassType: "double",
     openingType: "casement"
   });
-  const [calculatorResults, setCalculatorResults] = useState(null);
+  const [calculatorResults, setCalculatorResults] = useState<CalculatorResults | null>(null);
+  const [consultationSystem, setConsultationSystem] = useState<'upvc' | 'aluminum'>('upvc');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [consultationError, setConsultationError] = useState('');
+  const [consultationReceipt, setConsultationReceipt] = useState('');
+
+  const handleConsultationSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSubmitting || consultationReceipt) return;
+    const form = new FormData(event.currentTarget);
+    const parsed = consultationSchema.safeParse({ name: form.get('name'), phone: form.get('phone'), projectType: selectedProjectType, system: consultationSystem, message: form.get('message') });
+    if (!parsed.success) { setConsultationError('Enter your name, a valid +20 phone number and project type.'); return; }
+    setIsSubmitting(true);
+    setConsultationError('');
+    try { setConsultationReceipt(await submitFabricationConsultation(parsed.data)); }
+    catch (reason) { setConsultationError(reason instanceof Error ? reason.message : 'Unable to submit your request.'); }
+    finally { setIsSubmitting(false); }
+  };
 
   const toggleFeature = useCallback((index: number) => {
     setExpandedFeature(prev => (prev === index ? null : index));
   }, []);
 
   const handleConsultationClick = useCallback((projectType: string = "") => {
-    setSelectedProjectType(projectType);
+    setSelectedProjectType(projectTypes.some(type => type.value === projectType) ? projectType : '');
+    setConsultationSystem(projectType === 'aluminum' ? 'aluminum' : 'upvc');
+    setConsultationReceipt('');
+    setConsultationError('');
     setShowConsultationForm(true);
   }, []);
 
-  const handleCalculatorChange = useCallback((field, value) => {
-    setCalculatorValues(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleCalculatorChange = useCallback((field: keyof CalculatorValues, value: string) => {
+    if (field === 'systemType' && value !== 'upvc' && value !== 'aluminum') return;
+    setCalculatorResults(null);
+    setCalculatorValues(prev => {
+      const next = { ...prev, [field]: value };
+      if (field === 'systemType') {
+        const config = systemsData[value as SystemType].calculatorConfig;
+        if (!config.profileTypes.some(p => p.id === next.profileType)) next.profileType = 'standard';
+        if (!config.glassTypes.some(p => p.id === next.glassType)) next.glassType = 'double';
+        if (!config.openingTypes.some(p => p.id === next.openingType)) next.openingType = 'casement';
+      }
+      return next;
+    });
   }, []);
 
   const calculateEstimate = useCallback(() => {
@@ -199,7 +232,7 @@ const FabricationServices = () => {
     const height = parseFloat(calculatorValues.height) || 0;
     const quantity = parseInt(calculatorValues.quantity) || 1;
     
-    if (width <= 0 || height <= 0) {
+    if (!Number.isFinite(width) || !Number.isFinite(height) || !Number.isInteger(quantity) || quantity <= 0 || width <= 0 || height <= 0) {
       return;
     }
     
@@ -210,6 +243,7 @@ const FabricationServices = () => {
     const selectedGlass = systemConfig.glassTypes.find(g => g.id === calculatorValues.glassType);
     const selectedOpening = systemConfig.openingTypes.find(o => o.id === calculatorValues.openingType);
     
+    if (!selectedProfile || !selectedGlass || !selectedOpening) return;
     const basePrice = selectedProfile.pricePerSqm;
     const glassFactor = selectedGlass.priceFactor;
     const complexityFactor = selectedOpening.complexityFactor;
@@ -640,7 +674,7 @@ const FabricationServices = () => {
             </p>
           </motion.div>
 
-          <Tabs value={activeSystem} onValueChange={setActiveSystem} className="mb-16">
+          <Tabs value={activeSystem} onValueChange={value => { if (value === 'upvc' || value === 'aluminum') setActiveSystem(value); }} className="mb-16">
             <TabsList className="grid w-full grid-cols-2 max-w-2xl mx-auto bg-almona-dark/80 rounded-lg p-1 mb-12">
               <TabsTrigger value="upvc" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md text-lg transition-all duration-300">
                 UPVC Systems
@@ -835,8 +869,8 @@ const FabricationServices = () => {
           </div>
 
           <div className="text-center">
-            <Button variant="outline" className="border-almona-light text-almona-light hover:bg-almona-light/10">
-              View Full Portfolio
+            <Button onClick={() => handleConsultationClick()} variant="outline" className="border-almona-light text-almona-light hover:bg-almona-light/10">
+              Discuss a Similar Project
             </Button>
           </div>
         </div>
@@ -880,8 +914,8 @@ const FabricationServices = () => {
                     </div>
                     <h3 className="typography-h3 mb-2">{item.title}</h3>
                     <p className="text-gray-300 mb-4">{item.description}</p>
-                    <Button variant="outline" className="border-almona-light text-almona-light hover:bg-almona-light/10">
-                      <Download className="mr-2 h-4 w-4" /> Access Now
+                    <Button onClick={() => navigate(`/contact?subject=${encodeURIComponent(item.title)}`)} variant="outline" className="border-almona-light text-almona-light hover:bg-almona-light/10">
+                      <Download className="mr-2 h-4 w-4" /> Request Resource
                     </Button>
                   </CardContent>
                 </Card>
@@ -993,23 +1027,25 @@ const FabricationServices = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="typography-h3 mb-2">Request Consultation</h3>
-              <p className="text-gray-400 mb-6">Our expert will contact you within 24 hours</p>
+              <p className="text-gray-400 mb-6">Submit your project details for a consultation.</p>
+              {consultationReceipt && <p role="status">Request received. Reference: {consultationReceipt}</p>}
+              {consultationError && <p role="alert">{consultationError} <a href="/contact?subject=Fabrication%20consultation" className="underline">Contact us directly</a>.</p>}
               
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleConsultationSubmit}>
                 <div className="space-y-2">
                   <Label htmlFor="name" className="typography-label">Full Name</Label>
-                  <Input id="name" placeholder="Your name" className="bg-almona-dark/80 border-almona-light/30" />
+                  <Input id="name" name="name" required minLength={2} maxLength={120} placeholder="Your name" className="bg-almona-dark/80 border-almona-light/30" />
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="typography-label">Phone Number</Label>
-                  <Input id="phone" placeholder="+20XXXXXXXXXX" className="bg-almona-dark/80 border-almona-light/30" />
+                  <Input id="phone" name="phone" type="tel" required pattern="\+20[0-9]{10}" placeholder="+20XXXXXXXXXX" className="bg-almona-dark/80 border-almona-light/30" />
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="projectType" className="typography-label">Project Type</Label>
                   <Select value={selectedProjectType} onValueChange={setSelectedProjectType}>
-                    <SelectTrigger>
+                    <SelectTrigger id="projectType">
                       <SelectValue placeholder="Select project type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1023,7 +1059,7 @@ const FabricationServices = () => {
                 <div className="space-y-2">
                   <Label htmlFor="message" className="typography-label">Additional Details</Label>
                   <Textarea 
-                    id="message" 
+                    id="message" name="message" maxLength={2000}
                     placeholder="Tell us about your project, preferred system, or any specific requirements..." 
                     className="bg-almona-dark/80 border-almona-light/30 min-h-32" 
                   />
@@ -1038,8 +1074,8 @@ const FabricationServices = () => {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" className="flex-1 bg-gradient-orange hover:bg-almona-orange-dark text-white">
-                    Submit Request
+                  <Button type="submit" disabled={isSubmitting || Boolean(consultationReceipt)} className="flex-1 bg-gradient-orange hover:bg-almona-orange-dark text-white">
+                    {isSubmitting ? "Submitting…" : "Submit Request"}
                   </Button>
                 </div>
               </form>

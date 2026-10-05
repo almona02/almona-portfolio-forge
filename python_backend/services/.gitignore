@@ -1,0 +1,2 @@
+# Required by backend-only Docker builds; parity is checked against src policy.
+!sla_policy.json

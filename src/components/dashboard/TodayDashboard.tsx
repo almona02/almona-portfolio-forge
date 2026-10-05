@@ -65,7 +65,7 @@ const QuickActionsPanel: React.FC = () => (
       </CardTitle>
     </CardHeader>
     <CardContent className="space-y-2">
-      <Link to="/fabricator-workflow">
+      <Link to="/fabricator/studio/projects?new=true">
         <Button className="btn-primary">
           Start New Fabrication Job
         </Button>
@@ -87,6 +87,7 @@ const QuickActionsPanel: React.FC = () => (
 export const TodayDashboard: React.FC = () => {
   return (
     <div className="container mx-auto px-4">
+      <p role="status" className="mb-4 text-sm text-amber-200">Demo summary — live job, stock and machine totals are not connected.</p>
       {/* KPI Header */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <KPICard title="Today's Jobs" value="0" trend="Connect data to see jobs" />
@@ -123,5 +124,3 @@ export const TodayDashboard: React.FC = () => {
 };
 
 export default TodayDashboard;
-
-

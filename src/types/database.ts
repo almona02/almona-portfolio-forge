@@ -1518,6 +1518,10 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
+      submit_fabrication_consultation: {
+        Args: { p_name: string; p_phone: string; p_project_type: string; p_system: string; p_message: string };
+        Returns: string;
+      };
       get_fabricator_manufacturing_authority: {
         Args: { p_position_id: string; p_expected_revision: number }
         Returns: {

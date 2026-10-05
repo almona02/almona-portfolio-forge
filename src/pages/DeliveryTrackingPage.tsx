@@ -1,7 +1,7 @@
 /**
  * Delivery Tracking Page - ALMONA Gold Tier
  * 
- * Production-ready delivery tracking with:
+ * Delivery evidence preview (demo only) with:
  * - GPS location capture (customer site)
  * - Photo evidence upload (delivery proof)
  * - QR code scanning (product verification)
@@ -15,7 +15,6 @@
  * @since Phase 3: Delivery Tracking System (January 2026)
  */
 
-import { realityOSEventEmitter } from '@/lib/realityos';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -40,6 +39,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 interface DeliveryTrackingPageProps {
+    demo?: boolean;
     windowUnit?: WindowUnit;
     projectName?: string;
     unitNumber?: string;
@@ -57,14 +57,16 @@ interface GPSLocation {
 }
 
 export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
+    demo = false,
     windowUnit,
     projectName = 'Project',
     unitNumber = 'Unit',
     customerName = 'Customer',
     deliveryAddress = 'Delivery Address',
-    operatorId = 'operator_001',
-    onDeliveryComplete,
+    operatorId: _operatorId,
+    onDeliveryComplete: _onDeliveryComplete,
 }) => {
+    // Demo evidence is never emitted to operational services.
     // GPS state
     const [gpsLocation, setGpsLocation] = useState<GPSLocation | null>(null);
     const [isCapturingGPS, setIsCapturingGPS] = useState(false);
@@ -88,8 +90,8 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
     const [customerFeedback, setCustomerFeedback] = useState<string>('');
 
     // Event emission state
-    const [isEmittingEvent, setIsEmittingEvent] = useState(false);
-    const [deliveryCompleted, setDeliveryCompleted] = useState(false);
+    const isEmittingEvent = false;
+    const deliveryCompleted = false;
 
     /**
      * Capture GPS location
@@ -327,83 +329,13 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
     /**
      * Complete delivery and emit ProductDelivered event
      */
-    const handleCompleteDelivery = useCallback(async () => {
-        // Validate proof requirements
-        const validation = validateProofRequirements();
-        if (!validation.isValid) {
-            toast.error('Missing required proof', {
-                description: `Please provide: ${validation.missingProofs.join(', ')}`,
-            });
-            return;
-        }
+    const handleCompleteDelivery = useCallback(() => {
+        toast.info('Demo delivery preview only. No delivery event or production record was created.');
+    }, []);
 
-        if (!gpsLocation) {
-            toast.error('GPS location required');
-            return;
-        }
-
-        setIsEmittingEvent(true);
-        try {
-            const deliveryData = {
-                id: windowUnit?.id,
-                unitId: windowUnit?.id,
-                projectName,
-                unitNumber,
-                customerName,
-                deliveryAddress,
-                deliveryNotes,
-                customerFeedback,
-                timestamp: new Date().toISOString(),
-            };
-
-            const eventResult = await realityOSEventEmitter.emitProductDelivered(
-                deliveryData,
-                operatorId,
-                deliveryPhotoHash,
-                productQR,
-                {
-                    latitude: gpsLocation.latitude,
-                    longitude: gpsLocation.longitude,
-                    accuracy: gpsLocation.accuracy,
-                },
-                customerSignatureHash
-            );
-
-            if (eventResult.success) {
-                setDeliveryCompleted(true);
-                toast.success('Delivery completed successfully', {
-                    description: 'ProductDelivered event emitted to RealityOS Event Ledger',
-                });
-                onDeliveryComplete?.(deliveryData);
-            } else {
-                toast.error('Event emission failed', {
-                    description: eventResult.error || 'Unknown error',
-                });
-            }
-        } catch (error) {
-            console.error('Delivery completion error:', error);
-            toast.error('Delivery completion failed', {
-                description: error instanceof Error ? error.message : 'Unknown error',
-            });
-        } finally {
-            setIsEmittingEvent(false);
-        }
-    }, [
-        validateProofRequirements,
-        gpsLocation,
-        windowUnit,
-        projectName,
-        unitNumber,
-        customerName,
-        deliveryAddress,
-        deliveryNotes,
-        customerFeedback,
-        operatorId,
-        deliveryPhotoHash,
-        productQR,
-        customerSignatureHash,
-        onDeliveryComplete,
-    ]);
+    if (!demo) {
+        return <div className="p-6"><Alert><AlertCircle className="h-4 w-4" /><AlertDescription>Delivery recording is blocked until an authoritative released position and verified evidence capture are connected. Return to the position's quality control record.</AlertDescription></Alert></div>;
+    }
 
     // Show placeholder if no window unit
     if (!windowUnit) {
@@ -422,7 +354,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
         );
     }
 
-    // Show success state if delivery completed
+    // Demo preview
     if (deliveryCompleted) {
         return (
             <div className="space-y-6 max-w-6xl mx-auto p-6">
@@ -463,6 +395,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
     return (
         <div className="space-y-6 max-w-6xl mx-auto p-6">
             {/* Header */}
+            <Alert><AlertDescription>Demo delivery preview. Simulated evidence cannot create delivery records.</AlertDescription></Alert>
             <Card className="shadow-[0_0_30px_rgba(245,158,11,0.2)] card-premium card-glass-dark">
                 <CardHeader>
                     <div className="flex items-start justify-between">

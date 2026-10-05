@@ -564,7 +564,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         onClick={actions.validate}
                                         className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
                                     >
-                                        {t('engineering_bay.confirm_design', 'Confirm Design & Proceed to Optimization')}
+                                        {t('engineering_bay.review_bom', 'Review BOM')}
                                     </Button>
                                     <Button
                                         variant="secondary"

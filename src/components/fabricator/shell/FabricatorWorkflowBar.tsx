@@ -3,6 +3,8 @@ import {
   STUDIO_WORKFLOW_STAGES,
   deriveStageVisualStatus,
   resolveStudioWorkflowHref,
+  stageBlockedReason,
+  stageRecoveryStage,
   type StudioWorkflowEvidence,
 } from '@/lib/fabricator/studioWorkflow';
 import { isRTL } from '@/lib/i18n';
@@ -75,6 +77,9 @@ export const FabricatorWorkflowBar: React.FC = () => {
   const productionDocuments = useWorkflowStore((s) => s.productionDocuments);
   const completedSteps = useWorkflowStore((s) => s.completedSteps);
   const activeStep = useWorkflowStore((s) => s.activeStep);
+  const workflowIdentity = useWorkflowStore((s) => s.workflowIdentity);
+  const qualityApproval = useWorkflowStore((s) => s.qualityApproval);
+  const workflowDraftDirty = useWorkflowStore((s) => s.workflowDraftDirty);
 
   const evidence: StudioWorkflowEvidence = useMemo(
     () => ({
@@ -87,6 +92,9 @@ export const FabricatorWorkflowBar: React.FC = () => {
       productionDocuments,
       completedSteps,
       activeStep,
+      workflowIdentity,
+      qualityApproval,
+      workflowDraftDirty,
     }),
     [
       currentProject,
@@ -98,6 +106,9 @@ export const FabricatorWorkflowBar: React.FC = () => {
       productionDocuments,
       completedSteps,
       activeStep,
+      workflowIdentity,
+      qualityApproval,
+      workflowDraftDirty,
     ],
   );
 
@@ -109,7 +120,10 @@ export const FabricatorWorkflowBar: React.FC = () => {
     poseId: poseId ?? currentProject?.id,
   };
 
+  const activeStage = STUDIO_WORKFLOW_STAGES.find(stage => stage.isActive(location.pathname, evidence));
+  const blockedReason = activeStage ? stageBlockedReason(activeStage, evidence) : null;
   return (
+    <>
     <nav
       className={cn(
         'flex items-center gap-0 px-3 py-1.5 bg-[#0c0c0c] border-b border-amber-600/20 overflow-x-auto',
@@ -154,7 +168,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
               )}
               aria-current={isActive ? 'step' : undefined}
               aria-label={`${label} — ${statusLabel(status)}`}
-              title={`${label} — ${statusLabel(status)}`}
+              title={`${label} — ${statusLabel(status)}${stageBlockedReason(stage, evidence) ? `: ${stageBlockedReason(stage, evidence)}` : ''}`}
             >
               <span
                 className={cn(
@@ -172,11 +186,13 @@ export const FabricatorWorkflowBar: React.FC = () => {
                 )}
               </span>
               <span className="hidden md:inline">{label}</span>
-              <span className="sr-only">{statusLabel(status)}</span>
+              <span className="sr-only">{statusLabel(status)}. {stageBlockedReason(stage, evidence)}</span>
             </Link>
           </React.Fragment>
         );
       })}
     </nav>
+    {activeStage && blockedReason && <div role="status" className="border-b border-amber-600/20 bg-slate-950 px-4 py-2 text-xs text-amber-200">{blockedReason} <Link className="ml-2 underline" to={resolveStudioWorkflowHref(stageRecoveryStage(activeStage, evidence), ctx)}>Resolve prerequisites</Link></div>}
+    </>
   );
 };
