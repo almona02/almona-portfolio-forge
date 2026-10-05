@@ -171,21 +171,26 @@ const CommercialPageComponent: React.FC = () => {
     if (!quote || !user?.id) return;
 
     try {
-      const amount = quote.amount || 0;
-      const tax = amount * 0.14;
+      // UP-16: draft amount is tax-inclusive (see handleCreateDraftQuote). Do not add VAT again.
+      const totalInclusive = Number(quote.amount || 0);
+      const taxRate = 0.14;
+      const subtotal = Number((totalInclusive / (1 + taxRate)).toFixed(2));
+      const tax = Number((totalInclusive - subtotal).toFixed(2));
       const { error } = await supabase.from('orders').insert({
         user_id: user.id,
         status: 'pending' as const,
-        subtotal: amount,
-        tax_amount: Number(tax.toFixed(2)),
+        subtotal,
+        tax_amount: tax,
         discount_amount: 0,
         shipping_cost: 0,
-        total_amount: Number((amount + tax).toFixed(2)),
+        total_amount: totalInclusive,
         currency: quote.currency || 'EGP',
         payment_status: 'pending',
         customer_notes: `From quote: ${quote.projectTitle || quoteId}`,
         billing_address: {},
         shipping_address: {},
+        // Preserve link when draft carries a server quote id
+        ...(quote.id && !quote.id.startsWith('quote_') ? { quote_id: quote.id } : {}),
       });
       if (error) throw error;
       dispatch({ type: 'UPDATE_DRAFT_QUOTE', payload: { ...quote, status: 'accepted' } });

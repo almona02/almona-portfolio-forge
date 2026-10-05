@@ -10,6 +10,8 @@
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { generateFabricatorQuote } from '@/lib/fabricator/commercial/FabricatorQuoteService';
+import { upsertPoseQuote } from '@/lib/fabricator/commercial/poseQuotesClient';
+import { useAuth } from '@/context/AuthContext';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { formatCurrency } from '@/lib/i18n/formatters';
@@ -33,6 +35,7 @@ import { toast } from 'sonner';
 export const QuoteBuilder: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { branding } = useCompanyBranding();
   const {
     measurementData,
@@ -40,11 +43,13 @@ export const QuoteBuilder: React.FC = () => {
     optimizationResult,
     bom,
     setQuote,
+    workflowIdentity,
   } = useWorkflowStore();
 
   const [markupPercent, setMarkupPercent] = useState(35);
   const [taxRate, setTaxRate] = useState(14);
   const [isExporting, setIsExporting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const quote = useMemo(() => {
     if (!currentProject) return null;
@@ -56,12 +61,53 @@ export const QuoteBuilder: React.FC = () => {
     );
   }, [currentProject, optimizationResult, bom, markupPercent, taxRate]);
 
-  const handleSaveQuote = useCallback(() => {
-    if (quote) {
+  const handleSaveQuote = useCallback(async () => {
+    if (!quote) return;
+    setIsSaving(true);
+    try {
+      // Always keep workflow store for stage completion.
       setQuote(quote);
-      toast.success('Quote saved');
+
+      const projId = projectId ?? (currentProject as { projectId?: string } | null)?.projectId;
+      const posId = poseId ?? currentProject?.id;
+      const revision = workflowIdentity?.revision;
+
+      if (!user?.id || !projId || !posId || !revision) {
+        toast.success('Quote saved locally — open a saved position revision to persist to server.');
+        return;
+      }
+
+      const result = await upsertPoseQuote({
+        ownerUserId: user.id,
+        projectId: projId,
+        positionId: posId,
+        revision,
+        status: 'priced',
+        quote,
+        taxRate: taxRate / 100,
+        markupPercent,
+      });
+
+      if (!result.ok) {
+        toast.error(`Quote saved locally; server persist failed: ${result.error}`);
+        return;
+      }
+
+      toast.success(`Quote persisted for R${revision} (${result.status}).`);
+    } finally {
+      setIsSaving(false);
     }
-  }, [quote, setQuote]);
+  }, [
+    quote,
+    setQuote,
+    projectId,
+    poseId,
+    currentProject,
+    workflowIdentity,
+    user?.id,
+    taxRate,
+    markupPercent,
+  ]);
 
   const handleExportPDF = useCallback(async () => {
     if (!currentProject || !quote) return;
@@ -252,9 +298,11 @@ export const QuoteBuilder: React.FC = () => {
           <div className="flex flex-wrap gap-3 pt-4">
             <Button
               variant="outline"
-              onClick={handleSaveQuote}
+              onClick={() => void handleSaveQuote()}
+              disabled={isSaving || !quote}
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >
+              {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Save Quote
             </Button>
             <Button
