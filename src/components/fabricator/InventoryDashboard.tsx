@@ -24,8 +24,14 @@ import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { JUMBO100_WINDOW_SYSTEM_SPEC, ROCK60_WINDOW_SYSTEM_TEMPLATE, SYSTEM_PACKS } from '@/data/systemPacks';
 import {
   OWNED_INVENTORY_QUERY_KEYS,
-  recordStockIntakeThenSync,
+  hashIntakePayload,
+  recordAtomicStockIntake,
+  type StockIntakeLine,
 } from '@/lib/fabricator/inventory/stockIntake';
+import {
+  clearPendingStockIntake,
+  resolveIntakeRequestId,
+} from '@/lib/fabricator/inventory/stockIntakeRequest';
 import { remnantManager, type Remnant, type RemnantConsolidationSuggestion, type RemnantStatistics } from '@/lib/inventory/RemnantManager';
 import { syncStockFromMovements } from '@/lib/inventory/StockCalculator';
 import { trackError } from '@/lib/performance-monitoring';
@@ -229,7 +235,6 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [locations, setLocations] = useState<InventoryLocation[]>([]);
   const [consolidationSuggestions, setConsolidationSuggestions] = useState<RemnantConsolidationSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const pendingIntakeRequests = useRef(new Map<string, string>());
   const isLoadingRef = useRef(false);
   const [useRemnantsFirst, setUseRemnantsFirst] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
@@ -464,25 +469,38 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         }
 
         const rows = lines.slice(1);
-        const inserts: any[] = [];
-        const stockUpdates = new Map<string, number>();
+        const intakeLines: StockIntakeLine[] = [];
         let skippedUnknownProfiles = 0;
+        let rejectedRows = 0;
 
         for (const row of rows) {
           const cols = row.split(',').map((c) => c.trim());
-          if (!cols[idxProfileCode] || !cols[idxQuantity]) continue;
+          if (!cols[idxProfileCode] || !cols[idxQuantity]) {
+            rejectedRows += 1;
+            continue;
+          }
 
           const profileCode = cols[idxProfileCode];
-          const quantity = Number(cols[idxQuantity]) || 0;
-          if (quantity <= 0) continue;
+          const quantity = Number(cols[idxQuantity]);
+          if (!Number.isFinite(quantity) || quantity <= 0) {
+            rejectedRows += 1;
+            continue;
+          }
 
           const unitRaw = (cols[idxUnit] || '').toLowerCase();
-          const unit: 'bar' | 'meter' =
-            unitRaw === 'm' || unitRaw === 'meter' || unitRaw === 'meters' ? 'meter' : 'bar';
+          let inputUnit: 'meters' | 'pieces';
+          if (unitRaw === 'm' || unitRaw === 'meter' || unitRaw === 'meters') {
+            inputUnit = 'meters';
+          } else if (unitRaw === 'bar' || unitRaw === 'bars' || unitRaw === 'piece' || unitRaw === 'pieces' || unitRaw === 'pcs') {
+            inputUnit = 'pieces';
+          } else {
+            rejectedRows += 1;
+            continue;
+          }
 
           const barLengthM =
             idxBarLength >= 0 && cols[idxBarLength]
-              ? Number(cols[idxBarLength]) || 0
+              ? Number(cols[idxBarLength])
               : undefined;
 
           const invoiceNo = idxInvoiceNo >= 0 ? cols[idxInvoiceNo] : '';
@@ -507,21 +525,27 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             continue;
           }
 
-          const effectiveUnit = unit === 'meter' ? 'meters' : 'pieces';
           const defaultBarLenM =
             typeof (profile.specifications as any)?.stockLengthMm === 'number'
               ? ((profile.specifications as any).stockLengthMm as number) / 1000
               : 6;
 
-          const effectiveBarLenM = unit === 'meter' ? 0 : barLengthM || defaultBarLenM;
+          const effectiveBarLenM =
+            inputUnit === 'pieces'
+              ? (Number.isFinite(barLengthM) && (barLengthM as number) > 0
+                  ? (barLengthM as number)
+                  : defaultBarLenM)
+              : undefined;
+
+          if (inputUnit === 'pieces' && !(effectiveBarLenM && effectiveBarLenM > 0)) {
+            rejectedRows += 1;
+            continue;
+          }
+
           const totalLengthM =
-            unit === 'meter' ? quantity : quantity * (effectiveBarLenM > 0 ? effectiveBarLenM : 0);
-
-          // Accumulate stock update
-          const currentUpdate = stockUpdates.get(profile.id) || 0;
-          stockUpdates.set(profile.id, currentUpdate + totalLengthM);
-
-          const movementQuantity = unit === 'meter' ? totalLengthM : quantity;
+            inputUnit === 'meters'
+              ? quantity
+              : quantity * (effectiveBarLenM as number);
 
           const metaParts: string[] = [];
           if (invoiceNo) metaParts.push(`Invoice ${invoiceNo}`);
@@ -529,48 +553,42 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           metaParts.push(`[CSV import • code=${profileCode}]`);
           if (totalLengthM > 0) metaParts.push(`len=${totalLengthM.toFixed(2)}m`);
 
-          const notes = metaParts.join(' – ');
-
-          inserts.push({
-            user_id: userId,
-            profile_id: profile.id,
-            movement_type: 'in', // 'in' is the correct type for stock intake/purchases
-            quantity: movementQuantity,
-            unit: effectiveUnit,
-            notes,
+          intakeLines.push({
+            profileId: profile.id,
+            inputUnit,
+            quantity,
+            barLengthM: effectiveBarLenM,
+            notes: metaParts.join(' – '),
+            invoice: invoiceNo || null,
+            supplier: supplier || null,
+            lotMetadata: { source: 'csv', profile_code: profileCode },
           });
         }
 
-        if (!inserts.length) {
-          toast.error('No valid rows found in CSV.');
+        if (!intakeLines.length) {
+          toast.error(
+            rejectedRows
+              ? `No valid rows found in CSV (${rejectedRows} rejected).`
+              : 'No valid rows found in CSV.',
+          );
           return;
         }
 
-        // UP-10: movements + sync — never patch stock_quantity from stale props.
-        const requestKey = JSON.stringify({ userId, mode: 'csv', rows: inserts });
-        const requestToken = pendingIntakeRequests.current.get(requestKey) ?? crypto.randomUUID();
-        pendingIntakeRequests.current.set(requestKey, requestToken);
-        const intake = await recordStockIntakeThenSync(
-          userId,
-          inserts.map((row, index) => ({
-            profileId: row.profile_id,
-            quantity: row.quantity,
-            unit: row.unit,
-            notes: row.notes,
-            requestId: `${requestToken}:${index}`,
-          })),
-        );
+        const draftKey = `csv:${intakeLines.map((l) => l.profileId).join(',')}`;
+        const payloadHash = await hashIntakePayload(intakeLines);
+        const requestId = resolveIntakeRequestId({ userId, draftKey, payloadHash });
+        const intake = await recordAtomicStockIntake({ requestId, lines: intakeLines });
         if (!intake.ok) {
           throw new Error(intake.error);
         }
 
         await Promise.all([loadStockMovements(), loadStockAlerts(), invalidateOwnedInventory()]);
-        pendingIntakeRequests.current.delete(requestKey);
+        clearPendingStockIntake(userId);
 
         toast.success(
-          `Imported ${inserts.length} invoice row(s)${
+          `Imported ${intakeLines.length} invoice row(s)${
             skippedUnknownProfiles ? ` (skipped ${skippedUnknownProfiles} unknown profile(s))` : ''
-          }.`,
+          }${rejectedRows ? ` (${rejectedRows} rejected)` : ''}.`,
         );
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err));
@@ -588,8 +606,21 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     try {
       setIsSavingInvoice(true);
       const lengthM = totalInvoiceLengthM;
-      const effectiveUnit = invoiceUnit === 'meter' ? 'meters' : 'pieces';
-      const movementQuantity = invoiceUnit === 'meter' ? lengthM : invoiceQuantity;
+      const inputUnit: 'meters' | 'pieces' = invoiceUnit === 'meter' ? 'meters' : 'pieces';
+      const quantity = invoiceUnit === 'meter' ? lengthM : invoiceQuantity;
+      const barLengthM =
+        invoiceUnit === 'bar'
+          ? (Number(invoiceBarLengthM) > 0
+              ? Number(invoiceBarLengthM)
+              : typeof (invoiceSelectedProfile.specifications as any)?.stockLengthMm === 'number'
+                ? ((invoiceSelectedProfile.specifications as any).stockLengthMm as number) / 1000
+                : 6)
+          : undefined;
+
+      if (inputUnit === 'pieces' && !(barLengthM && barLengthM > 0)) {
+        toast.error('Bar intake requires a positive bar length in metres.');
+        return;
+      }
 
       const metaParts: string[] = [];
       if (invoiceNumber) metaParts.push(`Invoice ${invoiceNumber}`);
@@ -609,20 +640,27 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       if (totalInvoiceWeightKg > 0) metaParts.push(`wt=${totalInvoiceWeightKg.toFixed(2)}kg`);
 
       const notes = metaParts.length ? metaParts.join(' – ') : null;
-
-      // UP-10: movement + sync (authoritative qty), then invalidate owned inventory.
-      const requestKey = JSON.stringify({ userId, mode: 'invoice', profileId: invoiceProfileId, quantity: movementQuantity, unit: effectiveUnit, notes });
-      const requestToken = pendingIntakeRequests.current.get(requestKey) ?? crypto.randomUUID();
-      pendingIntakeRequests.current.set(requestKey, requestToken);
-      const intake = await recordStockIntakeThenSync(userId, [
+      const lines: StockIntakeLine[] = [
         {
           profileId: invoiceProfileId,
-          quantity: movementQuantity,
-          unit: effectiveUnit as 'meters' | 'pieces',
+          inputUnit,
+          quantity,
+          barLengthM,
           notes,
-          requestId: requestToken,
+          invoice: invoiceNumber || null,
+          supplier: invoiceSupplier || null,
+          lotMetadata: {
+            source: 'invoice',
+            finish: invoicePaintColor || null,
+            painted: invoiceIsPainted,
+          },
         },
-      ]);
+      ];
+
+      const draftKey = `invoice:${invoiceProfileId}:${quantity}:${inputUnit}:${barLengthM ?? ''}`;
+      const payloadHash = await hashIntakePayload(lines);
+      const requestId = resolveIntakeRequestId({ userId, draftKey, payloadHash });
+      const intake = await recordAtomicStockIntake({ requestId, lines });
       if (!intake.ok) {
         throw new Error(intake.error);
       }
@@ -630,9 +668,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       toast.success('Stock updated from purchase invoice');
 
       await Promise.all([loadStockMovements(), loadStockAlerts(), invalidateOwnedInventory()]);
+      clearPendingStockIntake(userId);
 
       setInvoiceProfileId('');
-      pendingIntakeRequests.current.delete(requestKey);
       setInvoiceQuantity(0);
       setInvoiceNumber('');
       setInvoiceSupplier('');

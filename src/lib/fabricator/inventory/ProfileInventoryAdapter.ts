@@ -17,7 +17,10 @@ export interface LoadOwnedInventoryOptions {
   userId: string;
   /** When set, keep profiles linked to this pack id (systemPackIds) or matching systemBrand. */
   systemPackId?: string | null;
-  /** Sync movements before read (same RPC Reports uses). */
+  /**
+   * Optional legacy sync-before-read. Prefer false once intake writes are authoritative;
+   * default is read-only load of owned stock_quantity / stock_version.
+   */
   syncFromMovements?: boolean;
 }
 
@@ -39,7 +42,7 @@ function matchesSystemFilter(profile: Profile, systemPackId: string): boolean {
 export async function loadOwnedWorkshopInventory(
   options: LoadOwnedInventoryOptions,
 ): Promise<OwnedInventoryResult> {
-  const { userId, systemPackId, syncFromMovements = true } = options;
+  const { userId, systemPackId, syncFromMovements = false } = options;
   if (!userId) {
     return {
       ok: false,

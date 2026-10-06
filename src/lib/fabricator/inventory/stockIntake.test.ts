@@ -1,81 +1,122 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { recordStockIntakeThenSync } from './stockIntake';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  hashIntakePayload,
+  recordAtomicStockIntake,
+  recordStockIntakeThenSync,
+  serializeIntakePayload,
+} from './stockIntake';
 
-const insert = vi.fn();
-const from = vi.fn();
-const syncRpc = vi.fn();
+const rpc = vi.fn();
 
 vi.mock('@/lib/supabase', () => ({
   supabase: {
-    from: (...args: unknown[]) => from(...args),
-    rpc: (...args: unknown[]) => syncRpc(...args),
+    rpc: (...args: unknown[]) => rpc(...args),
   },
 }));
 
-vi.mock('@/lib/inventory/StockCalculator', () => ({
-  syncStockFromMovements: vi.fn(async () => 1),
-}));
-
-describe('stockIntake (UP-10)', () => {
+describe('stockIntake (PR1 atomic RPC)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    insert.mockResolvedValue({ error: null });
-    from.mockReturnValue({ insert });
-  });
-
-  it('rejects missing user', async () => {
-    const result = await recordStockIntakeThenSync('', [
-      { profileId: 'p1', quantity: 1, unit: 'meters' },
-    ]);
-    expect(result.ok).toBe(false);
+    rpc.mockResolvedValue({
+      data: {
+        request_id: '11111111-1111-4111-8111-111111111111',
+        payload_hash: 'abc',
+        replay: false,
+        movement_ids: ['m1'],
+        balances: [
+          {
+            profile_id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            stock_quantity: 60,
+            stock_version: 2,
+            canonical_metres_added: 60,
+          },
+        ],
+        movement_count: 1,
+      },
+      error: null,
+    });
   });
 
   it('rejects empty / invalid rows', async () => {
-    const result = await recordStockIntakeThenSync('user-1', [
-      { profileId: 'p1', quantity: 0, unit: 'meters' },
-    ]);
+    const result = await recordAtomicStockIntake({
+      requestId: '11111111-1111-4111-8111-111111111111',
+      lines: [{ profileId: 'p1', quantity: 0, inputUnit: 'meters' }],
+    });
     expect(result.ok).toBe(false);
+    expect(rpc).not.toHaveBeenCalled();
   });
 
-  it('inserts movements then syncs (no client qty write)', async () => {
-    const { syncStockFromMovements } = await import('@/lib/inventory/StockCalculator');
-    const result = await recordStockIntakeThenSync('user-1', [
-      {
-        profileId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-        quantity: 6,
-        unit: 'meters',
-        notes: 'Invoice 1',
-        requestId: 'req-abc',
-      },
-    ]);
+  it('rejects pieces without bar length', async () => {
+    const result = await recordAtomicStockIntake({
+      requestId: '11111111-1111-4111-8111-111111111111',
+      lines: [{ profileId: 'p1', quantity: 10, inputUnit: 'pieces' }],
+    });
+    expect(result.ok).toBe(false);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('calls record_stock_intake with metres for bar lots via legacy helper', async () => {
+    const result = await recordStockIntakeThenSync(
+      'user-1',
+      [
+        {
+          profileId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          quantity: 10,
+          unit: 'pieces',
+          barLengthM: 6,
+          notes: 'Invoice 1',
+          requestId: '11111111-1111-4111-8111-111111111111',
+        },
+      ],
+      { requestId: '11111111-1111-4111-8111-111111111111' },
+    );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.movementCount).toBe(1);
-    expect(insert).toHaveBeenCalledWith([
+    expect(result.receipt.balances[0].stock_quantity).toBe(60);
+    expect(rpc).toHaveBeenCalledWith(
+      'record_stock_intake',
       expect.objectContaining({
-        user_id: 'user-1',
-        profile_id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-        movement_type: 'in',
-        quantity: 6,
-        notes: expect.stringContaining('[idempotency=req-abc]'),
+        p_request_id: '11111111-1111-4111-8111-111111111111',
+        p_lines: [
+          expect.objectContaining({
+            profile_id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            input_unit: 'pieces',
+            quantity: 10,
+            bar_length_m: 6,
+          }),
+        ],
       }),
-    ]);
-    expect(syncStockFromMovements).toHaveBeenCalledWith('user-1');
+    );
   });
 
-  it('does not acknowledge an inserted movement if reconciliation fails', async () => {
-    const { syncStockFromMovements } = await import('@/lib/inventory/StockCalculator');
-    vi.mocked(syncStockFromMovements).mockRejectedValueOnce(new Error('server unavailable'));
-    const result = await recordStockIntakeThenSync('user-1', [{ profileId: 'p1', quantity: 6, unit: 'meters', requestId: 'retry-same' }]);
+  it('surfaces RPC errors instead of fabricating success', async () => {
+    rpc.mockResolvedValue({ data: null, error: { message: 'Forbidden' } });
+    const result = await recordAtomicStockIntake({
+      requestId: '11111111-1111-4111-8111-111111111111',
+      lines: [{ profileId: 'p1', quantity: 6, inputUnit: 'meters' }],
+    });
     expect(result.ok).toBe(false);
-    expect(result).toMatchObject({ error: expect.stringContaining('Retry the same request') });
+    expect(result).toMatchObject({ error: expect.stringContaining('Forbidden') });
   });
 
-  it('does not accept a missing idempotency column as a successful retry', async () => {
-    insert.mockResolvedValue({ error: { code: '42703', message: 'idempotency_key does not exist' } });
-    const result = await recordStockIntakeThenSync('user-1', [{ profileId: 'p1', quantity: 6, unit: 'meters', requestId: 'req' }]);
+  it('rejects invalid receipts', async () => {
+    rpc.mockResolvedValue({ data: { ok: true }, error: null });
+    const result = await recordAtomicStockIntake({
+      requestId: '11111111-1111-4111-8111-111111111111',
+      lines: [{ profileId: 'p1', quantity: 6, inputUnit: 'meters' }],
+    });
     expect(result.ok).toBe(false);
-    const { syncStockFromMovements } = await import('@/lib/inventory/StockCalculator');
-    expect(syncStockFromMovements).not.toHaveBeenCalled();
+  });
+
+  it('hashes payloads stably for identical lines', async () => {
+    const lines = [
+      { profileId: 'p1', quantity: 10, inputUnit: 'pieces' as const, barLengthM: 6 },
+    ];
+    const a = await hashIntakePayload(lines);
+    const b = await hashIntakePayload(lines);
+    expect(a).toBe(b);
+    expect(a).toHaveLength(64);
+    expect(serializeIntakePayload(lines)).toContain('"input_unit":"pieces"');
   });
 });

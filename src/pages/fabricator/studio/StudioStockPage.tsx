@@ -40,7 +40,7 @@ export const StudioStockPage: React.FC = () => {
       }
       const result = await loadOwnedWorkshopInventory({
         userId: user.id,
-        syncFromMovements: true,
+        syncFromMovements: false,
       });
       return {
         profiles: result.profiles,
