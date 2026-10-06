@@ -73,7 +73,7 @@ export const FabricatorReports: React.FC = () => {
       // UP-09: shared owned-inventory adapter (finite costs, camelCase stock fields).
       const result = await loadOwnedWorkshopInventory({
         userId: user.id,
-        syncFromMovements: true,
+        syncFromMovements: false,
       });
       if (!result.ok) {
         throw new Error(result.error);

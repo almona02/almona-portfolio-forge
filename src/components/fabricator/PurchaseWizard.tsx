@@ -252,135 +252,73 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
         throw new Error('User profile not found. Please complete your profile setup first.');
       }
 
-      // 1. Ensure profiles exist in DB, create if missing
-      // This is the "Unify" part - ensuring scalable categories/roles
-      
-      for (const item of cart) {
+      const { hashIntakePayload, recordAtomicStockIntake } = await import(
+        '@/lib/fabricator/inventory/stockIntake'
+      );
+      const { clearPendingStockIntake, resolveIntakeRequestId } = await import(
+        '@/lib/fabricator/inventory/stockIntakeRequest'
+      );
+
+      const lines = cart.map((item) => {
         const p = item.profile;
-        
-        // Check if exists
-        const { data: existing } = await db
-          .from('fabricator_profiles')
-          .select('id, stock_quantity')
-          .eq('user_id', authenticatedUserId)
-          .eq('name', p.name) // Using name as key for now, ideally supplier code
-          .maybeSingle();
-
-        let profileId = existing?.id;
-        const currentStock = existing?.stock_quantity || 0;
-
-        if (!profileId) {
-          // Create new profile
-          const { data: newProfile, error: createError } = await db
-            .from('fabricator_profiles')
-            .insert({
-              user_id: authenticatedUserId,
-              name: p.name,
-              material: 'aluminum', // Simplified assumption
-              width: p.dimensions?.width || 50,
-              height: p.dimensions?.height || 50,
-              thickness: p.dimensions?.thickness || 1.5,
-              color: item.color,
-              cost_per_meter: 0, // Needs pricing input ideally
-              stock_quantity: 0,
-              min_stock_level: 10,
-              supplier: selectedSystem?.brand || 'Unknown',
-              system_brand: selectedSystem?.name,
-              specifications: {
-                profileRole: p.role,
-                supplierCode: p.profileCode,
-                internalCode: p.oldProfileCode,
-                systemPackId: p.systemPackId,
-                ...p.specifications
-              }
-            })
-            .select()
-            .single();
-          
-          if (createError) throw createError;
-          profileId = newProfile.id;
-        }
-
-        // 2. Record Stock Movement (Purchase)
-        // Use authenticatedUserId to ensure RLS policy compliance (auth.uid() = user_id)
-        // Note: movement_type must be 'in' (not 'purchase') per table constraint
-        const quantityMeters = parseFloat((item.quantity * (item.lengthMm / 1000)).toFixed(2));
-        const stockBefore = parseFloat((currentStock || 0).toFixed(2));
-        const stockAfter = parseFloat((stockBefore + quantityMeters).toFixed(2));
-        
-        // Prepare stock movement data
-        const movementData = {
-          user_id: authenticatedUserId,
-          profile_id: profileId,
-          movement_type: 'in', // 'in' is the correct type for stock intake/purchases
-          quantity: quantityMeters,
-          unit: 'meters',
-          stock_before: stockBefore,
-          stock_after: stockAfter,
+        const material =
+          (typeof p.specifications?.material === 'string' && p.specifications.material) ||
+          (selectedSystem as { material?: string } | null)?.material ||
+          'aluminum';
+        const barLengthM = item.lengthMm / 1000;
+        return {
+          createIfMissing: true,
+          catalogueKey: p.profileCode,
+          pack: p.systemPackId || selectedSystem?.id || '',
+          material: String(material).toLowerCase(),
+          finish: item.color || '',
+          profileName: p.name,
+          inputUnit: 'pieces' as const,
+          quantity: item.quantity,
+          barLengthM,
           notes: `Purchase Wizard - ${selectedSystem?.name || 'Unknown'} Batch`,
-          created_by: authenticatedUserId,
+          supplier: selectedSystem?.brand || null,
+          systemBrand: selectedSystem?.name,
+          width: p.dimensions?.width || 50,
+          height: p.dimensions?.height || 50,
+          thickness: p.dimensions?.thickness || 1.5,
+          minStockLevel: 10,
+          specifications: {
+            profileRole: p.role,
+            supplierCode: p.profileCode,
+            internalCode: p.oldProfileCode,
+            systemPackId: p.systemPackId,
+            finish: item.color || '',
+            ...(p.specifications || {}),
+          },
+          lotMetadata: {
+            source: 'purchase_wizard',
+            system: selectedSystem?.name || null,
+            length_mm: item.lengthMm,
+          },
         };
+      });
 
-        // Verify session is still valid and matches authenticatedUserId
-        const { data: { session: currentSession }, error: sessionCheckError } = await supabase.auth.getSession();
-        if (sessionCheckError || !currentSession) {
-          console.error('Session check failed before insert:', sessionCheckError);
-          throw new Error('Session expired. Please log in again.');
-        }
+      const draftKey = `wizard:${lines.map((l) => `${l.catalogueKey}:${l.pack}:${l.finish}`).join('|')}`;
+      const payloadHash = await hashIntakePayload(lines);
+      const requestId = resolveIntakeRequestId({
+        userId: authenticatedUserId,
+        draftKey,
+        payloadHash,
+      });
 
-        // Critical: Ensure the session user ID matches what we're inserting
-        if (currentSession.user.id !== authenticatedUserId) {
-          console.error('Session user ID mismatch:', {
-            sessionUserId: currentSession.user.id,
-            authenticatedUserId: authenticatedUserId,
-          });
-          throw new Error('Session user ID does not match. Please log in again.');
-        }
-
-        console.log('Inserting stock movement with data:', {
-          ...movementData,
-          user_id: authenticatedUserId,
-          profile_id: profileId,
-          session_user_id: currentSession.user.id,
-          session_valid: !!currentSession,
-          access_token_present: !!currentSession.access_token,
-        });
-
-        // Use supabase directly (not db cast) to ensure auth headers are included
-        const { error: movementError, data: movementDataResult } = await (supabase as any)
-          .from('stock_movements')
-          .insert(movementData)
-          .select();
-
-        if (movementError) {
-          console.error('Error recording stock movement:', {
-            error: movementError,
-            code: movementError.code,
-            message: movementError.message,
-            details: movementError.details,
-            hint: movementError.hint,
-            user_id: authenticatedUserId,
-            profile_id: profileId,
-          });
-          throw new Error(`Failed to record stock movement: ${movementError.message || movementError.details || 'Unknown error'}`);
-        }
-
-        console.log('Stock movement recorded successfully:', movementDataResult);
+      const intake = await recordAtomicStockIntake({ requestId, lines });
+      if (!intake.ok) {
+        throw new Error(intake.error);
       }
+      clearPendingStockIntake(authenticatedUserId);
 
-      // UP-10: recompute stock from movements (authoritative) instead of client stockAfter.
-      const { syncStockFromMovements } = await import('@/lib/inventory/StockCalculator');
-      await syncStockFromMovements(authenticatedUserId);
-
-      // Refresh and resolve stock alerts after purchase
-      // This will automatically resolve alerts when stock is restored above thresholds
+      // Refresh stock alerts after purchase (owner-scoped RPC).
       try {
-        const db = supabase as any;
         const alertResult = await db.rpc('check_stock_levels', { p_user_id: authenticatedUserId });
         console.log('Stock alerts refreshed:', alertResult);
       } catch (alertError) {
         console.warn('Failed to refresh stock alerts:', alertError);
-        // Don't fail the purchase if alert refresh fails
       }
 
       toast.success('Purchase recorded and inventory updated!');

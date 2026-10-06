@@ -1,150 +1,71 @@
 /**
- * Stock Calculator
- * 
- * Calculates real stock quantities from stock_movements table.
- * This provides the authoritative source of truth for inventory levels
- * by summing all recorded movements rather than relying on the stock_quantity field.
+ * Stock Calculator — RPC-backed balances. Fail closed (no fabricated zero).
  */
 
 import { supabase } from '@/lib/supabase';
 
 /**
- * Calculate current stock for a specific profile from stock movements
- * @param userId - User ID
- * @param profileId - Profile ID
- * @returns Calculated stock quantity in meters
+ * Calculate current stock for a specific profile from stock movements (metres).
+ * Throws when the RPC is unavailable or rejects the call — never invents 0.
  */
 export async function calculateStockFromMovements(
   userId: string,
-  profileId: string
+  profileId: string,
 ): Promise<number> {
-  try {
-    const db = supabase as any;
-    
-    const { data, error } = await db.rpc('calculate_stock_from_movements', {
-      p_user_id: userId,
-      p_profile_id: profileId,
-    });
+  const db = supabase as any;
 
-    if (error) {
-      console.error('Error calculating stock from movements:', error);
-      // Fallback: try direct query if RPC fails
-      return await calculateStockDirectly(userId, profileId);
-    }
+  const { data, error } = await db.rpc('calculate_stock_from_movements', {
+    p_user_id: userId,
+    p_profile_id: profileId,
+  });
 
-    return parseFloat(data || 0);
-  } catch (error) {
-    console.error('Error in calculateStockFromMovements:', error);
-    return await calculateStockDirectly(userId, profileId);
+  if (error) {
+    throw new Error(error.message || 'Stock calculation failed.');
   }
+
+  const value = Number(data);
+  if (!Number.isFinite(value)) {
+    throw new Error('Stock calculation returned a non-numeric balance.');
+  }
+  return value;
 }
 
 /**
- * Direct calculation of stock from movements (fallback method)
- * Sums all movements: 'in' adds, 'out' subtracts, adjustments use stock_after - stock_before
- */
-async function calculateStockDirectly(
-  userId: string,
-  profileId: string
-): Promise<number> {
-  try {
-    const db = supabase as any;
-    
-    const { data, error } = await db
-      .from('stock_movements')
-      .select('movement_type, quantity, stock_before, stock_after')
-      .eq('user_id', userId)
-      .eq('profile_id', profileId);
-
-    if (error) {
-      console.error('Error fetching stock movements:', error);
-      return 0;
-    }
-
-    if (!data || data.length === 0) {
-      return 0;
-    }
-
-    let stock = 0;
-    for (const movement of data) {
-      const quantity = parseFloat(movement.quantity || 0);
-      
-      switch (movement.movement_type) {
-        case 'in':
-        case 'return':
-        case 'transfer':
-          stock += quantity;
-          break;
-        case 'out':
-        case 'production':
-        case 'remnant_used':
-        case 'damage':
-        case 'loss':
-          stock -= quantity;
-          break;
-        case 'adjustment':
-          // Use the difference between stock_after and stock_before
-          const stockBefore = parseFloat(movement.stock_before || 0);
-          const stockAfter = parseFloat(movement.stock_after || 0);
-          stock += (stockAfter - stockBefore);
-          break;
-        default:
-          // Unknown movement type, skip
-          break;
-      }
-    }
-
-    return Math.max(stock, 0); // Ensure non-negative
-  } catch (error) {
-    console.error('Error in calculateStockDirectly:', error);
-    return 0;
-  }
-}
-
-/**
- * Sync stock quantities for all profiles of a user
- * Updates fabricator_profiles.stock_quantity with calculated values from movements
+ * Sync stock quantities for all profiles of a user from the movement ledger.
  */
 export async function syncStockFromMovements(userId: string): Promise<number> {
-  try {
-    const db = supabase as any;
-    
-    const { data, error } = await db.rpc('sync_stock_from_movements', {
-      p_user_id: userId,
-    });
+  const db = supabase as any;
 
-      if (error) {
-        throw new Error(error.message || 'Stock reconciliation failed.');
-    }
+  const { data, error } = await db.rpc('sync_stock_from_movements', {
+    p_user_id: userId,
+  });
 
-      const count = Number(data ?? 0);
-      if (!Number.isInteger(count) || count < 0) throw new Error('Invalid stock reconciliation acknowledgement.');
-      return count;
-  } catch (error) {
-      throw error;
+  if (error) {
+    throw new Error(error.message || 'Stock reconciliation failed.');
   }
+
+  const count = Number(data ?? 0);
+  if (!Number.isInteger(count) || count < 0) {
+    throw new Error('Invalid stock reconciliation acknowledgement.');
+  }
+  return count;
 }
 
 /**
- * Calculate stock for multiple profiles at once
- * @param userId - User ID
- * @param profileIds - Array of profile IDs
- * @returns Map of profileId -> calculated stock
+ * Calculate stock for multiple profiles. Fails closed on the first RPC error.
  */
 export async function calculateStockForProfiles(
   userId: string,
-  profileIds: string[]
+  profileIds: string[],
 ): Promise<Map<string, number>> {
   const stockMap = new Map<string, number>();
-  
-  // Calculate stock for each profile
+
   await Promise.all(
     profileIds.map(async (profileId) => {
       const stock = await calculateStockFromMovements(userId, profileId);
       stockMap.set(profileId, stock);
-    })
+    }),
   );
 
   return stockMap;
 }
-

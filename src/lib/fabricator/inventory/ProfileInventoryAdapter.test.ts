@@ -56,17 +56,21 @@ describe('ProfileInventoryAdapter (UP-09)', () => {
     expect(result.profiles).toEqual([]);
   });
 
-  it('does not present stale balances as reconciled stock when sync fails', async () => {
+  it('fails closed when an explicit sync-before-read is requested and sync fails', async () => {
     rpc.mockResolvedValue({ error: { message: 'reconciliation unavailable' } });
-    const result = await loadOwnedWorkshopInventory({ userId: 'user-1' });
+    const result = await loadOwnedWorkshopInventory({
+      userId: 'user-1',
+      syncFromMovements: true,
+    });
     expect(result.ok).toBe(false);
     expect(result.profiles).toEqual([]);
     expect(from).not.toHaveBeenCalled();
   });
 
-  it('loads owned profiles with finite costs (no NaN)', async () => {
+  it('loads owned profiles read-only by default (no sync side effect)', async () => {
     const result = await loadOwnedWorkshopInventory({ userId: 'user-1' });
     expect(result.ok).toBe(true);
+    expect(rpc).not.toHaveBeenCalled();
     expect(result.profiles).toHaveLength(2);
     expect(result.profiles.every((p) => Number.isFinite(p.costPerMeter))).toBe(true);
     expect(result.profiles[0].stockQuantity).toBe(10);

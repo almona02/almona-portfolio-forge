@@ -1,83 +1,238 @@
 /**
- * Batch 2 UP-10 — Stock intake via movements + authoritative sync.
+ * PR1 — Atomic stock intake via record_stock_intake RPC.
  *
- * Never trust stale client stockQuantity for writes. Insert movements, then
- * sync_stock_from_movements. Callers must invalidate owned-inventory queries.
+ * Canonical metre deltas are computed server-side. Client supplies input unit,
+ * quantities, optional bar length, and a durable request identity + payload hash.
  */
 
-import { syncStockFromMovements } from '@/lib/inventory/StockCalculator';
 import { supabase } from '@/lib/supabase';
 
-export interface StockIntakeMovement {
-  profileId: string;
+export type StockIntakeInputUnit = 'meters' | 'pieces';
+
+export interface StockIntakeLine {
+  profileId?: string;
+  /** Stable catalogue code (supplierCode). Required when createIfMissing. */
+  catalogueKey?: string;
+  pack?: string;
+  material?: string;
+  finish?: string;
+  profileName?: string;
+  inputUnit: StockIntakeInputUnit;
+  /** Metres when inputUnit=meters; bar count when pieces. */
   quantity: number;
-  unit: 'meters' | 'pieces';
+  /** Required for pieces; ignored for meters. */
+  barLengthM?: number;
   notes?: string | null;
-  /** Client-generated idempotency token (embedded in notes when column absent). */
-  requestId?: string;
+  invoice?: string | null;
+  supplier?: string | null;
+  createIfMissing?: boolean;
+  width?: number;
+  height?: number;
+  thickness?: number;
+  costPerMeter?: number;
+  minStockLevel?: number;
+  systemBrand?: string;
+  specifications?: Record<string, unknown>;
+  lotMetadata?: Record<string, unknown>;
+}
+
+export interface StockIntakeReceiptBalance {
+  profile_id: string;
+  stock_quantity: number;
+  stock_version: number;
+  canonical_metres_added: number;
+}
+
+export interface StockIntakeReceipt {
+  request_id: string;
+  payload_hash: string;
+  replay: boolean;
+  movement_ids: string[];
+  balances: StockIntakeReceiptBalance[];
+  movement_count: number;
 }
 
 export type StockIntakeResult =
-  | { ok: true; movementCount: number }
+  | { ok: true; receipt: StockIntakeReceipt; movementCount: number }
   | { ok: false; error: string };
 
+export interface StockIntakeRequest {
+  requestId: string;
+  lines: StockIntakeLine[];
+}
+
+function canonicalLinePayload(line: StockIntakeLine): Record<string, unknown> {
+  return {
+    profile_id: line.profileId ?? null,
+    catalogue_key: line.catalogueKey ?? null,
+    pack: line.pack ?? '',
+    material: line.material ?? null,
+    finish: line.finish ?? '',
+    profile_name: line.profileName ?? null,
+    input_unit: line.inputUnit,
+    quantity: line.quantity,
+    bar_length_m: line.barLengthM ?? null,
+    notes: line.notes ?? null,
+    invoice: line.invoice ?? null,
+    supplier: line.supplier ?? null,
+    create_if_missing: Boolean(line.createIfMissing),
+    width: line.width ?? null,
+    height: line.height ?? null,
+    thickness: line.thickness ?? null,
+    cost_per_meter: line.costPerMeter ?? null,
+    min_stock_level: line.minStockLevel ?? null,
+    system_brand: line.systemBrand ?? null,
+    specifications: line.specifications ?? null,
+    lot_metadata: line.lotMetadata ?? null,
+  };
+}
+
+/** Stable JSON for hashing — sorted keys, no whitespace variance. */
+export function serializeIntakePayload(lines: StockIntakeLine[]): string {
+  const normalized = lines.map((line) => canonicalLinePayload(line));
+  return JSON.stringify(normalized);
+}
+
+export async function hashIntakePayload(lines: StockIntakeLine[]): Promise<string> {
+  const payload = serializeIntakePayload(lines);
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    const data = new TextEncoder().encode(payload);
+    const digest = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+  // Node test fallback (vitest): deterministic non-crypto hash is unacceptable in prod browsers;
+  // vitest should polyfill subtle. Fail closed if unavailable.
+  throw new Error('Web Crypto SHA-256 is required to hash stock intake payloads.');
+}
+
+function toRpcLine(line: StockIntakeLine): Record<string, unknown> {
+  return canonicalLinePayload(line);
+}
+
+function parseReceipt(data: unknown): StockIntakeReceipt | null {
+  if (!data || typeof data !== 'object') return null;
+  const row = data as Record<string, unknown>;
+  if (typeof row.request_id !== 'string' || typeof row.payload_hash !== 'string') return null;
+  const balances = Array.isArray(row.balances) ? row.balances : [];
+  return {
+    request_id: row.request_id,
+    payload_hash: row.payload_hash,
+    replay: Boolean(row.replay),
+    movement_ids: Array.isArray(row.movement_ids)
+      ? row.movement_ids.map(String)
+      : [],
+    balances: balances.map((b) => {
+      const bal = (b || {}) as Record<string, unknown>;
+      return {
+        profile_id: String(bal.profile_id),
+        stock_quantity: Number(bal.stock_quantity),
+        stock_version: Number(bal.stock_version),
+        canonical_metres_added: Number(bal.canonical_metres_added),
+      };
+    }),
+    movement_count: Number(row.movement_count ?? 0),
+  };
+}
+
 /**
- * Insert stock_movements rows then recompute fabricator_profiles.stock_quantity
- * from movements. Skips zero/invalid quantities. Does not invent profile rows.
+ * Record intake through the owner-scoped atomic RPC.
+ * Does not invent profile rows unless createIfMissing is set on a line.
  */
 export async function recordStockIntakeThenSync(
-  userId: string,
-  movements: StockIntakeMovement[],
+  _userId: string,
+  movements: Array<{
+    profileId: string;
+    quantity: number;
+    unit: 'meters' | 'pieces';
+    notes?: string | null;
+    requestId?: string;
+    barLengthM?: number;
+    invoice?: string | null;
+    supplier?: string | null;
+  }>,
+  options?: { requestId?: string },
 ): Promise<StockIntakeResult> {
-  if (!userId) {
-    return { ok: false, error: 'Authenticated user is required for stock intake.' };
-  }
-
-  const rows = movements
+  const lines: StockIntakeLine[] = movements
     .filter((m) => m.profileId && Number.isFinite(m.quantity) && m.quantity > 0)
-    .map((m) => {
-      const noteParts: string[] = [];
-      if (m.notes) noteParts.push(m.notes);
-      if (m.requestId) noteParts.push(`[idempotency=${m.requestId}]`);
-      return {
-        user_id: userId,
-        profile_id: m.profileId,
-        movement_type: 'in' as const,
-        quantity: m.quantity,
-        unit: m.unit,
-        notes: noteParts.length ? noteParts.join(' – ') : null,
-        idempotency_key: m.requestId || null,
-      };
-    });
+    .map((m) => ({
+      profileId: m.profileId,
+      inputUnit: m.unit,
+      quantity: m.quantity,
+      barLengthM: m.barLengthM,
+      notes: m.notes,
+      invoice: m.invoice,
+      supplier: m.supplier,
+    }));
 
-  if (!rows.length) {
+  if (!lines.length) {
     return { ok: false, error: 'No valid intake rows to record.' };
   }
 
-  const db = supabase as any;
-  const { error } = await db.from('stock_movements').insert(rows);
-  if (error) {
-    if (String(error.code) === '23505' && rows.every(row => row.idempotency_key)) {
-      const { data: recorded, error: readError } = await db.from('stock_movements')
-        .select('profile_id,movement_type,quantity,unit,notes,idempotency_key')
-        .eq('user_id', userId).in('idempotency_key', rows.map(row => row.idempotency_key));
-      if (readError || !recorded || recorded.length !== rows.length || !rows.every(row => recorded.some((saved: Record<string, unknown>) =>
-        saved.idempotency_key === row.idempotency_key && saved.profile_id === row.profile_id &&
-        saved.movement_type === row.movement_type && Number(saved.quantity) === row.quantity &&
-        saved.unit === row.unit && saved.notes === row.notes))) {
-        return { ok: false, error: 'Stock retry does not match the persisted intake request.' };
-      }
-    } else {
-      return { ok: false, error: error.message || 'Failed to insert stock movements.' };
+  // Prefer explicit request UUID; fall back to first legacy per-row token only if UUID-shaped.
+  const legacy = movements.find((m) => m.requestId)?.requestId;
+  const requestId =
+    options?.requestId ||
+    (legacy && /^[0-9a-fA-F-]{36}$/.test(legacy) ? legacy : undefined) ||
+    crypto.randomUUID();
+
+  return recordAtomicStockIntake({ requestId, lines });
+}
+
+export async function recordAtomicStockIntake(
+  request: StockIntakeRequest,
+): Promise<StockIntakeResult> {
+  if (!request.requestId) {
+    return { ok: false, error: 'Authenticated intake requires a request UUID.' };
+  }
+  if (!request.lines?.length) {
+    return { ok: false, error: 'No valid intake rows to record.' };
+  }
+
+  for (const line of request.lines) {
+    if (!Number.isFinite(line.quantity) || line.quantity <= 0) {
+      return { ok: false, error: 'Each intake line needs a finite positive quantity.' };
+    }
+    if (line.inputUnit === 'pieces' && !(Number.isFinite(line.barLengthM) && (line.barLengthM as number) > 0)) {
+      return { ok: false, error: 'Pieces intake requires a positive bar length in metres.' };
+    }
+    if (line.inputUnit !== 'meters' && line.inputUnit !== 'pieces') {
+      return { ok: false, error: `Unsupported intake unit: ${String((line as { inputUnit?: string }).inputUnit)}` };
+    }
+    if (!line.profileId && !line.createIfMissing) {
+      return { ok: false, error: 'Each line needs a profile id or createIfMissing.' };
     }
   }
 
+  let payloadHash: string;
   try {
-    await syncStockFromMovements(userId);
+    payloadHash = await hashIntakePayload(request.lines);
   } catch (err) {
-    return { ok: false, error: `Intake reconciliation failed: ${err instanceof Error ? err.message : 'unknown error'}. Retry the same request.` };
+    return { ok: false, error: err instanceof Error ? err.message : 'Failed to hash intake payload.' };
   }
-  return { ok: true, movementCount: rows.length };
+
+  const db = supabase as any;
+  const { data, error } = await db.rpc('record_stock_intake', {
+    p_request_id: request.requestId,
+    p_payload_hash: payloadHash,
+    p_lines: request.lines.map(toRpcLine),
+  });
+
+  if (error) {
+    return { ok: false, error: error.message || 'Stock intake failed.' };
+  }
+
+  const receipt = parseReceipt(data);
+  if (!receipt) {
+    return { ok: false, error: 'Stock intake returned an invalid receipt.' };
+  }
+
+  return {
+    ok: true,
+    receipt,
+    movementCount: receipt.movement_count || receipt.movement_ids.length || request.lines.length,
+  };
 }
 
 /** React Query keys that must refresh after intake. */
