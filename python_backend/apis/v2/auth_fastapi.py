@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Body, Form, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import InvalidTokenError
 from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -66,7 +67,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
-    except JWTError:
+    except InvalidTokenError:
         raise credentials_exception
     return token_data
 
@@ -152,7 +153,7 @@ async def refresh_access_token(refresh_token: str = Body(..., embed=True)):
         )
         new_refresh_token = create_refresh_token(data={"sub": username})
         return {"access_token": access_token, "refresh_token": new_refresh_token, "token_type": "bearer"}
-    except JWTError:
+    except InvalidTokenError:
         raise credentials_exception
 
 @router.get("/users/me", response_model=TokenData)

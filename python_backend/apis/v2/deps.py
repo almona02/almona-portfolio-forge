@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import InvalidTokenError
 from typing import Any, Dict, AsyncGenerator
 import time
 import asyncio
@@ -284,7 +285,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any
         if subject is None:
             raise UnauthorizedError("Missing subject in token")
         return payload  # full claims to allow role/tenant checks by callers
-    except JWTError as e:
+    except InvalidTokenError as e:
         raise UnauthorizedError(f"Token validation failed: {str(e)}")
 
 

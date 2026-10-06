@@ -29,4 +29,4 @@ requests==2.34.2
 pillow>=12.1.1         # ~20MB (CVE-2026-25990 fix)
 
 # Security
-python-jose[cryptography]==3.4.0
+PyJWT[crypto]==2.15.1
