@@ -1,0 +1,156 @@
+{
+  "meta": {
+    "title": "Workshop Operator Reference",
+    "subtitle": "ALMONA Fabricator Pro — manufacturing gates, revision identity, and floor procedures",
+    "live_site": "Live site",
+    "audience": "Workshop owners · technical staff · administrators",
+    "print": "Print",
+    "full_guide": "Full operator guide (markdown)",
+    "standards": "Industrial computing · deterministic constraints · human validation required",
+    "lang_label": "Language",
+    "gate_label": "Gate",
+    "guide_path": "Repository guide (with live screenshots): docs/guides/FABRICATOR_OPERATOR_UNIVERSITY_GUIDE.md"
+  },
+  "toc": {
+    "principles": "1 · Floor principles",
+    "pipeline": "2 · Gated pipeline",
+    "revision": "3 · Revision (R#)",
+    "roles": "4 · Roles & scope",
+    "packs": "5 · Packs & tuning",
+    "stock": "6 · Stock",
+    "troubleshoot": "7 · Troubleshooting",
+    "assessment": "8 · Assessment"
+  },
+  "principles": {
+    "heading": "Five floor principles",
+    "intro": "Every operator must apply these rules on every pose. They are manufacturing constraints, not preferences.",
+    "items": [
+      {
+        "title": "Human validation",
+        "body": "Software proposes cuts and checks stock. A person qualifies the BOM, acknowledges stock, freezes release, and signs QC.",
+        "result": "Result: fewer wrong cut lists; clear responsibility at each gate."
+      },
+      {
+        "title": "No self-approved manufacturing authority",
+        "body": "You may request catalogue and cutting-rule review. Approval is performed by a trusted backend review process. The browser cannot approve itself.",
+        "result": "Result: manufacturing authority stays auditable; no operator self-certification loophole."
+      },
+      {
+        "title": "Soft stock acknowledgement",
+        "body": "Acknowledgement checks coverage for the active revision. It does not remove metres from the ledger.",
+        "result": "Result: inventory remains accurate; availability and consumption stay separate."
+      },
+      {
+        "title": "Revision discipline (R#)",
+        "body": "Every saved change to a position bumps R#. Stock acknowledgement, BOM, optimization, release, and QC must match the same R#.",
+        "result": "Result: cuts and QC always refer to one manufacturing identity."
+      },
+      {
+        "title": "Owner scope",
+        "body": "Packs and stock belong to the signed-in account (owner_user_id). They are not company-wide unless you share that owner account under workshop policy.",
+        "result": "Result: no accidental cross-workshop stock or pack leakage."
+      }
+    ]
+  },
+  "pipeline": {
+    "heading": "Gated manufacturing pipeline",
+    "intro": "Complete each step honestly. Blocked means a prerequisite is missing — resolve it before continuing.",
+    "steps": [
+      { "label": "Project", "gate": null },
+      { "label": "Position / pose", "gate": null },
+      { "label": "Measure", "gate": "Record valid measurements before design." },
+      { "label": "Design", "gate": "Resolve the system pack (frame + sash profiles)." },
+      { "label": "BOM", "gate": "Request catalogue / cutting-rule review; regenerate when qualified." },
+      { "label": "Stock acknowledgement", "gate": "Soft acknowledgement for the active R#." },
+      { "label": "Optimization", "gate": "Manufacturing-qualified BOM required." },
+      { "label": "Quote", "gate": "Human price confirmation." },
+      { "label": "Production → QC → Delivery", "gate": "Same R# freeze and inspection evidence." }
+    ]
+  },
+  "revision": {
+    "heading": "Revision discipline (R#)",
+    "identity": "Workflow identity: owner + project + position + source + revision",
+    "what": "R# is the manufacturing revision counter for a pose (R1, R2, R3…). It is part of the saved workflow identity.",
+    "when": "R# increases when you save measurement, design, or other position writes.",
+    "rule_title": "Classroom rule",
+    "rule_body": "When R# increments: previous soft stock acknowledgements are stale; regenerate and re-qualify the BOM; re-acknowledge stock before optimization. Never optimize or release against a mismatched revision.",
+    "evidence": "Assessment evidence: screenshot of the active R# in the studio chrome (status bar)."
+  },
+  "roles": {
+    "heading": "Roles and workshop scope",
+    "register": "Self-service registration at /register creates the customer role only. Technician and admin cannot be selected in the browser.",
+    "privileged": "Technician and admin roles require privileged server-side provisioning (service-role / ALMONA operations).",
+    "shared_title": "Shared workshop",
+    "shared_body": "Create one owner account for packs, stock, and live jobs. Grant technician or admin roles only through the admin panel / service role — not by inventing shared company-wide inventory from the registration form."
+  },
+  "packs": {
+    "heading": "System packs, profiles, and tuning",
+    "gallery": "Gallery: /fabricator/studio/data",
+    "examples": "Catalogue examples in this product: ROCK 60, JUMBO 100, KALE 70, ASAS — plus owner-scoped custom packs.",
+    "roles": "Assign correct profile roles (frame, sash, and others as required). Wrong roles break BOM cuts and stock demand matching.",
+    "tuning": "Tuning paths: No-DXF /fabricator/studio/data/tuning-no-dxf · DXF /fabricator/studio/data/tuning. Save until the pack shows Tuned.",
+    "note": "Tuned means pack geometry / cutting readiness. It does not grant manufacturing authority for a specific pose. Pose BOM still needs approved catalogue and cutting-rule evidence for that revision."
+  },
+  "stock": {
+    "heading": "Stock intake and soft acknowledgement",
+    "location": "Location: /fabricator/studio/data/stock",
+    "wizard": "Purchase Wizard: select pack profiles by role, quantities, and bar lengths to materialize owned inventory.",
+    "invoice": "Invoice intake: record quantity, bar length, invoice number, and supplier against owned profiles.",
+    "soft": "Acknowledge stock: soft availability check for the active revision — does not deduct the ledger.",
+    "add": "Purchase / invoice: adds metres (or equivalent) to owned inventory.",
+    "test": "Lots marked for testing are inspection inventory. Keep them out of operational readiness calculations."
+  },
+  "troubleshoot": {
+    "heading": "Troubleshooting",
+    "cols": {
+      "symptom": "Symptom",
+      "cause": "Cause",
+      "action": "Corrective action"
+    },
+    "rows": [
+      {
+        "symptom": "Design shows 0 profiles",
+        "cause": "Custom pack not resolved for this account",
+        "action": "Confirm the pack is saved for this owner; reload gallery; complete No-DXF save if needed."
+      },
+      {
+        "symptom": "BOM page blank",
+        "cause": "Pack not resolved for BOM review",
+        "action": "Ensure the pack is owned and available; regenerate from Design → Review BOM."
+      },
+      {
+        "symptom": "Optimize blocked: acknowledge stock",
+        "cause": "Missing soft acknowledgement or mismatched R#",
+        "action": "Open Stock → Acknowledge for the current R#."
+      },
+      {
+        "symptom": "Optimize blocked: qualify BOM",
+        "cause": "Estimate-only BOM",
+        "action": "Request / check manufacturing approval; regenerate BOM."
+      },
+      {
+        "symptom": "QC blocked: tolerance rule",
+        "cause": "No approved dimensional-tolerance evidence",
+        "action": "Obtain workshop-approved tolerance evidence. Do not invent values."
+      }
+    ]
+  },
+  "assessment": {
+    "heading": "Operator assessment checklist",
+    "intro": "Mark Pass only with live evidence. Memory is not evidence.",
+    "mandatory_chrome": "Mandatory: screenshot of the active R# in the studio chrome.",
+    "items": [
+      "Signed in; opened /fabricator/studio/command",
+      "Explained active revision R# and when it bumps",
+      "Stated that registration creates customer only; technician/admin need privileged setup",
+      "Verified pack with frame + sash roles (catalogue example or owned custom pack)",
+      "Confirmed pack shows Tuned (or documented why not)",
+      "Requested catalogue + cutting-rule review (or documented pending reviewer)",
+      "Recorded stock intake covering demand",
+      "Completed project → measure → design → BOM under a saved R#",
+      "Soft-acknowledged stock for that exact R#",
+      "Completed optimization with placed cuts for that R#",
+      "Attached screenshot of active R# chrome as assessment evidence"
+    ]
+  }
+}

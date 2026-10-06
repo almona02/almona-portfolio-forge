@@ -114,6 +114,7 @@ const QualityControlWorkflowPage = lazy(() => import("./pages/fabricator/workflo
 const BOMReviewPanel = lazy(() => import("./components/fabricator/workflow/BOMReviewPanel").then(m => ({ default: m.BOMReviewPanel })));
 const StudioStockPage = lazy(() => import("./pages/fabricator/studio/StudioStockPage").then(m => ({ default: m.StudioStockPage })));
 const StudioIntegrationsPage = lazy(() => import("./pages/fabricator/studio/StudioIntegrationsPage").then(m => ({ default: m.StudioIntegrationsPage })));
+const StudioOperatorHelpPage = lazy(() => import("./pages/fabricator/studio/StudioOperatorHelpPage").then(m => ({ default: m.StudioOperatorHelpPage })));
 const OrderManagementPage = lazy(() => import("./components/fabricator/orders/OrderManagement").then(m => ({ default: m.OrderManagement })));
 
 // Phase 5: Pre-Pilot Hardening - lazy loaded
@@ -501,6 +502,9 @@ const App = memo(() => {
                                     {/* 7. Reports (no ProtectedRoute — studio layout already requires auth) */}
                                     <Route path="reports" element={<Suspense fallback={getLoadingComponent('Reports')}><FabricatorReportsPage /></Suspense>} />
                                     <Route path="reports/*" element={<Suspense fallback={getLoadingComponent('Reports')}><FabricatorReportsPage /></Suspense>} />
+
+                                    {/* 8. Workshop operator help (university-tier floor reference) */}
+                                    <Route path="help" element={<Suspense fallback={getLoadingComponent('Operator Help')}><StudioOperatorHelpPage /></Suspense>} />
                                   </Route>
 
                                   {/* Fabricator Wizard (standalone) */}

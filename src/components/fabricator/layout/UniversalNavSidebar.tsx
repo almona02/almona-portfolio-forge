@@ -10,6 +10,7 @@ import { useWorkflowStore } from '@/store/workflowStore';
 import {
     BarChart,
     Bell,
+    BookOpen,
     Box,
     ChevronRight,
     Folder,
@@ -167,6 +168,12 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       label: 'Reports',
       icon: <BarChart size={20} />,
       href: fabricatorRoutes.studioReports(),
+    },
+    {
+      id: 'help',
+      label: 'Operator Help',
+      icon: <BookOpen size={20} />,
+      href: fabricatorRoutes.studioHelp(),
     },
     {
       id: 'settings',
