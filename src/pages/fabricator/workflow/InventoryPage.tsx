@@ -95,6 +95,7 @@ export const InventoryPage: React.FC = () => {
                     inventory={inventory}
                     project={currentProject}
                     userId={user?.id}
+                    currency="EGP"
                 />
 
                 {/* ✅ GOLD-TIER: Continue button with premium styling */}

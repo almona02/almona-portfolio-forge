@@ -520,6 +520,7 @@ const InventoryPage: React.FC = () => {
             inventory={filteredInventory}
             project={workspaceState.currentProject}
             userId={user.id}
+            currency="EGP"
             viewMode={viewMode}
           />
         )}
@@ -538,9 +539,9 @@ const InventoryPage: React.FC = () => {
             <CardContent>
               <div className="text-center py-12 text-amber-600/70">
                 <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{t('inventory.analytics.coming_soon', 'Advanced analytics dashboard coming soon.')}</p>
+                <p>{t('inventory.analytics.coming_soon', 'Ledger analytics are available on the Studio Stock dashboard.')}</p>
                 <p className="text-sm">
-                  {t('inventory.analytics.features', 'Inventory utilization, trend analysis, and predictive stocking.')}
+                  {t('inventory.analytics.features', 'Consumption, ageing, reorder coverage and remnant reuse from recorded movements — no predictive stocking claims.')}
                 </p>
               </div>
             </CardContent>

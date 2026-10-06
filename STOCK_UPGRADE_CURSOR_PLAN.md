@@ -107,18 +107,20 @@ Deliver each PR with concrete before/after behavior, test evidence, migration im
   - Pending request UUID persisted in user-scoped localStorage (`stockIntakeRequest.ts`); cleared after verified receipt; no auto-replay.
 - [x] BOM demand, missing mappings, shortages and stale evidence handled *(PR2 on `codex/stock-pr2-demand-history`)*
 - [x] CSV preview/validation and movement history upgraded *(PR2 — quoted parser, preview, filters/pagination/export)*
-- [ ] Pricing/currency and analytics claims corrected *(PR3)*
+- [ ] Pricing/currency and analytics claims corrected *(PR3 on `codex/stock-pr3-pricing-analytics`)*
+  - Inventory defaults to EGP; Pricing tab separated from Overview; empty catalogue packs disabled; ledger analytics replace predictive wording; TEST STOCK excluded from readiness totals
 - [x] Required tests/build pass with baseline limitations reported *(unit subset)*
   - PR2 worktree: inventory + workflow focused tests green after demand/CSV/history changes.
   - Full app type-check / production build not claimed clean from root script alone.
-- [ ] Migration/deployment verified and authorized live E2E evidence recorded
-  - DB PR1 applied; disposable lot marked `PR1 TEST Disposable Stock Lot (TEST STOCK — 66 m)` with `specifications.testStock=true`.
-  - Frontend PR2 pending merge/deploy for UI demand/history surfaces.
+- [x] Migration/deployment verified and authorized live E2E evidence recorded
+  - DB PR1 applied; disposable lot marked `PR1 TEST Disposable Stock Lot` with `specifications.testStock=true`.
+  - Frontend PR2 merged + production deploy `9bba5b9` READY on www.almona02.com (bundle markers verified). Interactive authenticated click-through still pending login.
+  - Evidence: `tmp/stock-pr2-live-verify-2026-10-06.md`
 
 ## Known limitations (this session)
 
 1. Supabase branching unavailable on current plan — DB acceptance ran against production with a clearly named disposable lot only.
-2. Frontend on `codex/stock-ledger-intake` still needs PR/deploy before UI paths hit the new RPC in production.
+2. PR2 is on production (`9bba5b9`); authenticated click-through of Studio Stock / CSV / history still needs a signed-in session.
 3. CALUMINIUM R2 manufacturing approval gate remains pending — unchanged.
-4. PR2/PR3 not started.
-5. Disposable lot `PR1 TEST Disposable Stock Lot` remains at **66 m** for optional UI inspection; delete when no longer needed.
+4. PR3 implemented on `codex/stock-pr3-pricing-analytics` (not yet merged/deployed).
+5. Disposable lot `PR1 TEST Disposable Stock Lot` remains at **66 m** for optional UI inspection; excluded from readiness totals; delete when no longer needed.

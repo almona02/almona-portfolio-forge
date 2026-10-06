@@ -80,9 +80,13 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   onProfileChange,
   onOpenStudio 
 }) => {
-  // Get regional config for currency
+  // Get regional config for currency — inventory overview is EGP; convert when comparing.
   const { config: regionalConfig } = useRegionalConfig();
   const currency = regionalConfig.currency.code || 'EGP'; // Default to EGP for Egypt
+  const inventoryCurrencyNote =
+    currency === 'EGP'
+      ? 'Pricing below is in EGP to match workshop stock value.'
+      : `Pricing below is in ${currency}. Workshop stock totals on Overview remain EGP unless converted.`;
   const [selectedGlazingTypeId, setSelectedGlazingTypeId] = useState<string>('');
   const [selectedHardwareCode, setSelectedHardwareCode] = useState<string>('');
   const [selectedGasketCode, setSelectedGasketCode] = useState<string>('');
@@ -611,6 +615,9 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
               <span className="text-amber-400/70 ml-1">Click "Open Studio" for advanced pricing management.</span>
             )}
           </CardDescription>
+          <p className="text-[11px] text-slate-400 mt-2">
+            Currency: <span className="font-semibold text-slate-200">{currency}</span>. {inventoryCurrencyNote}
+          </p>
         </div>
         <DollarSign className="h-4 w-4 text-green-400 ml-2 flex-shrink-0" />
       </CardHeader>

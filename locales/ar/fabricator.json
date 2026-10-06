@@ -124,82 +124,82 @@
         "description": "الفحص والتحقق"
       }
     },
-  "navbar": {
-    "fabricator_menu": "قائمة المصنع",
-    "modules_label": "الوحدات",
-    "fabrication_modules_title": "وحدات التصنيع",
-    "actions_label": "الإجراءات",
-    "status": {
-      "optimal": "مثالي",
-      "running": "يعمل",
-      "monitoring": "قيد المراقبة",
-      "active": "نشط",
-      "pending": "قيد الانتظار"
-    },
-    "fabrication_modules": {
-      "cutting_optimization": {
-        "name": "تحسين القطع",
-        "description": "ترصيف مواد بالذكاء الاصطناعي"
+    "navbar": {
+      "fabricator_menu": "قائمة المصنع",
+      "modules_label": "الوحدات",
+      "fabrication_modules_title": "وحدات التصنيع",
+      "actions_label": "الإجراءات",
+      "status": {
+        "optimal": "مثالي",
+        "running": "يعمل",
+        "monitoring": "قيد المراقبة",
+        "active": "نشط",
+        "pending": "قيد الانتظار"
       },
-      "machine_control": {
-        "name": "التحكم في الماكينة",
-        "description": "واجهة CNC لحظية"
+      "fabrication_modules": {
+        "cutting_optimization": {
+          "name": "تحسين القطع",
+          "description": "ترصيف مواد بالذكاء الاصطناعي"
+        },
+        "machine_control": {
+          "name": "التحكم في الماكينة",
+          "description": "واجهة CNC لحظية"
+        },
+        "production_scheduler": {
+          "name": "مجدول الإنتاج",
+          "description": "جدولة ذكية للمهام"
+        },
+        "quality_control_ai": {
+          "name": "ذكاء جودة",
+          "description": "فحص بالرؤية الحاسوبية"
+        },
+        "real_time_analytics": {
+          "name": "تحليلات لحظية",
+          "description": "مؤشرات أداء حية"
+        }
       },
-      "production_scheduler": {
-        "name": "مجدول الإنتاج",
-        "description": "جدولة ذكية للمهام"
+      "quick_actions": {
+        "new_project": "مشروع جديد",
+        "profile_tuning": "استوديو ضبط القطاعات",
+        "machine_status": "حالة الماكينة",
+        "inventory_check": "فحص المخزون",
+        "quality_reports": "تقارير الجودة"
       },
-      "quality_control_ai": {
-        "name": "ذكاء جودة",
-        "description": "فحص بالرؤية الحاسوبية"
-      },
-      "real_time_analytics": {
-        "name": "تحليلات لحظية",
-        "description": "مؤشرات أداء حية"
+      "local_system_intelligence": "ذكاء الأنظمة المحلي",
+      "local_system_intelligence_desc": "اقتراحات تفضيلات ديناميكية لبيوت الأنظمة التركية والمصرية مضبوطة حسب منطقتك النشطة.",
+      "business_nav": {
+        "customers": "العملاء",
+        "projects": "المشاريع",
+        "inventory": "المخزون",
+        "profiles": "القطاعات والملحقات",
+        "quick_reports": "تقارير سريعة",
+        "machines": "الماكينات",
+        "settings_prices": "الإعدادات والأسعار",
+        "commercial_offers": "العروض التجارية",
+        "cost_reports": "تقارير التكاليف",
+        "accounting": "المحاسبة"
       }
     },
-    "quick_actions": {
-      "new_project": "مشروع جديد",
-      "profile_tuning": "استوديو ضبط القطاعات",
-      "machine_status": "حالة الماكينة",
-      "inventory_check": "فحص المخزون",
-      "quality_reports": "تقارير الجودة"
+    "workspace": {
+      "tabs": {
+        "projects": "المشاريع",
+        "profiles": "القطاعات",
+        "inventory": "المخزون",
+        "commercial": "تجاري",
+        "analytics": "التحليلات",
+        "reports": "التقارير",
+        "settings": "الإعدادات"
+      },
+      "search": {
+        "placeholder": "ابحث في المخزون، القطاعات، الطلبات، المشاريع..."
+      },
+      "badges": {
+        "active": "نشط"
+      },
+      "title_prefix": "Your Company Name",
+      "title": "مساحة عمليات صناعية متقدمة",
+      "subtitle": "قمرة ألمونا المؤسسية للمشاريع والعملاء والمخزون والتدفقات التجارية — حالة محفوظة، قابلة للتدقيق، ومحسّنة لأعباء العمل التصنيعية الثقيلة."
     },
-    "local_system_intelligence": "ذكاء الأنظمة المحلي",
-    "local_system_intelligence_desc": "اقتراحات تفضيلات ديناميكية لبيوت الأنظمة التركية والمصرية مضبوطة حسب منطقتك النشطة.",
-    "business_nav": {
-      "customers": "العملاء",
-      "projects": "المشاريع",
-      "inventory": "المخزون",
-      "profiles": "القطاعات والملحقات",
-      "quick_reports": "تقارير سريعة",
-      "machines": "الماكينات",
-      "settings_prices": "الإعدادات والأسعار",
-      "commercial_offers": "العروض التجارية",
-      "cost_reports": "تقارير التكاليف",
-      "accounting": "المحاسبة"
-    }
-  },
-  "workspace": {
-    "tabs": {
-      "projects": "المشاريع",
-      "profiles": "القطاعات",
-      "inventory": "المخزون",
-      "commercial": "تجاري",
-      "analytics": "التحليلات",
-      "reports": "التقارير",
-      "settings": "الإعدادات"
-    },
-    "search": {
-      "placeholder": "ابحث في المخزون، القطاعات، الطلبات، المشاريع..."
-    },
-    "badges": {
-      "active": "نشط"
-    },
-    "title_prefix": "Your Company Name",
-    "title": "مساحة عمليات صناعية متقدمة",
-    "subtitle": "قمرة ألمونا المؤسسية للمشاريع والعملاء والمخزون والتدفقات التجارية — حالة محفوظة، قابلة للتدقيق، ومحسّنة لأعباء العمل التصنيعية الثقيلة."
-  },
     "measuring": "القياس",
     "smart_measuring": "واجهة القياس الذكية",
     "design": "التصميم",
@@ -899,11 +899,10 @@
     }
   },
   "design_interface": {
-    "title": "مساحة التصميم – خليج الهندسة",
-    "description": "مساحة تصميم موحدة تجمع بين EngineeringBay و SmartDrawCanvas",
+    "title": "مساحة عمل التصميم – قمرة الهندسة",
     "no_project": "لا يوجد مشروع نشط – أكمل القياس الذكي أولاً.",
-    "no_inventory": "لم يتم تحميل قطاعات المخزون بعد. يعمل Smart Draw وخليج الهندسة بشكل أفضل بمجرد توفر بيانات القطاع من تبويب المخزون.",
-    "pose_selector": "الموضع في الطلب"
+    "pose_in_order": "الوضع في الطلب",
+    "inventory_not_loaded": "لم يتم تحميل ملفات المخزون بعد. يعمل Smart Draw وقمرة الهندسة بشكل أفضل بمجرد توفر بيانات القطاع من تبويب المخزون."
   },
   "profile_definition_wizard": {
     "title": "تحديد القطاع من ورقة البيانات",
@@ -1255,7 +1254,7 @@
   },
   "inventory_dashboard": {
     "title": "مركز ذكاء المخزون",
-    "description": "إدارة المخزون المركزية مع التحليلات في الوقت الفعلي، وتحسين المخلفات، وتوقعات المخزون المدعومة بالذكاء الاصطناعي للأسواق التركية والمصرية.",
+    "description": "أرصدة مخزون الورشة وتتبع البواقي وسجل الحركات. تعتمد التحليلات على الحركات المسجلة فقط — بدون توقعات طلب.",
     "tabs": {
       "overview": "نظرة عامة",
       "remnants": "المخلفات",
@@ -1285,12 +1284,5 @@
     "low_stock": "مخزون منخفض",
     "out_of_stock": "نفد المخزون",
     "total_value": "القيمة الإجمالية"
-  },
-  "design_interface": {
-    "title": "مساحة عمل التصميم – قمرة الهندسة",
-    "no_project": "لا يوجد مشروع نشط – أكمل القياس الذكي أولاً.",
-    "pose_in_order": "الوضع في الطلب",
-    "inventory_not_loaded": "لم يتم تحميل ملفات المخزون بعد. يعمل Smart Draw وقمرة الهندسة بشكل أفضل بمجرد توفر بيانات القطاع من تبويب المخزون."
   }
 }
-
