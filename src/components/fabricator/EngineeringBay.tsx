@@ -1,3 +1,4 @@
+import { ManufacturingApprovalPanel } from './workflow/ManufacturingApprovalPanel';
 /**
  * Almona Fabricator Pro: EngineeringBay (v2.0)
  *
@@ -1181,6 +1182,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             </Dialog>
 
             {/* --- BILL OF MATERIALS (estimate-only design surface) --- */}
+            <ManufacturingApprovalPanel />
             <BOMSidebar
                 bomData={bomData}
                 liveProject={liveProject}
