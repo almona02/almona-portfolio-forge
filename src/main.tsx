@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import { useJobsStore } from "./store/jobsStore";
-import { showAppUpdate } from './lib/pwaUpdate';
+import { showAppUpdate, watchServiceWorkerUpdates } from './lib/pwaUpdate';
 
 // [DEV/E2E] Ensure critical stores are available globally
 if (import.meta.env?.DEV) {
@@ -596,6 +596,7 @@ const isProdEnv = import.meta.env?.PROD || process.env.NODE_ENV === 'production'
 if ('serviceWorker' in navigator && isProdEnv) {
   // Dynamic import with error handling - virtual module only exists in production
   import('virtual:pwa-register').then(({ registerSW }) => {
+    let stopWatching: (() => void) | undefined;
     const updateServiceWorker = registerSW({
       immediate: true, // Register immediately
       onNeedRefresh() {
@@ -606,6 +607,10 @@ if ('serviceWorker' in navigator && isProdEnv) {
       },
       onRegistered(registration) {
         console.log('✅ Service Worker registered:', registration);
+        stopWatching?.();
+        stopWatching = watchServiceWorkerUpdates(registration, () => {
+          showAppUpdate(() => updateServiceWorker(true));
+        });
       },
       onRegisterError(error) {
         // Suppress CacheStorage errors in development

@@ -14,22 +14,24 @@ import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerato
 import { gridMatchesPattern } from '@/lib/fabricator/presetUtils';
 import { WorkflowValidator } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { ArrowRight, Layers, Loader2 } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 export const BOMReviewPage: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
   const { currentProject, workflowIdentity, bom, setBOM, completeStep } = useWorkflowStore();
+  const engineeringPacks = useEngineeringSystemPacks();
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const systemPack = SYSTEM_PACKS.find(
-    (p) => p.meta?.id === currentProject?.systemPackId
-  ) ?? null;
+  const systemPack = useMemo(
+    () => engineeringPacks.find((p) => p.meta?.id === currentProject?.systemPackId) ?? null,
+    [engineeringPacks, currentProject?.systemPackId],
+  );
 
   const generateBOM = useCallback(async () => {
     if (!currentProject || !systemPack || !currentProject.grid) return null;

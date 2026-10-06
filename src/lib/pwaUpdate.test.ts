@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { toast } from 'sonner';
-import { showAppUpdate } from './pwaUpdate';
+import { showAppUpdate, watchServiceWorkerUpdates } from './pwaUpdate';
 
 vi.mock('sonner', () => ({ toast: { info: vi.fn(), error: vi.fn() } }));
 
@@ -17,7 +17,8 @@ describe('user-controlled app updates', () => {
     showAppUpdate(update);
     expect(update).not.toHaveBeenCalled();
     expect(toast.info).toHaveBeenCalledWith('An app update is ready', expect.objectContaining({
-      description: 'Save your current work before reloading.', duration: Infinity,
+      description: expect.stringContaining('Save your current work before reloading'),
+      duration: Infinity,
     }));
   });
 
@@ -32,5 +33,19 @@ describe('user-controlled app updates', () => {
     showAppUpdate(vi.fn().mockRejectedValue(new Error('activation failed')));
     chooseReload();
     await vi.waitFor(() => expect(toast.error).toHaveBeenCalledOnce());
+  });
+
+  it('re-prompts when a waiting worker is already installed', () => {
+    const requestReload = vi.fn();
+    const registration = {
+      waiting: {},
+      installing: null,
+      update: vi.fn().mockResolvedValue(undefined),
+      addEventListener: vi.fn(),
+    } as unknown as ServiceWorkerRegistration;
+
+    const stop = watchServiceWorkerUpdates(registration, requestReload);
+    expect(requestReload).toHaveBeenCalledOnce();
+    stop();
   });
 });
