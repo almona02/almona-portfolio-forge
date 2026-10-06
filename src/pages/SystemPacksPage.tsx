@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export const SystemPacksPage: React.FC = () => {
   const navigate = useNavigate();
@@ -470,11 +471,16 @@ export const SystemPacksPage: React.FC = () => {
         onClose={() => setShowSystemWizard(false)}
         allowStarterPack
         onSave={async (customPack) => {
-          const updated = await addCustomSystemAsync(customPack, userId);
-          setCustomSystems(updated);
-          setShowSystemWizard(false);
+          try {
+            if (!userId) throw new Error('Sign in before creating a workshop system pack.');
+            const updated = await addCustomSystemAsync(customPack, userId);
+            setCustomSystems(updated);
+            setShowSystemWizard(false);
           // Navigate to the new system pack
           navigate(`/fabricator/studio/data/tuning?systemPackId=${customPack.meta.id}`);
+          } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'System pack save failed.');
+          }
         }}
       />
       

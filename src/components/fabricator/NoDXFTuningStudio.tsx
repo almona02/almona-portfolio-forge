@@ -10,7 +10,8 @@
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
-import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { addCustomSystemAsync, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { supabase } from '@/lib/supabase';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { detectRoleFromName } from '@/lib/fabricator/roleDetection';
 import { getReturnUrl } from '@/lib/fabricator/systemTuningUtils';
@@ -38,6 +39,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface ProfileConfig {
   id: string;
@@ -268,7 +270,9 @@ export const NoDXFTuningStudio: React.FC = () => {
       };
 
       // Save to custom systems (this will update if exists, add if new)
-      addCustomSystem(tunedPack);
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) throw new Error('Sign in before saving workshop tuning.');
+      await addCustomSystemAsync(tunedPack, user.id);
 
       // Save to localStorage for SystemPackTuningStudio compatibility
       localStorage.setItem(`custom-profile-${tunedPack.meta.id}`, JSON.stringify({
@@ -321,6 +325,7 @@ export const NoDXFTuningStudio: React.FC = () => {
       }, 2000);
     } catch (error) {
       console.error('Error saving tuned system:', error);
+      toast.error(error instanceof Error ? error.message : 'Workshop tuning save failed.');
     } finally {
       setIsSaving(false);
     }
