@@ -54,6 +54,8 @@ describe('Studio readiness', () => {
       metersByProfile: { 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11': 6 },
       reservedAt: new Date().toISOString(),
       availabilityOk: true,
+      bomFingerprint: 'bom:test',
+      stockVersionByProfile: { 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11': 1 },
     };
     expect(stage('stock').completeWhen({ ...base, stockReservation: reservation })).toBe(true);
     expect(stage('stock').completeWhen({
@@ -68,6 +70,8 @@ describe('Studio readiness', () => {
       metersByProfile: { 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11': 6 },
       reservedAt: new Date().toISOString(),
       availabilityOk: true,
+      bomFingerprint: 'bom:test',
+      stockVersionByProfile: { 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11': 1 },
     };
     const manufacturing = {
       ...base,

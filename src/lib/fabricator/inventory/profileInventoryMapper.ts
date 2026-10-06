@@ -29,6 +29,8 @@ export function mapProfileRowFromDb(data: Record<string, unknown>): Profile {
     data.stockQuantity ?? data.stock_quantity,
     0,
   );
+  const stockVersionRaw = data.stockVersion ?? data.stock_version;
+  const stockVersion = finiteNumber(stockVersionRaw, 0);
   const minStockLevel = finiteNumber(
     data.minStockLevel ?? data.min_stock_level,
     0,
@@ -64,6 +66,7 @@ export function mapProfileRowFromDb(data: Record<string, unknown>): Profile {
       3,
     ),
     stockQuantity,
+    stockVersion,
     minStockLevel,
     maxStockLevel,
     supplier: (data.supplier as string) || undefined,

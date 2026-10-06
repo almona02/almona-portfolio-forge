@@ -89,6 +89,10 @@ export interface StockReservationEvidence {
   reservedAt: string;
   /** Soft availability check only — does not deduct stock. */
   availabilityOk: boolean;
+  /** BOM fingerprint at acknowledgement time (stale when BOM changes). */
+  bomFingerprint: string;
+  /** Owned profile stock_version snapshot (stale after intake/consumption). */
+  stockVersionByProfile: Record<string, number>;
 }
 
 /** UP-18: frozen release fingerprint acknowledgement. */

@@ -338,6 +338,8 @@ export interface Profile {
   costPerMeter: number;
   cuttingAllowance: number;
   stockQuantity: number;
+  /** Monotonic ledger version from fabricator_profiles.stock_version. */
+  stockVersion?: number;
   minStockLevel: number;
   maxStockLevel?: number;
   supplier: string;

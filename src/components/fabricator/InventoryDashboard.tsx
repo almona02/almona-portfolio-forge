@@ -32,6 +32,15 @@ import {
   clearPendingStockIntake,
   resolveIntakeRequestId,
 } from '@/lib/fabricator/inventory/stockIntakeRequest';
+import {
+  buildCsvIntakePreview,
+  type CsvIntakePreviewRow,
+} from '@/lib/fabricator/inventory/csvStockIntake';
+import {
+  exportStockMovementsCsv,
+  fetchStockMovementHistory,
+  type StockMovementHistoryRow,
+} from '@/lib/fabricator/inventory/stockMovementHistory';
 import { remnantManager, type Remnant, type RemnantConsolidationSuggestion, type RemnantStatistics } from '@/lib/inventory/RemnantManager';
 import { syncStockFromMovements } from '@/lib/inventory/StockCalculator';
 import { trackError } from '@/lib/performance-monitoring';
@@ -199,8 +208,12 @@ interface StockMovement {
   movementType: string;
   quantity: number;
   unit: string;
+  canonicalMetres?: number | null;
+  stockBefore?: number | null;
+  stockAfter?: number | null;
   projectId?: string;
   projectName?: string;
+  referenceNumber?: string | null;
   notes?: string;
   createdAt: Date;
   createdBy?: string;
@@ -232,6 +245,17 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [remnantStats, setRemnantStats] = useState<RemnantStatistics | null>(null);
   const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
   const [stockMovements, setStockMovements] = useState<StockMovement[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyHasMore, setHistoryHasMore] = useState(false);
+  const [historyProfileId, setHistoryProfileId] = useState<string>('all');
+  const [historyInvoiceQuery, setHistoryInvoiceQuery] = useState('');
+  const [historyFromDate, setHistoryFromDate] = useState('');
+  const [historyToDate, setHistoryToDate] = useState('');
+  const [csvPreviewRows, setCsvPreviewRows] = useState<CsvIntakePreviewRow[] | null>(null);
+  const [csvPreviewValid, setCsvPreviewValid] = useState<CsvIntakePreviewRow[]>([]);
+  const [lastSuccessfulRefreshAt, setLastSuccessfulRefreshAt] = useState<Date | null>(null);
   const [locations, setLocations] = useState<InventoryLocation[]>([]);
   const [consolidationSuggestions, setConsolidationSuggestions] = useState<RemnantConsolidationSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -311,43 +335,38 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     }
   }, [userId]);
 
-  const loadStockMovements = useCallback(async () => {
+  const loadStockMovements = useCallback(async (page = historyPage) => {
     if (!userId) return;
-
+    setHistoryLoading(true);
+    setHistoryError(null);
     try {
-      const db = supabase as any;
-
-      const { data, error } = await (db
-        .from('stock_movements')
-        .select(`
-          *,
-          fabricator_profiles (id, name)
-        `))
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-
-      const movements: StockMovement[] = (data || []).map((movement: any) => ({
-        id: movement.id,
-        profileId: movement.profile_id,
-        profileName: movement.fabricator_profiles?.name || 'Unknown',
-        movementType: movement.movement_type,
-        quantity: parseFloat(movement.quantity),
-        unit: movement.unit,
-        projectId: movement.project_id,
-        notes: movement.notes,
-        createdAt: new Date(movement.created_at),
-        createdBy: movement.created_by,
-      }));
-
-      setStockMovements(movements);
+      const result = await fetchStockMovementHistory({
+        userId,
+        page,
+        pageSize: 25,
+        profileId: historyProfileId !== 'all' ? historyProfileId : null,
+        invoiceQuery: historyInvoiceQuery || null,
+        fromDate: historyFromDate ? new Date(historyFromDate).toISOString() : null,
+        toDate: historyToDate ? new Date(`${historyToDate}T23:59:59.999`).toISOString() : null,
+      });
+      if (!result.ok) {
+        setStockMovements([]);
+        setHistoryHasMore(false);
+        setHistoryError(result.error);
+        return;
+      }
+      setStockMovements(result.rows as StockMovement[]);
+      setHistoryHasMore(result.hasMore);
+      setHistoryPage(result.page);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
+      setHistoryError(err.message);
+      setStockMovements([]);
       trackError('InventoryDashboard', 'load_stock_movements', err.message);
+    } finally {
+      setHistoryLoading(false);
     }
-  }, [userId]);
+  }, [userId, historyPage, historyProfileId, historyInvoiceQuery, historyFromDate, historyToDate]);
 
   const loadLocations = useCallback(async () => {
     if (!userId) return;
@@ -386,11 +405,13 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     isLoadingRef.current = true;
     setIsLoading(true);
     try {
-      // Sync stock quantities from movements first (ensures stock_quantity is accurate)
-      // This updates fabricator_profiles.stock_quantity based on actual stock_movements
-      await syncStockFromMovements(userId);
+      // Optional reconcile for dashboard refresh; intake RPCs already write balances.
+      try {
+        await syncStockFromMovements(userId);
+      } catch (syncErr) {
+        console.warn('Stock sync skipped during dashboard refresh', syncErr);
+      }
 
-      // Core remnant data (depends on selectedLocation)
       const [availableRemnants, stats, suggestions] = await Promise.all([
         remnantManager.getAvailableRemnants(userId, {
           locationId: selectedLocation !== 'all' ? selectedLocation : undefined,
@@ -403,8 +424,13 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       setRemnantStats(stats);
       setConsolidationSuggestions(suggestions);
 
-      // Run stock‑related queries in parallel; they only depend on userId
-      await Promise.all([loadStockAlerts(), loadStockMovements(), loadLocations()]);
+      await Promise.all([
+        loadStockAlerts(),
+        loadStockMovements(1),
+        loadLocations(),
+        invalidateOwnedInventory(),
+      ]);
+      setLastSuccessfulRefreshAt(new Date());
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       trackError('InventoryDashboard', 'load_dashboard_data', err.message);
@@ -413,7 +439,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       setIsLoading(false);
       isLoadingRef.current = false;
     }
-  }, [userId, selectedLocation, loadStockAlerts, loadStockMovements, loadLocations]);
+  }, [userId, selectedLocation, loadStockAlerts, loadStockMovements, loadLocations, invalidateOwnedInventory]);
 
   // Load data on mount / when user or location changes
   useEffect(() => {
@@ -423,11 +449,27 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, selectedLocation]);
 
+  const resolveCsvProfile = useCallback((profileCode: string) => {
+    const matches = inventory.filter((p) => {
+      const spec: any = p.specifications || {};
+      const candidateCodes = [spec.supplierCode, spec.internalCode, String(p.id)]
+        .filter(Boolean)
+        .map((v) => String(v).toLowerCase());
+      return candidateCodes.includes(profileCode.toLowerCase());
+    });
+    if (matches.length > 1) return 'ambiguous' as const;
+    if (!matches.length) return null;
+    const profile = matches[0];
+    const defaultBarLengthM =
+      typeof (profile.specifications as any)?.stockLengthMm === 'number'
+        ? ((profile.specifications as any).stockLengthMm as number) / 1000
+        : 6;
+    return { id: profile.id, name: profile.name, defaultBarLengthM };
+  }, [inventory]);
+
   const handleInvoiceCsvImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    // Allow re‑uploading the same file
     event.target.value = '';
 
     if (!userId) {
@@ -436,168 +478,76 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     }
 
     const reader = new FileReader();
-
-    reader.onload = async (e) => {
+    reader.onload = (e) => {
       try {
         const text = String(e.target?.result || '');
-        const lines = text
-          .split(/\r?\n/)
-          .map((l) => l.trim())
-          .filter(Boolean);
-
-        if (lines.length < 2) {
+        const preview = buildCsvIntakePreview(text, resolveCsvProfile);
+        setCsvPreviewRows(preview.rows);
+        setCsvPreviewValid(preview.validRows);
+        if (!preview.rows.length) {
           toast.error('CSV appears to be empty.');
           return;
         }
-
-        const headers = lines[0]
-          .split(',')
-          .map((h) => h.trim().toLowerCase());
-
-        const idxProfileCode = headers.indexOf('profile_code');
-        const idxQuantity = headers.indexOf('quantity');
-        const idxUnit = headers.indexOf('unit');
-        const idxBarLength = headers.indexOf('bar_length_m');
-        const idxInvoiceNo = headers.indexOf('invoice_no');
-        const idxSupplier = headers.indexOf('supplier');
-
-        if (idxProfileCode === -1 || idxQuantity === -1 || idxUnit === -1) {
-          toast.error(
-            'CSV must include at least: profile_code, quantity, unit (optional: bar_length_m, invoice_no, supplier).',
+        if (preview.hasErrors) {
+          toast.warning(
+            `CSV preview ready: ${preview.validRows.length} valid, ${preview.rows.length - preview.validRows.length} with errors. Fix or submit valid rows only.`,
           );
-          return;
+        } else {
+          toast.success(`CSV preview ready: ${preview.validRows.length} valid row(s).`);
         }
-
-        const rows = lines.slice(1);
-        const intakeLines: StockIntakeLine[] = [];
-        let skippedUnknownProfiles = 0;
-        let rejectedRows = 0;
-
-        for (const row of rows) {
-          const cols = row.split(',').map((c) => c.trim());
-          if (!cols[idxProfileCode] || !cols[idxQuantity]) {
-            rejectedRows += 1;
-            continue;
-          }
-
-          const profileCode = cols[idxProfileCode];
-          const quantity = Number(cols[idxQuantity]);
-          if (!Number.isFinite(quantity) || quantity <= 0) {
-            rejectedRows += 1;
-            continue;
-          }
-
-          const unitRaw = (cols[idxUnit] || '').toLowerCase();
-          let inputUnit: 'meters' | 'pieces';
-          if (unitRaw === 'm' || unitRaw === 'meter' || unitRaw === 'meters') {
-            inputUnit = 'meters';
-          } else if (unitRaw === 'bar' || unitRaw === 'bars' || unitRaw === 'piece' || unitRaw === 'pieces' || unitRaw === 'pcs') {
-            inputUnit = 'pieces';
-          } else {
-            rejectedRows += 1;
-            continue;
-          }
-
-          const barLengthM =
-            idxBarLength >= 0 && cols[idxBarLength]
-              ? Number(cols[idxBarLength])
-              : undefined;
-
-          const invoiceNo = idxInvoiceNo >= 0 ? cols[idxInvoiceNo] : '';
-          const supplier = idxSupplier >= 0 ? cols[idxSupplier] : '';
-
-          const profile = inventory.find((p) => {
-            const spec: any = p.specifications || {};
-            const candidateCodes = [
-              spec.supplierCode,
-              spec.internalCode,
-              p.name,
-              String(p.id),
-            ]
-              .filter(Boolean)
-              .map((v) => String(v).toLowerCase());
-
-            return candidateCodes.includes(profileCode.toLowerCase());
-          });
-
-          if (!profile) {
-            skippedUnknownProfiles += 1;
-            continue;
-          }
-
-          const defaultBarLenM =
-            typeof (profile.specifications as any)?.stockLengthMm === 'number'
-              ? ((profile.specifications as any).stockLengthMm as number) / 1000
-              : 6;
-
-          const effectiveBarLenM =
-            inputUnit === 'pieces'
-              ? (Number.isFinite(barLengthM) && (barLengthM as number) > 0
-                  ? (barLengthM as number)
-                  : defaultBarLenM)
-              : undefined;
-
-          if (inputUnit === 'pieces' && !(effectiveBarLenM && effectiveBarLenM > 0)) {
-            rejectedRows += 1;
-            continue;
-          }
-
-          const totalLengthM =
-            inputUnit === 'meters'
-              ? quantity
-              : quantity * (effectiveBarLenM as number);
-
-          const metaParts: string[] = [];
-          if (invoiceNo) metaParts.push(`Invoice ${invoiceNo}`);
-          if (supplier) metaParts.push(supplier);
-          metaParts.push(`[CSV import • code=${profileCode}]`);
-          if (totalLengthM > 0) metaParts.push(`len=${totalLengthM.toFixed(2)}m`);
-
-          intakeLines.push({
-            profileId: profile.id,
-            inputUnit,
-            quantity,
-            barLengthM: effectiveBarLenM,
-            notes: metaParts.join(' – '),
-            invoice: invoiceNo || null,
-            supplier: supplier || null,
-            lotMetadata: { source: 'csv', profile_code: profileCode },
-          });
-        }
-
-        if (!intakeLines.length) {
-          toast.error(
-            rejectedRows
-              ? `No valid rows found in CSV (${rejectedRows} rejected).`
-              : 'No valid rows found in CSV.',
-          );
-          return;
-        }
-
-        const draftKey = `csv:${intakeLines.map((l) => l.profileId).join(',')}`;
-        const payloadHash = await hashIntakePayload(intakeLines);
-        const requestId = resolveIntakeRequestId({ userId, draftKey, payloadHash });
-        const intake = await recordAtomicStockIntake({ requestId, lines: intakeLines });
-        if (!intake.ok) {
-          throw new Error(intake.error);
-        }
-
-        await Promise.all([loadStockMovements(), loadStockAlerts(), invalidateOwnedInventory()]);
-        clearPendingStockIntake(userId);
-
-        toast.success(
-          `Imported ${intakeLines.length} invoice row(s)${
-            skippedUnknownProfiles ? ` (skipped ${skippedUnknownProfiles} unknown profile(s))` : ''
-          }${rejectedRows ? ` (${rejectedRows} rejected)` : ''}.`,
-        );
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err));
         trackError('InventoryDashboard', 'import_invoice_csv', error.message);
-        toast.error('Failed to import invoice CSV.');
+        toast.error('Failed to parse invoice CSV.');
       }
     };
-
     reader.readAsText(file);
+  };
+
+  const submitCsvPreview = async () => {
+    if (!userId || !csvPreviewValid.length) {
+      toast.error('No valid CSV rows to submit.');
+      return;
+    }
+    try {
+      const intakeLines: StockIntakeLine[] = csvPreviewValid.map((row) => {
+        const totalLengthM =
+          row.inputUnit === 'meters'
+            ? (row.quantity as number)
+            : (row.quantity as number) * (row.barLengthM as number);
+        const metaParts: string[] = [];
+        if (row.invoiceNo) metaParts.push(`Invoice ${row.invoiceNo}`);
+        if (row.supplier) metaParts.push(row.supplier);
+        metaParts.push(`[CSV import • code=${row.profileCode}]`);
+        if (totalLengthM > 0) metaParts.push(`len=${totalLengthM.toFixed(2)}m`);
+        return {
+          profileId: row.profileId,
+          inputUnit: row.inputUnit as 'meters' | 'pieces',
+          quantity: row.quantity as number,
+          barLengthM: row.barLengthM ?? undefined,
+          notes: metaParts.join(' – '),
+          invoice: row.invoiceNo || null,
+          supplier: row.supplier || null,
+          lotMetadata: { source: 'csv', profile_code: row.profileCode },
+        };
+      });
+
+      const draftKey = `csv:${intakeLines.map((l) => l.profileId).join(',')}`;
+      const payloadHash = await hashIntakePayload(intakeLines);
+      const requestId = resolveIntakeRequestId({ userId, draftKey, payloadHash });
+      const intake = await recordAtomicStockIntake({ requestId, lines: intakeLines });
+      if (!intake.ok) throw new Error(intake.error);
+
+      await Promise.all([loadStockMovements(1), loadStockAlerts(), invalidateOwnedInventory()]);
+      clearPendingStockIntake(userId);
+      setCsvPreviewRows(null);
+      setCsvPreviewValid([]);
+      toast.success(`Imported ${intakeLines.length} invoice row(s) via record_stock_intake.`);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('InventoryDashboard', 'import_invoice_csv', error.message);
+      toast.error(error.message || 'Failed to import invoice CSV.');
+    }
   };
 
   const handleInvoiceStockIntake = async () => {
@@ -667,7 +617,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       toast.success('Stock updated from purchase invoice');
 
-      await Promise.all([loadStockMovements(), loadStockAlerts(), invalidateOwnedInventory()]);
+      await Promise.all([loadStockMovements(1), loadStockAlerts(), invalidateOwnedInventory()]);
       clearPendingStockIntake(userId);
 
       setInvoiceProfileId('');
@@ -1936,6 +1886,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       accept=".csv,text/csv"
                       className="hidden"
                       onChange={handleInvoiceCsvImport}
+                      aria-label="Import stock intake CSV"
                     />
                   </Label>
                   <Button
@@ -1954,6 +1905,70 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   </Button>
                 </div>
               </div>
+
+              {csvPreviewRows ? (
+                <div className="mt-4 rounded border border-amber-700/40 bg-black/30 p-3 space-y-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm text-amber-100">
+                      CSV preview · {csvPreviewValid.length} valid / {csvPreviewRows.length} total
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="border-gray-600 text-xs"
+                        onClick={() => {
+                          setCsvPreviewRows(null);
+                          setCsvPreviewValid([]);
+                        }}
+                      >
+                        Discard
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="btn-primary text-xs"
+                        disabled={!csvPreviewValid.length}
+                        onClick={() => void submitCsvPreview()}
+                      >
+                        Submit valid rows
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="max-h-48 overflow-auto text-[11px]">
+                    <table className="w-full text-left">
+                      <thead className="text-gray-400">
+                        <tr>
+                          <th className="py-1 pr-2">Row</th>
+                          <th className="py-1 pr-2">Code</th>
+                          <th className="py-1 pr-2">Qty</th>
+                          <th className="py-1 pr-2">Unit</th>
+                          <th className="py-1 pr-2">Bar m</th>
+                          <th className="py-1 pr-2">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {csvPreviewRows.map((row) => (
+                          <tr
+                            key={row.rowNumber}
+                            className={row.errors.length ? 'text-red-300' : 'text-emerald-200'}
+                          >
+                            <td className="py-1 pr-2">{row.rowNumber}</td>
+                            <td className="py-1 pr-2">{row.profileCode || '—'}</td>
+                            <td className="py-1 pr-2">{row.quantity ?? '—'}</td>
+                            <td className="py-1 pr-2">{row.inputUnit || row.unitRaw || '—'}</td>
+                            <td className="py-1 pr-2">{row.barLengthM ?? '—'}</td>
+                            <td className="py-1 pr-2">
+                              {row.errors.length ? row.errors.join('; ') : row.profileName || 'OK'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : null}
             </CardContent>
           </Card>
 
@@ -2061,44 +2076,170 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         {/* History Tab */}
         <TabsContent value="history" className="space-y-4">
           <Card className="bg-gray-700/50 border-gray-600">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <History className="h-5 w-5 text-blue-400" />
-                Stock Movement History
-              </CardTitle>
+            <CardHeader className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <CardTitle className="flex items-center gap-2">
+                  <History className="h-5 w-5 text-blue-400" aria-hidden />
+                  Stock Movement History
+                </CardTitle>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="border-gray-600 text-xs"
+                    aria-label="Apply history filters"
+                    onClick={() => void loadStockMovements(1)}
+                  >
+                    Apply filters
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="border-gray-600 text-xs"
+                    aria-label="Export filtered history as CSV"
+                    disabled={!stockMovements.length}
+                    onClick={() => {
+                      const csv = exportStockMovementsCsv(stockMovements as StockMovementHistoryRow[]);
+                      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `stock-movements-${new Date().toISOString().slice(0, 10)}.csv`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                  >
+                    Export CSV
+                  </Button>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 text-xs">
+                <div>
+                  <Label htmlFor="history-profile" className="text-[11px] text-gray-400">Profile</Label>
+                  <Select value={historyProfileId} onValueChange={setHistoryProfileId}>
+                    <SelectTrigger id="history-profile" className="h-8 bg-gray-800 border-gray-600">
+                      <SelectValue placeholder="All profiles" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All profiles</SelectItem>
+                      {inventory.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                          {(p.specifications as any)?.testStock ? ' (TEST STOCK)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="history-invoice" className="text-[11px] text-gray-400">Invoice / notes</Label>
+                  <Input
+                    id="history-invoice"
+                    className="h-8 bg-gray-800 border-gray-600"
+                    value={historyInvoiceQuery}
+                    onChange={(e) => setHistoryInvoiceQuery(e.target.value)}
+                    placeholder="INV-…"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="history-from" className="text-[11px] text-gray-400">From</Label>
+                  <Input
+                    id="history-from"
+                    type="date"
+                    className="h-8 bg-gray-800 border-gray-600"
+                    value={historyFromDate}
+                    onChange={(e) => setHistoryFromDate(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="history-to" className="text-[11px] text-gray-400">To</Label>
+                  <Input
+                    id="history-to"
+                    type="date"
+                    className="h-8 bg-gray-800 border-gray-600"
+                    value={historyToDate}
+                    onChange={(e) => setHistoryToDate(e.target.value)}
+                  />
+                </div>
+              </div>
+              {lastSuccessfulRefreshAt ? (
+                <p className="text-[11px] text-gray-500">
+                  Dashboard last refreshed {lastSuccessfulRefreshAt.toLocaleString()}
+                </p>
+              ) : null}
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                {stockMovements.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400">
-                    <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No movement history</p>
-                  </div>
-                ) : (
-                  stockMovements.map((movement) => (
+              {historyLoading ? (
+                <div className="py-8 text-center text-gray-400 text-sm">Loading movement history…</div>
+              ) : historyError ? (
+                <Alert variant="destructive">
+                  <AlertDescription>{historyError}</AlertDescription>
+                </Alert>
+              ) : stockMovements.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <History className="h-12 w-12 mx-auto mb-4 opacity-50" aria-hidden />
+                  <p>No movement history for these filters</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {stockMovements.map((movement) => (
                     <div
                       key={movement.id}
                       className="p-3 bg-gray-800 rounded border border-gray-600"
                     >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-semibold">{movement.profileName}</p>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-semibold truncate">{movement.profileName}</p>
                           <p className="text-sm text-gray-400">
                             {movement.movementType} • {movement.quantity} {movement.unit}
+                            {movement.canonicalMetres != null
+                              ? ` · ${movement.canonicalMetres} m canonical`
+                              : ''}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Balance {movement.stockBefore ?? '—'} → {movement.stockAfter ?? '—'}
+                            {movement.referenceNumber ? ` · ${movement.referenceNumber}` : ''}
                           </p>
                           {movement.notes && (
-                            <p className="text-xs text-gray-500 mt-1">{movement.notes}</p>
+                            <p className="text-xs text-gray-500 mt-1 truncate">{movement.notes}</p>
                           )}
                         </div>
-                        <div className="text-right text-sm text-gray-400">
+                        <div className="text-right text-sm text-gray-400 shrink-0">
                           <p>{new Date(movement.createdAt).toLocaleDateString()}</p>
                           <p>{new Date(movement.createdAt).toLocaleTimeString()}</p>
                         </div>
                       </div>
                     </div>
-                  ))
-                )}
-              </div>
+                  ))}
+                  <div className="flex items-center justify-between pt-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="border-gray-600"
+                      disabled={historyPage <= 1 || historyLoading}
+                      aria-label="Previous history page"
+                      onClick={() => void loadStockMovements(historyPage - 1)}
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-xs text-gray-400">Page {historyPage}</span>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="border-gray-600"
+                      disabled={!historyHasMore || historyLoading}
+                      aria-label="Next history page"
+                      onClick={() => void loadStockMovements(historyPage + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
