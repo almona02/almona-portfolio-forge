@@ -385,6 +385,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   }, [measurements.width, measurements.height, grid, selectedPatternId]);
 
   const handleInputChange = (field: string, value: string) => {
+    // These selects have no empty option. Ignore transient native-select reset
+    // events during animated step unmounts so saved choices remain intact.
+    if (value === '' && ['windowType', 'glazingType', 'glassColor', 'color', 'flyScreenType', 'measurementMode'].includes(field)) return;
     // Clear field error immediately when user starts typing (no debounce for UX)
     if (fieldErrors[field]) {
       setFieldErrors(prev => {
