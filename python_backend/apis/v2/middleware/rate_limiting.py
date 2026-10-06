@@ -13,7 +13,8 @@ from dataclasses import dataclass
 from fastapi import Request, Response, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import InvalidTokenError
 
 from core.config import settings
 
@@ -189,7 +190,7 @@ class V2RateLimitMiddleware(BaseHTTPMiddleware):
 
             return payload.get("sub") or payload.get("id")
 
-        except JWTError:
+        except InvalidTokenError:
             return None
     
     def _get_user_tier(self, user_id: str) -> RateLimitConfig:

@@ -46,8 +46,6 @@ dnspython==2.8.0
 docker==7.1.0
 # easyocr==1.7.2  # pulls torch; stubbed in tests (AICS-001)
 # ecdsa removed: no patched version for CVE-2024-23342 (Minerva timing attack).
-# It is still installed transitively by python-jose, but python-jose[cryptography]
-# uses the cryptography backend for all ECDSA operations, avoiding the vulnerable code path.
 email_validator==2.2.0
 et_xmlfile==2.0.0
 ezdxf==1.4.3
@@ -60,7 +58,7 @@ Flask-Login==0.6.3
 flatbuffers==25.2.10
 fonttools==4.61.1
 frozenlist==1.7.0
-fsspec==2025.7.0
+fsspec==2026.6.0
 gast==0.6.0
 gevent==25.5.1
 geventhttpclient==2.3.4
@@ -192,7 +190,6 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.2.3
 python-engineio
 python-http-client==3.3.7
-python-jose[cryptography]==3.5.0
 python-multipart==0.0.32
 python-socketio
 pytz==2025.2

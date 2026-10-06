@@ -135,7 +135,9 @@ describe('Calibration System Integration Tests', () => {
       // Original length: 2000 + allowance (2mm) = 2002mm
       // With calibration: 2002 + 2.0 (modifier) + 0.5 (blade) = 2004.5mm
       const firstCut = allCuts[0];
-      expect(firstCut.length).toBeGreaterThan(2000);
+      expect(firstCut.length).toBe(2004.5);
+      // Components retain their original profile; the supplied profile is authoritative.
+      expect(mockComponents[0].profile.calibrations).toEqual([]);
     });
 
     it('should use correct calibration for system pack', async () => {

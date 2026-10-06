@@ -57,7 +57,7 @@ class TestRateLimitingMiddleware:
             "exp": int(time.time()) + 3600
         }
         
-        with patch('jose.jwt.decode', return_value=mock_payload):
+        with patch('apis.v2.middleware.rate_limiting.jwt.decode', return_value=mock_payload):
             # Make requests up to the authenticated limit
             responses = []
             for i in range(105):  # Exceed the 100/minute limit
@@ -116,7 +116,7 @@ class TestRateLimitingMiddleware:
             "exp": int(time.time()) + 3600
         }
         
-        with patch('jose.jwt.decode') as mock_decode:
+        with patch('apis.v2.middleware.rate_limiting.jwt.decode') as mock_decode:
             # User 1 makes requests
             mock_decode.return_value = mock_payload_1
             for i in range(50):
