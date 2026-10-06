@@ -181,7 +181,6 @@ export const ProfileStudioLite: React.FC = () => {
             
             // Detect multiple profiles from DXF layers/entities
             // Check if DXF contains multiple polygons (frame + sash)
-            const isThermalBreak = metrics.is_thermal_break || false;
             const boundingBox = metrics.bounding_box || [];
             const width = boundingBox[2] - boundingBox[0] || undefined;
             const height = boundingBox[3] - boundingBox[1] || undefined;

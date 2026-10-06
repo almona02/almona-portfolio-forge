@@ -92,19 +92,24 @@ export class AdaptiveSolver {
         performance.now() - startTime
       );
 
-      this.assertPhysicalResult(result, job);
+      this.assertPhysicalResult(result, job, profiles);
       return result;
     } catch (error) {
       // Fallback to greedy if primary algorithm fails
       console.warn('Primary algorithm failed, falling back to greedy:', error);
       const fallback = await this.fallbackToGreedy(job, profiles, performance.now() - startTime);
-      this.assertPhysicalResult(fallback, job);
+      this.assertPhysicalResult(fallback, job, profiles);
       return fallback;
     }
   }
 
-  private assertPhysicalResult(result: OptimizationResult, job: CuttingJob): void {
-    const validation = validateOptimizationReconciliation(result, { components: job.components, systemPackId: job.systemPackId } as import('@/types/fabricator').WindowUnit);
+  private assertPhysicalResult(result: OptimizationResult, job: CuttingJob, profiles: Profile[]): void {
+    // Reconcile against the same profile data used to generate calibrated cuts.
+    const components = job.components.map(component => ({
+      ...component,
+      profile: profiles.find(profile => profile.id === component.profile.id) || component.profile,
+    }));
+    const validation = validateOptimizationReconciliation(result, { components, systemPackId: job.systemPackId } as import('@/types/fabricator').WindowUnit);
     if (!validation.valid) throw new Error(validation.errors[0]?.message || 'Invalid physical cutting result.');
   }
 
