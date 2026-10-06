@@ -5,6 +5,13 @@ import {
 } from './profileInventoryMapper';
 
 describe('profileInventoryMapper (UP-09)', () => {
+  it('preserves a sash role and custom pack membership stored in specifications', () => {
+    const profile = mapProfileRowFromDb({
+      id: 'owned-sash', name: 'Sash', specifications: { profileRole: 'sash', systemPackIds: ['custom-e2e'] },
+    });
+    expect(profile.profileRole).toBe('sash');
+    expect(profile.systemPackIds).toEqual(['custom-e2e']);
+  });
   it('maps snake_case stock and cost so inventory value is finite', () => {
     const profile = mapProfileRowFromDb({
       id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',

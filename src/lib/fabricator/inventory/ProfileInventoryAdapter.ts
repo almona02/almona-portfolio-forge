@@ -7,6 +7,8 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { loadCustomSystemsFromSupabase } from '@/lib/fabricator/systemPackSupabase';
+import { applyOwnedPackMetadata } from './ownedPackMetadata';
 import {
   mapProfileRowFromDb,
   profileInventoryValue,
@@ -80,6 +82,8 @@ export async function loadOwnedWorkshopInventory(
   let profiles = (data || []).map((row: Record<string, unknown>) =>
     mapProfileRowFromDb(row),
   );
+  const ownedPacks = await loadCustomSystemsFromSupabase(userId);
+  profiles = applyOwnedPackMetadata(profiles, ownedPacks);
 
   if (systemPackId && systemPackId.trim()) {
     const filtered = profiles.filter((p) => matchesSystemFilter(p, systemPackId.trim()));

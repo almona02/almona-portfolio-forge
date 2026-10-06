@@ -67,6 +67,7 @@ export async function materializeOwnedProfilesFromPack(
 
     const specs = {
       ...(profile.specifications || {}),
+      profileRole: profile.profileRole,
       originalCatalogCode: originalCode,
       partNumber: originalCode,
       systemPackIds: Array.from(

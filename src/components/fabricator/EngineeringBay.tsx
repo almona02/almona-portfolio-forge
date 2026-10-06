@@ -40,7 +40,7 @@ import { toast } from 'sonner';
 // Dynamic import for heavy 3D component
 const Window3DGenerator = React.lazy(() => import('./Window3DGenerator'));
 
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/shared/ui/ui/select';
@@ -111,6 +111,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     PreviewComponent,
 }) => {
     const { t } = useTranslation('fabricator');
+    const systemPacks = useEngineeringSystemPacks();
 
     // --- Logic Hook ---
     const {
@@ -125,7 +126,8 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     } = useEngineeringEngine({
         project,
         profiles,
-        onDesignComplete
+        onDesignComplete,
+        systemPacks
     });
 
     // Defer the heavy 3D preview input so grid edits stay snappy.
@@ -173,7 +175,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     const physicsResults = useMemo(() => {
         // Find a representative profile (Frame/Mullion) that has physics data
         const pack = activeSystemPackId
-            ? SYSTEM_PACKS.find((p) => p.meta.id === activeSystemPackId)
+            ? systemPacks.find((p) => p.meta.id === activeSystemPackId)
             : undefined;
 
         // Try to find a profile with physics data defined
@@ -234,7 +236,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                 { isSafe: structResult.isSafe }
             ),
         };
-    }, [activeSystemPackId, project]);
+    }, [activeSystemPackId, project, systemPacks]);
 
     // --- Performance Monitoring ---
     useEffect(() => {
@@ -303,7 +305,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             return;
         }
 
-        const matchingPack = SYSTEM_PACKS.find((pack) => pack.meta.id === result.recommendedSystem);
+        const matchingPack = systemPacks.find((pack) => pack.meta.id === result.recommendedSystem);
         if (!activeSystemPackId && !matchingPack) {
             actions.setError(`Template ${preset.title} references an unavailable system pack.`);
             return;
@@ -493,7 +495,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         >
                                             {project?.posNumber || 'Pose'}
                                             {activeSystemPackId && (() => {
-                                                const pack = SYSTEM_PACKS.find((p) => p.meta?.id === activeSystemPackId);
+                                                const pack = systemPacks.find((p) => p.meta?.id === activeSystemPackId);
                                                 return pack?.meta?.name ? (
                                                     <span className="ml-2 text-amber-400 font-medium" title={pack.meta.name}>
                                                         — {pack.meta.name}
@@ -752,7 +754,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                         {activeSystemPackId ? (
                                                             <span className="text-sm text-gray-100 font-semibold truncate w-full text-left">
                                                                 {(() => {
-                                                                    const pack = SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId);
+                                                                    const pack = systemPacks.find(p => p.meta.id === activeSystemPackId);
                                                                     return pack?.meta.name || activeSystemPackId;
                                                                 })()}
                                                             </span>
@@ -765,10 +767,10 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <SelectContent className="bg-gray-900 border-gray-700 text-gray-200">
                                                 {(
                                                     (project as any)?.allowedSystemPackIds?.length
-                                                        ? SYSTEM_PACKS.filter((p) =>
+                                                        ? systemPacks.filter((p) =>
                                                             (project as any)?.allowedSystemPackIds?.includes(p.meta.id)
                                                         )
-                                                        : SYSTEM_PACKS
+                                                        : systemPacks
                                                 ).map((pack) => (
                                                     <SelectItem
                                                         key={pack.meta.id}
@@ -795,7 +797,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                 <div className="flex flex-col">
                                                     <span className="text-[10px] text-gray-500">{t('engineering_bay.profiles', 'Profiles')}</span>
                                                     <span className="text-xs font-mono text-gray-300">
-                                                        {(SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.profiles_cutting_list?.length || 0}
+                                                        {(systemPacks.find(p => p.meta.id === activeSystemPackId) as any)?.profiles?.length || (systemPacks.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.profiles_cutting_list?.length || 0}
                                                     </span>
                                                 </div>
                                             </div>
@@ -804,7 +806,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                 <div className="flex flex-col">
                                                     <span className="text-[10px] text-gray-500">{t('engineering_bay.parts', 'Parts')}</span>
                                                     <span className="text-xs font-mono text-gray-300">
-                                                        {(SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.accessories_list?.length || 0}
+                                                        {(systemPacks.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.accessories_list?.length || 0}
                                                     </span>
                                                 </div>
                                             </div>
