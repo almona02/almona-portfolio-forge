@@ -1,3 +1,5 @@
+import { approvedBOMContext } from '@/lib/fabricator/bom/approvedBOMContext';
+import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -58,7 +60,7 @@ export const BOMReviewPanel: React.FC = () => {
         pattern,
         systemPack,
         true,
-        { identity: generationIdentity },
+        await approvedBOMContext(currentProject, generationIdentity).catch(() => ({ identity: generationIdentity })),
       );
       const latest = useWorkflowStore.getState();
       if (!generationIdentity || latest.currentProject !== generationProject || !workflowIdentityMatches(latest.workflowIdentity, generationIdentity)) return;
@@ -164,6 +166,7 @@ export const BOMReviewPanel: React.FC = () => {
           </div>
         </div>
 
+        <ManufacturingApprovalPanel />
         {/* Cost Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           <CostCard label="Profiles" value={bom.cost.materialCost} />

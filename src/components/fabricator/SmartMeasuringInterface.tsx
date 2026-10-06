@@ -138,7 +138,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     height: String(initialData?.height ?? DEFAULT_MEASUREMENTS.DEFAULT_HEIGHT_MM),
     measurementMode: initialData?.measurementMode ?? 'hole', // 'hole' (rough opening) or 'manufacturing'
     wallDeduction: String(initialData?.wallDeduction ?? DEFAULT_MEASUREMENTS.DEFAULT_WALL_DEDUCTION_MM), // mm deduction for wall tolerance
-    windowType: initialData?.windowType || 'sliding_window_2sash', // Default to 2-sash sliding window (matches SelectItem value)
+    windowType: !initialData?.windowType || initialData.windowType === 'window' ? 'sliding_window_2sash' : initialData.windowType, // Default to 2-sash sliding window (matches SelectItem value)
     color: initialData?.color || egyptianDefaults.color,
     glazingType: initialData?.glazingType || egyptianDefaults.glazingType || 'double', // Ensure glazingType has a default value
     glassColor: initialData?.glassColor || egyptianDefaults.glassColor || 'clear', // Default to 'clear' (first option) - selected by default
@@ -547,6 +547,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     if (Object.keys(fieldErrorMap).length > 0) {
       setValidationErrors(validation.errors);
       setFieldErrors(fieldErrorMap);
+      setCurrentStep(1);
       return;
     }
 

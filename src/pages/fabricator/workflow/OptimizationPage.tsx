@@ -1,3 +1,4 @@
+import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
 import type { CuttingJob } from '@/algorithms/adaptiveSolver';
 import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
 import { OptimizationCockpit } from '@/components/fabricator/cockpit/OptimizationCockpit';
@@ -132,9 +133,10 @@ export const OptimizationPage: React.FC = () => {
                     <div className="text-center">
                         <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold text-amber-200">
-                            {optimizationValidation.errors.length > 0 ? 'Design Required' : 'Optimization'}
+                            {optimizationValidation.errors.length > 0 ? 'Optimization prerequisites' : 'Optimization'}
                         </h2>
                     </div>
+                    <ManufacturingApprovalPanel />
                     <WorkflowValidationGate
                         result={optimizationValidation}
                         targetStepLabel="Optimization"
@@ -142,12 +144,12 @@ export const OptimizationPage: React.FC = () => {
                             const projId = projectId ?? currentProject?.id;
                             const posId = poseId ?? projId;
                             if (projId && posId) {
-                                void navigate(fabricatorRoutes.poseDesign(projId, posId));
+                                void navigate(`/fabricator/studio/projects/${projId}/positions/${posId}/bom`);
                             } else {
                                 void navigate(fabricatorRoutes.studioProjects());
                             }
                         }}
-                        backLabel="Go to Design"
+                        backLabel="Review BOM"
                     />
                 </div>
             </div>

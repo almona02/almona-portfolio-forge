@@ -1,3 +1,5 @@
+import { approvedBOMContext } from '@/lib/fabricator/bom/approvedBOMContext';
+import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
 /**
  * BOMReviewPage - Dedicated BOM review step (IMPROVEMENT_PLAN 1.2.3, 1.4)
  *
@@ -45,7 +47,7 @@ export const BOMReviewPage: React.FC = () => {
       pattern,
       systemPack,
       true,
-      { identity: workflowIdentity },
+      await approvedBOMContext(currentProject, workflowIdentity).catch(() => ({ identity: workflowIdentity })),
     ).catch(() => null);
   }, [currentProject, systemPack, workflowIdentity]);
 
@@ -129,6 +131,7 @@ export const BOMReviewPage: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
+          <ManufacturingApprovalPanel />
           {!hasBOM ? (
             <div className="text-center py-12 text-slate-400">
               <p>No BOM generated. Ensure design has grid and pattern.</p>
