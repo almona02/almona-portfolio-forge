@@ -1,0 +1,156 @@
+{
+  "meta": {
+    "title": "Atölye Operatör Referansı",
+    "subtitle": "ALMONA Fabricator Pro — üretim kapıları, revizyon kimliği ve saha prosedürleri",
+    "live_site": "Canlı site",
+    "audience": "Atölye sahipleri · teknik personel · yöneticiler",
+    "print": "Yazdır",
+    "full_guide": "Tam operatör kılavuzu (Markdown)",
+    "standards": "Endüstriyel bilişim · deterministik kısıtlar · insan doğrulaması zorunlu",
+    "lang_label": "Dil",
+    "gate_label": "Kapı",
+    "guide_path": "Depo kılavuzu (canlı ekran görüntüleriyle): docs/guides/FABRICATOR_OPERATOR_UNIVERSITY_GUIDE.md"
+  },
+  "toc": {
+    "principles": "1 · Saha ilkeleri",
+    "pipeline": "2 · Kapılı hat",
+    "revision": "3 · Revizyon (R#)",
+    "roles": "4 · Roller ve kapsam",
+    "packs": "5 · Paketler ve ayar",
+    "stock": "6 · Stok",
+    "troubleshoot": "7 · Arıza giderme",
+    "assessment": "8 · Değerlendirme"
+  },
+  "principles": {
+    "heading": "Beş saha ilkesi",
+    "intro": "Her operatör her pozisyonda bu kuralları uygular. Tercih değil; üretim kısıtlarıdır.",
+    "items": [
+      {
+        "title": "İnsan doğrulaması",
+        "body": "Yazılım kesimleri önerir ve stoğu kontrol eder. Bir kişi BOM’u nitelendirir, stoğu onaylar, salımı dondurur ve kalite kontrolü imzalar.",
+        "result": "Sonuç: daha az hatalı kesim listesi; her kapıda net sorumluluk."
+      },
+      {
+        "title": "Tarayıcıdan kendi kendine üretim yetkisi yok",
+        "body": "Katalog ve kesim kuralı incelemesi talep edebilirsiniz. Onay, güvenilir bir arka uç inceleme sürecinde yapılır. Tarayıcı kendini onaylayamaz.",
+        "result": "Sonuç: üretim yetkisi denetlenebilir kalır; operatörün kendi kendini belgelendirmesi kapanır."
+      },
+      {
+        "title": "Yumuşak stok onayı",
+        "body": "Onay, aktif revizyon için kapsama kontrolüdür. Defterden metre düşmez.",
+        "result": "Sonuç: envanter doğru kalır; kullanılabilirlik ile tüketim ayrıdır."
+      },
+      {
+        "title": "Revizyon disiplini (R#)",
+        "body": "Pozisyona kaydedilen her değişiklik R# değerini artırır. Stok onayı, BOM, optimizasyon, salım ve kalite kontrolü aynı R# ile eşleşmelidir.",
+        "result": "Sonuç: kesimler ve kalite kontrolü her zaman tek üretim kimliğine bağlıdır."
+      },
+      {
+        "title": "Sahip kapsamı",
+        "body": "Paketler ve stok, oturum açmış hesaba aittir (owner_user_id). Atölye politikası altında o sahip hesabı paylaşılmadıkça şirket genelinde ortak değildir.",
+        "result": "Sonuç: atölyeler arası yanlışlıkla paket veya stok sızıntısı olmaz."
+      }
+    ]
+  },
+  "pipeline": {
+    "heading": "Kapılı üretim hattı",
+    "intro": "Her adımı dürüstçe tamamlayın. Bloke, eksik önkoşul demektir — devam etmeden önce giderin.",
+    "steps": [
+      { "label": "Proje", "gate": null },
+      { "label": "Pozisyon", "gate": null },
+      { "label": "Ölçü", "gate": "Tasarım öncesi geçerli ölçüleri kaydedin." },
+      { "label": "Tasarım", "gate": "Sistem paketini çözün (kasa + kanat profilleri)." },
+      { "label": "BOM", "gate": "Katalog / kesim kuralı incelemesi talep edin; nitelendirilince yeniden üretin." },
+      { "label": "Stok onayı", "gate": "Aktif R# için yumuşak onay." },
+      { "label": "Optimizasyon", "gate": "Üretime nitelikli BOM zorunlu." },
+      { "label": "Teklif", "gate": "İnsan fiyat onayı." },
+      { "label": "Üretim → Kalite → Sevkiyat", "gate": "Aynı R# dondurması ve muayene kanıtı." }
+    ]
+  },
+  "revision": {
+    "heading": "Revizyon disiplini (R#)",
+    "identity": "İş akışı kimliği: sahip + proje + pozisyon + kaynak + revizyon",
+    "what": "R#, bir pozisyonun üretim revizyon sayacıdır (R1, R2, R3…). Kayıtlı iş akışı kimliğinin parçasıdır.",
+    "when": "Ölçü, tasarım veya diğer pozisyon yazmaları kaydedildiğinde R# artar.",
+    "rule_title": "Eğitim kuralı",
+    "rule_body": "R# arttığında: önceki yumuşak stok onayları geçersizdir; BOM’u yeniden üretin ve nitelendirin; optimizasyondan önce stoğu yeniden onaylayın. Uyumsuz revizyona karşı asla optimize etmeyin veya salım yapmayın.",
+    "evidence": "Değerlendirme kanıtı: stüdyo durum çubuğundaki aktif R# ekran görüntüsü."
+  },
+  "roles": {
+    "heading": "Roller ve atölye kapsamı",
+    "register": "/register üzerinden öz kayıt yalnızca customer rolünü oluşturur. Teknisyen ve yönetici tarayıcıdan seçilemez.",
+    "privileged": "Teknisyen ve yönetici rolleri, hizmet rolü ile sunucu tarafı yetkilendirme gerektirir (service-role / ALMONA operasyonları).",
+    "shared_title": "Ortak atölye",
+    "shared_body": "Paketler, stok ve canlı işler için tek bir sahip hesabı oluşturun. Teknisyen veya yönetici rollerini yalnızca yönetim paneli / hizmet rolü ile verin — kayıt formundan şirket geneli ortak stok varsaymayın."
+  },
+  "packs": {
+    "heading": "Sistem paketleri, profiller ve ayar",
+    "gallery": "Galeri: /fabricator/studio/data",
+    "examples": "Bu üründeki katalog örnekleri: ROCK 60, JUMBO 100, KALE 70, ASAS — ayrıca sahibi özel paketler.",
+    "roles": "Doğru profil rollerini atayın (kasa, kanat ve gerektiğinde diğerleri). Yanlış roller BOM kesimlerini ve stok talebi eşleşmesini bozar.",
+    "tuning": "Ayar yolları: DXF’siz /fabricator/studio/data/tuning-no-dxf · DXF /fabricator/studio/data/tuning. Paket Tuned (Ayarlandı) görünene kadar kaydedin.",
+    "note": "Tuned, paket geometri / kesim hazırlığıdır. Belirli bir pozisyon için üretim yetkisi vermez. Pozisyon BOM’u yine de o revizyon için onaylı katalog ve kesim kuralı kanıtı ister."
+  },
+  "stock": {
+    "heading": "Stok girişi ve yumuşak onay",
+    "location": "Konum: /fabricator/studio/data/stock",
+    "wizard": "Satın Alma Sihirbazı: rol, miktar ve çubuk boyuna göre paket profillerini seçerek sahip envanteri oluşturun.",
+    "invoice": "Fatura girişi: sahip profillere miktar, çubuk boyu, fatura numarası ve tedarikçi kaydedin.",
+    "soft": "Stok onayı: aktif revizyon için yumuşak kullanılabilirlik kontrolü — defterden düşmez.",
+    "add": "Satın alma / fatura: sahip envantere metre (veya eşdeğeri) ekler.",
+    "test": "Test işaretli partiler muayene envanteridir. Operasyonel hazırlık hesaplarına katmayın."
+  },
+  "troubleshoot": {
+    "heading": "Arıza giderme",
+    "cols": {
+      "symptom": "Belirti",
+      "cause": "Neden",
+      "action": "Düzeltici işlem"
+    },
+    "rows": [
+      {
+        "symptom": "Tasarım 0 profil gösteriyor",
+        "cause": "Özel paket bu hesap için çözülemiyor",
+        "action": "Paketin bu sahip için kayıtlı olduğunu doğrulayın; galeriyi yenileyin; gerekirse DXF’siz ayarı kaydedin."
+      },
+      {
+        "symptom": "BOM sayfası boş",
+        "cause": "BOM incelemesi için paket çözülemiyor",
+        "action": "Paketin sahip ve kullanılabilir olduğundan emin olun; Tasarım → BOM İnceleme ile yeniden üretin."
+      },
+      {
+        "symptom": "Optimizasyon bloke: stok onayla",
+        "cause": "Eksik yumuşak onay veya uyumsuz R#",
+        "action": "Stok’u açın → geçerli R# için onaylayın."
+      },
+      {
+        "symptom": "Optimizasyon bloke: BOM nitelendir",
+        "cause": "Yalnızca tahmini BOM",
+        "action": "Üretim onayını talep edin / kontrol edin; BOM’u yeniden üretin."
+      },
+      {
+        "symptom": "Kalite bloke: tolerans kuralı",
+        "cause": "Onaylı boyutsal tolerans kanıtı yok",
+        "action": "Atölye onaylı tolerans kanıtı alın. Değer uydurmayın."
+      }
+    ]
+  },
+  "assessment": {
+    "heading": "Operatör değerlendirme listesi",
+    "intro": "Geçti yalnızca canlı kanıtla işaretleyin. Bellek kanıt değildir.",
+    "mandatory_chrome": "Zorunlu: stüdyo durum çubuğundaki aktif R# ekran görüntüsü.",
+    "items": [
+      "Oturum açıldı; /fabricator/studio/command açıldı",
+      "Aktif R# ve ne zaman arttığı açıklandı",
+      "Kaydın yalnızca customer oluşturduğu; teknisyen/yönetici için ayrı yetki gerektiği belirtildi",
+      "Kasa + kanat rollerine sahip paket doğrulandı (katalog örneği veya sahip özel paket)",
+      "Paket Tuned görünüyor (veya neden olmadığı belgelendi)",
+      "Katalog + kesim kuralı incelemesi talep edildi (veya bekleyen inceleme belgelendi)",
+      "Talebi karşılayan stok girişi kaydedildi",
+      "Kayıtlı bir R# altında proje → ölçü → tasarım → BOM tamamlandı",
+      "Tam o R# için yumuşak stok onayı yapıldı",
+      "O R# için yerleştirilmiş kesimlerle optimizasyon tamamlandı",
+      "Değerlendirme kanıtı olarak aktif R# çubuğu ekran görüntüsü eklendi"
+    ]
+  }
+}

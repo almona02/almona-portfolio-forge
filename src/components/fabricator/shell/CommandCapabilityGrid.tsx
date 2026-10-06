@@ -121,6 +121,15 @@ const CAPABILITIES: Capability[] = [
     group: 'service',
     availability: 'not_recorded',
   },
+  {
+    id: 'operator-help',
+    title: 'Operator help',
+    engine: 'Floor reference · EN / AR / TR',
+    href: fabricatorRoutes.studioHelp(),
+    icon: <ClipboardList size={18} />,
+    group: 'fabricator',
+    availability: 'available',
+  },
 ];
 
 function availabilityLabel(availability: Capability['availability']): string {

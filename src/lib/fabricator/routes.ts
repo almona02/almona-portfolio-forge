@@ -6,7 +6,7 @@
  * - /fabricator → landing/command
  * - /fabricator/studio/projects → project list
  * - /fabricator/studio/projects/:projectId/positions/:poseId/{design|optimization|commercial|production}
- * - /fabricator/studio/data/*, /fabricator/studio/reports/*
+ * - /fabricator/studio/data/*, /fabricator/studio/reports/*, /fabricator/studio/help
  */
 
 const STUDIO_BASE = '/fabricator/studio';
@@ -66,6 +66,8 @@ export const fabricatorRoutes = {
   adminValidation: () => '/admin/validation',
   /** New project wizard (legacy entry: redirect target) */
   newProjectWizard: () => '/fabricator/studio/projects?new=true',
+  /** Workshop operator help (EN / AR / TR floor reference) */
+  studioHelp: () => `${STUDIO_BASE}/help`,
 } as const;
 
 export type FabricatorRouteKey = keyof typeof fabricatorRoutes;
