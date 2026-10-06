@@ -105,13 +105,15 @@ Deliver each PR with concrete before/after behavior, test evidence, migration im
 - [x] All three UI entry paths use canonical metre quantities and same transaction *(client wired; needs frontend deploy)*
   - Invoice, CSV, PurchaseWizard → `recordAtomicStockIntake` / `record_stock_intake`.
   - Pending request UUID persisted in user-scoped localStorage (`stockIntakeRequest.ts`); cleared after verified receipt; no auto-replay.
-- [ ] BOM demand, missing mappings, shortages and stale evidence handled *(PR2)*
-- [ ] CSV preview/validation and movement history upgraded *(PR2 — CSV unknown units now rejected; full quoted parser still PR2)*
+- [x] BOM demand, missing mappings, shortages and stale evidence handled *(PR2 on `codex/stock-pr2-demand-history`)*
+- [x] CSV preview/validation and movement history upgraded *(PR2 — quoted parser, preview, filters/pagination/export)*
 - [ ] Pricing/currency and analytics claims corrected *(PR3)*
 - [x] Required tests/build pass with baseline limitations reported *(unit subset)*
-  - 2026-10-06 worktree: 5 files / **20 tests passed** (stockIntake, stockIntakeRequest, ProfileInventoryAdapter, bomStockDemand, profileInventoryMapper).
+  - PR2 worktree: inventory + workflow focused tests green after demand/CSV/history changes.
   - Full app type-check / production build not claimed clean from root script alone.
 - [ ] Migration/deployment verified and authorized live E2E evidence recorded
+  - DB PR1 applied; disposable lot marked `PR1 TEST Disposable Stock Lot (TEST STOCK — 66 m)` with `specifications.testStock=true`.
+  - Frontend PR2 pending merge/deploy for UI demand/history surfaces.
 
 ## Known limitations (this session)
 

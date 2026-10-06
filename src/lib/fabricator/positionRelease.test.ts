@@ -39,6 +39,8 @@ describe('positionRelease fingerprints', () => {
       metersByProfile: { z: 1, a: 2 },
       reservedAt: '2026-01-01T00:00:00.000Z',
       availabilityOk: true,
+      bomFingerprint: 'bom:test',
+      stockVersionByProfile: { a: 1, z: 2 },
     });
     expect(fp).toContain('stock:a,z;m:a:2|z:1;ok:1');
     expect(fp).toContain('"ownerUserId":"o"');
