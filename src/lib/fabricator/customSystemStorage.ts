@@ -134,9 +134,8 @@ export const addCustomSystemAsync = async (
 
   // Sync pack to Supabase if enabled
   if (USE_SUPABASE && userId) {
-    saveSystemPackToSupabase(newSystem, userId).catch((e) => {
-      console.warn('Failed to sync to Supabase, saved to localStorage only:', e);
-    });
+    const saved = await saveSystemPackToSupabase(newSystem, userId);
+    if (!saved) throw new Error('System pack could not be saved to the workshop database. Retry saving before using it in a project.');
   }
 
   if (materializeNote) {

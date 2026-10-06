@@ -32,7 +32,7 @@ function systemPackToSupabase(system: SystemPack, userId: string | null): System
     spec: system as any, // Store full system pack in spec
     is_active: true,
     owner_user_id: userId,
-    scope: userId ? 'user' : 'public', // 'user' for custom, 'public' for shared
+    scope: userId ? 'tenant' : 'global',
   };
 }
 
@@ -69,7 +69,7 @@ export async function loadCustomSystemsFromSupabase(userId: string | null): Prom
     if (userId) {
       query.eq('owner_user_id', userId);
     } else {
-      query.is('owner_user_id', null).eq('scope', 'public');
+      query.is('owner_user_id', null).eq('scope', 'global');
     }
 
     const { data, error } = await query;
