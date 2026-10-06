@@ -254,23 +254,37 @@ export class AdaptiveSolver {
       const stockLength = this.getStockLength(profile, job.defaultStockLength);
 
       // Execute selected algorithm (Tier-3: greedy | linear only — asserted above)
+      const specsForCutting = profile.specifications || {};
+      const kerf = Number(specsForCutting.sawKerf ?? 0);
+      const trim = Number(specsForCutting.barEndTrim ?? 0);
+      if (![kerf, trim].every(value => Number.isFinite(value) && value >= 0) || trim * 2 >= stockLength) {
+        throw new Error('Invalid kerf or bar-end trim.');
+      }
+      const packingCuts = cuts.map(cut => ({ ...cut, length: cut.length + kerf }));
+      const usableLength = stockLength - trim * 2;
+      if (packingCuts.some(cut => cut.length > usableLength)) throw new Error('A cut exceeds usable stock after kerf and end trim.');
       let profilePlans: CuttingPlan[];
 
       switch (algorithm) {
         case 'linear': {
-          const lpOptimizer = new LinearProgrammingOptimizer(cuts, profile, stockLength);
+          const lpOptimizer = new LinearProgrammingOptimizer(packingCuts, profile, usableLength);
           profilePlans = lpOptimizer.optimize();
           break;
         }
         case 'greedy':
         default: {
-          const greedyOptimizer = new GreedyHeuristic(cuts, profile, stockLength);
+          const greedyOptimizer = new GreedyHeuristic(packingCuts, profile, usableLength);
           profilePlans = greedyOptimizer.optimize();
           break;
         }
       }
 
-      allPlans.push(...profilePlans);
+      allPlans.push(...profilePlans.map(plan => {
+        const physicalCuts = plan.cuts.map(cut => ({ ...cut, length: cut.length - kerf }));
+        const physicalLength = physicalCuts.reduce((sum, cut) => sum + cut.length, 0);
+        return { ...plan, cuts: physicalCuts, stockLength, totalWaste: stockLength - physicalLength,
+          utilization: physicalLength / stockLength * 100 };
+      }));
     }
 
     return allPlans;
@@ -347,26 +361,7 @@ export class AdaptiveSolver {
     profiles: Profile[],
     durationMs: number
   ): Promise<OptimizationResult> {
-    await Promise.resolve();
-    const allPlans: CuttingPlan[] = [];
-
-    for (const component of job.components) {
-      const profile = profiles.find(p => p.id === component.profile.id);
-      if (!profile) continue;
-
-      const cuts: Cut[] = [];
-      component.cuttingLengths.forEach((_, index) => {
-        cuts.push(physicalCutForOccurrence(component, index, profile, job.systemPackId));
-      });
-
-      if (cuts.length === 0) continue;
-
-      const stockLength = this.getStockLength(profile, job.defaultStockLength);
-      const greedyOptimizer = new GreedyHeuristic(cuts, profile, stockLength);
-      const plans = greedyOptimizer.optimize();
-      allPlans.push(...plans);
-    }
-
+    const allPlans = await this.executeOptimization(job, profiles, 'greedy', this.analyzeComplexity(job, profiles));
     return this.calculateOptimizationResult(allPlans, profiles, durationMs);
   }
 
@@ -376,9 +371,10 @@ export class AdaptiveSolver {
   private getStockLength(profile: Profile, defaultStockLength?: number): number {
     const MAX_STOCK_LENGTH_MM = 8000;
     
-    const specs = profile.specifications as { stockLengthMm?: number } | undefined;
-    if (typeof specs?.stockLengthMm === 'number') {
-      return Math.min(specs.stockLengthMm, MAX_STOCK_LENGTH_MM);
+    const specs = profile.specifications || {};
+    const configured = specs.stockLengthMm ?? profile.barLength ?? specs.barLength;
+    if (typeof configured === 'number' && Number.isFinite(configured) && configured > 0) {
+      return Math.min(configured, MAX_STOCK_LENGTH_MM);
     }
     
     return defaultStockLength || 6000;

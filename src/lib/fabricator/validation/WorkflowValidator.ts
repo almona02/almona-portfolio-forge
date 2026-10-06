@@ -55,6 +55,20 @@ export interface WorkflowState {
 const finitePositive = (value: number): boolean => Number.isFinite(value) && value > 0;
 const finiteNonNegative = (value: number): boolean => Number.isFinite(value) && value >= 0;
 
+export function bomMatchesPhysicalDesign(bom: CompleteBOM | null, project: WindowUnit | null): boolean {
+  if (!bom?.profiles?.length || !project?.components?.length) return false;
+  if (bom.profiles.some(profile => !Array.isArray(profile.cuttingLengths) || !Array.isArray(profile.angles)
+      || profile.cuttingLengths.length !== profile.angles.length || profile.cuttingLengths.some(length => !finitePositive(length)))) return false;
+  const key = (profileId: string, length: number, angle: number) => `${profileId}:${length.toFixed(3)}:${angle}`;
+  const expected = project.components.flatMap(component => component.cuttingLengths.map((_, index) => {
+    const cut = physicalCutForOccurrence(component, index, component.profile, project.systemPackId);
+    return key(component.profile.id, cut.length, cut.angle);
+  })).sort();
+  const actual = bom.profiles.flatMap(profile => profile.cuttingLengths.map((length, index) =>
+    key(profile.profileCode, length, profile.angles[index]))).sort();
+  return expected.length === actual.length && expected.every((cut, index) => cut === actual[index]);
+}
+
 export function validateOptimizationInputs(project: WindowUnit | null): WorkflowValidationResult {
   const errors: ValidationIssue[] = [];
   if (!project) {
@@ -97,6 +111,12 @@ export function validateOptimizationResult(result: OptimizationResult | null): W
   } else {
     result.cuttingPlan.forEach((plan, index) => {
       const consumed = (plan.cuts || []).reduce((sum, cut) => sum + cut.length, 0);
+      const kerf = Number(plan.profile?.specifications?.sawKerf ?? 0);
+      const trim = Number(plan.profile?.specifications?.barEndTrim ?? 0);
+      if (![kerf, trim].every(value => Number.isFinite(value) && value >= 0)
+          || consumed + kerf * (plan.cuts?.length || 0) + trim * 2 > plan.stockLength + 0.001) {
+        errors.push({ type: 'error', code: 'MACHINING_CAPACITY_EXCEEDED', message: `Cutting plan ${index + 1} exceeds stock after kerf and end trim.`, step: 'optimization' });
+      }
       if (finitePositive(plan.stockLength) && (Math.abs(plan.stockLength - consumed - plan.totalWaste) > 0.001 || Math.abs(plan.utilization - consumed / plan.stockLength * 100) > 0.011)) {
         errors.push({ type: 'error', code: 'STOCK_LEDGER_MISMATCH', message: `Cutting plan ${index + 1} waste and utilization do not reconcile to its stock bar.`, step: 'optimization' });
       }
@@ -280,6 +300,12 @@ export function validateStepTransition(
   // Production → Quality Control: optimization already validated above
   if (targetStep === 'quality-control') {
     errors.push(...validateOptimizationReconciliation(state.optimizationResult, state.currentProject).errors);
+  }
+
+  if (['optimization', 'commercial', 'production', 'quality-control'].includes(targetStep)
+      && state.bom && !bomMatchesPhysicalDesign(state.bom, state.currentProject)) {
+    errors.push({ type: 'error', code: 'BOM_CUT_GEOMETRY_MISMATCH',
+      message: 'BOM cuts differ from the physical design. Regenerate and review the BOM before continuing.', step: 'bom' });
   }
 
   return {
