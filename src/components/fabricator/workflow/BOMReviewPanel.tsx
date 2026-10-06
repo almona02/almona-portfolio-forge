@@ -269,7 +269,7 @@ const CostCard: React.FC<{ label: string; value: number; highlight?: boolean }> 
   </Card>
 );
 
-const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles'] }> = ({ profiles }) => (
+export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles'] }> = ({ profiles }) => (
   <Card className="bg-slate-900/40 border-amber-600/20">
     <CardHeader className="pb-2">
       <CardTitle className="text-sm text-amber-200">Profile Cut List</CardTitle>
@@ -281,8 +281,8 @@ const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles'] }> = ({ profil
             <tr className="border-b border-amber-600/20 text-xs text-slate-500 uppercase">
               <th className="text-left py-2 px-3">Role</th>
               <th className="text-left py-2 px-3">Profile Code</th>
-              <th className="text-right py-2 px-3">Length (mm)</th>
-              <th className="text-right py-2 px-3">Qty</th>
+              <th className="text-right py-2 px-3">Cut lengths (mm)</th>
+              <th className="text-right py-2 px-3">Pieces</th>
               <th className="text-right py-2 px-3">Angles</th>
               <th className="text-right py-2 px-3">Cost (EGP)</th>
             </tr>
@@ -292,9 +292,9 @@ const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles'] }> = ({ profil
               <tr key={i} className="border-b border-slate-800/50 hover:bg-amber-500/5">
                 <td className="py-2 px-3 text-amber-300 font-medium">{p.role}</td>
                 <td className="py-2 px-3 text-slate-400">{p.profileCode || '—'}</td>
-                <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.[0]?.toFixed(1) ?? p.length?.toFixed(1) ?? '—'}</td>
-                <td className="py-2 px-3 text-right text-slate-300">{p.quantity}</td>
-                <td className="py-2 px-3 text-right text-slate-400">{p.angles?.[0] ?? 90}°</td>
+                <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.length ? p.cuttingLengths.map((length, cutIndex) => <div key={cutIndex}>{length.toFixed(1)}</div>) : p.length?.toFixed(1) ?? '—'}</td>
+                <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.length || p.quantity}</td>
+                <td className="py-2 px-3 text-right text-slate-400">{p.angles?.length ? p.angles.map((angle, cutIndex) => <div key={cutIndex}>{angle}°</div>) : '90°'}</td>
                 <td className="py-2 px-3 text-right text-amber-200">{p.cost?.toFixed(2) ?? '—'}</td>
               </tr>
             ))}
@@ -303,7 +303,7 @@ const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles'] }> = ({ profil
             <tr className="border-t border-amber-600/30 font-bold">
               <td colSpan={3} className="py-2 px-3 text-amber-200">Total</td>
               <td className="py-2 px-3 text-right text-amber-200">
-                {profiles.reduce((s, p) => s + p.quantity, 0)}
+                {profiles.reduce((s, p) => s + (p.cuttingLengths?.length || p.quantity), 0)}
               </td>
               <td />
               <td className="py-2 px-3 text-right text-amber-300">
