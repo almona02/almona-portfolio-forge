@@ -9,16 +9,17 @@
  */
 
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { useProjectPositions } from '@/hooks/useFabricatorQueries';
+import { useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
 import { catalogProfilesOrEmpty } from '@/lib/fabricator/catalog/CatalogResolver';
 import type { DesignCompletionPayload } from '@/lib/fabricator/engineering/designCompletion';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { FeatureFlags } from '@/lib/featureFlags';
-import { isFabricatorUuid } from '@/lib/supabase/fabricatorClientV2';
+import { isFabricatorUuid, persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
 import { useJobsStore } from '@/store/jobsStore';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { Profile, WindowUnit } from '@/types/fabricator';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DesignWorkspaceShell } from './shell/DesignWorkspaceShell';
 import { EngineeringBay } from './EngineeringBay';
@@ -33,6 +34,8 @@ interface EngineeringBayWrapperProps {
 export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
+  const upsertPose = useUpsertPose();
+  const savingDesign = useRef(false);
   // Owner/project/position routes are authoritative by contract. The rollout
   // flag applies only to legacy routes that do not carry the full identity.
   const useV2 = Boolean(projectId && poseId) || FeatureFlags.FABRICATOR_READ_V2;
@@ -92,8 +95,8 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     return [currentProject, ...others];
   }, [currentProject, allSiblingPositions]);
 
-  const handleDesignComplete = (payload: DesignCompletionPayload) => {
-    if (!currentProject) return;
+  const handleDesignComplete = async (payload: DesignCompletionPayload) => {
+    if (!currentProject || savingDesign.current) return;
 
     const updatedProject: WindowUnit = {
       ...currentProject,
@@ -108,6 +111,21 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
 
     setCurrentProject(updatedProject);
     setDesignData(updatedProject);
+    if (useV2) {
+      savingDesign.current = true;
+      try {
+        await upsertPose.mutateAsync({
+          windowUnit: updatedProject,
+          grid: payload.grid as unknown as Record<string, unknown>,
+          selectedPreset: payload.presetId ?? undefined,
+        });
+      } catch (error) {
+        toast.error(`Failed to save design: ${persistenceErrorMessage(error)}`);
+        return;
+      } finally {
+        savingDesign.current = false;
+      }
+    }
     completeStep('design');
 
     const projKey = resolvedProjectId ?? projectId ?? 'default';

@@ -22,6 +22,8 @@ const profile = pack.profiles[0];
 const project = { id: 'position-1', updatedAt: new Date('2026-09-26'), systemPackId: pack.meta.id, components: [{ id: 'component-1', profile, quantity: 1, cuttingLengths: [1000] }] } as WindowUnit;
 const result: OptimizationResult = { materialUsage: 1, wastePercentage: 0, estimatedProductionTime: 1, nestingEfficiency: 100, cuttingPlan: [{ profile, stockLength: 6000, totalWaste: 0, utilization: 100, cuts: [{ length: 1000, angle: 90, componentId: 'component-1', waste: 0 }] }], costBreakdown: { materialCost: 1, laborCost: 0, hardwareCost: 0, glazingCost: 0, totalCost: 1 } };
 const qualifiedBom = {
+  profiles: [{ profileCode: profile.id, cuttingLengths: [physicalCutForOccurrence(project.components[0], 0, profile, project.systemPackId).length],
+    angles: [physicalCutForOccurrence(project.components[0], 0, profile, project.systemPackId).angle] }],
   qualification: { status: 'qualified', identity: { ownerUserId: 'user-1' }, catalogueVersion: 'fixture-catalogue', ruleVersion: 'fixture-rules', requiredPieceCount: 1, generatedPieceCount: 1, unplacedPieceCount: 0, reasons: [] },
 } as CompleteBOM;
 

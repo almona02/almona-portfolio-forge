@@ -10,7 +10,7 @@ const base: StudioWorkflowEvidence = {
   completedSteps: new Set(), activeStep: 'measuring', workflowIdentity: identity, workflowDraftDirty: false,
 };
 const stage = (id: string) => STUDIO_WORKFLOW_STAGES.find(s => s.id === id)!;
-const qualified = { qualification: { status: 'qualified', identity, catalogueVersion: 'fixture-catalogue', ruleVersion: 'fixture-rules', requiredPieceCount: 1, generatedPieceCount: 1, unplacedPieceCount: 0, reasons: [] } } as never;
+const qualified = { profiles: [{ profileCode: 'profile', cuttingLengths: [500], angles: [45] }], qualification: { status: 'qualified', identity, catalogueVersion: 'fixture-catalogue', ruleVersion: 'fixture-rules', requiredPieceCount: 1, generatedPieceCount: 1, unplacedPieceCount: 0, reasons: [] } } as never;
 
 describe('Studio readiness', () => {
   it('does not infer activity or stock verification from page selection', () => {

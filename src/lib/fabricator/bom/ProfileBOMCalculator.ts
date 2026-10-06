@@ -14,6 +14,7 @@
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { FabricationData, Profile, SystemPack, WindowUnit } from '@/types/fabricator';
 import type { ProfileSpec } from '../productionUtils';
+import { physicalCutForOccurrence } from '../optimization/physicalCutContract';
 import {
     CUTTING_CONSTANTS,
     DEFAULT_PROFILE_DIMENSIONS,
@@ -39,6 +40,32 @@ export class ProfileBOMCalculator {
     pattern: EgyptianPattern,
     systemPack: SystemPack
   ): Promise<FabricationData['profiles']> {
+    // A resolved design already has the physical piece ledger used by the solver.
+    // Do not recalculate different geometry from pattern defaults for stock demand.
+    if (windowUnit.components?.length) {
+      const rows = new Map<string, FabricationData['profiles'][number]>();
+      for (const component of windowUnit.components) {
+        const profile = component.profile;
+        const role = (profile.profileRole || component.type) as FabricationData['profiles'][number]['role'];
+        const key = `${profile.id}:${role}`;
+        const cuts = component.cuttingLengths.map((_, index) =>
+          physicalCutForOccurrence(component, index, profile, windowUnit.systemPackId));
+        if (cuts.some(cut => !Number.isFinite(cut.length) || cut.length <= 0)) throw new Error('Invalid design cut length.');
+        const row = rows.get(key) || {
+          id: key, systemPack: windowUnit.systemPackId || systemPack.meta?.id || systemPack.id,
+          profileCode: profile.id, role, length: 0, quantity: 1,
+          cuttingLengths: [], angles: [], rawStockLength: profile.barLength || Number(profile.specifications?.barLength) || 6000,
+          wasteLength: 0, machiningZones: [], weight: 0, cost: 0,
+        };
+        row.cuttingLengths.push(...cuts.map(cut => cut.length));
+        row.angles.push(...cuts.map(cut => cut.angle));
+        row.length = row.cuttingLengths.reduce((sum, length) => sum + length, 0);
+        row.weight = row.length / 1000 * (profile.weightPerMeter || 0);
+        row.cost = row.length / 1000 * (profile.costPerMeter || 0);
+        rows.set(key, row);
+      }
+      return Array.from(rows.values());
+    }
     const profiles: FabricationData['profiles'] = [];
     // Dynamic import to avoid circular dependencies, but typed
     const { ProductionUtils } = await import('../productionUtils');
