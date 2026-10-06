@@ -7,7 +7,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { useWorkflowStore, workflowIdentityMatches } from '@/store/workflowStore';
-import { findSystemPack } from '@/lib/fabricator/catalog/CatalogResolver';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { gridMatchesPattern } from '@/lib/fabricator/presetUtils';
 import { WorkflowValidator } from '@/lib/fabricator/validation/WorkflowValidator';
@@ -27,14 +27,16 @@ export const BOMReviewPanel: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
   const { currentProject, workflowIdentity, bom, setBOM, completeStep } = useWorkflowStore();
+  const engineeringPacks = useEngineeringSystemPacks();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const systemPack = useMemo(() => {
-    const resolved = findSystemPack(currentProject?.systemPackId);
-    return resolved.ok ? resolved.pack : null;
-  }, [currentProject?.systemPackId]);
+    const packId = currentProject?.systemPackId;
+    if (!packId) return null;
+    return engineeringPacks.find((pack) => pack.meta.id === packId) ?? null;
+  }, [currentProject?.systemPackId, engineeringPacks]);
 
   const pattern = useMemo(() => {
     if (!currentProject?.grid) return null;
@@ -139,7 +141,40 @@ export const BOMReviewPanel: React.FC = () => {
     );
   }
 
-  if (!bom) return null;
+  if ((!systemPack || !pattern) && !bom) {
+    const designHref = `/fabricator/studio/projects/${projectId}/positions/${poseId}/design`;
+    return (
+      <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
+        <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
+          <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
+          <h2 className="text-xl font-bold text-amber-200">BOM prerequisites missing</h2>
+          <p className="text-slate-400 text-sm">
+            {!systemPack
+              ? `Resolve system pack "${currentProject.systemPackId ?? 'unknown'}" (built-in or owned custom) before generating the BOM.`
+              : 'The saved grid does not match a supported window pattern. Return to Design and choose a compatible layout.'}
+          </p>
+          <Button onClick={() => navigate(designHref)} className="bg-amber-500 hover:bg-amber-600">
+            Back to Design
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!bom) {
+    return (
+      <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
+        <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
+          <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
+          <h2 className="text-xl font-bold text-amber-200">No BOM yet</h2>
+          <p className="text-slate-400 text-sm">Generate a revision-bound BOM for this saved design.</p>
+          <Button onClick={() => void generateBOM()} className="bg-amber-500 hover:bg-amber-600">
+            Generate BOM
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-slate-950 to-slate-900 overflow-auto">
