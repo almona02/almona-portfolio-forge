@@ -147,7 +147,7 @@ export function validateMeasurements(
 
   // Validate color (optional but if provided should be valid)
   if (data.color) {
-    const validColors = ['Silver', 'White', 'Black', 'Bronze'];
+    const validColors = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
     if (!validColors.includes(data.color)) {
       errors.push({ field: 'color', message: 'Invalid color selected' });
     }

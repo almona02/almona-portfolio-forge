@@ -1235,6 +1235,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           <SelectValue placeholder={t('smart_measuring.specs.glass_color_placeholder', 'Clear, Green, Bronze...')} />
                         </SelectTrigger>
                         <SelectContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50 text-slate-200 z-50">
+                          <SelectItem value="blue_reflective" className="btn-secondary">Blue reflective</SelectItem>
                           <SelectItem value="clear" className="btn-secondary">
                             {t('smart_measuring.specs.clear', 'Clear')}
                           </SelectItem>
@@ -1301,6 +1302,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         <SelectItem value="Silver" className="btn-secondary">{t('smart_measuring.specs.silver', 'Silver')}</SelectItem>
                         <SelectItem value="White" className="btn-secondary">{t('smart_measuring.specs.white', 'White')}</SelectItem>
                         <SelectItem value="Black" className="btn-secondary">{t('smart_measuring.specs.black', 'Black')}</SelectItem>
+                        <SelectItem value="Anthracite Grey" className="btn-secondary">Anthracite Grey</SelectItem>
                         <SelectItem value="Bronze" className="btn-secondary">{t('smart_measuring.specs.bronze_color', 'Bronze')}</SelectItem>
                       </SelectContent>
                     </Select>
