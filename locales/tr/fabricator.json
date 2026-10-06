@@ -91,82 +91,82 @@
         "description": "Muayene ve doğrulama"
       }
     },
-  "navbar": {
-    "fabricator_menu": "Fabricator Menüsü",
-    "modules_label": "Modüller",
-    "fabrication_modules_title": "Üretim Modülleri",
-    "actions_label": "İşlemler",
-    "status": {
-      "optimal": "Optimal",
-      "running": "Çalışıyor",
-      "monitoring": "İzlemede",
-      "active": "Aktif",
-      "pending": "Beklemede"
-    },
-    "fabrication_modules": {
-      "cutting_optimization": {
-        "name": "Kesim Optimizasyonu",
-        "description": "Yapay zekâ destekli malzeme yerleşimi"
+    "navbar": {
+      "fabricator_menu": "Fabricator Menüsü",
+      "modules_label": "Modüller",
+      "fabrication_modules_title": "Üretim Modülleri",
+      "actions_label": "İşlemler",
+      "status": {
+        "optimal": "Optimal",
+        "running": "Çalışıyor",
+        "monitoring": "İzlemede",
+        "active": "Aktif",
+        "pending": "Beklemede"
       },
-      "machine_control": {
-        "name": "Makine Kontrolü",
-        "description": "Gerçek zamanlı CNC arayüzü"
+      "fabrication_modules": {
+        "cutting_optimization": {
+          "name": "Kesim Optimizasyonu",
+          "description": "Yapay zekâ destekli malzeme yerleşimi"
+        },
+        "machine_control": {
+          "name": "Makine Kontrolü",
+          "description": "Gerçek zamanlı CNC arayüzü"
+        },
+        "production_scheduler": {
+          "name": "Üretim Zamanlayıcısı",
+          "description": "Akıllı iş sıralaması"
+        },
+        "quality_control_ai": {
+          "name": "Kalite Kontrol AI",
+          "description": "Bilgisayarla görme denetimi"
+        },
+        "real_time_analytics": {
+          "name": "Canlı Analitik",
+          "description": "Canlı performans metrikleri"
+        }
       },
-      "production_scheduler": {
-        "name": "Üretim Zamanlayıcısı",
-        "description": "Akıllı iş sıralaması"
+      "quick_actions": {
+        "new_project": "Yeni Proje",
+        "profile_tuning": "Profil Ayarlama Stüdyosu",
+        "machine_status": "Makine Durumu",
+        "inventory_check": "Envanter Kontrolü",
+        "quality_reports": "Kalite Raporları"
       },
-      "quality_control_ai": {
-        "name": "Kalite Kontrol AI",
-        "description": "Bilgisayarla görme denetimi"
-      },
-      "real_time_analytics": {
-        "name": "Canlı Analitik",
-        "description": "Canlı performans metrikleri"
+      "local_system_intelligence": "Yerel Sistem Zekâsı",
+      "local_system_intelligence_desc": "Türkiye ve Mısır sistem evleri için bölgeye göre ayarlı dinamik tercih önerileri.",
+      "business_nav": {
+        "customers": "Müşteriler",
+        "projects": "Projeler",
+        "inventory": "Envanter",
+        "profiles": "Profiller ve Aksesuarlar",
+        "quick_reports": "Hızlı Raporlar",
+        "machines": "Makineler",
+        "settings_prices": "Ayarlar ve Fiyatlar",
+        "commercial_offers": "Ticari Teklifler",
+        "cost_reports": "Maliyet Raporları",
+        "accounting": "Muhasebe"
       }
     },
-    "quick_actions": {
-      "new_project": "Yeni Proje",
-      "profile_tuning": "Profil Ayarlama Stüdyosu",
-      "machine_status": "Makine Durumu",
-      "inventory_check": "Envanter Kontrolü",
-      "quality_reports": "Kalite Raporları"
+    "workspace": {
+      "tabs": {
+        "projects": "Projeler",
+        "profiles": "Profiller",
+        "inventory": "Envanter",
+        "commercial": "Ticari",
+        "analytics": "Analitik",
+        "reports": "Raporlar",
+        "settings": "Ayarlar"
+      },
+      "search": {
+        "placeholder": "Envanter, profiller, siparişler, projeler ara..."
+      },
+      "badges": {
+        "active": "Aktif"
+      },
+      "title_prefix": "Your Company Name",
+      "title": "Endüstriyel Operasyon Çalışma Alanı",
+      "subtitle": "Projeler, müşteriler, envanter ve ticari akışlar için kurumsal seviye Almona kokpiti — durum korunur, denetlenebilir ve ağır üretim iş yüklerine göre optimize edilmiştir."
     },
-    "local_system_intelligence": "Yerel Sistem Zekâsı",
-    "local_system_intelligence_desc": "Türkiye ve Mısır sistem evleri için bölgeye göre ayarlı dinamik tercih önerileri.",
-    "business_nav": {
-      "customers": "Müşteriler",
-      "projects": "Projeler",
-      "inventory": "Envanter",
-      "profiles": "Profiller ve Aksesuarlar",
-      "quick_reports": "Hızlı Raporlar",
-      "machines": "Makineler",
-      "settings_prices": "Ayarlar ve Fiyatlar",
-      "commercial_offers": "Ticari Teklifler",
-      "cost_reports": "Maliyet Raporları",
-      "accounting": "Muhasebe"
-    }
-  },
-  "workspace": {
-    "tabs": {
-      "projects": "Projeler",
-      "profiles": "Profiller",
-      "inventory": "Envanter",
-      "commercial": "Ticari",
-      "analytics": "Analitik",
-      "reports": "Raporlar",
-      "settings": "Ayarlar"
-    },
-    "search": {
-      "placeholder": "Envanter, profiller, siparişler, projeler ara..."
-    },
-    "badges": {
-      "active": "Aktif"
-    },
-    "title_prefix": "Your Company Name",
-    "title": "Endüstriyel Operasyon Çalışma Alanı",
-    "subtitle": "Projeler, müşteriler, envanter ve ticari akışlar için kurumsal seviye Almona kokpiti — durum korunur, denetlenebilir ve ağır üretim iş yüklerine göre optimize edilmiştir."
-  },
     "measuring": "Ölçüm",
     "smart_measuring": "Akıllı Ölçüm Arayüzü",
     "design": "Tasarım",
@@ -867,10 +867,9 @@
   },
   "design_interface": {
     "title": "Tasarım Çalışma Alanı – Mühendislik Koyu",
-    "description": "EngineeringBay ve SmartDrawCanvas'ı birleştiren birleşik tasarım çalışma alanı",
     "no_project": "Aktif proje yok – önce Akıllı Ölçümü tamamlayın.",
-    "no_inventory": "Envanter profilleri henüz yüklenmedi. Envanter sekmesinden profil verileri mevcut olduğunda Smart Draw ve mühendislik koyu en iyi şekilde çalışır.",
-    "pose_selector": "Sıradaki pozisyon"
+    "pose_in_order": "Sıradaki pozisyon",
+    "inventory_not_loaded": "Envanter profilleri henüz yüklenmedi. Envanter sekmesinden profil verileri mevcut olduğunda Smart Draw ve mühendislik koyu en iyi şekilde çalışır."
   },
   "profile_definition_wizard": {
     "title": "Veri Sayfasından Profil Tanımla",
@@ -1222,7 +1221,7 @@
   },
   "inventory_dashboard": {
     "title": "Envanter Zeka Merkezi",
-    "description": "Türk ve Mısır pazarları için gerçek zamanlı analitik, artık optimizasyonu ve AI destekli stok tahminleri ile merkezi envanter yönetimi.",
+    "description": "Atölye stok bakiyeleri, artık takibi ve hareket geçmişi. Analitik yalnızca kayıtlı hareketlere dayanır — talep tahmini yok.",
     "tabs": {
       "overview": "Genel Bakış",
       "remnants": "Artıklar",
@@ -1252,12 +1251,5 @@
     "low_stock": "Düşük Stok",
     "out_of_stock": "Stokta Yok",
     "total_value": "Toplam Değer"
-  },
-  "design_interface": {
-    "title": "Tasarım Çalışma Alanı – Mühendislik Koyu",
-    "no_project": "Aktif proje yok – önce Akıllı Ölçümü tamamlayın.",
-    "pose_in_order": "Sıradaki pozisyon",
-    "inventory_not_loaded": "Envanter profilleri henüz yüklenmedi. Envanter sekmesinden profil verileri mevcut olduğunda Smart Draw ve mühendislik koyu en iyi şekilde çalışır."
   }
 }
-

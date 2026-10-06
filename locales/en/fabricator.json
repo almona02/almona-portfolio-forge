@@ -124,82 +124,82 @@
         "description": "Inspection & validation"
       }
     },
-  "navbar": {
-    "fabricator_menu": "Fabricator Menu",
-    "modules_label": "Modules",
-    "fabrication_modules_title": "Fabrication Modules",
-    "actions_label": "Actions",
-    "status": {
-      "optimal": "Optimal",
-      "running": "Running",
-      "monitoring": "Monitoring",
-      "active": "Active",
-      "pending": "Pending"
-    },
-    "fabrication_modules": {
-      "cutting_optimization": {
-        "name": "Cutting Optimization",
-        "description": "AI-powered material nesting"
+    "navbar": {
+      "fabricator_menu": "Fabricator Menu",
+      "modules_label": "Modules",
+      "fabrication_modules_title": "Fabrication Modules",
+      "actions_label": "Actions",
+      "status": {
+        "optimal": "Optimal",
+        "running": "Running",
+        "monitoring": "Monitoring",
+        "active": "Active",
+        "pending": "Pending"
       },
-      "machine_control": {
-        "name": "Machine Control",
-        "description": "Real-time CNC interface"
+      "fabrication_modules": {
+        "cutting_optimization": {
+          "name": "Cutting Optimization",
+          "description": "AI-powered material nesting"
+        },
+        "machine_control": {
+          "name": "Machine Control",
+          "description": "Real-time CNC interface"
+        },
+        "production_scheduler": {
+          "name": "Production Scheduler",
+          "description": "Smart job sequencing"
+        },
+        "quality_control_ai": {
+          "name": "Quality Control AI",
+          "description": "Computer vision inspection"
+        },
+        "real_time_analytics": {
+          "name": "Real-time Analytics",
+          "description": "Live performance metrics"
+        }
       },
-      "production_scheduler": {
-        "name": "Production Scheduler",
-        "description": "Smart job sequencing"
+      "quick_actions": {
+        "new_project": "New Project",
+        "profile_tuning": "Profile Tuning Studio",
+        "machine_status": "Machine Status",
+        "inventory_check": "Inventory Check",
+        "quality_reports": "Quality Reports"
       },
-      "quality_control_ai": {
-        "name": "Quality Control AI",
-        "description": "Computer vision inspection"
-      },
-      "real_time_analytics": {
-        "name": "Real-time Analytics",
-        "description": "Live performance metrics"
+      "local_system_intelligence": "Local System Intelligence",
+      "local_system_intelligence_desc": "Dynamic preference suggestions for Turkish & Egyptian system houses – tuned to your active region.",
+      "business_nav": {
+        "customers": "Customers",
+        "projects": "Projects",
+        "inventory": "Inventory",
+        "profiles": "Profiles & Accessories",
+        "quick_reports": "Quick Reports",
+        "machines": "Machines",
+        "settings_prices": "Settings & Prices",
+        "commercial_offers": "Commercial Offers",
+        "cost_reports": "Cost Reports",
+        "accounting": "Accounting"
       }
     },
-    "quick_actions": {
-      "new_project": "New Project",
-      "profile_tuning": "Profile Tuning Studio",
-      "machine_status": "Machine Status",
-      "inventory_check": "Inventory Check",
-      "quality_reports": "Quality Reports"
+    "workspace": {
+      "tabs": {
+        "projects": "Projects",
+        "profiles": "Profiles",
+        "inventory": "Inventory",
+        "commercial": "Commercial",
+        "analytics": "Analytics",
+        "reports": "Reports",
+        "settings": "Settings"
+      },
+      "search": {
+        "placeholder": "Search inventory, profiles, orders, projects..."
+      },
+      "badges": {
+        "active": "Active"
+      },
+      "title_prefix": "Your Company Name",
+      "title": "Industrial Operations Workspace",
+      "subtitle": "Enterprise-grade Almona cockpit for projects, customers, inventory, and commercial flows — stateful, auditable, and optimized for heavy fabrication workloads."
     },
-    "local_system_intelligence": "Local System Intelligence",
-    "local_system_intelligence_desc": "Dynamic preference suggestions for Turkish & Egyptian system houses – tuned to your active region.",
-    "business_nav": {
-      "customers": "Customers",
-      "projects": "Projects",
-      "inventory": "Inventory",
-      "profiles": "Profiles & Accessories",
-      "quick_reports": "Quick Reports",
-      "machines": "Machines",
-      "settings_prices": "Settings & Prices",
-      "commercial_offers": "Commercial Offers",
-      "cost_reports": "Cost Reports",
-      "accounting": "Accounting"
-    }
-  },
-  "workspace": {
-    "tabs": {
-      "projects": "Projects",
-      "profiles": "Profiles",
-      "inventory": "Inventory",
-      "commercial": "Commercial",
-      "analytics": "Analytics",
-      "reports": "Reports",
-      "settings": "Settings"
-    },
-    "search": {
-      "placeholder": "Search inventory, profiles, orders, projects..."
-    },
-    "badges": {
-      "active": "Active"
-    },
-    "title_prefix": "Your Company Name",
-    "title": "Industrial Operations Workspace",
-    "subtitle": "Enterprise-grade Almona cockpit for projects, customers, inventory, and commercial flows — stateful, auditable, and optimized for heavy fabrication workloads."
-  },
     "measuring": "Measuring",
     "smart_measuring": "Smart Measuring Interface",
     "design": "Design",
@@ -904,28 +904,10 @@
       "assembly_clearance": "Assembly Clearance (mm)"
     },
     "simulation": {
-      "title": "Real-time Cut Simulation",
-      "base_length": "Base Length (mm)",
-      "angle": "Angle (°)",
-      "temperature": "Temperature (°C)",
+      "title": "Cut Simulation",
+      "base_length": "Base Length",
       "adjusted_length": "Adjusted Length",
-      "adjustments": "Applied Adjustments:"
-    },
-    "test_results": {
-      "title": "Test Results & Learning",
-      "expected": "Expected Length (mm)",
-      "actual": "Actual Length (mm)",
-      "difference": "Difference",
-      "test_date": "Test Date",
-      "expected_label": "Expected",
-      "actual_label": "Actual",
-      "add_test": "Add Test",
-      "historical": "Historical Test Results:"
-    },
-    "ai": {
-      "training_title": "AI Model Training",
-      "training_desc": "The AI is learning from calibration data. Suggestions will appear once enough data is collected.",
-      "analyzing": "Analyzing calibration patterns..."
+      "adjustments": "Adjustments"
     },
     "test_results": {
       "title": "Test Results",
@@ -934,11 +916,10 @@
       "difference": "Difference",
       "test_date": "Test Date"
     },
-    "simulation": {
-      "title": "Cut Simulation",
-      "base_length": "Base Length",
-      "adjusted_length": "Adjusted Length",
-      "adjustments": "Adjustments"
+    "ai": {
+      "training_title": "AI Model Training",
+      "training_desc": "The AI is learning from calibration data. Suggestions will appear once enough data is collected.",
+      "analyzing": "Analyzing calibration patterns..."
     },
     "quick_insight": {
       "title": "Quick Insight",
@@ -1064,10 +1045,9 @@
   },
   "design_interface": {
     "title": "Design Workspace – Engineering Bay",
-    "description": "Unified design workspace combining EngineeringBay and SmartDrawCanvas",
     "no_project": "No active project – complete Smart Measuring first.",
-    "no_inventory": "Inventory profiles are not loaded yet. Smart Draw and the engineering bay work best once profile data is available from the Inventory tab.",
-    "pose_selector": "Pose in order"
+    "pose_in_order": "Pose in order",
+    "inventory_not_loaded": "Inventory profiles are not loaded yet. Smart Draw and the engineering bay work best once profile data is available from the Inventory tab."
   },
   "profile_definition_wizard": {
     "title": "Define Profile from Data Sheet",
@@ -1420,7 +1400,7 @@
   },
   "inventory_dashboard": {
     "title": "Inventory Intelligence Hub",
-    "description": "Centralized inventory management with real-time analytics, remnant optimization, and AI-powered stock predictions for Turkish & Egyptian markets.",
+    "description": "Workshop stock balances, remnant tracking, and ledger history. Analytics use recorded movements only — no demand forecasts.",
     "tabs": {
       "overview": "Overview",
       "remnants": "Remnants",
@@ -1450,12 +1430,5 @@
     "low_stock": "Low Stock",
     "out_of_stock": "Out of Stock",
     "total_value": "Total Value"
-  },
-  "design_interface": {
-    "title": "Design Workspace – Engineering Bay",
-    "no_project": "No active project – complete Smart Measuring first.",
-    "pose_in_order": "Pose in order",
-    "inventory_not_loaded": "Inventory profiles are not loaded yet. Smart Draw and the engineering bay work best once profile data is available from the Inventory tab."
   }
 }
-
