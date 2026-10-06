@@ -9,7 +9,7 @@ import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 const mocks = vi.hoisted(() => ({ resolve: vi.fn() }));
 vi.mock('../manufacturing/ManufacturingAuthorityResolver', () => ({ resolveManufacturingAuthority: mocks.resolve }));
 const identity = { ownerUserId: 'test-owner', projectId: 'test-project', positionId: 'test-position', source: 'v2' as const, revision: 1 };
-const profile = { id: 'test-frame', material: 'aluminum', cuttingAllowance: 0, costPerMeter: 10, specifications: { stockLengthMm: 6000 } } as Profile;
+const profile: Profile = { name: 'Test frame', width: 50, color: 'Silver', stockQuantity: 10, minStockLevel: 0, supplier: 'Test fixture', id: 'test-frame', material: 'aluminum', cuttingAllowance: 0, costPerMeter: 10, specifications: { stockLengthMm: 6000 } };
 const project = { id: identity.positionId, systemPackId: 'test-pack', overallWidth: 1200, overallHeight: 1400, quantity: 1,
   grid: { rows: 1, cols: 1, cells: [{ id: 'fixed', row: 0, col: 0, type: 'fixed' }] },
   components: [{ id: 'frame', type: 'frame', profile, quantity: 1, cuttingLengths: [1200,1400,1200,1400], angles: [90,90,90,90] }],

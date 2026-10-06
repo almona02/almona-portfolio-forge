@@ -1,8 +1,15 @@
 import { useState } from 'react';
+import type { Database } from '@/types/database';
+import { z } from 'zod';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { supabase } from '@/lib/supabase';
 import { resolveManufacturingAuthority } from '@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver';
 import { Button } from '@/shared/ui/ui/button';
+
+// Legacy database tables omit Relationships; keep the RPC boundary narrowly typed.
+const approvalClient = supabase as unknown as {
+  rpc(name: 'request_fabricator_manufacturing_approval', args: Database['public']['Functions']['request_fabricator_manufacturing_approval']['Args']): PromiseLike<{ data: unknown; error: { message: string } | null }>;
+};
 
 /** Requests are evidence for review, never client-side manufacturing approval. */
 export function ManufacturingApprovalPanel() {
@@ -19,7 +26,7 @@ export function ManufacturingApprovalPanel() {
     setMessage('');
     try {
       if (submit) {
-        const { data, error } = await supabase.rpc('request_fabricator_manufacturing_approval', {
+        const { data, error } = await approvalClient.rpc('request_fabricator_manufacturing_approval', {
           p_position_id: identity.positionId,
           p_expected_revision: identity.revision,
           p_catalogue_reference: catalogue.trim(),
@@ -27,6 +34,7 @@ export function ManufacturingApprovalPanel() {
           p_notes: notes.trim(),
         });
         if (error) throw new Error(error.message);
+        if (!z.string().uuid().safeParse(data).success) throw new Error('No valid approval request receipt was returned.');
         setMessage(`Review request ${String(data)} submitted. Manufacturing remains blocked until reviewer approval.`);
       } else {
         const authority = await resolveManufacturingAuthority(identity.positionId, identity.revision);
