@@ -41,6 +41,8 @@ import {
   fetchStockMovementHistory,
   type StockMovementHistoryRow,
 } from '@/lib/fabricator/inventory/stockMovementHistory';
+import { computeStockAnalytics } from '@/lib/fabricator/inventory/stockAnalytics';
+import { partitionProductionInventory } from '@/lib/fabricator/inventory/testStock';
 import { remnantManager, type Remnant, type RemnantConsolidationSuggestion, type RemnantStatistics } from '@/lib/inventory/RemnantManager';
 import { syncStockFromMovements } from '@/lib/inventory/StockCalculator';
 import { trackError } from '@/lib/performance-monitoring';
@@ -231,11 +233,16 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   inventory,
   project,
   userId,
-  currency = 'USD',
+  currency = 'EGP',
 }) => {
+  const inventoryCurrency = currency || 'EGP';
   const money = (value: number) => Number.isFinite(value)
-    ? new Intl.NumberFormat('en-EG', { style: 'currency', currency }).format(value)
+    ? new Intl.NumberFormat('en-EG', { style: 'currency', currency: inventoryCurrency }).format(value)
     : 'Not recorded';
+  const catalogueCurrencyNote =
+    inventoryCurrency === 'EGP'
+      ? 'Workshop stock value is EGP. Catalogue/system pricing may use a different currency — convert explicitly before comparing.'
+      : `Workshop stock value is shown in ${inventoryCurrency}. Confirm catalogue pricing currency before comparing.`;
   const { t } = useTranslation('fabricator');
   const queryClient = useQueryClient();
   const { state: workspaceState, dispatch } = useFabricatorWorkspace();
@@ -975,16 +982,28 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
   // UP-10: keep Purchases / CSV / remnants / history reachable even when stock is empty.
   const inventoryEmpty = !inventory || inventory.length === 0;
-
+  const { production: productionInventory, testStock: testStockLots } = useMemo(
+    () => partitionProductionInventory(inventory || []),
+    [inventory],
+  );
   const lowStockCount = inventoryEmpty
     ? 0
-    : inventory.filter((p) => getStockStatus(p) === 'low' || getStockStatus(p) === 'out_of_stock').length;
+    : productionInventory.filter((p) => getStockStatus(p) === 'low' || getStockStatus(p) === 'out_of_stock').length;
   const goodStockCount = inventoryEmpty
     ? 0
-    : inventory.filter((p) => getStockStatus(p) === 'high').length;
+    : productionInventory.filter((p) => getStockStatus(p) === 'high').length;
   const totalValue = inventoryEmpty
     ? 0
-    : inventory.reduce((sum, p) => sum + (p.stockQuantity * p.costPerMeter), 0);
+    : productionInventory.reduce((sum, p) => sum + (p.stockQuantity * p.costPerMeter), 0);
+  const stockAnalytics = useMemo(
+    () =>
+      computeStockAnalytics({
+        profiles: inventory || [],
+        movements: stockMovements,
+        remnantStats,
+      }),
+    [inventory, stockMovements, remnantStats],
+  );
 
   return (
     <div className="space-y-6">
@@ -1002,7 +1021,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="typography-h2">{t('inventory_dashboard.title', 'Inventory Dashboard')}</h2>
-          <p className="text-gray-400">{t('inventory_dashboard.description', 'Centralized inventory management with real-time analytics, remnant optimization, and stock level monitoring for Turkish & Egyptian markets.')}</p>
+          <p className="text-gray-400">{t('inventory_dashboard.description', 'Workshop stock balances, remnant tracking, and ledger history. Analytics use recorded movements only — no demand forecasts.')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -1045,10 +1064,21 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 {stockAlerts.filter(a => a.severity === 'critical').length} critical alert(s) require immediate attention.
               </span>
             )}
-            {' '}Click on the Alerts tab to view details and reorder suggestions.
+            {' '}Open the Alerts tab for threshold deficits (metres below minimum), not demand forecasts.
           </AlertDescription>
         </Alert>
       )}
+
+      <Alert className="border-slate-600/40 bg-slate-900/40">
+        <Info className="h-4 w-4" />
+        <AlertTitle>Currency</AlertTitle>
+        <AlertDescription className="text-sm text-slate-300">
+          Inventory totals use <strong>{inventoryCurrency}</strong>. {catalogueCurrencyNote}
+          {testStockLots.length > 0
+            ? ` ${testStockLots.length} TEST STOCK lot(s) are listed but excluded from production readiness totals.`
+            : ''}
+        </AlertDescription>
+      </Alert>
 
         {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -1056,8 +1086,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Total Profiles</p>
-                <p className="text-2xl font-bold text-blue-400">{inventory.length}</p>
+                <p className="text-sm text-gray-400">Production Profiles</p>
+                <p className="text-2xl font-bold text-blue-400">{productionInventory.length}</p>
+                {testStockLots.length > 0 ? (
+                  <p className="text-[10px] text-slate-400 mt-1">+{testStockLots.length} TEST STOCK lot(s) listed, excluded from readiness</p>
+                ) : null}
               </div>
               <Package className="h-8 w-8 text-blue-400 opacity-50" />
             </div>
@@ -1096,6 +1129,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 <p className="text-2xl font-bold text-amber-400">
                   {money(totalValue)}
                 </p>
+                <p className="text-[10px] text-slate-400 mt-1">{inventoryCurrency} · excludes TEST STOCK</p>
               </div>
               <DollarSign className="h-8 w-8 text-amber-400 opacity-50" />
             </div>
@@ -1166,8 +1200,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1 h-auto">
           <TabsTrigger value="overview">{t('inventory_dashboard.tabs.overview', 'Overview')}</TabsTrigger>
+          <TabsTrigger value="pricing">{t('inventory_dashboard.tabs.pricing', 'Pricing')}</TabsTrigger>
           <TabsTrigger value="remnants">{t('inventory_dashboard.tabs.remnants', 'Remnants')}</TabsTrigger>
           <TabsTrigger value="alerts">
             {t('inventory_dashboard.tabs.alerts', 'Alerts')}
@@ -1368,18 +1403,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                                       className="w-full text-xs h-7"
                                       onClick={() => {
                                         setSelectedRock60ProfileId(profile.id);
-                                        // Scroll to pricing panel after a short delay to allow state update
-                                        setTimeout(() => {
-                                          const pricingPanel = document.querySelector('[data-pricing-panel]');
-                                          if (pricingPanel) {
-                                            pricingPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                                            // Highlight the panel briefly
-                                            pricingPanel.classList.add('ring-2', 'ring-amber-500', 'ring-offset-2');
-                                            setTimeout(() => {
-                                              pricingPanel.classList.remove('ring-2', 'ring-amber-500', 'ring-offset-2');
-                                            }, 2000);
-                                          }
-                                        }, 100);
+                                        setActiveTab('pricing');
                                       }}
                                     >
                                       <DollarSign className="h-3 w-3 mr-1" />
@@ -1398,7 +1422,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               </Collapsible>
             </div>
 
-            {/* Customer / project inventory & ROCK 60 pricing side panel */}
+            {/* Customer / project inventory side panel (pricing lives on Pricing tab) */}
             <div className="space-y-4">
               <Card className="bg-gray-700/50 border-gray-600">
                 <CardHeader className="pb-3">
@@ -1457,22 +1481,42 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   )}
                 </CardContent>
               </Card>
-
-              {/* System pricing setup (per-element) */}
-              <div data-pricing-panel>
-                <Rock60PricingSetup 
-                  profiles={inventory} 
-                  userId={userId || ''}
-                  selectedProfileId={selectedRock60ProfileId}
-                  onProfileChange={setSelectedRock60ProfileId}
-                  onOpenStudio={(systemPackId, profileId) => {
-                    setPricingStudioSystemPackId(systemPackId);
-                    setPricingStudioProfileId(profileId);
-                    setShowPricingStudio(true);
-                  }}
-                />
-              </div>
+              <Card className="bg-gray-700/50 border-gray-600">
+                <CardContent className="p-4 text-xs text-slate-300 space-y-2">
+                  <p className="font-semibold text-slate-100">System pricing</p>
+                  <p>
+                    Catalogue / pack pricing is separate from workshop stock balances. Open the Pricing
+                    tab to edit owned profile rates ({inventoryCurrency} inventory totals stay on Overview).
+                  </p>
+                  <Button size="sm" variant="outline" onClick={() => setActiveTab('pricing')}>
+                    Open Pricing
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="pricing" className="space-y-4">
+          <Alert className="border-slate-600/40 bg-slate-900/40">
+            <DollarSign className="h-4 w-4" />
+            <AlertTitle>Pricing setup (separate from stock overview)</AlertTitle>
+            <AlertDescription className="text-sm text-slate-300">
+              Match owned BATCH0 / catalogue profiles here. {catalogueCurrencyNote}
+            </AlertDescription>
+          </Alert>
+          <div data-pricing-panel>
+            <Rock60PricingSetup
+              profiles={productionInventory}
+              userId={userId || ''}
+              selectedProfileId={selectedRock60ProfileId}
+              onProfileChange={setSelectedRock60ProfileId}
+              onOpenStudio={(systemPackId, profileId) => {
+                setPricingStudioSystemPackId(systemPackId);
+                setPricingStudioProfileId(profileId);
+                setShowPricingStudio(true);
+              }}
+            />
           </div>
         </TabsContent>
 
@@ -2055,10 +2099,13 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                           </p>
                           {alert.reorderQuantity && (
                             <div className="mt-2 p-2 bg-gray-800 rounded">
-                              <p className="text-sm font-semibold">Reorder Suggestion:</p>
+                              <p className="text-sm font-semibold">Threshold coverage (not a forecast):</p>
                               <p className="text-sm">
-                                Order {alert.reorderQuantity.toFixed(2)}m
+                                Metres below minimum: {alert.reorderQuantity.toFixed(2)}m
                                 {alert.reorderPriority && ` (Priority: ${alert.reorderPriority})`}
+                              </p>
+                              <p className="text-[11px] text-slate-400 mt-1">
+                                Derived from stock vs min level. Not an AI or demand prediction.
                               </p>
                             </div>
                           )}
@@ -2244,12 +2291,71 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           </Card>
         </TabsContent>
 
-        {/* Analytics Tab */}
+        {/* Analytics Tab — ledger-backed only (PR3) */}
         <TabsContent value="analytics" className="space-y-4">
+          <Alert className="border-slate-600/40 bg-slate-900/40">
+            <BarChart3 className="h-4 w-4" />
+            <AlertTitle>Ledger analytics</AlertTitle>
+            <AlertDescription className="text-sm text-slate-300">
+              Consumption, ageing and reorder coverage come from recorded stock movements and owned
+              balances. Unsupported AI / demand-forecast claims are not shown.
+            </AlertDescription>
+          </Alert>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="bg-gray-700/50 border-gray-600">
+              <CardContent className="p-4">
+                <p className="text-sm text-gray-400">On-hand (production)</p>
+                <p className="text-2xl font-bold text-cyan-400">{stockAnalytics.totalMetresOnHand.toFixed(2)}m</p>
+                <p className="text-[11px] text-slate-400">{money(stockAnalytics.totalInventoryValue)} · {inventoryCurrency}</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gray-700/50 border-gray-600">
+              <CardContent className="p-4">
+                <p className="text-sm text-gray-400">Consumed (30d sample)</p>
+                <p className="text-2xl font-bold text-amber-400">{stockAnalytics.consumedMetres30d.toFixed(2)}m</p>
+                <p className="text-[11px] text-slate-400">Intake {stockAnalytics.intakeMetres30d.toFixed(2)}m</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gray-700/50 border-gray-600">
+              <CardContent className="p-4">
+                <p className="text-sm text-gray-400">Reorder coverage</p>
+                <p className="text-2xl font-bold text-red-400">{stockAnalytics.reorderCoverageMetres.toFixed(2)}m</p>
+                <p className="text-[11px] text-slate-400">Metres below min — not a forecast</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gray-700/50 border-gray-600">
+              <CardContent className="p-4">
+                <p className="text-sm text-gray-400">Remnant reuse rate</p>
+                <p className="text-2xl font-bold text-green-400">
+                  {stockAnalytics.remnantReuseRate == null
+                    ? '—'
+                    : `${(stockAnalytics.remnantReuseRate * 100).toFixed(0)}%`}
+                </p>
+                <p className="text-[11px] text-slate-400">Available ÷ total remnants</p>
+              </CardContent>
+            </Card>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="bg-gray-700/50 border-gray-600">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <TrendingUp className="h-5 w-5 text-green-400" />
+                  Ageing (from loaded ledger)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <div className="flex justify-between"><span>Active ≤30d</span><span>{stockAnalytics.activeProfiles30d}</span></div>
+                <div className="flex justify-between"><span>Last touch &gt;90d</span><span>{stockAnalytics.ageingOver90d}</span></div>
+                <div className="flex justify-between"><span>No movement in sample</span><span>{stockAnalytics.ageingUnknown}</span></div>
+                <div className="flex justify-between"><span>TEST STOCK excluded</span><span>{stockAnalytics.testStockExcluded}</span></div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-700/50 border-gray-600">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
                   <BarChart3 className="h-5 w-5 text-amber-400" />
                   Remnant Statistics
                 </CardTitle>
@@ -2270,57 +2376,33 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         ))}
                       </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-400">By Quality</p>
-                      <div className="mt-2 space-y-2">
-                        {Object.entries(remnantStats.byQuality).map(([quality, count]) => (
-                          <div key={quality} className="flex justify-between">
-                            <span className="capitalize">{quality}:</span>
-                            <span>{count}</span>
-                          </div>
-                        ))}
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div>
+                        <p className="text-[11px] text-gray-400">Total</p>
+                        <p className="font-semibold">{remnantStats.totalRemnants}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-gray-400">Available</p>
+                        <p className="font-semibold text-green-400">{remnantStats.availableRemnants}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-gray-400">Unused 90d+</p>
+                        <p className="font-semibold text-amber-400">{remnantStats.unusedRemnants}</p>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-400">No statistics available</p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-700/50 border-gray-600">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-green-400" />
-                  Utilization Metrics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {remnantStats ? (
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-sm text-gray-400">Total Remnants</p>
-                      <p className="text-2xl font-bold">{remnantStats.totalRemnants}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Available</p>
-                      <p className="text-2xl font-bold text-green-400">
-                        {remnantStats.availableRemnants}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Unused (90+ days)</p>
-                      <p className="text-2xl font-bold text-amber-400">
-                        {remnantStats.unusedRemnants}
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-gray-400">No metrics available</p>
+                  <p className="text-gray-400">No remnant statistics available</p>
                 )}
               </CardContent>
             </Card>
           </div>
+
+          <ul className="text-xs text-slate-400 list-disc pl-5 space-y-1">
+            {stockAnalytics.notes.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
         </TabsContent>
       </Tabs>
 
@@ -2344,7 +2426,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           systemPackId={pricingStudioSystemPackId}
           profileId={pricingStudioProfileId}
           userId={userId}
-          profiles={inventory}
+          profiles={productionInventory}
           onClose={(saved) => {
             setShowPricingStudio(false);
             setPricingStudioSystemPackId(undefined);

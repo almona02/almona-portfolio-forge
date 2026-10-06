@@ -382,11 +382,25 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredSystems.map(sys => (
+                {filteredSystems.map(sys => {
+                  const purchasableCount = sys.profiles.length;
+                  const isEmptyPack = purchasableCount === 0;
+                  return (
                   <Card 
                     key={sys.id} 
-                    className="bg-gray-800 border-gray-700 cursor-pointer transition-all card-premium"
+                    className={`bg-gray-800 border-gray-700 transition-all card-premium ${
+                      isEmptyPack
+                        ? 'opacity-60 cursor-not-allowed'
+                        : 'cursor-pointer hover:border-amber-500/50'
+                    }`}
+                    aria-disabled={isEmptyPack}
                     onClick={() => {
+                      if (isEmptyPack) {
+                        toast.message('This catalogue pack has no purchasable profiles yet.', {
+                          description: 'Populate the system pack catalogue (or choose another pack) before purchasing stock.',
+                        });
+                        return;
+                      }
                       setSelectedSystem(sys);
                       setStep('profile-select');
                     }}
@@ -396,13 +410,19 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         <h3 className="typography-h3 text-lg text-gray-100">{sys.name}</h3>
                         <p className="text-sm text-gray-400">{sys.brand}</p>
                         <Badge variant="outline" className="mt-2 bg-gray-900/50">
-                          {sys.profiles.length} profiles
+                          {isEmptyPack ? 'No purchasable profiles' : `${purchasableCount} profiles`}
                         </Badge>
+                        {isEmptyPack ? (
+                          <p className="text-[11px] text-amber-300/90 mt-2 max-w-[220px]">
+                            Empty catalogue pack — disabled until profiles are configured.
+                          </p>
+                        ) : null}
                       </div>
                       <ChevronRight className="h-5 w-5 text-gray-500" />
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

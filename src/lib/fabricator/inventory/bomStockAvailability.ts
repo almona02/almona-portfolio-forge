@@ -6,6 +6,7 @@
 
 import type { FabricationData, Profile } from '@/types/fabricator';
 import { bomStockDemand } from '@/lib/fabricator/inventory/bomStockDemand';
+import { isTestStockProfile } from './testStock';
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -85,11 +86,6 @@ function eligibleBarLengths(profile: Profile, bomRawStockMm?: number): number[] 
   if (typeof bomRawStockMm === 'number' && bomRawStockMm > 0) lengths.add(bomRawStockMm / 1000);
   if (lengths.size === 0) lengths.add(6);
   return Array.from(lengths).sort((a, b) => a - b);
-}
-
-function isTestStockProfile(profile: Profile): boolean {
-  const specs = (profile.specifications || {}) as Record<string, unknown>;
-  return specs.testStock === true || /TEST STOCK/i.test(profile.name || '');
 }
 
 /**
