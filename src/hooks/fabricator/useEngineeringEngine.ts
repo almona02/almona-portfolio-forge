@@ -25,6 +25,7 @@ interface UseEngineeringEngineProps {
     project: WindowUnit | null;
     profiles: Profile[];
     onDesignComplete: DesignCompleteHandler;
+    systemPacks?: typeof SYSTEM_PACKS;
 }
 
 /**
@@ -51,7 +52,8 @@ export function buildBomRequestKey(
 export const useEngineeringEngine = ({
     project,
     profiles,
-    onDesignComplete
+    onDesignComplete,
+    systemPacks = SYSTEM_PACKS
 }: UseEngineeringEngineProps) => {
     const { t } = useTranslation('fabricator');
 
@@ -79,9 +81,9 @@ export const useEngineeringEngine = ({
     // Get system pack
     const systemPack = useMemo(() => {
         return activeSystemPackId 
-            ? SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId) || null
+            ? systemPacks.find(p => p.meta.id === activeSystemPackId) || null
             : null;
-    }, [activeSystemPackId]);
+    }, [activeSystemPackId, systemPacks]);
 
     // Effective Profiles (prioritize system pack / catalog-derived profiles)
     const effectiveProfiles = useMemo(() => {
@@ -213,7 +215,7 @@ export const useEngineeringEngine = ({
         const requestGrid = liveProject.grid ?? currentGrid;
 
         const runBOMCalculation = async () => {
-            const currentSystemPack = SYSTEM_PACKS.find(p => p.meta.id === requestSystemPackId);
+            const currentSystemPack = systemPacks.find(p => p.meta.id === requestSystemPackId);
             const patternStub = {
                 id: 'custom',
                 name: 'Custom',
@@ -256,7 +258,7 @@ export const useEngineeringEngine = ({
         };
         // liveProject/currentGrid captured when bomRequestKey changes; t used only for labels
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [bomRequestKey, calculateBOM]);
+    }, [bomRequestKey, calculateBOM, systemPacks]);
 
     // --- Actions ---
 
@@ -276,7 +278,7 @@ export const useEngineeringEngine = ({
         setError(null);
         setActiveSystemPackId(systemId);
 
-        const pack = SYSTEM_PACKS.find((p) => p.meta.id === systemId);
+        const pack = systemPacks.find((p) => p.meta.id === systemId);
         if (!pack || !project) {
             setPendingGeometryAction(null);
             return;
@@ -292,7 +294,7 @@ export const useEngineeringEngine = ({
         if (pending) {
             setError(pending.message);
         }
-    }, [currentGrid, project]);
+    }, [currentGrid, project, systemPacks]);
 
     const requestLayoutSuggestion = useCallback(() => {
         if (!project) {

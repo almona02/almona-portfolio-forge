@@ -72,12 +72,14 @@ export function mapProfileRowFromDb(data: Record<string, unknown>): Profile {
     supplier: (data.supplier as string) || undefined,
     systemBrand: (data.systemBrand as string) || (data.system_brand as string) || undefined,
     weightPerMeter: weight,
-    profileRole: data.profileRole as Profile['profileRole'] | undefined,
+    profileRole: (data.profileRole ?? data.profile_role ?? specs.profileRole ?? specs.role) as Profile['profileRole'] | undefined,
     systemPackIds: Array.isArray(data.systemPackIds)
       ? (data.systemPackIds as string[])
       : Array.isArray(data.system_pack_ids)
         ? (data.system_pack_ids as string[])
-        : undefined,
+        : Array.isArray(specs.systemPackIds)
+          ? specs.systemPackIds as string[]
+          : typeof specs.systemPackId === 'string' ? [specs.systemPackId] : undefined,
     specifications: specs,
     grainDirection: (data.grainDirection ?? data.grain_direction ?? null) as Profile['grainDirection'],
     userId: (data.userId as string) || (data.user_id as string) || undefined,
