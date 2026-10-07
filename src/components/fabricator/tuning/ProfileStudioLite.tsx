@@ -584,7 +584,6 @@ export const ProfileStudioLite: React.FC = () => {
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-slate-400">
-                        <span className="text-lg">🇹🇷</span>
                         <span className="font-medium">Custom Profiles</span>
                         {libraryPacks.length > 0 ? (
                           <Badge variant="outline" className="border-amber-600/40 text-amber-300 text-[10px]">
@@ -784,10 +783,10 @@ export const ProfileStudioLite: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-700 card-dark">
-                    <SelectItem value="frame" className="btn-secondary">Frame (Çerçeve)</SelectItem>
-                    <SelectItem value="sash" className="btn-secondary">Sash (Kanat)</SelectItem>
-                    <SelectItem value="mullion" className="btn-secondary">Mullion (Orta Dikme)</SelectItem>
-                    <SelectItem value="transom" className="btn-secondary">Transom (Orta Yatay)</SelectItem>
+                    <SelectItem value="frame" className="btn-secondary">Frame</SelectItem>
+                    <SelectItem value="sash" className="btn-secondary">Sash</SelectItem>
+                    <SelectItem value="mullion" className="btn-secondary">Mullion</SelectItem>
+                    <SelectItem value="transom" className="btn-secondary">Transom</SelectItem>
                     <SelectItem value="bead" className="btn-secondary">Glazing Bead (Cam Profili)</SelectItem>
                   </SelectContent>
                 </Select>
@@ -810,7 +809,7 @@ export const ProfileStudioLite: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-700 card-dark">
-                    <SelectItem value="aluminum" className="btn-secondary">Aluminum (Alüminyum)</SelectItem>
+                    <SelectItem value="aluminum" className="btn-secondary">Aluminum</SelectItem>
                     <SelectItem value="upvc" className="btn-secondary">UPVC (Plastik)</SelectItem>
                     <SelectItem value="steel" className="btn-secondary">Steel (Çelik)</SelectItem>
                   </SelectContent>
