@@ -51,7 +51,7 @@ describe('useEngineeringEngine system selection', () => {
     const frame = { id: 'owned-frame', name: 'Frame', material: 'aluminum', width: 60, height: 60, thickness: 1.8, profileRole: 'frame', cuttingAllowance: 3 };
     const divider = { ...frame, id: 'owned-divider', name: 'Divider', profileRole: 'mullion' };
     const custom = { meta: { id: 'custom' }, profiles: [frame, divider] } as unknown as SystemPack;
-    const fixed = { ...project, type: 'fixed', systemPackId: 'custom', presetId: undefined,
+    const fixed = { ...project, systemPackId: 'custom', presetId: undefined,
       systemProfileSelections: { frameProfileCode: 'external' },
       grid: { rows: 1, cols: 2, cells: [{ id: 'left', row: 0, col: 0, type: 'fixed' }, { id: 'right', row: 0, col: 1, type: 'fixed' }] } } as WindowUnit;
     const { result } = renderHook(() => useEngineeringEngine({ project: fixed, profiles: [{ ...frame, id: 'external' } as any], systemPacks: [custom], onDesignComplete: vi.fn() }));
