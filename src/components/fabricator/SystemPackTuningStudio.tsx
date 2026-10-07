@@ -1175,7 +1175,7 @@ export const SystemPackTuningStudio: React.FC = () => {
           }}
           userId={userId}
           initialData={editingProfile ? {
-            profileCode: editingProfile.id,
+            profileCode: editingProfile.name,
             systemName: systemPack?.name,
             width: editingProfile.width,
             height: editingProfile.height,
