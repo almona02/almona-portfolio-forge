@@ -97,10 +97,10 @@ export const ProfileStudioLite: React.FC = () => {
     manufacturer: '',
     profileType: 'frame',
     material: 'aluminum',
-    barLength: 6500, // Turkish standard
+    barLength: 6000, // Editable workshop starting value
     unitWeight: 1.2,
     weldingAllowance: 0,
-    sawKerf: 4.5, // Turkish industry standard
+    sawKerf: 4.2, // Editable workshop starting value
     millingDepth: 2.5,
   });
 
@@ -584,8 +584,7 @@ export const ProfileStudioLite: React.FC = () => {
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-slate-400">
-                        <span className="text-lg">🇹🇷</span>
-                        <span className="font-medium">Turkish Custom Profiles</span>
+                        <span className="font-medium">Custom Profiles</span>
                         {libraryPacks.length > 0 ? (
                           <Badge variant="outline" className="border-amber-600/40 text-amber-300 text-[10px]">
                             {libraryPacks.length} saved pack{libraryPacks.length === 1 ? '' : 's'}
@@ -595,7 +594,7 @@ export const ProfileStudioLite: React.FC = () => {
                     </div>
                   </div>
                   <CardDescription className="text-base text-slate-300 max-w-2xl leading-relaxed">
-                    Define custom Turkish profiles with precision physics configuration. 
+                    Define workshop profiles with dimensions, roles and cutting settings. 
                     DXF import, verification, and milling slot configuration for immediate use in Precision Design Interface.
                   </CardDescription>
                 </div>
@@ -678,7 +677,7 @@ export const ProfileStudioLite: React.FC = () => {
               {!dxfFileName && !isUploading && (
                 <div className="text-sm text-slate-400 p-6 border-2 border-dashed border-slate-700 rounded-lg text-center bg-slate-900/30">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-slate-500" />
-                  <p className="font-medium text-slate-300">Upload DXF/DWG file from Turkish supplier</p>
+                  <p className="font-medium text-slate-300">Upload DXF/DWG file from your supplier</p>
                   <p className="text-xs mt-2 text-slate-500">Supported: ASAŞ, Fırat, Kale, Yılmaz profiles</p>
                   <p className="text-xs text-slate-600 mt-1">(Optional - you can enter values manually)</p>
                 </div>
@@ -784,10 +783,10 @@ export const ProfileStudioLite: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-700 card-dark">
-                    <SelectItem value="frame" className="btn-secondary">Frame (Çerçeve)</SelectItem>
-                    <SelectItem value="sash" className="btn-secondary">Sash (Kanat)</SelectItem>
-                    <SelectItem value="mullion" className="btn-secondary">Mullion (Orta Dikme)</SelectItem>
-                    <SelectItem value="transom" className="btn-secondary">Transom (Orta Yatay)</SelectItem>
+                    <SelectItem value="frame" className="btn-secondary">Frame</SelectItem>
+                    <SelectItem value="sash" className="btn-secondary">Sash</SelectItem>
+                    <SelectItem value="mullion" className="btn-secondary">Mullion</SelectItem>
+                    <SelectItem value="transom" className="btn-secondary">Transom</SelectItem>
                     <SelectItem value="bead" className="btn-secondary">Glazing Bead (Cam Profili)</SelectItem>
                   </SelectContent>
                 </Select>
@@ -810,7 +809,7 @@ export const ProfileStudioLite: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-700 card-dark">
-                    <SelectItem value="aluminum" className="btn-secondary">Aluminum (Alüminyum)</SelectItem>
+                    <SelectItem value="aluminum" className="btn-secondary">Aluminum</SelectItem>
                     <SelectItem value="upvc" className="btn-secondary">UPVC (Plastik)</SelectItem>
                     <SelectItem value="steel" className="btn-secondary">Steel (Çelik)</SelectItem>
                   </SelectContent>
@@ -818,7 +817,7 @@ export const ProfileStudioLite: React.FC = () => {
               </div>
             </LazyMotionDiv>
 
-            {/* Right Column: Turkish Production Settings */}
+            {/* Right Column: Workshop Production Settings */}
             <LazyMotionDiv
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -829,7 +828,7 @@ export const ProfileStudioLite: React.FC = () => {
                 <div className="btn-primary">
                   <Gauge className="h-5 w-5 text-amber-400" />
                 </div>
-                <h3 className="typography-h3 text-white">Turkish Production Settings</h3>
+                <h3 className="typography-h3 text-white">Workshop Production Settings</h3>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -843,7 +842,7 @@ export const ProfileStudioLite: React.FC = () => {
                     placeholder="6500"
                     className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                   />
-                  <p className="text-xs text-slate-400">Turkish standard: 6500mm</p>
+                  <p className="text-xs text-slate-400">Set the stock length supplied to your workshop.</p>
                 </div>
 
                 <div className="space-y-2">
@@ -887,7 +886,7 @@ export const ProfileStudioLite: React.FC = () => {
                   placeholder="4.5"
                   className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                 />
-                <p className="text-xs text-slate-400">Turkish double-mitre saw: 4.2-4.8mm</p>
+                <p className="text-xs text-slate-400">Set the measured saw kerf for your machine.</p>
               </div>
 
               <div className="space-y-2">

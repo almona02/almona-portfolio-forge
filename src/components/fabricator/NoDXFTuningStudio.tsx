@@ -44,7 +44,7 @@ import { toast } from 'sonner';
 interface ProfileConfig {
   id: string;
   name: string;
-  role: Profile['profileRole'] | 'frame' | 'sash'; // Support both old and new roles
+  role: NonNullable<Profile['profileRole']> | 'frame' | 'sash'; // Support both old and new roles
   width: number;
   height: number;
   thickness: number;
@@ -120,12 +120,12 @@ export const NoDXFTuningStudio: React.FC = () => {
           height: p.height || 50,
           thickness: p.thickness || 1.5,
           material: p.material || (isUPVC ? 'upvc' : 'aluminum'),
-          sawKerf: 4.5, // UPVC default
-          barEndTrim: 20, // UPVC default
-          weldingLoss: isUPVC ? 3 : undefined,
-          transomMilling: 2.5,
+          sawKerf: Number(p.specifications?.sawKerf ?? (isUPVC ? 4.5 : 4.2)),
+          barEndTrim: Number(p.specifications?.barEndTrim ?? 20),
+          weldingLoss: p.specifications?.weldingLoss as number | undefined ?? (isUPVC ? 3 : undefined),
+          transomMilling: Number(p.specifications?.transomMilling ?? 2.5),
           cuttingAllowance: p.cuttingAllowance || 0,
-          barLength: isUPVC ? 5800 : 6000,
+          barLength: Number(p.barLength ?? p.specifications?.barLength ?? (isUPVC ? 5800 : 6000)),
           reinforcementDeduction: isUPVC ? 12 : undefined,
           reinforcementThickness: isUPVC ? 1.2 : undefined,
         };
@@ -225,7 +225,10 @@ export const NoDXFTuningStudio: React.FC = () => {
     setIsSaving(true);
     try {
       // Convert profiles to Profile format
-      const profileObjects: Profile[] = profiles.map(p => ({
+      const profileObjects: Profile[] = profiles.map(p => {
+        const existing = (systemPack?.profiles as Profile[] | undefined)?.find(profile => profile.id === p.id);
+        return ({
+        ...existing,
         id: p.id,
         name: p.name,
         type: p.role,
@@ -234,16 +237,19 @@ export const NoDXFTuningStudio: React.FC = () => {
         height: p.height,
         thickness: p.thickness,
         color: '#cccccc',
-        costPerMeter: 0,
+        costPerMeter: existing?.costPerMeter ?? 0,
         cuttingAllowance: p.cuttingAllowance,
-        stockQuantity: 0,
-        minStockLevel: 0,
+        barLength: p.barLength,
+        stockQuantity: existing?.stockQuantity ?? 0,
+        minStockLevel: existing?.minStockLevel ?? 0,
         supplier: systemPack?.meta?.brands?.[0] || 'Custom',
         profileRole: p.role,
         systemBrand: systemPack?.meta?.brands?.[0] || 'Custom',
         systemPackIds: [systemPackId || ''],
         specifications: {
+          ...existing?.specifications,
           tuningStatus: 'tuned',
+          profileRole: p.role,
           sawKerf: p.sawKerf,
           barEndTrim: p.barEndTrim,
           weldingLoss: p.weldingLoss,
@@ -252,9 +258,10 @@ export const NoDXFTuningStudio: React.FC = () => {
           reinforcementDeduction: p.reinforcementDeduction,
           reinforcementThickness: p.reinforcementThickness,
         },
-        calibrations: [],
-        machiningMacros: [],
-      }));
+        calibrations: existing?.calibrations ?? [],
+        machiningMacros: existing?.machiningMacros ?? [],
+      });
+      });
 
       // Update the original system pack (don't create a new one)
       const tunedPack = {

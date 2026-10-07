@@ -11,11 +11,10 @@ import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/Man
 
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import { gridMatchesPattern } from '@/lib/fabricator/presetUtils';
+import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { WorkflowValidator } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
-import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { ArrowRight, Layers, Loader2 } from 'lucide-react';
@@ -35,21 +34,17 @@ export const BOMReviewPage: React.FC = () => {
 
   const generateBOM = useCallback(async () => {
     if (!currentProject || !systemPack || !currentProject.grid) return null;
-    const candidates = currentProject.presetId
-      ? EGYPTIAN_PATTERNS.filter(candidate => candidate.id === currentProject.presetId)
-      : EGYPTIAN_PATTERNS;
-    const pattern = candidates.find(candidate => {
-      const match = gridMatchesPattern(currentProject.grid!, candidate);
-      return match.confidence === 100 && match.differences.length === 0;
-    });
-    if (!pattern) return null;
+    let pattern;
+    try { pattern = resolveEstimatePattern(currentProject); } catch { return null; }
     const generator = new PresetAwareBOMGenerator();
     return generator.generateCompleteBOM(
       currentProject,
       pattern,
       systemPack,
       true,
-      await approvedBOMContext(currentProject, workflowIdentity).catch(() => ({ identity: workflowIdentity })),
+      currentProject.presetId
+        ? await approvedBOMContext(currentProject, workflowIdentity).catch(() => ({ identity: workflowIdentity }))
+        : { identity: workflowIdentity },
     ).catch(() => null);
   }, [currentProject, systemPack, workflowIdentity]);
 
@@ -179,11 +174,9 @@ export const BOMReviewPage: React.FC = () => {
                 <div className="bg-slate-800/30 rounded-lg p-4">
                   <span className="text-slate-400">Estimated cost: </span>
                   <span className="font-mono text-amber-300">
-                    {(typeof bom.cost === 'object' && bom.cost?.totalCost != null)
+                    {bom.cost.totalCost != null
                       ? bom.cost.totalCost.toLocaleString('en-EG', { style: 'currency', currency: 'EGP' })
-                      : typeof bom.cost === 'number'
-                        ? bom.cost.toLocaleString('en-EG', { style: 'currency', currency: 'EGP' })
-                        : '—'}
+                      : '—'}
                   </span>
                 </div>
               )}

@@ -92,6 +92,9 @@ export class HardwareBOMCalculator {
 
     // Calculate hardware based on opening type and dimensions
     const openingType = pattern.openingMechanism?.type || windowUnit.type;
+    // Fixed glazing has no operating handle, lock, hinge or roller set.
+    // Explicit catalogue accessories above remain available as estimates.
+    if (openingType === 'fixed' || pattern.type === 'fixed') return hardware;
 
     // Hinges (for casement/tilt-turn)
     if (openingType === 'casement' || openingType === 'tilt-turn') {
