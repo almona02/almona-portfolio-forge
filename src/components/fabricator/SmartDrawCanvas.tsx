@@ -174,8 +174,8 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   // Phase 2: Wrapper function to handle grid changes with undo/redo tracking
   const handleGridChangeWithHistory = useCallback((newGrid: WindowGrid, skipHistory = false) => {
     if (!skipHistory && !isUndoRedoOperationRef.current) {
-      // Push current grid to history before changing
-      undoRedoManagerRef.current.push(grid);
+      // History includes the applied state so redo restores the actual edit.
+      undoRedoManagerRef.current.push(newGrid);
       setCanUndo(undoRedoManagerRef.current.canUndo());
       setCanRedo(false); // Clear redo when new action is taken
     }
@@ -304,18 +304,18 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   useEffect(() => {
     if (grid.colWidths && grid.colWidths.length === grid.cols) {
       setColWidthsInput(grid.colWidths.join(','));
-    } else if (!colWidthsInput) {
+    } else {
       setColWidthsInput('');
     }
-  }, [grid.cols, grid.colWidths, colWidthsInput]);
+  }, [grid.cols, grid.colWidths]);
 
   useEffect(() => {
     if (grid.rowHeights && grid.rowHeights.length === grid.rows) {
       setRowHeightsInput(grid.rowHeights.join(','));
-    } else if (!rowHeightsInput) {
+    } else {
       setRowHeightsInput('');
     }
-  }, [grid.rows, grid.rowHeights, rowHeightsInput]);
+  }, [grid.rows, grid.rowHeights]);
 
   useEffect(() => {
     if (!grid || !grid.cells || grid.cells.length === 0) {
