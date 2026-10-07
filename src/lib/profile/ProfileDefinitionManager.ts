@@ -40,7 +40,6 @@ export class ProfileDefinitionManager {
       user_id: input.userId,
       name: input.profileCode,
       material: input.material,
-      profile_role: input.role,
       width: input.width,
       height: input.height,
       thickness: input.materialThickness,
