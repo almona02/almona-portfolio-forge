@@ -421,6 +421,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                     {workflowStage === 'design' && (
                         activeUnit ? (
                             <EngineeringBay
+                                key={activeUnit.id}
                                 project={activeUnit}
                                 profiles={profiles}
                                 onDesignComplete={handleDesignComplete}
