@@ -1,3 +1,4 @@
+import { estimateSource } from '@/lib/fabricator/production/estimateSource';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -231,7 +232,16 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
     }, [activeUnitId, handleUpdateUnit]);
 
     // Estimates are separate from approved manufacturing/quote results.
-    useEffect(() => { setEstimate(null); }, [project.units, engineeringPacks]);
+    useEffect(() => {
+        const saved = (projectMeta?.meta as Record<string, any> | undefined)?.cutting_estimate;
+        if (saved?.classification === 'estimate_only' && saved.manufacturingEligible === false &&
+            saved.sourceReceipt === estimateSource(project.units, engineeringPacks)) {
+            try {
+                const verified = optimizeProjectEstimate(project.units, engineeringPacks);
+                setEstimate(verified);
+            } catch { setEstimate(null); }
+        } else setEstimate(null);
+    }, [project.units, engineeringPacks, projectMeta?.meta]);
     const runProjectOptimization = useCallback(() => {
         try {
             const result = optimizeProjectEstimate(project.units, engineeringPacks);
@@ -240,7 +250,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             if (useV2 && projectMeta) {
                 updateProject.mutate({ projectId: projectMeta.id, updates: { meta: {
                     ...(projectMeta.meta as Record<string, unknown> ?? {}),
-                    cutting_estimate: { ...result, generatedAt: new Date().toISOString(), sourcePositions: project.units.map(unit => ({ id: unit.id, updatedAt: unit.updatedAt })) },
+                    cutting_estimate: { ...result, sourceReceipt: estimateSource(project.units, engineeringPacks), generatedAt: new Date().toISOString(), sourcePositions: project.units.map(unit => ({ id: unit.id, updatedAt: unit.updatedAt })) },
                 } } }, {
                     onSuccess: data => data ? toast.success('Project cutting estimate saved') : toast.error('Estimate calculated but project save returned no receipt'),
                     onError: () => toast.error('Estimate calculated but saving failed. Retry before leaving.'),

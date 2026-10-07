@@ -20,6 +20,20 @@ function renderProject(positions: WindowUnit[]) {
 }
 
 describe('project BOM failures', () => {
+  it('restores a saved BOM after remount and invalidates changed quantities', async () => {
+    const view = render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={{ id: 'project' }} positions={[pose]} onOpenStudio={() => {}} /></MemoryRouter>);
+    mocks.generate.mockResolvedValueOnce({ qualification: { requiredPieceCount: 4, generatedPieceCount: 4 },
+      profiles: [{ cuttingLengths: [1200, 1200, 1400, 1400] }], hardware: [], glazing: [], accessories: [],
+      cost: { materialCost: 100, hardwareCost: 0, glazingCost: 0, accessoriesCost: 0, laborCost: 0 } });
+    fireEvent.click(screen.getByRole('button', { name: 'Aggregate Project BOM' }));
+    await waitFor(() => expect(screen.getByText('Project estimate total')).toBeVisible());
+    const meta = mocks.save.mock.calls.at(-1)![0].updates.meta;
+    view.unmount();
+    const restored = render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={{ id: 'project', meta }} positions={[pose]} onOpenStudio={() => {}} /></MemoryRouter>);
+    expect(screen.getByText('Project estimate total')).toBeVisible();
+    restored.rerender(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={{ id: 'project', meta }} positions={[{ ...pose, quantity: 3 }]} onOpenStudio={() => {}} /></MemoryRouter>);
+    expect(screen.queryByText('Project estimate total')).toBeNull();
+  });
   it('distinguishes ten positions from eighteen units and totals 30.24 square metres', () => {
     const positions = Array.from({ length: 10 }, (_, index) => ({ ...pose, id: String(index), posNumber: String(index + 1), quantity: index < 8 ? 2 : 1 }));
     render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={undefined} positions={positions} onOpenStudio={() => {}} /></MemoryRouter>);

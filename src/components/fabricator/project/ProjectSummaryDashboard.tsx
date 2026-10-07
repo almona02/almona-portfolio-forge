@@ -1,3 +1,4 @@
+import { estimateSource } from '@/lib/fabricator/production/estimateSource';
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useDeletePose, useUpsertPose, useUpdateProject } from '@/hooks/useFabricatorQueries';
 import { PresetAwareBOMGenerator, type CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
@@ -68,10 +69,19 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
   const aggregationGeneration = useRef(0);
   useEffect(() => {
     ++aggregationGeneration.current;
-    setAggregatedBOM(null);
+    const saved = (projectMeta?.meta as Record<string, any> | undefined)?.bom_estimate;
+    if (saved?.classification === 'estimate_only' && saved.manufacturingEligible === false &&
+        saved.sourceReceipt === estimateSource(positions, engineeringPacks) && saved.totals &&
+        Array.isArray(saved.positionBOMs) && Array.isArray(saved.failures)) {
+      setAggregatedBOM({ ...saved.totals,
+        positionBOMs: new Map(saved.positionBOMs), failureReasons: new Map(saved.failures),
+        failedPositionIds: saved.failures.map(([id]: [string, string]) => id),
+        isPartialEstimate: saved.isPartialEstimate,
+      });
+    } else setAggregatedBOM(null);
     setIsAggregating(false);
     return () => { ++aggregationGeneration.current; };
-  }, [positions, engineeringPacks]);
+  }, [positions, engineeringPacks, projectMeta?.meta]);
 
   const openPoseMeasuring = useCallback((id: string) => {
     if (!projectId) return;
@@ -232,6 +242,10 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
           bom_estimate: {
             classification: 'estimate_only', manufacturingEligible: false,
             generatedAt: new Date().toISOString(), isPartialEstimate,
+            sourceReceipt: estimateSource(positions, engineeringPacks),
+            totals: { totalProfiles, totalHardware, totalGlazing, totalAccessories,
+              materialCost, hardwareCost, glazingCost, accessoriesCost, laborCost,
+              totalCost: materialCost + hardwareCost + glazingCost + accessoriesCost + laborCost },
             sourcePositions: positions.map(position => ({ id: position.id, updatedAt: position.updatedAt })),
             positionBOMs: Array.from(positionBOMs.entries()),
             failures: Array.from(failureReasons.entries()),
