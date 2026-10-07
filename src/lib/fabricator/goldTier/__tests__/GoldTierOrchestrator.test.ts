@@ -13,13 +13,40 @@
 import type { FenestrationSystem } from '@/types/fenestration';
 import type { WindowUnit } from '@/types/fabricator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { DualOutputGenerator } from '../../DualOutputGenerator';
 import { ApexEngineV2 } from '../ApexEngineV2';
 import { GoldTierOrchestrator } from '../GoldTierOrchestrator';
 
+/** Vitest 4: `new DualOutputGenerator()` needs a constructible hoisted mock. */
+const { DualOutputGeneratorMock, dualOutputDefaults } = vi.hoisted(() => {
+  const dualOutputDefaults = {
+    geometry: {
+      frame: { outline: [] as unknown[], corners: [] as unknown[] },
+      sashes: [] as unknown[],
+      glazing: [] as unknown[],
+    },
+    fabrication: {
+      profiles: [] as unknown[],
+      hardware: [] as unknown[],
+      glazing: [] as unknown[],
+      productionSequence: [] as unknown[],
+    },
+    existingCutList: [] as unknown[],
+  };
+
+  const DualOutputGeneratorMock = vi.fn(function DualOutputGeneratorMock(this: {
+    generateForWindowUnit: ReturnType<typeof vi.fn>;
+  }) {
+    this.generateForWindowUnit = vi.fn().mockResolvedValue({ ...dualOutputDefaults });
+  });
+
+  return { DualOutputGeneratorMock, dualOutputDefaults };
+});
+
 // Mock dependencies
 vi.mock('../ApexEngineV2');
-vi.mock('../../DualOutputGenerator');
+vi.mock('../../DualOutputGenerator', () => ({
+  DualOutputGenerator: DualOutputGeneratorMock,
+}));
 vi.mock('../PerformanceMonitor', () => ({
   GoldTierPerformanceMonitor: {
     record: vi.fn().mockReturnValue('test-id'),
@@ -144,23 +171,13 @@ describe('GoldTierOrchestrator', () => {
       }),
     }; });
 
-    // Mock DualOutputGenerator
-    vi.mocked(DualOutputGenerator).mockImplementation(function () { return {
-      generateForWindowUnit: vi.fn().mockResolvedValue({
-        geometry: {
-          frame: { outline: [], corners: [] },
-          sashes: [],
-          glazing: [],
-        },
-        fabrication: {
-          profiles: [],
-          hardware: [],
-          glazing: [],
-          productionSequence: [],
-        },
-        existingCutList: [],
-      }),
-    }; });
+    // Reset DualOutputGenerator constructible mock (Vitest 4 + `new`)
+    DualOutputGeneratorMock.mockReset();
+    DualOutputGeneratorMock.mockImplementation(function DualOutputGeneratorMock(this: {
+      generateForWindowUnit: ReturnType<typeof vi.fn>;
+    }) {
+      this.generateForWindowUnit = vi.fn().mockResolvedValue({ ...dualOutputDefaults });
+    });
 
     // Mock environment
     vi.stubGlobal('import', {
@@ -305,17 +322,19 @@ describe('GoldTierOrchestrator', () => {
         }),
       }; });
 
-      // Mock legacy with different result
-      vi.mocked(DualOutputGenerator).mockImplementation(function () { return {
-        generateForWindowUnit: vi.fn().mockResolvedValue({
+      // Mock legacy with divergent BOM (constructible for `new DualOutputGenerator()`)
+      DualOutputGeneratorMock.mockImplementation(function DivergentLegacyGenerator(this: {
+        generateForWindowUnit: ReturnType<typeof vi.fn>;
+      }) {
+        this.generateForWindowUnit = vi.fn().mockResolvedValue({
           geometry: {
             frame: { outline: [], corners: [] },
             sashes: [],
             glazing: [],
           },
           fabrication: {
-            profiles: [{ 
-              profileCode: 'TEST', 
+            profiles: [{
+              profileCode: 'TEST',
               role: 'frame',
               quantity: 1,
               length: 500, // 500mm
@@ -323,15 +342,15 @@ describe('GoldTierOrchestrator', () => {
               angles: [90, 90],
               machiningZones: [],
               weight: 1,
-              cost: 10
+              cost: 10,
             }],
             hardware: [],
             glazing: [],
             productionSequence: [],
           },
           existingCutList: [],
-        }),
-      }; });
+        });
+      });
 
       const result = await orchestrator.generate(mockWindowUnit);
 
