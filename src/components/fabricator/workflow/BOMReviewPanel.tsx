@@ -8,8 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { useWorkflowStore, workflowIdentityMatches } from '@/store/workflowStore';
 import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
-import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
-import { gridMatchesPattern } from '@/lib/fabricator/presetUtils';
+import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { WorkflowValidator } from '@/lib/fabricator/validation/WorkflowValidator';
 import {
   AlertCircle,
@@ -40,14 +39,8 @@ export const BOMReviewPanel: React.FC = () => {
 
   const pattern = useMemo(() => {
     if (!currentProject?.grid) return null;
-    const candidates = currentProject.presetId
-      ? EGYPTIAN_PATTERNS.filter(candidate => candidate.id === currentProject.presetId)
-      : EGYPTIAN_PATTERNS;
-    return candidates.find(candidate => {
-      const match = gridMatchesPattern(currentProject.grid!, candidate);
-      return match.confidence === 100 && match.differences.length === 0;
-    }) ?? null;
-  }, [currentProject?.grid, currentProject?.presetId]);
+    try { return resolveEstimatePattern(currentProject); } catch { return null; }
+  }, [currentProject]);
 
   const generateBOM = useCallback(async () => {
     if (!currentProject || !systemPack || !pattern) return;
@@ -62,7 +55,9 @@ export const BOMReviewPanel: React.FC = () => {
         pattern,
         systemPack,
         true,
-        await approvedBOMContext(currentProject, generationIdentity).catch(() => ({ identity: generationIdentity })),
+        currentProject.presetId
+          ? await approvedBOMContext(currentProject, generationIdentity).catch(() => ({ identity: generationIdentity }))
+          : { identity: generationIdentity },
       );
       const latest = useWorkflowStore.getState();
       if (!generationIdentity || latest.currentProject !== generationProject || !workflowIdentityMatches(latest.workflowIdentity, generationIdentity)) return;

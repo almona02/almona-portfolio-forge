@@ -98,6 +98,8 @@ export interface HardwareItemMinimal {
 
 export interface WindowUnit {
   id: string;
+  /** Parent project identity for persisted v2 positions. */
+  projectId?: string;
   orderNumber: string;
   posNumber: string;
   type: string;

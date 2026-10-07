@@ -5,6 +5,7 @@ import {
     useProject,
     useProjectPositions,
     useUpsertPose,
+    useUpdateProject,
 } from '@/hooks/useFabricatorQueries';
 import { clearActiveProjectIfPoseDeleted } from '@/lib/fabricator/activeProjectBridge';
 import type { ApexV6Output } from '@/lib/fabricator/goldTier/ApexEngineV6';
@@ -26,11 +27,13 @@ import {
     Plus,
     Trash2
 } from 'lucide-react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { EngineeringBay } from '../EngineeringBay';
 import { ProjectBOMAggregate } from './ProjectBOMAggregate';
-import { ProjectOptimizer } from './ProjectOptimizer';
+import { ProjectOptimizationEstimateView } from './ProjectOptimizationEstimateView';
+import { optimizeProjectEstimate, type ProjectOptimizationEstimate } from '@/lib/fabricator/production/ProjectOptimizationEstimate';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { ProjectQuote } from './ProjectQuote';
 import { ProjectQuoteSummary } from './ProjectQuoteSummary';
 
@@ -81,6 +84,9 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
     const v2Units = useProjectPositions(useV2 ? projectId : undefined);
     const upsertPose = useUpsertPose();
     const deletePoseMutation = useDeletePose();
+    const updateProject = useUpdateProject();
+    const engineeringPacks = useEngineeringSystemPacks();
+    const [estimate, setEstimate] = useState<ProjectOptimizationEstimate | null>(null);
 
     // ─── Legacy: local state ───────────────────────────────────────
     const [localProject, setLocalProject] = useState(initialProject);
@@ -224,16 +230,27 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         }
     }, [activeUnitId, handleUpdateUnit]);
 
-    // --- Optimization Logic ---
+    // Estimates are separate from approved manufacturing/quote results.
+    useEffect(() => { setEstimate(null); }, [project.units, engineeringPacks]);
     const runProjectOptimization = useCallback(() => {
-        if (project.units.length === 0) {
-            toast.error("No units to optimize");
-            return;
+        try {
+            const result = optimizeProjectEstimate(project.units, engineeringPacks);
+            setEstimate(result);
+            setWorkflowStage('optimize');
+            if (useV2 && projectMeta) {
+                updateProject.mutate({ projectId: projectMeta.id, updates: { meta: {
+                    ...(projectMeta.meta as Record<string, unknown> ?? {}),
+                    cutting_estimate: { ...result, generatedAt: new Date().toISOString(), sourcePositions: project.units.map(unit => ({ id: unit.id, updatedAt: unit.updatedAt })) },
+                } } }, {
+                    onSuccess: data => data ? toast.success('Project cutting estimate saved') : toast.error('Estimate calculated but project save returned no receipt'),
+                    onError: () => toast.error('Estimate calculated but saving failed. Retry before leaving.'),
+                });
+            } else toast.success('Project cutting estimate calculated');
+        } catch (error) {
+            setEstimate(null);
+            toast.error('Project estimate blocked', { description: error instanceof Error ? error.message : 'Saved cut ledgers could not be resolved.' });
         }
-        toast.error("Optimization blocked", {
-            description: "Every position requires an approved manufacturing contract and system snapshot.",
-        });
-    }, [project.units]);
+    }, [project.units, engineeringPacks, useV2, projectMeta, updateProject]);
 
     return (
         <div className="flex h-full bg-gray-950 text-white overflow-hidden font-sans">
@@ -340,7 +357,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                             variant="outline"
                             className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-900/20"
                         >
-                            <MonitorPlay className="h-4 w-4 mr-2" /> Optimize All
+                            <MonitorPlay className="h-4 w-4 mr-2" /> Optimize All (Estimate)
                         </Button>
                         <Button
                             onClick={() => setWorkflowStage('quote')}
@@ -417,11 +434,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                     )}
 
                     {workflowStage === 'optimize' && (
-                        <ProjectOptimizer
-                            project={project}
-                            results={optimizationResults}
-                            onReoptimize={runProjectOptimization}
-                        />
+                        <ProjectOptimizationEstimateView estimate={estimate} onRun={runProjectOptimization} />
                     )}
 
                     {workflowStage === 'quote' && (

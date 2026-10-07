@@ -1,8 +1,8 @@
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
-import { useDeletePose, useUpsertPose } from '@/hooks/useFabricatorQueries';
+import { useDeletePose, useUpsertPose, useUpdateProject } from '@/hooks/useFabricatorQueries';
 import { PresetAwareBOMGenerator, type CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import { findSystemPack } from '@/lib/fabricator/catalog/CatalogResolver';
-import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
+import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { persistenceErrorMessage } from '@/lib/supabase/fabricatorClientV2';
 import { nextPoseNumber } from '@/pages/fabricator/workflow/MeasuringPage';
@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Input } from '@/shared/ui/ui/input';
 import type { WindowUnit } from '@/types/fabricator';
 import {
   AlertTriangle,
@@ -23,13 +24,13 @@ import {
   Package,
   Ruler,
 } from 'lucide-react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface ProjectSummaryDashboardProps {
   projectId: string | undefined;
-  projectMeta: { id: string; project_name?: string; project_code?: string; client_name?: string; status?: string } | undefined;
+  projectMeta: { id: string; project_name?: string; project_code?: string; client_name?: string; status?: string; meta?: unknown } | null | undefined;
   positions: WindowUnit[];
   onOpenStudio: () => void;
 }
@@ -47,20 +48,30 @@ interface AggregatedBOM {
   totalCost: number;
   positionBOMs: Map<string, CompleteBOM>;
   failedPositionIds: string[];
+  failureReasons: Map<string, string>;
   isPartialEstimate: boolean;
 }
 
 export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = ({
   projectId,
-  projectMeta: _projectMeta,
+  projectMeta,
   positions,
   onOpenStudio,
 }) => {
   const navigate = useNavigate();
+  const engineeringPacks = useEngineeringSystemPacks();
   const deletePose = useDeletePose();
   const upsertPose = useUpsertPose();
+  const updateProject = useUpdateProject();
   const [isAggregating, setIsAggregating] = useState(false);
   const [aggregatedBOM, setAggregatedBOM] = useState<AggregatedBOM | null>(null);
+  const aggregationGeneration = useRef(0);
+  useEffect(() => {
+    ++aggregationGeneration.current;
+    setAggregatedBOM(null);
+    setIsAggregating(false);
+    return () => { ++aggregationGeneration.current; };
+  }, [positions, engineeringPacks]);
 
   const openPoseMeasuring = useCallback((id: string) => {
     if (!projectId) return;
@@ -111,6 +122,25 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
     }
   }, [deletePose, positions]);
 
+  const handleQuantityChange = useCallback(async (position: WindowUnit, value: string) => {
+    const quantity = Number(value);
+    if (!Number.isSafeInteger(quantity) || quantity < 1) {
+      toast.error('Quantity must be a positive integer.');
+      return;
+    }
+    if (quantity === (position.quantity ?? 1) || !projectId) return;
+    try {
+      await upsertPose.mutateAsync({
+        windowUnit: { ...position, projectId, quantity, optimization: null, updatedAt: new Date() },
+        grid: position.grid as Record<string, unknown> | undefined,
+        selectedPreset: position.presetId,
+      });
+      toast.success(`Pose ${position.posNumber || position.id} quantity saved`);
+    } catch (error) {
+      toast.error(`Quantity save failed: ${persistenceErrorMessage(error)}`);
+    }
+  }, [projectId, upsertPose]);
+
   const totalArea = useMemo(() => {
     return positions.reduce((sum, p) => {
       const qty = p.quantity || 1;
@@ -133,35 +163,33 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
 
   const handleAggregateProject = useCallback(async () => {
     if (positions.length === 0) return;
+    const generation = ++aggregationGeneration.current;
     setIsAggregating(true);
 
     try {
       const generator = new PresetAwareBOMGenerator();
       const positionBOMs = new Map<string, CompleteBOM>();
       const failedPositionIds: string[] = [];
+      const failureReasons = new Map<string, string>();
 
       let materialCost = 0, hardwareCost = 0, glazingCost = 0;
       let accessoriesCost = 0, laborCost = 0;
       let totalProfiles = 0, totalHardware = 0, totalGlazing = 0, totalAccessories = 0;
 
       for (const pos of positions) {
-        // UP-13: exact pack/pattern only — never SYSTEM_PACKS[0] / EGYPTIAN_PATTERNS[0].
-        const packResult = findSystemPack(pos.systemPackId);
-        const pattern = pos.presetId
-          ? EGYPTIAN_PATTERNS.find((p) => p.id === pos.presetId)
-          : undefined;
-
-        if (!packResult.ok || !pattern) {
-          failedPositionIds.push(pos.id);
-          continue;
-        }
-
         try {
-          const bom = await generator.generateCompleteBOM(pos, pattern, packResult.pack, false);
-          const qty = pos.quantity || 1;
+          const pack = engineeringPacks.find(pack => pack.meta.id === pos.systemPackId);
+          if (!pack) throw new Error('Saved system pack is unavailable to the signed-in owner.');
+          const pattern = resolveEstimatePattern(pos);
+          const bom = await generator.generateCompleteBOM(pos, pattern, pack, false);
+          if (!bom.qualification || bom.qualification.generatedPieceCount !== bom.qualification.requiredPieceCount) {
+            throw new Error(`Incomplete profile ledger: ${bom.qualification?.generatedPieceCount ?? 0}/${bom.qualification?.requiredPieceCount ?? '?'} required pieces. Resolve frame and divider profiles in Design.`);
+          }
+          const qty = pos.quantity ?? 1;
+          if (!Number.isSafeInteger(qty) || qty < 1) throw new Error('Pose quantity must be a positive integer.');
           positionBOMs.set(pos.id, bom);
 
-          totalProfiles += bom.profiles.length * qty;
+          totalProfiles += bom.profiles.reduce((sum, profile) => sum + profile.cuttingLengths.length, 0) * qty;
           totalHardware += bom.hardware.length * qty;
           totalGlazing += bom.glazing.length * qty;
           totalAccessories += bom.accessories.length * qty;
@@ -170,14 +198,16 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
           glazingCost += bom.cost.glazingCost * qty;
           accessoriesCost += bom.cost.accessoriesCost * qty;
           laborCost += bom.cost.laborCost * qty;
-        } catch {
+        } catch (error) {
           failedPositionIds.push(pos.id);
+          failureReasons.set(pos.id, error instanceof Error ? error.message : 'BOM calculation failed.');
         }
       }
 
       const isPartialEstimate =
         failedPositionIds.length > 0 || positionBOMs.size < positions.length;
 
+      if (generation !== aggregationGeneration.current) return;
       setAggregatedBOM({
         totalProfiles,
         totalHardware,
@@ -191,8 +221,26 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
         totalCost: materialCost + hardwareCost + glazingCost + accessoriesCost + laborCost,
         positionBOMs,
         failedPositionIds,
+        failureReasons,
         isPartialEstimate,
       });
+      if (projectId && projectMeta) {
+        const existingMeta = projectMeta.meta && typeof projectMeta.meta === 'object' && !Array.isArray(projectMeta.meta)
+          ? projectMeta.meta as Record<string, unknown> : {};
+        updateProject.mutate({ projectId, updates: { meta: {
+          ...existingMeta,
+          bom_estimate: {
+            classification: 'estimate_only', manufacturingEligible: false,
+            generatedAt: new Date().toISOString(), isPartialEstimate,
+            sourcePositions: positions.map(position => ({ id: position.id, updatedAt: position.updatedAt })),
+            positionBOMs: Array.from(positionBOMs.entries()),
+            failures: Array.from(failureReasons.entries()),
+          },
+        } } }, {
+          onSuccess: data => data ? toast.success('Project BOM estimate saved') : toast.error('BOM calculated but saving returned no receipt'),
+          onError: () => toast.error('BOM calculated but saving failed. Retry before leaving.'),
+        });
+      }
 
       if (isPartialEstimate) {
         toast.warning(
@@ -200,9 +248,9 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
         );
       }
     } finally {
-      setIsAggregating(false);
+      if (generation === aggregationGeneration.current) setIsAggregating(false);
     }
-  }, [positions]);
+  }, [positions, engineeringPacks, projectId, projectMeta, updateProject]);
 
   return (
     <div className="h-full overflow-auto p-6 space-y-6 bg-[#0a0a0a]">
@@ -210,11 +258,11 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <KPICard label="Positions" value={positions.length} icon={<Layers size={16} />} />
         <KPICard label="Total Units" value={totalUnits} icon={<Box size={16} />} />
-        <KPICard label="Total Area" value={`${totalArea.toFixed(1)} m²`} icon={<Ruler size={16} />} />
+        <KPICard label="Total Area" value={`${totalArea.toFixed(2)} m²`} icon={<Ruler size={16} />} />
         <KPICard label="Systems" value={systemBreakdown.length} icon={<Package size={16} />} />
         <KPICard
-          label="Project Cost"
-          value={aggregatedBOM ? `${aggregatedBOM.totalCost.toLocaleString('en-EG', { maximumFractionDigits: 0 })} EGP` : '—'}
+          label="Estimated Cost"
+          value={aggregatedBOM?.positionBOMs.size ? `${aggregatedBOM.totalCost.toLocaleString('en-EG', { maximumFractionDigits: 0 })} EGP` : '—'}
           icon={<DollarSign size={16} />}
           highlight
         />
@@ -227,13 +275,18 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
             Partial estimate only — {aggregatedBOM.positionBOMs.size}/{positions.length} positions
             resolved
             {aggregatedBOM.failedPositionIds.length
-              ? ` (${aggregatedBOM.failedPositionIds.length} failed or missing system/pattern)`
+              ? ` (${aggregatedBOM.failedPositionIds.length} failed)`
               : ''}
             . Failed poses cannot look like a complete project BOM.
           </AlertDescription>
         </Alert>
       ) : null}
 
+      {aggregatedBOM && !aggregatedBOM.isPartialEstimate && (
+        <Alert className="border-amber-600/40 bg-amber-500/5">
+          <AlertDescription>Estimate only — manufacturing approval and validated cutting rules are required before production.</AlertDescription>
+        </Alert>
+      )}
       {/* Positions Table */}
       <Card className="bg-slate-900/40 border-amber-600/20">
         <CardHeader className="pb-2">
@@ -301,7 +354,12 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                         <td className="py-2 px-3 text-slate-300">{pos.type || 'window'}</td>
                         <td className="py-2 px-3 text-right text-slate-300 font-mono">{pos.overallWidth}</td>
                         <td className="py-2 px-3 text-right text-slate-300 font-mono">{pos.overallHeight}</td>
-                        <td className="py-2 px-3 text-right text-slate-300">{pos.quantity || 1}</td>
+                        <td className="py-2 px-3 text-right text-slate-300">
+                          <Input key={`${pos.id}:${pos.quantity}`} type="number" min={1} step={1}
+                            aria-label={`Quantity for pose ${pos.posNumber || i + 1}`}
+                            defaultValue={pos.quantity ?? 1} className="w-16 ml-auto h-8"
+                            onBlur={event => { void handleQuantityChange(pos, event.target.value); }} />
+                        </td>
                         <td className="py-2 px-3">
                           <Badge variant="outline" className="text-[10px] border-slate-700 text-slate-400">
                             {pos.systemPackId || '—'}
@@ -309,9 +367,9 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                         </td>
                         <td className="py-2 px-3">
                           {failed ? (
-                            <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-300">
+                            <div><Badge variant="outline" className="text-[10px] border-red-500/40 text-red-300">
                               BOM failed
-                            </Badge>
+                            </Badge><p className="text-xs text-red-300 mt-1">{aggregatedBOM?.failureReasons.get(pos.id)}</p></div>
                           ) : (
                             <StatusBadge status={pos.status} />
                           )}
@@ -320,7 +378,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                           {failed
                             ? '—'
                             : posBOM
-                              ? `${posBOM.cost.totalCost.toLocaleString('en-EG', { maximumFractionDigits: 0 })}`
+                              ? `${(posBOM.cost.totalCost * (pos.quantity || 1)).toLocaleString('en-EG', { maximumFractionDigits: 0 })}`
                               : '—'}
                         </td>
                         <td className="py-2 px-3 text-right">
@@ -339,10 +397,10 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                     );
                   })}
                 </tbody>
-                {aggregatedBOM && (
+                {aggregatedBOM && aggregatedBOM.positionBOMs.size > 0 && (
                   <tfoot>
                     <tr className="border-t border-amber-600/30 font-bold">
-                      <td colSpan={4} className="py-2 px-3 text-amber-200">Project Total</td>
+                      <td colSpan={4} className="py-2 px-3 text-amber-200">{aggregatedBOM.isPartialEstimate ? 'Partial estimate subtotal' : 'Project estimate total'}</td>
                       <td className="py-2 px-3 text-right text-amber-200">{totalUnits}</td>
                       <td colSpan={2} />
                       <td className="py-2 px-3 text-right text-amber-300 font-mono">
@@ -360,13 +418,13 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
       </Card>
 
       {/* Aggregated Cost Breakdown */}
-      {aggregatedBOM && (
+      {aggregatedBOM && aggregatedBOM.positionBOMs.size > 0 && (
         <Card className="bg-slate-900/40 border-amber-600/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-amber-200 flex items-center gap-2">
               <DollarSign size={16} />
-              Project Cost Breakdown
-              <Badge className="bg-green-500/20 text-green-300 border-green-500/40 text-[10px]">
+              Estimated Cost Breakdown
+              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px]">
                 <CheckCircle2 size={10} className="mr-1" />
                 {aggregatedBOM.positionBOMs.size}/{positions.length} positions calculated
                 {aggregatedBOM.isPartialEstimate ? ' (partial estimate)' : ''}
