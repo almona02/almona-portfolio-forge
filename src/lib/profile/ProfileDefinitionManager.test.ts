@@ -12,7 +12,8 @@ describe('profile definition persistence', () => {
       materialThickness: 1.8, weightPerMeter: 1.3, role: 'mullion', material: 'aluminum',
       defaultKFactor45: 0, defaultKFactor90: 0, userId: 'owner',
     });
-    expect(database.insert.mock.calls.at(-1)?.[0].profile_role).toBe('mullion');
+    expect(database.insert.mock.calls.at(-1)?.[0].specifications.role).toBe('mullion');
+    expect(database.insert.mock.calls.at(-1)?.[0]).not.toHaveProperty('profile_role');
     expect(profile.profileRole).toBe('mullion');
     expect(profile.specifications?.role).toBe('mullion');
     expect(profile.weightPerMeter).toBe(1.3);

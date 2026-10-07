@@ -8,9 +8,9 @@
  * - All parameters used in optimization and cut list
  */
 
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
-import { addCustomSystemAsync, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { addCustomSystemAsync } from '@/lib/fabricator/customSystemStorage';
 import { supabase } from '@/lib/supabase';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { detectRoleFromName } from '@/lib/fabricator/roleDetection';
@@ -63,6 +63,7 @@ interface ProfileConfig {
 }
 
 export const NoDXFTuningStudio: React.FC = () => {
+  const engineeringPacks = useEngineeringSystemPacks();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const systemPackId = searchParams.get('systemPackId');
@@ -80,11 +81,11 @@ export const NoDXFTuningStudio: React.FC = () => {
       return;
     }
 
-    const pack = SYSTEM_PACKS.find((p) => p.meta?.id === systemPackId) ||
-                 EGYPTIAN_UPVC_SYSTEMS.find((p) => (p as any).meta?.id === systemPackId) ||
-                 loadCustomSystems().find((p) => p.meta?.id === systemPackId);
+    const pack = engineeringPacks.find((p) => p.meta?.id === systemPackId) ||
+                 EGYPTIAN_UPVC_SYSTEMS.find((p) => (p as any).meta?.id === systemPackId);
     
     if (!pack) {
+      if (systemPackId.startsWith('custom-pack-')) return;
       navigate(fabricatorRoutes.studioData());
       return;
     }
@@ -215,7 +216,7 @@ export const NoDXFTuningStudio: React.FC = () => {
         },
       ]);
     }
-  }, [systemPackId, navigate]);
+  }, [systemPackId, navigate, engineeringPacks]);
 
   const handleProfileUpdate = (id: string, updates: Partial<ProfileConfig>) => {
     setProfiles(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));

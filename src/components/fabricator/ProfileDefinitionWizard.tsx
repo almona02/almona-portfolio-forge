@@ -313,6 +313,8 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
     setFormData({ ...formData, defaultKFactor45: kFactor });
   };
 
+  if (!open) return null;
+
   return (
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>

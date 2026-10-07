@@ -53,7 +53,7 @@ export function copyCellConfiguration(cell: GridCell): GridCell {
  */
 export function mirrorGridHorizontally(grid: WindowGrid): WindowGrid {
   const mirroredCells = grid.cells.map(cell => {
-    const newCol = grid.cols - 1 - cell.col;
+    const newCol = grid.cols - cell.col - (cell.colSpan || 1);
     const newOpeningDirection = cell.openingDirection === 'left' 
       ? 'right' 
       : cell.openingDirection === 'right' 
@@ -84,7 +84,7 @@ export function mirrorGridHorizontally(grid: WindowGrid): WindowGrid {
  */
 export function mirrorGridVertically(grid: WindowGrid): WindowGrid {
   const mirroredCells = grid.cells.map(cell => {
-    const newRow = grid.rows - 1 - cell.row;
+    const newRow = grid.rows - cell.row - (cell.rowSpan || 1);
     const newOpeningDirection = cell.openingDirection === 'top' 
       ? 'bottom' 
       : cell.openingDirection === 'bottom' 
