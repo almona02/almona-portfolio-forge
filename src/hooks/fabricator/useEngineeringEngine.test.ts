@@ -47,6 +47,20 @@ const project = {
 describe('useEngineeringEngine system selection', () => {
   beforeEach(() => calculateBOM.mockReset());
 
+  it('retains dividers and rejects stale external profile selections', () => {
+    const frame = { id: 'owned-frame', name: 'Frame', material: 'aluminum', width: 60, height: 60, thickness: 1.8, profileRole: 'frame', cuttingAllowance: 3 };
+    const divider = { ...frame, id: 'owned-divider', name: 'Divider', profileRole: 'mullion' };
+    const custom = { meta: { id: 'custom' }, profiles: [frame, divider] } as unknown as SystemPack;
+    const fixed = { ...project, type: 'fixed', systemPackId: 'custom', presetId: undefined,
+      systemProfileSelections: { frameProfileCode: 'external' },
+      grid: { rows: 1, cols: 2, cells: [{ id: 'left', row: 0, col: 0, type: 'fixed' }, { id: 'right', row: 0, col: 1, type: 'fixed' }] } } as WindowUnit;
+    const { result } = renderHook(() => useEngineeringEngine({ project: fixed, profiles: [{ ...frame, id: 'external' } as any], systemPacks: [custom], onDesignComplete: vi.fn() }));
+    const components = result.current.liveProject!.components;
+    expect(components.reduce((sum, component) => sum + component.cuttingLengths.length, 0)).toBe(5);
+    expect(components.some(component => component.profile.id === 'owned-divider')).toBe(true);
+    expect(components.some(component => component.profile.id === 'external')).toBe(false);
+  });
+
   it('resolves a persisted custom pack after it loads without replacing saved geometry', () => {
     const custom = {
       meta: { id: 'custom-e2e', name: 'E2E', brands: ['Custom'], regions: ['egypt'] },

@@ -109,12 +109,12 @@ export const useEngineeringEngine = ({
 
         const selections = project.systemProfileSelections;
         const mappedProfiles: Profile[] = [];
-        const requiredRoles = ['frame', 'sash', 'glazing_bead'];
+        const requiredRoles = ['frame', 'sash', 'glazing_bead', 'mullion', 'transom'];
 
         // Helper to find and add profile
         const addProfile = (code: string | undefined, role: string) => {
              if (code) {
-                const profile = effectiveProfiles.find(p => p.id === code || p.name === code);
+                const profile = systemPack.profiles?.find(p => p.id === code || p.name === code);
                 if (profile) {
                     mappedProfiles.push({ ...profile, profileRole: role as any });
                     return true;
@@ -130,7 +130,7 @@ export const useEngineeringEngine = ({
         // Add missing required profiles from system pack
         requiredRoles.forEach(role => {
             if (!mappedProfiles.some(p => p.profileRole === role)) {
-                const roleProfile = systemPack.profiles?.find(p => p.profileRole === role);
+                const roleProfile = systemPack.profiles?.find(p => (p.profileRole || p.type) === role);
                 if (roleProfile) {
                     const matched = effectiveProfiles.find(p => 
                         p.id === roleProfile.id || 
