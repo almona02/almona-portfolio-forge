@@ -7,7 +7,7 @@
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
-import { loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { addCustomSystemAsync, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { allProfilesExplicitlyTuned } from '@/lib/fabricator/tuningReadiness';
 import { supabase } from '@/lib/supabase';
@@ -378,7 +378,7 @@ export const SystemPackTuningStudio: React.FC = () => {
     const newProfile: SystemPackProfile = {
       id: profile.id || `profile_${Date.now()}`,
       name: profile.name,
-      type: (profile.profileRole || profile.type || 'frame') as SystemPackProfile['type'],
+      type: (profile.profileRole || profile.specifications?.role || profile.type || 'frame') as SystemPackProfile['type'],
       material: profile.material || 'aluminum',
       unitWeight: profile.unitWeight,
       barLength: profile.barLength,
@@ -511,8 +511,33 @@ export const SystemPackTuningStudio: React.FC = () => {
     }));
   };
 
-  const handleSaveAndReturn = () => {
+  const handleSaveAndReturn = async () => {
     if (!systemPack || !allProfilesTuned) return;
+
+    if (systemPackId?.startsWith('custom-pack-')) {
+      try {
+        if (!userId) throw new Error('Sign in before saving workshop tuning.');
+        const existing = loadCustomSystems().find(pack => pack.meta.id === systemPackId);
+        if (!existing) throw new Error('Saved system pack not found.');
+        await addCustomSystemAsync({
+          ...existing,
+          profiles: systemPack.profiles.map(profile => {
+            const previous = existing.profiles?.find(p => p.id === profile.id);
+            const converted = convertToProfile(profile);
+            return { ...previous, ...converted,
+              costPerMeter: previous?.costPerMeter ?? converted.costPerMeter,
+              cuttingAllowance: previous?.cuttingAllowance ?? converted.cuttingAllowance,
+              specifications: { ...previous?.specifications, ...converted.specifications },
+              calibrations: previous?.calibrations || converted.calibrations,
+            };
+          }),
+        }, userId);
+        setHasUnsavedChanges(false);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Workshop tuning save failed.');
+        return;
+      }
+    }
 
     // Get return URL
     const returnUrl = sessionStorage.getItem('tuning_return_url');
