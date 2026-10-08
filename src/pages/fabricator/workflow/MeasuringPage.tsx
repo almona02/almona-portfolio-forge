@@ -233,14 +233,23 @@ export const MeasuringPage: React.FC = () => {
         }
     }, [deletePose, layoutPoses, navigate, poseId, projectId]);
 
+    const poseGlazing = pose?.glazing && typeof pose.glazing === 'object'
+        ? (pose.glazing as { type?: string; color?: string })
+        : undefined;
+    const normalizedPoseColor = (() => {
+        const raw = pose?.color?.trim();
+        if (!raw) return undefined;
+        const known = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
+        return known.find((c) => c.toLowerCase() === raw.toLowerCase()) ?? raw;
+    })();
     const initialData: MeasurementData | undefined = pose
         ? {
             width: String(pose.overallWidth),
             height: String(pose.overallHeight),
             windowType: pose.type,
-            color: pose.color,
-            glazingType: 'type' in (pose.glazing ?? {}) ? (pose.glazing as { type?: string }).type : undefined,
-            glassColor: 'color' in (pose.glazing ?? {}) ? (pose.glazing as { color?: string }).color : undefined,
+            color: normalizedPoseColor,
+            glazingType: poseGlazing?.type || undefined,
+            glassColor: poseGlazing?.color || undefined,
             systemPackId: pose.systemPackId,
             measurementMode: pose.measurementMode ?? 'manufacturing',
             wallDeduction: '0',

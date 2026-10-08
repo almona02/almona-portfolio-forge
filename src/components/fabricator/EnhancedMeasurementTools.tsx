@@ -148,13 +148,15 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
       return;
     }
 
-    // Validate using measurement validation function
+    // Dimension-focused live check only — glazing/color are owned by later wizard steps
+    // and must not surface false "Glazing type is required" alerts on Size.
     const validation = validateMeasurements(
       {
         width: String(manufacturingWidth),
         height: String(manufacturingHeight),
         windowType,
         systemPackId: systemPackId || undefined,
+        glazingType: 'double',
       } as MeasurementData,
       systemConstraints,
     );
@@ -163,7 +165,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
     const widthError = validation.errors.find((e) => e.field === 'width');
     const heightError = validation.errors.find((e) => e.field === 'height');
     const otherErrors = validation.errors.filter(
-      (e) => e.field !== 'width' && e.field !== 'height'
+      (e) => e.field === 'area' || e.field === 'windowType',
     );
 
     setValidationState({

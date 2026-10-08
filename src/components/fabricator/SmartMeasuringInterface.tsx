@@ -140,7 +140,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     measurementMode: initialData?.measurementMode ?? 'hole', // 'hole' (rough opening) or 'manufacturing'
     wallDeduction: String(initialData?.wallDeduction ?? DEFAULT_MEASUREMENTS.DEFAULT_WALL_DEDUCTION_MM), // mm deduction for wall tolerance
     windowType: !initialData?.windowType || initialData.windowType === 'window' ? 'sliding_window_2sash' : initialData.windowType, // Default to 2-sash sliding window (matches SelectItem value)
-    color: initialData?.color || egyptianDefaults.color,
+    color: (() => {
+      const raw = (initialData?.color || egyptianDefaults.color || '').trim();
+      const known = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
+      return known.find((c) => c.toLowerCase() === raw.toLowerCase()) || raw || egyptianDefaults.color;
+    })(),
     glazingType: initialData?.glazingType || egyptianDefaults.glazingType || 'double', // Ensure glazingType has a default value
     glassColor: initialData?.glassColor || egyptianDefaults.glassColor || 'clear', // Default to 'clear' (first option) - selected by default
     flyScreenType: initialData?.flyScreenType || 'none', // Default to 'none' to avoid empty string in Select
@@ -1226,6 +1230,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       >
                         <SelectTrigger
                           id="glazingType"
+                          data-testid="measuring-glazing-type"
                           className={`bg-slate-800/50 border-slate-700/50 text-slate-100 ${getFieldError('glazingType') ? 'border-red-500' : ''
                             }`}
                         >
@@ -1322,7 +1327,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   <div>
                     <Label htmlFor="color" className="typography-label">{t('smart_measuring.specs.color', 'Color')}</Label>
                     <Select value={measurements.color} onValueChange={(value) => handleInputChange('color', value)}>
-                      <SelectTrigger className="bg-slate-800/50 border-slate-700 /50 text-slate-100 card-dark">
+                      <SelectTrigger
+                        id="color"
+                        data-testid="measuring-profile-color"
+                        className="bg-slate-800/50 border-slate-700 /50 text-slate-100 card-dark"
+                      >
                         <SelectValue placeholder={t('smart_measuring.specs.color_placeholder', 'Select color')} />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50 text-slate-200 z-50">

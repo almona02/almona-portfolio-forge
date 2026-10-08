@@ -94,11 +94,29 @@ test.describe('Fabricator measure → design reload', () => {
     await expect(measuringSummary).toHaveAttribute('data-grid-mode', 'off');
     await expect(page.getByTestId('measuring-grid-cell')).toHaveCount(2);
 
-    // Advance wizard via stable testids (UI may be Arabic / i18n)
+    // Advance wizard via stable testids (UI may be Arabic / i18n).
+    // Fill Glass/Place when those steps appear — seeded poses may omit or
+    // mis-case fields that block Save Pose & Design (no navigation, no PATCH).
     const saveBtn = page.getByTestId('measuring-save-pose-design');
     const wizardNext = page.getByTestId('measuring-wizard-next');
-    for (let i = 0; i < 6; i += 1) {
+    for (let i = 0; i < 8; i += 1) {
       if (await saveBtn.isVisible().catch(() => false)) break;
+
+      const glazing = page.getByTestId('measuring-glazing-type');
+      if (await glazing.isVisible().catch(() => false)) {
+        await glazing.click();
+        await page.getByRole('option', { name: /double/i }).first().click();
+      }
+
+      const color = page.getByTestId('measuring-profile-color');
+      if (await color.isVisible().catch(() => false)) {
+        const current = (await color.innerText().catch(() => '')).trim();
+        if (!/white|silver|black|bronze|anthracite/i.test(current)) {
+          await color.click();
+          await page.getByRole('option', { name: /^white$/i }).first().click();
+        }
+      }
+
       await expect(wizardNext).toBeVisible({ timeout: 15_000 });
       await wizardNext.click();
     }
@@ -111,8 +129,10 @@ test.describe('Fabricator measure → design reload', () => {
     // Multi-pane toggle lives on the Size step (already forced off before advancing)
 
     await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
-    await saveBtn.click();
-    await page.waitForURL(/\/design\/?$/, { timeout: 60_000 });
+    await Promise.all([
+      page.waitForURL((url) => /\/design\/?$/.test(url.pathname), { timeout: 60_000 }),
+      saveBtn.click(),
+    ]);
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Design may mount more than one summary (primary canvas + preview); require every

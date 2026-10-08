@@ -145,10 +145,13 @@ export function validateMeasurements(
     }
   }
 
-  // Validate color (optional but if provided should be valid)
+  // Validate color (optional but if provided should be valid; DB/UI casing may differ)
   if (data.color) {
     const validColors = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
-    if (!validColors.includes(data.color)) {
+    const colorOk = validColors.some(
+      (c) => c.toLowerCase() === String(data.color).trim().toLowerCase(),
+    );
+    if (!colorOk) {
       errors.push({ field: 'color', message: 'Invalid color selected' });
     }
   }
