@@ -1,4 +1,5 @@
 # Linux base/head app type-check fingerprints (honest delta; not type-clean).
+# Comparison tooling is copied out of the workspace before any base checkout.
 name: Typecheck base/head delta
 
 on:
@@ -26,55 +27,82 @@ jobs:
     name: Linux app tsc base vs head
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout PR head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          path: head
+
+      - name: Checkout PR base (separate tree)
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 1
+          path: base
+
+      - name: Preserve comparison tooling outside both checkouts
+        run: |
+          mkdir -p /tmp/typecheck-tools
+          cp head/scripts/ci-typecheck-baseline-delta.ts \
+             head/scripts/ci-typecheck-emit-fingerprint.ts \
+             head/scripts/ci-typecheck-compare-fingerprints.ts \
+             /tmp/typecheck-tools/
+          # Tiny package.json so npx tsx can resolve from the tools dir if needed
+          printf '%s\n' '{"type":"module"}' > /tmp/typecheck-tools/package.json
+          ls -la /tmp/typecheck-tools
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: npm
+          cache-dependency-path: head/package-lock.json
 
-      - name: Install (head)
-        run: npm ci
-
-      - name: Fingerprint head
+      - name: Install + fingerprint head
+        working-directory: head
         run: |
+          npm ci
           set +e
           npx tsc -p tsconfig.app.json --noEmit --pretty false > /tmp/tsc-head.txt 2>&1
           HEAD_EXIT=$?
           set -e
-          npx tsx scripts/ci-typecheck-emit-fingerprint.ts --from-log /tmp/tsc-head.txt --out /tmp/tsc-head.json --sha "${GITHUB_SHA}"
-          echo "head_tsc_exit=${HEAD_EXIT}" >> "$GITHUB_OUTPUT"
-          if [ "$HEAD_EXIT" -ne 0 ] && ! grep -q "error TS" /tmp/tsc-head.txt; then
-            echo "FAIL: head tsc non-zero with no parsed diagnostics"
+          echo "head_tsc_exit=${HEAD_EXIT}"
+          node_modules/.bin/tsx /tmp/typecheck-tools/ci-typecheck-emit-fingerprint.ts \
+            --from-log /tmp/tsc-head.txt \
+            --out /tmp/tsc-head.json \
+            --sha "${GITHUB_SHA}"
+          # Fail-closed: non-zero with no TS errors
+          if [ "$HEAD_EXIT" -ne 0 ] && ! grep -qE 'error TS[0-9]+' /tmp/tsc-head.txt; then
+            echo "FAIL: head tsc non-zero with no TS diagnostics"
             exit 1
           fi
 
-      - name: Fingerprint PR base
+      - name: Install + fingerprint base
         if: github.event_name == 'pull_request'
+        working-directory: base
         run: |
-          BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          git checkout --force "$BASE_SHA"
           npm ci
           set +e
           npx tsc -p tsconfig.app.json --noEmit --pretty false > /tmp/tsc-base.txt 2>&1
           BASE_EXIT=$?
           set -e
-          npx tsx scripts/ci-typecheck-emit-fingerprint.ts --from-log /tmp/tsc-base.txt --out /tmp/tsc-base.json --sha "$BASE_SHA"
-          if [ "$BASE_EXIT" -ne 0 ] && ! grep -q "error TS" /tmp/tsc-base.txt; then
-            echo "FAIL: base tsc non-zero with no parsed diagnostics"
+          echo "base_tsc_exit=${BASE_EXIT}"
+          # Always parse with HEAD tooling preserved under /tmp (never from base tree)
+          ../head/node_modules/.bin/tsx /tmp/typecheck-tools/ci-typecheck-emit-fingerprint.ts \
+            --from-log /tmp/tsc-base.txt \
+            --out /tmp/tsc-base.json \
+            --sha "${{ github.event.pull_request.base.sha }}"
+          if [ "$BASE_EXIT" -ne 0 ] && ! grep -qE 'error TS[0-9]+' /tmp/tsc-base.txt; then
+            echo "FAIL: base tsc non-zero with no TS diagnostics"
             exit 1
           fi
-          git checkout --force "${{ github.sha }}"
-          npm ci
 
-      - name: Diff base vs head
+      - name: Diff base vs head (HEAD tooling)
         if: github.event_name == 'pull_request'
+        working-directory: head
         run: |
-          npx tsx scripts/ci-typecheck-compare-fingerprints.ts \
+          node_modules/.bin/tsx /tmp/typecheck-tools/ci-typecheck-compare-fingerprints.ts \
             --base /tmp/tsc-base.json \
             --head /tmp/tsc-head.json \
             --out /tmp/tsc-delta.json
@@ -94,13 +122,18 @@ jobs:
 
       - name: Write Linux baseline artifact
         if: github.event_name == 'workflow_dispatch' && inputs.write_baseline == 'true'
+        working-directory: head
         run: |
           npm run type-check:baseline
           cp docs/ci/typecheck-app-baseline.json /tmp/typecheck-app-baseline.json
+          cp docs/ci/typecheck-app-baseline.linux.json /tmp/typecheck-app-baseline.linux.json 2>/dev/null || true
 
       - name: Upload Linux baseline JSON
         if: github.event_name == 'workflow_dispatch' && inputs.write_baseline == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: typecheck-app-baseline-linux
-          path: /tmp/typecheck-app-baseline.json
+          path: |
+            /tmp/typecheck-app-baseline.json
+            /tmp/typecheck-app-baseline.linux.json
+          if-no-files-found: warn

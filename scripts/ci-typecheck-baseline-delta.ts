@@ -4,8 +4,9 @@
  *
  * - tsconfig.node.json: must be clean (any error fails).
  * - tsconfig.app.json: compared to docs/ci/typecheck-app-baseline.json.
- *   Fail closed if tsc crashes, exits non-zero with zero parsed diagnostics,
- *   or spawn fails.
+ *   Fail closed if tsc is signaled, exits abnormally (null status), spawn fails,
+ *   exits non-zero with zero parsed diagnostics, or emits unparsed `error TS*`
+ *   markers even when some file(line,col) diagnostics were parsed.
  *   Regression = new file:TSxxxx signature OR higher occurrence count for any
  *   signature OR total errorCount increase. Passing ≠ type-clean.
  *
@@ -103,12 +104,16 @@ export function diffOccurrences(
   return { newSignatures, occurrenceIncreases };
 }
 
-function runTsc(project: string): {
-  exitCode: number;
+export type TscRunResult = {
+  /** null when the process was killed by a signal or otherwise did not exit normally */
+  exitCode: number | null;
+  signal: NodeJS.Signals | null;
   stdout: string;
   stderr: string;
   spawnError: string | null;
-} {
+};
+
+function runTsc(project: string): TscRunResult {
   const result = spawnSync(
     process.platform === "win32" ? "npx.cmd" : "npx",
     ["tsc", "-p", project, "--noEmit", "--pretty", "false"],
@@ -121,11 +126,81 @@ function runTsc(project: string): {
     },
   );
   return {
-    exitCode: result.status ?? 1,
+    // Preserve null — do not coerce signal deaths to exit 1
+    exitCode: result.status,
+    signal: result.signal,
     stdout: result.stdout ?? "",
     stderr: result.stderr ?? "",
     spawnError: result.error ? String(result.error.message ?? result.error) : null,
   };
+}
+
+/** Count raw `error TSxxxx` markers (may exceed file(line,col)-parsed diagnostics). */
+export function countRawTsErrorMarkers(output: string): number {
+  return (output.match(/\berror TS\d+\b/g) ?? []).length;
+}
+
+/**
+ * Fail-closed compiler gate before baseline comparison.
+ * Rejects spawn failures, signals, null exit, zero-parse non-zero, and unparsed TS errors.
+ */
+export function assertCompilerFailClosed(
+  label: string,
+  run: Pick<TscRunResult, "exitCode" | "signal" | "spawnError" | "stdout" | "stderr">,
+  parsedErrorCount: number,
+): void {
+  if (run.spawnError) {
+    console.error(`❌ FAIL: could not spawn tsc (${label}): ${run.spawnError}`);
+    process.exit(1);
+  }
+  if (run.signal) {
+    const combined = `${run.stdout}\n${run.stderr}`.trim();
+    if (combined) console.error(combined);
+    console.error(
+      `\n❌ FAIL: ${label} tsc terminated by signal ${run.signal} (fail-closed; not a clean diagnostic exit).`,
+    );
+    process.exit(1);
+  }
+  if (run.exitCode === null) {
+    const combined = `${run.stdout}\n${run.stderr}`.trim();
+    if (combined) console.error(combined);
+    console.error(
+      `\n❌ FAIL: ${label} tsc exited abnormally (null status, no signal) — fail-closed.`,
+    );
+    process.exit(1);
+  }
+
+  const combined = `${run.stdout}\n${run.stderr}`;
+  const rawTs = countRawTsErrorMarkers(combined);
+
+  // Non-zero with zero recognized file diagnostics = crash / config / unparsed
+  if (run.exitCode !== 0 && parsedErrorCount === 0) {
+    console.error(combined.trim() || "(no tsc output)");
+    console.error(
+      `\n❌ FAIL: ${label} tsc exited non-zero but produced zero parsed diagnostics (fail-closed).`,
+    );
+    console.error(`   exitCode=${run.exitCode} rawTsMarkers=${rawTs}`);
+    process.exit(1);
+  }
+
+  // Partial parse: some file(line,col) diagnostics recognized, but leftover error TS*
+  if (rawTs > parsedErrorCount) {
+    console.error(combined.trim() || "(no tsc output)");
+    console.error(
+      `\n❌ FAIL: ${label} tsc has unparsed compiler errors ` +
+        `(raw error TS markers=${rawTs} > parsed=${parsedErrorCount}) — fail-closed.`,
+    );
+    console.error(`   exitCode=${run.exitCode}`);
+    process.exit(1);
+  }
+
+  // Clean exit but we parsed errors (should not happen with tsc)
+  if (run.exitCode === 0 && parsedErrorCount > 0) {
+    console.error(
+      `\n❌ FAIL: ${label} tsc exit 0 but parsed ${parsedErrorCount} diagnostics (inconsistent).`,
+    );
+    process.exit(1);
+  }
 }
 
 function normalizeSignature(s: string): string {
@@ -236,11 +311,9 @@ function main(): void {
   // 1) Node project — must be clean
   console.log("\n1️⃣  tsc -p tsconfig.node.json --noEmit");
   const node = runTsc("tsconfig.node.json");
-  if (node.spawnError) {
-    console.error(`❌ FAIL: could not spawn tsc (node): ${node.spawnError}`);
-    process.exit(1);
-  }
-  if (node.exitCode !== 0) {
+  const nodeParsed = parseDiagnostics(`${node.stdout}\n${node.stderr}`);
+  assertCompilerFailClosed("node", node, nodeParsed.errorCount);
+  if (node.exitCode !== 0 || nodeParsed.errorCount > 0) {
     const combined = `${node.stdout}\n${node.stderr}`.trim();
     console.error(combined || "(no tsc output)");
     console.error("\n❌ FAIL: tsconfig.node.json has type errors (must be clean).");
@@ -251,31 +324,9 @@ function main(): void {
   // 2) App project — fail-closed parse, then baseline delta
   console.log("\n2️⃣  tsc -p tsconfig.app.json --noEmit");
   const app = runTsc("tsconfig.app.json");
-  if (app.spawnError) {
-    console.error(`❌ FAIL: could not spawn tsc (app): ${app.spawnError}`);
-    process.exit(1);
-  }
-
   const combined = `${app.stdout}\n${app.stderr}`;
   const parsed = parseDiagnostics(combined);
-
-  // Fail closed: non-zero exit with zero recognized diagnostics = crash / config / unparsed
-  if (app.exitCode !== 0 && parsed.errorCount === 0) {
-    console.error(combined.trim() || "(no tsc output)");
-    console.error(
-      "\n❌ FAIL: app tsc exited non-zero but produced zero parsed diagnostics (fail-closed).",
-    );
-    console.error(`   exitCode=${app.exitCode}`);
-    process.exit(1);
-  }
-
-  // Unexpected: clean exit but we parsed errors (should not happen with tsc)
-  if (app.exitCode === 0 && parsed.errorCount > 0) {
-    console.error(
-      `\n❌ FAIL: app tsc exit 0 but parsed ${parsed.errorCount} diagnostics (inconsistent).`,
-    );
-    process.exit(1);
-  }
+  assertCompilerFailClosed("app", app, parsed.errorCount);
 
   if (WRITE_BASELINE) {
     writeBaseline(parsed);

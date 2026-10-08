@@ -1,67 +1,84 @@
 /**
- * Measuring → Design save/reload: layout must survive reload.
- * Fail-closed without E2E_USER_* credentials (skipped, not soft-pass).
+ * Measuring → Design save/reload with Multi-pane OFF.
+ * Credentials are required: missing env fails the suite (not a successful skip).
+ * Set E2E_OPTIONAL=1 only for local soft runs.
  */
 import { expect, test } from '@playwright/test';
 
-const hasLocalAuth =
-  !!process.env.E2E_USER_EMAIL && !!process.env.E2E_USER_PASSWORD;
+function requireEnv(name: string): string {
+  const value = process.env[name]?.trim();
+  if (!value) {
+    if (process.env.E2E_OPTIONAL === '1') {
+      test.skip(true, `${name} missing (E2E_OPTIONAL=1)`);
+      return '';
+    }
+    throw new Error(
+      `Missing required ${name}. Authenticated acceptance must not soft-pass. ` +
+        `Provide credentials/secrets, or set E2E_OPTIONAL=1 for a local optional run.`,
+    );
+  }
+  return value;
+}
 
 test.describe('Fabricator measure → design reload', () => {
-  test.beforeEach(() => {
-    test.skip(
-      !hasLocalAuth,
-      'Set E2E_USER_EMAIL and E2E_USER_PASSWORD for authenticated save/reload checks',
-    );
-  });
-
-  test('two-cell sliding grid survives design reload', async ({ page }) => {
+  test('two sliding cells survive reload with Multi-pane off', async ({ page }) => {
     test.setTimeout(180_000);
+
+    const email = requireEnv('E2E_USER_EMAIL');
+    const password = requireEnv('E2E_USER_PASSWORD');
+    const poseUrl = requireEnv('E2E_POSE_DESIGN_URL');
+
     page.on('pageerror', (err) => console.log(`BROWSER ERROR: ${err.message}`));
 
     await page.goto('/auth', { waitUntil: 'domcontentloaded' });
-    await page.getByLabel(/email/i).fill(process.env.E2E_USER_EMAIL!);
-    await page.getByLabel(/password/i).fill(process.env.E2E_USER_PASSWORD!);
+    await page.getByLabel(/email/i).fill(email);
+    await page.getByLabel(/password/i).fill(password);
     await page.getByRole('button', { name: /sign in|log in|continue/i }).click();
     await page.waitForURL(/fabricator|studio|dashboard|projects/i, { timeout: 60_000 });
 
-    // Prefer an existing pose workflow URL from env, else open projects and create path.
-    const poseUrl = process.env.E2E_POSE_DESIGN_URL;
-    if (!poseUrl) {
-      test.skip(true, 'Set E2E_POSE_DESIGN_URL to /fabricator/studio/projects/:id/positions/:id/design');
-    }
+    const measureUrl = poseUrl.replace(/\/design\/?$/, '/measuring');
+    await page.goto(measureUrl, { waitUntil: 'domcontentloaded' });
 
-    await page.goto(poseUrl!, { waitUntil: 'domcontentloaded' });
-    // Navigate to measuring if design is open
-    const measureLink = page.getByRole('link', { name: /measur/i }).first();
-    if (await measureLink.isVisible().catch(() => false)) {
-      await measureLink.click();
-    }
+    // Explicit 2-sash sliding; Multi-pane must stay OFF for this acceptance case
+    const windowTypeTrigger = page.locator('#windowType').or(page.getByLabel(/window type|layout/i)).first();
+    await expect(windowTypeTrigger).toBeVisible({ timeout: 30_000 });
+    await windowTypeTrigger.click();
+    await page.getByRole('option', { name: /2.?sash|two.?sash|sliding/i }).first().click();
 
-    // Enable multi-pane / grid mode so 2-sash layout is persisted
-    const multiPane = page.getByRole('button', { name: /multi-?pane|grid/i }).first();
-    if (await multiPane.isVisible().catch(() => false)) {
+    const multiPane = page.getByTestId('measuring-multipane-toggle');
+    await expect(multiPane).toBeVisible({ timeout: 15_000 });
+    if ((await multiPane.getAttribute('aria-pressed')) === 'true') {
       await multiPane.click();
     }
+    await expect(multiPane).toHaveAttribute('aria-pressed', 'false');
 
-    const finalize = page.getByRole('button', { name: /finalize|save|complete measur/i }).first();
+    const width = page.getByLabel(/^width/i).or(page.locator('input[name="width"]')).first();
+    const height = page.getByLabel(/^height/i).or(page.locator('input[name="height"]')).first();
+    await expect(width).toBeVisible({ timeout: 15_000 });
+    await width.fill('1200');
+    await height.fill('1400');
+
+    // Exactly two intended cells before save (no swallowed fallbacks)
+    const measuringSummary = page.getByTestId('measuring-grid-summary');
+    await expect(measuringSummary).toHaveAttribute('data-cells', '2', { timeout: 30_000 });
+    await expect(measuringSummary).toHaveAttribute('data-grid-mode', 'off');
+    await expect(page.getByTestId('measuring-grid-cell')).toHaveCount(2);
+
+    const finalize = page.getByRole('button', { name: /finalize|save design|complete measur/i }).first();
     await expect(finalize).toBeVisible({ timeout: 30_000 });
     await finalize.click();
 
-    await page.goto(poseUrl!, { waitUntil: 'domcontentloaded' });
+    await page.goto(poseUrl, { waitUntil: 'domcontentloaded' });
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    // Must not fall back to a lone FIXED lite after reload
-    await expect(page.getByText(/1\s*[×x]\s*1/i).first()).not.toBeVisible({ timeout: 15_000 }).catch(() => undefined);
-    const fixedOnly = page.getByText(/FIXED/i);
-    const sliding = page.getByText(/sliding|sash/i);
-    await expect(sliding.first().or(page.getByTestId('design-grid-cell'))).toBeVisible({
-      timeout: 45_000,
-    });
-    // If FIXED appears, require more than one cell indicator
-    const fixedCount = await fixedOnly.count();
-    if (fixedCount > 0) {
-      expect(fixedCount).toBeGreaterThan(1);
-    }
+    // Exact post-reload configuration: two cells, not a 1×1 FIXED collapse
+    const designSummary = page.getByTestId('design-grid-summary');
+    await expect(designSummary).toHaveAttribute('data-cells', '2', { timeout: 45_000 });
+    await expect(page.getByTestId('design-grid-cell')).toHaveCount(2);
+    await expect(page.getByText(/1\s*[×x]\s*1/i)).toHaveCount(0);
+    await expect(page.getByTestId('design-grid-cell').first()).toHaveAttribute(
+      'data-cell-type',
+      /sliding/i,
+    );
   });
 });

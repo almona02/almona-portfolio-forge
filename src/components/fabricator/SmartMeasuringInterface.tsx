@@ -1111,6 +1111,24 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   </div>
 
                   <div className="space-y-3 border-t-2 border-amber-600/30 pt-4">
+                    <div
+                      data-testid="measuring-grid-summary"
+                      data-rows={grid?.rows ?? 0}
+                      data-cols={grid?.cols ?? 0}
+                      data-cells={grid?.cells?.length ?? 0}
+                      data-grid-mode={isGridMode ? 'on' : 'off'}
+                      className="sr-only"
+                      aria-hidden
+                    >
+                      {(grid?.cells ?? []).map((cell) => (
+                        <span
+                          key={cell.id}
+                          data-testid="measuring-grid-cell"
+                          data-cell-id={cell.id}
+                          data-cell-type={cell.type}
+                        />
+                      ))}
+                    </div>
                     <div className="flex items-center justify-between">
                       <Label className="typography-label flex items-center gap-2 cursor-pointer text-slate-200">
                         <Grid3X3 className="h-4 w-4 text-amber-400" />
@@ -1121,6 +1139,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         onPressedChange={setIsGridMode}
                         className="btn-primary"
                         size="sm"
+                        data-testid="measuring-multipane-toggle"
+                        aria-label={t('smart_measuring.dimensions.grid_mode', 'Multi-pane layout')}
                       >
                         {isGridMode ? t('profile_import_tool.on', 'On') : t('profile_import_tool.off', 'Off')}
                       </Toggle>

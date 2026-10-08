@@ -1,0 +1,64 @@
+# Authenticated Fabricator acceptance — fails closed without secrets (no successful skip).
+name: Fabricator acceptance E2E
+
+on:
+  pull_request:
+    paths:
+      - "tests/e2e/fabricator-measure-design-reload.spec.ts"
+      - "tests/e2e/fabricator-design-tuning-pickers.spec.ts"
+      - "src/components/fabricator/SmartMeasuringInterface.tsx"
+      - "src/components/fabricator/shouldPersistMeasuringGrid.ts"
+      - "src/components/fabricator/EngineeringBay.tsx"
+      - "src/components/fabricator/EngineeringBayWrapper.tsx"
+      - "playwright.config.ts"
+      - ".github/workflows/fabricator-acceptance-e2e.yml"
+  workflow_dispatch:
+
+jobs:
+  measure-design-reload:
+    name: Measure → design reload acceptance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require acceptance secrets
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          E2E_POSE_DESIGN_URL: ${{ secrets.E2E_POSE_DESIGN_URL }}
+        run: |
+          missing=0
+          for v in E2E_USER_EMAIL E2E_USER_PASSWORD E2E_POSE_DESIGN_URL; do
+            if [ -z "${!v}" ]; then
+              echo "FAIL: missing repository secret $v"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Authenticated acceptance must not soft-pass. Configure secrets or remove this job."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run acceptance specs (fail-closed)
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          E2E_POSE_DESIGN_URL: ${{ secrets.E2E_POSE_DESIGN_URL }}
+          E2E_OPTIONAL: "0"
+          PLAYWRIGHT_BASE_URL: ${{ secrets.E2E_BASE_URL }}
+        run: |
+          export PLAYWRIGHT_BASE_URL="${PLAYWRIGHT_BASE_URL:-https://almona-portfolio-forge.vercel.app}"
+          npx playwright test \
+            tests/e2e/fabricator-measure-design-reload.spec.ts \
+            tests/e2e/fabricator-design-tuning-pickers.spec.ts \
+            --project=chromium-acceptance

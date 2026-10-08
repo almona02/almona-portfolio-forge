@@ -8,7 +8,7 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { parseDiagnostics } from "./ci-typecheck-baseline-delta";
+import { countRawTsErrorMarkers, parseDiagnostics } from "./ci-typecheck-baseline-delta";
 
 const args = process.argv.slice(2);
 function flag(name: string): string | undefined {
@@ -47,6 +47,13 @@ if (fromLog) {
 }
 
 const parsed = parseDiagnostics(text);
+const rawTs = countRawTsErrorMarkers(text);
+if (rawTs > parsed.errorCount) {
+  console.error(
+    `FAIL: unparsed compiler errors (raw error TS markers=${rawTs} > parsed=${parsed.errorCount})`,
+  );
+  process.exit(1);
+}
 const occurrences = Object.fromEntries(parsed.bySignature);
 const payload = {
   sha,

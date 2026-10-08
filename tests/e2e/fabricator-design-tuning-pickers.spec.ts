@@ -1,28 +1,34 @@
 /**
- * Design/tuning bare-route pickers — requires local credentials.
- * Fail-closed: without E2E_USER_EMAIL / E2E_USER_PASSWORD this file is skipped,
- * not marked passed via soft annotations.
+ * Design/tuning bare-route pickers — requires credentials.
+ * Missing env fails the suite (not a successful skip). E2E_OPTIONAL=1 for local soft runs.
  */
 import { expect, test } from '@playwright/test';
 
-const hasLocalAuth =
-  !!process.env.E2E_USER_EMAIL && !!process.env.E2E_USER_PASSWORD;
+function requireEnv(name: string): string {
+  const value = process.env[name]?.trim();
+  if (!value) {
+    if (process.env.E2E_OPTIONAL === '1') {
+      test.skip(true, `${name} missing (E2E_OPTIONAL=1)`);
+      return '';
+    }
+    throw new Error(
+      `Missing required ${name}. Authenticated acceptance must not soft-pass. ` +
+        `Provide credentials/secrets, or set E2E_OPTIONAL=1 for a local optional run.`,
+    );
+  }
+  return value;
+}
 
 test.describe('Fabricator design/tuning pickers', () => {
-  test.beforeEach(() => {
-    test.skip(
-      !hasLocalAuth,
-      'Set E2E_USER_EMAIL and E2E_USER_PASSWORD for authenticated picker checks',
-    );
-  });
-
   test('bare design and tuning show pickers', async ({ page }) => {
     test.setTimeout(120_000);
+    const email = requireEnv('E2E_USER_EMAIL');
+    const password = requireEnv('E2E_USER_PASSWORD');
     page.on('pageerror', (err) => console.log(`BROWSER ERROR: ${err.message}`));
 
     await page.goto('/auth', { waitUntil: 'domcontentloaded' });
-    await page.getByLabel(/email/i).fill(process.env.E2E_USER_EMAIL!);
-    await page.getByLabel(/password/i).fill(process.env.E2E_USER_PASSWORD!);
+    await page.getByLabel(/email/i).fill(email);
+    await page.getByLabel(/password/i).fill(password);
     await page.getByRole('button', { name: /sign in|log in|continue/i }).click();
     await page.waitForURL(/fabricator|studio|dashboard|projects/i, { timeout: 60_000 });
 

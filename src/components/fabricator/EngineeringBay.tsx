@@ -891,6 +891,23 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
+                                    <div
+                                        data-testid="design-grid-summary"
+                                        data-rows={currentGrid?.rows ?? 0}
+                                        data-cols={currentGrid?.cols ?? 0}
+                                        data-cells={currentGrid?.cells?.length ?? 0}
+                                        className="sr-only"
+                                        aria-hidden
+                                    >
+                                        {(currentGrid?.cells ?? []).map((cell) => (
+                                            <span
+                                                key={cell.id}
+                                                data-testid="design-grid-cell"
+                                                data-cell-id={cell.id}
+                                                data-cell-type={cell.type}
+                                            />
+                                        ))}
+                                    </div>
                                     {CanvasComponent ? (
                                         <CanvasComponent
                                             width={project.overallWidth}

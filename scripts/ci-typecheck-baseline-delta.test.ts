@@ -1,5 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
+  assertCompilerFailClosed,
+  countRawTsErrorMarkers,
   diffOccurrences,
   parseDiagnostics,
   toPosixRepoPath,
@@ -42,5 +44,109 @@ describe("ci-typecheck-baseline-delta", () => {
     const parsed = parseDiagnostics("error TS5083: Cannot read file tsconfig.app.json");
     // Unparsed config lines that do not match file(line,col) form
     expect(parsed.errorCount).toBe(0);
+    expect(countRawTsErrorMarkers("error TS5083: Cannot read file tsconfig.app.json")).toBe(1);
+  });
+
+  it("fail-closes on termination signal even when some diagnostics were parsed", () => {
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code?: number) => {
+      throw new Error(`exit:${code ?? 0}`);
+    }) as never);
+    try {
+      const stdout = "src/a.ts(1,1): error TS2322: bad\n";
+      expect(() =>
+        assertCompilerFailClosed(
+          "app",
+          {
+            exitCode: null,
+            signal: "SIGSEGV",
+            spawnError: null,
+            stdout,
+            stderr: "",
+          },
+          parseDiagnostics(stdout).errorCount,
+        ),
+      ).toThrow("exit:1");
+      expect(exitSpy).toHaveBeenCalledWith(1);
+    } finally {
+      exitSpy.mockRestore();
+    }
+  });
+
+  it("fail-closes on null exit without signal", () => {
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code?: number) => {
+      throw new Error(`exit:${code ?? 0}`);
+    }) as never);
+    try {
+      expect(() =>
+        assertCompilerFailClosed(
+          "app",
+          {
+            exitCode: null,
+            signal: null,
+            spawnError: null,
+            stdout: "",
+            stderr: "",
+          },
+          0,
+        ),
+      ).toThrow("exit:1");
+    } finally {
+      exitSpy.mockRestore();
+    }
+  });
+
+  it("fail-closes when unparsed error TS markers remain after partial parse", () => {
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code?: number) => {
+      throw new Error(`exit:${code ?? 0}`);
+    }) as never);
+    try {
+      const stdout = [
+        "src/a.ts(1,1): error TS2322: bad",
+        "error TS5083: Cannot read file 'missing.json'",
+      ].join("\n");
+      const parsed = parseDiagnostics(stdout);
+      expect(parsed.errorCount).toBe(1);
+      expect(countRawTsErrorMarkers(stdout)).toBe(2);
+      expect(() =>
+        assertCompilerFailClosed(
+          "app",
+          {
+            exitCode: 1,
+            signal: null,
+            spawnError: null,
+            stdout,
+            stderr: "",
+          },
+          parsed.errorCount,
+        ),
+      ).toThrow("exit:1");
+    } finally {
+      exitSpy.mockRestore();
+    }
+  });
+
+  it("allows normal diagnostic exit when all error TS markers parse", () => {
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code?: number) => {
+      throw new Error(`exit:${code ?? 0}`);
+    }) as never);
+    try {
+      const stdout = "src/a.ts(1,1): error TS2322: bad\n";
+      expect(() =>
+        assertCompilerFailClosed(
+          "app",
+          {
+            exitCode: 1,
+            signal: null,
+            spawnError: null,
+            stdout,
+            stderr: "",
+          },
+          parseDiagnostics(stdout).errorCount,
+        ),
+      ).not.toThrow();
+      expect(exitSpy).not.toHaveBeenCalled();
+    } finally {
+      exitSpy.mockRestore();
+    }
   });
 });
