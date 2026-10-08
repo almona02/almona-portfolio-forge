@@ -202,6 +202,81 @@ export class ProfileBOMCalculator {
           weight: ProductionUtils.calculateProfileWeight(sashLength, this.profileToSpec(sashProfile)),
           cost: ProductionUtils.calculateMaterialCost(sashLength, this.profileToSpec(sashProfile))
         });
+
+        // Sliding: meeting-stile interlock + bottom track
+        const isSliding =
+          pattern.type === 'sliding' ||
+          pattern.openingMechanism?.type === 'sliding' ||
+          sashCells.some((cell) => cell.type === 'sliding');
+        if (isSliding) {
+          const interlockProfile = this.getProfileByRole(systemPack, 'interlock');
+          if (interlockProfile && sashCount >= 2) {
+            const interlockQty = Math.max(1, sashCount - 1);
+            const interlockCut = Math.max(
+              0,
+              height - (frameProfile.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM) * 2,
+            );
+            const interlockCutKV = ProductionUtils.applyKerfCompensation(
+              interlockCut,
+              kerf,
+              MITER_ANGLES.STRAIGHT_CUT,
+            );
+            profiles.push(
+              this.createProfileEntry(
+                systemPackId,
+                interlockProfile,
+                'interlock',
+                interlockCutKV * interlockQty,
+                interlockQty,
+                Array.from({ length: interlockQty }, () => interlockCut),
+                Array.from({ length: interlockQty }, () => MITER_ANGLES.STRAIGHT_CUT),
+                ProductionUtils,
+              ),
+            );
+          }
+          const trackProfile =
+            this.getProfileByRole(systemPack, 'track') ||
+            this.getProfileByRole(systemPack, 'screen_track');
+          if (trackProfile) {
+            const trackCut = Math.max(
+              0,
+              width - (frameProfile.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM) * 2,
+            );
+            const trackCutKV = ProductionUtils.applyKerfCompensation(
+              trackCut,
+              kerf,
+              MITER_ANGLES.STRAIGHT_CUT,
+            );
+            profiles.push(
+              this.createProfileEntry(
+                systemPackId,
+                trackProfile,
+                'track',
+                trackCutKV * 2,
+                2,
+                [trackCut, trackCut],
+                [MITER_ANGLES.STRAIGHT_CUT, MITER_ANGLES.STRAIGHT_CUT],
+                ProductionUtils,
+              ),
+            );
+          }
+          const beadProfile = this.getProfileByRole(systemPack, 'glazing_bead');
+          if (beadProfile) {
+            const beadPerimeter = sashCuttingLengths.reduce((sum, value) => sum + value, 0);
+            profiles.push(
+              this.createProfileEntry(
+                systemPackId,
+                beadProfile,
+                'glazing_bead',
+                beadPerimeter,
+                sashCount,
+                sashCuttingLengths,
+                Array.from({ length: sashCuttingLengths.length }, () => MITER_ANGLES.STRAIGHT_CUT),
+                ProductionUtils,
+              ),
+            );
+          }
+        }
       }
     }
 
@@ -314,9 +389,9 @@ export class ProfileBOMCalculator {
         }
     }
 
-    // 2. Fly Screen (Silk)
+    // 2. Fly Screen (Silk) — skip if sliding path already emitted a track line
     const screenTrackProfile = this.getProfileByRole(systemPack, 'screen_track');
-    if (screenTrackProfile) {
+    if (screenTrackProfile && !profiles.some((p) => p.role === 'track' || p.role === 'screen_track')) {
         // Top and Bottom Tracks
         const trackLength = width - (frameProfile.width || 50) * 2; // Inside frame
         const trackLengthKV = ProductionUtils.applyKerfCompensation(trackLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
@@ -361,11 +436,25 @@ export class ProfileBOMCalculator {
    * Generic profile getter by role
    */
   private getProfileByRole(systemPack: SystemPack, role: string): Profile | undefined {
-      // Use type guard or strict equality from the interface if possible
-      const found = systemPack.profiles?.find((p) => 
-          p.profileRole === role || p.name?.toLowerCase().includes(role.replace('_', ' '))
+      const aliases =
+        role === 'sash'
+          ? ['sash', 'sash_sliding', 'sash_casement', 'sash_door']
+          : role === 'track'
+            ? ['track', 'screen_track', 'sill', 'threshold']
+            : [role];
+      const found = systemPack.profiles?.find((p) => {
+        const profileRole = (p.profileRole || '').toLowerCase();
+        const name = (p.name || '').toLowerCase();
+        return (
+          aliases.some((alias) => profileRole === alias || profileRole.includes(alias)) ||
+          aliases.some((alias) => name.includes(alias.replace('_', ' ')))
+        );
+      });
+      // Prefer sliding-system profiles when requesting sash/frame for sliding packs
+      if (found) return found;
+      return systemPack.profiles?.find((p) =>
+        aliases.some((alias) => (p.id || '').toLowerCase().includes(alias.replace('_', '-'))),
       );
-      return found;
   }
 
   /**

@@ -58,7 +58,15 @@ function ownedMatchKey(parts: {
 
 function profileCatalogueKeys(profile: Profile): string[] {
   const specs = (profile.specifications || {}) as Record<string, unknown>;
-  return [specString(specs, 'supplierCode'), specString(specs, 'internalCode')]
+  return [
+    specString(specs, 'supplierCode'),
+    specString(specs, 'internalCode'),
+    specString(specs, 'originalCatalogCode'),
+    specString(specs, 'catalogAlias'),
+    specString(specs, 'profile_number'),
+    specString(specs, 'partNumber'),
+    profile.id || '',
+  ]
     .filter(Boolean)
     .map((s) => s.toLowerCase());
 }

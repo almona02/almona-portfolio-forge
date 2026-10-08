@@ -118,25 +118,40 @@ export class HardwareBOMCalculator {
       });
     }
 
-    // Rollers (for sliding)
-    if (openingType === 'sliding') {
+    // Rollers (for sliding) — prefer pack hardware_kits when present
+    if (openingType === 'sliding' || pattern.type === 'sliding') {
       const rollerCount = this.calculateRollerQuantity(width, height);
+      const packKits = (
+        systemPack.windowSystemSpec as
+          | { hardware_kits?: Array<{ id?: string; name?: string; unit_price?: number; type?: string }> }
+          | undefined
+      )?.hardware_kits;
+      const packRoller = packKits?.find(
+        (kit) =>
+          (kit.type || '').toLowerCase().includes('roller') ||
+          (kit.id || '').toLowerCase().includes('roller') ||
+          (kit.name || '').toLowerCase().includes('roller'),
+      );
       hardware.push({
-        id: 'roller-sliding',
-        supplierCode: 'ROLLER-SLIDING-STD',
-        name: 'Sliding Window Roller',
+        id: packRoller?.id || 'roller-sliding',
+        supplierCode: packRoller?.id || 'ROLLER-SLIDING-STD',
+        name: packRoller?.name || 'Sliding Window Roller',
         category: 'roller',
         quantity: rollerCount,
         positionSpec: 'Bottom of sliding sash',
         installationNotes: [
           'Install rollers at bottom corners',
           'Ensure smooth rolling operation',
-          'Check load capacity'
+          'Check load capacity',
         ],
         torqueSpec: undefined,
         alternatives: [],
         estimatedTime: INSTALLATION_TIME.PER_ROLLER_MINUTES,
-        supplierLink: undefined
+        supplierLink: undefined,
+        metadata:
+          typeof packRoller?.unit_price === 'number'
+            ? { unitPriceEgp: packRoller.unit_price, source: 'pack_hardware_kit' }
+            : undefined,
       });
     }
 
