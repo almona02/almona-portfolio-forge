@@ -33,15 +33,32 @@ export type AppBaseline = {
 
 const DIAG_RE = /^(.+?)\((\d+),(\d+)\): error (TS\d+):/gm;
 
+/** Normalize tsc file paths to stable repo-relative posix form. */
+function toPosixRepoPath(filePath: string): string {
+  let file = filePath.replace(/\\/g, "/");
+  // Strip drive / UNC / absolute prefixes down to src/ or scripts/
+  const srcIdx = file.toLowerCase().indexOf("/src/");
+  if (srcIdx !== -1) return file.slice(srcIdx + 1);
+  const scriptsIdx = file.toLowerCase().indexOf("/scripts/");
+  if (scriptsIdx !== -1) return file.slice(scriptsIdx + 1);
+  if (/^[A-Za-z]:\//.test(file)) file = file.replace(/^[A-Za-z]:\//, "");
+  if (file.startsWith("./")) file = file.slice(2);
+  // Relative "src/..." or "scripts/..." already posix
+  if (file.startsWith("src/") || file.startsWith("scripts/")) return file;
+  return file.replace(/^\/+/, "");
+}
+
 function runTsc(project: string): { exitCode: number; stdout: string; stderr: string } {
   const result = spawnSync(
     process.platform === "win32" ? "npx.cmd" : "npx",
-    ["tsc", "-p", project, "--noEmit"],
+    // --pretty false keeps "file(line,col): error TSxxxx:" stable across TTY/OS
+    ["tsc", "-p", project, "--noEmit", "--pretty", "false"],
     {
       cwd: ROOT,
       encoding: "utf8",
       maxBuffer: 64 * 1024 * 1024,
       shell: process.platform === "win32",
+      env: { ...process.env, FORCE_COLOR: "0" },
     },
   );
   return {
@@ -62,13 +79,7 @@ function parseDiagnostics(output: string): {
   let match: RegExpExecArray | null;
   while ((match = DIAG_RE.exec(output)) !== null) {
     errorCount += 1;
-    const file = match[1].replace(/\\/g, "/");
-    // Prefer repo-relative paths (strip absolute prefixes if present)
-    const rel = file.includes("/src/")
-      ? file.slice(file.indexOf("src/"))
-      : file.includes("/scripts/")
-        ? file.slice(file.indexOf("scripts/"))
-        : file.replace(/^[A-Za-z]:\//, "");
+    const rel = toPosixRepoPath(match[1]);
     const sig = `${rel}:${match[4]}`;
     bySignature.set(sig, (bySignature.get(sig) ?? 0) + 1);
   }
@@ -96,9 +107,13 @@ function writeBaseline(parsed: ReturnType<typeof parseDiagnostics>): void {
     project: "tsconfig.app.json",
     generatedAt: new Date().toISOString(),
     headNote:
-      "Baseline for CI delta gate. Not a type-clean claim. Reduce over time; refresh with --write-baseline after intentional debt paydown.",
+      `Baseline for CI delta gate (generated on ${process.platform}). Prefer regenerating on Linux/CI (npm run type-check:baseline) so OS-specific @types noise is included. Not type-clean.`,
     errorCount: parsed.errorCount,
-    signatures: parsed.signatures,
+    signatures: parsed.signatures.map((s) => {
+      const lastColon = s.lastIndexOf(":TS");
+      if (lastColon === -1) return toPosixRepoPath(s);
+      return `${toPosixRepoPath(s.slice(0, lastColon))}${s.slice(lastColon)}`;
+    }),
   };
   fs.mkdirSync(path.dirname(BASELINE_PATH), { recursive: true });
   fs.writeFileSync(BASELINE_PATH, `${JSON.stringify(baseline, null, 2)}\n`, "utf8");
@@ -140,7 +155,15 @@ function main(): void {
   }
 
   const baseline = loadBaseline();
-  const baselineSet = new Set(baseline.signatures);
+  // Normalize baseline signatures too (older Windows-written baselines may differ)
+  const baselineSet = new Set(
+    baseline.signatures.map((s) => {
+      // signature is "path:TSxxxx"
+      const lastColon = s.lastIndexOf(":TS");
+      if (lastColon === -1) return toPosixRepoPath(s);
+      return `${toPosixRepoPath(s.slice(0, lastColon))}${s.slice(lastColon)}`;
+    }),
+  );
   const newSignatures = parsed.signatures.filter((s) => !baselineSet.has(s));
   const countDelta = parsed.errorCount - baseline.errorCount;
 
