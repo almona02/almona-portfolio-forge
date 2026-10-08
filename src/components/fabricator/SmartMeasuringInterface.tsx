@@ -1489,6 +1489,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               )}
 
               <Button
+                data-testid="measuring-save-pose-design"
                 onClick={() => handleSubmit(false)}
                 disabled={!verificationConfirmed}
                 className={`

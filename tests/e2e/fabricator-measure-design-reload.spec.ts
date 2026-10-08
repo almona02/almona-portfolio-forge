@@ -94,19 +94,26 @@ test.describe('Fabricator measure → design reload', () => {
     await expect(measuringSummary).toHaveAttribute('data-grid-mode', 'off');
     await expect(page.getByTestId('measuring-grid-cell')).toHaveCount(2);
 
-    const finalize = page
-      .getByRole('button', { name: /finalize|save design|complete measur|next step/i })
-      .first();
-    await expect(finalize).toBeVisible({ timeout: 30_000 });
-    await finalize.click();
-
-    // Wizard may need a final save on last step
-    const saveDesign = page.getByRole('button', { name: /finalize|save design|complete measur/i }).first();
-    if (await saveDesign.isVisible().catch(() => false)) {
-      await saveDesign.click();
+    // Advance wizard: Size → Glass → Location → Confirm (do not stop on "Next")
+    for (let i = 0; i < 4; i += 1) {
+      const saveBtn = page.getByTestId('measuring-save-pose-design');
+      if (await saveBtn.isVisible().catch(() => false)) break;
+      const next = page.getByRole('button', { name: /^next$/i });
+      await expect(next).toBeVisible({ timeout: 15_000 });
+      await next.click();
     }
 
-    await page.goto(poseDesignPath, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('measuring-save-pose-design')).toBeVisible({ timeout: 20_000 });
+    // Confirm cut-size checkbox (required to enable save)
+    const verify = page.locator('#verify');
+    await expect(verify).toBeVisible({ timeout: 15_000 });
+    await verify.check();
+    // Re-assert Multi-pane OFF immediately before save (prediction can re-enable)
+    await ensureMultiPaneOff(multiPane);
+    await expect(page.getByTestId('measuring-grid-summary')).toHaveAttribute('data-cells', '2');
+
+    await page.getByTestId('measuring-save-pose-design').click();
+    await page.waitForURL(/\/design\/?$/, { timeout: 60_000 });
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Design may mount more than one summary (primary canvas + preview); require every
