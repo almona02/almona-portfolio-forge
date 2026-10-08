@@ -47,7 +47,7 @@ Merge order (bottom → top). Do not flatten onto `main` until #61 undrafts and 
 | PR | Role | Draft | CI tsc Δ | Score | Gate remaining |
 |---|---|---|---|---|---|
 | **#61** | Integration reviewed slice (#53+#52+#58) | yes | pass | **90%** | Human undraft + merge to `main` first |
-| **#62** | Canonical ledger L1–L2 | yes | **fix pushed** (`0314aaf2`; awaiting CI re-run) | **88%** | Confirm Linux tsc green; undraft after #61 |
+| **#62** | Canonical ledger L1–L2 | yes | **pass** (`0314aaf2`) | **90%** | Undraft after #61; merge next |
 | **#63** | Dated caluminium-ps EGP pricing | yes | pass | **80%** | Undraft after #62 |
 | **#64** | Empty-DB migration replay | yes | n/a (parallel) | **70%** | Staging-only apply path; not on critical product path |
 | **#65** | Sliding estimate + 10/18 E2E | no | pass | **88%** | Staging browser re-run on deployed SHA |
@@ -78,8 +78,9 @@ Merge order (bottom → top). Do not flatten onto `main` until #61 undrafts and 
 
 - [x] Ledger cross-path + sliding required count (23) + 10/18 metrics
 - [x] Hardener server checks + convert evidence binding in code
-- [ ] Refresh #62 onto current #61 so Linux tsc delta is green
-- [ ] Undraft #61/#62/#63 when reviewers accept; keep #68 tip green
+- [x] Refresh #62 onto current #61 — Linux tsc delta green (`0314aaf2`, 0 new signatures)
+- [ ] Undraft #61 → #62 → #63 when ready for review; keep #68 tip green
+- [ ] Merge bottom-up onto `main` (human merge; no production SQL)
 
 ### Phase B — Staging deploy (required before any prod)
 
