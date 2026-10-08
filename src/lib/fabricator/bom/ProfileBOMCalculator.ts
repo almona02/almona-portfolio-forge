@@ -60,7 +60,13 @@ export class ProfileBOMCalculator {
       const rows = new Map<string, ProfileBOMRow>();
       for (const component of windowUnit.components) {
         const profile = component.profile;
-        const role = (profile.profileRole || component.type) as ProfileBOMRow['role'];
+        // Prefer catalogue bomRole so screen_track / similar aliases normalize to ledger roles.
+        const bomRole = profile.specifications?.bomRole;
+        const role = (
+          (typeof bomRole === 'string' && bomRole) ||
+          profile.profileRole ||
+          component.type
+        ) as ProfileBOMRow['role'];
         const key = `${profile.id}:${role}`;
         const cuts = component.cuttingLengths.map((_, index) =>
           physicalCutForOccurrence(component, index, profile, windowUnit.systemPackId));
@@ -467,7 +473,13 @@ export class ProfileBOMCalculator {
     const height = windowUnit.overallHeight;
     const kerf = CUTTING_CONSTANTS.STANDARD_KERF_MM;
     const sashCount = Math.max(1, sashCountHint);
-    const hasRole = (role: string) => profiles.some((p) => p.role === role);
+    const hasRole = (role: string) =>
+      profiles.some((p) => {
+        if (p.role === role) return true;
+        // Catalogue track profiles often use profileRole screen_track with bomRole track.
+        if (role === 'track') return p.role === 'screen_track';
+        return false;
+      });
 
     if (!hasRole('interlock')) {
       const interlockProfile = this.getProfileByRole(systemPack, 'interlock');
