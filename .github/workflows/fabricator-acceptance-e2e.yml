@@ -26,9 +26,11 @@ jobs:
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
           E2E_POSE_DESIGN_URL: ${{ secrets.E2E_POSE_DESIGN_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           missing=0
-          for v in E2E_USER_EMAIL E2E_USER_PASSWORD E2E_POSE_DESIGN_URL; do
+          for v in E2E_USER_EMAIL E2E_USER_PASSWORD E2E_POSE_DESIGN_URL VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY; do
             if [ -z "${!v}" ]; then
               echo "FAIL: missing repository secret $v"
               missing=1
@@ -52,6 +54,11 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Build app under test
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: npm run build
 
       - name: Run acceptance specs (fail-closed)
