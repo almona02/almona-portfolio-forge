@@ -12,7 +12,14 @@
  */
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
-import type { FabricationData, Profile, SystemPack, WindowUnit } from '@/types/fabricator';
+import type {
+  FabricationData,
+  Profile,
+  SystemPack,
+  WindowComponent,
+  WindowGrid,
+  WindowUnit,
+} from '@/types/fabricator';
 import { normalizeOpeningType } from '@/lib/fabricator/openingType';
 import type { ProfileSpec } from '../productionUtils';
 import { physicalCutForOccurrence } from '../optimization/physicalCutContract';
@@ -41,6 +48,31 @@ function fillNumbers(length: number, value: number): number[] {
   return Array.from({ length }, () => value);
 }
 
+/** Canonical ledger role shared by generated and saved paths. */
+function resolveLedgerRole(profile: Profile, fallback: string): ProfileBOMRow['role'] {
+  const bomRole = profile.specifications?.bomRole;
+  if (typeof bomRole === 'string' && bomRole) {
+    return bomRole as ProfileBOMRow['role'];
+  }
+  const raw = String(profile.profileRole || fallback || 'unknown');
+  if (raw === 'sash_sliding' || raw.startsWith('sash_')) return 'sash';
+  if (raw === 'screen_track') return 'track';
+  if (raw === 'glazing_bead_inner' || raw === 'glazing_bead_outer' || raw === 'bead') {
+    return 'glazing_bead';
+  }
+  return raw as ProfileBOMRow['role'];
+}
+
+function componentHasLedgerRole(component: WindowComponent, role: string): boolean {
+  const resolved = resolveLedgerRole(component.profile, component.type);
+  if (resolved === role) return true;
+  if (role === 'track') return resolved === 'screen_track' || component.type === 'track';
+  if (role === 'glazing_bead') {
+    return resolved === 'glazing_bead' || component.type === 'glazing_bead' || component.type === 'bead';
+  }
+  return component.type === role;
+}
+
 /**
  * ProfileBOMCalculator - Profile quantity calculation engine
  */
@@ -53,50 +85,14 @@ export class ProfileBOMCalculator {
     pattern: EgyptianPattern,
     systemPack: SystemPack
   ): Promise<FabricationData['profiles']> {
-    // Saved design components are the primary ledger — but sliding subsystems
-    // (interlock / track / bead) must still be present when the opening is sliding.
-    // Do not early-return an incomplete ledger that bypasses catalogue roles.
-    if (windowUnit.components?.length) {
-      const rows = new Map<string, ProfileBOMRow>();
-      for (const component of windowUnit.components) {
-        const profile = component.profile;
-        // Prefer catalogue bomRole so screen_track / similar aliases normalize to ledger roles.
-        const bomRole = profile.specifications?.bomRole;
-        const role = (
-          (typeof bomRole === 'string' && bomRole) ||
-          profile.profileRole ||
-          component.type
-        ) as ProfileBOMRow['role'];
-        const key = `${profile.id}:${role}`;
-        const cuts = component.cuttingLengths.map((_, index) =>
-          physicalCutForOccurrence(component, index, profile, windowUnit.systemPackId));
-        if (cuts.some(cut => !Number.isFinite(cut.length) || cut.length <= 0)) throw new Error('Invalid design cut length.');
-        const packId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id || 'unknown';
-        const row: ProfileBOMRow = rows.get(key) ?? {
-          id: key,
-          systemPack: packId,
-          profileCode: profile.id,
-          role,
-          length: 0,
-          quantity: 1,
-          cuttingLengths: [] as number[],
-          angles: [] as number[],
-          rawStockLength: profile.barLength || Number(profile.specifications?.barLength) || 6000,
-          wasteLength: 0,
-          machiningZones: [],
-          weight: 0,
-          cost: 0,
-        };
-        row.cuttingLengths.push(...cuts.map((cut) => cut.length));
-        row.angles.push(...cuts.map((cut) => cut.angle));
-        row.length = row.cuttingLengths.reduce((sum, length) => sum + length, 0);
-        row.weight = (row.length / 1000) * (profile.weightPerMeter || 0);
-        row.cost = (row.length / 1000) * (profile.costPerMeter || 0);
-        rows.set(key, row);
-      }
-      const profiles = Array.from(rows.values());
-      const { ProductionUtils } = await import('../productionUtils');
-      const utils = ProductionUtils as unknown as ProdUtilsLike;
+    const { ProductionUtils } = await import('../productionUtils');
+    const utils = ProductionUtils as unknown as ProdUtilsLike;
+
+    // Design components (saved or synthesised from the real grid generator) are the
+    // single physical-cut authority via physicalCutForOccurrence.
+    const designComponents = await this.resolveDesignComponents(windowUnit, pattern, systemPack);
+    if (designComponents.length) {
+      const profiles = this.rowsFromDesignComponents(designComponents, windowUnit, systemPack);
       this.appendMissingSlidingSubsystemProfiles({
         profiles,
         windowUnit,
@@ -104,14 +100,15 @@ export class ProfileBOMCalculator {
         systemPack,
         ProductionUtils: utils,
         sashCountHint: this.countSlidingSashes(windowUnit, pattern),
-        sashCuttingLengthsHint: this.sashPerimeterCutsFromUnit(windowUnit, utils),
+        sashCuttingLengthsHint: this.sashPerimeterCutsFromUnit(
+          { ...windowUnit, components: designComponents },
+          utils,
+        ),
       });
       return profiles;
     }
+
     const profiles: FabricationData['profiles'] = [];
-    // Dynamic import to avoid circular dependencies, but typed
-    const { ProductionUtils } = await import('../productionUtils');
-    const utils = ProductionUtils as unknown as ProdUtilsLike;
 
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
@@ -404,6 +401,128 @@ export class ProfileBOMCalculator {
     return profiles;
   }
 
+  /**
+   * Resolve design-level components: prefer saved ledger, else synthesise via
+   * generateComponentsFromGrid (+ sliding track) so empty and saved paths share
+   * the same physicalCutForOccurrence contract.
+   */
+  private async resolveDesignComponents(
+    windowUnit: WindowUnit,
+    pattern: EgyptianPattern,
+    systemPack: SystemPack,
+  ): Promise<WindowComponent[]> {
+    if (windowUnit.components?.length) {
+      return this.ensureSlidingTrackDesignComponents(
+        windowUnit.components,
+        windowUnit,
+        pattern,
+        systemPack,
+      );
+    }
+
+    const grid = (windowUnit.grid ?? pattern.gridSpec) as WindowGrid | undefined;
+    if (!grid?.cells?.length) return [];
+
+    const { generateComponentsFromGrid } = await import('@/algorithms/smartDraw');
+    const packId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id || null;
+    const { components } = generateComponentsFromGrid(
+      { ...windowUnit, grid },
+      grid,
+      systemPack.profiles ?? [],
+      packId,
+      systemPack,
+    );
+    return this.ensureSlidingTrackDesignComponents(components, windowUnit, pattern, systemPack);
+  }
+
+  private ensureSlidingTrackDesignComponents(
+    components: WindowComponent[],
+    windowUnit: WindowUnit,
+    pattern: EgyptianPattern,
+    systemPack: SystemPack,
+  ): WindowComponent[] {
+    if (!this.isSlidingOpening(windowUnit, pattern)) return components;
+    if (components.some((component) => componentHasLedgerRole(component, 'track'))) {
+      return components;
+    }
+    const trackProfile =
+      this.getProfileByRole(systemPack, 'track') ||
+      this.getProfileByRole(systemPack, 'screen_track');
+    if (!trackProfile) return components;
+
+    const frameProfile =
+      components.find((component) => componentHasLedgerRole(component, 'frame'))?.profile ||
+      this.getProfileByRole(systemPack, 'frame');
+    const frameWidth = frameProfile?.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM;
+    const trackCut = Math.max(0, windowUnit.overallWidth - frameWidth * 2);
+    if (trackCut <= 0) return components;
+
+    return [
+      ...components,
+      {
+        id: `design-track-${windowUnit.id || 'pose'}`,
+        type: 'track',
+        profile: trackProfile,
+        width: trackCut,
+        height: trackProfile.width || 0,
+        quantity: 1,
+        cuttingLengths: [trackCut, trackCut],
+        angles: [90, 90],
+        machiningOperations: [],
+        glazingType: 'none',
+        hardware: [],
+      } as WindowComponent,
+    ];
+  }
+
+  private rowsFromDesignComponents(
+    components: WindowComponent[],
+    windowUnit: WindowUnit,
+    systemPack: SystemPack,
+  ): ProfileBOMRow[] {
+    const rows = new Map<string, ProfileBOMRow>();
+    const packId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id || 'unknown';
+
+    for (const component of components) {
+      const profile = component.profile;
+      if (!profile?.id || !component.cuttingLengths?.length) continue;
+      const role = resolveLedgerRole(profile, component.type);
+      const key = `${profile.id}:${role}`;
+      const cuts = component.cuttingLengths.map((_, index) =>
+        physicalCutForOccurrence(component, index, profile, windowUnit.systemPackId),
+      );
+      if (cuts.some((cut) => !Number.isFinite(cut.length) || cut.length <= 0)) {
+        throw new Error('Invalid design cut length.');
+      }
+      const row: ProfileBOMRow = rows.get(key) ?? {
+        id: key,
+        systemPack: packId,
+        profileCode: profile.id,
+        role,
+        length: 0,
+        quantity: 1,
+        cuttingLengths: [] as number[],
+        angles: [] as number[],
+        rawStockLength: profile.barLength || Number(profile.specifications?.barLength) || 6000,
+        wasteLength: 0,
+        machiningZones: [],
+        weight: 0,
+        cost: 0,
+      };
+      row.cuttingLengths.push(...cuts.map((cut) => cut.length));
+      row.angles.push(...cuts.map((cut) => cut.angle));
+      row.length = row.cuttingLengths.reduce((sum, length) => sum + length, 0);
+      row.weight = (row.length / 1000) * (profile.weightPerMeter || 0);
+      row.cost = (row.length / 1000) * (profile.costPerMeter || 0);
+      // Perimeter roles are 4 cuts per unit; track/interlock are 1 cut per unit.
+      const cutsPerUnit =
+        role === 'frame' || role === 'sash' || role === 'glazing_bead' ? 4 : 1;
+      row.quantity = Math.max(1, Math.round(row.cuttingLengths.length / cutsPerUnit));
+      rows.set(key, row);
+    }
+    return Array.from(rows.values());
+  }
+
   private isSlidingOpening(windowUnit: WindowUnit, pattern: EgyptianPattern): boolean {
     if (normalizeOpeningType(windowUnit.type, windowUnit.grid) === 'sliding') return true;
     if (pattern.type === 'sliding' || pattern.openingMechanism?.type === 'sliding') return true;
@@ -425,28 +544,31 @@ export class ProfileBOMCalculator {
     return Math.max(1, sashCells.length);
   }
 
+  /** Design-level sash perimeter cuts (pre-allowance) for bead enrichment. */
   private sashPerimeterCutsFromUnit(
     windowUnit: WindowUnit,
-    utils: Pick<ProdUtilsLike, 'applyKerfCompensation'>,
+    _utils: Pick<ProdUtilsLike, 'applyKerfCompensation'>,
   ): number[] {
+    const fromComponents = (windowUnit.components ?? [])
+      .filter((component) => componentHasLedgerRole(component, 'sash'))
+      .flatMap((component) => component.cuttingLengths ?? []);
+    if (fromComponents.length > 0) return fromComponents;
+
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
-    const sashCount = this.countSlidingSashes(windowUnit, { gridSpec: windowUnit.grid } as unknown as EgyptianPattern);
-    const kerf = CUTTING_CONSTANTS.STANDARD_KERF_MM;
+    const sashCount = this.countSlidingSashes(windowUnit, {
+      gridSpec: windowUnit.grid,
+    } as unknown as EgyptianPattern);
     const cellWidth = width / Math.max(1, windowUnit.grid?.cols || sashCount);
     const cellHeight = height / Math.max(1, windowUnit.grid?.rows || 1);
-    const oneSash = [
-      utils.applyKerfCompensation(cellWidth, kerf, MITER_ANGLES.CORNER_MITER),
-      utils.applyKerfCompensation(cellWidth, kerf, MITER_ANGLES.CORNER_MITER),
-      utils.applyKerfCompensation(cellHeight, kerf, MITER_ANGLES.CORNER_MITER),
-      utils.applyKerfCompensation(cellHeight, kerf, MITER_ANGLES.CORNER_MITER),
-    ];
+    const oneSash = [cellWidth, cellWidth, cellHeight, cellHeight];
     return Array.from({ length: sashCount }, () => oneSash).flat();
   }
 
   /**
    * Append catalogue sliding roles when missing from an existing profile ledger.
-   * Idempotent by role — does not duplicate interlock/track/bead already present.
+   * Idempotent by role — design lengths go through physicalCutForOccurrence so
+   * enrichment matches the saved-component contract (allowance applied once).
    */
   private appendMissingSlidingSubsystemProfiles(args: {
     profiles: FabricationData['profiles'];
@@ -471,40 +593,63 @@ export class ProfileBOMCalculator {
     const systemPackId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id || 'unknown';
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
-    const kerf = CUTTING_CONSTANTS.STANDARD_KERF_MM;
     const sashCount = Math.max(1, sashCountHint);
     const hasRole = (role: string) =>
       profiles.some((p) => {
         if (p.role === role) return true;
-        // Catalogue track profiles often use profileRole screen_track with bomRole track.
         if (role === 'track') return p.role === 'screen_track';
         return false;
       });
+
+    const pushPhysical = (
+      profile: Profile,
+      role: string,
+      designLengths: number[],
+      designAngles: number[],
+      quantity: number,
+    ) => {
+      const synthetic: WindowComponent = {
+        id: `enrich-${role}-${systemPackId}`,
+        type: role as WindowComponent['type'],
+        profile,
+        cuttingLengths: designLengths,
+        angles: designAngles,
+        quantity: 1,
+      } as WindowComponent;
+      const cuts = designLengths.map((_, index) =>
+        physicalCutForOccurrence(synthetic, index, profile, windowUnit.systemPackId),
+      );
+      const physicalLengths = cuts.map((cut) => cut.length);
+      const physicalAngles = cuts.map((cut) => cut.angle);
+      const total = physicalLengths.reduce((sum, length) => sum + length, 0);
+      profiles.push(
+        this.createProfileEntry(
+          systemPackId,
+          profile,
+          role,
+          total,
+          quantity,
+          physicalLengths,
+          physicalAngles,
+          utils,
+        ),
+      );
+    };
 
     if (!hasRole('interlock')) {
       const interlockProfile = this.getProfileByRole(systemPack, 'interlock');
       if (interlockProfile && sashCount >= 2) {
         const interlockQty = Math.max(1, sashCount - 1);
-        const interlockCut = Math.max(
-          0,
-          height - DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM * 2,
-        );
-        const interlockCutKV = utils.applyKerfCompensation(
-          interlockCut,
-          kerf,
-          MITER_ANGLES.STRAIGHT_CUT,
-        );
-        profiles.push(
-          this.createProfileEntry(
-            systemPackId,
-            interlockProfile,
-            'interlock',
-            interlockCutKV * interlockQty,
-            interlockQty,
-            fillNumbers(interlockQty, interlockCut),
-            fillNumbers(interlockQty, MITER_ANGLES.STRAIGHT_CUT),
-            utils,
-          ),
+        const frameWidth =
+          this.getProfileByRole(systemPack, 'frame')?.width ||
+          DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM;
+        const interlockCut = Math.max(0, height - frameWidth * 2);
+        pushPhysical(
+          interlockProfile,
+          'interlock',
+          fillNumbers(interlockQty, interlockCut),
+          fillNumbers(interlockQty, MITER_ANGLES.STRAIGHT_CUT),
+          interlockQty,
         );
       }
     }
@@ -514,26 +659,16 @@ export class ProfileBOMCalculator {
         this.getProfileByRole(systemPack, 'track') ||
         this.getProfileByRole(systemPack, 'screen_track');
       if (trackProfile) {
-        const trackCut = Math.max(
-          0,
-          width - DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM * 2,
-        );
-        const trackCutKV = utils.applyKerfCompensation(
-          trackCut,
-          kerf,
-          MITER_ANGLES.STRAIGHT_CUT,
-        );
-        profiles.push(
-          this.createProfileEntry(
-            systemPackId,
-            trackProfile,
-            'track',
-            trackCutKV * 2,
-            2,
-            [trackCut, trackCut],
-            [MITER_ANGLES.STRAIGHT_CUT, MITER_ANGLES.STRAIGHT_CUT],
-            utils,
-          ),
+        const frameWidth =
+          this.getProfileByRole(systemPack, 'frame')?.width ||
+          DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM;
+        const trackCut = Math.max(0, width - frameWidth * 2);
+        pushPhysical(
+          trackProfile,
+          'track',
+          [trackCut, trackCut],
+          [MITER_ANGLES.STRAIGHT_CUT, MITER_ANGLES.STRAIGHT_CUT],
+          2,
         );
       }
     }
@@ -541,18 +676,12 @@ export class ProfileBOMCalculator {
     if (!hasRole('glazing_bead') && sashCuttingLengthsHint.length > 0) {
       const beadProfile = this.getProfileByRole(systemPack, 'glazing_bead');
       if (beadProfile) {
-        const beadPerimeter = sashCuttingLengthsHint.reduce((sum, value) => sum + value, 0);
-        profiles.push(
-          this.createProfileEntry(
-            systemPackId,
-            beadProfile,
-            'glazing_bead',
-            beadPerimeter,
-            sashCount,
-            sashCuttingLengthsHint,
-            fillNumbers(sashCuttingLengthsHint.length, MITER_ANGLES.STRAIGHT_CUT),
-            utils,
-          ),
+        pushPhysical(
+          beadProfile,
+          'glazing_bead',
+          sashCuttingLengthsHint,
+          fillNumbers(sashCuttingLengthsHint.length, MITER_ANGLES.STRAIGHT_CUT),
+          sashCount,
         );
       }
     }
