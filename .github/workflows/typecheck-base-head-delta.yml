@@ -1,0 +1,106 @@
+# Linux base/head app type-check fingerprints (honest delta; not type-clean).
+name: Typecheck base/head delta
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "scripts/ci-typecheck*.ts"
+      - "docs/ci/**"
+      - "tsconfig*.json"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+    inputs:
+      write_baseline:
+        description: "Emit docs/ci/typecheck-app-baseline.json from Ubuntu (artifact only)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+jobs:
+  base-head-delta:
+    name: Linux app tsc base vs head
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install (head)
+        run: npm ci
+
+      - name: Fingerprint head
+        run: |
+          set +e
+          npx tsc -p tsconfig.app.json --noEmit --pretty false > /tmp/tsc-head.txt 2>&1
+          HEAD_EXIT=$?
+          set -e
+          npx tsx scripts/ci-typecheck-emit-fingerprint.ts --from-log /tmp/tsc-head.txt --out /tmp/tsc-head.json --sha "${GITHUB_SHA}"
+          echo "head_tsc_exit=${HEAD_EXIT}" >> "$GITHUB_OUTPUT"
+          if [ "$HEAD_EXIT" -ne 0 ] && ! grep -q "error TS" /tmp/tsc-head.txt; then
+            echo "FAIL: head tsc non-zero with no parsed diagnostics"
+            exit 1
+          fi
+
+      - name: Fingerprint PR base
+        if: github.event_name == 'pull_request'
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          git checkout --force "$BASE_SHA"
+          npm ci
+          set +e
+          npx tsc -p tsconfig.app.json --noEmit --pretty false > /tmp/tsc-base.txt 2>&1
+          BASE_EXIT=$?
+          set -e
+          npx tsx scripts/ci-typecheck-emit-fingerprint.ts --from-log /tmp/tsc-base.txt --out /tmp/tsc-base.json --sha "$BASE_SHA"
+          if [ "$BASE_EXIT" -ne 0 ] && ! grep -q "error TS" /tmp/tsc-base.txt; then
+            echo "FAIL: base tsc non-zero with no parsed diagnostics"
+            exit 1
+          fi
+          git checkout --force "${{ github.sha }}"
+          npm ci
+
+      - name: Diff base vs head
+        if: github.event_name == 'pull_request'
+        run: |
+          npx tsx scripts/ci-typecheck-compare-fingerprints.ts \
+            --base /tmp/tsc-base.json \
+            --head /tmp/tsc-head.json \
+            --out /tmp/tsc-delta.json
+
+      - name: Upload fingerprints
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: typecheck-linux-fingerprints
+          path: |
+            /tmp/tsc-head.txt
+            /tmp/tsc-head.json
+            /tmp/tsc-base.txt
+            /tmp/tsc-base.json
+            /tmp/tsc-delta.json
+          if-no-files-found: warn
+
+      - name: Write Linux baseline artifact
+        if: github.event_name == 'workflow_dispatch' && inputs.write_baseline == 'true'
+        run: |
+          npm run type-check:baseline
+          cp docs/ci/typecheck-app-baseline.json /tmp/typecheck-app-baseline.json
+
+      - name: Upload Linux baseline JSON
+        if: github.event_name == 'workflow_dispatch' && inputs.write_baseline == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: typecheck-app-baseline-linux
+          path: /tmp/typecheck-app-baseline.json

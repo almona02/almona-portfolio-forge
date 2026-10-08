@@ -33,6 +33,9 @@ htmlcov/
 !src/core/authority/version_lock.json
 !src/lib/ticketing/sla_policy.json
 !docs/ci/typecheck-app-baseline.json
+!docs/ci/typecheck-app-baseline.win32.json
+!docs/ci/typecheck-app-baseline.linux.json
+!docs/ci/README.md
 # Exception: i18n locale trees (already tracked historically; keep new namespaces shippable)
 !locales/
 !locales/**
