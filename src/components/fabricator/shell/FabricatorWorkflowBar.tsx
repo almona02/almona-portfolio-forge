@@ -201,7 +201,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
         );
       })}
     </nav>
-    {activeStage && blockedReason && <div role="status" className="border-b border-amber-600/20 bg-slate-950 px-4 py-2 text-xs text-amber-200">{blockedReason} <Link className="ml-2 underline" to={resolveStudioWorkflowHref(stageRecoveryStage(activeStage, evidence), ctx)}>Resolve prerequisites</Link></div>}
+    {activeStage && blockedReason && <div role="status" className="border-b border-amber-600/20 bg-slate-950 px-4 py-2 text-xs text-amber-200 break-words">{blockedReason} <Link className="ml-2 underline whitespace-nowrap" to={resolveStudioWorkflowHref(stageRecoveryStage(activeStage, evidence), ctx)}>Resolve prerequisites</Link></div>}
     </>
   );
 };

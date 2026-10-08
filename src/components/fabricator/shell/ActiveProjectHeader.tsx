@@ -212,7 +212,7 @@ export const ActiveProjectHeader: React.FC<ActiveProjectHeaderProps> = ({
   return (
     <div
       className={cn(
-        'grid grid-cols-3 xl:grid-cols-9 gap-x-4 gap-y-2 min-w-0',
+        'grid grid-cols-3 xl:grid-cols-9 gap-x-4 gap-y-2 min-w-0 overflow-x-auto',
         rtl && 'text-start',
         className,
       )}
