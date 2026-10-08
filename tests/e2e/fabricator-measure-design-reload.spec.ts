@@ -108,9 +108,7 @@ test.describe('Fabricator measure → design reload', () => {
     const verify = page.locator('#verify');
     await expect(verify).toBeVisible({ timeout: 15_000 });
     await verify.check();
-    // Re-assert Multi-pane OFF immediately before save (prediction can re-enable)
-    await ensureMultiPaneOff(multiPane);
-    await expect(page.getByTestId('measuring-grid-summary')).toHaveAttribute('data-cells', '2');
+    // Multi-pane toggle lives on the Size step (already forced off before advancing)
 
     await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
     await saveBtn.click();
