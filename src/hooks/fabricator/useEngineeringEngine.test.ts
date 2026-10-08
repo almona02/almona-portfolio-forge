@@ -35,7 +35,7 @@ const project = {
   quantity: 1,
   components: [],
   hardware: [],
-  glazing: [],
+  glazing: { type: 'double', thickness: 24 },
   status: 'design',
   optimization: null,
   createdAt: new Date('2026-10-04T00:00:00Z'),
@@ -81,7 +81,7 @@ describe('useEngineeringEngine system selection', () => {
       ],
     } as unknown as SystemPack;
     const { result, rerender } = renderHook(({ packs }) => useEngineeringEngine({
-      project: { ...project, systemPackId: custom.meta.id, presetId: undefined },
+      project: { ...project, systemPackId: custom.meta.id, presetId: undefined } as WindowUnit,
       profiles: [],
       systemPacks: packs,
       onDesignComplete: vi.fn(),
