@@ -373,11 +373,12 @@ export function generateComponentsFromGrid(
   // Find appropriate profiles based on systemPackId or defaults
   const frameProfile = getProfileByRole('frame') || profiles.find(p => p.profileRole === 'frame') || profiles[0];
 
-  // Find appropriate sash profile - prioritize sliding sash for sliding systems
-  // Saved legacy opening labels must not override the actual designed cells.
-  const isSlidingSystem = grid.cells?.length
-    ? grid.cells.some(cell => cell.type === 'sliding')
-    : !!project.type?.includes('sliding');
+  // Find appropriate sash profile - prioritize sliding sash for sliding systems.
+  // Cell type "sliding" OR project/opening type containing "sliding" both count —
+  // measuring often stores sash cells under a sliding_* window type.
+  const isSlidingSystem =
+    !!project.type?.toLowerCase().includes('sliding') ||
+    !!grid.cells?.some((cell) => String(cell.type ?? '').toLowerCase().includes('sliding'));
   
   const sashProfile = isSlidingSystem
     ? getProfileByRole('sash_sliding') || getProfileByRole('sash') || profiles.find(p => p.profileRole === 'sash_sliding') || profiles.find(p => p.profileRole === 'sash') || profiles[0]
@@ -514,13 +515,31 @@ export function generateComponentsFromGrid(
   if (!grid.cells || !Array.isArray(grid.cells)) {
     return { components, hardware };
   }
+  const colWeights = grid.colWidths?.length === grid.cols
+    ? grid.colWidths
+    : Array.from({ length: grid.cols }, () => 1);
+  const rowWeights = grid.rowHeights?.length === grid.rows
+    ? grid.rowHeights
+    : Array.from({ length: grid.rows }, () => 1);
+  const totalColWeight = colWeights.reduce((sum, value) => sum + value, 0) || grid.cols;
+  const totalRowWeight = rowWeights.reduce((sum, value) => sum + value, 0) || grid.rows;
+  const innerWidth = Math.max(0, width - (2 * frameProfile.width));
+  const innerHeight = Math.max(0, height - (2 * frameProfile.width));
+
   grid.cells.forEach(cell => {
       const isSashCell = cell.type === 'sliding' || cell.type === 'sash';
       if (isSashCell && sashProfile) {
-          // Calculate cell dimensions accurately
-          // For sliding systems: Each sash takes full height, width is divided by number of sashes
-          const cellW = (width - (2 * frameProfile.width)) / grid.cols;
-          const cellH = height - (2 * frameProfile.width); // Full height for sliding sashes
+          // Asymmetric-aware cell sizes inside the frame rebate
+          const colSpan = cell.colSpan ?? 1;
+          const rowSpan = cell.rowSpan ?? 1;
+          const cellW = innerWidth * (
+            colWeights.slice(cell.col, cell.col + colSpan).reduce((sum, value) => sum + value, 0) / totalColWeight
+          );
+          const cellH = isSlidingSystem
+            ? innerHeight
+            : innerHeight * (
+              rowWeights.slice(cell.row, cell.row + rowSpan).reduce((sum, value) => sum + value, 0) / totalRowWeight
+            );
           
            components.push({
             id: `sash_${cell.id}_top`,
