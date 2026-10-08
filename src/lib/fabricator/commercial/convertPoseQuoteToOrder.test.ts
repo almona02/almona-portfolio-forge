@@ -96,7 +96,7 @@ describe('convertPoseQuoteToOrder (UP-16 / #57)', () => {
   it('surfaces server fail-closed optimization error', async () => {
     rpc.mockResolvedValue({
       data: null,
-      error: { message: 'optimization not approved on position (durable status required)' },
+      error: { message: 'optimization evidence missing (server validation required)' },
     });
     const result = await convertPoseQuoteToOrder({
       ownerUserId: 'user-1',
@@ -108,6 +108,6 @@ describe('convertPoseQuoteToOrder (UP-16 / #57)', () => {
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error).toMatch(/optimization not approved/i);
+    expect(result.error).toMatch(/optimization evidence missing/i);
   });
 });
