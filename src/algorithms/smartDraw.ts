@@ -374,8 +374,10 @@ export function generateComponentsFromGrid(
   const frameProfile = getProfileByRole('frame') || profiles.find(p => p.profileRole === 'frame') || profiles[0];
 
   // Find appropriate sash profile - prioritize sliding sash for sliding systems
-  const isSlidingSystem = project.type?.includes('sliding') ||
-                          (grid.cells && Array.isArray(grid.cells) && grid.cells.some(cell => cell.type === 'sliding'));
+  // Saved legacy opening labels must not override the actual designed cells.
+  const isSlidingSystem = grid.cells?.length
+    ? grid.cells.some(cell => cell.type === 'sliding')
+    : !!project.type?.includes('sliding');
   
   const sashProfile = isSlidingSystem
     ? getProfileByRole('sash_sliding') || getProfileByRole('sash') || profiles.find(p => p.profileRole === 'sash_sliding') || profiles.find(p => p.profileRole === 'sash') || profiles[0]

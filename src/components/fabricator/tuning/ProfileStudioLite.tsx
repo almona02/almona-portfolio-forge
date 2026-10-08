@@ -754,6 +754,20 @@ export const ProfileStudioLite: React.FC = () => {
                 />
               </div>
 
+              <div className="grid grid-cols-3 gap-3">
+                {(['width', 'height', 'thickness'] as const).map(dimension => (
+                  <div key={dimension} className="space-y-2">
+                    <Label htmlFor={`profile-${dimension}`} className="typography-label text-slate-300 capitalize">
+                      {dimension} (mm) *
+                    </Label>
+                    <Input id={`profile-${dimension}`} type="number" min="0.01" step="0.01"
+                      value={profile[dimension] ?? ''}
+                      onChange={event => setProfile({ ...profile, [dimension]: event.target.value === '' ? undefined : Number(event.target.value) })}
+                      className="h-11 border-slate-600 text-white card-premium" />
+                  </div>
+                ))}
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="manufacturer" className="typography-label text-slate-300 font-medium">Manufacturer *</Label>
                 <Select
