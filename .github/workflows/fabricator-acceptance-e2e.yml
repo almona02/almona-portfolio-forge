@@ -1,0 +1,96 @@
+# Authenticated Fabricator acceptance — fails closed without secrets (no successful skip).
+# Builds this PR and serves it locally so assertions hit the branch under test
+# (Vercel Preview SSO is not a substitute for staging acceptance).
+name: Fabricator acceptance E2E
+
+on:
+  pull_request:
+    paths:
+      - "tests/e2e/fabricator-measure-design-reload.spec.ts"
+      - "tests/e2e/fabricator-design-tuning-pickers.spec.ts"
+      - "src/components/fabricator/SmartMeasuringInterface.tsx"
+      - "src/components/fabricator/EnhancedMeasurementTools.tsx"
+      - "src/components/fabricator/shouldPersistMeasuringGrid.ts"
+      - "src/components/fabricator/EngineeringBay.tsx"
+      - "src/components/fabricator/EngineeringBayWrapper.tsx"
+      - "playwright.config.ts"
+      - ".github/workflows/fabricator-acceptance-e2e.yml"
+  workflow_dispatch:
+
+jobs:
+  measure-design-reload:
+    name: Measure → design reload acceptance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require acceptance secrets
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          E2E_POSE_DESIGN_URL: ${{ secrets.E2E_POSE_DESIGN_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          missing=0
+          for v in E2E_USER_EMAIL E2E_USER_PASSWORD E2E_POSE_DESIGN_URL VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY; do
+            if [ -z "${!v}" ]; then
+              echo "FAIL: missing repository secret $v"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Authenticated acceptance must not soft-pass. Configure secrets or remove this job."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build app under test
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Run acceptance specs (fail-closed)
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          E2E_POSE_DESIGN_URL: ${{ secrets.E2E_POSE_DESIGN_URL }}
+          E2E_OPTIONAL: "0"
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+          PLAYWRIGHT_NO_WEBSERVER: "1"
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 &
+          for i in $(seq 1 60); do
+            if curl -sf "http://127.0.0.1:4173/" >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl -sf "http://127.0.0.1:4173/" >/dev/null
+          npx playwright test \
+            tests/e2e/fabricator-measure-design-reload.spec.ts \
+            tests/e2e/fabricator-design-tuning-pickers.spec.ts \
+            --project=chromium-acceptance \
+            --reporter=line
+
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fabricator-acceptance-artifacts
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore

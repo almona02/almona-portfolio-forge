@@ -20,7 +20,7 @@ import { useWorkflowStore } from '@/store/workflowStore';
 import { Profile, WindowUnit } from '@/types/fabricator';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { DesignWorkspaceShell } from './shell/DesignWorkspaceShell';
 import { EngineeringBay } from './EngineeringBay';
 
@@ -157,7 +157,52 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     }
   }, [useV2, resolvedProjectId, jobs, navigate, dispatch, setSelectedJob]);
 
-  if (useV2 && (!projectId || !effectivePoseId || !currentProject)) {
+  // Bare /studio/design (no ids) → project/pose picker, not a dead-end alert
+  if (!projectId || !poseId) {
+    const recent = jobs.slice(0, 12);
+    return (
+      <div
+        className="h-full w-full bg-[#0a0a0a] p-8 text-amber-100 overflow-auto"
+        data-testid="design-pose-picker"
+      >
+        <h1 className="text-xl font-semibold text-amber-200 mb-2">Select a project position</h1>
+        <p className="text-sm text-slate-400 mb-6">
+          Design Studio needs a project and position. Open Projects or pick a recent unit below.
+        </p>
+        <Link
+          to={fabricatorRoutes.studioProjects()}
+          className="inline-flex px-4 py-2 rounded bg-amber-600 text-white text-sm font-medium hover:bg-amber-500"
+        >
+          Open Projects
+        </Link>
+        {recent.length > 0 && (
+          <ul className="mt-8 space-y-2 max-w-lg">
+            {recent.map((job) => {
+              const projKey =
+                (job as WindowUnit & { projectId?: string }).projectId ??
+                job.projectCode ??
+                job.orderNumber ??
+                'default';
+              return (
+                <li key={job.id}>
+                  <Link
+                    to={fabricatorRoutes.poseDesign(String(projKey), job.id)}
+                    className="block px-3 py-2 rounded border border-amber-900/40 hover:border-amber-600/60 text-sm truncate"
+                    title={job.id}
+                  >
+                    {job.projectCode || projKey} ·{' '}
+                    {job.positionMeta?.posNumber || job.positionMeta?.roomOrZone || job.id.slice(0, 8)}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    );
+  }
+
+  if (useV2 && (!effectivePoseId || !currentProject)) {
     return <div role="alert" className="h-full w-full bg-[#0a0a0a] p-8 text-red-300">Authoritative project and position data is unavailable.</div>;
   }
 

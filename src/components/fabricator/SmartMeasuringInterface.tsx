@@ -40,6 +40,7 @@ import {
   DEFAULT_GRID,
   DEFAULT_MEASUREMENTS,
 } from './measuringConstants';
+import { shouldPersistMeasuringGrid } from './shouldPersistMeasuringGrid';
 
 // Workshop dark-amber blueprint theme (matches Fabricator shell)
 const DEFAULT_THEME = {
@@ -139,7 +140,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     measurementMode: initialData?.measurementMode ?? 'hole', // 'hole' (rough opening) or 'manufacturing'
     wallDeduction: String(initialData?.wallDeduction ?? DEFAULT_MEASUREMENTS.DEFAULT_WALL_DEDUCTION_MM), // mm deduction for wall tolerance
     windowType: !initialData?.windowType || initialData.windowType === 'window' ? 'sliding_window_2sash' : initialData.windowType, // Default to 2-sash sliding window (matches SelectItem value)
-    color: initialData?.color || egyptianDefaults.color,
+    color: (() => {
+      const raw = (initialData?.color || egyptianDefaults.color || '').trim();
+      const known = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
+      return known.find((c) => c.toLowerCase() === raw.toLowerCase()) || raw || egyptianDefaults.color;
+    })(),
     glazingType: initialData?.glazingType || egyptianDefaults.glazingType || 'double', // Ensure glazingType has a default value
     glassColor: initialData?.glassColor || egyptianDefaults.glassColor || 'clear', // Default to 'clear' (first option) - selected by default
     flyScreenType: initialData?.flyScreenType || 'none', // Default to 'none' to avoid empty string in Select
@@ -305,8 +310,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       createdAt: new Date(),
       updatedAt: new Date(),
       systemPackId: selectedSystemPackId,
-      // Attach Grid if in Grid Mode
-      grid: isGridMode ? grid : undefined
+      // Persist multi-cell predicted grids even when Multi-pane UI toggle is off
+      grid: shouldPersistMeasuringGrid(grid, isGridMode) ? grid : undefined
     };
   }, [measurements, grid, isGridMode, selectedSystemPackId]);
 
@@ -590,8 +595,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       // Include rough opening if in hole mode
       roughOpeningWidth: isHoleMode ? rawWidth : undefined,
       roughOpeningHeight: isHoleMode ? rawHeight : undefined,
-      // Preserve grid layout if set in measuring step
-      grid: isGridMode ? grid : undefined,
+      // Persist multi-cell predicted grids even when Multi-pane UI toggle is off
+      grid: shouldPersistMeasuringGrid(grid, isGridMode) ? grid : undefined,
       // Preserve preset pattern selection
       presetId: selectedPatternId || undefined,
     };
@@ -1110,6 +1115,24 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   </div>
 
                   <div className="space-y-3 border-t-2 border-amber-600/30 pt-4">
+                    <div
+                      data-testid="measuring-grid-summary"
+                      data-rows={grid?.rows ?? 0}
+                      data-cols={grid?.cols ?? 0}
+                      data-cells={grid?.cells?.length ?? 0}
+                      data-grid-mode={isGridMode ? 'on' : 'off'}
+                      className="sr-only"
+                      aria-hidden
+                    >
+                      {(grid?.cells ?? []).map((cell) => (
+                        <span
+                          key={cell.id}
+                          data-testid="measuring-grid-cell"
+                          data-cell-id={cell.id}
+                          data-cell-type={cell.type}
+                        />
+                      ))}
+                    </div>
                     <div className="flex items-center justify-between">
                       <Label className="typography-label flex items-center gap-2 cursor-pointer text-slate-200">
                         <Grid3X3 className="h-4 w-4 text-amber-400" />
@@ -1120,6 +1143,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         onPressedChange={setIsGridMode}
                         className="btn-primary"
                         size="sm"
+                        data-testid="measuring-multipane-toggle"
+                        aria-label={t('smart_measuring.dimensions.grid_mode', 'Multi-pane layout')}
                       >
                         {isGridMode ? t('profile_import_tool.on', 'On') : t('profile_import_tool.off', 'Off')}
                       </Toggle>
@@ -1131,11 +1156,18 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           {t('smart_measuring.dimensions.grid_description', 'Define rows and columns for multi-pane openings. Edit panes in Opening layout (tap panes: fixed / sash / sliding).')}
                         </p>
                       </div>
-                    ) : (
-                      <div>
+                    ) : null}
+
+                    {/* Window type drives predictive grid whether Multi-pane UI is on or off */}
+                    <div>
                         <Label htmlFor="windowType" className="typography-label">{t('smart_measuring.dimensions.window_type', 'Window Type & Layout')}</Label>
                         <Select value={measurements.windowType} onValueChange={(value) => handleInputChange('windowType', value)}>
-                          <SelectTrigger className={`bg-[#1a1a1a]/80 border-2 border-amber-600/30 text-amber-200 ${getFieldError('windowType') ? 'border-red-500' : ''}`}>
+                          <SelectTrigger
+                            id="windowType"
+                            data-testid="measuring-window-type"
+                            aria-label={t('smart_measuring.dimensions.window_type', 'Window Type & Layout')}
+                            className={`bg-[#1a1a1a]/80 border-2 border-amber-600/30 text-amber-200 ${getFieldError('windowType') ? 'border-red-500' : ''}`}
+                          >
                             <SelectValue placeholder={t('smart_measuring.dimensions.window_type_placeholder', 'Select window or door layout')} />
                           </SelectTrigger>
                           <SelectContent className="bg-[#0f0f0f]/95 backdrop-blur-xl /40 text-amber-200 z-50 space-y-1 card-premium">
@@ -1181,8 +1213,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         {getFieldError('windowType') && (
                           <p className="text-sm text-red-400 mt-1">{getFieldError('windowType')}</p>
                         )}
-                      </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -1199,6 +1230,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       >
                         <SelectTrigger
                           id="glazingType"
+                          data-testid="measuring-glazing-type"
                           className={`bg-slate-800/50 border-slate-700/50 text-slate-100 ${getFieldError('glazingType') ? 'border-red-500' : ''
                             }`}
                         >
@@ -1295,7 +1327,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   <div>
                     <Label htmlFor="color" className="typography-label">{t('smart_measuring.specs.color', 'Color')}</Label>
                     <Select value={measurements.color} onValueChange={(value) => handleInputChange('color', value)}>
-                      <SelectTrigger className="bg-slate-800/50 border-slate-700 /50 text-slate-100 card-dark">
+                      <SelectTrigger
+                        id="color"
+                        data-testid="measuring-profile-color"
+                        className="bg-slate-800/50 border-slate-700 /50 text-slate-100 card-dark"
+                      >
                         <SelectValue placeholder={t('smart_measuring.specs.color_placeholder', 'Select color')} />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50 text-slate-200 z-50">
@@ -1462,6 +1498,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               )}
 
               <Button
+                data-testid="measuring-save-pose-design"
                 onClick={() => handleSubmit(false)}
                 disabled={!verificationConfirmed}
                 className={`
@@ -1485,7 +1522,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               )}
             </div>
           ) : (
-            <Button onClick={nextStep} className="btn-primary-gradient font-bold w-full sm:w-auto">
+            <Button
+              data-testid="measuring-wizard-next"
+              onClick={nextStep}
+              className="btn-primary-gradient font-bold w-full sm:w-auto"
+            >
               {t('smart_measuring.actions.next', 'Next')} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}

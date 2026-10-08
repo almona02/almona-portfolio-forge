@@ -1,8 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
-import type { WindowGrid, WindowUnit } from '@/types/fabricator';
+import type { SystemPack, WindowGrid, WindowUnit } from '@/types/fabricator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useEngineeringEngine } from './useEngineeringEngine';
-import type { SystemPack } from '@/data/systemPacks';
 
 const calculateBOM = vi.fn();
 
@@ -36,16 +35,42 @@ const project = {
   quantity: 1,
   components: [],
   hardware: [],
+  glazing: { type: 'double', thickness: 24 },
   status: 'design',
   optimization: null,
   createdAt: new Date('2026-10-04T00:00:00Z'),
   updatedAt: new Date('2026-10-04T00:00:00Z'),
   systemPackId: 'rock60',
   grid: savedGrid,
-} satisfies WindowUnit;
+} as WindowUnit;
 
 describe('useEngineeringEngine system selection', () => {
   beforeEach(() => calculateBOM.mockReset());
+
+  it('retains dividers and rejects stale external profile selections', () => {
+    const frame = { id: 'owned-frame', name: 'Frame', material: 'aluminum', width: 60, height: 60, thickness: 1.8, profileRole: 'frame', cuttingAllowance: 3 };
+    const divider = { ...frame, id: 'owned-divider', name: 'Divider', profileRole: 'mullion' };
+    const custom = { meta: { id: 'custom' }, profiles: [frame, divider] } as unknown as SystemPack;
+    const fixed = {
+      ...project,
+      systemPackId: 'custom',
+      presetId: undefined,
+      systemProfileSelections: { frameProfileCode: 'external' },
+      grid: {
+        rows: 1,
+        cols: 2,
+        cells: [
+          { id: 'left', row: 0, col: 0, type: 'fixed' as const },
+          { id: 'right', row: 0, col: 1, type: 'fixed' as const },
+        ],
+      },
+    } as WindowUnit;
+    const { result } = renderHook(() => useEngineeringEngine({ project: fixed, profiles: [{ ...frame, id: 'external' } as any], systemPacks: [custom], onDesignComplete: vi.fn() }));
+    const components = result.current.liveProject!.components;
+    expect(components.reduce((sum, component) => sum + component.cuttingLengths.length, 0)).toBe(5);
+    expect(components.some(component => component.profile.id === 'owned-divider')).toBe(true);
+    expect(components.some(component => component.profile.id === 'external')).toBe(false);
+  });
 
   it('resolves a persisted custom pack after it loads without replacing saved geometry', () => {
     const custom = {
@@ -56,7 +81,7 @@ describe('useEngineeringEngine system selection', () => {
       ],
     } as unknown as SystemPack;
     const { result, rerender } = renderHook(({ packs }) => useEngineeringEngine({
-      project: { ...project, systemPackId: custom.meta.id, presetId: undefined },
+      project: { ...project, systemPackId: custom.meta.id, presetId: undefined } as WindowUnit,
       profiles: [],
       systemPacks: packs,
       onDesignComplete: vi.fn(),

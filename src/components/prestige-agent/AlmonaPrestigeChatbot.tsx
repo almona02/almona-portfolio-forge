@@ -293,7 +293,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
   const PersonaIcon = currentPersona.icon;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8 text-gray-900">
       <div className="max-w-6xl mx-auto" style={{ marginTop: '2.5cm' }}>
         {/* Prestige Header */}
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-8">

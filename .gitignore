@@ -32,6 +32,10 @@ htmlcov/
 !src/lib/ydt/knowledge-base.json
 !src/core/authority/version_lock.json
 !src/lib/ticketing/sla_policy.json
+!docs/ci/typecheck-app-baseline.json
+!docs/ci/typecheck-app-baseline.win32.json
+!docs/ci/typecheck-app-baseline.linux.json
+!docs/ci/README.md
 # Exception: i18n locale trees (already tracked historically; keep new namespaces shippable)
 !locales/
 !locales/**
@@ -113,3 +117,6 @@ git-status-push-review.txt
 # Reproducible deployment bundles
 batch1-release*/
 .vercel/
+
+# Local CI acceptance secret material (never commit)
+.tmp-pr-assess/e2e-acceptance-secrets.env

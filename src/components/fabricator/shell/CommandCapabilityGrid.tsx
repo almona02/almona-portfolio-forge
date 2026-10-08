@@ -44,7 +44,7 @@ const CAPABILITIES: Capability[] = [
     id: 'design',
     title: 'Design Studio',
     engine: 'Engineering Bay',
-    href: '/fabricator/studio/design',
+    href: fabricatorRoutes.studioProjects(),
     icon: <Paintbrush size={18} />,
     group: 'fabricator',
     availability: 'in_use',
