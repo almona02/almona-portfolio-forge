@@ -5,6 +5,7 @@
  * Server RPC is the authority for admin access (client role may hydrate late).
  */
 
+import { HardenerApprovalsPanel } from '@/components/fabricator/hardener/HardenerApprovalsPanel';
 import { useAuth } from '@/context/AuthContext';
 import {
   VENDOR_CATALOGUE_PACKS,
@@ -370,6 +371,10 @@ export default function ManufacturingApprovalsPage() {
           </ul>
         )}
       </section>
+
+      <div className="rounded-lg border border-slate-700 bg-slate-900/50 p-4">
+        <HardenerApprovalsPanel />
+      </div>
 
       {message && (
         <p role="status" className="text-sm text-amber-200 break-words" data-testid="approvals-status">
