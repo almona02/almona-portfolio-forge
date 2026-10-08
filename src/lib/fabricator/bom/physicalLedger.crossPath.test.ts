@@ -73,7 +73,7 @@ function baseUnit(type: string, g: WindowGrid, w: number, h: number): WindowUnit
     grid: g,
     quantity: 1,
     components: [],
-  } as WindowUnit;
+  } as unknown as WindowUnit;
 }
 
 function normalizeRole(role: string | undefined): string {
@@ -144,12 +144,12 @@ function tuplesFromComponents(unit: WindowUnit): CutTuple[] {
 }
 
 function packProfile(roleOrId: string): Profile {
-  const profiles = CALUMINIUM_PS_PACK.profiles ?? [];
+  const profiles = (CALUMINIUM_PS_PACK.profiles ?? []) as Profile[];
   const found =
-    profiles.find((p) => p.id === roleOrId) ||
-    profiles.find((p) => p.profileRole === roleOrId) ||
-    profiles.find((p) => p.specifications?.bomRole === roleOrId) ||
-    profiles.find((p) => String(p.profileRole || '').includes(roleOrId));
+    profiles.find((p: Profile) => p.id === roleOrId) ||
+    profiles.find((p: Profile) => p.profileRole === roleOrId) ||
+    profiles.find((p: Profile) => p.specifications?.bomRole === roleOrId) ||
+    profiles.find((p: Profile) => String(p.profileRole || '').includes(roleOrId));
   if (!found) throw new Error(`Missing caluminium-ps profile for ${roleOrId}`);
   return found;
 }
