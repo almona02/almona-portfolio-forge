@@ -28,9 +28,10 @@ import {
   SelectValue,
 } from '@/shared/ui/ui/select';
 import { Package, RotateCcw, Save, Wrench } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import type { SystemPack } from '@/types/fabricator';
 
 type PackOption = {
   id: string;
@@ -40,7 +41,7 @@ type PackOption = {
 
 function collectPacks(): PackOption[] {
   const map = new Map<string, PackOption>();
-  const push = (pack: { meta?: { id?: string; name?: string }; windowSystemSpec?: Record<string, unknown> }) => {
+  const push = (pack: SystemPack | StoredSystemPack) => {
     const id = pack.meta?.id;
     if (!id) return;
     const kits = listKitsFromPackSpec(pack.windowSystemSpec);
@@ -50,10 +51,8 @@ function collectPacks(): PackOption[] {
       kits,
     });
   };
-  SYSTEM_PACKS.forEach((p) => push(p as PackOption & { meta: { id: string; name: string }; windowSystemSpec: Record<string, unknown> }));
-  loadCustomSystems().forEach((p: StoredSystemPack) =>
-    push(p as unknown as { meta?: { id?: string; name?: string }; windowSystemSpec?: Record<string, unknown> }),
-  );
+  SYSTEM_PACKS.forEach((p) => push(p));
+  loadCustomSystems().forEach((p) => push(p));
   return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
 
