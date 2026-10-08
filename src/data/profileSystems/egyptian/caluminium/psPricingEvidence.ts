@@ -59,8 +59,22 @@ export const CALUMINIUM_PS_PRICING_EVIDENCE: DatedPricingEvidence = {
     ps_sliding_roller: 15,
     ps_interlock_kit: 45,
     ps_hinge_kit: 12,
+    // ps_sliding_handle / ps_sliding_lock — owner price confirmation pending (#63 hold)
   },
 };
+
+/** Registered PS sliding kits awaiting owner EGP unit prices (never invent 0.00). */
+export const CALUMINIUM_PS_HARDWARE_PRICE_TBD = [
+  'ps_sliding_handle',
+  'ps_sliding_lock',
+] as const;
+
+export type CaluminiumPsHardwarePriceTbdId =
+  (typeof CALUMINIUM_PS_HARDWARE_PRICE_TBD)[number];
+
+export function isCaluminiumPsHardwarePriceTbd(hardwareId: string): boolean {
+  return (CALUMINIUM_PS_HARDWARE_PRICE_TBD as readonly string[]).includes(hardwareId);
+}
 
 export class MissingOrExpiredPriceError extends Error {
   constructor(message: string) {

@@ -46,4 +46,41 @@ describe('project cutting estimate', () => {
     const tooLong = pose('1'); tooLong.components[0].cuttingLengths[0] = 5980;
     expect(() => optimizeProjectEstimate([tooLong], [pack])).toThrow('after kerf and trim');
   });
+
+  it('optimizes saved sliding sash layouts through resolveEstimatePattern (not a separate pool)', () => {
+    const slidingProfile = {
+      id: 'PS-6601-FRAME',
+      barLength: 6000,
+      specifications: { sawKerf: 3, barEndTrim: 0 },
+    } as unknown as Profile;
+    const slidingPack = {
+      meta: { id: 'caluminium-ps' },
+      profiles: [slidingProfile],
+    } as SystemPack;
+    // 23 cuts matches countRequiredProfilePieces for 2-sash sliding (frame+sash+subsystem)
+    const cuts = Array.from({ length: 23 }, (_, i) => 800 + (i % 5) * 10);
+    const slidingPose = {
+      id: 's1',
+      posNumber: '1',
+      systemPackId: 'caluminium-ps',
+      quantity: 2,
+      type: 'sliding_window_2sash',
+      overallWidth: 1200,
+      overallHeight: 1400,
+      grid: {
+        rows: 1,
+        cols: 2,
+        cells: [
+          { id: '0', row: 0, col: 0, type: 'sash' },
+          { id: '1', row: 0, col: 1, type: 'sash' },
+        ],
+      },
+      components: [{ id: 'ledger', type: 'frame', profile: slidingProfile, cuttingLengths: cuts }],
+    } as WindowUnit;
+    const estimate = optimizeProjectEstimate([slidingPose], [slidingPack]);
+    expect(estimate.positions).toBe(1);
+    expect(estimate.pieces).toBe(46); // 23 × qty 2
+    expect(estimate.groups[0].result.stockUsed.flatMap((bar) => bar.cuts)).toHaveLength(46);
+    expect(estimate.manufacturingEligible).toBe(false);
+  });
 });

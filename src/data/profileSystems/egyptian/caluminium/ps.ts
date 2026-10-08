@@ -270,6 +270,27 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
         pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
         pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
       },
+      {
+        id: 'ps_sliding_handle',
+        name: 'PS Sliding Window Handle',
+        type: 'handle',
+        specifications: {
+          material: 'aluminum_zinc',
+        },
+        // unit_price omitted — owner confirmation pending (#63 hold); never invent 0.00
+        currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
+        pricing_status: 'tbd',
+      },
+      {
+        id: 'ps_sliding_lock',
+        name: 'PS Sliding Window Lock',
+        type: 'lock',
+        specifications: {
+          material: 'stainless_steel',
+        },
+        currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
+        pricing_status: 'tbd',
+      },
     ],
     glass_rules: {
       default: {

@@ -43,4 +43,12 @@ describe('CALUMINIUM PS dated pricing evidence', () => {
     expect(CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate).toBe('2026-10-01');
     expect(CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt).toBe('2027-01-01');
   });
+
+  it('lists sliding handle/lock as owner-pending (no invented 0.00)', async () => {
+    const { isCaluminiumPsHardwarePriceTbd } = await import('./psPricingEvidence');
+    expect(isCaluminiumPsHardwarePriceTbd('ps_sliding_handle')).toBe(true);
+    expect(isCaluminiumPsHardwarePriceTbd('ps_sliding_lock')).toBe(true);
+    expect(CALUMINIUM_PS_PRICING_EVIDENCE.hardware.ps_sliding_handle).toBeUndefined();
+    expect(CALUMINIUM_PS_PRICING_EVIDENCE.hardware.ps_sliding_lock).toBeUndefined();
+  });
 });

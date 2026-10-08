@@ -4,11 +4,9 @@
  * in the companion shell step (see .tmp-pr-assess/mfg-e2e-report.md).
  */
 import { describe, expect, it } from 'vitest';
-import { optimizeLinearCuts, type CutRequest } from '@/lib/algorithms/LinearOptimizer';
 import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
 import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
-import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physicalCutContract';
-import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
+import { optimizeProjectEstimate } from '@/lib/fabricator/production/ProjectOptimizationEstimate';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { Profile, WindowUnit } from '@/types/fabricator';
 
@@ -76,42 +74,16 @@ describe('manufacturing E2E — caluminium-ps 10/18/>100-cut', () => {
     const expectedPieces = cutsPerUnit * unitCount;
     expect(expectedPieces).toBeGreaterThan(100);
 
-    // Sliding pack path: pool cuts by profile (ProjectOptimizationEstimate is fixed-grid only).
-    const stockLengthMm = 6000;
-    const kerfMm = PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm;
-    const trimMm = PLATFORM_MANUFACTURING_DEFAULTS.trimCutMm;
-    const byProfile = new Map<string, CutRequest[]>();
-    let pieces = 0;
-    for (const position of positions) {
-      const quantity = position.quantity ?? 1;
-      for (const component of position.components ?? []) {
-        const profile = component.profile!;
-        const list = byProfile.get(profile.id) ?? [];
-        component.cuttingLengths.forEach((_length: number, index: number) => {
-          const cut = physicalCutForOccurrence(component, index, profile, position.systemPackId);
-          list.push({
-            id: `${position.id}:${component.id}:${index}`,
-            length: cut.length,
-            quantity,
-            label: `Pose ${position.posNumber} · ${component.type} · ${index + 1}`,
-          });
-          pieces += quantity;
-        });
-        byProfile.set(profile.id, list);
-      }
-    }
-    expect(pieces).toBe(expectedPieces);
-
-    let placed = 0;
-    for (const [profileId, requests] of byProfile) {
-      const result = optimizeLinearCuts(requests, stockLengthMm, kerfMm, trimMm);
-      const required = requests.reduce((sum: number, request: CutRequest) => sum + request.quantity, 0);
-      const barCuts = result.stockUsed.reduce((sum: number, bar) => sum + bar.cuts.length, 0);
-      expect(barCuts).toBe(required);
-      expect(result.stockUsed.every((bar) => bar.waste >= 0), profileId).toBe(true);
-      placed += barCuts;
-    }
-    expect(placed).toBe(pieces);
-    expect(placed).toBeGreaterThan(100);
+    // Sliding units go through optimizeProjectEstimate (resolveEstimatePattern sliding path).
+    const estimate = optimizeProjectEstimate(positions, [CALUMINIUM_PS_PACK]);
+    expect(estimate.positions).toBe(10);
+    expect(estimate.pieces).toBe(expectedPieces);
+    expect(estimate.pieces).toBeGreaterThan(100);
+    const placed = estimate.groups.reduce(
+      (sum, group) => sum + group.result.stockUsed.reduce((barSum, bar) => barSum + bar.cuts.length, 0),
+      0,
+    );
+    expect(placed).toBe(estimate.pieces);
+    expect(estimate.groups.every((g) => g.result.stockUsed.every((bar) => bar.waste >= 0))).toBe(true);
   });
 });

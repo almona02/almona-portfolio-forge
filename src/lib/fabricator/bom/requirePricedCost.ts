@@ -6,12 +6,17 @@
 import {
   CALUMINIUM_PS_PRICING_EVIDENCE,
   MissingOrExpiredPriceError,
+  isCaluminiumPsHardwarePriceTbd,
   requireHardwareUnitPriceEgp,
   requireProfileCostPerMeterEgp,
 } from '@/data/profileSystems/egyptian/caluminium/psPricingEvidence';
 import type { Profile } from '@/types/fabricator';
 
 export { MissingOrExpiredPriceError };
+
+export type BomHardwarePriceResolution =
+  | { status: 'priced'; unitPriceEgp: number }
+  | { status: 'tbd' };
 
 export function requireBomProfileCostPerMeter(
   systemPackId: string | undefined,
@@ -26,14 +31,45 @@ export function requireBomProfileCostPerMeter(
   return Number.isFinite(price) && price >= 0 ? price : 0;
 }
 
+/**
+ * Resolve hardware unit price. TBD kits (awaiting owner confirmation) return
+ * `{ status: 'tbd' }` — never a silent 0.00. Priced kits fail closed on missing/expired.
+ */
+export function resolveBomHardwareUnitPrice(
+  systemPackId: string | undefined,
+  hardwareId: string,
+  fallbackUnitPrice?: number,
+): BomHardwarePriceResolution {
+  if (systemPackId === 'caluminium-ps' || hardwareId.startsWith('ps_')) {
+    if (isCaluminiumPsHardwarePriceTbd(hardwareId)) {
+      const listed = CALUMINIUM_PS_PRICING_EVIDENCE.hardware[hardwareId];
+      if (typeof listed === 'number' && Number.isFinite(listed) && listed > 0) {
+        return { status: 'priced', unitPriceEgp: listed };
+      }
+      return { status: 'tbd' };
+    }
+    return {
+      status: 'priced',
+      unitPriceEgp: requireHardwareUnitPriceEgp(hardwareId, CALUMINIUM_PS_PRICING_EVIDENCE),
+    };
+  }
+  const price = Number(fallbackUnitPrice);
+  if (!Number.isFinite(price) || price < 0) {
+    return { status: 'priced', unitPriceEgp: 0 };
+  }
+  return { status: 'priced', unitPriceEgp: price };
+}
+
 export function requireBomHardwareUnitPrice(
   systemPackId: string | undefined,
   hardwareId: string,
   fallbackUnitPrice?: number,
 ): number {
-  if (systemPackId === 'caluminium-ps' || hardwareId.startsWith('ps_')) {
-    return requireHardwareUnitPriceEgp(hardwareId, CALUMINIUM_PS_PRICING_EVIDENCE);
+  const resolved = resolveBomHardwareUnitPrice(systemPackId, hardwareId, fallbackUnitPrice);
+  if (resolved.status === 'tbd') {
+    throw new MissingOrExpiredPriceError(
+      `EGP unit price TBD for hardware ${hardwareId} (pack ${systemPackId ?? 'unknown'}) — awaiting owner confirmation`,
+    );
   }
-  const price = Number(fallbackUnitPrice);
-  return Number.isFinite(price) && price >= 0 ? price : 0;
+  return resolved.unitPriceEgp;
 }
