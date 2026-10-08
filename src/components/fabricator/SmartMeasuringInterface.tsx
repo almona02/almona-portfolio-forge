@@ -1513,7 +1513,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               )}
             </div>
           ) : (
-            <Button onClick={nextStep} className="btn-primary-gradient font-bold w-full sm:w-auto">
+            <Button
+              data-testid="measuring-wizard-next"
+              onClick={nextStep}
+              className="btn-primary-gradient font-bold w-full sm:w-auto"
+            >
               {t('smart_measuring.actions.next', 'Next')} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
