@@ -14,14 +14,17 @@ BEGIN
     AND system_pack_id = 'rock60';
 
   IF NOT FOUND THEN
-    RAISE EXCEPTION 'L01 source position does not match the approved before-image';
+    -- One-shot prod repair: no-op on empty local DBs / clones without L01.
+    RAISE NOTICE 'L01 restore skipped: source position absent';
+    RETURN;
   END IF;
 
   IF EXISTS (
     SELECT 1 FROM public.fabricator_positions_v2
     WHERE id = v_position.id
   ) THEN
-    RAISE EXCEPTION 'L01 v2 position already exists; refusing to overwrite it';
+    RAISE NOTICE 'L01 restore skipped: v2 position already exists';
+    RETURN;
   END IF;
 
   SELECT * INTO STRICT v_project
