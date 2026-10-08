@@ -8,28 +8,30 @@ import type { SystemPack, WindowUnit } from '@/types/fabricator';
 
 /**
  * Pattern used only to count required ledger pieces. Preset/fixed manual grids
- * use resolveEstimatePattern; complete sash/sliding ledgers fall back to the
- * saved grid + opening type so optimizer consumption is not blocked.
+ * use resolveEstimatePattern. Saved sash/sliding/casement ledgers use the
+ * position opening type + grid so countRequired matches the design generator.
  */
 function patternForLedgerCount(position: WindowUnit): EgyptianPattern {
-  try {
-    return resolveEstimatePattern(position);
-  } catch (error) {
-    const grid = position.grid;
-    if (!grid?.cells?.length) throw error;
+  const grid = position.grid;
+  const hasOperativeCells = !!grid?.cells?.some((cell) => {
+    const t = String(cell.type ?? '').toLowerCase();
+    return t === 'sash' || t.includes('sliding') || t.includes('casement') || t.includes('tilt');
+  });
+  if (hasOperativeCells) {
     const sliding =
       String(position.type ?? '').toLowerCase().includes('sliding') ||
-      grid.cells.some((cell) => String(cell.type ?? '').toLowerCase().includes('sliding'));
+      !!grid?.cells?.some((cell) => String(cell.type ?? '').toLowerCase().includes('sliding'));
     return {
       id: `saved-ledger:${position.id}`,
       name: 'Saved design ledger (estimate)',
-      type: sliding ? 'sliding' : String(position.type || 'fixed'),
+      type: sliding ? 'sliding' : String(position.type || 'casement'),
       openingMechanism: sliding ? { type: 'sliding' } : undefined,
       gridSpec: grid,
       mullions: [],
       transoms: [],
     } as unknown as EgyptianPattern;
   }
+  return resolveEstimatePattern(position);
 }
 
 export interface ProjectOptimizationEstimate {

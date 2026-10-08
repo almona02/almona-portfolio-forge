@@ -19,6 +19,35 @@ export type HardenerCompatibilityCheck = {
   detail?: string;
 };
 
+/** Full named compatibility-check set required server-side (#68). */
+export const HARDENER_REQUIRED_COMPATIBILITY_CHECKS = [
+  'system_profile',
+  'material',
+  'glass_thickness',
+  'sash_dimensions',
+  'sash_weight',
+  'opening_type',
+] as const;
+
+export type HardenerRequiredCheckName =
+  (typeof HARDENER_REQUIRED_COMPATIBILITY_CHECKS)[number];
+
+export function assertFullHardenerCompatibilityChecks(
+  checks: HardenerCompatibilityCheck[] | undefined,
+): HardenerCompatibilityCheck[] {
+  if (!checks?.length) {
+    throw new Error('compatibility checks required (empty rejected)');
+  }
+  const byName = new Map(checks.map((c) => [c.check, c]));
+  for (const name of HARDENER_REQUIRED_COMPATIBILITY_CHECKS) {
+    const row = byName.get(name);
+    if (!row || typeof row.passed !== 'boolean') {
+      throw new Error(`compatibility check "${name}" required`);
+    }
+  }
+  return HARDENER_REQUIRED_COMPATIBILITY_CHECKS.map((name) => byName.get(name)!);
+}
+
 export async function requestHardenerVerification(input: {
   positionId: string;
   expectedRevision: number;
@@ -33,12 +62,25 @@ export async function requestHardenerVerification(input: {
   sashHeightMm?: number | null;
   sashWeightKg?: number | null;
 }): Promise<{ ok: true; proposalId: string } | { ok: false; error: string }> {
+  let checks: HardenerCompatibilityCheck[];
+  try {
+    checks = assertFullHardenerCompatibilityChecks(input.compatibilityChecks);
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'invalid checks' };
+  }
+  const evidence = input.engineeringEvidence ?? {};
+  if (
+    Object.keys(evidence).length < 2 ||
+    (!(evidence.method || evidence.calc) || !(evidence.reference || evidence.source))
+  ) {
+    return { ok: false, error: 'engineering evidence incomplete (need method/reference fields)' };
+  }
   const { data, error } = await rpc().rpc('request_fabricator_hardener_verification', {
     p_position_id: input.positionId,
     p_expected_revision: input.expectedRevision,
     p_proposed_hardener_code: input.proposedHardenerCode,
-    p_engineering_evidence: input.engineeringEvidence ?? {},
-    p_compatibility_checks: input.compatibilityChecks ?? [],
+    p_engineering_evidence: evidence,
+    p_compatibility_checks: checks,
     p_missing_evidence: input.missingEvidence ?? [],
     p_opening_type: input.openingType ?? null,
     p_material: input.material ?? null,

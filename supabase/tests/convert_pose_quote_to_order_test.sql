@@ -115,6 +115,50 @@ UPDATE convert_pos_rev SET qc_revision = (
   WHERE id = '33000000-0000-0000-0000-000000000001'
 );
 
+-- #68: approve hardener at the post-update revision before opt/convert gates
+DO $hardener_clear$
+DECLARE
+  v_prop UUID;
+BEGIN
+  INSERT INTO public.profiles(id, full_name, role)
+  VALUES ('13000000-0000-0000-0000-000000000099', 'Convert Admin', 'admin')
+  ON CONFLICT (id) DO UPDATE SET role = 'admin';
+
+  PERFORM set_config(
+    'request.jwt.claims',
+    '{"sub":"13000000-0000-0000-0000-000000000001","role":"authenticated"}',
+    true
+  );
+  v_prop := public.request_fabricator_hardener_verification(
+    '33000000-0000-0000-0000-000000000001',
+    (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
+    'H-PS-CONVERT-01',
+    '{"method":"catalogue","reference":"convert-test","calc":"ok"}'::jsonb,
+    jsonb_build_array(
+      jsonb_build_object('check', 'system_profile', 'passed', true),
+      jsonb_build_object('check', 'material', 'passed', true),
+      jsonb_build_object('check', 'glass_thickness', 'passed', true),
+      jsonb_build_object('check', 'sash_dimensions', 'passed', true),
+      jsonb_build_object('check', 'sash_weight', 'passed', true),
+      jsonb_build_object('check', 'opening_type', 'passed', true)
+    ),
+    '{}',
+    'sliding', 'aluminum', 6, 600, 1400, 28
+  );
+  PERFORM set_config(
+    'request.jwt.claims',
+    '{"sub":"13000000-0000-0000-0000-000000000099","role":"authenticated"}',
+    true
+  );
+  PERFORM public.admin_review_fabricator_hardener(v_prop, 'approve', 'convert fixture');
+  PERFORM set_config(
+    'request.jwt.claims',
+    '{"sub":"13000000-0000-0000-0000-000000000001","role":"authenticated"}',
+    true
+  );
+END;
+$hardener_clear$;
+
 INSERT INTO convert_order_test_output(result)
 SELECT throws_ok(
   format(
