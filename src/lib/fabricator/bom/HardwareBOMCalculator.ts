@@ -80,8 +80,13 @@ function hardwarePriceMetadata(
     return {
       unitPriceEgp: resolved.unitPriceEgp,
       currency: 'EGP',
-      source,
-      priceStatus: 'priced',
+      source:
+        resolved.priceStatus === 'admin_override'
+          ? 'admin_pack_kit_override'
+          : resolved.priceStatus === 'provisional'
+            ? 'provisional_workshop_approx'
+            : source,
+      priceStatus: resolved.priceStatus,
     };
   }
   return undefined;

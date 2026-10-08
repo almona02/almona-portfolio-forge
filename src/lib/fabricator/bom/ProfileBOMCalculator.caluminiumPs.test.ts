@@ -56,7 +56,7 @@ describe('caluminium-ps sliding BOM completeness', () => {
     expect(profiles.every((p) => !String(p.profileCode).startsWith('SASH-60'))).toBe(true);
   });
 
-  it('uses pack sliding roller / handle / lock kits (handle+lock prices may be TBD)', async () => {
+  it('uses pack sliding roller / handle / lock kits (handle+lock provisional EGP)', async () => {
     const hardware = await hardwareCalc.calculateHardwareBOM(unit, pattern, CALUMINIUM_PS_PACK);
     const roller = hardware.find((h) => h.category === 'roller');
     expect(roller).toBeDefined();
@@ -68,10 +68,10 @@ describe('caluminium-ps sliding BOM completeness', () => {
     const lock = hardware.find((h) => h.category === 'lock');
     expect(handle?.supplierCode).toBe('ps_sliding_handle');
     expect(lock?.supplierCode).toBe('ps_sliding_lock');
-    expect(handle?.metadata?.priceStatus).toBe('tbd');
-    expect(lock?.metadata?.priceStatus).toBe('tbd');
-    expect(handle?.metadata?.unitPriceEgp).toBeUndefined();
-    expect(lock?.metadata?.unitPriceEgp).toBeUndefined();
+    expect(handle?.metadata?.priceStatus).toBe('provisional');
+    expect(lock?.metadata?.priceStatus).toBe('provisional');
+    expect(handle?.metadata?.unitPriceEgp).toBe(40);
+    expect(lock?.metadata?.unitPriceEgp).toBe(60);
   });
 
   it('fails loudly on missing profile price (never 0.00)', () => {

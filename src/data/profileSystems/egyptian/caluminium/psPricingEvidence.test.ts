@@ -44,11 +44,31 @@ describe('CALUMINIUM PS dated pricing evidence', () => {
     expect(CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt).toBe('2027-01-01');
   });
 
-  it('lists sliding handle/lock as owner-pending (no invented 0.00)', async () => {
-    const { isCaluminiumPsHardwarePriceTbd } = await import('./psPricingEvidence');
-    expect(isCaluminiumPsHardwarePriceTbd('ps_sliding_handle')).toBe(true);
-    expect(isCaluminiumPsHardwarePriceTbd('ps_sliding_lock')).toBe(true);
-    expect(CALUMINIUM_PS_PRICING_EVIDENCE.hardware.ps_sliding_handle).toBeUndefined();
-    expect(CALUMINIUM_PS_PRICING_EVIDENCE.hardware.ps_sliding_lock).toBeUndefined();
+  it('lists sliding handle/lock as provisional positive EGP (never 0.00)', async () => {
+    const { isCaluminiumPsHardwarePriceProvisional, isCaluminiumPsHardwarePriceTbd } =
+      await import('./psPricingEvidence');
+    expect(isCaluminiumPsHardwarePriceProvisional('ps_sliding_handle')).toBe(true);
+    expect(isCaluminiumPsHardwarePriceProvisional('ps_sliding_lock')).toBe(true);
+    expect(isCaluminiumPsHardwarePriceTbd('ps_sliding_handle')).toBe(false);
+    expect(requireHardwareUnitPriceEgp('ps_sliding_handle')).toBe(40);
+    expect(requireHardwareUnitPriceEgp('ps_sliding_lock')).toBe(60);
+  });
+
+  it('prefers positive pack kit unit_price as admin override for provisional kits', async () => {
+    const { resolveBomHardwareUnitPrice } = await import(
+      '@/lib/fabricator/bom/requirePricedCost'
+    );
+    const overridden = resolveBomHardwareUnitPrice('caluminium-ps', 'ps_sliding_handle', 75);
+    expect(overridden).toEqual({
+      status: 'priced',
+      unitPriceEgp: 75,
+      priceStatus: 'admin_override',
+    });
+    const sameAsEvidence = resolveBomHardwareUnitPrice('caluminium-ps', 'ps_sliding_handle', 40);
+    expect(sameAsEvidence).toEqual({
+      status: 'priced',
+      unitPriceEgp: 40,
+      priceStatus: 'provisional',
+    });
   });
 });

@@ -277,9 +277,12 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
         specifications: {
           material: 'aluminum_zinc',
         },
-        // unit_price omitted — owner confirmation pending (#63 hold); never invent 0.00
+        // Provisional approx; admin may override unit_price on this kit later.
+        unit_price: PS_HW_PRICE.ps_sliding_handle,
         currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
-        pricing_status: 'tbd',
+        pricing_status: 'provisional',
+        pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
+        pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
       },
       {
         id: 'ps_sliding_lock',
@@ -288,8 +291,11 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
         specifications: {
           material: 'stainless_steel',
         },
+        unit_price: PS_HW_PRICE.ps_sliding_lock,
         currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
-        pricing_status: 'tbd',
+        pricing_status: 'provisional',
+        pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
+        pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
       },
     ],
     glass_rules: {
