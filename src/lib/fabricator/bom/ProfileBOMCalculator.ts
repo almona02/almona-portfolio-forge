@@ -13,6 +13,7 @@
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { FabricationData, Profile, SystemPack, WindowUnit } from '@/types/fabricator';
+import { normalizeOpeningType } from '@/lib/fabricator/openingType';
 import type { ProfileSpec } from '../productionUtils';
 import { physicalCutForOccurrence } from '../optimization/physicalCutContract';
 import {
@@ -40,8 +41,9 @@ export class ProfileBOMCalculator {
     pattern: EgyptianPattern,
     systemPack: SystemPack
   ): Promise<FabricationData['profiles']> {
-    // A resolved design already has the physical piece ledger used by the solver.
-    // Do not recalculate different geometry from pattern defaults for stock demand.
+    // Saved design components are the primary ledger — but sliding subsystems
+    // (interlock / track / bead) must still be present when the opening is sliding.
+    // Do not early-return an incomplete ledger that bypasses catalogue roles.
     if (windowUnit.components?.length) {
       const rows = new Map<string, FabricationData['profiles'][number]>();
       for (const component of windowUnit.components) {
@@ -64,7 +66,18 @@ export class ProfileBOMCalculator {
         row.cost = row.length / 1000 * (profile.costPerMeter || 0);
         rows.set(key, row);
       }
-      return Array.from(rows.values());
+      const profiles = Array.from(rows.values());
+      const { ProductionUtils } = await import('../productionUtils');
+      this.appendMissingSlidingSubsystemProfiles({
+        profiles,
+        windowUnit,
+        pattern,
+        systemPack,
+        ProductionUtils,
+        sashCountHint: this.countSlidingSashes(windowUnit, pattern),
+        sashCuttingLengthsHint: this.sashPerimeterCutsFromUnit(windowUnit, ProductionUtils),
+      });
+      return profiles;
     }
     const profiles: FabricationData['profiles'] = [];
     // Dynamic import to avoid circular dependencies, but typed
@@ -202,6 +215,16 @@ export class ProfileBOMCalculator {
           weight: ProductionUtils.calculateProfileWeight(sashLength, this.profileToSpec(sashProfile)),
           cost: ProductionUtils.calculateMaterialCost(sashLength, this.profileToSpec(sashProfile))
         });
+
+        this.appendMissingSlidingSubsystemProfiles({
+          profiles,
+          windowUnit,
+          pattern,
+          systemPack,
+          ProductionUtils,
+          sashCountHint: sashCount,
+          sashCuttingLengthsHint: sashCuttingLengths,
+        });
       }
     }
 
@@ -314,9 +337,9 @@ export class ProfileBOMCalculator {
         }
     }
 
-    // 2. Fly Screen (Silk)
+    // 2. Fly Screen (Silk) — skip if sliding path already emitted a track line
     const screenTrackProfile = this.getProfileByRole(systemPack, 'screen_track');
-    if (screenTrackProfile) {
+    if (screenTrackProfile && !profiles.some((p) => p.role === 'track' || p.role === 'screen_track')) {
         // Top and Bottom Tracks
         const trackLength = width - (frameProfile.width || 50) * 2; // Inside frame
         const trackLengthKV = ProductionUtils.applyKerfCompensation(trackLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
@@ -330,6 +353,159 @@ export class ProfileBOMCalculator {
     }
 
     return profiles;
+  }
+
+  private isSlidingOpening(windowUnit: WindowUnit, pattern: EgyptianPattern): boolean {
+    if (normalizeOpeningType(windowUnit.type, windowUnit.grid) === 'sliding') return true;
+    if (pattern.type === 'sliding' || pattern.openingMechanism?.type === 'sliding') return true;
+    const cells = [
+      ...(windowUnit.grid?.cells ?? []),
+      ...(pattern.gridSpec?.cells ?? []),
+    ];
+    return cells.some((cell) => String(cell.type ?? '').toLowerCase().includes('sliding'));
+  }
+
+  private countSlidingSashes(windowUnit: WindowUnit, pattern: EgyptianPattern): number {
+    const cells = windowUnit.grid?.cells?.length
+      ? windowUnit.grid.cells
+      : pattern.gridSpec?.cells ?? [];
+    const sashCells = cells.filter((c) => {
+      const t = String(c.type ?? '').toLowerCase();
+      return t === 'sash' || t.includes('sliding');
+    });
+    return Math.max(1, sashCells.length);
+  }
+
+  private sashPerimeterCutsFromUnit(
+    windowUnit: WindowUnit,
+    ProductionUtils: { applyKerfCompensation: (len: number, kerf: number, angle: number) => number },
+  ): number[] {
+    const width = windowUnit.overallWidth;
+    const height = windowUnit.overallHeight;
+    const sashCount = this.countSlidingSashes(windowUnit, { gridSpec: windowUnit.grid } as EgyptianPattern);
+    const kerf = CUTTING_CONSTANTS.STANDARD_KERF_MM;
+    const cellWidth = width / Math.max(1, windowUnit.grid?.cols || sashCount);
+    const cellHeight = height / Math.max(1, windowUnit.grid?.rows || 1);
+    const oneSash = [
+      ProductionUtils.applyKerfCompensation(cellWidth, kerf, MITER_ANGLES.CORNER_MITER),
+      ProductionUtils.applyKerfCompensation(cellWidth, kerf, MITER_ANGLES.CORNER_MITER),
+      ProductionUtils.applyKerfCompensation(cellHeight, kerf, MITER_ANGLES.CORNER_MITER),
+      ProductionUtils.applyKerfCompensation(cellHeight, kerf, MITER_ANGLES.CORNER_MITER),
+    ];
+    return Array.from({ length: sashCount }, () => oneSash).flat();
+  }
+
+  /**
+   * Append catalogue sliding roles when missing from an existing profile ledger.
+   * Idempotent by role — does not duplicate interlock/track/bead already present.
+   */
+  private appendMissingSlidingSubsystemProfiles(args: {
+    profiles: FabricationData['profiles'];
+    windowUnit: WindowUnit;
+    pattern: EgyptianPattern;
+    systemPack: SystemPack;
+    ProductionUtils: {
+      applyKerfCompensation: (len: number, kerf: number, angle: number) => number;
+      calculateWaste: (len: number, stock: number) => number;
+      calculateProfileWeight: (len: number, spec: unknown) => number;
+      calculateMaterialCost: (len: number, spec: unknown) => number;
+    };
+    sashCountHint: number;
+    sashCuttingLengthsHint: number[];
+  }): void {
+    const {
+      profiles,
+      windowUnit,
+      pattern,
+      systemPack,
+      ProductionUtils,
+      sashCountHint,
+      sashCuttingLengthsHint,
+    } = args;
+    if (!this.isSlidingOpening(windowUnit, pattern)) return;
+
+    const systemPackId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id;
+    const width = windowUnit.overallWidth;
+    const height = windowUnit.overallHeight;
+    const kerf = CUTTING_CONSTANTS.STANDARD_KERF_MM;
+    const sashCount = Math.max(1, sashCountHint);
+    const hasRole = (role: string) => profiles.some((p) => p.role === role);
+
+    if (!hasRole('interlock')) {
+      const interlockProfile = this.getProfileByRole(systemPack, 'interlock');
+      if (interlockProfile && sashCount >= 2) {
+        const interlockQty = Math.max(1, sashCount - 1);
+        const interlockCut = Math.max(
+          0,
+          height - DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM * 2,
+        );
+        const interlockCutKV = ProductionUtils.applyKerfCompensation(
+          interlockCut,
+          kerf,
+          MITER_ANGLES.STRAIGHT_CUT,
+        );
+        profiles.push(
+          this.createProfileEntry(
+            systemPackId,
+            interlockProfile,
+            'interlock',
+            interlockCutKV * interlockQty,
+            interlockQty,
+            Array.from({ length: interlockQty }, () => interlockCut),
+            Array.from({ length: interlockQty }, () => MITER_ANGLES.STRAIGHT_CUT),
+            ProductionUtils,
+          ),
+        );
+      }
+    }
+
+    if (!hasRole('track')) {
+      const trackProfile =
+        this.getProfileByRole(systemPack, 'track') ||
+        this.getProfileByRole(systemPack, 'screen_track');
+      if (trackProfile) {
+        const trackCut = Math.max(
+          0,
+          width - DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM * 2,
+        );
+        const trackCutKV = ProductionUtils.applyKerfCompensation(
+          trackCut,
+          kerf,
+          MITER_ANGLES.STRAIGHT_CUT,
+        );
+        profiles.push(
+          this.createProfileEntry(
+            systemPackId,
+            trackProfile,
+            'track',
+            trackCutKV * 2,
+            2,
+            [trackCut, trackCut],
+            [MITER_ANGLES.STRAIGHT_CUT, MITER_ANGLES.STRAIGHT_CUT],
+            ProductionUtils,
+          ),
+        );
+      }
+    }
+
+    if (!hasRole('glazing_bead') && sashCuttingLengthsHint.length > 0) {
+      const beadProfile = this.getProfileByRole(systemPack, 'glazing_bead');
+      if (beadProfile) {
+        const beadPerimeter = sashCuttingLengthsHint.reduce((sum, value) => sum + value, 0);
+        profiles.push(
+          this.createProfileEntry(
+            systemPackId,
+            beadProfile,
+            'glazing_bead',
+            beadPerimeter,
+            sashCount,
+            sashCuttingLengthsHint,
+            Array.from({ length: sashCuttingLengthsHint.length }, () => MITER_ANGLES.STRAIGHT_CUT),
+            ProductionUtils,
+          ),
+        );
+      }
+    }
   }
 
   /**
@@ -361,11 +537,25 @@ export class ProfileBOMCalculator {
    * Generic profile getter by role
    */
   private getProfileByRole(systemPack: SystemPack, role: string): Profile | undefined {
-      // Use type guard or strict equality from the interface if possible
-      const found = systemPack.profiles?.find((p) => 
-          p.profileRole === role || p.name?.toLowerCase().includes(role.replace('_', ' '))
+      const aliases =
+        role === 'sash'
+          ? ['sash', 'sash_sliding', 'sash_casement', 'sash_door']
+          : role === 'track'
+            ? ['track', 'screen_track', 'sill', 'threshold']
+            : [role];
+      const found = systemPack.profiles?.find((p) => {
+        const profileRole = (p.profileRole || '').toLowerCase();
+        const name = (p.name || '').toLowerCase();
+        return (
+          aliases.some((alias) => profileRole === alias || profileRole.includes(alias)) ||
+          aliases.some((alias) => name.includes(alias.replace('_', ' ')))
+        );
+      });
+      // Prefer sliding-system profiles when requesting sash/frame for sliding packs
+      if (found) return found;
+      return systemPack.profiles?.find((p) =>
+        aliases.some((alias) => (p.id || '').toLowerCase().includes(alias.replace('_', '-'))),
       );
-      return found;
   }
 
   /**

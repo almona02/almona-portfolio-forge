@@ -1024,7 +1024,7 @@ export interface FabricationData {
     id: string;
     systemPack: string;      // e.g., "FOXY-60"
     profileCode: string;     // e.g., "FRAME-60-A"
-    role: 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'reinforcement';
+    role: 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'reinforcement' | 'interlock' | 'track' | 'screen_track' | 'shutter_box' | 'shutter_slat' | 'shutter_guide' | 'glazing_bead';
     length: number;          // mm ±0.1mm
     quantity: number;
     cuttingLengths: number[]; // With kerf compensation
