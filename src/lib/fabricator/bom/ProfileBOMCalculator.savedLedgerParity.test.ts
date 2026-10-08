@@ -72,7 +72,7 @@ describe('ProfileBOMCalculator saved ↔ generated ledger parity', () => {
     const byRole = (role: string) =>
       generated.find((p) => p.role === role || (role === 'track' && p.role === 'screen_track'));
 
-    const components: WindowComponent[] = [
+    const components = [
       {
         id: 'c-frame',
         type: 'frame',
@@ -108,9 +108,9 @@ describe('ProfileBOMCalculator saved ↔ generated ledger parity', () => {
         cuttingLengths: [...(byRole('glazing_bead')?.cuttingLengths ?? Array(8).fill(400))],
         quantity: 1,
       },
-    ];
+    ] as unknown as WindowComponent[];
 
-    const savedUnit = { ...baseUnit, components } as WindowUnit;
+    const savedUnit = { ...baseUnit, components } as unknown as WindowUnit;
     const rebom = await calculator.calculateProfileBOM(savedUnit, pattern, CALUMINIUM_PS_PACK);
     const rebomCuts = rebom.reduce((n, p) => n + p.cuttingLengths.length, 0);
 
