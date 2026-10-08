@@ -1,5 +1,12 @@
 import type { SystemPack } from '@/data/systemPacks';
 import type { Profile } from '@/types/fabricator';
+import {
+  CALUMINIUM_PS_PRICING_EVIDENCE,
+  pricingProvenanceStamp,
+} from './psPricingEvidence';
+
+const PS_PRICE = CALUMINIUM_PS_PRICING_EVIDENCE.profiles;
+const PS_HW_PRICE = CALUMINIUM_PS_PRICING_EVIDENCE.hardware;
 
 /**
  * CALUMINIUM PS Profile Systems – Egyptian Market
@@ -13,6 +20,7 @@ import type { Profile } from '@/types/fabricator';
  * - Curtain Walls: PS 100
  * 
  * Source: Caluminium technical catalogs and Egyptian market specifications
+ * Pricing: dated evidence in psPricingEvidence.ts (EGP; never invent 0.00)
  */
 export const CALUMINIUM_PS_PACK: SystemPack = {
   meta: {
@@ -36,6 +44,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       system_code: 'PS',
       extraction_date: new Date().toISOString().slice(0, 10),
       market: 'egypt',
+      pricing_evidence: pricingProvenanceStamp(),
     },
     // PS 6600 Sliding System
     ps_6600_sliding: {
@@ -231,8 +240,10 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
           loadCapacity: 150,
           material: 'nylon_bearing',
         },
-        unit_price: 15.00,
-        currency: 'EGP',
+        unit_price: PS_HW_PRICE.ps_sliding_roller,
+        currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
+        pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
+        pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
       },
       {
         id: 'ps_interlock_kit',
@@ -241,8 +252,10 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
         specifications: {
           material: 'aluminum',
         },
-        unit_price: 45.00,
-        currency: 'EGP',
+        unit_price: PS_HW_PRICE.ps_interlock_kit,
+        currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
+        pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
+        pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
       },
       {
         id: 'ps_hinge_kit',
@@ -252,8 +265,10 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
           loadCapacity: 80,
           material: 'stainless_steel',
         },
-        unit_price: 12.00,
-        currency: 'EGP',
+        unit_price: PS_HW_PRICE.ps_hinge_kit,
+        currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
+        pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
+        pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
       },
     ],
     glass_rules: {
@@ -325,7 +340,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 66,
       thickness: 1.8,
       color: '#cccccc',
-      costPerMeter: 185,
+      costPerMeter: PS_PRICE['PS-6601-FRAME'],
       cuttingAllowance: 3.0,
       stockQuantity: 0,
       minStockLevel: 0,
@@ -365,7 +380,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 115.6,
       thickness: 2.0,
       color: '#cccccc',
-      costPerMeter: 220,
+      costPerMeter: PS_PRICE['PS-9601-FRAME'],
       cuttingAllowance: 3.0,
       stockQuantity: 0,
       minStockLevel: 0,
@@ -395,7 +410,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 66,
       thickness: 1.6,
       color: '#cccccc',
-      costPerMeter: 165,
+      costPerMeter: PS_PRICE['PS-6601-SASH'],
       cuttingAllowance: 3.0,
       stockQuantity: 0,
       minStockLevel: 0,
@@ -424,7 +439,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 66,
       thickness: 1.5,
       color: '#cccccc',
-      costPerMeter: 95,
+      costPerMeter: PS_PRICE['PS-6601-INTERLOCK'],
       cuttingAllowance: 2.0,
       stockQuantity: 0,
       minStockLevel: 0,
@@ -451,7 +466,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 28,
       thickness: 1.5,
       color: '#cccccc',
-      costPerMeter: 110,
+      costPerMeter: PS_PRICE['PS-6601-TRACK'],
       cuttingAllowance: 2.0,
       stockQuantity: 0,
       minStockLevel: 0,
@@ -480,7 +495,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 18,
       thickness: 1.2,
       color: '#cccccc',
-      costPerMeter: 42,
+      costPerMeter: PS_PRICE['PS-6601-BEAD'],
       cuttingAllowance: 1.0,
       stockQuantity: 0,
       minStockLevel: 0,
@@ -507,7 +522,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 72.0,
       thickness: 1.7,
       color: '#cccccc',
-      costPerMeter: 170,
+      costPerMeter: PS_PRICE['PS-5600-FRAME'],
       cuttingAllowance: 3.0,
       stockQuantity: 0,
       minStockLevel: 0,
@@ -542,7 +557,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 68.0,
       thickness: 1.6,
       color: '#cccccc',
-      costPerMeter: 155,
+      costPerMeter: PS_PRICE['PS-5600-SASH'],
       cuttingAllowance: 3.0,
       stockQuantity: 0,
       minStockLevel: 0,
@@ -567,7 +582,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 78.5,
       thickness: 1.6,
       color: '#cccccc',
-      costPerMeter: 145,
+      costPerMeter: PS_PRICE['PS-4800-FRAME'],
       cuttingAllowance: 3.0,
       stockQuantity: 0,
       minStockLevel: 0,
@@ -602,7 +617,7 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
       height: 100,
       thickness: 3.0,
       color: '#cccccc',
-      costPerMeter: 310,
+      costPerMeter: PS_PRICE['PS-101-MULLION'],
       cuttingAllowance: 3.0,
       stockQuantity: 0,
       minStockLevel: 0,

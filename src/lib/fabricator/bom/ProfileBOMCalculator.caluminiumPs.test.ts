@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
+import {
+  CALUMINIUM_PS_PRICING_EVIDENCE,
+  MissingOrExpiredPriceError,
+} from '@/data/profileSystems/egyptian/caluminium/psPricingEvidence';
 import { ProfileBOMCalculator } from './ProfileBOMCalculator';
 import { HardwareBOMCalculator } from './HardwareBOMCalculator';
+import { requireBomProfileCostPerMeter } from './requirePricedCost';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { Profile, WindowUnit } from '@/types/fabricator';
 
@@ -56,7 +61,28 @@ describe('caluminium-ps sliding BOM completeness', () => {
     const roller = hardware.find((h) => h.category === 'roller');
     expect(roller).toBeDefined();
     expect(roller!.supplierCode).toBe('ps_sliding_roller');
-    expect(roller!.metadata?.unitPriceEgp).toBe(15);
+    expect(roller!.metadata?.unitPriceEgp).toBe(
+      CALUMINIUM_PS_PRICING_EVIDENCE.hardware.ps_sliding_roller,
+    );
+  });
+
+  it('fails loudly on missing profile price (never 0.00)', () => {
+    expect(() =>
+      requireBomProfileCostPerMeter('caluminium-ps', {
+        id: 'PS-MISSING-PRICE',
+        costPerMeter: 0,
+      }),
+    ).toThrow(MissingOrExpiredPriceError);
+  });
+
+  it('stamps dated pricing provenance on the pack', () => {
+    const meta = (
+      CALUMINIUM_PS_PACK.windowSystemSpec as {
+        catalog_metadata?: { pricing_evidence?: { effectiveDate?: string; currency?: string } };
+      }
+    ).catalog_metadata?.pricing_evidence;
+    expect(meta?.currency).toBe('EGP');
+    expect(meta?.effectiveDate).toBe(CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate);
   });
 
   it('enriches saved components with missing sliding track/interlock (ledger path)', async () => {

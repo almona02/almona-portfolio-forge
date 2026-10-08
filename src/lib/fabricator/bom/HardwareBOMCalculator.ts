@@ -26,6 +26,7 @@ import {
     ROLLER_QUANTITY_THRESHOLDS,
     UNIT_CONVERSION,
 } from './hardwareBOMConstants';
+import { requireBomHardwareUnitPrice } from './requirePricedCost';
 
 /**
  * HardwareBOMCalculator - Hardware quantity calculation engine
@@ -132,9 +133,17 @@ export class HardwareBOMCalculator {
           (kit.id || '').toLowerCase().includes('roller') ||
           (kit.name || '').toLowerCase().includes('roller'),
       );
+      const rollerId = packRoller?.id || 'roller-sliding';
+      const packId = systemPack.meta?.id || systemPack.id;
+      // caluminium-ps / ps_* kits: dated evidence (fail-loud). Legacy packs keep optional price.
+      const unitPriceEgp = requireBomHardwareUnitPrice(
+        packId,
+        rollerId,
+        packRoller?.unit_price,
+      );
       hardware.push({
-        id: packRoller?.id || 'roller-sliding',
-        supplierCode: packRoller?.id || 'ROLLER-SLIDING-STD',
+        id: rollerId,
+        supplierCode: rollerId,
         name: packRoller?.name || 'Sliding Window Roller',
         category: 'roller',
         quantity: rollerCount,
@@ -149,8 +158,12 @@ export class HardwareBOMCalculator {
         estimatedTime: INSTALLATION_TIME.PER_ROLLER_MINUTES,
         supplierLink: undefined,
         metadata:
-          typeof packRoller?.unit_price === 'number'
-            ? { unitPriceEgp: packRoller.unit_price, source: 'pack_hardware_kit' }
+          unitPriceEgp > 0
+            ? {
+                unitPriceEgp,
+                source: packRoller ? 'pack_hardware_kit' : 'legacy_default',
+                currency: 'EGP',
+              }
             : undefined,
       });
     }
