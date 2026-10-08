@@ -19,7 +19,7 @@ it('opens position-specific prerequisites without marking an estimate complete',
     <Route path="/projects/:projectId/positions/:poseId/bom" element={<BOMReviewPanel />} />
     <Route path="/fabricator/studio/projects/project-a/positions/position-a/optimization" element={<p>Position-specific optimization prerequisites</p>} />
   </Routes></MemoryRouter>);
-  expect(screen.getByText('Approved cutting rules missing')).toBeVisible();
+  expect(screen.getAllByText('Approved cutting rules missing')[0]).toBeVisible();
   fireEvent.click(screen.getByRole('button', { name: 'Review optimization prerequisites' }));
   expect(screen.getByText('Position-specific optimization prerequisites')).toBeVisible();
   expect(useWorkflowStore.getState().completedSteps.has('bom')).toBe(false);

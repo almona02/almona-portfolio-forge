@@ -35,7 +35,7 @@ export function ManufacturingApprovalPanel() {
         });
         if (error) throw new Error(error.message);
         if (!z.string().uuid().safeParse(data).success) throw new Error('No valid approval request receipt was returned.');
-        setMessage(`Review request ${String(data)} submitted. Manufacturing remains blocked until reviewer approval.`);
+        setMessage(`Review request ${String(data)} submitted. Manufacturing remains blocked until admin approval.`);
       } else {
         const authority = await resolveManufacturingAuthority(identity.positionId, identity.revision);
         setMessage(`Approved ${authority.systemPack.id} catalogue revision ${authority.systemPack.revision}. Cutting rules: ${authority.cuttingRules.map(rule => `${rule.ruleId} r${rule.revision}`).join(', ')}. Regenerate the BOM to use this evidence.`);
@@ -47,6 +47,14 @@ export function ManufacturingApprovalPanel() {
   return <section className="rounded-lg border border-amber-600/30 bg-slate-900 p-4 space-y-3" aria-label="Catalogue and manufacturing approval">
     <h3 className="font-semibold text-amber-200">Catalogue & manufacturing rules</h3>
     <p className="text-sm text-slate-300">{currentProject?.systemPackId ?? 'Select a system'} · saved revision {workflowIdentity?.revision ?? 'required'}. Submit the catalogue and rule document references for authorized review.</p>
+    <p className="text-xs text-slate-400">
+      Blocked? Open{' '}
+      <a className="text-amber-300 underline" href="/fabricator/studio/approvals">Admin Approvals</a>
+      {' · '}
+      <a className="text-amber-300 underline" href="/fabricator/studio/data/tuning">Pack qualification</a>
+      {' · '}
+      <a className="text-amber-300 underline" href="/fabricator/studio/data/stock">Stock</a>
+    </p>
     <label className="block text-sm text-slate-300">Catalogue document / version
       <input className="block w-full rounded border border-slate-600 bg-slate-950 p-2" maxLength={1000} value={catalogue} onChange={event => setCatalogue(event.target.value)} />
     </label>

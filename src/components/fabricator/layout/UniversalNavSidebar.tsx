@@ -132,6 +132,12 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       href: '/fabricator/studio/orders',
     },
     {
+      id: 'approvals',
+      label: 'Approvals',
+      icon: <Box size={20} />,
+      href: fabricatorRoutes.studioApprovals(),
+    },
+    {
       id: 'design',
       label: 'Design Studio',
       icon: <Settings size={20} />,
