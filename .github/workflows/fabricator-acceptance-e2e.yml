@@ -81,4 +81,15 @@ jobs:
           npx playwright test \
             tests/e2e/fabricator-measure-design-reload.spec.ts \
             tests/e2e/fabricator-design-tuning-pickers.spec.ts \
-            --project=chromium-acceptance
+            --project=chromium-acceptance \
+            --reporter=line
+
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fabricator-acceptance-artifacts
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore

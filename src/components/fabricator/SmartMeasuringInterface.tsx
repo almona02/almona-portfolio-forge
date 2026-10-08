@@ -1152,8 +1152,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           {t('smart_measuring.dimensions.grid_description', 'Define rows and columns for multi-pane openings. Edit panes in Opening layout (tap panes: fixed / sash / sliding).')}
                         </p>
                       </div>
-                    ) : (
-                      <div>
+                    ) : null}
+
+                    {/* Window type drives predictive grid whether Multi-pane UI is on or off */}
+                    <div>
                         <Label htmlFor="windowType" className="typography-label">{t('smart_measuring.dimensions.window_type', 'Window Type & Layout')}</Label>
                         <Select value={measurements.windowType} onValueChange={(value) => handleInputChange('windowType', value)}>
                           <SelectTrigger
@@ -1207,8 +1209,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         {getFieldError('windowType') && (
                           <p className="text-sm text-red-400 mt-1">{getFieldError('windowType')}</p>
                         )}
-                      </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               )}

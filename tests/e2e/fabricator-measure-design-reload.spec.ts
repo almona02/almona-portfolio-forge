@@ -50,18 +50,19 @@ test.describe('Fabricator measure → design reload', () => {
     const measurePath = poseDesignPath.replace(/\/design\/?$/, '/measuring');
     await page.goto(measurePath, { waitUntil: 'domcontentloaded' });
 
-    // Explicit 2-sash sliding; Multi-pane must stay OFF for this acceptance case
-    const windowType = page.getByTestId('measuring-window-type').or(page.locator('#windowType'));
-    await expect(windowType).toBeVisible({ timeout: 45_000 });
-    await windowType.click();
-    await page.getByRole('option', { name: /2.?sash|two.?sash|sliding/i }).first().click();
-
+    // Measuring chrome must mount before interacting with layout controls
     const multiPane = page.getByTestId('measuring-multipane-toggle');
-    await expect(multiPane).toBeVisible({ timeout: 15_000 });
+    await expect(multiPane).toBeVisible({ timeout: 60_000 });
     if ((await multiPane.getAttribute('aria-pressed')) === 'true') {
       await multiPane.click();
     }
     await expect(multiPane).toHaveAttribute('aria-pressed', 'false');
+
+    // Explicit 2-sash sliding with Multi-pane OFF
+    const windowType = page.getByTestId('measuring-window-type');
+    await expect(windowType).toBeVisible({ timeout: 30_000 });
+    await windowType.click();
+    await page.getByRole('option', { name: /2.?sash|two.?sash/i }).first().click();
 
     const width = page.getByLabel(/^width/i).or(page.locator('input[name="width"]')).first();
     const height = page.getByLabel(/^height/i).or(page.locator('input[name="height"]')).first();
