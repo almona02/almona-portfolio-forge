@@ -292,8 +292,12 @@ export class ProfileBOMCalculator {
 
     // --- EGYPTIAN MARKET EXTENSIONS ---
 
-    // 1. Shutter System (Shish)
-    const shutterBoxProfile = this.getProfileByRole(systemPack, 'shutter_box');
+    // 1. Shutter System (Shish) — only when the unit explicitly requests a shutter
+    const wantsShutter = Boolean(
+      (windowUnit as { shutterType?: string }).shutterType &&
+        (windowUnit as { shutterType?: string }).shutterType !== 'none',
+    );
+    const shutterBoxProfile = wantsShutter ? this.getProfileByRole(systemPack, 'shutter_box') : undefined;
     if (shutterBoxProfile) {
         // Shutter Box (Top only)
         const boxLength = width; 
@@ -337,19 +341,34 @@ export class ProfileBOMCalculator {
         }
     }
 
-    // 2. Fly Screen (Silk) — skip if sliding path already emitted a track line
-    const screenTrackProfile = this.getProfileByRole(systemPack, 'screen_track');
-    if (screenTrackProfile && !profiles.some((p) => p.role === 'track' || p.role === 'screen_track')) {
-        // Top and Bottom Tracks
-        const trackLength = width - (frameProfile.width || 50) * 2; // Inside frame
-        const trackLengthKV = ProductionUtils.applyKerfCompensation(trackLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
-        
-         profiles.push(this.createProfileEntry(
-            systemPackId, screenTrackProfile, 'screen_track',
-            trackLengthKV * 2, 2, [trackLength, trackLength], 
-            [MITER_ANGLES.STRAIGHT_CUT, MITER_ANGLES.STRAIGHT_CUT],
-            ProductionUtils
-        ));
+    // 2. Fly Screen — only when measuring/design selected a fly screen (not every pack that catalogues a track)
+    const flyScreenType = String(windowUnit.flyScreenType ?? '').toLowerCase();
+    const wantsFlyScreen = Boolean(flyScreenType && flyScreenType !== 'none');
+    const screenTrackProfile = wantsFlyScreen
+      ? this.getProfileByRole(systemPack, 'screen_track')
+      : undefined;
+    if (
+      screenTrackProfile &&
+      !profiles.some((p) => p.role === 'track' || p.role === 'screen_track')
+    ) {
+      const trackLength = width - (frameProfile.width || 50) * 2;
+      const trackLengthKV = ProductionUtils.applyKerfCompensation(
+        trackLength,
+        kerf,
+        MITER_ANGLES.STRAIGHT_CUT,
+      );
+      profiles.push(
+        this.createProfileEntry(
+          systemPackId,
+          screenTrackProfile,
+          'screen_track',
+          trackLengthKV * 2,
+          2,
+          [trackLength, trackLength],
+          [MITER_ANGLES.STRAIGHT_CUT, MITER_ANGLES.STRAIGHT_CUT],
+          ProductionUtils,
+        ),
+      );
     }
 
     return profiles;
