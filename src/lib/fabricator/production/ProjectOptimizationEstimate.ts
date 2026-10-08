@@ -3,7 +3,34 @@ import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingS
 import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physicalCutContract';
 import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { countRequiredProfilePieces } from '@/lib/fabricator/bom/bomQualification';
+import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
+
+/**
+ * Pattern used only to count required ledger pieces. Preset/fixed manual grids
+ * use resolveEstimatePattern; complete sash/sliding ledgers fall back to the
+ * saved grid + opening type so optimizer consumption is not blocked.
+ */
+function patternForLedgerCount(position: WindowUnit): EgyptianPattern {
+  try {
+    return resolveEstimatePattern(position);
+  } catch (error) {
+    const grid = position.grid;
+    if (!grid?.cells?.length) throw error;
+    const sliding =
+      String(position.type ?? '').toLowerCase().includes('sliding') ||
+      grid.cells.some((cell) => String(cell.type ?? '').toLowerCase().includes('sliding'));
+    return {
+      id: `saved-ledger:${position.id}`,
+      name: 'Saved design ledger (estimate)',
+      type: sliding ? 'sliding' : String(position.type || 'fixed'),
+      openingMechanism: sliding ? { type: 'sliding' } : undefined,
+      gridSpec: grid,
+      mullions: [],
+      transoms: [],
+    } as unknown as EgyptianPattern;
+  }
+}
 
 export interface ProjectOptimizationEstimate {
   classification: 'estimate_only';
@@ -25,7 +52,7 @@ export function optimizeProjectEstimate(positions: readonly WindowUnit[], packs:
     positionIds.add(position.id);
     const pack = packs.find(pack => pack.meta.id === position.systemPackId);
     if (!pack) throw new Error(`${label}: saved system pack is unavailable to the signed-in owner.`);
-    const pattern = resolveEstimatePattern(position);
+    const pattern = patternForLedgerCount(position);
     const expected = countRequiredProfilePieces(position, pattern);
     const actual = (position.components ?? []).reduce((sum, component) => sum + component.cuttingLengths.length, 0);
     if (actual !== expected) throw new Error(`${label}: incomplete saved cut ledger (${actual}/${expected} pieces). Resolve frame and divider profiles in Design.`);
