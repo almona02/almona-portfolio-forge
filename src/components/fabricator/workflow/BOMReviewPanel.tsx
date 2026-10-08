@@ -195,6 +195,23 @@ export const BOMReviewPanel: React.FC = () => {
               </Badge>
             </div>
           </div>
+          {bom.qualification?.status !== 'qualified' && (
+            <div className="mt-3 text-sm text-amber-100/80 space-y-1" data-testid="bom-gate-actions">
+              <p>Manufacturing release blocked. Resolve via:</p>
+              <ul className="list-disc list-inside">
+                {(bom.qualification?.reasons ?? ['Manufacturing qualification evidence is missing']).map((reason) => (
+                  <li key={reason}>{reason}</li>
+                ))}
+              </ul>
+              <p className="pt-1">
+                <a className="text-amber-300 underline" href="/fabricator/studio/approvals">Admin Approvals</a>
+                {' · '}
+                <a className="text-amber-300 underline" href="/fabricator/studio/data/tuning">Pack qualification</a>
+                {' · '}
+                <a className="text-amber-300 underline" href="/fabricator/studio/data/stock">Stock</a>
+              </p>
+            </div>
+          )}
         </div>
 
         <ManufacturingApprovalPanel />

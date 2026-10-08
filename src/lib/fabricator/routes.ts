@@ -68,6 +68,8 @@ export const fabricatorRoutes = {
   newProjectWizard: () => '/fabricator/studio/projects?new=true',
   /** Workshop operator help (EN / AR / TR floor reference) */
   studioHelp: () => `${STUDIO_BASE}/help`,
+  /** Admin manufacturing catalogue / cutting-rule approvals */
+  studioApprovals: () => `${STUDIO_BASE}/approvals`,
 } as const;
 
 export type FabricatorRouteKey = keyof typeof fabricatorRoutes;

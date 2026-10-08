@@ -1,7 +1,8 @@
 /**
  * Seed local Supabase for Playwright 10/18/>100-cut UI chain.
  *
- * Usage (local Supabase running, #54 seed applied):
+ * Usage (local Supabase running; optional authority via
+ * scripts/e2e-seed-manufacturing-authority-local.sql — not a migration):
  *   E2E_USER_EMAIL=... E2E_USER_PASSWORD=... npx tsx scripts/e2e-seed-mfg-1018.ts
  *
  * Prints E2E_MFG_PROJECT_ID for the Playwright spec.
