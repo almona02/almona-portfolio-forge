@@ -6,6 +6,7 @@ import { WorkflowValidationGate } from '@/components/fabricator/workflow/Workflo
 import { useAuth } from '@/context/AuthContext';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateOptimizationReconciliation, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
+import { supabase } from '@/lib/supabase';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { AdaptiveSolverConfig, OptimizationResult } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
@@ -45,6 +46,7 @@ export const OptimizationPage: React.FC = () => {
         completeStep,
         setOptimizationResult,
         invalidateStep,
+        alignShellProject,
     } = useWorkflowStore();
     const activeProjectRef = useRef(currentProject);
 
@@ -100,6 +102,22 @@ export const OptimizationPage: React.FC = () => {
 
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
             setOptimizationResult(optimizationResult);
+            // Persist durable optimized status (server convert gate reads positions_v2).
+            alignShellProject({ ...runProject, status: 'optimized', updatedAt: new Date() });
+            if (user?.id && poseId) {
+                const { error: persistErr } = await supabase
+                    .from('fabricator_positions_v2')
+                    .update({
+                        status: 'optimized',
+                        optimization: optimizationResult as unknown as Record<string, unknown>,
+                        updated_at: new Date().toISOString(),
+                    })
+                    .eq('id', poseId)
+                    .eq('owner_user_id', user.id);
+                if (persistErr) {
+                    console.warn('[OptimizationPage] durable status persist failed:', persistErr.message);
+                }
+            }
             if (!completeStep('optimization')) throw new Error('Optimization evidence could not be verified.');
 
         } catch (err) {
@@ -113,7 +131,7 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, navigate, invalidateStep, projectIdentity]);
+    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, navigate, invalidateStep, projectIdentity]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, currentProject).valid;
 
