@@ -1156,7 +1156,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       <div>
                         <Label htmlFor="windowType" className="typography-label">{t('smart_measuring.dimensions.window_type', 'Window Type & Layout')}</Label>
                         <Select value={measurements.windowType} onValueChange={(value) => handleInputChange('windowType', value)}>
-                          <SelectTrigger className={`bg-[#1a1a1a]/80 border-2 border-amber-600/30 text-amber-200 ${getFieldError('windowType') ? 'border-red-500' : ''}`}>
+                          <SelectTrigger
+                            id="windowType"
+                            data-testid="measuring-window-type"
+                            aria-label={t('smart_measuring.dimensions.window_type', 'Window Type & Layout')}
+                            className={`bg-[#1a1a1a]/80 border-2 border-amber-600/30 text-amber-200 ${getFieldError('windowType') ? 'border-red-500' : ''}`}
+                          >
                             <SelectValue placeholder={t('smart_measuring.dimensions.window_type_placeholder', 'Select window or door layout')} />
                           </SelectTrigger>
                           <SelectContent className="bg-[#0f0f0f]/95 backdrop-blur-xl /40 text-amber-200 z-50 space-y-1 card-premium">

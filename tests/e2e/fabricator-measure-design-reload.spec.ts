@@ -2,6 +2,9 @@
  * Measuring → Design save/reload with Multi-pane OFF.
  * Credentials are required: missing env fails the suite (not a successful skip).
  * Set E2E_OPTIONAL=1 only for local soft runs.
+ *
+ * E2E_POSE_DESIGN_URL may be absolute or site-relative; E2E_BASE_URL / Playwright
+ * baseURL must point at a deployment that includes this branch's measuring UI.
  */
 import { expect, test } from '@playwright/test';
 
@@ -20,13 +23,20 @@ function requireEnv(name: string): string {
   return value;
 }
 
+function toPath(urlOrPath: string): string {
+  if (urlOrPath.startsWith('http://') || urlOrPath.startsWith('https://')) {
+    return new URL(urlOrPath).pathname;
+  }
+  return urlOrPath.startsWith('/') ? urlOrPath : `/${urlOrPath}`;
+}
+
 test.describe('Fabricator measure → design reload', () => {
   test('two sliding cells survive reload with Multi-pane off', async ({ page }) => {
     test.setTimeout(180_000);
 
     const email = requireEnv('E2E_USER_EMAIL');
     const password = requireEnv('E2E_USER_PASSWORD');
-    const poseUrl = requireEnv('E2E_POSE_DESIGN_URL');
+    const poseDesignPath = toPath(requireEnv('E2E_POSE_DESIGN_URL'));
 
     page.on('pageerror', (err) => console.log(`BROWSER ERROR: ${err.message}`));
 
@@ -37,13 +47,13 @@ test.describe('Fabricator measure → design reload', () => {
     await page.getByRole('button', { name: /sign in/i }).click();
     await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 60_000 });
 
-    const measureUrl = poseUrl.replace(/\/design\/?$/, '/measuring');
-    await page.goto(measureUrl, { waitUntil: 'domcontentloaded' });
+    const measurePath = poseDesignPath.replace(/\/design\/?$/, '/measuring');
+    await page.goto(measurePath, { waitUntil: 'domcontentloaded' });
 
     // Explicit 2-sash sliding; Multi-pane must stay OFF for this acceptance case
-    const windowTypeTrigger = page.locator('#windowType').or(page.getByLabel(/window type|layout/i)).first();
-    await expect(windowTypeTrigger).toBeVisible({ timeout: 30_000 });
-    await windowTypeTrigger.click();
+    const windowType = page.getByTestId('measuring-window-type').or(page.locator('#windowType'));
+    await expect(windowType).toBeVisible({ timeout: 45_000 });
+    await windowType.click();
     await page.getByRole('option', { name: /2.?sash|two.?sash|sliding/i }).first().click();
 
     const multiPane = page.getByTestId('measuring-multipane-toggle');
@@ -69,7 +79,7 @@ test.describe('Fabricator measure → design reload', () => {
     await expect(finalize).toBeVisible({ timeout: 30_000 });
     await finalize.click();
 
-    await page.goto(poseUrl, { waitUntil: 'domcontentloaded' });
+    await page.goto(poseDesignPath, { waitUntil: 'domcontentloaded' });
     await page.reload({ waitUntil: 'domcontentloaded' });
 
     // Exact post-reload configuration: two cells, not a 1×1 FIXED collapse

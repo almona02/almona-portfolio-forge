@@ -34,13 +34,9 @@ test.describe('Fabricator design/tuning pickers', () => {
     await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 60_000 });
 
     await page.goto('/fabricator/studio/design', { waitUntil: 'domcontentloaded' });
-    await expect(
-      page.getByTestId('design-pose-picker').or(page.getByText(/Select a project position/i)),
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('design-pose-picker')).toBeVisible({ timeout: 30_000 });
 
     await page.goto('/fabricator/studio/data/tuning', { waitUntil: 'domcontentloaded' });
-    await expect(
-      page.getByTestId('tuning-pack-picker').or(page.getByText(/Select a system pack/i)),
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('tuning-pack-picker')).toBeVisible({ timeout: 30_000 });
   });
 });

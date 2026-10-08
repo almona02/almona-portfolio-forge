@@ -1,4 +1,6 @@
 # Authenticated Fabricator acceptance — fails closed without secrets (no successful skip).
+# Builds this PR and serves it locally so assertions hit the branch under test
+# (Vercel Preview SSO is not a substitute for staging acceptance).
 name: Fabricator acceptance E2E
 
 on:
@@ -49,15 +51,25 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
+      - name: Build app under test
+        run: npm run build
+
       - name: Run acceptance specs (fail-closed)
         env:
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
           E2E_POSE_DESIGN_URL: ${{ secrets.E2E_POSE_DESIGN_URL }}
           E2E_OPTIONAL: "0"
-          PLAYWRIGHT_BASE_URL: ${{ secrets.E2E_BASE_URL }}
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
         run: |
-          export PLAYWRIGHT_BASE_URL="${PLAYWRIGHT_BASE_URL:-https://almona-portfolio-forge.vercel.app}"
+          npx vite preview --host 127.0.0.1 --port 4173 &
+          for i in $(seq 1 60); do
+            if curl -sf "http://127.0.0.1:4173/" >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl -sf "http://127.0.0.1:4173/" >/dev/null
           npx playwright test \
             tests/e2e/fabricator-measure-design-reload.spec.ts \
             tests/e2e/fabricator-design-tuning-pickers.spec.ts \
