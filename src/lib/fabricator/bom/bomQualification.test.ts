@@ -47,7 +47,8 @@ describe('BOM manufacturing qualification', () => {
         cells: [{ id: 'a', row: 0, col: 0, type: 'sash' }],
       },
     } as WindowUnit;
-    expect(countRequiredProfilePieces(casement, pattern)).toBe(8);
+    // 4 frame + 4 sash + 4 glazing bead (design generator always emits beads per sash)
+    expect(countRequiredProfilePieces(casement, pattern)).toBe(12);
 
     const fixed = {
       type: 'fixed_window',
