@@ -109,11 +109,19 @@ test.describe('Fabricator measure → design reload', () => {
     await page.goto(poseDesignPath, { waitUntil: 'domcontentloaded' });
     await page.reload({ waitUntil: 'domcontentloaded' });
 
-    const designSummary = page.getByTestId('design-grid-summary');
-    await expect(designSummary).toHaveAttribute('data-cells', '2', { timeout: 45_000 });
-    await expect(page.getByTestId('design-grid-cell')).toHaveCount(2);
+    // Design may mount more than one summary (primary canvas + preview); require every
+    // summary reports two cells, and scope cell checks to the first summary.
+    const designSummaries = page.getByTestId('design-grid-summary');
+    await expect(designSummaries.first()).toBeVisible({ timeout: 45_000 });
+    const summaryCount = await designSummaries.count();
+    expect(summaryCount).toBeGreaterThan(0);
+    for (let i = 0; i < summaryCount; i += 1) {
+      await expect(designSummaries.nth(i)).toHaveAttribute('data-cells', '2');
+    }
+    const primarySummary = designSummaries.first();
+    await expect(primarySummary.getByTestId('design-grid-cell')).toHaveCount(2);
     await expect(page.getByText(/1\s*[×x]\s*1/i)).toHaveCount(0);
-    await expect(page.getByTestId('design-grid-cell').first()).toHaveAttribute(
+    await expect(primarySummary.getByTestId('design-grid-cell').first()).toHaveAttribute(
       'data-cell-type',
       /sliding/i,
     );
