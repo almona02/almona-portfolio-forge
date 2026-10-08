@@ -8,6 +8,7 @@ import { useEgyptianPredictiveGrid } from '@/hooks/fabricator/useEgyptianPredict
 import { useSystemRoleOptions } from '@/hooks/fabricator/useSystemRoleOptions';
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 import { StoredSystemPack, addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { shouldPersistMeasuringGrid } from '@/lib/fabricator/openingType';
 import { ValidationError, getConstraintsForSystemPack, validateMeasurements } from '@/lib/fabricatorValidation';
 import { trackError } from '@/lib/performance-monitoring';
 import { cn } from '@/lib/utils';
@@ -186,7 +187,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     isGridLocked
   });
 
-  // Apply suggested grid if available
+  const [isGridMode, setIsGridMode] = useState(hasAuthoritativeGrid || Boolean(suggestedGrid));
+
+  // Apply suggested grid if available — keep grid mode on so Design receives the layout
   useEffect(() => {
     if (suggestedGrid && !isGridLocked) {
       setGrid(_prev => ({
@@ -194,10 +197,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         // Preserve any manual cell types if dimensions match? For now, full replace for safety.
         // In future: intelligent merge.
       }));
+      setIsGridMode(true);
     }
   }, [suggestedGrid, isGridLocked]);
 
-  const [isGridMode, setIsGridMode] = useState(hasAuthoritativeGrid);
   const [isSystemPackCollapsed, setIsSystemPackCollapsed] = useState(false);
   /** When true, user opened the panel — stay open until they hide it (no auto-collapse). */
   const [systemPackPinnedOpen, setSystemPackPinnedOpen] = useState(false);
@@ -305,8 +308,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       createdAt: new Date(),
       updatedAt: new Date(),
       systemPackId: selectedSystemPackId,
-      // Attach Grid if in Grid Mode
-      grid: isGridMode ? grid : undefined
+      // Persist predicted/sliding grids even when the grid-mode toggle is off
+      grid: shouldPersistMeasuringGrid(isGridMode, grid) ? grid : undefined,
     };
   }, [measurements, grid, isGridMode, selectedSystemPackId]);
 
@@ -590,8 +593,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       // Include rough opening if in hole mode
       roughOpeningWidth: isHoleMode ? rawWidth : undefined,
       roughOpeningHeight: isHoleMode ? rawHeight : undefined,
-      // Preserve grid layout if set in measuring step
-      grid: isGridMode ? grid : undefined,
+      // Persist predicted/sliding grids even when the grid-mode toggle is off
+      grid: shouldPersistMeasuringGrid(isGridMode, grid) ? grid : undefined,
       // Preserve preset pattern selection
       presetId: selectedPatternId || undefined,
     };

@@ -13,10 +13,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { HardenerSelectionResult } from '@/lib/fabricator/hardener';
-import { hardenerAuditLogger, hardenerSelectionCache, hardenerSelector } from '@/lib/fabricator/hardener';
+import { HARDENER_CATALOG, hardenerAuditLogger, hardenerSelectionCache, hardenerSelector } from '@/lib/fabricator/hardener';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
 import { AlertCircle, FileText, Info, Loader2, RefreshCw } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { HardenerDisplay } from './HardenerDisplay';
 
 interface HardenerSelectionPanelProps {
@@ -113,6 +113,8 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
           `System stop required: Hardener selection failed validation (${aicsRef}). ` +
           `Manufacturing cannot proceed without valid hardener specification.`
         );
+      } else if (!result.hardenerCode) {
+        setError(result.justification || 'No hardener rule matched — pick a code manually.');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to select hardener code';
@@ -123,11 +125,59 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
     }
   }, [windowUnit, systemPack, userId, mode, onSelectionChange]);
 
+  const context = useMemo(
+    () => (windowUnit && systemPack ? hardenerSelector.extractContext(windowUnit, systemPack) : null),
+    [windowUnit, systemPack],
+  );
+
+  const manualOptions = useMemo(() => {
+    if (!context) return HARDENER_CATALOG;
+    return HARDENER_CATALOG.filter(
+      (spec) =>
+        spec.material === context.material &&
+        (spec.openingTypes.includes(context.openingType) || context.openingType === 'casement'),
+    );
+  }, [context]);
+
   /**
    * Handle manual refresh
    */
   const handleRefresh = () => {
     selectHardener();
+  };
+
+  /**
+   * Manual catalog pick when no rule matches (human validation required).
+   */
+  const handleManualPick = (code: string) => {
+    if (!windowUnit || !systemPack || !context) return;
+    const spec = HARDENER_CATALOG.find((item) => item.code === code);
+    if (!spec) return;
+    const manual: HardenerSelectionResult = {
+      tier: 'Tier 3',
+      deterministic: true,
+      hardenerCode: spec.code,
+      ruleId: `manual-${spec.code}`,
+      validation: 'WARNING',
+      validationDetails: {
+        profileSystemMatch: true,
+        glassThicknessMatch: true,
+        sashSizeMatch: true,
+        openingTypeMatch: spec.openingTypes.includes(context.openingType),
+        egyptianCodeCompliant: spec.egyptianCodeCompliant,
+        constraintViolations: ['Manual hardener selection — human validation required'],
+      },
+      justification: `Manual selection of ${spec.code} (${spec.name}) after no automatic rule matched.`,
+      constitutionalDisclaimer:
+        'Manual hardener selection is rule-catalog based. Human validation is required before manufacturing.',
+      systemStopRequired: false,
+      requiresHumanIntervention: true,
+    };
+    hardenerSelectionCache.set(context, manual);
+    hardenerAuditLogger.logSelection(windowUnit.id, context, manual, userId, mode);
+    setSelection(manual);
+    setError(null);
+    onSelectionChange?.(manual);
   };
 
   /**
@@ -137,9 +187,8 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
     if (mode === 'certified') {
       return; // Override not allowed in certified mode
     }
-    // In sandbox mode, allow manual override
-    // This would open a manual selection dialog
-    console.log('Override hardener selection (sandbox mode)');
+    // In sandbox mode, allow manual override via catalog picker below
+    setError('Pick a hardener code from the catalog (sandbox override).');
   };
 
   return (
@@ -253,6 +302,30 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
             >
               Select Hardener Code
             </Button>
+          </div>
+        )}
+
+        {/* Manual picker when automatic rule fails */}
+        {!loading && (!selection?.hardenerCode || error) && manualOptions.length > 0 && (
+          <div className="rounded-lg border border-amber-600/30 bg-slate-950/60 p-3 space-y-2" data-testid="hardener-manual-picker">
+            <p className="text-xs text-amber-200/80">No matching rule — select a hardener from the catalog:</p>
+            <select
+              className="w-full rounded border border-slate-600 bg-slate-900 p-2 text-sm text-slate-100"
+              defaultValue=""
+              onChange={(event) => {
+                if (event.target.value) handleManualPick(event.target.value);
+              }}
+              aria-label="Manual hardener catalog"
+            >
+              <option value="" disabled>
+                Choose hardener code…
+              </option>
+              {manualOptions.map((spec) => (
+                <option key={spec.code} value={spec.code}>
+                  {spec.code} — {spec.name}
+                </option>
+              ))}
+            </select>
           </div>
         )}
       </CardContent>
