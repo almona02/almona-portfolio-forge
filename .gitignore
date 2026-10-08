@@ -117,3 +117,6 @@ git-status-push-review.txt
 # Reproducible deployment bundles
 batch1-release*/
 .vercel/
+
+# Local CI acceptance secret material (never commit)
+.tmp-pr-assess/e2e-acceptance-secrets.env
