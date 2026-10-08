@@ -221,7 +221,6 @@
     "@types/qrcode": "^1.5.6",
     "@types/qrcode.react": "^1.0.5",
     "@types/react-helmet-async": "^1.0.1",
-    "@types/three": "^0.155.1",
     "@uiw/react-md-editor": "^4.0.8",
     "@use-gesture/react": "^10.3.1",
     "@vercel/analytics": "^1.5.0",
@@ -301,9 +300,11 @@
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/three": "~0.180.0",
     "@vitejs/plugin-react": "^4.7.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "@vitest/browser": "4.1.11",
+    "@vitest/browser-playwright": "4.1.11",
     "@vitest/coverage-v8": "4.1.11",
     "@vitest/ui": "4.1.11",
     "autoprefixer": "^10.4.20",
@@ -334,7 +335,6 @@
     "vite-plugin-gltf": "^4.0.0",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "4.1.11",
-    "ws": "^8.21.3",
-    "@vitest/browser-playwright": "4.1.11"
+    "ws": "^8.21.3"
   }
 }
