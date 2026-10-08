@@ -56,7 +56,13 @@ describe('recordOptimizationEvidence (#67)', () => {
       estimatedProductionTime: 1,
       nestingEfficiency: 0.88,
       cuttingPlan: [],
-      costBreakdown: sampleResult.costBreakdown,
+      costBreakdown: {
+        materialCost: 1,
+        laborCost: 1,
+        hardwareCost: 1,
+        glazingCost: 1,
+        totalCost: 4,
+      },
     } as never;
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
