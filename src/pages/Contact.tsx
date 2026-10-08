@@ -2,6 +2,7 @@ import { usePublicCopy } from '@/hooks/usePublicCopy';
 import SEO from "@/components/SEO";
 import { EmailDraftDownload } from '@/components/contact/EmailDraftDownload';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
+import { supabase } from '@/lib/supabase';
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
 import { Label } from "@/shared/ui/ui/label";
@@ -11,7 +12,10 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
+import { toast } from "sonner";
 import * as z from "zod";
+
+const CONTACT_DRAFT_KEY = 'almona.contact.draft.v1';
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -29,6 +33,7 @@ const Contact = () => {
   const copy = usePublicCopy();
   const location = useLocation();
   const [emailDraft, setEmailDraft] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -38,10 +43,40 @@ const Contact = () => {
     defaultValues: { subject: new URLSearchParams(location.search).get('subject')?.slice(0, 120) || '' },
   });
 
-  const onSubmit = useCallback((data: ContactFormValues) => {
+  const onSubmit = useCallback(async (data: ContactFormValues) => {
+    setIsSubmitting(true);
     const body = `Name: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\n\n${data.message}`;
-    setEmailDraft(`mailto:almona02@yahoo.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(body)}`);
-  }, []);
+    const mailto = `mailto:almona02@yahoo.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(body)}`;
+    try {
+      localStorage.setItem(CONTACT_DRAFT_KEY, JSON.stringify({ ...data, savedAt: new Date().toISOString() }));
+    } catch {
+      /* ignore quota */
+    }
+
+    let persisted = false;
+    try {
+      const { error } = await supabase.from('contact_inquiries').insert({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        subject: data.subject,
+        message: data.message,
+        source: 'web_contact',
+      });
+      persisted = !error;
+      if (error) console.warn('[Contact] persist failed:', error.message);
+    } catch (err) {
+      console.warn('[Contact] persist unavailable', err);
+    }
+
+    setEmailDraft(mailto);
+    toast.success(
+      persisted
+        ? copy('Message saved. You can still open an email draft as backup.')
+        : copy('Saved locally; cloud save unavailable. Open email draft to send.'),
+    );
+    setIsSubmitting(false);
+  }, [copy]);
 
   const currentUrl = useMemo(() => `https://www.almona02.com${location.pathname}`, [location.pathname]);
 
@@ -56,10 +91,10 @@ const Contact = () => {
   return (
     <>
       <SEO
-        title="Contact Us - Get in Touch | Almona Co."
-        description="Contact Almona Co. for industrial machinery inquiries, technical support, and business partnerships. Official YILMAZ dealer in Egypt."
+        title={copy("Contact Us - Get in Touch | Almona Co.")}
+        description={copy("Contact Almona Co. for industrial machinery inquiries, technical support, and business partnerships. Official YILMAZ dealer in Egypt.")}
         url={currentUrl}
-        keywords="contact Almona, industrial machinery contact, YILMAZ dealer contact Egypt"
+        keywords={copy("contact Almona, industrial machinery contact, YILMAZ dealer contact Egypt")}
       />
       <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-12">
@@ -109,7 +144,7 @@ const Contact = () => {
                       dir="ltr"
                       type="email"
                       className="mt-2 bg-almona-dark border-almona-light/30"
-                      placeholder="you@example.com"
+                      placeholder={copy("you@example.com")}
                       {...register("email")}
                     />
                     {errors.email && (
@@ -171,8 +206,9 @@ const Contact = () => {
 
                 <Button
                   type="submit"
+                  disabled={isSubmitting}
                   className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white py-3"
-                >{copy("Prepare Email")}</Button>
+                >{isSubmitting ? copy("Loading...") : copy("Prepare Email")}</Button>
               </form>
             </div>
 

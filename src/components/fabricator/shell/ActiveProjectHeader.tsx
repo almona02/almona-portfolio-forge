@@ -204,7 +204,7 @@ export const ActiveProjectHeader: React.FC<ActiveProjectHeaderProps> = ({
     },
     {
       label: t('industrial.context.saved', 'Last saved'),
-      value: saveChrome.tone === 'dirty' ? 'Unsaved draft' : saveChrome.savedAtLabel,
+      value: saveChrome.tone === 'dirty' ? t('industrial.unsaved_draft', 'Unsaved draft') : saveChrome.savedAtLabel,
       ltr: true,
     },
   ];

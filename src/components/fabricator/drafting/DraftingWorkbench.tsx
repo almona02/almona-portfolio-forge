@@ -7,7 +7,6 @@ import type { Profile, WindowUnit } from '@/types/fabricator';
 import React, { Suspense, lazy, useCallback, useState } from 'react';
 // PHASE 2 IMPORT: Facade Editor
 import { usePoseSync } from '@/hooks/fabricator/usePoseSync';
-import { FacadeReportService } from '@/lib/exports/FacadeReportService';
 import { FacadeModel } from '@/lib/facade/CurtainWallEngine';
 import { useOutletContext } from 'react-router-dom';
 import { ConstitutionalTopBar, ConstitutionalTopBarCompact } from '../constitutional/ConstitutionalTopBar';
@@ -170,6 +169,7 @@ export const DraftingWorkbench: React.FC<{
         glazing: []
       } as unknown as WindowUnit;
 
+      const { FacadeReportService } = await import('@/lib/exports/FacadeReportService');
       const blob = await FacadeReportService.generateFacadeReport(mockUnit, facadeModel);
       const { saveAs } = await import('file-saver');
       saveAs(blob, `Facade_Report_${mockUnit.orderNumber}.pdf`);
