@@ -44,6 +44,7 @@ export const OptimizationPage: React.FC = () => {
         optimizationResult,
         completeStep,
         setOptimizationResult,
+        alignShellProject,
         invalidateStep,
     } = useWorkflowStore();
     const activeProjectRef = useRef(currentProject);
@@ -101,6 +102,10 @@ export const OptimizationPage: React.FC = () => {
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
             setOptimizationResult(optimizationResult);
             if (!completeStep('optimization')) throw new Error('Optimization evidence could not be verified.');
+            // Persist real WindowUnitStatus via alignShellProject (avoids wiping BOM/opt)
+            if (runProject) {
+                alignShellProject({ ...runProject, status: 'optimized', updatedAt: new Date() });
+            }
 
         } catch (err) {
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current) return;
@@ -113,7 +118,7 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, navigate, invalidateStep, projectIdentity]);
+    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, alignShellProject, navigate, invalidateStep, projectIdentity]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, currentProject).valid;
 
