@@ -9,6 +9,7 @@ on:
       - "tests/e2e/fabricator-measure-design-reload.spec.ts"
       - "tests/e2e/fabricator-design-tuning-pickers.spec.ts"
       - "src/components/fabricator/SmartMeasuringInterface.tsx"
+      - "src/components/fabricator/EnhancedMeasurementTools.tsx"
       - "src/components/fabricator/shouldPersistMeasuringGrid.ts"
       - "src/components/fabricator/EngineeringBay.tsx"
       - "src/components/fabricator/EngineeringBayWrapper.tsx"

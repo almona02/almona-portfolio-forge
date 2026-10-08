@@ -290,7 +290,10 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
       {/* Width Input */}
       <div className="group">
         <div className="flex items-center justify-between mb-2">
-          <Label className="text-xs uppercase tracking-[0.15em] text-amber-500/80 group-focus-within:text-amber-400 transition-colors font-semibold">
+          <Label
+            htmlFor="measuring-width-mm"
+            className="text-xs uppercase tracking-[0.15em] text-amber-500/80 group-focus-within:text-amber-400 transition-colors font-semibold"
+          >
             {t('smart_measuring.dimensions.width', 'Total Width (mm)')}
           </Label>
           <TooltipProvider>
@@ -320,6 +323,8 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
         </div>
         <div className="relative">
           <Input
+            id="measuring-width-mm"
+            data-testid="measuring-width-mm"
             value={width}
             onChange={(e) => onWidthChange(e.target.value)}
             className={`btn-secondary-dark ${getValidationClass(validationState.widthValid, !!widthError)}`}
@@ -354,7 +359,10 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
       {/* Height Input */}
       <div className="group">
         <div className="flex items-center justify-between mb-2">
-          <Label className="text-xs uppercase tracking-[0.15em] text-amber-500/80 group-focus-within:text-amber-400 transition-colors font-semibold">
+          <Label
+            htmlFor="measuring-height-mm"
+            className="text-xs uppercase tracking-[0.15em] text-amber-500/80 group-focus-within:text-amber-400 transition-colors font-semibold"
+          >
             {t('smart_measuring.dimensions.height', 'Total Height (mm)')}
           </Label>
           <TooltipProvider>
@@ -384,6 +392,8 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
         </div>
         <div className="relative">
           <Input
+            id="measuring-height-mm"
+            data-testid="measuring-height-mm"
             value={height}
             onChange={(e) => onHeightChange(e.target.value)}
             className={`btn-secondary-dark ${getValidationClass(validationState.heightValid, !!heightError)}`}

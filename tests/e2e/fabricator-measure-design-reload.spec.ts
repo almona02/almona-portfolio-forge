@@ -80,9 +80,8 @@ test.describe('Fabricator measure → design reload', () => {
     await windowType.click();
     await page.getByRole('option', { name: /2.?sash|two.?sash/i }).first().click();
 
-    // Dimensions use "Total Width (mm)" / "Total Height (mm)" labels
-    const width = page.getByLabel(/total width/i).or(page.getByLabel(/width \(mm\)/i)).first();
-    const height = page.getByLabel(/total height/i).or(page.getByLabel(/height \(mm\)/i)).first();
+    const width = page.getByTestId('measuring-width-mm');
+    const height = page.getByTestId('measuring-height-mm');
     await expect(width).toBeVisible({ timeout: 30_000 });
     await width.fill('1200');
     await height.fill('1400');
