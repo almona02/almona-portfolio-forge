@@ -26,11 +26,12 @@ test.describe('Fabricator design/tuning pickers', () => {
     const password = requireEnv('E2E_USER_PASSWORD');
     page.on('pageerror', (err) => console.log(`BROWSER ERROR: ${err.message}`));
 
-    await page.goto('/auth', { waitUntil: 'domcontentloaded' });
-    await page.getByLabel(/email/i).fill(email);
-    await page.getByLabel(/password/i).fill(password);
-    await page.getByRole('button', { name: /sign in|log in|continue/i }).click();
-    await page.waitForURL(/fabricator|studio|dashboard|projects/i, { timeout: 60_000 });
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#email')).toBeVisible({ timeout: 30_000 });
+    await page.locator('#email').fill(email);
+    await page.locator('#password').fill(password);
+    await page.getByRole('button', { name: /sign in/i }).click();
+    await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 60_000 });
 
     await page.goto('/fabricator/studio/design', { waitUntil: 'domcontentloaded' });
     await expect(
