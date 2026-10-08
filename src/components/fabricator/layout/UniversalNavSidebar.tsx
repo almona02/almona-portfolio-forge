@@ -18,6 +18,7 @@ import {
     Settings
 } from 'lucide-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { CollapsiblePanel } from './CollapsiblePanel';
 
@@ -50,6 +51,7 @@ interface UniversalNavSidebarProps {
 
 export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ activeStudio }) => {
   const location = useLocation();
+  const { t } = useTranslation('fabricator');
   const { user } = useAuth();
   const { state: workspace } = useFabricatorWorkspace();
   const narrow = useNarrowStudioShell();
@@ -104,7 +106,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
   );
   const savedOk = saveChrome.tone === 'acknowledged';
   const savedLabel = saveChrome.tone === 'dirty'
-    ? 'Unsaved draft'
+    ? t('industrial.unsaved_draft', 'Unsaved draft')
     : saveChrome.tone === 'acknowledged'
       ? saveChrome.label
       : saveChrome.tone === 'local'
@@ -115,73 +117,73 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
   const navItems: NavItem[] = useMemo(() => [
     {
       id: 'command',
-      label: 'Command Center',
+      label: t('nav.command', 'Command Center'),
       icon: <Home size={20} />,
       href: fabricatorRoutes.studioCommand(),
     },
     {
       id: 'project',
-      label: 'Project Studio',
+      label: t('nav.project', 'Project Studio'),
       icon: <Folder size={20} />,
       href: fabricatorRoutes.studioProjects(),
     },
     {
       id: 'orders',
-      label: 'Orders',
+      label: t('nav.orders', 'Orders'),
       icon: <Box size={20} />,
       href: '/fabricator/studio/orders',
     },
     {
       id: 'design',
-      label: 'Design Studio',
+      label: t('nav.design', 'Design Studio'),
       icon: <Settings size={20} />,
       href: '/fabricator/studio/design',
     },
     {
       id: 'production',
-      label: 'Production Studio',
+      label: t('nav.production', 'Production Studio'),
       icon: <Box size={20} />,
       href: fabricatorRoutes.studioProduction(),
       subItems: [
-        { label: 'Dashboard', href: fabricatorRoutes.studioProduction() },
-        { label: 'Quality Control', href: fabricatorRoutes.studioProductionQuality() },
-        { label: 'Delivery Tracking', href: fabricatorRoutes.studioProductionDelivery() },
+        { label: t('nav.dashboard', 'Dashboard'), href: fabricatorRoutes.studioProduction() },
+        { label: t('nav.quality_control', 'Quality Control'), href: fabricatorRoutes.studioProductionQuality() },
+        { label: t('nav.delivery_tracking', 'Delivery Tracking'), href: fabricatorRoutes.studioProductionDelivery() },
       ],
     },
     {
       id: 'data',
-      label: 'Data Studio',
+      label: t('nav.data', 'Data Studio'),
       icon: <BarChart size={20} />,
       href: fabricatorRoutes.studioData(),
       subItems: [
-        { label: 'System library', href: fabricatorRoutes.studioData() },
-        { label: 'Profiles', href: fabricatorRoutes.studioData('profiles') },
-        { label: 'Operation templates', href: fabricatorRoutes.studioData('tuning') },
-        { label: 'Patterns', href: fabricatorRoutes.studioData('patterns') },
-        { label: 'Stock / remnants', href: fabricatorRoutes.studioDataStock() },
-        { label: 'Customers', href: fabricatorRoutes.studioData('customers') },
-        { label: 'Integrations', href: fabricatorRoutes.studioDataIntegrations() },
+        { label: t('nav.system_library', 'System library'), href: fabricatorRoutes.studioData() },
+        { label: t('nav.profiles', 'Profiles'), href: fabricatorRoutes.studioData('profiles') },
+        { label: t('nav.operation_templates', 'Operation templates'), href: fabricatorRoutes.studioData('tuning') },
+        { label: t('nav.patterns', 'Patterns'), href: fabricatorRoutes.studioData('patterns') },
+        { label: t('nav.stock', 'Stock / remnants'), href: fabricatorRoutes.studioDataStock() },
+        { label: t('nav.customers', 'Customers'), href: fabricatorRoutes.studioData('customers') },
+        { label: t('nav.integrations', 'Integrations'), href: fabricatorRoutes.studioDataIntegrations() },
       ],
     },
     {
       id: 'reports',
-      label: 'Reports',
+      label: t('nav.reports', 'Reports'),
       icon: <BarChart size={20} />,
       href: fabricatorRoutes.studioReports(),
     },
     {
       id: 'help',
-      label: 'Operator Help',
+      label: t('nav.help', 'Operator Help'),
       icon: <BookOpen size={20} />,
       href: fabricatorRoutes.studioHelp(),
     },
     {
       id: 'settings',
-      label: 'Settings',
+      label: t('nav.settings', 'Settings'),
       icon: <Settings size={20} />,
       href: '/settings',
     },
-  ], []);
+  ], [t]);
   
   const isActive = useCallback((href: string, id: string, subItems?: Array<{ href: string }>) => {
     if (activeStudio && (id === activeStudio || (id === 'project' && activeStudio === 'projects'))) return true;

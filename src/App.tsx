@@ -321,11 +321,14 @@ const GlobalDynamicImportGuard = () => {
   return null;
 };
 
-// Public pages do not need the simulated manufacturing boot sequence.
-const EntryLoader = ({ children }: { children: React.ReactNode }) =>
-  window.location.pathname.startsWith('/fabricator')
-    ? <Prestige3DLoader show3DAnimation={import.meta.env.PROD}>{children}</Prestige3DLoader>
-    : <>{children}</>;
+// Public pages skip boot. Studio skips Prestige3D (three/r3f) for LCP; other /fabricator* keep 2D boot only.
+const EntryLoader = ({ children }: { children: React.ReactNode }) => {
+  const path = window.location.pathname;
+  if (!path.startsWith('/fabricator') || path.startsWith('/fabricator/studio')) {
+    return <>{children}</>;
+  }
+  return <Prestige3DLoader show3DAnimation={false}>{children}</Prestige3DLoader>;
+};
 
 // Memoize App component to prevent unnecessary re-renders
 const App = memo(() => {

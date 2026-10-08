@@ -1,6 +1,32 @@
 {
+  "nav": {
+    "command": "مركز القيادة",
+    "project": "استوديو المشاريع",
+    "orders": "الطلبات",
+    "design": "استوديو التصميم",
+    "production": "استوديو الإنتاج",
+    "data": "استوديو البيانات",
+    "reports": "التقارير",
+    "help": "مساعدة المشغّل",
+    "settings": "الإعدادات",
+    "dashboard": "لوحة التحكم",
+    "quality_control": "مراقبة الجودة",
+    "delivery_tracking": "تتبع التسليم",
+    "system_library": "مكتبة الأنظمة",
+    "profiles": "المقاطع",
+    "operation_templates": "قوالب التشغيل",
+    "patterns": "الأنماط",
+    "stock": "المخزون / البقايا",
+    "customers": "العملاء",
+    "integrations": "التكاملات",
+    "open_navigation": "فتح التنقل",
+    "close_navigation": "إغلاق التنقل",
+    "studio_suffix": "استوديو {{name}}",
+    "initializing": "جاري تهيئة بيئة الاستوديو..."
+  },
   "industrial": {
     "no_active_project": "لا يوجد مشروع نشط",
+    "unsaved_draft": "مسودة غير محفوظة",
     "workflow_nav": "مسار التصنيع",
     "stages": {
       "project": "مشروع",

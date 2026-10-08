@@ -2,13 +2,17 @@ import { ThermalAnalysisResult } from '@/lib/engineering/ThermalBridge';
 import { CostBreakdown } from '@/lib/fabricator/CostCalculator';
 import { StructuralModel } from '@/types/engineering';
 import { FacadeModel, WindowUnit } from '@/types/fabricator';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
 
 // Extend jsPDF for autoTable (TypeScript workaround)
-interface jsPDFWithAutoTable extends jsPDF {
-  autoTable: (options: any) => jsPDF; 
+interface jsPDFWithAutoTable {
+  autoTable: (options: any) => jsPDFWithAutoTable;
   lastAutoTable: { finalY: number };
+  setFontSize: (n: number) => void;
+  text: (...args: any[]) => void;
+  addPage: () => void;
+  output: (type: string) => Blob;
+  // allow other jsPDF methods used below
+  [key: string]: any;
 }
 
 export class FacadeReportService {
@@ -24,6 +28,8 @@ export class FacadeReportService {
     thermalResult?: ThermalAnalysisResult,
     structuralModel?: StructuralModel
   ): Promise<Blob> {
+    const { jsPDF } = await import('jspdf');
+    await import('jspdf-autotable');
     const doc = new jsPDF() as unknown as jsPDFWithAutoTable;
     
     // --- 1. COVER PAGE ---
@@ -131,7 +137,7 @@ export class FacadeReportService {
     return doc.output('blob');
   }
 
-  private static addHeader(doc: jsPDF, title: string) {
+  private static addHeader(doc: jsPDFWithAutoTable, title: string) {
       doc.setFillColor(26, 26, 26); // Dark Almona Background
       doc.rect(0, 0, 210, 30, 'F');
       doc.setTextColor(255, 255, 255);
@@ -140,14 +146,14 @@ export class FacadeReportService {
       doc.setTextColor(0, 0, 0); // Reset
   }
 
-  private static addProjectInfo(doc: jsPDF, project: WindowUnit) {
+  private static addProjectInfo(doc: jsPDFWithAutoTable, project: WindowUnit) {
       doc.setFontSize(12);
       doc.text(`Project Ref: ${project.orderNumber}`, 150, 20);
       doc.setFontSize(10);
       doc.text(`Client: ${project.customer || 'N/A'}`, 150, 26);
   }
 
-  private static addEnergyBadge(doc: jsPDF, rating: string, x: number, y: number) {
+  private static addEnergyBadge(doc: jsPDFWithAutoTable, rating: string, x: number, y: number) {
       // Draw simple Badge
       const colorMap: Record<string, [number, number, number]> = {
           'A+': [0, 153, 51], // Green
