@@ -121,7 +121,6 @@ export const SystemPackTuningStudio: React.FC = () => {
   // Load system pack from localStorage or original systems
   useEffect(() => {
     if (!systemPackId) {
-      navigate(fabricatorRoutes.studioData());
       return;
     }
 
@@ -576,8 +575,52 @@ export const SystemPackTuningStudio: React.FC = () => {
   };
 
   const handleGoToDesign = () => {
-    navigate('/fabricator/design');
+    navigate(fabricatorRoutes.studioProjects());
   };
+
+  if (!systemPackId) {
+    const custom = loadCustomSystems();
+    const packs = [
+      ...SYSTEM_PACKS.map((p) => ({ id: p.meta.id, name: p.meta.name || p.meta.id })),
+      ...custom.map((p) => ({ id: p.meta.id, name: p.meta.name || p.meta.id })),
+    ];
+    return (
+      <div
+        className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8 text-white"
+        data-testid="tuning-pack-picker"
+      >
+        <h1 className="text-xl font-semibold text-amber-200 mb-2">Select a system pack to tune</h1>
+        <p className="text-sm text-slate-400 mb-6">
+          Operation templates need a pack. Choose one below or open the system library.
+        </p>
+        <Button
+          variant="outline"
+          className="mb-6 border-slate-600 text-slate-200"
+          onClick={() => navigate(fabricatorRoutes.studioData())}
+        >
+          Open system library
+        </Button>
+        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl">
+          {packs.map((pack) => (
+            <li key={pack.id}>
+              <button
+                type="button"
+                className="w-full text-left px-4 py-3 rounded border border-slate-700 hover:border-amber-600/50 bg-slate-900/60 truncate"
+                onClick={() =>
+                  navigate(`${fabricatorRoutes.studioData('tuning')}?systemPackId=${encodeURIComponent(pack.id)}`)
+                }
+              >
+                <span className="block text-sm text-amber-100 truncate">{pack.name}</span>
+                <span className="block text-[10px] text-slate-500 font-mono truncate" dir="ltr">
+                  {pack.id}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
 
   if (!systemPack) {
     return (

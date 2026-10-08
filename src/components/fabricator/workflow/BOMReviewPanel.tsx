@@ -2,6 +2,7 @@ import { approvedBOMContext } from '@/lib/fabricator/bom/approvedBOMContext';
 import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -99,7 +100,7 @@ export const BOMReviewPanel: React.FC = () => {
           <h2 className="text-2xl font-bold text-amber-200">Design Required</h2>
           <p className="text-slate-400">Complete the design step before reviewing the BOM.</p>
           <button
-            onClick={() => navigate('/fabricator/studio/design')}
+            onClick={() => navigate(fabricatorRoutes.studioProjects())}
             className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all"
           >
             Go to Design

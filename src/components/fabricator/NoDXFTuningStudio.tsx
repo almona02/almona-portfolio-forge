@@ -77,7 +77,6 @@ export const NoDXFTuningStudio: React.FC = () => {
   // Load system pack
   useEffect(() => {
     if (!systemPackId) {
-      navigate(fabricatorRoutes.studioData());
       return;
     }
 
@@ -338,6 +337,43 @@ export const NoDXFTuningStudio: React.FC = () => {
       setIsSaving(false);
     }
   };
+
+  if (!systemPackId) {
+    const packs = [
+      ...engineeringPacks.map((p) => ({ id: p.meta?.id, name: p.meta?.name || p.meta?.id })),
+      ...EGYPTIAN_UPVC_SYSTEMS.map((p) => ({
+        id: (p as { meta?: { id?: string; name?: string } }).meta?.id,
+        name: (p as { meta?: { id?: string; name?: string } }).meta?.name,
+      })),
+    ].filter((p): p is { id: string; name: string } => Boolean(p.id));
+    return (
+      <div
+        className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8 text-white"
+        data-testid="nodxf-tuning-pack-picker"
+      >
+        <h1 className="text-xl font-semibold text-amber-200 mb-2">Select a system pack to tune</h1>
+        <p className="text-sm text-slate-400 mb-6">Choose a pack for No-DXF tuning, or open the system library.</p>
+        <Button variant="outline" className="mb-6 border-slate-600 text-slate-200" onClick={() => navigate(fabricatorRoutes.studioData())}>
+          Open system library
+        </Button>
+        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl">
+          {packs.map((pack) => (
+            <li key={pack.id}>
+              <button
+                type="button"
+                className="w-full text-left px-4 py-3 rounded border border-slate-700 hover:border-amber-600/50 bg-slate-900/60 truncate"
+                onClick={() =>
+                  navigate(`${fabricatorRoutes.studioData('tuning-no-dxf')}?systemPackId=${encodeURIComponent(pack.id)}`)
+                }
+              >
+                <span className="block text-sm text-amber-100 truncate">{pack.name || pack.id}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
 
   if (!systemPack) {
     return (

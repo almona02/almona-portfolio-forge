@@ -34,9 +34,13 @@ const KIND_LABEL: Record<InspectorSelectionKind, string> = {
 
 function Row({ label, value, ltr }: { label: string; value: string; ltr?: boolean }) {
   return (
-    <div className="flex items-baseline justify-between gap-2 py-1 border-b border-amber-900/20">
-      <span className="text-[10px] uppercase tracking-wider text-amber-700">{label}</span>
-      <span className={cn('text-xs text-amber-100', ltr && 'font-mono')} dir={ltr ? 'ltr' : undefined}>
+    <div className="flex items-baseline justify-between gap-2 py-1 border-b border-amber-900/20 min-w-0">
+      <span className="text-[10px] uppercase tracking-wider text-amber-700 shrink-0">{label}</span>
+      <span
+        className={cn('text-xs text-amber-100 min-w-0 truncate text-end', ltr && 'font-mono')}
+        dir={ltr ? 'ltr' : undefined}
+        title={value}
+      >
         {value}
       </span>
     </div>

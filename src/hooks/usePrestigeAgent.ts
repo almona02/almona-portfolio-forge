@@ -5,11 +5,15 @@
 
 import { useCallback, useRef, useState } from 'react';
 
-// YDT Agent API URL — never fall back to a dead Railway hostname.
+// YDT Agent API URL — prefer VITE_YDT_API_URL; never use Supabase REST as the agent host.
 const getApiBaseUrl = () => {
-  const configured = import.meta.env.VITE_YDT_API_URL || import.meta.env.VITE_API_URL;
-  if (configured) {
-    return String(configured).replace(/\/$/, '');
+  const ydt = import.meta.env.VITE_YDT_API_URL;
+  if (ydt) {
+    return String(ydt).replace(/\/$/, '');
+  }
+  const api = import.meta.env.VITE_API_URL;
+  if (api && !/supabase\.(co|in)\b/i.test(String(api))) {
+    return String(api).replace(/\/$/, '');
   }
   if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
     return 'http://localhost:8000';
