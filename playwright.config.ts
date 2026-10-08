@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 const useRemoteBase = !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/?$/i.test(baseURL);
+/** CI acceptance starts vite preview itself; do not also spawn npm run dev. */
+const externalServer = process.env.PLAYWRIGHT_NO_WEBSERVER === '1';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -45,8 +47,8 @@ export default defineConfig({
     },
   ],
 
-  /* Local only — remote PLAYWRIGHT_BASE_URL skips spawning Vite */
-  webServer: useRemoteBase
+  /* Local only — remote URL or externally managed preview skips spawning Vite */
+  webServer: useRemoteBase || externalServer
     ? undefined
     : {
         command: 'npm run dev',

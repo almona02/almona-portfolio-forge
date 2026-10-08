@@ -61,6 +61,7 @@ jobs:
           E2E_POSE_DESIGN_URL: ${{ secrets.E2E_POSE_DESIGN_URL }}
           E2E_OPTIONAL: "0"
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+          PLAYWRIGHT_NO_WEBSERVER: "1"
         run: |
           npx vite preview --host 127.0.0.1 --port 4173 &
           for i in $(seq 1 60); do
