@@ -47,7 +47,7 @@ Merge order (bottom → top). Do not flatten onto `main` until #61 undrafts and 
 | PR | Role | Draft | CI tsc Δ | Score | Gate remaining |
 |---|---|---|---|---|---|
 | **#61** | Integration reviewed slice (#53+#52+#58) | yes | pass | **90%** | Human undraft + merge to `main` first |
-| **#62** | Canonical ledger L1–L2 | yes | **fail** (rebase/refresh needed vs #61) | **85%** | Fix tsc delta; undraft after #61 |
+| **#62** | Canonical ledger L1–L2 | yes | **fix pushed** (`0314aaf2`; awaiting CI re-run) | **88%** | Confirm Linux tsc green; undraft after #61 |
 | **#63** | Dated caluminium-ps EGP pricing | yes | pass | **80%** | Undraft after #62 |
 | **#64** | Empty-DB migration replay | yes | n/a (parallel) | **70%** | Staging-only apply path; not on critical product path |
 | **#65** | Sliding estimate + 10/18 E2E | no | pass | **88%** | Staging browser re-run on deployed SHA |
