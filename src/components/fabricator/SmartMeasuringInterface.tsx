@@ -40,6 +40,7 @@ import {
   DEFAULT_GRID,
   DEFAULT_MEASUREMENTS,
 } from './measuringConstants';
+import { shouldPersistMeasuringGrid } from './shouldPersistMeasuringGrid';
 
 // Workshop dark-amber blueprint theme (matches Fabricator shell)
 const DEFAULT_THEME = {
@@ -305,8 +306,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       createdAt: new Date(),
       updatedAt: new Date(),
       systemPackId: selectedSystemPackId,
-      // Attach Grid if in Grid Mode
-      grid: isGridMode ? grid : undefined
+      // Persist multi-cell predicted grids even when Multi-pane UI toggle is off
+      grid: shouldPersistMeasuringGrid(grid, isGridMode) ? grid : undefined
     };
   }, [measurements, grid, isGridMode, selectedSystemPackId]);
 
@@ -590,8 +591,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       // Include rough opening if in hole mode
       roughOpeningWidth: isHoleMode ? rawWidth : undefined,
       roughOpeningHeight: isHoleMode ? rawHeight : undefined,
-      // Preserve grid layout if set in measuring step
-      grid: isGridMode ? grid : undefined,
+      // Persist multi-cell predicted grids even when Multi-pane UI toggle is off
+      grid: shouldPersistMeasuringGrid(grid, isGridMode) ? grid : undefined,
       // Preserve preset pattern selection
       presetId: selectedPatternId || undefined,
     };
