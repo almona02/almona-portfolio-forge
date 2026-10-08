@@ -1,11 +1,15 @@
 /**
  * Admin-only manufacturing approval queue.
- * Approve / reject pending catalogue & rule review requests; revoke active authority.
+ * Approve / reject pending requests; one-click vendor catalogue approve; revoke.
  * AICS-001: deterministic admin gate — no ML in the approval path.
- * Catalogue packs are not blanket-seeded; optional local E2E fixture is separate.
+ * Server RPC is the authority for admin access (client role may hydrate late).
  */
 
 import { useAuth } from '@/context/AuthContext';
+import {
+  VENDOR_CATALOGUE_PACKS,
+  buildVendorAuthorityPayload,
+} from '@/lib/fabricator/manufacturing/vendorCataloguePacks';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
@@ -29,15 +33,27 @@ type ApprovalRequest = {
   requested_at: string;
 };
 
+type ActiveAuthority = {
+  approval_id: string;
+  system_pack_id: string;
+  system_pack_revision: number;
+  provenance: string;
+  approved_at: string;
+};
+
 type RpcClient = {
-  rpc(name: string, args: Record<string, unknown>): PromiseLike<{
+  rpc(name: string, args?: Record<string, unknown>): PromiseLike<{
     data: unknown;
     error: { message: string } | null;
   }>;
 };
-const listClient = supabase as unknown as RpcClient;
+const rpc = supabase as unknown as RpcClient;
 
-function buildSeedStylePayload(packId: string, approvalId: string): Record<string, unknown> {
+function buildRequestPayload(packId: string, approvalId: string): Record<string, unknown> {
+  const pack = VENDOR_CATALOGUE_PACKS.find((p) => p.id === packId);
+  if (pack) {
+    return buildVendorAuthorityPayload(pack, approvalId, 1);
+  }
   return {
     schema: 'almona.manufacturing-authority',
     schemaVersion: 1,
@@ -81,39 +97,66 @@ function buildSeedStylePayload(packId: string, approvalId: string): Record<strin
   };
 }
 
+function isAdminDenied(message: string | undefined): boolean {
+  if (!message) return false;
+  return /admin role required|authentication required/i.test(message);
+}
+
 export default function ManufacturingApprovalsPage() {
   const { user, loading } = useAuth();
+  const [adminGate, setAdminGate] = useState<boolean | null>(null);
   const [rows, setRows] = useState<ApprovalRequest[]>([]);
+  const [active, setActive] = useState<ActiveAuthority[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
-  const [revokeId, setRevokeId] = useState('');
 
-  const refresh = useCallback(async () => {
-    const { data, error } = await listClient.rpc('admin_list_manufacturing_approval_requests', {
-      p_status: 'pending',
-    });
-    if (error) {
-      setMessage(error.message);
+  const refresh = useCallback(async (opts?: { clearStatus?: boolean }) => {
+    const [pendingRes, activeRes] = await Promise.all([
+      rpc.rpc('admin_list_manufacturing_approval_requests', { p_status: 'pending' }),
+      rpc.rpc('admin_list_active_manufacturing_authority'),
+    ]);
+
+    if (isAdminDenied(pendingRes.error?.message) || isAdminDenied(activeRes.error?.message)) {
+      setAdminGate(false);
       setRows([]);
+      setActive([]);
       return;
     }
-    setRows(Array.isArray(data) ? (data as ApprovalRequest[]) : []);
-    setMessage('');
+
+    setAdminGate(true);
+    if (pendingRes.error) {
+      setMessage(pendingRes.error.message);
+      setRows([]);
+    } else {
+      setRows(Array.isArray(pendingRes.data) ? (pendingRes.data as ApprovalRequest[]) : []);
+    }
+    if (activeRes.error) {
+      setMessage((prev) => prev || activeRes.error!.message);
+      setActive([]);
+    } else {
+      setActive(Array.isArray(activeRes.data) ? (activeRes.data as ActiveAuthority[]) : []);
+      if (opts?.clearStatus && !pendingRes.error) setMessage('');
+    }
   }, []);
 
   useEffect(() => {
-    if (user?.role === 'admin') void refresh();
-  }, [user?.role, refresh]);
+    if (loading) return;
+    if (!user) {
+      setAdminGate(false);
+      return;
+    }
+    void refresh();
+  }, [user, loading, refresh]);
 
-  if (loading) {
+  if (loading || adminGate === null) {
     return (
-      <div className="flex items-center justify-center py-16">
+      <div className="flex items-center justify-center py-16" data-testid="manufacturing-approvals-loading">
         <Loader2 className="h-6 w-6 animate-spin text-amber-400" />
       </div>
     );
   }
 
-  if (user?.role !== 'admin') {
+  if (!adminGate) {
     return (
       <div className="p-6" data-testid="manufacturing-approvals-blocked">
         <Alert className="border-amber-600/40 bg-amber-500/5">
@@ -133,7 +176,7 @@ export default function ManufacturingApprovalsPage() {
   const reject = async (id: string) => {
     setBusyId(id);
     try {
-      const { error } = await listClient.rpc('admin_reject_fabricator_manufacturing_approval', {
+      const { error } = await rpc.rpc('admin_reject_fabricator_manufacturing_approval', {
         p_request_id: id,
         p_reason: 'Rejected by admin from Approvals UI',
       });
@@ -151,14 +194,14 @@ export default function ManufacturingApprovalsPage() {
     setBusyId(row.id);
     try {
       const placeholderApproval = crypto.randomUUID();
-      const payload = buildSeedStylePayload(row.system_pack_id, placeholderApproval);
-      const { data, error } = await listClient.rpc('admin_approve_fabricator_manufacturing_approval', {
+      const payload = buildRequestPayload(row.system_pack_id, placeholderApproval);
+      const { data, error } = await rpc.rpc('admin_approve_fabricator_manufacturing_approval', {
         p_request_id: row.id,
         p_authority_payload: payload,
       });
       if (error) throw new Error(error.message);
       if (!z.string().uuid().safeParse(data).success) throw new Error('No approval id returned');
-      setMessage(`Approved ${String(data)}`);
+      setMessage(`Approved request → ${String(data)}`);
       await refresh();
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Approve failed');
@@ -167,20 +210,33 @@ export default function ManufacturingApprovalsPage() {
     }
   };
 
-  const revoke = async () => {
-    if (!z.string().uuid().safeParse(revokeId.trim()).success) {
-      setMessage('Enter a valid approval UUID to revoke');
-      return;
-    }
-    setBusyId(revokeId);
+  const approveVendor = async (packId: string) => {
+    setBusyId(`vendor:${packId}`);
     try {
-      const { error } = await listClient.rpc('admin_revoke_fabricator_manufacturing_authority', {
-        p_approval_id: revokeId.trim(),
+      const { data, error } = await rpc.rpc('admin_approve_vendor_catalogue', {
+        p_system_pack_id: packId,
+      });
+      if (error) throw new Error(error.message);
+      if (!z.string().uuid().safeParse(data).success) throw new Error('No approval id returned');
+      setMessage(`Vendor catalogue approved for ${packId} → ${String(data)}`);
+      await refresh();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Vendor approve failed');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const revoke = async (approvalId: string) => {
+    setBusyId(approvalId);
+    try {
+      const { error } = await rpc.rpc('admin_revoke_fabricator_manufacturing_authority', {
+        p_approval_id: approvalId,
         p_reason: 'Revoked by admin from Approvals UI',
       });
       if (error) throw new Error(error.message);
-      setMessage(`Revoked ${revokeId.trim()}`);
-      setRevokeId('');
+      setMessage(`Revoked ${approvalId}`);
+      await refresh();
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Revoke failed');
     } finally {
@@ -196,14 +252,50 @@ export default function ManufacturingApprovalsPage() {
           Manufacturing Approvals
         </h1>
         <p className="text-sm text-slate-400">
-          Review pending catalogue / cutting-rule requests. Seeded authority remains revocable.
+          Pending request review, one-click vendor catalogue approval (provenance=vendor), and revoke.
+          Packs are never blanket-seeded by migration.
         </p>
       </header>
+
+      <section
+        className="rounded-lg border border-slate-700 bg-slate-900/50 p-4 space-y-3"
+        data-testid="vendor-catalogue-section"
+      >
+        <h2 className="font-semibold text-amber-100">Approve vendor catalogue</h2>
+        <p className="text-xs text-slate-400">
+          One-click approval for built-in packs. Writes provenance=vendor, an audit row, and supersedes
+          any prior active revision. Revoke anytime below.
+        </p>
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {VENDOR_CATALOGUE_PACKS.map((pack) => (
+            <li
+              key={pack.id}
+              className="flex items-center justify-between gap-2 rounded border border-slate-700 px-3 py-2 text-sm"
+            >
+              <span className="text-slate-200">
+                <span className="text-amber-200 font-medium">{pack.label}</span>
+                <span className="block text-xs text-slate-500">{pack.id}</span>
+              </span>
+              <Button
+                size="sm"
+                disabled={busyId === `vendor:${pack.id}`}
+                onClick={() => void approveVendor(pack.id)}
+                className="bg-amber-500 hover:bg-amber-600 text-black shrink-0"
+                data-testid={`approve-vendor-${pack.id}`}
+              >
+                Approve vendor catalogue
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="rounded-lg border border-slate-700 bg-slate-900/50 p-4 space-y-3">
         <h2 className="font-semibold text-amber-100">Pending requests</h2>
         {rows.length === 0 ? (
-          <p className="text-sm text-slate-400">No pending manufacturing approval requests.</p>
+          <p className="text-sm text-slate-400" data-testid="pending-requests-empty">
+            No pending manufacturing approval requests.
+          </p>
         ) : (
           <ul className="space-y-3">
             {rows.map((row) => (
@@ -224,6 +316,7 @@ export default function ManufacturingApprovalsPage() {
                     disabled={busyId === row.id}
                     onClick={() => void approve(row)}
                     className="bg-amber-500 hover:bg-amber-600 text-black"
+                    data-testid={`approve-request-${row.id}`}
                   >
                     Approve
                   </Button>
@@ -235,12 +328,6 @@ export default function ManufacturingApprovalsPage() {
                   >
                     Reject
                   </Button>
-                  <Button asChild size="sm" variant="ghost">
-                    <Link to={fabricatorRoutes.studioData('tuning')}>Pack qualification</Link>
-                  </Button>
-                  <Button asChild size="sm" variant="ghost">
-                    <Link to={fabricatorRoutes.studioDataStock()}>Stock</Link>
-                  </Button>
                 </div>
               </li>
             ))}
@@ -248,26 +335,44 @@ export default function ManufacturingApprovalsPage() {
         )}
       </section>
 
-      <section className="rounded-lg border border-slate-700 bg-slate-900/50 p-4 space-y-3">
-        <h2 className="font-semibold text-amber-100">Revoke authority</h2>
-        <p className="text-xs text-slate-400">
-          Seeded packs (provenance=seed) can be revoked; manufacturing gates fail closed until re-approved.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <input
-            className="flex-1 min-w-[16rem] rounded border border-slate-600 bg-slate-950 p-2 text-sm"
-            placeholder="approval UUID"
-            value={revokeId}
-            onChange={(e) => setRevokeId(e.target.value)}
-          />
-          <Button size="sm" variant="destructive" disabled={!!busyId} onClick={() => void revoke()}>
-            Revoke
-          </Button>
-        </div>
+      <section
+        className="rounded-lg border border-slate-700 bg-slate-900/50 p-4 space-y-3"
+        data-testid="active-authority-section"
+      >
+        <h2 className="font-semibold text-amber-100">Active authority (revoke)</h2>
+        {active.length === 0 ? (
+          <p className="text-sm text-slate-400">No active manufacturing authority revisions.</p>
+        ) : (
+          <ul className="space-y-2">
+            {active.map((row) => (
+              <li
+                key={row.approval_id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded border border-slate-700 px-3 py-2 text-sm"
+                data-testid={`active-authority-${row.system_pack_id}`}
+              >
+                <div className="text-slate-200">
+                  <span className="text-amber-200 font-medium">{row.system_pack_id}</span>
+                  <span className="text-slate-400"> · r{row.system_pack_revision}</span>
+                  <span className="text-slate-500"> · {row.provenance}</span>
+                  <span className="block text-xs text-slate-500 break-all">{row.approval_id}</span>
+                </div>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  disabled={busyId === row.approval_id}
+                  onClick={() => void revoke(row.approval_id)}
+                  data-testid={`revoke-${row.approval_id}`}
+                >
+                  Revoke
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {message && (
-        <p role="status" className="text-sm text-amber-200 break-words">
+        <p role="status" className="text-sm text-amber-200 break-words" data-testid="approvals-status">
           {message}
         </p>
       )}

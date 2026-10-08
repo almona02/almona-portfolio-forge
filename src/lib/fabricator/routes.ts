@@ -54,6 +54,15 @@ export const fabricatorRoutes = {
   studioOrders: () => `${STUDIO_BASE}/orders`,
   /** Production: orders management (admin bulk — gated in App) */
   studioProductionOrders: () => `${STUDIO_BASE}/production/orders`,
+  /** Data: main profiles / system-pack library */
+  studioDataProfiles: () => `${STUDIO_BASE}/data/profiles`,
+  /** Data: custom profile builder (ProfileStudioLite) */
+  studioDataProfileStudio: () => `${STUDIO_BASE}/data/profile-studio`,
+  /** Data: system-pack accessories / hardware kits (admin workshop overrides) */
+  studioDataAccessories: (packId?: string) =>
+    packId
+      ? `${STUDIO_BASE}/data/accessories?pack=${encodeURIComponent(packId)}`
+      : `${STUDIO_BASE}/data/accessories`,
   /** Data: stock / remnants (InventoryDashboard) */
   studioDataStock: () => `${STUDIO_BASE}/data/stock`,
   /** Data: integration placeholders (no fake ERP) */

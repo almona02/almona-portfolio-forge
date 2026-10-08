@@ -1,5 +1,4 @@
--- #54 rewrite: admin approve/reject wrappers reject non-admins; is_admin fail-closed.
--- Asserts no blanket seed authority rows from the admin-workflow migration.
+-- #54/#66 rewrite: fail-closed admin gates + vendor catalogue approve (no blanket seed).
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
 
 DO $reset_pgtap$
@@ -17,12 +16,13 @@ CREATE TEMP TABLE admin_approval_test_output (
   sequence_no INTEGER GENERATED ALWAYS AS IDENTITY,
   result TEXT NOT NULL
 ) ON COMMIT DROP;
-INSERT INTO admin_approval_test_output(result) SELECT plan(8);
+INSERT INTO admin_approval_test_output(result) SELECT plan(12);
 
 INSERT INTO auth.users(id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
 VALUES
   ('12000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin-approver@example.test', '', now(), now()),
-  ('12000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'non-admin@example.test', '', now(), now())
+  ('12000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'non-admin@example.test', '', now(), now()),
+  ('12000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'missing-profile@example.test', '', now(), now())
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.profiles(id, full_name, role)
@@ -30,6 +30,8 @@ VALUES
   ('12000000-0000-0000-0000-000000000001', 'Admin Approver', 'admin'),
   ('12000000-0000-0000-0000-000000000002', 'Non Admin', 'customer')
 ON CONFLICT (id) DO UPDATE SET role = EXCLUDED.role;
+
+-- Intentionally no profile for 0003 (missing-profile user)
 
 INSERT INTO public.fabricator_projects_v2(id, owner_user_id, project_code, project_name, client_name, system_pack_id)
 VALUES ('22000000-0000-0000-0000-000000000001', '12000000-0000-0000-0000-000000000002', 'ADM-TEST', 'Admin Approval Test', 'Test', 'caluminium-ps')
@@ -48,30 +50,28 @@ INSERT INTO public.fabricator_manufacturing_approval_requests(
   1, 'caluminium-ps', 'cat-ref-doc', 'rule-ref-doc', 'test', 'pending'
 );
 
--- No blanket seed from admin-workflow migration
 INSERT INTO admin_approval_test_output(result)
 SELECT ok(
   (SELECT count(*) = 0 FROM public.fabricator_manufacturing_authority_revisions WHERE provenance = 'seed'),
   'migration does not blanket-seed authority packs'
 );
 
--- is_admin fail-closed: null user and missing profile never yield NULL
 INSERT INTO admin_approval_test_output(result)
 SELECT ok(public.is_admin(NULL) IS FALSE, 'is_admin(NULL) is false (fail closed)');
 
 INSERT INTO admin_approval_test_output(result)
 SELECT ok(
   public.is_admin('12000000-0000-0000-0000-000000000099') IS FALSE,
-  'is_admin(missing profile) is false (fail closed)'
+  'is_admin(missing uuid) is false (fail closed)'
 );
 
 INSERT INTO admin_approval_test_output(result)
 SELECT ok(
-  (public.is_admin('12000000-0000-0000-0000-000000000002') IS DISTINCT FROM TRUE),
-  'non-admin is_admin IS DISTINCT FROM TRUE'
+  public.is_admin('12000000-0000-0000-0000-000000000003') IS FALSE,
+  'is_admin(auth user without profile) is false (fail closed)'
 );
 
--- Non-admin cannot list
+-- Non-admin rejected
 INSERT INTO admin_approval_test_output(result)
 SELECT throws_ok(
   $$SELECT * FROM public.admin_list_manufacturing_approval_requests('pending')$$,
@@ -79,31 +79,62 @@ SELECT throws_ok(
   'non-admin list rejected'
 );
 
--- Non-admin cannot reject
 INSERT INTO admin_approval_test_output(result)
 SELECT throws_ok(
-  $$SELECT public.admin_reject_fabricator_manufacturing_approval('42000000-0000-0000-0000-000000000001', 'nope not allowed')$$,
+  $$SELECT public.admin_approve_vendor_catalogue('caluminium-ps')$$,
   'admin role required',
-  'non-admin reject rejected'
+  'non-admin vendor catalogue rejected'
 );
 
--- Non-admin cannot approve
+-- Missing-profile user rejected (fail closed)
+SELECT set_config('request.jwt.claim.sub', '12000000-0000-0000-0000-000000000003', true);
 INSERT INTO admin_approval_test_output(result)
 SELECT throws_ok(
-  $$SELECT public.admin_approve_fabricator_manufacturing_approval(
-    '42000000-0000-0000-0000-000000000001',
-    '{"schema":"almona.manufacturing-authority","schemaVersion":1,"system":{"id":"caluminium-ps"},"systemPack":{"id":"caluminium-ps","revision":1,"evidenceStatus":"approved","approvalId":"42000000-0000-0000-0000-000000000099"},"profiles":[{"role":"frame","profileId":"PS-6601-FRAME","stockLengthMm":6000,"evidenceStatus":"approved","approvalId":"51000000-0000-0000-0000-000000000001"},{"role":"sash","profileId":"PS-5600-SASH","stockLengthMm":6000,"evidenceStatus":"approved","approvalId":"51000000-0000-0000-0000-000000000002"}],"cuttingRules":[{"ruleId":"caluminium-ps-cut","revision":1,"evidenceStatus":"approved","approvalId":"61000000-0000-0000-0000-000000000001"}],"toleranceRule":{"ruleId":"caluminium-ps-tolerance","revision":1,"evidenceStatus":"approved","approvalId":"61000000-0000-0000-0000-000000000002"}}'::jsonb
-  )$$,
+  $$SELECT public.admin_approve_vendor_catalogue('caluminium-ps')$$,
   'admin role required',
-  'non-admin approve rejected'
+  'missing-profile vendor catalogue rejected'
 );
 
--- Admin can list
+INSERT INTO admin_approval_test_output(result)
+SELECT throws_ok(
+  $$SELECT * FROM public.admin_list_manufacturing_approval_requests('pending')$$,
+  'admin role required',
+  'missing-profile list rejected'
+);
+
+-- Admin vendor catalogue approve
 SELECT set_config('request.jwt.claim.sub', '12000000-0000-0000-0000-000000000001', true);
 INSERT INTO admin_approval_test_output(result)
 SELECT ok(
-  (SELECT count(*) >= 1 FROM public.admin_list_manufacturing_approval_requests('pending')),
-  'admin can list pending requests'
+  (SELECT public.admin_approve_vendor_catalogue('caluminium-ps') IS NOT NULL),
+  'admin can approve vendor catalogue for caluminium-ps'
+);
+
+INSERT INTO admin_approval_test_output(result)
+SELECT ok(
+  (SELECT count(*) = 1 AND min(provenance) = 'vendor'
+   FROM public.fabricator_manufacturing_authority_revisions
+   WHERE system_pack_id = 'caluminium-ps' AND revoked_at IS NULL),
+  'vendor provenance active for caluminium-ps'
+);
+
+INSERT INTO admin_approval_test_output(result)
+SELECT ok(
+  (SELECT count(*) >= 1 FROM public.fabricator_manufacturing_authority_audit
+   WHERE system_pack_id = 'caluminium-ps' AND event = 'approve'
+     AND details->>'provenance' = 'vendor'),
+  'vendor approve writes audit row'
+);
+
+-- Revoke then confirm inactive
+INSERT INTO admin_approval_test_output(result)
+SELECT lives_ok(
+  $$SELECT public.admin_revoke_fabricator_manufacturing_authority(
+    (SELECT approval_id FROM public.fabricator_manufacturing_authority_revisions
+     WHERE system_pack_id = 'caluminium-ps' AND revoked_at IS NULL LIMIT 1),
+    'revoke after vendor approve test'
+  )$$,
+  'admin can revoke vendor authority'
 );
 
 INSERT INTO admin_approval_test_output(result) SELECT * FROM finish();

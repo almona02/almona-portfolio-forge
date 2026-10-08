@@ -42,9 +42,9 @@ export const BOMReviewPage: React.FC = () => {
       pattern,
       systemPack,
       true,
-      currentProject.presetId
-        ? await approvedBOMContext(currentProject, workflowIdentity).catch(() => ({ identity: workflowIdentity }))
-        : { identity: workflowIdentity },
+      await approvedBOMContext(currentProject, workflowIdentity).catch(() => ({
+        identity: workflowIdentity,
+      })),
     ).catch(() => null);
   }, [currentProject, systemPack, workflowIdentity]);
 

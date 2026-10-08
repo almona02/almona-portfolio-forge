@@ -12,7 +12,7 @@ const workspaceTabs = [
   { id: 'projects', icon: FileText, path: () => fabricatorRoutes.studioProjects(), key: 'projects' },
   { id: 'customers', icon: Users, path: () => fabricatorRoutes.studioData(), key: 'customers' },
   { id: 'inventory', icon: Package, path: () => fabricatorRoutes.studioData(), key: 'inventory' },
-  { id: 'profiles', icon: Library, path: () => fabricatorRoutes.studioData('profiles'), key: 'profiles' },
+  { id: 'profiles', icon: Library, path: () => fabricatorRoutes.studioDataProfiles(), key: 'profiles' },
   { id: 'system-packs', icon: Boxes, path: () => fabricatorRoutes.studioData(), key: 'systemPacks' },
   { id: 'commercial', icon: Calculator, path: () => fabricatorRoutes.studioProjects(), key: 'commercial' },
 ] as const;

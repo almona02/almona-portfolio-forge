@@ -297,6 +297,42 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
         pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
         pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
       },
+      {
+        id: 'ps_corner_key_frame',
+        name: 'PS Frame Corner Key',
+        type: 'corner_key',
+        specifications: {
+          role: 'frame',
+          material: 'zinc_alloy',
+          /** Outer-frame chamber cleat — larger than sash key. */
+          leg_mm: 20,
+          thickness_mm: 2.0,
+          fits_profiles: ['PS-6601-FRAME', 'PS-9601-FRAME', 'PS-5600-FRAME'],
+        },
+        unit_price: PS_HW_PRICE.ps_corner_key_frame,
+        currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
+        pricing_status: 'provisional',
+        pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
+        pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
+      },
+      {
+        id: 'ps_corner_key_sash',
+        name: 'PS Sash Corner Key',
+        type: 'corner_key',
+        specifications: {
+          role: 'sash',
+          material: 'zinc_alloy',
+          /** Sash chamber cleat — smaller / different SKU from frame key. */
+          leg_mm: 15,
+          thickness_mm: 1.5,
+          fits_profiles: ['PS-6601-SASH', 'PS-5600-SASH'],
+        },
+        unit_price: PS_HW_PRICE.ps_corner_key_sash,
+        currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
+        pricing_status: 'provisional',
+        pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
+        pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
+      },
     ],
     glass_rules: {
       default: {

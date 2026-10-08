@@ -90,6 +90,7 @@ const SystemPackTuningStudio = lazy(() => import("./components/fabricator/System
 const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuningStudio.tsx").then(m => ({ default: m.NoDXFTuningStudio })));
 const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx"));
 const SystemPacksPage = lazy(() => import("./pages/SystemPacksPage.tsx").then(m => ({ default: m.SystemPacksPage })));
+const SystemPackAccessoriesPage = lazy(() => import("./pages/fabricator/studio/SystemPackAccessoriesPage.tsx"));
 const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
 const WorkshopPortal = lazy(() => import("./pages/workshop/WorkshopPortal.tsx").then(m => ({ default: m.WorkshopPortal })));
@@ -487,10 +488,13 @@ const App = memo(() => {
 
                                     {/* 5. Data Studio */}
                                     <Route path="data/*" element={<Suspense fallback={getLoadingComponent('Data Studio')}><DataStudioLayout /></Suspense>}>
-                                      <Route index element={<Suspense fallback={getLoadingComponent('System Packs')}><SystemPacksPage /></Suspense>} />
+                                      {/* Main profiles / system-pack library (canonical). Lite custom builder is profile-studio. */}
+                                      <Route index element={<Navigate to="profiles" replace />} />
+                                      <Route path="profiles" element={<Suspense fallback={getLoadingComponent('Profiles')}><SystemPacksPage /></Suspense>} />
+                                      <Route path="accessories" element={<Suspense fallback={getLoadingComponent('Accessories kits')}><SystemPackAccessoriesPage /></Suspense>} />
+                                      <Route path="profile-studio" element={<Suspense fallback={getLoadingComponent('Custom Profile Studio')}><ProfileStudioLite /></Suspense>} />
                                       <Route path="tuning" element={<Suspense fallback={getLoadingComponent('Tuning Studio')}><SystemPackTuningStudio /></Suspense>} />
                                       <Route path="tuning-no-dxf" element={<Suspense fallback={getLoadingComponent('Tuning Studio')}><NoDXFTuningStudio /></Suspense>} />
-                                      <Route path="profiles" element={<Suspense fallback={getLoadingComponent('Profile Studio')}><ProfileStudioLite /></Suspense>} />
                                       <Route path="customers" element={<Suspense fallback={getLoadingComponent('Customers')}><CustomersPage /></Suspense>} />
                                       <Route path="patterns" element={<Suspense fallback={getLoadingComponent('Pattern Library')}><PatternLibraryPage /></Suspense>} />
                                       <Route path="stock" element={<Suspense fallback={getLoadingComponent('Stock')}><StudioStockPage /></Suspense>} />

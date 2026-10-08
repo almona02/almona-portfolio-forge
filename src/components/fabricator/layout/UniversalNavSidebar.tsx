@@ -160,8 +160,9 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       icon: <BarChart size={20} />,
       href: fabricatorRoutes.studioData(),
       subItems: [
-        { label: 'System library', href: fabricatorRoutes.studioData() },
         { label: 'Profiles', href: fabricatorRoutes.studioData('profiles') },
+        { label: 'Accessories kits', href: fabricatorRoutes.studioDataAccessories() },
+        { label: 'Custom profile studio', href: fabricatorRoutes.studioData('profile-studio') },
         { label: 'Operation templates', href: fabricatorRoutes.studioData('tuning') },
         { label: 'Patterns', href: fabricatorRoutes.studioData('patterns') },
         { label: 'Stock / remnants', href: fabricatorRoutes.studioDataStock() },

@@ -56,9 +56,9 @@ export const BOMReviewPanel: React.FC = () => {
         pattern,
         systemPack,
         true,
-        currentProject.presetId
-          ? await approvedBOMContext(currentProject, generationIdentity).catch(() => ({ identity: generationIdentity }))
-          : { identity: generationIdentity },
+        await approvedBOMContext(currentProject, generationIdentity).catch(() => ({
+          identity: generationIdentity,
+        })),
       );
       const latest = useWorkflowStore.getState();
       if (!generationIdentity || latest.currentProject !== generationProject || !workflowIdentityMatches(latest.workflowIdentity, generationIdentity)) return;
@@ -124,14 +124,20 @@ export const BOMReviewPanel: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
-        <div className="max-w-md w-full bg-slate-900/50 border border-red-600/30 rounded-lg p-8 text-center space-y-4">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
-          <h2 className="text-xl font-bold text-red-200">BOM Generation Failed</h2>
-          <p className="text-slate-400 text-sm">{error}</p>
-          <Button onClick={() => void generateBOM()} className="bg-amber-500 hover:bg-amber-600">
-            Retry
-          </Button>
+      <div className="flex items-start justify-center h-full overflow-y-auto bg-gradient-to-br from-slate-950 to-slate-900 p-6">
+        <div className="max-w-md w-full bg-slate-900/50 border border-red-600/30 rounded-lg p-8 space-y-4">
+          <div className="text-center space-y-4">
+            <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
+            <h2 className="text-xl font-bold text-red-200">BOM Generation Failed</h2>
+            <p className="text-slate-400 text-sm">{error}</p>
+            <Button onClick={() => void generateBOM()} className="bg-amber-500 hover:bg-amber-600">
+              Retry
+            </Button>
+            <p className="text-xs text-slate-500">
+              Resolve the design components and profiles in Design. Resolve prerequisites.
+            </p>
+          </div>
+          <ManufacturingApprovalPanel />
         </div>
       </div>
     );
