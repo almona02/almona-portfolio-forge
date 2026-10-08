@@ -3,7 +3,7 @@ import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps
 import { ProfileBOMCalculator } from './ProfileBOMCalculator';
 import { HardwareBOMCalculator } from './HardwareBOMCalculator';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
-import type { WindowUnit } from '@/types/fabricator';
+import type { Profile, WindowUnit } from '@/types/fabricator';
 
 describe('caluminium-ps sliding BOM completeness', () => {
   const calculator = new ProfileBOMCalculator();
@@ -60,8 +60,8 @@ describe('caluminium-ps sliding BOM completeness', () => {
   });
 
   it('enriches saved components with missing sliding track/interlock (ledger path)', async () => {
-    const frame = CALUMINIUM_PS_PACK.profiles.find((p) => p.profileRole === 'frame');
-    const sash = CALUMINIUM_PS_PACK.profiles.find((p) =>
+    const frame = CALUMINIUM_PS_PACK.profiles.find((p: Profile) => p.profileRole === 'frame');
+    const sash = CALUMINIUM_PS_PACK.profiles.find((p: Profile) =>
       String(p.profileRole || '').includes('sash'),
     );
     expect(frame && sash).toBeTruthy();

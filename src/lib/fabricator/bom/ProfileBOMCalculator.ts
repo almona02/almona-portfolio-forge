@@ -29,6 +29,18 @@ const SHUTTER_CONSTANTS = {
   BOX_HEIGHT_MM: 165, // Standard shutter box size
 };
 
+type ProfileBOMRow = FabricationData['profiles'][number];
+type ProdUtilsLike = {
+  applyKerfCompensation: (len: number, kerf: number, angle: number) => number;
+  calculateWaste: (len: number, stock: number) => number;
+  calculateProfileWeight: (len: number, spec: ProfileSpec) => number;
+  calculateMaterialCost: (len: number, spec: ProfileSpec) => number;
+};
+
+function fillNumbers(length: number, value: number): number[] {
+  return Array.from({ length }, () => value);
+}
+
 /**
  * ProfileBOMCalculator - Profile quantity calculation engine
  */
@@ -45,47 +57,59 @@ export class ProfileBOMCalculator {
     // (interlock / track / bead) must still be present when the opening is sliding.
     // Do not early-return an incomplete ledger that bypasses catalogue roles.
     if (windowUnit.components?.length) {
-      const rows = new Map<string, FabricationData['profiles'][number]>();
+      const rows = new Map<string, ProfileBOMRow>();
       for (const component of windowUnit.components) {
         const profile = component.profile;
-        const role = (profile.profileRole || component.type) as FabricationData['profiles'][number]['role'];
+        const role = (profile.profileRole || component.type) as ProfileBOMRow['role'];
         const key = `${profile.id}:${role}`;
         const cuts = component.cuttingLengths.map((_, index) =>
           physicalCutForOccurrence(component, index, profile, windowUnit.systemPackId));
         if (cuts.some(cut => !Number.isFinite(cut.length) || cut.length <= 0)) throw new Error('Invalid design cut length.');
-        const row = rows.get(key) || {
-          id: key, systemPack: windowUnit.systemPackId || systemPack.meta?.id || systemPack.id,
-          profileCode: profile.id, role, length: 0, quantity: 1,
-          cuttingLengths: [], angles: [], rawStockLength: profile.barLength || Number(profile.specifications?.barLength) || 6000,
-          wasteLength: 0, machiningZones: [], weight: 0, cost: 0,
+        const packId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id || 'unknown';
+        const row: ProfileBOMRow = rows.get(key) ?? {
+          id: key,
+          systemPack: packId,
+          profileCode: profile.id,
+          role,
+          length: 0,
+          quantity: 1,
+          cuttingLengths: [] as number[],
+          angles: [] as number[],
+          rawStockLength: profile.barLength || Number(profile.specifications?.barLength) || 6000,
+          wasteLength: 0,
+          machiningZones: [],
+          weight: 0,
+          cost: 0,
         };
-        row.cuttingLengths.push(...cuts.map(cut => cut.length));
-        row.angles.push(...cuts.map(cut => cut.angle));
+        row.cuttingLengths.push(...cuts.map((cut) => cut.length));
+        row.angles.push(...cuts.map((cut) => cut.angle));
         row.length = row.cuttingLengths.reduce((sum, length) => sum + length, 0);
-        row.weight = row.length / 1000 * (profile.weightPerMeter || 0);
-        row.cost = row.length / 1000 * (profile.costPerMeter || 0);
+        row.weight = (row.length / 1000) * (profile.weightPerMeter || 0);
+        row.cost = (row.length / 1000) * (profile.costPerMeter || 0);
         rows.set(key, row);
       }
       const profiles = Array.from(rows.values());
       const { ProductionUtils } = await import('../productionUtils');
+      const utils = ProductionUtils as unknown as ProdUtilsLike;
       this.appendMissingSlidingSubsystemProfiles({
         profiles,
         windowUnit,
         pattern,
         systemPack,
-        ProductionUtils,
+        ProductionUtils: utils,
         sashCountHint: this.countSlidingSashes(windowUnit, pattern),
-        sashCuttingLengthsHint: this.sashPerimeterCutsFromUnit(windowUnit, ProductionUtils),
+        sashCuttingLengthsHint: this.sashPerimeterCutsFromUnit(windowUnit, utils),
       });
       return profiles;
     }
     const profiles: FabricationData['profiles'] = [];
     // Dynamic import to avoid circular dependencies, but typed
     const { ProductionUtils } = await import('../productionUtils');
+    const utils = ProductionUtils as unknown as ProdUtilsLike;
 
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
-    const systemPackId = systemPack.id;
+    const systemPackId = systemPack.id || systemPack.meta?.id || 'unknown';
 
     // Get frame profile from system pack
     const frameProfile = this.getProfileGeneric(
@@ -100,7 +124,7 @@ export class ProfileBOMCalculator {
 
     // Frame profile with kerf compensation
     const kerf = CUTTING_CONSTANTS.STANDARD_KERF_MM;
-    const frameLength = ProductionUtils.applyKerfCompensation(framePerimeter, kerf, MITER_ANGLES.STRAIGHT_CUT);
+    const frameLength = utils.applyKerfCompensation(framePerimeter, kerf, MITER_ANGLES.STRAIGHT_CUT);
 
     profiles.push({
       id: `frame-${systemPackId}`,
@@ -110,22 +134,22 @@ export class ProfileBOMCalculator {
       length: frameLength,
       quantity: 1,
       cuttingLengths: [
-        ProductionUtils.applyKerfCompensation(
+        utils.applyKerfCompensation(
           width - (frameProfile.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM) * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER,
           kerf,
           MITER_ANGLES.CORNER_MITER
         ),
-        ProductionUtils.applyKerfCompensation(
+        utils.applyKerfCompensation(
           height - (frameProfile.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM) * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER,
           kerf,
           MITER_ANGLES.CORNER_MITER
         ),
-        ProductionUtils.applyKerfCompensation(
+        utils.applyKerfCompensation(
           width - (frameProfile.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM) * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER,
           kerf,
           MITER_ANGLES.CORNER_MITER
         ),
-        ProductionUtils.applyKerfCompensation(
+        utils.applyKerfCompensation(
           height - (frameProfile.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM) * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER,
           kerf,
           MITER_ANGLES.CORNER_MITER
@@ -138,10 +162,10 @@ export class ProfileBOMCalculator {
         MITER_ANGLES.CORNER_MITER,
       ],
       rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
-      wasteLength: ProductionUtils.calculateWaste(frameLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
+      wasteLength: utils.calculateWaste(frameLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
       machiningZones: [],
-      weight: ProductionUtils.calculateProfileWeight(frameLength, this.profileToSpec(frameProfile)),
-      cost: ProductionUtils.calculateMaterialCost(frameLength, this.profileToSpec(frameProfile))
+      weight: utils.calculateProfileWeight(frameLength, this.profileToSpec(frameProfile)),
+      cost: utils.calculateMaterialCost(frameLength, this.profileToSpec(frameProfile))
     });
 
     // Sash profiles (from grid)
@@ -186,12 +210,12 @@ export class ProfileBOMCalculator {
             return [];
           }
 
-          const horizontalCut = ProductionUtils.applyKerfCompensation(
+          const horizontalCut = utils.applyKerfCompensation(
             cellWidth,
             kerf,
             MITER_ANGLES.CORNER_MITER,
           );
-          const verticalCut = ProductionUtils.applyKerfCompensation(
+          const verticalCut = utils.applyKerfCompensation(
             cellHeight,
             kerf,
             MITER_ANGLES.CORNER_MITER,
@@ -208,12 +232,12 @@ export class ProfileBOMCalculator {
           length: sashLength,
           quantity: sashCount,
           cuttingLengths: sashCuttingLengths,
-          angles: Array.from<number>({ length: sashCount * GEOMETRIC_CONSTANTS.CORNERS_PER_SASH }, () => MITER_ANGLES.CORNER_MITER),
+          angles: fillNumbers(sashCount * GEOMETRIC_CONSTANTS.CORNERS_PER_SASH, MITER_ANGLES.CORNER_MITER),
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
-          wasteLength: ProductionUtils.calculateWaste(sashLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
+          wasteLength: utils.calculateWaste(sashLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: [],
-          weight: ProductionUtils.calculateProfileWeight(sashLength, this.profileToSpec(sashProfile)),
-          cost: ProductionUtils.calculateMaterialCost(sashLength, this.profileToSpec(sashProfile))
+          weight: utils.calculateProfileWeight(sashLength, this.profileToSpec(sashProfile)),
+          cost: utils.calculateMaterialCost(sashLength, this.profileToSpec(sashProfile))
         });
 
         this.appendMissingSlidingSubsystemProfiles({
@@ -221,7 +245,7 @@ export class ProfileBOMCalculator {
           windowUnit,
           pattern,
           systemPack,
-          ProductionUtils,
+          ProductionUtils: utils,
           sashCountHint: sashCount,
           sashCuttingLengthsHint: sashCuttingLengths,
         });
@@ -239,7 +263,7 @@ export class ProfileBOMCalculator {
       );
       pattern.mullions.forEach((mullion, index) => {
         const mullionLength = height - (frameProfile.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM) * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER;
-        const mullionLengthWithKerf = ProductionUtils.applyKerfCompensation(mullionLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
+        const mullionLengthWithKerf = utils.applyKerfCompensation(mullionLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
 
         profiles.push({
           id: `mullion-${index}-${mullion.type || 'vertical'}`,
@@ -251,10 +275,10 @@ export class ProfileBOMCalculator {
           cuttingLengths: [mullionLength],
           angles: [MITER_ANGLES.STRAIGHT_CUT],
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
-          wasteLength: ProductionUtils.calculateWaste(mullionLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
+          wasteLength: utils.calculateWaste(mullionLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: [],
-          weight: ProductionUtils.calculateProfileWeight(mullionLength, this.profileToSpec(mullionProfile)),
-          cost: ProductionUtils.calculateMaterialCost(mullionLength, this.profileToSpec(mullionProfile))
+          weight: utils.calculateProfileWeight(mullionLength, this.profileToSpec(mullionProfile)),
+          cost: utils.calculateMaterialCost(mullionLength, this.profileToSpec(mullionProfile))
         });
       });
     }
@@ -270,7 +294,7 @@ export class ProfileBOMCalculator {
       );
       pattern.transoms.forEach((transom, index) => {
         const transomLength = width - (frameProfile.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM) * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER;
-        const transomLengthWithKerf = ProductionUtils.applyKerfCompensation(transomLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
+        const transomLengthWithKerf = utils.applyKerfCompensation(transomLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
 
         profiles.push({
           id: `transom-${index}-${transom.type || 'standard'}`,
@@ -282,10 +306,10 @@ export class ProfileBOMCalculator {
           cuttingLengths: [transomLength],
           angles: [MITER_ANGLES.STRAIGHT_CUT],
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
-          wasteLength: ProductionUtils.calculateWaste(transomLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
+          wasteLength: utils.calculateWaste(transomLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: [],
-          weight: ProductionUtils.calculateProfileWeight(transomLength, this.profileToSpec(transomProfile)),
-          cost: ProductionUtils.calculateMaterialCost(transomLength, this.profileToSpec(transomProfile))
+          weight: utils.calculateProfileWeight(transomLength, this.profileToSpec(transomProfile)),
+          cost: utils.calculateMaterialCost(transomLength, this.profileToSpec(transomProfile))
         });
       });
     }
@@ -301,23 +325,23 @@ export class ProfileBOMCalculator {
     if (shutterBoxProfile) {
         // Shutter Box (Top only)
         const boxLength = width; 
-        const boxLengthKV = ProductionUtils.applyKerfCompensation(boxLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
+        const boxLengthKV = utils.applyKerfCompensation(boxLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
         
         profiles.push(this.createProfileEntry(
             systemPackId, shutterBoxProfile, 'shutter_box', 
             boxLengthKV, 1, [boxLength], [MITER_ANGLES.STRAIGHT_CUT], 
-            ProductionUtils
+            utils
         ));
 
         // Shutter Guides (Sides)
         const guideProfile = this.getProfileByRole(systemPack, 'shutter_guide');
         if (guideProfile) {
             const guideLength = height; // Full height
-            const guideLengthKV = ProductionUtils.applyKerfCompensation(guideLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
+            const guideLengthKV = utils.applyKerfCompensation(guideLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
             profiles.push(this.createProfileEntry(
                 systemPackId, guideProfile, 'shutter_guide',
                 guideLengthKV * 2, 2, [guideLength, guideLength], [MITER_ANGLES.STRAIGHT_CUT, MITER_ANGLES.STRAIGHT_CUT],
-                ProductionUtils
+                utils
             ));
         }
 
@@ -328,14 +352,14 @@ export class ProfileBOMCalculator {
             const effectiveHeight = Math.max(0, height - SHUTTER_CONSTANTS.BOX_HEIGHT_MM);
             const slatCount = Math.ceil(effectiveHeight / SHUTTER_CONSTANTS.SLAT_HEIGHT_MM);
             const slatLength = width - 60; // Approximate clearance for guides
-            const slatLengthKV = ProductionUtils.applyKerfCompensation(slatLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
+            const slatLengthKV = utils.applyKerfCompensation(slatLength, kerf, MITER_ANGLES.STRAIGHT_CUT);
             
             if (slatCount > 0) {
                  profiles.push(this.createProfileEntry(
                     systemPackId, slatProfile, 'shutter_slat',
-                    slatLengthKV * slatCount, slatCount, Array.from<number>({ length: slatCount }, () => slatLength),
-                    Array.from<number>({ length: slatCount }, () => MITER_ANGLES.STRAIGHT_CUT),
-                    ProductionUtils
+                    slatLengthKV * slatCount, slatCount, fillNumbers(slatCount, slatLength),
+                    fillNumbers(slatCount, MITER_ANGLES.STRAIGHT_CUT),
+                    utils
                 ));
             }
         }
@@ -352,7 +376,7 @@ export class ProfileBOMCalculator {
       !profiles.some((p) => p.role === 'track' || p.role === 'screen_track')
     ) {
       const trackLength = width - (frameProfile.width || 50) * 2;
-      const trackLengthKV = ProductionUtils.applyKerfCompensation(
+      const trackLengthKV = utils.applyKerfCompensation(
         trackLength,
         kerf,
         MITER_ANGLES.STRAIGHT_CUT,
@@ -366,7 +390,7 @@ export class ProfileBOMCalculator {
           2,
           [trackLength, trackLength],
           [MITER_ANGLES.STRAIGHT_CUT, MITER_ANGLES.STRAIGHT_CUT],
-          ProductionUtils,
+          utils,
         ),
       );
     }
@@ -397,19 +421,19 @@ export class ProfileBOMCalculator {
 
   private sashPerimeterCutsFromUnit(
     windowUnit: WindowUnit,
-    ProductionUtils: { applyKerfCompensation: (len: number, kerf: number, angle: number) => number },
+    utils: Pick<ProdUtilsLike, 'applyKerfCompensation'>,
   ): number[] {
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
-    const sashCount = this.countSlidingSashes(windowUnit, { gridSpec: windowUnit.grid } as EgyptianPattern);
+    const sashCount = this.countSlidingSashes(windowUnit, { gridSpec: windowUnit.grid } as unknown as EgyptianPattern);
     const kerf = CUTTING_CONSTANTS.STANDARD_KERF_MM;
     const cellWidth = width / Math.max(1, windowUnit.grid?.cols || sashCount);
     const cellHeight = height / Math.max(1, windowUnit.grid?.rows || 1);
     const oneSash = [
-      ProductionUtils.applyKerfCompensation(cellWidth, kerf, MITER_ANGLES.CORNER_MITER),
-      ProductionUtils.applyKerfCompensation(cellWidth, kerf, MITER_ANGLES.CORNER_MITER),
-      ProductionUtils.applyKerfCompensation(cellHeight, kerf, MITER_ANGLES.CORNER_MITER),
-      ProductionUtils.applyKerfCompensation(cellHeight, kerf, MITER_ANGLES.CORNER_MITER),
+      utils.applyKerfCompensation(cellWidth, kerf, MITER_ANGLES.CORNER_MITER),
+      utils.applyKerfCompensation(cellWidth, kerf, MITER_ANGLES.CORNER_MITER),
+      utils.applyKerfCompensation(cellHeight, kerf, MITER_ANGLES.CORNER_MITER),
+      utils.applyKerfCompensation(cellHeight, kerf, MITER_ANGLES.CORNER_MITER),
     ];
     return Array.from({ length: sashCount }, () => oneSash).flat();
   }
@@ -423,12 +447,7 @@ export class ProfileBOMCalculator {
     windowUnit: WindowUnit;
     pattern: EgyptianPattern;
     systemPack: SystemPack;
-    ProductionUtils: {
-      applyKerfCompensation: (len: number, kerf: number, angle: number) => number;
-      calculateWaste: (len: number, stock: number) => number;
-      calculateProfileWeight: (len: number, spec: unknown) => number;
-      calculateMaterialCost: (len: number, spec: unknown) => number;
-    };
+    ProductionUtils: ProdUtilsLike;
     sashCountHint: number;
     sashCuttingLengthsHint: number[];
   }): void {
@@ -437,13 +456,13 @@ export class ProfileBOMCalculator {
       windowUnit,
       pattern,
       systemPack,
-      ProductionUtils,
+      ProductionUtils: utils,
       sashCountHint,
       sashCuttingLengthsHint,
     } = args;
     if (!this.isSlidingOpening(windowUnit, pattern)) return;
 
-    const systemPackId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id;
+    const systemPackId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id || 'unknown';
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
     const kerf = CUTTING_CONSTANTS.STANDARD_KERF_MM;
@@ -458,7 +477,7 @@ export class ProfileBOMCalculator {
           0,
           height - DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM * 2,
         );
-        const interlockCutKV = ProductionUtils.applyKerfCompensation(
+        const interlockCutKV = utils.applyKerfCompensation(
           interlockCut,
           kerf,
           MITER_ANGLES.STRAIGHT_CUT,
@@ -470,9 +489,9 @@ export class ProfileBOMCalculator {
             'interlock',
             interlockCutKV * interlockQty,
             interlockQty,
-            Array.from({ length: interlockQty }, () => interlockCut),
-            Array.from({ length: interlockQty }, () => MITER_ANGLES.STRAIGHT_CUT),
-            ProductionUtils,
+            fillNumbers(interlockQty, interlockCut),
+            fillNumbers(interlockQty, MITER_ANGLES.STRAIGHT_CUT),
+            utils,
           ),
         );
       }
@@ -487,7 +506,7 @@ export class ProfileBOMCalculator {
           0,
           width - DEFAULT_PROFILE_DIMENSIONS.DEFAULT_WIDTH_MM * 2,
         );
-        const trackCutKV = ProductionUtils.applyKerfCompensation(
+        const trackCutKV = utils.applyKerfCompensation(
           trackCut,
           kerf,
           MITER_ANGLES.STRAIGHT_CUT,
@@ -501,7 +520,7 @@ export class ProfileBOMCalculator {
             2,
             [trackCut, trackCut],
             [MITER_ANGLES.STRAIGHT_CUT, MITER_ANGLES.STRAIGHT_CUT],
-            ProductionUtils,
+            utils,
           ),
         );
       }
@@ -519,8 +538,8 @@ export class ProfileBOMCalculator {
             beadPerimeter,
             sashCount,
             sashCuttingLengthsHint,
-            Array.from({ length: sashCuttingLengthsHint.length }, () => MITER_ANGLES.STRAIGHT_CUT),
-            ProductionUtils,
+            fillNumbers(sashCuttingLengthsHint.length, MITER_ANGLES.STRAIGHT_CUT),
+            utils,
           ),
         );
       }
@@ -533,8 +552,8 @@ export class ProfileBOMCalculator {
   private createProfileEntry(
     systemPackId: string, profile: Profile, role: string, 
     totalLength: number, quantity: number, cutLengths: number[], angles: number[],
-    prodUtils: { calculateWaste: (len: number, stock: number) => number; calculateProfileWeight: (len: number, spec: unknown) => number; calculateMaterialCost: (len: number, spec: unknown) => number }
-  ): FabricationData['profiles'][0] {
+    prodUtils: Pick<ProdUtilsLike, 'calculateWaste' | 'calculateProfileWeight' | 'calculateMaterialCost'>
+  ): ProfileBOMRow {
       return {
           id: `${role}-${systemPackId}`,
           systemPack: systemPackId,
@@ -625,7 +644,7 @@ export class ProfileBOMCalculator {
       stockQuantity: 0,
       minStockLevel: 0,
       supplier: 'default',
-      profileRole: role as FabricationData['profiles'][0]['role'],
+      profileRole: role as Profile['profileRole'],
     };
   }
 }
