@@ -2,11 +2,16 @@
  * #67 — Persist server-stamped optimization evidence (convert gate reads this, not client JSON).
  */
 
-import { fingerprintBom, fingerprintOptimization } from '@/lib/fabricator/positionRelease';
+import { fingerprintBom } from '@/lib/fabricator/positionRelease';
 import { resolveManufacturingAuthority } from '@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { supabase } from '@/lib/supabase';
 import type { OptimizationResult } from '@/types/fabricator';
+import {
+  sha256Hex,
+  validateOptimizationEvidencePayload,
+  type OptimizationEvidencePayload,
+} from './validateOptimizationEvidencePayload';
 
 export interface RecordOptimizationEvidenceInput {
   positionId: string;
@@ -32,11 +37,19 @@ function countCuts(result: OptimizationResult): number {
   return (result.cuttingPlan ?? []).reduce((sum, plan) => sum + (plan.cuts?.length ?? 0), 0);
 }
 
-function ledgerFingerprint(bom: CompleteBOM | null, optimization: OptimizationResult): string {
-  const bomFp = fingerprintBom(bom);
-  const optFp = fingerprintOptimization(optimization);
-  const combined = [bomFp, optFp].filter(Boolean).join('||');
-  return combined.length >= 8 ? combined : `opt-only:${optFp || 'empty'}`;
+function buildEvidencePayload(
+  result: OptimizationResult,
+  cutCount: number,
+): OptimizationEvidencePayload {
+  return {
+    schema: 'almona.optimization-result',
+    schemaVersion: 1,
+    materialUsage: result.materialUsage,
+    wastePercentage: result.wastePercentage,
+    nestingEfficiency: result.nestingEfficiency,
+    cutCount,
+    cuttingPlan: result.cuttingPlan,
+  };
 }
 
 /**
@@ -61,6 +74,16 @@ export async function recordOptimizationEvidence(
     return { ok: false, error: 'Optimization produced no cuts to validate.' };
   }
 
+  const evidencePayload = buildEvidencePayload(input.optimizationResult, cutCount);
+  const structural = validateOptimizationEvidencePayload(evidencePayload, cutCount);
+  if (!structural.ok) {
+    return { ok: false, error: structural.error };
+  }
+
+  const placementFingerprint = await sha256Hex(structural.placementCanonical);
+  const bomFp = fingerprintBom(input.bom);
+  const ledgerFingerprint = [bomFp, placementFingerprint].filter(Boolean).join('||') || placementFingerprint;
+
   let systemPackRevision: number;
   let ruleVersion: string;
   try {
@@ -73,12 +96,16 @@ export async function recordOptimizationEvidence(
       input.ruleVersion?.trim() ||
       input.bom?.qualification?.ruleVersion ||
       authority.cuttingRules.map((r) => `${r.ruleId}:r${r.revision}`).join('|') ||
-      'unspecified';
+      '';
   } catch (err) {
     return {
       ok: false,
       error: err instanceof Error ? err.message : 'Manufacturing authority unavailable.',
     };
+  }
+
+  if (!ruleVersion || ['unspecified', 'unknown', 'n/a'].includes(ruleVersion.toLowerCase())) {
+    return { ok: false, error: 'Authoritative rule version is required.' };
   }
 
   if (!Number.isInteger(systemPackRevision) || systemPackRevision < 1) {
@@ -90,19 +117,11 @@ export async function recordOptimizationEvidence(
     p_position_id: input.positionId,
     p_expected_revision: input.expectedRevision,
     p_design_revision: input.designRevision,
-    p_ledger_fingerprint: ledgerFingerprint(input.bom, input.optimizationResult),
+    p_ledger_fingerprint: ledgerFingerprint,
     p_system_pack_revision: systemPackRevision,
     p_rule_version: ruleVersion,
-    p_cut_count: cutCount,
-    p_evidence_payload: {
-      schema: 'almona.optimization-result',
-      schemaVersion: 1,
-      materialUsage: input.optimizationResult.materialUsage,
-      wastePercentage: input.optimizationResult.wastePercentage,
-      nestingEfficiency: input.optimizationResult.nestingEfficiency,
-      cutCount,
-      cuttingPlan: input.optimizationResult.cuttingPlan,
-    },
+    p_cut_count: structural.serverCutCount,
+    p_evidence_payload: evidencePayload,
   });
 
   if (error) {
