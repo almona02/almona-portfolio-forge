@@ -30,7 +30,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: 'tests/e2e/.auth/user.json',
       },
-      testIgnore: /fabricator-(measure-design-reload|design-tuning-pickers)\.spec\.ts/,
+      testIgnore: /fabricator-(measure-design-reload|design-tuning-pickers|project-1018-cut-chain)\.spec\.ts/,
     },
     {
       name: 'chromium-acceptance',
@@ -38,7 +38,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         // Fresh login in-spec; do not require pre-baked storageState
       },
-      testMatch: /fabricator-(measure-design-reload|design-tuning-pickers)\.spec\.ts/,
+      testMatch: /fabricator-(measure-design-reload|design-tuning-pickers|project-1018-cut-chain)\.spec\.ts/,
     },
     {
       name: 'chromium-real-login',

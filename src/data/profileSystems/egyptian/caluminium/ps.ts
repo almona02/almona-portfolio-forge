@@ -270,6 +270,33 @@ export const CALUMINIUM_PS_PACK: SystemPack = {
         pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
         pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
       },
+      {
+        id: 'ps_sliding_handle',
+        name: 'PS Sliding Window Handle',
+        type: 'handle',
+        specifications: {
+          material: 'aluminum_zinc',
+        },
+        // Provisional approx; admin may override unit_price on this kit later.
+        unit_price: PS_HW_PRICE.ps_sliding_handle,
+        currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
+        pricing_status: 'provisional',
+        pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
+        pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
+      },
+      {
+        id: 'ps_sliding_lock',
+        name: 'PS Sliding Window Lock',
+        type: 'lock',
+        specifications: {
+          material: 'stainless_steel',
+        },
+        unit_price: PS_HW_PRICE.ps_sliding_lock,
+        currency: CALUMINIUM_PS_PRICING_EVIDENCE.currency,
+        pricing_status: 'provisional',
+        pricing_effective_date: CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate,
+        pricing_expires_at: CALUMINIUM_PS_PRICING_EVIDENCE.expiresAt,
+      },
     ],
     glass_rules: {
       default: {

@@ -26,7 +26,71 @@ import {
     ROLLER_QUANTITY_THRESHOLDS,
     UNIT_CONVERSION,
 } from './hardwareBOMConstants';
-import { requireBomHardwareUnitPrice } from './requirePricedCost';
+import { resolveBomHardwareUnitPrice } from './requirePricedCost';
+
+type PackHardwareKit = {
+  id?: string;
+  name?: string;
+  unit_price?: number;
+  type?: string;
+};
+
+function packHardwareKits(systemPack: SystemPack): PackHardwareKit[] {
+  return (
+    (
+      systemPack.windowSystemSpec as
+        | { hardware_kits?: PackHardwareKit[] }
+        | undefined
+    )?.hardware_kits ?? []
+  );
+}
+
+function findPackKit(
+  kits: PackHardwareKit[],
+  kind: 'roller' | 'handle' | 'lock',
+): PackHardwareKit | undefined {
+  return kits.find((kit) => {
+    const id = (kit.id || '').toLowerCase();
+    const type = (kit.type || '').toLowerCase();
+    const name = (kit.name || '').toLowerCase();
+    if (kind === 'lock') {
+      // Do not match interlock kits (substring "lock").
+      if (id.includes('interlock') || name.includes('interlock')) return false;
+      return type === 'lock' || id.includes('sliding_lock') || /(^|[\s_-])lock([\s_-]|$)/.test(`${id} ${name}`);
+    }
+    return type.includes(kind) || id.includes(kind) || name.includes(kind);
+  });
+}
+
+function hardwarePriceMetadata(
+  packId: string | undefined,
+  hardwareId: string,
+  fallbackUnitPrice: number | undefined,
+  source: string,
+): Record<string, unknown> | undefined {
+  const resolved = resolveBomHardwareUnitPrice(packId, hardwareId, fallbackUnitPrice);
+  if (resolved.status === 'tbd') {
+    return {
+      priceStatus: 'tbd',
+      currency: 'EGP',
+      source: 'awaiting_owner_confirmation',
+    };
+  }
+  if (resolved.unitPriceEgp > 0) {
+    return {
+      unitPriceEgp: resolved.unitPriceEgp,
+      currency: 'EGP',
+      source:
+        resolved.priceStatus === 'admin_override'
+          ? 'admin_pack_kit_override'
+          : resolved.priceStatus === 'provisional'
+            ? 'provisional_workshop_approx'
+            : source,
+      priceStatus: resolved.priceStatus,
+    };
+  }
+  return undefined;
+}
 
 /**
  * HardwareBOMCalculator - Hardware quantity calculation engine
@@ -119,28 +183,19 @@ export class HardwareBOMCalculator {
       });
     }
 
+    const isSliding = openingType === 'sliding' || pattern.type === 'sliding';
+    const packId = systemPack.meta?.id || systemPack.id;
+    const packKits = packHardwareKits(systemPack);
+    const hasCells = pattern.gridSpec?.cells && Array.isArray(pattern.gridSpec.cells);
+    const sashCount = hasCells
+      ? pattern.gridSpec.cells.filter((c) => c.type === 'sash' || c.type === 'sliding').length
+      : HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
+
     // Rollers (for sliding) — prefer pack hardware_kits when present
-    if (openingType === 'sliding' || pattern.type === 'sliding') {
+    if (isSliding) {
       const rollerCount = this.calculateRollerQuantity(width, height);
-      const packKits = (
-        systemPack.windowSystemSpec as
-          | { hardware_kits?: Array<{ id?: string; name?: string; unit_price?: number; type?: string }> }
-          | undefined
-      )?.hardware_kits;
-      const packRoller = packKits?.find(
-        (kit) =>
-          (kit.type || '').toLowerCase().includes('roller') ||
-          (kit.id || '').toLowerCase().includes('roller') ||
-          (kit.name || '').toLowerCase().includes('roller'),
-      );
+      const packRoller = findPackKit(packKits, 'roller');
       const rollerId = packRoller?.id || 'roller-sliding';
-      const packId = systemPack.meta?.id || systemPack.id;
-      // caluminium-ps / ps_* kits: dated evidence (fail-loud). Legacy packs keep optional price.
-      const unitPriceEgp = requireBomHardwareUnitPrice(
-        packId,
-        rollerId,
-        packRoller?.unit_price,
-      );
       hardware.push({
         id: rollerId,
         supplierCode: rollerId,
@@ -157,43 +212,88 @@ export class HardwareBOMCalculator {
         alternatives: [],
         estimatedTime: INSTALLATION_TIME.PER_ROLLER_MINUTES,
         supplierLink: undefined,
-        metadata:
-          unitPriceEgp > 0
-            ? {
-                unitPriceEgp,
-                source: packRoller ? 'pack_hardware_kit' : 'legacy_default',
-                currency: 'EGP',
-              }
-            : undefined,
+        metadata: hardwarePriceMetadata(
+          packId,
+          rollerId,
+          packRoller?.unit_price,
+          packRoller ? 'pack_hardware_kit' : 'legacy_default',
+        ),
       });
     }
 
-    // Handles (standard: 1 per operable sash)
-    const hasCells = pattern.gridSpec?.cells && Array.isArray(pattern.gridSpec.cells);
-    const sashCount = hasCells ? pattern.gridSpec.cells.filter(c => 
-      c.type === 'sash' || c.type === 'sliding'
-    ).length : HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
+    // Handles — PS sliding uses pack kit (price may be TBD); others use standard handle
+    const packHandle = isSliding ? findPackKit(packKits, 'handle') : undefined;
+    if (packHandle?.id) {
+      hardware.push({
+        id: packHandle.id,
+        supplierCode: packHandle.id,
+        name: packHandle.name || 'Sliding Window Handle',
+        category: 'handle',
+        quantity: sashCount,
+        positionSpec: `${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom (Egyptian standard)`,
+        installationNotes: [
+          `Position handle at ${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom`,
+          'Ensure comfortable operation height',
+          'Test handle operation',
+        ],
+        torqueSpec: HARDWARE_TORQUE.HANDLE_STANDARD_NM,
+        alternatives: [],
+        estimatedTime: INSTALLATION_TIME.PER_HANDLE_MINUTES,
+        supplierLink: undefined,
+        metadata: hardwarePriceMetadata(
+          packId,
+          packHandle.id,
+          packHandle.unit_price,
+          'pack_hardware_kit',
+        ),
+      });
+    } else {
+      hardware.push({
+        id: 'handle-standard',
+        supplierCode: 'HANDLE-STANDARD-1100',
+        name: 'Standard Window Handle',
+        category: 'handle',
+        quantity: sashCount,
+        positionSpec: `${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom (Egyptian standard)`,
+        installationNotes: [
+          `Position handle at ${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom`,
+          'Ensure comfortable operation height',
+          'Test handle operation',
+        ],
+        torqueSpec: HARDWARE_TORQUE.HANDLE_STANDARD_NM,
+        alternatives: ['HANDLE-ERGONOMIC', 'HANDLE-DESIGN'],
+        estimatedTime: INSTALLATION_TIME.PER_HANDLE_MINUTES,
+        supplierLink: undefined,
+      });
+    }
 
-    hardware.push({
-      id: 'handle-standard',
-      supplierCode: 'HANDLE-STANDARD-1100',
-      name: 'Standard Window Handle',
-      category: 'handle',
-      quantity: sashCount,
-      positionSpec: `${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom (Egyptian standard)`,
-      installationNotes: [
-        `Position handle at ${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom`,
-        'Ensure comfortable operation height',
-        'Test handle operation'
-      ],
-      torqueSpec: HARDWARE_TORQUE.HANDLE_STANDARD_NM,
-      alternatives: ['HANDLE-ERGONOMIC', 'HANDLE-DESIGN'],
-      estimatedTime: INSTALLATION_TIME.PER_HANDLE_MINUTES,
-      supplierLink: undefined
-    });
-
-    // Locks (for casement/tilt-turn)
-    if (openingType === 'casement' || openingType === 'tilt-turn') {
+    // Locks — casement/tilt-turn standard; PS sliding uses pack lock kit (price may be TBD)
+    const packLock = isSliding ? findPackKit(packKits, 'lock') : undefined;
+    if (packLock?.id) {
+      hardware.push({
+        id: packLock.id,
+        supplierCode: packLock.id,
+        name: packLock.name || 'Sliding Window Lock',
+        category: 'lock',
+        quantity: sashCount,
+        positionSpec: 'Meeting stile / handle side of operable sash',
+        installationNotes: [
+          'Install lock at handle side of operable sash',
+          'Verify interlock engagement when closed',
+          'Test lock mechanism',
+        ],
+        torqueSpec: undefined,
+        alternatives: [],
+        estimatedTime: INSTALLATION_TIME.PER_LOCK_MINUTES,
+        supplierLink: undefined,
+        metadata: hardwarePriceMetadata(
+          packId,
+          packLock.id,
+          packLock.unit_price,
+          'pack_hardware_kit',
+        ),
+      });
+    } else if (openingType === 'casement' || openingType === 'tilt-turn') {
       hardware.push({
         id: 'lock-casement',
         supplierCode: 'LOCK-CASEMENT-STD',
@@ -204,12 +304,12 @@ export class HardwareBOMCalculator {
         installationNotes: [
           'Install lock at handle position',
           'Install additional lock at top for tall sashes',
-          'Test lock mechanism'
+          'Test lock mechanism',
         ],
         torqueSpec: undefined,
         alternatives: [],
         estimatedTime: INSTALLATION_TIME.PER_LOCK_MINUTES,
-        supplierLink: undefined
+        supplierLink: undefined,
       });
     }
 

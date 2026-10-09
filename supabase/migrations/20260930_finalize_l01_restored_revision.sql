@@ -22,6 +22,11 @@ BEGIN
     AND (SELECT bool_and(cell->>'type' = 'sliding') FROM jsonb_array_elements(grid->'cells') AS cell);
 
   GET DIAGNOSTICS v_updated = ROW_COUNT;
+  IF v_updated = 0 THEN
+    -- One-shot prod repair: no-op when L01 row was never restored (empty DB).
+    RAISE NOTICE 'L01 finalize skipped: target position absent';
+    RETURN;
+  END IF;
   IF v_updated <> 1 THEN
     RAISE EXCEPTION 'L01 restored position no longer matches the verified revision-2 record';
   END IF;

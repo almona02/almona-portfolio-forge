@@ -59,8 +59,40 @@ export const CALUMINIUM_PS_PRICING_EVIDENCE: DatedPricingEvidence = {
     ps_sliding_roller: 15,
     ps_interlock_kit: 45,
     ps_hinge_kit: 12,
+    /** Provisional Cairo workshop approx — replace via evidence or pack kit unit_price. */
+    ps_sliding_handle: 40,
+    /** Provisional Cairo workshop approx — replace via evidence or pack kit unit_price. */
+    ps_sliding_lock: 60,
   },
 };
+
+/**
+ * Kits with provisional EGP (pass gates now). Owner/admin may replace later by
+ * editing this evidence schedule or setting pack `hardware_kits[].unit_price`
+ * (admin override wins when positive).
+ */
+export const CALUMINIUM_PS_HARDWARE_PRICE_PROVISIONAL = [
+  'ps_sliding_handle',
+  'ps_sliding_lock',
+] as const;
+
+/** @deprecated Empty — handle/lock use provisional approx; kept for import stability. */
+export const CALUMINIUM_PS_HARDWARE_PRICE_TBD = [] as const;
+
+export type CaluminiumPsHardwarePriceProvisionalId =
+  (typeof CALUMINIUM_PS_HARDWARE_PRICE_PROVISIONAL)[number];
+
+export type CaluminiumPsHardwarePriceTbdId = never;
+
+export function isCaluminiumPsHardwarePriceProvisional(hardwareId: string): boolean {
+  return (CALUMINIUM_PS_HARDWARE_PRICE_PROVISIONAL as readonly string[]).includes(
+    hardwareId,
+  );
+}
+
+export function isCaluminiumPsHardwarePriceTbd(hardwareId: string): boolean {
+  return (CALUMINIUM_PS_HARDWARE_PRICE_TBD as readonly string[]).includes(hardwareId);
+}
 
 export class MissingOrExpiredPriceError extends Error {
   constructor(message: string) {

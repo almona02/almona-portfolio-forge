@@ -22,16 +22,34 @@ describe('saved manual design estimate resolution', () => {
       expect(result.compatibleSystems).toEqual([]);
       expect(result.name).toContain('estimate');
     });
-  it('rejects missing, duplicate, and operative cells rather than substituting a preset', () => {
+  it('rejects missing and duplicate cells rather than substituting a preset', () => {
     const missing = position(2, 2);
     missing.grid!.cells.pop();
     expect(() => resolveEstimatePattern(missing)).toThrow('complete rectangular grid');
     const duplicate = position(2, 2);
     duplicate.grid!.cells[1] = duplicate.grid!.cells[0];
     expect(() => resolveEstimatePattern(duplicate)).toThrow('duplicate');
-    const sash = position(1, 1);
-    sash.grid!.cells[0].type = 'sash';
-    expect(() => resolveEstimatePattern(sash)).toThrow('supported preset');
+  });
+
+  it('resolves manual sliding sash grids without inventing mullion/transom rows', () => {
+    const sliding = position(2, 1);
+    sliding.type = 'sliding_window_2sash';
+    sliding.grid!.cells.forEach((cell) => {
+      cell.type = 'sash';
+    });
+    const result = resolveEstimatePattern(sliding);
+    expect(result.type).toBe('sliding');
+    expect(result.openingMechanism?.type).toBe('sliding');
+    expect(result.mullions).toHaveLength(0);
+    expect(result.transoms).toHaveLength(0);
+    expect(result.gridSpec.cells).toHaveLength(2);
+  });
+
+  it('rejects mixed fixed/sash manual grids', () => {
+    const mixed = position(2, 1);
+    mixed.grid!.cells[0].type = 'fixed';
+    mixed.grid!.cells[1].type = 'sash';
+    expect(() => resolveEstimatePattern(mixed)).toThrow(/fixed cells|sliding estimate/);
   });
   it('rejects unknown explicit presets and invalid proportions', () => {
     const unknown = position(1, 1);
