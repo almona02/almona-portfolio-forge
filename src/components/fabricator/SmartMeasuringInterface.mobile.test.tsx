@@ -112,7 +112,7 @@ describe('SmartMeasuringInterface mobile confirm actions', () => {
     expect(await screen.findByTestId('measuring-pattern-applied')).toBeInTheDocument();
     expect(screen.getByTestId('measuring-confirm-pattern')).toBeEnabled();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /^Confirm$/ }));
     const checkbox = await screen.findByRole('checkbox', {
       name: 'I checked the cut size against the opening / drawing.',
     });
