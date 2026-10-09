@@ -36,7 +36,7 @@ const sampleResult = {
     glazingCost: 1,
     totalCost: 4,
   },
-} as never;
+};
 
 describe('recordOptimizationEvidence (#67)', () => {
   beforeEach(() => {
@@ -51,25 +51,15 @@ describe('recordOptimizationEvidence (#67)', () => {
 
   it('rejects empty cutting plans without RPC', async () => {
     const emptyCuts = {
-      materialUsage: 0.8,
-      wastePercentage: 12,
-      estimatedProductionTime: 1,
-      nestingEfficiency: 0.88,
+      ...sampleResult,
       cuttingPlan: [],
-      costBreakdown: {
-        materialCost: 1,
-        laborCost: 1,
-        hardwareCost: 1,
-        glazingCost: 1,
-        totalCost: 4,
-      },
-    } as never;
+    };
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
       expectedRevision: 1,
       designRevision: 1,
       bom: null,
-      optimizationResult: emptyCuts,
+      optimizationResult: emptyCuts as never,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
@@ -85,7 +75,7 @@ describe('recordOptimizationEvidence (#67)', () => {
       bom: {
         qualification: { ruleVersion: 'rules-fixture' },
       } as never,
-      optimizationResult: sampleResult,
+      optimizationResult: sampleResult as never,
     });
     expect(result.ok).toBe(true);
     expect(rpc).toHaveBeenCalledWith(
@@ -118,7 +108,7 @@ describe('recordOptimizationEvidence (#67)', () => {
       expectedRevision: 1,
       designRevision: 1,
       bom: null,
-      optimizationResult: sampleResult,
+      optimizationResult: sampleResult as never,
       ruleVersion: 'unspecified',
     });
     expect(result.ok).toBe(false);
@@ -140,13 +130,13 @@ describe('recordOptimizationEvidence (#67)', () => {
           ],
         },
       ],
-    } as never;
+    };
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
       expectedRevision: 1,
       designRevision: 1,
       bom: { qualification: { ruleVersion: 'rules-fixture' } } as never,
-      optimizationResult: overrun,
+      optimizationResult: overrun as never,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
@@ -161,7 +151,7 @@ describe('recordOptimizationEvidence (#67)', () => {
       expectedRevision: 1,
       designRevision: 1,
       bom: null,
-      optimizationResult: sampleResult,
+      optimizationResult: sampleResult as never,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
