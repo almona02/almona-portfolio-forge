@@ -34,9 +34,8 @@ export default function MeasuringMobilePreview() {
             </span>
           ) : null}
         </div>
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 overflow-hidden">
           <SmartMeasuringInterface
-            systemPackId="caluminium-ps"
             poseLabel="Pose 1"
             initialData={{
               width: '1200',
@@ -46,7 +45,6 @@ export default function MeasuringMobilePreview() {
               color: 'White',
               measurementMode: 'manufacturing',
               wallDeduction: '0',
-              systemPackId: 'caluminium-ps',
             }}
             onMeasurementComplete={(data) => setLast(data)}
             onSaveAndNextPose={(data) => setLast(data)}

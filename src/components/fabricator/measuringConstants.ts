@@ -56,6 +56,12 @@ export const DEFAULT_GRID = {
   DEFAULT_CELL_ID: '0-0',
 } as const;
 
+/** Workshop default pack — CALUMINIUM PS (Egyptian). */
+export const DEFAULT_MEASURING_SYSTEM_PACK_ID = 'caluminium-ps';
+
+/** Workshop default opening — sliding 2-sash window. */
+export const DEFAULT_MEASURING_PATTERN_ID = 'sliding-2s';
+
 /**
  * Blueprint zoom and view constants
  */

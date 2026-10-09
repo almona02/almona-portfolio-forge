@@ -67,6 +67,18 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe('SmartMeasuringInterface mobile confirm actions', () => {
+  it('defaults to CALUMINIUM PS + sliding-2s with narrow chrome and wizard scroll focus', () => {
+    render(<SmartMeasuringInterface onMeasurementComplete={vi.fn()} />);
+
+    expect(screen.getByTestId('measuring-mobile-shell')).toBeInTheDocument();
+    expect(screen.getByTestId('measuring-wizard-focus')).toBeInTheDocument();
+    expect(screen.getByTestId('measuring-wizard-scroll')).toBeInTheDocument();
+    expect(screen.getByTestId('measuring-chrome-system')).toHaveTextContent(/CALUMINIUM PS/i);
+    expect(screen.getByTestId('measuring-chrome-layout')).toHaveTextContent(/sliding-2s/i);
+    expect(screen.queryByTestId('measuring-apply-system-pack')).not.toBeInTheDocument();
+    expect(screen.getByTestId('measuring-wizard-next')).toBeVisible();
+  });
+
   it('starts with system pack collapsed when pack is preselected and Apply confirms change', async () => {
     render(
       <SmartMeasuringInterface

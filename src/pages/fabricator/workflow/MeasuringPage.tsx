@@ -275,22 +275,25 @@ export const MeasuringPage: React.FC = () => {
                 onOpenChange={setPoseLayoutOpen}
                 className="shrink-0 border-b border-amber-600/20"
             >
-                <div className="px-3 py-2 sm:px-4 sm:py-2.5">
+                <div className="px-2 py-1 sm:px-4 sm:py-2.5">
                     <CollapsibleTrigger
                         type="button"
-                        className="flex w-full items-center gap-2 rounded-md px-1 py-1 text-left hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40"
+                        className="flex w-full items-center gap-1.5 rounded-md px-1 py-0.5 sm:py-1 text-left hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40 min-h-9"
                         aria-label={poseLayoutOpen ? 'Hide project pose layout' : 'Show project pose layout'}
                     >
                         <div className="min-w-0 flex-1">
-                            <h2 className="truncate text-sm font-semibold text-amber-200">
-                                Measuring — Pose {pose?.posNumber || '1'}
+                            <h2 className="truncate text-xs sm:text-sm font-semibold text-amber-200">
+                                Pose {pose?.posNumber || '1'}
+                                <span className="ml-1.5 font-mono font-normal text-[10px] text-slate-500 sm:hidden">
+                                    {activePoseSummary}
+                                </span>
                             </h2>
-                            <p className="truncate font-mono text-[11px] text-slate-500">
+                            <p className="hidden sm:block truncate font-mono text-[11px] text-slate-500">
                                 {activePoseSummary}
                             </p>
                         </div>
                         <ChevronDown
-                            className={`h-4 w-4 shrink-0 text-amber-500/80 transition-transform ${poseLayoutOpen ? 'rotate-180' : ''}`}
+                            className={`h-3.5 w-3.5 shrink-0 text-amber-500/80 transition-transform ${poseLayoutOpen ? 'rotate-180' : ''}`}
                             aria-hidden
                         />
                     </CollapsibleTrigger>
