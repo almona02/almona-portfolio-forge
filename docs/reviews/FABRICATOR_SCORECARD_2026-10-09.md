@@ -11,21 +11,24 @@ Staging plan (awaiting auth): [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](
 | Artifact | Status |
 |---|---|
 | `origin/main` / Production | `f9954be9` (merge #69) |
-| PR #70 measuring | tip `91c2a4d0` — **CI green** (20/20) |
-| PR #71 optimization evidence | tip `a639284c` — **CI green** (19/19) |
+| PR #70 measuring | tip `f9ce74fb` — **CI green** |
+| PR #71 optimization evidence | tip `a639284c` — **CI green** |
 | PR #72 hardener applicability | tip `d2b637d4` — **CI green** |
-| PR #73 measured pooled E2E | tip `c1bc3bc3` — measured job green; remaining suite in flight |
+| PR #73 measured pooled E2E | tip `bd8ea3b8` — **CI green** (uniform + diverse metrics) |
+| PR #74 Profile Studio contract | tip `f32c3174` — **CI green** |
 | PR #64 empty-DB replay | open draft (parallel) |
+
+Merge + staging readiness: [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../plans/FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md) — **awaiting owner merge/staging auth**.
 
 ## Layer scores (separate — do not flatten)
 
 | Layer | Score | Meaning |
 |---|---|---|
 | **Verified implementation** | **~94** | Product surface + stack code largely present |
-| **Current-head CI** | **~92** | #70/#71/#72 tip green; #73 finishing |
-| **Local / staging acceptance** | **~48** | Uniform + diverse estimate 10/18 metrics; staging SQL not authorized |
+| **Current-head CI** | **~96** | #70–#74 tips green / mergeable |
+| **Local / staging acceptance** | **~48** | Estimate 10/18 metrics; **no staging Supabase project** identified |
 | **Live acceptance** | **~35** | Prod has prior manufacturing SQL; FINAL GOAL walk **not run** |
-| **Production readiness** | **NOT READY** | #71/#72 need staging then explicit prod auth |
+| **Production readiness** | **NOT READY** | Merge authorized separately from Phase B/C SQL |
 
 Composite provisional **82/100** remains. Raising live acceptance requires Phase B/C evidence in the staging plan.
 
