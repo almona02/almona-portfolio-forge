@@ -289,25 +289,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   /** When true, user opened the panel — stay open until they hide it (no auto-collapse). */
   const [systemPackPinnedOpen, setSystemPackPinnedOpen] = useState(false);
   /**
-   * Layout / preview start collapsed. DevTools device emulation still reports a wide
-   * window for matchMedia, so never trust initial matchMedia for phone layout.
+   * Layout / preview start collapsed on all viewports. Large screens reveal panel
+   * bodies with `max-lg:hidden` CSS so DevTools device mode cannot force them open
+   * via matchMedia on the outer browser window.
    */
   const [layoutPanelOpen, setLayoutPanelOpen] = useState(false);
   const [previewPanelOpen, setPreviewPanelOpen] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
-    const mq = window.matchMedia('(min-width: 1024px)');
-    const syncDesktopPanels = () => {
-      if (mq.matches) {
-        setLayoutPanelOpen(true);
-        setPreviewPanelOpen(true);
-      }
-    };
-    syncDesktopPanels();
-    mq.addEventListener?.('change', syncDesktopPanels);
-    return () => mq.removeEventListener?.('change', syncDesktopPanels);
-  }, []);
 
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(() =>
     resolveDefaultMeasuringPackId(systemPackId, region),
@@ -501,11 +488,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   };
 
   const nextStep = () => {
-    if (currentStep < STEPS.length - 1) setCurrentStep(c => c + 1);
+    setCurrentStep((c) => (c < STEPS.length - 1 ? c + 1 : c));
   };
 
   const prevStep = () => {
-    if (currentStep > 0) setCurrentStep(c => c - 1);
+    setCurrentStep((c) => (c > 0 ? c - 1 : c));
   };
 
   // Animation variants for smooth slide transitions
@@ -1049,8 +1036,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             </Button>
           </div>
 
-          {layoutPanelOpen && (
-            <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden">
+          <div
+            className={cn(
+              'relative flex-1 min-h-0 flex-col overflow-hidden',
+              layoutPanelOpen ? 'flex' : 'hidden lg:flex',
+            )}
+          >
               {!isGridLocked && predictionReason && (
                 <div className="px-3 py-1.5 border-b border-amber-600/20 bg-amber-950/40 text-[11px] text-amber-100/90 flex items-start gap-2">
                   <Sparkles className="h-3 w-3 text-amber-400 shrink-0 mt-0.5" />
@@ -1087,8 +1078,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               <p className="hidden sm:block px-3 py-1.5 text-[10px] text-slate-500 border-t border-amber-600/15 shrink-0">
                 Tap a pane to set fixed / sash / sliding. Use Locked so size edits do not rewrite your layout.
               </p>
-            </div>
-          )}
+          </div>
         </div>
         );
       })()}
@@ -1826,8 +1816,20 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         </div>
 
         {/* Footer — sticky to wizard card; wizard buttons + confirmations stay reachable */}
-        <div className="p-2 sm:p-3 border-t border-amber-600/25 flex flex-col sm:flex-row justify-between gap-1.5 sm:gap-2 flex-shrink-0 bg-slate-950/95">
-          <Button variant="ghost" disabled={currentStep === 0} onClick={prevStep} className="btn-secondary-dark h-10 sm:h-11 touch-manipulation">
+        <div
+          className="p-2 sm:p-3 border-t border-amber-600/25 flex flex-col sm:flex-row justify-between gap-1.5 sm:gap-2 flex-shrink-0 bg-slate-950/95 z-20"
+          data-testid="measuring-wizard-footer"
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={currentStep === 0}
+            onClick={(e) => {
+              e.preventDefault();
+              prevStep();
+            }}
+            className="btn-secondary-dark h-10 sm:h-11 touch-manipulation"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.previous', 'Back')}
           </Button>
 
@@ -1888,8 +1890,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             </div>
           ) : (
             <Button
+              type="button"
               data-testid="measuring-wizard-next"
-              onClick={nextStep}
+              onClick={(e) => {
+                e.preventDefault();
+                nextStep();
+              }}
               className="btn-primary-gradient font-bold w-full sm:w-auto h-11 touch-manipulation"
             >
               {t('smart_measuring.actions.next', 'Next')} <ArrowRight className="ml-2 h-4 w-4" />
@@ -2050,7 +2056,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         <div
           className={cn(
             'relative flex-1 min-h-0 w-full',
-            previewPanelOpen ? 'min-h-[220px] sm:min-h-[280px]' : 'hidden lg:block lg:min-h-0',
+            previewPanelOpen ? 'min-h-[220px] sm:min-h-[280px]' : 'hidden lg:block lg:min-h-[280px]',
           )}
         >
         {/* SR-Only Summary for Accessibility */}

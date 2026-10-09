@@ -158,4 +158,19 @@ describe('SmartMeasuringInterface mobile confirm actions', () => {
       'true',
     );
   });
+
+  it('advances Size → Glass with footer Next and collapses pack Apply', async () => {
+    render(<SmartMeasuringInterface onMeasurementComplete={vi.fn()} />);
+
+    expect(screen.getByRole('button', { name: 'Size', current: 'step' })).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('measuring-wizard-next'));
+    expect(screen.getByRole('button', { name: 'Glass', current: 'step' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('measuring-chrome-system'));
+    const apply = await screen.findByTestId('measuring-apply-system-pack');
+    fireEvent.click(apply);
+    await waitFor(() => {
+      expect(screen.queryByTestId('measuring-apply-system-pack')).not.toBeInTheDocument();
+    });
+  });
 });
