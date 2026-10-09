@@ -16,17 +16,21 @@ import {
     LogOut,
     Monitor,
     Moon,
+    Package,
     Palette,
     Settings,
     Sun,
-    User
+    User,
+    Wrench,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, useSearchParams } from 'react-router-dom';
 // Reuse existing branding component
 import CompanyBrandingSettings from '@/components/settings/CompanyBrandingSettings';
 import { KeyboardShortcutsPanel } from '@/components/settings/KeyboardShortcutsPanel';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { toast } from 'sonner';
 
 /**
@@ -37,6 +41,20 @@ export const SettingsPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { user, signOut, updateProfile } = useAuth();
     const { theme, setTheme } = useTheme();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const settingsTab = useMemo(() => {
+        const tab = searchParams.get('tab') || 'general';
+        const allowed = new Set([
+            'general',
+            'account',
+            'branding',
+            'keyboard',
+            'notifications',
+            'integrations',
+            'manufacturing',
+        ]);
+        return allowed.has(tab) ? tab : 'general';
+    }, [searchParams]);
     const [isLoading, setIsLoading] = useState(false);
     
     // Draft state for form inputs
@@ -96,7 +114,11 @@ export const SettingsPage: React.FC = () => {
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Tabs defaultValue="general" className="space-y-8">
+                <Tabs
+                    value={settingsTab}
+                    onValueChange={(value) => setSearchParams(value === 'general' ? {} : { tab: value })}
+                    className="space-y-8"
+                >
                     {/* Navigation Tabs */}
                     <TabsList className="bg-slate-900/50 border border-slate-800 p-1 rounded-xl h-auto flex-wrap">
                         <TabsTrigger value="general" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
@@ -110,6 +132,10 @@ export const SettingsPage: React.FC = () => {
                         <TabsTrigger value="branding" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
                             <Palette className="h-4 w-4 mr-2" />
                             Branding
+                        </TabsTrigger>
+                        <TabsTrigger value="manufacturing" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
+                            <Wrench className="h-4 w-4 mr-2" />
+                            Manufacturing
                         </TabsTrigger>
                         <TabsTrigger value="keyboard" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
                             <Keyboard className="h-4 w-4 mr-2" />
@@ -282,6 +308,56 @@ export const SettingsPage: React.FC = () => {
                         <div className="bg-slate-900/30 rounded-xl">
                             <CompanyBrandingSettings />
                         </div>
+                    </TabsContent>
+
+                    {/* MANUFACTURING / WORKSHOP CONFIG */}
+                    <TabsContent value="manufacturing" className="space-y-6">
+                        <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Package className="h-5 w-5 text-amber-500" />
+                                    System pack accessories
+                                </CardTitle>
+                                <CardDescription>
+                                    Hardware kits per profile system (rollers, handles, locks, frame/sash corner keys).
+                                    Edit workshop unit prices used by manufacturing BOM.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex flex-wrap items-center justify-between gap-4">
+                                <div className="text-sm text-slate-400 max-w-xl">
+                                    Opens Data Studio → Accessories kits. Overrides stay on this workshop device and
+                                    apply as admin unit-price overrides when they differ from catalogue evidence.
+                                </div>
+                                <Button asChild className="bg-amber-600 hover:bg-amber-700 text-white">
+                                    <Link
+                                        to={fabricatorRoutes.studioDataAccessories('caluminium-ps')}
+                                        data-testid="settings-open-accessories-kits"
+                                    >
+                                        <Wrench className="h-4 w-4 mr-2" />
+                                        Open accessories kits
+                                    </Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Settings className="h-5 w-5 text-amber-500" />
+                                    Related workshop surfaces
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="flex flex-wrap gap-3">
+                                <Button asChild variant="outline" className="border-slate-700">
+                                    <Link to={fabricatorRoutes.studioDataProfiles()}>Profiles library</Link>
+                                </Button>
+                                <Button asChild variant="outline" className="border-slate-700">
+                                    <Link to={fabricatorRoutes.studioApprovals()}>Manufacturing approvals</Link>
+                                </Button>
+                                <Button asChild variant="outline" className="border-slate-700">
+                                    <Link to={fabricatorRoutes.studioDataStock()}>Stock / remnants</Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
                     </TabsContent>
 
                     {/* KEYBOARD TAB */}

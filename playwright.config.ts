@@ -30,7 +30,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: 'tests/e2e/.auth/user.json',
       },
-      testIgnore: /fabricator-(measure-design-reload|design-tuning-pickers|project-1018-cut-chain)\.spec\.ts/,
+      testIgnore: /fabricator-(measure-design-reload|design-tuning-pickers|project-1018-cut-chain|admin-approvals-chain)\.spec\.ts/,
     },
     {
       name: 'chromium-acceptance',
@@ -38,7 +38,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         // Fresh login in-spec; do not require pre-baked storageState
       },
-      testMatch: /fabricator-(measure-design-reload|design-tuning-pickers|project-1018-cut-chain)\.spec\.ts/,
+      testMatch: /fabricator-(measure-design-reload|design-tuning-pickers|project-1018-cut-chain|admin-approvals-chain)\.spec\.ts/,
     },
     {
       name: 'chromium-real-login',
@@ -55,5 +55,15 @@ export default defineConfig({
         url: 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
+        env: {
+          ...process.env,
+          // Prefer caller-exported local Supabase; fall back to committed .env otherwise.
+          ...(process.env.VITE_SUPABASE_URL
+            ? {
+                VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL,
+                VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ?? '',
+              }
+            : {}),
+        },
       },
 });

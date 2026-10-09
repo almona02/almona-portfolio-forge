@@ -26,28 +26,34 @@ import {
     ROLLER_QUANTITY_THRESHOLDS,
     UNIT_CONVERSION,
 } from './hardwareBOMConstants';
+import {
+  listKitsFromPackSpec,
+  mergeHardwareKitsWithOverrides,
+  type PackHardwareKitLike,
+} from '@/lib/fabricator/manufacturing/hardwareKitOverrides';
 import { resolveBomHardwareUnitPrice } from './requirePricedCost';
 
-type PackHardwareKit = {
-  id?: string;
-  name?: string;
-  unit_price?: number;
-  type?: string;
+type PackHardwareKit = PackHardwareKitLike & {
+  specifications?: {
+    role?: string;
+    leg_mm?: number;
+    thickness_mm?: number;
+    material?: string;
+    fits_profiles?: string[];
+  };
 };
 
 function packHardwareKits(systemPack: SystemPack): PackHardwareKit[] {
-  return (
-    (
-      systemPack.windowSystemSpec as
-        | { hardware_kits?: PackHardwareKit[] }
-        | undefined
-    )?.hardware_kits ?? []
-  );
+  const packId = systemPack.meta?.id || systemPack.id || '';
+  const base = listKitsFromPackSpec(
+    systemPack.windowSystemSpec as Record<string, unknown> | undefined,
+  ) as PackHardwareKit[];
+  return mergeHardwareKitsWithOverrides(packId, base) as PackHardwareKit[];
 }
 
 function findPackKit(
   kits: PackHardwareKit[],
-  kind: 'roller' | 'handle' | 'lock',
+  kind: 'roller' | 'handle' | 'lock' | 'corner_key_frame' | 'corner_key_sash',
 ): PackHardwareKit | undefined {
   return kits.find((kit) => {
     const id = (kit.id || '').toLowerCase();
@@ -57,6 +63,20 @@ function findPackKit(
       // Do not match interlock kits (substring "lock").
       if (id.includes('interlock') || name.includes('interlock')) return false;
       return type === 'lock' || id.includes('sliding_lock') || /(^|[\s_-])lock([\s_-]|$)/.test(`${id} ${name}`);
+    }
+    if (kind === 'corner_key_frame') {
+      return (
+        id === 'ps_corner_key_frame' ||
+        id.includes('corner_key_frame') ||
+        (type.includes('corner') && (id.includes('frame') || name.includes('frame')))
+      );
+    }
+    if (kind === 'corner_key_sash') {
+      return (
+        id === 'ps_corner_key_sash' ||
+        id.includes('corner_key_sash') ||
+        (type.includes('corner') && (id.includes('sash') || name.includes('sash')))
+      );
     }
     return type.includes(kind) || id.includes(kind) || name.includes(kind);
   });
@@ -313,24 +333,85 @@ export class HardwareBOMCalculator {
       });
     }
 
-    // Corner keys (standard: 4 per frame)
-    hardware.push({
-      id: 'corner-key-standard',
-      supplierCode: 'CORNER-KEY-15',
-      name: 'Corner Key 15mm',
-      category: 'corner_key',
-      quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
-      positionSpec: 'One in each frame corner',
-      installationNotes: [
-        'Tap in with rubber mallet',
-        'Ensure flush fit',
-        'Check corner alignment'
-      ],
-      torqueSpec: undefined,
-      alternatives: ['CORNER-KEY-20', 'SCREW-CORNER'],
-      estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
-      supplierLink: undefined
-    });
+    // Corner keys — CALUMINIUM PS uses two SKUs (frame vs sash: different size + price).
+    // Qty: 4 frame + 4 per sash (2-sash sliding → 4 + 8 = 12). Other packs: legacy 4.
+    const isCaluminiumPs = packId === 'caluminium-ps';
+    if (isCaluminiumPs) {
+      const frameKit = findPackKit(packKits, 'corner_key_frame');
+      const sashKit = findPackKit(packKits, 'corner_key_sash');
+      const frameId = frameKit?.id || 'ps_corner_key_frame';
+      const sashId = sashKit?.id || 'ps_corner_key_sash';
+      const frameLeg = frameKit?.specifications?.leg_mm ?? 20;
+      const sashLeg = sashKit?.specifications?.leg_mm ?? 15;
+
+      hardware.push({
+        id: frameId,
+        supplierCode: frameId,
+        name: frameKit?.name || `PS Frame Corner Key ${frameLeg}mm`,
+        category: 'corner_key',
+        quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
+        positionSpec: `Outer frame corners only — ${frameLeg}mm frame cleat (not sash SKU)`,
+        installationNotes: [
+          'Use FRAME corner key only (larger chamber)',
+          'Do not substitute sash corner keys',
+          'Tap in with rubber mallet; check squareness',
+        ],
+        torqueSpec: undefined,
+        alternatives: [sashId],
+        estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
+        supplierLink: undefined,
+        metadata: hardwarePriceMetadata(
+          packId,
+          frameId,
+          frameKit?.unit_price,
+          frameKit ? 'pack_hardware_kit' : 'legacy_default',
+        ),
+      });
+      const sashCornerKeys = HARDWARE_QUANTITY.CORNER_KEYS_PER_SASH * Math.max(0, sashCount);
+      if (sashCornerKeys > 0) {
+        hardware.push({
+          id: sashId,
+          supplierCode: sashId,
+          name: sashKit?.name || `PS Sash Corner Key ${sashLeg}mm`,
+          category: 'corner_key',
+          quantity: sashCornerKeys,
+          positionSpec: `Each sash corner — ${sashLeg}mm sash cleat (${sashCount} sash × ${HARDWARE_QUANTITY.CORNER_KEYS_PER_SASH})`,
+          installationNotes: [
+            'Use SASH corner key only (smaller chamber)',
+            'Do not substitute frame corner keys',
+            'Tap in with rubber mallet before glazing',
+          ],
+          torqueSpec: undefined,
+          alternatives: [frameId],
+          estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
+          supplierLink: undefined,
+          metadata: hardwarePriceMetadata(
+            packId,
+            sashId,
+            sashKit?.unit_price,
+            sashKit ? 'pack_hardware_kit' : 'legacy_default',
+          ),
+        });
+      }
+    } else {
+      hardware.push({
+        id: 'corner-key-standard',
+        supplierCode: 'CORNER-KEY-15',
+        name: 'Corner Key 15mm',
+        category: 'corner_key',
+        quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
+        positionSpec: 'One in each frame corner',
+        installationNotes: [
+          'Tap in with rubber mallet',
+          'Ensure flush fit',
+          'Check corner alignment',
+        ],
+        torqueSpec: undefined,
+        alternatives: ['CORNER-KEY-20', 'SCREW-CORNER'],
+        estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
+        supplierLink: undefined,
+      });
+    }
 
     // Phase 1: Add hardener code to hardware BOM
     const hardenerSelection = hardenerSelector.selectHardenerForWindowUnit(windowUnit, systemPack);

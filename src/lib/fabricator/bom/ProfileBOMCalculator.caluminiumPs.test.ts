@@ -74,6 +74,31 @@ describe('caluminium-ps sliding BOM completeness', () => {
     expect(lock?.metadata?.unitPriceEgp).toBe(60);
   });
 
+  it('uses distinct frame vs sash corner-key SKUs (qty 4+8, different price/size)', async () => {
+    const hardware = await hardwareCalc.calculateHardwareBOM(unit, pattern, CALUMINIUM_PS_PACK);
+    const frameKeys = hardware.find((h) => h.id === 'ps_corner_key_frame');
+    const sashKeys = hardware.find((h) => h.id === 'ps_corner_key_sash');
+    expect(frameKeys?.supplierCode).toBe('ps_corner_key_frame');
+    expect(sashKeys?.supplierCode).toBe('ps_corner_key_sash');
+    expect(frameKeys?.quantity).toBe(4);
+    expect(sashKeys?.quantity).toBe(8);
+    expect(frameKeys?.metadata?.unitPriceEgp).toBe(
+      CALUMINIUM_PS_PRICING_EVIDENCE.hardware.ps_corner_key_frame,
+    );
+    expect(sashKeys?.metadata?.unitPriceEgp).toBe(
+      CALUMINIUM_PS_PRICING_EVIDENCE.hardware.ps_corner_key_sash,
+    );
+    expect(frameKeys?.metadata?.priceStatus).toBe('provisional');
+    expect(sashKeys?.metadata?.priceStatus).toBe('provisional');
+    expect(frameKeys?.metadata?.unitPriceEgp).not.toBe(sashKeys?.metadata?.unitPriceEgp);
+    expect(frameKeys?.positionSpec).toMatch(/20mm/i);
+    expect(sashKeys?.positionSpec).toMatch(/15mm/i);
+    const cornerTotal = hardware
+      .filter((h) => h.category === 'corner_key')
+      .reduce((sum, h) => sum + h.quantity, 0);
+    expect(cornerTotal).toBe(12);
+  });
+
   it('fails loudly on missing profile price (never 0.00)', () => {
     expect(() =>
       requireBomProfileCostPerMeter('caluminium-ps', {

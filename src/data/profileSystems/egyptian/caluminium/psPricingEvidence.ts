@@ -63,6 +63,10 @@ export const CALUMINIUM_PS_PRICING_EVIDENCE: DatedPricingEvidence = {
     ps_sliding_handle: 40,
     /** Provisional Cairo workshop approx — replace via evidence or pack kit unit_price. */
     ps_sliding_lock: 60,
+    /** Larger frame cleat (outer frame chamber) — provisional workshop approx. */
+    ps_corner_key_frame: 8,
+    /** Smaller sash cleat (sash chamber) — provisional workshop approx. */
+    ps_corner_key_sash: 5,
   },
 };
 
@@ -74,6 +78,8 @@ export const CALUMINIUM_PS_PRICING_EVIDENCE: DatedPricingEvidence = {
 export const CALUMINIUM_PS_HARDWARE_PRICE_PROVISIONAL = [
   'ps_sliding_handle',
   'ps_sliding_lock',
+  'ps_corner_key_frame',
+  'ps_corner_key_sash',
 ] as const;
 
 /** @deprecated Empty — handle/lock use provisional approx; kept for import stability. */

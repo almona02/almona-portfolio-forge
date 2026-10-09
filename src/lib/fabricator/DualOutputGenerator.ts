@@ -804,22 +804,65 @@ export class DualOutputGenerator {
       });
     }
     
-    // Add corner keys for frames (standard: 4 corners)
-    const { HARDWARE_QUANTITY, INSTALLATION_TIME } = await import('./bom/hardwareBOMConstants');
-    hardware.push({
-      id: 'corner-key-default',
-      supplierCode: 'CORNER-KEY-15',
-      name: 'Corner Key 15mm',
-      category: 'corner_key',
-      quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
-      positionSpec: 'One in each frame corner',
-      installationNotes: ['Tap in with rubber mallet', 'Ensure flush fit'],
-      torqueSpec: undefined,
-      alternatives: ['CORNER-KEY-20', 'SCREW-CORNER'],
-      estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
-      supplierLink: undefined
-    });
-    
+    // Corner keys: PS = 4 frame + 4 per sash; others = 4 frame (legacy).
+    const { HARDWARE_QUANTITY, HARDWARE_QUANTITY_DEFAULTS, INSTALLATION_TIME } = await import(
+      './bom/hardwareBOMConstants'
+    );
+    const packId = windowUnit.systemPackId || '';
+    const cells = pattern.gridSpec?.cells;
+    const sashCount = Array.isArray(cells)
+      ? cells.filter((c) => c.type === 'sash' || c.type === 'sliding').length
+      : HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
+
+    if (packId === 'caluminium-ps') {
+      hardware.push({
+        id: 'ps_corner_key_frame',
+        supplierCode: 'ps_corner_key_frame',
+        name: 'PS Frame Corner Key',
+        category: 'corner_key',
+        quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
+        positionSpec: 'Outer frame corners — 20mm frame cleat (not sash SKU)',
+        installationNotes: [
+          'Use FRAME corner key only (larger chamber)',
+          'Do not substitute sash corner keys',
+        ],
+        torqueSpec: undefined,
+        alternatives: ['ps_corner_key_sash'],
+        estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
+        supplierLink: undefined,
+      });
+      hardware.push({
+        id: 'ps_corner_key_sash',
+        supplierCode: 'ps_corner_key_sash',
+        name: 'PS Sash Corner Key',
+        category: 'corner_key',
+        quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_SASH * Math.max(0, sashCount),
+        positionSpec: `Sash corners — 15mm sash cleat (${sashCount} sash × ${HARDWARE_QUANTITY.CORNER_KEYS_PER_SASH})`,
+        installationNotes: [
+          'Use SASH corner key only (smaller chamber)',
+          'Do not substitute frame corner keys',
+        ],
+        torqueSpec: undefined,
+        alternatives: ['ps_corner_key_frame'],
+        estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
+        supplierLink: undefined,
+      });
+    } else {
+      hardware.push({
+        id: 'corner-key-default',
+        supplierCode: 'CORNER-KEY-15',
+        name: 'Corner Key 15mm',
+        category: 'corner_key',
+        quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
+        positionSpec: 'One in each frame corner',
+        installationNotes: ['Tap in with rubber mallet', 'Ensure flush fit'],
+        torqueSpec: undefined,
+        alternatives: ['CORNER-KEY-20', 'SCREW-CORNER'],
+        estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
+        supplierLink: undefined,
+      });
+    }
+
     return hardware;
   }
   
