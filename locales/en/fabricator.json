@@ -1,6 +1,32 @@
 {
+  "nav": {
+    "command": "Command Center",
+    "project": "Project Studio",
+    "orders": "Orders",
+    "design": "Design Studio",
+    "production": "Production Studio",
+    "data": "Data Studio",
+    "reports": "Reports",
+    "help": "Operator Help",
+    "settings": "Settings",
+    "dashboard": "Dashboard",
+    "quality_control": "Quality Control",
+    "delivery_tracking": "Delivery Tracking",
+    "system_library": "System library",
+    "profiles": "Profiles",
+    "operation_templates": "Operation templates",
+    "patterns": "Patterns",
+    "stock": "Stock / remnants",
+    "customers": "Customers",
+    "integrations": "Integrations",
+    "open_navigation": "Open navigation",
+    "close_navigation": "Close navigation",
+    "studio_suffix": "{{name}} studio",
+    "initializing": "INITIALIZING STUDIO ENV..."
+  },
   "industrial": {
     "no_active_project": "No active project",
+    "unsaved_draft": "Unsaved draft",
     "workflow_nav": "Manufacturing workflow",
     "stages": {
       "project": "Project",
