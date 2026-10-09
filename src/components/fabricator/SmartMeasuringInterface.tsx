@@ -1520,14 +1520,17 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     </div>
                   </div>
 
-                  <label className="flex items-start gap-3 rounded-lg border border-amber-600/25 bg-slate-950/40 p-3 cursor-pointer">
+                  <label
+                    htmlFor="verify"
+                    className="flex items-start gap-3 rounded-lg border border-amber-600/25 bg-slate-950/40 p-3 cursor-pointer touch-manipulation"
+                  >
                     <Checkbox
                       id="verify"
                       checked={verificationConfirmed as boolean}
                       onCheckedChange={setVerificationConfirmed}
-                      className="mt-0.5"
+                      className="mt-0.5 h-5 w-5 shrink-0"
                     />
-                    <span className="text-sm text-amber-100/90 leading-snug">
+                    <span className="min-w-0 flex-1 text-sm text-amber-100/90 leading-snug">
                       I checked the cut size against the opening / drawing.
                     </span>
                   </label>
