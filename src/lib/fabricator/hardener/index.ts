@@ -7,6 +7,11 @@
  */
 
 export { HardenerAuditLogger, hardenerAuditLogger } from './HardenerAuditRecord';
+export {
+  HARDENER_APPLICABILITY_SEED,
+  packRequiresHardener,
+  type HardenerApplicabilityRecord,
+} from './HardenerApplicability';
 export { HARDENER_CATALOG, getHardenerByCode, getHardenerCodesByMaterial, getHardenerCodesByOpeningType } from './HardenerCatalog';
 export { HardenerRuleEngine } from './HardenerRuleEngine';
 export {
