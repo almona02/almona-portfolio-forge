@@ -3,7 +3,36 @@ import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingS
 import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physicalCutContract';
 import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { countRequiredProfilePieces } from '@/lib/fabricator/bom/bomQualification';
+import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
+
+/**
+ * Pattern used only to count required ledger pieces. Preset/fixed manual grids
+ * use resolveEstimatePattern. Saved sash/sliding/casement ledgers use the
+ * position opening type + grid so countRequired matches the design generator.
+ */
+function patternForLedgerCount(position: WindowUnit): EgyptianPattern {
+  const grid = position.grid;
+  const hasOperativeCells = !!grid?.cells?.some((cell) => {
+    const t = String(cell.type ?? '').toLowerCase();
+    return t === 'sash' || t.includes('sliding') || t.includes('casement') || t.includes('tilt');
+  });
+  if (hasOperativeCells) {
+    const sliding =
+      String(position.type ?? '').toLowerCase().includes('sliding') ||
+      !!grid?.cells?.some((cell) => String(cell.type ?? '').toLowerCase().includes('sliding'));
+    return {
+      id: `saved-ledger:${position.id}`,
+      name: 'Saved design ledger (estimate)',
+      type: sliding ? 'sliding' : String(position.type || 'casement'),
+      openingMechanism: sliding ? { type: 'sliding' } : undefined,
+      gridSpec: grid,
+      mullions: [],
+      transoms: [],
+    } as unknown as EgyptianPattern;
+  }
+  return resolveEstimatePattern(position);
+}
 
 export interface ProjectOptimizationEstimate {
   classification: 'estimate_only';
@@ -25,7 +54,7 @@ export function optimizeProjectEstimate(positions: readonly WindowUnit[], packs:
     positionIds.add(position.id);
     const pack = packs.find(pack => pack.meta.id === position.systemPackId);
     if (!pack) throw new Error(`${label}: saved system pack is unavailable to the signed-in owner.`);
-    const pattern = resolveEstimatePattern(position);
+    const pattern = patternForLedgerCount(position);
     const expected = countRequiredProfilePieces(position, pattern);
     const actual = (position.components ?? []).reduce((sum, component) => sum + component.cuttingLengths.length, 0);
     if (actual !== expected) throw new Error(`${label}: incomplete saved cut ledger (${actual}/${expected} pieces). Resolve frame and divider profiles in Design.`);

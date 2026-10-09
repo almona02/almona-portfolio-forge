@@ -53,6 +53,8 @@ describe('useEngineeringEngine system selection', () => {
     const custom = { meta: { id: 'custom' }, profiles: [frame, divider] } as unknown as SystemPack;
     const fixed = {
       ...project,
+      // Must not inherit base project's sliding type — sliding skips mullions.
+      type: 'fixed',
       systemPackId: 'custom',
       presetId: undefined,
       systemProfileSelections: { frameProfileCode: 'external' },

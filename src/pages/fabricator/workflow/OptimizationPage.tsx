@@ -4,6 +4,7 @@ import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
 import { OptimizationCockpit } from '@/components/fabricator/cockpit/OptimizationCockpit';
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { useAuth } from '@/context/AuthContext';
+import { recordOptimizationEvidence } from '@/lib/fabricator/commercial/recordOptimizationEvidence';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateOptimizationReconciliation, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
@@ -45,6 +46,8 @@ export const OptimizationPage: React.FC = () => {
         completeStep,
         setOptimizationResult,
         invalidateStep,
+        alignShellProject,
+        workflowIdentity,
     } = useWorkflowStore();
     const activeProjectRef = useRef(currentProject);
 
@@ -100,6 +103,26 @@ export const OptimizationPage: React.FC = () => {
 
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
             setOptimizationResult(optimizationResult);
+            // Server-stamped evidence only — client JSON on positions_v2.optimization is not convert-eligible.
+            const revision =
+                workflowIdentity?.revision ??
+                (Number.isInteger(runProject.revision) ? Number(runProject.revision) : 0);
+            if (user?.id && poseId && revision >= 1) {
+                const recorded = await recordOptimizationEvidence({
+                    positionId: poseId,
+                    expectedRevision: revision,
+                    designRevision: revision,
+                    bom,
+                    optimizationResult,
+                    ruleVersion: bom?.qualification?.ruleVersion ?? null,
+                });
+                if (!recorded.ok) {
+                    throw new Error(recorded.error);
+                }
+            } else if (user?.id && poseId) {
+                throw new Error('Authoritative position revision is required before optimization can be recorded.');
+            }
+            alignShellProject({ ...runProject, status: 'optimized', updatedAt: new Date() });
             if (!completeStep('optimization')) throw new Error('Optimization evidence could not be verified.');
 
         } catch (err) {
@@ -113,7 +136,7 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, navigate, invalidateStep, projectIdentity]);
+    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, navigate, invalidateStep, projectIdentity, bom, workflowIdentity]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, currentProject).valid;
 

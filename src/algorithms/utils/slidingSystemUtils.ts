@@ -35,17 +35,18 @@ export function generateInternalDividers(
   // Vertical dividers (interlock for sliding, mullion for others)
   if (grid.cols > 1) {
     if (isSlidingSystem && interlockProfile) {
-      // Sliding system: Use interlock profile
+      // Sliding system: one physical interlock cut per gap between panels
       const interlockHeight = height - (2 * frameProfile.width);
+      const interlockCount = Math.max(1, grid.cols - 1);
       components.push({
         id: `interlock_vertical_${Date.now()}`,
         type: 'interlock',
         profile: interlockProfile,
         width: interlockProfile.width || 20,
         height: interlockHeight,
-        quantity: grid.cols - 1,
-        cuttingLengths: [interlockHeight],
-        angles: [90, 90],
+        quantity: 1,
+        cuttingLengths: Array.from({ length: interlockCount }, () => interlockHeight),
+        angles: Array.from({ length: interlockCount }, () => 90),
         machiningOperations: [],
         glazingType: 'none',
         hardware: []

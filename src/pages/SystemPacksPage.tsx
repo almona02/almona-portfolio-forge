@@ -9,6 +9,7 @@ import { SystemTuningStudio } from '@/components/fabricator/SystemTuningStudio';
 import { UnifiedStudioWizard } from '@/components/fabricator/unifiedWorkflow/UnifiedStudioWizard';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { addCustomSystemAsync, loadCustomSystems, type StoredSystemPack } from '@/lib/fabricator/customSystemStorage';
+import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -108,14 +109,14 @@ export const SystemPacksPage: React.FC = () => {
   }, [allSystems, searchQuery, filterType]);
 
   const handleTuneSystem = (systemPackId: string) => {
-    saveReturnUrl('/fabricator/studio/data', {
+    saveReturnUrl('/fabricator/studio/data/profiles', {
       returnToSystemPacks: 'true',
     });
     navigate(`/fabricator/studio/data/tuning-no-dxf?systemPackId=${systemPackId}`);
   };
 
   const handleTuneProfile = (systemPackId: string, profileId?: string) => {
-    saveReturnUrl('/fabricator/studio/data', {
+    saveReturnUrl('/fabricator/studio/data/profiles', {
       returnToSystemPacks: 'true',
     });
     const url = profileId 
@@ -439,6 +440,16 @@ export const SystemPacksPage: React.FC = () => {
                         >
                           <Layers className="h-4 w-4 mr-2" />
                           {profiles.length > 0 ? `View Profiles (${profiles.length})` : 'Add Profile'}
+                        </Button>
+
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="w-full text-amber-200/90 hover:text-amber-100 hover:bg-amber-500/10"
+                          onClick={() => navigate(fabricatorRoutes.studioDataAccessories(system.meta.id))}
+                        >
+                          <Package className="h-4 w-4 mr-2" />
+                          Accessories kits
                         </Button>
                       </div>
                     </div>

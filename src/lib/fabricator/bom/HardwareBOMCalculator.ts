@@ -26,6 +26,91 @@ import {
     ROLLER_QUANTITY_THRESHOLDS,
     UNIT_CONVERSION,
 } from './hardwareBOMConstants';
+import {
+  listKitsFromPackSpec,
+  mergeHardwareKitsWithOverrides,
+  type PackHardwareKitLike,
+} from '@/lib/fabricator/manufacturing/hardwareKitOverrides';
+import { resolveBomHardwareUnitPrice } from './requirePricedCost';
+
+type PackHardwareKit = PackHardwareKitLike & {
+  specifications?: {
+    role?: string;
+    leg_mm?: number;
+    thickness_mm?: number;
+    material?: string;
+    fits_profiles?: string[];
+  };
+};
+
+function packHardwareKits(systemPack: SystemPack): PackHardwareKit[] {
+  const packId = systemPack.meta?.id || systemPack.id || '';
+  const base = listKitsFromPackSpec(
+    systemPack.windowSystemSpec as Record<string, unknown> | undefined,
+  ) as PackHardwareKit[];
+  return mergeHardwareKitsWithOverrides(packId, base) as PackHardwareKit[];
+}
+
+function findPackKit(
+  kits: PackHardwareKit[],
+  kind: 'roller' | 'handle' | 'lock' | 'corner_key_frame' | 'corner_key_sash',
+): PackHardwareKit | undefined {
+  return kits.find((kit) => {
+    const id = (kit.id || '').toLowerCase();
+    const type = (kit.type || '').toLowerCase();
+    const name = (kit.name || '').toLowerCase();
+    if (kind === 'lock') {
+      // Do not match interlock kits (substring "lock").
+      if (id.includes('interlock') || name.includes('interlock')) return false;
+      return type === 'lock' || id.includes('sliding_lock') || /(^|[\s_-])lock([\s_-]|$)/.test(`${id} ${name}`);
+    }
+    if (kind === 'corner_key_frame') {
+      return (
+        id === 'ps_corner_key_frame' ||
+        id.includes('corner_key_frame') ||
+        (type.includes('corner') && (id.includes('frame') || name.includes('frame')))
+      );
+    }
+    if (kind === 'corner_key_sash') {
+      return (
+        id === 'ps_corner_key_sash' ||
+        id.includes('corner_key_sash') ||
+        (type.includes('corner') && (id.includes('sash') || name.includes('sash')))
+      );
+    }
+    return type.includes(kind) || id.includes(kind) || name.includes(kind);
+  });
+}
+
+function hardwarePriceMetadata(
+  packId: string | undefined,
+  hardwareId: string,
+  fallbackUnitPrice: number | undefined,
+  source: string,
+): Record<string, unknown> | undefined {
+  const resolved = resolveBomHardwareUnitPrice(packId, hardwareId, fallbackUnitPrice);
+  if (resolved.status === 'tbd') {
+    return {
+      priceStatus: 'tbd',
+      currency: 'EGP',
+      source: 'awaiting_owner_confirmation',
+    };
+  }
+  if (resolved.unitPriceEgp > 0) {
+    return {
+      unitPriceEgp: resolved.unitPriceEgp,
+      currency: 'EGP',
+      source:
+        resolved.priceStatus === 'admin_override'
+          ? 'admin_pack_kit_override'
+          : resolved.priceStatus === 'provisional'
+            ? 'provisional_workshop_approx'
+            : source,
+      priceStatus: resolved.priceStatus,
+    };
+  }
+  return undefined;
+}
 
 /**
  * HardwareBOMCalculator - Hardware quantity calculation engine
@@ -118,54 +203,117 @@ export class HardwareBOMCalculator {
       });
     }
 
-    // Rollers (for sliding)
-    if (openingType === 'sliding') {
+    const isSliding = openingType === 'sliding' || pattern.type === 'sliding';
+    const packId = systemPack.meta?.id || systemPack.id;
+    const packKits = packHardwareKits(systemPack);
+    const hasCells = pattern.gridSpec?.cells && Array.isArray(pattern.gridSpec.cells);
+    const sashCount = hasCells
+      ? pattern.gridSpec.cells.filter((c) => c.type === 'sash' || c.type === 'sliding').length
+      : HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
+
+    // Rollers (for sliding) — prefer pack hardware_kits when present
+    if (isSliding) {
       const rollerCount = this.calculateRollerQuantity(width, height);
+      const packRoller = findPackKit(packKits, 'roller');
+      const rollerId = packRoller?.id || 'roller-sliding';
       hardware.push({
-        id: 'roller-sliding',
-        supplierCode: 'ROLLER-SLIDING-STD',
-        name: 'Sliding Window Roller',
+        id: rollerId,
+        supplierCode: rollerId,
+        name: packRoller?.name || 'Sliding Window Roller',
         category: 'roller',
         quantity: rollerCount,
         positionSpec: 'Bottom of sliding sash',
         installationNotes: [
           'Install rollers at bottom corners',
           'Ensure smooth rolling operation',
-          'Check load capacity'
+          'Check load capacity',
         ],
         torqueSpec: undefined,
         alternatives: [],
         estimatedTime: INSTALLATION_TIME.PER_ROLLER_MINUTES,
-        supplierLink: undefined
+        supplierLink: undefined,
+        metadata: hardwarePriceMetadata(
+          packId,
+          rollerId,
+          packRoller?.unit_price,
+          packRoller ? 'pack_hardware_kit' : 'legacy_default',
+        ),
       });
     }
 
-    // Handles (standard: 1 per operable sash)
-    const hasCells = pattern.gridSpec?.cells && Array.isArray(pattern.gridSpec.cells);
-    const sashCount = hasCells ? pattern.gridSpec.cells.filter(c => 
-      c.type === 'sash' || c.type === 'sliding'
-    ).length : HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
+    // Handles — PS sliding uses pack kit (price may be TBD); others use standard handle
+    const packHandle = isSliding ? findPackKit(packKits, 'handle') : undefined;
+    if (packHandle?.id) {
+      hardware.push({
+        id: packHandle.id,
+        supplierCode: packHandle.id,
+        name: packHandle.name || 'Sliding Window Handle',
+        category: 'handle',
+        quantity: sashCount,
+        positionSpec: `${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom (Egyptian standard)`,
+        installationNotes: [
+          `Position handle at ${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom`,
+          'Ensure comfortable operation height',
+          'Test handle operation',
+        ],
+        torqueSpec: HARDWARE_TORQUE.HANDLE_STANDARD_NM,
+        alternatives: [],
+        estimatedTime: INSTALLATION_TIME.PER_HANDLE_MINUTES,
+        supplierLink: undefined,
+        metadata: hardwarePriceMetadata(
+          packId,
+          packHandle.id,
+          packHandle.unit_price,
+          'pack_hardware_kit',
+        ),
+      });
+    } else {
+      hardware.push({
+        id: 'handle-standard',
+        supplierCode: 'HANDLE-STANDARD-1100',
+        name: 'Standard Window Handle',
+        category: 'handle',
+        quantity: sashCount,
+        positionSpec: `${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom (Egyptian standard)`,
+        installationNotes: [
+          `Position handle at ${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom`,
+          'Ensure comfortable operation height',
+          'Test handle operation',
+        ],
+        torqueSpec: HARDWARE_TORQUE.HANDLE_STANDARD_NM,
+        alternatives: ['HANDLE-ERGONOMIC', 'HANDLE-DESIGN'],
+        estimatedTime: INSTALLATION_TIME.PER_HANDLE_MINUTES,
+        supplierLink: undefined,
+      });
+    }
 
-    hardware.push({
-      id: 'handle-standard',
-      supplierCode: 'HANDLE-STANDARD-1100',
-      name: 'Standard Window Handle',
-      category: 'handle',
-      quantity: sashCount,
-      positionSpec: `${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom (Egyptian standard)`,
-      installationNotes: [
-        `Position handle at ${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom`,
-        'Ensure comfortable operation height',
-        'Test handle operation'
-      ],
-      torqueSpec: HARDWARE_TORQUE.HANDLE_STANDARD_NM,
-      alternatives: ['HANDLE-ERGONOMIC', 'HANDLE-DESIGN'],
-      estimatedTime: INSTALLATION_TIME.PER_HANDLE_MINUTES,
-      supplierLink: undefined
-    });
-
-    // Locks (for casement/tilt-turn)
-    if (openingType === 'casement' || openingType === 'tilt-turn') {
+    // Locks — casement/tilt-turn standard; PS sliding uses pack lock kit (price may be TBD)
+    const packLock = isSliding ? findPackKit(packKits, 'lock') : undefined;
+    if (packLock?.id) {
+      hardware.push({
+        id: packLock.id,
+        supplierCode: packLock.id,
+        name: packLock.name || 'Sliding Window Lock',
+        category: 'lock',
+        quantity: sashCount,
+        positionSpec: 'Meeting stile / handle side of operable sash',
+        installationNotes: [
+          'Install lock at handle side of operable sash',
+          'Verify interlock engagement when closed',
+          'Test lock mechanism',
+        ],
+        torqueSpec: undefined,
+        alternatives: [],
+        estimatedTime: INSTALLATION_TIME.PER_LOCK_MINUTES,
+        supplierLink: undefined,
+        metadata: hardwarePriceMetadata(
+          packId,
+          packLock.id,
+          packLock.unit_price,
+          'pack_hardware_kit',
+        ),
+      });
+    } else if (openingType === 'casement' || openingType === 'tilt-turn') {
       hardware.push({
         id: 'lock-casement',
         supplierCode: 'LOCK-CASEMENT-STD',
@@ -176,33 +324,94 @@ export class HardwareBOMCalculator {
         installationNotes: [
           'Install lock at handle position',
           'Install additional lock at top for tall sashes',
-          'Test lock mechanism'
+          'Test lock mechanism',
         ],
         torqueSpec: undefined,
         alternatives: [],
         estimatedTime: INSTALLATION_TIME.PER_LOCK_MINUTES,
-        supplierLink: undefined
+        supplierLink: undefined,
       });
     }
 
-    // Corner keys (standard: 4 per frame)
-    hardware.push({
-      id: 'corner-key-standard',
-      supplierCode: 'CORNER-KEY-15',
-      name: 'Corner Key 15mm',
-      category: 'corner_key',
-      quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
-      positionSpec: 'One in each frame corner',
-      installationNotes: [
-        'Tap in with rubber mallet',
-        'Ensure flush fit',
-        'Check corner alignment'
-      ],
-      torqueSpec: undefined,
-      alternatives: ['CORNER-KEY-20', 'SCREW-CORNER'],
-      estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
-      supplierLink: undefined
-    });
+    // Corner keys — CALUMINIUM PS uses two SKUs (frame vs sash: different size + price).
+    // Qty: 4 frame + 4 per sash (2-sash sliding → 4 + 8 = 12). Other packs: legacy 4.
+    const isCaluminiumPs = packId === 'caluminium-ps';
+    if (isCaluminiumPs) {
+      const frameKit = findPackKit(packKits, 'corner_key_frame');
+      const sashKit = findPackKit(packKits, 'corner_key_sash');
+      const frameId = frameKit?.id || 'ps_corner_key_frame';
+      const sashId = sashKit?.id || 'ps_corner_key_sash';
+      const frameLeg = frameKit?.specifications?.leg_mm ?? 20;
+      const sashLeg = sashKit?.specifications?.leg_mm ?? 15;
+
+      hardware.push({
+        id: frameId,
+        supplierCode: frameId,
+        name: frameKit?.name || `PS Frame Corner Key ${frameLeg}mm`,
+        category: 'corner_key',
+        quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
+        positionSpec: `Outer frame corners only — ${frameLeg}mm frame cleat (not sash SKU)`,
+        installationNotes: [
+          'Use FRAME corner key only (larger chamber)',
+          'Do not substitute sash corner keys',
+          'Tap in with rubber mallet; check squareness',
+        ],
+        torqueSpec: undefined,
+        alternatives: [sashId],
+        estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
+        supplierLink: undefined,
+        metadata: hardwarePriceMetadata(
+          packId,
+          frameId,
+          frameKit?.unit_price,
+          frameKit ? 'pack_hardware_kit' : 'legacy_default',
+        ),
+      });
+      const sashCornerKeys = HARDWARE_QUANTITY.CORNER_KEYS_PER_SASH * Math.max(0, sashCount);
+      if (sashCornerKeys > 0) {
+        hardware.push({
+          id: sashId,
+          supplierCode: sashId,
+          name: sashKit?.name || `PS Sash Corner Key ${sashLeg}mm`,
+          category: 'corner_key',
+          quantity: sashCornerKeys,
+          positionSpec: `Each sash corner — ${sashLeg}mm sash cleat (${sashCount} sash × ${HARDWARE_QUANTITY.CORNER_KEYS_PER_SASH})`,
+          installationNotes: [
+            'Use SASH corner key only (smaller chamber)',
+            'Do not substitute frame corner keys',
+            'Tap in with rubber mallet before glazing',
+          ],
+          torqueSpec: undefined,
+          alternatives: [frameId],
+          estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
+          supplierLink: undefined,
+          metadata: hardwarePriceMetadata(
+            packId,
+            sashId,
+            sashKit?.unit_price,
+            sashKit ? 'pack_hardware_kit' : 'legacy_default',
+          ),
+        });
+      }
+    } else {
+      hardware.push({
+        id: 'corner-key-standard',
+        supplierCode: 'CORNER-KEY-15',
+        name: 'Corner Key 15mm',
+        category: 'corner_key',
+        quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
+        positionSpec: 'One in each frame corner',
+        installationNotes: [
+          'Tap in with rubber mallet',
+          'Ensure flush fit',
+          'Check corner alignment',
+        ],
+        torqueSpec: undefined,
+        alternatives: ['CORNER-KEY-20', 'SCREW-CORNER'],
+        estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
+        supplierLink: undefined,
+      });
+    }
 
     // Phase 1: Add hardener code to hardware BOM
     const hardenerSelection = hardenerSelector.selectHardenerForWindowUnit(windowUnit, systemPack);

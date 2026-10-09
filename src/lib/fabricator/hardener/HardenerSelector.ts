@@ -9,6 +9,7 @@
  * @since Phase 1: Precision Upgrade Plan (January 2026)
  */
 
+import { normalizeOpeningType } from '@/lib/fabricator/openingType';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
 import { HardenerRuleEngine } from './HardenerRuleEngine';
 import { HardenerValidationGate } from './HardenerValidationGate';
@@ -107,8 +108,8 @@ export class HardenerSelector {
     const sashWidth = windowUnit.overallWidth || 1000;
     const sashHeight = windowUnit.overallHeight || 1000;
 
-    // Determine opening type from window unit type
-    const openingType = this.mapOpeningType(windowUnit.type);
+    // Infer opening type from unit type + grid (generic "window" must not force casement)
+    const openingType = normalizeOpeningType(windowUnit.type, windowUnit.grid);
 
     // Get profile system from system pack
     const profileSystem = systemPack?.id || windowUnit.systemPackId || 'unknown';
@@ -122,20 +123,6 @@ export class HardenerSelector {
       openingType,
       region: 'egypt', // Default to Egypt, can be overridden
     };
-  }
-
-  /**
-   * Map window unit type to opening type
-   */
-  private mapOpeningType(windowType: string | undefined): HardenerSelectionContext['openingType'] {
-    if (!windowType) return 'casement'; // Default if type is missing
-    const typeLower = windowType.toLowerCase();
-    if (typeLower.includes('casement')) return 'casement';
-    if (typeLower.includes('tilt') || typeLower.includes('turn')) return 'tilt-turn';
-    if (typeLower.includes('sliding')) return 'sliding';
-    if (typeLower.includes('fixed')) return 'fixed';
-    if (typeLower.includes('pivot')) return 'pivot';
-    return 'casement'; // Default to casement
   }
 }
 

@@ -8,7 +8,10 @@
  */
 
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
-import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
+import {
+  validateOptimizationReconciliation,
+  validateStepTransition,
+} from '@/lib/fabricator/validation/WorkflowValidator';
 import { generateFabricatorQuote } from '@/lib/fabricator/commercial/FabricatorQuoteService';
 import { convertPoseQuoteToOrder } from '@/lib/fabricator/commercial/convertPoseQuoteToOrder';
 import { upsertPoseQuote } from '@/lib/fabricator/commercial/poseQuotesClient';
@@ -105,11 +108,21 @@ export const QuoteBuilder: React.FC = () => {
     }
   }, [quote, setQuote, resolveIdentity, user?.id, taxRate, markupPercent]);
 
+  const optimizationApproved = useMemo(
+    () => validateOptimizationReconciliation(optimizationResult, currentProject).valid,
+    [optimizationResult, currentProject],
+  );
+  const isEstimateOnly = Boolean(bom?.cost) && !optimizationApproved;
+
   const handleConvertToOrder = useCallback(async () => {
     if (!quote) return;
     const { projId, posId, revision } = resolveIdentity();
     if (!user?.id || !projId || !posId || !revision) {
       toast.error('Open a saved position revision before converting to an order.');
+      return;
+    }
+    if (!optimizationApproved) {
+      toast.error('Convert to Order is blocked until optimization is approved and reconciled.');
       return;
     }
 
@@ -126,6 +139,7 @@ export const QuoteBuilder: React.FC = () => {
         markupPercent,
         customerName: currentProject?.customer,
         projectTitle: currentProject?.projectCode || currentProject?.orderNumber,
+        optimizationApproved: true,
       });
 
       if (!result.ok) {
@@ -151,6 +165,7 @@ export const QuoteBuilder: React.FC = () => {
     currentProject,
     setQuote,
     navigate,
+    optimizationApproved,
   ]);
 
   const handleExportPDF = useCallback(async () => {
@@ -259,10 +274,13 @@ export const QuoteBuilder: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-amber-200">
             <Receipt className="h-5 w-5" />
-            Quotation
+            {isEstimateOnly ? 'Estimate Quotation' : 'Quotation'}
           </CardTitle>
           <p className="text-slate-400 text-sm">
             {currentProject.orderNumber || currentProject.id} · {currentProject.type}
+            {isEstimateOnly
+              ? ' · Estimate only — Convert to Order blocked until optimization is approved'
+              : ''}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -349,13 +367,19 @@ export const QuoteBuilder: React.FC = () => {
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-              Save Quote
+              {isEstimateOnly ? 'Save Estimate' : 'Save Quote'}
             </Button>
             <Button
               variant="outline"
               onClick={() => void handleConvertToOrder()}
-              disabled={isConverting || isSaving || !quote}
-              className="border-emerald-600/40 text-emerald-300 hover:bg-emerald-500/10"
+              disabled={isConverting || isSaving || !quote || !optimizationApproved}
+              title={
+                optimizationApproved
+                  ? 'Create order from approved optimization quote'
+                  : 'Blocked until optimization is approved'
+              }
+              className="border-emerald-600/40 text-emerald-300 hover:bg-emerald-500/10 disabled:opacity-40"
+              data-testid="convert-to-order"
             >
               {isConverting ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />

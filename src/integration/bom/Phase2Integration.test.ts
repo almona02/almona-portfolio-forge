@@ -59,10 +59,14 @@ describe('Phase 2 Integration: BOM Pipeline', () => {
         id: 'unit-1',
         name: 'Test Unit',
         type: 'sliding',
+        // ProfileBOMCalculator / smartDraw require overall* (not width/height aliases).
+        overallWidth: 1000,
+        overallHeight: 2000,
         width: 1000,
         height: 2000,
         systemPackId: 'sys-1',
         quantity: 1,
+        components: [],
         glazing: { type: 'single', thickness: 6 }, // Renamed from glass
         grid: {
             rows: 1,

@@ -78,9 +78,15 @@ export const HARDWARE_POSITIONING = {
  */
 export const HARDWARE_QUANTITY = {
   /**
-   * Number of corner keys per frame (fixed: 4 corners)
+   * Number of corner keys per outer frame (fixed: 4 corners)
    */
   CORNER_KEYS_PER_FRAME: 4,
+
+  /**
+   * Number of corner keys per operable sash (fixed: 4 corners).
+   * CALUMINIUM PS sliding 2-sash → 4 frame + 8 sash = 12 total.
+   */
+  CORNER_KEYS_PER_SASH: 4,
 } as const;
 
 /**

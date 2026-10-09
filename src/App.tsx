@@ -90,11 +90,13 @@ const SystemPackTuningStudio = lazy(() => import("./components/fabricator/System
 const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuningStudio.tsx").then(m => ({ default: m.NoDXFTuningStudio })));
 const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx"));
 const SystemPacksPage = lazy(() => import("./pages/SystemPacksPage.tsx").then(m => ({ default: m.SystemPacksPage })));
+const SystemPackAccessoriesPage = lazy(() => import("./pages/fabricator/studio/SystemPackAccessoriesPage.tsx"));
 const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
 const WorkshopPortal = lazy(() => import("./pages/workshop/WorkshopPortal.tsx").then(m => ({ default: m.WorkshopPortal })));
 const DeliveryTrackingPage = lazy(() => import("./pages/DeliveryTrackingPage.tsx").then(m => ({ default: m.DeliveryTrackingPage })));
 const AdminOrdersGate = lazy(() => import("./pages/fabricator/studio/AdminOrdersGate.tsx"));
+const ManufacturingApprovalsPage = lazy(() => import("./pages/fabricator/studio/ManufacturingApprovalsPage.tsx"));
 // BentProfileDesignerPage removed — page deleted in consolidation
 const FabricationWorkflowWizard = lazy(() => import("./components/fabricator/FabricationWorkflowWizard.tsx").then(m => ({ default: m.FabricationWorkflowWizard })));
 const ValidationDashboardPage = lazy(() => import("./pages/ValidationDashboardPage.tsx").then(m => ({ default: m.default })));
@@ -486,10 +488,13 @@ const App = memo(() => {
 
                                     {/* 5. Data Studio */}
                                     <Route path="data/*" element={<Suspense fallback={getLoadingComponent('Data Studio')}><DataStudioLayout /></Suspense>}>
-                                      <Route index element={<Suspense fallback={getLoadingComponent('System Packs')}><SystemPacksPage /></Suspense>} />
+                                      {/* Main profiles / system-pack library (canonical). Lite custom builder is profile-studio. */}
+                                      <Route index element={<Navigate to="profiles" replace />} />
+                                      <Route path="profiles" element={<Suspense fallback={getLoadingComponent('Profiles')}><SystemPacksPage /></Suspense>} />
+                                      <Route path="accessories" element={<Suspense fallback={getLoadingComponent('Accessories kits')}><SystemPackAccessoriesPage /></Suspense>} />
+                                      <Route path="profile-studio" element={<Suspense fallback={getLoadingComponent('Custom Profile Studio')}><ProfileStudioLite /></Suspense>} />
                                       <Route path="tuning" element={<Suspense fallback={getLoadingComponent('Tuning Studio')}><SystemPackTuningStudio /></Suspense>} />
                                       <Route path="tuning-no-dxf" element={<Suspense fallback={getLoadingComponent('Tuning Studio')}><NoDXFTuningStudio /></Suspense>} />
-                                      <Route path="profiles" element={<Suspense fallback={getLoadingComponent('Profile Studio')}><ProfileStudioLite /></Suspense>} />
                                       <Route path="customers" element={<Suspense fallback={getLoadingComponent('Customers')}><CustomersPage /></Suspense>} />
                                       <Route path="patterns" element={<Suspense fallback={getLoadingComponent('Pattern Library')}><PatternLibraryPage /></Suspense>} />
                                       <Route path="stock" element={<Suspense fallback={getLoadingComponent('Stock')}><StudioStockPage /></Suspense>} />
@@ -498,6 +503,9 @@ const App = memo(() => {
                                     </Route>
                                     {/* 6. Orders */}
                                     <Route path="orders" element={<Suspense fallback={getLoadingComponent('Orders')}><OrderManagementPage /></Suspense>} />
+
+                                    {/* 6b. Manufacturing Approvals (admin) */}
+                                    <Route path="approvals" element={<Suspense fallback={getLoadingComponent('Approvals')}><ManufacturingApprovalsPage /></Suspense>} />
 
                                     {/* 7. Reports (no ProtectedRoute — studio layout already requires auth) */}
                                     <Route path="reports" element={<Suspense fallback={getLoadingComponent('Reports')}><FabricatorReportsPage /></Suspense>} />
@@ -659,6 +667,10 @@ const App = memo(() => {
 
                                   {/* Legacy top-level redirects to canonical routes */}
                                   <Route path="/reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/fabricator/reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/cost-reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/quality-reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/fabricator/orders" element={<Navigate to={fabricatorRoutes.studioOrders()} replace />} />
                                   <Route path="/machine-status" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
                                   <Route path="/offers" element={<Navigate to="/shop" replace />} />
 

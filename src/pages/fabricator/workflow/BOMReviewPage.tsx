@@ -42,9 +42,9 @@ export const BOMReviewPage: React.FC = () => {
       pattern,
       systemPack,
       true,
-      currentProject.presetId
-        ? await approvedBOMContext(currentProject, workflowIdentity).catch(() => ({ identity: workflowIdentity }))
-        : { identity: workflowIdentity },
+      await approvedBOMContext(currentProject, workflowIdentity).catch(() => ({
+        identity: workflowIdentity,
+      })),
     ).catch(() => null);
   }, [currentProject, systemPack, workflowIdentity]);
 
@@ -137,12 +137,19 @@ export const BOMReviewPage: React.FC = () => {
           ) : (
             <>
               {bom?.qualification?.status !== 'qualified' && (
-                <div className="border border-amber-600/40 bg-amber-500/10 rounded-lg p-4 text-sm text-amber-200">
+                <div className="border border-amber-600/40 bg-amber-500/10 rounded-lg p-4 text-sm text-amber-200" data-testid="bom-gate-actions">
                   <p className="font-semibold">Estimate only — manufacturing release blocked</p>
                   <ul className="mt-2 list-disc list-inside text-amber-100/80">
                     {(bom?.qualification?.reasons ?? ['Manufacturing qualification evidence is missing'])
                       .map(reason => <li key={reason}>{reason}</li>)}
                   </ul>
+                  <p className="mt-2 text-amber-100/90">
+                    <a className="underline" href="/fabricator/studio/approvals">Admin Approvals</a>
+                    {' · '}
+                    <a className="underline" href="/fabricator/studio/data/tuning">Pack qualification</a>
+                    {' · '}
+                    <a className="underline" href="/fabricator/studio/data/stock">Stock</a>
+                  </p>
                 </div>
               )}
               {bom?.profiles && bom.profiles.length > 0 && (

@@ -12,9 +12,14 @@ if (typeof window === 'undefined') {
   (global as typeof globalThis & { window: typeof window; document: typeof document; navigator: typeof navigator }).navigator = dom.window.navigator;
 }
 
-afterEach(() => {
-  cleanup();
-});
+try {
+  afterEach(() => {
+    cleanup();
+  });
+} catch {
+  // Vitest 4 can import setupFiles outside a suite context in some runners;
+  // skip cleanup registration rather than failing every suite collect.
+}
 
 // Mock requestAnimationFrame for tests (required for animations and canvas operations)
 global.requestAnimationFrame = (callback: FrameRequestCallback) => {
