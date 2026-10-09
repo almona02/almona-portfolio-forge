@@ -1,0 +1,71 @@
+# Measured pooled optimize (Vitest): 10 positions / 18 units / >100 cuts.
+# Classification remains estimate_only — not manufacturing-qualified live acceptance.
+name: Fabricator measured pooled E2E
+
+on:
+  pull_request:
+    paths:
+      - "src/lib/fabricator/__tests__/manufacturingChain.caluminiumPs.e2e.test.ts"
+      - "src/lib/fabricator/production/ProjectOptimizationEstimate.ts"
+      - "src/lib/fabricator/bom/**"
+      - "src/data/profileSystems/egyptian/caluminium/**"
+      - "src/data/egyptian-window-patterns.ts"
+      - ".github/workflows/fabricator-measured-pooled-e2e.yml"
+  workflow_dispatch:
+
+jobs:
+  measured-pooled-optimize:
+    name: 10/18/>100-cut estimate optimize
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run measured pooled Vitest + write metrics
+        env:
+          MFG_E2E_METRICS_PATH: ${{ github.workspace }}/e2e-1018-metrics.json
+          MFG_E2E_DIVERSE_METRICS_PATH: ${{ github.workspace }}/e2e-1018-diverse-metrics.json
+        run: |
+          npm run test -- --run src/lib/fabricator/__tests__/manufacturingChain.caluminiumPs.e2e.test.ts
+          test -f e2e-1018-metrics.json
+          test -f e2e-1018-diverse-metrics.json
+          python3 - <<'PY'
+          import json
+          u=json.load(open('e2e-1018-metrics.json'))
+          assert u['classification']=='estimate_only'
+          assert u['manufacturingEligible'] is False
+          assert u['positionsResolved']==10
+          assert u['units']==18
+          assert u['placedCuts']>100
+          assert u['unplacedCuts']==0
+          assert abs(u['areaM2']-30.24)<1e-9
+          assert u.get('fixture')=='uniform'
+          d=json.load(open('e2e-1018-diverse-metrics.json'))
+          assert d['classification']=='estimate_only'
+          assert d['manufacturingEligible'] is False
+          assert d['positionsResolved']==10
+          assert d['units']==18
+          assert d['placedCuts']>100
+          assert d['unplacedCuts']==0
+          assert abs(d['areaM2']-76.68)<1e-9
+          assert d.get('fixture')=='diverse'
+          assert len(d.get('poses') or [])==10
+          assert len({f"{p['patternId']}:{p['widthMm']}x{p['heightMm']}" for p in d['poses']})==10
+          print('UNIFORM', json.dumps(u, indent=2))
+          print('DIVERSE', json.dumps({k:d[k] for k in d if k!='poses'}, indent=2))
+          PY
+
+      - name: Upload metrics artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-1018-metrics
+          path: |
+            e2e-1018-metrics.json
+            e2e-1018-diverse-metrics.json
+          if-no-files-found: error
