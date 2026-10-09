@@ -55,13 +55,15 @@ vi.mock('@/lib/analytics/CalibrationAnalytics', () => ({
 vi.mock('@/lib/performance-monitoring', () => ({ trackError: vi.fn() }));
 
 beforeEach(() => {
-  // Phone viewport — panels start collapsed
+  // Phone viewport — panels start collapsed (do not open via matchMedia)
   window.matchMedia = vi.fn().mockReturnValue({
     matches: false,
+    media: '(min-width: 1024px)',
     addListener: vi.fn(),
     removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
   });
 });
 afterEach(cleanup);

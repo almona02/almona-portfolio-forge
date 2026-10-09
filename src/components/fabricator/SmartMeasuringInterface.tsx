@@ -288,14 +288,26 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [isSystemPackCollapsed, setIsSystemPackCollapsed] = useState(true);
   /** When true, user opened the panel — stay open until they hide it (no auto-collapse). */
   const [systemPackPinnedOpen, setSystemPackPinnedOpen] = useState(false);
-  /** Opening layout panel — open on desktop, compact closed bar on small screens. */
-  const [layoutPanelOpen, setLayoutPanelOpen] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches,
-  );
-  /** Cut preview — collapsed on phone so Confirm / Save actions stay reachable. */
-  const [previewPanelOpen, setPreviewPanelOpen] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches,
-  );
+  /**
+   * Layout / preview start collapsed. DevTools device emulation still reports a wide
+   * window for matchMedia, so never trust initial matchMedia for phone layout.
+   */
+  const [layoutPanelOpen, setLayoutPanelOpen] = useState(false);
+  const [previewPanelOpen, setPreviewPanelOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const syncDesktopPanels = () => {
+      if (mq.matches) {
+        setLayoutPanelOpen(true);
+        setPreviewPanelOpen(true);
+      }
+    };
+    syncDesktopPanels();
+    mq.addEventListener?.('change', syncDesktopPanels);
+    return () => mq.removeEventListener?.('change', syncDesktopPanels);
+  }, []);
 
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(() =>
     resolveDefaultMeasuringPackId(systemPackId, region),
@@ -967,7 +979,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         return (
         <div
           className={cn(
-            'order-2 w-full shrink-0 card-glass-dark rounded-md overflow-hidden flex flex-col lg:col-start-2 lg:row-start-1',
+            'order-1 w-full shrink-0 card-glass-dark rounded-md overflow-hidden flex flex-col lg:order-none lg:col-start-2 lg:row-start-1',
             layoutPanelOpen &&
               'max-h-[min(42dvh,320px)] sm:max-h-none lg:min-h-[360px] lg:max-h-none',
           )}
@@ -1081,11 +1093,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         );
       })()}
 
-      {/* Focused wizard — sole primary scroll region on phone */}
+      {/* Focused wizard — sole primary scroll region on phone (below narrow drops) */}
       <div
         className={cn(
-          'order-1 w-full flex flex-col card-glass-dark rounded-md overflow-hidden min-h-0 flex-1 bg-slate-950/80 lg:min-h-0 lg:col-start-1 lg:row-start-1 lg:row-span-2',
-          (layoutPanelOpen || previewPanelOpen) && 'lg:flex max-lg:min-h-[40%]',
+          'order-3 w-full flex flex-col card-glass-dark rounded-md overflow-hidden min-h-0 flex-1 bg-slate-950/80 lg:order-none lg:min-h-0 lg:col-start-1 lg:row-start-1 lg:row-span-2',
         )}
         data-testid="measuring-wizard-focus"
       >
@@ -1887,13 +1898,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         </div>
       </div>
 
-      {/* Cut preview — narrow drop on phone */}
+      {/* Cut preview — narrow drop on phone (above wizard) */}
       <div
         className={cn(
-          'order-3 w-full shrink-0 rounded-md border border-amber-600/30 bg-slate-950 relative overflow-hidden min-w-0 flex flex-col lg:col-start-2 lg:row-start-2',
+          'order-2 w-full shrink-0 rounded-md border border-amber-600/30 bg-slate-950 relative overflow-hidden min-w-0 flex flex-col lg:order-none lg:col-start-2 lg:row-start-2',
           previewPanelOpen
             ? 'max-h-[min(36dvh,280px)] sm:max-h-none sm:min-h-[320px] lg:min-h-[420px] lg:max-h-none'
             : 'min-h-0',
+          !previewPanelOpen && 'lg:min-h-0',
         )}
       >
         <div className="flex items-center gap-1.5 px-2 py-1 border-b border-amber-600/25 shrink-0 lg:hidden">
