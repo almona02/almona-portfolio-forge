@@ -3,7 +3,7 @@ import { draftingToWindowUnit } from './draftingToWindowUnit';
 import type { DraftingStateSnapshot } from './draftingToWindowUnit';
 
 describe('draftingToWindowUnit opening-type round-trip', () => {
-  it('infers sliding from a 2-sash grid instead of hardcoding casement', () => {
+  it('infers sliding from explicit sliding cells (bare sash stays casement)', () => {
     const drafting: DraftingStateSnapshot = {
       getGeometry: () => ({ rectangles: [] }),
       getMaterialAwareWindows: () => [
@@ -19,8 +19,9 @@ describe('draftingToWindowUnit opening-type round-trip', () => {
           rows: 1,
           cols: 2,
           cells: [
-            { id: '0-0', row: 0, col: 0, type: 'sash' },
-            { id: '0-1', row: 0, col: 1, type: 'sash' },
+            // normalizeOpeningType: two bare "sash" cells ≠ sliding proof.
+            { id: '0-0', row: 0, col: 0, type: 'sliding' },
+            { id: '0-1', row: 0, col: 1, type: 'sliding' },
           ],
         },
       }),
@@ -31,6 +32,34 @@ describe('draftingToWindowUnit opening-type round-trip', () => {
     expect(unit!.type).toBe('sliding');
     expect(unit!.grid?.cols).toBe(2);
     expect(unit!.systemPackId).toBe('caluminium-ps');
+  });
+
+  it('keeps casement for multi-cell bare sash grids without sliding markers', () => {
+    const drafting: DraftingStateSnapshot = {
+      getGeometry: () => ({ rectangles: [] }),
+      getMaterialAwareWindows: () => [
+        {
+          id: 'frame-1b',
+          width: 1400,
+          height: 1500,
+          systemPackId: 'caluminium-ps',
+        } as never,
+      ],
+      getMaterialWindowGrids: () => ({
+        'frame-1b': {
+          rows: 1,
+          cols: 2,
+          cells: [
+            { id: '0-0', row: 0, col: 0, type: 'sash' },
+            { id: '0-1', row: 0, col: 1, type: 'sash' },
+          ],
+        },
+      }),
+    };
+
+    const unit = draftingToWindowUnit(drafting);
+    expect(unit).not.toBeNull();
+    expect(unit!.type).toBe('casement');
   });
 
   it('keeps casement when type string says casement', () => {

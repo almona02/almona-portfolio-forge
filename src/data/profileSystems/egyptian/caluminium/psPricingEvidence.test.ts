@@ -18,6 +18,12 @@ describe('CALUMINIUM PS dated pricing evidence', () => {
     expect(requireHardwareUnitPriceEgp('ps_sliding_roller')).toBe(15);
   });
 
+  it('resolves legacy FRAME-60 / SASH-60 BOM codes to priced PS members', () => {
+    expect(requireProfileCostPerMeterEgp('FRAME-60')).toBe(185);
+    expect(requireProfileCostPerMeterEgp('SASH-60')).toBe(165);
+    expect(requireProfileCostPerMeterEgp('MULLION-60')).toBe(310);
+  });
+
   it('fails loudly on missing profile price', () => {
     expect(() => requireProfileCostPerMeterEgp('PS-DOES-NOT-EXIST')).toThrow(
       MissingOrExpiredPriceError,

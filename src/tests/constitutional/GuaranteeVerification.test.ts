@@ -22,10 +22,16 @@ const MOCK_SYSTEM_PACK: any = {
     brands: ['CALUMINIUM'],
     regions: ['egypt'],
   },
+  // Priced PS catalogue IDs (must match CALUMINIUM_PS_PRICING_EVIDENCE).
+  profiles: [
+    { id: 'PS-6601-FRAME', name: 'PS Frame', type: 'frame', profileRole: 'frame', width: 50, height: 50, cuttingAllowance: 5, costPerMeter: 185, specifications: {}, material: 'aluminum' },
+    { id: 'PS-6601-SASH', name: 'PS Sash', type: 'sash', profileRole: 'sash', width: 40, height: 40, cuttingAllowance: 5, costPerMeter: 165, specifications: {}, material: 'aluminum' },
+    { id: 'PS-6601-BEAD', name: 'PS Bead', type: 'glazing_bead', profileRole: 'glazing_bead', width: 10, height: 10, cuttingAllowance: 0, costPerMeter: 42, specifications: {}, material: 'aluminum' },
+  ],
   compatibleProfiles: [
-    { id: 'mock-frame', name: 'Mock Frame', type: 'frame', profileRole: 'frame', width: 50, height: 50, cuttingAllowance: 5, specifications: {}, material: 'aluminum' },
-    { id: 'mock-sash', name: 'Mock Sash', type: 'sash', profileRole: 'sash', width: 40, height: 40, cuttingAllowance: 5, specifications: {}, material: 'aluminum' },
-    { id: 'mock-bead', name: 'Mock Bead', type: 'glazing_bead', profileRole: 'glazing_bead', width: 10, height: 10, cuttingAllowance: 0, specifications: {}, material: 'aluminum' }
+    { id: 'PS-6601-FRAME', name: 'PS Frame', type: 'frame', profileRole: 'frame', width: 50, height: 50, cuttingAllowance: 5, specifications: {}, material: 'aluminum' },
+    { id: 'PS-6601-SASH', name: 'PS Sash', type: 'sash', profileRole: 'sash', width: 40, height: 40, cuttingAllowance: 5, specifications: {}, material: 'aluminum' },
+    { id: 'PS-6601-BEAD', name: 'PS Bead', type: 'glazing_bead', profileRole: 'glazing_bead', width: 10, height: 10, cuttingAllowance: 0, specifications: {}, material: 'aluminum' },
   ],
   hardware: [],
   windowSystemSpec: {

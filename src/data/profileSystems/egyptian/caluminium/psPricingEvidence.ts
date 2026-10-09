@@ -134,13 +134,31 @@ export function assertPricingEvidenceCurrent(
   }
 }
 
+/**
+ * Legacy BOM fallback codes (profileBOMConstants / DualOutputGenerator) →
+ * priced PS catalogue members. Resolve before fail-closed lookup.
+ */
+export const CALUMINIUM_PS_PROFILE_ID_ALIASES: Record<string, string> = {
+  'FRAME-60': 'PS-6601-FRAME',
+  'SASH-60': 'PS-6601-SASH',
+  'MULLION-60': 'PS-101-MULLION',
+  'TRANSOM-60': 'PS-101-MULLION',
+  'BEAD-60': 'PS-6601-BEAD',
+  'GLAZING_BEAD-60': 'PS-6601-BEAD',
+};
+
+export function resolveCaluminiumPsProfileId(profileId: string): string {
+  return CALUMINIUM_PS_PROFILE_ID_ALIASES[profileId] ?? profileId;
+}
+
 export function requireProfileCostPerMeterEgp(
   profileId: string,
   evidence: DatedPricingEvidence = CALUMINIUM_PS_PRICING_EVIDENCE,
   asOfIsoDate?: string,
 ): number {
   assertPricingEvidenceCurrent(evidence, asOfIsoDate);
-  const price = evidence.profiles[profileId];
+  const resolvedId = resolveCaluminiumPsProfileId(profileId);
+  const price = evidence.profiles[resolvedId];
   if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0) {
     throw new MissingOrExpiredPriceError(
       `Missing or non-positive EGP/m price for profile ${profileId} in ${evidence.systemPackId} evidence (${evidence.source.reference})`,
