@@ -271,7 +271,7 @@ export const MeasuringPage: React.FC = () => {
     if (!projectId || !poseId) return <div role="alert" className="p-8 text-red-300">Authoritative project and position identifiers are required.</div>;
 
     return (
-        <div className="flex flex-col h-full bg-slate-950">
+        <div className="flex flex-col h-full min-h-0 overflow-hidden bg-slate-950">
             <Collapsible
                 open={poseLayoutOpen}
                 onOpenChange={setPoseLayoutOpen}
@@ -321,20 +321,22 @@ export const MeasuringPage: React.FC = () => {
                     </CollapsibleContent>
                 </div>
             </Collapsible>
-            <Suspense fallback={
-                <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400" />
-                </div>
-            }>
-                <SmartMeasuringInterface
-                    key={poseId ?? 'new'}
-                    onMeasurementComplete={handleMeasurementComplete}
-                    onSaveAndNextPose={handleSaveAndNext}
-                    initialData={initialData}
-                    systemPackId={pose?.systemPackId}
-                    poseLabel={`Pose ${pose?.posNumber || '1'}`}
-                />
-            </Suspense>
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                <Suspense fallback={
+                    <div className="flex items-center justify-center h-full">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400" />
+                    </div>
+                }>
+                    <SmartMeasuringInterface
+                        key={poseId ?? 'new'}
+                        onMeasurementComplete={handleMeasurementComplete}
+                        onSaveAndNextPose={handleSaveAndNext}
+                        initialData={initialData}
+                        systemPackId={pose?.systemPackId}
+                        poseLabel={`Pose ${pose?.posNumber || '1'}`}
+                    />
+                </Suspense>
+            </div>
         </div>
     );
 };

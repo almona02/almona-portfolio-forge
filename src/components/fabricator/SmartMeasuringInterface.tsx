@@ -205,11 +205,16 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
   }, [suggestedGrid, isGridLocked]);
 
-  const [isSystemPackCollapsed, setIsSystemPackCollapsed] = useState(false);
+  /** Start collapsed when pack already chosen so mobile measuring form stays on-screen. */
+  const [isSystemPackCollapsed, setIsSystemPackCollapsed] = useState(() => Boolean(systemPackId));
   /** When true, user opened the panel — stay open until they hide it (no auto-collapse). */
   const [systemPackPinnedOpen, setSystemPackPinnedOpen] = useState(false);
   /** Opening layout panel — open on desktop, compact closed bar on small screens. */
   const [layoutPanelOpen, setLayoutPanelOpen] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches,
+  );
+  /** Cut preview — collapsed on phone so Confirm / Save actions stay reachable. */
+  const [previewPanelOpen, setPreviewPanelOpen] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches,
   );
 
@@ -624,8 +629,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   // const startARScan = () => { ... };
 
+  const applySystemPackAndContinue = () => {
+    setSystemPackPinnedOpen(false);
+    setIsSystemPackCollapsed(true);
+    if (currentStep === 0) setCurrentStep(1);
+  };
+
   return (
-    <div className="flex flex-col h-full gap-2 sm:gap-4 overflow-y-auto p-1">
+    <div className="flex flex-col h-full min-h-0 gap-2 sm:gap-3 overflow-hidden p-1 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
       {/* Label Modal */}
       {showLabel && previewWindowUnit && (
         <ProductionLabel
@@ -634,11 +645,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         />
       )}
 
-      {/* System pack — capped height + internal scroll so measuring stays usable on all screens */}
+      {/* System pack — capped height + sticky Apply so phone users can confirm and return to measuring */}
       <div
         className={cn(
           'w-full rounded-lg border border-amber-600/25 bg-slate-950/80 overflow-hidden flex flex-col shrink-0',
-          !isSystemPackCollapsed && 'max-h-[min(70vh,520px)]',
+          !isSystemPackCollapsed && 'max-h-[min(58vh,440px)] sm:max-h-[min(70vh,520px)]',
         )}
       >
         {!isSystemPackCollapsed && (
@@ -670,6 +681,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         )}
 
         {!isSystemPackCollapsed ? (
+          <>
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 space-y-3">
             <div>
               <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">
@@ -757,6 +769,22 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               </p>
             )}
           </div>
+          <div className="shrink-0 border-t border-amber-600/25 bg-slate-950/95 p-2.5 safe-area-pb">
+            <Button
+              type="button"
+              data-testid="measuring-apply-system-pack"
+              onClick={applySystemPackAndContinue}
+              disabled={!selectedSystemPackId}
+              className="btn-primary-gradient w-full font-semibold h-11 touch-manipulation"
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              {t('smart_measuring.actions.apply_system', {
+                defaultValue: 'Use {{name}}',
+                name: activeSystemPack?.meta.name || 'system',
+              })}
+            </Button>
+          </div>
+          </>
         ) : (
           <button
             type="button"
@@ -764,7 +792,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               setSystemPackPinnedOpen(true);
               setIsSystemPackCollapsed(false);
             }}
-            className="w-full px-3 py-2.5 flex items-center justify-between text-left hover:bg-amber-500/5"
+            className="w-full px-3 py-2.5 flex items-center justify-between text-left hover:bg-amber-500/5 min-h-11 touch-manipulation"
             aria-label="Show system picker"
           >
             <div className="flex items-center gap-2 min-w-0">
@@ -790,7 +818,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         )}
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(280px,auto)_minmax(0,1fr)]">
+      <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-3 overflow-y-auto overscroll-contain lg:grid lg:overflow-hidden lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(280px,auto)_minmax(0,1fr)]">
       {/* Opening layout — daily workshop preview + edit (alongside guided form) */}
       {selectedSystemPackId && (() => {
         const layoutW = Math.max(1, Number(measurements.width) || 1000);
@@ -799,11 +827,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         const layoutRows = Number(grid?.rows) > 0 ? Number(grid.rows) : 1;
         const cellCount = Array.isArray(grid?.cells) ? grid.cells.length : 0;
         return (
-        <div className={`order-2 w-full card-glass-dark rounded-lg overflow-hidden flex flex-col lg:col-start-2 lg:row-start-1 ${layoutPanelOpen ? 'min-h-[280px] lg:min-h-[360px]' : ''}`}>
+        <div className={`order-2 w-full shrink-0 card-glass-dark rounded-lg overflow-hidden flex flex-col lg:col-start-2 lg:row-start-1 ${layoutPanelOpen ? 'min-h-[220px] sm:min-h-[280px] lg:min-h-[360px]' : ''}`}>
           <div className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 border-b-2 border-amber-600/30 flex-shrink-0">
             <button
               type="button"
-              className="flex min-w-0 flex-1 items-center gap-2 text-left rounded-md hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40"
+              className="flex min-w-0 flex-1 items-center gap-2 text-left rounded-md hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40 min-h-11 touch-manipulation"
               onClick={() => setLayoutPanelOpen((open) => !open)}
               aria-expanded={layoutPanelOpen}
               aria-label={layoutPanelOpen ? 'Hide opening layout' : 'Show opening layout'}
@@ -898,8 +926,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         );
       })()}
 
-      {/* Left Panel: Guided measuring form */}
-      <div className="order-1 w-full flex flex-col card-glass-dark rounded-lg overflow-hidden min-h-0 bg-slate-950/80 lg:col-start-1 lg:row-start-1 lg:row-span-2">
+      {/* Left Panel: Guided measuring form — fills phone viewport so footer stays reachable */}
+      <div className="order-1 w-full flex flex-col card-glass-dark rounded-lg overflow-hidden min-h-0 flex-1 bg-slate-950/80 lg:min-h-0 lg:col-start-1 lg:row-start-1 lg:row-span-2">
         <div className="flex-shrink-0 border-b border-amber-600/25 px-2 pt-2 pb-2 sm:px-3">
           <div className="flex items-center justify-between gap-2 mb-2 px-1">
             <h2 className="text-sm font-semibold text-amber-200 truncate">
@@ -922,7 +950,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   key={step.id}
                   type="button"
                   onClick={() => setCurrentStep(idx)}
-                  className={`flex items-center gap-1 shrink-0 rounded-md px-2 py-1.5 text-[11px] font-medium transition-colors ${
+                  className={`flex items-center gap-1 shrink-0 rounded-md px-2 py-1.5 text-[11px] font-medium transition-colors touch-manipulation min-h-9 ${
                     active
                       ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50'
                       : done
@@ -944,7 +972,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         </div>
 
         {/* Form Content Container */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 relative min-h-0">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-3 sm:p-4 relative min-h-0">
           <AnimatePresence mode='wait' custom={currentStep}>
             <motion.div
               key={currentStep}
@@ -1024,7 +1052,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   </div>
 
                   {availablePatterns.length > 0 && (
-                    <div className="rounded-lg border border-amber-600/25 bg-slate-950/50 p-2.5 sm:p-3">
+                    <div className="rounded-lg border border-amber-600/25 bg-slate-950/50 p-2.5 sm:p-3 space-y-2">
                       <EgyptianPatternSelector
                         selectedPatternId={selectedPatternId || undefined}
                         onSelect={(patternId, nextGrid) => {
@@ -1038,6 +1066,30 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         }}
                         currentSystemId={selectedSystemPackId}
                       />
+                      {selectedPatternId ? (
+                        <div
+                          className="flex flex-col gap-2 rounded-md border border-emerald-500/35 bg-emerald-950/30 p-2.5 sm:flex-row sm:items-center sm:justify-between"
+                          data-testid="measuring-pattern-applied"
+                        >
+                          <p className="text-xs text-emerald-200/95 leading-snug">
+                            Pattern and grid locked for this pose. Enter size, then continue.
+                          </p>
+                          <Button
+                            type="button"
+                            size="sm"
+                            data-testid="measuring-confirm-pattern"
+                            onClick={nextStep}
+                            className="btn-primary-gradient h-10 shrink-0 touch-manipulation w-full sm:w-auto"
+                          >
+                            Continue with pattern
+                            <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-slate-500">
+                          Pick a pattern to set the grid, or leave empty and edit Opening layout.
+                        </p>
+                      )}
                     </div>
                   )}
 
@@ -1431,7 +1483,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       Check cut size
                     </h3>
                     <p className="text-xs text-slate-400">
-                      Confirm these millimetres match the site or shop drawing before saving.
+                      Confirm these millimetres match the site or shop drawing, then save to Design and BOM.
                     </p>
                     <div className="space-y-2 text-sm">
                       {(() => {
@@ -1480,9 +1532,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           </AnimatePresence>
         </div>
 
-        {/* Footer Navigation */}
-        <div className="p-2.5 sm:p-3 border-t border-amber-600/25 flex flex-col sm:flex-row justify-between gap-2 flex-shrink-0 bg-slate-950/90">
-          <Button variant="ghost" disabled={currentStep === 0} onClick={prevStep} className="btn-secondary-dark">
+        {/* Footer Navigation — sticky on phone so Confirm / Save stay above the fold */}
+        <div className="sticky bottom-0 z-20 p-2.5 sm:p-3 border-t border-amber-600/25 flex flex-col sm:flex-row justify-between gap-2 flex-shrink-0 bg-slate-950/95 backdrop-blur-sm supports-[backdrop-filter]:bg-slate-950/90">
+          <Button variant="ghost" disabled={currentStep === 0} onClick={prevStep} className="btn-secondary-dark h-11 touch-manipulation">
             <ArrowLeft className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.previous', 'Back')}
           </Button>
 
@@ -1493,7 +1545,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 <Button
                   variant="outline"
                   onClick={() => setShowLabel(true)}
-                  className="btn-secondary-dark"
+                  className="btn-secondary-dark h-11 touch-manipulation"
                 >
                   <QrCode className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.print_label', 'Print Label')}
                 </Button>
@@ -1504,7 +1556,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 onClick={() => handleSubmit(false)}
                 disabled={!verificationConfirmed}
                 className={`
-                  transition-all duration-300 w-full sm:w-auto
+                  transition-all duration-300 w-full sm:w-auto h-11 touch-manipulation
                   ${verificationConfirmed
                     ? 'btn-primary-gradient'
                     : 'bg-[#1a1a1a] text-amber-600/50 cursor-not-allowed border-2 border-amber-600/20'}
@@ -1517,7 +1569,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   onClick={() => handleSubmit(true)}
                   disabled={!verificationConfirmed}
                   variant="secondary"
-                  className="bg-cyan-500 text-slate-900 hover:bg-cyan-400 font-semibold w-full sm:w-auto"
+                  className="bg-cyan-500 text-slate-900 hover:bg-cyan-400 font-semibold w-full sm:w-auto h-11 touch-manipulation"
                 >
                   {t('engineering_bay.save_and_next', 'Save & Next Pose')}
                 </Button>
@@ -1527,7 +1579,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             <Button
               data-testid="measuring-wizard-next"
               onClick={nextStep}
-              className="btn-primary-gradient font-bold w-full sm:w-auto"
+              className="btn-primary-gradient font-bold w-full sm:w-auto h-11 touch-manipulation"
             >
               {t('smart_measuring.actions.next', 'Next')} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -1535,14 +1587,46 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         </div>
       </div>
 
-      {/* Right Panel: Measurement blueprint (dark amber, matches studio) */}
-      <div className="order-3 w-full rounded-lg border border-amber-600/30 bg-slate-950 relative overflow-hidden min-h-[280px] sm:min-h-[360px] lg:min-h-[420px] min-w-0 flex flex-col lg:col-start-2 lg:row-start-2">
+      {/* Right Panel: Measurement blueprint — collapsed bar on phone so Confirm stays reachable */}
+      <div
+        className={cn(
+          'order-3 w-full shrink-0 rounded-lg border border-amber-600/30 bg-slate-950 relative overflow-hidden min-w-0 flex flex-col lg:col-start-2 lg:row-start-2',
+          previewPanelOpen
+            ? 'min-h-[240px] sm:min-h-[320px] lg:min-h-[420px]'
+            : 'min-h-0',
+        )}
+      >
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-amber-600/25 shrink-0 lg:hidden">
+          <button
+            type="button"
+            className="flex min-w-0 flex-1 items-center gap-2 text-left rounded-md hover:bg-amber-500/5 min-h-11 touch-manipulation"
+            onClick={() => setPreviewPanelOpen((open) => !open)}
+            aria-expanded={previewPanelOpen}
+            aria-label={previewPanelOpen ? 'Hide cut preview' : 'Show cut preview'}
+          >
+            <Ruler className="h-4 w-4 text-amber-500 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-amber-200 truncate">Cut preview</p>
+              <p className="truncate font-mono text-[11px] text-slate-500">
+                {Math.round(Number(measurements.width) || 0)} × {Math.round(Number(measurements.height) || 0)} mm
+              </p>
+            </div>
+            <ChevronDown
+              className={`h-4 w-4 shrink-0 text-amber-500/80 transition-transform ${previewPanelOpen ? 'rotate-180' : ''}`}
+              aria-hidden
+            />
+          </button>
+        </div>
         {/* Header with Zoom Controls */}
-        <div className="absolute top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-          <Badge className="bg-amber-500/15 text-amber-200 border-amber-500/40 font-medium text-xs px-2 sm:px-2.5 py-1 w-fit">
+        <div
+          className={cn(
+            'absolute top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 z-10 flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2',
+            previewPanelOpen ? 'flex' : 'hidden lg:flex',
+          )}
+        >
+          <Badge className="bg-amber-500/15 text-amber-200 border-amber-500/40 font-medium text-xs px-2 sm:px-2.5 py-1 w-fit hidden lg:inline-flex">
             <Ruler className="h-3 w-3 mr-1 sm:mr-1.5" />
-            <span className="hidden sm:inline">Cut preview</span>
-            <span className="sm:hidden">Preview</span>
+            <span>Cut preview</span>
           </Badge>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
             {activeSystemPack && (
@@ -1642,6 +1726,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           </div>
         </div>
 
+        <div
+          className={cn(
+            'relative flex-1 min-h-0 w-full',
+            previewPanelOpen ? 'min-h-[220px] sm:min-h-[280px]' : 'hidden lg:block lg:min-h-0',
+          )}
+        >
         {/* SR-Only Summary for Accessibility */}
         <div className="sr-only" aria-live="polite">
           {previewWindowUnit ? (
@@ -2795,6 +2885,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             </motion.div>
           </div>
         )}
+        </div>
       </div>
       </div>
 
