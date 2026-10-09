@@ -114,12 +114,26 @@ export async function adminOverrideHardener(input: {
   supportingEvidence: Record<string, unknown>;
   scope?: 'position' | 'project' | 'system_pack';
 }): Promise<{ ok: true; overrideId: string } | { ok: false; error: string }> {
+  if (!input.reason || input.reason.trim().length < 8) {
+    return { ok: false, error: 'override reason must be at least 8 characters' };
+  }
+  if (
+    !input.supportingEvidence ||
+    typeof input.supportingEvidence !== 'object' ||
+    Object.keys(input.supportingEvidence).length < 1
+  ) {
+    return { ok: false, error: 'override supporting evidence incomplete' };
+  }
+  const scope = input.scope ?? 'position';
+  if (scope !== 'position' && scope !== 'project' && scope !== 'system_pack') {
+    return { ok: false, error: 'invalid override scope' };
+  }
   const { data, error } = await rpc().rpc('admin_override_fabricator_hardener', {
     p_proposal_id: input.proposalId,
     p_hardener_code: input.hardenerCode,
     p_reason: input.reason,
     p_supporting_evidence: input.supportingEvidence,
-    p_scope: input.scope ?? 'position',
+    p_scope: scope,
   });
   if (error) return { ok: false, error: error.message };
   return { ok: true, overrideId: String(data) };

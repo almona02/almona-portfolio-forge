@@ -16,7 +16,7 @@ CREATE TEMP TABLE hardener_test_output (
   sequence_no INTEGER GENERATED ALWAYS AS IDENTITY,
   result TEXT NOT NULL
 ) ON COMMIT DROP;
-INSERT INTO hardener_test_output(result) SELECT plan(18);
+INSERT INTO hardener_test_output(result) SELECT plan(22);
 
 INSERT INTO auth.users(id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
 VALUES
@@ -151,6 +151,19 @@ SELECT throws_ok(
   )$fmt$,
   'unsupported hardener/profile mapping for code BADCODE',
   'unsupported hardener code rejected'
+);
+
+-- Versioned applicability (not name-based %-no-hardener)
+INSERT INTO hardener_test_output(result)
+SELECT ok(
+  public.system_pack_requires_hardener('sandbox-no-hardener') IS FALSE,
+  'versioned applicability metadata exempts sandbox estimate pack'
+);
+
+INSERT INTO hardener_test_output(result)
+SELECT ok(
+  public.system_pack_requires_hardener('evil-no-hardener') IS TRUE,
+  'name-based %-no-hardener loophole is closed'
 );
 
 -- N/A pack clears manufacturing without proposal
@@ -335,6 +348,37 @@ SELECT set_config(
   '{"sub":"14000000-0000-0000-0000-000000000099","role":"authenticated"}',
   true
 );
+
+-- Empty evidence override denied (admin still needs evidence object)
+INSERT INTO hardener_test_output(result)
+SELECT throws_ok(
+  format(
+    $fmt$SELECT public.admin_override_fabricator_hardener(
+      '%s', 'H-PS-OVERRIDE', 'Workshop measured sash weight confirms catalogue exception', '{}'::jsonb, 'position'
+    )$fmt$,
+    (SELECT proposal_id FROM hardener_ids LIMIT 1)
+  ),
+  'override supporting evidence incomplete',
+  'admin override without evidence denied'
+);
+
+-- Missing profile (delete admin profile temporarily) denied
+DELETE FROM public.profiles WHERE id = '14000000-0000-0000-0000-000000000099';
+INSERT INTO hardener_test_output(result)
+SELECT throws_ok(
+  format(
+    $fmt$SELECT public.admin_override_fabricator_hardener(
+      '%s', 'H-PS-OVERRIDE', 'Workshop measured sash weight confirms catalogue exception',
+      '{"shopTicket":"ST-9","photoRef":"ev-1"}'::jsonb, 'position'
+    )$fmt$,
+    (SELECT proposal_id FROM hardener_ids LIMIT 1)
+  ),
+  'admin role required',
+  'missing admin profile denies override'
+);
+INSERT INTO public.profiles(id, full_name, role)
+VALUES ('14000000-0000-0000-0000-000000000099', 'Hardener Admin', 'admin')
+ON CONFLICT (id) DO UPDATE SET role = EXCLUDED.role;
 
 UPDATE hardener_ids SET override_id = public.admin_override_fabricator_hardener(
   (SELECT proposal_id FROM hardener_ids LIMIT 1),
