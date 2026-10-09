@@ -102,18 +102,18 @@ CI workflow: `.github/workflows/fabricator-measured-pooled-e2e.yml` asserts both
 | Hardener approve / override / reject / revoke / invalidation | **partial** — SQL/unit/pgTAP; live open |
 | Order → release → QC → delivery + negatives | **not run** |
 | Gold-tier flexibility | **partial** — code present |
-| Egyptian / Turkish / custom Profile Studio | **not run** |
+| Egyptian / Turkish / custom Profile Studio | **partial** — route/data contract (#74); live auth walk open |
 
 ## Remaining blockers → next action
 
-1. Land tip CI green on #71 `a639284c` and #73 (diverse metrics push).
-2. Owner reviews staging plan; authorize Phase B only.
-3. Staging fixture walk with digests; then separate prod promote decision.
-4. Live FINAL GOAL on almona02.com only after Phase B exit — no gate bypasses.
+1. Owner authorizes **merge order** #74 → #71 → #72 → #70 → #73 (code only).
+2. Owner identifies **staging Supabase** (none exists today besides prod `shfsebdncjnncqqnewfj`).
+3. Authorize Phase B SQL (#71 then #72) on staging only; fixture walk + digests.
+4. Separate Phase C auth for prod; live FINAL GOAL on almona02.com only after Phase B exit.
 
 ## Explicit non-claims
 
 - 82/100 ≠ workshop readiness.
 - Green PR checks ≠ manufacturing-qualified BOM.
 - Diverse estimate 10/18 ≠ live custom-pack project on almona02.com.
-- Staging plan ≠ authorization to apply SQL.
+- Staging plan ≠ authorization to merge or apply SQL.
