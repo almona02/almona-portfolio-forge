@@ -236,27 +236,10 @@ export const MeasuringPage: React.FC = () => {
     const poseGlazing = pose?.glazing && typeof pose.glazing === 'object'
         ? (pose.glazing as { type?: string; color?: string })
         : undefined;
-    const normalizedPoseColor = (() => {
-        const raw = pose?.color?.trim();
-        if (!raw) return undefined;
-        const known = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
-        const byName = known.find((c) => c.toLowerCase() === raw.toLowerCase());
-        if (byName) return byName;
-        // Persist often stores hex; map common whites/blacks for measuring validation
-        const hex = raw.toLowerCase();
-        if (hex === '#fff' || hex === '#ffffff' || hex === 'fff' || hex === 'ffffff') return 'White';
-        if (hex === '#000' || hex === '#000000' || hex === '000' || hex === '000000') return 'Black';
-        return raw;
-    })();
-    const normalizedGlazingType = (() => {
-        const raw = poseGlazing?.type?.trim().toLowerCase();
-        if (!raw) return undefined;
-        if (raw === 'single' || raw === 'double' || raw === 'triple') return raw;
-        // Legacy poses store glass tint as glazing.type (e.g. "clear")
-        return undefined;
-    })();
-    const normalizedGlassColor = poseGlazing?.color
-        || (poseGlazing?.type && !normalizedGlazingType ? poseGlazing.type : undefined);
+    // Preserve raw color/glazing; SmartMeasuringInterface seeds suggestions and requires Confirm.
+    const normalizedPoseColor = pose?.color?.trim() || undefined;
+    const normalizedGlazingType = poseGlazing?.type?.trim() || undefined;
+    const normalizedGlassColor = poseGlazing?.color?.trim() || undefined;
     const initialData: MeasurementData | undefined = pose
         ? {
             width: String(pose.overallWidth),

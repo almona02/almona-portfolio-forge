@@ -2,12 +2,22 @@ import {
   getDefaultGlazing,
   getDefaultProfileColor
 } from '@/data/egyptian-defaults';
-import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
+import { EGYPTIAN_PATTERNS, type EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useEgyptianPredictiveGrid } from '@/hooks/fabricator/useEgyptianPredictiveGrid';
 import { useSystemRoleOptions } from '@/hooks/fabricator/useSystemRoleOptions';
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 import { StoredSystemPack, addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import {
+  applyAppearanceConfirmations,
+  seedMeasuringAppearance,
+  type AppearanceSuggestionKind,
+} from '@/lib/fabricator/measuringAppearance';
+import {
+  assessPatternPackFit,
+  getLayoutTemplatesForSystem,
+  type PatternPackFit,
+} from '@/lib/fabricator/patternPackCompatibility';
 import { ValidationError, getConstraintsForSystemPack, validateMeasurements } from '@/lib/fabricatorValidation';
 import { trackError } from '@/lib/performance-monitoring';
 import { cn } from '@/lib/utils';
@@ -133,6 +143,21 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     };
   }, [region]);
 
+  const appearanceSeed = useMemo(
+    () =>
+      seedMeasuringAppearance({
+        color: initialData?.color,
+        glazingType: initialData?.glazingType,
+        glassColor: initialData?.glassColor,
+        defaultColor: egyptianDefaults.color,
+        defaultGlazingType: egyptianDefaults.glazingType,
+        defaultGlassColor: egyptianDefaults.glassColor,
+      }),
+    // Seed once from initial pose / defaults — intentional mount-time snapshot
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   const [measurements, setMeasurements] = useState({
     // Default professional stub dimensions – can be refined per system later.
     width: String(initialData?.width ?? DEFAULT_MEASUREMENTS.DEFAULT_WIDTH_MM),
@@ -140,27 +165,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     measurementMode: initialData?.measurementMode ?? 'hole', // 'hole' (rough opening) or 'manufacturing'
     wallDeduction: String(initialData?.wallDeduction ?? DEFAULT_MEASUREMENTS.DEFAULT_WALL_DEDUCTION_MM), // mm deduction for wall tolerance
     windowType: !initialData?.windowType || initialData.windowType === 'window' ? 'sliding_window_2sash' : initialData.windowType, // Default to 2-sash sliding window (matches SelectItem value)
-    color: (() => {
-      const raw = (initialData?.color || egyptianDefaults.color || '').trim();
-      const known = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
-      const byName = known.find((c) => c.toLowerCase() === raw.toLowerCase());
-      if (byName) return byName;
-      const hex = raw.toLowerCase();
-      if (hex === '#fff' || hex === '#ffffff' || hex === 'fff' || hex === 'ffffff') return 'White';
-      if (hex === '#000' || hex === '#000000' || hex === '000' || hex === '000000') return 'Black';
-      return byName || egyptianDefaults.color || 'White';
-    })(),
-    glazingType: (() => {
-      const raw = (initialData?.glazingType || '').trim().toLowerCase();
-      if (raw === 'single' || raw === 'double' || raw === 'triple') return raw;
-      return egyptianDefaults.glazingType || 'double';
-    })(),
-    glassColor: initialData?.glassColor
-      || (initialData?.glazingType && !['single', 'double', 'triple'].includes(initialData.glazingType)
-        ? initialData.glazingType
-        : undefined)
-      || egyptianDefaults.glassColor
-      || 'clear',
+    // Preserve unknown color/glazing; suggestions require Confirm-step acknowledgment
+    color: appearanceSeed.color,
+    glazingType: appearanceSeed.glazingType,
+    glassColor: appearanceSeed.glassColor,
     flyScreenType: initialData?.flyScreenType || 'none', // Default to 'none' to avoid empty string in Select
     flatNumber: initialData?.flatNumber || '', // Text input - OK
     buildingBlock: initialData?.buildingBlock || '', // Text input - OK
@@ -171,6 +179,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     windowIndex: initialData?.windowIndex || '', // Text input - OK
     remarks: initialData?.remarks || '', // Text input - OK
   });
+  const [appearanceSuggestions] = useState(appearanceSeed.suggestions);
+  const [confirmedAppearanceKinds, setConfirmedAppearanceKinds] = useState<Set<AppearanceSuggestionKind>>(
+    () => new Set(),
+  );
+  const [pendingPatternFit, setPendingPatternFit] = useState<PatternPackFit | null>(null);
+  const [patternTemplateConfirmed, setPatternTemplateConfirmed] = useState(false);
 
   // Grid State for Phase 4 — empty `{}` from savePose must not count as authoritative
   const seededGrid = initialData?.grid;
@@ -478,8 +492,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     [availableSystemPacks, selectedSystemPackId],
   );
 
+  // Layout templates (certified ∪ similar-pack donors). Certified status checked via assessPatternPackFit.
   const availablePatterns = useMemo(() => {
-    return getPatternsForSystem(selectedSystemPackId);
+    return getLayoutTemplatesForSystem(selectedSystemPackId);
   }, [selectedSystemPackId]);
 
   const systemConstraints = useMemo(
@@ -551,9 +566,54 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       return;
     }
 
+    const resolvedAppearance = applyAppearanceConfirmations(
+      {
+        color: measurements.color,
+        glazingType: measurements.glazingType,
+        glassColor: measurements.glassColor,
+      },
+      appearanceSuggestions,
+      confirmedAppearanceKinds,
+    );
+    if (resolvedAppearance.blocked.length > 0) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        color: resolvedAppearance.blocked.find((b) => b.kind === 'color')?.reason || prev.color,
+        glazingType:
+          resolvedAppearance.blocked.find((b) => b.kind === 'glazingType')?.reason || prev.glazingType,
+      }));
+      setCurrentStep(4);
+      return;
+    }
+
+    if (
+      pendingPatternFit?.requiresConfirmation &&
+      pendingPatternFit.canApplyAsTemplate &&
+      !patternTemplateConfirmed
+    ) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        pattern: pendingPatternFit.reasons[0] || 'Confirm layout template before save',
+      }));
+      setCurrentStep(4);
+      return;
+    }
+
+    if (pendingPatternFit && !pendingPatternFit.canApplyAsTemplate) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        pattern: pendingPatternFit.reasons[0] || 'Pattern incompatible with selected pack',
+      }));
+      setCurrentStep(1);
+      return;
+    }
+
     const validation = validateMeasurements(
       {
         ...measurements,
+        color: resolvedAppearance.color,
+        glazingType: resolvedAppearance.glazingType,
+        glassColor: resolvedAppearance.glassColor,
         systemPackId: selectedSystemPackId,
         manufacturingWidth,
         manufacturingHeight
@@ -606,6 +666,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
     const payload: MeasurementData = {
       ...measurements,
+      color: resolvedAppearance.color,
+      glazingType: resolvedAppearance.glazingType,
+      glassColor: resolvedAppearance.glassColor,
       systemPackId: selectedSystemPackId,
       systemProfileSelections,
       // Rule 18: Include wall tolerance data for InterferenceEngine
@@ -1075,29 +1138,90 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       <EgyptianPatternSelector
                         selectedPatternId={selectedPatternId || undefined}
                         onSelect={(patternId, nextGrid) => {
+                          const fit = assessPatternPackFit({
+                            patternId,
+                            systemPackId: selectedSystemPackId,
+                            widthMm: Number(measurements.width) || 0,
+                            heightMm: Number(measurements.height) || 0,
+                          });
+                          setPendingPatternFit(fit);
+                          setPatternTemplateConfirmed(fit.kind === 'certified' && fit.reasons.length === 0);
+                          if (!fit.canApplyAsTemplate) {
+                            setFieldErrors((prev) => ({
+                              ...prev,
+                              pattern: fit.reasons[0] || 'Pattern incompatible with selected pack',
+                            }));
+                            return;
+                          }
                           setSelectedPatternId(patternId);
                           setGrid(nextGrid);
                           setIsGridMode(true);
                           setIsGridLocked(true);
+                          setFieldErrors((prev) => {
+                            const next = { ...prev };
+                            delete next.pattern;
+                            return next;
+                          });
                         }}
                         onClear={() => {
                           setSelectedPatternId('');
+                          setPendingPatternFit(null);
+                          setPatternTemplateConfirmed(false);
                         }}
                         currentSystemId={selectedSystemPackId}
                       />
+                      {pendingPatternFit && !pendingPatternFit.canApplyAsTemplate ? (
+                        <p className="text-xs text-red-300" data-testid="measuring-pattern-blocked">
+                          {pendingPatternFit.reasons[0]}
+                        </p>
+                      ) : null}
+                      {pendingPatternFit?.kind === 'layout_template' && pendingPatternFit.canApplyAsTemplate ? (
+                        <div
+                          className="rounded-md border border-amber-500/40 bg-amber-950/35 p-2.5 space-y-2"
+                          data-testid="measuring-pattern-template-warning"
+                        >
+                          <p className="text-xs text-amber-100/95 leading-snug">
+                            Layout template from a similar pack — not certified for this system.
+                            Geometry only; pack profiles, hardware and dimensional limits still apply.
+                          </p>
+                          <label
+                            htmlFor="confirm-layout-template"
+                            className="flex items-start gap-2 cursor-pointer touch-manipulation"
+                          >
+                            <Checkbox
+                              id="confirm-layout-template"
+                              checked={patternTemplateConfirmed}
+                              onCheckedChange={(v) => setPatternTemplateConfirmed(v === true)}
+                              className="mt-0.5 h-5 w-5 shrink-0"
+                            />
+                            <span className="text-xs text-amber-50/90 leading-snug">
+                              Apply this layout template to the selected pack
+                            </span>
+                          </label>
+                        </div>
+                      ) : null}
                       {selectedPatternId ? (
                         <div
                           className="flex flex-col gap-2 rounded-md border border-emerald-500/35 bg-emerald-950/40 p-2.5 sm:flex-row sm:items-center sm:justify-between"
                           data-testid="measuring-pattern-applied"
                         >
                           <p className="text-xs text-emerald-200/95 leading-snug">
-                            Pattern and grid locked. Use Next below when size looks right.
+                            {pendingPatternFit?.kind === 'certified'
+                              ? 'Certified pattern and grid locked. Use Next below when size looks right.'
+                              : 'Pattern and grid locked. Confirm template above, then Next when size looks right.'}
                           </p>
                           <Button
                             type="button"
                             size="sm"
                             data-testid="measuring-confirm-pattern"
                             onClick={nextStep}
+                            disabled={
+                              Boolean(
+                                pendingPatternFit?.requiresConfirmation &&
+                                  pendingPatternFit.canApplyAsTemplate &&
+                                  !patternTemplateConfirmed,
+                              )
+                            }
                             className="btn-primary-gradient h-10 shrink-0 touch-manipulation w-full sm:w-auto"
                           >
                             Continue with pattern
@@ -1534,6 +1658,59 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     </div>
                   </div>
 
+                  {appearanceSuggestions.length > 0 ? (
+                    <div
+                      className="rounded-lg border border-amber-500/35 bg-amber-950/30 p-3 space-y-2"
+                      data-testid="measuring-appearance-confirm"
+                    >
+                      <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-200">
+                        Confirm color / glazing mapping
+                      </h4>
+                      <p className="text-[11px] text-slate-400 leading-snug">
+                        Unknown or legacy values are preserved until you confirm a catalog mapping.
+                      </p>
+                      {appearanceSuggestions.map((suggestion) => {
+                        const id = `confirm-appearance-${suggestion.kind}`;
+                        const checked = confirmedAppearanceKinds.has(suggestion.kind);
+                        return (
+                          <label
+                            key={suggestion.kind}
+                            htmlFor={id}
+                            className="flex items-start gap-2 cursor-pointer touch-manipulation"
+                          >
+                            <Checkbox
+                              id={id}
+                              checked={checked}
+                              onCheckedChange={(v) => {
+                                setConfirmedAppearanceKinds((prev) => {
+                                  const next = new Set(prev);
+                                  if (v === true) next.add(suggestion.kind);
+                                  else next.delete(suggestion.kind);
+                                  return next;
+                                });
+                              }}
+                              className="mt-0.5 h-5 w-5 shrink-0"
+                            />
+                              <span className="text-xs text-amber-50/90 leading-snug">
+                                {suggestion.reason}
+                                <span className="block font-mono text-[10px] text-slate-400 mt-0.5">
+                                  {suggestion.raw} → {suggestion.suggested}
+                                </span>
+                              </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+
+                  {pendingPatternFit?.kind === 'layout_template' &&
+                  pendingPatternFit.canApplyAsTemplate &&
+                  !patternTemplateConfirmed ? (
+                    <p className="text-xs text-amber-200" data-testid="measuring-template-confirm-needed">
+                      Go back to Layout and confirm the similar-pack template before save.
+                    </p>
+                  ) : null}
+
                   <label
                     htmlFor="verify"
                     className="flex items-start gap-3 rounded-lg border border-amber-600/25 bg-slate-950/40 p-3 cursor-pointer touch-manipulation"
@@ -1578,7 +1755,15 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               <Button
                 data-testid="measuring-save-pose-design"
                 onClick={() => handleSubmit(false)}
-                disabled={!verificationConfirmed}
+                disabled={
+                  !verificationConfirmed ||
+                  appearanceSuggestions.some((s) => !confirmedAppearanceKinds.has(s.kind)) ||
+                  Boolean(
+                    pendingPatternFit?.requiresConfirmation &&
+                      pendingPatternFit.canApplyAsTemplate &&
+                      !patternTemplateConfirmed,
+                  )
+                }
                 className={`
                   transition-all duration-300 w-full sm:w-auto h-11 touch-manipulation
                   ${verificationConfirmed
@@ -1591,7 +1776,15 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               {onSaveAndNextPose && (
                 <Button
                   onClick={() => handleSubmit(true)}
-                  disabled={!verificationConfirmed}
+                  disabled={
+                    !verificationConfirmed ||
+                    appearanceSuggestions.some((s) => !confirmedAppearanceKinds.has(s.kind)) ||
+                    Boolean(
+                      pendingPatternFit?.requiresConfirmation &&
+                        pendingPatternFit.canApplyAsTemplate &&
+                        !patternTemplateConfirmed,
+                    )
+                  }
                   variant="secondary"
                   className="bg-cyan-500 text-slate-900 hover:bg-cyan-400 font-semibold w-full sm:w-auto h-11 touch-manipulation"
                 >
