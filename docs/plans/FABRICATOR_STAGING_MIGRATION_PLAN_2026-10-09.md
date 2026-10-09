@@ -1,124 +1,102 @@
 # Fabricator merge + staging readiness — 9 October 2026
 
-**Status:** Phase A complete (code tips green). **Phase B blocked** until owner names a staging DB and authorizes SQL.  
-**Do not merge, force-push, or apply remote SQL from this document without explicit owner approval.**
+**Status:** Phase A **complete** (merge chain on `main`). Phase B **SQL smoke complete** on Option A staging; §5.3 fixture walk still open. Phase C prod SQL still requires separate auth.  
+**Do not force-push or apply prod SQL from this document without explicit owner approval.**
 
 Canonical scorecard: [FABRICATOR_SCORECARD_2026-10-09.md](../reviews/FABRICATOR_SCORECARD_2026-10-09.md).
 
 ---
 
-## 1. Tip CI snapshot (verified)
+## 1. Merge chain (executed)
 
-| PR | Branch | Tip | Base | CI | Mergeable | Scope |
-|---|---|---|---|---|---|---|
-| [#74](https://github.com/almona02/almona-portfolio-forge/pull/74) | `cursor/profile-studio-entry-points-1dc6` | `f32c3174` | `main` | **green** | yes | Profile Studio route/data contract (1 file) |
-| [#71](https://github.com/almona02/almona-portfolio-forge/pull/71) | `cursor/harden-optimization-evidence-1dc6` | `a639284c` | `main` | **green** | yes | Optimization evidence harden + `20261009160000_*.sql` |
-| [#72](https://github.com/almona02/almona-portfolio-forge/pull/72) | `cursor/hardener-applicability-metadata-1dc6` | `d2b637d4` | `main` | **green** | yes | Hardener applicability + `20261009170000_*.sql` |
-| [#70](https://github.com/almona02/almona-portfolio-forge/pull/70) | `cursor/measuring-mobile-confirm-actions-1dc6` | `f9ce74fb` | `main` | **green** | yes | Mobile measuring UX, PS/sliding-2s defaults |
-| [#73](https://github.com/almona02/almona-portfolio-forge/pull/73) | `cursor/measured-pooled-e2e-ci-1dc6` | `bd8ea3b8` | `main` | **green** | yes | Measured 10/18 E2E CI + this plan/scorecard |
-| [#64](https://github.com/almona02/almona-portfolio-forge/pull/64) | empty-DB replay | draft | `integration/fabricator-reviewed` | parallel | — | Empty-DB history replay (not on merge path) |
+| Step | PR | Merge commit | Merged at (UTC) |
+|---|---|---|---|
+| 1 | [#74](https://github.com/almona02/almona-portfolio-forge/pull/74) | `4786a26e` | 2026-10-09T19:47:54Z |
+| 2 | [#71](https://github.com/almona02/almona-portfolio-forge/pull/71) | `a4dd770b` | 2026-10-09T19:49:32Z |
+| 3 | [#72](https://github.com/almona02/almona-portfolio-forge/pull/72) | `71d9e059` | 2026-10-09T19:49:43Z |
+| 4 | [#70](https://github.com/almona02/almona-portfolio-forge/pull/70) | `8c7cf43a` | 2026-10-09T19:49:53Z |
+| 5 | [#73](https://github.com/almona02/almona-portfolio-forge/pull/73) | `8a1ac7d7` | 2026-10-09T19:52:27Z |
 
-`origin/main` / production frontend: `f9954be9` (merge #69).
+`origin/main` tip: **`8a1ac7d7`**. Vercel Production / `eu-production` deployments recorded for that SHA (GitHub Deployments API).
 
-File overlap: only `docs/reviews/FABRICATOR_SCORECARD_2026-10-09.md` is shared (#70 ∩ #73). No code overlap between #71 and #72.
+Merging landed **git + frontend deploy**. It did **not** apply Supabase SQL to production.
 
----
-
-## 2. Recommended merge order → `main` (code only)
-
-Merging lands **git + frontend deploy**. It does **not** apply Supabase SQL. Migrations in #71/#72 stay inert until explicit `db push` / SQL apply.
-
-| Step | PR | Why this order |
-|---|---|---|
-| 1 | **#74** | Single test file; zero conflict risk |
-| 2 | **#71** | Evidence hardening code + migration file |
-| 3 | **#72** | Applicability metadata after #71 (SQL apply order matches) |
-| 4 | **#70** | Measuring UX (older scorecard copy) |
-| 5 | **#73** | Measured E2E CI + **newer scorecard/plan** (wins scorecard conflict) |
-
-After each merge: confirm GitHub Production / Vercel preview for that SHA; do not run FINAL GOAL on prod yet.
-
-**Explicit non-actions until authorized:** `gh pr merge`, force-push, prod SQL, blanket manufacturing seeds.
+[#64](https://github.com/almona02/almona-portfolio-forge/pull/64) empty-DB replay remains open (parallel; full history replay not required for §5.2).
 
 ---
 
-## 3. Staging DB gap (Phase B blocker)
+## 2. Staging target (Phase B Option A)
 
-Read-only Supabase inventory for this org shows **one** project:
-
-| Project | Ref | Role |
-|---|---|---|
-| `almona02` | `shfsebdncjnncqqnewfj` | **Production** (manufacturing migrations `20261009001810`…`02244` already applied) |
-
-There is **no separate staging Supabase project** in the accessible account. Phase B cannot start until the owner chooses one of:
-
-| Option | Action | Risk |
-|---|---|---|
-| **A. New staging project** | Create disposable Supabase project; replay #64 path + #71 then #72 | Lowest risk; preferred |
-| **B. Supabase branch** | Branch `shfsebdncjnncqqnewfj` if plan allows | Medium; confirm branching available |
-| **C. Prod maintenance** | Skip staging; Phase C-style apply on prod only | Highest; **not recommended**; requires separate explicit auth |
-
-Vercel MCP is unauthenticated in this agent session — staging frontend URL must be confirmed by owner (preview aliases vs dedicated staging project).
-
----
-
-## 4. Phase A checklist (pre-merge / pre-SQL)
-
-| Item | Status |
+| Field | Value |
 |---|---|
-| #70–#74 tip CI green | **done** |
-| Merge order documented | **done** (section 2) |
-| Scorecard conflict strategy (#73 last) | **done** |
-| Staging Supabase identified | **blocked** — only prod `shfsebdncjnncqqnewfj` |
-| Rollback baseline (staging SHA, Vercel URL, `schema_migrations` dump) | **pending** — needs staging target |
-| Empty-DB replay (#64) | **parallel** — report drift only; do not block merge of #70–#74 |
-| Capture prod `system_pack_requires_hardener` + evidence row count | **pending** before any SQL (read-only) |
+| Name | `almona02-staging` |
+| Ref / project id | `apnmoevmvihfzcnttctx` |
+| Region | `eu-west-3` |
+| API URL | `https://apnmoevmvihfzcnttctx.supabase.co` |
+| Org | `iuhujuoejbfydldnbqac` (free tier; branching PaymentRequired — Option B unavailable) |
+| Role | **Staging only** — disposable; not customer prod |
+
+Production remains `shfsebdncjnncqqnewfj` (`almona02`). **#71/#72 SQL not applied to prod.**
 
 ---
 
-## 5. Phase B — Staging SQL + fixture walk (requires authorization)
+## 3. Phase B SQL apply (staging)
 
-**Authorize only after staging target exists.**
+### 3.1 Baseline note
 
-### 5.1 Apply order (staging only, forward-only)
+Empty hosted project had no manufacturing tables. Applied a **minimal manufacturing stub** (not full #64 replay) so #71/#72 could compile and §5.2 RPCs could run:
 
-1. `20261009160000_fabricator_optimization_evidence_hardening.sql` (#71)  
-2. `20261009170000_fabricator_hardener_applicability_metadata.sql` (#72)
+1. `phase_b_manufacturing_stub_baseline` — stub tables/functions (`fabricator_optimization_evidence`, positions, hardener stubs, `is_admin`→false, pre-#72 name-list `system_pack_requires_hardener`)
+2. `phase_b_public_digest_wrappers` — `public.digest` → `extensions.digest` (pgcrypto lives in `extensions` on hosted)
 
-**Not included:** blanket manufacturing approval seeds; authority `provenance=seed`.
+### 3.2 Forward apply order (executed)
 
-### 5.2 Smoke RPCs (must pass before fixture walk)
+3. `fabricator_optimization_evidence_hardening` (#71 body)  
+4. `fabricator_hardener_applicability_metadata` (#72 body)
 
-- `validate_optimization_evidence_payload` rejects overrun / bad schema  
-- `record_fabricator_optimization_evidence` rejects `ledger-fp-*` and unbound fingerprints  
-- `system_pack_requires_hardener('evil-no-hardener')` = **true**  
-- `system_pack_requires_hardener('sandbox-no-hardener')` = **false** (seeded metadata only)  
-- `admin_override_fabricator_hardener` rejects empty evidence; non-admin denied  
+**Not included:** blanket manufacturing approval seeds; authority `provenance=seed`; Phase C prod apply.
 
-### 5.3 Fixture walk (dedicated staging user / customer / project)
+### 3.3 Smoke RPCs (§5.2) — **all passed**
 
-1. Custom system pack; profiles / roles / stock  
-2. 10 genuinely different poses / 18 units (diverse; not only uniform 1200×1400)  
-3. Complete BOM → optimize all 10 together → **>100 placed cuts**, 0 unplaced  
-4. Record authoritative optimization evidence  
-5. Hardener: approve / scoped override / reject / revoke / changed-input invalidation  
-6. Qualified convert → production release → QC → delivery  
-7. Negatives: stale revision, revoked authority, missing evidence, pending/rejected hardener  
-8. Reload + fresh login persistence  
+| Check | Result |
+|---|---|
+| `validate_optimization_evidence_payload` bad schema | reject: schema must be `almona.optimization-result` |
+| `validate_optimization_evidence_payload` stock overrun | reject: placed 1400 mm > stock 1000 mm |
+| `record_fabricator_optimization_evidence` `ledger-fp-*` | reject: not authoritative |
+| `record_fabricator_optimization_evidence` unbound fingerprint | reject: does not bind to validated placement |
+| `system_pack_requires_hardener('evil-no-hardener')` | **true** (fail-closed; no LIKE loophole) |
+| `system_pack_requires_hardener('sandbox-no-hardener')` | **false** (seeded metadata) |
+| `admin_override_fabricator_hardener` non-admin | reject: admin role required |
+| `admin_override_fabricator_hardener` empty evidence | reject: supporting evidence incomplete |
 
-### 5.4 Digests to record
+Artifact: `/opt/cursor/artifacts/phase-b-smoke-results.log`.
 
-Git SHA (merged main), Vercel deployment URL/id, backend image digest, applied migration versions, metrics JSON (cuts/bars/area/kerf/waste).
+### 3.4 Still open (§5.3 fixture walk)
+
+Dedicated staging Auth users + custom pack + 10/18 diverse poses → BOM → optimize → evidence → hardener → convert → release → QC → delivery + negatives. Needs staging app wiring / fixture users (no credentials in chat traces).
 
 ---
 
-## 6. Phase C — Production promote (separate authorization)
+## 4. Digests (current)
 
-Only if Phase B exits clean:
+| Item | Value |
+|---|---|
+| Git SHA | `8a1ac7d7` |
+| Vercel Production | deploy recorded for `8a1ac7d7` (GitHub Deployments) |
+| Staging Supabase | `apnmoevmvihfzcnttctx` |
+| Staging migrations | stub baseline + digest wrappers + #71 + #72 names above |
+| Prod tip migrations | still ends at `20261009002244` (manufacturing stack; **no** #71/#72) |
+| Backend image digest | not captured this turn |
+
+---
+
+## 5. Phase C — Production promote (separate authorization)
+
+Only if Phase B fixture walk exits clean:
 
 1. Same artifact set as staging (no rebuild-and-hope)  
-2. Maintenance window; apply #71 then #72 SQL only with explicit approval  
-3. Deploy frontend at the same merged SHA  
+2. Maintenance window; apply #71 then #72 SQL **only** with explicit approval on `shfsebdncjnncqqnewfj`  
+3. Frontend already at merged SHA `8a1ac7d7` (verify alias)  
 4. Post-deploy smoke on a disposable project (not customer data)  
 5. Update scorecard live-acceptance section  
 6. Rollback: previous Vercel alias + Railway digest + documented DB restore point  
@@ -127,20 +105,21 @@ Only if Phase B exits clean:
 
 ---
 
-## 7. Owner approval checklist
+## 6. Owner approval checklist
 
 ### Merge to `main` (code)
 
-- [ ] Authorize merge order: #74 → #71 → #72 → #70 → #73  
-- [ ] Confirm no auto SQL apply on merge/deploy  
-- [ ] After merges: verify Production deploy SHA chain  
+- [x] Authorize merge order: #74 → #71 → #72 → #70 → #73  
+- [x] Confirm no auto SQL apply on merge/deploy  
+- [x] After merges: verify Production deploy SHA chain (`8a1ac7d7`)  
 
 ### Staging (Phase B)
 
-- [ ] Identify staging target (Option A / B / C above)  
-- [ ] Authorize Phase B SQL apply of #71 then #72 on that target only  
-- [ ] Review migration SQL in #71 / #72  
-- [ ] Provide staging auth users for fixture walk (no credentials in chat traces)  
+- [x] Identify staging target (Option A: `apnmoevmvihfzcnttctx`)  
+- [x] Authorize Phase B SQL apply of #71 then #72 on that target only  
+- [x] §5.2 smoke RPCs  
+- [ ] §5.3 fixture walk + staging Auth users  
+- [ ] Optional: full #64 empty-DB replay onto staging for deeper parity  
 
 ### Production (Phase C) — later
 
@@ -149,9 +128,10 @@ Only if Phase B exits clean:
 
 ---
 
-## 8. Explicit non-claims
+## 7. Explicit non-claims
 
 - Tip CI green ≠ manufacturing-qualified BOM on almona02.com  
 - Merging PRs ≠ applying #71/#72 to prod DB  
+- Staging stub baseline ≠ full production schema parity / #64 replay  
 - Estimate 10/18 metrics (414 / 489 cuts) ≠ live FINAL GOAL  
-- This plan ≠ authorization to merge or run SQL  
+- §5.2 smoke ≠ §5.3 fixture walk  
