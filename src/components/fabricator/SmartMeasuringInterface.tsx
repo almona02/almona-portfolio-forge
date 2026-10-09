@@ -143,10 +143,24 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     color: (() => {
       const raw = (initialData?.color || egyptianDefaults.color || '').trim();
       const known = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
-      return known.find((c) => c.toLowerCase() === raw.toLowerCase()) || raw || egyptianDefaults.color;
+      const byName = known.find((c) => c.toLowerCase() === raw.toLowerCase());
+      if (byName) return byName;
+      const hex = raw.toLowerCase();
+      if (hex === '#fff' || hex === '#ffffff' || hex === 'fff' || hex === 'ffffff') return 'White';
+      if (hex === '#000' || hex === '#000000' || hex === '000' || hex === '000000') return 'Black';
+      return byName || egyptianDefaults.color || 'White';
     })(),
-    glazingType: initialData?.glazingType || egyptianDefaults.glazingType || 'double', // Ensure glazingType has a default value
-    glassColor: initialData?.glassColor || egyptianDefaults.glassColor || 'clear', // Default to 'clear' (first option) - selected by default
+    glazingType: (() => {
+      const raw = (initialData?.glazingType || '').trim().toLowerCase();
+      if (raw === 'single' || raw === 'double' || raw === 'triple') return raw;
+      return egyptianDefaults.glazingType || 'double';
+    })(),
+    glassColor: initialData?.glassColor
+      || (initialData?.glazingType && !['single', 'double', 'triple'].includes(initialData.glazingType)
+        ? initialData.glazingType
+        : undefined)
+      || egyptianDefaults.glassColor
+      || 'clear',
     flyScreenType: initialData?.flyScreenType || 'none', // Default to 'none' to avoid empty string in Select
     flatNumber: initialData?.flatNumber || '', // Text input - OK
     buildingBlock: initialData?.buildingBlock || '', // Text input - OK
@@ -1073,11 +1087,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       />
                       {selectedPatternId ? (
                         <div
-                          className="sticky bottom-0 z-10 flex flex-col gap-2 rounded-md border border-emerald-500/35 bg-emerald-950/95 p-2.5 shadow-lg shadow-black/40 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between"
+                          className="flex flex-col gap-2 rounded-md border border-emerald-500/35 bg-emerald-950/40 p-2.5 sm:flex-row sm:items-center sm:justify-between"
                           data-testid="measuring-pattern-applied"
                         >
                           <p className="text-xs text-emerald-200/95 leading-snug">
-                            Pattern and grid locked. Continue when size looks right.
+                            Pattern and grid locked. Use Next below when size looks right.
                           </p>
                           <Button
                             type="button"

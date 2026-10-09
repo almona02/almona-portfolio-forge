@@ -240,16 +240,31 @@ export const MeasuringPage: React.FC = () => {
         const raw = pose?.color?.trim();
         if (!raw) return undefined;
         const known = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
-        return known.find((c) => c.toLowerCase() === raw.toLowerCase()) ?? raw;
+        const byName = known.find((c) => c.toLowerCase() === raw.toLowerCase());
+        if (byName) return byName;
+        // Persist often stores hex; map common whites/blacks for measuring validation
+        const hex = raw.toLowerCase();
+        if (hex === '#fff' || hex === '#ffffff' || hex === 'fff' || hex === 'ffffff') return 'White';
+        if (hex === '#000' || hex === '#000000' || hex === '000' || hex === '000000') return 'Black';
+        return raw;
     })();
+    const normalizedGlazingType = (() => {
+        const raw = poseGlazing?.type?.trim().toLowerCase();
+        if (!raw) return undefined;
+        if (raw === 'single' || raw === 'double' || raw === 'triple') return raw;
+        // Legacy poses store glass tint as glazing.type (e.g. "clear")
+        return undefined;
+    })();
+    const normalizedGlassColor = poseGlazing?.color
+        || (poseGlazing?.type && !normalizedGlazingType ? poseGlazing.type : undefined);
     const initialData: MeasurementData | undefined = pose
         ? {
             width: String(pose.overallWidth),
             height: String(pose.overallHeight),
-            windowType: pose.type,
+            windowType: !pose.type || pose.type === 'window' ? 'sliding_window_2sash' : pose.type,
             color: normalizedPoseColor,
-            glazingType: poseGlazing?.type || undefined,
-            glassColor: poseGlazing?.color || undefined,
+            glazingType: normalizedGlazingType,
+            glassColor: normalizedGlassColor,
             systemPackId: pose.systemPackId,
             measurementMode: pose.measurementMode ?? 'manufacturing',
             wallDeduction: '0',
