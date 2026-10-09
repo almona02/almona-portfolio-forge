@@ -43,6 +43,8 @@ export default defineConfig({
       '**/dist/**',
       'tests/e2e/**',
       'fabricator-mobile/**',
+      '.tmp-pr-assess/**',
+      '**/.tmp-pr-assess/**',
       'src/pages/Services.test.tsx',
       'src/integration/presets/Phase1Integration.test.ts',
       'src/tests/e2e/SpecialPresets.e2e.test.ts',

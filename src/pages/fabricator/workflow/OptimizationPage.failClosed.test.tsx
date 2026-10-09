@@ -7,9 +7,16 @@ import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { OptimizationResult, WindowUnit } from '@/types/fabricator';
 
-const mocks = vi.hoisted(() => ({ solve: vi.fn(), onComplete: undefined as undefined | (() => Promise<void>) }));
+const mocks = vi.hoisted(() => ({
+  solve: vi.fn(),
+  recordEvidence: vi.fn(),
+  onComplete: undefined as undefined | (() => Promise<void>),
+}));
 vi.mock('@/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'user-1' } }) }));
 vi.mock('@/algorithms/adaptiveSolver', () => ({ AdaptiveSolver: class { solve = mocks.solve; } }));
+vi.mock('@/lib/fabricator/commercial/recordOptimizationEvidence', () => ({
+  recordOptimizationEvidence: (...args: unknown[]) => mocks.recordEvidence(...args),
+}));
 vi.mock('@/components/fabricator/cockpit/OptimizationCockpit', () => ({ OptimizationCockpit: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
 vi.mock('@/components/fabricator/OptimizationEqualizer', () => ({ OptimizationEqualizer: ({ onComplete }: { onComplete: () => Promise<void> }) => { mocks.onComplete = onComplete; return <button onClick={() => void onComplete()}>Optimize</button>; } }));
 
@@ -30,9 +37,21 @@ const qualifiedBom = {
 describe('OptimizationPage fail-closed execution', () => {
   beforeEach(() => {
     mocks.solve.mockReset();
+    mocks.recordEvidence.mockReset();
+    mocks.recordEvidence.mockResolvedValue({ ok: true, positionId: 'position-1' });
     mocks.onComplete = undefined;
     useWorkflowStore.getState().clearWorkflow();
-    useWorkflowStore.setState({ currentProject: project, bom: qualifiedBom });
+    useWorkflowStore.setState({
+      currentProject: project,
+      bom: qualifiedBom,
+      workflowIdentity: {
+        ownerUserId: 'user-1',
+        projectId: 'project-a',
+        positionId: 'position-1',
+        source: 'v2',
+        revision: 1,
+      },
+    });
   });
 
   it('keeps a successful result available for PDF export instead of navigating away', async () => {

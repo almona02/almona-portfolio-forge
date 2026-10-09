@@ -667,6 +667,10 @@ const App = memo(() => {
 
                                   {/* Legacy top-level redirects to canonical routes */}
                                   <Route path="/reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/fabricator/reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/cost-reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/quality-reports" element={<Navigate to={fabricatorRoutes.studioReports()} replace />} />
+                                  <Route path="/fabricator/orders" element={<Navigate to={fabricatorRoutes.studioOrders()} replace />} />
                                   <Route path="/machine-status" element={<Navigate to={fabricatorRoutes.studioCommand()} replace />} />
                                   <Route path="/offers" element={<Navigate to="/shop" replace />} />
 
