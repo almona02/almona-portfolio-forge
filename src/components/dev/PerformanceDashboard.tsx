@@ -26,7 +26,8 @@ export const PerformanceDashboard: React.FC = () => {
   });
 
   const [optimizations, setOptimizations] = useState<string[]>([]);
-  const [isVisible, setIsVisible] = useState(true);
+  /** Collapsed by default so it does not cover sticky measuring / form footers on phone. */
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     // Monitor Core Web Vitals
@@ -188,8 +189,37 @@ export const PerformanceDashboard: React.FC = () => {
   const tbtStatus = getMetricStatus(metrics.tbt, 400);
   const clsStatus = getMetricStatus(metrics.cls, 0.1);
 
+  if (!isVisible) {
+    return (
+      <button
+        type="button"
+        className="performance-dashboard-toggle"
+        onClick={() => setIsVisible(true)}
+        aria-label="Open performance dashboard"
+        title="Performance"
+        style={{
+          position: 'fixed',
+          bottom: 12,
+          right: 12,
+          zIndex: 9999,
+          width: 36,
+          height: 36,
+          borderRadius: 8,
+          border: '1px solid #444',
+          background: 'rgba(0,0,0,0.85)',
+          color: '#fbbf24',
+          fontSize: 11,
+          fontWeight: 700,
+          cursor: 'pointer',
+        }}
+      >
+        Perf
+      </button>
+    );
+  }
+
   return (
-    <div className="performance-dashboard" style={{ display: isVisible ? 'block' : 'none' }}>
+    <div className="performance-dashboard">
       <div className="dashboard-header">
         <h3>Phase 1 Performance Dashboard</h3>
         <button 

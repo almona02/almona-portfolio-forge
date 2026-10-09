@@ -236,20 +236,18 @@ export const MeasuringPage: React.FC = () => {
     const poseGlazing = pose?.glazing && typeof pose.glazing === 'object'
         ? (pose.glazing as { type?: string; color?: string })
         : undefined;
-    const normalizedPoseColor = (() => {
-        const raw = pose?.color?.trim();
-        if (!raw) return undefined;
-        const known = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
-        return known.find((c) => c.toLowerCase() === raw.toLowerCase()) ?? raw;
-    })();
+    // Preserve raw color/glazing; SmartMeasuringInterface seeds suggestions and requires Confirm.
+    const normalizedPoseColor = pose?.color?.trim() || undefined;
+    const normalizedGlazingType = poseGlazing?.type?.trim() || undefined;
+    const normalizedGlassColor = poseGlazing?.color?.trim() || undefined;
     const initialData: MeasurementData | undefined = pose
         ? {
             width: String(pose.overallWidth),
             height: String(pose.overallHeight),
-            windowType: pose.type,
+            windowType: !pose.type || pose.type === 'window' ? 'sliding_window_2sash' : pose.type,
             color: normalizedPoseColor,
-            glazingType: poseGlazing?.type || undefined,
-            glassColor: poseGlazing?.color || undefined,
+            glazingType: normalizedGlazingType,
+            glassColor: normalizedGlassColor,
             systemPackId: pose.systemPackId,
             measurementMode: pose.measurementMode ?? 'manufacturing',
             wallDeduction: '0',
@@ -271,28 +269,31 @@ export const MeasuringPage: React.FC = () => {
     if (!projectId || !poseId) return <div role="alert" className="p-8 text-red-300">Authoritative project and position identifiers are required.</div>;
 
     return (
-        <div className="flex flex-col h-full bg-slate-950">
+        <div className="flex flex-col h-full min-h-0 overflow-hidden bg-slate-950">
             <Collapsible
                 open={poseLayoutOpen}
                 onOpenChange={setPoseLayoutOpen}
                 className="shrink-0 border-b border-amber-600/20"
             >
-                <div className="px-3 py-2 sm:px-4 sm:py-2.5">
+                <div className="px-2 py-1 sm:px-4 sm:py-2.5">
                     <CollapsibleTrigger
                         type="button"
-                        className="flex w-full items-center gap-2 rounded-md px-1 py-1 text-left hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40"
+                        className="flex w-full items-center gap-1.5 rounded-md px-1 py-0.5 sm:py-1 text-left hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40 min-h-9"
                         aria-label={poseLayoutOpen ? 'Hide project pose layout' : 'Show project pose layout'}
                     >
                         <div className="min-w-0 flex-1">
-                            <h2 className="truncate text-sm font-semibold text-amber-200">
-                                Measuring — Pose {pose?.posNumber || '1'}
+                            <h2 className="truncate text-xs sm:text-sm font-semibold text-amber-200">
+                                Pose {pose?.posNumber || '1'}
+                                <span className="ml-1.5 font-mono font-normal text-[10px] text-slate-500 sm:hidden">
+                                    {activePoseSummary}
+                                </span>
                             </h2>
-                            <p className="truncate font-mono text-[11px] text-slate-500">
+                            <p className="hidden sm:block truncate font-mono text-[11px] text-slate-500">
                                 {activePoseSummary}
                             </p>
                         </div>
                         <ChevronDown
-                            className={`h-4 w-4 shrink-0 text-amber-500/80 transition-transform ${poseLayoutOpen ? 'rotate-180' : ''}`}
+                            className={`h-3.5 w-3.5 shrink-0 text-amber-500/80 transition-transform ${poseLayoutOpen ? 'rotate-180' : ''}`}
                             aria-hidden
                         />
                     </CollapsibleTrigger>
@@ -321,20 +322,22 @@ export const MeasuringPage: React.FC = () => {
                     </CollapsibleContent>
                 </div>
             </Collapsible>
-            <Suspense fallback={
-                <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400" />
-                </div>
-            }>
-                <SmartMeasuringInterface
-                    key={poseId ?? 'new'}
-                    onMeasurementComplete={handleMeasurementComplete}
-                    onSaveAndNextPose={handleSaveAndNext}
-                    initialData={initialData}
-                    systemPackId={pose?.systemPackId}
-                    poseLabel={`Pose ${pose?.posNumber || '1'}`}
-                />
-            </Suspense>
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                <Suspense fallback={
+                    <div className="flex items-center justify-center h-full">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400" />
+                    </div>
+                }>
+                    <SmartMeasuringInterface
+                        key={poseId ?? 'new'}
+                        onMeasurementComplete={handleMeasurementComplete}
+                        onSaveAndNextPose={handleSaveAndNext}
+                        initialData={initialData}
+                        systemPackId={pose?.systemPackId}
+                        poseLabel={`Pose ${pose?.posNumber || '1'}`}
+                    />
+                </Suspense>
+            </div>
         </div>
     );
 };
