@@ -11,10 +11,10 @@ Staging plan (awaiting auth): [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](
 | Artifact | Status |
 |---|---|
 | `origin/main` / Production | `f9954be9` (merge #69) |
-| PR #70 measuring | tip `91c2a4d0` — **CI green** (RTL/desktop + type-delta) |
-| PR #71 optimization evidence | tip `a639284c` (stress.test Vitest exclude) — Docker pending; Frontend Build green |
+| PR #70 measuring | tip `91c2a4d0` — **CI green** (20/20) |
+| PR #71 optimization evidence | tip `a639284c` — **CI green** (19/19) |
 | PR #72 hardener applicability | tip `d2b637d4` — **CI green** |
-| PR #73 measured pooled E2E | tip in flight — uniform + **diverse** estimate fixtures |
+| PR #73 measured pooled E2E | tip `c1bc3bc3` — measured job green; remaining suite in flight |
 | PR #64 empty-DB replay | open draft (parallel) |
 
 ## Layer scores (separate — do not flatten)
@@ -22,7 +22,7 @@ Staging plan (awaiting auth): [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](
 | Layer | Score | Meaning |
 |---|---|---|
 | **Verified implementation** | **~94** | Product surface + stack code largely present |
-| **Current-head CI** | **~88** | #70 + #72 tip green; #71/#73 finishing Docker |
+| **Current-head CI** | **~92** | #70/#71/#72 tip green; #73 finishing |
 | **Local / staging acceptance** | **~48** | Uniform + diverse estimate 10/18 metrics; staging SQL not authorized |
 | **Live acceptance** | **~35** | Prod has prior manufacturing SQL; FINAL GOAL walk **not run** |
 | **Production readiness** | **NOT READY** | #71/#72 need staging then explicit prod auth |
