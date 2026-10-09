@@ -1221,6 +1221,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     <div className="rounded-lg border border-amber-600/25 bg-slate-950/50 p-2.5 sm:p-3 space-y-2">
                       <EgyptianPatternSelector
                         selectedPatternId={selectedPatternId || undefined}
+                        collapseBrowseWhenSelected
                         onSelect={(patternId, nextGrid) => {
                           const fit = assessPatternPackFit({
                             patternId,

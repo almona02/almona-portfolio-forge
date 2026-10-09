@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SmartMeasuringInterface } from './SmartMeasuringInterface';
 
@@ -29,25 +30,52 @@ vi.mock('./drafting/prestige/PrestigeSystemPackSelector', () => ({
 vi.mock('./drafting/prestige/EgyptianPatternSelector', () => ({
   EgyptianPatternSelector: ({
     onSelect,
+    selectedPatternId,
+    collapseBrowseWhenSelected,
   }: {
     onSelect: (id: string, grid: { rows: number; cols: number; cells: unknown[] }) => void;
-  }) => (
-    <button
-      type="button"
-      onClick={() =>
-        onSelect('sliding-2s', {
-          rows: 1,
-          cols: 2,
-          cells: [
-            { id: 'a', row: 0, col: 0, type: 'sliding' },
-            { id: 'b', row: 0, col: 1, type: 'sliding' },
-          ],
-        })
-      }
-    >
-      Pick pattern
-    </button>
-  ),
+    selectedPatternId?: string;
+    collapseBrowseWhenSelected?: boolean;
+  }) => {
+    const [open, setOpen] = React.useState(
+      () => !(collapseBrowseWhenSelected && Boolean(selectedPatternId)),
+    );
+    return (
+      <div>
+        {selectedPatternId ? (
+          <button
+            type="button"
+            data-testid="measuring-pattern-browse-toggle"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? 'Hide' : 'Change'}
+          </button>
+        ) : null}
+        <div
+          data-testid="measuring-pattern-browse"
+          className={open || !selectedPatternId ? '' : 'hidden'}
+          hidden={!open && Boolean(selectedPatternId)}
+        >
+          <button
+            type="button"
+            onClick={() =>
+              onSelect('sliding-2s', {
+                rows: 1,
+                cols: 2,
+                cells: [
+                  { id: 'a', row: 0, col: 0, type: 'sliding' },
+                  { id: 'b', row: 0, col: 1, type: 'sliding' },
+                ],
+              })
+            }
+          >
+            Pick pattern
+          </button>
+        </div>
+      </div>
+    );
+  },
 }));
 vi.mock('@/lib/analytics/CalibrationAnalytics', () => ({
   calibrationAnalytics: { recordVerificationEvent: vi.fn() },
@@ -79,6 +107,11 @@ describe('SmartMeasuringInterface mobile confirm actions', () => {
     expect(screen.getByTestId('measuring-chrome-layout')).toHaveTextContent(/sliding-2s/i);
     expect(screen.queryByTestId('measuring-apply-system-pack')).not.toBeInTheDocument();
     expect(screen.getByTestId('measuring-wizard-next')).toBeVisible();
+    // Pattern chip grid stays collapsed when sliding-2s is already selected
+    const browseToggle = screen.getByTestId('measuring-pattern-browse-toggle');
+    expect(browseToggle).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(browseToggle);
+    expect(browseToggle).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('starts with system pack collapsed when pack is preselected and Apply confirms change', async () => {
@@ -117,11 +150,14 @@ describe('SmartMeasuringInterface mobile confirm actions', () => {
           windowType: 'sliding_window_2sash',
           glazingType: 'single',
           measurementMode: 'manufacturing',
+          presetId: 'sliding-2s',
         }}
         onMeasurementComplete={vi.fn()}
       />,
     );
 
+    // Default sliding-2s is collapsed; re-pick via Change to refresh fit/CTA
+    fireEvent.click(screen.getByTestId('measuring-pattern-browse-toggle'));
     fireEvent.click(screen.getByRole('button', { name: 'Pick pattern' }));
     expect(await screen.findByTestId('measuring-pattern-applied')).toBeInTheDocument();
     expect(screen.getByTestId('measuring-confirm-pattern')).toBeEnabled();
