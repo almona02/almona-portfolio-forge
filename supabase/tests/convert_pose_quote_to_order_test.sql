@@ -17,7 +17,37 @@ CREATE TEMP TABLE convert_order_test_output (
   sequence_no INTEGER GENERATED ALWAYS AS IDENTITY,
   result TEXT NOT NULL
 ) ON COMMIT DROP;
-INSERT INTO convert_order_test_output(result) SELECT plan(14);
+INSERT INTO convert_order_test_output(result) SELECT plan(16);
+
+-- Hardened evidence fixture (schema + cuttingPlan). Fingerprint bound to placement digest.
+CREATE TEMP TABLE convert_opt_evidence (
+  payload JSONB NOT NULL,
+  cut_count INTEGER NOT NULL,
+  placement_fp TEXT
+) ON COMMIT DROP;
+
+INSERT INTO convert_opt_evidence(payload, cut_count) VALUES (
+  jsonb_build_object(
+    'schema', 'almona.optimization-result',
+    'schemaVersion', 1,
+    'cuttingPlan', jsonb_build_array(
+      jsonb_build_object(
+        'stockLength', 6000,
+        'profile', jsonb_build_object('id', 'PS-FRAME'),
+        'cuts', jsonb_build_array(
+          jsonb_build_object('cutId', 'c1', 'length', 1200, 'angle', 45),
+          jsonb_build_object('cutId', 'c2', 'length', 1400, 'angle', 45)
+        )
+      )
+    )
+  ),
+  2
+);
+
+UPDATE convert_opt_evidence SET placement_fp = (
+  SELECT o_placement_fingerprint
+  FROM public.validate_optimization_evidence_payload(payload, cut_count)
+);
 
 INSERT INTO auth.users(id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
 VALUES
@@ -179,14 +209,51 @@ SELECT lives_ok(
   format(
     $fmt$SELECT public.record_fabricator_optimization_evidence(
       '33000000-0000-0000-0000-000000000001',
-      %s, %s, 'ledger-fp-abcdefgh', %s, 'rules-v1', 12,
-      '{"cuts":12}'::jsonb
+      %s, %s, %L, %s, 'rules-v1', %s, %L::jsonb
+    )$fmt$,
+    (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
+    (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
+    (SELECT placement_fp FROM convert_opt_evidence LIMIT 1),
+    (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
+    (SELECT cut_count FROM convert_opt_evidence LIMIT 1),
+    (SELECT payload::text FROM convert_opt_evidence LIMIT 1)
+  ),
+  'owner can record optimization evidence'
+);
+
+-- 2b) Reject stock overrun placement
+INSERT INTO convert_order_test_output(result)
+SELECT throws_ok(
+  format(
+    $fmt$SELECT public.record_fabricator_optimization_evidence(
+      '33000000-0000-0000-0000-000000000001',
+      %s, %s, 'deadbeefdeadbeef', %s, 'rules-v1', 2,
+      '{"schema":"almona.optimization-result","schemaVersion":1,"cuttingPlan":[{"stockLength":1000,"cuts":[{"cutId":"a","length":800},{"cutId":"b","length":800}]}]}'::jsonb
     )$fmt$,
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1)
   ),
-  'owner can record optimization evidence'
+  'cuttingPlan[0] stock overrun (placed 1600 mm > stock 1000 mm)',
+  'stock overrun rejected when recording evidence'
+);
+
+-- 2c) Reject placeholder ledger fingerprint
+INSERT INTO convert_order_test_output(result)
+SELECT throws_ok(
+  format(
+    $fmt$SELECT public.record_fabricator_optimization_evidence(
+      '33000000-0000-0000-0000-000000000001',
+      %s, %s, 'ledger-fp-abcdefgh', %s, 'rules-v1', %s, %L::jsonb
+    )$fmt$,
+    (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
+    (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
+    (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
+    (SELECT cut_count FROM convert_opt_evidence LIMIT 1),
+    (SELECT payload::text FROM convert_opt_evidence LIMIT 1)
+  ),
+  'ledger fingerprint is not authoritative',
+  'placeholder ledger fingerprint rejected'
 );
 
 -- 3) Happy-path convert
@@ -270,11 +337,14 @@ SELECT throws_ok(
   format(
     $fmt$SELECT public.record_fabricator_optimization_evidence(
       '33000000-0000-0000-0000-000000000001',
-      %s, %s, 'ledger-fp-otheruser', %s, 'rules-v1', 12, '{}'::jsonb
+      %s, %s, %L, %s, 'rules-v1', %s, %L::jsonb
     )$fmt$,
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
-    (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1)
+    (SELECT placement_fp FROM convert_opt_evidence LIMIT 1),
+    (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
+    (SELECT cut_count FROM convert_opt_evidence LIMIT 1),
+    (SELECT payload::text FROM convert_opt_evidence LIMIT 1)
   ),
   'position owner mismatch',
   'non-owner evidence record denied'
@@ -292,9 +362,12 @@ SELECT throws_ok(
   format(
     $fmt$SELECT public.record_fabricator_optimization_evidence(
       '33000000-0000-0000-0000-000000000001',
-      9999, 9999, 'ledger-fp-stale-rev', %s, 'rules-v1', 12, '{}'::jsonb
+      9999, 9999, %L, %s, 'rules-v1', %s, %L::jsonb
     )$fmt$,
-    (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1)
+    (SELECT placement_fp FROM convert_opt_evidence LIMIT 1),
+    (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
+    (SELECT cut_count FROM convert_opt_evidence LIMIT 1),
+    (SELECT payload::text FROM convert_opt_evidence LIMIT 1)
   ),
   format(
     'stale position revision (expected 9999, actual %s)',
@@ -341,9 +414,11 @@ SELECT public.record_fabricator_optimization_evidence(
   '33000000-0000-0000-0000-000000000001',
   (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
   (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
-  'ledger-fp-revocation1',
+  (SELECT placement_fp FROM convert_opt_evidence LIMIT 1),
   (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
-  'rules-v1', 12, '{"cuts":12}'::jsonb
+  'rules-v1',
+  (SELECT cut_count FROM convert_opt_evidence LIMIT 1),
+  (SELECT payload FROM convert_opt_evidence LIMIT 1)
 );
 
 -- 11) Revoke authority → convert rejects

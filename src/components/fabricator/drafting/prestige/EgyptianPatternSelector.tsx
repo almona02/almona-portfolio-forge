@@ -26,6 +26,11 @@ interface EgyptianPatternSelectorProps {
   currentSystemId?: string;
   /** @deprecated Details panel removed for daily UX; ignored. */
   defaultShowDetails?: boolean;
+  /**
+   * When a pattern is already selected, start with the chip grid collapsed
+   * (narrow summary drop). Phone measuring uses this so Size stays scrollable.
+   */
+  collapseBrowseWhenSelected?: boolean;
   className?: string;
 }
 
@@ -94,9 +99,13 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
   onSelect,
   onClear,
   currentSystemId,
+  collapseBrowseWhenSelected = false,
   className,
 }) => {
   const [filter, setFilter] = useState<PatternFilter>('all');
+  const [browseOpen, setBrowseOpen] = useState(
+    () => !(collapseBrowseWhenSelected && Boolean(selectedPatternId)),
+  );
 
   const availablePatterns = useMemo(() => {
     if (currentSystemId) return getPatternsForSystem(currentSystemId);
@@ -140,33 +149,46 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
       `CHECKPOINT-EGYPTIAN-PATTERN-${Date.now()}`,
     );
     onSelect(pattern.id, grid);
+    if (collapseBrowseWhenSelected) setBrowseOpen(false);
   };
 
   const visibleFilters = FILTERS.filter((f) => f.id === 'all' || counts[f.id] > 0);
+  const showBrowse = browseOpen || !selected;
 
   return (
     <div className={cn('w-full min-w-0 space-y-2.5', className)} role="group" aria-label="Opening patterns">
-      {/* Selected summary — always visible for daily confirmation */}
+      {/* Selected summary — narrow drop; expand to browse */}
       <div
         className={cn(
-          'flex items-center gap-2 rounded-md border px-2.5 py-2',
+          'flex items-center gap-2 rounded-md border px-2.5 py-1.5 min-h-9',
           selected
             ? 'border-amber-500/50 bg-amber-500/10'
             : 'border-amber-600/20 bg-slate-950/50',
         )}
       >
-        <Grid3x3 className="h-4 w-4 text-amber-500 shrink-0" aria-hidden />
+        <Grid3x3 className="h-3.5 w-3.5 text-amber-500 shrink-0" aria-hidden />
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] uppercase tracking-wider text-slate-500">Pattern</p>
-          <p className="text-sm font-medium text-amber-100 truncate">
-            {selected ? shortName(selected) : 'None — pick a layout below'}
+          <p className="text-[10px] uppercase tracking-wider text-slate-500 leading-none mb-0.5">Pattern</p>
+          <p className="text-xs sm:text-sm font-medium text-amber-100 truncate">
+            {selected ? shortName(selected) : 'None — pick a layout'}
+            {selected ? (
+              <span className="ml-1.5 font-mono font-normal text-[10px] text-slate-500">
+                {selected.gridSpec.cols}×{selected.gridSpec.rows}
+              </span>
+            ) : null}
           </p>
-          {selected && (
-            <p className="font-mono text-[11px] text-slate-500 tabular-nums">
-              {selected.gridSpec.cols}×{selected.gridSpec.rows} panes
-            </p>
-          )}
         </div>
+        {selected ? (
+          <button
+            type="button"
+            onClick={() => setBrowseOpen((open) => !open)}
+            className="inline-flex items-center gap-1 shrink-0 rounded-md border border-amber-600/30 px-2 py-1 text-[10px] uppercase tracking-wide text-amber-200/90 hover:bg-amber-500/10 touch-manipulation"
+            aria-expanded={showBrowse}
+            data-testid="measuring-pattern-browse-toggle"
+          >
+            {showBrowse ? 'Hide' : 'Change'}
+          </button>
+        ) : null}
         {selected && onClear && (
           <button
             type="button"
@@ -182,7 +204,10 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
 
       {/* Type filters */}
       <div
-        className="flex gap-1 overflow-x-auto overscroll-x-contain pb-0.5 [scrollbar-width:thin]"
+        className={cn(
+          'flex gap-1 overflow-x-auto overscroll-x-contain pb-0.5 [scrollbar-width:thin]',
+          !showBrowse && 'hidden',
+        )}
         role="tablist"
         aria-label="Pattern type"
       >
@@ -209,16 +234,18 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
         })}
       </div>
 
-      {/* Pattern chips — swipe on phone, capped wrap scroll on desktop */}
+      {/* Pattern chips — swipe on phone; hidden when summary drop is collapsed */}
       <div
         className={cn(
           'flex gap-2 -mx-0.5 px-0.5 pb-1',
-          'overflow-x-auto overscroll-x-contain snap-x snap-mandatory',
+          'overflow-x-auto overscroll-x-contain snap-x snap-mandatory touch-pan-x',
           '[scrollbar-width:thin]',
           'md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-2 md:overflow-x-visible md:overflow-y-auto md:max-h-[min(36vh,280px)] md:snap-none md:pb-0',
+          !showBrowse && 'hidden',
         )}
         role="listbox"
         aria-label="Available patterns"
+        data-testid="measuring-pattern-browse"
       >
         {filteredPatterns.map((pattern) => {
           const isSelected = selectedPatternId === pattern.id;

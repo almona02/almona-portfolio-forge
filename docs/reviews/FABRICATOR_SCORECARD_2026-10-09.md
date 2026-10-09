@@ -10,12 +10,12 @@ Staging plan (awaiting auth): [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](
 
 | Artifact | Status |
 |---|---|
-| `origin/main` / Production | `f9954be9` (merge #69) |
-| PR #70 measuring | tip `f9ce74fb` — **CI green** |
-| PR #71 optimization evidence | tip `a639284c` — **CI green** |
-| PR #72 hardener applicability | tip `d2b637d4` — **CI green** |
-| PR #73 measured pooled E2E | tip `bd8ea3b8` — **CI green** (uniform + diverse metrics) |
-| PR #74 Profile Studio contract | tip `f32c3174` — **CI green** |
+| `origin/main` (pre-#73) | `8c7cf43a` — merged #74 → #71 → #72 → #70 |
+| PR #74 Profile Studio | **merged** `4786a26e` |
+| PR #71 optimization evidence | **merged** `a4dd770b` |
+| PR #72 hardener applicability | **merged** `71d9e059` |
+| PR #70 measuring | **merged** `8c7cf43a` |
+| PR #73 measured pooled E2E | landing (this PR) |
 | PR #64 empty-DB replay | open draft (parallel) |
 
 Merge + staging readiness: [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../plans/FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md) — **awaiting owner merge/staging auth**.

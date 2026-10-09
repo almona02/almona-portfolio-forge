@@ -2,12 +2,26 @@ import {
   getDefaultGlazing,
   getDefaultProfileColor
 } from '@/data/egyptian-defaults';
-import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
+import {
+  EGYPTIAN_PATTERNS,
+  patternGridSpecToWindowGrid,
+  type EgyptianPattern,
+} from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useEgyptianPredictiveGrid } from '@/hooks/fabricator/useEgyptianPredictiveGrid';
 import { useSystemRoleOptions } from '@/hooks/fabricator/useSystemRoleOptions';
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 import { StoredSystemPack, addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import {
+  applyAppearanceConfirmations,
+  seedMeasuringAppearance,
+  type AppearanceSuggestionKind,
+} from '@/lib/fabricator/measuringAppearance';
+import {
+  assessPatternPackFit,
+  getLayoutTemplatesForSystem,
+  type PatternPackFit,
+} from '@/lib/fabricator/patternPackCompatibility';
 import { ValidationError, getConstraintsForSystemPack, validateMeasurements } from '@/lib/fabricatorValidation';
 import { trackError } from '@/lib/performance-monitoring';
 import { cn } from '@/lib/utils';
@@ -37,10 +51,45 @@ import {
   ANIMATION_CONSTANTS,
   BLUEPRINT_VIEW,
   DEFAULT_GLAZING_SPECS,
-  DEFAULT_GRID,
   DEFAULT_MEASUREMENTS,
+  DEFAULT_MEASURING_PATTERN_ID,
+  DEFAULT_MEASURING_SYSTEM_PACK_ID,
 } from './measuringConstants';
 import { shouldPersistMeasuringGrid } from './shouldPersistMeasuringGrid';
+
+function resolveDefaultMeasuringPackId(
+  explicitPackId: string | undefined,
+  region?: string,
+): string {
+  if (explicitPackId) return explicitPackId;
+  const packsForRegion =
+    region && region !== 'global'
+      ? SYSTEM_PACKS.filter(
+          (p) => p.meta.regions.includes(region) || p.meta.regions.includes('global'),
+        )
+      : SYSTEM_PACKS;
+  if (packsForRegion.some((p) => p.meta.id === DEFAULT_MEASURING_SYSTEM_PACK_ID)) {
+    return DEFAULT_MEASURING_SYSTEM_PACK_ID;
+  }
+  if (SYSTEM_PACKS.some((p) => p.meta.id === DEFAULT_MEASURING_SYSTEM_PACK_ID)) {
+    return DEFAULT_MEASURING_SYSTEM_PACK_ID;
+  }
+  return packsForRegion[0]?.meta.id || SYSTEM_PACKS[0]?.meta.id || DEFAULT_MEASURING_SYSTEM_PACK_ID;
+}
+
+function defaultSliding2sGrid(): WindowGrid {
+  const pattern = EGYPTIAN_PATTERNS.find((p) => p.id === DEFAULT_MEASURING_PATTERN_ID);
+  if (pattern?.gridSpec) return patternGridSpecToWindowGrid(pattern.gridSpec);
+  return {
+    rows: 1,
+    cols: 2,
+    cells: [
+      { id: '0-0', row: 0, col: 0, type: 'sliding', openingDirection: 'right' },
+      { id: '0-1', row: 0, col: 1, type: 'sliding', openingDirection: 'left' },
+    ],
+    colWidths: [1, 1],
+  };
+}
 
 // Workshop dark-amber blueprint theme (matches Fabricator shell)
 const DEFAULT_THEME = {
@@ -133,6 +182,21 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     };
   }, [region]);
 
+  const appearanceSeed = useMemo(
+    () =>
+      seedMeasuringAppearance({
+        color: initialData?.color,
+        glazingType: initialData?.glazingType,
+        glassColor: initialData?.glassColor,
+        defaultColor: egyptianDefaults.color,
+        defaultGlazingType: egyptianDefaults.glazingType,
+        defaultGlassColor: egyptianDefaults.glassColor,
+      }),
+    // Seed once from initial pose / defaults — intentional mount-time snapshot
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   const [measurements, setMeasurements] = useState({
     // Default professional stub dimensions – can be refined per system later.
     width: String(initialData?.width ?? DEFAULT_MEASUREMENTS.DEFAULT_WIDTH_MM),
@@ -140,13 +204,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     measurementMode: initialData?.measurementMode ?? 'hole', // 'hole' (rough opening) or 'manufacturing'
     wallDeduction: String(initialData?.wallDeduction ?? DEFAULT_MEASUREMENTS.DEFAULT_WALL_DEDUCTION_MM), // mm deduction for wall tolerance
     windowType: !initialData?.windowType || initialData.windowType === 'window' ? 'sliding_window_2sash' : initialData.windowType, // Default to 2-sash sliding window (matches SelectItem value)
-    color: (() => {
-      const raw = (initialData?.color || egyptianDefaults.color || '').trim();
-      const known = ['Silver', 'White', 'Black', 'Bronze', 'Anthracite Grey'];
-      return known.find((c) => c.toLowerCase() === raw.toLowerCase()) || raw || egyptianDefaults.color;
-    })(),
-    glazingType: initialData?.glazingType || egyptianDefaults.glazingType || 'double', // Ensure glazingType has a default value
-    glassColor: initialData?.glassColor || egyptianDefaults.glassColor || 'clear', // Default to 'clear' (first option) - selected by default
+    // Preserve unknown color/glazing; suggestions require Confirm-step acknowledgment
+    color: appearanceSeed.color,
+    glazingType: appearanceSeed.glazingType,
+    glassColor: appearanceSeed.glassColor,
     flyScreenType: initialData?.flyScreenType || 'none', // Default to 'none' to avoid empty string in Select
     flatNumber: initialData?.flatNumber || '', // Text input - OK
     buildingBlock: initialData?.buildingBlock || '', // Text input - OK
@@ -156,6 +217,27 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     roomOrZone: initialData?.roomOrZone || '', // Text input - OK
     windowIndex: initialData?.windowIndex || '', // Text input - OK
     remarks: initialData?.remarks || '', // Text input - OK
+  });
+  const [appearanceSuggestions] = useState(appearanceSeed.suggestions);
+  const [confirmedAppearanceKinds, setConfirmedAppearanceKinds] = useState<Set<AppearanceSuggestionKind>>(
+    () => new Set(),
+  );
+  const [pendingPatternFit, setPendingPatternFit] = useState<PatternPackFit | null>(() => {
+    if (initialData?.presetId && initialData.presetId !== DEFAULT_MEASURING_PATTERN_ID) {
+      return null;
+    }
+    const packId = resolveDefaultMeasuringPackId(systemPackId, region);
+    return assessPatternPackFit({
+      patternId: initialData?.presetId || DEFAULT_MEASURING_PATTERN_ID,
+      systemPackId: packId,
+      widthMm: Number(initialData?.width ?? DEFAULT_MEASUREMENTS.DEFAULT_WIDTH_MM) || 0,
+      heightMm: Number(initialData?.height ?? DEFAULT_MEASUREMENTS.DEFAULT_HEIGHT_MM) || 0,
+    });
+  });
+  /** Workshop default sliding-2s on PS is pre-accepted; other donor templates still require Confirm. */
+  const [patternTemplateConfirmed, setPatternTemplateConfirmed] = useState(() => {
+    const preset = initialData?.presetId || DEFAULT_MEASURING_PATTERN_ID;
+    return !initialData?.presetId || preset === DEFAULT_MEASURING_PATTERN_ID;
   });
 
   // Grid State for Phase 4 — empty `{}` from savePose must not count as authoritative
@@ -174,14 +256,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           colWidths: seededGrid.colWidths,
           rowHeights: seededGrid.rowHeights,
         }
-      : {
-          rows: DEFAULT_GRID.DEFAULT_ROWS,
-          cols: DEFAULT_GRID.DEFAULT_COLS,
-          cells: [{ id: DEFAULT_GRID.DEFAULT_CELL_ID, row: 0, col: 0, type: 'fixed' as const }],
-        }
+      : defaultSliding2sGrid()
   ));
 
-  const [isGridLocked, setIsGridLocked] = useState(hasAuthoritativeGrid);
+  // Lock saved grids and the default sliding-2s seed so predictive layout does not overwrite them.
+  const [isGridLocked, setIsGridLocked] = useState(true);
 
   // Predictive Grid Logic (Phase 3)
   const { suggestedGrid, predictionReason } = useEgyptianPredictiveGrid({
@@ -191,7 +270,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     isGridLocked
   });
 
-  const [isGridMode, setIsGridMode] = useState(hasAuthoritativeGrid || Boolean(suggestedGrid));
+  const [isGridMode, setIsGridMode] = useState(true);
 
   // Apply suggested grid if available — keep grid mode on so Design receives the layout
   useEffect(() => {
@@ -205,23 +284,21 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
   }, [suggestedGrid, isGridLocked]);
 
-  const [isSystemPackCollapsed, setIsSystemPackCollapsed] = useState(false);
+  /** Start collapsed — PS (or prop) is preselected so the wizard stays the phone scroll focus. */
+  const [isSystemPackCollapsed, setIsSystemPackCollapsed] = useState(true);
   /** When true, user opened the panel — stay open until they hide it (no auto-collapse). */
   const [systemPackPinnedOpen, setSystemPackPinnedOpen] = useState(false);
-  /** Opening layout panel — open on desktop, compact closed bar on small screens. */
-  const [layoutPanelOpen, setLayoutPanelOpen] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches,
-  );
+  /**
+   * Layout / preview start collapsed on all viewports. Large screens reveal panel
+   * bodies with `max-lg:hidden` CSS so DevTools device mode cannot force them open
+   * via matchMedia on the outer browser window.
+   */
+  const [layoutPanelOpen, setLayoutPanelOpen] = useState(false);
+  const [previewPanelOpen, setPreviewPanelOpen] = useState(false);
 
-  const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(() => {
-    if (systemPackId) return systemPackId;
-    // Default to first configured system pack filtered by region (if provided)
-    const packsForRegion =
-      region && region !== 'global'
-        ? SYSTEM_PACKS.filter((p) => p.meta.regions.includes(region) || p.meta.regions.includes('global'))
-        : SYSTEM_PACKS;
-    return packsForRegion[0]?.meta.id || SYSTEM_PACKS[0]?.meta.id || 'rock60';
-  });
+  const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(() =>
+    resolveDefaultMeasuringPackId(systemPackId, region),
+  );
 
   const [systemProfileSelections, setSystemProfileSelections] = useState<SystemProfileSelections>(
     {},
@@ -232,9 +309,13 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [_isScanning, _setIsScanning] = useState(false);
   const [_validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  /** Skip system step when pack already chosen (typical after project create). */
-  const [currentStep, setCurrentStep] = useState(() => (systemPackId ? 1 : 0));
-  const [selectedPatternId, setSelectedPatternId] = useState<string>(initialData?.presetId ?? ''); // Empty string is OK here - not used in Select value
+  /** Skip system step when pack already chosen (typical after project create) or PS default. */
+  const [currentStep, setCurrentStep] = useState(() =>
+    systemPackId || resolveDefaultMeasuringPackId(undefined, region) ? 1 : 0,
+  );
+  const [selectedPatternId, setSelectedPatternId] = useState<string>(
+    () => initialData?.presetId || DEFAULT_MEASURING_PATTERN_ID,
+  );
   const [blueprintZoom, setBlueprintZoom] = useState<number>(BLUEPRINT_VIEW.DEFAULT_ZOOM); // Zoom level (1 = 100%, 1.2 = 120%, etc.)
   const [blueprintFullscreen, setBlueprintFullscreen] = useState<boolean>(false);
 
@@ -407,11 +488,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   };
 
   const nextStep = () => {
-    if (currentStep < STEPS.length - 1) setCurrentStep(c => c + 1);
+    setCurrentStep((c) => (c < STEPS.length - 1 ? c + 1 : c));
   };
 
   const prevStep = () => {
-    if (currentStep > 0) setCurrentStep(c => c - 1);
+    setCurrentStep((c) => (c > 0 ? c - 1 : c));
   };
 
   // Animation variants for smooth slide transitions
@@ -459,8 +540,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     [availableSystemPacks, selectedSystemPackId],
   );
 
+  // Layout templates (certified ∪ similar-pack donors). Certified status checked via assessPatternPackFit.
   const availablePatterns = useMemo(() => {
-    return getPatternsForSystem(selectedSystemPackId);
+    return getLayoutTemplatesForSystem(selectedSystemPackId);
   }, [selectedSystemPackId]);
 
   const systemConstraints = useMemo(
@@ -532,9 +614,54 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       return;
     }
 
+    const resolvedAppearance = applyAppearanceConfirmations(
+      {
+        color: measurements.color,
+        glazingType: measurements.glazingType,
+        glassColor: measurements.glassColor,
+      },
+      appearanceSuggestions,
+      confirmedAppearanceKinds,
+    );
+    if (resolvedAppearance.blocked.length > 0) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        color: resolvedAppearance.blocked.find((b) => b.kind === 'color')?.reason || prev.color,
+        glazingType:
+          resolvedAppearance.blocked.find((b) => b.kind === 'glazingType')?.reason || prev.glazingType,
+      }));
+      setCurrentStep(4);
+      return;
+    }
+
+    if (
+      pendingPatternFit?.requiresConfirmation &&
+      pendingPatternFit.canApplyAsTemplate &&
+      !patternTemplateConfirmed
+    ) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        pattern: pendingPatternFit.reasons[0] || 'Confirm layout template before save',
+      }));
+      setCurrentStep(4);
+      return;
+    }
+
+    if (pendingPatternFit && !pendingPatternFit.canApplyAsTemplate) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        pattern: pendingPatternFit.reasons[0] || 'Pattern incompatible with selected pack',
+      }));
+      setCurrentStep(1);
+      return;
+    }
+
     const validation = validateMeasurements(
       {
         ...measurements,
+        color: resolvedAppearance.color,
+        glazingType: resolvedAppearance.glazingType,
+        glassColor: resolvedAppearance.glassColor,
         systemPackId: selectedSystemPackId,
         manufacturingWidth,
         manufacturingHeight
@@ -587,6 +714,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
     const payload: MeasurementData = {
       ...measurements,
+      color: resolvedAppearance.color,
+      glazingType: resolvedAppearance.glazingType,
+      glassColor: resolvedAppearance.glassColor,
       systemPackId: selectedSystemPackId,
       systemProfileSelections,
       // Rule 18: Include wall tolerance data for InterferenceEngine
@@ -624,8 +754,17 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   // const startARScan = () => { ... };
 
+  const applySystemPackAndContinue = () => {
+    setSystemPackPinnedOpen(false);
+    setIsSystemPackCollapsed(true);
+    if (currentStep === 0) setCurrentStep(1);
+  };
+
   return (
-    <div className="flex flex-col h-full gap-2 sm:gap-4 overflow-y-auto p-1">
+    <div
+      className="flex flex-col h-full min-h-0 gap-1 sm:gap-3 overflow-hidden p-1 pb-[max(0.25rem,env(safe-area-inset-bottom))]"
+      data-testid="measuring-mobile-shell"
+    >
       {/* Label Modal */}
       {showLabel && previewWindowUnit && (
         <ProductionLabel
@@ -634,11 +773,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         />
       )}
 
-      {/* System pack — capped height + internal scroll so measuring stays usable on all screens */}
+      {/* System pack — narrow drop when collapsed; focused scroll sheet when open on phone */}
       <div
         className={cn(
-          'w-full rounded-lg border border-amber-600/25 bg-slate-950/80 overflow-hidden flex flex-col shrink-0',
-          !isSystemPackCollapsed && 'max-h-[min(70vh,520px)]',
+          'w-full rounded-md border border-amber-600/25 bg-slate-950/80 overflow-hidden flex flex-col shrink-0',
+          !isSystemPackCollapsed &&
+            'max-h-[min(85dvh,720px)] flex-1 lg:flex-none lg:max-h-[min(70vh,520px)]',
         )}
       >
         {!isSystemPackCollapsed && (
@@ -670,6 +810,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         )}
 
         {!isSystemPackCollapsed ? (
+          <>
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 space-y-3">
             <div>
               <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">
@@ -757,24 +898,43 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               </p>
             )}
           </div>
+          <div className="shrink-0 border-t border-amber-600/25 bg-slate-950/95 p-2.5 safe-area-pb">
+            <Button
+              type="button"
+              data-testid="measuring-apply-system-pack"
+              onClick={applySystemPackAndContinue}
+              disabled={!selectedSystemPackId}
+              className="btn-primary-gradient w-full font-semibold h-11 touch-manipulation"
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              {t('smart_measuring.actions.apply_system', {
+                defaultValue: 'Use {{name}}',
+                name: activeSystemPack?.meta.name || 'system',
+              })}
+            </Button>
+          </div>
+          </>
         ) : (
           <button
             type="button"
             onClick={() => {
               setSystemPackPinnedOpen(true);
               setIsSystemPackCollapsed(false);
+              setLayoutPanelOpen(false);
+              setPreviewPanelOpen(false);
             }}
-            className="w-full px-3 py-2.5 flex items-center justify-between text-left hover:bg-amber-500/5"
+            className="w-full px-2.5 py-1.5 flex items-center justify-between text-left hover:bg-amber-500/5 min-h-9 touch-manipulation"
             aria-label="Show system picker"
+            data-testid="measuring-chrome-system"
           >
-            <div className="flex items-center gap-2 min-w-0">
-              <Factory className="h-4 w-4 text-amber-500 shrink-0" />
-              <span className="text-sm text-amber-200 truncate">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Factory className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+              <span className="text-xs text-amber-200 truncate">
                 {activeSystemPack?.meta.name || 'No system selected'}
               </span>
               {systemPackRoleOptions.length > 0 && (
                 <span
-                  className={`text-xs shrink-0 ${
+                  className={`text-[10px] shrink-0 ${
                     profilesComplete ? 'text-emerald-400/80' : 'text-amber-400'
                   }`}
                 >
@@ -782,16 +942,21 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 </span>
               )}
             </div>
-            <span className="flex items-center gap-1 text-xs text-amber-400 shrink-0 ml-2">
-              Change
-              <ChevronDown className="h-3.5 w-3.5" />
+            <span className="flex items-center gap-0.5 text-[10px] text-amber-400 shrink-0 ml-2 uppercase tracking-wide">
+              Pack
+              <ChevronDown className="h-3 w-3" />
             </span>
           </button>
         )}
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(280px,auto)_minmax(0,1fr)]">
-      {/* Opening layout — daily workshop preview + edit (alongside guided form) */}
+      <div
+        className={cn(
+          'flex min-h-0 flex-1 flex-col gap-1 sm:gap-3 overflow-hidden lg:grid lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] lg:grid-rows-[minmax(280px,auto)_minmax(0,1fr)]',
+          !isSystemPackCollapsed && 'hidden lg:grid',
+        )}
+      >
+      {/* Opening layout — narrow drop on phone; expands into capped scroll sheet */}
       {selectedSystemPackId && (() => {
         const layoutW = Math.max(1, Number(measurements.width) || 1000);
         const layoutH = Math.max(1, Number(measurements.height) || 1000);
@@ -799,28 +964,45 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         const layoutRows = Number(grid?.rows) > 0 ? Number(grid.rows) : 1;
         const cellCount = Array.isArray(grid?.cells) ? grid.cells.length : 0;
         return (
-        <div className={`order-2 w-full card-glass-dark rounded-lg overflow-hidden flex flex-col lg:col-start-2 lg:row-start-1 ${layoutPanelOpen ? 'min-h-[280px] lg:min-h-[360px]' : ''}`}>
-          <div className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 border-b-2 border-amber-600/30 flex-shrink-0">
+        <div
+          className={cn(
+            'order-1 w-full shrink-0 card-glass-dark rounded-md overflow-hidden flex flex-col lg:order-none lg:col-start-2 lg:row-start-1',
+            layoutPanelOpen &&
+              'max-h-[min(42dvh,320px)] sm:max-h-none lg:min-h-[360px] lg:max-h-none',
+          )}
+        >
+          <div className="flex items-center gap-1.5 px-2 py-1 sm:px-4 sm:py-2.5 border-b border-amber-600/30 flex-shrink-0">
             <button
               type="button"
-              className="flex min-w-0 flex-1 items-center gap-2 text-left rounded-md hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40"
-              onClick={() => setLayoutPanelOpen((open) => !open)}
+              className="flex min-w-0 flex-1 items-center gap-1.5 text-left rounded-md hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40 min-h-9 touch-manipulation"
+              onClick={() => {
+                setLayoutPanelOpen((open) => {
+                  const next = !open;
+                  if (next) setPreviewPanelOpen(false);
+                  return next;
+                });
+              }}
               aria-expanded={layoutPanelOpen}
               aria-label={layoutPanelOpen ? 'Hide opening layout' : 'Show opening layout'}
+              data-testid="measuring-chrome-layout"
             >
-              <Grid3X3 className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 shrink-0" />
+              <Grid3X3 className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-amber-500 shrink-0" />
               <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-semibold text-amber-200 truncate">
-                  Opening layout
+                <h3 className="text-xs sm:text-sm font-semibold text-amber-200 truncate">
+                  Layout
+                  <span className="ml-1.5 font-mono font-normal text-[10px] text-slate-500">
+                    {layoutCols}×{layoutRows}
+                    {selectedPatternId ? ` · ${selectedPatternId}` : ''}
+                  </span>
                 </h3>
-                <p className="truncate font-mono text-[11px] text-slate-500">
+                <p className="hidden sm:block truncate font-mono text-[11px] text-slate-500">
                   {Math.round(layoutW)} × {Math.round(layoutH)} mm · {layoutCols}×{layoutRows}
                   {cellCount > 0 ? ` · ${cellCount} pane${cellCount === 1 ? '' : 's'}` : ''}
                   {isGridLocked ? ' · locked' : ' · auto'}
                 </p>
               </div>
               <ChevronDown
-                className={`h-4 w-4 shrink-0 text-amber-500/80 transition-transform lg:hidden ${layoutPanelOpen ? 'rotate-180' : ''}`}
+                className={`h-3.5 w-3.5 shrink-0 text-amber-500/80 transition-transform lg:hidden ${layoutPanelOpen ? 'rotate-180' : ''}`}
                 aria-hidden
               />
             </button>
@@ -854,8 +1036,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             </Button>
           </div>
 
-          {layoutPanelOpen && (
-            <div className="relative flex-1 min-h-0 flex flex-col">
+          <div
+            className={cn(
+              'relative flex-1 min-h-0 flex-col overflow-hidden',
+              layoutPanelOpen ? 'flex' : 'hidden lg:flex',
+            )}
+          >
               {!isGridLocked && predictionReason && (
                 <div className="px-3 py-1.5 border-b border-amber-600/20 bg-amber-950/40 text-[11px] text-amber-100/90 flex items-start gap-2">
                   <Sparkles className="h-3 w-3 text-amber-400 shrink-0 mt-0.5" />
@@ -869,7 +1055,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   </button>
                 </div>
               )}
-              <div className="flex-1 overflow-auto p-2 sm:p-3 min-h-[220px]">
+              <div className="flex-1 overflow-y-auto overscroll-contain touch-pan-y p-2 sm:p-3 min-h-0 sm:min-h-[220px]">
                 <SmartDrawCanvas
                   width={layoutW}
                   height={layoutH}
@@ -889,30 +1075,34 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   systemPackId={selectedSystemPackId}
                 />
               </div>
-              <p className="px-3 py-1.5 text-[10px] text-slate-500 border-t border-amber-600/15 shrink-0">
+              <p className="hidden sm:block px-3 py-1.5 text-[10px] text-slate-500 border-t border-amber-600/15 shrink-0">
                 Tap a pane to set fixed / sash / sliding. Use Locked so size edits do not rewrite your layout.
               </p>
-            </div>
-          )}
+          </div>
         </div>
         );
       })()}
 
-      {/* Left Panel: Guided measuring form */}
-      <div className="order-1 w-full flex flex-col card-glass-dark rounded-lg overflow-hidden min-h-0 bg-slate-950/80 lg:col-start-1 lg:row-start-1 lg:row-span-2">
-        <div className="flex-shrink-0 border-b border-amber-600/25 px-2 pt-2 pb-2 sm:px-3">
-          <div className="flex items-center justify-between gap-2 mb-2 px-1">
-            <h2 className="text-sm font-semibold text-amber-200 truncate">
+      {/* Focused wizard — sole primary scroll region on phone (below narrow drops) */}
+      <div
+        className={cn(
+          'order-3 w-full flex flex-col card-glass-dark rounded-md overflow-hidden min-h-0 flex-1 bg-slate-950/80 lg:order-none lg:min-h-0 lg:col-start-1 lg:row-start-1 lg:row-span-2',
+        )}
+        data-testid="measuring-wizard-focus"
+      >
+        <div className="flex-shrink-0 border-b border-amber-600/25 px-2 pt-1.5 pb-1.5 sm:px-3 sm:pt-2 sm:pb-2">
+          <div className="flex items-center justify-between gap-2 mb-1 px-0.5">
+            <h2 className="text-xs sm:text-sm font-semibold text-amber-200 truncate">
               {STEPS[currentStep].title}
               {poseLabel ? (
                 <span className="ml-2 font-normal text-slate-500">{poseLabel}</span>
               ) : null}
             </h2>
-            <span className="shrink-0 font-mono text-[11px] text-amber-300/90 tabular-nums">
+            <span className="shrink-0 font-mono text-[10px] sm:text-[11px] text-amber-300/90 tabular-nums">
               {Math.round(Number(measurements.width) || 0)} × {Math.round(Number(measurements.height) || 0)} mm
             </span>
           </div>
-          <nav aria-label="Measuring steps" className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-thin">
+          <nav aria-label="Measuring steps" className="flex gap-0.5 overflow-x-auto pb-0.5 scrollbar-thin touch-pan-x">
             {STEPS.map((step, idx) => {
               const StepIcon = step.icon;
               const active = idx === currentStep;
@@ -922,7 +1112,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   key={step.id}
                   type="button"
                   onClick={() => setCurrentStep(idx)}
-                  className={`flex items-center gap-1 shrink-0 rounded-md px-2 py-1.5 text-[11px] font-medium transition-colors ${
+                  className={`flex items-center gap-0.5 shrink-0 rounded px-1.5 py-1 text-[10px] sm:text-[11px] font-medium transition-colors touch-manipulation min-h-8 ${
                     active
                       ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50'
                       : done
@@ -943,8 +1133,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           </nav>
         </div>
 
-        {/* Form Content Container */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 relative min-h-0">
+        {/* Form Content Container — phone scroll focus */}
+        <div
+          className="flex-1 overflow-y-auto overscroll-y-contain touch-pan-y p-2.5 sm:p-4 relative min-h-0"
+          data-testid="measuring-wizard-scroll"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           <AnimatePresence mode='wait' custom={currentStep}>
             <motion.div
               key={currentStep}
@@ -953,7 +1147,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               animate="center"
               exit="exit"
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="space-y-6"
+              className="space-y-4 sm:space-y-6 pb-2"
             >
               {/* STEP 1: System checklist (pack selector lives in top bar) */}
               {currentStep === 0 && (
@@ -1024,20 +1218,106 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   </div>
 
                   {availablePatterns.length > 0 && (
-                    <div className="rounded-lg border border-amber-600/25 bg-slate-950/50 p-2.5 sm:p-3">
+                    <div className="rounded-lg border border-amber-600/25 bg-slate-950/50 p-2.5 sm:p-3 space-y-2">
                       <EgyptianPatternSelector
                         selectedPatternId={selectedPatternId || undefined}
+                        collapseBrowseWhenSelected
                         onSelect={(patternId, nextGrid) => {
+                          const fit = assessPatternPackFit({
+                            patternId,
+                            systemPackId: selectedSystemPackId,
+                            widthMm: Number(measurements.width) || 0,
+                            heightMm: Number(measurements.height) || 0,
+                          });
+                          setPendingPatternFit(fit);
+                          setPatternTemplateConfirmed(fit.kind === 'certified' && fit.reasons.length === 0);
+                          if (!fit.canApplyAsTemplate) {
+                            setFieldErrors((prev) => ({
+                              ...prev,
+                              pattern: fit.reasons[0] || 'Pattern incompatible with selected pack',
+                            }));
+                            return;
+                          }
                           setSelectedPatternId(patternId);
                           setGrid(nextGrid);
                           setIsGridMode(true);
                           setIsGridLocked(true);
+                          setFieldErrors((prev) => {
+                            const next = { ...prev };
+                            delete next.pattern;
+                            return next;
+                          });
                         }}
                         onClear={() => {
                           setSelectedPatternId('');
+                          setPendingPatternFit(null);
+                          setPatternTemplateConfirmed(false);
                         }}
                         currentSystemId={selectedSystemPackId}
                       />
+                      {pendingPatternFit && !pendingPatternFit.canApplyAsTemplate ? (
+                        <p className="text-xs text-red-300" data-testid="measuring-pattern-blocked">
+                          {pendingPatternFit.reasons[0]}
+                        </p>
+                      ) : null}
+                      {pendingPatternFit?.kind === 'layout_template' && pendingPatternFit.canApplyAsTemplate ? (
+                        <div
+                          className="rounded-md border border-amber-500/40 bg-amber-950/35 p-2.5 space-y-2"
+                          data-testid="measuring-pattern-template-warning"
+                        >
+                          <p className="text-xs text-amber-100/95 leading-snug">
+                            Layout template from a similar pack — not certified for this system.
+                            Geometry only; pack profiles, hardware and dimensional limits still apply.
+                          </p>
+                          <label
+                            htmlFor="confirm-layout-template"
+                            className="flex items-start gap-2 cursor-pointer touch-manipulation"
+                          >
+                            <Checkbox
+                              id="confirm-layout-template"
+                              checked={patternTemplateConfirmed}
+                              onCheckedChange={(v) => setPatternTemplateConfirmed(v === true)}
+                              className="mt-0.5 h-5 w-5 shrink-0"
+                            />
+                            <span className="text-xs text-amber-50/90 leading-snug">
+                              Apply this layout template to the selected pack
+                            </span>
+                          </label>
+                        </div>
+                      ) : null}
+                      {selectedPatternId ? (
+                        <div
+                          className="flex flex-col gap-2 rounded-md border border-emerald-500/35 bg-emerald-950/40 p-2.5 sm:flex-row sm:items-center sm:justify-between"
+                          data-testid="measuring-pattern-applied"
+                        >
+                          <p className="text-xs text-emerald-200/95 leading-snug">
+                            {pendingPatternFit?.kind === 'certified'
+                              ? 'Certified pattern and grid locked. Use Next below when size looks right.'
+                              : 'Pattern and grid locked. Confirm template above, then Next when size looks right.'}
+                          </p>
+                          <Button
+                            type="button"
+                            size="sm"
+                            data-testid="measuring-confirm-pattern"
+                            onClick={nextStep}
+                            disabled={
+                              Boolean(
+                                pendingPatternFit?.requiresConfirmation &&
+                                  pendingPatternFit.canApplyAsTemplate &&
+                                  !patternTemplateConfirmed,
+                              )
+                            }
+                            className="btn-primary-gradient h-10 shrink-0 touch-manipulation w-full sm:w-auto"
+                          >
+                            Continue with pattern
+                            <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-slate-500">
+                          Pick a pattern to set the grid, or leave empty and edit Opening layout.
+                        </p>
+                      )}
                     </div>
                   )}
 
@@ -1431,7 +1711,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       Check cut size
                     </h3>
                     <p className="text-xs text-slate-400">
-                      Confirm these millimetres match the site or shop drawing before saving.
+                      Confirm these millimetres match the site or shop drawing, then save to Design and BOM.
                     </p>
                     <div className="space-y-2 text-sm">
                       {(() => {
@@ -1463,14 +1743,70 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     </div>
                   </div>
 
-                  <label className="flex items-start gap-3 rounded-lg border border-amber-600/25 bg-slate-950/40 p-3 cursor-pointer">
+                  {appearanceSuggestions.length > 0 ? (
+                    <div
+                      className="rounded-lg border border-amber-500/35 bg-amber-950/30 p-3 space-y-2"
+                      data-testid="measuring-appearance-confirm"
+                    >
+                      <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-200">
+                        Confirm color / glazing mapping
+                      </h4>
+                      <p className="text-[11px] text-slate-400 leading-snug">
+                        Unknown or legacy values are preserved until you confirm a catalog mapping.
+                      </p>
+                      {appearanceSuggestions.map((suggestion) => {
+                        const id = `confirm-appearance-${suggestion.kind}`;
+                        const checked = confirmedAppearanceKinds.has(suggestion.kind);
+                        return (
+                          <label
+                            key={suggestion.kind}
+                            htmlFor={id}
+                            className="flex items-start gap-2 cursor-pointer touch-manipulation"
+                          >
+                            <Checkbox
+                              id={id}
+                              checked={checked}
+                              onCheckedChange={(v) => {
+                                setConfirmedAppearanceKinds((prev) => {
+                                  const next = new Set(prev);
+                                  if (v === true) next.add(suggestion.kind);
+                                  else next.delete(suggestion.kind);
+                                  return next;
+                                });
+                              }}
+                              className="mt-0.5 h-5 w-5 shrink-0"
+                            />
+                              <span className="text-xs text-amber-50/90 leading-snug">
+                                {suggestion.reason}
+                                <span className="block font-mono text-[10px] text-slate-400 mt-0.5">
+                                  {suggestion.raw} → {suggestion.suggested}
+                                </span>
+                              </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+
+                  {pendingPatternFit?.kind === 'layout_template' &&
+                  pendingPatternFit.canApplyAsTemplate &&
+                  !patternTemplateConfirmed ? (
+                    <p className="text-xs text-amber-200" data-testid="measuring-template-confirm-needed">
+                      Go back to Layout and confirm the similar-pack template before save.
+                    </p>
+                  ) : null}
+
+                  <label
+                    htmlFor="verify"
+                    className="flex items-start gap-3 rounded-lg border border-amber-600/25 bg-slate-950/40 p-3 cursor-pointer touch-manipulation"
+                  >
                     <Checkbox
                       id="verify"
                       checked={verificationConfirmed as boolean}
                       onCheckedChange={setVerificationConfirmed}
-                      className="mt-0.5"
+                      className="mt-0.5 h-5 w-5 shrink-0"
                     />
-                    <span className="text-sm text-amber-100/90 leading-snug">
+                    <span className="min-w-0 flex-1 text-sm text-amber-100/90 leading-snug">
                       I checked the cut size against the opening / drawing.
                     </span>
                   </label>
@@ -1480,31 +1816,53 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           </AnimatePresence>
         </div>
 
-        {/* Footer Navigation */}
-        <div className="p-2.5 sm:p-3 border-t border-amber-600/25 flex flex-col sm:flex-row justify-between gap-2 flex-shrink-0 bg-slate-950/90">
-          <Button variant="ghost" disabled={currentStep === 0} onClick={prevStep} className="btn-secondary-dark">
+        {/* Footer — sticky to wizard card; wizard buttons + confirmations stay reachable */}
+        <div
+          className="p-2 sm:p-3 border-t border-amber-600/25 flex flex-col sm:flex-row justify-between gap-1.5 sm:gap-2 flex-shrink-0 bg-slate-950/95 z-20"
+          data-testid="measuring-wizard-footer"
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={currentStep === 0}
+            onClick={(e) => {
+              e.preventDefault();
+              prevStep();
+            }}
+            className="btn-secondary-dark h-10 sm:h-11 touch-manipulation"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.previous', 'Back')}
           </Button>
 
           {currentStep === STEPS.length - 1 ? (
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              {/* Print Label Button - Enabled only after verification */}
+              {/* Print Label — compact on phone so Save stays primary */}
               {verificationConfirmed && (
                 <Button
                   variant="outline"
                   onClick={() => setShowLabel(true)}
-                  className="btn-secondary-dark"
+                  className="btn-secondary-dark h-11 touch-manipulation"
+                  aria-label={t('smart_measuring.actions.print_label', 'Print Label')}
                 >
-                  <QrCode className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.print_label', 'Print Label')}
+                  <QrCode className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t('smart_measuring.actions.print_label', 'Print Label')}</span>
                 </Button>
               )}
 
               <Button
                 data-testid="measuring-save-pose-design"
                 onClick={() => handleSubmit(false)}
-                disabled={!verificationConfirmed}
+                disabled={
+                  !verificationConfirmed ||
+                  appearanceSuggestions.some((s) => !confirmedAppearanceKinds.has(s.kind)) ||
+                  Boolean(
+                    pendingPatternFit?.requiresConfirmation &&
+                      pendingPatternFit.canApplyAsTemplate &&
+                      !patternTemplateConfirmed,
+                  )
+                }
                 className={`
-                  transition-all duration-300 w-full sm:w-auto
+                  transition-all duration-300 w-full sm:w-auto h-11 touch-manipulation
                   ${verificationConfirmed
                     ? 'btn-primary-gradient'
                     : 'bg-[#1a1a1a] text-amber-600/50 cursor-not-allowed border-2 border-amber-600/20'}
@@ -1515,9 +1873,17 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               {onSaveAndNextPose && (
                 <Button
                   onClick={() => handleSubmit(true)}
-                  disabled={!verificationConfirmed}
+                  disabled={
+                    !verificationConfirmed ||
+                    appearanceSuggestions.some((s) => !confirmedAppearanceKinds.has(s.kind)) ||
+                    Boolean(
+                      pendingPatternFit?.requiresConfirmation &&
+                        pendingPatternFit.canApplyAsTemplate &&
+                        !patternTemplateConfirmed,
+                    )
+                  }
                   variant="secondary"
-                  className="bg-cyan-500 text-slate-900 hover:bg-cyan-400 font-semibold w-full sm:w-auto"
+                  className="bg-cyan-500 text-slate-900 hover:bg-cyan-400 font-semibold w-full sm:w-auto h-11 touch-manipulation"
                 >
                   {t('engineering_bay.save_and_next', 'Save & Next Pose')}
                 </Button>
@@ -1525,9 +1891,13 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             </div>
           ) : (
             <Button
+              type="button"
               data-testid="measuring-wizard-next"
-              onClick={nextStep}
-              className="btn-primary-gradient font-bold w-full sm:w-auto"
+              onClick={(e) => {
+                e.preventDefault();
+                nextStep();
+              }}
+              className="btn-primary-gradient font-bold w-full sm:w-auto h-11 touch-manipulation"
             >
               {t('smart_measuring.actions.next', 'Next')} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -1535,14 +1905,56 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         </div>
       </div>
 
-      {/* Right Panel: Measurement blueprint (dark amber, matches studio) */}
-      <div className="order-3 w-full rounded-lg border border-amber-600/30 bg-slate-950 relative overflow-hidden min-h-[280px] sm:min-h-[360px] lg:min-h-[420px] min-w-0 flex flex-col lg:col-start-2 lg:row-start-2">
+      {/* Cut preview — narrow drop on phone (above wizard) */}
+      <div
+        className={cn(
+          'order-2 w-full shrink-0 rounded-md border border-amber-600/30 bg-slate-950 relative overflow-hidden min-w-0 flex flex-col lg:order-none lg:col-start-2 lg:row-start-2',
+          previewPanelOpen
+            ? 'max-h-[min(36dvh,280px)] sm:max-h-none sm:min-h-[320px] lg:min-h-[420px] lg:max-h-none'
+            : 'min-h-0',
+          !previewPanelOpen && 'lg:min-h-0',
+        )}
+      >
+        <div className="flex items-center gap-1.5 px-2 py-1 border-b border-amber-600/25 shrink-0 lg:hidden">
+          <button
+            type="button"
+            className="flex min-w-0 flex-1 items-center gap-1.5 text-left rounded-md hover:bg-amber-500/5 min-h-9 touch-manipulation"
+            onClick={() => {
+              setPreviewPanelOpen((open) => {
+                const next = !open;
+                if (next) setLayoutPanelOpen(false);
+                return next;
+              });
+            }}
+            aria-expanded={previewPanelOpen}
+            aria-label={previewPanelOpen ? 'Hide cut preview' : 'Show cut preview'}
+            data-testid="measuring-chrome-preview"
+          >
+            <Ruler className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-amber-200 truncate">
+                Preview
+                <span className="ml-1.5 font-mono font-normal text-[10px] text-slate-500">
+                  {Math.round(Number(measurements.width) || 0)}×{Math.round(Number(measurements.height) || 0)}
+                </span>
+              </p>
+            </div>
+            <ChevronDown
+              className={`h-3.5 w-3.5 shrink-0 text-amber-500/80 transition-transform ${previewPanelOpen ? 'rotate-180' : ''}`}
+              aria-hidden
+            />
+          </button>
+        </div>
         {/* Header with Zoom Controls */}
-        <div className="absolute top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-          <Badge className="bg-amber-500/15 text-amber-200 border-amber-500/40 font-medium text-xs px-2 sm:px-2.5 py-1 w-fit">
+        <div
+          className={cn(
+            'absolute top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 z-10 flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2',
+            previewPanelOpen ? 'flex' : 'hidden lg:flex',
+          )}
+        >
+          <Badge className="bg-amber-500/15 text-amber-200 border-amber-500/40 font-medium text-xs px-2 sm:px-2.5 py-1 w-fit hidden lg:inline-flex">
             <Ruler className="h-3 w-3 mr-1 sm:mr-1.5" />
-            <span className="hidden sm:inline">Cut preview</span>
-            <span className="sm:hidden">Preview</span>
+            <span>Cut preview</span>
           </Badge>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
             {activeSystemPack && (
@@ -1642,6 +2054,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           </div>
         </div>
 
+        <div
+          className={cn(
+            'relative flex-1 min-h-0 w-full',
+            previewPanelOpen ? 'min-h-[220px] sm:min-h-[280px]' : 'hidden lg:block lg:min-h-[280px]',
+          )}
+        >
         {/* SR-Only Summary for Accessibility */}
         <div className="sr-only" aria-live="polite">
           {previewWindowUnit ? (
@@ -2795,6 +3213,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             </motion.div>
           </div>
         )}
+        </div>
       </div>
       </div>
 

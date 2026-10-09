@@ -36,7 +36,7 @@ const sampleResult = {
     glazingCost: 1,
     totalCost: 4,
   },
-} as never;
+};
 
 describe('recordOptimizationEvidence (#67)', () => {
   beforeEach(() => {
@@ -51,25 +51,15 @@ describe('recordOptimizationEvidence (#67)', () => {
 
   it('rejects empty cutting plans without RPC', async () => {
     const emptyCuts = {
-      materialUsage: 0.8,
-      wastePercentage: 12,
-      estimatedProductionTime: 1,
-      nestingEfficiency: 0.88,
+      ...sampleResult,
       cuttingPlan: [],
-      costBreakdown: {
-        materialCost: 1,
-        laborCost: 1,
-        hardwareCost: 1,
-        glazingCost: 1,
-        totalCost: 4,
-      },
-    } as never;
+    };
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
       expectedRevision: 1,
       designRevision: 1,
       bom: null,
-      optimizationResult: emptyCuts,
+      optimizationResult: emptyCuts as never,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
@@ -85,7 +75,7 @@ describe('recordOptimizationEvidence (#67)', () => {
       bom: {
         qualification: { ruleVersion: 'rules-fixture' },
       } as never,
-      optimizationResult: sampleResult,
+      optimizationResult: sampleResult as never,
     });
     expect(result.ok).toBe(true);
     expect(rpc).toHaveBeenCalledWith(
@@ -97,8 +87,61 @@ describe('recordOptimizationEvidence (#67)', () => {
         p_system_pack_revision: 3,
         p_rule_version: 'rules-fixture',
         p_cut_count: 2,
+        p_evidence_payload: expect.objectContaining({
+          schema: 'almona.optimization-result',
+          schemaVersion: 1,
+        }),
       }),
     );
+    const args = rpc.mock.calls[0]?.[1] as { p_ledger_fingerprint?: string };
+    expect(args.p_ledger_fingerprint?.length).toBeGreaterThanOrEqual(64);
+  });
+
+  it('rejects unspecified rule versions without RPC', async () => {
+    resolveManufacturingAuthority.mockResolvedValue({
+      systemPack: { id: 'caluminium-ps', revision: 3 },
+      cuttingRules: [],
+      authorityApprovalId: 'auth-1',
+    });
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: null,
+      optimizationResult: sampleResult as never,
+      ruleVersion: 'unspecified',
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/rule version/i);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('rejects stock overrun placements without RPC', async () => {
+    const overrun = {
+      ...sampleResult,
+      cuttingPlan: [
+        {
+          stockLength: 1000,
+          profile: { id: 'PS-FRAME' },
+          cuts: [
+            { cutId: 'c1', componentId: 'c1', length: 800, angle: 45 },
+            { cutId: 'c2', componentId: 'c2', length: 800, angle: 45 },
+          ],
+        },
+      ],
+    };
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: { qualification: { ruleVersion: 'rules-fixture' } } as never,
+      optimizationResult: overrun as never,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/stock overrun/i);
+    expect(rpc).not.toHaveBeenCalled();
   });
 
   it('surfaces authority resolution failures', async () => {
@@ -108,7 +151,7 @@ describe('recordOptimizationEvidence (#67)', () => {
       expectedRevision: 1,
       designRevision: 1,
       bom: null,
-      optimizationResult: sampleResult,
+      optimizationResult: sampleResult as never,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
