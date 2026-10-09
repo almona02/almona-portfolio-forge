@@ -7,7 +7,11 @@
  * - Pattern matching and validation
  */
 
-import { EGYPTIAN_PATTERNS, type EgyptianPattern } from '@/data/egyptian-window-patterns';
+import {
+  EGYPTIAN_PATTERNS,
+  getPatternsForSystem as getPatternsForSystemId,
+  type EgyptianPattern,
+} from '@/data/egyptian-window-patterns';
 import type { WindowGrid } from '@/types/fabricator';
 import { PATTERN_MATCHING_THRESHOLDS } from './presetMatchingConstants';
 
@@ -22,13 +26,11 @@ export function getPatternById(patternId: string): EgyptianPattern | null {
 }
 
 /**
- * Get patterns compatible with system pack
+ * Get patterns compatible with system pack (includes similar-pack donors).
  */
 export function getPatternsForSystem(systemPackId: string | null): EgyptianPattern[] {
   if (!systemPackId) return EGYPTIAN_PATTERNS;
-  return EGYPTIAN_PATTERNS.filter(p => 
-    p.compatibleSystems.includes(systemPackId)
-  );
+  return getPatternsForSystemId(systemPackId);
 }
 
 /**

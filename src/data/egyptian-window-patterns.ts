@@ -814,8 +814,42 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
   },
 ];
 
+/**
+ * Similar packs share opening layouts so measuring / Design can complete.
+ * Keys are catalog IDs (or legacy aliases in pattern data); values are donor
+ * system IDs already listed on patterns. AICS-001: deterministic map only.
+ */
+export const SYSTEM_PACK_PATTERN_DONORS: Readonly<Record<string, readonly string[]>> = {
+  // CALUMINIUM PS ↔ legacy PS catalog aliases ↔ aluminum sliding peers
+  'caluminium-ps': ['ps-6600', 'ps-9600', 'jumbo100', 'rock60', 'emapen_ema60s_sliding'],
+  'ps-6600': ['caluminium-ps', 'ps-9600', 'jumbo100', 'rock60'],
+  'ps-9600': ['caluminium-ps', 'ps-6600', 'jumbo100', 'rock60'],
+  // Turkish aluminum window / sliding families
+  'anadolu-w60': ['rock60', 'panda-50', 'emapen_ema60_complete'],
+  'kale-70-sliding': ['jumbo100', 'emapen_ema60s_sliding', 'rock60', 'foxywin_eco_view_88'],
+  'kale-commercial': ['rock60', 'panda-100', 'emapen_ema60_complete'],
+  // ASAS commercial / facade / folding
+  'asas-commercial': ['rock60', 'panda-100', 'emapen_ema60_complete'],
+  'asas-rescara-rwt75': ['rock60', 'panda-50', 'emapen_ema60_complete'],
+  'asas-rescara-r50': ['jumbo100', 'asas-cw100', 'foxywin_foxy_prestige_114'],
+  'asas-cw100': ['jumbo100', 'foxywin_foxy_prestige_114'],
+  'asas-refd77': ['jumbo100', 'foxywin_foxy_prestige_114'],
+  // Legacy pattern-only IDs still referenced in compatibleSystems
+  'volcano-m11000': ['panda-100', 'rock60', 'veka_70_softline'],
+};
+
+/** Resolve a pack id to itself plus similar donors for pattern matching. */
+export function resolvePatternSystemIds(systemId: string): string[] {
+  const donors = SYSTEM_PACK_PATTERN_DONORS[systemId] ?? [];
+  return [systemId, ...donors];
+}
+
+/**
+ * Patterns usable with a system pack, including layouts synced from similar packs.
+ */
 export function getPatternsForSystem(systemId: string): EgyptianPattern[] {
-  return EGYPTIAN_PATTERNS.filter((p) => p.compatibleSystems.includes(systemId));
+  const ids = new Set(resolvePatternSystemIds(systemId));
+  return EGYPTIAN_PATTERNS.filter((p) => p.compatibleSystems.some((s) => ids.has(s)));
 }
 
 /**
