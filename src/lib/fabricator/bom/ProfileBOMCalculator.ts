@@ -23,6 +23,7 @@ import type {
 import { normalizeOpeningType } from '@/lib/fabricator/openingType';
 import type { ProfileSpec } from '../productionUtils';
 import { physicalCutForOccurrence } from '../optimization/physicalCutContract';
+import { requireBomProfileCostPerMeter } from './requirePricedCost';
 import {
     CUTTING_CONSTANTS,
     DEFAULT_PROFILE_DIMENSIONS,
@@ -167,8 +168,8 @@ export class ProfileBOMCalculator {
       rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
       wasteLength: utils.calculateWaste(frameLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
       machiningZones: [],
-      weight: utils.calculateProfileWeight(frameLength, this.profileToSpec(frameProfile)),
-      cost: utils.calculateMaterialCost(frameLength, this.profileToSpec(frameProfile))
+      weight: utils.calculateProfileWeight(frameLength, this.profileToSpec(frameProfile, systemPackId)),
+      cost: utils.calculateMaterialCost(frameLength, this.profileToSpec(frameProfile, systemPackId))
     });
 
     // Sash profiles (from grid)
@@ -239,8 +240,8 @@ export class ProfileBOMCalculator {
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
           wasteLength: utils.calculateWaste(sashLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: [],
-          weight: utils.calculateProfileWeight(sashLength, this.profileToSpec(sashProfile)),
-          cost: utils.calculateMaterialCost(sashLength, this.profileToSpec(sashProfile))
+          weight: utils.calculateProfileWeight(sashLength, this.profileToSpec(sashProfile, systemPackId)),
+          cost: utils.calculateMaterialCost(sashLength, this.profileToSpec(sashProfile, systemPackId))
         });
 
         this.appendMissingSlidingSubsystemProfiles({
@@ -280,8 +281,8 @@ export class ProfileBOMCalculator {
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
           wasteLength: utils.calculateWaste(mullionLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: [],
-          weight: utils.calculateProfileWeight(mullionLength, this.profileToSpec(mullionProfile)),
-          cost: utils.calculateMaterialCost(mullionLength, this.profileToSpec(mullionProfile))
+          weight: utils.calculateProfileWeight(mullionLength, this.profileToSpec(mullionProfile, systemPackId)),
+          cost: utils.calculateMaterialCost(mullionLength, this.profileToSpec(mullionProfile, systemPackId))
         });
       });
     }
@@ -311,8 +312,8 @@ export class ProfileBOMCalculator {
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
           wasteLength: utils.calculateWaste(transomLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: [],
-          weight: utils.calculateProfileWeight(transomLength, this.profileToSpec(transomProfile)),
-          cost: utils.calculateMaterialCost(transomLength, this.profileToSpec(transomProfile))
+          weight: utils.calculateProfileWeight(transomLength, this.profileToSpec(transomProfile, systemPackId)),
+          cost: utils.calculateMaterialCost(transomLength, this.profileToSpec(transomProfile, systemPackId))
         });
       });
     }
@@ -513,7 +514,8 @@ export class ProfileBOMCalculator {
       row.angles.push(...cuts.map((cut) => cut.angle));
       row.length = row.cuttingLengths.reduce((sum, length) => sum + length, 0);
       row.weight = (row.length / 1000) * (profile.weightPerMeter || 0);
-      row.cost = (row.length / 1000) * (profile.costPerMeter || 0);
+      const costPerMeter = requireBomProfileCostPerMeter(packId, profile);
+      row.cost = (row.length / 1000) * costPerMeter;
       // Perimeter roles are 4 cuts per unit; track/interlock are 1 cut per unit.
       const cutsPerUnit =
         role === 'frame' || role === 'sash' || role === 'glazing_bead' ? 4 : 1;
@@ -707,8 +709,8 @@ export class ProfileBOMCalculator {
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
           wasteLength: prodUtils.calculateWaste(totalLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: [],
-          weight: prodUtils.calculateProfileWeight(totalLength, this.profileToSpec(profile)),
-          cost: prodUtils.calculateMaterialCost(totalLength, this.profileToSpec(profile))
+          weight: prodUtils.calculateProfileWeight(totalLength, this.profileToSpec(profile, systemPackId)),
+          cost: prodUtils.calculateMaterialCost(totalLength, this.profileToSpec(profile, systemPackId))
       };
   }
 
@@ -740,7 +742,7 @@ export class ProfileBOMCalculator {
   /**
    * Convert Profile to ProfileSpec for calculations
    */
-  private profileToSpec(profile: Profile): ProfileSpec {
+  private profileToSpec(profile: Profile, systemPackId?: string): ProfileSpec {
     // Map 'wood' to 'aluminum' for ProfileSpec compatibility
     // Fix: strict check on materials
     const material: 'aluminum' | 'upvc' | 'steel' = 
@@ -755,7 +757,8 @@ export class ProfileBOMCalculator {
       depth: profile.height || profile.width, // Use height or width as depth
       material,
       weightPerMeter: profile.weightPerMeter || profile.unitWeight || 0,
-      costPerMeter: profile.costPerMeter,
+      // Fail loudly — never coerce missing/zero prices to 0.00 for BOM money lines
+      costPerMeter: requireBomProfileCostPerMeter(systemPackId, profile),
     };
   }
 
