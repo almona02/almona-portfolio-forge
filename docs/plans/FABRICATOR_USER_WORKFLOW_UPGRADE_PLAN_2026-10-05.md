@@ -1,7 +1,7 @@
 # Fabricator user workflow upgrade plan
 
-Date: 6 October 2026.
-Status: Batches 1–6 have implementation commits; full live acceptance remains **OPEN**. Earlier percentages describe implementation estimates, not verified production readiness. Current sequence is approval publication/approved BOM inputs → owned-stock and durable optimization contracts → release/QC/delivery live exit. See the [repair and optimization exit plan](FABRICATOR_REPAIR_AND_OPTIMIZATION_EXIT_PLAN_2026-10-05.md) and [latest responsive/PDF audit](../audits/FABRICATOR_OPTIMIZATION_RESPONSIVE_AUDIT_2026-10-06.md).
+Date: 6 October 2026 (scorecard refreshed 8 October 2026).
+Status: Batches 1–6 have implementation commits; manufacturing stack #61–#68 is local/CI ~78%; full live acceptance remains **OPEN** (~35%). Production deploy readiness: **NOT READY**. Use the refreshed [upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) for scores and Slice 8 staging→prod plan. Earlier percentages describe implementation estimates, not verified production readiness. Current sequence is merge stack bottom-up → staging migrations/fixture walk → only then production. See the [repair and optimization exit plan](FABRICATOR_REPAIR_AND_OPTIMIZATION_EXIT_PLAN_2026-10-05.md) and [latest responsive/PDF audit](../audits/FABRICATOR_OPTIMIZATION_RESPONSIVE_AUDIT_2026-10-06.md).
 
 | Companion | Role |
 |---|---|
