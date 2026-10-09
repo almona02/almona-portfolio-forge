@@ -103,6 +103,7 @@ const ValidationDashboardPage = lazy(() => import("./pages/ValidationDashboardPa
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 const ProductionDashboard = lazy(() => import("./components/fabricator/ProductionDashboard.tsx").then(m => ({ default: m.ProductionDashboard })));
 const MeasuringPage = lazy(() => import("./pages/fabricator/workflow/MeasuringPage").then(m => ({ default: m.MeasuringPage })));
+const MeasuringMobilePreview = lazy(() => import("./pages/dev/MeasuringMobilePreview"));
 const ProjectStudioWrapper = lazy(() => import("./pages/fabricator/ProjectStudioWrapper"));
 
 // NEW: Workflow Page Components - Route-Based Architecture
@@ -639,6 +640,16 @@ const App = memo(() => {
 
                                   {/* Authentication */}
                                   <Route path="/login" element={<Suspense fallback={getLoadingComponent('/login')}><Login /></Suspense>} />
+                                  {import.meta.env.DEV && (
+                                    <Route
+                                      path="/dev/measuring-mobile"
+                                      element={
+                                        <Suspense fallback={getLoadingComponent('Measuring mobile preview')}>
+                                          <MeasuringMobilePreview />
+                                        </Suspense>
+                                      }
+                                    />
+                                  )}
                                   <Route path="/register" element={<Suspense fallback={getLoadingComponent('/register')}><Register /></Suspense>} />
                                   <Route path="/portal" element={<Suspense fallback={getLoadingComponent('/portal')}><ProtectedRoute><CustomerPortal /></ProtectedRoute></Suspense>} />
                                   <Route path="/client-portal" element={<Suspense fallback={getLoadingComponent('/client-portal')}><ProtectedRoute><ClientPortalPage /></ProtectedRoute></Suspense>} />
