@@ -3,6 +3,7 @@
  * Builds from first material-aware window (frame) with optional grid and per-cell glazing.
  */
 
+import { normalizeOpeningType } from '@/lib/fabricator/openingType';
 import type { WindowUnit } from '@/types/fabricator';
 import type { MaterialAwareRectangle } from '../types/materialAware';
 
@@ -65,11 +66,17 @@ export function draftingToWindowUnit(drafting: DraftingStateSnapshot): WindowUni
     rawGrid && rawGrid.cells?.length > 0 ? normalizeGrid(rawGrid) : rawGrid;
 
   const now = new Date();
+  const inferredType = normalizeOpeningType(
+    (frame as { openingType?: string; windowType?: string }).openingType
+      ?? (frame as { windowType?: string }).windowType
+      ?? frame.systemPackId,
+    grid,
+  );
   const unit: WindowUnit = {
     id: frame.id ?? `draft-${now.getTime()}`,
     orderNumber: frame.id ?? '1',
     posNumber: '1',
-    type: 'casement',
+    type: inferredType,
     components: [],
     overallWidth,
     overallHeight,
