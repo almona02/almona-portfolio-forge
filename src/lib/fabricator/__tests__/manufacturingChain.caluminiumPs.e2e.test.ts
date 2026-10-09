@@ -1,8 +1,9 @@
 /**
- * Manufacturing chain E2E (local): 10 positions / 18 units / >100 cuts on caluminium-ps.
- * Requires dated pricing (#63) + ledger BOM. Authority seed (#54) is checked via local DB
- * in the companion shell step (see .tmp-pr-assess/mfg-e2e-report.md).
+ * Manufacturing chain E2E (local/CI): 10 positions / 18 units / >100 cuts on caluminium-ps.
+ * Classification remains estimate_only — not manufacturing-qualified convert evidence.
  */
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
 import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
@@ -31,6 +32,12 @@ function packProfile(code: string): Profile {
   const found = CALUMINIUM_PS_PACK.profiles.find((p: Profile) => p.id === code);
   if (!found) throw new Error(`Missing pack profile ${code}`);
   return found;
+}
+
+function metricsPath(): string {
+  const fromEnv = process.env.MFG_E2E_METRICS_PATH?.trim();
+  if (fromEnv) return resolve(fromEnv);
+  return resolve('/opt/cursor/artifacts/e2e-1018-metrics.json');
 }
 
 describe('manufacturing E2E — caluminium-ps 10/18/>100-cut', () => {
@@ -74,16 +81,69 @@ describe('manufacturing E2E — caluminium-ps 10/18/>100-cut', () => {
     const expectedPieces = cutsPerUnit * unitCount;
     expect(expectedPieces).toBeGreaterThan(100);
 
-    // Sliding units go through optimizeProjectEstimate (resolveEstimatePattern sliding path).
     const estimate = optimizeProjectEstimate(positions, [CALUMINIUM_PS_PACK]);
+    expect(estimate.classification).toBe('estimate_only');
+    expect(estimate.manufacturingEligible).toBe(false);
     expect(estimate.positions).toBe(10);
     expect(estimate.pieces).toBe(expectedPieces);
     expect(estimate.pieces).toBeGreaterThan(100);
+
     const placed = estimate.groups.reduce(
       (sum, group) => sum + group.result.stockUsed.reduce((barSum, bar) => barSum + bar.cuts.length, 0),
       0,
     );
+    const bars = estimate.groups.reduce((sum, group) => sum + group.result.stockUsed.length, 0);
+    const wasteMm = estimate.groups.reduce((sum, group) => sum + group.result.totalWaste, 0);
+    const cutLengthMm = estimate.groups.reduce((sum, group) => sum + group.result.totalCutLength, 0);
+    const stockLengthMm = estimate.groups.reduce((sum, group) => sum + group.result.totalStockLength, 0);
+    const kerfMm = estimate.groups[0]?.kerfMm ?? null;
+    const trimMm = estimate.groups[0]?.trimMm ?? null;
+    const efficiency =
+      stockLengthMm > 0 ? Number((((stockLengthMm - wasteMm) / stockLengthMm) * 100).toFixed(2)) : 0;
+    // Uniform 1200×1400 × 18 units
+    const areaM2 = Number(((1.2 * 1.4 * unitCount)).toFixed(2));
+
     expect(placed).toBe(estimate.pieces);
+    expect(placed).toBe(expectedPieces);
     expect(estimate.groups.every((g) => g.result.stockUsed.every((bar) => bar.waste >= 0))).toBe(true);
+
+    const unplaced = expectedPieces - placed;
+    expect(unplaced).toBe(0);
+
+    const metrics = {
+      classification: estimate.classification,
+      manufacturingEligible: estimate.manufacturingEligible,
+      positions: estimate.positions,
+      positionsResolved: estimate.positions,
+      units: unitCount,
+      cutsPerUnit,
+      placedCuts: placed,
+      unplacedCuts: unplaced,
+      bars,
+      kerfMm,
+      trimMm,
+      wasteMm,
+      cutLengthMm,
+      stockLengthMm,
+      efficiencyPercent: efficiency,
+      areaM2,
+      areaNote: 'uniform 1200×1400 fixture; diverse-pose area must be calculated separately',
+      recordedAt: new Date().toISOString(),
+    };
+
+    const out = metricsPath();
+    try {
+      mkdirSync(dirname(out), { recursive: true });
+      writeFileSync(out, `${JSON.stringify(metrics, null, 2)}\n`, 'utf8');
+    } catch {
+      // CI / sandbox without /opt/cursor — still assert metrics in-process
+      const fallback = resolve(process.cwd(), 'e2e-1018-metrics.json');
+      writeFileSync(fallback, `${JSON.stringify(metrics, null, 2)}\n`, 'utf8');
+    }
+
+    expect(metrics.positionsResolved).toBe(10);
+    expect(metrics.placedCuts).toBeGreaterThan(100);
+    expect(metrics.unplacedCuts).toBe(0);
+    expect(metrics.areaM2).toBe(30.24);
   });
 });
