@@ -16,6 +16,8 @@ export interface ConvertPoseQuoteToOrderInput {
   markupPercent?: number;
   customerName?: string;
   projectTitle?: string;
+  /** Must be true — estimate quotes cannot convert without reconciled optimization. */
+  optimizationApproved?: boolean;
 }
 
 export type ConvertPoseQuoteToOrderResult =
@@ -29,6 +31,12 @@ export type ConvertPoseQuoteToOrderResult =
 export async function convertPoseQuoteToOrder(
   input: ConvertPoseQuoteToOrderInput,
 ): Promise<ConvertPoseQuoteToOrderResult> {
+  if (!input.optimizationApproved) {
+    return {
+      ok: false,
+      error: 'Convert to Order requires an approved, reconciled optimization result.',
+    };
+  }
   const taxRate = input.taxRate ?? 0.14;
 
   const persisted = await upsertPoseQuote({
