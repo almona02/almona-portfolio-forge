@@ -158,19 +158,27 @@ export default function ManufacturingApprovalsPage() {
     return () => ro.disconnect();
   }, [measureStickyChrome, message, adminGate, rows.length, active.length]);
 
-  const scrollToSection = useCallback(
-    (id: string) => {
-      const scroller = scrollerRef.current;
-      const target = document.getElementById(id);
-      if (!scroller || !target) return;
-      const scrollerRect = scroller.getBoundingClientRect();
-      const targetRect = target.getBoundingClientRect();
-      const top =
-        scroller.scrollTop + (targetRect.top - scrollerRect.top) - stickyOffsetPx - 8;
-      scroller.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-    },
-    [stickyOffsetPx],
-  );
+  const scrollToSection = useCallback((id: string) => {
+    const scroller = scrollerRef.current;
+    const target = document.getElementById(id);
+    if (!scroller || !target) return;
+    // Live height (ResizeObserver/state can lag CSS zoom / status text wrap).
+    const liveOffset = Math.ceil(
+      stickyChromeRef.current?.getBoundingClientRect().height ?? stickyOffsetPx,
+    );
+    setStickyOffsetPx((prev) => (prev === liveOffset ? prev : liveOffset));
+    const zoom =
+      parseFloat(String(getComputedStyle(document.documentElement).zoom || '1')) || 1;
+    const scrollerRect = scroller.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    // getBoundingClientRect is zoom-scaled; scrollTop is layout pixels.
+    const deltaLayout =
+      (targetRect.top - scrollerRect.top - liveOffset - 8) / zoom;
+    scroller.scrollTo({
+      top: Math.max(0, scroller.scrollTop + deltaLayout),
+      behavior: 'smooth',
+    });
+  }, [stickyOffsetPx]);
 
   const refresh = useCallback(async (opts?: { clearStatus?: boolean }) => {
     if (import.meta.env.DEV && isApprovalsReachabilityFixtureActive()) {
@@ -351,7 +359,7 @@ export default function ManufacturingApprovalsPage() {
   return (
     <div
       ref={scrollerRef}
-      className="h-full min-h-0 overflow-y-auto overscroll-y-contain scroll-smooth"
+      className="h-full min-h-0 overflow-y-auto overscroll-y-contain scroll-smooth [scroll-padding-bottom:7rem]"
       data-testid="manufacturing-approvals-admin"
       data-sticky-offset={stickyOffsetPx}
       style={
@@ -360,7 +368,8 @@ export default function ManufacturingApprovalsPage() {
         } as CSSProperties
       }
     >
-      <div className="mx-auto max-w-5xl space-y-4 px-3 pb-36 pt-3 sm:space-y-6 sm:px-6 sm:pb-40 sm:pt-6">
+      {/* pb clears manufacturing status bar + production FABs (chat / feedback) */}
+      <div className="mx-auto max-w-5xl space-y-4 px-3 pb-44 pt-3 sm:space-y-6 sm:px-6 sm:pb-48 sm:pt-6">
         <header className="space-y-1">
           <h1 className="text-xl sm:text-2xl font-bold text-amber-200 flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
@@ -382,15 +391,15 @@ export default function ManufacturingApprovalsPage() {
             aria-label="Jump to approval section"
             data-testid="approvals-jump-nav"
           >
-            <div className="flex flex-wrap gap-2">
-              {jumpLinks.map((link) => (
-                <button
-                  key={link.id}
-                  type="button"
-                  onClick={() => scrollToSection(link.id)}
-                  className="inline-flex items-center gap-1.5 rounded border border-amber-600/40 bg-amber-500/10 px-2.5 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                  data-testid={`approvals-jump-${link.id}`}
-                >
+          <div className="flex flex-nowrap gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {jumpLinks.map((link) => (
+              <button
+                key={link.id}
+                type="button"
+                onClick={() => scrollToSection(link.id)}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded border border-amber-600/40 bg-amber-500/10 px-2.5 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                data-testid={`approvals-jump-${link.id}`}
+              >
                   {link.label}
                   {link.count !== null && (
                     <span className="font-mono text-amber-400/90 tabular-nums">{link.count}</span>
@@ -469,7 +478,7 @@ export default function ManufacturingApprovalsPage() {
                   </div>
                   <p className="text-slate-400 break-all">Catalogue: {row.catalogue_reference}</p>
                   <p className="text-slate-400 break-all">Rules: {row.rule_reference}</p>
-                  <div className="sticky bottom-2 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-[#0f0f0f]/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-[#0f0f0f]/80">
+                  <div className="sticky bottom-20 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-[#0f0f0f]/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-[#0f0f0f]/80 sm:bottom-16">
                     <Button
                       size="sm"
                       disabled={busyId === row.id}

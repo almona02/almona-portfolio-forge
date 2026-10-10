@@ -182,7 +182,8 @@ export function HardenerApprovalsPanel() {
                   )}
                 </div>
 
-                <div className="sticky bottom-2 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-[#0f0f0f]/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-[#0f0f0f]/80">
+                {/* bottom-* clears production FABs + manufacturing status bar */}
+                <div className="sticky bottom-20 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-[#0f0f0f]/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-[#0f0f0f]/80 sm:bottom-16">
                   <Button
                     size="sm"
                     disabled={busyId === row.id || failed.length > 0 || missing.length > 0}
@@ -227,6 +228,7 @@ export function HardenerApprovalsPanel() {
                   <Input
                     placeholder="Reason (min 8 chars)"
                     value={overrideReason[row.id] ?? ''}
+                    data-testid={`hardener-override-reason-${row.id}`}
                     onChange={(e) =>
                       setOverrideReason((prev) => ({ ...prev, [row.id]: e.target.value }))
                     }
@@ -234,6 +236,7 @@ export function HardenerApprovalsPanel() {
                   <Input
                     placeholder="Supporting evidence ref"
                     value={overrideEvidence[row.id] ?? ''}
+                    data-testid={`hardener-override-evidence-${row.id}`}
                     onChange={(e) =>
                       setOverrideEvidence((prev) => ({ ...prev, [row.id]: e.target.value }))
                     }
