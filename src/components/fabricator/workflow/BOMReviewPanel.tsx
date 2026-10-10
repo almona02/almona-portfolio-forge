@@ -1,4 +1,5 @@
 import { approvedBOMContext } from '@/lib/fabricator/bom/approvedBOMContext';
+import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
 import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
@@ -11,6 +12,7 @@ import { useWorkflowStore, workflowIdentityMatches } from '@/store/workflowStore
 import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { WorkflowValidator } from '@/lib/fabricator/validation/WorkflowValidator';
+import { fabricatorClientV2 } from '@/lib/supabase/fabricatorClientV2';
 import {
   AlertCircle,
   ClipboardList,
@@ -26,7 +28,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 export const BOMReviewPanel: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
-  const { currentProject, workflowIdentity, bom, setBOM, completeStep } = useWorkflowStore();
+  const { currentProject, workflowIdentity, bom, setBOM, completeStep, alignShellProject } =
+    useWorkflowStore();
   const engineeringPacks = useEngineeringSystemPacks();
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -51,8 +54,13 @@ export const BOMReviewPanel: React.FC = () => {
     setError(null);
     try {
       const generator = new PresetAwareBOMGenerator();
-      const result = await generator.generateCompleteBOM(
+      const physicalDesign = await new ProfileBOMCalculator().resolvePhysicalDesignComponents(
         currentProject,
+        pattern,
+        systemPack,
+      );
+      const result = await generator.generateCompleteBOM(
+        { ...currentProject, components: physicalDesign },
         pattern,
         systemPack,
         true,
@@ -61,14 +69,36 @@ export const BOMReviewPanel: React.FC = () => {
         })),
       );
       const latest = useWorkflowStore.getState();
-      if (!generationIdentity || latest.currentProject !== generationProject || !workflowIdentityMatches(latest.workflowIdentity, generationIdentity)) return;
+      if (
+        !generationIdentity ||
+        latest.currentProject !== generationProject ||
+        !workflowIdentityMatches(latest.workflowIdentity, generationIdentity)
+      ) {
+        return;
+      }
+      // Align + persist design ledger to the BOM authority so bomMatchesPhysicalDesign
+      // (optimize gate) and reload hydration share the same physical cuts.
+      if (physicalDesign.length) {
+        const aligned = { ...generationProject, components: physicalDesign };
+        alignShellProject(aligned);
+        const ownerUserId = generationIdentity.ownerUserId;
+        if (ownerUserId) {
+          try {
+            await fabricatorClientV2.savePose(aligned, ownerUserId, {
+              grid: aligned.grid as Record<string, unknown> | undefined,
+            });
+          } catch (persistErr) {
+            console.warn('BOM design ledger persist failed', persistErr);
+          }
+        }
+      }
       setBOM(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'BOM generation failed');
     } finally {
       setIsGenerating(false);
     }
-  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM]);
+  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM, alignShellProject]);
 
   useEffect(() => {
     if (!bom && currentProject && systemPack && pattern) {

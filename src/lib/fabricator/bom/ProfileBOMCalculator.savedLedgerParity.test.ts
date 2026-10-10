@@ -7,6 +7,8 @@ import { describe, expect, it } from 'vitest';
 import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
+import { bomMatchesPhysicalDesign } from '@/lib/fabricator/validation/WorkflowValidator';
+import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { ProfileBOMCalculator } from './ProfileBOMCalculator';
 import { assessBOMQualification, countRequiredProfilePieces } from './bomQualification';
 
@@ -196,5 +198,18 @@ describe('ProfileBOMCalculator saved ↔ generated ledger parity', () => {
     });
     expect(qualification.status).toBe('qualified');
     expect(qualification.reasons).toEqual([]);
+
+    // Optimize gate: regenerated physical design must match BOM cuts (not frame-only).
+    const physicalDesign = await calculator.resolvePhysicalDesignComponents(
+      frameOnly,
+      pattern,
+      CALUMINIUM_PS_PACK,
+    );
+    const aligned = { ...frameOnly, components: physicalDesign };
+    const alignedBom = await calculator.calculateProfileBOM(aligned, pattern, CALUMINIUM_PS_PACK);
+    expect(
+      bomMatchesPhysicalDesign({ profiles: alignedBom } as CompleteBOM, aligned),
+    ).toBe(true);
+    expect(bomMatchesPhysicalDesign({ profiles } as CompleteBOM, frameOnly)).toBe(false);
   });
 });
