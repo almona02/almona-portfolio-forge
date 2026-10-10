@@ -1,11 +1,12 @@
 # Fabricator user workflow upgrade plan
 
-Date: 6 October 2026 (scorecard refreshed 8 October 2026).
-Status: Batches 1–6 have implementation commits; manufacturing stack #61–#68 is local/CI ~78%; full live acceptance remains **OPEN** (~35%). Production deploy readiness: **NOT READY**. Use the refreshed [upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) for scores and Slice 8 staging→prod plan. Earlier percentages describe implementation estimates, not verified production readiness. Current sequence is merge stack bottom-up → staging migrations/fixture walk → only then production. See the [repair and optimization exit plan](FABRICATOR_REPAIR_AND_OPTIMIZATION_EXIT_PLAN_2026-10-05.md) and [latest responsive/PDF audit](../audits/FABRICATOR_OPTIMIZATION_RESPONSIVE_AUDIT_2026-10-06.md).
+Date: 6 October 2026 (scorecard refreshed **10 October 2026**).
+Status: Batches 1–6 implementation ~94%; manufacturing stack #61–#68 **merged** via #69; #70–#75 on `main` tip `f27f0317`. Staging §5.2 + Phase B fail-closed gates **pass**; Phase C prod #71/#72 SQL **applied**. Live acceptance ~55%; production readiness **PARTIAL**. Composite provisional **~89/100** — see [Oct 9 scorecard](../reviews/FABRICATOR_SCORECARD_2026-10-09.md) and synced [upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md). Next: §5.3 positive convert + live FINAL GOAL. See the [staging/promote plan](FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md), [repair exit](FABRICATOR_REPAIR_AND_OPTIMIZATION_EXIT_PLAN_2026-10-05.md), and [responsive/PDF audit](../audits/FABRICATOR_OPTIMIZATION_RESPONSIVE_AUDIT_2026-10-06.md).
 
 | Companion | Role |
 |---|---|
-| [Upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) | Gate-by-gate evidence (refreshed) |
+| [Oct 9 scorecard](../reviews/FABRICATOR_SCORECARD_2026-10-09.md) | Current provisional scores + Phase B/C evidence |
+| [Upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) | Synced gate-by-gate companion (10 Oct) |
 | [Batch 1 implementation](FABRICATOR_BATCH1_IMPLEMENTATION_2026-10-05.md) | What shipped and how it was verified |
 | [Batch 1 readiness](FABRICATOR_BATCH1_READINESS_2026-10-05.md) | Pre-implementation toolchain baseline |
 | [Security remediation](SECURITY_DEPENDABOT_REMEDIATION_BATCH_2026-10-05.md) | Dependabot clearable pins + blocked braces/node-forge |
@@ -82,7 +83,7 @@ Keep adapters centralized. Do not add another global store that owns manufacturi
 
 | Batch | Scope | Status | Score | Exit gate |
 |---|---|---|---|---|
-| **0** | Toolchain + disposable fixtures + deploy baseline | **PARTIAL** | ~60% | Baseline doc + seed template; operators still needed |
+| **0** | Toolchain + disposable fixtures + deploy baseline | **NEAR EXIT** | ~85% | Owners seeded; §5.3 positive convert + FINAL GOAL still open |
 | **1** | Truthful readiness / nav / demos / public lead | **DONE** | ~95% | Product exit met; fixtures/Redis provision optional for “release-perfect” |
 | **2** | Profiles / systems / inventory | **DONE** | ~95% | Soft reservation exit; DB reservation deferred |
 | **3** | Customer / pattern / revision handoffs | **DONE** | ~90% | UP-11…14 |
@@ -92,18 +93,18 @@ Keep adapters centralized. Do not add another global store that owns manufacturi
 
 ---
 
-## Batch 0 — Staging baseline (PARTIAL — close next)
+## Batch 0 — Staging baseline (NEAR EXIT)
 
-**Done:** npm/Vitest restored; `npm run test:batch1`; production builds; Railway Redis honesty; git on `main`; release metadata pattern (`batch1-verification.json`); [Batch 0 baseline doc](BATCH0_STAGING_BASELINE_2026-10-05.md) + seed template.
+**Done:** npm/Vitest restored; `npm run test:batch1`; production builds; Railway Redis honesty; git on `main`; release metadata pattern (`batch1-verification.json`); [Batch 0 baseline doc](BATCH0_STAGING_BASELINE_2026-10-05.md) + seed template; two-owner fixtures seeded; Phase B fail-closed + cross-owner gates recorded.
 
 **Still required:**
 
-1. Designate disposable two-owner accounts/projects (never mutate customer workshop data).
-2. Expand [`supabase/seeds/batch0_disposable_fixtures.sql`](../../supabase/seeds/batch0_disposable_fixtures.sql) with real owner UUIDs / multi-revision poses.
+1. §5.3 positive convert on disposable fixture with approved authority.
+2. Expand multi-revision poses if needed for release/QC walk.
 3. Restore points for fixture data.
-4. Record Railway image digest on next staging deploy.
+4. Record Railway image digest on next staging/prod promote.
 
-**Exit:** targeted identity/validation/QC suites run against fixtures; failures classified; route inventory + deploy baseline recorded.
+**Exit:** targeted identity/validation/QC suites run against fixtures; failures classified; route inventory + deploy baseline recorded; positive convert + release→QC→delivery evidenced.
 
 ---
 
@@ -260,9 +261,10 @@ Metrics (no PII/secrets): hydration failures, blocked reasons, save ack latency,
 
 ## Immediate next sequence
 
-1. **Start Batch 4** — UP-15 quote persist, UP-16 quote→order, UP-17 Orders UX.
-2. Polish Batch 2/3 remainders only if they block quote/order.
-3. Close Batch 0 fixtures when operators available.
-4. Keep FP-028 accuracy on its own track.
+1. **§5.3 positive convert** on disposable Batch 0 (or dedicated) fixture: approved manufacturing authority → qualified BOM → durable optimize evidence → convert-to-order.
+2. Complete release → QC → delivery + hardener approve/override/revoke audit; attach digests (Git / Vercel / Railway / migrations).
+3. Live FINAL GOAL walk on almona02.com; raise Oct 9 scorecard live layer only with evidence.
+4. Triage open follow-ons #76–#79; close superseded Phase PRs #54–#57 when owner agrees.
+5. Keep FP-028 accuracy and Phase 6/7 (#59/#60) off the manufacturing critical path until live exit.
 
-No delivery-date commitment until Batch 4 quote/order exit and Batch 0 fixtures are agreed.
+No delivery-date commitment until §5.3 convert and live FINAL GOAL evidence are attached.
