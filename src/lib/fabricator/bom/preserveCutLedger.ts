@@ -10,8 +10,8 @@
 
 import type { WindowComponent, WindowGrid, WindowUnit } from '@/types/fabricator';
 
-/** Sync SHA-256 hex — browser-safe (no node:crypto; Vite client bundle). */
-function sha256HexSync(text: string): string {
+/** Sync SHA-256 hex — browser-safe (no node:crypto; Vite client bundle). Exported for vector parity tests. */
+export function sha256HexSync(text: string): string {
   const bytes = new TextEncoder().encode(text);
   // FIPS-180-4 SHA-256 (compact, deterministic; used for design fingerprints only).
   const K = new Uint32Array([
@@ -167,7 +167,7 @@ export function ledgerCutMultiset(
   for (const component of components) {
     const profileId = component.profile?.id;
     if (!profileId || !component.cuttingLengths?.length) continue;
-    component.cuttingLengths.forEach((length, index) => {
+    component.cuttingLengths.forEach((length: number, index: number) => {
       const angle = Number(component.angles?.[index] ?? 0);
       keys.push(
         [

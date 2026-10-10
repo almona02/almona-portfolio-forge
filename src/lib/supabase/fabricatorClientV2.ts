@@ -411,16 +411,17 @@ export const fabricatorClientV2 = {
       if (byPos?.id) existing = byPos as ExistingPoseSlice;
     }
 
-    const resolvedGrid = options?.grid && Number(options.grid.cols) > 0 && Number(options.grid.rows) > 0
-      ? options.grid
-      : (windowUnit.grid && Number(windowUnit.grid.cols) > 0 && Number(windowUnit.grid.rows) > 0
-        ? windowUnit.grid as Record<string, unknown>
-        : null);
+    const resolvedGrid: Record<string, unknown> | null =
+      options?.grid && Number(options.grid.cols) > 0 && Number(options.grid.rows) > 0
+        ? options.grid
+        : (windowUnit.grid && Number(windowUnit.grid.cols) > 0 && Number(windowUnit.grid.rows) > 0
+          ? (windowUnit.grid as unknown as Record<string, unknown>)
+          : null);
     const incomingDesignFingerprint = designFingerprintFromWindowUnit(
       {
         ...windowUnit,
         presetId: options?.selectedPreset ?? windowUnit.presetId,
-        grid: (resolvedGrid as WindowUnit['grid']) ?? windowUnit.grid,
+        grid: (resolvedGrid as unknown as WindowUnit['grid']) ?? windowUnit.grid,
       },
       resolvedGrid,
     );
@@ -429,10 +430,10 @@ export const fabricatorClientV2 = {
         ?? designFingerprintFromWindowUnit({
           overallWidth: Number(existing.overall_width_mm),
           overallHeight: Number(existing.overall_height_mm),
-          type: existing.type ?? undefined,
-          systemPackId: existing.system_pack_id ?? undefined,
-          presetId: existing.selected_preset ?? undefined,
-          grid: (existing.grid as WindowUnit['grid']) ?? undefined,
+          type: existing.type ?? '',
+          systemPackId: existing.system_pack_id ?? '',
+          presetId: existing.selected_preset ?? '',
+          grid: (existing.grid as unknown as WindowUnit['grid']) ?? undefined,
         }))
       : null;
     const existingComponents = Array.isArray(existing?.components)

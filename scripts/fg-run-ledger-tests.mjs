@@ -1,22 +1,28 @@
 /**
- * Working runner for cut-ledger tests when root vitest/storybook config is broken.
- * Prefer: npx vitest run --config vitest.ledger.config.ts
- * Fallback: this vite-node harness.
+ * Repeatable ledger contract runner for merge evidence.
+ * Authoritative suite: scripts/fg-ledger-contract-suite.mjs (vite-node).
+ * Does not depend on Vitest/Storybook describe.config.
  */
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
+import { mkdirSync, writeFileSync } from 'node:fs';
 
-const vitest = spawnSync(
-  process.platform === 'win32' ? 'npx.cmd' : 'npx',
-  ['vitest', 'run', '--config', 'vitest.ledger.config.ts', '--reporter=verbose'],
-  { cwd: resolve('.'), stdio: 'inherit', shell: true },
-);
-if (vitest.status === 0) process.exit(0);
+const cwd = resolve('.');
+const art = resolve('test-results/final-goal-staging');
+mkdirSync(art, { recursive: true });
 
-console.error('vitest.ledger.config failed; running vite-node assert harness');
-const harness = spawnSync(
+const suite = spawnSync(
   process.platform === 'win32' ? 'npx.cmd' : 'npx',
-  ['vite-node', 'scripts/fg-ledger-test-harness.mjs'],
-  { cwd: resolve('.'), stdio: 'inherit', shell: true },
+  ['vite-node', 'scripts/fg-ledger-contract-suite.mjs'],
+  { cwd, stdio: 'inherit', shell: true },
 );
-process.exit(harness.status ?? 1);
+
+const report = {
+  runner: 'vite-node scripts/fg-ledger-contract-suite.mjs',
+  status: suite.status === 0 ? 'passed' : 'failed',
+  exitCode: suite.status ?? 1,
+  at: new Date().toISOString(),
+  sha: process.env.GITHUB_SHA || null,
+};
+writeFileSync(resolve(art, 'fg-ledger-contract-report.json'), `${JSON.stringify(report, null, 2)}\n`);
+process.exit(suite.status ?? 1);
