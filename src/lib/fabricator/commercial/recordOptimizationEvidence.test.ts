@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { approvedRuleContentFingerprint } from './validateOptimizationEvidencePayload';
 import { recordOptimizationEvidence } from './recordOptimizationEvidence';
 
 const rpc = vi.fn();
@@ -14,6 +15,30 @@ vi.mock('@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver', () => (
   resolveManufacturingAuthority: (...args: unknown[]) => resolveManufacturingAuthority(...args),
 }));
 
+const authorityRules = [
+  {
+    approvalId: 'b2000000-0000-4000-8000-000000000020',
+    ruleId: 'cut-a',
+    revision: 1,
+    evidenceStatus: 'approved' as const,
+    deductions: { endDeductionMm: 20 },
+    allowances: { weldMm: 3 },
+    applicability: { materials: ['aluminum'] },
+  },
+];
+
+const sampleBom = {
+  profiles: [
+    {
+      id: 'c1',
+      profileCode: 'PS-FRAME',
+      cuttingLengths: [1200, 1400],
+      angles: [45, 45],
+      quantity: 1,
+    },
+  ],
+};
+
 const sampleResult = {
   materialUsage: 0.8,
   wastePercentage: 12,
@@ -24,8 +49,8 @@ const sampleResult = {
       stockLength: 6000,
       profile: { id: 'PS-FRAME' },
       cuts: [
-        { cutId: 'c1', componentId: 'c1', length: 1200, angle: 45 },
-        { cutId: 'c2', componentId: 'c2', length: 1400, angle: 45 },
+        { cutId: 'c1:0', componentId: 'c1', length: 1200, angle: 45 },
+        { cutId: 'c1:1', componentId: 'c1', length: 1400, angle: 45 },
       ],
     },
   ],
@@ -38,95 +63,169 @@ const sampleResult = {
   },
 };
 
-describe('recordOptimizationEvidence (#67)', () => {
+function mockAuthority(overrides: Record<string, unknown> = {}) {
+  return {
+    systemPack: { id: 'caluminium-ps', revision: 3 },
+    cuttingRules: authorityRules,
+    authorityApprovalId: 'auth-1',
+    manufacturingSettings: { sawKerfMm: 4, trimCutMm: 0 },
+    profiles: [
+      { profileId: 'PS-FRAME', stockLengthMm: 6000, role: 'frame', evidenceStatus: 'approved', approvalId: 'b2000000-0000-4000-8000-000000000010' },
+      { profileId: 'PS-SASH', stockLengthMm: 6000, role: 'sash', evidenceStatus: 'approved', approvalId: 'b2000000-0000-4000-8000-000000000011' },
+    ],
+    ...overrides,
+  };
+}
+
+describe('recordOptimizationEvidence (authoritative binding)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    resolveManufacturingAuthority.mockResolvedValue({
-      systemPack: { id: 'caluminium-ps', revision: 3 },
-      cuttingRules: [{ ruleId: 'cut-a', revision: 1 }],
-      authorityApprovalId: 'auth-1',
+    resolveManufacturingAuthority.mockResolvedValue(mockAuthority());
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        return Promise.resolve({
+          data: [
+            { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1200, angle: 45 },
+            { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1400, angle: 45 },
+          ],
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
     });
-    rpc.mockResolvedValue({ data: 'pos-1', error: null });
   });
 
-  it('rejects empty cutting plans without RPC', async () => {
-    const emptyCuts = {
-      ...sampleResult,
-      cuttingPlan: [],
-    };
+  it('rejects missing BOM design ledger without RPC write', async () => {
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
       expectedRevision: 1,
       designRevision: 1,
       bom: null,
-      optimizationResult: emptyCuts as never,
+      optimizationResult: sampleResult as never,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error).toMatch(/no cuts/i);
-    expect(rpc).not.toHaveBeenCalled();
+    expect(result.error).toMatch(/BOM cuttingLengths are missing/i);
+    expect(rpc).not.toHaveBeenCalledWith(
+      'record_fabricator_optimization_evidence',
+      expect.anything(),
+    );
   });
 
-  it('records via SECURITY DEFINER RPC with authority revision', async () => {
+  it('records with authority-bound kerf/trim and content fingerprint', async () => {
+    const contentFp = await approvedRuleContentFingerprint(authorityRules);
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
       expectedRevision: 2,
       designRevision: 2,
-      bom: {
-        qualification: { ruleVersion: 'rules-fixture' },
-      } as never,
+      bom: sampleBom as never,
       optimizationResult: sampleResult as never,
     });
     expect(result.ok).toBe(true);
     expect(rpc).toHaveBeenCalledWith(
       'record_fabricator_optimization_evidence',
       expect.objectContaining({
-        p_position_id: 'pos-1',
-        p_expected_revision: 2,
-        p_design_revision: 2,
-        p_system_pack_revision: 3,
-        p_rule_version: 'rules-fixture',
-        p_cut_count: 2,
+        p_rule_version: contentFp,
         p_evidence_payload: expect.objectContaining({
-          schema: 'almona.optimization-result',
-          schemaVersion: 1,
+          schemaVersion: 2,
+          kerfMm: 4,
+          trimMm: 0,
         }),
       }),
     );
-    const args = rpc.mock.calls[0]?.[1] as { p_ledger_fingerprint?: string };
-    expect(args.p_ledger_fingerprint?.length).toBeGreaterThanOrEqual(64);
   });
 
-  it('rejects unspecified rule versions without RPC', async () => {
-    resolveManufacturingAuthority.mockResolvedValue({
-      systemPack: { id: 'caluminium-ps', revision: 3 },
-      cuttingRules: [],
-      authorityApprovalId: 'auth-1',
+  it('rejects fabricated but internally consistent ledger/placement that disagrees with server pose', async () => {
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        // Server pose has different lengths than client fabricated pair
+        return Promise.resolve({
+          data: [
+            { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1100, angle: 45 },
+            { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1300, angle: 45 },
+          ],
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
     });
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
       expectedRevision: 1,
       designRevision: 1,
-      bom: null,
+      bom: sampleBom as never,
       optimizationResult: sampleResult as never,
-      ruleVersion: 'unspecified',
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error).toMatch(/rule version/i);
-    expect(rpc).not.toHaveBeenCalled();
+    expect(result.error).toMatch(/wrongly sized|missing cut|unexpected cut|mismatch/i);
+    expect(rpc).not.toHaveBeenCalledWith(
+      'record_fabricator_optimization_evidence',
+      expect.anything(),
+    );
   });
 
-  it('rejects stock overrun placements without RPC', async () => {
-    const overrun = {
+  it('rejects zero-kerf tampering against approved settings', async () => {
+    // Client cannot lower kerf: authority is 4; validation uses authority kerf.
+    // Simulate by authority kerf 4 and a plan that only fits at kerf 0.
+    const tight = {
       ...sampleResult,
       cuttingPlan: [
         {
-          stockLength: 1000,
+          stockLength: 6000,
           profile: { id: 'PS-FRAME' },
           cuts: [
-            { cutId: 'c1', componentId: 'c1', length: 800, angle: 45 },
-            { cutId: 'c2', componentId: 'c2', length: 800, angle: 45 },
+            { cutId: 'c1:0', length: 3000, angle: 0 },
+            { cutId: 'c1:1', length: 2996, angle: 0 },
+          ],
+        },
+      ],
+    };
+    const bom = {
+      profiles: [
+        {
+          id: 'c1',
+          profileCode: 'PS-FRAME',
+          cuttingLengths: [3000, 2996],
+          angles: [0, 0],
+        },
+      ],
+    };
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        return Promise.resolve({
+          data: [
+            { cutId: 'c1:0', profileId: 'PS-FRAME', length: 3000, angle: 0 },
+            { cutId: 'c1:1', profileId: 'PS-FRAME', length: 2996, angle: 0 },
+          ],
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
+    });
+    // lengths 3000+2996=5996; kerf 4*2=8 → 6004 > 6000
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: bom as never,
+      optimizationResult: tight as never,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/kerf\/trim|stock overrun/i);
+  });
+
+  it('rejects invented stock lengths not in approved catalogue', async () => {
+    const invented = {
+      ...sampleResult,
+      cuttingPlan: [
+        {
+          stockLength: 9999,
+          profile: { id: 'PS-FRAME' },
+          cuts: [
+            { cutId: 'c1:0', length: 1200, angle: 45 },
+            { cutId: 'c1:1', length: 1400, angle: 45 },
           ],
         },
       ],
@@ -135,27 +234,68 @@ describe('recordOptimizationEvidence (#67)', () => {
       positionId: 'pos-1',
       expectedRevision: 1,
       designRevision: 1,
-      bom: { qualification: { ruleVersion: 'rules-fixture' } } as never,
-      optimizationResult: overrun as never,
+      bom: sampleBom as never,
+      optimizationResult: invented as never,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error).toMatch(/stock overrun/i);
-    expect(rpc).not.toHaveBeenCalled();
+    expect(result.error).toMatch(/not in approved catalogue/i);
   });
 
-  it('surfaces authority resolution failures', async () => {
-    resolveManufacturingAuthority.mockRejectedValue(new Error('approved manufacturing authority is unavailable'));
+  it('rejects changed rule content under unchanged identifiers', async () => {
+    const contentFp = await approvedRuleContentFingerprint(authorityRules);
+    const tampered = [
+      {
+        ...authorityRules[0],
+        deductions: { endDeductionMm: 99 },
+      },
+    ];
+    const tamperedFp = await approvedRuleContentFingerprint(tampered);
+    expect(tamperedFp).not.toBe(contentFp);
+
+    resolveManufacturingAuthority.mockResolvedValue(
+      mockAuthority({ cuttingRules: tampered }),
+    );
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
       expectedRevision: 1,
       designRevision: 1,
-      bom: null,
+      bom: sampleBom as never,
+      optimizationResult: sampleResult as never,
+      ruleVersion: contentFp, // old fingerprint under same ruleId/revision
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/does not match approved cutting-rule content/i);
+  });
+
+  it('rejects free-form rule version labels', async () => {
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: sampleResult as never,
+      ruleVersion: 'rules-fixture',
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/does not match approved cutting-rule content/i);
+  });
+
+  it('surfaces authority resolution failures', async () => {
+    resolveManufacturingAuthority.mockRejectedValue(
+      new Error('approved manufacturing authority is unavailable'),
+    );
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
       optimizationResult: sampleResult as never,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.error).toMatch(/authority is unavailable/i);
-    expect(rpc).not.toHaveBeenCalled();
   });
 });

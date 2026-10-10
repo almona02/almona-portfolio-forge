@@ -1,6 +1,7 @@
-# Fabricator merge + staging readiness — 9 October 2026
+# Fabricator merge + staging readiness — 9–10 October 2026
 
-**Status:** Phase A **complete**. Phase B staging §5.2 **complete**. Phase C prod SQL (#71 then #72) **applied** with reject-only smoke. Live FINAL GOAL / §5.3 fixture walk still open.  
+**Status:** Phase A **complete**. Phase B staging §5.2 **complete**. Phase C prod SQL (#71 then #72) **applied** with reject-only smoke. **Authoritative binding + §5.3 staging positive chain complete** on `apnmoevmvihfzcnttctx`. Live FINAL GOAL on almona02.com still open.  
+Draft **#76** retained — **no production promote** of ledger/kerf or binding SQL without separate authorization.  
 **Do not force-push from this document.**
 
 Canonical scorecard: [FABRICATOR_SCORECARD_2026-10-09.md](../reviews/FABRICATOR_SCORECARD_2026-10-09.md).
@@ -17,23 +18,20 @@ Canonical scorecard: [FABRICATOR_SCORECARD_2026-10-09.md](../reviews/FABRICATOR_
 | 4 | [#70](https://github.com/almona02/almona-portfolio-forge/pull/70) | `8c7cf43a` | 2026-10-09T19:49:53Z |
 | 5 | [#73](https://github.com/almona02/almona-portfolio-forge/pull/73) | `8a1ac7d7` | 2026-10-09T19:52:27Z |
 
-`origin/main` tip: **`8a1ac7d7`**. Vercel Production / `eu-production` deployments recorded for that SHA.
-
-[#64](https://github.com/almona02/almona-portfolio-forge/pull/64) empty-DB replay remains open (parallel).
+`origin/main` tip at Phase C scorecard: **`8a1ac7d7`**. Vercel Production / `eu-production` deployments recorded for that SHA.  
+[#75](https://github.com/almona02/almona-portfolio-forge/pull/75) recorded Phase B/C docs. Draft [#76](https://github.com/almona02/almona-portfolio-forge/pull/76) carries authoritative binding + §5.3 staging walk.  
+[#64](https://github.com/almona02/almona-portfolio-forge/pull/64) empty-DB replay remains open (parallel); empty-DB prerequisites were applied to staging via MCP for §5.3.
 
 ---
 
-## 2. Staging target (Phase B Option A)
+## 2. Staging / prod DB
 
-| Field | Value |
-|---|---|
-| Name | `almona02-staging` |
-| Ref / project id | `apnmoevmvihfzcnttctx` |
-| Region | `eu-west-3` |
-| API URL | `https://apnmoevmvihfzcnttctx.supabase.co` |
-| Role | Staging / disposable |
+| Project | Ref | #71/#72 | Ledger/kerf | Authoritative binding | §5.3 walk |
+|---|---|---|---|---|---|
+| Staging `almona02-staging` | `apnmoevmvihfzcnttctx` | applied | applied | **applied** (`20261010020000`) | **PASS** (SQL + Auth login) |
+| Prod `almona02` | `shfsebdncjnncqqnewfj` | applied (Phase C) | **not applied** | **not applied** | n/a |
 
-Staging applied: stub manufacturing baseline + digest wrappers + #71 + #72. §5.2 smoke **pass**.
+Staging API: `https://apnmoevmvihfzcnttctx.supabase.co` (`eu-west-3`).
 
 ---
 
@@ -53,7 +51,8 @@ Staging applied: stub manufacturing baseline + digest wrappers + #71 + #72. §5.
 2. `fabricator_optimization_evidence_hardening` (#71)  
 3. `fabricator_hardener_applicability_metadata` (#72)  
 
-**Not included:** blanket manufacturing approval seeds; authority `provenance=seed`.
+**Not included:** blanket manufacturing approval seeds; authority `provenance=seed`.  
+**Not included:** ledger/kerf (`20261010010000_*`) or authoritative binding (`20261010020000_*`) — require separate promote auth.
 
 ### 3.2 Smoke RPCs (§5.2 reject-only) — **all passed** on prod
 
@@ -71,52 +70,88 @@ Staging applied: stub manufacturing baseline + digest wrappers + #71 + #72. §5.
 
 Artifact: `/opt/cursor/artifacts/phase-c-prod-smoke-results.log`.
 
-### 3.3 Still open
+---
 
-- §5.3 fixture walk (dedicated disposable project; not customer data)  
-- Live FINAL GOAL on almona02.com  
-- Optional full #64 empty-DB replay onto staging  
+## 4. Authoritative binding (draft #76)
+
+Migration `20261010020000_fabricator_evidence_authoritative_binding.sql` + TS mirror:
+
+1. **No placement fallback** — missing BOM/design ledger fails closed  
+2. **Server-derived ledger** — `derive_required_cuts_from_position` from saved pose; record ignores client `requiredCuts`  
+3. **Kerf/trim/stock authority** — `manufacturingSettings` + catalogue stock lengths; zero-kerf / invented stock rejected  
+4. **Rule content fingerprint** — deductions / allowances / applicability (not IDs alone); TS/SQL parity via `pgJsonbText`
+
+Prior ledger/kerf (`20261010010000_*`) remains: FP-023B accounting + multiset reconcile + `designFp||placementFp`.
+
+### Tests
+
+- Vitest: fabricated ledger, missing BOM, zero-kerf, invented stock, rule-content drift, free-form labels  
+- pgTAP: `fabricator_evidence_authoritative_binding_test.sql` + ledger/kerf suite  
+- Fixtures: authority payloads include `manufacturingSettings` + rule content  
+
+Artifacts: `/opt/cursor/artifacts/authoritative-binding-vitest.log`, `/opt/cursor/artifacts/staging-s53-positive-chain.log`.
 
 ---
 
-## 4. Digests (current)
+## 5. §5.3 fixture walk — status
+
+| Step | Status |
+|---|---|
+| Staging schema/RPC parity (empty-DB + manufacturing stack) | **done** on staging |
+| Dedicated Auth fixtures (owner + admin) | **done** — password login HTTP 200 |
+| Approval → optimization evidence (reject paths) | **done** |
+| Successful convert with ledger-bound evidence | **done** |
+| Release → QC → delivery | **done** |
+| Reload + fresh login persistence | **done** (SQL reload + Auth password re-login) |
+
+Script: `scripts/staging-s53-positive-chain.sql`.
+
+Still open: live FINAL GOAL on almona02.com; disposable-project walk on **prod** fixture (not customer data).
+
+---
+
+## 6. Digests (current)
 
 | Item | Value |
 |---|---|
-| Git SHA | `8a1ac7d7` |
+| Git SHA (Phase C tip) | `8a1ac7d7` |
 | Vercel Production | deploy recorded for `8a1ac7d7` |
-| Staging Supabase | `apnmoevmvihfzcnttctx` (#71/#72) |
-| Prod Supabase | `shfsebdncjnncqqnewfj` — tip includes #71/#72 names above |
+| Staging Supabase | `apnmoevmvihfzcnttctx` (#71/#72 + ledger/kerf + binding + §5.3) |
+| Prod Supabase | `shfsebdncjnncqqnewfj` — #71/#72 only |
 | Backend image digest | not captured this turn |
 
 ---
 
-## 5. Owner approval checklist
+## 7. Owner approval checklist
 
 ### Merge to `main` (code)
 
 - [x] Merge order #74 → #71 → #72 → #70 → #73  
 - [x] No auto SQL on merge/deploy  
 - [x] Production deploy SHA `8a1ac7d7`  
+- [ ] Merge draft #76 (authoritative binding) after review  
 
 ### Staging (Phase B)
 
 - [x] Option A staging project  
 - [x] Phase B SQL + §5.2 smoke  
-- [ ] §5.3 fixture walk  
+- [x] §5.3 fixture walk (disposable Auth + positive chain)  
 
 ### Production (Phase C)
 
-- [x] Separate authorization  
+- [x] Separate authorization for #71/#72  
 - [x] Apply #71 then #72 on prod  
 - [x] Reject-only smoke  
+- [ ] Separate authorization for ledger/kerf + binding promote  
 - [ ] Disposable-project post-deploy manufacturing walk  
 - [ ] Live FINAL GOAL scorecard update  
 
 ---
 
-## 6. Explicit non-claims
+## 8. Explicit non-claims
 
 - Prod §5.2 smoke ≠ manufacturing-qualified BOM on almona02.com  
+- Staging §5.3 disposable fixture ≠ live FINAL GOAL on almona02.com  
 - Closing `%-no-hardener` loophole ≠ live hardener workflow walk  
 - Estimate 10/18 metrics ≠ live FINAL GOAL  
+- Phase C #71/#72 grant does **not** authorize ledger/kerf or binding SQL promote  

@@ -42,6 +42,9 @@ export interface ApprovedProfileReference extends ApprovedAuthorityReference {
 export interface ApprovedRuleReference extends ApprovedAuthorityReference {
   readonly ruleId: string;
   readonly revision: number;
+  readonly deductions?: Readonly<Record<string, unknown>>;
+  readonly allowances?: Readonly<Record<string, unknown>>;
+  readonly applicability?: Readonly<Record<string, unknown>>;
 }
 
 export interface ApprovedGlazingSelection extends ApprovedAuthorityReference {
@@ -497,6 +500,9 @@ const approvedReferenceSchema = z.object({
 const ruleSchema = approvedReferenceSchema.extend({
   ruleId: z.string(),
   revision: z.number(),
+  deductions: z.record(z.unknown()).optional(),
+  allowances: z.record(z.unknown()).optional(),
+  applicability: z.record(z.unknown()).optional(),
 });
 
 const serializedContractSchema = z.object({
