@@ -4,6 +4,10 @@
  */
 
 import {
+  buildReachabilityHardener,
+  isApprovalsReachabilityFixtureActive,
+} from '@/lib/fabricator/approvals/approvalsReachabilityFixture';
+import {
   adminOverrideHardener,
   adminReviewHardener,
   adminRevokeHardener,
@@ -66,7 +70,13 @@ export function HardenerApprovalsPanel() {
   const [overrideReason, setOverrideReason] = useState<Record<string, string>>({});
   const [overrideEvidence, setOverrideEvidence] = useState<Record<string, string>>({});
 
+  const fixture = import.meta.env.DEV && isApprovalsReachabilityFixtureActive();
+
   const refresh = useCallback(async () => {
+    if (import.meta.env.DEV && isApprovalsReachabilityFixtureActive()) {
+      setRows(buildReachabilityHardener(5));
+      return;
+    }
     const pending = await listHardenerProposals('pending');
     if (!pending.ok) {
       setMessage(pending.error);
@@ -82,6 +92,12 @@ export function HardenerApprovalsPanel() {
   const run = async (id: string, action: () => Promise<{ ok: boolean; error?: string }>) => {
     setBusyId(id);
     setMessage('');
+    if (fixture) {
+      setBusyId(null);
+      setMessage('Hardener action recorded.');
+      setRows((prev) => prev.filter((r) => r.id !== id));
+      return;
+    }
     const result = await action();
     setBusyId(null);
     if (!result.ok) {
@@ -166,10 +182,13 @@ export function HardenerApprovalsPanel() {
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-2">
+                {/* bottom-* clears production FABs + manufacturing status bar */}
+                <div className="sticky bottom-20 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-[#0f0f0f]/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-[#0f0f0f]/80 sm:bottom-16">
                   <Button
                     size="sm"
                     disabled={busyId === row.id || failed.length > 0 || missing.length > 0}
+                    className="flex-1 sm:flex-none min-h-9"
+                    data-testid={`hardener-approve-${row.id}`}
                     onClick={() =>
                       void run(row.id, () => adminReviewHardener(row.id, 'approve', 'checks pass'))
                     }
@@ -180,6 +199,8 @@ export function HardenerApprovalsPanel() {
                     size="sm"
                     variant="outline"
                     disabled={busyId === row.id}
+                    className="flex-1 sm:flex-none min-h-9"
+                    data-testid={`hardener-reject-${row.id}`}
                     onClick={() =>
                       void run(row.id, () =>
                         adminReviewHardener(row.id, 'reject', 'rejected by admin'),
@@ -192,6 +213,8 @@ export function HardenerApprovalsPanel() {
                     size="sm"
                     variant="outline"
                     disabled={busyId === row.id}
+                    className="flex-1 sm:flex-none min-h-9"
+                    data-testid={`hardener-revoke-${row.id}`}
                     onClick={() =>
                       void run(row.id, () => adminRevokeHardener(row.id, 'revoked by admin'))
                     }
@@ -205,6 +228,7 @@ export function HardenerApprovalsPanel() {
                   <Input
                     placeholder="Reason (min 8 chars)"
                     value={overrideReason[row.id] ?? ''}
+                    data-testid={`hardener-override-reason-${row.id}`}
                     onChange={(e) =>
                       setOverrideReason((prev) => ({ ...prev, [row.id]: e.target.value }))
                     }
@@ -212,14 +236,16 @@ export function HardenerApprovalsPanel() {
                   <Input
                     placeholder="Supporting evidence ref"
                     value={overrideEvidence[row.id] ?? ''}
+                    data-testid={`hardener-override-evidence-${row.id}`}
                     onChange={(e) =>
                       setOverrideEvidence((prev) => ({ ...prev, [row.id]: e.target.value }))
                     }
                   />
                   <Button
                     size="sm"
-                    className="bg-amber-500 hover:bg-amber-600 text-black"
+                    className="bg-amber-500 hover:bg-amber-600 text-black w-full sm:w-auto min-h-9"
                     disabled={busyId === row.id || (overrideReason[row.id] ?? '').trim().length < 8}
+                    data-testid={`hardener-override-${row.id}`}
                     onClick={() =>
                       void run(row.id, () =>
                         adminOverrideHardener({
