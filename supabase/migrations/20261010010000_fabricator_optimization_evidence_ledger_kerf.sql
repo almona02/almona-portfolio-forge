@@ -84,14 +84,15 @@ BEGIN
       END LOOP;
     END IF;
     SELECT coalesce(array_agg(x ORDER BY x), ARRAY[]::TEXT[]) INTO v_cuts FROM unnest(v_cuts) AS x;
+    -- Placement digest uses payload-level machining only (plan overrides are non-authoritative).
     v_parts := array_append(
       v_parts,
       concat_ws(
         '|',
         v_profile,
         v_stock,
-        'kerf=' || coalesce(v_plan->>'kerfMm', v_kerf),
-        'trim=' || coalesce(v_plan->>'trimMm', v_trim),
+        'kerf=' || v_kerf,
+        'trim=' || v_trim,
         coalesce(array_to_string(v_cuts, ','), '')
       )
     );
@@ -286,23 +287,16 @@ BEGIN
       RAISE EXCEPTION 'cuttingPlan[%] has no placed cuts', i;
     END IF;
 
-    BEGIN
-      v_kerf := coalesce(
-        NULLIF(v_plan->>'kerfMm', '')::NUMERIC,
-        NULLIF(v_plan->'profile'->'specifications'->>'sawKerf', '')::NUMERIC,
-        v_payload_kerf
-      );
-      v_trim := coalesce(
-        NULLIF(v_plan->>'trimMm', '')::NUMERIC,
-        NULLIF(v_plan->'profile'->'specifications'->>'barEndTrim', '')::NUMERIC,
-        v_payload_trim
-      );
-    EXCEPTION WHEN others THEN
-      RAISE EXCEPTION 'kerfMm/trimMm must be non-negative numbers';
-    END;
-    IF v_kerf IS NULL OR v_kerf < 0 OR v_trim IS NULL OR v_trim < 0 THEN
-      RAISE EXCEPTION 'kerfMm/trimMm must be non-negative numbers';
+    -- Reject plan/profile machining overrides; only payload kerf/trim (authority-bound) apply.
+    IF v_plan ? 'kerfMm' OR v_plan ? 'trimMm'
+       OR (v_plan->'profile'->'specifications' ? 'sawKerf')
+       OR (v_plan->'profile'->'specifications' ? 'barEndTrim') THEN
+      RAISE EXCEPTION
+        'cuttingPlan[%] must not override kerfMm/trimMm (use approved payload machining settings)',
+        i;
     END IF;
+    v_kerf := v_payload_kerf;
+    v_trim := v_payload_trim;
 
     v_consumed := 0;
     FOR j IN 0 .. jsonb_array_length(v_plan->'cuts') - 1 LOOP

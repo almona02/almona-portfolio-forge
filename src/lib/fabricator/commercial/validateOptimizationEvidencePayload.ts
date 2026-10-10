@@ -96,12 +96,20 @@ function resolveBarKerfTrim(
   payload: OptimizationEvidencePayload,
   plan: OptimizationEvidencePayload['cuttingPlan'][number],
 ): { kerfMm: number; trimMm: number } | { error: string } {
-  const kerf = Number(
-    plan.kerfMm ?? plan.profile?.specifications?.sawKerf ?? payload.kerfMm,
-  );
-  const trim = Number(
-    plan.trimMm ?? plan.profile?.specifications?.barEndTrim ?? payload.trimMm,
-  );
+  // Plan/profile overrides are non-authoritative; only payload machining settings apply.
+  if (
+    plan.kerfMm != null ||
+    plan.trimMm != null ||
+    plan.profile?.specifications?.sawKerf != null ||
+    plan.profile?.specifications?.barEndTrim != null
+  ) {
+    return {
+      error:
+        'cuttingPlan must not override kerfMm/trimMm (use approved payload machining settings)',
+    };
+  }
+  const kerf = Number(payload.kerfMm);
+  const trim = Number(payload.trimMm);
   if (!Number.isFinite(kerf) || kerf < 0) {
     return { error: 'kerfMm must be a non-negative number' };
   }
@@ -394,8 +402,9 @@ export function pgJsonbText(value: unknown): string {
 export async function approvedRuleContentFingerprint(
   rules: ReadonlyArray<ApprovedRuleContent>,
 ): Promise<string> {
+  // Match SQL: missing evidenceStatus is excluded (fail-closed), not treated as approved.
   const parts = rules
-    .filter((r) => (r.evidenceStatus ?? 'approved') === 'approved')
+    .filter((r) => r.evidenceStatus === 'approved')
     .map((r) =>
       [
         r.approvalId ?? '',
@@ -415,7 +424,7 @@ export async function approvedRuleContentFingerprint(
 
 /** Fingerprint of approved machining settings + stocks + rule content (SQL parity). */
 export async function authorityContentFingerprint(input: {
-  manufacturingSettings: { sawKerfMm: number; trimCutMm: number };
+  manufacturingSettings: Record<string, unknown> | { sawKerfMm: number; trimCutMm: number };
   permittedStockLengths: number[];
   cuttingRules: ReadonlyArray<ApprovedRuleContent>;
 }): Promise<string> {
@@ -424,10 +433,8 @@ export async function authorityContentFingerprint(input: {
     .filter((s) => s > 0)
     .sort((a, b) => a - b)
     .join(',');
-  const settings = pgJsonbText({
-    sawKerfMm: input.manufacturingSettings.sawKerfMm,
-    trimCutMm: input.manufacturingSettings.trimCutMm,
-  });
+  // Mirror SQL: coalesce(authority->'manufacturingSettings', '{}')::text
+  const settings = pgJsonbText(input.manufacturingSettings ?? {});
   const canonical = [settings, `stocks=${stocks}`, `rules=${rulesFp}`].join('||');
   return sha256Hex(canonical);
 }

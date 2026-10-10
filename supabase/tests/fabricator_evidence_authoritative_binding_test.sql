@@ -12,7 +12,7 @@ $reset_pgtap$;
 
 BEGIN;
 SET LOCAL search_path TO public, extensions, pg_temp;
-SELECT plan(7);
+SELECT plan(8);
 
 SELECT throws_ok(
   $$SELECT * FROM public.authority_machining_settings('{"schema":"almona.manufacturing-authority"}'::jsonb)$$,
@@ -42,6 +42,15 @@ SELECT throws_ok(
   )$$,
   'kerfMm does not match approved manufacturing settings',
   'rejects zero-kerf tampering'
+);
+
+SELECT throws_ok(
+  $$SELECT * FROM public.validate_optimization_evidence_payload(
+    '{"schema":"almona.optimization-result","schemaVersion":2,"kerfMm":4,"trimMm":0,"requiredCuts":[{"cutId":"c1","profileId":"PS-FRAME","length":1200,"angle":45},{"cutId":"c2","profileId":"PS-FRAME","length":1400,"angle":45}],"cuttingPlan":[{"stockLength":2600,"kerfMm":0,"profile":{"id":"PS-FRAME"},"cuts":[{"cutId":"c1","length":1200,"angle":45},{"cutId":"c2","length":1400,"angle":45}]}]}'::jsonb,
+    2
+  )$$,
+  'cuttingPlan[0] must not override kerfMm/trimMm (use approved payload machining settings)',
+  'rejects plan-level zero-kerf override'
 );
 
 SELECT throws_ok(

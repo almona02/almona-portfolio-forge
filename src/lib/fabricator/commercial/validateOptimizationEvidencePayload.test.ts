@@ -206,7 +206,12 @@ describe('validateOptimizationEvidencePayload', () => {
 
   it('binds rule version to approved content, not free-form labels', async () => {
     const rules = [
-      { approvalId: 'b2000000-0000-4000-8000-000000000020', ruleId: 'ps-default', revision: 1 },
+      {
+        approvalId: 'b2000000-0000-4000-8000-000000000020',
+        ruleId: 'ps-default',
+        revision: 1,
+        evidenceStatus: 'approved',
+      },
     ];
     const label = canonicalApprovedRuleVersion(rules);
     const content = await approvedRuleContentFingerprint(rules);
@@ -214,5 +219,35 @@ describe('validateOptimizationEvidencePayload', () => {
     expect(content).toHaveLength(64);
     expect(label).not.toBe('rules-fixture');
     expect(content).not.toBe('rules-fixture');
+  });
+
+  it('excludes rules without explicit evidenceStatus=approved from content fingerprint', async () => {
+    const missingStatus = await approvedRuleContentFingerprint([
+      { approvalId: 'a', ruleId: 'r1', revision: 1 },
+    ]);
+    expect(missingStatus).toBe('');
+  });
+
+  it('rejects plan-level kerf/trim overrides (zero-kerf tampering path)', () => {
+    const result = validateOptimizationEvidencePayload(
+      {
+        ...validPayload,
+        cuttingPlan: [
+          {
+            stockLength: 2600,
+            kerfMm: 0,
+            profile: { id: 'PS-FRAME' },
+            cuts: [
+              { cutId: 'c1', length: 1200, angle: 45 },
+              { cutId: 'c2', length: 1400, angle: 45 },
+            ],
+          },
+        ],
+      },
+      2,
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/must not override kerfMm\/trimMm/i);
   });
 });
