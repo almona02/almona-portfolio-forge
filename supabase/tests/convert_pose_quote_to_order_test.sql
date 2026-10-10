@@ -32,17 +32,18 @@ INSERT INTO convert_opt_evidence(payload, cut_count) VALUES (
     'schemaVersion', 2,
     'kerfMm', 4,
     'trimMm', 0,
+    -- Client requiredCuts are ignored on record_*; cutIds must match derive (componentId:index).
     'requiredCuts', jsonb_build_array(
-      jsonb_build_object('cutId', 'c1', 'profileId', 'PS-FRAME', 'length', 1200, 'angle', 45),
-      jsonb_build_object('cutId', 'c2', 'profileId', 'PS-FRAME', 'length', 1400, 'angle', 45)
+      jsonb_build_object('cutId', 'c1:0', 'profileId', 'PS-FRAME', 'length', 1200, 'angle', 45),
+      jsonb_build_object('cutId', 'c1:1', 'profileId', 'PS-FRAME', 'length', 1400, 'angle', 45)
     ),
     'cuttingPlan', jsonb_build_array(
       jsonb_build_object(
         'stockLength', 6000,
         'profile', jsonb_build_object('id', 'PS-FRAME'),
         'cuts', jsonb_build_array(
-          jsonb_build_object('cutId', 'c1', 'length', 1200, 'angle', 45),
-          jsonb_build_object('cutId', 'c2', 'length', 1400, 'angle', 45)
+          jsonb_build_object('cutId', 'c1:0', 'length', 1200, 'angle', 45),
+          jsonb_build_object('cutId', 'c1:1', 'length', 1400, 'angle', 45)
         )
       )
     )
@@ -75,15 +76,28 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.fabricator_positions_v2(
   id, project_id, owner_user_id, overall_width_mm, overall_height_mm, system_pack_id,
-  qc_revision, status, optimization, quantity
+  qc_revision, status, optimization, quantity, components
 ) VALUES (
   '33000000-0000-0000-0000-000000000001',
   '23000000-0000-0000-0000-000000000001',
   '13000000-0000-0000-0000-000000000001',
-  1200, 1500, 'caluminium-ps', 1, 'measuring', NULL, 1
+  1200, 1500, 'caluminium-ps', 1, 'measuring', NULL, 1,
+  jsonb_build_array(
+    jsonb_build_object(
+      'id', 'c1',
+      'profile', jsonb_build_object('id', 'PS-FRAME', 'profileCode', 'PS-FRAME'),
+      'cuttingLengths', jsonb_build_array(1200, 1400),
+      'angles', jsonb_build_array(45, 45),
+      'quantity', 1
+    )
+  )
 )
 ON CONFLICT (id) DO UPDATE
-  SET status = 'measuring', optimization = NULL, quantity = 1, system_pack_id = 'caluminium-ps';
+  SET status = 'measuring',
+      optimization = NULL,
+      quantity = 1,
+      system_pack_id = 'caluminium-ps',
+      components = EXCLUDED.components;
 
 CREATE TEMP TABLE convert_auth_rev (
   system_pack_revision BIGINT NOT NULL
@@ -229,7 +243,7 @@ SELECT lives_ok(
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT placement_fp FROM convert_opt_evidence LIMIT 1),
     (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
-    (SELECT public.canonical_approved_rule_version(
+    (SELECT public.approved_rule_content_fingerprint(
       a.authority_payload->'cuttingRules'
     ) FROM public.fabricator_manufacturing_authority_revisions a
      WHERE a.system_pack_id = 'caluminium-ps' AND a.revoked_at IS NULL
@@ -240,21 +254,15 @@ SELECT lives_ok(
   'owner can record optimization evidence'
 );
 
--- 2b) Reject stock overrun placement (kerf/trim aware)
+-- 2b) Reject stock overrun (kerf-aware) at validate — lengths fit raw stock but not with kerf
 INSERT INTO convert_order_test_output(result)
 SELECT throws_ok(
-  format(
-    $fmt$SELECT public.record_fabricator_optimization_evidence(
-      '33000000-0000-0000-0000-000000000001',
-      %s, %s, 'deadbeefdeadbeef', %s, 'rules-v1', 2,
-      '{"schema":"almona.optimization-result","schemaVersion":2,"kerfMm":4,"trimMm":0,"requiredCuts":[{"cutId":"a","profileId":"PS-FRAME","length":800,"angle":0},{"cutId":"b","profileId":"PS-FRAME","length":800,"angle":0}],"cuttingPlan":[{"stockLength":1000,"profile":{"id":"PS-FRAME"},"cuts":[{"cutId":"a","length":800,"angle":0},{"cutId":"b","length":800,"angle":0}]}]}'::jsonb
-    )$fmt$,
-    (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
-    (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
-    (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1)
-  ),
-  'cuttingPlan[0] stock overrun (consumed 1608 mm > stock 1000 mm including kerf/trim)',
-  'stock overrun rejected when recording evidence'
+  $fmt$SELECT * FROM public.validate_optimization_evidence_payload(
+    '{"schema":"almona.optimization-result","schemaVersion":2,"kerfMm":4,"trimMm":0,"requiredCuts":[{"cutId":"c1:0","profileId":"PS-FRAME","length":1200,"angle":45},{"cutId":"c1:1","profileId":"PS-FRAME","length":1400,"angle":45}],"cuttingPlan":[{"stockLength":2600,"profile":{"id":"PS-FRAME"},"cuts":[{"cutId":"c1:0","length":1200,"angle":45},{"cutId":"c1:1","length":1400,"angle":45}]}]}'::jsonb,
+    2
+  )$fmt$,
+  'cuttingPlan[0] stock overrun (consumed 2608 mm > stock 2600 mm including kerf/trim)',
+  'stock overrun rejected when validating evidence'
 );
 
 -- 2c) Reject placeholder ledger fingerprint
@@ -268,7 +276,7 @@ SELECT throws_ok(
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
-    (SELECT public.canonical_approved_rule_version(
+    (SELECT public.approved_rule_content_fingerprint(
       a.authority_payload->'cuttingRules'
     ) FROM public.fabricator_manufacturing_authority_revisions a
      WHERE a.system_pack_id = 'caluminium-ps' AND a.revoked_at IS NULL
