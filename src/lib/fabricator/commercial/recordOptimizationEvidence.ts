@@ -74,7 +74,7 @@ function buildEvidencePayload(
     kerfMm,
     trimMm,
     requiredCuts,
-    cuttingPlan: result.cuttingPlan,
+    cuttingPlan: result.cuttingPlan as OptimizationEvidencePayload['cuttingPlan'],
   };
 }
 

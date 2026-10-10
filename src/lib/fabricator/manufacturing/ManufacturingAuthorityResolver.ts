@@ -22,9 +22,9 @@ const profileSchema = approvedReferenceSchema.extend({
 const ruleSchema = approvedReferenceSchema.extend({
   ruleId: z.string().min(1),
   revision: z.number().int().positive(),
-  deductions: z.unknown().optional(),
-  allowances: z.unknown().optional(),
-  applicability: z.unknown().optional(),
+  deductions: z.record(z.unknown()).optional(),
+  allowances: z.record(z.unknown()).optional(),
+  applicability: z.record(z.unknown()).optional(),
 });
 const manufacturingSettingsSchema = z.object({
   sawKerfMm: z.number().finite().nonnegative(),

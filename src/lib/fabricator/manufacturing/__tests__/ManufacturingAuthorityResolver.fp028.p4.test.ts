@@ -50,12 +50,13 @@ describe('FP-028 / P4.5 manufacturing authority resolver', () => {
   });
 
   it('rejects authority missing manufacturingSettings', () => {
-    const invalid = row();
-    const payload = { ...invalid.authority_payload };
+    const payload = { ...row().authority_payload };
     delete (payload as { manufacturingSettings?: unknown }).manufacturingSettings;
-    invalid.authority_payload = payload;
     expect(() =>
-      parseManufacturingAuthorityRpcRow(invalid, { positionId: 'position-a', revision: 7 }),
+      parseManufacturingAuthorityRpcRow(
+        { ...row(), authority_payload: payload },
+        { positionId: 'position-a', revision: 7 },
+      ),
     ).toThrowError(ManufacturingAuthorityResolutionError);
   });
 
@@ -71,8 +72,10 @@ describe('FP-028 / P4.5 manufacturing authority resolver', () => {
   });
 
   it('rejects unapproved or structurally incomplete authority payloads', () => {
-    const invalid = row();
-    invalid.authority_payload = { ...invalid.authority_payload, profiles: [] };
+    const invalid: ManufacturingAuthorityRpcRow = {
+      ...row(),
+      authority_payload: { ...row().authority_payload, profiles: [] },
+    };
     try {
       parseManufacturingAuthorityRpcRow(invalid, { positionId: 'position-a', revision: 7 });
       throw new Error('Expected invalid authority rejection.');
