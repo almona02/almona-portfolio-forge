@@ -1,7 +1,8 @@
 # Fabricator scorecard — 9–10 October 2026
 
 **Assessment: 88/100 provisional** (implementation + CI + staging §5.2/§5.3 + prod Phase C SQL smoke; live FINAL GOAL open).  
-**Live acceptance on almona02.com: not demonstrated.** Do not treat this score as FINAL GOAL completion.
+**Live acceptance on almona02.com: not demonstrated.** Do not treat this score as FINAL GOAL completion.  
+**Oct 10 execution pack:** [OCT10_READINESS_EXECUTION_2026-10-10.md](./OCT10_READINESS_EXECUTION_2026-10-10.md). Composite **held at 88** — no new browser FINAL GOAL evidence.
 
 Canonical prior scorecard: [FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md](../plans/FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md).  
 Staging / promote plan: [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../plans/FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md).
@@ -10,11 +11,12 @@ Staging / promote plan: [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../pla
 
 | Artifact | Status |
 |---|---|
-| `origin/main` tip (Phase C) | **`8a1ac7d7`** — merge #74 → #71 → #72 → #70 → #73 |
-| PR #74–#73 | **merged** (see plan §1) |
-| PR #75 | Phase B/C scorecard docs **merged** |
-| PR #76 (draft) | authoritative binding + §5.3 staging walk — **keep draft** |
+| `origin/main` tip | **`f27f0317`** (#75) on Phase C chain `8a1ac7d7` |
+| PR #74–#73 / #75 | **merged** |
+| PR #76 | OPEN — plan-level kerf authority fix + convert pgTAP sync; **no prod SQL** |
 | PR #64 empty-DB replay | open draft (parallel); empty-DB applied to staging via MCP |
+| Main protection / rulesets | **unprotected** (404 + `[]`); [proposal](../governance/MAIN_BRANCH_PROTECTION_PROPOSAL_2026-10-10.md) not applied |
+| FP-027 machine export | **OPEN / UNPROVEN** — Caluminium 414/489 cannot close |
 | Vercel Production | deploy recorded for `8a1ac7d7` |
 | Staging `apnmoevmvihfzcnttctx` | #71/#72 + ledger/kerf + binding; §5.2 smoke + §5.3 positive chain **PASS** |
 | Prod `shfsebdncjnncqqnewfj` | #71/#72 Phase C + §5.2 reject-only smoke **pass** (`evil-no-hardener` **true**); ledger/kerf + binding **not applied** |
@@ -115,13 +117,14 @@ CI workflow: `.github/workflows/fabricator-measured-pooled-e2e.yml`.
 
 ## Remaining blockers → next action
 
-1. ~~Merge chain~~ **done** (`8a1ac7d7`).
-2. ~~Staging Option A + §5.2~~ **done**.
+1. ~~Merge chain~~ **done** (`8a1ac7d7` / tip `f27f0317`).
+2. ~~Staging Option A + §5.2 / §5.3~~ **done**.
 3. ~~Phase C prod #71/#72~~ **done** (owner grant).
-4. ~~Staging §5.3 positive chain~~ **done** (draft #76).
-5. Merge draft #76 after review.
+4. **Owner:** apply main protection/rulesets (proposal only — not auto-applied).
+5. Merge #76 after protection + review + green CI on post-fix tip.
 6. **Separate owner authorization** before any prod apply of `20261010010000_*` / `20261010020000_*`.
-7. Live FINAL GOAL on almona02.com → honest scorecard close.
+7. FP-027 DoWin ORTA conservation evidence (export remains blocked).
+8. Browser FINAL GOAL (staging then disposable prod) → honest scorecard close.
 
 ## Explicit non-claims
 
