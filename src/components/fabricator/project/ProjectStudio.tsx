@@ -33,7 +33,7 @@ import { toast } from 'sonner';
 import { EngineeringBay } from '../EngineeringBay';
 import { ProjectBOMAggregate } from './ProjectBOMAggregate';
 import { ProjectOptimizationEstimateView } from './ProjectOptimizationEstimateView';
-import { optimizeProjectEstimate, type ProjectOptimizationEstimate } from '@/lib/fabricator/production/ProjectOptimizationEstimate';
+import { optimizeProjectEstimate, optimizeProjectEstimateWithDesignParity, type ProjectOptimizationEstimate } from '@/lib/fabricator/production/ProjectOptimizationEstimate';
 import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { ProjectQuote } from './ProjectQuote';
 import { ProjectQuoteSummary } from './ProjectQuoteSummary';
@@ -243,23 +243,25 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         } else setEstimate(null);
     }, [project.units, engineeringPacks, projectMeta?.meta]);
     const runProjectOptimization = useCallback(() => {
-        try {
-            const result = optimizeProjectEstimate(project.units, engineeringPacks);
-            setEstimate(result);
-            setWorkflowStage('optimize');
-            if (useV2 && projectMeta) {
-                updateProject.mutate({ projectId: projectMeta.id, updates: { meta: {
-                    ...(projectMeta.meta as Record<string, unknown> ?? {}),
-                    cutting_estimate: { ...result, sourceReceipt: estimateSource(project.units, engineeringPacks), generatedAt: new Date().toISOString(), sourcePositions: project.units.map(unit => ({ id: unit.id, updatedAt: unit.updatedAt })) },
-                } } }, {
-                    onSuccess: data => data ? toast.success('Project cutting estimate saved') : toast.error('Estimate calculated but project save returned no receipt'),
-                    onError: () => toast.error('Estimate calculated but saving failed. Retry before leaving.'),
-                });
-            } else toast.success('Project cutting estimate calculated');
-        } catch (error) {
-            setEstimate(null);
-            toast.error('Project estimate blocked', { description: error instanceof Error ? error.message : 'Saved cut ledgers could not be resolved.' });
-        }
+        void (async () => {
+            try {
+                const result = await optimizeProjectEstimateWithDesignParity(project.units, engineeringPacks);
+                setEstimate(result);
+                setWorkflowStage('optimize');
+                if (useV2 && projectMeta) {
+                    updateProject.mutate({ projectId: projectMeta.id, updates: { meta: {
+                        ...(projectMeta.meta as Record<string, unknown> ?? {}),
+                        cutting_estimate: { ...result, sourceReceipt: estimateSource(project.units, engineeringPacks), generatedAt: new Date().toISOString(), sourcePositions: project.units.map(unit => ({ id: unit.id, updatedAt: unit.updatedAt })) },
+                    } } }, {
+                        onSuccess: data => data ? toast.success('Project cutting estimate saved') : toast.error('Estimate calculated but project save returned no receipt'),
+                        onError: () => toast.error('Estimate calculated but saving failed. Retry before leaving.'),
+                    });
+                } else toast.success('Project cutting estimate calculated');
+            } catch (error) {
+                setEstimate(null);
+                toast.error('Project estimate blocked', { description: error instanceof Error ? error.message : 'Saved cut ledgers could not be resolved.' });
+            }
+        })();
     }, [project.units, engineeringPacks, useV2, projectMeta, updateProject]);
 
     return (

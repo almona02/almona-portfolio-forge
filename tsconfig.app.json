@@ -42,5 +42,8 @@
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "src/**/*.node.test.ts"
   ]
 }

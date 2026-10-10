@@ -2,6 +2,10 @@ import { estimateSource } from '@/lib/fabricator/production/estimateSource';
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useDeletePose, useUpsertPose, useUpdateProject } from '@/hooks/useFabricatorQueries';
 import { PresetAwareBOMGenerator, type CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
+import {
+  resolveExpectedDesignLedger,
+  savedLedgerNeedsMaterialize,
+} from '@/lib/fabricator/bom/ledgerParity';
 import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
@@ -197,6 +201,27 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
           }
           const qty = pos.quantity ?? 1;
           if (!Number.isSafeInteger(qty) || qty < 1) throw new Error('Pose quantity must be a positive integer.');
+
+          // Pricing persists an exact design multiset ledger (profile/length/angle),
+          // not count-only. Materialize when saved ≠ expected; never invent partial cuts.
+          const required = bom.qualification.requiredPieceCount;
+          const expectedLedger = await resolveExpectedDesignLedger(pos, pattern, pack);
+          if (expectedLedger.reduce((s, c) => s + c.cuttingLengths.length, 0) !== required) {
+            throw new Error(`Incomplete profile ledger: synthesised ${expectedLedger.reduce((s, c) => s + c.cuttingLengths.length, 0)}/${required} required pieces.`);
+          }
+          if (projectId && savedLedgerNeedsMaterialize(pos.components, expectedLedger)) {
+            await upsertPose.mutateAsync({
+              windowUnit: {
+                ...pos,
+                projectId,
+                components: expectedLedger,
+                optimization: null,
+                updatedAt: new Date(),
+              },
+              grid: pos.grid as Record<string, unknown> | undefined,
+              selectedPreset: pos.presetId,
+            });
+          }
           positionBOMs.set(pos.id, bom);
 
           totalProfiles += bom.profiles.reduce((sum, profile) => sum + profile.cuttingLengths.length, 0) * qty;
@@ -264,7 +289,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
     } finally {
       if (generation === aggregationGeneration.current) setIsAggregating(false);
     }
-  }, [positions, engineeringPacks, projectId, projectMeta, updateProject]);
+  }, [positions, engineeringPacks, projectId, projectMeta, updateProject, upsertPose]);
 
   return (
     <div className="h-full overflow-auto p-6 space-y-6 bg-[#0a0a0a]">

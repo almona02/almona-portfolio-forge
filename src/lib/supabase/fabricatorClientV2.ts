@@ -4,7 +4,14 @@
  */
 
 import type { Database } from '@/types/database';
-import type { WindowUnit } from '@/types/fabricator';
+import {
+  designFingerprintFromWindowUnit,
+  mergeComponentsForSave,
+  mergeSelectedPresetForSave,
+  readCutLedgerDesignFingerprint,
+  withCutLedgerMeta,
+} from '@/lib/fabricator/bom/preserveCutLedger';
+import type { WindowComponent, WindowUnit } from '@/types/fabricator';
 import { supabase } from '../supabase';
 
 type ProjectV2Insert = Database['public']['Tables']['fabricator_projects_v2']['Insert'];
@@ -280,7 +287,12 @@ export const fabricatorClientV2 = {
   async savePose(
     windowUnit: WindowUnit,
     ownerUserId: string,
-    options?: { grid?: Record<string, unknown>; selectedPreset?: string }
+    options?: {
+      grid?: Record<string, unknown>;
+      selectedPreset?: string;
+      /** Explicit clear of manufacturing cut ledger + optimization. */
+      clearCutLedger?: boolean;
+    }
   ): Promise<{ projectId: string; poseId: string }> {
     const projectCode = windowUnit.projectCode || windowUnit.orderNumber;
     const siteName =
@@ -358,6 +370,95 @@ export const fabricatorClientV2 = {
     });
 
     const now = new Date().toISOString();
+
+    // Load existing row for fingerprint-gated ledger merge. Read errors are hard failures.
+    type ExistingPoseSlice = {
+      id: string;
+      components: unknown;
+      selected_preset: string | null;
+      position_meta: Record<string, unknown> | null;
+      optimization: Record<string, unknown> | null;
+      overall_width_mm: number | null;
+      overall_height_mm: number | null;
+      type: string | null;
+      system_pack_id: string | null;
+      grid: Record<string, unknown> | null;
+    };
+    let existing: ExistingPoseSlice | null = null;
+    if (isUuid(windowUnit.id)) {
+      const { data: byId, error: byIdErr } = await supabase
+        .from('fabricator_positions_v2')
+        .select('id, components, selected_preset, position_meta, optimization, overall_width_mm, overall_height_mm, type, system_pack_id, grid')
+        .eq('id', windowUnit.id)
+        .eq('owner_user_id', ownerUserId)
+        .maybeSingle();
+      if (byIdErr) {
+        throw new Error(`Failed to load existing pose for ledger merge: ${persistenceErrorMessage(byIdErr)}`);
+      }
+      if (byId?.id) existing = byId as ExistingPoseSlice;
+    }
+    if (!existing) {
+      const { data: byPos, error: byPosErr } = await supabase
+        .from('fabricator_positions_v2')
+        .select('id, components, selected_preset, position_meta, optimization, overall_width_mm, overall_height_mm, type, system_pack_id, grid')
+        .eq('project_id', projectId)
+        .eq('owner_user_id', ownerUserId)
+        .eq('pos_number', windowUnit.posNumber)
+        .maybeSingle();
+      if (byPosErr) {
+        throw new Error(`Failed to load existing pose for ledger merge: ${persistenceErrorMessage(byPosErr)}`);
+      }
+      if (byPos?.id) existing = byPos as ExistingPoseSlice;
+    }
+
+    const resolvedGrid: Record<string, unknown> | null =
+      options?.grid && Number(options.grid.cols) > 0 && Number(options.grid.rows) > 0
+        ? options.grid
+        : (windowUnit.grid && Number(windowUnit.grid.cols) > 0 && Number(windowUnit.grid.rows) > 0
+          ? (windowUnit.grid as unknown as Record<string, unknown>)
+          : null);
+    const incomingDesignFingerprint = designFingerprintFromWindowUnit(
+      {
+        ...windowUnit,
+        presetId: options?.selectedPreset ?? windowUnit.presetId,
+        grid: (resolvedGrid as unknown as WindowUnit['grid']) ?? windowUnit.grid,
+      },
+      resolvedGrid,
+    );
+    const existingDesignFingerprint = existing
+      ? (readCutLedgerDesignFingerprint(existing.position_meta)
+        ?? designFingerprintFromWindowUnit({
+          overallWidth: Number(existing.overall_width_mm),
+          overallHeight: Number(existing.overall_height_mm),
+          type: existing.type ?? '',
+          systemPackId: existing.system_pack_id ?? '',
+          presetId: existing.selected_preset ?? '',
+          grid: (existing.grid as unknown as WindowUnit['grid']) ?? undefined,
+        }))
+      : null;
+    const existingComponents = Array.isArray(existing?.components)
+      ? (existing!.components as WindowComponent[])
+      : [];
+    const ledgerMerge = mergeComponentsForSave({
+      incoming: windowUnit.components,
+      existing: existingComponents,
+      incomingDesignFingerprint,
+      existingDesignFingerprint,
+      intentionalClear: options?.clearCutLedger === true,
+    });
+    const components = ledgerMerge.components;
+    const selectedPreset = mergeSelectedPresetForSave(
+      options?.selectedPreset,
+      existing?.selected_preset ?? null,
+    );
+    const positionMeta = withCutLedgerMeta(
+      (windowUnit.positionMeta ?? existing?.position_meta ?? {}) as Record<string, unknown>,
+      ledgerMerge.designFingerprint,
+    );
+    const optimization = ledgerMerge.clearOptimization
+      ? null
+      : (windowUnit.optimization ?? existing?.optimization ?? null);
+
     const positionPayload: PositionV2Update & Partial<PositionV2Insert> = {
       project_id: projectId,
       owner_user_id: ownerUserId,
@@ -371,19 +472,19 @@ export const fabricatorClientV2 = {
       system_pack_id: windowUnit.systemPackId ?? null,
       status: windowUnit.status ?? 'draft',
       quantity: windowUnit.quantity ?? 1,
-      position_meta: (windowUnit.positionMeta ?? {}) as Record<string, unknown>,
+      position_meta: positionMeta,
       meta: { poseId: windowUnit.id, projectCode, saved_at: now },
-      optimization: windowUnit.optimization ?? null,
-      grid: options?.grid && Number(options.grid.cols) > 0 && Number(options.grid.rows) > 0
-        ? options.grid
-        : (windowUnit.grid && Number(windowUnit.grid.cols) > 0 && Number(windowUnit.grid.rows) > 0
-          ? windowUnit.grid as Record<string, unknown>
-          : null),
-      components: windowUnit.components ?? [],
+      optimization,
+      grid: resolvedGrid,
+      components,
       hardware: (windowUnit.hardware ?? {}) as Record<string, unknown>,
-      selected_preset: options?.selectedPreset ?? null,
+      selected_preset: selectedPreset,
       window_unit: {
         ...windowUnit,
+        components,
+        positionMeta,
+        optimization,
+        presetId: selectedPreset ?? windowUnit.presetId,
         createdAt: windowUnit.createdAt instanceof Date ? windowUnit.createdAt.toISOString() : windowUnit.createdAt,
         updatedAt: now,
         projectCode,
@@ -392,41 +493,16 @@ export const fabricatorClientV2 = {
       updated_at: now,
     };
 
-    if (isUuid(windowUnit.id)) {
-        const { data: existingPos } = await supabase
-        .from('fabricator_positions_v2')
-        .select('id')
-        .eq('id', windowUnit.id)
-        .eq('owner_user_id', ownerUserId)
-        .maybeSingle();
+    const existingPoseId = existing?.id ?? null;
 
-        if (existingPos?.id) {
-        const { error: upErr } = await supabase
-            .from('fabricator_positions_v2')
-            .update(positionPayload)
-            .eq('id', windowUnit.id)
-            .eq('owner_user_id', ownerUserId);
-        if (upErr) throw new Error(persistenceErrorMessage(upErr));
-        return { projectId, poseId: windowUnit.id };
-        }
-    }
-
-    const { data: existingByPos } = await supabase
-      .from('fabricator_positions_v2')
-      .select('id')
-      .eq('project_id', projectId)
-      .eq('owner_user_id', ownerUserId)
-      .eq('pos_number', windowUnit.posNumber)
-      .maybeSingle();
-
-    if (existingByPos?.id) {
+    if (existingPoseId) {
       const { error: upErr } = await supabase
         .from('fabricator_positions_v2')
         .update(positionPayload)
-        .eq('id', existingByPos.id)
+        .eq('id', existingPoseId)
         .eq('owner_user_id', ownerUserId);
       if (upErr) throw new Error(persistenceErrorMessage(upErr));
-      return { projectId, poseId: existingByPos.id };
+      return { projectId, poseId: existingPoseId };
     }
 
     const insertPayload = { ...positionPayload };
