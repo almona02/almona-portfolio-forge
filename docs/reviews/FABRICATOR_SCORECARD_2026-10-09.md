@@ -1,41 +1,39 @@
 # Fabricator scorecard — 9 October 2026
 
-**Assessment: 82/100 provisional** (implementation + local/CI stack).  
+**Assessment: 88/100 provisional** (implementation + CI + staging §5.2 + prod Phase C SQL smoke).  
 **Live acceptance on almona02.com: not demonstrated.** Do not treat this score as FINAL GOAL completion.
 
 Canonical prior scorecard: [FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md](../plans/FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md).  
-Staging plan (awaiting auth): [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../plans/FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md).
+Staging / promote plan: [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../plans/FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md).
 
 ## Independent head verification (refreshed)
 
 | Artifact | Status |
 |---|---|
-| `origin/main` (pre-#73) | `8c7cf43a` — merged #74 → #71 → #72 → #70 |
-| PR #74 Profile Studio | **merged** `4786a26e` |
-| PR #71 optimization evidence | **merged** `a4dd770b` |
-| PR #72 hardener applicability | **merged** `71d9e059` |
-| PR #70 measuring | **merged** `8c7cf43a` |
-| PR #73 measured pooled E2E | landing (this PR) |
+| `origin/main` tip | **`8a1ac7d7`** — merge #74 → #71 → #72 → #70 → #73 |
+| PR #74–#73 | **merged** (see plan §1) |
 | PR #64 empty-DB replay | open draft (parallel) |
-
-Merge + staging readiness: [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../plans/FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md) — **awaiting owner merge/staging auth**.
+| Vercel Production | deploy recorded for `8a1ac7d7` |
+| Staging Supabase `apnmoevmvihfzcnttctx` | #71+#72 applied; §5.2 smoke **pass** |
+| Prod Supabase `shfsebdncjnncqqnewfj` | #71+#72 applied (Phase C); §5.2 reject-only smoke **pass**; `evil-no-hardener` now **true** |
 
 ## Layer scores (separate — do not flatten)
 
 | Layer | Score | Meaning |
 |---|---|---|
 | **Verified implementation** | **~94** | Product surface + stack code largely present |
-| **Current-head CI** | **~96** | #70–#74 tips green / mergeable |
-| **Local / staging acceptance** | **~48** | Estimate 10/18 metrics; **no staging Supabase project** identified |
-| **Live acceptance** | **~35** | Prod has prior manufacturing SQL; FINAL GOAL walk **not run** |
-| **Production readiness** | **NOT READY** | Merge authorized separately from Phase B/C SQL |
+| **Current-head CI** | **~96** | Merge chain landed; tip deploy green |
+| **Local / staging acceptance** | **~62** | Estimate 10/18 + staging §5.2; §5.3 fixture walk open |
+| **Live acceptance** | **~55** | Prod SQL hardenings live; FINAL GOAL walk **not run** |
+| **Production readiness** | **PARTIAL** | Phase C SQL done; live manufacturing walk still required |
 
-Composite provisional **82/100** remains. Raising live acceptance requires Phase B/C evidence in the staging plan.
+Composite provisional **84 → 88/100** after Phase C SQL + smoke. Raising further needs §5.3 / live FINAL GOAL.
 
-## READ-ONLY deploy / DB audit (no repairs)
+## READ-ONLY deploy / DB audit (post Phase C)
 
-Confirmed on `shfsebdncjnncqqnewfj`: admin workflow, convert, hardener migrations (`20261009001810`…`02244`), RPCs, RLS, hardener triggers.  
-Drift: local filenames ≠ applied versions; prod still name-lists `%-no-hardener` until #72 authorized. Frontend prod SHA ≠ open PR tips.
+Prod tip migrations now include `fabricator_optimization_evidence_hardening` and `fabricator_hardener_applicability_metadata` (plus digest wrappers).  
+Pre-apply: `system_pack_requires_hardener('evil-no-hardener')` was **false** (LIKE loophole). Post-apply: **true**.  
+Evidence table row count at apply: **0**. `is_admin(uuid)` restored to profiles-based definition after smoke.
 
 ## Measured pooled E2E (`estimate_only`)
 
@@ -66,28 +64,26 @@ npm run test -- --run src/lib/fabricator/__tests__/manufacturingChain.caluminium
 |---|---|
 | Classification | `estimate_only` / not manufacturing-eligible |
 | Positions / units | **10 / 18** |
-| Distinct pattern×size signatures | **10** (`sliding-2s`, `sliding-4s`, `sliding-3s-center-fixed`, `sliding-door-2p`) |
+| Distinct pattern×size signatures | **10** |
 | Placed / unplaced cuts | **489 / 0** |
 | Bars | **124** |
 | Kerf / trim | **4 mm / 0 mm** |
 | Waste | **47894 mm** |
 | Efficiency | **93.56%** |
-| Area | **76.68 m²** (per-pose sum; ≠ uniform 30.24) |
+| Area | **76.68 m²** |
 | Reload / fresh login | **not run** |
 | Live project persistence | **not run** |
 
-CI workflow: `.github/workflows/fabricator-measured-pooled-e2e.yml` asserts both metric files.
+CI workflow: `.github/workflows/fabricator-measured-pooled-e2e.yml`.
 
 ## PR #70 measuring verification
 
 | Check | Result |
 |---|---|
-| Type-delta / build / constitutional (tip `91c2a4d0`) | **pass** |
 | Layout templates vs certified packs | **implemented** |
 | Color/glazing confirm (no silent save) | **implemented** |
-| Mobile Vitest | **pass** |
-| RTL + desktop Vitest | **pass** (`SmartMeasuringInterface.rtlDesktop.test.tsx`) |
-| Live save → reload → BOM (auth UI) | **partial** — prior preview E2E; not re-run this tip |
+| Mobile / RTL Vitest | **pass** |
+| Live save → reload → BOM (auth UI) | **partial** |
 
 ## FINAL GOAL checklist
 
@@ -95,25 +91,25 @@ CI workflow: `.github/workflows/fabricator-measured-pooled-e2e.yml` asserts both
 |---|---|
 | Dedicated user, customer, project | **not run** |
 | Custom system pack + profiles/roles/stock | **not run** |
-| 10 genuinely different poses / 18 units | **partial** — diverse estimate fixture local; live project open |
-| Complete BOM + optimize >100 placed cuts | **partial** — estimate 489 cuts (diverse) / 414 (uniform) |
-| Quantities, area, bars, trim, kerf, waste, zero unplaced | **partial** — estimate metrics; manufacturing ledger open |
+| 10 genuinely different poses / 18 units | **partial** — diverse estimate fixture |
+| Complete BOM + optimize >100 placed cuts | **partial** — estimate 489 / 414 |
+| Quantities, area, bars, trim, kerf, waste, zero unplaced | **partial** |
 | Save + reload + fresh login | **not run** |
-| Hardener approve / override / reject / revoke / invalidation | **partial** — SQL/unit/pgTAP; live open |
+| Hardener approve / override / reject / revoke / invalidation | **partial** — prod §5.2 reject paths; live walk open |
 | Order → release → QC → delivery + negatives | **not run** |
-| Gold-tier flexibility | **partial** — code present |
-| Egyptian / Turkish / custom Profile Studio | **partial** — route/data contract (#74); live auth walk open |
+| Egyptian / Turkish / custom Profile Studio | **partial** — #74 contract |
 
 ## Remaining blockers → next action
 
-1. Owner authorizes **merge order** #74 → #71 → #72 → #70 → #73 (code only).
-2. Owner identifies **staging Supabase** (none exists today besides prod `shfsebdncjnncqqnewfj`).
-3. Authorize Phase B SQL (#71 then #72) on staging only; fixture walk + digests.
-4. Separate Phase C auth for prod; live FINAL GOAL on almona02.com only after Phase B exit.
+1. ~~Merge chain~~ **done** (`8a1ac7d7`).
+2. ~~Staging Option A + §5.2~~ **done**.
+3. ~~Phase C prod #71/#72~~ **done** (owner grant).
+4. §5.3 / disposable live manufacturing walk on staging or prod fixture project.
+5. Live FINAL GOAL on almona02.com → honest scorecard close.
 
 ## Explicit non-claims
 
-- 82/100 ≠ workshop readiness.
-- Green PR checks ≠ manufacturing-qualified BOM.
+- 88/100 ≠ workshop readiness.
+- Prod SQL smoke ≠ manufacturing-qualified BOM.
+- Closing `%-no-hardener` ≠ full hardener approve/override/revoke walk.
 - Diverse estimate 10/18 ≠ live custom-pack project on almona02.com.
-- Staging plan ≠ authorization to merge or apply SQL.
