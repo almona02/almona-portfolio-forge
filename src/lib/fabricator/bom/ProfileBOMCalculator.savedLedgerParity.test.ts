@@ -7,6 +7,8 @@ import { describe, expect, it } from 'vitest';
 import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
+import { bomMatchesPhysicalDesign } from '@/lib/fabricator/validation/WorkflowValidator';
+import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { ProfileBOMCalculator } from './ProfileBOMCalculator';
 import { assessBOMQualification, countRequiredProfilePieces } from './bomQualification';
 
@@ -131,5 +133,83 @@ describe('ProfileBOMCalculator saved ↔ generated ledger parity', () => {
     expect(qualification.status).toBe('qualified');
     expect(qualification.unplacedPieceCount).toBe(0);
     expect(qualification.reasons).toEqual([]);
+  });
+
+  it('frame-only saved components enrich sash + sliding subsystems to required 23 cuts', async () => {
+    const baseUnit = {
+      id: 'wu-frame-only',
+      overallWidth: 1200,
+      overallHeight: 1400,
+      type: 'sliding_window_2sash',
+      systemPackId: 'caluminium-ps',
+      grid: pattern.gridSpec,
+    } as unknown as WindowUnit;
+
+    const frame = packProfile((p) => p.profileRole === 'frame');
+    const frameOnly = {
+      ...baseUnit,
+      components: [
+        {
+          id: 'c-frame-a',
+          type: 'frame',
+          profile: frame,
+          cuttingLengths: [1200],
+          quantity: 1,
+        },
+        {
+          id: 'c-frame-b',
+          type: 'frame',
+          profile: frame,
+          cuttingLengths: [1400],
+          quantity: 1,
+        },
+        {
+          id: 'c-frame-c',
+          type: 'frame',
+          profile: frame,
+          cuttingLengths: [1200],
+          quantity: 1,
+        },
+        {
+          id: 'c-frame-d',
+          type: 'frame',
+          profile: frame,
+          cuttingLengths: [1400],
+          quantity: 1,
+        },
+      ],
+    } as unknown as WindowUnit;
+
+    const profiles = await calculator.calculateProfileBOM(frameOnly, pattern, CALUMINIUM_PS_PACK);
+    const cuts = profiles.reduce((n, p) => n + p.cuttingLengths.length, 0);
+    const required = countRequiredProfilePieces(frameOnly, pattern);
+
+    expect(required).toBe(23);
+    expect(cuts).toBe(23);
+    expect(profiles.some((p) => p.role === 'sash')).toBe(true);
+    expect(profiles.some((p) => p.role === 'interlock')).toBe(true);
+    expect(profiles.some((p) => p.role === 'track' || p.role === 'screen_track')).toBe(true);
+    expect(profiles.some((p) => p.role === 'glazing_bead')).toBe(true);
+
+    const qualification = assessBOMQualification(frameOnly, pattern, profiles, {
+      identity,
+      catalogueVersion: 'fixture-catalogue',
+      ruleVersion: 'fixture-rules',
+    });
+    expect(qualification.status).toBe('qualified');
+    expect(qualification.reasons).toEqual([]);
+
+    // Optimize gate: regenerated physical design must match BOM cuts (not frame-only).
+    const physicalDesign = await calculator.resolvePhysicalDesignComponents(
+      frameOnly,
+      pattern,
+      CALUMINIUM_PS_PACK,
+    );
+    const aligned = { ...frameOnly, components: physicalDesign };
+    const alignedBom = await calculator.calculateProfileBOM(aligned, pattern, CALUMINIUM_PS_PACK);
+    expect(
+      bomMatchesPhysicalDesign({ profiles: alignedBom } as CompleteBOM, aligned),
+    ).toBe(true);
+    expect(bomMatchesPhysicalDesign({ profiles } as CompleteBOM, frameOnly)).toBe(false);
   });
 });

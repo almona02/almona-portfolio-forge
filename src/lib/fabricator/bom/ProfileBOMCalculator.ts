@@ -403,18 +403,39 @@ export class ProfileBOMCalculator {
   }
 
   /**
-   * Resolve design-level components: prefer saved ledger, else synthesise via
-   * generateComponentsFromGrid (+ sliding track) so empty and saved paths share
-   * the same physicalCutForOccurrence contract.
+   * Public: design components that authority the BOM cut ledger (saved when
+   * complete; otherwise synthesised). Callers should align workflow project
+   * components to this list so bomMatchesPhysicalDesign can pass.
+   */
+  async resolvePhysicalDesignComponents(
+    windowUnit: WindowUnit,
+    pattern: EgyptianPattern,
+    systemPack: SystemPack,
+  ): Promise<WindowComponent[]> {
+    return this.resolveDesignComponents(windowUnit, pattern, systemPack);
+  }
+
+  /**
+   * Resolve design-level components: prefer a complete saved ledger, else
+   * synthesise via generateComponentsFromGrid (+ sliding track) so empty and
+   * partial saved paths share the same physicalCutForOccurrence contract.
+   *
+   * Frame-only (or sash-missing) sliding saves are treated as incomplete —
+   * they must not block sash / interlock / track / bead emission.
    */
   private async resolveDesignComponents(
     windowUnit: WindowUnit,
     pattern: EgyptianPattern,
     systemPack: SystemPack,
   ): Promise<WindowComponent[]> {
-    if (windowUnit.components?.length) {
+    const saved = windowUnit.components ?? [];
+    const sliding = this.isSlidingOpening(windowUnit, pattern);
+    const savedHasSash = saved.some((component) => componentHasLedgerRole(component, 'sash'));
+    const useSaved = saved.length > 0 && (!sliding || savedHasSash);
+
+    if (useSaved) {
       return this.ensureSlidingTrackDesignComponents(
-        windowUnit.components,
+        saved,
         windowUnit,
         pattern,
         systemPack,
@@ -422,12 +443,17 @@ export class ProfileBOMCalculator {
     }
 
     const grid = (windowUnit.grid ?? pattern.gridSpec) as WindowGrid | undefined;
-    if (!grid?.cells?.length) return [];
+    if (!grid?.cells?.length) {
+      // Last resort: keep partial saved frames so optimization inputs stay non-empty.
+      return saved.length
+        ? this.ensureSlidingTrackDesignComponents(saved, windowUnit, pattern, systemPack)
+        : [];
+    }
 
     const { generateComponentsFromGrid } = await import('@/algorithms/smartDraw');
     const packId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id || null;
     const { components } = generateComponentsFromGrid(
-      { ...windowUnit, grid },
+      { ...windowUnit, grid, components: [] },
       grid,
       systemPack.profiles ?? [],
       packId,
@@ -637,6 +663,21 @@ export class ProfileBOMCalculator {
         ),
       );
     };
+
+    // Partial saved ledgers (e.g. frame-only measure hydration) must still emit
+    // sash perimeter cuts so countRequiredProfilePieces (23 for 2-sash PS) matches.
+    if (!hasRole('sash') && sashCuttingLengthsHint.length > 0) {
+      const sashProfile = this.getProfileByRole(systemPack, 'sash');
+      if (sashProfile) {
+        pushPhysical(
+          sashProfile,
+          'sash',
+          sashCuttingLengthsHint,
+          fillNumbers(sashCuttingLengthsHint.length, MITER_ANGLES.CORNER_MITER),
+          sashCount,
+        );
+      }
+    }
 
     if (!hasRole('interlock')) {
       const interlockProfile = this.getProfileByRole(systemPack, 'interlock');

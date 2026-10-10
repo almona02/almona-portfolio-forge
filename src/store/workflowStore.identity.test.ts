@@ -55,4 +55,52 @@ describe('identity-scoped workflow hydration', () => {
     );
     expect(useWorkflowStore.getState()).toMatchObject({ bom: null, quote: null, productionDocuments: null, optimizationResult: null, qualityApproval: null });
   });
+
+  it('keeps matching BOM across qc_revision bump on the same pose', () => {
+    const profile = { id: 'PS-6601-FRAME', cuttingAllowance: 3 } as never;
+    const designed = {
+      ...position,
+      systemPackId: 'caluminium-ps',
+      components: [
+        {
+          id: 'c1',
+          type: 'frame',
+          profile,
+          quantity: 1,
+          cuttingLengths: [1000],
+          angles: [45],
+        },
+      ],
+    } as WindowUnit;
+    useWorkflowStore.getState().hydrateAuthoritativePosition(identity, designed);
+    useWorkflowStore.setState({
+      bom: {
+        confidence: 1,
+        profiles: [{ profileCode: 'PS-6601-FRAME', cuttingLengths: [1003], angles: [45] }],
+        qualification: {
+          status: 'qualified',
+          identity,
+          catalogueVersion: 'cat',
+          ruleVersion: 'rule',
+          requiredPieceCount: 1,
+          generatedPieceCount: 1,
+          unplacedPieceCount: 0,
+          reasons: [],
+        },
+      } as never,
+      optimizationResult: { cuttingPlan: [{}] } as never,
+      completedSteps: new Set(['design', 'bom', 'optimization']),
+    });
+
+    const bumped: WorkflowIdentity = { ...identity, revision: 5 };
+    useWorkflowStore.getState().hydrateAuthoritativePosition(bumped, designed);
+
+    const state = useWorkflowStore.getState();
+    expect(state.workflowIdentity).toEqual(bumped);
+    expect(state.bom?.qualification?.identity).toEqual(bumped);
+    expect(state.bom?.qualification?.status).toBe('qualified');
+    expect(state.optimizationResult).toBeNull();
+    expect(state.completedSteps.has('bom')).toBe(true);
+    expect(state.completedSteps.has('optimization')).toBe(false);
+  });
 });
