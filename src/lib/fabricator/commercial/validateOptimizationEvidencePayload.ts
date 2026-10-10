@@ -371,31 +371,48 @@ export type ApprovedRuleContent = {
 };
 
 /**
- * Mirror of PostgreSQL `jsonb::text` for fingerprint parity:
- * sorted object keys, space after `:` / `,`, JSON null → `null`.
+ * Explicit canonical JSON serialization shared with SQL
+ * `public.canonical_jsonb_serialize` — never rely on jsonb::text formatting.
+ *
+ * Contract:
+ * - null/undefined → null
+ * - boolean → true|false
+ * - number → shortest decimal (safe integers without fraction; no exponent)
+ * - string → JSON.stringify (UTF-8, escaped)
+ * - array → [elem, elem] (comma+space)
+ * - object → sorted UTF-8 keys, {"k": v, ...} (comma+space, space after :)
  */
-export function pgJsonbText(value: unknown): string {
+export function canonicalJsonbSerialize(value: unknown): string {
   if (value === null || value === undefined) return 'null';
   if (typeof value === 'boolean') return value ? 'true' : 'false';
   if (typeof value === 'number') {
     if (!Number.isFinite(value)) return 'null';
-    return String(value);
+    if (Number.isSafeInteger(value)) return String(value);
+    const fixed = value.toFixed(20).replace(/\.?0+$/, '');
+    return fixed === '-0' ? '0' : fixed;
   }
   if (typeof value === 'string') return JSON.stringify(value);
   if (Array.isArray(value)) {
-    return `[${value.map((item) => pgJsonbText(item)).join(', ')}]`;
+    return `[${value.map((item) => canonicalJsonbSerialize(item)).join(', ')}]`;
   }
   if (typeof value === 'object') {
     const keys = Object.keys(value as Record<string, unknown>).sort();
     const body = keys
       .map(
         (key) =>
-          `${JSON.stringify(key)}: ${pgJsonbText((value as Record<string, unknown>)[key])}`,
+          `${JSON.stringify(key)}: ${canonicalJsonbSerialize(
+            (value as Record<string, unknown>)[key],
+          )}`,
       )
       .join(', ');
     return `{${body}}`;
   }
   return 'null';
+}
+
+/** @deprecated Use canonicalJsonbSerialize — same contract. */
+export function pgJsonbText(value: unknown): string {
+  return canonicalJsonbSerialize(value);
 }
 
 /** SHA-256 of approved cutting-rule content (must match SQL approved_rule_content_fingerprint). */
@@ -411,9 +428,9 @@ export async function approvedRuleContentFingerprint(
         r.ruleId,
         String(r.revision ?? 0),
         'approved',
-        pgJsonbText(r.deductions ?? null),
-        pgJsonbText(r.allowances ?? null),
-        pgJsonbText(r.applicability ?? null),
+        canonicalJsonbSerialize(r.deductions ?? null),
+        canonicalJsonbSerialize(r.allowances ?? null),
+        canonicalJsonbSerialize(r.applicability ?? null),
       ].join('|'),
     )
     .sort();
@@ -433,8 +450,7 @@ export async function authorityContentFingerprint(input: {
     .filter((s) => s > 0)
     .sort((a, b) => a - b)
     .join(',');
-  // Mirror SQL: coalesce(authority->'manufacturingSettings', '{}')::text
-  const settings = pgJsonbText(input.manufacturingSettings ?? {});
+  const settings = canonicalJsonbSerialize(input.manufacturingSettings ?? {});
   const canonical = [settings, `stocks=${stocks}`, `rules=${rulesFp}`].join('||');
   return sha256Hex(canonical);
 }

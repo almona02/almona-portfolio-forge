@@ -17,7 +17,7 @@ CREATE TEMP TABLE convert_order_test_output (
   sequence_no INTEGER GENERATED ALWAYS AS IDENTITY,
   result TEXT NOT NULL
 ) ON COMMIT DROP;
-INSERT INTO convert_order_test_output(result) SELECT plan(16);
+INSERT INTO convert_order_test_output(result) SELECT plan(17);
 
 -- Hardened evidence fixture (schema + cuttingPlan). Fingerprint bound to placement digest.
 CREATE TEMP TABLE convert_opt_evidence (
@@ -127,6 +127,8 @@ SELECT
     ),
     'profiles', jsonb_build_array(
       jsonb_build_object('role', 'frame', 'profileId', 'PS-FRAME', 'stockLengthMm', 6000, 'evidenceStatus', 'approved', 'approvalId', 'b2000000-0000-4000-8000-000000000010'),
+      -- Permitted short bar: raw 1200+1400 fits; with kerf 4×2 overrun (integration path).
+      jsonb_build_object('role', 'frame-short', 'profileId', 'PS-FRAME', 'stockLengthMm', 2600, 'evidenceStatus', 'approved', 'approvalId', 'b2000000-0000-4000-8000-000000000012'),
       jsonb_build_object('role', 'sash', 'profileId', 'PS-SASH', 'stockLengthMm', 6000, 'evidenceStatus', 'approved', 'approvalId', 'b2000000-0000-4000-8000-000000000011')
     ),
     'cuttingRules', jsonb_build_array(
@@ -147,6 +149,26 @@ WHERE NOT EXISTS (SELECT 1 FROM convert_auth_rev);
 
 INSERT INTO convert_auth_rev(system_pack_revision)
 SELECT 1 WHERE NOT EXISTS (SELECT 1 FROM convert_auth_rev);
+
+-- Ensure active caluminium-ps authority permits the short bar used by kerf-overrun record tests.
+-- Transaction-local; rolled back with the suite. Does not mutate production outside this test txn.
+UPDATE public.fabricator_manufacturing_authority_revisions a
+SET authority_payload = jsonb_set(
+  a.authority_payload,
+  '{profiles}',
+  (a.authority_payload->'profiles') || jsonb_build_array(
+    jsonb_build_object(
+      'role', 'frame-short',
+      'profileId', 'PS-FRAME',
+      'stockLengthMm', 2600,
+      'evidenceStatus', 'approved',
+      'approvalId', 'b2000000-0000-4000-8000-000000000012'
+    )
+  )
+)
+WHERE a.system_pack_id = 'caluminium-ps'
+  AND a.revoked_at IS NULL
+  AND NOT (a.authority_payload->'profiles' @> '[{"stockLengthMm": 2600}]'::jsonb);
 
 CREATE TEMP TABLE convert_pos_rev (
   qc_revision BIGINT NOT NULL
@@ -254,7 +276,7 @@ SELECT lives_ok(
   'owner can record optimization evidence'
 );
 
--- 2b) Reject stock overrun (kerf-aware) at validate — lengths fit raw stock but not with kerf
+-- 2b) Validator path: kerf-aware overrun (raw lengths fit; consumed with kerf does not)
 INSERT INTO convert_order_test_output(result)
 SELECT throws_ok(
   $fmt$SELECT * FROM public.validate_optimization_evidence_payload(
@@ -263,6 +285,28 @@ SELECT throws_ok(
   )$fmt$,
   'cuttingPlan[0] stock overrun (consumed 2608 mm > stock 2600 mm including kerf/trim)',
   'stock overrun rejected when validating evidence'
+);
+
+-- 2b-record) Recording gate: same overrun on authority-permitted short stock (2600)
+INSERT INTO convert_order_test_output(result)
+SELECT throws_ok(
+  format(
+    $fmt$SELECT public.record_fabricator_optimization_evidence(
+      '33000000-0000-0000-0000-000000000001',
+      %s, %s, 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef', %s, %L, 2,
+      '{"schema":"almona.optimization-result","schemaVersion":2,"kerfMm":4,"trimMm":0,"requiredCuts":[{"cutId":"c1:0","profileId":"PS-FRAME","length":1200,"angle":45},{"cutId":"c1:1","profileId":"PS-FRAME","length":1400,"angle":45}],"cuttingPlan":[{"stockLength":2600,"profile":{"id":"PS-FRAME"},"cuts":[{"cutId":"c1:0","length":1200,"angle":45},{"cutId":"c1:1","length":1400,"angle":45}]}]}'::jsonb
+    )$fmt$,
+    (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
+    (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
+    (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
+    (SELECT public.approved_rule_content_fingerprint(
+      a.authority_payload->'cuttingRules'
+    ) FROM public.fabricator_manufacturing_authority_revisions a
+     WHERE a.system_pack_id = 'caluminium-ps' AND a.revoked_at IS NULL
+     ORDER BY a.system_pack_revision DESC LIMIT 1)
+  ),
+  'cuttingPlan[0] stock overrun (consumed 2608 mm > stock 2600 mm including kerf/trim)',
+  'stock overrun rejected when recording evidence on permitted short stock'
 );
 
 -- 2c) Reject placeholder ledger fingerprint

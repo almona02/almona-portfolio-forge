@@ -192,6 +192,8 @@ BEGIN
     IF coalesce(v_rule->>'evidenceStatus', '') IS DISTINCT FROM 'approved' THEN
       CONTINUE;
     END IF;
+    -- Prefer explicit canonical serialization when available (see 20261010023000_*).
+    -- Fallback kept for mid-migration windows only; 23000 replaces this function.
     v_deductions := coalesce(v_rule->'deductions', 'null'::JSONB)::TEXT;
     v_allowances := coalesce(v_rule->'allowances', 'null'::JSONB)::TEXT;
     v_applicability := coalesce(v_rule->'applicability', 'null'::JSONB)::TEXT;
