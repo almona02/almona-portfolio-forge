@@ -330,7 +330,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={next => { if (!submitting.current) onOpenChange(next); }}>
-      <DialogContent className="max-w-4xl h-[90dvh] max-h-[90dvh] flex flex-col gap-0 p-0 bg-gray-900 border-gray-800 card-dark">
+      <DialogContent className="max-w-4xl h-[90dvh] max-h-[90dvh] flex flex-col gap-0 p-0 bg-gray-900 border-gray-800">
         <div className="shrink-0 p-4 sm:p-6 border-b border-gray-800">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
@@ -394,7 +394,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                       }
                     }}
                     key={sys.id} 
-                    className={`bg-gray-800 border-gray-700 transition-all card-premium ${
+                    className={`bg-gray-800 border-gray-700 transition-all ${
                       isEmptyPack
                         ? 'opacity-60 cursor-not-allowed'
                         : 'cursor-pointer hover:border-amber-500/50'
@@ -684,7 +684,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           </fieldset>
         </div>
 
-        <div className="shrink-0 p-3 sm:p-4 border-t border-gray-800 bg-gray-900 card-dark">
+        <div className="shrink-0 p-3 sm:p-4 border-t border-gray-800 bg-gray-900">
           <div className="flex flex-wrap gap-3 justify-between items-center">
             <div className="text-sm text-gray-400">
               {cart.length > 0 && (
