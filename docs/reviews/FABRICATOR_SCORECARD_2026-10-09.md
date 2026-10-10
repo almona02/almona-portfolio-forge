@@ -2,7 +2,8 @@
 
 **Assessment: 88/100 provisional** (implementation + CI + staging §5.2/§5.3 + prod Phase C SQL smoke; live FINAL GOAL open).  
 **Live acceptance on almona02.com: not demonstrated.** Do not treat this score as FINAL GOAL completion.  
-**Oct 10 execution pack:** [OCT10_READINESS_EXECUTION_2026-10-10.md](./OCT10_READINESS_EXECUTION_2026-10-10.md). Composite **held at 88** — no new browser FINAL GOAL evidence.
+**Oct 10 execution pack:** [OCT10_READINESS_EXECUTION_2026-10-10.md](./OCT10_READINESS_EXECUTION_2026-10-10.md). Composite **held at 88**.  
+Browser FINAL GOAL: Egyptian wizard project `FP-2HUUKV` / Pose 1 measuring on staging (caluminium-ps) — **not** custom pack; **not** 10 poses / 18 units.
 
 Canonical prior scorecard: [FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md](../plans/FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md).  
 Staging / promote plan: [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../plans/FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md).
