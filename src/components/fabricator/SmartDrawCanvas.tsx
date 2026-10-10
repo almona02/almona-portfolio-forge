@@ -1,4 +1,5 @@
 import { useTouchGestures } from '@/hooks/useTouchGestures';
+import { cycleGridCellOpening } from '@/lib/fabricator/drawing/cycleCellOpeningType';
 import { getPatternById, getPatternsForSystem, patternToWindowGrid, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
 import { presetMatcher, type PatternMatch } from '@/lib/ml/PresetMatcher';
 import { cn } from '@/lib/utils';
@@ -383,37 +384,11 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
       clearSelection();
     }
 
-    // Normal cell type cycling (only when not in mullion input mode)
-    if (!grid.cells || !Array.isArray(grid.cells)) {
-      return;
+    // Ordinary click SELECTS ONLY — does not mutate opening type / revision / BOM.
+    // Explicit Alt+click cycles opening type (inspector/property edits are preferred).
+    if (event?.altKey && grid.cells && Array.isArray(grid.cells)) {
+      handleGridChangeWithHistory({ ...grid, cells: cycleGridCellOpening(grid.cells, cellId) });
     }
-    const newCells: GridCell[] = grid.cells.map(cell => {
-      if (cell.id === cellId) {
-        const cycle = ['fixed', 'sash-left', 'sash-right', 'sliding', 'panel', 'empty'] as const;
-        const currentKey =
-          cell.type === 'sash' && cell.openingDirection === 'right'
-            ? 'sash-right'
-            : cell.type === 'sash'
-              ? 'sash-left'
-              : (cell.type as any);
-        const currentIndex = cycle.indexOf(currentKey);
-        const nextKey = cycle[(currentIndex + 1) % cycle.length];
-
-        if (nextKey === 'sash-left') {
-          return { ...cell, type: 'sash' as const, openingDirection: 'left' as const };
-        }
-        if (nextKey === 'sash-right') {
-          return { ...cell, type: 'sash' as const, openingDirection: 'right' as const };
-        }
-        const validType = (nextKey === 'fixed' || nextKey === 'sliding' || nextKey === 'panel' || nextKey === 'empty')
-          ? nextKey
-          : 'fixed';
-        return { ...cell, type: validType as 'fixed' | 'sash' | 'sliding' | 'empty' | 'panel', openingDirection: undefined };
-      }
-      return cell;
-    });
-
-    handleGridChangeWithHistory({ ...grid, cells: newCells });
     selectCell(cellId);
   }, [grid, handleGridChangeWithHistory, selectCell, clearSelection, toggleCellSelection, selectedCellIds, mullionMode, selectedSashForMullion]);
 

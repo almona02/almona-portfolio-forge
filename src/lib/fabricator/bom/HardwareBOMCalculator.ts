@@ -181,16 +181,25 @@ export class HardwareBOMCalculator {
     // Explicit catalogue accessories above remain available as estimates.
     if (openingType === 'fixed' || pattern.type === 'fixed') return hardware;
 
-    // Hinges (for casement/tilt-turn)
+    const isSliding = openingType === 'sliding' || pattern.type === 'sliding';
+    const packId = systemPack.meta?.id || systemPack.id;
+    const packKits = packHardwareKits(systemPack);
+    const hasCells = pattern.gridSpec?.cells && Array.isArray(pattern.gridSpec.cells);
+    const sashCount = hasCells
+      ? pattern.gridSpec.cells.filter((c) => c.type === 'sash' || c.type === 'sliding').length
+      : HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
+
+    // Hinges (for casement/tilt-turn) — per operative sash, not overall window only
     if (openingType === 'casement' || openingType === 'tilt-turn') {
-      const hingeCount = this.calculateHingeQuantity(height, openingType);
+      const hingesPerSash = this.calculateHingeQuantity(height, openingType);
+      const hingeCount = hingesPerSash * Math.max(0, sashCount);
       hardware.push({
         id: 'hinge-casement',
         supplierCode: 'HINGE-CASEMENT-EC300',
         name: 'Casement Hinge EC300',
         category: 'hinge',
         quantity: hingeCount,
-        positionSpec: `Evenly spaced along sash height (${height}mm)`,
+        positionSpec: `Evenly spaced along each sash height (${height}mm) × ${sashCount} sash`,
         installationNotes: [
           'Install hinges at calculated positions',
           'Use appropriate fasteners',
@@ -202,14 +211,6 @@ export class HardwareBOMCalculator {
         supplierLink: undefined
       });
     }
-
-    const isSliding = openingType === 'sliding' || pattern.type === 'sliding';
-    const packId = systemPack.meta?.id || systemPack.id;
-    const packKits = packHardwareKits(systemPack);
-    const hasCells = pattern.gridSpec?.cells && Array.isArray(pattern.gridSpec.cells);
-    const sashCount = hasCells
-      ? pattern.gridSpec.cells.filter((c) => c.type === 'sash' || c.type === 'sliding').length
-      : HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
 
     // Rollers (for sliding) — prefer pack hardware_kits when present
     if (isSliding) {

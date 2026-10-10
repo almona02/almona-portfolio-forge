@@ -92,6 +92,7 @@
     "prebuild": "echo 'Skipping image optimization in CI/CD' || true",
     "test": "vitest run",
     "test:ledger": "node scripts/fg-run-ledger-tests.mjs",
+    "test:object-bom-phase1": "npx vite-node scripts/fg-object-bom-phase1-suite.mjs",
     "test:batch1": "vitest run src/store/workflowStore.identity.test.ts src/store/workflowStore.failClosed.test.ts src/pages/fabricator/workflow/OptimizationPage.failClosed.test.tsx src/pages/fabricator/workflow/MeasuringPage.integrity.test.tsx src/lib/fabricator/qualityApproval.test.ts src/lib/fabricator/studioWorkflow.test.ts src/lib/fabricator/consultation.test.ts src/lib/fabricator/tuningReadiness.test.ts src/hooks/usePersona.test.tsx src/pages/DeliveryTrackingPage.demo.test.tsx src/lib/pwaUpdate.test.ts",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",

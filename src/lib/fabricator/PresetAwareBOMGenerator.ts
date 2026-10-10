@@ -24,6 +24,7 @@ import { CostCalculator } from './bom/CostCalculator';
 import { GlassBOMCalculator } from './bom/GlassBOMCalculator';
 import { HardwareBOMCalculator } from './bom/HardwareBOMCalculator';
 import { ProfileBOMCalculator } from './bom/ProfileBOMCalculator';
+import { semanticRevisionDigest } from './bom/preserveCutLedger';
 import {
     assessBOMQualification,
     type BOMQualification,
@@ -150,20 +151,26 @@ export class PresetAwareBOMGenerator {
       qualificationContext,
     };
 
-    // Create cache key from inputs
+    // Cache key binds semantic revision (glazing/hardware/leaf ops/rule versions), not counts alone.
     const cacheKey = JSON.stringify({
       windowUnitId: windowUnit.id,
       patternId: pattern.id,
       systemPackId: systemPack.id,
-      grid: windowUnit.grid,
       components: windowUnit.components?.length || 0,
-      dimensions: {
-        width: windowUnit.overallWidth,
-        height: windowUnit.overallHeight,
-      },
       identity: qualificationContext.identity,
-      catalogueVersion: qualificationContext.catalogueVersion,
-      ruleVersion: qualificationContext.ruleVersion,
+      semanticRevision: semanticRevisionDigest({
+        overallWidth: windowUnit.overallWidth,
+        overallHeight: windowUnit.overallHeight,
+        type: windowUnit.type,
+        systemPackId: windowUnit.systemPackId ?? systemPack.id,
+        presetId: windowUnit.presetId ?? pattern.id,
+        grid: windowUnit.grid,
+        glazing: windowUnit.glazing,
+        hardware: windowUnit.hardware,
+        systemProfileSelections: windowUnit.systemProfileSelections ?? null,
+        ruleVersion: qualificationContext.ruleVersion,
+        catalogueVersion: qualificationContext.catalogueVersion,
+      }),
     });
 
     // Check cache (5 second expiration)
@@ -281,17 +288,23 @@ export class PresetAwareBOMGenerator {
   ): Promise<BOMGenerationResult> {
     const startTime = performance.now();
     
-    // Check cache first
+    // Check cache first — same semantic digest as generateCompleteBOM
     const cacheKey = JSON.stringify({
       windowUnitId: windowUnit.id,
       patternId: pattern.id,
       systemPackId: systemPack.id,
-      grid: windowUnit.grid,
       components: windowUnit.components?.length || 0,
-      dimensions: {
-        width: windowUnit.overallWidth,
-        height: windowUnit.overallHeight,
-      },
+      semanticRevision: semanticRevisionDigest({
+        overallWidth: windowUnit.overallWidth,
+        overallHeight: windowUnit.overallHeight,
+        type: windowUnit.type,
+        systemPackId: windowUnit.systemPackId ?? systemPack.id,
+        presetId: windowUnit.presetId ?? pattern.id,
+        grid: windowUnit.grid,
+        glazing: windowUnit.glazing,
+        hardware: windowUnit.hardware,
+        systemProfileSelections: windowUnit.systemProfileSelections ?? null,
+      }),
     });
     
     const cached = useCache ? this.bomCache.get(cacheKey) : null;

@@ -1,3 +1,4 @@
+import type { AssemblyOccurrence } from '@/lib/fabricator/assembly/occurrenceIdentity';
 import { NOT_RECORDED } from '@/lib/fabricator/studioWorkflow';
 import { cn } from '@/lib/utils';
 import type { WindowUnit } from '@/types/fabricator';
@@ -18,6 +19,8 @@ export type InspectorSelectionKind =
 export interface EngineeringInspectorProps {
   project: WindowUnit | null;
   selectionKind?: InspectorSelectionKind;
+  /** Stable assembly occurrence — Engine contract; not a drawing primitive index. */
+  selectedOccurrence?: AssemblyOccurrence | null;
   className?: string;
 }
 
@@ -54,6 +57,7 @@ function Row({ label, value, ltr }: { label: string; value: string; ltr?: boolea
 export const EngineeringInspector: React.FC<EngineeringInspectorProps> = ({
   project,
   selectionKind = 'pose',
+  selectedOccurrence = null,
   className,
 }) => {
   const { t } = useTranslation('fabricator');
@@ -61,13 +65,22 @@ export const EngineeringInspector: React.FC<EngineeringInspectorProps> = ({
     ? SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId)
     : null;
 
-  const kind = !project ? 'none' : selectionKind;
+  const kind = !project
+    ? 'none'
+    : selectedOccurrence
+      ? (selectedOccurrence.kind === 'cell'
+          ? 'sash'
+          : selectedOccurrence.kind === 'transom'
+            ? 'mullion'
+            : (selectedOccurrence.kind as InspectorSelectionKind))
+      : selectionKind;
 
   return (
     <aside
       className={cn('h-full overflow-y-auto bg-[#0d0d0d] p-3', className)}
       data-testid="engineering-inspector"
       data-selection={kind}
+      data-occurrence-id={selectedOccurrence?.id || undefined}
       aria-label={t('industrial.inspector.title', 'Properties')}
     >
       <h2 className="text-[10px] uppercase tracking-widest text-amber-500 mb-3">
@@ -117,6 +130,16 @@ export const EngineeringInspector: React.FC<EngineeringInspectorProps> = ({
         <div>
           <p className="text-xs text-amber-200 mb-2">{KIND_LABEL[kind]}</p>
           <Row label="Linked position" value={project.posNumber || NOT_RECORDED} ltr />
+          <Row
+            label="Occurrence"
+            value={selectedOccurrence?.id || NOT_RECORDED}
+            ltr
+          />
+          <Row
+            label="Cell"
+            value={selectedOccurrence?.cellId || NOT_RECORDED}
+            ltr
+          />
           <Row
             label="Detail"
             value={t(
