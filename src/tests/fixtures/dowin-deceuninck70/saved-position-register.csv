@@ -1,0 +1,12 @@
+projectOrder,position,materialSystem,layout,profilePieces,totalNominalMm,profileCapture,fabricatorParity
+100001,asdd,Deceuninck 70 PVC,double casement with structural mullion,21,20504,complete,not_run
+100002,213254,Deceuninck 70 PVC,double casement with structural mullion,21,20504,complete,not_run
+100002,121,Deceuninck 70 PVC,double casement with structural mullion,21,20504,complete,not_run
+100002,FRESH_A,Deceuninck 70 PVC,double casement with structural mullion,21,20504,complete,not_run
+100003,RUN_A,Deceuninck 70 PVC,double casement with structural mullion,21,20504,complete,not_run
+100004,RUN_B,Deceuninck 70 PVC,double casement with structural mullion,21,20504,complete,not_run
+100005,RUN_C,Deceuninck 70 PVC,double casement with structural mullion,21,20504,complete,not_run
+100006,E3_KASA_SPARE,Deceuninck 70 PVC,single fixed 500x500,8,3664,complete,not_run
+100007,E1_DEMAND1_NONORTA,Deceuninck 70 PVC,single casement 1000x1500,12,13960,complete,not_run
+100008,E2_NONORTA_90,Deceuninck 70 PVC,fixed left / casement right 1000x1500,17,17166,complete,not_run
+100009,FP024C_90_CONTROL_DESIGN,Deceuninck 70 PVC,two fixed panes 1200x1200,13,12528,complete,not_run

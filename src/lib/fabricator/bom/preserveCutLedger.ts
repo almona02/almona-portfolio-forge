@@ -70,6 +70,15 @@ export type DesignFingerprintInput = {
   systemPackId?: string | null;
   presetId?: string | null;
   grid?: WindowGrid | Record<string, unknown> | null;
+  /** Flat or per-cell glazing — semantic invalidation input. */
+  glazing?: unknown;
+  /** Hardware SKU identities (supplierCode/id) — semantic invalidation input. */
+  hardware?: ReadonlyArray<{ id?: string; supplierCode?: string; quantity?: number }> | null;
+  /** Role → profile code selections. */
+  systemProfileSelections?: unknown;
+  /** Optional manufacturing rule / catalogue versions for BOM cache composition. */
+  ruleVersion?: string | null;
+  catalogueVersion?: string | null;
 };
 
 export type MergeLedgerForSaveInput = {
@@ -118,12 +127,24 @@ function gridFingerprintSlice(grid: DesignFingerprintInput['grid']): unknown {
           row: Number(cell?.row),
           col: Number(cell?.col),
           type: String(cell?.type ?? ''),
+          openingDirection: String(cell?.openingDirection ?? ''),
         }))
       : [],
   };
 }
 
-/** Stable SHA-256 of design-defining pose fields (geometry, pack, grid, type, preset). */
+function hardwareFingerprintSlice(
+  hardware: DesignFingerprintInput['hardware'],
+): unknown {
+  if (!Array.isArray(hardware)) return null;
+  return hardware.map((item) => ({
+    id: String(item?.id ?? ''),
+    supplierCode: String(item?.supplierCode ?? ''),
+    quantity: Number(item?.quantity) || 0,
+  }));
+}
+
+/** Stable SHA-256 of design-defining pose fields (geometry, pack, grid, type, preset, leaf ops, glazing, hardware). */
 export function designFingerprint(input: DesignFingerprintInput): string {
   const payload = {
     overallWidth: Number(input.overallWidth) || 0,
@@ -132,12 +153,36 @@ export function designFingerprint(input: DesignFingerprintInput): string {
     systemPackId: String(input.systemPackId ?? ''),
     presetId: String(input.presetId ?? ''),
     grid: gridFingerprintSlice(input.grid),
+    glazing: input.glazing ?? null,
+    hardware: hardwareFingerprintSlice(input.hardware),
+    systemProfileSelections: input.systemProfileSelections ?? null,
   };
   return sha256HexSync(JSON.stringify(sortedKeys(payload)));
 }
 
+/**
+ * Semantic revision digest for BOM/evidence cache keys.
+ * Composes design fingerprint with explicit rule/catalogue versions.
+ */
+export function semanticRevisionDigest(
+  input: DesignFingerprintInput,
+): string {
+  const base = designFingerprint(input);
+  if (!input.ruleVersion && !input.catalogueVersion) return base;
+  return sha256HexSync(
+    JSON.stringify(
+      sortedKeys({
+        design: base,
+        ruleVersion: String(input.ruleVersion ?? ''),
+        catalogueVersion: String(input.catalogueVersion ?? ''),
+      }),
+    ),
+  );
+}
+
 export function designFingerprintFromWindowUnit(
-  unit: Pick<WindowUnit, 'overallWidth' | 'overallHeight' | 'type' | 'systemPackId' | 'presetId' | 'grid'>,
+  unit: Pick<WindowUnit, 'overallWidth' | 'overallHeight' | 'type' | 'systemPackId' | 'presetId' | 'grid'> &
+    Partial<Pick<WindowUnit, 'glazing' | 'hardware' | 'systemProfileSelections'>>,
   gridOverride?: WindowGrid | Record<string, unknown> | null,
 ): string {
   return designFingerprint({
@@ -147,6 +192,9 @@ export function designFingerprintFromWindowUnit(
     systemPackId: unit.systemPackId,
     presetId: unit.presetId,
     grid: gridOverride ?? unit.grid,
+    glazing: unit.glazing ?? null,
+    hardware: unit.hardware ?? null,
+    systemProfileSelections: unit.systemProfileSelections ?? null,
   });
 }
 

@@ -471,4 +471,35 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
       expect(wu).not.toHaveProperty('confidence');
     });
   });
+
+  describe('AICS-001 Object BOM Phase 1: casement ≠ sliding; select without mutation contract', () => {
+    test('manual sash grids resolve as casement and occurrence IDs stay deterministic', async () => {
+      const { resolveEstimatePattern } = await import('@/lib/fabricator/bom/resolveEstimatePattern');
+      const { buildOccurrenceId } = await import('@/lib/fabricator/assembly/occurrenceIdentity');
+      const pattern = resolveEstimatePattern({
+        id: 'const-casement',
+        type: 'casement',
+        overallWidth: 1000,
+        overallHeight: 1500,
+        grid: {
+          rows: 1,
+          cols: 2,
+          cells: [
+            { id: '0', row: 0, col: 0, type: 'sash', openingDirection: 'left' },
+            { id: '1', row: 0, col: 1, type: 'sash', openingDirection: 'right' },
+          ],
+        },
+      } as any);
+      expect(pattern.openingMechanism?.type).toBe('casement');
+      expect(pattern.type).not.toBe('sliding');
+      expect(
+        buildOccurrenceId({
+          positionId: 'const-casement',
+          revision: 1,
+          kind: 'sash',
+          cellId: '0',
+        }),
+      ).toBe('const-casement/r1/sash/cell:0');
+    });
+  });
 });
