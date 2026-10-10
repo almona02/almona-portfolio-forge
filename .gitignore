@@ -120,3 +120,6 @@ batch1-release*/
 
 # Local CI acceptance secret material (never commit)
 .tmp-pr-assess/e2e-acceptance-secrets.env
+.tmp-fg-*
+.tmp-vercel-bypass
+.tmp-*-pass

@@ -128,7 +128,11 @@ export const MeasuringPage: React.FC = () => {
     const persistPose = useCallback(async (data: MeasurementData, targetPoseId: string, posNumber: string) => {
         if (!projectId || !user?.id) throw new Error('Not authenticated');
         const unit = unitFromMeasurement(pose ?? null, data, projectId, targetPoseId, posNumber);
-        return upsertPose.mutateAsync({ windowUnit: unit, grid: data.grid as Record<string, unknown> | undefined });
+        return upsertPose.mutateAsync({
+            windowUnit: unit,
+            grid: data.grid as Record<string, unknown> | undefined,
+            selectedPreset: data.presetId ?? unit.presetId,
+        });
     }, [pose, projectId, user?.id, upsertPose]);
 
     const handleMeasurementComplete = async (data: MeasurementData) => {

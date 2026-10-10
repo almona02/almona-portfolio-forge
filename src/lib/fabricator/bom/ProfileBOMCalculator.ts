@@ -403,6 +403,23 @@ export class ProfileBOMCalculator {
   }
 
   /**
+   * Public entry for pricing → persist: same design ledger Design and BOM use.
+   * Prefer saved components; else synthesise from the grid generator (+ track).
+   */
+  /**
+   * Design ledger for BOM/pricing: prefer a non-empty saved ledger (track-patched),
+   * otherwise synthesise from grid. Callers that need the design-true baseline
+   * (parity / materialize) must pass `components: []` or use resolveExpectedDesignLedger.
+   */
+  async resolveCanonicalDesignLedger(
+    windowUnit: WindowUnit,
+    pattern: EgyptianPattern,
+    systemPack: SystemPack,
+  ): Promise<WindowComponent[]> {
+    return this.resolveDesignComponents(windowUnit, pattern, systemPack);
+  }
+
+  /**
    * Resolve design-level components: prefer saved ledger, else synthesise via
    * generateComponentsFromGrid (+ sliding track) so empty and saved paths share
    * the same physicalCutForOccurrence contract.
