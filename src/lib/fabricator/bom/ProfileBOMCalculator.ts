@@ -638,6 +638,21 @@ export class ProfileBOMCalculator {
       );
     };
 
+    // Partial saved ledgers (e.g. frame-only measure hydration) must still emit
+    // sash perimeter cuts so countRequiredProfilePieces (23 for 2-sash PS) matches.
+    if (!hasRole('sash') && sashCuttingLengthsHint.length > 0) {
+      const sashProfile = this.getProfileByRole(systemPack, 'sash');
+      if (sashProfile) {
+        pushPhysical(
+          sashProfile,
+          'sash',
+          sashCuttingLengthsHint,
+          fillNumbers(sashCuttingLengthsHint.length, MITER_ANGLES.CORNER_MITER),
+          sashCount,
+        );
+      }
+    }
+
     if (!hasRole('interlock')) {
       const interlockProfile = this.getProfileByRole(systemPack, 'interlock');
       if (interlockProfile && sashCount >= 2) {
