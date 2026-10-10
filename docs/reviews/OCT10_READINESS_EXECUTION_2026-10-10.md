@@ -7,7 +7,7 @@
 
 | PR | Base | Head SHA | State | CI |
 |---|---|---|---|---|
-| [#76](https://github.com/almona02/almona-portfolio-forge/pull/76) authoritative binding | `main` | see branch tip after authority fix commits | OPEN / MERGEABLE | green on prior tip `55a9f51c`; re-run after push |
+| [#76](https://github.com/almona02/almona-portfolio-forge/pull/76) authoritative binding | `main` | local tip `310925fc` (3 commits ahead of `55a9f51c`; **not pushed**) | OPEN / MERGEABLE | green on remote tip `55a9f51c`; re-run CI after owner-authorized push |
 | [#75](https://github.com/almona02/almona-portfolio-forge/pull/75) scorecard/staging docs | `main` | merged → `f27f0317` | MERGED | [Full Pipeline](https://github.com/almona02/almona-portfolio-forge/actions/runs/38046757305) success |
 | [#64](https://github.com/almona02/almona-portfolio-forge/pull/64) empty-DB replay | `integration/fabricator-reviewed` | `345e4a58` | OPEN draft | review before using as sole staging rebuild path |
 | `origin/main` | — | `f27f0317` | tip | Full Pipeline + Constitutional + Gate 1 success |
