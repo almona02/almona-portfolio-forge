@@ -59,14 +59,25 @@ export const BOMReviewPanel: React.FC = () => {
         pattern,
         systemPack,
       );
+      const aligned = { ...generationProject, components: physicalDesign };
+      // Authority context must validate the physical design ledger (not stale frame-only).
+      let qualificationContext: Awaited<ReturnType<typeof approvedBOMContext>>;
+      try {
+        qualificationContext = await approvedBOMContext(aligned, generationIdentity);
+      } catch (authorityErr) {
+        const message =
+          authorityErr instanceof Error
+            ? authorityErr.message
+            : 'Approved manufacturing authority is unavailable for this BOM.';
+        setError(message);
+        qualificationContext = { identity: generationIdentity ?? undefined };
+      }
       const result = await generator.generateCompleteBOM(
-        { ...currentProject, components: physicalDesign },
+        aligned,
         pattern,
         systemPack,
         true,
-        await approvedBOMContext(currentProject, generationIdentity).catch(() => ({
-          identity: generationIdentity,
-        })),
+        qualificationContext,
       );
       const latest = useWorkflowStore.getState();
       if (
@@ -76,17 +87,34 @@ export const BOMReviewPanel: React.FC = () => {
       ) {
         return;
       }
-      // Align + persist design ledger to the BOM authority so bomMatchesPhysicalDesign
-      // (optimize gate) and reload hydration share the same physical cuts.
+      // Align + persist design ledger. savePose bumps qc_revision; hydrate must
+      // rebind BOM identity (see workflowStore) so optimize handoff survives.
       if (physicalDesign.length) {
-        const aligned = { ...generationProject, components: physicalDesign };
         alignShellProject(aligned);
         const ownerUserId = generationIdentity.ownerUserId;
-        if (ownerUserId) {
+        if (ownerUserId && projectId && poseId) {
           try {
             await fabricatorClientV2.savePose(aligned, ownerUserId, {
               grid: aligned.grid as Record<string, unknown> | undefined,
             });
+            const authoritative = await fabricatorClientV2.getAuthoritativePosition(
+              projectId,
+              poseId,
+              ownerUserId,
+            );
+            useWorkflowStore
+              .getState()
+              .hydrateAuthoritativePosition(authoritative.identity, {
+                ...authoritative.position,
+                components: physicalDesign,
+              });
+            // Re-stamp qualification onto the post-bump identity before setBOM.
+            if (result.qualification && authoritative.identity) {
+              result.qualification = {
+                ...result.qualification,
+                identity: authoritative.identity,
+              };
+            }
           } catch (persistErr) {
             console.warn('BOM design ledger persist failed', persistErr);
           }
@@ -98,7 +126,7 @@ export const BOMReviewPanel: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM, alignShellProject]);
+  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM, alignShellProject, projectId, poseId]);
 
   useEffect(() => {
     if (!bom && currentProject && systemPack && pattern) {
@@ -109,7 +137,10 @@ export const BOMReviewPanel: React.FC = () => {
   const handleContinue = () => {
     const validation = WorkflowValidator.validateBOMToOptimization(bom);
     if (!validation.passed) {
-      if (projectId && poseId) navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/optimization`);
+      setError(
+        validation.issues.map((issue) => issue.message).join('; ') ||
+          'Resolve BOM qualification before optimization.',
+      );
       return;
     }
     if (!completeStep('bom')) {
