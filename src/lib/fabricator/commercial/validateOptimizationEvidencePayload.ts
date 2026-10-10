@@ -352,29 +352,82 @@ export function canonicalApprovedRuleVersion(
     .join('|');
 }
 
-/** SHA-256 of approved cutting-rule content (not a free-form label). */
+export type ApprovedRuleContent = {
+  approvalId?: string;
+  ruleId: string;
+  revision: number;
+  evidenceStatus?: string;
+  deductions?: unknown;
+  allowances?: unknown;
+  applicability?: unknown;
+};
+
+/**
+ * Mirror of PostgreSQL `jsonb::text` for fingerprint parity:
+ * sorted object keys, space after `:` / `,`, JSON null → `null`.
+ */
+export function pgJsonbText(value: unknown): string {
+  if (value === null || value === undefined) return 'null';
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) return 'null';
+    return String(value);
+  }
+  if (typeof value === 'string') return JSON.stringify(value);
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => pgJsonbText(item)).join(', ')}]`;
+  }
+  if (typeof value === 'object') {
+    const keys = Object.keys(value as Record<string, unknown>).sort();
+    const body = keys
+      .map(
+        (key) =>
+          `${JSON.stringify(key)}: ${pgJsonbText((value as Record<string, unknown>)[key])}`,
+      )
+      .join(', ');
+    return `{${body}}`;
+  }
+  return 'null';
+}
+
+/** SHA-256 of approved cutting-rule content (must match SQL approved_rule_content_fingerprint). */
 export async function approvedRuleContentFingerprint(
-  rules: ReadonlyArray<{
-    approvalId?: string;
-    ruleId: string;
-    revision: number;
-    evidenceStatus?: string;
-  }>,
+  rules: ReadonlyArray<ApprovedRuleContent>,
 ): Promise<string> {
-  const canonical = JSON.stringify(
-    [...rules]
-      .map((r) => ({
-        approvalId: r.approvalId ?? '',
-        ruleId: r.ruleId,
-        revision: r.revision,
-        evidenceStatus: r.evidenceStatus ?? 'approved',
-      }))
-      .sort(
-        (a, b) =>
-          a.ruleId.localeCompare(b.ruleId) ||
-          a.revision - b.revision ||
-          a.approvalId.localeCompare(b.approvalId),
-      ),
-  );
+  const parts = rules
+    .filter((r) => (r.evidenceStatus ?? 'approved') === 'approved')
+    .map((r) =>
+      [
+        r.approvalId ?? '',
+        r.ruleId,
+        String(r.revision ?? 0),
+        'approved',
+        pgJsonbText(r.deductions ?? null),
+        pgJsonbText(r.allowances ?? null),
+        pgJsonbText(r.applicability ?? null),
+      ].join('|'),
+    )
+    .sort();
+  const canonical = parts.join(';');
+  if (canonical.length < 4) return '';
+  return sha256Hex(canonical);
+}
+
+/** Fingerprint of approved machining settings + stocks + rule content (SQL parity). */
+export async function authorityContentFingerprint(input: {
+  manufacturingSettings: { sawKerfMm: number; trimCutMm: number };
+  permittedStockLengths: number[];
+  cuttingRules: ReadonlyArray<ApprovedRuleContent>;
+}): Promise<string> {
+  const rulesFp = await approvedRuleContentFingerprint(input.cuttingRules);
+  const stocks = [...input.permittedStockLengths]
+    .filter((s) => s > 0)
+    .sort((a, b) => a - b)
+    .join(',');
+  const settings = pgJsonbText({
+    sawKerfMm: input.manufacturingSettings.sawKerfMm,
+    trimCutMm: input.manufacturingSettings.trimCutMm,
+  });
+  const canonical = [settings, `stocks=${stocks}`, `rules=${rulesFp}`].join('||');
   return sha256Hex(canonical);
 }

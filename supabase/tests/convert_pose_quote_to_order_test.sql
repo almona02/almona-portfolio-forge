@@ -116,9 +116,17 @@ SELECT
       jsonb_build_object('role', 'sash', 'profileId', 'PS-SASH', 'stockLengthMm', 6000, 'evidenceStatus', 'approved', 'approvalId', 'b2000000-0000-4000-8000-000000000011')
     ),
     'cuttingRules', jsonb_build_array(
-      jsonb_build_object('ruleId', 'ps-default', 'revision', 1, 'approvalId', 'b2000000-0000-4000-8000-000000000020', 'evidenceStatus', 'approved')
+      jsonb_build_object(
+        'ruleId', 'ps-default', 'revision', 1,
+        'approvalId', 'b2000000-0000-4000-8000-000000000020',
+        'evidenceStatus', 'approved',
+        'deductions', jsonb_build_object('endDeductionMm', 20),
+        'allowances', jsonb_build_object('weldMm', 3),
+        'applicability', jsonb_build_object('materials', jsonb_build_array('aluminum'))
+      )
     ),
-    'toleranceRule', jsonb_build_object('evidenceStatus', 'approved', 'approvalId', 'b2000000-0000-4000-8000-000000000030')
+    'toleranceRule', jsonb_build_object('evidenceStatus', 'approved', 'approvalId', 'b2000000-0000-4000-8000-000000000030'),
+    'manufacturingSettings', jsonb_build_object('sawKerfMm', 4, 'trimCutMm', 0)
   ),
   '13000000-0000-0000-0000-000000000099'
 WHERE NOT EXISTS (SELECT 1 FROM convert_auth_rev);
