@@ -1,7 +1,7 @@
 # Fabricator merge + staging readiness — 9–10 October 2026
 
-**Status:** Phase A complete. Phase B/C §5.2 for #71/#72 complete. **Ledger/kerf evidence harden** implemented (code + staging smoke); §5.3 full fixture walk still open.  
-Keep provisional scorecard at **88/100**.
+**Status:** Phase A complete. Phase B/C §5.2 for #71/#72 complete. **Authoritative binding + §5.3 staging positive chain complete** on `apnmoevmvihfzcnttctx`.  
+Keep provisional scorecard at **88/100**. Draft **#76** retained — **no production promote** without separate authorization.
 
 Canonical scorecard: [FABRICATOR_SCORECARD_2026-10-09.md](../reviews/FABRICATOR_SCORECARD_2026-10-09.md).
 
@@ -15,35 +15,31 @@ Canonical scorecard: [FABRICATOR_SCORECARD_2026-10-09.md](../reviews/FABRICATOR_
 
 ## 2. Staging / prod DB
 
-| Project | Ref | #71/#72 | Ledger/kerf (`20261010010000`) |
-|---|---|---|---|
-| Staging `almona02-staging` | `apnmoevmvihfzcnttctx` | applied (stub baseline) | **applied** + reject smoke |
-| Prod `almona02` | `shfsebdncjnncqqnewfj` | applied (Phase C) | **not applied** (await merge + auth) |
+| Project | Ref | #71/#72 | Ledger/kerf | Authoritative binding | §5.3 walk |
+|---|---|---|---|---|---|
+| Staging `almona02-staging` | `apnmoevmvihfzcnttctx` | applied | applied | **applied** (`20261010020000`) | **PASS** (SQL + Auth login) |
+| Prod `almona02` | `shfsebdncjnncqqnewfj` | applied (Phase C) | **not applied** | **not applied** | n/a |
 
 ---
 
-## 3. Post-#71 review hardenings
+## 3. Authoritative binding (draft #76)
 
-### 3.1 Code / SQL
+Migration `20261010020000_fabricator_evidence_authoritative_binding.sql` + TS mirror:
 
-Migration `supabase/migrations/20261010010000_fabricator_optimization_evidence_ledger_kerf.sql` + TS mirror:
+1. **No placement fallback** — missing BOM/design ledger fails closed
+2. **Server-derived ledger** — `derive_required_cuts_from_position` from saved pose; record ignores client `requiredCuts`
+3. **Kerf/trim/stock authority** — `manufacturingSettings` + catalogue stock lengths; zero-kerf / invented stock rejected
+4. **Rule content fingerprint** — deductions / allowances / applicability (not IDs alone); TS/SQL parity via `pgJsonbText`
 
-1. **Kerf/trim accounting** (FP-023B): overrun when `Σ(length)+N·kerf+trim > stock`
-2. **Design-ledger reconciliation**: `requiredCuts` exact multiset vs placed cuts (missing / duplicate / substituted / wrongly sized)
-3. **Rule version**: must match `canonical_approved_rule_version(authority.cuttingRules)` or content fingerprint — not free-form labels
-4. **Ledger bind**: `designFp||placementFp` required
+Prior ledger/kerf (`20261010010000_*`) remains: FP-023B accounting + multiset reconcile + `designFp||placementFp`.
 
-### 3.2 Tests
+### Tests
 
-- Vitest: `validateOptimizationEvidencePayload.test.ts`, `recordOptimizationEvidence.test.ts` (18)
-- Constitutional: GuaranteeVerification ledger/kerf case
-- pgTAP: `fabricator_optimization_evidence_ledger_kerf_test.sql`; convert test fixtures bumped to schemaVersion 2
+- Vitest: fabricated ledger, missing BOM, zero-kerf, invented stock, rule-content drift, free-form labels
+- pgTAP: `fabricator_evidence_authoritative_binding_test.sql` + ledger/kerf suite
+- Fixtures: authority payloads include `manufacturingSettings` + rule content
 
-### 3.3 Staging reject smoke (recorded)
-
-kerf overrun, missing, duplicate, substituted, wrong size, rule-label content-bound — all pass.
-
-Artifact: `/opt/cursor/artifacts/staging-ledger-kerf-smoke.log`.
+Artifacts: `/opt/cursor/artifacts/authoritative-binding-vitest.log`, `/opt/cursor/artifacts/staging-s53-positive-chain.log`.
 
 ---
 
@@ -51,23 +47,25 @@ Artifact: `/opt/cursor/artifacts/staging-ledger-kerf-smoke.log`.
 
 | Step | Status |
 |---|---|
-| Approval → optimization evidence (reject paths) | **done** on staging smoke |
-| Successful convert with ledger-bound evidence | **blocked** — stub staging lacks full manufacturing authority/convert stack parity |
-| Release → QC → delivery | **blocked** — tables/RPCs absent on stub staging; needs #64 empty-DB replay or prod-parity staging |
-| Reload + fresh login persistence | **not run** (needs Auth UI fixtures) |
+| Staging schema/RPC parity (empty-DB + manufacturing stack) | **done** on staging |
+| Dedicated Auth fixtures (owner + admin) | **done** — password login HTTP 200 |
+| Approval → optimization evidence (reject paths) | **done** |
+| Successful convert with ledger-bound evidence | **done** |
+| Release → QC → delivery | **done** |
+| Reload + fresh login persistence | **done** (SQL reload + Auth password re-login) |
 
-**Next:** apply #64 empty-DB prerequisites onto staging (or branch when Pro available), seed disposable Auth users, then run convert→release→QC→delivery on a disposable project.
+Script: `scripts/staging-s53-positive-chain.sql`.
 
 ---
 
 ## 5. Phase C note
 
-Prod #71/#72 smoke remains **owner-authorized / agent-recorded**. Ledger/kerf SQL must not ride that grant automatically — promote only after this PR merges and owner confirms.
+**No production promote** of ledger/kerf or authoritative binding until merge + **separate owner authorization**. Phase C #71/#72 grant does not cover these files.
 
 ---
 
 ## 6. Explicit non-claims
 
-- Reject smoke ≠ successful manufacturing walk  
-- Stub staging ≠ prod schema parity  
-- 88/100 provisional unchanged until §5.3 + live FINAL GOAL  
+- Staging §5.3 disposable fixture ≠ live FINAL GOAL on almona02.com  
+- 88/100 provisional unchanged until live FINAL GOAL  
+- Prod DB still lacks `20261010010000_*` / `20261010020000_*`  
