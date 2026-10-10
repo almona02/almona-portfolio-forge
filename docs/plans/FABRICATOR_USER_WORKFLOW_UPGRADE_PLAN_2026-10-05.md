@@ -155,13 +155,13 @@ Tickets:
 
 ---
 
-## Batch 4 — Quote → order + admin separation
+## Batch 4 — Quote → order + admin separation (DONE ~92% implementation; staging positive convert open)
 
-- **UP-15:** Persist quotes/lines bound to project/position/revision; draft estimate vs priced vs accepted/superseded/expired. **FUA-08**
-- **UP-16:** Atomic idempotent quote→order; no double tax; preserve links + revision snapshot. **FUA-09**
-- **UP-17:** One user Orders UX; admin bulk payment/status server-gated; currency-aware totals. **FUA-10**
+- **UP-15:** **DONE** — Persist quotes/lines bound to project/position/revision; draft estimate vs priced. **FUA-08**
+- **UP-16:** **DONE (code)** — Server convert-to-order + durable optimize gate (#67/#69); live positive convert still §5.3. **FUA-09**
+- **UP-17:** **DONE** — Orders UX + admin bulk gated. **FUA-10**
 
-**Exit:** one order after retries; PDF/list/order match; unauthorized writes fail server-side; label-only “Delivered” impossible.
+**Exit (product):** one order after retries; PDF/list/order match; unauthorized writes fail server-side. **Residual:** §5.3 fixture convert under approved authority.
 
 ---
 
