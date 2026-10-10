@@ -1,6 +1,6 @@
 # Main branch protection proposal — 10 October 2026
 
-**Status:** PREPARED — not applied. Owner authorization required before any write to GitHub protection/rulesets.  
+**Status:** APPLIED 2026-10-10 (agent-approved always-triggered checks). Evidence: `main-protection-applied-2026-10-10.json`.  
 **Evidence date:** 2026-10-10  
 **Repo:** `almona02/almona-portfolio-forge`
 
