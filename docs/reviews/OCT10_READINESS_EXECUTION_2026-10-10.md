@@ -1,13 +1,13 @@
 # Oct 10 readiness execution — evidence pack
 
-**Assessment posture:** controlled pre-production · **88/100 provisional** (unchanged; no new live acceptance that justifies a raise).  
-**FINAL GOAL:** open until every checklist item has executed browser/SQL evidence.
+**Assessment posture:** controlled pre-production · **88/100 provisional** (unchanged).  
+**FINAL GOAL:** still open — browser staging login + Project Studio entry proven; ten-pose / custom-pack / full UI manufacturing chain **not** completed.
 
 ## 1. PR heads / bases / CI
 
 | PR | Base | Head SHA | State | CI |
 |---|---|---|---|---|
-| [#76](https://github.com/almona02/almona-portfolio-forge/pull/76) authoritative binding | `main` | local tip `310925fc` (3 commits ahead of `55a9f51c`; **not pushed**) | OPEN / MERGEABLE | green on remote tip `55a9f51c`; re-run CI after owner-authorized push |
+| [#76](https://github.com/almona02/almona-portfolio-forge/pull/76) authoritative binding | `main` | tip `1b298c30` (pushed) | OPEN / MERGEABLE | CI re-running after flaky timing fix; required check `Frontend Build & Test` failed once on flaky perf test |
 | [#75](https://github.com/almona02/almona-portfolio-forge/pull/75) scorecard/staging docs | `main` | merged → `f27f0317` | MERGED | [Full Pipeline](https://github.com/almona02/almona-portfolio-forge/actions/runs/38046757305) success |
 | [#64](https://github.com/almona02/almona-portfolio-forge/pull/64) empty-DB replay | `integration/fabricator-reviewed` | `345e4a58` | OPEN draft | review before using as sole staging rebuild path |
 | `origin/main` | — | `f27f0317` | tip | Full Pipeline + Constitutional + Gate 1 success |
@@ -18,12 +18,12 @@
 
 | Probe | Evidence |
 |---|---|
-| Classic branch protection | `GET .../branches/main/protection` → **404** Branch not protected |
-| Repository rulesets | `GET .../rulesets` → **`[]`** |
-| Verdict | **main is unprotected** by both mechanisms |
+| Classic branch protection | **APPLIED** — see [MAIN_PROTECTION_APPLIED_2026-10-10.md](../governance/MAIN_PROTECTION_APPLIED_2026-10-10.md) |
+| Repository rulesets | still `[]` (classic protection active) |
+| Required checks | always-triggered only (path-filtered excluded) |
+| Reviews / force-push | 1 review + dismiss stale; force-push/deletion blocked; enforce_admins |
 
-Prepared settings (not applied): [MAIN_BRANCH_PROTECTION_PROPOSAL_2026-10-10.md](../governance/MAIN_BRANCH_PROTECTION_PROPOSAL_2026-10-10.md).  
-**Owner authorization required** before apply. Path-filtered workflows must not be required checks.
+Proposal history: [MAIN_BRANCH_PROTECTION_PROPOSAL_2026-10-10.md](../governance/MAIN_BRANCH_PROTECTION_PROPOSAL_2026-10-10.md).
 
 ## 3. Independent #76 review (pre-fix head `55a9f51c`)
 
@@ -70,14 +70,14 @@ Per [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../plans/FABRICATOR_STAGIN
 
 | Goal item | Status |
 |---|---|
-| Dedicated user/customer/project + custom pack | **not run** (browser) |
-| 10 different poses / 18 units | estimate_only fixtures only |
-| BOM + optimize >100 placed cuts | estimate 414/489 — **not** manufacturing-eligible |
+| Dedicated user/customer/project + custom pack | **partial** — browser login as staging S53 owner; §5.3 project visible (1 pose); custom pack **not** created in UI |
+| 10 different poses / 18 units | **not run** in browser (estimate fixtures only) |
+| BOM + optimize >100 placed cuts | estimate 414/489 — **not** manufacturing-eligible UI walk |
 | Exact metrics + zero unplaced | estimate only |
-| Save → reload → fresh login | staging §5.3 SQL/Auth; **not** live FINAL GOAL UI |
-| Hardener approve/reject/override/revoke | partial / §5.2–5.3 |
-| Order → release → QC → delivery + negatives | staging §5.3; live open |
-| EG / TR / custom Profile Studio | partial contracts |
+| Save → reload → fresh login | browser login + Project Studio OK; full save/reload chain **not** completed |
+| Hardener approve/reject/override/revoke | SQL §5.2–5.3; browser UI **not** walked |
+| Order → release → QC → delivery + negatives | SQL §5.3; browser UI **not** walked |
+| EG / TR / custom Profile Studio | Design Studio reached (needs position); Profile Studio deep walk open |
 | Gold flexibility (asymmetric, miters, undo) | **not run** |
 
 JSON round-trips and estimate fixtures are **not** substitutes for browser acceptance.
