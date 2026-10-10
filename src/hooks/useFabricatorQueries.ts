@@ -124,12 +124,17 @@ export function useUpsertPose() {
       windowUnit: WindowUnit;
       grid?: Record<string, unknown>;
       selectedPreset?: string;
+      clearCutLedger?: boolean;
     }) => {
       if (!user?.id) throw new Error('Not authenticated');
       return fabricatorClientV2.savePose(
         payload.windowUnit,
         user.id,
-        { grid: payload.grid, selectedPreset: payload.selectedPreset }
+        {
+          grid: payload.grid,
+          selectedPreset: payload.selectedPreset,
+          clearCutLedger: payload.clearCutLedger,
+        }
       );
     },
     onSuccess: async (_data, variables) => {
