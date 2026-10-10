@@ -438,6 +438,53 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
     });
   });
 
+  describe('AICS-001: Optimization evidence binds design ledger + kerf/trim', () => {
+    test('rejects kerf-only overruns and unbound free-form rule labels', async () => {
+      const {
+        validateOptimizationEvidencePayload,
+        canonicalApprovedRuleVersion,
+      } = await import('@/lib/fabricator/commercial/validateOptimizationEvidencePayload');
+
+      const kerfOnly = validateOptimizationEvidencePayload(
+        {
+          schema: 'almona.optimization-result',
+          schemaVersion: 2,
+          kerfMm: 4,
+          trimMm: 0,
+          requiredCuts: [
+            { cutId: 'c1', profileId: 'PS-FRAME', length: 1000, angle: 0 },
+            { cutId: 'c2', profileId: 'PS-FRAME', length: 1000, angle: 0 },
+          ],
+          cuttingPlan: [
+            {
+              stockLength: 2000,
+              profile: { id: 'PS-FRAME' },
+              cuts: [
+                { cutId: 'c1', length: 1000, angle: 0 },
+                { cutId: 'c2', length: 1000, angle: 0 },
+              ],
+            },
+          ],
+        },
+        2,
+      );
+      expect(kerfOnly.ok).toBe(false);
+      if (!kerfOnly.ok) {
+        expect(kerfOnly.error).toMatch(/kerf\/trim/i);
+      }
+
+      const label = canonicalApprovedRuleVersion([
+        {
+          approvalId: 'b2000000-0000-4000-8000-000000000020',
+          ruleId: 'ps-default',
+          revision: 1,
+        },
+      ]);
+      expect(label).not.toBe('rules-fixture');
+      expect(label).toContain('ps-default');
+    });
+  });
+
   describe('AICS-001: Pose measures are stored millimetres, not inferred', () => {
     test('Position mapping uses overall_width_mm / overall_height_mm without a window_unit blob', async () => {
       const { mapPositionRowToWindowUnit } = await import('@/lib/supabase/fabricatorClientV2');

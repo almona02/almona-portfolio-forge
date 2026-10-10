@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { canonicalApprovedRuleVersion } from './validateOptimizationEvidencePayload';
 import { recordOptimizationEvidence } from './recordOptimizationEvidence';
 
 const rpc = vi.fn();
@@ -13,6 +14,15 @@ vi.mock('@/lib/supabase', () => ({
 vi.mock('@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver', () => ({
   resolveManufacturingAuthority: (...args: unknown[]) => resolveManufacturingAuthority(...args),
 }));
+
+const authorityRules = [
+  {
+    approvalId: 'b2000000-0000-4000-8000-000000000020',
+    ruleId: 'cut-a',
+    revision: 1,
+    evidenceStatus: 'approved' as const,
+  },
+];
 
 const sampleResult = {
   materialUsage: 0.8,
@@ -38,12 +48,12 @@ const sampleResult = {
   },
 };
 
-describe('recordOptimizationEvidence (#67)', () => {
+describe('recordOptimizationEvidence (#67 / ledger+kerf)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resolveManufacturingAuthority.mockResolvedValue({
       systemPack: { id: 'caluminium-ps', revision: 3 },
-      cuttingRules: [{ ruleId: 'cut-a', revision: 1 }],
+      cuttingRules: authorityRules,
       authorityApprovalId: 'auth-1',
     });
     rpc.mockResolvedValue({ data: 'pos-1', error: null });
@@ -67,15 +77,16 @@ describe('recordOptimizationEvidence (#67)', () => {
     expect(rpc).not.toHaveBeenCalled();
   });
 
-  it('records via SECURITY DEFINER RPC with authority revision', async () => {
+  it('records via SECURITY DEFINER RPC with authority-bound rule version', async () => {
+    const expectedRule = canonicalApprovedRuleVersion(authorityRules);
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
       expectedRevision: 2,
       designRevision: 2,
-      bom: {
-        qualification: { ruleVersion: 'rules-fixture' },
-      } as never,
+      bom: null,
       optimizationResult: sampleResult as never,
+      kerfMm: 4,
+      trimMm: 0,
     });
     expect(result.ok).toBe(true);
     expect(rpc).toHaveBeenCalledWith(
@@ -85,19 +96,39 @@ describe('recordOptimizationEvidence (#67)', () => {
         p_expected_revision: 2,
         p_design_revision: 2,
         p_system_pack_revision: 3,
-        p_rule_version: 'rules-fixture',
+        p_rule_version: expectedRule,
         p_cut_count: 2,
         p_evidence_payload: expect.objectContaining({
           schema: 'almona.optimization-result',
-          schemaVersion: 1,
+          schemaVersion: 2,
+          kerfMm: 4,
+          trimMm: 0,
+          requiredCuts: expect.any(Array),
         }),
       }),
     );
     const args = rpc.mock.calls[0]?.[1] as { p_ledger_fingerprint?: string };
-    expect(args.p_ledger_fingerprint?.length).toBeGreaterThanOrEqual(64);
+    expect(args.p_ledger_fingerprint).toMatch(/^[a-f0-9]{64}\|\|[a-f0-9]{64}$/);
   });
 
-  it('rejects unspecified rule versions without RPC', async () => {
+  it('rejects free-form rule version labels that do not match approved content', async () => {
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: null,
+      optimizationResult: sampleResult as never,
+      ruleVersion: 'rules-fixture',
+      kerfMm: 4,
+      trimMm: 0,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/does not match approved cutting-rule content/i);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('rejects unspecified rule versions when authority has no rules', async () => {
     resolveManufacturingAuthority.mockResolvedValue({
       systemPack: { id: 'caluminium-ps', revision: 3 },
       cuttingRules: [],
@@ -110,23 +141,25 @@ describe('recordOptimizationEvidence (#67)', () => {
       bom: null,
       optimizationResult: sampleResult as never,
       ruleVersion: 'unspecified',
+      kerfMm: 4,
+      trimMm: 0,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error).toMatch(/rule version/i);
+    expect(result.error).toMatch(/cutting rules|rule version/i);
     expect(rpc).not.toHaveBeenCalled();
   });
 
-  it('rejects stock overrun placements without RPC', async () => {
+  it('rejects kerf-only stock overrun placements without RPC', async () => {
     const overrun = {
       ...sampleResult,
       cuttingPlan: [
         {
-          stockLength: 1000,
+          stockLength: 2000,
           profile: { id: 'PS-FRAME' },
           cuts: [
-            { cutId: 'c1', componentId: 'c1', length: 800, angle: 45 },
-            { cutId: 'c2', componentId: 'c2', length: 800, angle: 45 },
+            { cutId: 'c1', componentId: 'c1', length: 1000, angle: 45 },
+            { cutId: 'c2', componentId: 'c2', length: 1000, angle: 45 },
           ],
         },
       ],
@@ -135,12 +168,31 @@ describe('recordOptimizationEvidence (#67)', () => {
       positionId: 'pos-1',
       expectedRevision: 1,
       designRevision: 1,
-      bom: { qualification: { ruleVersion: 'rules-fixture' } } as never,
+      bom: null,
       optimizationResult: overrun as never,
+      kerfMm: 4,
+      trimMm: 0,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error).toMatch(/stock overrun/i);
+    expect(result.error).toMatch(/stock overrun|kerf/i);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('rejects missing design-ledger cuts without RPC', async () => {
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: null,
+      optimizationResult: sampleResult as never,
+      requiredCuts: [{ cutId: 'c1', profileId: 'PS-FRAME', length: 1200, angle: 45 }],
+      kerfMm: 4,
+      trimMm: 0,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/missing cut|cut count mismatch/i);
     expect(rpc).not.toHaveBeenCalled();
   });
 
@@ -152,6 +204,8 @@ describe('recordOptimizationEvidence (#67)', () => {
       designRevision: 1,
       bom: null,
       optimizationResult: sampleResult as never,
+      kerfMm: 4,
+      trimMm: 0,
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;

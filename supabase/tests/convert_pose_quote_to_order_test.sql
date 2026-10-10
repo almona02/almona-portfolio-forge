@@ -29,7 +29,13 @@ CREATE TEMP TABLE convert_opt_evidence (
 INSERT INTO convert_opt_evidence(payload, cut_count) VALUES (
   jsonb_build_object(
     'schema', 'almona.optimization-result',
-    'schemaVersion', 1,
+    'schemaVersion', 2,
+    'kerfMm', 4,
+    'trimMm', 0,
+    'requiredCuts', jsonb_build_array(
+      jsonb_build_object('cutId', 'c1', 'profileId', 'PS-FRAME', 'length', 1200, 'angle', 45),
+      jsonb_build_object('cutId', 'c2', 'profileId', 'PS-FRAME', 'length', 1400, 'angle', 45)
+    ),
     'cuttingPlan', jsonb_build_array(
       jsonb_build_object(
         'stockLength', 6000,
@@ -45,8 +51,8 @@ INSERT INTO convert_opt_evidence(payload, cut_count) VALUES (
 );
 
 UPDATE convert_opt_evidence SET placement_fp = (
-  SELECT o_placement_fingerprint
-  FROM public.validate_optimization_evidence_payload(payload, cut_count)
+  SELECT v.o_design_fingerprint || '||' || v.o_placement_fingerprint
+  FROM public.validate_optimization_evidence_payload(payload, cut_count) AS v
 );
 
 INSERT INTO auth.users(id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
@@ -209,32 +215,37 @@ SELECT lives_ok(
   format(
     $fmt$SELECT public.record_fabricator_optimization_evidence(
       '33000000-0000-0000-0000-000000000001',
-      %s, %s, %L, %s, 'rules-v1', %s, %L::jsonb
+      %s, %s, %L, %s, %L, %s, %L::jsonb
     )$fmt$,
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT placement_fp FROM convert_opt_evidence LIMIT 1),
     (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
+    (SELECT public.canonical_approved_rule_version(
+      a.authority_payload->'cuttingRules'
+    ) FROM public.fabricator_manufacturing_authority_revisions a
+     WHERE a.system_pack_id = 'caluminium-ps' AND a.revoked_at IS NULL
+     ORDER BY a.system_pack_revision DESC LIMIT 1),
     (SELECT cut_count FROM convert_opt_evidence LIMIT 1),
     (SELECT payload::text FROM convert_opt_evidence LIMIT 1)
   ),
   'owner can record optimization evidence'
 );
 
--- 2b) Reject stock overrun placement
+-- 2b) Reject stock overrun placement (kerf/trim aware)
 INSERT INTO convert_order_test_output(result)
 SELECT throws_ok(
   format(
     $fmt$SELECT public.record_fabricator_optimization_evidence(
       '33000000-0000-0000-0000-000000000001',
       %s, %s, 'deadbeefdeadbeef', %s, 'rules-v1', 2,
-      '{"schema":"almona.optimization-result","schemaVersion":1,"cuttingPlan":[{"stockLength":1000,"cuts":[{"cutId":"a","length":800},{"cutId":"b","length":800}]}]}'::jsonb
+      '{"schema":"almona.optimization-result","schemaVersion":2,"kerfMm":4,"trimMm":0,"requiredCuts":[{"cutId":"a","profileId":"PS-FRAME","length":800,"angle":0},{"cutId":"b","profileId":"PS-FRAME","length":800,"angle":0}],"cuttingPlan":[{"stockLength":1000,"profile":{"id":"PS-FRAME"},"cuts":[{"cutId":"a","length":800,"angle":0},{"cutId":"b","length":800,"angle":0}]}]}'::jsonb
     )$fmt$,
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1)
   ),
-  'cuttingPlan[0] stock overrun (placed 1600 mm > stock 1000 mm)',
+  'cuttingPlan[0] stock overrun (consumed 1608 mm > stock 1000 mm including kerf/trim)',
   'stock overrun rejected when recording evidence'
 );
 
@@ -244,11 +255,16 @@ SELECT throws_ok(
   format(
     $fmt$SELECT public.record_fabricator_optimization_evidence(
       '33000000-0000-0000-0000-000000000001',
-      %s, %s, 'ledger-fp-abcdefgh', %s, 'rules-v1', %s, %L::jsonb
+      %s, %s, 'ledger-fp-abcdefgh', %s, %L, %s, %L::jsonb
     )$fmt$,
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT qc_revision FROM convert_pos_rev LIMIT 1),
     (SELECT system_pack_revision FROM convert_auth_rev LIMIT 1),
+    (SELECT public.canonical_approved_rule_version(
+      a.authority_payload->'cuttingRules'
+    ) FROM public.fabricator_manufacturing_authority_revisions a
+     WHERE a.system_pack_id = 'caluminium-ps' AND a.revoked_at IS NULL
+     ORDER BY a.system_pack_revision DESC LIMIT 1),
     (SELECT cut_count FROM convert_opt_evidence LIMIT 1),
     (SELECT payload::text FROM convert_opt_evidence LIMIT 1)
   ),

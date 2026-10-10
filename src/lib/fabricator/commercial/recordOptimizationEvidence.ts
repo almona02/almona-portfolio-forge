@@ -1,15 +1,19 @@
 /**
- * #67 — Persist server-stamped optimization evidence (convert gate reads this, not client JSON).
+ * Persist server-stamped optimization evidence (convert gate reads this, not client JSON).
+ * schemaVersion 2: design-ledger reconciliation + kerf/trim accounting + authority-bound rules.
  */
 
-import { fingerprintBom } from '@/lib/fabricator/positionRelease';
+import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 import { resolveManufacturingAuthority } from '@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { supabase } from '@/lib/supabase';
 import type { OptimizationResult } from '@/types/fabricator';
 import {
+  approvedRuleContentFingerprint,
+  canonicalApprovedRuleVersion,
   sha256Hex,
   validateOptimizationEvidencePayload,
+  type EvidenceCutSpec,
   type OptimizationEvidencePayload,
 } from './validateOptimizationEvidencePayload';
 
@@ -20,6 +24,10 @@ export interface RecordOptimizationEvidenceInput {
   bom: CompleteBOM | null;
   optimizationResult: OptimizationResult;
   ruleVersion?: string | null;
+  kerfMm?: number | null;
+  trimMm?: number | null;
+  /** Optional explicit design ledger; defaults to BOM cuttingLengths. */
+  requiredCuts?: EvidenceCutSpec[] | null;
 }
 
 export type RecordOptimizationEvidenceResult =
@@ -37,17 +45,69 @@ function countCuts(result: OptimizationResult): number {
   return (result.cuttingPlan ?? []).reduce((sum, plan) => sum + (plan.cuts?.length ?? 0), 0);
 }
 
+export function requiredCutsFromBom(bom: CompleteBOM | null): EvidenceCutSpec[] {
+  if (!bom?.profiles?.length) return [];
+  return bom.profiles.flatMap((profile) => {
+    const profileId = profile.profileCode ?? profile.id ?? '';
+    const lengths = profile.cuttingLengths ?? [];
+    const angles = profile.angles ?? [];
+    return lengths.map((length, index) => ({
+      cutId: `${profile.id ?? profileId}:${index}`,
+      profileId,
+      length: Number(length),
+      angle: Number.isFinite(angles[index]) ? Number(angles[index]) : 0,
+    }));
+  });
+}
+
+/** Fallback: treat placed cuts as the design ledger only when BOM has no cuts (tests). */
+function requiredCutsFromPlacement(result: OptimizationResult): EvidenceCutSpec[] {
+  return (result.cuttingPlan ?? []).flatMap((plan) =>
+    (plan.cuts ?? []).map((cut, index) => ({
+      cutId: cut.cutId ?? cut.componentId ?? `cut:${index}`,
+      profileId: plan.profile?.id ?? '',
+      length: Number(cut.length),
+      angle: Number.isFinite(cut.angle) ? Number(cut.angle) : 0,
+    })),
+  );
+}
+
+function resolveKerfTrim(
+  result: OptimizationResult,
+  overrideKerf?: number | null,
+  overrideTrim?: number | null,
+): { kerfMm: number; trimMm: number } {
+  const first = result.cuttingPlan?.[0];
+  const kerf = Number(
+    overrideKerf ??
+      first?.profile?.specifications?.sawKerf ??
+      PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
+  );
+  const trim = Number(
+    overrideTrim ??
+      first?.profile?.specifications?.barEndTrim ??
+      PLATFORM_MANUFACTURING_DEFAULTS.trimCutMm,
+  );
+  return { kerfMm: kerf, trimMm: trim };
+}
+
 function buildEvidencePayload(
   result: OptimizationResult,
   cutCount: number,
+  requiredCuts: EvidenceCutSpec[],
+  kerfMm: number,
+  trimMm: number,
 ): OptimizationEvidencePayload {
   return {
     schema: 'almona.optimization-result',
-    schemaVersion: 1,
+    schemaVersion: 2,
     materialUsage: result.materialUsage,
     wastePercentage: result.wastePercentage,
     nestingEfficiency: result.nestingEfficiency,
     cutCount,
+    kerfMm,
+    trimMm,
+    requiredCuts,
     cuttingPlan: result.cuttingPlan,
   };
 }
@@ -74,15 +134,42 @@ export async function recordOptimizationEvidence(
     return { ok: false, error: 'Optimization produced no cuts to validate.' };
   }
 
-  const evidencePayload = buildEvidencePayload(input.optimizationResult, cutCount);
+  const fromBom = requiredCutsFromBom(input.bom);
+  const requiredCuts =
+    input.requiredCuts?.length
+      ? input.requiredCuts
+      : fromBom.length > 0
+        ? fromBom
+        : requiredCutsFromPlacement(input.optimizationResult);
+
+  if (requiredCuts.length === 0) {
+    return { ok: false, error: 'Design ledger requiredCuts are required.' };
+  }
+
+  const { kerfMm, trimMm } = resolveKerfTrim(
+    input.optimizationResult,
+    input.kerfMm,
+    input.trimMm,
+  );
+  if (!Number.isFinite(kerfMm) || kerfMm < 0 || !Number.isFinite(trimMm) || trimMm < 0) {
+    return { ok: false, error: 'kerfMm/trimMm must be non-negative numbers.' };
+  }
+
+  const evidencePayload = buildEvidencePayload(
+    input.optimizationResult,
+    cutCount,
+    requiredCuts,
+    kerfMm,
+    trimMm,
+  );
   const structural = validateOptimizationEvidencePayload(evidencePayload, cutCount);
   if (!structural.ok) {
     return { ok: false, error: structural.error };
   }
 
   const placementFingerprint = await sha256Hex(structural.placementCanonical);
-  const bomFp = fingerprintBom(input.bom);
-  const ledgerFingerprint = [bomFp, placementFingerprint].filter(Boolean).join('||') || placementFingerprint;
+  const designFingerprint = await sha256Hex(structural.designCanonical);
+  const ledgerFingerprint = `${designFingerprint}||${placementFingerprint}`;
 
   let systemPackRevision: number;
   let ruleVersion: string;
@@ -92,11 +179,20 @@ export async function recordOptimizationEvidence(
       input.expectedRevision,
     );
     systemPackRevision = Number(authority.systemPack.revision);
-    ruleVersion =
-      input.ruleVersion?.trim() ||
-      input.bom?.qualification?.ruleVersion ||
-      authority.cuttingRules.map((r) => `${r.ruleId}:r${r.revision}`).join('|') ||
-      '';
+    if (!authority.cuttingRules.length) {
+      return { ok: false, error: 'Approved cutting rules are required for rule version.' };
+    }
+    const authorityRuleVersion = canonicalApprovedRuleVersion(authority.cuttingRules);
+    const contentFp = await approvedRuleContentFingerprint(authority.cuttingRules);
+    const requested = input.ruleVersion?.trim() || '';
+    // Accept only authority-derived label or content fingerprint — not free-form BOM labels.
+    if (requested && requested !== authorityRuleVersion && requested !== contentFp) {
+      return {
+        ok: false,
+        error: 'rule version does not match approved cutting-rule content',
+      };
+    }
+    ruleVersion = authorityRuleVersion || contentFp;
   } catch (err) {
     return {
       ok: false,
