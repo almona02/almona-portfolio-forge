@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -9,7 +9,6 @@ import {
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Badge } from '@/shared/ui/ui/badge';
-import { ScrollArea } from '@/shared/ui/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Card, CardContent } from '@/shared/ui/ui/card';
 import { 
@@ -28,6 +27,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Profile } from '@/types/fabricator';
+import { purchaseProfileKey, purchaseValidationError, type PurchaseItem } from '@/lib/fabricator/inventory/purchaseDraft';
 
 interface PurchaseWizardProps {
   open: boolean;
@@ -37,13 +37,6 @@ interface PurchaseWizardProps {
 }
 
 type WizardStep = 'system-select' | 'profile-select' | 'review';
-
-interface PurchaseItem {
-  profile: CatalogProfile;
-  quantity: number; // bars
-  lengthMm: number; // usually stock length (6000)
-  color: string;
-}
 
 export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
   open,
@@ -61,15 +54,41 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
   const [editingQuantityFor, setEditingQuantityFor] = useState<string | null>(null);
   const [quantityInput, setQuantityInput] = useState<number>(1);
   const [editingRoleFor, setEditingRoleFor] = useState<string | null>(null);
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [catalogError, setCatalogError] = useState('');
+  const [catalogAttempt, setCatalogAttempt] = useState(0);
+  const [profileQuery, setProfileQuery] = useState('');
+  const [supplier, setSupplier] = useState('');
+  const [invoice, setInvoice] = useState('');
+  const submitting = useRef(false);
+  const validationError = purchaseValidationError(cart);
+  const totalBars = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalMetres = cart.reduce((sum, item) => sum + item.quantity * item.lengthMm / 1000, 0);
 
   useEffect(() => {
+    let cancelled = false;
     if (open) {
-      UnifiedProfileCatalog.getAllSystems(userId).then(setSystems);
+      setCatalogLoading(true);
+      setCatalogError('');
+      setSystems([]);
+      UnifiedProfileCatalog.getAllSystems(userId)
+        .then(data => { if (!cancelled) setSystems(data); })
+        .catch(() => { if (!cancelled) setCatalogError('Unable to load the catalogue. Please retry.'); })
+        .finally(() => { if (!cancelled) setCatalogLoading(false); });
       setStep('system-select');
       setCart([]);
       setSelectedSystem(null);
+      setSearchQuery('');
+      setProfileQuery('');
+      setActiveRoleTab('frame');
+      setEditingQuantityFor(null);
+      setEditingRoleFor(null);
+      setQuantityInput(1);
+      setSupplier('');
+      setInvoice('');
     }
-  }, [open, userId]);
+    return () => { cancelled = true; };
+  }, [open, userId, catalogAttempt]);
 
   const filteredSystems = useMemo(() => {
     if (!searchQuery) return systems;
@@ -81,8 +100,9 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
 
   const currentSystemProfiles = useMemo(() => {
     if (!selectedSystem) return [];
-    return selectedSystem.profiles;
-  }, [selectedSystem]);
+    const query = profileQuery.trim().toLowerCase();
+    return selectedSystem.profiles.filter(p => !query || `${p.name} ${p.profileCode} ${p.oldProfileCode || ''}`.toLowerCase().includes(query));
+  }, [selectedSystem, profileQuery]);
 
   const profilesByRole = useMemo(() => {
     const grouped: Record<string, CatalogProfile[]> = {
@@ -108,11 +128,15 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
   }, [currentSystemProfiles]);
 
   const addToCart = (profile: CatalogProfile, quantity: number) => {
+    if (!Number.isSafeInteger(quantity) || quantity < 1) {
+      toast.error('Enter a positive whole number of bars.');
+      return;
+    }
     setCart(prev => {
-      const existing = prev.find(item => item.profile.profileCode === profile.profileCode);
+      const existing = prev.find(item => purchaseProfileKey(item.profile) === purchaseProfileKey(profile));
       if (existing) {
         return prev.map(item => 
-          item.profile.profileCode === profile.profileCode 
+          purchaseProfileKey(item.profile) === purchaseProfileKey(profile)
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -125,64 +149,21 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
   };
 
   const handleQuickAdd = (profile: CatalogProfile) => {
-    setEditingQuantityFor(profile.profileCode);
+    setEditingQuantityFor(purchaseProfileKey(profile));
     setQuantityInput(1);
   };
 
   const handleConfirmQuantity = (profile: CatalogProfile) => {
-    if (quantityInput > 0) {
-      addToCart(profile, quantityInput);
-    }
+    addToCart(profile, quantityInput);
   };
 
-  const handleUpdateRole = async (profileCode: string, newRole: Profile['profileRole']) => {
-    if (!userId) return;
-    
-    try {
-      // Find the profile in database by code
-      const db = supabase as any;
-      
-      // Try to find by supplierCode first
-      let { data: profiles } = await db
-        .from('fabricator_profiles')
-        .select('id, specifications')
-        .eq('user_id', userId)
-        .eq('specifications->>supplierCode', profileCode);
-      
-      // If not found, try internalCode
-      if (!profiles || profiles.length === 0) {
-        const result = await db
-          .from('fabricator_profiles')
-          .select('id, specifications')
-          .eq('user_id', userId)
-          .eq('specifications->>internalCode', profileCode);
-        profiles = result.data;
-      }
-      
-      if (profiles && profiles.length > 0) {
-        // Update the first matching profile
-        const profile = profiles[0];
-        const specs = profile.specifications || {};
-        await db
-          .from('fabricator_profiles')
-          .update({
-            specifications: { ...specs, profileRole: newRole },
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', profile.id)
-          .eq('user_id', userId);
-        
-        // Refresh systems to reflect the change
-        const updatedSystems = await UnifiedProfileCatalog.getAllSystems(userId);
-        setSystems(updatedSystems);
-        toast.success(`Role updated to ${newRole}`);
-      } else {
-        toast.info('Profile not found in database. Role will be saved when you add it to inventory.');
-      }
-    } catch (error) {
-      console.error('Error updating role:', error);
-      toast.error('Failed to update role');
-    }
+  // Role changes belong to this purchase draft; inventory is written atomically on confirmation.
+  const handleUpdateRole = (profile: CatalogProfile, newRole: Profile['profileRole']) => {
+    const key = purchaseProfileKey(profile);
+    const update = (p: CatalogProfile) => purchaseProfileKey(p) === key ? { ...p, role: newRole } : p;
+    setSelectedSystem(prev => prev ? { ...prev, profiles: prev.profiles.map(update) } : prev);
+    setSystems(prev => prev.map(system => ({ ...system, profiles: system.profiles.map(update) })));
+    setCart(prev => prev.map(item => ({ ...item, profile: update(item.profile) })));
     setEditingRoleFor(null);
   };
 
@@ -190,14 +171,20 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
     setCart(prev => prev.filter((_, i) => i !== index));
   };
 
-  const updateCartItem = (index: number, field: keyof PurchaseItem, value: any) => {
+  const updateCartItem = (index: number, field: 'quantity' | 'lengthMm' | 'color', value: number | string) => {
     setCart(prev => prev.map((item, i) => 
       i === index ? { ...item, [field]: value } : item
     ));
   };
 
   const handlePurchase = async () => {
-    if (!userId || cart.length === 0) return;
+    if (submitting.current) return;
+    const error = purchaseValidationError(cart);
+    if (error || !userId) {
+      toast.error(error || 'Please sign in before recording stock.');
+      return;
+    }
+    submitting.current = true;
     setLoading(true);
 
     try {
@@ -232,7 +219,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
       
       // Verify that the prop userId matches the authenticated user (security check)
       if (authenticatedUserId !== userId) {
-        console.warn('Prop userId does not match authenticated user ID. Using authenticated user ID for RLS compliance.');
+        throw new Error('Your signed-in account changed. Reopen the purchase wizard before recording stock.');
       }
 
       // Verify that a profile exists for this user (required for foreign key constraint)
@@ -271,29 +258,30 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           catalogueKey: p.profileCode,
           pack: p.systemPackId || selectedSystem?.id || '',
           material: String(material).toLowerCase(),
-          finish: item.color || '',
+          finish: item.color.trim(),
           profileName: p.name,
           inputUnit: 'pieces' as const,
           quantity: item.quantity,
           barLengthM,
-          notes: `Purchase Wizard - ${selectedSystem?.name || 'Unknown'} Batch`,
-          supplier: selectedSystem?.brand || null,
-          systemBrand: selectedSystem?.name,
+          notes: `Purchase Wizard - ${p.systemName} Batch`,
+          supplier: supplier.trim() || null,
+          invoice: invoice.trim() || null,
+          systemBrand: p.systemName,
           width: p.dimensions?.width || 50,
           height: p.dimensions?.height || 50,
           thickness: p.dimensions?.thickness || 1.5,
           minStockLevel: 10,
           specifications: {
+            ...(p.specifications || {}),
             profileRole: p.role,
             supplierCode: p.profileCode,
             internalCode: p.oldProfileCode,
             systemPackId: p.systemPackId,
-            finish: item.color || '',
-            ...(p.specifications || {}),
+            finish: item.color.trim(),
           },
           lotMetadata: {
             source: 'purchase_wizard',
-            system: selectedSystem?.name || null,
+            system: p.systemName,
             length_mm: item.lengthMm,
           },
         };
@@ -323,22 +311,27 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
 
       toast.success('Purchase recorded and inventory updated!');
       
-      // Call onPurchaseComplete which should refresh the dashboard and alerts
-      onPurchaseComplete();
       onOpenChange(false);
+      // Stock is already committed. A dashboard refresh failure must not invite a second intake.
+      try {
+        onPurchaseComplete();
+      } catch {
+        toast.error('Stock was recorded. Reload the inventory dashboard to refresh balances.');
+      }
     } catch (error) {
       console.error('Purchase failed:', error);
       const errorMessage = (error as any)?.message || (error as any)?.details || (error as any)?.error_description || 'Unknown error';
       toast.error(`Failed to record stock intake: ${errorMessage}`);
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 bg-gray-900 border-gray-800 card-dark">
-        <div className="p-6 border-b border-gray-800">
+    <Dialog open={open} onOpenChange={next => { if (!submitting.current) onOpenChange(next); }}>
+      <DialogContent className="max-w-4xl h-[90dvh] max-h-[90dvh] flex flex-col gap-0 p-0 bg-gray-900 border-gray-800">
+        <div className="shrink-0 p-4 sm:p-6 border-b border-gray-800">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
               <ShoppingCart className="h-6 w-6 text-amber-400" />
@@ -368,18 +361,23 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-6">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6" aria-busy={catalogLoading || loading}>
+          <fieldset disabled={loading} className="min-w-0">
           {step === 'system-select' && (
             <div className="space-y-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input 
+                  aria-label="Search systems"
                   placeholder="Search systems (e.g. Rock60, Jumbo)..." 
                   className="pl-10 bg-gray-800 border-gray-700"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
+              {catalogLoading && <p role="status">Loading material catalogue…</p>}
+              {catalogError && <div role="alert" className="text-red-300"><p>{catalogError}</p><Button variant="outline" onClick={() => setCatalogAttempt(value => value + 1)}>Retry catalogue</Button></div>}
+              {!catalogLoading && !catalogError && filteredSystems.length === 0 && <p className="text-gray-400">No systems match your search.</p>}
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredSystems.map(sys => {
@@ -387,8 +385,16 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                   const isEmptyPack = purchasableCount === 0;
                   return (
                   <Card 
+                    role="button"
+                    tabIndex={isEmptyPack ? -1 : 0}
+                    onKeyDown={event => {
+                      if (!isEmptyPack && (event.key === "Enter" || event.key === " ")) {
+                        event.preventDefault();
+                        event.currentTarget.click();
+                      }
+                    }}
                     key={sys.id} 
-                    className={`bg-gray-800 border-gray-700 transition-all card-premium ${
+                    className={`bg-gray-800 border-gray-700 transition-all ${
                       isEmptyPack
                         ? 'opacity-60 cursor-not-allowed'
                         : 'cursor-pointer hover:border-amber-500/50'
@@ -402,6 +408,10 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         return;
                       }
                       setSelectedSystem(sys);
+                      setProfileQuery('');
+                      setEditingQuantityFor(null);
+                      const firstRole = sys.profiles[0]?.role || 'other';
+                      setActiveRoleTab(['frame', 'sash', 'mullion', 'glazing_bead', 'interlock', 'accessory'].includes(firstRole) ? firstRole : 'other');
                       setStep('profile-select');
                     }}
                   >
@@ -439,14 +449,16 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                 </Button>
               </div>
 
+              <Input aria-label="Search profiles" placeholder="Search profile name or code…" value={profileQuery} onChange={event => setProfileQuery(event.target.value)} />
               <Tabs value={activeRoleTab} onValueChange={setActiveRoleTab} className="w-full">
-                <TabsList className="w-full justify-start bg-gray-800 p-1 mb-4 overflow-x-auto">
+                <TabsList className="flex w-full justify-start bg-gray-800 p-1 mb-4 overflow-x-auto">
                   <TabsTrigger value="frame">Frames</TabsTrigger>
                   <TabsTrigger value="sash">Sashes</TabsTrigger>
                   <TabsTrigger value="mullion">Mullions</TabsTrigger>
                   <TabsTrigger value="glazing_bead">Beads</TabsTrigger>
                   <TabsTrigger value="interlock">Interlocks</TabsTrigger>
                   <TabsTrigger value="accessory">Accessory</TabsTrigger>
+                  <TabsTrigger value="other">Other roles</TabsTrigger>
                 </TabsList>
 
                 {Object.entries(profilesByRole).map(([role, profiles]) => (
@@ -456,21 +468,21 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         No profiles found for this role.
                       </div>
                     ) : (
-                      <ScrollArea className="h-[400px] pr-4">
+                      <div>
                         <div className="grid grid-cols-1 gap-3">
                         {profiles.map(profile => {
-                          const inCart = cart.find(i => i.profile.profileCode === profile.profileCode);
-                          const isEditingQuantity = editingQuantityFor === profile.profileCode;
-                          const isEditingRole = editingRoleFor === profile.profileCode;
+                          const inCart = cart.find(i => purchaseProfileKey(i.profile) === purchaseProfileKey(profile));
+                          const isEditingQuantity = editingQuantityFor === purchaseProfileKey(profile);
+                          const isEditingRole = editingRoleFor === purchaseProfileKey(profile);
                           
                           return (
-                            <div key={profile.profileCode} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg border border-gray-700">
+                            <div key={profile.profileCode} className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between p-3 bg-gray-800 rounded-lg border border-gray-700">
                               <div className="flex items-center gap-3 flex-1">
                                 <div className="h-10 w-10 bg-gray-700 rounded flex items-center justify-center">
                                   <Layers className="h-5 w-5 text-gray-400" />
                                 </div>
                                 <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
+                                  <div className="flex flex-wrap items-center gap-2 mb-1">
                                     <span className="font-medium">{profile.name}</span>
                                     <Badge variant="outline" className="text-[10px]">
                                       {profile.role || 'other'}
@@ -478,7 +490,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                                     {isEditingRole ? (
                                       <Select
                                         value={profile.role || 'other'}
-                                        onValueChange={(value) => handleUpdateRole(profile.profileCode, value as Profile['profileRole'])}
+                                        onValueChange={(value) => handleUpdateRole(profile, value as Profile['profileRole'])}
                                         onOpenChange={(open) => !open && setEditingRoleFor(null)}
                                       >
                                         <SelectTrigger className="h-6 w-24 text-[10px]">
@@ -499,14 +511,14 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                                         size="icon"
                                         variant="ghost"
                                         className="h-5 w-5"
-                                        onClick={() => setEditingRoleFor(profile.profileCode)}
-                                        title="Edit role"
+                                        onClick={() => setEditingRoleFor(purchaseProfileKey(profile))}
+                                        title="Edit role for this purchase" aria-label={`Edit purchase role for ${profile.name}`}
                                       >
                                         <Edit2 className="h-3 w-3" />
                                       </Button>
                                     )}
                                   </div>
-                                  <div className="text-xs text-gray-400 flex gap-2">
+                                  <div className="text-xs text-gray-400 flex flex-wrap gap-2">
                                     <span>Code: {profile.profileCode}</span>
                                     {profile.weightPerMeter && (
                                       <span>• {profile.weightPerMeter} kg/m</span>
@@ -520,6 +532,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                                   <div className="flex items-center gap-2 bg-gray-900 rounded px-2 py-1">
                                     <span className="text-sm font-medium">{inCart.quantity} bars</span>
                                     <Button 
+                                      aria-label={`Add one bar of ${profile.name}`}
                                       size="icon" 
                                       variant="ghost" 
                                       className="h-6 w-6"
@@ -531,10 +544,12 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                                 ) : isEditingQuantity ? (
                                   <div className="flex items-center gap-2">
                                     <Input
+                                      aria-label={`Bars to add for ${profile.name}`}
                                       type="number"
                                       min="1"
+                                      step="1"
                                       value={quantityInput}
-                                      onChange={(e) => setQuantityInput(parseInt(e.target.value) || 1)}
+                                      onChange={(e) => setQuantityInput(Number(e.target.value))}
                                       className="h-8 w-20 text-center"
                                       autoFocus
                                       onKeyDown={(e) => {
@@ -578,7 +593,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                           );
                         })}
                         </div>
-                      </ScrollArea>
+                      </div>
                     )}
                   </TabsContent>
                 ))}
@@ -594,8 +609,14 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
               </div>
 
               <div className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="text-sm">Supplier (optional)<Input value={supplier} onChange={event => setSupplier(event.target.value)} placeholder="Supplier name" /></label>
+                  <label className="text-sm">Invoice / reference (optional)<Input value={invoice} onChange={event => setInvoice(event.target.value)} placeholder="Delivery note or invoice" /></label>
+                </div>
+                <p className="text-sm text-gray-400">Record received profile bars. Each line keeps its own system, length, and finish.</p>
+                {validationError && <p role="alert" className="text-sm text-red-300">{validationError}</p>}
                 {cart.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700">
+                  <div key={idx} className="flex flex-col gap-3 p-4 bg-gray-800 rounded-lg border border-gray-700">
                     <div className="flex-1">
                       <div className="font-medium">{item.profile.name}</div>
                       <div className="text-xs text-gray-400">
@@ -603,23 +624,29 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-end gap-3">
                       <div>
                         <label className="typography-label text-[10px] text-gray-500 block">Bars</label>
                         <Input 
+                          aria-label={`Bars for ${item.profile.name}`}
                           type="number" 
+                          min="1"
+                          step="1"
                           className="h-8 w-20 text-center"
                           value={item.quantity}
-                          onChange={(e) => updateCartItem(idx, 'quantity', parseInt(e.target.value) || 0)}
+                          onChange={(e) => updateCartItem(idx, 'quantity', Number(e.target.value))}
                         />
                       </div>
                       <div>
                         <label className="typography-label text-[10px] text-gray-500 block">Length (mm)</label>
                         <Input 
+                          aria-label={`Stock length in millimetres for ${item.profile.name}`}
                           type="number" 
+                          min="0.01"
+                          step="any"
                           className="h-8 w-24 text-center"
                           value={item.lengthMm}
-                          onChange={(e) => updateCartItem(idx, 'lengthMm', parseInt(e.target.value) || 0)}
+                          onChange={(e) => updateCartItem(idx, 'lengthMm', Number(e.target.value))}
                         />
                       </div>
                       <div>
@@ -630,6 +657,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                             style={{ backgroundColor: item.color }}
                           />
                           <Input 
+                            aria-label={`Finish for ${item.profile.name}`}
                             type="text" 
                             className="h-8 w-24"
                             value={item.color}
@@ -639,6 +667,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                       </div>
                       
                       <Button 
+                        aria-label={`Remove ${item.profile.name} from purchase`}
                         size="icon" 
                         variant="ghost" 
                         className="text-red-400 hover:bg-red-900/20"
@@ -652,20 +681,22 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
               </div>
             </div>
           )}
-        </ScrollArea>
+          </fieldset>
+        </div>
 
-        <div className="p-4 border-t border-gray-800 bg-gray-900 card-dark">
-          <div className="flex justify-between items-center">
+        <div className="shrink-0 p-3 sm:p-4 border-t border-gray-800 bg-gray-900">
+          <div className="flex flex-wrap gap-3 justify-between items-center">
             <div className="text-sm text-gray-400">
               {cart.length > 0 && (
                 <span>
-                  Total Bars: <span className="text-gray-200">{cart.reduce((a,b) => a + b.quantity, 0)}</span>
+                  Total Bars: <span className="text-gray-200">{totalBars}</span>
+                 · {totalMetres.toLocaleString(undefined, { maximumFractionDigits: 2 })} m
                 </span>
               )}
             </div>
             <div className="flex gap-3">
               {step !== 'system-select' && (
-                <Button variant="outline" onClick={() => setStep(prev => prev === 'review' ? 'profile-select' : 'system-select')}>
+                <Button variant="outline" disabled={loading} onClick={() => setStep(prev => prev === 'review' ? 'profile-select' : 'system-select')}>
                   Back
                 </Button>
               )}
@@ -683,10 +714,10 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
               {step === 'review' && (
                 <Button 
                   className="bg-green-600 hover:bg-green-700"
-                  disabled={loading}
+                  disabled={loading || !!validationError || !userId}
                   onClick={handlePurchase}
                 >
-                  {loading ? 'Processing...' : 'Confirm & Add to Inventory'} 
+                  {loading ? 'Recording...' : 'Record stock intake'}
                   <Check className="ml-2 h-4 w-4" />
                 </Button>
               )}
