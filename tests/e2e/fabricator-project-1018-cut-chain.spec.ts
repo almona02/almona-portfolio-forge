@@ -113,7 +113,7 @@ test.describe('Fabricator project 10/18/>100-cut UI chain', () => {
     await page.getByRole('tab', { name: /^Studio$/i }).click();
     await page.getByRole('tab', { name: /^Optimize$/i }).click();
     await expect(page.getByText(/Project cutting estimate/i)).toBeVisible({ timeout: 30_000 });
-    await page.getByRole('button', { name: /Optimize all poses \(estimate\)/i }).click();
+    await page.getByRole('button', { name: /(Optimize all poses \(estimate\)|Recalculate all poses)/i }).click();
 
     await expect
       .poll(
