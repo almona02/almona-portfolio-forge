@@ -220,7 +220,7 @@ locales/{lang}/reports.json    [NEW - 3 files]
 
 ### Competitive Advantage
 
-- **Better than Moxisys** - Deeper customization + better reporting
+- **Better than reference system** - Deeper customization + better reporting
 - **Market Ready** - Turkish and Egyptian market support
 - **Professional Image** - Branded deliverables impress clients
 
@@ -286,7 +286,7 @@ After Phase 2 completion, the platform will offer:
 🔄 **Stunning Visualizations** (Phase 3 - Next)  
 🔄 **Advanced Optimization** (Phase 4 - Future)  
 
-**This makes the platform BETTER than Moxisys with:**
+**This makes the platform BETTER than reference system with:**
 - Deeper customization
 - Better reporting
 - Multi-language support

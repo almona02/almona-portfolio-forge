@@ -1063,7 +1063,7 @@ interface MeasurementData {
 
 ### Drafting Workbench Competitive Position
 
-**Feature Parity:** 95%+ with Kliess Orgadata and Moxisys Design Flow
+**Feature Parity:** 95%+ with reference system reference system and reference system Design Flow
 
 **Completed Features:**
 - ✅ Advanced drawing tools (matches Kliess/Moxisys)
@@ -1085,7 +1085,7 @@ interface MeasurementData {
 - ✅ Template Editor with auto-extraction from workshop history
 
 **Remaining Competitive Gaps:**
-- 🟡 Template library depth (50 vs 1000+ for Kliess) - Expansion strategy ready
+- 🟡 Template library depth (50 vs 1000+ for reference system) - Expansion strategy ready
 
 ---
 

@@ -241,7 +241,7 @@ import { useRegionDetection } from '@/hooks/useRegionDetection';
 
 function MyComponent() {
   const { regionState, setRegion } = useRegionDetection();
-  
+
   return (
     <div>
       <p>Current region: {regionState.region}</p>
@@ -352,7 +352,7 @@ Visit `/demo/regional-features` to see all features in action:
 - **Machine learning** for region detection
 - **Blockchain integration** for compliance
 - **Voice support** in regional languages
-- **AI-powered chat** responses
+- **software-assisted chat** responses
 
 ## 📞 Support
 

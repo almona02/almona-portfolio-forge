@@ -41,14 +41,14 @@ This documentation provides complete information about the project structure, fe
 ### **Backend Architecture**
 - **API**: FastAPI with versioned endpoints
 - **Database**: Supabase (PostgreSQL) with RLS
-- **AI Services**: TensorFlow.js + Computer Vision
+- **automation Services**: TensorFlow.js + Computer Vision
 - **Authentication**: Multi-factor with role-based access
 - **Testing**: Comprehensive test suite
 
 ### **Key Features**
 - 🛒 **E-Commerce**: Complete industrial machinery catalog
 - 🔧 **Service Management**: Professional ticketing system
-- 🤖 **AI-Powered**: Equipment recommendations and part detection
+- 🤖 **software-assisted**: Equipment recommendations and part detection
 - 🌐 **Multi-Language**: Arabic (RTL) and English (LTR)
 - 📱 **Responsive**: Mobile-first design approach
 - 🔐 **Secure**: Enterprise-grade security implementation
@@ -119,7 +119,7 @@ npm run deploy:production     # Deploy to production
 - **Shop & E-Commerce** (`src/components/shop/`)
   - Product catalog and configuration
   - Shopping cart and checkout
-  - AI-powered recommendations
+  - software-assisted recommendations
   - Freight calculations
 
 - **Services** (`src/components/services/`)
@@ -245,7 +245,7 @@ npm run deploy:production     # Deploy to production
 ### **Version 2.0.0** (Latest)
 - ✅ Complete documentation overhaul
 - ✅ Service ticketing system with SLA management
-- ✅ AI-powered equipment recommendations
+- ✅ software-assisted equipment recommendations
 - ✅ Enhanced security with RLS policies
 - ✅ Multi-language support (Arabic/English)
 - ✅ Performance improvements (40% faster)
@@ -260,7 +260,7 @@ npm run deploy:production     # Deploy to production
 
 ### **Backend API Enhancements**
 - FastAPI v2 endpoints with improved performance
-- AI services integration for part detection
+- automation services integration for part detection
 - Email notification system with templates
 - Comprehensive testing suite
 - Docker optimization for production

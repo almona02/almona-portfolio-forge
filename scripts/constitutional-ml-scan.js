@@ -1,6 +1,6 @@
-// Constitutional ML/AI Import Scanner
+// Constitutional advisory inference Import Scanner
 // AICS-001 §5.10.2 Enforcement
-// Scans Tier 0 components for forbidden ML/AI library imports
+// Scans Tier 0 components for forbidden advisory inference library imports
 
 import fs from 'fs';
 import path from 'path';

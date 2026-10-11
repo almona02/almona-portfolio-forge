@@ -19,7 +19,7 @@
 
 ### 2. Tier Classification (AICS-001 §5.10.2)
 
-- [ ] Tier 3 (Deterministic): No AI, pure logic
+- [ ] Tier 3 (Deterministic): No automation, pure logic
 - [ ] Tier 2 (Advisory): IntelligenceGate wrapper required
 - [ ] Tier 1 (Strategic): YDT integration required
 

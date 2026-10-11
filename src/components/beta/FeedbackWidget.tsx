@@ -22,19 +22,19 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
   const [issues, setIssues] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const handleSubmit = async () => {
     if (!rating) {
       alert('Please provide a rating');
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Get tester ID from context or generate
       const testerId = context || 'anonymous';
-      
+
       const feedback = {
         testerId,
         feature,
@@ -43,17 +43,17 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
         issues: issues.filter(i => i.trim()),
         suggestions: suggestions.filter(s => s.trim())
       };
-      
+
       // Submit to beta testing framework
       await betaTestingFramework.submitFeedback(feedback);
-      
+
       // Reset form
       setRating(null);
       setComments('');
       setIssues([]);
       setSuggestions([]);
       setIsOpen(false);
-      
+
       alert('Thank you for your feedback!');
     } catch (error) {
       console.error('Failed to submit feedback:', error);
@@ -62,25 +62,25 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
       setIsSubmitting(false);
     }
   };
-  
+
   const StarIcon = ({ filled }: { filled: boolean }) => (
     <span className={`text-2xl ${filled ? 'text-yellow-400' : 'text-gray-300'}`}>
       ★
     </span>
   );
-  
+
   const MessageSquareIcon = () => (
     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
     </svg>
   );
-  
+
   const XIcon = () => (
     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
     </svg>
   );
-  
+
   return (
     <>
       {/* Feedback button */}
@@ -91,7 +91,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
       >
         <MessageSquareIcon />
       </button>
-      
+
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -106,7 +106,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                   <XIcon />
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 {/* Rating */}
                 <div>
@@ -129,7 +129,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Comments */}
                 <div>
                   <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
@@ -143,7 +143,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                     placeholder="What did you like or dislike?"
                   />
                 </div>
-                
+
                 {/* Issues */}
                 <div>
                   <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
@@ -169,7 +169,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Suggestions */}
                 <div>
                   <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
@@ -184,7 +184,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                   />
                 </div>
               </div>
-              
+
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   onClick={() => setIsOpen(false)}

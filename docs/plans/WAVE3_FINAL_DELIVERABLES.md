@@ -80,7 +80,7 @@ Implemented a constitutional service analytics system for YILMAZ machines in Egy
 - ✅ Egypt environmental constants (Khamsin, Summer, Voltage)
 - ✅ Bilingual rule names and actions (EN/AR)
 - ✅ Input validation with detailed error messages
-- ✅ No AI, no ML, no learning — pure deterministic logic
+- ✅ No automation, no ML, no learning — pure deterministic logic
 
 **Rules**:
 1. `YIL-EGY-001` — Khamsin Dust Clog (March-May)

@@ -26,9 +26,9 @@
 
 ### The Verdict
 
-**Fabricator Pro (ALMONA)** is a modern, cloud-native fenestration platform that has achieved **85–92% feature parity** with gold-tier incumbents (Orgadata LogiKal, Klaes, Soft Tech V6) while introducing **category-defining differentiators** that no competitor offers: constitutional determinism, auditable governance, and native MENA/Arabic-first design.
+**Fabricator Pro (ALMONA)** is a modern, cloud-native fenestration platform that has achieved **85–92% feature parity** with gold-tier incumbents (reference system reference system, reference system, Soft Tech V6) while introducing **category-defining differentiators** that no competitor offers: constitutional determinism, auditable governance, and native MENA/Arabic-first design.
 
-However, the fenestration software market is undergoing **rapid consolidation** (Forterro acquired Orgadata in March 2025 and BM Group in January 2025), meaning the competitive bar is rising. Fabricator Pro's window of opportunity to establish market position is **12–18 months** before incumbents absorb its innovations.
+However, the fenestration software market is undergoing **rapid consolidation** (Forterro acquired reference system in March 2025 and BM Group in January 2025), meaning the competitive bar is rising. Fabricator Pro's window of opportunity to establish market position is **12–18 months** before incumbents absorb its innovations.
 
 ### Key Findings
 
@@ -60,14 +60,14 @@ The global fenestration software market serves an estimated **50,000+ fabricatio
 The most significant market shift in 2025 was **Forterro's dual acquisition strategy**:
 
 - **January 2025:** Forterro acquires **BM Group** (UK) — makers of Evolution and Touch software for UK/Ireland fenestration market
-- **March 2025:** Forterro completes acquisition of **Orgadata AG** (Germany) — parent of LogiKal, the global market leader with ~30% share
+- **March 2025:** Forterro completes acquisition of **reference system AG** (Germany) — parent of reference system, the global market leader with ~30% share
 
 This created **"Forterro Windows and Doors"**, headquartered in Leer, Germany, combining:
-- LogiKal's global CAD/CAM/ERP capabilities (400+ manufacturer databases)
+- reference system's global CAD/CAM/ERP capabilities (400+ manufacturer databases)
 - BM Group's UK regional strength
 - Forterro's enterprise ERP infrastructure
 
-**Impact on Fabricator Pro:** This consolidation raises the competitive bar significantly. Forterro can now cross-sell ERP capabilities into LogiKal's customer base and vice versa. However, it also creates **integration complexity and potential customer dissatisfaction** during the merger period — an opportunity for agile newcomers.
+**Impact on Fabricator Pro:** This consolidation raises the competitive bar significantly. Forterro can now cross-sell ERP capabilities into reference system's customer base and vice versa. However, it also creates **integration complexity and potential customer dissatisfaction** during the merger period — an opportunity for agile newcomers.
 
 *Source: Enterprise Times, March 2025; Forterro press releases*
 
@@ -75,15 +75,15 @@ This created **"Forterro Windows and Doors"**, headquartered in Leer, Germany, c
 
 | Tier | Companies | Annual License | Market Share |
 |------|-----------|---------------|-------------|
-| **Tier 1: Global Leaders** | Orgadata LogiKal (Forterro), Soft Tech V6 (Cyncly), Schüco | €15K–50K | ~57% combined |
-| **Tier 2: Strong Regional** | Klaes, A+W Software, Moxisys, WindowMaker, FeneVision (FeneTech) | €8K–25K | ~30% combined |
-| **Tier 3: Established Niche** | ERCOM 2000, Stolcad, Paradigm Omni, iWindow, Ecotal | €5K–15K | ~10% combined |
+| **Tier 1: Global Leaders** | reference system reference system (Forterro), Soft Tech V6 (Cyncly), Schüco | €15K–50K | ~57% combined |
+| **Tier 2: Strong Regional** | reference system, A+W Software, reference system, WindowMaker, FeneVision (FeneTech) | €8K–25K | ~30% combined |
+| **Tier 3: Established Niche** | reference system 2000, Stolcad, Paradigm Omni, reference system, Ecotal | €5K–15K | ~10% combined |
 | **Tier 4: Emerging/Regional** | DW-ERP, Winksys, ALMONA (Fabricator Pro), local solutions | €2K–18K | ~3% combined |
 
 ### 2.4 Key Industry Trends (2025–2026)
 
-1. **AI Integration:** Competitors adding AI for batch optimization, yield prediction, and dynamic pricing (FeneVision, A+W, Klaes at FENSTERBAU FRONTALE 2026)
-2. **Cloud Migration:** Legacy desktop tools moving to SaaS (WindowMaker leading, LogiKal following)
+1. **automation Integration:** Competitors adding automation for batch optimization, yield prediction, and dynamic pricing (FeneVision, A+W, reference system at FENSTERBAU FRONTALE 2026)
+2. **Cloud Migration:** Legacy desktop tools moving to SaaS (WindowMaker leading, reference system following)
 3. **Sustainability Compliance:** EU Green Deal and IECC energy standards driving new feature requirements
 4. **Supply Chain Digitization:** EDI integration, real-time material pricing, supplier portals becoming table stakes
 5. **Labor Shortage Response:** Automation in frame fabrication, smart home integration (Autoslide), simplified UX for less-skilled operators
@@ -117,7 +117,7 @@ This created **"Forterro Windows and Doors"**, headquartered in Leer, Germany, c
 
 #### Design & Drafting
 - **DraftingWorkbench** — Full CAD toolset: Rectangle, Circle, Line, Arc, Polygon, Text
-- **SmartDrawCanvas** — Freeform design with AI-assisted profile matching
+- **SmartDrawCanvas** — Freeform design with software-assisted profile matching
 - **Template Library** — 50+ Egyptian window templates with recommendation engine
 - **Pattern/Array Tools** — Rectangular, Circular, Linear, Offset patterns
 - **Transform Tools** — Mirror, Rotate, Scale with geometry support
@@ -173,7 +173,7 @@ This created **"Forterro Windows and Doors"**, headquartered in Leer, Germany, c
 #### Advanced Features
 - **YDT Intelligence** — 164 chapters, 878 components of fabrication knowledge
 - **SmartScan** — Document/profile scanning with OCR
-- **AI Advisor** — Shop AI advisor (Tier 1, non-execution)
+- **automation Advisor** — Shop automation advisor (Tier 1, non-execution)
 - **Workflow Automation** — Rule-based automation engine
 - **Real-time Collaboration** — WebSocket-based multi-user drafting
 - **Mobile App** — React Native mobile companion (fabricator-mobile/)
@@ -189,13 +189,13 @@ Tier 1 (Strategic)  → AI/ML advisory, suggestions, YDT intelligence
 Tier 3 (Execution)  → Deterministic BOM, cutting, optimization — ZERO AI
 ```
 
-This separation is **unique in the fenestration industry**. No competitor has a formal governance model that guarantees deterministic execution while allowing AI advisory in a separate, non-contaminating tier.
+This separation is **unique in the fenestration industry**. No competitor has a formal governance model that guarantees deterministic execution while allowing automation advisory in a separate, non-contaminating tier.
 
 ---
 
 ## 4. Competitor Deep Dives
 
-### 4.1 Orgadata LogiKal (Forterro) — Market Leader
+### 4.1 reference system reference system (Forterro) — Market Leader
 
 **Headquarters:** Leer, Germany (now under Forterro)  
 **Market Share:** ~30% globally  
@@ -227,7 +227,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 - Native Arabic/MENA market fit
 - Real-time collaboration
 
-**Where LogiKal Wins:**
+**Where reference system Wins:**
 - 400+ vs. ~5 system pack libraries
 - Direct CNC machine connectors
 - 20+ vs. 2 languages
@@ -235,7 +235,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 - Brand recognition and enterprise trust
 - Structural analysis depth
 
-### 4.2 Klaes — German ERP Specialist
+### 4.2 reference system — German ERP Specialist
 
 **Headquarters:** Ahaus, Germany  
 **Market Share:** ~7% globally  
@@ -245,7 +245,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 **Strengths:**
 - End-to-end ERP from quoting to organization
 - Deep German/DIN standards expertise
-- AI-enhanced planning (announced for FENSTERBAU FRONTALE 2026)
+- software-assisted planning (announced for FENSTERBAU FRONTALE 2026)
 - Strong legacy system integration
 - Reliable, battle-tested over decades
 
@@ -263,7 +263,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 - MENA market specialization
 - Faster innovation cycle
 
-**Where Klaes Wins:**
+**Where reference system Wins:**
 - ERP depth and maturity
 - German market dominance
 - Legacy integration connectors
@@ -316,7 +316,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 **Strengths:**
 - Full ERP/CAD/CAM suite
 - Glass optimization (OPTI module)
-- AI for yield prediction (2026 updates)
+- automation for yield prediction (2026 updates)
 - Production scheduling and CRM integration
 - Strong US market presence
 - Lean manufacturing focus
@@ -413,8 +413,8 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 | **Stolcad Professional** (Poland) | EU | Medium | All-in-one for PVC/wood/aluminum/steel; low CAD barrier |
 | **Paradigm Omni** (USA) | North America | Low | CPQ for complex windows; sales automation |
 | **DW-ERP** (India) | Asia/Emerging | Medium | Full fenestration ERP; lifecycle management; emerging market pricing |
-| **Moxisys Design Flow** (Turkey) | Turkey/MENA | High | 35% Turkish market share; regional pricing; closest geographic competitor |
-| **ERCOM 2000** (Italy) | Italy/EU | Low | 40% Italian market; production automation |
+| **reference system Design Flow** (Turkey) | Turkey/MENA | High | 35% Turkish market share; regional pricing; closest geographic competitor |
+| **reference system 2000** (Italy) | Italy/EU | Low | 40% Italian market; production automation |
 | **Ecotal/UptimeCode** (Egypt) | Egypt | High | Direct Egyptian market competitor; local focus |
 
 ---
@@ -423,7 +423,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 
 ### 5.1 Design & CAD Capabilities
 
-| Feature | Fabricator Pro | LogiKal | Klaes | WindowMaker | FeneVision | Soft Tech V6 |
+| Feature | Fabricator Pro | reference system | reference system | WindowMaker | FeneVision | Soft Tech V6 |
 |---------|---------------|---------|-------|-------------|------------|--------------|
 | **CAD Drawing Tools** | ✅ Full set | ✅ Full set | ✅ Full set | ✅ Full set | ⚠️ Basic | ✅ Full set |
 | **3D Real-time Preview** | ✅ 60fps WebGL | ✅ 60fps | ✅ 60fps | ⚠️ 30fps | ⚠️ Basic | ✅ Standard |
@@ -439,7 +439,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 
 ### 5.2 Fabrication & Optimization
 
-| Feature | Fabricator Pro | LogiKal | Klaes | WindowMaker | FeneVision | A+W |
+| Feature | Fabricator Pro | reference system | reference system | WindowMaker | FeneVision | A+W |
 |---------|---------------|---------|-------|-------------|------------|-----|
 | **BOM Generation** | ✅ 99.8% accuracy | ✅ 99.5% | ✅ 98.0% | ✅ 97.5% | ✅ 98.0% | ✅ 97.0% |
 | **Cut List Optimization** | ✅ 3 algorithms | ✅ 2 algorithms | ✅ 2 algorithms | ✅ 2 algorithms | ✅ OPTI module | ✅ 2 algorithms |
@@ -449,13 +449,13 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 | **Aluminum Engine** | ✅ Dedicated | ✅ Integrated | ✅ Integrated | ✅ Integrated | ⚠️ Basic | ⚠️ Basic |
 | **Glass Optimization** | ⚠️ Basic | ✅ Full | ✅ Full | ✅ Full | ✅ Advanced | ✅ Advanced |
 | **Remnant Management** | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Waste Prediction** | ✅ Real-time | ⚠️ Post-calc | ⚠️ Post-calc | ⚠️ Post-calc | ✅ AI-based | ⚠️ Post-calc |
+| **Waste Prediction** | ✅ Real-time | ⚠️ Post-calc | ⚠️ Post-calc | ⚠️ Post-calc | ✅ software-assisted | ⚠️ Post-calc |
 | **CNC Machine Output** | ❌ No direct | ✅ Full | ✅ Full | ✅ Yes | ✅ Yes | ✅ Yes |
 | **G-Code Generation** | ⚠️ Planned | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
 
 ### 5.3 Business & Enterprise
 
-| Feature | Fabricator Pro | LogiKal | Klaes | WindowMaker | FeneVision | A+W |
+| Feature | Fabricator Pro | reference system | reference system | WindowMaker | FeneVision | A+W |
 |---------|---------------|---------|-------|-------------|------------|-----|
 | **Quotation Engine** | ⚠️ Basic | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ✅ Full |
 | **Multi-variant Quotes** | ❌ No | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
@@ -470,7 +470,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 
 ### 5.4 Platform & Technology
 
-| Feature | Fabricator Pro | LogiKal | Klaes | WindowMaker | FeneVision | A+W |
+| Feature | Fabricator Pro | reference system | reference system | WindowMaker | FeneVision | A+W |
 |---------|---------------|---------|-------|-------------|------------|-----|
 | **Architecture** | ✅ Cloud-native | ⚠️ Desktop→Cloud | ⚠️ Desktop | ✅ Cloud/SaaS | ⚠️ On-prem/SaaS | ⚠️ Hybrid |
 | **Mobile App** | ✅ React Native | ❌ No | ❌ No | ⚠️ Responsive | ❌ No | ❌ No |
@@ -490,14 +490,14 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 
 | Solution | Year 1 | Year 2 | Year 3 | 3-Year TCO | Implementation |
 |----------|--------|--------|--------|-----------|----------------|
-| **Orgadata LogiKal** | €50K | €35K | €35K | **€120K** | 3–6 months |
+| **reference system reference system** | €50K | €35K | €35K | **€120K** | 3–6 months |
 | **Soft Tech V6** | €40K | €30K | €30K | **€100K** | 2–4 months |
-| **Klaes** | €25K | €18K | €18K | **€61K** | 2–3 months |
+| **reference system** | €25K | €18K | €18K | **€61K** | 2–3 months |
 | **A+W Software** | €45K | €25K | €25K | **€95K** | 3–5 months |
 | **FeneVision** | €55K | €20K | €20K | **€95K** | 3–6 months |
 | **WindowMaker** | €12K | €10K | €10K | **€32K** | 2–4 weeks |
 | **Fabricator Pro** | €18K | €14K | €14K | **€46K** | 2–4 weeks |
-| **Moxisys** | €15K | €10K | €10K | **€35K** | 1–2 months |
+| **reference system** | €15K | €10K | €10K | **€35K** | 1–2 months |
 
 ### 6.2 Value Score (Quality ÷ Price)
 
@@ -505,9 +505,9 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 |------|----------|--------------|-----------|-------------|
 | **1** | **Fabricator Pro** | 92/100 | €46K | **2.00** |
 | 2 | WindowMaker | 88/100 | €32K | 2.75* |
-| 3 | Moxisys | 85/100 | €35K | 2.43* |
-| 4 | Klaes | 90/100 | €61K | 1.48 |
-| 5 | Orgadata LogiKal | 98/100 | €120K | 0.82 |
+| 3 | reference system | 85/100 | €35K | 2.43* |
+| 4 | reference system | 90/100 | €61K | 1.48 |
+| 5 | reference system reference system | 98/100 | €120K | 0.82 |
 | 6 | Soft Tech V6 | 95/100 | €100K | 0.95 |
 | 7 | A+W Software | 91/100 | €95K | 0.96 |
 | 8 | FeneVision | 90/100 | €95K | 0.95 |
@@ -535,9 +535,9 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 
 | Weakness | Impact | Remediation Timeline |
 |----------|--------|---------------------|
-| **Limited System Pack Library** — ~5 vs. 400+ for LogiKal | Blocks enterprise sales outside MENA | 6–12 months per 50 packs |
+| **Limited System Pack Library** — ~5 vs. 400+ for reference system | Blocks enterprise sales outside MENA | 6–12 months per 50 packs |
 | **No Direct CNC Output** — No G-Code/machine connectors | Critical gap for production-floor adoption | 3–6 months to implement |
-| **Only 2 Languages** — Arabic + English vs. 20+ for LogiKal | Limits European/Asian expansion | 2–3 months per language |
+| **Only 2 Languages** — Arabic + English vs. 20+ for reference system | Limits European/Asian expansion | 2–3 months per language |
 | **No ERP Integration** — No SAP/Oracle/custom ERP connectors | Blocks large enterprise sales | 6–12 months |
 | **No SSO/2FA** — Missing enterprise security features | Blocks enterprise IT approval | 2–4 weeks |
 | **Pre-revenue / No Brand** — <1% market share, no reference customers | Requires anchor client validation | 6–12 months |
@@ -551,7 +551,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 |-------------|-----------|-------------|----------|
 | **MENA Fenestration Market** — Underserved by European incumbents | €500M+ | High | 6–12 months |
 | **Government/Institutional** — Constitutional governance is unique selling point | €200M+ | High | 12–18 months |
-| **Forterro Integration Disruption** — Customer dissatisfaction during Orgadata merger | €100M+ | Medium | 6–12 months |
+| **Forterro Integration Disruption** — Customer dissatisfaction during reference system merger | €100M+ | Medium | 6–12 months |
 | **Cloud Migration Wave** — Fabricators moving from desktop to cloud | €300M+ | Medium | 12–24 months |
 | **SMB Tier** — Workshops priced out of LogiKal/Klaes | €400M+ | High | 6–12 months |
 | **National Platform Play** — White-label for government industrial programs | €50M+ | Medium | 18–24 months |
@@ -561,12 +561,12 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 
 | Threat | Severity | Probability | Mitigation |
 |--------|----------|-------------|-----------|
-| **Forterro consolidation** — Combined LogiKal + ERP creates unbeatable enterprise suite | High | High | Focus on MENA/SMB where Forterro is weak |
-| **LogiKal adds governance** — Copies constitutional framework | High | Low (2–3 years) | Accelerate market penetration now |
-| **Moxisys improves quality** — Closest geographic competitor upgrades | Medium | Medium (1–2 years) | Maintain technical superiority |
+| **Forterro consolidation** — Combined reference system + ERP creates unbeatable enterprise suite | High | High | Focus on MENA/SMB where Forterro is weak |
+| **reference system adds governance** — Copies constitutional framework | High | Low (2–3 years) | Accelerate market penetration now |
+| **reference system improves quality** — Closest geographic competitor upgrades | Medium | Medium (1–2 years) | Maintain technical superiority |
 | **WindowMaker enters MENA** — Already growing in emerging markets | Medium | Medium | Deepen Arabic/cultural integration |
 | **Ecotal/UptimeCode** — Direct Egyptian competitor with local knowledge | Medium | Medium | Outpace on technology and governance |
-| **AI disruption** — Generative AI changes design paradigm entirely | High | Low (3–5 years) | Tier 1 AI advisory already in architecture |
+| **automation disruption** — Generative automation changes design paradigm entirely | High | Low (3–5 years) | Tier 1 automation advisory already in architecture |
 | **Economic downturn** — Construction slowdown reduces software spend | Medium | Medium | Lower pricing tier for survival mode |
 
 ---
@@ -577,7 +577,7 @@ This separation is **unique in the fenestration industry**. No competitor has a 
 
 **"Enterprise-grade fenestration computing with constitutional guarantees — at regional pricing"**
 
-Fabricator Pro should NOT try to out-feature LogiKal. Instead, it should:
+Fabricator Pro should NOT try to out-feature reference system. Instead, it should:
 
 1. **Own the governance category** — Be the only fenestration software that can pass government audits
 2. **Own the MENA market** — Be the default choice for Arabic-speaking fabricators
@@ -593,7 +593,7 @@ Fabricator Pro should NOT try to out-feature LogiKal. Instead, it should:
 | **P1** | CNC/G-Code Output (Yilmaz, Elumatec) | Unlocks production floor | Medium | 8–12 weeks |
 | **P1** | SSO/2FA/Team Management | Unlocks enterprise IT approval | Low | 2–4 weeks |
 | **P2** | System Pack Library Expansion (20→100 packs) | Broadens addressable market | High | 6–12 months |
-| **P2** | Turkish Language Support | Unlocks Turkish market (Moxisys territory) | Low | 4–6 weeks |
+| **P2** | Turkish Language Support | Unlocks Turkish market (reference system territory) | Low | 4–6 weeks |
 | **P3** | BIM Integration (Revit/IFC) | Unlocks architect-driven sales | High | 3–6 months |
 | **P3** | ERP Connectors (SAP/Oracle) | Unlocks large enterprise | High | 6–12 months |
 
@@ -601,11 +601,11 @@ Fabricator Pro should NOT try to out-feature LogiKal. Instead, it should:
 
 | Segment | Primary Competitor | Win Strategy | Expected Win Rate |
 |---------|-------------------|-------------|-------------------|
-| **MENA SMB** | Moxisys, Ecotal | Arabic-first + governance + value pricing | **85%** |
-| **MENA Enterprise** | LogiKal, Moxisys | Governance + national platform + value | **65%** |
+| **MENA SMB** | reference system, Ecotal | Arabic-first + governance + value pricing | **85%** |
+| **MENA Enterprise** | reference system, reference system | Governance + national platform + value | **65%** |
 | **Government/Institutional** | None (new category) | Constitutional guarantees + audit trails | **90%** |
-| **European SMB** | Klaes, Stolcad | Cloud-native + value pricing + modern UX | **40%** |
-| **European Enterprise** | LogiKal, Soft Tech | Governance + value (long-term play) | **25%** |
+| **European SMB** | reference system, Stolcad | Cloud-native + value pricing + modern UX | **40%** |
+| **European Enterprise** | reference system, Soft Tech | Governance + value (long-term play) | **25%** |
 | **North American** | FeneVision, Paradigm | Cloud-native + value (requires localization) | **20%** |
 | **Emerging Markets** | DW-ERP, WindowMaker | Value + Arabic + cloud-native | **60%** |
 
@@ -630,15 +630,15 @@ No fenestration software today offers:
 
 This is not a feature — it's a **category**. In regulated industries (government construction, institutional buildings, infrastructure), this becomes a **procurement requirement**, not a nice-to-have.
 
-**Recommendation:** Position marketing around "the only fenestration software that can prove its outputs are correct" rather than competing on feature checklists against LogiKal.
+**Recommendation:** Position marketing around "the only fenestration software that can prove its outputs are correct" rather than competing on feature checklists against reference system.
 
 ---
 
 ## 9. Sources & Citations
 
 ### Market Research
-1. **Enterprise Times** (March 2025) — "Forterro completes Orgadata acquisition to dominate fenestration software market"
-2. **Forterro Press Release** (March 2025) — "Forterro completes Orgadata acquisition"
+1. **Enterprise Times** (March 2025) — "Forterro completes reference system acquisition to dominate fenestration software market"
+2. **Forterro Press Release** (March 2025) — "Forterro completes reference system acquisition"
 3. **Forterro Press Release** (January 2025) — "Forterro acquires BM Group"
 4. **Gitnux** (2026) — "Best Window and Door Software" rankings
 5. **Zipdo** (2026) — "Best Window Manufacturing Software"
@@ -646,8 +646,8 @@ This is not a feature — it's a **category**. In regulated industries (governme
 7. **Insight Data** (2025) — "Fenestration Industry Market Analysis"
 
 ### Competitor Sources
-8. **Orgadata** — orgadata.com/en-us (product documentation)
-9. **Klaes** — klaes.de/en-klaes-software (product features, FENSTERBAU FRONTALE 2026)
+8. **reference system** — orgadata.com/en-us (product documentation)
+9. **reference system** — klaes.de/en-klaes-software (product features, FENSTERBAU FRONTALE 2026)
 10. **WindowMaker** — windowmaker.com (2025 R3 release notes)
 11. **FeneTech/FeneVision** — cyncly.com/products/fenevision (capabilities)
 12. **A+W Software** — a-w.com (product documentation)

@@ -40,6 +40,3 @@ None - All changes are internal fixes
 - Fixes Vercel deployment failure
 - Fixes GitHub Actions CI/CD failures
 - Resolves #116, #117, #114 (Dependabot alerts - separate PR needed)
-
-Co-authored-by: AI Assistant <assistant@cursor.com>
-

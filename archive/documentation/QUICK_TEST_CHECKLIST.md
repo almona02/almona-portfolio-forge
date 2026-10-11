@@ -12,8 +12,8 @@
 ### **1. View Toggle Test** 🔄
 **Action**: Visit http://localhost:3001/services
 - [ ] **Default View**: Should show "Customer Packages" (Simple View)
-- [ ] **Toggle to Advanced**: Click "AI Technical Hub" button
-- [ ] **Verify**: Advanced view shows existing AI features (predictive maintenance, etc.)
+- [ ] **Toggle to Advanced**: Click "automation Technical Hub" button
+- [ ] **Verify**: Advanced view shows existing automation features (predictive maintenance, etc.)
 - [ ] **Toggle Back**: Click "Customer Packages" button
 - [ ] **Verify**: Simple view shows 3-tier packages with comparison table
 

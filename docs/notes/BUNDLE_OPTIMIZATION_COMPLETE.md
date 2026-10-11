@@ -14,10 +14,10 @@
 
 ### Tiered Chunk Strategy
 
-#### TIER 1: Heavy 3D & AI (Lazy Load)
+#### TIER 1: Heavy 3D & automation (Lazy Load)
 - `vendor-three` - Three.js ecosystem
 - `vendor-tfjs` - TensorFlow.js
-- `vendor-mediapipe` - MediaPipe Vision AI
+- `vendor-mediapipe` - MediaPipe Vision automation
 - `vendor-physics` - Physics engine
 
 #### TIER 2: Document Processing (Lazy Load)

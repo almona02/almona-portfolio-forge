@@ -27,17 +27,17 @@ lighthouse http://localhost:3000/portal --output=json
 
 ---
 
-### **✅ 2. AI TECHNICAL SUPPORT CHATBOT TESTING**
+### **✅ 2. automation TECHNICAL SUPPORT CHATBOT TESTING**
 
 #### **Core Functionality Tests:**
 - [ ] **Chatbot initialization** - Verify floating button appears and chat opens
 - [ ] **Quick response templates** - Test all 5 predefined responses
 - [ ] **Emergency escalation** - Verify critical issue handling and routing
-- [ ] **Image-based part identification** - Test camera capture and AI analysis
+- [ ] **Image-based part identification** - Test camera capture and automation analysis
 - [ ] **Audio recording** - Test voice note capture and file handling
 - [ ] **Multi-language responses** - Verify Arabic + English technical terms
 
-#### **Gemini AI Integration Tests:**
+#### **support service automation Integration Tests:**
 ```bash
 # Environment Variables Required:
 VITE_GEMINI_KEY=your_google_gemini_api_key
@@ -201,17 +201,17 @@ interface ProductionMetrics {
   portalActiveUsers: number;
   chatbotInteractions: number;
   mobileTicketsCreated: number;
-  
+
   // System Performance  
   averageResponseTime: number;
   errorRate: number;
   uptimePercentage: number;
-  
+
   // IoT Performance
   sensorDataPoints: number;
   iotConnectionUptime: number;
   alertsGenerated: number;
-  
+
   // AI Performance
   chatbotResponseTime: number;
   partIdentificationAccuracy: number;
@@ -237,8 +237,8 @@ interface ProductionMetrics {
 4. **Location Capture** → GPS coordinates
 5. **Sync Verification** → Auto-sync when online
 
-### **Scenario 3: AI Support Workflow**
-1. **Chat Initiation** → Open AI chatbot
+### **Scenario 3: automation Support Workflow**
+1. **Chat Initiation** → Open automation chatbot
 2. **Emergency Issue** → Test critical escalation
 3. **Part Identification** → Camera-based recognition
 4. **Multilingual Response** → Arabic + English support
@@ -281,7 +281,7 @@ npm run test:mobile          # Mobile-specific tests
 
 ### **Week 1 Targets:**
 - Customer Portal Engagement: +150%
-- AI Chatbot Usage: 500+ interactions
+- automation Chatbot Usage: 500+ interactions
 - Mobile Ticket Creation: 50+ offline tickets
 - IoT Data Processing: 10,000+ sensor readings/day
 

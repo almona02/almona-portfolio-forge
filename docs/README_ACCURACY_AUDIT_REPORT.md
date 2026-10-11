@@ -54,7 +54,7 @@ This audit systematically verified README.md claims against the actual codebase.
 | ExcelJS | 4.4.0 | ^4.4.0 | ✅ Match |
 | jsPDF | 3.0.4 | ^3.0.4 | ✅ Match |
 | Chart.js | 4.5.0 | ^4.5.0 | ✅ Match |
-| Google Generative AI | Mentioned | ^0.24.1 | ✅ Exists |
+| Google Generative automation | Mentioned | ^0.24.1 | ✅ Exists |
 | Hugging Face | Mentioned | ^4.3.1 | ✅ Exists |
 
 **Result:** ✅ **100% Accurate** - All additional libraries verified
@@ -187,7 +187,7 @@ This audit systematically verified README.md claims against the actual codebase.
 | Frontend | React 18.3.1 + TypeScript + Vite | ✅ Matches | ✅ Verified |
 | Backend | FastAPI Python 3.9+ | ✅ Matches | ✅ Verified |
 | Database | Supabase PostgreSQL | ✅ Matches | ✅ Verified |
-| AI/ML | TensorFlow.js + ONNX | ✅ Matches | ✅ Verified |
+| advisory inference | TensorFlow.js + ONNX | ✅ Matches | ✅ Verified |
 | CNC Integration | Multi-brand adapters | ✅ Matches | ✅ Verified |
 | Real-time | Supabase Channels | ✅ Matches | ✅ Verified |
 

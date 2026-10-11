@@ -14,8 +14,8 @@ All strategic enhancements from the competitive analysis and adoption plan have 
 - `src/components/fabricator/SystemDrivenDesign.tsx` - Fast & Accurate design mode
 - `src/components/fabricator/LiveCostConsole.tsx` - Real-time cost & engineering panel
 - `src/components/fabricator/QuoteToCutWorkflow.tsx` - Unified 4-step workflow orchestrator
-- `src/components/fabricator/AISuggestionPanel.tsx` - AI profile suggestions for SmartDraw
-- `src/lib/ai/DesignAISuggestor.ts` - AI engine for profile suggestions
+- `src/components/fabricator/AISuggestionPanel.tsx` - automation profile suggestions for SmartDraw
+- `src/lib/ai/DesignAISuggestor.ts` - automation engine for profile suggestions
 - `src/hooks/useLivePricing.ts` - Reactive pricing hook
 - `src/components/fabricator/NewProjectWizard.tsx` - Enhanced with project type selection
 
@@ -23,7 +23,7 @@ All strategic enhancements from the competitive analysis and adoption plan have 
 - Project Cockpit with 4 project types (Residential Villa, Commercial Building, Standard Apartment, Repair/Maintenance)
 - Dual-mode design: System-Driven (fast) and Freeform SmartDraw (custom)
 - Real-time cost console with live pricing, waste prediction, structural warnings, and remnant suggestions
-- AI-powered profile suggestions as user draws
+- software-assisted profile suggestions as user draws
 - Unified workflow with progress indicator
 
 #### 2. "Waste is Money" Dashboard ✅
@@ -97,7 +97,7 @@ All strategic enhancements from the competitive analysis and adoption plan have 
 - Location-based search (city, governorate, distance)
 - Enhanced marketplace filters
 
-#### 7. AI "Advisor" and "Predictor" Features ✅
+#### 7. automation "Advisor" and "Predictor" Features ✅
 **Files Created/Modified:**
 - `src/components/fabricator/JobRiskIndicator.tsx` - Risk score display component
 - `src/lib/quality/AIQualityPredictor.ts` - Enhanced with risk score calculation
@@ -124,7 +124,7 @@ All strategic enhancements from the competitive analysis and adoption plan have 
 3. `optimization_comparisons` - Manual vs optimized metrics
 4. `onboarding_progress` - Setup checklist tracking
 5. `invoice_imports` - Invoice upload tracking
-6. `job_risk_scores` - AI risk assessment data
+6. `job_risk_scores` - automation risk assessment data
 
 **Enhancements:**
 - `remnant_marketplace_listings` - Added location columns (latitude, longitude, city, governorate)
@@ -206,7 +206,7 @@ All features include analytics hooks for tracking:
 - Freemium to paid conversions
 - Standalone optimizer leads
 - Marketplace listings/transactions
-- AI advisor usage
+- automation advisor usage
 - Waste savings per job
 
 ## Files Summary

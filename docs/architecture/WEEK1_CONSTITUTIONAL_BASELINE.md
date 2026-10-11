@@ -1,4 +1,4 @@
-# Week 1 – Constitutional AI Baseline (Tier 1 Locked)
+# Week 1 – Constitutional automation Baseline (Tier 1 Locked)
 
 **Date:** January 7, 2026  
 **Status:** ✅ Tier 1 Governance Operational  
@@ -8,7 +8,7 @@
 
 ## 🎯 EXECUTIVE SUMMARY
 
-**Week 1 Achievement:** Successfully implemented Constitutional AI Governance Framework, establishing formal authority boundaries for all strategic decisions in the platform.
+**Week 1 Achievement:** Successfully implemented Constitutional automation Governance Framework, establishing formal authority boundaries for all strategic decisions in the platform.
 
 **Key Metrics:**
 - ✅ **Constitutional Health:** 100/100
@@ -17,7 +17,7 @@
 - ✅ **Tier Violations:** 0 (no governance breaches)
 - ✅ **Services Refactored:** 3/3 (Pricing, Viability, Optimization Strategy)
 
-**Strategic Impact:** Platform now operates under formal AI governance with enforceable boundaries, auditable reasoning, and real-time health monitoring.
+**Strategic Impact:** Platform now operates under formal automation governance with enforceable boundaries, auditable reasoning, and real-time health monitoring.
 
 ---
 
@@ -118,7 +118,7 @@ const constitutionalHealth = Math.max(0, Math.min(100,
 ### What 100/100 Means
 - ✅ All YDT responses include reasoning
 - ✅ All reasoning includes primary factor, change triggers, assumptions
-- ✅ No AI operating outside authorized tiers
+- ✅ No automation operating outside authorized tiers
 - ✅ All strategic decisions use IntelligenceGate
 - ✅ Zero governance breaches detected
 
@@ -128,7 +128,7 @@ const constitutionalHealth = Math.max(0, Math.min(100,
 
 ### Tier Violation Types
 
-#### 1. AI in Deterministic Path (Tier 3)
+#### 1. automation in Deterministic Path (Tier 3)
 **Example:**
 ```typescript
 // ❌ VIOLATION: YDT called in deterministic operation
@@ -144,7 +144,7 @@ function calculateArea(width: number, height: number): number {
 }
 ```
 
-**Detection:** `IntelligenceGate.deterministic()` audits for AI calls
+**Detection:** `IntelligenceGate.deterministic()` audits for automation calls
 
 ---
 
@@ -247,7 +247,7 @@ return {
 
 ---
 
-#### Rule 3: Never Use AI in Tier 3
+#### Rule 3: Never Use automation in Tier 3
 ```typescript
 // ❌ FORBIDDEN: AI in deterministic operation
 function calculateTotal(items: Item[]): number {
@@ -269,7 +269,7 @@ function calculateTotal(items: Item[]): number {
 ### Tier Metrics
 - **Tier 1 Decision Count:** Number of strategic decisions using YDT
 - **Tier 2 Decision Count:** Number of execution decisions using YDT + TensorFlow (Week 2)
-- **Tier 3 Decision Count:** Number of deterministic operations (no AI)
+- **Tier 3 Decision Count:** Number of deterministic operations (no automation)
 
 ### YDT Response Metrics
 - **YDT Response Count:** Total YDT calls made
@@ -313,10 +313,10 @@ async calculatePriceWithYDT(project: Project, workshop: Workshop) {
 ```typescript
 async validateProject(project: Project) {
   TierMetrics.recordTier1Decision();
-  
+
   const business = await IntelligenceGate.strategic('business_viability', ...);
   const market = await IntelligenceGate.strategic('market_validation', ...);
-  
+
   // Combine results deterministically (Tier 3)
   return IntelligenceGate.deterministic('validation_combination', () => {
     return { valid: business.profitable && market.feasible, ... };
@@ -414,9 +414,9 @@ All strategic decisions in the platform are:
 
 **This document serves as:**
 - Onboarding material for new engineers
-- Internal contract for AI governance
+- Internal contract for automation governance
 - Future audit reference
-- Investor/enterprise proof of institutional AI governance
+- Investor/enterprise proof of institutional automation governance
 
 ---
 

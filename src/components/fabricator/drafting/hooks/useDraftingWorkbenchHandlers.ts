@@ -110,7 +110,7 @@ export function useDraftingWorkbenchHandlers({
     [actions]
   );
 
-  // Cursor move handler with throttling
+  // pointer move handler with throttling
   const handleCursorMove = useCallback((pos: { x: number; y: number }) => {
     // Validate position before processing
     if (!pos || typeof pos.x !== 'number' || typeof pos.y !== 'number') return;
@@ -119,7 +119,7 @@ export function useDraftingWorkbenchHandlers({
     // Throttle coordinate updates
     throttledMouseMove(pos);
 
-    // Broadcast cursor for collaboration (not throttled for real-time feel)
+    // Broadcast pointer for collaboration (not throttled for real-time feel)
     collaboration?.broadcastCursor?.(pos);
   }, [collaboration, throttledMouseMove]);
 
@@ -215,11 +215,11 @@ export function useDraftingWorkbenchHandlers({
   const handleSave = useCallback(() => {
     try {
       const geometry = draftingEngine.getGeometry();
-      
+
       // Generate twincode for draft tracking
       const userId = collaboration?.userId || `guest-${Date.now()}`;
       const twincode = generateDigitalTwinCode('draft', userId);
-      
+
       const filename = `drafting-${Date.now()}.json`;
       const data = {
         geometry,
@@ -282,7 +282,7 @@ export function useDraftingWorkbenchHandlers({
       if (draftState.geometry) {
         // Clear current geometry
         draftingEngine.clearSelection();
-        
+
         // Load geometry elements
         draftState.geometry.rectangles?.forEach((rect: Rectangle) => {
           draftingEngine.addRectangle(rect);

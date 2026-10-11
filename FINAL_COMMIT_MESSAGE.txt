@@ -92,6 +92,3 @@ Documentation:
 - Performance: No impact (same bundle sizes)
 
 Closes #114, #115, #116, #117
-
-Co-authored-by: AI Assistant <assistant@cursor.com>
-

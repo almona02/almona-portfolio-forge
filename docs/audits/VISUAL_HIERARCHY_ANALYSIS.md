@@ -411,7 +411,7 @@ Why This Is Gold Standard:
 }
 ```
 
-##### Example 2: AI Pattern Suggestions (Lines 788-822)
+##### Example 2: automation Pattern Suggestions (Lines 788-822)
 
 **Current Implementation (EXCELLENT):**
 ```
@@ -905,13 +905,13 @@ Spacing: 24px gaps - Comfortable
     min-width: 44px;    /* Square touch target */
     padding: 12px 16px; /* py-3 px-4 */
   }
-  
+
   .tab-icon {
     width: 16px;        /* h-4 w-4 */
     height: 16px;
     flex-shrink: 0;     /* Prevent icon squish */
   }
-  
+
   .tab-label {
     font-size: 0.75rem; /* 12px */
   }
@@ -923,12 +923,12 @@ Spacing: 24px gaps - Comfortable
     min-height: 36px;   /* Desktop comfortable */
     padding: 8px 16px;  /* py-2 px-4 */
   }
-  
+
   .tab-icon {
     width: 20px;        /* h-5 w-5 */
     height: 20px;
   }
-  
+
   .tab-label {
     font-size: 0.875rem; /* 14px */
   }
@@ -1032,27 +1032,27 @@ Based on the audit findings, here's a recommended type scale that ensures consis
   /* Display (Hero Titles) */
   --text-display-1: 3rem;      /* 48px - Page heroes */
   --text-display-2: 2.25rem;   /* 36px - Section heroes */
-  
+
   /* Headings */
   --text-h1: 1.875rem;         /* 30px - Page titles */
   --text-h2: 1.5rem;           /* 24px - Section titles */
   --text-h3: 1.25rem;          /* 20px - Subsection titles */
   --text-h4: 1.125rem;         /* 18px - Card titles */
-  
+
   /* Body Text */
   --text-body-lg: 1rem;        /* 16px - Large body */
   --text-body: 0.875rem;       /* 14px - Standard body */
   --text-body-sm: 0.75rem;     /* 12px - Small body */
-  
+
   /* UI Elements */
   --text-button-lg: 1rem;      /* 16px - Large buttons */
   --text-button: 0.875rem;     /* 14px - Standard buttons */
   --text-button-sm: 0.75rem;   /* 12px - Small buttons */
-  
+
   /* Metadata */
   --text-label: 0.75rem;       /* 12px - Form labels */
   --text-caption: 0.625rem;    /* 10px - Captions/helper ONLY */
-  
+
   /* Technical Data */
   --text-data-lg: 2rem;        /* 32px - Primary metrics */
   --text-data: 1.5rem;         /* 24px - Secondary metrics */

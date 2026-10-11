@@ -206,7 +206,7 @@ export const SupportPortal = () => {
           {machineInfo ? (
             <div className="space-y-4">
               <h3 className="typography-h3 text-lg">Troubleshooting Guide for {machineInfo.model}</h3>
-              
+
               <div className="space-y-2">
                 {troubleshootingSteps.map(step => (
                   <div 

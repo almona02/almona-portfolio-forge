@@ -9,7 +9,7 @@
 ## 🎯 The Paradox We're Solving
 
 ### The Problem:
-- **Complex software** = Powerful but intimidating (Orgadata, Klaes)
+- **Complex software** = Powerful but intimidating (reference system, reference system)
 - **Simple software** = Easy but limited (basic calculators)
 - **Your opportunity** = Complex intelligence + Simple interface
 
@@ -32,13 +32,13 @@ export class AlmonaCognitionEngine {
   async analyzeWindow(windowUnit: WindowUnit): Promise<SmartAnalysis> {
     // 1. Fabricator Brain thinks
     const fabrication = await this.fabricatorBrain.analyze(windowUnit);
-    
+
     // 2. Engineering Mind validates
     const engineering = await this.engineeringMind.validate(windowUnit);
-    
+
     // 3. Platform Intelligence contextualizes
     const platform = await this.platformIntelligence.contextualize(windowUnit);
-    
+
     // 4. Synthesize into SIMPLE recommendations
     return this.synthesizeToSimpleRecommendations(
       fabrication,
@@ -46,7 +46,7 @@ export class AlmonaCognitionEngine {
       platform
     );
   }
-  
+
   private synthesizeToSimpleRecommendations(
     fabrication: FabricationInsights,
     engineering: StructuralAnalysis,
@@ -56,19 +56,19 @@ export class AlmonaCognitionEngine {
     return {
       // ONE decision, not 50 options
       recommendedProfile: this.pickBestProfile(fabrication, engineering),
-      
+
       // ONE price, not a range
       estimatedCost: this.calculateAccurateCost(fabrication, platform),
-      
+
       // ONE timeline, not "it depends"
       productionTime: this.estimateRealisticTime(fabrication),
-      
+
       // Simple warnings (not technical jargon)
       warnings: this.translateToSimpleWarnings(engineering.riskFactors),
-      
+
       // Actionable next steps
       nextSteps: this.generateActionableSteps(fabrication),
-      
+
       // Hidden: Full technical details (for experts who click "Details")
       technicalDetails: {
         fabrication,
@@ -95,37 +95,37 @@ export class SmartDefaults {
     const season = this.getCurrentSeason();
     const marketTrends = await this.getMarketTrends(location);
     const workshopHistory = await this.getWorkshopHistory(context.workshop);
-    
+
     // Make intelligent decisions
     return {
       // Material (based on location + trends)
       material: this.decideMaterial(location, marketTrends),
       // "Aluminum" for Cairo (90% of market)
       // "UPVC" for Alexandria (coastal corrosion)
-      
+
       // Profile size (based on typical projects)
       profileSize: this.decideProfileSize(workshopHistory, marketTrends),
       // "70mm" for residential (80% of projects)
       // "80mm" for commercial (wind loads)
-      
+
       // Color (based on regional preferences)
       color: this.decideColor(location, season, marketTrends),
       // "Anodized Silver" for Cairo (65% preference)
       // "Dark Bronze" for New Cairo (2025 trend)
       // "White" for coastal (heat reflection)
-      
+
       // Glass type (based on orientation + climate)
       glassType: this.decideGlassType(context.orientation, location),
       // "Solar Control" for west-facing in Cairo
       // "Low-E" for north-facing
       // "Acoustic" for street-facing
-      
+
       // Opening mechanism (based on room type)
       openingType: this.decideOpeningType(context.roomType),
       // "Casement" for bedrooms (ventilation)
       // "Sliding" for living rooms (space-saving)
       // "Fixed" for stairwells (safety)
-      
+
       // Confidence scores (show if user clicks "Why?")
       confidence: {
         material: 0.95, // 95% confident this is right
@@ -134,7 +134,7 @@ export class SmartDefaults {
         glassType: 0.91,
         openingType: 0.85
       },
-      
+
       // Explanation (hidden until user asks)
       reasoning: {
         material: "Aluminum is preferred by 90% of Cairo workshops for durability and cost",
@@ -199,7 +199,7 @@ export const SmartWizard: React.FC = () => {
   const [step, setStep] = useState(1);
   const [context, setContext] = useState<WizardContext>({});
   const cognitionEngine = useCognitionEngine();
-  
+
   // Step 1: What are you making?
   const Step1_ProjectType = () => (
     <div className="grid grid-cols-3 gap-6 p-8">
@@ -232,13 +232,13 @@ export const SmartWizard: React.FC = () => {
       />
     </div>
   );
-  
+
   // Step 2: Where is it going?
   const Step2_Location = () => {
     const [location, setLocation] = useState('cairo');
     const [room, setRoom] = useState('bedroom');
     const [facing, setFacing] = useState('west');
-    
+
     return (
       <div className="max-w-2xl mx-auto p-8 space-y-6">
         <SimpleSelect
@@ -253,7 +253,7 @@ export const SmartWizard: React.FC = () => {
             { value: 'new_cairo', label: 'New Cairo', icon: '🏘️' }
           ]}
         />
-        
+
         <SimpleSelect
           label="Room Type"
           icon={<Home />}
@@ -266,7 +266,7 @@ export const SmartWizard: React.FC = () => {
             { value: 'bathroom', label: 'Bathroom', icon: '🚿' }
           ]}
         />
-        
+
         <SimpleSelect
           label="Window Facing"
           icon={<Compass />}
@@ -279,7 +279,7 @@ export const SmartWizard: React.FC = () => {
             { value: 'west', label: 'West', icon: '⬅️', hint: 'Afternoon sun' }
           ]}
         />
-        
+
         <Button
           size="lg"
           onClick={async () => {
@@ -290,7 +290,7 @@ export const SmartWizard: React.FC = () => {
               room,
               facing
             });
-            
+
             setContext({ ...context, location, room, facing, smartDefaults });
             setStep(3);
           }}
@@ -300,12 +300,12 @@ export const SmartWizard: React.FC = () => {
       </div>
     );
   };
-  
+
   // Step 3: How big?
   const Step3_Size = () => {
     const [width, setWidth] = useState(1500);
     const [height, setHeight] = useState(1800);
-    
+
     return (
       <div className="max-w-4xl mx-auto p-8">
         <div className="grid grid-cols-2 gap-8">
@@ -328,7 +328,7 @@ export const SmartWizard: React.FC = () => {
               {width}mm × {height}mm
             </div>
           </div>
-          
+
           {/* Right: Common sizes */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Or Choose Common Size</h3>
@@ -345,12 +345,12 @@ export const SmartWizard: React.FC = () => {
             ))}
           </div>
         </div>
-        
+
         <div className="mt-8 flex justify-between items-center">
           <Button variant="outline" onClick={() => setStep(2)}>
             Back
           </Button>
-          
+
           <Button
             size="lg"
             onClick={async () => {
@@ -360,7 +360,7 @@ export const SmartWizard: React.FC = () => {
                 width,
                 height
               });
-              
+
               setContext({ ...context, width, height, completeWindow });
               setStep(4);
             }}
@@ -371,11 +371,11 @@ export const SmartWizard: React.FC = () => {
       </div>
     );
   };
-  
+
   // Step 4: Review & Customize (Optional)
   const Step4_Review = () => {
     const { completeWindow } = context;
-    
+
     return (
       <div className="max-w-6xl mx-auto p-8">
         <div className="grid grid-cols-2 gap-8">
@@ -387,7 +387,7 @@ export const SmartWizard: React.FC = () => {
               quality="high"
             />
           </div>
-          
+
           {/* Right: Smart Summary */}
           <div className="space-y-6">
             <SmartSummaryCard
@@ -418,7 +418,7 @@ export const SmartWizard: React.FC = () => {
                 explanation="Casement provides best ventilation for bedrooms"
               />
             </SmartSummaryCard>
-            
+
             <SmartSummaryCard
               title="Production Details"
               icon={<Factory className="text-blue-500" />}
@@ -437,7 +437,7 @@ export const SmartWizard: React.FC = () => {
                 badge={completeWindow.wastePercentage < 15 ? 'Excellent' : 'Good'}
               />
             </SmartSummaryCard>
-            
+
             {/* Smart Warnings (if any) */}
             {completeWindow.warnings.length > 0 && (
               <SmartSummaryCard
@@ -449,7 +449,7 @@ export const SmartWizard: React.FC = () => {
                 ))}
               </SmartSummaryCard>
             )}
-            
+
             {/* Action Buttons */}
             <div className="flex gap-4">
               <Button
@@ -475,7 +475,7 @@ export const SmartWizard: React.FC = () => {
       </div>
     );
   };
-  
+
   // Step 5: Advanced Customization (Optional - for experts)
   const Step5_Customize = () => {
     // This is where experts can override smart defaults
@@ -489,7 +489,7 @@ export const SmartWizard: React.FC = () => {
             <TabsTrigger value="hardware">Hardware</TabsTrigger>
             <TabsTrigger value="grid">Grid Layout</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="profile">
             <ProfileCustomization
               current={context.completeWindow.profile}
@@ -497,18 +497,18 @@ export const SmartWizard: React.FC = () => {
               onSelect={(profile) => updateWindow({ profile })}
             />
           </TabsContent>
-          
+
           {/* Other tabs... */}
         </Tabs>
       </div>
     );
   };
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
       {/* Progress indicator */}
       <WizardProgress currentStep={step} totalSteps={4} />
-      
+
       {/* Step content */}
       {step === 1 && <Step1_ProjectType />}
       {step === 2 && <Step2_Location />}
@@ -545,7 +545,7 @@ const BigButton: React.FC<BigButtonProps> = ({ icon, title, subtitle, onClick })
           </p>
         </div>
       </div>
-      
+
       {/* Hover effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-orange-500/0 to-orange-600/0 group-hover:from-orange-500/10 group-hover:to-orange-600/10 rounded-2xl transition-all duration-300" />
     </button>
@@ -570,7 +570,7 @@ const SimpleSelect: React.FC<SimpleSelectProps> = ({
         {icon}
         {label}
       </label>
-      
+
       <div className="grid grid-cols-2 gap-3">
         {options.map(option => (
           <button
@@ -616,7 +616,7 @@ const VisualSizePicker: React.FC<VisualSizePickerProps> = ({
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragCorner, setDragCorner] = useState<'br' | 'tr' | 'bl' | null>(null);
-  
+
   // Visual representation scaled to fit container
   const containerWidth = 400;
   const containerHeight = 400;
@@ -624,10 +624,10 @@ const VisualSizePicker: React.FC<VisualSizePickerProps> = ({
     containerWidth / maxWidth,
     containerHeight / maxHeight
   );
-  
+
   const visualWidth = width * scale;
   const visualHeight = height * scale;
-  
+
   return (
     <div className="relative w-full h-96 bg-gray-950 rounded-lg flex items-center justify-center">
       {/* Grid background */}
@@ -641,7 +641,7 @@ const VisualSizePicker: React.FC<VisualSizePickerProps> = ({
           <rect width="100%" height="100%" fill="url(#grid)" />
         </svg>
       </div>
-      
+
       {/* Window representation */}
       <div
         className="relative bg-blue-500/20 border-4 border-blue-500 rounded-lg"
@@ -659,7 +659,7 @@ const VisualSizePicker: React.FC<VisualSizePickerProps> = ({
             onResize(Math.round(newWidth), Math.round(newHeight));
           }}
         />
-        
+
         {/* Dimensions display */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 px-3 py-1 rounded text-sm font-mono">
           {width}mm
@@ -703,7 +703,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
   badge
 }) => {
   const [showExplanation, setShowExplanation] = useState(false);
-  
+
   return (
     <div className="flex items-start justify-between py-2 border-b border-gray-800 last:border-0">
       <div className="flex-1">
@@ -742,7 +742,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
 const ConfidenceBadge: React.FC<{ confidence: number }> = ({ confidence }) => {
   const percentage = Math.round(confidence * 100);
   const color = confidence > 0.9 ? 'green' : confidence > 0.7 ? 'yellow' : 'orange';
-  
+
   return (
     <span className={`text-xs px-1.5 py-0.5 bg-${color}-500/20 text-${color}-400 rounded`}>
       {percentage}%
@@ -766,7 +766,7 @@ const ConfidenceBadge: React.FC<{ confidence: number }> = ({ confidence }) => {
 
 const WhyButton: React.FC<WhyButtonProps> = ({ reasoning }) => {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <>
       <button
@@ -776,13 +776,13 @@ const WhyButton: React.FC<WhyButtonProps> = ({ reasoning }) => {
         <HelpCircle className="h-3 w-3" />
         Why?
       </button>
-      
+
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Why We Recommend This</DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             {/* Fabricator Thinking */}
             <ReasoningSection
@@ -790,21 +790,21 @@ const WhyButton: React.FC<WhyButtonProps> = ({ reasoning }) => {
               title="Workshop Perspective"
               items={reasoning.fabricator}
             />
-            
+
             {/* Engineering Thinking */}
             <ReasoningSection
               icon={<Calculator className="h-5 w-5 text-green-500" />}
               title="Engineering Analysis"
               items={reasoning.engineering}
             />
-            
+
             {/* Platform Intelligence */}
             <ReasoningSection
               icon={<TrendingUp className="h-5 w-5 text-orange-500" />}
               title="Market Intelligence"
               items={reasoning.platform}
             />
-            
+
             {/* Alternative Options */}
             {reasoning.alternatives && reasoning.alternatives.length > 0 && (
               <div className="border-t border-gray-800 pt-4">

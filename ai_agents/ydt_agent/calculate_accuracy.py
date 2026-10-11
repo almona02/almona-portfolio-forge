@@ -1,8 +1,8 @@
-"""Calculate accuracy of Vision AI extraction"""
+"""Calculate accuracy of Vision automation extraction"""
 import json
 from pathlib import Path
 
-# Load Vision AI extraction
+# Load Vision automation extraction
 vision_file = Path(__file__).parent / "knowledge" / "processed" / "aim-7510" / "vision_ai_extraction.json"
 demo_file = Path(__file__).parent / "knowledge" / "processed" / "aim-7510" / "wiring_diagram_analysis.json"
 

@@ -97,7 +97,7 @@ PDF export functionality for the Drafting Workbench has been successfully implem
 ### Constitutional Compliance ✅
 - ✅ Tier 0 Drafting Layer (visual export only)
 - ✅ No execution logic
-- ✅ Deterministic export (no ML/AI)
+- ✅ Deterministic export (no advisory inference)
 - ✅ Error tracking for audit trail
 
 ---

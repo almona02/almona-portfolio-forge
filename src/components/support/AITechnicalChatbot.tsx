@@ -137,7 +137,7 @@ export const AITechnicalChatbot: React.FC = () => {
     await sendMessage(response.prompt, response.category, response.severity);
   };
 
-  // Enhanced AI response generation
+  // Enhanced automation response generation
   const generateAIResponse = async (
     userMessage: string, 
     category?: string, 
@@ -145,7 +145,7 @@ export const AITechnicalChatbot: React.FC = () => {
     imageBase64?: string
   ): Promise<string> => {
     try {
-      // Build context for AI (prompt variable removed as it's not used directly)
+      // Build context for automation (prompt variable removed as it's not used directly)
       const _context = `${EGYPTIAN_TECHNICAL_CONTEXT}\n\n${
         severity === 'critical' || severity === 'high' 
           ? `URGENT ${severity.toUpperCase()} ISSUE - Priority response needed!\n\n` 
@@ -159,12 +159,12 @@ export const AITechnicalChatbot: React.FC = () => {
           ? `Previous conversation context:\n${chatHistory.slice(-4).join('\n')}\n\n` 
           : ''
       }Customer inquiry: ${userMessage}`;
-      
+
       // Handle image-based part identification
       if (imageBase64) {
         return await identifyPartFromImage(imageBase64);
       }
-      
+
       // Use technical support engine for queries
       const response = await getTechnicalSupport(
         userMessage,
@@ -172,13 +172,13 @@ export const AITechnicalChatbot: React.FC = () => {
         severity as 'low' | 'medium' | 'high' | 'critical',
         chatHistory.slice(-6)
       );
-      
+
       // Update chat history
       setChatHistory(prev => [...prev, `User: ${userMessage}`, `AI: ${response}`]);
-      
+
       return response;
     } catch (error) {
-      console.error('AI Response Error:', error);
+      console.error('automation Response Error:', error);
       return 'عذراً، حدث خطأ في النظام. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني مباشرة على: +20 xxx xxx xxxx';
     }
   };
@@ -219,7 +219,7 @@ export const AITechnicalChatbot: React.FC = () => {
           reader.onload = async (e) => {
             imageBase64 = (e.target?.result as string)?.split(',')[1];
             const aiResponse = await generateAIResponse(content, category, severity, imageBase64);
-            
+
             const botMessage: ChatMessage = {
               id: (Date.now() + 1).toString(),
               type: 'bot',
@@ -227,7 +227,7 @@ export const AITechnicalChatbot: React.FC = () => {
               timestamp: new Date(),
               category: 'technical'
             };
-            
+
             setMessages(prev => [...prev, botMessage]);
             setIsLoading(false);
           };
@@ -236,9 +236,9 @@ export const AITechnicalChatbot: React.FC = () => {
         }
       }
 
-      // Generate AI response
+      // Generate automation response
       const aiResponse = await generateAIResponse(content, category, severity);
-      
+
       // Add bot response
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -250,7 +250,7 @@ export const AITechnicalChatbot: React.FC = () => {
       };
 
       setMessages(prev => [...prev, botMessage]);
-      
+
       // Log interaction for improvement
       if (user) {
         await logChatInteraction(userMessage, botMessage);
@@ -258,16 +258,16 @@ export const AITechnicalChatbot: React.FC = () => {
 
     } catch (error) {
       console.error('Chat Error:', error);
-      toast.error('Failed to get AI response');
+      toast.error('Failed to get automation response');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Extract suggested actions from AI response
+  // Extract suggested actions from automation response
   const extractSuggestedActions = (response: string): string[] => {
     const actions: string[] = [];
-    
+
     if (response.includes('technician') || response.includes('فني')) {
       actions.push('Contact Technician');
     }
@@ -280,7 +280,7 @@ export const AITechnicalChatbot: React.FC = () => {
     if (response.includes('emergency') || response.includes('طوارئ')) {
       actions.push('Emergency Support');
     }
-    
+
     return actions;
   };
 
@@ -356,7 +356,7 @@ export const AITechnicalChatbot: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-almona-orange">
                     <Sparkles className="h-5 w-5" />
-                    AI Technical Support
+                    automation Technical Support
                   </CardTitle>
                   <Button
                     variant="ghost"
@@ -425,7 +425,7 @@ export const AITechnicalChatbot: React.FC = () => {
                             )}
                           </div>
                           <div className="text-sm whitespace-pre-line">{message.content}</div>
-                          
+
                           {/* Suggested Actions */}
                           {message.suggested_actions && message.suggested_actions.length > 0 && (
                             <div className="mt-3 flex flex-wrap gap-2">
@@ -444,7 +444,7 @@ export const AITechnicalChatbot: React.FC = () => {
                         </div>
                       </LazyMotionDiv>
                     ))}
-                    
+
                     {/* Loading indicator */}
                     {isLoading && (
                       <LazyMotionDiv
@@ -455,7 +455,7 @@ export const AITechnicalChatbot: React.FC = () => {
                         <div className="bg-almona-dark/40 border border-almona-light/20 rounded-lg p-3">
                           <div className="flex items-center gap-2">
                             <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />
-                            <span className="text-sm text-gray-400">AI يقوم بالتحليل...</span>
+                            <span className="text-sm text-gray-400">automation يقوم بالتحليل...</span>
                           </div>
                         </div>
                       </LazyMotionDiv>

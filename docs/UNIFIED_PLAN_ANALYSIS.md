@@ -251,11 +251,11 @@ This document provides a comprehensive analysis comparing four major strategic p
 
 ---
 
-## Plan 4: YILMAZ Digital Twin & AI Services System
+## Plan 4: YILMAZ Digital Twin & automation Services System
 
 ### Plan Overview
 **File:** `yilmaz_digital_twin_&_ai_services_system_a2a31e74.plan.md`  
-**Goal:** Build comprehensive YILMAZ Digital Twin knowledge system and AI-powered services (diagnosis, learning, spare parts).
+**Goal:** Build comprehensive YILMAZ Digital Twin knowledge system and software-assisted services (diagnosis, learning, spare parts).
 
 ### Implementation Status: 🟡 **45% COMPLETE**
 
@@ -367,7 +367,7 @@ This document provides a comprehensive analysis comparing four major strategic p
 - No architectural conflicts detected
 
 **⚠️ Areas for Attention:**
-- Plan 4 (YDT) is more isolated (separate AI agent system)
+- Plan 4 (YDT) is more isolated (separate automation agent system)
 - Learning agent needs frontend integration (Plan 4)
 - Spare parts system not started (Plan 4)
 

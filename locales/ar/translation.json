@@ -97,10 +97,10 @@
       "title": "الخدمات",
       "all_services": {
         "name": "جميع الخدمات",
-        "description": "نظرة عامة شاملة على الخدمات المدعومة بالذكاء الاصطناعي"
+        "description": "نظرة عامة شاملة على الخدمات المدعومة بالمساعدة الآلية"
       },
       "ai_equipment_advisor": {
-        "name": "مستشار المعدات بالذكاء الاصطناعي",
+        "name": "مستشار المعدات بالمساعدة الآلية",
         "description": "توصيات ذكية"
       },
       "machine_sales": {
@@ -358,7 +358,7 @@
     "highly_recommended": "موصى به بشدة",
     "recommended": "موصى به",
     "consider": "يُنصح بالنظر",
-    "ai_recommendations": "توصيات مدعومة بالذكاء الاصطناعي",
+    "ai_recommendations": "توصيات مدعومة بالمساعدة الآلية",
     "expert_analysis": "تحليل الخبراء",
     "cost_benefit": "تحليل التكلفة والفائدة",
     "performance_metrics": "مقاييس الأداء"

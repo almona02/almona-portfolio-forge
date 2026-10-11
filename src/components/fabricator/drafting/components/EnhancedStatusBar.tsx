@@ -4,7 +4,7 @@
  * Gold-tier status bar with progress indicators, error messages, operation status,
  * and command history for the Drafting Workbench.
  * 
- * Constitutional: Deterministic status display, no ML/AI
+ * Constitutional: Deterministic status display, no advisory inference
  * Tier: 3 Protected Determinism
  */
 
@@ -79,13 +79,13 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
         ? Math.max(0, Math.min(100, progress)) 
         : undefined)
     : undefined;
-  
+
   const validatedElementCount = elementCount !== undefined 
     ? (typeof elementCount === 'number' && isFinite(elementCount) && elementCount >= 0
         ? Math.floor(elementCount)
         : 0)
     : undefined;
-  
+
   const validatedCoordinates = coordinates && 
     typeof coordinates.x === 'number' && isFinite(coordinates.x) &&
     typeof coordinates.y === 'number' && isFinite(coordinates.y)
@@ -94,11 +94,11 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
         y: Math.max(-1_000_000, Math.min(1_000_000, coordinates.y))
       }
     : undefined;
-  
+
   // Get latest message with validation
   const latestMessage = useMemo(() => {
     if (!Array.isArray(messages) || messages.length === 0) return null;
-    
+
     // Filter valid messages
     const validMessages = messages.filter(msg => 
       msg && 
@@ -110,7 +110,7 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
       typeof msg.timestamp === 'number' &&
       isFinite(msg.timestamp)
     );
-    
+
     if (validMessages.length === 0) return null;
     return validMessages.sort((a, b) => b.timestamp - a.timestamp)[0];
   }, [messages]);
@@ -211,7 +211,7 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
       {/* Right Section - Coordinates & Settings */}
       <div className="flex items-center gap-2 flex-shrink-0">
         {validatedCoordinates && (
-          <div className="flex items-center gap-1 font-mono text-[10px]" title="Cursor location (world mm)">
+          <div className="flex items-center gap-1 font-mono text-[10px]" title="pointer location (world mm)">
             <span className="text-slate-500 font-medium">Location:</span>
             <span className="text-amber-300 font-semibold">{validatedCoordinates.x.toFixed(1)}</span>
             <span className="text-slate-400">×</span>

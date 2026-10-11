@@ -23,7 +23,7 @@ interface DigitalSparePartsProps {
 export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsProps) {
     const [selectedPart, setSelectedPart] = useState<Part | null>(null);
     const [zoomLevel, setZoomLevel] = useState(1);
-    
+
     // Fallback if no parts provided
     const displayParts = parts.length > 0 ? parts : MOCK_PARTS;
 
@@ -59,7 +59,7 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
                             backgroundSize: '40px 40px'
                         }} 
                     />
-                    
+
                     {/* Machine Outline (SVG Representation) - Simplified for functionality */}
                     <svg viewBox="0 0 400 300" className="w-3/4 h-3/4 opacity-80 drop-shadow-[0_0_15px_rgba(245,158,11,0.1)]">
                          <path d="M50 250 L350 250 L350 100 L200 50 L50 100 Z" fill="none" stroke="#64748b" strokeWidth="2" strokeDasharray="5,5" />
@@ -105,7 +105,7 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
                                     <h3 className="text-xl font-bold text-white">{selectedPart.name}</h3>
                                     <p className="text-slate-400 font-mono text-sm mt-1">SKU: {selectedPart.sku}</p>
                                 </div>
-                                
+
                                 <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50 space-y-3">
                                     <div className="flex justify-between items-center">
                                         <span className="text-slate-400 text-sm">Status</span>
@@ -122,7 +122,7 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
                                 <Button fullWidth variant="primary" disabled={!selectedPart.inStock} leftIcon={<Plus className="w-4 h-4" />}>
                                     Add to Order
                                 </Button>
-                                
+
                                 <p className="text-xs text-slate-500 text-center">
                                    Ensure compatibility with model {modelName} before ordering.
                                 </p>
@@ -135,7 +135,7 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
                         )}
                     </CardContent>
                 </GoldTierCard>
-                
+
                 {/* Mini Cart Summary */}
                 <GoldTierCard variant="filled" className="bg-slate-800 border-slate-700">
                      <div className="p-4 flex items-center justify-between">

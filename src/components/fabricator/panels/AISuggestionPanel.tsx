@@ -1,5 +1,5 @@
 /**
- * AI Suggestion Panel
+ * automation Suggestion Panel
  * Displays ML-powered K-factor predictions with confidence and user feedback
  * The crown jewel feature that makes the system truly intelligent
  */
@@ -64,7 +64,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
       const result = await calibrationLearner.predict(input);
       setPrediction(result);
     } catch (error) {
-      console.error('Error loading AI prediction:', error);
+      console.error('Error loading automation prediction:', error);
     } finally {
       setLoading(false);
     }
@@ -145,9 +145,9 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
           <div className="flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-yellow-400" />
             <div className="flex-1">
-              <p className="text-sm text-gray-300">{t('calibration_wizard.ai.training_title', 'AI Model Training')}</p>
+              <p className="text-sm text-gray-300">{t('calibration_wizard.ai.training_title', 'Calibration Analysis')}</p>
               <p className="text-xs text-gray-400">
-                {t('calibration_wizard.ai.training_desc', 'The AI is learning from calibration data. Suggestions will appear once enough data is collected.')}
+                {t('calibration_wizard.ai.training_desc', 'The system is learning from calibration data. Suggestions will appear once enough data is collected.')}
               </p>
             </div>
           </div>
@@ -187,7 +187,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Sparkles className="h-5 w-5 text-blue-400" />
-          AI Suggestion
+          automation Suggestion
           <Badge variant="outline" className={`ml-auto ${confidenceColor} border-current`}>
             {confidencePercent}% Confidence
           </Badge>
@@ -232,7 +232,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
           <Alert className="bg-green-500/10 border-green-500/30">
             <CheckCircle2 className="h-4 w-4 text-green-400" />
             <AlertDescription className="text-sm text-green-300">
-              Your feedback has been recorded. The AI will learn from this to improve future suggestions.
+              Your feedback has been recorded. The system will learn from this to improve future suggestions.
             </AlertDescription>
           </Alert>
         )}

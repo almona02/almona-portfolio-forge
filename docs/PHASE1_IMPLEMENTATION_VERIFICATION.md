@@ -144,7 +144,7 @@ This report verifies that the current codebase implementation aligns with the Ph
 
 5. **Component States Audit**
    - Review all button variants for state compliance
-   - Verify disabled states (opacity-50, cursor-not-allowed)
+   - Verify disabled states (opacity-50, development tool-not-allowed)
    - Check loading states (if implemented)
 
 ### Low Priority (Enhancements)

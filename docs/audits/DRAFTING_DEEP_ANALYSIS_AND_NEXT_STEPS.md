@@ -396,7 +396,7 @@ case 'roller':
 ## 📝 Notes
 
 - All integration must maintain ALMONA's constitutional boundaries
-- Material specs are rule-based (no AI)
+- Material specs are rule-based (no automation)
 - Egyptian standards are hardcoded (deterministic)
 - All validation must be auditable
 

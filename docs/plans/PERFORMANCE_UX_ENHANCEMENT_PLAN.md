@@ -27,7 +27,7 @@ export const quickPerformanceWins = {
       { href: '/assets/fabricator-core-[hash].js', as: 'script' },
       { href: '/assets/fabricator-algorithms-[hash].js', as: 'script' }
     ];
-    
+
     links.forEach(link => {
       const preload = document.createElement('link');
       preload.rel = 'preload';
@@ -155,18 +155,18 @@ export const useMobileOptimization = () => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      
+
       // Detect low-end devices
       const hardwareConcurrency = navigator.hardwareConcurrency || 4;
       const deviceMemory = (navigator as any).deviceMemory || 4;
       const isLowEnd = hardwareConcurrency < 4 || deviceMemory < 4;
       setIsLowEndDevice(isLowEnd);
-      
+
       // Reduce animation complexity on mobile/low-end devices
       if (mobile || isLowEnd) {
         document.documentElement.style.setProperty('--animation-scale', '0.8');
         document.documentElement.style.setProperty('--animation-duration', '0.3s');
-        
+
         // Disable heavy animations
         if (isLowEnd) {
           document.documentElement.classList.add('reduce-motion');
@@ -176,19 +176,19 @@ export const useMobileOptimization = () => {
         document.documentElement.style.removeProperty('--animation-duration');
       }
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (prefersReducedMotion.matches) {
       document.documentElement.classList.add('reduce-motion');
     }
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
+
   return { isMobile, isLowEndDevice };
 };
 ```
@@ -324,10 +324,10 @@ async saveWithRecovery(
     return await this.saveWorkspaceSnapshotDebounced(workspaceState);
   } catch (error) {
     console.warn('Primary save failed, attempting recovery:', error);
-    
+
     if (this.recoveryAttempts < this.maxRecoveryAttempts) {
       this.recoveryAttempts++;
-      
+
       // Try saving to localStorage as fallback
       try {
         const result = await this.saveToLocalStorageFallback(workspaceState);
@@ -338,7 +338,7 @@ async saveWithRecovery(
         throw fallbackError;
       }
     }
-    
+
     // Reset attempts after max retries
     this.recoveryAttempts = 0;
     throw error;
@@ -351,12 +351,12 @@ private async saveToLocalStorageFallback(
   if (!this.hasWindow()) {
     return { success: false, usedFallback: false, timestamp: null };
   }
-  
+
   try {
     // Use compression for large workspace data
     const compressed = quickPerformanceWins.compressWorkspaceData(workspaceState);
     window.localStorage.setItem(this.storageKey, compressed);
-    
+
     return {
       success: true,
       usedFallback: true,
@@ -414,15 +414,15 @@ const {
 // Replace useEffect at line 268 with:
 useEffect(() => {
   if (typeof window === 'undefined') return;
-  
+
   const debouncedSave = debounce(async () => {
     const service = new WorkspaceSyncService(STORAGE_KEY);
     const result = await service.saveWorkspaceSnapshotDebounced(state);
     dispatch({ type: 'MARK_SAVED', payload: result.timestamp });
   }, 3000);
-  
+
   debouncedSave();
-  
+
   return () => debouncedSave.cancel();
 }, [state]);
 ```
@@ -515,7 +515,7 @@ const { copyToClipboard, copiedText, isCopying } = useClipboard();
 **Features**:
 - 4-step tutorial:
   1. Smart Measuring (2:30)
-  2. AI-Powered Design (3:45)
+  2. Assisted Design (3:45)
   3. Cutting Optimization (4:15)
   4. CNC Export (2:45)
 - Progress indicator

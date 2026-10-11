@@ -11,7 +11,7 @@
 
 ## Executive Summary
 
-This document outlines the plan to enhance the Drafting Workbench's 3D Preview from **minimal implementation** (basic geometry rendering) to **full 3D preview** matching gold-tier competitors (Orgadata LogiKal, KLAES, Moxisys Design Flow).
+This document outlines the plan to enhance the Drafting Workbench's 3D Preview from **minimal implementation** (basic geometry rendering) to **full 3D preview** matching gold-tier competitors (reference system reference system, reference system, reference system Design Flow).
 
 **Current State:** `DraftingPreview3D.tsx` renders basic 3D shapes (boxes, cylinders, extrusions) from drafting geometry.
 
@@ -160,14 +160,14 @@ const convertToWindowUnit = useMemo(() => {
   const geometry = drafting.getGeometry();
   const activeTemplate = drafting.getActiveTemplate();
   const template = drafting.getAvailableTemplates().find(t => t.id === activeTemplate);
-  
+
   if (!template || geometry.rectangles.length === 0) {
     return null;
   }
-  
+
   // Convert to WindowGrid
   const grid = convertDraftingToWindowGrid(geometry, template);
-  
+
   // Calculate overall dimensions
   const rects = geometry.rectangles;
   const minX = Math.min(...rects.map(r => r.x));
@@ -176,7 +176,7 @@ const convertToWindowUnit = useMemo(() => {
   const maxY = Math.max(...rects.map(r => r.y + r.height));
   const overallWidth = maxX - minX;
   const overallHeight = maxY - minY;
-  
+
   // Create WindowUnit
   const windowUnit: WindowUnit = {
     id: `draft-preview-${Date.now()}`,
@@ -196,7 +196,7 @@ const convertToWindowUnit = useMemo(() => {
     createdAt: new Date(),
     updatedAt: new Date()
   };
-  
+
   return windowUnit;
 }, [drafting, selectedSystemPackId, selectedMaterial]);
 ```
@@ -685,7 +685,7 @@ Window3DGenerator
 
 ### 5.1 Before Implementation
 
-| Feature | ALMONA (Current) | Orgadata LogiKal | KLAES | Moxisys | Gap |
+| Feature | ALMONA (Current) | reference system reference system | reference system | reference system | Gap |
 |---------|------------------|------------------|-------|---------|-----|
 | **3D Preview** | ⚠️ Basic geometry | ✅ Full 3D | ✅ Full 3D | ✅ Full 3D | **Large** |
 | **Hardware Visualization** | ❌ No | ✅ Full | ✅ Full | ✅ Full | **Large** |
@@ -696,7 +696,7 @@ Window3DGenerator
 
 ### 5.2 After Implementation
 
-| Feature | ALMONA (Enhanced) | Orgadata LogiKal | KLAES | Moxisys | Gap |
+| Feature | ALMONA (Enhanced) | reference system reference system | reference system | reference system | Gap |
 |---------|-------------------|------------------|-------|---------|-----|
 | **3D Preview** | ✅ Full 3D (Window3DGenerator) | ✅ Full 3D | ✅ Full 3D | ✅ Full 3D | **Parity** |
 | **Hardware Visualization** | ✅ Full (GLTF models) | ✅ Full | ✅ Full | ✅ Full | **Parity** |
@@ -762,7 +762,7 @@ Window3DGenerator
 
 ### 7.2 Competitive Requirements
 
-- ✅ Feature parity with Orgadata LogiKal, KLAES, Moxisys
+- ✅ Feature parity with reference system reference system, reference system, reference system
 - ✅ Unique advantages (post-processing, section view, exploded view)
 
 ### 7.3 Quality Requirements

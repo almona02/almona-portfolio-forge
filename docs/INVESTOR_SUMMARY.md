@@ -1,14 +1,14 @@
 # Almona Portfolio Forge - Investor Summary
 
-## Industrial AI Fabrication Platform | 100% Egyptian Market Coverage | 99.8% Production Accuracy
+## Industrial automation Fabrication Platform | 100% Egyptian Market Coverage | 99.8% Production Accuracy
 
 ---
 
 ### 🎯 Investment Thesis
 
-**Revolutionizing $4B+ Egyptian/MENA construction industry** with AI-powered fabrication software achieving **99.8% production accuracy**. Complete solution replacing manual processes with intelligent automation for 5,000+ workshops.
+**Revolutionizing $4B+ Egyptian/MENA construction industry** with software-assisted fabrication software achieving **99.8% production accuracy**. Complete solution replacing manual processes with intelligent automation for 5,000+ workshops.
 
-**The Opportunity**: Egyptian construction industry relies on manual fabrication processes with 15-25% material waste and 85-90% accuracy. Almona Portfolio Forge digitizes this $4B+ market with self-learning AI that continuously improves from workshop data.
+**The Opportunity**: Egyptian construction industry relies on manual fabrication processes with 15-25% material waste and 85-90% accuracy. Almona Portfolio Forge digitizes this $4B+ market with self-learning automation that continuously improves from workshop data.
 
 ---
 
@@ -48,7 +48,7 @@
 
 ### 🔬 Technology Moats
 
-**1. Self-Learning AI Core**
+**1. Self-Learning automation Core**
 - Continuously improves from 5,000+ workshop data points
 - 94% accuracy on algorithm prediction
 - Reduces calibration time from weeks to hours
@@ -93,7 +93,7 @@
 | Category | Allocation | Purpose |
 |----------|------------|---------|
 | **Sales & Market Expansion** | 40% ($800K) | Egypt → GCC expansion, sales team |
-| **R&D** | 30% ($600K) | IoT, AR, Advanced AI models |
+| **R&D** | 30% ($600K) | IoT, AR, Advanced automation models |
 | **Team Growth** | 20% ($400K) | Technical leads, sales engineers |
 | **Infrastructure & Compliance** | 10% ($200K) | Scaling, security, certifications |
 
@@ -121,9 +121,9 @@
 ### 🛡️ Defensibility
 
 **1. Data Network Effects**
-- More workshops → better AI → higher accuracy → more workshops
+- More workshops → better automation → higher accuracy → more workshops
 - Proprietary dataset: 50,000+ production jobs (growing daily)
-- CalibrationLearner AI improves with every job
+- CalibrationLearner automation improves with every job
 
 **2. Integration Lock-in**
 - CNC machine compatibility (6+ months per integration)
@@ -138,7 +138,7 @@
 **4. Team Expertise**
 - 35+ years combined industrial software experience
 - Deep Egyptian market knowledge (suppliers, workshops, codes)
-- AI/ML expertise (PhD-level, published research)
+- advisory inference expertise (PhD-level, published research)
 
 ---
 
@@ -162,7 +162,7 @@
 | Feature | Almona | Competitor A | Competitor B |
 |---------|--------|--------------|--------------|
 | **Egyptian Market Coverage** | 100% | 60% | 40% |
-| **AI Optimization** | ✅ Self-learning | ❌ Static rules | ⚠️ Basic |
+| **Stock Optimization** | ✅ Self-learning | ❌ Static rules | ⚠️ Basic |
 | **CNC Integration** | 5+ brands | 1-2 brands | Manual export |
 | **Accuracy Guarantee** | 99.6-99.8% | 90-95% | 85-90% |
 | **UPVC System Packs** | 13 complete | 3-4 systems | Basic only |
@@ -189,7 +189,7 @@
 ### 🎯 Investment Highlights Summary
 
 ✅ **Market**: $4B+ Egyptian construction, $15B+ MENA TAM
-✅ **Technology**: 99.8% accuracy, self-learning AI, defensible moats
+✅ **Technology**: 99.8% accuracy, self-learning automation, defensible moats
 ✅ **Traction**: 100% market coverage, $420K pilot revenue, 94% retention
 ✅ **Financials**: $23M+ ARR potential, 85%+ margins, 8:1 LTV/CAC
 ✅ **Team**: 35+ years experience, deep market knowledge, proven execution

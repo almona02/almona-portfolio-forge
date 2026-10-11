@@ -1,7 +1,7 @@
 # Special Presets Implementation Guide: 99.5% Accuracy for Complex Designs
 
 **Goal:** Handle complex designs (fly screens, custom mullions, tall windows, bent profiles) with 99.5%+ accuracy  
-**Competitive Advantage:** Designs that Klaes and Orgadata can't handle well  
+**Competitive Advantage:** Designs that reference system and reference system can't handle well
 **Egyptian Market Focus:** Local materials, workshop capabilities, climate considerations
 
 ---
@@ -10,13 +10,13 @@
 
 ### What Competitors Struggle With:
 
-**Klaes (German):**
+**reference system (German):**
 - ❌ No fly screen integration
 - ❌ Limited custom mullion support
 - ❌ No bent profile calculations
 - ❌ Generic hardware (not Egyptian)
 
-**Orgadata (German):**
+**reference system (German):**
 - ❌ Complex manual setup for special designs
 - ❌ No workshop capability matching
 - ❌ No Egyptian climate considerations
@@ -62,12 +62,12 @@ export class FlyScreenPresetEngine {
    * - Charcoal gray color (most popular)
    * - 25mm slim frame (space-saving)
    */
-  
+
   async generateFlyScreenAssembly(
     windowUnit: WindowUnit,
     screenType: 'magnetic' | 'fixed' | 'sliding'
   ): Promise<FlyScreenAssembly> {
-    
+
     // 1. SCREEN FRAME PROFILES
     const screenFrame = {
       profile: {
@@ -84,7 +84,7 @@ export class FlyScreenPresetEngine {
       totalLength: (windowUnit.overallWidth + windowUnit.overallHeight) * 2,
       cost: this.calculateScreenFrameCost(windowUnit)
     };
-    
+
     // 2. SCREEN MESH
     const screenMesh = {
       type: 'fiberglass_standard',
@@ -99,16 +99,16 @@ export class FlyScreenPresetEngine {
       totalCost: ((windowUnit.overallWidth + 100) * (windowUnit.overallHeight + 100)) / 1_000_000 * 120,
       supplier: this.getLocalSupplier('screen_mesh', windowUnit.location)
     };
-    
+
     // 3. MOUNTING HARDWARE (Type-Specific)
     const hardware = this.generateScreenHardware(windowUnit, screenType);
-    
+
     // 4. ASSEMBLY SEQUENCE
     const assemblySequence = this.generateScreenAssemblySequence(screenType);
-    
+
     // 5. INSTALLATION INSTRUCTIONS
     const installation = this.generateScreenInstallation(screenType);
-    
+
     return {
       screenFrame,
       screenMesh,
@@ -120,18 +120,18 @@ export class FlyScreenPresetEngine {
       confidence: 97
     };
   }
-  
+
   private generateScreenHardware(
     windowUnit: WindowUnit,
     screenType: 'magnetic' | 'fixed' | 'sliding'
   ): ScreenHardware {
-    
+
     if (screenType === 'magnetic') {
       // MAGNETIC CLIPS (Most Popular in Egypt)
       const clipSpacing = 400; // mm (Egyptian standard)
       const perimeterLength = (windowUnit.overallWidth + windowUnit.overallHeight) * 2;
       const clipCount = Math.ceil(perimeterLength / clipSpacing);
-      
+
       return {
         clips: {
           type: 'magnetic_clip_neodymium',
@@ -160,14 +160,14 @@ export class FlyScreenPresetEngine {
         totalCost: (clipCount * 15) + (Math.ceil((perimeterLength + 500) / 1000) * 10) + 32
       };
     }
-    
+
     // Similar logic for 'fixed' and 'sliding' types...
   }
-  
+
   private generateScreenAssemblySequence(
     screenType: 'magnetic' | 'fixed' | 'sliding'
   ): AssemblyStep[] {
-    
+
     const baseSteps: AssemblyStep[] = [
       {
         step: 1,
@@ -200,7 +200,7 @@ export class FlyScreenPresetEngine {
         ]
       }
     ];
-    
+
     if (screenType === 'magnetic') {
       baseSteps.push({
         step: 4,
@@ -216,7 +216,7 @@ export class FlyScreenPresetEngine {
         ]
       });
     }
-    
+
     baseSteps.push({
       step: baseSteps.length + 1,
       action: 'Quality check',
@@ -225,7 +225,7 @@ export class FlyScreenPresetEngine {
       tools: ['none'],
       notes: 'Check mesh tension, clip alignment, frame squareness'
     });
-    
+
     return baseSteps;
   }
 }
@@ -248,7 +248,7 @@ export class FlyScreenPresetEngine {
     totalLength: 6672mm,
     cost: 480 EGP
   },
-  
+
   screenMesh: {
     type: "Fiberglass Standard 1.2mm",
     color: "Charcoal Gray",
@@ -256,7 +256,7 @@ export class FlyScreenPresetEngine {
     area: 3.04 m²,
     cost: 365 EGP
   },
-  
+
   hardware: {
     magneticClips: {
       quantity: 17, // (1800+1500)×2 / 400 = 16.5 → 17
@@ -273,7 +273,7 @@ export class FlyScreenPresetEngine {
     },
     totalCost: 359 EGP
   },
-  
+
   assemblySequence: [
     "Cut screen frame (10 min, 1 worker)",
     "Assemble frame (15 min, 1 worker)",
@@ -281,7 +281,7 @@ export class FlyScreenPresetEngine {
     "Attach magnetic clips (15 min, 1 worker)",
     "Quality check (5 min, 1 worker)"
   ],
-  
+
   totalTime: 65 minutes,
   totalCost: 1,204 EGP,
   accuracy: 99.5%,
@@ -308,59 +308,59 @@ export class CustomMullionValidator {
    * - Manufacturing feasibility
    * - Egyptian Code 2020 compliance
    */
-  
+
   async validateMullionPlacement(
     windowUnit: WindowUnit,
     mullionPosition: number, // mm from left edge
     mullionType: 'standard' | 'structural' | 'thermal_break'
   ): Promise<MullionValidation> {
-    
+
     // 1. STRUCTURAL ANALYSIS
     const structural = await this.analyzeStructuralImpact(
       windowUnit,
       mullionPosition,
       mullionType
     );
-    
+
     // 2. THERMAL ANALYSIS
     const thermal = this.analyzeThermalBridging(
       windowUnit,
       mullionPosition,
       mullionType
     );
-    
+
     // 3. MANUFACTURING FEASIBILITY
     const manufacturing = this.assessManufacturability(
       windowUnit,
       mullionPosition,
       mullionType
     );
-    
+
     // 4. COST IMPACT
     const cost = this.calculateMullionCost(
       windowUnit,
       mullionType
     );
-    
+
     // 5. DETERMINE REQUIRED PROFILE
     const requiredProfile = this.determineMullionProfile(
       windowUnit.overallHeight,
       structural.load,
       mullionType
     );
-    
+
     // 6. CONNECTOR SPECIFICATION
     const connector = this.specifyConnector(
       mullionType,
       windowUnit.profile,
       requiredProfile
     );
-    
+
     return {
       isValid: structural.isValid && manufacturing.isFeasible,
       position: mullionPosition,
       type: mullionType,
-      
+
       structural: {
         load: structural.load, // N
         deflection: structural.deflection, // mm
@@ -368,20 +368,20 @@ export class CustomMullionValidator {
         isValid: structural.isValid,
         warnings: structural.warnings
       },
-      
+
       thermal: {
         uValueImpact: thermal.uValueIncrease, // W/m²K
         psiValue: thermal.psiValue, // W/m·K
         recommendation: thermal.recommendation
       },
-      
+
       manufacturing: {
         isFeasible: manufacturing.isFeasible,
         complexity: manufacturing.complexity, // 'simple' | 'moderate' | 'complex'
         specialTools: manufacturing.specialTools,
         warnings: manufacturing.warnings
       },
-      
+
       requiredProfile: {
         width: requiredProfile.width, // mm
         height: requiredProfile.height, // mm
@@ -390,7 +390,7 @@ export class CustomMullionValidator {
         reinforcement: requiredProfile.reinforcement,
         cost: requiredProfile.cost // EGP
       },
-      
+
       connector: {
         type: connector.type,
         partNumber: connector.partNumber,
@@ -399,48 +399,48 @@ export class CustomMullionValidator {
         totalPrice: connector.totalPrice,
         supplier: connector.supplier
       },
-      
+
       totalCost: requiredProfile.cost + connector.totalPrice,
       accuracy: 99.2,
       confidence: 96
     };
   }
-  
+
   private async analyzeStructuralImpact(
     windowUnit: WindowUnit,
     mullionPosition: number,
     mullionType: string
   ): Promise<StructuralAnalysis> {
-    
+
     // Calculate wind load on mullion (Egyptian Code 203/2005)
     const location = windowUnit.location || 'cairo';
     const windZone = this.getEgyptianWindZone(location);
     const windPressure = this.calculateWindPressure(windZone, windowUnit.buildingHeight);
-    
+
     // Calculate mullion span and load
     const mullionHeight = windowUnit.overallHeight;
     const mullionLoad = windPressure * (windowUnit.overallWidth / 2) * mullionHeight / 1000; // N
-    
+
     // Calculate deflection
     const momentOfInertia = this.calculateMomentOfInertia(mullionType);
     const deflection = (5 * mullionLoad * Math.pow(mullionHeight, 3)) / (384 * 70000 * momentOfInertia); // mm
-    
+
     // Egyptian Code: Max deflection = L/175 or 10mm, whichever is less
     const allowableDeflection = Math.min(mullionHeight / 175, 10);
-    
+
     // Safety factor
     const safetyFactor = allowableDeflection / deflection;
-    
+
     const warnings: string[] = [];
     if (deflection > allowableDeflection) {
       warnings.push(`Deflection ${deflection.toFixed(1)}mm exceeds allowable ${allowableDeflection.toFixed(1)}mm`);
       warnings.push(`Recommend upgrading to structural mullion or adding reinforcement`);
     }
-    
+
     if (mullionHeight > 2000 && mullionType === 'standard') {
       warnings.push(`Height ${mullionHeight}mm requires structural mullion for spans > 2000mm`);
     }
-    
+
     return {
       load: mullionLoad,
       deflection: deflection,
@@ -471,41 +471,41 @@ export class TallWindowSegmenter {
    * - Min segment height: 800mm (functional minimum)
    * - Handle height: 1100mm from floor (accessibility)
    */
-  
+
   async segmentTallWindow(
     totalHeight: number,
     maxSegmentHeight: number = 2400,
     openingType: 'casement' | 'tilt_turn' | 'fixed'
   ): Promise<SegmentedWindowDesign> {
-    
+
     // Calculate optimal segmentation
     const segments = Math.ceil(totalHeight / maxSegmentHeight);
     const actualSegmentHeight = totalHeight / segments;
-    
+
     // Validate segment height
     if (actualSegmentHeight < 800) {
       throw new Error(`Segment height ${actualSegmentHeight}mm is below minimum 800mm`);
     }
-    
+
     // Generate segment designs
     const segmentDesigns: SegmentDesign[] = [];
-    
+
     for (let i = 0; i < segments; i++) {
       const isBottom = i === 0;
       const isTop = i === segments - 1;
-      
+
       segmentDesigns.push({
         segment: i + 1,
         height: actualSegmentHeight,
         position: i * actualSegmentHeight, // mm from bottom
-        
+
         // Reinforcement (bottom segment carries most load)
         reinforcement: {
           required: isBottom || actualSegmentHeight > 2000,
           type: isBottom ? 'steel_channel_full' : 'steel_channel_partial',
           cost: isBottom ? 450 : 250 // EGP
         },
-        
+
         // Hardware placement
         hardware: {
           hinges: {
@@ -515,14 +515,14 @@ export class TallWindowSegmenter {
             unitPrice: isBottom ? 120 : 85,
             totalPrice: (actualSegmentHeight > 1500 ? 3 : 2) * (isBottom ? 120 : 85)
           },
-          
+
           handle: {
             position: this.calculateHandlePosition(i, segments, actualSegmentHeight),
             type: 'standard_handle',
             unitPrice: 180,
             totalPrice: 180
           },
-          
+
           locks: {
             quantity: actualSegmentHeight > 1800 ? 2 : 1,
             positions: this.calculateLockPositions(actualSegmentHeight),
@@ -531,7 +531,7 @@ export class TallWindowSegmenter {
             totalPrice: (actualSegmentHeight > 1800 ? 2 : 1) * 320
           }
         },
-        
+
         // Inter-segment connection (if not bottom segment)
         mullionConnection: i > 0 ? {
           type: 'horizontal_structural_mullion',
@@ -542,24 +542,24 @@ export class TallWindowSegmenter {
         } : null
       });
     }
-    
+
     return {
       totalHeight: totalHeight,
       segments: segmentDesigns,
       segmentCount: segments,
       segmentHeight: actualSegmentHeight,
-      
+
       structuralConnections: this.designInterSegmentConnections(segments),
-      
+
       assemblySequence: this.generateSegmentedAssemblySequence(segmentDesigns),
-      
+
       totalCost: this.calculateTotalSegmentedCost(segmentDesigns),
-      
+
       accuracy: 99.7,
       confidence: 98
     };
   }
-  
+
   private calculateHandlePosition(
     segmentIndex: number,
     totalSegments: number,
@@ -567,16 +567,16 @@ export class TallWindowSegmenter {
   ): number {
     // Egyptian standard: Handle at 1100mm from floor
     const targetHeightFromFloor = 1100; // mm
-    
+
     // Calculate which segment contains the 1100mm mark
     const segmentBottomHeight = segmentIndex * segmentHeight;
     const segmentTopHeight = (segmentIndex + 1) * segmentHeight;
-    
+
     if (targetHeightFromFloor >= segmentBottomHeight && targetHeightFromFloor <= segmentTopHeight) {
       // This segment contains the ideal handle position
       return targetHeightFromFloor - segmentBottomHeight; // Position within segment
     }
-    
+
     // If ideal position not in this segment, place handle at segment center
     return segmentHeight / 2;
   }
@@ -601,58 +601,58 @@ export class BentProfileEngine {
    * - Premium workshops: Continuous bends (radius > 800mm)
    * - Material limits: Aluminum can bend, UPVC cannot
    */
-  
+
   async generateBentProfileDesign(
     curveSpec: CurveSpecification,
     workshopCapability: 'standard' | 'premium'
   ): Promise<BentDesign> {
-    
+
     // Get material bend limits
     const bendLimits = this.getMaterialBendLimits(curveSpec.material);
-    
+
     // Determine if continuous bend is possible
     const canBendContinuously = 
       curveSpec.radius >= bendLimits.minimumRadius &&
       workshopCapability === 'premium' &&
       curveSpec.material === 'aluminum';
-    
+
     if (canBendContinuously) {
       return this.generateContinuousBend(curveSpec, bendLimits);
     } else {
       return this.generateSegmentedBend(curveSpec, bendLimits);
     }
   }
-  
+
   private generateContinuousBend(
     curveSpec: CurveSpecification,
     bendLimits: BendLimits
   ): BentDesign {
-    
+
     // Calculate bend geometry
     const arcLength = (curveSpec.radius * curveSpec.angle * Math.PI) / 180;
     const chordLength = 2 * curveSpec.radius * Math.sin((curveSpec.angle * Math.PI) / 360);
-    
+
     // Calculate springback compensation
     const springback = this.calculateSpringback(curveSpec.material, curveSpec.radius);
     const compensatedRadius = curveSpec.radius * (1 - springback);
-    
+
     // Generate notching pattern for bending
     const notchingPattern = this.generateNotchingPattern(
       curveSpec.radius,
       curveSpec.angle,
       curveSpec.profileDepth
     );
-    
+
     return {
       type: 'continuous_bend',
-      
+
       geometry: {
         radius: curveSpec.radius,
         angle: curveSpec.angle,
         arcLength: arcLength,
         chordLength: chordLength
       },
-      
+
       manufacturing: {
         method: 'notch_and_bend',
         bendingTemplate: {
@@ -670,14 +670,14 @@ export class BentProfileEngine {
           'hydraulic_press'
         ]
       },
-      
+
       profilePreparation: {
         straightLength: arcLength * 1.1, // +10% for bending
         notchCount: notchingPattern.notches.length,
         notchDepth: notchingPattern.depth,
         notchSpacing: notchingPattern.spacing
       },
-      
+
       glassIntegration: {
         method: 'segmented_glass',
         segments: this.calculateGlassSegments(curveSpec.radius, curveSpec.angle),
@@ -685,29 +685,29 @@ export class BentProfileEngine {
         gasketType: 'flexible_epdm_curved',
         cost: 450 // EGP
       },
-      
+
       totalCost: 2850, // EGP (profile + bending + template + gaskets)
       accuracy: 98.5,
       confidence: 94
     };
   }
-  
+
   private generateSegmentedBend(
     curveSpec: CurveSpecification,
     bendLimits: BendLimits
   ): BentDesign {
-    
+
     // Calculate number of segments needed
     const segmentAngle = 15; // degrees (standard for segmented bends)
     const segments = Math.ceil(curveSpec.angle / segmentAngle);
     const actualSegmentAngle = curveSpec.angle / segments;
-    
+
     // Calculate segment dimensions
     const segmentChordLength = 2 * curveSpec.radius * Math.sin((actualSegmentAngle * Math.PI) / 360);
-    
+
     return {
       type: 'segmented_bend',
-      
+
       geometry: {
         radius: curveSpec.radius,
         angle: curveSpec.angle,
@@ -715,7 +715,7 @@ export class BentProfileEngine {
         segmentAngle: actualSegmentAngle,
         segmentLength: segmentChordLength
       },
-      
+
       manufacturing: {
         method: 'straight_segments_with_angle_connectors',
         segmentCount: segments,
@@ -729,14 +729,14 @@ export class BentProfileEngine {
           'angle_measuring_tool'
         ]
       },
-      
+
       profilePreparation: {
         straightSegments: segments,
         segmentLength: segmentChordLength,
         cutAngle: 90 - (actualSegmentAngle / 2), // Miter angle
         totalProfileLength: segmentChordLength * segments
       },
-      
+
       glassIntegration: {
         method: 'flat_glass_segments',
         segments: segments,
@@ -744,7 +744,7 @@ export class BentProfileEngine {
         gasketType: 'standard_epdm',
         cost: 180 // EGP
       },
-      
+
       totalCost: 1650, // EGP (segments + connectors + gaskets)
       accuracy: 98.5,
       confidence: 96
@@ -773,7 +773,7 @@ export const SpecialPresetSelector: React.FC = () => {
         egyptianFocus="Sand/dust protection, local mesh suppliers"
         onClick={() => router.push('/fabricator/special/fly-screen')}
       />
-      
+
       <SpecialPresetCard
         title="Custom Mullion Placement"
         icon={<Plus />}
@@ -782,7 +782,7 @@ export const SpecialPresetSelector: React.FC = () => {
         egyptianFocus="Wind load analysis, thermal bridging, local connectors"
         onClick={() => router.push('/fabricator/special/custom-mullion')}
       />
-      
+
       <SpecialPresetCard
         title="Tall Segmented Windows"
         icon={<MoveVertical />}
@@ -791,7 +791,7 @@ export const SpecialPresetSelector: React.FC = () => {
         egyptianFocus="High-rise buildings, handle positioning, reinforcement"
         onClick={() => router.push('/fabricator/special/tall-window')}
       />
-      
+
       <SpecialPresetCard
         title="Bent Profiles / Domes"
         icon={<Circle />}

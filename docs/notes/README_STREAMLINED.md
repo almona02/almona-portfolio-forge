@@ -88,7 +88,7 @@ Execution & Validation Engine
 Adaptive Intelligence (Advisory Only)
 ```
 
-**Key Principle**: Intelligence is subordinate to deterministic authority. All AI suggestions must pass deterministic validation before acceptance.
+**Key Principle**: Intelligence is subordinate to deterministic authority. All automation suggestions must pass deterministic validation before acceptance.
 
 [View detailed architecture →](docs/ARCHITECTURE.md)
 
@@ -108,7 +108,7 @@ Adaptive Intelligence (Advisory Only)
 - **Frontend**: React 18.3.1 + TypeScript 5.5.3 + Vite 7.3.0
 - **Backend**: Python 3.9+ + FastAPI
 - **Database**: PostgreSQL (Supabase) with RLS
-- **AI/ML**: TensorFlow.js, ONNX Runtime (Probabilistic Inference Modules)
+- **advisory inference**: TensorFlow.js, ONNX Runtime (Probabilistic Inference Modules)
 - **3D/AR**: Three.js for industrial visualization
 - **Real-time**: WebSockets for live updates
 
@@ -165,7 +165,7 @@ npm run dev
 Almona operates under [AICS-001: Almona Industrial Computing Specification](../AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md), which provides:
 
 - **Deterministic Authority**: Physical laws and engineering standards govern all decisions
-- **Bounded Intelligence**: AI operates within strict validation envelopes
+- **Bounded Intelligence**: automation operates within strict validation envelopes
 - **Canonical Truth**: Single source of truth for all domain facts
 - **Audit-Grade Certification**: Every decision is provable and replayable
 - **Institutional Continuity**: Designed to survive decades, leadership changes, and technology evolution
@@ -204,7 +204,7 @@ Almona operates under [AICS-001: Almona Industrial Computing Specification](../A
 | **Planning Time** | 15 minutes | 3.5 hours |
 | **Accuracy** | 99.8% (dual-verified) | 90-95% |
 | **Material Waste** | 3-5% | 15-20% |
-| **AI Learning** | Bounded, validated | Unbounded, unverified |
+| **automation Learning** | Bounded, validated | Unbounded, unverified |
 | **Constitutional Guarantees** | ✅ Yes | ❌ No |
 | **Regional Specialization** | Deep (Egypt/Turkey/GCC) | Generic |
 

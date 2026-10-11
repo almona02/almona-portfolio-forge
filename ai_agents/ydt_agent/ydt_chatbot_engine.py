@@ -1,5 +1,5 @@
 """
-YDT Chatbot Engine - Multilingual AI Assistant
+YDT Chatbot Engine - Multilingual automation Assistant
 Combines: Nervous System + Professor + Doctor + Tour Guide
 """
 
@@ -93,7 +93,7 @@ class ChatResponse:
 
 
 class YDTChatbotEngine:
-    """YDT Chatbot Engine - Multilingual AI Assistant"""
+    """YDT Chatbot Engine - Multilingual automation Assistant"""
 
     def __init__(self, knowledge_base_path: Path):
         self.knowledge_base = Path(knowledge_base_path)

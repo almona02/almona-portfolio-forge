@@ -76,7 +76,7 @@
 - ✓ Quick setup without CAD files
 
 ### **2. Fixed All Metrics**
-- ✓ 99.6-99.8% (not just "AI")
+- ✓ 99.6-99.8% (not just "automation")
 - ✓ 93% time reduction
 - ✓ 15-20% material savings
 - ✓ 5,000+ addressable workshops

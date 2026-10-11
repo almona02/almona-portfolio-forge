@@ -29,11 +29,11 @@ This is still an actively hardened industrial product. Passing CI means the soft
 - **Machinery and spare parts** — product catalogue, machine comparison, requests, and after-sales support.
 - **Service operations** — tickets, SLA plans, technician workflows, and digital machine passports.
 - **Fabricator Pro** — project and position management, measurement, SmartDraw and drafting, BOM, stock optimization, quoting, QC, and production documents.
-- **Advisory tools** — AI-assisted support and analysis kept separate from manufacturing authority.
+- **Technical support** — machinery guidance and reference analysis kept separate from manufacturing authority.
 
 ## Manufacturing boundaries
 
-Manufacturing-critical paths are designed to be deterministic and auditable. Identical validated inputs should produce identical protected-path outputs. Advisory search or AI output must not silently become manufacturing truth.
+Manufacturing-critical paths are designed to be deterministic and auditable. Identical validated inputs should produce identical protected-path outputs. Support responses and reference search results must not silently become manufacturing truth.
 
 The platform does not claim structural engineering authority. Profile-system rules, tolerances, formulas, and workshop output require approved source data and human sign-off. Accuracy percentages are not published as guarantees until they are supported by representative, independently reviewed production evidence.
 
@@ -141,6 +141,12 @@ Product improvements that follow the release gates include continuous plausibili
 ## Contributing
 
 Keep changes small and scoped. New TypeScript must remain strict and manufacturing changes need boundary, unit-conversion, and deterministic replay tests. Database changes require additive migrations and policy tests. Pull requests must pass the relevant CI, security, constitutional, and shipability gates.
+
+For concurrent contributions, assign a bounded task and explicit file ownership to each contributor. Use separate branches or worktrees, agree on shared interfaces before changing them, and designate one coordinator to integrate the results. Each handoff should include changed files, verification outcomes, remaining blockers, and dependencies. Run relevant integration checks after combining changes.
+
+Keep repository navigation and verified implementation status concise and linked to source files. Dated audit records describe the state when they were written; verify the current checkout before treating their test counts or release findings as current evidence.
+
+Public product descriptions should explain workshop capabilities and their validation limits without tool endorsements, provider branding, unsupported superiority claims, or comparisons with other commercial products.
 
 Do not commit `.env` files, service-role keys, customer data, or production exports. Report security issues privately to the repository owner rather than opening a public issue.
 

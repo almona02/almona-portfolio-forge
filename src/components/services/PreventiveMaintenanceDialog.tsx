@@ -152,7 +152,7 @@ const serviceContracts: ServiceContract[] = [
     localTechnicians: true,
     features: [
       "Özel fabrika teknisyenleri (Dedicated factory technicians)",
-      "AI destekli bakım tahmini (AI-powered maintenance prediction)",
+      "automation destekli bakım tahmini (software-assisted maintenance prediction)",
       "7/24 Türkçe/Arapça destek (24/7 Turkish/Arabic support)",
       "3 yıl garanti uzatması (3-year warranty extension)",
       "Ücretsiz yedek parça stoğu (Free spare parts inventory)",
@@ -192,17 +192,17 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
   const onSubmit = async (_data: MaintenanceFormData) => {
     setIsSubmitting(true);
-    
+
     try {
       // Simulate API call with market-specific processing
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Generate market-specific contract ID
       const contractPrefix = market === "egypt" ? "EG-PM" : "TR-PM";
       const _contractId = `${contractPrefix}-${Date.now().toString().slice(-8)}`;
-      
+
       setStep("confirm");
-      
+
       // Reset after 3 seconds
       setTimeout(() => {
         onOpenChange(false);
@@ -759,7 +759,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
               </Badge>
               <div className="mt-6 space-y-2 text-sm text-gray-400">
                 <p>✓ {selectedMarket === "egypt" ? "عقد الخدمة تم إنشاؤه" : "Servis sözleşmesi oluşturuldu"}</p>
-                <p>✓ {selectedMarket === "egypt" ? "الجداول الزمنية AI مفعلة" : "AI zamanlamaları etkinleştirildi"}</p>
+                <p>✓ {selectedMarket === "egypt" ? "الجداول الزمنية automation مفعلة" : "automation zamanlamaları etkinleştirildi"}</p>
                 <p>✓ {selectedMarket === "egypt" ? "وصول إلى البوابة الإلكترونية" : "Müşteri portalı erişimi verildi"}</p>
                 <p>✓ {selectedMarket === "egypt" ? "دعم محلي باللغة العربية/التركية" : "Yerel Türkçe/Arapça destek"}</p>
               </div>

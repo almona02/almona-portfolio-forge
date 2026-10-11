@@ -40,7 +40,7 @@ const ADVISOR_ICONS: Record<string, React.ReactNode> = {
 };
 
 const ADVISOR_LABELS: Record<string, string> = {
-    AISuggestionPanel: 'AI Suggestions',
+    AISuggestionPanel: 'automation Suggestions',
     DesignModeComparison: 'Design Comparison',
     OptimizationJobMonitor: 'Optimization Monitor',
     JobRiskIndicator: 'Risk Assessment',
@@ -142,7 +142,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
                     {!activeAdvisor && (
                         <div className="p-6 text-center text-slate-500">
                             <Brain className="w-12 h-12 mx-auto mb-3 opacity-30 text-[var(--fabricator-text-accent)]" />
-                            <p className="text-sm">Select an advisor above to get AI-powered suggestions</p>
+                            <p className="text-sm">Select an advisor above to get software-assisted suggestions</p>
                             <p className="text-xs mt-2 text-amber-500/70">
                                 All advisors are Tier 2 - suggestions only, no execution authority
                             </p>

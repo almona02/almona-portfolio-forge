@@ -95,7 +95,7 @@ export class ActivityLogger {
       user_agent: event.userAgent
     });
   }
-  
+
   static async getTimeline(
     entityType: string,
     entityId: string
@@ -148,18 +148,18 @@ export interface StateMachine<TState extends string> {
 export class StateMachineEngine<TState extends string> {
   private currentState: TState;
   private machine: StateMachine<TState>;
-  
+
   canTransition(to: TState): boolean {
     return this.machine.transitions.some(
       t => t.from === this.currentState && t.to === to
     );
   }
-  
+
   async transition(to: TState, context: any): Promise<void> {
     if (!this.canTransition(to)) {
       throw new Error(`Invalid transition from ${this.currentState} to ${to}`);
     }
-    
+
     // Log transition
     await ActivityLogger.log({
       entityType: context.entityType,
@@ -172,7 +172,7 @@ export class StateMachineEngine<TState extends string> {
         reason: context.reason
       }
     });
-    
+
     this.currentState = to;
     this.machine.onTransition?.(this.currentState, to, context);
   }
@@ -211,7 +211,7 @@ export const WORKFLOW_STATE_MACHINE: StateMachine = {
 ---
 
 #### Day 5-7: Notification Infrastructure
-**Why Third:** Operational trust requires deterministic alerts, not AI promises.  
+**Why Third:** Operational trust requires deterministic alerts, not automation promises.
 **Priority:** 🟡 P2 - MEDIUM (Improves UX, not blocking)
 
 **Files to Create:**
@@ -261,15 +261,15 @@ export class NotificationService {
     channels: NotificationChannel[] = ['in_app']
   ): Promise<void> {
     const template = await this.getTemplate(type);
-    
+
     for (const channel of channels) {
       await this.sendNotification(userId, channel, template, data);
     }
   }
-  
+
   static async checkRules(event: ActivityEvent): Promise<void> {
     const rules = await this.getActiveRules(event.userId);
-    
+
     for (const rule of rules) {
       if (this.matchesTrigger(rule, event)) {
         await this.notify(
@@ -798,10 +798,10 @@ Week 12: ████████████████████ 90-95% ✅
 
 ---
 
-### 4. Rule-Based Notifications (No AI)
+### 4. Rule-Based Notifications (No automation)
 **Decision:** Deterministic, rule-based notifications only.
 
-**Rationale:** Executives need reliability, not AI promises. AI can be added later if needed.
+**Rationale:** Executives need reliability, not automation promises. automation can be added later if needed.
 
 **Implementation:** Simple trigger → condition → action rules.
 

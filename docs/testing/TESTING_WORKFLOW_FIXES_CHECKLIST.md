@@ -45,7 +45,7 @@
 **Test Steps:**
 1. Navigate to Engineering Bay
 2. Hover over "Engineering Bay" title in header (center)
-3. **Expected:** Cursor changes to pointer, hover effect visible
+3. **Expected:** development tool changes to pointer, hover effect visible
 4. Click "Engineering Bay" title
 5. **Expected:** Navigates to `/fabricator` page
 6. Verify breadcrumbs also work (Home → Fabricator → Engineering Bay)
@@ -92,7 +92,7 @@
 3. **System Configuration Panel**
    - Click "Choose Pattern" → Verify dialog opens (wide)
    - Select a system pack → Verify patterns filter
-   - Verify "Suggest AI Layout" button works
+   - Verify "Suggest automation Layout" button works
    - Verify panel can collapse/expand
 
 4. **BOM Sidebar (Right Panel)**

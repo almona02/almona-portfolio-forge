@@ -1,5 +1,5 @@
 """
-Calibration Safety Net - Enterprise-Grade AI Safety Guardrails
+Calibration Safety Net - Enterprise-Grade automation Safety Guardrails
 ===============================================================
 
 Wraps CalibrationLearner to add industrial-grade safety features:
@@ -9,7 +9,7 @@ Wraps CalibrationLearner to add industrial-grade safety features:
 - ACID-compliant transactions via PostgreSQL functions
 - Graceful degradation (baseline → heuristic → safe defaults)
 
-This transforms the AI calibration system from "accurate" to
+This transforms the automation calibration system from "accurate" to
 "industrially responsible."
 """
 
@@ -145,7 +145,7 @@ class CalibrationSafetyNet:
     Enterprise-grade safety wrapper for CalibrationLearner.
 
     Adds confidence floors, drift detection, immutable baselines, and
-    automatic freezing to prevent silent AI corruption.
+    automatic freezing to prevent silent automation corruption.
     """
 
     # Safety constants
@@ -263,7 +263,7 @@ class CalibrationSafetyNet:
         Detect drift between predicted and baseline K-factors.
 
         Args:
-            predicted_k_factor: AI-predicted K-factor
+            predicted_k_factor: automation-predicted K-factor
             baseline_k_factor: Certified baseline K-factor
 
         Returns:
@@ -331,7 +331,7 @@ class CalibrationSafetyNet:
         # Get certified baseline if available
         baseline = self._get_baseline(profile_id, joint_type, workshop_id)
 
-        # Get AI prediction
+        # Get automation prediction
         try:
             prediction = self.learner.predict(
                 profile_data=profile_data,

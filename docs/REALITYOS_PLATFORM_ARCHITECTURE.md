@@ -25,7 +25,7 @@ RealityOS is a **constitutional truth platform** for reality-verified operations
    - Per-vertical isolation and security
 
 3. **Current Verticals**
-   - **Almona Vertical** (v1.0.0): Aluminium/UPVC fabrication with AI calibration
+   - **Almona Vertical** (v1.0.0): Aluminium/UPVC fabrication with automation calibration
    - **TMG Shield Vertical** (v0.1.0 - In Development): Asset management & maintenance compliance
 
 ## Constitutional Guarantees

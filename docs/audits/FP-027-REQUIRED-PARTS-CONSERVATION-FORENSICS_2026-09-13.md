@@ -66,7 +66,7 @@ The review specified this trace. Each layer is marked with what was actually mea
 | 5 | MIP demand constraints | **UNOBSERVABLE** | not exposed | log reports stage 2 `OPTIMAL`, cost 6.50, **1 stock / 1 layout**. Bar count is exposed; piece multiplicity inside the layout is not |
 | 6 | Post-MIP / annealing representation | **UNOBSERVABLE** | not exposed | `TAVLAMA BENZETİMİ` MaxIter 210, T 100. No seed, no intermediate state |
 | 7 | Report / cutting plan | **4** | observable | bar 5, ORTA-KAYIT-70 6500, applications 1, packed `1416, 1416, 1416, 1416`, used 5664.00, remaining **820.00**, yield 87.4 % |
-| 8 | DC-600 export | **1 piece, but 820 mm remainder** | observable | `Table1` wrote 13 rows including exactly one ORTA row; `REMAINING_LENGTH` = `8200` → 820.0 mm, with DoWin's own warning `3 piece(s) in the optimization plan could not be matched to the detailed production list.` |
+| 8 | DC-600 export | **1 piece, but 820 mm remainder** | observable | `Table1` wrote 13 rows including exactly one ORTA row; `REMAINING_LENGTH` = `8200` → 820.0 mm, with reference system's own warning `3 piece(s) in the optimization plan could not be matched to the detailed production list.` |
 
 ### First layer of divergence
 
@@ -173,7 +173,7 @@ and every derived material figure must be computed from the pieces actually writ
 remainder(bar) == stockLength - sum(written pieces) - kerf(written pieces) - trim
 ```
 
-Neither may be a warning. A conservation failure is a fail-closed condition: a plan that does not conserve required parts is not a valid plan, and a remainder that does not reconcile with the written pieces is not a publishable remainder. DoWin's behaviour of emitting `3 piece(s) ... could not be matched` and continuing is precisely the pattern to avoid.
+Neither may be a warning. A conservation failure is a fail-closed condition: a plan that does not conserve required parts is not a valid plan, and a remainder that does not reconcile with the written pieces is not a publishable remainder. reference system's behaviour of emitting `3 piece(s) ... could not be matched` and continuing is precisely the pattern to avoid.
 
 ---
 
@@ -193,7 +193,7 @@ ALMONA_CONSERVATION_EXPOSURE = NOT_EXPOSED_BY_CONSTRUCTION
 ALMONA_CONSERVATION_INVARIANT_ASSERTED = NO
 ```
 
-The invariant holds by construction but is **nowhere asserted** — no test fails if a future engine breaks it. That is the real ALMONA risk: DoWin-parity work points toward pattern-based or column-generation optimization, which is exactly the architecture in which this defect class becomes possible. The invariant should be asserted *before* any such optimizer is written, not after.
+The invariant holds by construction but is **nowhere asserted** — no test fails if a future engine breaks it. That is the real ALMONA risk: reference system-parity work points toward pattern-based or column-generation optimization, which is exactly the architecture in which this defect class becomes possible. The invariant should be asserted *before* any such optimizer is written, not after.
 
 This is also a constitutional point under AICS-001. Required-parts conservation is a deterministic constraint, so it is non-negotiable and must not sit behind a heuristic, a solver objective or an `IntelligenceGate` — a plan either conserves or it is rejected.
 

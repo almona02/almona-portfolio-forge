@@ -59,7 +59,7 @@ Contains utility scripts that are no longer needed:
 ### 📁 external-tools/
 Contains external tool binaries:
 
-- tabby_x86_64-windows-msvc/ (Tabby AI editor binaries)
+- tabby_x86_64-windows-msvc/ (Tabby automation editor binaries)
 
 ### 📁 build-artifacts/
 Reserved for build artifacts (currently empty - dist/ directory was not moved as it's needed for deployment)

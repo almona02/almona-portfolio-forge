@@ -2,7 +2,7 @@
  * Canvas Rendering Utilities
  * 
  * Extracted rendering functions for SmartDrawTool canvas.
- * Constitutional: Pure rendering logic, no ML/AI.
+ * Constitutional: Pure rendering logic, no advisory inference.
  */
 
 export interface CanvasRenderingContext {

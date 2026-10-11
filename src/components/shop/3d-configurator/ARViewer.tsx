@@ -77,7 +77,7 @@ type MachinePreset = (typeof MACHINE_PRESETS)[keyof typeof MACHINE_PRESETS];
  * - Multi-platform WebXR support (ARCore, ARKit, WebXR)
  * - Real-time performance monitoring
  * - Advanced measurement tools
- * - AI-powered predictive maintenance
+ * - software-assisted predictive maintenance
  * - Digital twin integration
  * - Offline capability with progressive loading
  * - Social sharing and collaboration
@@ -113,7 +113,7 @@ export const ARViewer = ({
   const [isMuted, setIsMuted] = useState(false);
   const [currentScale, setCurrentScale] = useState(1);
   const [arMode, setArMode] = useState<'view' | 'measure' | 'inspect'>('view');
-  
+
   const { toast } = useToast();
   const arContainerRef = useRef<HTMLDivElement>(null);
   const fpsRef = useRef<number>(0);
@@ -124,7 +124,7 @@ export const ARViewer = ({
   useEffect(() => {
     const checkARSupport = async () => {
       setIsLoading(true);
-      
+
       try {
         // Check for WebXR first
         const xr = (navigator as unknown as { xr?: XRLike }).xr;
@@ -132,7 +132,7 @@ export const ARViewer = ({
           const supported = await xr.isSessionSupported('immersive-ar');
           setIsSupported(supported);
           setWebXRSupported(supported);
-          
+
           if (!supported) {
             // Check for fallback options
             checkFallbackSupport();
@@ -155,7 +155,7 @@ export const ARViewer = ({
       const hasAccelerometer = 'DeviceOrientationEvent' in window;
       const hasGyroscope = 'DeviceMotionEvent' in window;
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      
+
       setIsSupported(hasAccelerometer && hasGyroscope && isMobile);
     };
 
@@ -171,12 +171,12 @@ export const ARViewer = ({
     const updatePerformanceMetrics = () => {
       frameCountRef.current++;
       const now = performance.now();
-      
+
       if (now - lastFpsUpdateRef.current >= 1000) {
         fpsRef.current = frameCountRef.current;
         frameCountRef.current = 0;
         lastFpsUpdateRef.current = now;
-        
+
         const perfAny = performance as Performance & { memory?: { usedJSHeapSize: number; totalJSHeapSize: number } };
         const memory = perfAny.memory;
 
@@ -187,57 +187,57 @@ export const ARViewer = ({
             Math.round((memory.usedJSHeapSize / memory.totalJSHeapSize) * 100) : 0
         }));
       }
-      
+
       animationId = requestAnimationFrame(updatePerformanceMetrics);
     };
 
     animationId = requestAnimationFrame(updatePerformanceMetrics);
-    
+
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
     };
   }, [isOpen]);
 
-  // AI-powered predictive maintenance
+  // software-assisted predictive maintenance
   useEffect(() => {
     const fetchMaintenanceInfo = async () => {
       if (!selectedMachine) {
         setMaintenanceInfo(null);
         return;
       }
-      
+
       try {
         setIsLoading(true);
         const machine = MACHINE_PRESETS[selectedMachine];
-        
+
         const prompt = `
           As an industrial equipment expert, provide comprehensive predictive maintenance information for:
           Machine: ${machine.id}
           Type: Industrial Machinery
           Product: ${productId}
-          
+
           Include:
           1. Recommended maintenance schedule
           2. Critical components to monitor
           3. Common failure points
           4. Optimal operating conditions
           5. Spare parts replacement timeline
-          
+
           Format as concise bullet points for AR display.
         `;
-        
+
         const info = await getEquipmentRecommendation(prompt);
         setMaintenanceInfo(info);
-        
+
         toast({
           title: "Maintenance Data Loaded",
-          description: "AI-powered insights ready",
+          description: "software-assisted insights ready",
           variant: "default",
         });
       } catch (error) {
         console.error('Failed to fetch maintenance info:', error);
-        setMaintenanceInfo('AI maintenance insights temporarily unavailable. Please check machine manual.');
-        
+        setMaintenanceInfo('automation maintenance insights temporarily unavailable. Please check machine manual.');
+
         toast({
           title: "Maintenance Data Unavailable",
           description: "Using standard maintenance schedule",
@@ -262,7 +262,7 @@ export const ARViewer = ({
     const scaledLength = Number((length * currentScale).toFixed(2));
     const scaledWidth = Number((width * currentScale).toFixed(2));
     const scaledHeight = Number((height * currentScale).toFixed(2));
-    
+
     return {
       length: scaledLength,
       width: scaledWidth,
@@ -288,7 +288,7 @@ export const ARViewer = ({
 
     try {
       setIsLoading(true);
-      
+
       const xr = (navigator as unknown as { xr?: XRLike }).xr;
       if (webXRSupported && xr && typeof xr.requestSession === 'function') {
         // WebXR implementation
@@ -296,9 +296,9 @@ export const ARViewer = ({
           requiredFeatures: ['hit-test', 'dom-overlay'],
           optionalFeatures: ['light-estimation', 'anchors']
         });
-        
+
         setArSession(session);
-        
+
         toast({
           title: "AR Session Started",
           description: "Move your device to place the machine in your space",
@@ -312,13 +312,13 @@ export const ARViewer = ({
           variant: "default",
         });
       }
-      
+
       setIsOpen(true);
-      
+
       // Calculate initial measurements
       const machineData = MACHINE_PRESETS[selectedMachine];
       setMeasurements(calculateMeasurements(machineData));
-      
+
     } catch (error) {
       console.error('Failed to start AR session:', error);
       toast({
@@ -344,7 +344,7 @@ export const ARViewer = ({
   // Enhanced capture functionality - memoized
   const captureSnapshot = useCallback(() => {
     if (!arContainerRef.current) return;
-    
+
     try {
       toast({
         title: "Snapshot Captured",
@@ -395,7 +395,7 @@ export const ARViewer = ({
   const adjustScale = useCallback((factor: number) => {
     const newScale = Math.max(0.1, Math.min(5, currentScale * factor));
     setCurrentScale(newScale);
-    
+
     if (selectedMachine) {
       const machineData = MACHINE_PRESETS[selectedMachine];
       setMeasurements(calculateMeasurements(machineData));
@@ -434,7 +434,7 @@ export const ARViewer = ({
               For the full Augmented Reality experience, use a compatible mobile device.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="space-y-2">
               <h4 className="typography-h4 text-gray-200">Recommended Devices</h4>
@@ -449,7 +449,7 @@ export const ARViewer = ({
               <ul className="text-gray-400 space-y-1">
                 <li>• Interactive 3D Preview</li>
                 <li>• Virtual Measurement Tools</li>
-                <li>• AI Maintenance Insights</li>
+                <li>• automation Maintenance Insights</li>
               </ul>
             </div>
           </div>
@@ -523,7 +523,7 @@ export const ARViewer = ({
                   <TabsList className="grid w-full grid-cols-3 bg-gray-800">
                     <TabsTrigger value="preview">3D Preview</TabsTrigger>
                     <TabsTrigger value="specs">Specifications</TabsTrigger>
-                    <TabsTrigger value="maintenance">AI Insights</TabsTrigger>
+                    <TabsTrigger value="maintenance">automation Insights</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="preview" className="space-y-4 mt-4">
@@ -534,7 +534,7 @@ export const ARViewer = ({
                       <WorkshopARView 
                         machine={MACHINE_PRESETS[selectedMachine]} 
                       />
-                      
+
                       {/* AR Overlay Controls */}
                       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
                         <div className="flex gap-2">
@@ -551,7 +551,7 @@ export const ARViewer = ({
                             </TooltipTrigger>
                             <TooltipContent>Zoom In</TooltipContent>
                           </Tooltip>
-                          
+
                           <Tooltip>
                             <TooltipTrigger>
                               <Button
@@ -566,7 +566,7 @@ export const ARViewer = ({
                             <TooltipContent>Zoom Out</TooltipContent>
                           </Tooltip>
                         </div>
-                        
+
                         <div className="text-xs text-gray-400">
                           Scale: {currentScale}x
                         </div>
@@ -587,7 +587,7 @@ export const ARViewer = ({
                         <Ruler className="h-4 w-4 mr-2" />
                         Measure
                       </Button>
-                      
+
                       <Button
                         onClick={() => setArMode('inspect')}
                         variant={arMode === 'inspect' ? 'default' : 'outline'}
@@ -600,7 +600,7 @@ export const ARViewer = ({
                         <Shield className="h-4 w-4 mr-2" />
                         Inspect
                       </Button>
-                      
+
                       <Button
                         onClick={() => captureSnapshot()}
                         variant="outline"
@@ -649,7 +649,7 @@ export const ARViewer = ({
                       <div className="bg-gray-800/50 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-3">
                           <Zap className="h-4 w-4 text-amber-400" />
-                          <span className="font-medium text-amber-400">AI-Powered Insights</span>
+                          <span className="font-medium text-amber-400">software-assisted Insights</span>
                         </div>
                         <p className="text-gray-300 text-sm leading-relaxed">
                           {maintenanceInfo}
@@ -677,7 +677,7 @@ export const ARViewer = ({
                 <Scan className="w-5 h-5 mr-2" />
                 {isSupported ? 'Launch AR Experience' : 'AR Not Available'}
               </Button>
-              
+
               <Button 
                 onClick={() => void shareExperience()}
                 variant="outline"
@@ -713,7 +713,7 @@ export const ARViewer = ({
                   {performanceMetrics.trackingQuality}
                 </Badge>
               </div>
-              
+
               <div className="space-y-1 text-xs">
                 <div className="flex justify-between">
                   <span className="text-gray-400">FPS:</span>
@@ -724,7 +724,7 @@ export const ARViewer = ({
                     {performanceMetrics.fps}
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between">
                   <span className="text-gray-400">Memory:</span>
                   <span className={
@@ -734,7 +734,7 @@ export const ARViewer = ({
                     {performanceMetrics.memoryUsage}%
                   </span>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <Battery className="h-3 w-3 text-gray-400" />
                   <Progress 
@@ -763,7 +763,7 @@ export const ARViewer = ({
                 Move around to view from different angles.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            
+
             <div className="relative h-96 bg-black rounded-lg overflow-hidden">
               {/* AR view would be rendered here */}
               <div className="absolute inset-0 flex items-center justify-center text-gray-500">
@@ -773,7 +773,7 @@ export const ARViewer = ({
                   <p className="text-sm">Move your device to explore</p>
                 </div>
               </div>
-              
+
               {/* Session Controls */}
               <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
                 <div className="flex gap-2">
@@ -790,7 +790,7 @@ export const ARViewer = ({
                     </TooltipTrigger>
                     <TooltipContent>{isMuted ? 'Unmute' : 'Mute'}</TooltipContent>
                   </Tooltip>
-                  
+
                   <Tooltip>
                     <TooltipTrigger>
                       <Button
@@ -805,7 +805,7 @@ export const ARViewer = ({
                     <TooltipContent>Capture Snapshot</TooltipContent>
                   </Tooltip>
                 </div>
-                
+
                 <Button
                   onClick={stopAR}
                   variant="destructive"

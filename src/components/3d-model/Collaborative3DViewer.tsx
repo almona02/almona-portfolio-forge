@@ -143,7 +143,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
   const [newAnnotationText, setNewAnnotationText] = useState('')
   const [isAddingAnnotation, setIsAddingAnnotation] = useState(false)
   const [clickPosition, setClickPosition] = useState<Vector3 | null>(null)
-  
+
   const controlsRef = useRef<{ object: { position: { x: number; y: number; z: number } }; target: { x: number; y: number; z: number } } | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -155,7 +155,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
       try {
         const session = await collaboration3DService.createSession(modelPath, user.id)
         setSessionId(session.id)
-        
+
         // Subscribe to real-time updates
         collaboration3DService.subscribeToSession(session.id, user.id, {
           onParticipantJoin: (participant) => {
@@ -280,7 +280,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
     })
   }, [isConnected])
 
-  // Handle cursor movement
+  // Handle pointer movement
   const handlePointerMove = useCallback((event: React.PointerEvent) => {
     if (!canvasRef.current) return
 
@@ -394,7 +394,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
       >
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
-        
+
         {/* 3D Model would go here - using a placeholder for now */}
         <mesh>
           <boxGeometry args={[2, 2, 2]} />

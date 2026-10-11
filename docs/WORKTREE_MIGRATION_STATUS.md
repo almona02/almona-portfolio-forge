@@ -2,7 +2,7 @@
 
 ## Summary
 
-This document tracks the migration of files from Cursor worktrees to the main project.
+This document tracks the migration of files from development tool worktrees to the main project.
 
 ## ✅ Already Migrated (Verified)
 

@@ -523,14 +523,14 @@ This document provides a detailed analysis of 10 core pages/components in the AL
 2. 🟡 Limited reporting
 3. ❌ No API integration
 4. 🟡 Limited cloud processing
-5. 🟡 Limited ML/AI features
+5. 🟡 Limited advisory inference features
 
 **Priority Fixes:**
 1. 🟡 **Medium:** Enhance batch processing
 2. 🟡 **Medium:** Expand reporting
 3. 🔴 **High:** Add API integration
 4. 🟡 **Medium:** Enhance cloud processing
-5. 🟡 **Low:** ML/AI features (future)
+5. 🟡 **Low:** advisory inference features (future)
 
 **Expected Impact:** +5-10% UI/UX parity
 

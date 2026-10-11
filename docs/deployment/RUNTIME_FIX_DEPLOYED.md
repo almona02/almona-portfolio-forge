@@ -48,7 +48,7 @@ if (id.includes('lucide-react') || id.includes('clsx')) {
 - **React vendor**: `react-vendor-CYF3cVCf.js` = 584.11 kB
 - **3D engine**: `3d-engine-Cf3JX9PM.js` = 1,998.68 kB (isolated)
 - **Physics engine**: `physics-engine-DKwdRmnU.js` = 1,356.94 kB (isolated)
-- **AI engine**: `ai-engine-Q_Azf6Hz.js` = 872.16 kB (isolated)
+- **automation engine**: `ai-engine-Q_Azf6Hz.js` = 872.16 kB (isolated)
 
 ### ⚠️ Remaining Issues (Non-Critical)
 - **3.4MB vendor bundle**: Still large but not blocking landing page

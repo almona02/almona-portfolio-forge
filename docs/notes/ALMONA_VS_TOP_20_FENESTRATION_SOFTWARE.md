@@ -10,21 +10,21 @@
 ## 🏆 **TOP 20 FENESTRATION SOFTWARE RANKING**
 
 ### **Tier 1: Global Leaders (€15K-50K/year)**
-1. **Orgadata Logikal** (Germany) - Market leader, 30% share
+1. **reference system reference system** (Germany) - Market leader, 30% share
 2. **Soft Tech Spirit** (France) - 15% share
 3. **Schüco** (Germany) - 12% share
-4. **ERCOM 2000** (Italy) - 10% share
+4. **reference system 2000** (Italy) - 10% share
 
 ### **Tier 2: Strong Regional Players (€8K-25K/year)**
-5. **Moxisys Design Flow** (Turkey) - 8% share
-6. **Klaes** (Germany) - 7% share
-7. **ABT Herofis** (Germany) - 6% share
-8. **iWindow** (Poland) - 5% share
+5. **reference system Design Flow** (Turkey) - 8% share
+6. **reference system** (Germany) - 7% share
+7. **ABT reference system** (Germany) - 6% share
+8. **reference system** (Poland) - 5% share
 9. **Ecotal** (Spain) - 4% share
 10. **Alwin** (Germany) - 4% share
 
 ### **Tier 3: Established Players (€5K-15K/year)**
-11. **Orgadata Orgawin** (Germany) - 3% share
+11. **reference system Orgawin** (Germany) - 3% share
 12. **Soft Tech Menuiserie** (France) - 3% share
 13. **Veka Software** (Germany) - 2.5% share
 14. **Profine Group Tools** (Germany) - 2.5% share
@@ -44,25 +44,25 @@
 
 ## 📊 **DETAILED COMPETITIVE MATRIX**
 
-### **1. ORGADATA LOGIKAL (Market Leader)**
+### **1. reference system reference system (Market Leader)**
 
-| Category | Orgadata | ALMONA (Post) | Winner |
+| Category | reference system | ALMONA (Post) | Winner |
 |----------|----------|---------------|--------|
-| **Market Share** | 30% | <1% → 3-5% | Orgadata |
+| **Market Share** | 30% | <1% → 3-5% | reference system |
 | **Price** | €30-50K | €12-18K | **ALMONA** |
 | **BOM Accuracy** | 99.5% | 99.8% | **ALMONA** |
 | **3D Visualization** | Excellent | Excellent | Tie |
-| **CAD Integration** | Full | Good | Orgadata |
-| **Languages** | 20+ | 2 (AR/EN) | Orgadata |
-| **Constitutional AI** | ❌ | ✅ | **ALMONA** |
+| **CAD Integration** | Full | Good | reference system |
+| **Languages** | 20+ | 2 (AR/EN) | reference system |
+| **Constitutional automation** | ❌ | ✅ | **ALMONA** |
 | **Deterministic Guarantees** | ❌ | ✅ | **ALMONA** |
 | **YDT Intelligence** | ❌ | ✅ | **ALMONA** |
 | **MENA Market Fit** | Low | High | **ALMONA** |
-| **Brand Recognition** | Excellent | Low | Orgadata |
-| **Support Network** | Global | Regional | Orgadata |
+| **Brand Recognition** | Excellent | Low | reference system |
+| **Support Network** | Global | Regional | reference system |
 | **Implementation Time** | 3-6 months | 2-4 weeks | **ALMONA** |
 
-**Head-to-Head:** Orgadata 7 - ALMONA 6 - Tie 1
+**Head-to-Head:** reference system 7 - ALMONA 6 - Tie 1
 **Value Ratio:** ALMONA 2.5x better (€12K/95 vs €40K/98)
 
 **ALMONA Win Scenarios:**
@@ -71,7 +71,7 @@
 - Budget-conscious enterprises (70%)
 - Fast implementation needed (80%)
 
-**Orgadata Win Scenarios:**
+**reference system Win Scenarios:**
 - Large enterprises (70%)
 - Global operations (80%)
 - Legacy system integration (90%)
@@ -79,22 +79,22 @@
 
 ---
 
-### **2. ERCOM 2000 (Italian Leader)**
+### **2. reference system 2000 (Italian Leader)**
 
-| Category | ERCOM 2000 | ALMONA (Post) | Winner |
+| Category | reference system 2000 | ALMONA (Post) | Winner |
 |----------|------------|---------------|--------|
-| **Market Share** | 10% (Italy 40%) | <1% | ERCOM |
+| **Market Share** | 10% (Italy 40%) | <1% | reference system |
 | **Price** | €18-35K | €12-18K | **ALMONA** |
 | **BOM Accuracy** | 99.0% | 99.8% | **ALMONA** |
 | **Aluminum Focus** | Excellent | Excellent | Tie |
 | **UPVC Support** | Good | Excellent | **ALMONA** |
-| **Italian Market** | Dominant | Weak | ERCOM |
-| **Constitutional AI** | ❌ | ✅ | **ALMONA** |
+| **Italian Market** | Dominant | Weak | reference system |
+| **Constitutional automation** | ❌ | ✅ | **ALMONA** |
 | **Optimization Algorithms** | 2 | 3 | **ALMONA** |
 | **Mobile Support** | Limited | Good | **ALMONA** |
 | **Cloud Integration** | Basic | Advanced | **ALMONA** |
 
-**Head-to-Head:** ERCOM 4 - ALMONA 6 - Tie 1
+**Head-to-Head:** reference system 4 - ALMONA 6 - Tie 1
 **Value Ratio:** ALMONA 1.8x better
 
 **ALMONA Win Scenarios:**
@@ -103,22 +103,22 @@
 - Cloud-first buyers (75%)
 - Price-sensitive (80%)
 
-**ERCOM Win Scenarios:**
+**reference system Win Scenarios:**
 - Italian market (85%)
 - Aluminum specialists (55%)
 - Established relationships (70%)
 
 ---
 
-### **3. ABT HEROFIS (German Specialist)**
+### **3. ABT reference system (German Specialist)**
 
-| Category | ABT Herofis | ALMONA (Post) | Winner |
+| Category | ABT reference system | ALMONA (Post) | Winner |
 |----------|-------------|---------------|--------|
 | **Market Share** | 6% (Germany 15%) | <1% | ABT |
 | **Price** | €15-28K | €12-18K | **ALMONA** |
 | **BOM Accuracy** | 98.5% | 99.8% | **ALMONA** |
 | **German Standards** | Excellent | Good | ABT |
-| **Constitutional AI** | ❌ | ✅ | **ALMONA** |
+| **Constitutional automation** | ❌ | ✅ | **ALMONA** |
 | **Technical Quality** | Good | Excellent | **ALMONA** |
 | **Innovation** | Moderate | High | **ALMONA** |
 | **German Market** | Strong | Weak | ABT |
@@ -137,20 +137,20 @@
 
 ---
 
-### **4. KLAES (German Traditional)**
+### **4. reference system (German Traditional)**
 
-| Category | Klaes | ALMONA (Post) | Winner |
+| Category | reference system | ALMONA (Post) | Winner |
 |----------|-------|---------------|--------|
-| **Market Share** | 7% | <1% | Klaes |
+| **Market Share** | 7% | <1% | reference system |
 | **Price** | €12-22K | €12-18K | Tie |
 | **BOM Accuracy** | 98.0% | 99.8% | **ALMONA** |
-| **Legacy Support** | Excellent | Limited | Klaes |
+| **Legacy Support** | Excellent | Limited | reference system |
 | **Modern Architecture** | Dated | Modern | **ALMONA** |
-| **Constitutional AI** | ❌ | ✅ | **ALMONA** |
+| **Constitutional automation** | ❌ | ✅ | **ALMONA** |
 | **User Experience** | Traditional | Modern | **ALMONA** |
-| **German Market** | Strong | Weak | Klaes |
+| **German Market** | Strong | Weak | reference system |
 
-**Head-to-Head:** Klaes 3 - ALMONA 5 - Tie 1
+**Head-to-Head:** reference system 3 - ALMONA 5 - Tie 1
 **Value Ratio:** ALMONA 1.3x better (similar price, better quality)
 
 **ALMONA Win Scenarios:**
@@ -158,27 +158,27 @@
 - Outside Germany (70%)
 - Quality-focused (75%)
 
-**Klaes Win Scenarios:**
+**reference system Win Scenarios:**
 - Legacy integration (85%)
 - German traditional market (65%)
 
 ---
 
-### **5. MOXISYS DESIGN FLOW (Turkish Leader)**
+### **5. reference system DESIGN FLOW (Turkish Leader)**
 
-| Category | Moxisys | ALMONA (Post) | Winner |
+| Category | reference system | ALMONA (Post) | Winner |
 |----------|---------|---------------|--------|
-| **Market Share** | 8% (Turkey 35%) | <1% | Moxisys |
-| **Price** | €8-15K | €12-18K | Moxisys |
+| **Market Share** | 8% (Turkey 35%) | <1% | reference system |
+| **Price** | €8-15K | €12-18K | reference system |
 | **BOM Accuracy** | 98.5% | 99.8% | **ALMONA** |
-| **Turkish Market** | Dominant | Weak | Moxisys |
+| **Turkish Market** | Dominant | Weak | reference system |
 | **MENA Market** | Good | Excellent | **ALMONA** |
-| **Constitutional AI** | ❌ | ✅ | **ALMONA** |
+| **Constitutional automation** | ❌ | ✅ | **ALMONA** |
 | **Technical Quality** | Good | Excellent | **ALMONA** |
 | **Arabic Support** | Limited | Native | **ALMONA** |
 | **YDT Intelligence** | ❌ | ✅ | **ALMONA** |
 
-**Head-to-Head:** Moxisys 3 - ALMONA 6
+**Head-to-Head:** reference system 3 - ALMONA 6
 **Value Ratio:** ALMONA 1.2x better (higher price justified by quality)
 
 **ALMONA Win Scenarios:**
@@ -187,7 +187,7 @@
 - Government buyers (90%)
 - Arabic-first (95%)
 
-**Moxisys Win Scenarios:**
+**reference system Win Scenarios:**
 - Turkish market (80%)
 - Price-sensitive Turkish buyers (70%)
 
@@ -195,18 +195,18 @@
 
 ### **6. iWINDOOR (Polish Emerging)**
 
-| Category | iWindow | ALMONA (Post) | Winner |
+| Category | reference system | ALMONA (Post) | Winner |
 |----------|---------|---------------|--------|
-| **Market Share** | 5% (Poland 25%) | <1% | iWindow |
-| **Price** | €6-12K | €12-18K | iWindow |
+| **Market Share** | 5% (Poland 25%) | <1% | reference system |
+| **Price** | €6-12K | €12-18K | reference system |
 | **BOM Accuracy** | 97.5% | 99.8% | **ALMONA** |
-| **Polish Market** | Strong | Weak | iWindow |
+| **Polish Market** | Strong | Weak | reference system |
 | **Technical Quality** | Moderate | Excellent | **ALMONA** |
-| **Constitutional AI** | ❌ | ✅ | **ALMONA** |
+| **Constitutional automation** | ❌ | ✅ | **ALMONA** |
 | **Innovation** | Low | High | **ALMONA** |
-| **Eastern Europe** | Good | Weak | iWindow |
+| **Eastern Europe** | Good | Weak | reference system |
 
-**Head-to-Head:** iWindow 3 - ALMONA 5
+**Head-to-Head:** reference system 3 - ALMONA 5
 **Value Ratio:** ALMONA 1.5x better (premium justified)
 
 **ALMONA Win Scenarios:**
@@ -214,7 +214,7 @@
 - Outside Poland (75%)
 - Enterprise buyers (70%)
 
-**iWindow Win Scenarios:**
+**reference system Win Scenarios:**
 - Polish market (75%)
 - Budget-conscious (80%)
 
@@ -229,7 +229,7 @@
 | **BOM Accuracy** | 97.0% | 99.8% | **ALMONA** |
 | **Spanish Market** | Strong | Weak | Ecotal |
 | **Technical Quality** | Moderate | Excellent | **ALMONA** |
-| **Constitutional AI** | ❌ | ✅ | **ALMONA** |
+| **Constitutional automation** | ❌ | ✅ | **ALMONA** |
 | **Innovation** | Low | High | **ALMONA** |
 
 **Head-to-Head:** Ecotal 2 - ALMONA 5 - Tie 1
@@ -252,15 +252,15 @@
 
 | Rank | Company | Current Share | Post-ALMONA Share | Change |
 |------|---------|---------------|-------------------|--------|
-| 1 | Orgadata Logikal | 30% | 28% | -2% |
+| 1 | reference system reference system | 30% | 28% | -2% |
 | 2 | Soft Tech Spirit | 15% | 14% | -1% |
 | 3 | Schüco | 12% | 11.5% | -0.5% |
-| 4 | ERCOM 2000 | 10% | 9.5% | -0.5% |
-| 5 | Moxisys | 8% | 7% | -1% |
-| 6 | Klaes | 7% | 6.5% | -0.5% |
+| 4 | reference system 2000 | 10% | 9.5% | -0.5% |
+| 5 | reference system | 8% | 7% | -1% |
+| 6 | reference system | 7% | 6.5% | -0.5% |
 | **7** | **ALMONA** | **<1%** | **5%** | **+4%** ⬆️ |
-| 8 | ABT Herofis | 6% | 5.5% | -0.5% |
-| 9 | iWindow | 5% | 4.5% | -0.5% |
+| 8 | ABT reference system | 6% | 5.5% | -0.5% |
+| 9 | reference system | 5% | 4.5% | -0.5% |
 | 10 | Ecotal | 4% | 3.5% | -0.5% |
 
 **ALMONA Position:** #7 globally (from #18-19)
@@ -270,7 +270,7 @@
 ## 💪 **ALMONA COMPETITIVE STRENGTHS**
 
 ### **1. Unique Advantages (No Competitor Has)**
-- ✅ Constitutional AI Governance Framework
+- ✅ Constitutional automation Governance Framework
 - ✅ Three-tier decision architecture
 - ✅ Deterministic replay guarantees
 - ✅ YDT Intelligence (164 chapters, 878 components)
@@ -301,7 +301,7 @@
 - ❌ No legacy customer base
 
 ### **2. Feature Gaps**
-- ❌ Only 2 languages (vs 20+ for Orgadata)
+- ❌ Only 2 languages (vs 20+ for reference system)
 - ❌ Limited CAD integration
 - ❌ No legacy system connectors
 - ❌ Smaller template library
@@ -320,14 +320,14 @@
 
 | Competitor | ALMONA Win Rate | Key Battleground |
 |------------|-----------------|------------------|
-| Orgadata | 35% | Government, MENA, Budget |
+| reference system | 35% | Government, MENA, Budget |
 | Soft Tech | 40% | Innovation, MENA, Value |
 | Schüco | 45% | Price, Innovation, MENA |
-| ERCOM 2000 | 55% | Outside Italy, UPVC, Cloud |
-| Moxisys | 65% | MENA, Quality, Government |
-| Klaes | 60% | Modern tech, Quality |
-| ABT Herofis | 60% | Innovation, Outside Germany |
-| iWindow | 70% | Quality, Enterprise |
+| reference system 2000 | 55% | Outside Italy, UPVC, Cloud |
+| reference system | 65% | MENA, Quality, Government |
+| reference system | 60% | Modern tech, Quality |
+| ABT reference system | 60% | Innovation, Outside Germany |
+| reference system | 70% | Quality, Enterprise |
 | Ecotal | 75% | Quality, Innovation |
 | Others (Tier 3-4) | 80% | All categories |
 
@@ -375,7 +375,7 @@
    - Legacy integration critical
 
 3. **Italian Market** - 25% win rate
-   - ERCOM dominance
+   - reference system dominance
    - Local relationships
    - Language barrier
 
@@ -392,14 +392,14 @@
 | Rank | Company | Price | Quality | Value Score |
 |------|---------|-------|---------|-------------|
 | **1** | **ALMONA** | €15K | 95/100 | **6.3** |
-| 2 | Moxisys | €12K | 88/100 | 7.3* |
-| 3 | Klaes | €17K | 90/100 | 5.3 |
-| 4 | iWindow | €9K | 85/100 | 9.4** |
+| 2 | reference system | €12K | 88/100 | 7.3* |
+| 3 | reference system | €17K | 90/100 | 5.3 |
+| 4 | reference system | €9K | 85/100 | 9.4** |
 | 5 | Ecotal | €12K | 87/100 | 7.3 |
-| 6 | ABT Herofis | €22K | 92/100 | 4.2 |
-| 7 | ERCOM 2000 | €27K | 94/100 | 3.5 |
+| 6 | ABT reference system | €22K | 92/100 | 4.2 |
+| 7 | reference system 2000 | €27K | 94/100 | 3.5 |
 | 8 | Soft Tech | €30K | 95/100 | 3.2 |
-| 9 | Orgadata | €40K | 98/100 | 2.5 |
+| 9 | reference system | €40K | 98/100 | 2.5 |
 
 *Lower quality, lower price
 **Budget option, acceptable quality
@@ -445,7 +445,7 @@
 | Category | ALMONA Rank | Notes |
 |----------|-------------|-------|
 | **Technical Quality** | #2 | Tied with Soft Tech |
-| **Innovation** | **#1** | Constitutional AI unique |
+| **Innovation** | **#1** | Constitutional automation unique |
 | **Value for Money** | **#1** | Best in Tier 1-2 range |
 | **BOM Accuracy** | **#1** | 99.8% highest |
 | **MENA Market Fit** | **#1** | Native Arabic, YDT |
@@ -462,13 +462,13 @@
 ### **Competitive Threats**
 
 **High Threat (Can hurt ALMONA):**
-- Orgadata adds constitutional features (2-3 years)
-- Moxisys improves quality (1-2 years)
+- reference system adds constitutional features (2-3 years)
+- reference system improves quality (1-2 years)
 - New entrant with better MENA focus (1-2 years)
 
 **Medium Threat:**
 - Soft Tech expands to MENA (2-3 years)
-- ERCOM improves pricing (1 year)
+- reference system improves pricing (1 year)
 
 **Low Threat:**
 - Klaes/ABT modernize (3+ years)
@@ -498,8 +498,8 @@
 **Competitive Tier:** Tier 2 (Strong Regional Player)
 
 ### **Win Rates:**
-- vs Tier 1 (Orgadata, Soft Tech): 35-40%
-- vs Tier 2 (Moxisys, Klaes, ABT): 60-65%
+- vs Tier 1 (reference system, Soft Tech): 35-40%
+- vs Tier 2 (reference system, reference system, ABT): 60-65%
 - vs Tier 3-4: 75-80%
 - **Overall: 55%**
 

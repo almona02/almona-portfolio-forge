@@ -79,7 +79,7 @@ This document evaluates how comprehensively the project documentation covers the
 - ✅ Certification claims (100%)
 - ✅ Guarantee statements (100%)
 - ✅ Accuracy claims (100%)
-- ✅ AI/ML capabilities (100%)
+- ✅ advisory inference capabilities (100%)
 - ✅ IP/Licensing (100%)
 - ✅ Compliance readiness (100%)
 - ✅ Tender use cases (100%)

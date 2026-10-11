@@ -37,7 +37,7 @@
    - ❌ Tuning studio (88% parameters without DXF!)
    - ❌ No-DXF capabilities
 3. **Missing Key Metrics**: 
-   - ❌ 99.6-99.8% accuracy (not just "AI")
+   - ❌ 99.6-99.8% accuracy (not just "automation")
    - ❌ 93% time reduction
    - ❌ 15-20% material savings
 4. **No Connection**: Don't link to our detailed stakeholder diagrams
@@ -118,7 +118,7 @@
    - No-DXF capabilities
 
 2. **Fix Metrics**
-   - 99.6-99.8% (not just "AI")
+   - 99.6-99.8% (not just "automation")
    - Add: 93% time reduction, 15-20% savings
 
 3. **Add Navigation**

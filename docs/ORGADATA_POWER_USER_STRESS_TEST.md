@@ -1,4 +1,4 @@
-# Stress-Test: Orgadata Power User Objections
+# Stress-Test: reference system Power User Objections
 ## Sales-Room Defense Playbook
 
 **Document Classification:** Sales Enablement  
@@ -46,13 +46,13 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 
 | Category | Objections | Target Audience |
 |----------|-----------|----------------|
-| **Trust & Legacy** | "We've used Orgadata for 12 years" | Technical offices, workshops |
+| **Trust & Legacy** | "We've used reference system for 12 years" | Technical offices, workshops |
 | **Feature Parity** | "Your system doesn't calculate X" | Engineers, technical leads |
 | **Legal & Liability** | "Who is legally responsible?" | Enterprise buyers, legal teams |
 | **Pricing & Cost** | "Can we trust your pricing?" | CFOs, procurement |
 | **Migration & Data** | "What happens to our existing projects?" | IT managers, technical leads |
 | **Authority & Control** | "Does the system make decisions for us?" | Enterprise buyers, government |
-| **Competitive Comparison** | "How are you better than Orgadata?" | All stakeholders |
+| **Competitive Comparison** | "How are you better than reference system?" | All stakeholders |
 
 ---
 
@@ -62,7 +62,7 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 **Theme:** "We've invested years in Orgadata/Klaes"
 
 ### Category 2: Feature Parity
-**Theme:** "Orgadata does X, can you?"
+**Theme:** "reference system does X, can you?"
 
 ### Category 3: Legal & Liability
 **Theme:** "Who is responsible when things go wrong?"
@@ -77,32 +77,32 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 **Theme:** "Does the system replace human judgment?"
 
 ### Category 7: Competitive Comparison
-**Theme:** "Why should we switch from Orgadata?"
+**Theme:** "Why should we switch from reference system?"
 
 ---
 
 ## 3. Q&A Playbook: 20 Real Objections
 
-### Objection 1: "We've used Orgadata for 12 years. Why should we switch?"
+### Objection 1: "We've used reference system for 12 years. Why should we switch?"
 
 **Short Answer:**
-> "We're not asking you to switch everything. We're offering a safer, more transparent alternative for new projects. Your 12 years of Orgadata projects remain accessible—we can import them as read-only references for comparison."
+> "We're not asking you to switch everything. We're offering a safer, more transparent alternative for new projects. Your 12 years of reference system projects remain accessible—we can import them as read-only references for comparison."
 
 **Deep Answer:**
-> "We understand the investment you've made in Orgadata. We're not proposing a full migration—we're proposing a safer execution model for new projects. ALMONA can import your existing Orgadata projects as read-only references, so you can compare outputs side-by-side. Your legacy projects remain untouched, but new projects benefit from explicit authority boundaries, full audit trails, and modern architecture. Many of our anchor clients use both systems initially—Orgadata for legacy reference, ALMONA for new production."
+> "We understand the investment you've made in reference system. We're not proposing a full migration—we're proposing a safer execution model for new projects. ALMONA can import your existing reference system projects as read-only references, so you can compare outputs side-by-side. Your legacy projects remain untouched, but new projects benefit from explicit authority boundaries, full audit trails, and modern architecture. Many of our anchor clients use both systems initially—reference system for legacy reference, ALMONA for new production."
 
 **Constitutional Backing:**
 - Legacy Project Reference Mode (Phase 1.5) allows read-only import
 - No forced migration—coexistence model
 - Explicit authority boundaries reduce legal risk
 
-**Comparison to Orgadata:**
-- Orgadata: Lock-in, proprietary format, no audit trail
+**Comparison to reference system:**
+- reference system: Lock-in, proprietary format, no audit trail
 - ALMONA: Open architecture, full audit trail, legacy compatibility
 
 ---
 
-### Objection 2: "Orgadata calculates structural loads. Can you do that?"
+### Objection 2: "reference system calculates structural loads. Can you do that?"
 
 **Short Answer:**
 > "No, and that's intentional. Structural analysis requires licensed engineering judgment—we don't replace engineers. We validate geometry and manufacturability, but structural calculations remain with your engineering team. That's why we're legally safer."
@@ -115,8 +115,8 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 - Geometry validation ≠ structural analysis
 - Human responsibility for engineering judgment
 
-**Comparison to Orgadata:**
-- Orgadata: Performs structural calculations (legal risk, engineering replacement)
+**Comparison to reference system:**
+- reference system: Performs structural calculations (legal risk, engineering replacement)
 - ALMONA: Validates manufacturability only (legal safety, respects engineering authority)
 
 ---
@@ -134,8 +134,8 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 - Immutable audit trail (RealityOS) proves human responsibility
 - Constitutional disclaimers on every output
 
-**Comparison to Orgadata:**
-- Orgadata: Black-box calculations, ambiguous responsibility
+**Comparison to reference system:**
+- reference system: Black-box calculations, ambiguous responsibility
 - ALMONA: Transparent calculations, explicit human approval, full audit trail
 
 ---
@@ -146,53 +146,53 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 > "All costs are calculated deterministically from BOM truth—not estimates or heuristics. Every cost is traceable to specific parts, quantities, and user-provided prices. You can audit any calculation back to its source."
 
 **Deep Answer:**
-> "ALMONA calculates costs deterministically from BOM truth. Every cost line item is traceable: which part, what quantity, which user-provided price. There are no hidden heuristics or black-box calculations. The system takes your geometry, applies your system pack, generates a BOM, then multiplies by your material prices. Every step is auditable. If you want to verify a cost, you can trace it back: 'This mullion costs X because it's 150mm deep, 6 meters long, and your price list says 150mm mullion is Y per meter.' Compare this to Orgadata, where cost calculations are proprietary and not fully auditable."
+> "ALMONA calculates costs deterministically from BOM truth. Every cost line item is traceable: which part, what quantity, which user-provided price. There are no hidden heuristics or black-box calculations. The system takes your geometry, applies your system pack, generates a BOM, then multiplies by your material prices. Every step is auditable. If you want to verify a cost, you can trace it back: 'This mullion costs X because it's 150mm deep, 6 meters long, and your price list says 150mm mullion is Y per meter.' Compare this to reference system, where cost calculations are proprietary and not fully auditable."
 
 **Constitutional Backing:**
 - Tier 3 determinism: 100% traceable calculations
-- BOM truth → cost (no AI inference in cost calculation)
+- BOM truth → cost (no automation inference in cost calculation)
 - Full audit trail (RealityOS)
 
-**Comparison to Orgadata:**
-- Orgadata: Proprietary cost calculations, limited auditability
+**Comparison to reference system:**
+- reference system: Proprietary cost calculations, limited auditability
 - ALMONA: Transparent calculations, full traceability, BOM truth
 
 ---
 
-### Objection 5: "What happens to our 10 years of Orgadata projects? Do we lose them?"
+### Objection 5: "What happens to our 10 years of reference system projects? Do we lose them?"
 
 **Short Answer:**
-> "No. We can import your Orgadata projects as read-only references. You keep your legacy projects intact, and you can compare ALMONA outputs against them. No data loss, no forced migration."
+> "No. We can import your reference system projects as read-only references. You keep your legacy projects intact, and you can compare ALMONA outputs against them. No data loss, no forced migration."
 
 **Deep Answer:**
-> "ALMONA's Legacy Project Reference Mode allows read-only import of Orgadata projects. Your existing projects remain in Orgadata—we don't touch them. But you can import them into ALMONA as immutable references for comparison. This means you can: compare BOMs side-by-side, validate ALMONA outputs against historical Orgadata outputs, and maintain your legacy project archive. There's no forced migration, no data loss, no risk. Many clients use this to validate ALMONA accuracy before fully switching. Your 10 years of projects are safe—and now you have a modern alternative for new work."
+> "ALMONA's Legacy Project Reference Mode allows read-only import of reference system projects. Your existing projects remain in reference system—we don't touch them. But you can import them into ALMONA as immutable references for comparison. This means you can: compare BOMs side-by-side, validate ALMONA outputs against historical reference system outputs, and maintain your legacy project archive. There's no forced migration, no data loss, no risk. Many clients use this to validate ALMONA accuracy before fully switching. Your 10 years of projects are safe—and now you have a modern alternative for new work."
 
 **Constitutional Backing:**
 - Legacy Project Reference Mode (Phase 1.5, Week 13-16)
 - Read-only import (no modification of legacy data)
 - Comparison tools (BOM comparator)
 
-**Comparison to Orgadata:**
-- Orgadata: Lock-in, no export to modern formats
+**Comparison to reference system:**
+- reference system: Lock-in, no export to modern formats
 - ALMONA: Legacy compatibility, read-only import, comparison tools
 
 ---
 
-### Objection 6: "Orgadata has thousands of system packs. How many do you have?"
+### Objection 6: "reference system has thousands of system packs. How many do you have?"
 
 **Short Answer:**
 > "We have fewer system packs, but each one is institutionally certified with explicit versioning and approval status. Quality over quantity. And we're adding more based on anchor client needs."
 
 **Deep Answer:**
-> "Orgadata has quantity—we have quality and governance. Every ALMONA system pack is institutionally certified with explicit versioning, approval status, and certification authority. We don't have thousands yet, but we have the ones that matter for Egypt/MENA markets, and each one is locked, auditable, and trusted. Our system pack library grows based on real client needs—not theoretical coverage. More importantly, our system packs are transparent: you know exactly what constraints they enforce, what hardware they support, and who certified them. Compare this to Orgadata, where system pack details are often opaque."
+> "reference system has quantity—we have quality and governance. Every ALMONA system pack is institutionally certified with explicit versioning, approval status, and certification authority. We don't have thousands yet, but we have the ones that matter for Egypt/MENA markets, and each one is locked, auditable, and trusted. Our system pack library grows based on real client needs—not theoretical coverage. More importantly, our system packs are transparent: you know exactly what constraints they enforce, what hardware they support, and who certified them. Compare this to reference system, where system pack details are often opaque."
 
 **Constitutional Backing:**
 - System Pack Certification (Phase 1, Week 5-16)
 - Explicit versioning and approval status
 - Supplier certification slots
 
-**Comparison to Orgadata:**
-- Orgadata: Thousands of packs, but opaque details, no certification governance
+**Comparison to reference system:**
+- reference system: Thousands of packs, but opaque details, no certification governance
 - ALMONA: Fewer packs, but certified, transparent, auditable
 
 ---
@@ -203,15 +203,15 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 > "No. We compare variants and explain cost differences, but we never recommend which one to choose. That's a business decision—you make it, not the system."
 
 **Deep Answer:**
-> "ALMONA compares variants and explains cost differences deterministically—'Option B costs 7.4% more because mullion depth increased from 120mm to 150mm.' But we never recommend which variant to use. That's a business decision requiring human judgment. The system provides facts: cost comparisons, cost drivers, sensitivity analysis. You decide based on your project requirements, budget, and client needs. This is a constitutional boundary: we calculate and compare, you decide. Compare this to systems that use AI to 'recommend' variants—that's pricing advice, which creates legal risk."
+> "ALMONA compares variants and explains cost differences deterministically—'Option B costs 7.4% more because mullion depth increased from 120mm to 150mm.' But we never recommend which variant to use. That's a business decision requiring human judgment. The system provides facts: cost comparisons, cost drivers, sensitivity analysis. You decide based on your project requirements, budget, and client needs. This is a constitutional boundary: we calculate and compare, you decide. Compare this to systems that use automation to 'recommend' variants—that's pricing advice, which creates legal risk."
 
 **Constitutional Backing:**
 - Variant Comparator (Tier 2) provides facts, not recommendations
 - Cost Narrative Generator explains differences, doesn't recommend
 - Human approval required for all pricing decisions
 
-**Comparison to Orgadata:**
-- Orgadata: May use heuristics to suggest variants (ambiguous authority)
+**Comparison to reference system:**
+- reference system: May use heuristics to suggest variants (ambiguous authority)
 - ALMONA: Provides comparisons, you decide (explicit authority separation)
 
 ---
@@ -229,27 +229,27 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 - Override Workflow with required reason
 - Immutable audit trail (RealityOS)
 
-**Comparison to Orgadata:**
-- Orgadata: Override capability exists, but audit trail may be limited
+**Comparison to reference system:**
+- reference system: Override capability exists, but audit trail may be limited
 - ALMONA: Explicit override workflow with full audit trail and responsibility markers
 
 ---
 
-### Objection 9: "Orgadata integrates with our ERP. Can you?"
+### Objection 9: "reference system integrates with our ERP. Can you?"
 
 **Short Answer:**
 > "Not in Phase 1, but our API-first architecture makes integration straightforward. We're prioritizing fabrication accuracy first, then ERP integration in Phase 3."
 
 **Deep Answer:**
-> "ALMONA is API-first, so ERP integration is architecturally straightforward. However, we're prioritizing fabrication accuracy and constitutional boundaries first (Phase 1-2), then multi-tenant and integration features (Phase 3). This ensures we get the core right before adding complexity. Many clients start with manual export/import, then we build custom integrations based on their specific ERP. Our anchor client program includes ERP integration planning for Phase 3. Compare this to Orgadata, which may have pre-built integrations but with older architecture that's harder to extend."
+> "ALMONA is API-first, so ERP integration is architecturally straightforward. However, we're prioritizing fabrication accuracy and constitutional boundaries first (Phase 1-2), then multi-tenant and integration features (Phase 3). This ensures we get the core right before adding complexity. Many clients start with manual export/import, then we build custom integrations based on their specific ERP. Our anchor client program includes ERP integration planning for Phase 3. Compare this to reference system, which may have pre-built integrations but with older architecture that's harder to extend."
 
 **Constitutional Backing:**
 - API-first architecture (modern, extensible)
 - Phase 3 includes multi-tenant and integration features
 - Anchor client program includes integration planning
 
-**Comparison to Orgadata:**
-- Orgadata: Pre-built integrations, but older architecture
+**Comparison to reference system:**
+- reference system: Pre-built integrations, but older architecture
 - ALMONA: API-first, modern architecture, custom integrations in Phase 3
 
 ---
@@ -260,15 +260,15 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 > "Every BOM is generated deterministically from geometry and system pack rules—not estimates. You can trace every part back to its source. Our anchor clients validate accuracy within 0.5% of manual calculations."
 
 **Deep Answer:**
-> "ALMONA BOMs are generated deterministically from geometry and system pack definitions. Every part in the BOM is traceable: which geometry element, which system pack rule, which constraint. There are no estimates or heuristics. Our anchor client acceptance criteria require BOM accuracy within 0.5% of manual calculations. The system takes your BIM geometry, applies your selected system pack, and generates a BOM based on deterministic rules. If you want to verify a part, you can trace it: 'This mullion exists because the geometry shows a 6-meter span, and the system pack requires a mullion every 1.2 meters.' Compare this to Orgadata, where BOM generation may use proprietary algorithms that aren't fully transparent."
+> "ALMONA BOMs are generated deterministically from geometry and system pack definitions. Every part in the BOM is traceable: which geometry element, which system pack rule, which constraint. There are no estimates or heuristics. Our anchor client acceptance criteria require BOM accuracy within 0.5% of manual calculations. The system takes your BIM geometry, applies your selected system pack, and generates a BOM based on deterministic rules. If you want to verify a part, you can trace it: 'This mullion exists because the geometry shows a 6-meter span, and the system pack requires a mullion every 1.2 meters.' Compare this to reference system, where BOM generation may use proprietary algorithms that aren't fully transparent."
 
 **Constitutional Backing:**
 - Tier 3 BOM generation (100% deterministic)
 - BOM truth traceable to geometry + system pack
 - Anchor client validation (0.5% accuracy requirement)
 
-**Comparison to Orgadata:**
-- Orgadata: BOM generation may use proprietary algorithms
+**Comparison to reference system:**
+- reference system: BOM generation may use proprietary algorithms
 - ALMONA: Deterministic BOM generation, fully traceable
 
 ---
@@ -279,34 +279,34 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 > "The system doesn't set prices—it calculates costs. All pricing requires human approval. If there's an error, the audit trail shows who approved it. Legal responsibility is clear."
 
 **Deep Answer:**
-> "ALMONA calculates costs from BOM truth and user-provided prices—it never sets final prices. All pricing decisions require explicit human approval with immutable audit stamps. If there's an error, the audit trail shows: who calculated the cost, who approved the price, when, and why. Legal responsibility is clear and traceable. The system provides cost calculations; humans make pricing decisions. This is encoded in our constitutional architecture: we calculate, you approve. Compare this to systems that automatically set prices or use AI to 'optimize' pricing—that creates ambiguous legal responsibility."
+> "ALMONA calculates costs from BOM truth and user-provided prices—it never sets final prices. All pricing decisions require explicit human approval with immutable audit stamps. If there's an error, the audit trail shows: who calculated the cost, who approved the price, when, and why. Legal responsibility is clear and traceable. The system provides cost calculations; humans make pricing decisions. This is encoded in our constitutional architecture: we calculate, you approve. Compare this to systems that automatically set prices or use automation to 'optimize' pricing—that creates ambiguous legal responsibility."
 
 **Constitutional Backing:**
 - Human approval required for all pricing
 - Immutable audit trail (RealityOS)
 - Constitutional disclaimers on every quotation
 
-**Comparison to Orgadata:**
-- Orgadata: May automatically set prices or use heuristics
+**Comparison to reference system:**
+- reference system: May automatically set prices or use heuristics
 - ALMONA: Calculates costs, humans set prices, full audit trail
 
 ---
 
-### Objection 12: "Orgadata has been around for 30 years. You're new. Why should we trust you?"
+### Objection 12: "reference system has been around for 30 years. You're new. Why should we trust you?"
 
 **Short Answer:**
-> "We're new, but we're built on explicit governance that Orgadata doesn't have. Our constitutional boundaries, full audit trails, and human responsibility model are more trustworthy than 30 years of black-box operations."
+> "We're new, but we're built on explicit governance that reference system doesn't have. Our constitutional boundaries, full audit trails, and human responsibility model are more trustworthy than 30 years of black-box operations."
 
 **Deep Answer:**
-> "Orgadata has time, but we have governance. Their 30 years of operation don't guarantee transparency or legal safety. ALMONA is built on explicit constitutional boundaries, full audit trails, and human responsibility—things Orgadata doesn't have. We're new, but we're architecturally safer. Our constitutional model means: you know exactly what the system does and doesn't do, every decision is auditable, and legal responsibility is clear. Orgadata's 30 years include proprietary algorithms, limited auditability, and ambiguous authority boundaries. Time doesn't equal trust—governance does."
+> "reference system has time, but we have governance. Their 30 years of operation don't guarantee transparency or legal safety. ALMONA is built on explicit constitutional boundaries, full audit trails, and human responsibility—things reference system doesn't have. We're new, but we're architecturally safer. Our constitutional model means: you know exactly what the system does and doesn't do, every decision is auditable, and legal responsibility is clear. reference system's 30 years include proprietary algorithms, limited auditability, and ambiguous authority boundaries. Time doesn't equal trust—governance does."
 
 **Constitutional Backing:**
 - Constitutional Guardian infrastructure (Phase 0)
 - Full audit trail (RealityOS)
 - Explicit authority boundaries
 
-**Comparison to Orgadata:**
-- Orgadata: 30 years, but proprietary, limited auditability
+**Comparison to reference system:**
+- reference system: 30 years, but proprietary, limited auditability
 - ALMONA: New, but explicit governance, full auditability
 
 ---
@@ -324,8 +324,8 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 - Curved geometry processing (no structural calculations)
 - Constitutional boundary: geometry processing ≠ structural analysis
 
-**Comparison to Orgadata:**
-- Orgadata: May attempt structural calculations (legal risk)
+**Comparison to reference system:**
+- reference system: May attempt structural calculations (legal risk)
 - ALMONA: Processes geometry, respects engineering authority
 
 ---
@@ -343,8 +343,8 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 - Explicit versioning and approval status
 - Supplier certification slots
 
-**Comparison to Orgadata:**
-- Orgadata: May allow free-form customization without governance
+**Comparison to reference system:**
+- reference system: May allow free-form customization without governance
 - ALMONA: Custom system packs require certification and governance
 
 ---
@@ -362,8 +362,8 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 - No forced process changes
 - Same outputs, safer execution
 
-**Comparison to Orgadata:**
-- Orgadata: May require specific workflow adaptations
+**Comparison to reference system:**
+- reference system: May require specific workflow adaptations
 - ALMONA: Fits existing workflow, safer execution
 
 ---
@@ -374,15 +374,15 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 > "We don't recommend—we suggest. The system suggests suitable system packs based on geometry, but you always select. We provide facts; you make decisions."
 
 **Deep Answer:**
-> "ALMONA doesn't recommend system packs—we suggest them. The system analyzes your geometry and suggests suitable system packs with confidence scores and factual reasons. But you always select the system pack—the system never chooses for you. This is a constitutional boundary: we provide suggestions and facts, you make decisions. Compare this to systems that use AI to 'recommend' system packs—that's decision-making, which creates legal risk. We suggest, you decide."
+> "ALMONA doesn't recommend system packs—we suggest them. The system analyzes your geometry and suggests suitable system packs with confidence scores and factual reasons. But you always select the system pack—the system never chooses for you. This is a constitutional boundary: we provide suggestions and facts, you make decisions. Compare this to systems that use automation to 'recommend' system packs—that's decision-making, which creates legal risk. We suggest, you decide."
 
 **Constitutional Backing:**
 - System Pack Suggester (Tier 1) provides suggestions, not recommendations
 - User always selects system pack
 - Constitutional boundary: suggestions ≠ recommendations
 
-**Comparison to Orgadata:**
-- Orgadata: May use AI to recommend system packs (ambiguous authority)
+**Comparison to reference system:**
+- reference system: May use automation to recommend system packs (ambiguous authority)
 - ALMONA: Suggests system packs, you decide (explicit authority separation)
 
 ---
@@ -393,15 +393,15 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 > "All data is exportable in standard formats (BOMs as CSV, cut lists as DXF, quotations as PDF). We're API-first, so programmatic export is straightforward. No lock-in."
 
 **Deep Answer:**
-> "ALMONA is API-first with full data exportability. You can export: BOMs as CSV/Excel, cut lists as DXF/CNC, quotations as PDF, and all data via API. There's no proprietary lock-in. Compare this to Orgadata, which may use proprietary formats that make export difficult. ALMONA's modern architecture means: your data is always accessible, exportable, and portable. If you want to switch later, you can export everything. No vendor lock-in."
+> "ALMONA is API-first with full data exportability. You can export: BOMs as CSV/Excel, cut lists as DXF/CNC, quotations as PDF, and all data via API. There's no proprietary lock-in. Compare this to reference system, which may use proprietary formats that make export difficult. ALMONA's modern architecture means: your data is always accessible, exportable, and portable. If you want to switch later, you can export everything. No vendor lock-in."
 
 **Constitutional Backing:**
 - API-first architecture
 - Standard export formats (CSV, DXF, PDF, CNC)
 - No proprietary lock-in
 
-**Comparison to Orgadata:**
-- Orgadata: Proprietary formats, potential lock-in
+**Comparison to reference system:**
+- reference system: Proprietary formats, potential lock-in
 - ALMONA: Standard formats, API-first, no lock-in
 
 ---
@@ -412,15 +412,15 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 > "We're building anchor client relationships in Egypt/MENA with local support. Our constitutional model means support is about governance and accuracy, not black-box troubleshooting."
 
 **Deep Answer:**
-> "ALMONA is building anchor client relationships in Egypt/MENA with local support infrastructure. Our support model is different from Orgadata: because our system is transparent and auditable, support is about governance, accuracy validation, and constitutional compliance—not black-box troubleshooting. If there's an issue, we can trace it through the audit trail and explain exactly what happened. Compare this to Orgadata, where support may involve proprietary troubleshooting that's hard to verify."
+> "ALMONA is building anchor client relationships in Egypt/MENA with local support infrastructure. Our support model is different from reference system: because our system is transparent and auditable, support is about governance, accuracy validation, and constitutional compliance—not black-box troubleshooting. If there's an issue, we can trace it through the audit trail and explain exactly what happened. Compare this to reference system, where support may involve proprietary troubleshooting that's hard to verify."
 
 **Constitutional Backing:**
 - Anchor client program (Egypt/MENA focus)
 - Transparent architecture (easier support)
 - Full audit trail (issue traceability)
 
-**Comparison to Orgadata:**
-- Orgadata: May have local support, but proprietary troubleshooting
+**Comparison to reference system:**
+- reference system: May have local support, but proprietary troubleshooting
 - ALMONA: Transparent architecture, traceable issues, governance-focused support
 
 ---
@@ -438,8 +438,8 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 - CI/CD enforcement (constitutional validation)
 - Immutable audit trail (boundary changes are logged)
 
-**Comparison to Orgadata:**
-- Orgadata: Principles may be documentation-only
+**Comparison to reference system:**
+- reference system: Principles may be documentation-only
 - ALMONA: Constitutional boundaries are infrastructure, enforceable
 
 ---
@@ -450,15 +450,15 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 > "We're not competing on time—we're competing on governance. Our constitutional model, explicit boundaries, and full auditability are more trustworthy than 30 years of black-box operations."
 
 **Deep Answer:**
-> "Trust isn't about time—it's about transparency and governance. Orgadata has 30 years, but they also have: proprietary algorithms you can't audit, ambiguous authority boundaries, and limited traceability. ALMONA is new, but we have: explicit constitutional boundaries you can verify, full audit trails you can inspect, and transparent calculations you can trace. Time doesn't equal trust—governance does. Our constitutional model means you know exactly what the system does and doesn't do. That's more trustworthy than decades of opaque operations."
+> "Trust isn't about time—it's about transparency and governance. reference system has 30 years, but they also have: proprietary algorithms you can't audit, ambiguous authority boundaries, and limited traceability. ALMONA is new, but we have: explicit constitutional boundaries you can verify, full audit trails you can inspect, and transparent calculations you can trace. Time doesn't equal trust—governance does. Our constitutional model means you know exactly what the system does and doesn't do. That's more trustworthy than decades of opaque operations."
 
 **Constitutional Backing:**
 - Constitutional Guardian infrastructure
 - Full audit trail (RealityOS)
 - Transparent architecture
 
-**Comparison to Orgadata:**
-- Orgadata: 30 years, but opaque, limited auditability
+**Comparison to reference system:**
+- reference system: 30 years, but opaque, limited auditability
 - ALMONA: New, but explicit governance, full auditability
 
 ---
@@ -469,7 +469,7 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 
 | Objection | One-Liner Response |
 |-----------|-------------------|
-| "12 years of Orgadata" | "We import as read-only references. No forced migration." |
+| "12 years of reference system" | "We import as read-only references. No forced migration." |
 | "Structural calculations?" | "No—that's engineering. We validate manufacturability only." |
 | "Legal responsibility?" | "System calculates, humans approve. Audit trail proves responsibility." |
 | "Cost accuracy?" | "Deterministic from BOM truth. Traceable to every part." |
@@ -535,8 +535,8 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 ### Red Flag 4: "Can you guarantee 100% accuracy?"
 **Response:** "We guarantee deterministic calculations from BOM truth. Accuracy depends on input geometry and system pack selection. We validate within 0.5% of manual calculations."
 
-### Red Flag 5: "We need AI recommendations"
-**Response:** "We provide AI suggestions in Tier 1, but all decisions require human approval. We don't use AI to make business judgments—that's a constitutional boundary."
+### Red Flag 5: "We need automation recommendations"
+**Response:** "We provide automation suggestions in Tier 1, but all decisions require human approval. We don't use automation to make business judgments—that's a constitutional boundary."
 
 ---
 
@@ -544,11 +544,11 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 
 ### Scenario: Technical Office Manager (Hostile)
 
-**Manager:** "We've used Orgadata for 12 years. Why should we switch?"
+**Manager:** "We've used reference system for 12 years. Why should we switch?"
 
-**You:** "We're not asking you to switch everything. We're offering a safer alternative for new projects. Your 12 years of Orgadata projects remain accessible—we can import them as read-only references for comparison."
+**You:** "We're not asking you to switch everything. We're offering a safer alternative for new projects. Your 12 years of reference system projects remain accessible—we can import them as read-only references for comparison."
 
-**Manager:** "But Orgadata calculates structural loads. Can you do that?"
+**Manager:** "But reference system calculates structural loads. Can you do that?"
 
 **You:** "No, and that's intentional. Structural analysis requires licensed engineering judgment—we don't replace engineers. We validate geometry and manufacturability, but structural calculations remain with your engineering team. That's why we're legally safer."
 
@@ -560,11 +560,11 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 
 **You:** "All costs are calculated deterministically from BOM truth—not estimates or heuristics. Every cost is traceable to specific parts, quantities, and user-provided prices. You can audit any calculation back to its source."
 
-**Manager:** "What happens to our 10 years of Orgadata projects?"
+**Manager:** "What happens to our 10 years of reference system projects?"
 
-**You:** "No data loss. We can import your Orgadata projects as read-only references. You keep your legacy projects intact, and you can compare ALMONA outputs against them. No forced migration, no risk."
+**You:** "No data loss. We can import your reference system projects as read-only references. You keep your legacy projects intact, and you can compare ALMONA outputs against them. No forced migration, no risk."
 
-**Manager:** "Orgadata has thousands of system packs. How many do you have?"
+**Manager:** "reference system has thousands of system packs. How many do you have?"
 
 **You:** "We have fewer system packs, but each one is institutionally certified with explicit versioning and approval status. Quality over quantity. And we're adding more based on anchor client needs."
 
@@ -580,9 +580,9 @@ This document pre-answers objections from experienced Orgadata/Klaes users in re
 
 **You:** "Every BOM is generated deterministically from geometry and system pack rules—not estimates. You can trace every part back to its source. Our anchor clients validate accuracy within 0.5% of manual calculations."
 
-**Manager:** "Orgadata has been around for 30 years. You're new. Why should we trust you?"
+**Manager:** "reference system has been around for 30 years. You're new. Why should we trust you?"
 
-**You:** "We're new, but we're built on explicit governance that Orgadata doesn't have. Our constitutional boundaries, full audit trails, and human responsibility model are more trustworthy than 30 years of black-box operations."
+**You:** "We're new, but we're built on explicit governance that reference system doesn't have. Our constitutional boundaries, full audit trails, and human responsibility model are more trustworthy than 30 years of black-box operations."
 
 **Manager:** "Okay, I'm interested. What's next?"
 

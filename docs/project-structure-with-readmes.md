@@ -815,7 +815,7 @@ Generated: 2025-09-25T16:37:34.793Z
 
 # Almona Portfolio Forge
 
-A comprehensive, modern industrial machinery portfolio and e-commerce platform built for Almona, featuring advanced 3D/AR visualization, AI-powered services, and a complete customer support system.
+A comprehensive, modern industrial machinery portfolio and e-commerce platform built for Almona, featuring advanced 3D/AR visualization, software-assisted services, and a complete customer support system.
 
 ## 🚀 Overview
 Almona Portfolio Forge is a full-stack industrial machinery platform that combines a React frontend with a Python FastAPI backend, offering everything from product showcases to complete service management. The platform serves industrial clients across Egypt and the Middle East with specialized features for aluminum, UPVC, and steel fabrication industries.
@@ -827,7 +827,7 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 ### 🛒 **E-Commerce & Shop**
 - **Product Catalog**: Comprehensive industrial machinery, spare parts, and raw materials
 - **3D Product Viewer**: Interactive 3D models with AR capabilities
-- **Smart Configurator**: AI-powered product configuration and recommendations
+- **Smart Configurator**: software-assisted product configuration and recommendations
 - **Quote System**: Advanced quoting with bulk pricing and custom configurations
 - **Multi-Currency Support**: EGP, USD, EUR with real-time conversion
 - **Inventory Management**: Real-time stock tracking and availability
@@ -840,8 +840,8 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 - **Emergency Services**: 24/7 emergency support with priority routing
 - **Spare Parts Management**: Automated parts identification and ordering
 
-### 🤖 **AI-Powered Features**
-- **Equipment Advisor**: AI recommendations based on requirements
+### 🤖 **software-assisted Features**
+- **Equipment Advisor**: automation recommendations based on requirements
 - **Part Detection**: Computer vision for spare parts identification
 - **Predictive Maintenance**: ML-based maintenance predictions
 - **Fault Detection**: Automated issue diagnosis from images/audio
@@ -884,7 +884,7 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 - **Framework**: FastAPI (Python 3.9+)
 - **Database**: Supabase (PostgreSQL) with real-time subscriptions
 - **Authentication**: Supabase Auth with custom policies
-- **AI Services**: TensorFlow.js + Hugging Face Transformers
+- **automation Services**: TensorFlow.js + Hugging Face Transformers
 - **Task Queue**: Celery with Redis
 - **Email Service**: SendGrid with custom templates
 - **File Storage**: Supabase Storage with CDN
@@ -1081,7 +1081,7 @@ Future enhancements:
    # Copy environment files
    cp .env.example .env
    cp python_backend/.env.example python_backend/.env
-   
+
    # Configure your environment variables:
    # - Supabase URL and API keys
    # - Google Maps API key
@@ -1190,7 +1190,7 @@ Notes
 1. **User Interaction** → React Components
 2. **State Management** → Context/Zustand
 3. **API Calls** → FastAPI Backend
-4. **Data Processing** → AI Services (if applicable)
+4. **Data Processing** → automation Services (if applicable)
 5. **Database Operations** → Supabase with RLS
 6. **Real-time Updates** → WebSocket subscriptions
 
@@ -1216,8 +1216,8 @@ Notes
 - `MaintenanceDashboard` - Preventive maintenance
 - `MachineRegistration` - Equipment registration
 
-### **AI & Smart Features**
-- `AiEquipmentAdvisor` - AI-powered recommendations
+### **automation & Smart Features**
+- `AiEquipmentAdvisor` - software-assisted recommendations
 - `MachineRecommendationWizard` - Smart product finder
 - `FabricationReportGenerator` - Automated reporting
 - `IntelligentForm` - Smart form assistance
@@ -1348,7 +1348,7 @@ For technical support or questions:
 
 ### **Version 2.0.0** (Latest)
 - ✅ **Service Ticketing System**: Professional SLA-based support system
-- ✅ **AI-Powered Services**: Equipment advisor and part detection
+- ✅ **software-assisted Services**: Equipment advisor and part detection
 - ✅ **Enhanced Security**: Row Level Security and audit logging
 - ✅ **Multi-Language Support**: Complete Arabic/English localization
 - ✅ **Performance Improvements**: 40% faster loading times
@@ -1363,7 +1363,7 @@ For technical support or questions:
 
 ### **Backend API Enhancements**
 - FastAPI v2 endpoints with improved performance
-- AI services integration for part detection
+- automation services integration for part detection
 - Email notification system with templates
 - Comprehensive testing suite
 - Docker optimization for production
@@ -1419,14 +1419,14 @@ sss
 ### **Backend Architecture**
 - **API**: FastAPI with versioned endpoints
 - **Database**: Supabase (PostgreSQL) with RLS
-- **AI Services**: TensorFlow.js + Computer Vision
+- **automation Services**: TensorFlow.js + Computer Vision
 - **Authentication**: Multi-factor with role-based access
 - **Testing**: Comprehensive test suite
 
 ### **Key Features**
 - 🛒 **E-Commerce**: Complete industrial machinery catalog
 - 🔧 **Service Management**: Professional ticketing system
-- 🤖 **AI-Powered**: Equipment recommendations and part detection
+- 🤖 **software-assisted**: Equipment recommendations and part detection
 - 🌐 **Multi-Language**: Arabic (RTL) and English (LTR)
 - 📱 **Responsive**: Mobile-first design approach
 - 🔐 **Secure**: Enterprise-grade security implementation
@@ -1497,7 +1497,7 @@ npm run deploy:production     # Deploy to production
 - **Shop & E-Commerce** (`src/components/shop/`)
   - Product catalog and configuration
   - Shopping cart and checkout
-  - AI-powered recommendations
+  - software-assisted recommendations
   - Freight calculations
 
 - **Services** (`src/components/services/`)
@@ -1623,7 +1623,7 @@ npm run deploy:production     # Deploy to production
 ### **Version 2.0.0** (Latest)
 - ✅ Complete documentation overhaul
 - ✅ Service ticketing system with SLA management
-- ✅ AI-powered equipment recommendations
+- ✅ software-assisted equipment recommendations
 - ✅ Enhanced security with RLS policies
 - ✅ Multi-language support (Arabic/English)
 - ✅ Performance improvements (40% faster)
@@ -1638,7 +1638,7 @@ npm run deploy:production     # Deploy to production
 
 ### **Backend API Enhancements**
 - FastAPI v2 endpoints with improved performance
-- AI services integration for part detection
+- automation services integration for part detection
 - Email notification system with templates
 - Comprehensive testing suite
 - Docker optimization for production
@@ -1669,7 +1669,7 @@ The components are already included in your project. No additional installation 
 import { EnhancedGLBViewer } from '@/components/3d-model/EnhancedGLBViewer';
 
 <EnhancedGLBViewer 
-  modelPath="/models/model.glb" 
+  modelPath="/models/model.glb"
 />
 ```
 
@@ -1741,7 +1741,7 @@ import { EnhancedGLBViewer } from '@/components/3d-model/EnhancedGLBViewer';
 
 function MyComponent() {
   const [scale, setScale] = useState(1);
-  
+
   return (
     <div>
       <EnhancedGLBViewer 
@@ -1793,7 +1793,7 @@ This comprehensive quote request system provides a seamless experience for users
 ### 2. QuoteRequestStepper
 - **File**: `QuoteRequestStepper.tsx`
 - **Usage**: Multi-step form for detailed quote requests
-- **Features**: 4-step process with AI assistance
+- **Features**: 4-step process with automation assistance
 
 ### 3. QuoteRequestPage
 - **File**: `QuoteRequestPage.tsx`
@@ -1810,7 +1810,7 @@ This comprehensive quote request system provides a seamless experience for users
 
 ### 6. QuoteAIHelper
 - **File**: `QuoteAIHelper.tsx`
-- **Usage**: AI-powered suggestions
+- **Usage**: software-assisted suggestions
 
 ### 7. QuoteSummary
 - **File**: `QuoteSummary.tsx`
@@ -3323,10 +3323,10 @@ const [showQuoteDialog, setShowQuoteDialog] = useState(false);
 
 ### README for `src\components\shop\ai-advisor`
 
-# AI Equipment Advisor
+# automation Equipment Advisor
 
 ## Features
-- Gemini AI-powered equipment recommendations
+- support service software-assisted equipment recommendations
 - Egyptian market-specific suggestions
 - Wizard-style interface
 - Budget-conscious filtering
@@ -3358,7 +3358,7 @@ Edit `src/lib/ai/gemini.ts` to adjust:
 
 ## Testing
 Run the component and verify:
-- AI responses are relevant
+- automation responses are relevant
 - Egyptian context is applied
 - Error states are handled gracefully
 

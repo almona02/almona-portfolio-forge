@@ -83,4 +83,4 @@ For every task marked "Complete":
 
 **Status:** APPROVED FOR EXECUTION
 **Owner:** Antigravity Agent
-**Constitution:** Tier 0 (No AI hallucination in verified stats)
+**Constitution:** Tier 0 (No automation hallucination in verified stats)

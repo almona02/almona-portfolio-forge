@@ -47,7 +47,7 @@
 **Key Validations**:
 - ✅ Six principles align with AICS-001 v1.0.0
 - ✅ Tier classification enforces constitutional boundaries
-- ✅ No AI/ML in Tier 3 execution paths
+- ✅ No advisory inference in Tier 3 execution paths
 - ✅ Append-only event ledger
 - ✅ Human verification required for all events
 - ✅ Cryptographic chain of custody (SHA-256)

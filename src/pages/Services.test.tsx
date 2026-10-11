@@ -36,7 +36,7 @@ const Services = () => {
               <span className="text-gradient-orange">Industrial Services Hub</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              AI-powered maintenance, machine lifecycle management, and premium support for your equipment.
+              software-assisted maintenance, machine lifecycle management, and premium support for your equipment.
             </p>
           </div>
 
@@ -47,7 +47,7 @@ const Services = () => {
               <TabsTrigger value="register">Register Machine</TabsTrigger>
               <TabsTrigger value="dashboard">Maintenance Dashboard</TabsTrigger>
               <TabsTrigger value="portal">Customer Portal</TabsTrigger>
-              <TabsTrigger value="ai">AI Features</TabsTrigger>
+              <TabsTrigger value="ai">automation Features</TabsTrigger>
             </TabsList>
 
             {/* Services Overview */}
@@ -59,7 +59,7 @@ const Services = () => {
                   description="Scheduled servicing to maximize equipment lifespan"
                   features={[
                     "Custom maintenance plans",
-                    "AI-driven scheduling",
+                    "software-assisted scheduling",
                     "Warranty compliance tracking"
                   ]}
                   actionText="Schedule Maintenance"
@@ -101,7 +101,7 @@ const Services = () => {
                     {machineView === "list" ? "Show Map View" : "Show List View"}
                   </Button>
                 </div>
-                
+
                 {machineView === "list" ? (
                   <div className="grid gap-4">
                     {/* Sample machine - in reality would map through registered machines */}
@@ -142,10 +142,10 @@ const Services = () => {
               </div>
             </TabsContent>
 
-            {/* AI Features — standalone AIFeatures page was removed as an orphan */}
+            {/* automation Features — standalone AIFeatures page was removed as an orphan */}
             <TabsContent value="ai">
               <div className="text-center py-12">
-                <h3 className="typography-h3 mb-4">AI Features</h3>
+                <h3 className="typography-h3 mb-4">automation Features</h3>
                 <p className="text-gray-400">Equipment advisor and comparison tools are available in the shop.</p>
               </div>
             </TabsContent>
@@ -153,7 +153,7 @@ const Services = () => {
 
           {/* Unique Technology Highlights */}
           <Separator className="my-12 bg-almona-light/20" />
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
               <Badge className="mb-4">Patent Pending</Badge>

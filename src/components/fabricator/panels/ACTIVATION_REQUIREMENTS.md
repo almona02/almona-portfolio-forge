@@ -10,7 +10,7 @@
 
 | File | Size | Purpose |
 |------|------|---------|
-| `AISuggestionPanel.tsx` | 8KB | AI-driven suggestions |
+| `AISuggestionPanel.tsx` | 8KB | software-assisted suggestions |
 | `DesignModeComparison.tsx` | 9KB | Mode comparison view |
 | `DesignModeSelector.tsx` | 11KB | Mode selection UI |
 | `OptimizationJobMonitor.tsx` | 8KB | Job monitoring |

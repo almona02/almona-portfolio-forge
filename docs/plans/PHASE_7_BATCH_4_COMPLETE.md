@@ -23,7 +23,7 @@
     - Status: Complete
 
 27. **AITechnicalChatbot.tsx** ✅
-    - Type: AI chatbot component
+    - Type: automation chatbot component
     - Motion usages: 4 (motion.div, AnimatePresence)
     - Status: Complete
 

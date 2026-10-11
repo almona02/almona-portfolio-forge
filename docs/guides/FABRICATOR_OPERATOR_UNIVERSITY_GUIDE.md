@@ -459,7 +459,7 @@ ALMONA Fabricator Pro is an **industrial computing** tool. Adaptive or advisory 
 - human validation of outputs,
 - workshop-approved catalogue and rules.
 
-Do not treat marketing “AI” labels in unrelated menus as a license to skip gates.
+Do not treat marketing “automation” labels in unrelated menus as a license to skip gates.
 
 ---
 

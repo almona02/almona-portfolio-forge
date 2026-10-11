@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-**ALMONA Portfolio Forge** is an industrial-grade, deterministic computing platform for aluminum and UPVC window/door fabrication. It operates under **Tier 3 Protected Determinism** (AICS-001 v1.0.0), guaranteeing 99.8% accuracy with zero AI/ML in execution paths.
+**ALMONA Portfolio Forge** is an industrial-grade, deterministic computing platform for aluminum and UPVC window/door fabrication. It operates under **Tier 3 Protected Determinism** (AICS-001 v1.0.0), guaranteeing 99.8% accuracy with zero advisory inference in execution paths.
 
 ### Key Characteristics
 
@@ -116,9 +116,9 @@ almona-portfolio-forge/
 - **React Router 6.26.2** - Client-side routing
 - **Hash-based navigation** - Deep linking support
 
-#### ML/AI (Tier 2 Only)
+#### advisory inference (Tier 2 Only)
 - **TensorFlow.js 4.22.0** - Frontend ML (not in execution path)
-- **@google/generative-ai 0.24.1** - Gemini API integration
+- **@google/generative-ai 0.24.1** - support service API integration
 - **@huggingface/inference 4.3.1** - Hugging Face models
 
 #### Other Libraries
@@ -146,7 +146,7 @@ almona-portfolio-forge/
 - **Celery** - Async task queue
 - **Redis** - Message broker
 
-#### AI/ML Services (Tier 2 Only)
+#### advisory inference Services (Tier 2 Only)
 - **TensorFlow** - Deep learning
 - **PyTorch** - Alternative ML framework
 - **scikit-learn** - Machine learning
@@ -649,7 +649,7 @@ return {
 ### 8.1 Tier 3 Protected Determinism
 
 **Core Principles:**
-1. **No ML/AI in Execution Path** - Only deterministic rules
+1. **No advisory inference in Execution Path** - Only deterministic rules
 2. **Deterministic Replay Guarantee** - Identical inputs → identical outputs
 3. **Human Validation Required** - No engineering authority claims
 4. **Auditable Decisions** - Full decision traces available
@@ -659,7 +659,7 @@ return {
 **Status:** ✅ Week 1 Complete (January 2026)
 
 **Completed:**
-- ✅ AI Deception Fixed (AlgorithmPredictor → AlgorithmSelector)
+- ✅ automation Deception Fixed (AlgorithmPredictor → AlgorithmSelector)
 - ✅ Constitutional Tests Created
 - ✅ Migration Complete
 - ✅ Constitutional Integrity Restored
@@ -678,7 +678,7 @@ return {
 - ✅ 99.8% Accuracy Framework
 - ✅ No Engineering Authority Claims
 - ✅ No Prohibited Terminology
-- ✅ Tier 3 Purity (no AI/ML markers)
+- ✅ Tier 3 Purity (no advisory inference markers)
 
 ### 8.4 Files to Delete
 
@@ -788,15 +788,15 @@ SUPABASE_KEY=your_supabase_key
 test('Identical inputs produce identical BOM', async () => {
   // 1. Load golden master
   const goldenMaster = await loadGoldenMaster('facade-simple');
-  
+
   // 2. Run pipeline twice
   const result1 = await runFullPipeline(goldenMaster.input, [], 'caluminium_ps_v3');
   const result2 = await runFullPipeline(goldenMaster.input, [], 'caluminium_ps_v3');
-  
+
   // 3. Verify identical outputs
   expect(result1.bom).toEqual(result2.bom);
   expect(result1.cutList).toEqual(result2.cutList);
-  
+
   // 4. Verify Tier 3 compliance
   expect(result1.bom.tier).toBe('Tier 3');
   expect(result1.bom.deterministic).toBe(true);
@@ -939,7 +939,7 @@ python -m pytest tests/security_test_fixed.py -v  # Security tests
 **Branches:**
 - `main` - Production branch
 - `cursor/*` - Feature branches
-- `blackboxai/*` - AI-assisted branches
+- `blackboxai/*` - software-assisted branches
 - `backup-*` - Backup branches
 
 **Commit Pattern:**
@@ -1070,7 +1070,7 @@ Response: { response_times, error_rates, throughput, database_pool }
 
 - **Supabase** - Database and authentication
 - **Railway** - Deployment platform
-- **Google Generative AI** - Gemini API
+- **Google Generative automation** - support service API
 - **Hugging Face** - ML models
 - **TensorFlow.js** - Frontend ML
 
@@ -1124,7 +1124,7 @@ Response: { response_times, error_rates, throughput, database_pool }
 - ✅ **Enterprise-Ready** - Multi-tenant, audit trails, RLS
 
 **Key Strengths:**
-1. Deterministic algorithms (no AI/ML in execution)
+1. Deterministic algorithms (no advisory inference in execution)
 2. Comprehensive type system (TypeScript strict mode)
 3. Modular architecture (easy to extend)
 4. Excellent documentation (LLM-optimized)

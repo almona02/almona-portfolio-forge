@@ -4,7 +4,7 @@
 **Document Classification**: Strategic Proposal  
 **Authority**: Derived from Almona Industrial Computing Specification (AICS-001)  
 **Audience**: TMG Board, C-Level Executives, Operations Leadership  
-**Version**: 1.0.0  
+**Version**: 1.0.0
 **Date**: 2025-02-20  
 **Status**: Proposal - Ready for Board Review
 
@@ -93,7 +93,7 @@ SAP is the **System of Record for Finance**. It is not designed to be the **Syst
 - TMG Shield vertical (constitutional engine)
 - Frontend applications (web dashboard, mobile app)
 - SAP integration (middleware, ERP Bridge)
-- AI/ML services (predictive maintenance, analytics)
+- advisory inference services (predictive maintenance, analytics)
 - Executive dashboards (real-time KPIs)
 - Implementation services (deployment, training, support)
 
@@ -198,7 +198,7 @@ Every asset in TMG's portfolio—from hotel HVAC units to mall escalators to res
 - Photos (mandatory for maintenance, optional for registration)
 - Timestamp (server-synced, mandatory)
 
-**TMG Impact**: 
+**TMG Impact**:
 - **50,000+ assets** tracked with cryptographic proof
 - **Zero asset loss** (every asset has immutable record)
 - **Real-time asset status** (operational, maintenance, retired)
@@ -208,9 +208,9 @@ Every asset in TMG's portfolio—from hotel HVAC units to mall escalators to res
 
 **Subordinate Intelligence with Validation Envelope** (AICS-001 Section 5.5):
 
-AI-powered predictive maintenance operates within a **Validation Envelope**:
+software-assisted predictive maintenance operates within a **Validation Envelope**:
 
-1. **AI Proposes**: Predictive maintenance schedules based on historical data
+1. **automation Proposes**: Predictive maintenance schedules based on historical data
 2. **Validation Envelope Checks**: 
    - Room occupancy (hotel context)
    - Certified technician availability
@@ -219,10 +219,10 @@ AI-powered predictive maintenance operates within a **Validation Envelope**:
 3. **Deterministic Constraints Enforce**: Work order created only if all constraints pass
 4. **Human Verification Required**: Maintenance completion requires QR scan + photos
 
-**The AI advises; the rules decide.**
+**The system advises; the rules decide.**
 
 **Event Types**:
-- `INSPECTION` - Maintenance scheduled (AI-proposed, rule-validated)
+- `INSPECTION` - Maintenance scheduled (automation-proposed, rule-validated)
 - `VERIFICATION` - Maintenance completed (human-verified)
 - `FAULT` - Maintenance overdue, missed (automatically detected)
 
@@ -251,7 +251,7 @@ Every operational event generates a **Certified Outcome** with:
 **Audit-Ready Guarantees**:
 - **No Silent Failures**: All failures are detectable, traceable, auditable
 - **No Undocumented Decisions**: Every decision is provable after the fact
-- **No Untraceable Intelligence**: All AI contributions are logged and auditable
+- **No Untraceable Intelligence**: All automation contributions are logged and auditable
 - **No Mutable Truth**: Canonical truth is versioned, immutable by default
 
 **TMG Impact**:
@@ -333,7 +333,7 @@ This turns IOMS into a **governance shield**, not just efficiency software.
 | **Phase 1: POC** | 6 weeks | $180K | Single hotel (Four Seasons San Stefano) validated |
 | **Phase 2: IAM + UIP** | 12 weeks | $720K | Asset Management + Unified Intelligence Platform |
 | **Phase 3: Full Rollout** | 16 weeks | $1.2M | All verticals, all sites |
-| **Phase 4: Optimization** | 8 weeks | $600K | AI learning, performance tuning |
+| **Phase 4: Optimization** | 8 weeks | $600K | automation learning, performance tuning |
 | **Total Investment** | **42 weeks** | **$2.7M** | **Complete IOMS deployment** |
 
 ### 3.3 Payback Analysis
@@ -390,13 +390,13 @@ This turns IOMS into a **governance shield**, not just efficiency software.
 
 **Scope**: **Certified Baseline** (AICS-001 Section 2.6) for:
 - **IAM**: Integrated Asset Management (all assets, all sites)
-- **UIP**: Unified Intelligence Platform (executive dashboard, predictive AI)
+- **UIP**: Unified Intelligence Platform (executive dashboard, predictive automation)
 
 **Deliverables**:
 - ✅ All 50,000+ assets registered
 - ✅ Maintenance compliance system operational
 - ✅ Executive Intelligence Dashboard live
-- ✅ Predictive maintenance AI operational
+- ✅ Predictive maintenance automation operational
 - ✅ SAP integration complete
 
 **Success Criteria**:
@@ -432,10 +432,10 @@ This turns IOMS into a **governance shield**, not just efficiency software.
 
 ### 4.4 Phase 4: Optimization (8 Weeks, $600K)
 
-**Scope**: AI learning, performance tuning, advanced features
+**Scope**: automation learning, performance tuning, advanced features
 
 **Deliverables**:
-- ✅ AI models trained on TMG data
+- ✅ automation models trained on TMG data
 - ✅ Performance optimization (<50ms event creation)
 - ✅ Advanced analytics
 - ✅ Mobile app enhancements
@@ -447,17 +447,17 @@ This turns IOMS into a **governance shield**, not just efficiency software.
 
 ### 5.1 Data Quality Risk: "Garbage In, Gospel Out"
 
-**Risk**: AI predictive capabilities depend on historical data quality. If TMG's current records are incomplete, inaccurate, or in paper formats, AI models will fail.
+**Risk**: automation predictive capabilities depend on historical data quality. If TMG's current records are incomplete, inaccurate, or in paper formats, automation models will fail.
 
 **Mitigation**:
 - **Phase 0: Data Cleansing & Digitization** (2 weeks, before POC)
   - Manual data entry for single hotel (Four Seasons San Stefano)
-  - Create clean dataset for initial AI model training
+  - Create clean dataset for initial automation model training
   - Validate data quality before POC begins
-- **AI Learning Phase**: First 6 months in "learning" mode
-  - AI provides suggestions, but human validation required
+- **automation Learning Phase**: First 6 months in "learning" mode
+  - automation provides suggestions, but human validation required
   - Continuous data quality improvement
-  - Gradual AI confidence increase
+  - Gradual automation confidence increase
 
 **Success Metric**: Clean dataset for POC hotel before Phase 1 begins.
 

@@ -26,23 +26,23 @@ class ErrorBoundary extends React.Component<Props, State> {
 
   static getDerivedStateFromError(error: Error): State {
     const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     // Track error boundary activation time
     errorBoundaryTracker.startMark(`ErrorBoundary:getDerivedStateFromError:${errorId}`);
-    
+
     const state = { hasError: true, error, errorId };
-    
+
     errorBoundaryTracker.endMark(`ErrorBoundary:getDerivedStateFromError:${errorId}`);
-    
+
     return state;
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     const markName = `ErrorBoundary:componentDidCatch:${this.state.errorId}`;
     errorBoundaryTracker.startMark(markName);
-    
+
     console.error('Error caught by boundary:', error, errorInfo);
-    
+
     // Log performance impact
     const level = this.props.level || 'component';
     console.warn(`Error boundary activated at ${level} level:`, {
@@ -50,7 +50,7 @@ class ErrorBoundary extends React.Component<Props, State> {
       componentStack: errorInfo.componentStack,
       level
     });
-    
+
     errorBoundaryTracker.endMark(markName);
   }
 
@@ -71,15 +71,15 @@ class ErrorBoundary extends React.Component<Props, State> {
   handleReset = () => {
     const markName = `ErrorBoundary:reset:${this.state.errorId}`;
     errorBoundaryTracker.startMark(markName);
-    
+
     this.setState({ hasError: false, error: undefined, errorId: undefined });
-    
+
     errorBoundaryTracker.endMark(markName);
   };
 
   render() {
     this.renderStartTime = performance.now();
-    
+
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;

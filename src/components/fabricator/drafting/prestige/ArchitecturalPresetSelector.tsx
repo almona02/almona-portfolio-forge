@@ -35,7 +35,7 @@ export interface ArchitecturalPreset {
   icon: string;
   complexity: 'Basic' | 'Moderate' | 'Advanced' | 'Expert' | 'Bespoke';
 
-  // Workshop guidance (shown as checklist, not “AI”)
+  // Workshop guidance (shown as checklist, not “automation”)
   intelligence: {
     gridPattern: string;
     systemRecommendation: string;

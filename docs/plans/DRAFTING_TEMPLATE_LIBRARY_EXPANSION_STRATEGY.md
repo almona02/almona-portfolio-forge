@@ -3,14 +3,14 @@
 
 **Date:** January 2026  
 **Current:** 50 templates  
-**Target:** 1000+ templates (competitive with Kliess)  
+**Target:** 1000+ templates (competitive with reference system)
 **Strategy:** Multi-pronged automated approach
 
 ---
 
 ## 🎯 The Challenge
 
-**Kliess Orgadata:** 1000+ pre-built templates  
+**reference system reference system:** 1000+ pre-built templates
 **ALMONA:** 50 templates (but with unique advantages)
 
 **Key Insight:** We don't need to manually create 1000 templates. We can leverage:
@@ -67,7 +67,7 @@ const allTemplates = await extractTemplatesFromAllWorkshops({
 class TemplateGenerator {
   generateAllVariations(basePattern: EgyptianTemplate): EgyptianTemplate[] {
     const variations: EgyptianTemplate[] = [];
-    
+
     // Generate cell type variations
     for (const cellType of ['fixed', 'sliding', 'casement', 'tilt-turn']) {
       // Generate grid size variations
@@ -82,7 +82,7 @@ class TemplateGenerator {
         }
       }
     }
-    
+
     return variations;
   }
 }
@@ -112,19 +112,19 @@ class TemplateGenerator {
 class PatternVariationEngine {
   generateVariations(template: EgyptianTemplate): EgyptianTemplate[] {
     const variations: EgyptianTemplate[] = [];
-    
+
     // Mullion variations
     variations.push(...this.addMullionVariations(template));
-    
+
     // Transom variations
     variations.push(...this.addTransomVariations(template));
-    
+
     // Cell type variations
     variations.push(...this.changeCellTypeVariations(template));
-    
+
     // Regional adaptations
     variations.push(...this.regionalAdaptations(template));
-    
+
     return variations;
   }
 }
@@ -268,7 +268,7 @@ export class TemplateGenerator {
    */
   generateAllVariations(): EgyptianTemplate[] {
     const templates: EgyptianTemplate[] = [];
-    
+
     // Base grid sizes
     const gridSizes = [
       { rows: 1, cols: 1 },
@@ -286,10 +286,10 @@ export class TemplateGenerator {
       { rows: 5, cols: 3 },
       { rows: 3, cols: 5 }
     ];
-    
+
     // Cell type combinations
     const cellTypes = ['fixed', 'sliding', 'casement', 'tilt-turn'];
-    
+
     // Generate for each grid size
     for (const gridSize of gridSizes) {
       // Generate all cell type combinations
@@ -298,7 +298,7 @@ export class TemplateGenerator {
         gridSize.cols,
         cellTypes
       );
-      
+
       for (const combination of combinations) {
         templates.push(this.createTemplate({
           ...gridSize,
@@ -307,10 +307,10 @@ export class TemplateGenerator {
         }));
       }
     }
-    
+
     return templates;
   }
-  
+
   /**
    * Generate cell type combinations for a grid
    */
@@ -321,7 +321,7 @@ export class TemplateGenerator {
   ): string[][][] {
     const totalCells = rows * cols;
     const combinations: string[][][] = [];
-    
+
     // Generate all possible combinations (with smart filtering)
     this.generateCombinationsRecursive(
       rows,
@@ -330,10 +330,10 @@ export class TemplateGenerator {
       [],
       combinations
     );
-    
+
     return combinations;
   }
-  
+
   /**
    * Create template from specification
    */
@@ -352,7 +352,7 @@ export class TemplateGenerator {
       constraints: spec.constraints
     };
   }
-  
+
   /**
    * Calculate constraints based on cell types
    */
@@ -366,16 +366,16 @@ export class TemplateGenerator {
   } {
     const hasSliding = cellTypes.some(row => row.some(cell => cell === 'sliding'));
     const hasCasement = cellTypes.some(row => row.some(cell => cell === 'casement'));
-    
+
     // Base constraints
     const cols = cellTypes[0]?.length || 1;
     const rows = cellTypes.length || 1;
-    
+
     const minCellWidth = hasSliding ? 600 : hasCasement ? 400 : 300;
     const maxCellWidth = hasSliding ? 1200 : hasCasement ? 800 : 2000;
     const minCellHeight = hasSliding ? 1200 : hasCasement ? 500 : 300;
     const maxCellHeight = hasSliding ? 2000 : hasCasement ? 1600 : 3000;
-    
+
     return {
       minWidth: minCellWidth * cols,
       maxWidth: maxCellWidth * cols,
@@ -385,7 +385,7 @@ export class TemplateGenerator {
       cellMinHeight: minCellHeight
     };
   }
-  
+
   /**
    * Generate template name
    */
@@ -400,13 +400,13 @@ export class TemplateGenerator {
         typeCounts.set(cell, (typeCounts.get(cell) || 0) + 1);
       });
     });
-    
+
     const parts: string[] = [];
     if (typeCounts.get('sliding')) parts.push(`${typeCounts.get('sliding')}-Panel Sliding`);
     if (typeCounts.get('casement')) parts.push(`${typeCounts.get('casement')}-Sash Casement`);
     if (typeCounts.get('tilt-turn')) parts.push(`${typeCounts.get('tilt-turn')} Tilt-Turn`);
     if (typeCounts.get('fixed')) parts.push(`${typeCounts.get('fixed')} Fixed`);
-    
+
     return parts.join(' + ') || `${spec.rows}x${spec.cols} Grid`;
   }
 }
@@ -422,11 +422,11 @@ export async function extractTemplatesFromAllWorkshops(options?: {
   minConfidence?: number;
 }): Promise<ExtractedTemplate[]> {
   const { extractTemplatesFromHistory } = await import('./templateExtractor');
-  
+
   // Load all jobs from all workshops
   const { useJobsStore } = await import('@/store/jobsStore');
   const jobs = useJobsStore.getState().jobs;
-  
+
   // Extract templates with lower thresholds for discovery
   const templates = await extractTemplatesFromHistory(jobs, {
     minFrequency: options?.minFrequency || 1, // Even single-use
@@ -434,17 +434,17 @@ export async function extractTemplatesFromAllWorkshops(options?: {
     includeMaterialPreferences: true,
     includeSuccessMetrics: true
   });
-  
+
   // Deduplicate by pattern key
   const uniqueTemplates = deduplicateTemplates(templates);
-  
+
   return uniqueTemplates;
 }
 
 function deduplicateTemplates(templates: ExtractedTemplate[]): ExtractedTemplate[] {
   const seen = new Set<string>();
   const unique: ExtractedTemplate[] = [];
-  
+
   for (const template of templates) {
     const key = `${template.rows}x${template.cols}:${JSON.stringify(template.cellTypes)}`;
     if (!seen.has(key)) {
@@ -452,7 +452,7 @@ function deduplicateTemplates(templates: ExtractedTemplate[]): ExtractedTemplate
       unique.push(template);
     }
   }
-  
+
   return unique;
 }
 ```
@@ -462,7 +462,7 @@ function deduplicateTemplates(templates: ExtractedTemplate[]): ExtractedTemplate
 ## 🎯 Competitive Advantage
 
 ### Quality over Quantity
-- **Kliess:** 1000+ generic templates
+- **reference system:** 1000+ generic templates
 - **ALMONA:** 1000+ templates **extracted from real projects**
 
 ### Unique Features
@@ -485,7 +485,7 @@ function deduplicateTemplates(templates: ExtractedTemplate[]): ExtractedTemplate
 ### Week 1 Target
 - **Current:** 50 templates
 - **After Phase 1:** 350 templates
-- **Gap Closed:** 35% → 100% (if Kliess has 1000)
+- **Gap Closed:** 35% → 100% (if reference system has 1000)
 
 ### Week 2 Target
 - **After Phase 2:** 750 templates

@@ -114,7 +114,7 @@ export class AdvisoryGate {
     }
 
     /**
-     * Pure Presentation: No AI, no state mutation, read-only
+     * Pure Presentation: No automation, no state mutation, read-only
      * AICS-001 §5.3.4: No gates needed, minimal wrapper
      */
     static presentation(component: () => Promise<{ default: ComponentType<any> }>) {

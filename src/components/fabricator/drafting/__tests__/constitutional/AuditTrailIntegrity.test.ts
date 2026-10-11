@@ -41,7 +41,7 @@ describe('Audit Trail Integrity (AICS-001 §7.4)', () => {
     expect(content).toContain('operationId');
   });
 
-  it('should not import ML/AI libraries (Tier 0 boundary)', () => {
+  it('should not import advisory inference libraries (Tier 0 boundary)', () => {
     const content = fs.readFileSync(auditTrailPath, 'utf8');
     const forbiddenImports = [
       'tensorflow', 'pytorch', 'torch', 'sklearn',

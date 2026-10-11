@@ -168,14 +168,14 @@ export const EnhancedGLBViewer = forwardRef<{ resetCamera: () => void }, Enhance
         }
       })();
     }
-    
+
     // Check for SwiftXR app on iOS
     if (isIOS) {
       void detectSwiftXR().then(result => {
         if (!cancelled) setSwiftXRInstalled(result.isInstalled);
       });
     }
-    
+
     return () => { cancelled = true; };
   }, [enableWebXR, isIOS]);
 
@@ -248,7 +248,7 @@ export const EnhancedGLBViewer = forwardRef<{ resetCamera: () => void }, Enhance
                       const fullModelUrl = modelPath.startsWith('http') 
                         ? modelPath 
                         : `${window.location.origin}${modelPath}`;
-                      
+
                       const success = await launchSwiftXR({
                         modelName,
                         modelUrl: fullModelUrl,
@@ -270,10 +270,10 @@ export const EnhancedGLBViewer = forwardRef<{ resetCamera: () => void }, Enhance
                           document.body.removeChild(link);
                         }
                       });
-                      
+
                       if (success) return;
                     }
-                    
+
                     // Fallback to Quick Look
                     const link = document.createElement('a');
                     link.href = usdzPath;

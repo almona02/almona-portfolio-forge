@@ -124,7 +124,7 @@
 ## 💡 Strategic Insight
 
 **70% reduction to 2GB is excellent and credible for:**
-- Industrial AI platform
+- Industrial automation platform
 - ML libraries (TensorFlow, OpenCV, ONNX)
 - Computer vision (Tesseract OCR)
 - Real-time analytics

@@ -17,7 +17,7 @@ This report analyzes the current operational status of AICS-001 requirements bas
 | Section | Status | Operational | Integration Status |
 |---------|--------|-------------|-------------------|
 | **4.3/4.4** Deterministic Constraints & Validation Envelope | ✅ **COMPLETE** | ✅ Operational | ✅ Integrated |
-| **5.10** Constitutional AI Governance | ✅ **COMPLETE** | ✅ Operational | ✅ Integrated |
+| **5.10** Constitutional automation Governance | ✅ **COMPLETE** | ✅ Operational | ✅ Integrated |
 | **6.0** Canonical Source of Truth (Services) | ✅ **COMPLETE** | ✅ Operational | ⚠️ Integration Pending |
 | **7.4** Audit Trail Doctrine | ✅ **COMPLETE** | ✅ Operational | ⚠️ Integration Pending |
 | **7.5** Deterministic Replay Guarantee | ✅ **COMPLETE** | ✅ Operational | ✅ Integrated (Tests) |
@@ -162,7 +162,7 @@ This report analyzes the current operational status of AICS-001 requirements bas
 | Section | Requirements | Implemented | Operational | Integration | Score |
 |---------|-------------|-------------|-------------|-------------|-------|
 | **4.3/4.4** Constraints & Validation Envelope | 5 | 5 | 5 | 5 | **100%** |
-| **5.10** Constitutional AI Governance | 10 | 10 | 10 | 10 | **100%** |
+| **5.10** Constitutional automation Governance | 10 | 10 | 10 | 10 | **100%** |
 | **6.0** Canonical Source of Truth (Services) | 5 | 5 | 5 | 2 | **80%** |
 | **7.4** Audit Trail Doctrine | 12 | 12 | 12 | 2 | **85%** |
 | **7.5** Deterministic Replay | 10 | 10 | 10 | 5 | **95%** |

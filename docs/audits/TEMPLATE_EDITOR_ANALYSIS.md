@@ -64,7 +64,7 @@ interface TemplateEditorProps {
 - **UI**: Grid layout of template cards
 
 ### 3. Recommendations Tab
-- **Purpose**: Get AI/ML-based template recommendations
+- **Purpose**: Get advisory inference-based template recommendations
 - **Trigger**: "Get Recommendations" button (requires currentDesign)
 - **Logic**: `getTemplateRecommendations(workshopId, dimensions, context)`
 - **Context**:
@@ -295,7 +295,7 @@ src/components/fabricator/drafting/
 The Template Editor is a comprehensive tool for template management in the drafting workflow. It provides:
 - ✅ Template extraction from current designs
 - ✅ Historical pattern analysis
-- ✅ AI/ML-based recommendations
+- ✅ advisory inference-based recommendations
 - ✅ Workshop knowledge extraction
 - ✅ Filtering and search capabilities
 - ✅ Visual template previews

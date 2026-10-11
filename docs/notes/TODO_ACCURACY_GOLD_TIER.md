@@ -37,7 +37,7 @@
 - [ ] Secondary: hover background shift to slate-700
 - [ ] Outline: transparent bg, border slate-600, hover bg rgba(148,163,184,0.08)
 - [ ] Loading: spinner before label, aria-busy, disabled state
-- [ ] Disabled: opacity 0.5, cursor-not-allowed
+- [ ] Disabled: opacity 0.5, development tool-not-allowed
 - [ ] Test files: `src/components/ui/button.tsx`, `src/components/common/Button.tsx`
 
 ### 2.2 Input Components
@@ -246,8 +246,8 @@
 - [ ] Time-to-task: <30s for common tasks
 
 ### Competitive Metrics
-- [ ] Klaes parity: Match or exceed
-- [ ] Orgadata parity: Match or exceed
+- [ ] reference system parity: Match or exceed
+- [ ] reference system parity: Match or exceed
 - [ ] Market differentiation: Unique features
 
 ---

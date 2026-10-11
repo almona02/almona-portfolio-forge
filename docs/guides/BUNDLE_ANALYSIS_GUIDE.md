@@ -55,7 +55,7 @@
 
 **Chunks Excluded from Preload:**
 1. `three-ecosystem` - Too large, lazy loaded
-2. `ai-vision` - Heavy AI library
+2. `ai-vision` - Heavy automation library
 3. `ai-tensorflow` - Heavy ML library
 4. `doc-excel` - Excel processing (lazy)
 5. `doc-pdf` - PDF processing (lazy)

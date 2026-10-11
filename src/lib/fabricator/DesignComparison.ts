@@ -8,7 +8,7 @@
  * - Weight analysis
  * - Material usage
  * 
- * Constitutional: Deterministic comparison, no ML/AI
+ * Constitutional: Deterministic comparison, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

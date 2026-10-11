@@ -442,7 +442,7 @@ export interface AlmonaReproducibilitySurface {
 }
 
 /**
- * ALMONA-only forensic classification. Does not explain DoWin.
+ * ALMONA-only forensic classification. Does not explain reference system.
  * Production optimizer behavior is not patched here.
  */
 export const ALMONA_REPRODUCIBILITY_SURFACES: readonly AlmonaReproducibilitySurface[] = [
@@ -751,7 +751,7 @@ export type TopologyComparison =
 
 /**
  * Separates a genuine bar-assignment divergence from a mere difference in the
- * within-bar cut sequence. This matters because DoWin does not render one
+ * within-bar cut sequence. This matters because reference system does not render one
  * uniform sequence convention, and a sequence that was never captured must not
  * be allowed to manufacture a divergence.
  */
@@ -1793,7 +1793,7 @@ export const STOCK_COMMIT_DIALOG_TRIGGER = {
 } as const;
 
 /**
- * Solver stages DoWin logs per solve. Recorded because simulated annealing is
+ * Solver stages reference system logs per solve. Recorded because simulated annealing is
  * a stochastic metaheuristic and is therefore the candidate mechanism for any
  * topology non-repeatability FP-024C.3 might find. Observation only: no seed,
  * RNG, or determinism guarantee is exposed, so this proves nothing on its own.
@@ -2369,7 +2369,7 @@ export type Fp024cNinetyControlDualUseClassification =
  * FP-024C.5 independent 90° compensation fixture.
  * Chosen for a clear 90/90 mullion plus 45/45 frame references — not to
  * trigger ORTA surplus, demand=1, or the asdd 1→4 observation. Mullion
- * packed/nominal lengths are not pre-encoded; DoWin must generate them.
+ * packed/nominal lengths are not pre-encoded; reference system must generate them.
  */
 export const FP024C_NINETY_CONTROL_SPEC = {
   fixtureId: 'FP024C_90_CONTROL',
@@ -3221,7 +3221,7 @@ export function evaluateCitaWeldCausalityFromExistingArtifacts(args: {
 /**
  * FP-024C.9 — existing-artifact profile coverage. CITA Design Report
  * transcribed from the already-exported C.6 Design Preview PDF.
- * Do not open DoWin. Do not change settings. Do not solve. Do not
+ * Do not open reference system. Do not change settings. Do not solve. Do not
  * implement RequiredParts = Report + WeldingWaste. AICS-001.
  */
 export const FP024C9_EXISTING_ARTIFACT_PROFILE_COVERAGE = {

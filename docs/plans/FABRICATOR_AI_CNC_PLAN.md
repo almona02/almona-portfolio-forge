@@ -1,8 +1,8 @@
-# Fabricator Pro AI & CNC Integration Plan
+# Fabricator Pro automation & CNC Integration Plan
 
-This phase focuses on optimizing the AI capabilities for manufacturing efficiency and implementing the core CNC integration features, building on the secured infrastructure.
+This phase focuses on optimizing the automation capabilities for manufacturing efficiency and implementing the core CNC integration features, building on the secured infrastructure.
 
-## 1. AI Model Optimization
+## 1. automation Model Optimization
 - [ ] Create `python_backend/ai_services/optimization/model_converter.py`
     - Implement conversion of YOLOv8 models to ONNX format for faster CPU inference.
 - [ ] Create `python_backend/ai_services/nesting/smart_nesting.py`

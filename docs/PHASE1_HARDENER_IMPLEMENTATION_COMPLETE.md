@@ -464,7 +464,7 @@ const hardenerSelection = hardenerSelector.selectHardenerForWindowUnit(windowUni
 
 ### ✅ Tier 3 Purity
 
-**Guarantee:** No ML/AI in execution paths  
+**Guarantee:** No advisory inference in execution paths
 **Implementation:**
 - All selection is rule-based
 - No ML models used

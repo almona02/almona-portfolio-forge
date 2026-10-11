@@ -1,5 +1,5 @@
 /**
- * Tier Metrics - Constitutional AI Governance Metrics
+ * Tier Metrics - Constitutional automation Governance Metrics
  * 
  * Tracks tier coverage, violations, and reasoning quality
  * to measure architectural health.
@@ -37,7 +37,7 @@ export interface ConstitutionalHealthMetrics {
 /**
  * Tier Metrics Service
  * 
- * Tracks and reports on Constitutional AI governance health.
+ * Tracks and reports on Constitutional automation governance health.
  */
 export class TierMetrics {
   private static coverage: TierCoverageMetrics = {
@@ -90,7 +90,7 @@ export class TierMetrics {
    */
   static recordYDTResponse(hasReasoning: boolean, hasStructuredReasoning: boolean): void {
     this.reasoning.totalYDTResponses++;
-    
+
     if (hasReasoning) {
       this.reasoning.responsesWithReasoning++;
     } else {
@@ -111,7 +111,7 @@ export class TierMetrics {
    */
   static getMetrics(): ConstitutionalHealthMetrics {
     const violations = this.getViolationMetrics();
-    
+
     return {
       tierCoverage: { ...this.coverage },
       reasoningQuality: { ...this.reasoning },
@@ -200,7 +200,7 @@ export class TierMetrics {
     const violations = this.getViolationMetrics();
     const totalTier3 = this.coverage.tier3Decisions;
     const violationsInTier3 = violations.ydtCalledInDeterministicPath;
-    
+
     if (totalTier3 === 0) {
       this.coverage.tier3Purity = 100;
     } else {
@@ -220,7 +220,7 @@ export class TierMetrics {
     } else {
       this.reasoning.reasoningCoverage = 
         (this.reasoning.responsesWithReasoning / this.reasoning.totalYDTResponses) * 100;
-      
+
       this.reasoning.reasoningQuality = 
         (this.reasoning.responsesWithStructuredReasoning / this.reasoning.totalYDTResponses) * 100;
     }
@@ -255,7 +255,7 @@ export class TierMetrics {
    */
   static exportForDashboard(): any {
     const metrics = this.getMetrics();
-    
+
     return {
       health: {
         score: metrics.healthScore,

@@ -38,7 +38,7 @@ import { AISuggestionPanel } from '@/future/advisory-panels/AISuggestionPanel';
 |------|---------|---------------|
 | **Tier 2** | Collaborative Intelligence | `AdvisoryGate.tier2()` |
 | **Tier 2 Limited** | Suggestions only | `AdvisoryGate.tier2Limited()` |
-| **Presentation** | Read-only, no AI | `AdvisoryGate.presentation()` |
+| **Presentation** | Read-only, no automation | `AdvisoryGate.presentation()` |
 
 ## Constitutional Guarantees
 

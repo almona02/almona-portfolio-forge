@@ -23,7 +23,7 @@ Evidence (behavioural, not decompiled):
 | Source | Statement |
 |--------|---------|
 | Licensed Yilmaz dealer audit 9 Sep 2026 | “Bar packing = Σ(piece + SawThickness) + TrimCut” (`docs/audits/DOWIN_VS_ALMONA_DEALER_AUDIT_2026-09-09.md`) |
-| DoWin factory Settings | `SawThickness` 4 mm; `TrimCut` 0 |
+| reference system factory Settings | `SawThickness` 4 mm; `TrimCut` 0 |
 | Chop-saw process | Each finished piece is cut off remaining stock. The last piece still requires a saw pass. N−1 “gaps between items only” omits that pass. |
 
 A one-piece bar makes this unambiguous: cutting a 1000 mm piece from 6000 mm stock consumes **one** kerf. N−1 would consume zero.
@@ -77,7 +77,7 @@ Warehouse `src/lib/inventory/RemnantManager.ts`:
 - `fromManufacturingSettings()` still yields **500** for `yilmazcad-parity`.
 - Canonical remnant millimetres on a packed bar remain `barRemnantLengthMm`.
 
-Platform 300 vs yilmazcad-parity 500 is unchanged.
+Platform 300 vs reference system-parity 500 is unchanged.
 
 ---
 
@@ -109,7 +109,7 @@ Same bar `[1400, 1000, 800]` / 6000 mm / kerf 4 / trim 0 → optimizer waste, Cu
 
 ## Scores (unchanged)
 
-FP-023B makes bar **consumption** consistent. It does not prove piece **lengths** vs a DoWin export. Do not raise physical-length correctness above **6.0/10** yet.
+FP-023B makes bar **consumption** consistent. It does not prove piece **lengths** vs a reference system export. Do not raise physical-length correctness above **6.0/10** yet.
 
 | Area | Score |
 |------|------:|
@@ -130,6 +130,6 @@ FP-023B makes bar **consumption** consistent. It does not prove piece **lengths*
 
 Next: **FP-024** only. Acceptance remains:
 
-> Same elevation + same system + same manufacturing settings → ALMONA cut lengths within **±0.1 mm** of a **real exported DoWin cut list**, per physical piece.
+> Same elevation + same system + same manufacturing settings → ALMONA cut lengths within **±0.1 mm** of a **real exported reference system cut list**, per physical piece.
 
 FP-024 must score **separately**: frame, sash horizontal, sash vertical, mullion, glass, angle compensation. No physical-length score increase until that external fixture passes. After it passes, physical-length correctness may move from 6.0 toward ~8.0–8.5.

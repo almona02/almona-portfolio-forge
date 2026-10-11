@@ -1,4 +1,4 @@
-# FP-024A — External DoWin Golden Parity (9 September 2026)
+# FP-024A — External reference system Golden Parity (9 September 2026)
 
 | Field | Value |
 |-------|--------|
@@ -6,7 +6,7 @@
 | Repository | `almona-portfolio-forge` |
 | Branch | `feature/fp024-dowin-external-golden` |
 | Depends on | FP-023A (settings contract), FP-023B (canonical kerf identity) |
-| Scope | Ingest licensed asdd export; three-layer length semantics; per-piece ±0.1 mm gate. Not FP-016, FP-017, column generation, or a DoWin UI clone. |
+| Scope | Ingest licensed asdd export; three-layer length semantics; per-piece ±0.1 mm gate. Not FP-016, FP-017, column generation, or a reference system UI clone. |
 | Fixture | `dowin-deceuninck70z-asdd-1000x1500-20260909` (`deceuninck70-asdd-1000x1500-dowin-2026-09-09`) |
 | Gate | ❌ **NOT ACCEPTED** |
 | Physical-length score | **Unchanged at 6.0/10** |
@@ -19,7 +19,7 @@ External-fixture availability is **unblocked**. Physical-length parity is **not 
 
 ❌ **NOT ACCEPTED**
 
-The licensed DoWin job is now a real fixture. Represented categories (frame, sash, mullion, glazing bead) all **FAIL** against ALMONA actuals. Glass remains **UNPROVEN** (`PENDING_EXTERNAL_FIXTURE`). Angle compensation remains **UNPROVEN** / `NOT_APPLICABLE`. `dowinParityGatePasses` is **false**. FP-023A/B were not rewritten to chase DoWin remainders.
+The licensed reference system job is now a real fixture. Represented categories (frame, sash, mullion, glazing bead) all **FAIL** against ALMONA actuals. Glass remains **UNPROVEN** (`PENDING_EXTERNAL_FIXTURE`). Angle compensation remains **UNPROVEN** / `NOT_APPLICABLE`. `dowinParityGatePasses` is **false**. FP-023A/B were not rewritten to chase reference system remainders.
 
 ---
 
@@ -46,7 +46,7 @@ The licensed DoWin job is now a real fixture. Represented categories (frame, sas
 | FP-024 fixture | `src/lib/fabricator/golden/dowinPhysicalLengthFixture.ts` | this audit |
 | FP-023A/B audits | `docs/audits/FP-023A-MANUFACTURING-SETTINGS-CONTRACT_2026-09-09.md`, `docs/audits/FP-023B-KERF-ACCOUNTING_2026-09-09.md` | unchanged identity |
 | Design workspace | `src/components/fabricator/drafting/DraftingWorkbench.tsx` | existing three-pane Studio |
-| Production / optimization UI | `ProjectOptimizer.tsx`, `CuttingOptimizationEngine.tsx` | mixed planning/optimization; DoWin four-region cockpit **not** built |
+| Production / optimization UI | `ProjectOptimizer.tsx`, `CuttingOptimizationEngine.tsx` | mixed planning/optimization; reference system four-region cockpit **not** built |
 | Playwright | `playwright.config.ts`, `tests/e2e/` | exists; Design/Production/Optimization visual-diff **not** captured (workbench hierarchy not implemented) |
 
 FP-023A ⚠️ CONDITIONAL and FP-023B ✅ PROVEN (internal N-kerf identity) remain the accepted program state.
@@ -133,7 +133,7 @@ Per-piece rule: one piece with `abs(actual − expected) > 0.1` fails the catego
 
 Isolated `DowinParityLengthEngine` (not production `UPVCCuttingEngine`) using sash-outer **437 × 1416** from the design property panel:
 
-| Term | Documented expression | Result | DoWin packed | Adopted? |
+| Term | Documented expression | Result | reference system packed | Adopted? |
 |-------|------------------------|-------:|-------------:|----------|
 | sash inner W | 437 − 2×7 | 423 | — | tracing only |
 | sash H | inner + 12 + 6 + 3 | **444** | 454 | **No** (−10 mm) |
@@ -153,7 +153,7 @@ Class: sash packed miss is `UNEVIDENCED_FORMULA` (documented Basma/Kaynak path d
 
 Canonical FP-023B: N × 4 mm kerf, trim 0. External remainders are **not** used to rewrite `barPackAccounting`.
 
-| Pattern | Stock | Packed labels | DoWin remaining | Unexplained after N×kerf |
+| Pattern | Stock | Packed labels | reference system remaining | Unexplained after N×kerf |
 |---------|------:|---------------|----------------:|--------------------------:|
 | KASA-70 | 6000 | 1503×2 + 1003×2 | 965 | **7 mm** UNRECONCILED |
 | KANAT-70 ×2 | 6000 | 1433×2 + 454×2 | 2203 | **7 mm** UNRECONCILED |
@@ -195,7 +195,7 @@ flowchart TD
 
 ## UI / reports checkpoint
 
-DoWin information architecture is documented in `docs/audits/DOWIN_UI_REFERENCE_ANNOTATIONS_2026-09-09.md` (text/diagrams only; no copyrighted screenshots).
+reference system information architecture is documented in `docs/audits/DOWIN_UI_REFERENCE_ANNOTATIONS_2026-09-09.md` (text/diagrams only; no copyrighted screenshots).
 
 Implemented in this slice (ALMONA identity, not a pixel clone):
 
@@ -229,7 +229,7 @@ Not implemented (STOP — parity still fails; do not hide it with a cockpit):
 
 Allowed evidence used: licensed manual (behaviour), legitimate PDFs, legitimate MDB millimetres, dealer-audit documented settings, independently implemented ALMONA code.
 
-Not done: no binary decompilation, no SQLCipher/DPAPI, no Eyeshot/artwork copy, no pixel-identical DoWin clone, no licensed binaries or encrypted shop DBs committed.
+Not done: no binary decompilation, no SQLCipher/DPAPI, no Eyeshot/artwork copy, no pixel-identical reference system clone, no licensed binaries or encrypted shop DBs committed.
 
 External golden values are **test/reference input only**. They are not runtime manufacturing authority.
 

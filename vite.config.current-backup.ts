@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), "");
   const isProduction = mode === "production";
-  
+
 
   return {
     base: '/',
@@ -75,7 +75,7 @@ export default defineConfig(({ mode }) => {
         // Optimize JSX runtime
         jsxRuntime: 'automatic'
       }),
-      
+
       // Plugin to ensure long package is available for TensorFlow.js
       {
         name: 'fix-long-package',
@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => {
           }
         }
       },
-      
+
       // PWA Configuration - Stable, Production-Ready
       ...(isProduction ? [VitePWA({
         registerType: "autoUpdate",
@@ -217,7 +217,7 @@ export default defineConfig(({ mode }) => {
           ]
         }
       })] : []),
-      
+
       // Bundle analyzer (only in production with ANALYZE=true)
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
@@ -255,9 +255,9 @@ export default defineConfig(({ mode }) => {
       extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
       // **IMPORTANT: Keep React deduped**
       dedupe: [
-        "react", 
-        "react-dom", 
-        "react/jsx-runtime", 
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
         "react/jsx-dev-runtime",
         "antd",
         "@ant-design/icons",
@@ -285,21 +285,21 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "esbuild" : false,
       sourcemap: false,
-      
+
       // **REDUCE CHUNK SIZE WARNING - Target 1MB chunks**
       chunkSizeWarningLimit: 1024,
-      
+
       assetsInlineLimit: 2048,
       reportCompressedSize: false,
       cssCodeSplit: true,
-      
+
       commonjsOptions: {
         include: [/node_modules/, /long/],
         transformMixedEsModules: true,
         requireReturnsDefault: 'auto',
         esmExternals: (id) => !id.includes('long')
       },
-      
+
       rollupOptions: {
         maxParallelFileOps: 3, // Reduce parallel ops for stability
         treeshake: {
@@ -310,7 +310,7 @@ export default defineConfig(({ mode }) => {
           preset: 'smallest',
           annotations: true,
         },
-        
+
         onwarn(warning, warn) {
           // Suppress specific warnings
           if (warning.code === 'UNKNOWN_OPTION' || 
@@ -332,16 +332,16 @@ export default defineConfig(({ mode }) => {
           }
           warn(warning);
         },
-        
+
         input: "index.html",
         external: [],
-        
+
         output: {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
           workerFileNames: `assets/[name]-[hash].worker.js`,
-          
+
           // **REVISED MANUAL CHUNKS - SAFER STRATEGY (Fixes Circular Dependencies)**
           manualChunks: (id) => {
             // Exclude app code
@@ -364,19 +364,19 @@ export default defineConfig(({ mode }) => {
               return 'vendor-lodash';
             }
 
-            // **TIER 1: HEAVY 3D & AI (Keep separate)**
+            // **TIER 1: HEAVY 3D & automation (Keep separate)**
             if (id.includes('three') || id.includes('@react-three')) {
               return 'vendor-three';
             }
-            
+
             if (id.includes('@tensorflow/tfjs')) {
               return 'vendor-tfjs';
             }
-            
+
             if (id.includes('@mediapipe') || id.includes('tasks-vision')) {
               return 'vendor-mediapipe';
             }
-            
+
             if (id.includes('ammo.js')) {
               return 'vendor-physics';
             }
@@ -385,28 +385,28 @@ export default defineConfig(({ mode }) => {
             if (id.includes('exceljs')) {
               return 'vendor-excel';
             }
-            
+
             if (id.includes('pdfjs-dist') || id.includes('pdf-lib') || id.includes('jspdf')) {
               return 'vendor-pdf';
             }
 
             // **TIER 3: UI FRAMEWORKS (Split Ant Design for better loading)**
-            
+
             // Ant Design icons (separate chunk - can be lazy loaded)
             if (id.includes('@ant-design/icons')) {
               return 'vendor-antd-icons';
             }
-            
+
             // RC components (Ant Design base components - separate chunk)
             if (id.includes('rc-') && !id.includes('@ant-design')) {
               return 'vendor-rc-components';
             }
-            
+
             // Ant Design core (main library - smaller now)
             if (id.includes('antd/es') || id.includes('antd/lib')) {
               return 'vendor-antd';
             }
-            
+
             // Ant Design theme and utilities
             if (id.includes('@ant-design') && (id.includes('theme') || id.includes('colors'))) {
               return 'vendor-antd-theme';
@@ -437,7 +437,7 @@ export default defineConfig(({ mode }) => {
           compact: true,
         },
       },
-      
+
       // **DISABLE MODULE PRELOAD FOR HEAVY CHUNKS**
       modulePreload: {
         resolveDependencies: (filename, deps) => {
@@ -454,7 +454,7 @@ export default defineConfig(({ mode }) => {
             'vendor-zod', // Zod (circular deps)
             'vendor-lodash', // Lodash (large utility)
           ];
-          
+
           return deps.filter(dep => {
             return !heavyChunks.some(chunkName => dep.includes(chunkName));
           });
@@ -472,16 +472,16 @@ export default defineConfig(({ mode }) => {
         "react/jsx-runtime",
         "react/jsx-dev-runtime",
         "react-router-dom",
-        
+
         // Force optimization for better splitting
         "long",
         "seedrandom",
         "pako",
-        
+
         // Include Ant Design icons for better optimization
         "@ant-design/icons",
       ],
-      
+
       // **EXCLUDE HEAVY LIBRARIES FROM PRE-BUNDLING**
       exclude: [
         "@google/generative-ai",
@@ -498,9 +498,9 @@ export default defineConfig(({ mode }) => {
         "zod",
         "lodash"
       ],
-      
+
       force: true,
-      
+
       esbuildOptions: {
         define: {
           global: "globalThis",

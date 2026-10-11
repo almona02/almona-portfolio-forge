@@ -3,7 +3,7 @@
  * 
  * Validates:
  * - RemnantCreated event emission with cryptographic provenance
- * - Deterministic ranking algorithm (no AI/ML)
+ * - Deterministic ranking algorithm (no advisory inference)
  * - Append-only lifecycle (status updates only)
  * - Constitutional compliance (Tier 3 Protected Determinism)
  * 
@@ -111,7 +111,7 @@ describe('Remnant Management System', () => {
 
   describe('Constitutional Compliance', () => {
     it('should enforce Tier 3 Protected Determinism', async () => {
-      // Remnant creation should be deterministic (no AI/ML)
+      // Remnant creation should be deterministic (no advisory inference)
       const remnantData = {
         id: 'remnant-001',
         timestamp: '2026-01-19T00:00:00.000Z',

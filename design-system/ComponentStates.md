@@ -20,7 +20,7 @@ Sizes: sm, md, lg (touch-friendly min height 40–44px)
 
 States
 - Default
-  - Cursor: pointer
+  - development tool: pointer
   - Background/Foreground/Border: per token mapping (see colors.json semantic.dark.interactive.button.*)
   - Shadow: none or subtle elevation for primary buttons
 - Hover
@@ -35,7 +35,7 @@ States
   - No layout shift; ensure outline doesn’t clip
 - Disabled
   - Opacity: 0.5
-  - Cursor: not-allowed
+  - development tool: not-allowed
   - No hover/active/focus effects
 - Loading
   - Spinner placed before label (aria-hidden), role="progressbar" on spinner
@@ -71,7 +71,7 @@ States
   - Text: 60–70% opacity; placeholder slightly lighter
   - No focus ring
 - Readonly
-  - Same as default with cursor: default
+  - Same as default with development tool: default
   - Consider subtle background tint
 
 A11y
@@ -208,7 +208,7 @@ Examples (indicative; map tokens in tailwind.config.ts):
   - Colors: "bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)]"
   - Hover: "hover:scale-[1.02]"
   - Focus: "focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--ring-offset)]"
-  - Disabled: "disabled:opacity-50 disabled:cursor-not-allowed"
+  - Disabled: "disabled:opacity-50 disabled:development tool-not-allowed"
 - Input
   - Base: "bg-[var(--input-bg)] text-[var(--input-fg)] placeholder-[var(--input-placeholder)] border border-[var(--input-border)]"
   - Focus: "focus:border-[var(--input-border-focus)] focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2"

@@ -715,7 +715,7 @@ node docs/generate-structure.js
 
 ### **Backend (python_backend/)**
 - **apis/**: FastAPI route handlers with versioned endpoints
-- **ai_services/**: Machine learning and AI-powered features
+- **ai_services/**: Machine learning and software-assisted features
 - **core/**: Core application logic and configurations
 - **models/**: Pydantic data models for API validation
 - **tests/**: Comprehensive testing suite with multiple test types

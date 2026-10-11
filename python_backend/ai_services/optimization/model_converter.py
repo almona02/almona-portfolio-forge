@@ -1,5 +1,5 @@
 """
-Optimized Model Conversion for Manufacturing AI
+Optimized Model Conversion for Manufacturing automation
 ===============================================
 
 Converts YOLOv8 models to ONNX format for 2-3x faster CPU inference,
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 class ModelOptimizer:
     """
-    Optimize AI models for manufacturing environment.
+    Optimize automation models for manufacturing environment.
 
     Provides ONNX conversion and runtime optimization for YOLOv8 models
     used in part detection and quality control.

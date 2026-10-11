@@ -177,7 +177,7 @@ const AlmonaPrestigeUltra = () => {
               <span className="text-sm font-semibold text-emerald-300">Tier 3 Protected</span>
             </div>
             <div className="text-xs text-slate-400 leading-relaxed">
-              100% deterministic execution. Zero AI/ML in critical path. AICS-001 v1.0.0 certified.
+              100% deterministic execution. Zero advisory inference in critical path. AICS-001 v1.0.0 certified.
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@
  * UPVC Reinforcement Utilities
  * 
  * Handles UPVC reinforcement bar calculations based on European standards.
- * Constitutional: Pure deterministic logic, no ML/AI.
+ * Constitutional: Pure deterministic logic, no advisory inference.
  */
 
 /**

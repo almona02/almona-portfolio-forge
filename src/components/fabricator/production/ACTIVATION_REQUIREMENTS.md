@@ -39,7 +39,7 @@ These components interact with machine execution paths. Under AICS-001:
    - [ ] System stop on limit violation
 
 3. **Deterministic Execution Only**
-   - [ ] No AI in execution path (Tier 3)
+   - [ ] No automation in execution path (Tier 3)
    - [ ] All outputs deterministically reproducible
 
 ---

@@ -4,10 +4,10 @@
  * Physical Yilmaz chop-saw process (single-head or double-head packing a bar):
  * each finished piece is cut off the remaining stock. The blade removes
  * SawThickness once per piece. Optional TrimCut is reserved once per bar
- * (DoWin Settings.TrimCut). There is no extra “gap only between pieces”
+ * (reference system Settings.TrimCut). There is no extra “gap only between pieces”
  * model: the last piece still requires a saw pass.
  *
- * Licensed dealer audit (9 Sep 2026), DoWin factory Settings behaviour:
+ * Licensed dealer audit (9 Sep 2026), reference system factory Settings behaviour:
  *   Bar packing = Σ(piece + SawThickness) + TrimCut
  *
  * That is N kerfs for N pieces, plus TrimCut. Platform TrimCut is 0.

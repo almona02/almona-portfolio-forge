@@ -1,7 +1,7 @@
 /**
  * @tier Tier 3 Execution (Deterministic Rules)
  * @constitutional_compliance AICS-001 §6.1 (Deterministic constraints only)
- * @authority Absolute - No AI, no inference, no learning
+ * @authority Absolute - No automation, no inference, no learning
  * @region Egypt-specific rules (24 years of YILMAZ dealer experience)
  * 
  * GOVERNANCE:
@@ -210,21 +210,21 @@ export interface YilmazTechnicianInput {
   machineModel: YilmazMachineModel;
   machineSerial: string;
   installationYear: number;
-  
+
   // Manual Sensor Readings
   hydraulicPressureBar?: number;
   spindleTempCelsius?: number;
   inputVoltage?: number;
   dustLevel?: number; // Scale 1-5
   ambientTempCelsius?: number;
-  
+
   // Observed Symptoms
   symptoms: string[];
-  
+
   // Environmental Context
   currentMonth: number; // 0-11
   location: 'cairo' | 'giza' | 'alexandria' | 'suez' | 'port_said' | 'other';
-  
+
   // Machine History
   lastMaintenanceDate?: Date;
   operatingHours?: number;
@@ -262,9 +262,9 @@ export interface YilmazRuleResult {
  * They are NOT subject to ML modification or adaptive tuning.
  */
 export class YilmazEgyptRulesEngine {
-  
+
   private readonly rules: YilmazDeterministicRule[] = [
-    
+
     // RULE 1: Khamsin Dust Clog
     {
       ruleId: 'YIL-EGY-001',
@@ -276,7 +276,7 @@ export class YilmazEgyptRulesEngine {
                               && input.currentMonth <= EGYPT_ENV_CONSTANTS.KHAMSIN_SEASON_END;
         const highDust = (input.dustLevel ?? 0) >= EGYPT_ENV_CONSTANTS.DUST_LEVEL_WARNING;
         const spindleHot = (input.spindleTempCelsius ?? 0) > 70;
-        
+
         return isKhamsinSeason && (highDust || spindleHot);
       },
       recommendedParts: ['YIL-FLT-AIR-001', 'YIL-FLT-AIR-002', 'YIL-CLN-001'],
@@ -313,7 +313,7 @@ export class YilmazEgyptRulesEngine {
           s.toLowerCase().includes('positioning') ||
           s.toLowerCase().includes('accuracy')
         );
-        
+
         return outOfRange || hasDriftSymptom;
       },
       recommendedParts: ['YIL-ELC-AVR-001', 'YIL-ELC-SPD-001', 'YIL-ELC-FUSE-001'],
@@ -347,7 +347,7 @@ export class YilmazEgyptRulesEngine {
         const isSummer = input.currentMonth >= 5 && input.currentMonth <= 8; // June-September
         const highAmbient = (input.ambientTempCelsius ?? 0) > EGYPT_ENV_CONSTANTS.SUMMER_TEMP_THRESHOLD;
         const spindleOverheat = (input.spindleTempCelsius ?? 0) > 75;
-        
+
         return isSummer && (highAmbient || spindleOverheat);
       },
       recommendedParts: ['YIL-THM-CLR-001', 'YIL-THM-FAN-001', 'YIL-THM-PASTE-001'],
@@ -385,7 +385,7 @@ export class YilmazEgyptRulesEngine {
           s.toLowerCase().includes('hydraulic') ||
           s.toLowerCase().includes('pressure')
         );
-        
+
         return lowPressure || (hasClampingIssue && ['AIM_7510', 'ALM_6510'].includes(input.machineModel));
       },
       recommendedParts: ['YIL-HYD-SEAL-001', 'YIL-HYD-OIL-001'],
@@ -420,7 +420,7 @@ export class YilmazEgyptRulesEngine {
           s.toLowerCase().includes('thermal') ||
           s.toLowerCase().includes('spindle')
         );
-        
+
         return criticalTemp || hasShutdown;
       },
       recommendedParts: ['YIL-THM-CLR-001', 'YIL-FLT-AIR-002', 'YIL-THM-PASTE-001'],
@@ -459,7 +459,7 @@ export class YilmazEgyptRulesEngine {
           s.toLowerCase().includes('accuracy') ||
           s.toLowerCase().includes('tolerance')
         );
-        
+
         return hasDrift && (voltageIssue || (input.spindleTempCelsius ?? 0) > 70);
       },
       recommendedParts: ['YIL-SRV-ENC-001', 'YIL-ELC-AVR-001'],
@@ -494,7 +494,7 @@ export class YilmazEgyptRulesEngine {
           s.toLowerCase().includes('coolant') || 
           s.toLowerCase().includes('low fluid')
         );
-        
+
         return dryClimate && (hasOverheat || hasCoolantSymptom);
       },
       recommendedParts: ['YIL-CLT-TANK-001', 'YIL-CLT-PUMP-001'],
@@ -531,7 +531,7 @@ export class YilmazEgyptRulesEngine {
           s.toLowerCase().includes('board') ||
           s.toLowerCase().includes('error code')
         );
-        
+
         return surgeDetected || hasDamageSymptom;
       },
       recommendedParts: ['YIL-ELC-SPD-001', 'YIL-ELC-FUSE-001', 'YIL-SRV-DRV-001'],
@@ -582,7 +582,7 @@ export class YilmazEgyptRulesEngine {
 
         let seasonalWarning: string | undefined;
         let seasonalWarningAr: string | undefined;
-        
+
         if (rule.seasonalFactor === 'KHAMSIN') {
           seasonalWarning = '⚠️ KHAMSIN SEASON ALERT: This is a recurring seasonal issue. Recommend preventive filter replacement every March.';
           seasonalWarningAr = '⚠️ تنبيه موسم الخماسين: هذه مشكلة موسمية متكررة. يوصى باستبدال الفلتر الوقائي كل مارس.';

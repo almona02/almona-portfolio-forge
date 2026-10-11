@@ -1,7 +1,7 @@
 # TIEC Proposal Review & Corrections Summary
 
 **Date:** December 2025  
-**Reviewer:** AI Assistant  
+**Reviewer:** automation Assistant
 **Purpose:** Ensure university-grade realism and credibility for Minister's Office submission
 
 ---

@@ -26,7 +26,7 @@ A comprehensive analysis of missing CAD tools has been completed. See `CAD_TOOLS
 - **Phase 2:** Layers System, Blocks/Symbols (2-3 weeks)
 - **Phase 3:** Cutting Optimization Visualization (1-2 weeks)
 
-**Impact:** Implementing Phase 1-2 will bring CAD tool coverage from ~70% to ~90%, making Almona competitive with industry leaders (Kliess, Moxisys).
+**Impact:** Implementing Phase 1-2 will bring CAD tool coverage from ~70% to ~90%, making Almona competitive with industry leaders (reference system, reference system).
 
 ---
 
@@ -96,7 +96,7 @@ The Engineering Bay is the central engineering cockpit for defining the technica
 
 #### Drafting Mode (Advanced CAD)
 - **Full Drafting Workbench:** Switch to professional CAD interface
-- **Tier 0 Visual Drafting:** Constitutional AI governance
+- **Tier 0 Visual Drafting:** Constitutional automation governance
 - **50+ Templates:** Egyptian window templates
 - **Material-Aware Design:** Aluminum/UPVC specific tools
 - **Advanced Tools:** Circle, Polygon, Arc, Transform, Pattern, Measurement
@@ -323,13 +323,13 @@ const handleDraftingValidated = useCallback((draftingOutput: DraftingOutput) => 
     draftingOutput.geometry,
     draftingOutput.template
   );
-  
+
   // Update grid and system pack
   setCurrentGrid(windowGrid);
   if (draftingOutput.suggestedSystemPack) {
     setActiveSystemPackId(draftingOutput.suggestedSystemPack);
   }
-  
+
   // Switch back to smartdraw mode
   setDesignMode('smartdraw');
 }, []);
@@ -396,7 +396,7 @@ const handleDraftingValidated = useCallback((draftingOutput: DraftingOutput) => 
 
 ## 📈 Competitive Position
 
-### vs. Orgadata Logikal / Kliess
+### vs. reference system reference system / reference system
 
 | Feature | ALMONA | Competitors | Status |
 |---------|--------|-------------|--------|
@@ -410,9 +410,9 @@ const handleDraftingValidated = useCallback((draftingOutput: DraftingOutput) => 
 | **3D Integration** | ✅ Live preview | ✅ Yes | ✅ Equal |
 | **Dual Mode** | ✅ SmartDraw + Drafting | ❌ Single mode | ✅ Unique advantage |
 
-### vs. Moxisys Design Flow
+### vs. reference system Design Flow
 
-| Feature | ALMONA | Moxisys | Status |
+| Feature | ALMONA | reference system | Status |
 |---------|--------|---------|--------|
 | **Layout** | Modern web-native | Desktop tabbed | ✅ Better (responsive) |
 | **Visual Design** | ✅ Prestige theme | ✅ Modern | ✅ Equal |
@@ -464,14 +464,14 @@ const handleDraftingValidated = useCallback((draftingOutput: DraftingOutput) => 
      - ✅ Material-specific markups (Aluminum, UPVC, Wood)
      - ✅ Profit & discount controls (Min profit margin, Max discount)
      - ✅ Rounding settings (Method, Precision)
-   
+
    - ✅ **Quantity Breaks & Volume Discounts:**
      - ✅ Volume discount tiers (configurable min/max quantities)
      - ✅ Bulk pricing rules
      - ✅ Customer-specific quantity pricing (Retail, Wholesale, Contractor, Custom)
      - ✅ Real-time discount calculation
      - ✅ LocalStorage & Supabase persistence
-   
+
    - ✅ **Price History & Versioning:**
      - ✅ Complete audit trail of all price changes
      - ✅ Price version comparison (old vs new with % change)
@@ -479,7 +479,7 @@ const handleDraftingValidated = useCallback((draftingOutput: DraftingOutput) => 
      - ✅ Change reason tracking
      - ✅ Version numbering
      - ✅ CSV export functionality
-   
+
    - ✅ **Exchange Rate Management:**
      - ✅ Real-time exchange rates from API
      - ✅ Automatic currency conversion
@@ -487,14 +487,14 @@ const handleDraftingValidated = useCallback((draftingOutput: DraftingOutput) => 
      - ✅ Rate caching (5-minute cache)
      - ✅ Fallback rates for offline use
      - ✅ Rate refresh functionality
-   
+
    - ✅ **Bulk Operations:**
      - ✅ CSV/Excel import/export
      - ✅ Bulk price updates
      - ✅ Price validation alerts
      - ✅ Import progress tracking
      - ✅ Error handling and validation
-   
+
    - **Status:** Integrated as Settings dialog (Tools → Settings)
    - **Components:** 
      - `EnhancedPricingConfigDialog.tsx` - Main dialog with tabs
@@ -533,7 +533,7 @@ const handleDraftingValidated = useCallback((draftingOutput: DraftingOutput) => 
 
 **Status:** ✅ Production-Ready  
 **Competitive Position:** 95%+ feature parity with gold-tier competitors  
-**Unique Advantages:** Dual mode design, real-time cost calculation, design comparison, constitutional AI governance
+**Unique Advantages:** Dual mode design, real-time cost calculation, design comparison, constitutional automation governance
 
 ---
 

@@ -1,6 +1,6 @@
-# Cursor handoff: stock correctness and warehouse upgrade
+# development tool handoff: stock correctness and warehouse upgrade
 
-Status: PLAN ONLY. No stock upgrade code or database change has been made. Created at the user's request because Codex has 17% remaining in its five-hour allowance and the required database validation exceeds a safely bounded frontend patch.
+Status: PLAN ONLY. No stock upgrade code or database change has been made. Created at the user's request because development tool has 17% remaining in its five-hour allowance and the required database validation exceeds a safely bounded frontend patch.
 
 ## Objective
 
@@ -71,7 +71,7 @@ Acceptance: exact BOM shortages, missing mapping, unit parsing with quoted suppl
 
 - Separate pricing setup from stock overview; reconcile two owned BATCH0 profiles versus the current zero-row pricing table. Make currency explicit across EGP inventory and USD catalogue prices, with configured conversion and source/date if conversion is used.
 - Disable/explain catalogue packs with zero purchasable profiles. Respect real material/finish and catalogue identifiers when materializing owned stock.
-- Show consumption and ageing from real ledger data, reorder coverage and remnant reuse rate. Remove unsupported AI prediction wording until a validated feature exists. Do not present today's fixed 100 m reorder suggestion as a demand forecast.
+- Show consumption and ageing from real ledger data, reorder coverage and remnant reuse rate. Remove unsupported automation prediction wording until a validated feature exists. Do not present today's fixed 100 m reorder suggestion as a demand forecast.
 - Add warehouse/location and bar-lot drilldown, barcode intake and compatible remnant selection as a separate bounded follow-up if schema complexity warrants it.
 - Check desktop/mobile overflow, table readability, empty/error states and accessible icon-only alert actions.
 

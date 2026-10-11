@@ -236,7 +236,7 @@ describe('BOM Generation AICS-001 Constitutional Compliance', () => {
   }, 30000);
 
   it('should maintain Tier 3 compliance (no ML/AI in execution path)', async () => {
-    // AICS-001 Rule 15: Tier 3 compliance means no ML/AI in execution path
+    // AICS-001 Rule 15: Tier 3 compliance means no advisory inference in execution path
     const startTime = performance.now();
     
     const result = await bomGenerator.generateCompleteBOM(
@@ -249,7 +249,7 @@ describe('BOM Generation AICS-001 Constitutional Compliance', () => {
     const endTime = performance.now();
     const executionTime = endTime - startTime;
 
-    // BOM generation should complete deterministically without ML/AI calls
+    // BOM generation should complete deterministically without advisory inference calls
     expect(result).toBeDefined();
     expect(result.replayMetadata).toBeDefined();
     

@@ -1,14 +1,14 @@
 # Fabricator Pro Cut List vs Reference Image Analysis
 
 **Reference image:** `C:\Users\bobbi\Downloads\WhatsApp Image 2026-02-03 at 11.26.39 PM.jpeg`  
-**Image content:** LogiKal 12.6 – ORGADATA AG "Cut Optimisation" report (Page 1 of 5)  
+**Image content:** reference system 12.6 – reference system AG "Cut Optimisation" report (Page 1 of 5)
 **Comparison target:** ALMONA Fabricator Pro – CutListViewer, Print ALMONA Style (CutListExport), UPVCCuttingEngine, AlmonaCuttingEngine
 
 ---
 
-## 1. Reference Image Summary (LogiKal 12.6)
+## 1. Reference Image Summary (reference system 12.6)
 
-The image is a **Cut Optimisation** report from **LogiKal 12.6 – ORGADATA AG** with:
+The image is a **Cut Optimisation** report from **reference system 12.6 – reference system AG** with:
 
 | Element | Value |
 |--------|--------|
@@ -35,7 +35,7 @@ The image is a **Cut Optimisation** report from **LogiKal 12.6 – ORGADATA AG**
 - **Angles:** The number **"45"** placed in the **gaps between** segments (annotations, not in the shape)
 - **End of row:** "0" (residual length for that bar when none)
 
-**Footer:** ORGADATA logo, LogiKal 12.6 – ORGADATA AG, disclaimer, "Page 1 from 5".
+**Footer:** reference system logo, reference system 12.6 – reference system AG, disclaimer, "Page 1 from 5".
 
 ---
 
@@ -50,7 +50,7 @@ The image is a **Cut Optimisation** report from **LogiKal 12.6 – ORGADATA AG**
 
 ### 2.2 Print ALMONA Style content (current)
 
-**Header (LogiKal-aligned):**
+**Header (reference system-aligned):**
 - Title: **Cut Optimisation**
 - Date/time (en-GB)
 - Project, Job Number, Person in Charge, Directory
@@ -62,7 +62,7 @@ The image is a **Cut Optimisation** report from **LogiKal 12.6 – ORGADATA AG**
 **Bar table:**
 - **Repeat:** "1 ×" or "N ×"
 - **Bar:** Profile icon + **div-based bar** (rectangles, scalable up to 20 bars per page):
-  - Segments drawn as **rectangles** with **angle label ("45", "135", "90") in gaps** (LogiKal-style, performance)
+  - Segments drawn as **rectangles** with **angle label ("45", "135", "90") in gaps** (reference system-style, performance)
   - **Length (mm)** in centre: **dynamically sized font** (18–48pt by bars on page), accurate to 1 decimal
   - "mm" and part ID (e.g. W01, W02) below
   - Cut lines at segment edges; angle label in the gap at right edge
@@ -72,9 +72,9 @@ The image is a **Cut Optimisation** report from **LogiKal 12.6 – ORGADATA AG**
 **Footer:** ALMONA Fabricator Pro - Gold Tier | Page X from Y | Cut Optimisation Report.
 
 **Aligned with reference (current implementation):**
-- **Segment shape:** ALMONA now uses **rectangles with angle ("45", "135", "90") in gaps** (same as LogiKal; performance-friendly).
+- **Segment shape:** ALMONA now uses **rectangles with angle ("45", "135", "90") in gaps** (same as reference system; performance-friendly).
 - **Length:** **Dynamically optimized** font size (18–48pt) by bars on page: fewer bars = larger font for workshop readability.
-- **Part codes:** ALMONA uses W01, W02, … (workshop segment IDs); LogiKal uses WD01, WD04-3, etc. = **window number reference from drawing** (not part number).
+- **Part codes:** ALMONA uses W01, W02, … (workshop segment IDs); reference system uses WD01, WD04-3, etc. = **window number reference from drawing** (not part number).
 
 ---
 
@@ -82,7 +82,7 @@ The image is a **Cut Optimisation** report from **LogiKal 12.6 – ORGADATA AG**
 
 ### 3.1 Now aligned with reference (ALMONA Print ALMONA Style)
 
-| Feature | Reference (LogiKal) | ALMONA (current) | Status |
+| Feature | Reference (reference system) | ALMONA (current) | Status |
 |--------|---------------------|------------------|--------|
 | **Report title** | Cut Optimisation | Cut Optimisation | ✓ Match |
 | **Date / time** | 24/01/2026 / 10:13 | en-GB locale (e.g. 04/02/2026, 01:32:28) | ✓ Match |
@@ -104,12 +104,12 @@ The image is a **Cut Optimisation** report from **LogiKal 12.6 – ORGADATA AG**
 
 ### 3.2 Aligned with reference (div-based, angle in gaps)
 
-| Feature | Reference (LogiKal) | ALMONA (current) | Status |
+| Feature | Reference (reference system) | ALMONA (current) | Status |
 |--------|---------------------|------------------|--------|
 | **Bar graphic** | Div-based rectangles | **Div-based rectangles** (scalable) | ✓ Match; up to 20 bars per page. |
 | **Segment shape** | Rectangles; "45" in gaps | **Rectangles; angle ("45", "135", "90") in gaps** | ✓ Match; performance-friendly. |
 | **Length** | Relatively small | **Dynamically optimized** by bars on page (18–48pt) | ✓ Improved: fewer bars = larger font for workshop. |
-| **Part IDs** | WD01, WD04-3 = **window ref from drawing** | W01, W02 = workshop segment IDs | LogiKal = window number; ALMONA = part/segment; optional WDxx from drawing. |
+| **Part IDs** | WD01, WD04-3 = **window ref from drawing** | W01, W02 = workshop segment IDs | reference system = window number; ALMONA = part/segment; optional WDxx from drawing. |
 
 ### 3.3 Optional enhancements
 
@@ -128,7 +128,7 @@ The image is a **Cut Optimisation** report from **LogiKal 12.6 – ORGADATA AG**
 - Bar: **Div-based rectangles** (scalable, up to **20 bars per page**); **angle label ("45", "135", "90") in gaps** between segments; **length font size dynamically optimized** by bars on page (18–48pt); part ID (W01, W02…); Residual block; residual column.
 - Footer: Page X from Y, ALMONA branding.
 
-**Clarification – Part IDs:** LogiKal **WD01, WD04-3** = **window number reference from drawing**. ALMONA W01, W02 = workshop segment IDs. Optional: map to window-ref (WDxx) from drawing when required.
+**Clarification – Part IDs:** reference system **WD01, WD04-3** = **window number reference from drawing**. ALMONA W01, W02 = workshop segment IDs. Optional: map to window-ref (WDxx) from drawing when required.
 
 **Optional:** Length notation `2492' (7)` if needed; show "0" at end of bar when residual is zero.
 
@@ -145,9 +145,9 @@ The image is a **Cut Optimisation** report from **LogiKal 12.6 – ORGADATA AG**
 | Saw / end deduction, wastage line | ✓ | | |
 | Usable residual, repeat, residual per bar | ✓ | | |
 | Page X from Y | ✓ | | |
-| Visual bar with segments | ✓ | | Div-based rectangles (same as LogiKal) |
-| 45° representation | ✓ | | Angle ("45") in gaps (same as LogiKal) |
+| Visual bar with segments | ✓ | | Div-based rectangles (same as reference system) |
+| 45° representation | ✓ | | Angle ("45") in gaps (same as reference system) |
 | Length | ✓ | | Dynamic font (18–48pt) by bars on page |
-| Part IDs | ✓ | | LogiKal WD01 = window ref; ALMONA W01 = segment ID |
+| Part IDs | ✓ | | reference system WD01 = window ref; ALMONA W01 = segment ID |
 
-**Conclusion:** The reference (LogiKal 12.6) is a **Cut Optimisation** report with full header, **div-based bar rectangles**, **angle in gaps**, and per-bar residual. **ALMONA Print ALMONA Style** matches: **div-based rectangles**, **angle label in gaps** (performance), **up to 20 bars per page**, and **length font dynamically optimized** by number of lines. LogiKal **WD01, WD04-3 = window number reference from drawing** (not part number); ALMONA W01, W02 = workshop segment IDs; optional mapping to WDxx when needed.
+**Conclusion:** The reference (reference system 12.6) is a **Cut Optimisation** report with full header, **div-based bar rectangles**, **angle in gaps**, and per-bar residual. **ALMONA Print ALMONA Style** matches: **div-based rectangles**, **angle label in gaps** (performance), **up to 20 bars per page**, and **length font dynamically optimized** by number of lines. reference system **WD01, WD04-3 = window number reference from drawing** (not part number); ALMONA W01, W02 = workshop segment IDs; optional mapping to WDxx when needed.

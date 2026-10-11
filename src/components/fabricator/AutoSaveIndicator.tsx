@@ -27,7 +27,7 @@ export const AutoSaveIndicator: React.FC<AutoSaveIndicatorProps> = ({
 }) => {
   const formatTimeAgo = (timestamp: string | null): string => {
     if (!timestamp) return 'Never';
-    
+
     const now = new Date();
     const saved = new Date(timestamp);
     const diffMs = now.getTime() - saved.getTime();
@@ -39,7 +39,7 @@ export const AutoSaveIndicator: React.FC<AutoSaveIndicatorProps> = ({
     if (diffSec < 60) return `${diffSec}s ago`;
     if (diffMin < 60) return `${diffMin}m ago`;
     if (diffHour < 24) return `${diffHour}h ago`;
-    
+
     return saved.toLocaleDateString();
   };
 
@@ -76,7 +76,7 @@ export const AutoSaveIndicator: React.FC<AutoSaveIndicatorProps> = ({
         {getStatusIcon()}
         <span className="font-medium">{getStatusText()}</span>
       </div>
-      
+
       {hasUnsavedChanges && onManualSave && (
         <button
           onClick={onManualSave}

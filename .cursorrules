@@ -1,7 +1,7 @@
 # ALMONA Constitutional Development Rules
 
 ## CONSTITUTIONAL CONSTRAINTS (AICS-001)
-1. NO ML/AI in execution paths (Tier 3)
+1. NO advisory inference in execution paths (Tier 3)
 2. ALL adaptive intelligence must use IntelligenceGate
 3. Deterministic constraints are NON-NEGOTIABLE
 4. Human validation required for all outputs

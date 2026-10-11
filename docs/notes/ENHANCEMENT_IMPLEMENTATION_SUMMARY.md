@@ -138,7 +138,7 @@
 ### Code Quality
 - **Type Safety**: All utilities fully typed
 - **Documentation**: Comprehensive JSDoc comments
-- **Constitutional Compliance**: All code maintains Tier 3 purity (no ML/AI)
+- **Constitutional Compliance**: All code maintains Tier 3 purity (no advisory inference)
 
 ---
 

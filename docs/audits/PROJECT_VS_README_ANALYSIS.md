@@ -23,7 +23,7 @@ The project is **largely aligned** with the README documentation, with a few cri
 - ✅ **AICS-001 Document**: Exists at `docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md`
 - ✅ **AlgorithmSelector.ts**: Exists and is constitutional compliant
   - Location: `src/lib/fabricator/AlgorithmSelector.ts`
-  - Uses rule-based selection (no ML/AI)
+  - Uses rule-based selection (no advisory inference)
   - Has proper Tier 3 markers
   - Includes constitutional disclaimers
 - ✅ **Constitutional Tests**: Structure exists

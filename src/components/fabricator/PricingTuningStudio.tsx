@@ -148,7 +148,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
   const [selectedHistoryEntry, setSelectedHistoryEntry] = useState<PriceHistoryEntry | null>(null);
   const [showRollbackDialog, setShowRollbackDialog] = useState(false);
   const [comprehensiveValidation, setComprehensiveValidation] = useState<ValidationResult | null>(null);
-  
+
   // Bulk operations state
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importProgress, setImportProgress] = useState(0);
@@ -159,7 +159,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
   const [bulkOperationType, setBulkOperationType] = useState<'percentage' | 'copy' | 'import' | null>(null);
   const [importResult, setImportResult] = useState<{ success: boolean; errors: string[]; warnings: string[] } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Pricing Rules state
   const [editingQuantityBreak, setEditingQuantityBreak] = useState<QuantityBreakRule | null>(null);
   const [showQuantityBreakDialog, setShowQuantityBreakDialog] = useState(false);
@@ -167,7 +167,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
   const [showCustomerTierDialog, setShowCustomerTierDialog] = useState(false);
   const [editingSeasonalAdjustment, setEditingSeasonalAdjustment] = useState<SeasonalAdjustmentRule | null>(null);
   const [showSeasonalAdjustmentDialog, setShowSeasonalAdjustmentDialog] = useState(false);
-  
+
   // Material Markups state
   const [editingCustomRule, setEditingCustomRule] = useState<CustomMaterialRule | null>(null);
   const [showCustomRuleDialog, setShowCustomRuleDialog] = useState(false);
@@ -405,7 +405,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
           'update',
           'Pricing updated via Pricing Tuning Studio'
         );
-        
+
         // Refresh history
         if (selectedProfileId && selectedSystemPackId) {
           await loadPriceHistory();
@@ -3359,7 +3359,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                               <Label className="text-xs font-semibold text-gray-300">
                                 {t('pricing_tuning_studio.bulk_ops.import', 'Import Pricing')}
                               </Label>
-                              
+
                               {/* Import Mode Selection */}
                               <RadioGroup
                                 value={importMode}

@@ -1,7 +1,7 @@
 # AlgorithmPredictor → AlgorithmSelector Migration Guide
 
 **Date:** January 2026  
-**Purpose:** Remove AI deception, restore constitutional integrity  
+**Purpose:** Remove automation deception, restore constitutional integrity
 **Timeline:** Week 1 (IMMEDIATE)
 
 ---

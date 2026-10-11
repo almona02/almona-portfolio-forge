@@ -1,5 +1,5 @@
 /**
- * PR3 — ledger-backed stock analytics (no AI / demand-forecast claims).
+ * PR3 — ledger-backed stock analytics (no automation / demand-forecast claims).
  * Consumption, ageing, reorder coverage and remnant reuse from recorded data only.
  */
 

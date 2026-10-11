@@ -73,7 +73,7 @@ router.include_router(invoice_templates_router)  # invoice-templates already has
 router.include_router(workflows_router)  # workflows already has prefix
 router.include_router(customers_router)  # customers already has prefix
 # router.include_router(
-#    part_detection_router, prefix="/ai", tags=["AI"]
+#    part_detection_router, prefix="/ai", tags=["automation"]
 # )  # optional namespacing
 router.include_router(profile_import_router)  # /profile-import/ingest
 # router.include_router(

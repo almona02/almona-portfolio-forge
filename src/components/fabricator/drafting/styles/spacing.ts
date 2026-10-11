@@ -4,7 +4,7 @@
  * Enterprise-grade spacing system for consistent layout and visual grouping
  * across the Drafting Workbench.
  * 
- * Constitutional: Deterministic styling, no ML/AI
+ * Constitutional: Deterministic styling, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

@@ -117,7 +117,7 @@ All planning documents are located in: `C:\Users\bobbi\.gemini\antigravity\brain
 ### Ego Leakage in Government Documents
 **Banned phrases**:
 - ❌ "National infrastructure"
-- ❌ "AI-powered"
+- ❌ "software-assisted"
 - ❌ "Revolutionary"
 - ❌ "Guaranteed 99.8%"
 

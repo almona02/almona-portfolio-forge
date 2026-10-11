@@ -1,6 +1,6 @@
 # 3D Window Generator & Drawing System - Comprehensive Upgrade Plan
 
-**Goal:** Make Fabricator Pro's 3D window generation and drawing experience **better than Klaes (beauty) and Orgadata (precision)**
+**Goal:** Make Fabricator Pro's 3D window generation and drawing experience **better than reference system (beauty) and reference system (precision)**
 
 **Current State Analysis:** 85% accuracy (visual), 99.8% accuracy (production data)  
 **Target State:** 98%+ visual accuracy, photorealistic rendering, intuitive drawing
@@ -32,7 +32,7 @@ Your consultant is RIGHT - before pilot, you need the 3D window generator to be 
 
 ## 📊 Competitive Analysis
 
-### Klaes (German Standard - Beauty)
+### reference system (German Standard - Beauty)
 **Strengths:**
 - Photorealistic rendering
 - Beautiful material textures
@@ -44,7 +44,7 @@ Your consultant is RIGHT - before pilot, you need the 3D window generator to be 
 - Complex to learn
 - Not Egyptian-focused
 
-### Orgadata (German Standard - Precision)
+### reference system (German Standard - Precision)
 **Strengths:**
 - 99%+ visual accuracy
 - Detailed profile cross-sections
@@ -57,7 +57,7 @@ Your consultant is RIGHT - before pilot, you need the 3D window generator to be 
 - Not Egyptian-focused
 
 ### **Your Opportunity:**
-Combine Klaes's beauty + Orgadata's precision + Egyptian focus = **Market Leader**
+Combine reference system's beauty + reference system's precision + Egyptian focus = **Market Leader**
 
 ---
 
@@ -80,14 +80,14 @@ const bar = new BoxGeometry(width, height, depth);
 - [ ] **Day 1-2:** Create `AdvancedProfileGenerator.ts`
   ```typescript
   // src/lib/3d/AdvancedProfileGenerator.ts
-  
+
   interface ProfileChamber {
     position: Vector2;
     width: number;
     height: number;
     type: 'air' | 'reinforcement' | 'drainage';
   }
-  
+
   interface AdvancedProfileSpec {
     outerWidth: number;
     outerHeight: number;
@@ -105,7 +105,7 @@ const bar = new BoxGeometry(width, height, depth);
       position: Vector2;
     };
   }
-  
+
   export class AdvancedProfileGenerator {
     /**
      * Generate realistic multi-chamber profile cross-section
@@ -118,56 +118,56 @@ const bar = new BoxGeometry(width, height, depth);
      */
     generateProfileShape(spec: AdvancedProfileSpec): Shape {
       const shape = new Shape();
-      
+
       // 1. Outer perimeter
       this.createOuterPerimeter(shape, spec);
-      
+
       // 2. Chamber walls (internal divisions)
       this.createChamberWalls(shape, spec);
-      
+
       // 3. Glass pocket (U-shaped notch)
       this.createGlassPocket(shape, spec);
-      
+
       // 4. Drainage channels
       this.createDrainageChannels(shape, spec);
-      
+
       // 5. Reinforcement channel (for UPVC)
       if (spec.reinforcementChannel) {
         this.createReinforcementChannel(shape, spec);
       }
-      
+
       return shape;
     }
-    
+
     /**
      * Get profile spec from system pack
      */
     getProfileSpecFromSystemPack(systemPackId: string, role: 'frame' | 'sash'): AdvancedProfileSpec {
       const systemPack = SYSTEM_PACKS.find(p => p.meta.id === systemPackId);
       if (!systemPack) return this.getDefaultProfileSpec();
-      
+
       const profile = systemPack.windowSystemSpec.aluminum_profiles.find(
         p => p.role === role
       );
-      
+
       if (!profile) return this.getDefaultProfileSpec();
-      
+
       // Parse profile dimensions and create chamber layout
       return this.parseProfileToChambers(profile);
     }
-    
+
     private parseProfileToChambers(profile: any): AdvancedProfileSpec {
       const width = profile.width / 1000; // mm to meters
       const height = profile.height / 1000;
-      
+
       // Determine chamber count based on width
       const chamberCount = width < 0.06 ? 3 : 
                           width < 0.075 ? 5 : 
                           width < 0.085 ? 7 : 9;
-      
+
       // Generate chamber layout
       const chambers = this.generateChamberLayout(width, height, chamberCount);
-      
+
       return {
         outerWidth: width,
         outerHeight: height,
@@ -197,15 +197,15 @@ const bar = new BoxGeometry(width, height, depth);
     systemPackId?: string
   ): ProfileCrossSection {
     const generator = new AdvancedProfileGenerator();
-    
+
     // Get advanced spec from system pack
     const spec = systemPackId 
       ? generator.getProfileSpecFromSystemPack(systemPackId, 'frame')
       : generator.getDefaultProfileSpec();
-    
+
     // Generate realistic shape
     const shape = generator.generateProfileShape(spec);
-    
+
     return {
       shape: shape.getPoints(), // Convert to Vector2[]
       width: spec.outerWidth,
@@ -250,16 +250,16 @@ const frameMaterial = createMaterial('aluminum', {
 - [ ] **Day 1-2:** Create texture library
   ```typescript
   // src/lib/3d/materials/TextureLibrary.ts
-  
+
   export class TextureLibrary {
     private textureCache: Map<string, Texture> = new Map();
-    
+
     /**
      * Load material textures (color, normal, roughness, metalness)
      */
     async loadMaterialTextures(material: MaterialType): Promise<MaterialTextures> {
       const basePath = '/textures/materials';
-      
+
       const textures = {
         aluminum: {
           color: `${basePath}/aluminum/color.jpg`,
@@ -281,10 +281,10 @@ const frameMaterial = createMaterial('aluminum', {
           ao: `${basePath}/wood/ao.jpg`
         }
       };
-      
+
       return this.loadTextures(textures[material]);
     }
-    
+
     /**
      * Generate procedural textures for materials without images
      */
@@ -293,7 +293,7 @@ const frameMaterial = createMaterial('aluminum', {
       canvas.width = 512;
       canvas.height = 512;
       const ctx = canvas.getContext('2d')!;
-      
+
       if (material === 'aluminum') {
         // Brushed aluminum effect
         this.drawBrushedMetal(ctx);
@@ -301,11 +301,11 @@ const frameMaterial = createMaterial('aluminum', {
         // Smooth plastic with slight grain
         this.drawSmoothPlastic(ctx);
       }
-      
+
       const texture = new CanvasTexture(canvas);
       texture.wrapS = texture.wrapT = RepeatWrapping;
       texture.repeat.set(4, 4);
-      
+
       return texture;
     }
   }
@@ -314,46 +314,46 @@ const frameMaterial = createMaterial('aluminum', {
 - [ ] **Day 3:** Enhanced material system
   ```typescript
   // src/lib/3d/materials/EnhancedMaterials.ts
-  
+
   export class EnhancedMaterialSystem {
     private textureLibrary: TextureLibrary;
-    
+
     async createRealisticMaterial(
       type: MaterialType,
       options: MaterialOptions
     ): Promise<MeshStandardMaterial> {
       // Load textures
       const textures = await this.textureLibrary.loadMaterialTextures(type);
-      
+
       const material = new MeshStandardMaterial({
         // Base color
         color: options.color || 0xffffff,
         map: textures.color,
-        
+
         // Surface detail
         normalMap: textures.normal,
         normalScale: new Vector2(0.5, 0.5),
-        
+
         // Roughness (how shiny/matte)
         roughnessMap: textures.roughness,
         roughness: type === 'aluminum' ? 0.3 : 0.6,
-        
+
         // Metalness
         metalnessMap: textures.metalness,
         metalness: type === 'aluminum' ? 0.9 : 0.0,
-        
+
         // Ambient occlusion (shadows in crevices)
         aoMap: textures.ao,
         aoMapIntensity: 1.0,
-        
+
         // Environment reflection
         envMapIntensity: type === 'aluminum' ? 1.5 : 0.3,
-        
+
         // Advanced features
         clearcoat: type === 'upvc' ? 0.3 : 0,
         clearcoatRoughness: 0.4
       });
-      
+
       return material;
     }
   }
@@ -366,28 +366,28 @@ const frameMaterial = createMaterial('aluminum', {
     color: glassColor,
     metalness: 0,
     roughness: 0.05,
-    
+
     // Transmission (see-through)
     transmission: 0.95,
     thickness: 0.01,
-    
+
     // Index of refraction (glass = 1.52)
     ior: 1.52,
-    
+
     // Reflections
     reflectivity: 0.5,
-    
+
     // Clearcoat (outer layer)
     clearcoat: 1.0,
     clearcoatRoughness: 0.05,
-    
+
     // Transparency
     transparent: true,
     opacity: 0.3,
-    
+
     // Environment map
     envMapIntensity: 2.0,
-    
+
     // Double-sided rendering
     side: DoubleSide
   });
@@ -422,10 +422,10 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
 - [ ] **Day 1-2:** Create hardware model library
   ```typescript
   // src/lib/3d/hardware/HardwareModelLibrary.ts
-  
+
   export class HardwareModelLibrary {
     private modelCache: Map<string, Group> = new Map();
-    
+
     /**
      * Load or generate hardware 3D model
      */
@@ -433,7 +433,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       if (this.modelCache.has(type)) {
         return this.modelCache.get(type)!.clone();
       }
-      
+
       // Try to load GLTF model first
       try {
         const model = await this.loadGLTFModel(`/models/hardware/${type}.glb`);
@@ -446,13 +446,13 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
         return model.clone();
       }
     }
-    
+
     /**
      * Generate realistic hardware models procedurally
      */
     private generateProceduralHardware(type: HardwareType): Group {
       const group = new Group();
-      
+
       switch (type) {
         case 'hinge':
           return this.generateHinge();
@@ -466,10 +466,10 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
           return group;
       }
     }
-    
+
     private generateHinge(): Group {
       const group = new Group();
-      
+
       // Hinge barrel (cylinder)
       const barrelGeometry = new CylinderGeometry(0.008, 0.008, 0.06, 16);
       const barrelMaterial = new MeshStandardMaterial({
@@ -480,7 +480,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       const barrel = new Mesh(barrelGeometry, barrelMaterial);
       barrel.rotation.z = Math.PI / 2;
       group.add(barrel);
-      
+
       // Hinge plates (2 flat rectangles)
       const plateGeometry = new BoxGeometry(0.04, 0.06, 0.002);
       const plateMaterial = new MeshStandardMaterial({
@@ -488,15 +488,15 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
         metalness: 0.9,
         roughness: 0.3
       });
-      
+
       const plate1 = new Mesh(plateGeometry, plateMaterial);
       plate1.position.set(-0.015, 0, 0);
       group.add(plate1);
-      
+
       const plate2 = new Mesh(plateGeometry, plateMaterial);
       plate2.position.set(0.015, 0, 0);
       group.add(plate2);
-      
+
       // Screws (small cylinders)
       const screwGeometry = new CylinderGeometry(0.002, 0.002, 0.003, 8);
       const screwMaterial = new MeshStandardMaterial({
@@ -504,7 +504,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
         metalness: 0.8,
         roughness: 0.4
       });
-      
+
       // 4 screws per plate
       [-0.02, 0.02].forEach(y => {
         [-0.015, 0.015].forEach(x => {
@@ -514,13 +514,13 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
           group.add(screw);
         });
       });
-      
+
       return group;
     }
-    
+
     private generateHandle(): Group {
       const group = new Group();
-      
+
       // Handle grip (rounded cylinder)
       const gripGeometry = new CylinderGeometry(0.012, 0.012, 0.12, 16);
       const gripMaterial = new MeshStandardMaterial({
@@ -532,7 +532,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       grip.rotation.z = Math.PI / 2;
       grip.position.set(0.06, 0, 0);
       group.add(grip);
-      
+
       // Handle base (mounting plate)
       const baseGeometry = new BoxGeometry(0.05, 0.08, 0.01);
       const baseMaterial = new MeshStandardMaterial({
@@ -542,7 +542,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       });
       const base = new Mesh(baseGeometry, baseMaterial);
       group.add(base);
-      
+
       // Lock cylinder (if lockable)
       const cylinderGeometry = new CylinderGeometry(0.008, 0.008, 0.015, 16);
       const cylinderMaterial = new MeshStandardMaterial({
@@ -554,13 +554,13 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       cylinder.rotation.x = Math.PI / 2;
       cylinder.position.set(0, 0, 0.01);
       group.add(cylinder);
-      
+
       return group;
     }
-    
+
     private generateRoller(): Group {
       const group = new Group();
-      
+
       // Roller wheel
       const wheelGeometry = new CylinderGeometry(0.015, 0.015, 0.02, 24);
       const wheelMaterial = new MeshStandardMaterial({
@@ -571,7 +571,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       const wheel = new Mesh(wheelGeometry, wheelMaterial);
       wheel.rotation.z = Math.PI / 2;
       group.add(wheel);
-      
+
       // Roller housing
       const housingGeometry = new BoxGeometry(0.04, 0.05, 0.03);
       const housingMaterial = new MeshStandardMaterial({
@@ -582,7 +582,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       const housing = new Mesh(housingGeometry, housingMaterial);
       housing.position.set(0, 0, 0.02);
       group.add(housing);
-      
+
       return group;
     }
   }
@@ -592,7 +592,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
   ```typescript
   // Update Window3DModel to use realistic hardware
   const hardwareLibrary = new HardwareModelLibrary();
-  
+
   // Replace simple boxes with detailed models
   for (const hw of hardwarePlaceholders) {
     const model = await hardwareLibrary.getHardwareModel(hw.type);
@@ -605,7 +605,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
 - [ ] **Day 4-5:** Hardware placement algorithm
   ```typescript
   // src/lib/3d/hardware/HardwarePlacementEngine.ts
-  
+
   export class HardwarePlacementEngine {
     /**
      * Calculate optimal hardware positions based on:
@@ -619,34 +619,34 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       pattern: EgyptianPattern
     ): HardwarePlacement[] {
       const placements: HardwarePlacement[] = [];
-      
+
       // 1. Hinges (for casement windows)
       if (pattern.openingMechanism?.type === 'casement') {
         placements.push(...this.calculateHingePlacements(windowUnit));
       }
-      
+
       // 2. Handles
       placements.push(...this.calculateHandlePlacements(windowUnit));
-      
+
       // 3. Locks
       placements.push(...this.calculateLockPlacements(windowUnit));
-      
+
       // 4. Rollers (for sliding windows)
       if (pattern.openingMechanism?.type === 'sliding') {
         placements.push(...this.calculateRollerPlacements(windowUnit));
       }
-      
+
       return placements;
     }
-    
+
     private calculateHingePlacements(windowUnit: WindowUnit): HardwarePlacement[] {
       const placements: HardwarePlacement[] = [];
       const height = windowUnit.overallHeight / 1000;
-      
+
       // Egyptian Code 2020: Hinges at 150mm from top/bottom
       const topHingeY = height / 2 - 0.15;
       const bottomHingeY = -height / 2 + 0.15;
-      
+
       // Add middle hinge if height > 1.5m
       if (height > 1.5) {
         placements.push({
@@ -655,7 +655,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
           rotation: new Euler(0, 0, 0)
         });
       }
-      
+
       placements.push(
         {
           type: 'hinge',
@@ -668,16 +668,16 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
           rotation: new Euler(0, 0, 0)
         }
       );
-      
+
       return placements;
     }
-    
+
     private calculateHandlePlacements(windowUnit: WindowUnit): HardwarePlacement[] {
       const height = windowUnit.overallHeight / 1000;
-      
+
       // Ergonomic handle height: 1.1m from bottom (Egyptian standard)
       const handleY = -height / 2 + 1.1;
-      
+
       return [{
         type: 'handle',
         position: new Vector3(0, handleY, 0.02),
@@ -710,7 +710,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
 - [ ] **Day 1-2:** Kinematic engine
   ```typescript
   // src/lib/3d/kinematics/OpeningKinematicsEngine.ts
-  
+
   export class OpeningKinematicsEngine {
     /**
      * Calculate accurate opening path for casement windows
@@ -726,22 +726,22 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
     } {
       // Find hinge line (pivot axis)
       const hingeLine = this.calculateHingeLine(hinges);
-      
+
       // Calculate rotation around hinge line
       const rotation = new Euler(0, openAngle * Math.PI / 180, 0);
-      
+
       // Calculate position (sash center moves as it rotates)
       const sashCenter = sash.openingPath.position;
       const pivotPoint = hingeLine.center;
-      
+
       // Rotate sash center around pivot
       const relativePos = sashCenter.clone().sub(pivotPoint);
       relativePos.applyEuler(rotation);
       const newPosition = pivotPoint.clone().add(relativePos);
-      
+
       return { position: newPosition, rotation };
     }
-    
+
     /**
      * Calculate sliding path with track constraints
      */
@@ -756,13 +756,13 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       // Sliding is linear along track direction
       const direction = track.direction.clone().normalize();
       const offset = direction.multiplyScalar(slideDistance);
-      
+
       return {
         position: sash.openingPath.position.clone().add(offset),
         rotation: sash.openingPath.rotation.clone()
       };
     }
-    
+
     /**
      * Calculate tilt-turn path (complex 2-axis movement)
      */
@@ -798,7 +798,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       otherSashes: SashData[]
     ): Collision[] {
       const collisions: Collision[] = [];
-      
+
       // Check frame collision
       if (this.checkFrameCollision(sash, frame)) {
         collisions.push({
@@ -807,7 +807,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
           message: 'Sash collides with frame'
         });
       }
-      
+
       // Check other sashes
       for (const other of otherSashes) {
         if (this.checkSashCollision(sash, other)) {
@@ -818,7 +818,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
           });
         }
       }
-      
+
       return collisions;
     }
   }
@@ -832,7 +832,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       ? 4 * t * t * t
       : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
-  
+
   // Apply to animation
   const easedProgress = easeInOutCubic(animationProgress);
   const path = kinematicsEngine.calculateCasementPath(sash, hinges, easedProgress * 90);
@@ -862,18 +862,18 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
   // Add drag selection for faster grid creation
   const [dragStart, setDragStart] = useState<{row: number, col: number} | null>(null);
   const [dragEnd, setDragEnd] = useState<{row: number, col: number} | null>(null);
-  
+
   const handleCellMouseDown = (row: number, col: number) => {
     setDragStart({row, col});
     setDragEnd({row, col});
   };
-  
+
   const handleCellMouseEnter = (row: number, col: number) => {
     if (dragStart) {
       setDragEnd({row, col});
     }
   };
-  
+
   const handleCellMouseUp = () => {
     if (dragStart && dragEnd) {
       // Apply cell type to all cells in rectangle
@@ -881,7 +881,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
       const maxRow = Math.max(dragStart.row, dragEnd.row);
       const minCol = Math.min(dragStart.col, dragEnd.col);
       const maxCol = Math.max(dragStart.col, dragEnd.col);
-      
+
       const newCells = grid.cells.map(cell => {
         if (cell.row >= minRow && cell.row <= maxRow &&
             cell.col >= minCol && cell.col <= maxCol) {
@@ -889,7 +889,7 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
         }
         return cell;
       });
-      
+
       onGridChange({ ...grid, cells: newCells });
     }
     setDragStart(null);
@@ -901,8 +901,8 @@ const geometry = new BoxGeometry(0.03, 0.05, 0.02);
   ```typescript
   // Click-to-place mullions instead of typing positions
   const [mullionPlacementMode, setMullionPlacementMode] = useState(false);
-  
+
   const handleCanvasClick = (event: React.MouseEvent<SVGSVGElement>) => {
     if (!mullionPlacementMode) return;
-    
+
     // Get click

@@ -795,7 +795,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                      (profile.specifications as any)?.internalCode?.toLowerCase() || '';
         const role = (profile.specifications as any)?.profileRole?.toLowerCase() || '';
         const profileNumber = ((profile.specifications as any)?.profileNumber || (profile.specifications as any)?.supplierCode || '').toLowerCase();
-        
+
         if (!(
           name.includes(query) ||
           supplier.includes(query) ||
@@ -1235,7 +1235,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     </p>
                   </div>
                 </div>
-                <div 
+                <div
                   className={cn(
                     "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold pointer-events-none select-none",
                     useRemnantsFirst 
@@ -1338,7 +1338,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                           className={cn(
                             "h-4 w-4 text-gray-400 transition-transform duration-200",
                             isProfileInventoryOpen && "rotate-180"
-                          )} 
+                          )}
                         />
                       </div>
                     </CardHeader>
@@ -2105,7 +2105,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                                 {alert.reorderPriority && ` (Priority: ${alert.reorderPriority})`}
                               </p>
                               <p className="text-[11px] text-slate-400 mt-1">
-                                Derived from stock vs min level. Not an AI or demand prediction.
+                                Derived from stock vs min level. Not an automation or demand prediction.
                               </p>
                             </div>
                           )}
@@ -2298,7 +2298,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             <AlertTitle>Ledger analytics</AlertTitle>
             <AlertDescription className="text-sm text-slate-300">
               Consumption, ageing and reorder coverage come from recorded stock movements and owned
-              balances. Unsupported AI / demand-forecast claims are not shown.
+              balances. Unsupported automation / demand-forecast claims are not shown.
             </AlertDescription>
           </Alert>
 

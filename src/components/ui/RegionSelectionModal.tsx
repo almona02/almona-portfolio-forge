@@ -78,7 +78,7 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
   const handleRegionSelect = (region: RegionCode) => {
     setSelectedRegion(region);
     setIsAnimating(true);
-    
+
     setTimeout(() => {
       setShowSuccess(true);
       setTimeout(() => {
@@ -100,7 +100,7 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
       )}>
         {/* Animated background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-amber-600/20 to-amber-600/20 rounded-2xl blur-xl animate-pulse" />
-        
+
         <Card className="relative bg-almona-dark border-gray-700 shadow-2xl overflow-hidden">
           <CardHeader className="text-center pb-4">
             <div className="flex items-center justify-center mb-4">
@@ -147,7 +147,7 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
                       "absolute inset-0 rounded-xl bg-gradient-to-br opacity-20 group-hover:opacity-30 transition-opacity",
                       config.color
                     )} />
-                    
+
                     <Card className={cn(
                       "relative border-2 transition-all duration-300",
                       selectedRegion === code 

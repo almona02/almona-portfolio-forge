@@ -167,7 +167,7 @@ try {
 
 **Constitutional Compliance:**
 - Tier 0 only (visual export, no execution logic)
-- Deterministic conversion (no ML/AI)
+- Deterministic conversion (no advisory inference)
 - Error tracking for audit trail
 
 #### Estimated Effort: 2-3 days
@@ -616,7 +616,7 @@ File
 
 - Tier 0 only (visual operations)
 - No execution logic in drafting layer
-- Deterministic operations (no ML/AI)
+- Deterministic operations (no advisory inference)
 - Error tracking for audit trail
 
 ### Linting & Syntax

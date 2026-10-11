@@ -19,7 +19,7 @@
 - ✅ `onboarding.complete` - "إكمال البرنامج التعليمي"
 - ✅ `onboarding.steps.measuring.title` - "القياس الذكي"
 - ✅ `onboarding.steps.measuring.description` - Full Arabic description
-- ✅ `onboarding.steps.design.title` - "التصميم المدعوم بالذكاء الاصطناعي"
+- ✅ `onboarding.steps.design.title` - "التصميم المدعوم بالمساعدة الآلية"
 - ✅ `onboarding.steps.design.description` - Full Arabic description
 - ✅ `onboarding.steps.optimization.title` - "تحسين القطع"
 - ✅ `onboarding.steps.optimization.description` - Full Arabic description
@@ -47,7 +47,7 @@
 - ✅ `onboarding.complete` - "Eğitimi Tamamla"
 - ✅ `onboarding.steps.measuring.title` - "Akıllı Ölçüm"
 - ✅ `onboarding.steps.measuring.description` - Full Turkish description
-- ✅ `onboarding.steps.design.title` - "AI Destekli Tasarım"
+- ✅ `onboarding.steps.design.title` - "automation Destekli Tasarım"
 - ✅ `onboarding.steps.design.description` - Full Turkish description
 - ✅ `onboarding.steps.optimization.title` - "Kesim Optimizasyonu"
 - ✅ `onboarding.steps.optimization.description` - Full Turkish description
@@ -92,7 +92,7 @@
 
 **Sample Translations**:
 - "Smart Measuring" → "القياس الذكي"
-- "AI-Powered Design" → "التصميم المدعوم بالذكاء الاصطناعي"
+- "Assisted Design" → "التصميم المدعوم بالمساعدة الآلية"
 - "Cutting Optimization" → "تحسين القطع"
 - "CNC Export" → "تصدير CNC"
 
@@ -106,7 +106,7 @@
 
 **Sample Translations**:
 - "Smart Measuring" → "Akıllı Ölçüm"
-- "AI-Powered Design" → "AI Destekli Tasarım"
+- "Assisted Design" → "automation Destekli Tasarım"
 - "Cutting Optimization" → "Kesim Optimizasyonu"
 - "CNC Export" → "CNC Dışa Aktarma"
 

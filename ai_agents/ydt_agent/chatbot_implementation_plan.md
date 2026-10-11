@@ -84,7 +84,7 @@
 - **Python/FastAPI**: API server
 - **Supabase**: Database with pgvector
 - **LangChain**: RAG framework
-- **Google Gemini**: LLM for generation
+- **Google support service**: LLM for generation
 
 ### Frontend
 - **React/TypeScript**: Chat interface

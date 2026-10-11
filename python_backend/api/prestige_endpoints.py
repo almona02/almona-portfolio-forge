@@ -1,6 +1,6 @@
 """
 YDT Prestige Agent API - FastAPI Backend
-University-grade AI Assistant for AIM 7510 CNC Machines
+University-grade automation Assistant for AIM 7510 CNC Machines
 """
 
 from fastapi import FastAPI, BackgroundTasks

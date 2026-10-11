@@ -1,5 +1,5 @@
 /**
- * FP-024A — Licensed DoWin external golden fixture (asdd, 9 Sep 2026).
+ * FP-024A — Licensed reference system external golden fixture (asdd, 9 Sep 2026).
  *
  * Three length layers (do not collapse, do not substitute):
  *   expectedNominalLengthMm   — Design Preview / assembly table

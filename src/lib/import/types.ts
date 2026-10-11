@@ -1,7 +1,7 @@
 /**
  * Import Bridge Types
  * 
- * Type definitions for import bridges (DXF, CSV, LogiKal, KLAES).
+ * Type definitions for import bridges (DXF, CSV, reference system, reference system).
  * 
  * Constitutional Compliance: AICS-001 §7.4 (Audit Trail Doctrine)
  * All imports require Tier 3 validation and human verification.
@@ -122,7 +122,7 @@ export interface CSVImportOptions {
 }
 
 /**
- * LogiKal Import Options
+ * reference system Import Options
  */
 export interface LogiKalImportOptions {
   /** Allow partial import */
@@ -134,7 +134,7 @@ export interface LogiKalImportOptions {
 }
 
 /**
- * KLAES Import Options
+ * reference system Import Options
  */
 export interface KLAESImportOptions {
   /** Allow partial import */

@@ -4,7 +4,7 @@
  * Adapts BosphorusWorkflowRibbon to support unified 4-stage workflow.
  * Maintains backward compatibility with legacy 7-tab workflow.
  * 
- * Constitutional: Deterministic workflow navigation, no ML/AI
+ * Constitutional: Deterministic workflow navigation, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

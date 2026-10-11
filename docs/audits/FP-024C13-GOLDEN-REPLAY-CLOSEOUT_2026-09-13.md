@@ -41,7 +41,7 @@ Independent review = ACCEPTED
 
 ## Independent review (13 September 2026)
 
-C.13 is **ACCEPTED**. Bounded FP-024C parity is **finished**. Zero further DoWin experiments for this stage.
+C.13 is **ACCEPTED**. Bounded FP-024C parity is **finished**. Zero further reference system experiments for this stage.
 
 Physical-length correctness moved **6.0/10 → 7.5/10**. Not 8.5–9: live canonical production still does not consume the proven parity behavior.
 

@@ -50,7 +50,7 @@ This document simulates a hostile audit review of TMG IOMS, asking the toughest 
    - Prevents time manipulation
    - **Cannot be bypassed**: Timestamp comes from server
 
-**Evidence**: 
+**Evidence**:
 - Constitutional Principle 1: Human-Verified Before System-Trusted
 - AICS-001 Section 2.5: Validation Envelope
 - TMG Shield Rule: TMGMaintenanceRule requires GPS + Photos
@@ -195,34 +195,34 @@ This document simulates a hostile audit review of TMG IOMS, asking the toughest 
 
 ---
 
-## Stress Test Scenario 5: AI Manipulation
+## Stress Test Scenario 5: automation Manipulation
 
 ### The Attack
 
-**Auditor Question**: "What if the AI makes a bad prediction and someone uses it to justify incorrect maintenance? Can AI override human judgment or deterministic rules?"
+**Auditor Question**: "What if the automation makes a bad prediction and someone uses it to justify incorrect maintenance? Can automation override human judgment or deterministic rules?"
 
 ### The Defense
 
 **Architectural Guarantees**:
 
 1. **Subordinate Intelligence** (AICS-001 Section 5.2)
-   - AI is advisory only (suggests, never decides)
-   - All AI suggestions must pass deterministic validation
-   - **Cannot be bypassed**: AI output is always validated
+   - The system is advisory only (suggests, never decides)
+   - All automation suggestions must pass deterministic validation
+   - **Cannot be bypassed**: automation output is always validated
 
 2. **Validation Envelope** (AICS-001 Section 2.5)
-   - AI suggestions checked against deterministic constraints
+   - automation suggestions checked against deterministic constraints
    - Room occupancy, technician availability, spare parts
-   - Validation can reject AI suggestions
+   - Validation can reject automation suggestions
    - **Cannot be bypassed**: Validation is mandatory
 
 3. **Human Verification Required**
-   - Even AI-suggested maintenance requires human verification
+   - Even automation-suggested maintenance requires human verification
    - QR scan, GPS, photos still required
    - **Cannot be bypassed**: Human verification is constitutional requirement
 
 4. **Confidence Disclosure**
-   - AI confidence scores are visible
+   - automation confidence scores are visible
    - Low confidence triggers human review
    - **Cannot be bypassed**: Confidence is always disclosed
 
@@ -231,7 +231,7 @@ This document simulates a hostile audit review of TMG IOMS, asking the toughest 
 - AICS-001 Section 5.2: Principle of Subordination (Non-Negotiable)
 - AICS-001 Section 5.5: Intelligence Containment Zones
 
-**Conclusion**: **Architecturally impossible** for AI to override human judgment or deterministic rules. AI advises; rules decide.
+**Conclusion**: **Architecturally impossible** for automation to override human judgment or deterministic rules. automation advises; rules decide.
 
 ---
 
@@ -464,7 +464,7 @@ This document simulates a hostile audit review of TMG IOMS, asking the toughest 
 ✅ **Cryptographic Chain**: Chain integrity automatic (cannot be broken)  
 ✅ **Vertical Isolation**: Data isolation enforced (cannot be accessed)  
 ✅ **No Admin Override**: No bypass mechanisms (cannot be added)  
-✅ **Subordinate Intelligence**: AI advisory only (cannot override rules)
+✅ **Subordinate Intelligence**: automation advisory only (cannot override rules)
 
 ### What Requires Organizational Process
 

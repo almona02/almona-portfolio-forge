@@ -29,21 +29,21 @@ graph TB
         SystemPackSuggest[System Pack Suggestions]
         MaterialIntelligence[Material Intelligence]
     end
-    
+
     subgraph tier2["Tier 2: Collaborative Intelligence"]
         BOMGenerator[BOM Generator]
         CostCalculator[Cost Calculator]
         VariantComparator[Variant Comparator]
         CostNarrative[Cost Narrative Generator]
     end
-    
+
     subgraph tier3["Tier 3: Protected Determinism"]
         QuotationPDF[Quotation PDF Generator]
         TenderPDF[Tender PDF Generator]
         CostBreakdown[Cost Breakdown Tables]
         SensitivityReport[Sensitivity Analysis Report]
     end
-    
+
     YDT --> SystemPackSuggest
     SystemPackSuggest --> BOMGenerator
     BOMGenerator --> CostCalculator
@@ -53,16 +53,16 @@ graph TB
     CostNarrative --> TenderPDF
     CostCalculator --> CostBreakdown
     CostCalculator --> SensitivityReport
-    
+
     style tier1 fill:#e1f5ff
     style tier2 fill:#fff4e1
     style tier3 fill:#e8f5e9
 ```
 
 **Key Boundaries:**
-- **Tier 1:** Suggests system packs, provides material intelligence (AI-assisted)
-- **Tier 2:** Generates BOMs, calculates costs, compares variants, generates narratives (AI + deterministic)
-- **Tier 3:** Generates PDFs, tables, reports (100% deterministic, zero AI)
+- **Tier 1:** Suggests system packs, provides material intelligence (software-assisted)
+- **Tier 2:** Generates BOMs, calculates costs, compares variants, generates narratives (automation + deterministic)
+- **Tier 3:** Generates PDFs, tables, reports (100% deterministic, zero automation)
 
 ---
 
@@ -81,7 +81,7 @@ sequenceDiagram
     participant Narrative as Cost Narrative (Tier 2)
     participant PDF as PDF Generator (Tier 3)
     participant Human as Human Approver
-    
+
     User->>Tier1: Request quotation for project
     Tier1->>Tier1: Suggest system packs (AI)
     Tier1->>User: Present options: System A, B, C
@@ -113,7 +113,7 @@ sequenceDiagram
 
 ---
 
-## 3. Tier 1: Authoritative AI (Strategic Gate)
+## 3. Tier 1: Authoritative automation (Strategic Gate)
 
 ### 3.1 System Pack Suggestions
 
@@ -285,7 +285,7 @@ interface CostNarrative {
 > Sensitivity: If glass thickness changes from 6mm to 8mm, cost increases by 12.3%."
 
 **Constitutional Safeguard:**
-- All narratives are factual (from BOM deltas, not AI inference)
+- All narratives are factual (from BOM deltas, not automation inference)
 - No judgmental language ("better", "recommended", "should")
 - Clear disclaimer: "Cost calculations for information only. Pricing decisions require human judgment."
 
@@ -360,12 +360,12 @@ stateDiagram-v2
     Approved --> Finalized: Immutable audit stamp
     Rejected --> [*]: Quotation cancelled
     Finalized --> [*]: Quotation ready for client
-    
+
     note right of Generated
         System calculates costs
         System does NOT set prices
     end note
-    
+
     note right of Approved
         Human takes responsibility
         Immutable audit stamp
@@ -463,7 +463,7 @@ All cost calculations are for information purposes only.
 1. **Explicit Disclaimers:** Every document includes constitutional disclaimer
 2. **Human Responsibility:** All pricing decisions require human approval
 3. **Deterministic Calculations:** All costs calculated from BOM truth (auditable)
-4. **No AI in Pricing:** Tier 3 (PDF generation) is 100% deterministic
+4. **No automation in Pricing:** Tier 3 (PDF generation) is 100% deterministic
 5. **Immutable Audit Trail:** All approvals logged in RealityOS (tamper-proof)
 
 **Legal Position:**
@@ -486,7 +486,7 @@ All cost calculations are for information purposes only.
 **For government procurement:**
 
 1. **Deterministic Process:** All calculations auditable
-2. **No Bias:** No AI recommendations, only factual comparisons
+2. **No Bias:** No automation recommendations, only factual comparisons
 3. **Full Transparency:** All cost drivers explained
 4. **Immutable Records:** RealityOS audit trail
 
@@ -606,7 +606,7 @@ src/components/quotation/
 
 ### 11.3 Enterprise Trust Risk
 
-**Risk:** Enterprise buyers don't trust "AI-generated" quotations
+**Risk:** Enterprise buyers don't trust "automation-generated" quotations
 
 **Mitigation:**
 - Transparent cost calculations (traceable to BOM)

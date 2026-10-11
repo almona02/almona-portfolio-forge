@@ -19,7 +19,7 @@ Phase 1 cannot close without a signed Anchor Client Acceptance Certificate. This
 ### Who Qualifies
 
 - ✅ Operating curtain wall/facade workshop in Egypt/MENA
-- ✅ Currently using Orgadata, Klaes, or manual processes
+- ✅ Currently using reference system, reference system, or manual processes
 - ✅ Willing to commit senior technical lead (8+ hours/week)
 - ✅ Has 3+ real projects queued for 2026 Q2
 

@@ -23,21 +23,21 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
   showIcon = true,
   className
 }) => {
-  
+
   // Normalize condition string (handle inconsistent casing)
   const normalizeCondition = (cond: string): MachineCondition => {
     const normalized = cond.toLowerCase().trim();
-    
+
     if (normalized.includes('excellent') || normalized.includes('like new')) return 'Excellent';
     if (normalized.includes('good') || normalized.includes('very good')) return 'Good';
     if (normalized.includes('fair') || normalized.includes('average')) return 'Fair';
     if (normalized.includes('repair') || normalized.includes('maintenance')) return 'Needs Repair';
-    
+
     return 'As-Is'; // Default fallback
   };
 
   const normalizedCondition = normalizeCondition(condition);
-  
+
   // Condition configuration with colors, icons, and descriptions
   const conditionConfig = {
     'Excellent': {
@@ -73,7 +73,7 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
   };
 
   const config = conditionConfig[normalizedCondition];
-  
+
   const sizeClasses = {
     sm: 'text-xs px-2 py-1',
     md: 'text-sm px-3 py-1.5',
@@ -118,7 +118,7 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
  */
 export const getConditionScore = (condition: string): number => {
   const normalized = condition.toLowerCase().trim();
-  
+
   if (normalized.includes('excellent')) return 5;
   if (normalized.includes('good')) return 4;
   if (normalized.includes('fair')) return 3;

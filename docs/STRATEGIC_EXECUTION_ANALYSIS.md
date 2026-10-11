@@ -99,7 +99,7 @@ This document evaluates the consultant's strategic recommendations through three
 
 ### 2.2 "Political Protection" Strategy (⚠️ Requires Legal Review)
 
-**Consultant's Recommendation**: Position AI as "liability shield" and emphasize "never replace humans."
+**Consultant's Recommendation**: Position automation as "liability shield" and emphasize "never replace humans."
 
 **Academic Concern**: 
 - "Liability shield" language may create legal exposure if interpreted as warranty
@@ -110,7 +110,7 @@ This document evaluates the consultant's strategic recommendations through three
 - Better to emphasize "risk mitigation through verification" than "shield"
 
 **Refined Approach**:
-- **Academic Frame**: "Almona's governance framework ensures AI operates within deterministic constraints, making AI contributions verifiable and auditable."
+- **Academic Frame**: "Almona's governance framework ensures automation operates within deterministic constraints, making automation contributions verifiable and auditable."
 - **Legal Frame**: "Almona provides verification and audit trails that support decision-makers in demonstrating due diligence."
 - **Operational Frame**: "Almona supports human authority by providing verified, traceable recommendations within safety boundaries."
 
@@ -294,7 +294,7 @@ interface CertificationSeal {
    - Legal review by counsel
 
 3. **Academic Paper** (Optional):
-   - "Constitutional AI Governance in Industrial Computing"
+   - "Constitutional automation Governance in Industrial Computing"
    - Submit to relevant conferences/journals
    - Strengthens academic credibility
 
@@ -322,7 +322,7 @@ interface CertificationSeal {
 ### 4.2 Preferred Language (Academic, Legal, Polite)
 
 **For Engineers**:
-- "Almona's governance engine ensures AI operates within deterministic constraints."
+- "Almona's governance engine ensures automation operates within deterministic constraints."
 - "Certified outputs provide verifiable, auditable records of fabrication decisions."
 
 **For Management**:
@@ -367,7 +367,7 @@ interface CertificationSeal {
 
 **Risk**: "Dependency strategy" language may be interpreted as anti-competitive.
 
-**Mitigation**: 
+**Mitigation**:
 - Reframe all language to emphasize value and reliability
 - Engage legal counsel to review all positioning
 - Ensure contracts are defensible, not coercive

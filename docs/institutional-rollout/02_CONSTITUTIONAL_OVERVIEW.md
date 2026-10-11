@@ -32,11 +32,11 @@ ALMONA Platform
 
 ## Execution Classes (Tiered Authority)
 
-| Tier | Name | AI Allowed | Purpose |
+| Tier | Name | automation Allowed | Purpose |
 |------|------|------------|---------|
 | **Tier 3** | Protected Determinism | ❌ None | Pure computation, geometry, mathematics |
 | **Tier 2** | Collaborative Intelligence | ✅ Bounded | Advisory suggestions only |
-| **Tier 1** | Authoritative AI | ✅ YDT Required | Strategic decisions with reasoning |
+| **Tier 1** | Authoritative automation | ✅ YDT Required | Strategic decisions with reasoning |
 | **Tier 0** | Presentation Layer | ❌ None | Read-only visualization |
 
 ## Governance Mechanisms

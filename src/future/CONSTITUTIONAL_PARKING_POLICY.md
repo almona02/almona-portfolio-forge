@@ -37,7 +37,7 @@ Before any component can leave `/future/`:
    - Canonical source must be identified
 
 2. **Tier Classification** (§5.10.2)
-   - Tier 3: Deterministic only, no AI
+   - Tier 3: Deterministic only, no automation
    - Tier 2: Advisory, IntelligenceGate required
    - Tier 1: Strategic, YDT required
 

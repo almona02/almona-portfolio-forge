@@ -248,7 +248,7 @@ Transform YDT from "45% complete chatbot feature" to "100% complete intelligence
 #### Dependencies
 
 - **Enables:** Board Scorecard Q1 gate (YDT mandatory established)
-- **Integrates with:** 48-Week Roadmap (Tier 1 Authoritative AI)
+- **Integrates with:** 48-Week Roadmap (Tier 1 Authoritative automation)
 - **Integrates with:** Authority Foundation (decision justification)
 
 ---
@@ -302,18 +302,18 @@ graph TD
     B --> C[48-Week Roadmap Phase 1]
     C --> D[Anchor Client Gate Week 16]
     D --> E[48-Week Roadmap Phase 2]
-    
+
     F[RealityOS Phases 1-2] --> G[Phase 3 Capture Gateway]
     G --> H[TMG Shield Vertical]
     H --> I[TMG IOMS POC]
-    
+
     J[YDT Transformation] --> K[Board Scorecard Q1]
     H --> L[Board Scorecard Q3]
-    
+
     M[Authority Foundation] --> N[48-Week Roadmap Governance]
     M --> O[Persona Layers]
     O --> P[TMG IOMS Access Control]
-    
+
     style A fill:#e1f5ff
     style D fill:#fff4e1
     style G fill:#e8f5e9
@@ -392,7 +392,7 @@ graph TD
 **Integration:**
 - All plans must respect NOT IN SCOPE 2026 prohibitions
 - All plans must pass constitutional validation (CI/CD)
-- All plans must maintain Tier 3 purity (99.8%+ accuracy, zero AI)
+- All plans must maintain Tier 3 purity (99.8%+ accuracy, zero automation)
 
 ### 2. RealityOS Platform (Cross-Plan)
 
@@ -413,7 +413,7 @@ graph TD
 - YDTCoreService (YDT Transformation)
 - YDTBusinessLayer (orchestration)
 - Decision Justification (Authority Plan Week 4)
-- Tier 1 Authoritative AI (48-Week Roadmap)
+- Tier 1 Authoritative automation (48-Week Roadmap)
 
 **Integration:**
 - YDT powers Tier 1 suggestions (48-Week Roadmap)

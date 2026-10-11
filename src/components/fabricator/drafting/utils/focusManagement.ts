@@ -4,7 +4,7 @@
  * Enterprise-grade focus management for keyboard navigation, accessibility,
  * and professional UX in the Drafting Workbench.
  * 
- * Constitutional: Deterministic focus management, no ML/AI
+ * Constitutional: Deterministic focus management, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

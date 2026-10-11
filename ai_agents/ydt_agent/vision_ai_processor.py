@@ -1,6 +1,6 @@
 """
-Vision AI Wiring Diagram Processor
-Uses Google Gemini Pro Vision to extract components from actual wiring diagram PDFs.
+Vision automation Wiring Diagram Processor
+Uses Google support service Pro Vision to extract components from actual wiring diagram PDFs.
 
 This is the REAL Gold Tier extraction - processing the actual PDF file.
 """
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ExtractedComponent:
-    """Component extracted from Vision AI analysis"""
+    """Component extracted from Vision automation analysis"""
     component_id: str
     component_type: str
     category: str  # "electrical" or "pneumatic"
@@ -42,7 +42,7 @@ class ExtractedComponent:
 
 @dataclass
 class VisionExtractionResult:
-    """Complete Vision AI extraction result"""
+    """Complete Vision automation extraction result"""
     machine_id: str
     diagram_filename: str
     total_pages: int
@@ -54,7 +54,7 @@ class VisionExtractionResult:
 
 
 class VisionAIWiringProcessor:
-    """Process wiring diagrams with Google Gemini Pro Vision"""
+    """Process wiring diagrams with Google support service Pro Vision"""
     
     def __init__(self, raw_manuals_path: Path, api_key: Optional[str] = None):
         self.raw_manuals_path = Path(raw_manuals_path)
@@ -65,8 +65,8 @@ class VisionAIWiringProcessor:
         if VISION_AI_AVAILABLE and self.api_key:
             try:
                 genai.configure(api_key=self.api_key)
-                # Use gemini-2.5-flash (supports vision, faster and cheaper)
-                # Alternative: gemini-2.5-pro (more accurate but slower)
+                # Use support service-2.5-flash (supports vision, faster and cheaper)
+                # Alternative: support service-2.5-pro (more accurate but slower)
                 self.model = genai.GenerativeModel('gemini-2.5-flash')
                 self.api_configured = True
                 logger.info("[VISION AI] Gemini 2.5 Flash configured successfully")
@@ -78,7 +78,7 @@ class VisionAIWiringProcessor:
     
     def process_diagram(self, machine_id: str, diagram_filename: str) -> VisionExtractionResult:
         """
-        Process wiring diagram PDF with Vision AI.
+        Process wiring diagram PDF with Vision automation.
         
         This is the REAL extraction from the actual PDF file.
         """
@@ -113,7 +113,7 @@ class VisionAIWiringProcessor:
                 api_used=False
             )
         
-        # Process each page with Vision AI
+        # Process each page with Vision automation
         all_components = []
         all_connections = []
         processing_notes = []
@@ -161,7 +161,7 @@ class VisionAIWiringProcessor:
         return result
     
     def _extract_from_image(self, image, page_num: int, machine_id: str) -> Tuple[List, List, List]:
-        """Extract components from a single page using Vision AI"""
+        """Extract components from a single page using Vision automation"""
         prompt = f"""
 You are analyzing a wiring diagram for YILMAZ {machine_id.upper()} CNC machine.
 
@@ -242,7 +242,7 @@ Be extremely thorough - extract EVERY component you can see. This is for CNC mac
                     specifications=comp_data.get('specifications', {}),
                     connections=comp_data.get('connections', []),
                     page_number=page_num,
-                    confidence=0.85,  # Default confidence for Vision AI
+                    confidence=0.85,  # Default confidence for Vision automation
                     coordinates=tuple(comp_data.get('coordinates', [0, 0])) if comp_data.get('coordinates') else None
                 )
                 components.append(component)
@@ -316,7 +316,7 @@ Be extremely thorough - extract EVERY component you can see. This is for CNC mac
 
 
 def main():
-    """Process AIM 7510 wiring diagram with Vision AI"""
+    """Process AIM 7510 wiring diagram with Vision automation"""
     print("\n" + "="*70)
     print("VISION AI WIRING DIAGRAM PROCESSOR - REAL EXTRACTION")
     print("="*70 + "\n")

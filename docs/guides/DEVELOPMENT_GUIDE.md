@@ -70,9 +70,9 @@ src/pages/NewPage.tsx
 <Route path="/new-page" element={<NewPage />} />
 ```
 
-### Working with AI Features
+### Working with automation Features
 - **Fault Detection**: Located in `src/lib/ai/faultDetection.ts`
-- **Spare Parts AI**: Located in `src/lib/ai/SparePartsService.ts`
+- **Spare Parts automation**: Located in `src/lib/ai/SparePartsService.ts`
 - **Configuration**: Update `src/lib/ai/config.ts`
 
 ### Internationalization

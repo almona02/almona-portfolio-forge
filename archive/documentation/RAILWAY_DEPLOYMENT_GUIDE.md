@@ -103,7 +103,7 @@ VITE_APP_URL=https://almona.eg
 
 2. **Test Key Features**
    - [ ] Supabase authentication works
-   - [ ] AI features work (if Gemini key provided)
+   - [ ] automation features work (if support service key provided)
    - [ ] Maps display correctly (if Maps key provided)
    - [ ] Analytics tracking works (if Analytics ID provided)
 
@@ -126,7 +126,7 @@ See `RAILWAY_ENVIRONMENT_VARIABLES.md` for the complete list of all available en
 
 #### 1. Build Fails with Node Version Error
 **Problem**: Build fails due to Node.js version incompatibility
-**Solution**: 
+**Solution**:
 - Ensure `NODE_VERSION=20` is set in Railway variables
 - Check `package.json` engines field
 

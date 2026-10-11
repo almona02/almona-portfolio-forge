@@ -260,7 +260,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
             </TabsList>
 
             <TabsContent value="k-factor" className="space-y-4">
-              {/* AI Suggestion Panel */}
+              {/* automation Suggestion Panel */}
               {userId && (
                 <AISuggestionPanel
                   profile={profile}
@@ -268,7 +268,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   cutAngle={45}
                   userId={userId}
                   onSuggestionApplied={(kFactor) => {
-                    // Auto-apply AI suggestion to calculator
+                    // Auto-apply automation suggestion to calculator
                     setCalibration((prev) => ({
                       ...prev,
                       allowances: {

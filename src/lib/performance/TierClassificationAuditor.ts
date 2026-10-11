@@ -72,7 +72,7 @@ export class TierClassificationAuditor {
   ];
 
   /**
-   * Prohibited imports for Tier 3 files (no ML/AI)
+   * Prohibited imports for Tier 3 files (no advisory inference)
    */
   private readonly tier3ProhibitedImports = [
     'tensorflow',
@@ -133,7 +133,7 @@ export class TierClassificationAuditor {
     }
 
     if (tier === 'Tier 3') {
-      // Check for prohibited ML/AI imports
+      // Check for prohibited advisory inference imports
       this.tier3ProhibitedImports.forEach(prohibitedImport => {
         const importRegex = new RegExp(`import.*from.*['"].*${prohibitedImport}.*['"]`, 'g');
         if (importRegex.test(content)) {

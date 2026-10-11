@@ -109,7 +109,7 @@ Canonical evidence identity:
 | Closest generator “Design Report” | `src/lib/fabricator/UnitProfileGatherer.ts:489-490` `plannedLength =` finished dimension; `src/lib/fabricator/OptimizationEngine.ts:31` `plannedLength` |
 | Cut generation | `src/lib/fabricator/CuttingListGenerator.ts:36-63,134-148`; `src/lib/fabricator/UPVCCuttingEngine.ts:243-314` `generateOptimizedCutList`; `src/lib/fabricator/HardenedCuttingListGenerator.ts`; `src/lib/reports/CuttingListGenerator.ts:24-33` (report transform) |
 | Angle | `src/types/fabricator.ts:697` `Cut.angle` (single end); `src/lib/fabricator/production/CutSheetGenerator.ts:81` `angleDeg: cut.angle ?? 0`; `src/lib/fabricator/UPVCCuttingEngine.ts:269,281` hardcoded miter 45; `src/lib/fabricator/dowinParity/DowinParityLengthEngine.ts:165-166` left/right with `?? 45` |
-| Profile / system | `src/types/fabricator.ts:755` `MeasurementData.systemPackId`; `src/lib/fabricator/golden/dowinPhysicalLengthFixture.ts:272` DoWin `profileSystem`; `SYSTEM_PACKS` has no Deceuninck pack |
+| Profile / system | `src/types/fabricator.ts:755` `MeasurementData.systemPackId`; `src/lib/fabricator/golden/dowinPhysicalLengthFixture.ts:272` reference system `profileSystem`; `SYSTEM_PACKS` has no Deceuninck pack |
 | Welding Waste setting | `src/lib/fabricator/ManufacturingSettings.ts:36` field, `:100/:121` defaults 3, `:187-211` `resolveManufacturingSettings` |
 | Required Parts semantic | `src/lib/fabricator/cutLengthSemantics.ts:24-26` `packedSegmentMm`; `src/types/fabricator.ts:715-719` packed / Required Parts graphic |
 | Packed physical | `src/lib/fabricator/barPackAccounting.ts` kerf/trim only; historical `Cut.length`; `CutSheetGenerator.ts:71-76` uses `cut.length` |
@@ -117,7 +117,7 @@ Canonical evidence identity:
 
 ### 1. Closest Design Report → Required Parts boundary
 
-DoWin’s boundary is Design Preview / report millimetres → Required Parts millimetres.
+reference system’s boundary is Design Preview / report millimetres → Required Parts millimetres.
 
 ALMONA’s closest **semantic** equivalent is:
 
@@ -140,7 +140,7 @@ Not consumed by `UPVCCuttingEngine`, `AlmonaCuttingEngine`, `barPackAccounting`,
 | Path | Risk |
 |------|------|
 | `UPVCCuttingEngine.ts:169-208` K-factor + `burnOffMm` + cooling | **HIGH** if `weldingWasteMm` is stacked on this production cut length. Separate weld-like allowance. |
-| Parity sash inner + Basma + Kaynak + Weld | **HIGH** if Report + Weld is stacked on that packed sash path. C.6–C.10 showed DoWin’s Report → Required Parts delta **is** the weld term alone. |
+| Parity sash inner + Basma + Kaynak + Weld | **HIGH** if Report + Weld is stacked on that packed sash path. C.6–C.10 showed reference system’s Report → Required Parts delta **is** the weld term alone. |
 | Role geometric offsets `L+50` / `L-40` (`roleDetection.ts:121-193`, `cuttingFormulaConstants.ts:19-38`) | Different layer; not Welding Waste. |
 | Bar pack kerf (`barPackAccounting.ts`) | Saw / trim only; not weld. |
 
@@ -190,7 +190,7 @@ Exactly one:
 
 ## Exact bounded implementation contract (not implemented)
 
-Applies only to a future DoWin compatibility / parity adapter. Fail closed outside this contract.
+Applies only to a future reference system compatibility / parity adapter. Fail closed outside this contract.
 
 ```
 WHEN ALL of:

@@ -82,7 +82,7 @@ From your customer testimonials:
 Create `almona-platform-ar.html` and `traditional-fabrication-ar.html`:
 - Full RTL support
 - Academic/ministry-grade Arabic (as we did for diagrams)
-- Replace "AI" with "نظام حاسوبي ذكي"
+- Replace "automation" with "نظام حاسوبي ذكي"
 
 #### 8. **Add "Why Different" Metrics**
 Expand the "Why Almona Is Different" section with:

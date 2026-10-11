@@ -30,14 +30,14 @@ describe('AiEquipmentAdvisor', () => {
 
   it('renders the component with default tab', () => {
     render(<AiEquipmentAdvisor open={true} onOpenChange={mockOnOpenChange} />);
-    expect(screen.getByText('AI Spare Parts Finder')).toBeInTheDocument();
+    expect(screen.getByText('automation Spare Parts Finder')).toBeInTheDocument();
     expect(screen.getByText('Description')).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Describe the part/i)).toBeInTheDocument();
   });
 
   it('can click on different tabs', async () => {
     render(<AiEquipmentAdvisor open={true} onOpenChange={mockOnOpenChange} />);
-    
+
     // Click on Image tab
     fireEvent.click(screen.getByText('Image'));
     await waitFor(() => {
@@ -53,7 +53,7 @@ describe('AiEquipmentAdvisor', () => {
 
   it('handles text description search', async () => {
     render(<AiEquipmentAdvisor open={true} onOpenChange={mockOnOpenChange} />);
-    
+
     fireEvent.change(
       screen.getByPlaceholderText(/Describe the part/i), 
       { target: { value: 'cutting blade' } }
@@ -67,7 +67,7 @@ describe('AiEquipmentAdvisor', () => {
 
   it('shows error when no input provided', () => {
     render(<AiEquipmentAdvisor open={true} onOpenChange={mockOnOpenChange} />);
-    
+
     const button = screen.getByText('Identify Part');
     expect(button).toHaveAttribute('disabled');
 

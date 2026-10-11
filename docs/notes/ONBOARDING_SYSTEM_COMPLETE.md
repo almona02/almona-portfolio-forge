@@ -37,7 +37,7 @@
 **Features**:
 - ✅ 4-step tutorial structure:
   1. Smart Measuring (2:30)
-  2. AI-Powered Design (3:45)
+  2. Assisted Design (3:45)
   3. Cutting Optimization (4:15)
   4. CNC Export (2:45)
 - ✅ Progress indicator with percentage

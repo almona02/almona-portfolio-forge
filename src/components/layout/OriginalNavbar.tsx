@@ -48,7 +48,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
       path: "/services", 
       type: "dropdown",
       items: [
-        { name: "AI Equipment Advisor", path: "/services/ai-advisor" },
+        { name: "Equipment Advisor", path: "/services/ai-advisor" },
         { name: "Machine Sales", path: "/services/sales" },
         { name: "Technical Training", path: "/services/training" },
         { name: "Fabrication Services", path: "/fabrication-services" },

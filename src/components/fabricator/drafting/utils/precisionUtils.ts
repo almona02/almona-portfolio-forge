@@ -9,7 +9,7 @@
 
 /**
  * Standard precision for all calculations (0.01mm)
- * This matches competitive fenestration software (Ercom, Moxisys, Orgadata, Klaes)
+ * Provides precision handling for fenestration drafting
  */
 export const STANDARD_PRECISION = 0.01; // mm
 
@@ -28,11 +28,11 @@ export function roundToPrecision(value: number, precision: number = STANDARD_PRE
   if (!isFinite(value)) {
     return value;
   }
-  
+
   if (!isFinite(precision) || precision <= 0) {
     return value;
   }
-  
+
   // Use Math.round with scaled precision to avoid floating point errors
   const multiplier = 1 / precision;
   return Math.round(value * multiplier) / multiplier;
@@ -49,16 +49,16 @@ export function validatePrecision(value: number, precision: number = STANDARD_PR
   if (!isFinite(value)) {
     return false;
   }
-  
+
   if (!isFinite(precision) || precision <= 0) {
     return false;
   }
-  
+
   // Check if value is already at the required precision (within rounding tolerance)
   const rounded = roundToPrecision(value, precision);
   const diff = Math.abs(value - rounded);
   const tolerance = precision / 1000; // Very small tolerance for floating point errors
-  
+
   return diff <= tolerance;
 }
 
@@ -101,7 +101,7 @@ export function equalsWithinPrecision(
   if (!isFinite(a) || !isFinite(b)) {
     return a === b;
   }
-  
+
   return Math.abs(a - b) <= precision / 2;
 }
 

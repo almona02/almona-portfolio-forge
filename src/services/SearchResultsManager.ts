@@ -1,7 +1,7 @@
 /**
  * SearchResultsManager
  * 
- * Manages intelligent search results with AI-powered matching,
+ * Manages intelligent search results with software-assisted matching,
  * synonym expansion, and relevance scoring.
  */
 
@@ -28,22 +28,22 @@ export interface SearchFilters {
 }
 
 export class SearchResultsManager {
-  
+
   /**
-   * Perform intelligent search with AI-powered matching
+   * Perform intelligent search with software-assisted matching
    */
   static searchMachines(
     machines: UsedMachine[],
     filters: SearchFilters
   ): {results: SearchResult[], analytics: ParsedQuery | null, eventId: string | null} {
-    
+
     let parsedQuery: ParsedQuery | null = null;
     let eventId: string | null = null;
-    
+
     // Parse query with NLP if provided
     if (filters.query.trim()) {
       parsedQuery = NaturalLanguageProcessor.parseQuery(filters.query);
-      
+
       // Extract additional filters from natural language
       if (parsedQuery.priceRange.min && !filters.priceRange[0]) {
         filters.priceRange[0] = parsedQuery.priceRange.min;
@@ -58,13 +58,13 @@ export class SearchResultsManager {
         filters.condition = parsedQuery.condition;
       }
     }
-    
+
     // Apply filters and calculate relevance scores
     const results = machines
       .map(machine => this.calculateRelevance(machine, filters, parsedQuery))
       .filter(result => result.relevanceScore > 0)
       .sort((a, b) => b.relevanceScore - a.relevanceScore);
-    
+
     // Track search analytics
     if (filters.query.trim()) {
       eventId = SearchAnalyticsTracker.trackSearch(
@@ -73,7 +73,7 @@ export class SearchResultsManager {
         parsedQuery || undefined
       );
     }
-    
+
     return {
       results,
       analytics: parsedQuery,
@@ -102,7 +102,7 @@ export class SearchResultsManager {
     if (filters.query.trim()) {
       const textScore = this.calculateTextMatchScore(machine, filters.query, matchedTerms);
       relevanceScore += textScore * 0.4; // 40% weight for text matching
-      
+
       if (textScore > 0) {
         matchReasons.push('Text match');
       }
@@ -137,7 +137,7 @@ export class SearchResultsManager {
     if (filters.machineType !== 'all') {
       const typeScore = this.calculateTypeMatchScore(machine, filters.machineType);
       relevanceScore += typeScore * 0.15; // 15% weight for type match
-      
+
       if (typeScore > 0) {
         matchReasons.push('Machine type');
       }
@@ -180,7 +180,7 @@ export class SearchResultsManager {
         relevanceScore += 0.1;
         matchReasons.push('Commercial intent match');
       }
-      
+
       // Urgency matching (boost newer or better condition machines for urgent queries)
       if (parsedQuery.urgency === 'high') {
         if (machine.condition === 'Excellent' || machine.year >= new Date().getFullYear() - 3) {
@@ -224,7 +224,7 @@ export class SearchResultsManager {
 
     // Expand query with synonyms
     const expandedTerms = SearchSynonymsService.expandQuery(query);
-    
+
     let score = 0;
     const maxScore = expandedTerms.length;
 
@@ -232,7 +232,7 @@ export class SearchResultsManager {
       if (searchableText.includes(term.toLowerCase())) {
         score++;
         matchedTerms.push(term);
-        
+
         // Boost for exact matches in title
         if (machine.title.toLowerCase().includes(term.toLowerCase())) {
           score += 0.5; // Extra boost for title matches
@@ -255,7 +255,7 @@ export class SearchResultsManager {
     // Synonym match
     const synonyms = SearchSynonymsService.expandQuery(filterType);
     const machineTypeSynonyms = SearchSynonymsService.expandQuery(machine.type);
-    
+
     // Check for overlap in synonyms
     const hasOverlap = synonyms.some(syn => 
       machineTypeSynonyms.includes(syn) || 
@@ -293,16 +293,16 @@ export class SearchResultsManager {
 
     // If no results, suggest broader searches
     const currentResults = this.searchMachines(allMachines, currentFilters);
-    
+
     if (currentResults.results.length === 0) {
       // Suggest removing location filter
       if (currentFilters.location !== 'all') {
         suggestions.push(`${currentFilters.query} in any location`);
       }
-      
+
       // Suggest broader price range
       suggestions.push(`${currentFilters.query} any price`);
-      
+
       // Suggest related machine types
       const relatedTypes = SearchSynonymsService.expandQuery(currentFilters.machineType);
       relatedTypes.slice(0, 2).forEach(type => {

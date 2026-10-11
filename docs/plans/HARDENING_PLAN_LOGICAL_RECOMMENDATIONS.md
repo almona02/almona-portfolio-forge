@@ -22,7 +22,7 @@
 - **370+ React components** - Large frontend codebase
 - **99.8% accuracy requirement** - Critical precision needs
 - **Multi-language support** (EN, AR, TR, FR, DE) - International scope
-- **AI/ML integration** - TensorFlow.js, ONNX Runtime
+- **advisory inference integration** - TensorFlow.js, ONNX Runtime
 - **CNC machine integration** - Multiple brands (YILMAZ, Elumatec, etc.)
 - **Real-time features** - WebSocket subscriptions
 - **Production-grade** - Used by actual workshops

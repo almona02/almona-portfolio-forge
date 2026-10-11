@@ -5,7 +5,7 @@
  * 
  * Steps:
  * 1. Smart Measuring (2:30)
- * 2. AI-Powered Design (3:45)
+ * 2. Assisted Design (3:45)
  * 3. Cutting Optimization (4:15)
  * 4. CNC Export (2:45)
  * 
@@ -109,15 +109,15 @@ const getDefaultSteps = (t: (key: string, options?: { defaultValue?: string }) =
   {
     id: 'measuring',
     title: t('onboarding.steps.measuring.title', { defaultValue: 'Smart Measuring' }),
-    description: t('onboarding.steps.measuring.description', { defaultValue: 'Learn how to use our AI-powered measuring tools to quickly and accurately measure window dimensions. Our smart measuring interface guides you through the process step by step.' }),
+    description: t('onboarding.steps.measuring.description', { defaultValue: 'Learn how to use our software-assisted measuring tools to quickly and accurately measure window dimensions. Our smart measuring interface guides you through the process step by step.' }),
     duration: '2:30',
     // videoUrl: '/videos/onboarding/measuring.mp4', // Placeholder - videos to be added
     component: SmartMeasuringDemo,
   },
   {
     id: 'design',
-    title: t('onboarding.steps.design.title', { defaultValue: 'AI-Powered Design' }),
-    description: t('onboarding.steps.design.description', { defaultValue: 'Discover how our AI design assistant helps you create optimal window configurations. The system suggests profiles, accessories, and layouts based on your measurements.' }),
+    title: t('onboarding.steps.design.title', { defaultValue: 'Assisted Design' }),
+    description: t('onboarding.steps.design.description', { defaultValue: 'Discover how our design assistant helps you create optimal window configurations. The system suggests profiles, accessories, and layouts based on your measurements.' }),
     duration: '3:45',
     // videoUrl: '/videos/onboarding/design.mp4',
     component: AIDesignDemo,
@@ -169,7 +169,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
     if (open && steps[currentStep]) {
       const stepStartTime = Date.now();
       stepStartTimes.set(currentStep, stepStartTime);
-      
+
       trackOnboardingStepViewed(
         steps[currentStep].id,
         currentStep + 1,
@@ -213,7 +213,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
     // Track step completion
     const stepStartTime = stepStartTimes.get(currentStep);
     const timeOnStep = stepStartTime ? Date.now() - stepStartTime : 0;
-    
+
     trackOnboardingStepCompleted(
       steps[currentStep].id,
       currentStep + 1,
@@ -224,7 +224,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
     const nextStep = currentStep + 1;
     const newCompleted = new Set(completedSteps);
     newCompleted.add(steps[currentStep].id);
-    
+
     setCompletedSteps(newCompleted);
     saveProgress(nextStep, newCompleted);
 
@@ -249,11 +249,11 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
   const handleComplete = (skipped = false) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
-      
+
       // Track completion analytics
       const completionTime = Date.now() - startTime;
       const completedStepsList = Array.from(completedSteps);
-      
+
       if (skipped) {
         trackOnboardingSkipped(currentStep + 1, steps.length, completionTime);
       } else {

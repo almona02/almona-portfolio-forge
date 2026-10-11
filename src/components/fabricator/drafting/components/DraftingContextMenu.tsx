@@ -1,7 +1,7 @@
 /**
  * DraftingContextMenu - Context-sensitive right-click menu for 2D drafting.
  * Renders different items for: empty space, plain rectangle, defined frame, sash.
- * Gold-tier alignment: LogiKal, Orgadata, KLAES, ABT HeroFis.
+ * Context actions for the drafting workspace.
  * Precision: memoized handlers, guarded API calls, viewport collision, a11y.
  */
 

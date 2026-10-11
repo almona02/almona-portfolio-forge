@@ -14,14 +14,14 @@ export interface ConstitutionalHealth {
   score: number; // 0-100
   violations: ConstitutionalViolation[];
   lastCheck: Date;
-  
+
   // Tier compliance metrics
   tierCompliance: {
     tier1: { total: number; compliant: number };
     tier2: { total: number; compliant: number };
     tier3: { total: number; compliant: number };
   };
-  
+
   // Truth domain integrity (AICS-001 Section 6)
   truthDomainIntegrity: {
     geometry: boolean;
@@ -32,7 +32,7 @@ export interface ConstitutionalHealth {
     operationalServices: number; // 0-5 (number of operational truth services)
     integrationComplete: boolean; // Whether services are integrated into workflows
   };
-  
+
   // Validation envelope enforcement (AICS-001 Section 4.4)
   validationEnforcement: {
     deterministicConstraints: { total: number; enforced: number };
@@ -42,7 +42,7 @@ export interface ConstitutionalHealth {
     constraintCategoriesComplete?: number; // Number of constraint categories complete (5 = 100%)
     constraintCategoryCoverage?: number; // Coverage percentage (0-1)
   };
-  
+
   // Audit trail and certification (AICS-001 Sections 7.4, 7.5)
   auditAndCertification: {
     auditTrailOperational: boolean; // AuditTrailService operational
@@ -52,7 +52,7 @@ export interface ConstitutionalHealth {
     cryptographicLinking: boolean; // Cryptographic linking functional
     chainIntegrity: boolean; // Chain integrity verification functional
   };
-  
+
   // Certification seal validity
   certificationValidity: {
     totalSeals: number;
@@ -79,7 +79,7 @@ export interface ConstitutionalViolation {
  * 
  * AICS-001 Compliance Score Calculation (based on progress report):
  * - Section 4.3/4.4 (ValidationEnvelope): 20% weight
- * - Section 5.10 (Constitutional AI Governance): 20% weight  
+ * - Section 5.10 (Constitutional automation Governance): 20% weight
  * - Section 6.0 (Canonical Source of Truth): 20% weight
  * - Section 7.4 (Audit Trail): 20% weight
  * - Section 7.5 (Deterministic Replay): 20% weight
@@ -88,7 +88,7 @@ export function getConstitutionalHealth(): ConstitutionalHealth {
   // Truth domain services status (all 5 services operational)
   const truthDomainServicesOperational = 5; // All 5 services created and operational
   const truthDomainServicesIntegrated = false; // Integration pending
-  
+
   // Validation envelope status (fully operational and integrated)
   // All 5 constraint categories complete: Geometric (10), Material (19), Machine (18), Process (15), Certification (10)
   // Total: 72 constraints registered
@@ -96,16 +96,16 @@ export function getConstitutionalHealth(): ConstitutionalHealth {
   const validationEnvelopeIntegrated = true; // Integrated in ConstraintEngine
   const constraintCategoriesComplete = 5; // All 5 categories complete (5/5 = 100%)
   const totalConstraints = 72; // 10 + 19 + 18 + 15 + 10
-  
+
   // Audit trail status (operational, constraint recording ready, integration pending)
   const auditTrailOperational = true;
   const auditTrailIntegrated = false; // Integration pending
   const constraintRecordingReady = true; // Constraint results can be recorded in audit trail
-  
+
   // Deterministic replay status (operational, test-integrated)
   const replayGuaranteeOperational = true;
   const replayGuaranteeIntegrated = false; // Test-integrated, production integration pending
-  
+
   // Calculate score components
   // Section 4.3/4.4 (ValidationEnvelope): 100% (fully operational, integrated, all 5 categories complete)
   // All 5 constraint categories complete (5/5 = 100%)
@@ -114,24 +114,24 @@ export function getConstitutionalHealth(): ConstitutionalHealth {
                                    validationEnvelopeOperational && constraintCategoriesComplete === 5 ? 95 :
                                    validationEnvelopeOperational && validationEnvelopeIntegrated ? 90 :
                                    validationEnvelopeOperational ? 80 : 0;
-  
+
   // Section 6.0 (Truth Domains): 80% (operational, integration pending)
   const truthDomainScore = truthDomainServicesOperational === 5 ? 
                            (truthDomainServicesIntegrated ? 100 : 80) : 
                            (truthDomainServicesOperational / 5) * 80;
-  
+
   // Section 7.4 (Audit Trail): 85% (operational, constraint recording ready, integration pending)
   // Constraint recording infrastructure ready, but integration into workflows pending
   const auditTrailScore = auditTrailOperational ? 
                           (auditTrailIntegrated ? 100 : 
                            constraintRecordingReady ? 85 : 75) : 0;
-  
+
   // Section 7.5 (Deterministic Replay): 95% (operational, test-integrated)
   const replayScore = replayGuaranteeOperational ? (replayGuaranteeIntegrated ? 100 : 95) : 0;
-  
-  // Section 5.10 (Constitutional AI Governance): 100% (already operational from previous analysis)
+
+  // Section 5.10 (Constitutional automation Governance): 100% (already operational from previous analysis)
   const governanceScore = 100;
-  
+
   // Calculate weighted average
   const weightedScore = (
     validationEnvelopeScore * 0.20 +
@@ -140,10 +140,10 @@ export function getConstitutionalHealth(): ConstitutionalHealth {
     auditTrailScore * 0.20 +
     replayScore * 0.20
   );
-  
+
   // Round to nearest integer
   const finalScore = Math.round(weightedScore);
-  
+
   return {
     score: finalScore,
     violations: [],

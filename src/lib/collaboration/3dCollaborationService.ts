@@ -173,7 +173,7 @@ class Collaboration3DService {
         }
       })
 
-      // Update presence with cursor position
+      // Update presence with pointer position
       this.channel.track({
         user_id: this.userId,
         cursor_position: position

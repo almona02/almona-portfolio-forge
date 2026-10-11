@@ -9,7 +9,7 @@
  * - RealityOS ProductDelivered event emission
  * - Constitutional proof requirements enforced
  * 
- * Constitutional: Tier 3 Protected Determinism, no ML/AI
+ * Constitutional: Tier 3 Protected Determinism, no advisory inference
  * Inspired by: UPS, FedEx, DHL delivery tracking systems
  * 
  * @since Phase 3: Delivery Tracking System (January 2026)

@@ -3,7 +3,7 @@
 ## Executive Summary
 
 This document analyzes the enhancement logic for three critical components of the Almona Portfolio Forge system:
-1. **YDT Agent Logic** - AI-powered industrial machinery assistant
+1. **YDT Agent Logic** - software-assisted industrial machinery assistant
 2. **Window Geometry & 3D Generator** - Production-accurate 3D visualization engine
 3. **Window Presets** - Egyptian market-specific pattern library
 
@@ -43,7 +43,7 @@ class IndustryExperienceEnhancer:
         self.user_skill_level = None  # beginner, intermediate, expert
         self.learning_history = []
         self.machine_familiarity = {}
-    
+
     def adapt_tutorial_complexity(self, user_profile):
         """
         Adapt tutorial complexity based on:
@@ -107,7 +107,7 @@ class EnhancedKnowledgeRetrieval:
     def __init__(self, knowledge_base_path):
         self.knowledge_graph = self._build_knowledge_graph()
         self.semantic_index = self._build_semantic_index()
-    
+
     def retrieve_contextual_knowledge(self, query, context):
         """
         Multi-stage retrieval:
@@ -119,16 +119,16 @@ class EnhancedKnowledgeRetrieval:
         # Stage 1: Semantic understanding
         intent = self._extract_intent(query)
         entities = self._extract_entities(query)
-        
+
         # Stage 2: Graph traversal
         related_concepts = self.knowledge_graph.traverse(entities)
-        
+
         # Stage 3: Context filtering
         relevant_docs = self._filter_by_context(related_concepts, context)
-        
+
         # Stage 4: Confidence scoring
         ranked_results = self._rank_by_confidence(relevant_docs)
-        
+
         return ranked_results
 ```
 
@@ -179,7 +179,7 @@ class ArabicLanguageEnhancer:
         self.dialect_detector = ArabicDialectDetector()
         self.technical_glossary = self._load_technical_glossary()
         self.context_analyzer = ArabicContextAnalyzer()
-    
+
     def process_arabic_query(self, query):
         """
         Enhanced Arabic processing:
@@ -191,7 +191,7 @@ class ArabicLanguageEnhancer:
         dialect = self.dialect_detector.detect(query)
         normalized = self._normalize_technical_terms(query, dialect)
         context = self.context_analyzer.analyze(normalized)
-        
+
         return {
             'query': normalized,
             'dialect': dialect,
@@ -228,7 +228,7 @@ class DiagnosticEngine:
         self.symptom_database = self._load_symptoms()
         self.decision_tree = self._build_decision_tree()
         self.ml_model = self._load_ml_model()
-    
+
     def diagnose_issue(self, symptoms, machine_state):
         """
         Multi-method diagnosis:
@@ -239,18 +239,18 @@ class DiagnosticEngine:
         """
         # Method 1: Rule-based
         rule_diagnosis = self.decision_tree.diagnose(symptoms)
-        
+
         # Method 2: ML-based
         ml_diagnosis = self.ml_model.predict(symptoms, machine_state)
-        
+
         # Method 3: Case-based
         similar_cases = self._find_similar_cases(symptoms)
-        
+
         # Method 4: Combine results
         final_diagnosis = self._combine_diagnoses(
             rule_diagnosis, ml_diagnosis, similar_cases
         )
-        
+
         return final_diagnosis
 ```
 
@@ -305,7 +305,7 @@ class PrecisionGeometryEngine {
         assembly: 1.0,     // ±1.0mm assembly tolerance
         thermal: 2.0       // ±2.0mm thermal expansion
     };
-    
+
     generateProductionGeometry(
         windowUnit: WindowUnit,
         pattern: EgyptianPattern
@@ -317,28 +317,28 @@ class PrecisionGeometryEngine {
          * 3. Include assembly clearances
          * 4. Add machining zones
          */
-        
+
         // Step 1: Base geometry with exact dimensions
         const baseGeometry = this.generateBaseGeometry(windowUnit);
-        
+
         // Step 2: Apply cutting allowances
         const withCutting = this.applyCuttingAllowances(
             baseGeometry,
             this.tolerances.cutting
         );
-        
+
         // Step 3: Add thermal expansion zones
         const withThermal = this.addThermalExpansion(
             withCutting,
             this.tolerances.thermal
         );
-        
+
         // Step 4: Include machining zones
         const withMachining = this.addMachiningZones(
             withThermal,
             pattern
         );
-        
+
         return withMachining;
     }
 }
@@ -389,13 +389,13 @@ class AdvancedProfileModeler {
          * 4. Gasket grooves
          * 5. Hardware mounting points
          */
-        
+
         const chambers = this.generateChambers(profile);
         const reinforcement = this.addReinforcementChannels(chambers);
         const drainage = this.addDrainageChannels(reinforcement);
         const gaskets = this.addGasketGrooves(drainage);
         const hardware = this.addHardwareMounts(gaskets);
-        
+
         return {
             chambers,
             reinforcement,
@@ -405,7 +405,7 @@ class AdvancedProfileModeler {
             thermalBreak: this.calculateThermalBreak(chambers)
         };
     }
-    
+
     private generateChambers(profile: Profile): Chamber[] {
         /**
          * Multi-chamber structure for:
@@ -463,7 +463,7 @@ class OpeningMechanismSimulator {
          * 3. Check collision detection
          * 4. Animate hardware movement
          */
-        
+
         switch (mechanism.type) {
             case 'casement':
                 return this.simulateCasementOpening(sash, animationProgress);
@@ -477,7 +477,7 @@ class OpeningMechanismSimulator {
                 return sash;
         }
     }
-    
+
     private simulateCasementOpening(
         sash: SashData,
         progress: number
@@ -491,16 +491,16 @@ class OpeningMechanismSimulator {
          */
         const maxAngle = 90; // degrees
         const currentAngle = progress * maxAngle;
-        
+
         // Calculate hinge position
         const hingePosition = this.calculateHingePosition(sash);
-        
+
         // Rotate around hinge
         const rotation = new Euler(0, currentAngle * Math.PI / 180, 0);
-        
+
         // Calculate friction stay extension
         const stayExtension = this.calculateStayExtension(currentAngle);
-        
+
         return {
             position: this.calculateSashPosition(hingePosition, rotation),
             rotation,
@@ -554,13 +554,13 @@ class GlazingSystemEnhancer {
          * 4. Edge seal (primary, secondary)
          * 5. Low-E coatings
          */
-        
+
         const panes = this.generateGlassPanes(dimensions, specification);
         const spacers = this.generateSpacers(dimensions, specification);
         const gasFill = this.calculateGasFill(specification);
         const edgeSeal = this.generateEdgeSeal(dimensions);
         const coatings = this.applyCoatings(panes, specification);
-        
+
         return {
             panes,
             spacers,
@@ -571,7 +571,7 @@ class GlazingSystemEnhancer {
             acousticPerformance: this.calculateRw(specification)
         };
     }
-    
+
     private calculateUValue(spec: GlazingSpec): number {
         /**
          * Calculate thermal transmittance (U-value):
@@ -581,17 +581,17 @@ class GlazingSystemEnhancer {
          * - Low-E coating
          */
         let uValue = 5.8; // Single glazing baseline
-        
+
         if (spec.panes === 2) uValue = 2.8; // Double glazing
         if (spec.panes === 3) uValue = 1.8; // Triple glazing
-        
+
         if (spec.gasFill === 'argon') uValue *= 0.85;
         if (spec.gasFill === 'krypton') uValue *= 0.75;
-        
+
         if (spec.lowE) uValue *= 0.70;
-        
+
         if (spec.spacerType === 'warm-edge') uValue *= 0.95;
-        
+
         return uValue;
     }
 }
@@ -663,53 +663,53 @@ class PresetRecommendationEngine {
          * 5. Budget constraints
          * 6. Performance requirements
          */
-        
+
         // Step 1: Filter by building type
         let candidates = this.filterByBuildingType(
             EGYPTIAN_PATTERNS,
             context.buildingType
         );
-        
+
         // Step 2: Filter by dimensions
         candidates = this.filterByDimensions(
             candidates,
             context.dimensions
         );
-        
+
         // Step 3: Score by suitability
         const scored = candidates.map(pattern => ({
             pattern,
             score: this.calculateSuitabilityScore(pattern, context),
             reasons: this.explainRecommendation(pattern, context)
         }));
-        
+
         // Step 4: Sort and return top recommendations
         return scored
             .sort((a, b) => b.score - a.score)
             .slice(0, 5);
     }
-    
+
     private calculateSuitabilityScore(
         pattern: EgyptianPattern,
         context: ProjectContext
     ): number {
         let score = 0;
-        
+
         // Dimension match (0-30 points)
         score += this.scoreDimensionMatch(pattern, context.dimensions);
-        
+
         // Building type match (0-25 points)
         score += this.scoreBuildingTypeMatch(pattern, context.buildingType);
-        
+
         // Performance requirements (0-20 points)
         score += this.scorePerformanceMatch(pattern, context.requirements);
-        
+
         // Budget fit (0-15 points)
         score += this.scoreBudgetFit(pattern, context.budget);
-        
+
         // Regional popularity (0-10 points)
         score += this.scoreRegionalPopularity(pattern, context.region);
-        
+
         return score;
     }
 }
@@ -753,69 +753,69 @@ class PresetCustomizationEngine {
          * 3. System compatibility
          * 4. Manufacturing feasibility
          */
-        
+
         // Step 1: Validate customizations
         const validation = this.validateCustomizations(
             basePreset,
             customizations
         );
-        
+
         if (!validation.isValid) {
             throw new Error(`Invalid customizations: ${validation.errors}`);
         }
-        
+
         // Step 2: Apply customizations
         let customized = { ...basePreset };
-        
+
         if (customizations.dimensions) {
             customized = this.adjustDimensions(customized, customizations.dimensions);
         }
-        
+
         if (customizations.gridModifications) {
             customized = this.modifyGrid(customized, customizations.gridModifications);
         }
-        
+
         if (customizations.openingMechanism) {
             customized = this.changeOpeningMechanism(
                 customized,
                 customizations.openingMechanism
             );
         }
-        
+
         // Step 3: Recalculate constraints
         customized.constraints = this.recalculateConstraints(customized);
-        
+
         // Step 4: Update hardware requirements
         customized.accessories = this.updateAccessories(customized);
-        
+
         return customized;
     }
-    
+
     private validateCustomizations(
         preset: EgyptianPattern,
         customizations: CustomizationRequest
     ): ValidationResult {
         const errors: string[] = [];
-        
+
         // Check dimension limits
         if (customizations.dimensions) {
             const { width, height } = customizations.dimensions;
-            
+
             if (width < preset.constraints.minSashWidth) {
                 errors.push(`Width ${width}mm below minimum ${preset.constraints.minSashWidth}mm`);
             }
-            
+
             if (width > preset.constraints.maxSashWidth) {
                 errors.push(`Width ${width}mm exceeds maximum ${preset.constraints.maxSashWidth}mm`);
             }
-            
+
             // Check sash area
             const area = (width * height) / 1000000; // m²
             if (area > preset.constraints.maxSashArea) {
                 errors.push(`Sash area ${area}m² exceeds maximum ${preset.constraints.maxSashArea}m²`);
             }
         }
-        
+
         // Check grid modifications
         if (customizations.gridModifications) {
             const gridErrors = this.validateGridModifications(
@@ -824,7 +824,7 @@ class PresetCustomizationEngine {
             );
             errors.push(...gridErrors);
         }
-        
+
         return {
             isValid: errors.length === 0,
             errors
@@ -861,11 +861,11 @@ class PresetCustomizationEngine {
 // ENHANCEMENT 3: Regional Pattern Database
 class RegionalPatternLibrary {
     private patterns: Map<string, EgyptianPattern[]> = new Map();
-    
+
     constructor() {
         this.loadRegionalPatterns();
     }
-    
+
     getRegionalPatterns(region: string): EgyptianPattern[] {
         /**
          * Get patterns specific to region:
@@ -875,21 +875,21 @@ class RegionalPatternLibrary {
          * - North Coast: Luxury, bi-fold doors
          * - Upper Egypt: Traditional, small openings
          */
-        
+
         const regionalPatterns = this.patterns.get(region) || [];
-        
+
         // Add regional adaptations
         return regionalPatterns.map(pattern => 
             this.adaptToRegionalRequirements(pattern, region)
         );
     }
-    
+
     private adaptToRegionalRequirements(
         pattern: EgyptianPattern,
         region: string
     ): EgyptianPattern {
         const adapted = { ...pattern };
-        
+
         switch (region) {
             case 'Alexandria':
             case 'North Coast':
@@ -902,7 +902,7 @@ class RegionalPatternLibrary {
                     'marine-grade-seals'
                 ];
                 break;
-                
+
             case 'Upper Egypt':
                 // Desert climate
                 adapted.accessories = [
@@ -911,7 +911,7 @@ class RegionalPatternLibrary {
                     'thermal-break-enhanced'
                 ];
                 break;
-                
+
             case 'New Cairo':
             case '6th October':
                 // Modern developments
@@ -922,10 +922,10 @@ class RegionalPatternLibrary {
                 ];
                 break;
         }
-        
+
         return adapted;
     }
-    
+
     private loadRegionalPatterns(): void {
         /**
          * Load patterns from regional surveys:
@@ -934,21 +934,21 @@ class RegionalPatternLibrary {
          * - Market analysis
          * - Historical data
          */
-        
+
         // Cairo patterns (high-rise apartments)
         this.patterns.set('Cairo', [
             this.createCairoApartmentStandard(),
             this.createCairoBalconyDoor(),
             this.createCairoKitchenWindow()
         ]);
-        
+
         // Alexandria patterns (coastal)
         this.patterns.set('Alexandria', [
             this.createAlexandriaCoastalWindow(),
             this.createAlexandriaSlidingDoor(),
             this.createAlexandriaBalcony()
         ]);
-        
+
         // New Cairo patterns (villas)
         this.patterns.set('New Cairo', [
             this.createVillaLivingRoom(),
@@ -998,29 +998,29 @@ class PresetComplianceValidator {
          * 3. Energy efficiency requirements
          * 4. Accessibility standards
          */
-        
+
         const report: ComplianceReport = {
             isCompliant: true,
             violations: [],
             warnings: [],
             recommendations: []
         };
-        
+
         // Check building code
         this.checkBuildingCode(pattern, windowUnit, report);
-        
+
         // Check safety standards
         this.checkSafetyStandards(pattern, windowUnit, report);
-        
+
         // Check energy efficiency
         this.checkEnergyEfficiency(pattern, windowUnit, report);
-        
+
         // Check accessibility
         this.checkAccessibility(pattern, windowUnit, report);
-        
+
         return report;
     }
-    
+
     private checkBuildingCode(
         pattern: EgyptianPattern,
         windowUnit: WindowUnit,

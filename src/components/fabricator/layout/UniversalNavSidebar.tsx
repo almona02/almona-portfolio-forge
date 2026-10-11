@@ -110,7 +110,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       : saveChrome.tone === 'local'
         ? saveChrome.label
         : null;
-  
+
   // Navigation items for all fabricator sections (memoized for performance)
   const navItems: NavItem[] = useMemo(() => [
     {
@@ -189,7 +189,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       href: '/settings',
     },
   ], []);
-  
+
   const isActive = useCallback((href: string, id: string, subItems?: Array<{ href: string }>) => {
     if (activeStudio && (id === activeStudio || (id === 'project' && activeStudio === 'projects'))) return true;
     if (location.pathname === href) return true;
@@ -197,7 +197,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
     if (subItems?.some(item => location.pathname === item.href || location.pathname.startsWith(item.href + '/'))) return true;
     return false;
   }, [location.pathname, activeStudio]);
-  
+
   const toggleExpand = useCallback((itemId: string) => {
     setExpandedItems(prev => {
       const newSet = new Set(prev);
@@ -209,7 +209,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       return newSet;
     });
   }, []);
-  
+
   const getBadgeColor = (type: NavItem['badgeType']) => {
     switch (type) {
       case 'error': return 'bg-red-500 text-white';
@@ -218,7 +218,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       default: return 'bg-blue-500 text-white';
     }
   };
-  
+
   // Auto-expand items when their route is active
   useEffect(() => {
     navItems.forEach(item => {
@@ -229,11 +229,11 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       }
     });
   }, [location.pathname, isActive, navItems]);
-  
+
   const renderNavItem = useCallback((item: NavItem) => {
     const active = isActive(item.href, item.id, item.subItems);
     const expanded = expandedItems.has(item.id);
-    
+
     return (
       <div key={item.id} className="mb-1">
         <Link
@@ -261,7 +261,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
             </div>
             <span className="text-sm font-medium">{item.label}</span>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             {item.badge !== undefined && (
               <span className={cn(
@@ -271,7 +271,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
                 {item.badge}
               </span>
             )}
-            
+
             {item.subItems && item.subItems.length > 0 && (
               <ChevronRight
                 size={14}
@@ -283,14 +283,14 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
             )}
           </div>
         </Link>
-        
+
         {/* Sub-items */}
         {item.subItems && expanded && (
           <div className="ml-9 mt-1 space-y-1">
             {item.subItems.map((subItem, index) => {
               const subActive = location.pathname === subItem.href || 
                                location.pathname.startsWith(subItem.href + '/');
-              
+
               return (
                 <Link
                   key={index}
@@ -309,7 +309,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
                     <div className="w-1.5 h-1.5 rounded-full bg-current opacity-50" />
                     <span>{subItem.label}</span>
                   </div>
-                  
+
                   {subItem.badge !== undefined && (
                     <span className="text-xs px-1.5 py-0.5 rounded-full bg-gray-700 text-gray-300">
                       {subItem.badge}
@@ -323,7 +323,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       </div>
     );
   }, [isActive, expandedItems, location.pathname, toggleExpand]);
-  
+
   return (
     <CollapsiblePanel
       position="left"
@@ -352,12 +352,12 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
             <Bell size={16} className="text-gray-400" aria-hidden />
           </div>
         </div>
-        
+
         {/* Navigation Items */}
         <nav className="space-y-1" role="navigation" aria-label="Fabricator navigation">
           {navItems.map((item) => renderNavItem(item))}
         </nav>
-        
+
         {/* Contextual Tools Section - Shows section-specific tools */}
         {contextTools.length > 0 && contextSectionId && (
           <div className="mt-6 pt-6 border-t border-gray-800/50">
@@ -405,7 +405,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
             </div>
           </div>
         )}
-        
+
         {/* Manufacturing save chrome (UP-14) — same source as status bar */}
         <div className="mt-8 pt-6 border-t border-gray-800/50">
           <div className="flex items-center justify-between mb-2">

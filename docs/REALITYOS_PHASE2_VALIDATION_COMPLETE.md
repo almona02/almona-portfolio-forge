@@ -116,7 +116,7 @@ Run: `scripts/test_event_ledger_supabase.sql` in Supabase SQL Editor
 
 ---
 
-**Validated by:** AI Assistant + User  
+**Validated by:** automation Assistant + User
 **Validation Date:** 2025-02-20  
 **Environment:** Supabase (Production-like)
 

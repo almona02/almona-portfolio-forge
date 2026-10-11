@@ -10,7 +10,7 @@
 
 ## 📋 Executive Summary
 
-**ALMONA's Current Position:** 85-92% feature parity with gold-tier fenestration software (Orgadata Logikal, Klaes, Moxisys, iWindow)
+**ALMONA's Current Position:** 85-92% feature parity with gold-tier fenestration software (reference system reference system, reference system, reference system, reference system)
 
 **Key Strengths:**
 - ✅ Modern cloud-native architecture vs. legacy desktop systems
@@ -609,7 +609,7 @@ Gold-Tier Navigation Pattern:
 
 ### 2.1 Core Fabrication Workflow
 
-| Phase | ALMONA | Klaes/Orgadata | Moxisys | ALMONA % | Gap |
+| Phase | ALMONA | Klaes/Orgadata | reference system | ALMONA % | Gap |
 |-------|--------|----------------|---------|----------|-----|
 | **Measurement** | ✅ Complete | ✅ Complete | ✅ Complete | 95% | 🟡 UX refinement |
 | **Design** | ✅ Complete | ✅ Complete | ✅ Complete | 95% | 🟡 Visual polish |
@@ -705,7 +705,7 @@ Gold-Tier Navigation Pattern:
 ### 3.2 Weaknesses (Why Users Prefer Competitors)
 
 #### 1. **Visual Polish & UI Maturity** (Perception Gap)
-- **Perception:** "Feels like a prototype next to Klaes"
+- **Perception:** "Feels like a prototype next to reference system"
 - **Reality:** 70-75% visual polish vs. 95% for competitors
 - **User Concern:** "Is this stable enough for production?"
 - **Impact:** Initial hesitation in enterprise sales
@@ -730,7 +730,7 @@ Gold-Tier Navigation Pattern:
 - **Impact:** Big projects feel slower
 
 #### 4. **Advanced CAD Features Missing** (Power)
-- **Perception:** "Can't do what I could in Klaes"
+- **Perception:** "Can't do what I could in reference system"
 - **Reality:** No parametric design, no FEA, no constraints
 - **User Concern:** "Is it too limited for complex projects?"
 - **Impact:** Experienced users feel restricted
@@ -995,9 +995,9 @@ Current gap in mobile support prevents shop floor adoption. Mobile-optimized int
 - **Action:** Enterprise features (search, bulk ops, analytics, integrations)
 
 #### Long Term (6-12 months)
-- **Message:** "AI-powered fabrication optimization platform"
+- **Message:** "software-assisted fabrication optimization platform"
 - **Target:** Innovators seeking competitive advantage
-- **Value Prop:** Constitutional AI, real-time cost/waste prediction, demand forecasting
+- **Value Prop:** Constitutional automation, real-time cost/waste prediction, demand forecasting
 - **Action:** Advanced features (parametric design, FEA-lite, predictive analytics)
 
 ---

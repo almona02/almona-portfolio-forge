@@ -990,7 +990,7 @@ ${data.notes}
                       <div className="flex items-start gap-2">
                         <AlertCircle className="h-4 w-4 text-blue-500 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium">نظام الجدولة الذكي | AI Scheduling Active</p>
+                          <p className="text-sm font-medium">نظام الجدولة الذكي | automation Scheduling Active</p>
                           <p className="text-xs text-gray-400">
                             سيقوم نظامنا بتحسين الجدول بناءً على توفر الفنيين وتفضيلاتك
                             <br />

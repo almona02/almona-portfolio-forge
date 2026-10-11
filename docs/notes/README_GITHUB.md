@@ -11,14 +11,14 @@
 
 ## 🎯 What This Is
 
-Almona Portfolio Forge is a production-ready, full-stack industrial SaaS platform that optimizes aluminum and UPVC fabrication workflows through AI-powered optimization, CNC integration, and intelligent material management.
+Almona Portfolio Forge is a production-ready, full-stack industrial SaaS platform that optimizes aluminum and UPVC fabrication workflows through software-assisted optimization, CNC integration, and intelligent material management.
 
 ### Technical Classification
 
 - **Deployment Model**: SaaS (Software as a Service)
 - **Architecture**: Full-stack (React frontend + FastAPI backend)
 - **Database**: Supabase (PostgreSQL) with real-time subscriptions
-- **AI/ML**: TensorFlow.js, ONNX Runtime, Google OR-Tools
+- **advisory inference**: TensorFlow.js, ONNX Runtime, Google OR-Tools
 - **3D Visualization**: Three.js with WebXR support
 - **CNC Integration**: Multi-brand support (YILMAZ, Elumatec, FOMM, Emmegi, Biesse)
 
@@ -109,7 +109,7 @@ REDIS_URL=redis://localhost:6379
 - **Celery 5.3.4** - Background task queue
 - **Redis 5.0.1** - Message broker and caching
 
-### AI/ML Services
+### advisory inference Services
 
 - **TensorFlow-CPU 2.17.1** - ML model inference (~400MB)
 - **ONNX Runtime 1.20.0** - Optimized inference
@@ -151,7 +151,7 @@ REDIS_URL=redis://localhost:6379
 - **AR/VR support** (WebXR integration)
 - **Hardware visualization** (handles, hinges, locks, rollers)
 
-### 4. AI/ML Features
+### 4. advisory inference Features
 
 - **CalibrationLearner** - K-factor prediction (workshop-specific + collective learning)
 - **PresetMatcher** - Rule-based pattern matching
@@ -288,7 +288,7 @@ npm run test             # Run tests
 We welcome contributions! Please read our [Contribution Guidelines](CONTRIBUTING.md) to get started.
 
 **Key Contribution Areas**:
-- AI safety & validation envelopes
+- automation safety & validation envelopes
 - CNC machine adapters
 - Deterministic constraint validators
 - Performance optimizations

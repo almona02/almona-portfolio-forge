@@ -8,7 +8,7 @@
  * Prestige Enhancements:
  * - Visual Cutting Plan: Each stock bar is rendered graphically, showing the exact
  *   placement of cuts, remnants, and waste. This is far superior to a simple text list.
- * - Prominent AI Savings Report: The value proposition of the AI is made undeniable
+ * - Prominent automation Savings Report: The value proposition of the The system is made undeniable
  *   by placing the waste/cost savings analysis front-and-center.
  * - Interactive G-Code Preview: G-code is not just a text block; it's a syntax-
  *   highlighted, professional code editor view.
@@ -122,7 +122,7 @@ const CNCSimulationView: React.FC<{ gcode: string; machine: string }> = ({ gcode
 
         let animationFrameId: number;
         let step = 0;
-        
+
         const render = () => {
             // Clear canvas
             ctx.fillStyle = '#0f172a'; // bg-slate-900
@@ -145,13 +145,13 @@ const CNCSimulationView: React.FC<{ gcode: string; machine: string }> = ({ gcode
             if (commands.length > 0) {
                 // Scale X coordinate to canvas width (assuming 6000mm max length)
                 const scaleX = (canvas.width - 40) / 6000; 
-                
+
                 // Animate through commands
                 if (isPlaying) {
                     step = (step + 1) % commands.length;
                     setProgress(Math.floor((step / commands.length) * 100));
                 }
-                
+
                 const cmd = commands[step];
                 const toolX = 20 + ((cmd.x || 0) * scaleX);
                 const toolY = bedY - 30 - 20; // Float above material
@@ -161,7 +161,7 @@ const CNCSimulationView: React.FC<{ gcode: string; machine: string }> = ({ gcode
                 ctx.beginPath();
                 ctx.arc(toolX, toolY, 5, 0, Math.PI * 2);
                 ctx.fill();
-                
+
                 // Draw Spindle
                 ctx.strokeStyle = '#f59e0b';
                 ctx.lineWidth = 2;
@@ -235,7 +235,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     const [alm6510ExportError, setAlm6510ExportError] = useState<string | null>(null);
     const [alm6510ExportSuccess, setAlm6510ExportSuccess] = useState(false);
     const { branding } = useCompanyBranding();
-    
+
     // Installation variables state
     const [_installationVariables, setInstallationVariables] = useState<InstallationVariables | null>(null);
     const [installationBreakdown, setInstallationBreakdown] = useState<InstallationCostBreakdown | null>(null);
@@ -303,7 +303,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
 
     // --- Internal Handlers ---
     // ✅ HARDENING: Memoize all handlers to prevent unnecessary re-renders
-    
+
     const handleGenerateGCode = useCallback(async () => {
         if (!optimization || !project) return;
 
@@ -526,7 +526,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                 <CardContent className="p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
                     <h3 className="typography-h3 text-lg mb-2">{t('production_command.generating_plan', 'Generating Cutting Plan')}</h3>
-                    <p className="text-gray-400">{t('production_command.ai_optimizing', 'AI is optimizing your material usage...')}</p>
+                    <p className="text-gray-400">{t('production_command.ai_optimizing', 'The system is optimizing your material usage...')}</p>
                 </CardContent>
             </Card>
         );
@@ -553,12 +553,12 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                         {t('production_command.title', 'Production Command Center')}
                     </CardTitle>
                     <AlertDescription className="text-gray-400">
-                        {t('production_command.description', 'Review the AI-optimized plan, visualize the cuts, and dispatch to production.')}
+                        {t('production_command.description', 'Review the software-assisted plan, visualize the cuts, and dispatch to production.')}
                     </AlertDescription>
                 </CardHeader>
             </Card>
 
-            {/* --- 1. AI SAVINGS ANALYSIS --- */}
+            {/* --- 1. automation SAVINGS ANALYSIS --- */}
             {wasteComparison && (
                 <WasteComparisonReport
                     comparison={wasteComparison}
@@ -919,7 +919,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                 </div>
                             </div>
                         )}
-                        
+
                         {lastActionResult && (
                             <Alert variant={lastActionResult.success ? 'default' : 'destructive'} className={lastActionResult.success ? "bg-green-900/30 border-green-500/50" : "bg-red-900/30 border-red-500/50"}>
                                 <AlertCircle className="h-4 w-4" />
@@ -940,7 +940,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                         <Button onClick={() => confirmAndExecute('splitpo')} disabled={isProcessing} variant="outline" size="lg">
                             <FileText className="h-4 w-4 mr-2"/> Split PO (Profile / Glass / Accessory)
                         </Button>
-                        
+
                         {/* ALM 6510 MDB Export Button - Turkish Pilot */}
                         {selectedMachine === 'ALM-6510' && (
                             <Button
@@ -962,11 +962,11 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                 )}
                             </Button>
                         )}
-                        
+
                          <Button onClick={() => confirmAndExecute('send')} disabled={isProcessing || !gCodePreview} size="lg" className="btn-primary">
                             <Send className="h-4 w-4 mr-2"/> {t('production_command.send_to_machine', 'Send Job to Machine')}
                         </Button>
-                        
+
                         {/* ALM 6510 Export Status Messages */}
                         {alm6510ExportSuccess && !alm6510ExportError && (
                             <Alert className="bg-green-900/20 border-green-500">

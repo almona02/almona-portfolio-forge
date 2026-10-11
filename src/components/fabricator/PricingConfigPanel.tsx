@@ -4,7 +4,7 @@
  * In-app pricing settings for EngineeringBay
  * Simplified UI for quick pricing adjustments
  * 
- * Constitutional: Deterministic pricing, no ML/AI
+ * Constitutional: Deterministic pricing, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

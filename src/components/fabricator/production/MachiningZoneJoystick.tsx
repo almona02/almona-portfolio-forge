@@ -73,7 +73,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
   const _zoneToCanvas = useCallback((zone: MachiningZone) => {
     const centerX = canvasSize.width / 2;
     const centerY = canvasSize.height / 2;
-    
+
     // Calculate position based on reference corner
     let x = 0, y = 0;
     switch (zone.referenceCorner) {
@@ -94,7 +94,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
         y = profileHeight - zone.yOffset - zone.height;
         break;
     }
-    
+
     return {
       x: centerX + (x - profileWidth / 2) * scale,
       y: centerY + (y - profileHeight / 2) * scale,

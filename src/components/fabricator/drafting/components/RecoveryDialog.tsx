@@ -4,7 +4,7 @@
  * Gold-tier crash recovery dialog with state restoration options
  * for the Drafting Workbench.
  * 
- * Constitutional: Deterministic UI, no ML/AI
+ * Constitutional: Deterministic UI, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

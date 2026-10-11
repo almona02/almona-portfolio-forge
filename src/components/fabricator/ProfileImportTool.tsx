@@ -291,14 +291,14 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
   const extractFromSVG = async (file: File): Promise<ExtractedProfileData> => {
     const text = await file.text();
-    
+
     // Parse SVG dimensions
     const widthMatch = text.match(/width="([^"]+)"/);
     const heightMatch = text.match(/height="([^"]+)"/);
     const viewBoxMatch = text.match(/viewBox="([^"]+)"/);
 
     let width = 100, height = 100;
-    
+
     if (viewBoxMatch) {
       const [, , vbWidth, vbHeight] = viewBoxMatch[1].split(/\s+/).map(Number);
       width = vbWidth || width;
@@ -564,7 +564,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
     file: File,
     type: 'png' | 'jpg'
   ): Promise<ExtractedProfileData> => {
-    // Use AI vision API for image analysis
+    // Use automation vision API for image analysis
     const formData = new FormData();
     formData.append('file', file);
     formData.append('type', type);
@@ -816,7 +816,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
         filesCount: files.length,
         defaultValue: `Extracted ${newProfiles.length} profiles from ${files.length} files`
       }));
-      
+
       // Auto-select all if auto-optimize is on
       if (autoOptimizeAll) {
         setSelectedProfiles(new Set(newProfiles.map((p) => p.id)));
@@ -877,7 +877,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
         }),
       });
 
-      toast.success('K-factor measurement recorded for AI learning');
+      toast.success('K-factor measurement recorded for automation learning');
     } catch (error) {
       console.error('Failed to save learning data:', error);
     }
@@ -1061,7 +1061,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
             {t('profile_import_tool.title', 'Smart Profile Import Tool')}
           </CardTitle>
           <CardDescription className="text-gray-300">
-            {t('profile_import_tool.description', 'Import profiles from multiple formats with AI-powered K-factor learning')}
+            {t('profile_import_tool.description', 'Import profiles from multiple formats with software-assisted K-factor learning')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -1074,7 +1074,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
           </TabsTrigger>
           <TabsTrigger value="kfactor" className="text-xs">
             <Brain className="w-3 h-3 mr-1" />
-            {t('profile_import_tool.tabs.kfactor', 'K-Factor AI')}
+            {t('profile_import_tool.tabs.kfactor', 'K-Factor Assistance')}
           </TabsTrigger>
           <TabsTrigger value="settings" className="text-xs">
             <Settings className="w-3 h-3 mr-1" />
@@ -1286,7 +1286,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
           )}
         </TabsContent>
 
-        {/* K-Factor AI Tab */}
+        {/* K-Factor automation Tab */}
         <TabsContent value="kfactor" className="space-y-4">
           <Card className="bg-gray-900/60 border-gray-700 card-dark">
             <CardHeader>
@@ -1295,7 +1295,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                 {t('profile_import_tool.kfactor.title', 'Smart K-Factor Learning')}
               </CardTitle>
               <CardDescription className="text-xs">
-                {t('profile_import_tool.kfactor.description', 'AI-powered K-factor suggestions based on imported DXF/DWG measurements')}
+                {t('profile_import_tool.kfactor.description', 'software-assisted K-factor suggestions based on imported DXF/DWG measurements')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1455,7 +1455,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
               <div className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                 <div>
                   <div className="text-sm font-medium">{t('profile_import_tool.settings.import.k_factor_learning', 'K-Factor Learning')}</div>
-                  <div className="text-xs text-gray-400">{t('profile_import_tool.settings.import.k_factor_learning_desc', 'Enable AI K-factor suggestions')}</div>
+                  <div className="text-xs text-gray-400">{t('profile_import_tool.settings.import.k_factor_learning_desc', 'Enable automation K-factor suggestions')}</div>
                 </div>
                 <Button
                   variant={kFactorLearningEnabled ? 'default' : 'outline'}

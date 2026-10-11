@@ -55,7 +55,7 @@ Notes:
 - Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z → Redo (support both patterns)
 - Ctrl/Cmd+X → Cut (focus-aware: text vs canvas selection)
 - Ctrl/Cmd+C → Copy (focus-aware)
-- Ctrl/Cmd+V → Paste (focus-aware; paste at cursor or centered)
+- Ctrl/Cmd+V → Paste (focus-aware; paste at development tool or centered)
 - Delete/Backspace → Delete selected (Backspace should not navigate browser history)
 - Ctrl/Cmd+A → Select All (workspace items if canvas focused)
 - Ctrl/Cmd+D → Deselect (clear selection)

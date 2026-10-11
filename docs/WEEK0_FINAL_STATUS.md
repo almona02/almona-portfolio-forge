@@ -83,7 +83,7 @@
 
 **Reality Check:**
 - 2GB target may require removing functionality
-- 2.4-2.5GB is realistic for industrial AI platform
+- 2.4-2.5GB is realistic for industrial automation platform
 - Still represents **64-65% reduction** (excellent achievement)
 
 ---

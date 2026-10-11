@@ -136,7 +136,7 @@ After completing the 3D Preview enhancement, ALMONA Drafting Workbench has achie
 - **Competitors:** 1000+ certified European systems
 
 **Gap Analysis:**
-- **ALMONA:** 10 templates vs 1000+ (Kliess)
+- **ALMONA:** 10 templates vs 1000+ (reference system)
 - **Impact:** High - Library depth is a key competitive differentiator
 - **Strategic Note:** This is a content/data gap, not a technical gap
 

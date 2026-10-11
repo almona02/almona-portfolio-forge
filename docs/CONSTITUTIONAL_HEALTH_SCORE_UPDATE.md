@@ -25,7 +25,7 @@ Updated the Constitutional Health Score calculation to include new implementatio
 | Component | Weight | Score | Weighted |
 |-----------|--------|-------|----------|
 | **Section 4.3/4.4** (ValidationEnvelope) | 20% | 100% | 20.0 |
-| **Section 5.10** (Constitutional AI Governance) | 20% | 100% | 20.0 |
+| **Section 5.10** (Constitutional automation Governance) | 20% | 100% | 20.0 |
 | **Section 6.0** (Canonical Source of Truth) | 20% | 80% | 16.0 |
 | **Section 7.4** (Audit Trail) | 20% | 85% | 17.0 |
 | **Section 7.5** (Deterministic Replay) | 20% | 95% | 19.0 |
@@ -50,7 +50,7 @@ Updated the Constitutional Health Score calculation to include new implementatio
 
 ---
 
-### 2. Constitutional AI Governance (Section 5.10) - 100%
+### 2. Constitutional automation Governance (Section 5.10) - 100%
 
 **Status:** ✅ Fully Operational
 
@@ -134,7 +134,7 @@ Updated the Constitutional Health Score calculation to include new implementatio
 ```typescript
 export interface ConstitutionalHealth {
   // ... existing fields ...
-  
+
   // Truth domain integrity (enhanced)
   truthDomainIntegrity: {
     geometry: boolean;
@@ -145,7 +145,7 @@ export interface ConstitutionalHealth {
     operationalServices: number; // 0-5 (new)
     integrationComplete: boolean; // (new)
   };
-  
+
   // Validation envelope enforcement (enhanced)
   validationEnforcement: {
     deterministicConstraints: { total: number; enforced: number };
@@ -153,7 +153,7 @@ export interface ConstitutionalHealth {
     validationEnvelopeOperational: boolean; // (new)
     validationEnvelopeIntegrated: boolean; // (new)
   };
-  
+
   // Audit trail and certification (new section)
   auditAndCertification: {
     auditTrailOperational: boolean; // (new)
@@ -163,7 +163,7 @@ export interface ConstitutionalHealth {
     cryptographicLinking: boolean; // (new)
     chainIntegrity: boolean; // (new)
   };
-  
+
   // ... existing fields ...
 }
 ```

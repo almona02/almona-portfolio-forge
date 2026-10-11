@@ -243,7 +243,7 @@ SELECT get_performance_dashboard_data();
 ### **Long Term (6+ months)**
 - **Microservices**: Consider microservices architecture
 - **Advanced Monitoring**: Implement advanced performance monitoring
-- **AI Optimization**: Use AI for performance optimization
+- **Stock Optimization**: Use automation for performance optimization
 - **Global CDN**: Implement global CDN strategy
 
 ---

@@ -28,7 +28,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// AI Sales Types
+// automation Sales Types
 interface Lead {
   id: string;
   companyName: string;
@@ -185,9 +185,9 @@ const mockAIInsights: AIInsight[] = [
 ];
 
 /**
- * AI Sales Acceleration Component
+ * automation Sales Acceleration Component
  * 
- * AI-powered sales and marketing acceleration system.
+ * software-assisted sales and marketing acceleration system.
  * Features:
  * - Intelligent lead scoring and qualification
  * - Automated proposal generation
@@ -219,12 +219,12 @@ export const SalesAcceleration: React.FC = () => {
   const generateAIProposal = async (leadId: string) => {
     setGeneratingProposal(true);
     const lead = leads.find(l => l.id === leadId);
-    
+
     if (!lead) return;
 
-    // Simulate AI proposal generation
+    // Simulate automation proposal generation
     await new Promise(resolve => setTimeout(resolve, 3000));
-    
+
     const proposal: SalesProposal = {
       id: `prop-${Date.now()}`,
       leadId,
@@ -255,9 +255,9 @@ export const SalesAcceleration: React.FC = () => {
       generatedAt: new Date().toISOString(),
       status: 'draft'
     };
-    
+
     setGeneratingProposal(false);
-    
+
     track('ai_proposal_generated', {
       leadId,
       proposalValue: proposal.totalValue,
@@ -268,27 +268,27 @@ export const SalesAcceleration: React.FC = () => {
 
   const askAI = async () => {
     if (!aiQuery.trim()) return;
-    
+
     try {
       const response = await getEquipmentRecommendation(aiQuery);
       setAIResponse(response);
-      
+
       track('ai_sales_query', {
         query: aiQuery,
         timestamp: Date.now()
       });
     } catch {
-      setAIResponse('AI service temporarily unavailable. Please try again later.');
+      setAIResponse('automation service temporarily unavailable. Please try again later.');
     }
   };
 
   const LeadsManagement = () => (
     <div className="space-y-6">
-      {/* AI Insights Alert */}
+      {/* automation Insights Alert */}
       <Alert>
         <Brain className="h-4 w-4" />
         <AlertDescription>
-          <strong>AI Insight:</strong> {aiInsights[0]?.description} - {aiInsights[0]?.recommendation}
+          <strong>automation Insight:</strong> {aiInsights[0]?.description} - {aiInsights[0]?.recommendation}
         </AlertDescription>
       </Alert>
 
@@ -335,7 +335,7 @@ export const SalesAcceleration: React.FC = () => {
             <div className="flex items-center gap-3">
               <BarChart3 className="h-8 w-8 text-blue-600" />
               <div>
-                <p className="text-sm text-muted-foreground">Avg AI Score</p>
+                <p className="text-sm text-muted-foreground">Avg automation Score</p>
                 <p className="text-2xl font-bold">{Math.round(leads.reduce((sum, l) => sum + l.aiScore, 0) / leads.length)}</p>
               </div>
             </div>
@@ -366,12 +366,12 @@ export const SalesAcceleration: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
                   <div className="flex items-center gap-2 mb-2">
                     <Brain className="h-4 w-4 text-amber-600" />
                     <span className="font-bold text-lg">{lead.aiScore}</span>
-                    <span className="text-sm text-muted-foreground">AI Score</span>
+                    <span className="text-sm text-muted-foreground">automation Score</span>
                   </div>
                   <p className="text-sm text-muted-foreground">€{lead.predictedValue.toLocaleString()} • {lead.probability}%</p>
                   <p className="text-xs text-muted-foreground mt-1">{lead.nextBestAction}</p>
@@ -382,7 +382,7 @@ export const SalesAcceleration: React.FC = () => {
                 <div className="mt-4 pt-4 border-t">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <h4 className="typography-h4 font-medium mb-2">AI Insights</h4>
+                      <h4 className="typography-h4 font-medium mb-2">automation Insights</h4>
                       <div className="space-y-1">
                         {lead.insights.map((insight, index) => (
                           <div key={index} className="flex items-start gap-2">
@@ -392,9 +392,9 @@ export const SalesAcceleration: React.FC = () => {
                         ))}
                       </div>
                     </div>
-                    
+
                     <div>
-                      <h4 className="typography-h4 font-medium mb-2">AI Recommendations</h4>
+                      <h4 className="typography-h4 font-medium mb-2">Recommendations</h4>
                       <div className="space-y-1">
                         {lead.aiRecommendations.map((rec, index) => (
                           <div key={index} className="flex items-start gap-2">
@@ -405,7 +405,7 @@ export const SalesAcceleration: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-2 mt-4">
                     <Button size="sm" onClick={() => generateAIProposal(lead.id)} disabled={generatingProposal}>
                       {generatingProposal ? (
@@ -416,7 +416,7 @@ export const SalesAcceleration: React.FC = () => {
                       ) : (
                         <>
                           <Brain className="h-4 w-4 mr-2" />
-                          Generate AI Proposal
+                          Generate automation Proposal
                         </>
                       )}
                     </Button>
@@ -450,16 +450,16 @@ export const SalesAcceleration: React.FC = () => {
           medium: 'border-yellow-200 bg-yellow-50',
           low: 'border-blue-200 bg-blue-50'
         };
-        
+
         const typeIcons = {
           opportunity: TrendingUp,
           risk: AlertCircle,
           action: Target,
           trend: BarChart3
         };
-        
+
         const TypeIcon = typeIcons[insight.type];
-        
+
         return (
           <Card key={index} className={priorityColors[insight.priority]}>
             <CardContent className="p-4">
@@ -474,7 +474,7 @@ export const SalesAcceleration: React.FC = () => {
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">{insight.description}</p>
-                    
+
                     <div className="space-y-1">
                       <p className="text-sm font-medium text-green-600">Impact: {insight.impact}</p>
                       <p className="text-sm">
@@ -483,7 +483,7 @@ export const SalesAcceleration: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-1">
                   <Badge 
                     variant={insight.priority === 'high' ? 'default' : 'default'}
@@ -493,7 +493,7 @@ export const SalesAcceleration: React.FC = () => {
                   </Badge>
                 </div>
               </div>
-              
+
               <div className="flex gap-2 mt-3">
                 <Button size="sm">
                   <CheckCircle className="h-4 w-4 mr-2" />
@@ -517,12 +517,12 @@ export const SalesAcceleration: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            AI Sales Assistant
+            automation Sales Assistant
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Ask AI about leads, markets, or strategies</Label>
+            <Label>Ask automation about leads, markets, or strategies</Label>
             <Textarea
               placeholder="e.g., 'What's the best approach for German manufacturing companies?' or 'How should I position against DMG MORI?'"
               value={aiQuery}
@@ -530,17 +530,17 @@ export const SalesAcceleration: React.FC = () => {
               rows={3}
             />
           </div>
-          
+
           <Button onClick={askAI} disabled={!aiQuery.trim()}>
             <Send className="h-4 w-4 mr-2" />
-            Ask AI
+            Ask automation
           </Button>
-          
+
           {aiResponse && (
             <div className="p-4 border rounded-lg bg-blue-50">
               <h4 className="typography-h4 font-medium mb-2 flex items-center gap-2">
                 <Brain className="h-4 w-4" />
-                AI Response
+                automation Response
               </h4>
               <div className="text-sm whitespace-pre-wrap">{aiResponse}</div>
             </div>
@@ -550,31 +550,31 @@ export const SalesAcceleration: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Quick AI Actions</CardTitle>
+          <CardTitle>Quick automation Actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 md:grid-cols-2">
             <Button variant="outline" className="justify-start h-auto p-4">
               <div className="text-left">
                 <div className="font-medium">Generate Market Report</div>
-                <div className="text-sm text-muted-foreground">AI-powered regional analysis</div>
+                <div className="text-sm text-muted-foreground">software-assisted regional analysis</div>
               </div>
             </Button>
-            
+
             <Button variant="outline" className="justify-start h-auto p-4">
               <div className="text-left">
                 <div className="font-medium">Competitor Analysis</div>
                 <div className="text-sm text-muted-foreground">Compare positioning strategies</div>
               </div>
             </Button>
-            
+
             <Button variant="outline" className="justify-start h-auto p-4">
               <div className="text-left">
                 <div className="font-medium">Price Optimization</div>
-                <div className="text-sm text-muted-foreground">AI-suggested pricing</div>
+                <div className="text-sm text-muted-foreground">automation-suggested pricing</div>
               </div>
             </Button>
-            
+
             <Button variant="outline" className="justify-start h-auto p-4">
               <div className="text-left">
                 <div className="font-medium">Email Templates</div>
@@ -594,16 +594,16 @@ export const SalesAcceleration: React.FC = () => {
         <div>
           <h2 className="typography-h2 tracking-tight flex items-center gap-2">
             <Brain className="h-8 w-8 text-amber-600" />
-            AI Sales Acceleration
+            automation Sales Acceleration
           </h2>
           <p className="text-muted-foreground">
-            AI-powered lead qualification, proposal generation, and sales intelligence
+            software-assisted lead qualification, proposal generation, and sales intelligence
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="flex items-center gap-1">
             <Zap className="h-3 w-3" />
-            AI Powered
+            software-assisted
           </Badge>
           <Badge variant="outline" className="flex items-center gap-1">
             <Star className="h-3 w-3" />
@@ -615,9 +615,9 @@ export const SalesAcceleration: React.FC = () => {
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="leads">AI Leads</TabsTrigger>
+          <TabsTrigger value="leads">automation Leads</TabsTrigger>
           <TabsTrigger value="insights">Insights</TabsTrigger>
-          <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
+          <TabsTrigger value="assistant">automation Assistant</TabsTrigger>
         </TabsList>
 
         <TabsContent value="leads">

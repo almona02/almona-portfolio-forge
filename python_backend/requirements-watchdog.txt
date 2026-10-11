@@ -10,6 +10,6 @@ httpx>=0.25.0
 # Date parsing
 python-dateutil>=2.8.2
 
-# Optional: For LLM-based analysis (if using Gemini)
+# Optional: For LLM-based analysis (if using support service)
 google-generativeai>=0.3.0
 

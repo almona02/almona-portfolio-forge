@@ -1,4 +1,4 @@
-# ALMONA vs Logikal — Gap Analysis Verification Report
+# ALMONA vs reference system — Gap Analysis Verification Report
 
 > **Purpose**: Verify the gap analysis document against the actual codebase. This report documents what is **confirmed**, **resolved**, or **remaining** based on code inspection.
 

@@ -55,7 +55,7 @@ function generateGCodeHash(gcode: string): string {
   // Use Web Crypto API for secure hashing
   const encoder = new TextEncoder();
   const data = encoder.encode(gcode);
-  
+
   // For now, use a simple hash (in production, use crypto.subtle.digest)
   // This is a placeholder - in production, use proper crypto
   let hash = 0;
@@ -64,7 +64,7 @@ function generateGCodeHash(gcode: string): string {
     hash = ((hash << 5) - hash) + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
-  
+
   // Convert to hex string (64 chars for SHA-256 equivalent)
   return Math.abs(hash).toString(16).padStart(64, '0');
 }
@@ -81,18 +81,18 @@ function generateDigitalSignature(data: {
 }): string {
   // Create canonical string for signing
   const canonical = `${data.jobId}:${data.machineType}:${data.gcodeHash}:${data.userId}:${data.timestamp}`;
-  
+
   // Generate hash (in production, use HMAC-SHA256 with secret key)
   const encoder = new TextEncoder();
   const dataBytes = encoder.encode(canonical);
-  
+
   let hash = 0;
   for (let i = 0; i < dataBytes.length; i++) {
     const char = dataBytes[i];
     hash = ((hash << 5) - hash) + char;
     hash = hash & hash;
   }
-  
+
   return Math.abs(hash).toString(16).padStart(64, '0');
 }
 

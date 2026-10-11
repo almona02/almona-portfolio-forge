@@ -3,7 +3,7 @@
  * 
  * Tools for multi-element selection via drag rectangle
  * 
- * Constitutional: Deterministic geometry operations, no ML/AI
+ * Constitutional: Deterministic geometry operations, no advisory inference
  * Tier: 3 Protected Determinism
  * 
  * Performance: Optimized intersection detection, early returns

@@ -6,7 +6,7 @@ Latest verification: Batch 1 is implemented; 10 frontend files / 27 tests and th
 
 ## Toolchain recovery
 
-The missing npm-cli error was caused by sandbox access to the user-level npm installation. npm and npx both report 11.11.1 outside that restriction; Node is 22.17.0. No global launcher replacement was necessary. Run npm through the approved execution context in Codex. The Program Files bundled CLI is also accessible, but using it does not remove sandbox restrictions on spawned tools.
+The missing npm-cli error was caused by sandbox access to the user-level npm installation. npm and npx both report 11.11.1 outside that restriction; Node is 22.17.0. No global launcher replacement was necessary. Run npm through the approved execution context in development tool. The Program Files bundled CLI is also accessible, but using it does not remove sandbox restrictions on spawned tools.
 
 Installed dependencies were stale: Vitest 3.2.7 was present while package.json and the lock require 4.1.11, and @vitest/browser-playwright was missing. `npm ci --no-audit --no-fund` successfully restored 1665 packages. The lockfile was preserved. Normal test startup now loads the existing configuration without modification.
 

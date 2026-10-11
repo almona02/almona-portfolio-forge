@@ -55,7 +55,7 @@
 - ✅ ViewportControls component exists and integrated
 - ✅ **Pan tool button in toolbar** (DraftingToolbar.tsx line 33) - **VERIFIED**
 - ✅ **Status bar zoom indicator** (EnhancedStatusBar.tsx) - **ADDED January 2026**
-- ✅ **Pan tool cursor** - Shows cursor-grab when pan tool selected - **FIXED January 2026**
+- ✅ **Pan tool development tool** - Shows development tool-grab when pan tool selected - **FIXED January 2026**
 - ✅ **Viewport synchronization** - Parent and child viewports properly synced - **FIXED January 2026**
 
 **Gap:** ❌ **NONE** - All features complete
@@ -63,7 +63,7 @@
 **Priority:** ✅ **COMPLETE** - No action needed
 
 **Recent Enhancements (January 2026):**
-1. ✅ Fixed pan tool cursor (cursor-grab when selected, cursor-grabbing when active)
+1. ✅ Fixed pan tool development tool (development tool-grab when selected, development tool-grabbing when active)
 2. ✅ Added zoom level to status bar
 3. ✅ Fixed viewport synchronization between DraftingWorkbench and DraftingCanvas2D
 
@@ -237,7 +237,7 @@
 2. ✅ **Pan Tool Button** - **VERIFIED COMPLETE**
    - ✅ Pan tool exists in DraftingToolbar
    - ✅ Visual indicator when active
-   - ✅ Cursor feedback (cursor-grab/cursor-grabbing)
+   - ✅ development tool feedback (cursor-grab/cursor-grabbing)
    - **Impact:** +0.5% UI/UX parity achieved
 
 3. ✅ **Viewport Synchronization** - **FIXED**
@@ -448,7 +448,7 @@
 ### ✅ Completed (January 2026):
 1. ✅ **EnhancedStatusBar Integration** - Complete with zoom level display
 2. ✅ **Pan Tool Button** - Verified complete (was already implemented)
-3. ✅ **Pan Tool Cursor** - Fixed to show cursor-grab when selected
+3. ✅ **Pan Tool development tool** - Fixed to show development tool-grab when selected
 4. ✅ **Viewport Synchronization** - Fixed bidirectional sync
 5. ✅ **Update Documentation** - Updated to reflect actual status
 

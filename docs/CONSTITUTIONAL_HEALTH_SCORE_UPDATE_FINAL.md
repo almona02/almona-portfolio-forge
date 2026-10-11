@@ -39,7 +39,7 @@ The Constitutional Health Score has been updated to reflect the completion of Pr
 
 ---
 
-### Section 5.10: Constitutional AI Governance (20% weight)
+### Section 5.10: Constitutional automation Governance (20% weight)
 
 **Status:** ✅ **100% Complete**
 

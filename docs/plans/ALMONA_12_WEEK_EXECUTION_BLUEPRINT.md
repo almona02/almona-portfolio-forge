@@ -53,7 +53,7 @@ Deliverables to Create in This Repo
    - Buttons: default, hover, active, disabled, loading
      - hover: transform scale(1.02), transition 150ms, will-change: transform
      - focus: ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-900
-     - disabled: opacity-50 cursor-not-allowed
+     - disabled: opacity-50 development tool-not-allowed
      - loading: spinner + disabled
    - Inputs: focus ring glow (amber), error border and hint, disabled, placeholder style
    - Selects/Dropdowns: animation (200ms), hover/selected states, focus trap

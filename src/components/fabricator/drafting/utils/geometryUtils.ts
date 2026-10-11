@@ -8,7 +8,7 @@
  * - Point-to-line distance
  * - Angle calculations
  * 
- * Constitutional: Deterministic geometry, no ML/AI
+ * Constitutional: Deterministic geometry, no advisory inference
  * Tier: 3 Protected Determinism
  * 
  * Performance: Optimized with early returns, cached calculations, and bounds checking

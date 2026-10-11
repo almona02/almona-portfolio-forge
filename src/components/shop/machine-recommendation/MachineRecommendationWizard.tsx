@@ -232,13 +232,13 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
     if (criteria.automation) {
       if (criteria.automation === 'cnc') {
         filtered = filtered.filter(m => 
-          m.tags?.includes('CNC') || 
+          m.tags?.includes('CNC') ||
           m.type.toLowerCase().includes('cnc') ||
           m.name.toLowerCase().includes('cnc')
         );
       } else if (criteria.automation === 'automatic') {
         filtered = filtered.filter(m => 
-          m.tags?.includes('Automatic') || 
+          m.tags?.includes('Automatic') ||
           m.type.toLowerCase().includes('automatic') ||
           m.name.toLowerCase().includes('automatic')
         );
@@ -333,7 +333,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       toast({
         title: copy("Download Started"),
         description: `${copy('Downloading specifications')}: ${machine.name}`,
@@ -363,7 +363,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
         tax: 0
       }
     };
-    
+
     addToQuote(shopProduct);
     toast({
       title: copy("Added to Quote"),
@@ -474,17 +474,17 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
   const handleValueChange = (key: keyof typeof answers, value: string) => {
     setAnswers(prev => {
       const newAnswers = { ...prev, [key]: value };
-      
+
       // Smart reset: If material changes, clear application selection
       if (key === 'material') {
         newAnswers.application = '';
       }
-      
+
       // Smart reset: If application changes, clear automation selection
       if (key === 'application') {
         newAnswers.automation = '';
       }
-      
+
       return newAnswers;
     });
   };
@@ -970,14 +970,14 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
             <div className="flex-1">
               <DialogTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
                 <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-almona-orange" />
-                <span className="truncate">{copy("Precision AI Machine Wizard")}</span>
+                <span className="truncate">{copy("Precision automation Machine Wizard")}</span>
               </DialogTitle>
               <p className="text-gray-400 mt-1 text-sm sm:text-base">{copy("ISO-grade, Industry 4.0 aligned guidance for aluminum & UPVC production investments.")}</p>
             </div>
             <div className="text-sm text-gray-400 flex-shrink-0">{copy("Step")} {currentStepIndex + 1} {copy("of")} {steps.length}
             </div>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2 overflow-x-auto">
@@ -985,7 +985,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                 const Icon = stepItem.icon;
                 const isCompleted = index < currentStepIndex;
                 const isCurrent = index === currentStepIndex;
-                
+
                 return (
                   <div key={stepItem.id} className="flex items-center flex-shrink-0">
                     <div className={`flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 transition-all ${
@@ -1017,13 +1017,13 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
             </div>
           </div>
         </DialogHeader>
-        
+
         <div className="flex-1 overflow-y-auto py-4 sm:py-6 px-2 sm:px-0">
           <LazyAnimatePresence mode="wait">
         {renderStep()}
           </LazyAnimatePresence>
         </div>
-        
+
         <DialogFooter className="border-t border-gray-700 pt-4 flex-shrink-0">
           <div className="w-full flex flex-col gap-3">
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-300">
@@ -1044,7 +1044,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                 className="flex items-center gap-2 w-full sm:w-auto"
               >
                 <ArrowLeft className="h-4 w-4" />{copy("Back")}</Button>
-              
+
               <div className="flex gap-2 w-full sm:w-auto">
                 {step === 'results' ? (
                   <>

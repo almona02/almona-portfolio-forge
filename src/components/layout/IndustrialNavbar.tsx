@@ -66,7 +66,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
   const workflowStages = [
     { id: 'measuring', name: t('fabricator:workflow.steps.measuring.name', 'Smart Measuring'), icon: Ruler, status: 'active' },
     { id: 'design', name: t('fabricator:workflow.steps.design.name', 'Technical Design'), icon: Settings, status: 'pending' },
-    { id: 'optimization', name: t('fabricator:workflow.steps.optimization.name', 'AI Optimization'), icon: Sparkles, status: 'pending' },
+    { id: 'optimization', name: t('fabricator:workflow.steps.optimization.name', 'Stock Optimization'), icon: Sparkles, status: 'pending' },
     { id: 'inventory', name: t('fabricator:workflow.steps.inventory.name', 'Inventory Check'), icon: Package, status: 'pending' },
     { id: 'production', name: t('fabricator:workflow.steps.production.name', 'Production'), icon: Factory, status: 'pending' },
     { id: 'quality', name: t('fabricator:workflow.steps.quality.name', 'Quality Control'), icon: Zap, status: 'pending' }
@@ -80,7 +80,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       icon: <Scissors className="h-4 w-4" />,
       status: "optimal",
       efficiency: "92.5%",
-      description: t('fabricator:navbar.fabrication_modules.cutting_optimization.description', 'AI-powered material nesting')
+      description: t('fabricator:navbar.fabrication_modules.cutting_optimization.description', 'software-assisted material nesting')
     },
     {
       name: t('fabricator:navbar.fabrication_modules.machine_control.name', 'Machine Control'),
@@ -99,7 +99,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       description: t('fabricator:navbar.fabrication_modules.production_scheduler.description', 'Smart job sequencing')
     },
     {
-      name: t('fabricator:navbar.fabrication_modules.quality_control_ai.name', 'Quality Control AI'),
+      name: t('fabricator:navbar.fabrication_modules.quality_control_ai.name', 'Quality Control'),
       path: "/fabricator/quality",
       icon: <Brain className="h-4 w-4 text-[var(--fabricator-text-accent)]" />,
       status: "monitoring",
@@ -154,14 +154,14 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
   const fabricatorNavItems: NavItem[] = useMemo(() => [
     {
       id: 'workflow',
-      label: 'AI Workflow',
+      label: 'automation Workflow',
       icon: Factory,
       description: 'End‑to‑end fabrication pipeline',
       children: [
-        { id: 'measuring', label: 'Smart Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: 'AI' },
+        { id: 'measuring', label: 'Smart Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: "PRO" },
         { id: 'design', label: 'Technical Design', icon: Settings, path: '/fabricator-workflow#design', badge: 'PRO' },
         { id: 'preview3d', label: '3D Preview', icon: Box, path: '/fabricator-workflow#preview3d', badge: '3D' },
-        { id: 'optimization', label: 'Cutting Optimization', icon: Scissors, path: '/fabricator-workflow#optimization', badge: 'AI' },
+        { id: 'optimization', label: 'Cutting Optimization', icon: Scissors, path: '/fabricator-workflow#optimization', badge: "PRO" },
         { id: 'inventory', label: 'Inventory Check', icon: Package, path: '/fabricator-workflow#inventory' },
         { id: 'production', label: 'Production Planning', icon: Factory, path: '/fabricator-workflow#production' },
         { id: 'quality', label: 'Quality Control', icon: Zap, path: '/fabricator-workflow#quality' }

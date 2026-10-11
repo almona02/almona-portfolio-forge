@@ -67,7 +67,7 @@ Phase 2 builds on the solid foundations of Phase 1, adding advanced ML capabilit
 #### 1. **Collaboration Context** (`src/contexts/FabricatorCollaborationContext.tsx`)
 - Real-time user presence tracking
 - Supabase real-time subscriptions
-- Live cursor updates (throttled to 10/sec)
+- Live development tool updates (throttled to 10/sec)
 - Selection synchronization
 - Edit broadcasting
 
@@ -98,7 +98,7 @@ Phase 2 builds on the solid foundations of Phase 1, adding advanced ML capabilit
   - Connection status badge
 
 - **LiveCursorOverlay** (`src/components/fabricator/LiveCursorOverlay.tsx`)
-  - Real-time cursor positions
+  - Real-time development tool positions
   - User name labels
   - Avatar indicators
 
@@ -122,7 +122,7 @@ Phase 2 builds on the solid foundations of Phase 1, adding advanced ML capabilit
 - Tabbed interface (Forecasts/Insights)
 
 #### 2. **Cost Optimization Insights** (`src/components/analytics/CostOptimizationInsights.tsx`)
-- AI-driven cost reduction suggestions
+- software-assisted cost reduction suggestions
 - Priority-based recommendations
 - Potential savings calculation
 - Action items for each suggestion
@@ -287,7 +287,7 @@ The mobile companion app structure is outlined but not yet implemented. This wou
 - Fallback rate: < 20% (80%+ confidence threshold)
 
 ### Real-time Collaboration
-- Latency: < 500ms for cursor updates
+- Latency: < 500ms for development tool updates
 - Conflict rate: < 5% of edits
 
 ### Analytics Dashboard

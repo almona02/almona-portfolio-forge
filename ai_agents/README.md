@@ -1,6 +1,6 @@
-# Almona AI Agents
+# Almona automation Agents
 
-This directory contains AI agent implementations for the Almona platform, focusing on YILMAZ machine intelligence and learning systems.
+This directory contains automation agent implementations for the Almona platform, focusing on YILMAZ machine intelligence and learning systems.
 
 ## Directory Structure
 
@@ -24,7 +24,7 @@ ai_agents/
 ## YILMAZ Digital Twin (YDT) Agent
 
 ### Purpose
-Build a comprehensive digital representation of YILMAZ machinery by ingesting and understanding all official documentation. This system serves as the "single source of truth" for AI-powered service, diagnostic, and training tools.
+Build a comprehensive digital representation of YILMAZ machinery by ingesting and understanding all official documentation. This system serves as the "single source of truth" for software-assisted service, diagnostic, and training tools.
 
 ### Key Features
 - **Knowledge Ingestion**: Processes PDF manuals, wiring diagrams, pneumatic schematics
@@ -37,7 +37,7 @@ Build a comprehensive digital representation of YILMAZ machinery by ingesting an
 - **Machine Types**: `src/types/machine.ts`, `src/constants/yilmazMachines.ts`
 - **Database**: `yilmaz_machines` table (Supabase)
 - **Ticketing**: `service_tickets` table for auto-diagnosis
-- **AI Services**: `python_backend/ai_services/`
+- **automation Services**: `python_backend/ai_services/`
 
 ## Learning Agent
 

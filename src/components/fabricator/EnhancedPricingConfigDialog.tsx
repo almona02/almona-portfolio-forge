@@ -7,7 +7,7 @@
  * - Exchange rate management
  * - Bulk operations
  * 
- * Constitutional: Deterministic pricing, no ML/AI
+ * Constitutional: Deterministic pricing, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

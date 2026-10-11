@@ -329,10 +329,10 @@
 ### Certification Statement
 
 **If Certified:**
-> "Week 1 Constitutional AI Governance is hereby certified as operational. All strategic decisions (pricing, viability, optimization strategy) are governed by IntelligenceGate with 100% Tier 1 coverage, 100% reasoning quality, and 0 tier violations. Tier 1 governance is now locked and frozen. Any changes require explicit governance revision."
+> "Week 1 Constitutional automation Governance is hereby certified as operational. All strategic decisions (pricing, viability, optimization strategy) are governed by IntelligenceGate with 100% Tier 1 coverage, 100% reasoning quality, and 0 tier violations. Tier 1 governance is now locked and frozen. Any changes require explicit governance revision."
 
 **If Not Certified:**
-> "Week 1 Constitutional AI Governance requires remediation before certification. Issues identified: [List issues]. Certification pending resolution."
+> "Week 1 Constitutional automation Governance requires remediation before certification. Issues identified: [List issues]. Certification pending resolution."
 
 ---
 

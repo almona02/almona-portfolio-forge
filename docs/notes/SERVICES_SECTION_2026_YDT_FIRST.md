@@ -54,7 +54,7 @@ Success is not feature completeness. Success is:
 > **No service feature is built unless it increases YDT dependency.**
 
 This replaces:
-- ❌ Large AI rewrites
+- ❌ Large automation rewrites
 - ❌ IoT-heavy investments
 - ❌ Independent ML pipelines
 - ❌ $580K roadmaps
@@ -76,7 +76,7 @@ import { YDTEnforcementService } from '@/lib/ydt/YDTEnforcementService';
 
 export class YDTServiceIntelligence {
   private ydtEnforcer: YDTEnforcementService;
-  
+
   constructor() {
     this.ydtEnforcer = new YDTEnforcementService({
       mode: 'mandatory',
@@ -185,16 +185,16 @@ interface MachinePassport2026 {
   machineId: string;
   serialNumber: string;
   model: string;
-  
+
   // YDT context
   ydtDiagnosticHistory: YDTDiagnosticRecord[];
   ydtKnowledgeEntries: KnowledgeEntry[];
-  
+
   // Service records (linked to tickets)
   serviceHistory: ServiceRecord[];
   maintenanceActions: MaintenanceAction[];
   partsReplaced: PartRecord[];
-  
+
   // That's it. No production correlation, no IoT, no AR.
 }
 ```
@@ -221,7 +221,7 @@ async function predictMaintenance(machineId: string): Promise<MaintenanceAlert> 
     chapters: ['MAINTENANCE_SCHEDULES', 'COMMON_FAILURES'],
     context: 'preventive_maintenance'
   });
-  
+
   // If YDT says risk > 70%, create ticket
   if (ydtPrediction.risk > 0.7) {
     await createMaintenanceTicket({
@@ -231,7 +231,7 @@ async function predictMaintenance(machineId: string): Promise<MaintenanceAlert> 
       recommended_action: ydtPrediction.recommendedAction
     });
   }
-  
+
   return ydtPrediction;
 }
 ```
@@ -278,7 +278,7 @@ async function predictMaintenance(machineId: string): Promise<MaintenanceAlert> 
 // Minimal Fabricator Pro → YDT integration
 async function feedProductionToYDT(machineId: string, jobId: string) {
   const jobSummary = await getJobSummary(jobId);
-  
+
   // Feed to YDT as context only
   await YDTCoreService.addContext({
     machine_id: machineId,
@@ -385,7 +385,7 @@ async function feedProductionToYDT(machineId: string, jobId: string) {
 
 2. **Does it reuse existing YDT intelligence?**
    - YES → Consider
-   - NO → Build new ML/AI? → REJECT (not 2026)
+   - NO → Build new advisory inference? → REJECT (not 2026)
 
 3. **Does this drive YDT Intelligence Report sales?**
    - YES → Prioritize
@@ -415,7 +415,7 @@ async function feedProductionToYDT(machineId: string, jobId: string) {
 // Enhanced Ticket Wizard with YDT
 export function TicketWizardWithYDT() {
   const [ydtSuggestions, setYdtSuggestions] = useState<YDTSuggestion[]>([]);
-  
+
   useEffect(() => {
     // Auto-suggest when ticket description changes
     if (ticket.description.length > 20) {
@@ -423,12 +423,12 @@ export function TicketWizardWithYDT() {
         .then(suggestions => setYdtSuggestions(suggestions));
     }
   }, [ticket.description]);
-  
+
   return (
     <TicketWizard>
       {/* Existing ticket form */}
       <TicketForm {...props} />
-      
+
       {/* NEW: YDT Suggestions Panel */}
       <YDTSuggestionsPanel 
         suggestions={ydtSuggestions}
@@ -464,10 +464,10 @@ class YDTMaintenancePredictor {
       chapters: ['COMMON_FAILURES', 'MAINTENANCE_SCHEDULES'],
       query: 'predict_next_maintenance'
     });
-    
+
     // Simple risk calculation from YDT confidence
     const risk = ydtPatterns.confidence < 0.7 ? 0.8 : 0.3;
-    
+
     if (risk > 0.7) {
       return {
         machineId,
@@ -478,7 +478,7 @@ class YDTMaintenancePredictor {
         source: 'ydt_prediction'
       };
     }
-    
+
     return null;
   }
 }
@@ -499,15 +499,15 @@ interface MachinePassport2026 {
   machineId: string;
   serialNumber: string;
   model: string;
-  
+
   // YDT Integration
   ydtDiagnostics: YDTDiagnosticRecord[];
   ydtKnowledge: KnowledgeEntry[];
-  
+
   // Service History (linked to tickets)
   serviceHistory: ServiceRecord[];
   maintenanceActions: MaintenanceAction[];
-  
+
   // That's it. No production correlation, no IoT, no AR.
 }
 ```
@@ -531,7 +531,7 @@ interface MachinePassport2026 {
 // Minimal Fabricator Pro → YDT feed
 async function feedProductionContext(machineId: string, jobId: string) {
   const job = await getFabricatorJob(jobId);
-  
+
   // Just feed context - no complex analytics
   await YDTCoreService.addContext({
     machine_id: machineId,
@@ -667,16 +667,16 @@ async function feedProductionContext(machineId: string, jobId: string) {
 interface YDTServiceInterface {
   // Ticket routing
   suggestAssignment(ticket: Ticket): Promise<Assignment>;
-  
+
   // Resolution prediction
   predictResolution(ticket: Ticket): Promise<Prediction>;
-  
+
   // Spare parts
   suggestSpareParts(machineId: string, symptoms: string[]): Promise<Part[]>;
-  
+
   // Maintenance prediction
   predictMaintenance(machineId: string): Promise<MaintenanceAlert>;
-  
+
   // All use existing YDT, no new intelligence
 }
 ```

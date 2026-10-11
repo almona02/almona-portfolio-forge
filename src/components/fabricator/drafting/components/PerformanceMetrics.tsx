@@ -4,7 +4,7 @@
  * Displays real-time performance metrics (FPS, render time, element count)
  * for debugging and optimization monitoring.
  * 
- * Constitutional: Deterministic metrics, no ML/AI
+ * Constitutional: Deterministic metrics, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

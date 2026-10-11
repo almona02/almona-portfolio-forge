@@ -440,7 +440,7 @@ Completed below. The 90° control was **not** run.
 
 ## Dual-use reassessment — original 90° CONTROL_FIXTURE vs FP-027
 
-Repository/audit reasoning only. 13 September 2026. No DoWin session. No project, solve, export, stock, or settings change.
+Repository/audit reasoning only. 13 September 2026. No reference system session. No project, solve, export, stock, or settings change.
 
 ### Original FP-024C purpose (must not be rewritten)
 

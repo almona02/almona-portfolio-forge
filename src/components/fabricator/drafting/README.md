@@ -2,7 +2,7 @@
 
 ## Overview
 
-The ALMONA Drafting Workbench is a constitutional drafting layer that provides a Moxisys-style visual drafting experience while maintaining ALMONA's Tier 3 determinism guarantees.
+The ALMONA Drafting Workbench is a constitutional drafting layer that provides a visual drafting experience while maintaining ALMONA's Tier 3 determinism guarantees.
 
 ## Architecture: Three Gates Model
 
@@ -31,7 +31,7 @@ The ALMONA Drafting Workbench is a constitutional drafting layer that provides a
 - **Audit Trail**: Complete validation history with constitutional notes
 - **Rule Transparency**: All validation rules are explicit
 
-### ✅ Moxisys-Style Experience
+### ✅ Visual Drafting Experience
 - Visual 2D canvas with SVG rendering
 - Snap-to-grid (5mm)
 - Dimension annotation tools

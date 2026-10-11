@@ -1,17 +1,17 @@
-# Fabricator Pro versus DoWin: workflow and usability
+# Fabricator Pro versus reference system: workflow and usability
 
 Date: 22 September 2026. Fabricator source revision: `eb5a75e`.
 Revised after authenticated inspection of www.almona02.com. The deployed commit
 was not independently identified; source findings are labelled separately.
 
-**Assessment:** DoWin's inspected interface gives a clearer, compact path from a
+**Assessment:** reference system's inspected interface gives a clearer, compact path from a
 saved position to its cutting requirements. Fabricator has broader project,
 commercial and regional capabilities, but needs more reliable state and simpler
 operator navigation before claiming equivalent production usability.
 
 ## Evidence and limits
 
-- Inspected the running local DoWin application: Project, Design,
+- Inspected the running local reference system application: Project, Design,
   Management–Production, Optimization, Production Status, and Profile Management.
 - Opened the existing `FP024C_90_CONTROL` project and its saved design. Selected
   a glass area and viewed its properties and the production cut-list preview.
@@ -31,7 +31,7 @@ operator navigation before claiming equivalent production usability.
 ## Authenticated findings that change the priorities
 
 The saved Fabricator position was 1210 × 1550 mm, type `sliding_window_2sash`,
-system ROCK 60. DoWin's reference was a different 1200 × 1200 mm PVC design.
+system ROCK 60. reference system's reference was a different 1200 × 1200 mm PVC design.
 These jobs are not a matched accuracy benchmark.
 
 | ID | Priority | Evidence and scope | Required outcome |
@@ -51,7 +51,7 @@ Positive live checks: Production blocked without optimization; Delivery blocked
 without QC. Preserve these safeguards. SmartDraw already provides keyboard
 navigation, undo/redo, mirroring, dimensions and pattern suggestions.
 
-## Live DoWin reference
+## Live reference system reference
 
 The loaded design showed a 1,200 × 1,200 mm overall opening, two 600 mm divisions,
 and two glass labels of 535 × 1,114 mm. Its cut-list preview showed four frame
@@ -71,7 +71,7 @@ Positive interaction patterns:
 - Catalogue management separates profile systems, stock, glass, customers and
   general settings from everyday design work.
 
-DoWin friction observed:
+reference system friction observed:
 
 - Saved positions were initially collapsed behind a narrow edge toggle; the
   canvas was blank until the saved design was opened.
@@ -92,8 +92,8 @@ P0 blocks reliable release of affected production work. P1 improves pilot usabil
 | P0 | Save status is inferred from `project.updatedAt`, rather than a confirmed write. `ManufacturingStatusBar.tsx:28`. | Track Unsaved / Saving / Saved / Failed from persistence acknowledgements. A failed save must never display Saved; show retry and last confirmed revision. |
 | P0 | Production layout renders unconditional green `CNC Online` / `Saw Online` indicators. `ProductionStudioLayout.tsx:15`. `ProductionCommand.tsx:367` simulates transport before a Job sent message. | Show Unknown/Disconnected until a real heartbeat exists. Separate file generated, downloaded, transmitted and controller accepted. |
 | P0 | `workflowStore.ts:146` and `:208` replace design/project without clearing dependent BOM, optimization, quote and documents. | Bind artifacts to owner/project/position/revision. On edits or position switches, invalidate stale results and block export until regeneration. |
-| P0 | Complete physical-length and controller parity is still unresolved in the existing evidence; standalone preflight has no production caller found in this review. | Reconcile original piece identities, quantities, lengths, both angles, kerf, trim and unplaced pieces across BOM, nesting and export. Require approved supplier/controller evidence. Do not change formulas merely to copy this saved DoWin output. |
-| P1 | BOM review renders only `cuttingLengths[0]` and `angles[0]`, despite plural data. `BOMReviewPanel.tsx:262`. DoWin exposes assembly identity and both ends. | Expand the actual piece ledger: position, part, profile, cut length, left/right angle and quantity. Define array semantics first; never invent a second angle. Link rows to the drawing. |
+| P0 | Complete physical-length and controller parity is still unresolved in the existing evidence; standalone preflight has no production caller found in this review. | Reconcile original piece identities, quantities, lengths, both angles, kerf, trim and unplaced pieces across BOM, nesting and export. Require approved supplier/controller evidence. Do not change formulas merely to copy this saved reference system output. |
+| P1 | BOM review renders only `cuttingLengths[0]` and `angles[0]`, despite plural data. `BOMReviewPanel.tsx:262`. reference system exposes assembly identity and both ends. | Expand the actual piece ledger: position, part, profile, cut length, left/right angle and quantity. Define array semantics first; never invent a second angle. Link rows to the drawing. |
 | P1 | Ten workflow stages coexist with studio navigation. The bar puts Quote before BOM/Optimize, while the store's ordered sequence puts commercial after optimization. `studioWorkflow.ts:93`, `workflowStore.ts:103`. | Distinguish an early estimate from a manufacturing-based final quote. Present one recommended next action with prerequisites; preserve expert shortcuts and canonical routes. |
 | P1 | Stage labels use 11 px text and are hidden below the medium breakpoint. Status text and sidebar labels include hard-coded English. `FabricatorWorkflowBar.tsx:41,144,172`; `UniversalNavSidebar.tsx:49`. | Keep current/next step labels visible on small screens, enlarge primary touch targets, translate all operator navigation/statuses, and test Arabic RTL with profile codes/numbers kept readable. |
 | P1 | Project creation exposes project-type selection, custom-system management and tuning inside the creation flow. `NewProjectWizard.tsx:211,266,322`. | Offer a short path using a qualified system and remembered defaults. Move catalogue authoring to an explicit expert action. Validate manufacturing prerequisites before production even when draft creation is allowed. |
@@ -102,7 +102,7 @@ P0 blocks reliable release of affected production work. P1 improves pilot usabil
 
 ## Ease-of-use judgement
 
-For an experienced cutting operator, DoWin's inspected arrangement is easier to
+For an experienced cutting operator, reference system's inspected arrangement is easier to
 understand because it keeps the drawing, required parts and production actions
 close together. This is a heuristic judgement, not a timed comparison.
 
@@ -110,7 +110,7 @@ Fabricator already has a canonical workflow bar, contextual design tools,
 keyboard shortcuts, regional defaults and Arabic/RTL infrastructure. Preserve
 these foundations. Its most valuable next improvements are reliable save/status
 feedback, visible position/revision context, a complete cut-list review, and one
-clear next action. More dashboards or AI controls would not resolve these gaps.
+clear next action. More dashboards or automation controls would not resolve these gaps.
 
 Suggested operator view: **Project → Design → Review & Price → Cut & Export**.
 Keep the existing detailed stages beneath those groups. Show the active customer,
@@ -138,5 +138,5 @@ Record task completion, time, clicks, corrections, help requests, save/recovery
 failures and output discrepancies. Require no unexplained missing parts, no stale
 exports and no false success messages. Numerical speed or ease-of-use rankings
 remain unmeasured. The authenticated walkthrough is complete within the scope
-above; matched-job save/recovery trials and controlled DoWin optimization/export
+above; matched-job save/recovery trials and controlled reference system optimization/export
 remain outstanding. See `FABRICATOR-IMPROVEMENT-PLAN_2026-09-22.md` for sequencing.

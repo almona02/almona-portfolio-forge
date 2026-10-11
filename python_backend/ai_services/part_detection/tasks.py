@@ -136,7 +136,7 @@ def detect_parts(self, image_path: str) -> Dict[str, Any]:
 
 @celery_app.task(name="health_check")
 def health_check() -> Dict[str, str]:
-    """Health check endpoint for the AI service"""
+    """Health check endpoint for the automation service"""
     return {
         "status": "healthy",
         "service": "part_detection",

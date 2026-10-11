@@ -2,7 +2,7 @@
  * Constitutional Validation for Tier 3 Operations
  * 
  * Validates that production outputs comply with ALMONA constitutional guarantees:
- * - Tier 3: Protected Determinism (no ML/AI in execution)
+ * - Tier 3: Protected Determinism (no advisory inference in execution)
  * - Full audit trail
  * - Human validation required disclaimers
  * - Deterministic guarantees

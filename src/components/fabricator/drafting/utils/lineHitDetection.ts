@@ -4,7 +4,7 @@
  * Optimized line hit testing for canvas interactions
  * Performance: Cached calculations, early returns, squared distances
  * 
- * Constitutional: Deterministic geometry, no ML/AI
+ * Constitutional: Deterministic geometry, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

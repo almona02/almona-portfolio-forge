@@ -5,7 +5,7 @@
  * and algorithm selection rules for deterministic optimization.
  * 
  * Constitutional Compliance: Tier 3 (Protected Determinism)
- * - No ML/AI in algorithm selection
+ * - No advisory inference in algorithm selection
  * - Pure rule-based selection
  * - Fully auditable decision logic
  * 

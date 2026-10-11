@@ -1,13 +1,13 @@
 /**
  * @file intelligence_gate.ts
- * @description Intelligence Gate - Constitutional AI Governance
+ * @description Intelligence Gate - Constitutional automation Governance
  * 
  * AICS-001 Reference: Section 5.10
  * 
  * Enforces three-tier decision architecture:
- * - Tier 1: Authoritative AI (YDT mandatory)
+ * - Tier 1: Authoritative automation (YDT mandatory)
  * - Tier 2: Collaborative Intelligence (YDT + TensorFlow)
- * - Tier 3: Protected Determinism (No AI)
+ * - Tier 3: Protected Determinism (No automation)
  * 
  * Location: Core Authority Layer (constitutional, immutable)
  */
@@ -20,10 +20,10 @@ export interface TierDecision {
   reasoning: string; // AICS-001: "Mandatory reasoning for Tier 1"
   confidence?: number;
   timestamp: Date;
-  
+
   // Constitutional requirement: All decisions traceable
   auditAnchorId: string;
-  
+
   // Tier-specific data
   ydtContribution?: YDTContribution;
   tensorflowContribution?: TensorFlowContribution;
@@ -55,13 +55,13 @@ export interface IntelligenceGate {
    * AICS-001 Section 5.10.2
    */
   classifyDecision(context: DecisionContext): Tier;
-  
+
   /**
    * Enforces tier requirements and creates tier decision
    * AICS-001 Section 5.10.3
    */
   enforceTier(decision: DecisionContext, tier: Tier): TierDecision;
-  
+
   /**
    * Validates that a tier decision complies with constitutional requirements
    * AICS-001 Section 5.10.4

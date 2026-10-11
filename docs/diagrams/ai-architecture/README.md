@@ -1,13 +1,13 @@
-# AI Architecture Diagrams - Stakeholder Views
+# automation Architecture Diagrams - Stakeholder Views
 
 **One Platform, Six Perspectives**
 
-This directory contains professional HTML/SVG diagrams that present the Almona Portfolio Forge AI architecture from different stakeholder perspectives. Each diagram emphasizes different aspects of the same powerful system, optimized for specific audiences, concerns, and trust requirements.
+This directory contains professional HTML/SVG diagrams that present the Almona Portfolio Forge automation architecture from different stakeholder perspectives. Each diagram emphasizes different aspects of the same powerful system, optimized for specific audiences, concerns, and trust requirements.
 
 ## 📁 Files
 
 - **`index.html`** - Master navigation page with links to all stakeholder views
-- **`investors.html`** - Defensible AI + Scalable Moat (for investors)
+- **`investors.html`** - Defensible automation + Scalable Moat (for investors)
 - **`enterprises.html`** - Control, Safety & Auditability (for enterprises)
 - **`workshops.html`** - Speed, Fewer Mistakes, More Money (for workshops)
 - **`machine-suppliers.html`** - Fewer Errors, Happier Customers (for machine suppliers)
@@ -53,16 +53,16 @@ We do NOT change the platform. We only change WHAT is emphasized and WHAT risk i
 
 - **Green** = Success, Validation, Production
 - **Red** = STOP, Error Prevention, Safety
-- **Blue** = Intelligence, AI, Processing
+- **Blue** = Intelligence, automation, Processing
 - **Purple** = Enterprise, Governance, Control
 - **Gold** = Validation, Certification, Quality
 
 ## 📊 Stakeholder Views
 
 ### 1. Investors 💰
-**Focus:** Defensible AI + Scalable Moat
+**Focus:** Defensible automation + Scalable Moat
 
-**Key Message:** "Our AI improves only when real machines produce real output — this creates a compounding industrial data moat."
+**Key Message:** "Our automation improves only when real machines produce real output — this creates a compounding industrial data moat."
 
 **Emphasizes:**
 - Proprietary production data
@@ -74,7 +74,7 @@ We do NOT change the platform. We only change WHAT is emphasized and WHAT risk i
 ### 2. Enterprises 🏢
 **Focus:** Control, Safety & Auditability
 
-**Key Message:** "AI never executes directly. Every decision passes certified validation and can be audited."
+**Key Message:** "automation never executes directly. Every decision passes certified validation and can be audited."
 
 **Emphasizes:**
 - Validation layers

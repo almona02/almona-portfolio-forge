@@ -23,7 +23,7 @@ interface SEOProps {
 
 const SEO = ({
   title = 'Almona — Precision at the Heart of Industry',
-  description = 'Smart fabrication. Egyptian excellence. YILMAZ machinery, Fabricator Pro AI, Industry 4.0.',
+  description = 'Smart fabrication. Egyptian excellence. YILMAZ machinery, Fabricator Pro automation, Industry 4.0.',
   keywords = 'Yilmaz Egypt, Yilmaz authorized dealer, Yilmaz machines Egypt, Yilmaz CNC, industrial machinery Egypt, aluminium fabrication Egypt, smart manufacturing Egypt, Industry 4.0 Egypt',
   image = '/logo.svg',
   url = import.meta.env.VITE_APP_URL || 'https://www.almona02.com',
@@ -32,7 +32,7 @@ const SEO = ({
 }: SEOProps) => {
   const siteTitle = 'Almona';
   const fullTitle = title.includes('Almona') ? title : `${title} | ${siteTitle}`;
-  
+
   // Prioritize specific product image for social sharing, fallback to provided image or default logo
   const socialImage = productData?.image || image;
 
@@ -47,19 +47,19 @@ const SEO = ({
     'Yilmaz machines Cairo',
     'Yilmaz CNC Egypt',
     'Yilmaz copy router Egypt',
-    
+
     // Service terms
     'Yilmaz machine service Egypt',
     'Yilmaz spare parts Egypt',
     'Yilmaz training Egypt',
     'Yilmaz installation Egypt',
-    
+
     // Industry-specific
     'aluminium machine Egypt',
     'UPVC machine Egypt',
     'window fabrication machine',
     'door manufacturing equipment',
-    
+
     // Location specific
     'industrial machines Cairo',
     'factory equipment Egypt',
@@ -69,15 +69,15 @@ const SEO = ({
   // Industry 4.0 comprehensive keywords
   const industry40Keywords = [
     'Industry 4.0', 'Smart Manufacturing', 'Digital Transformation', 'Industrial IoT', 'Cyber-Physical Systems',
-    'AI-Powered Manufacturing', 'Machine Learning Optimization', 'Predictive Maintenance', 'Digital Twin',
+    'software-assisted Manufacturing', 'Machine Learning Optimization', 'Predictive Maintenance', 'Digital Twin',
     'Real-Time Analytics', 'Automated Quality Control', 'Intelligent Production Planning', 'CNC Integration',
     'Smart Factory', 'Connected Manufacturing', 'Data-Driven Production', 'Automated Workflows',
-    'Self-Learning Systems', 'Adaptive Manufacturing', 'Remnant Marketplace', 'Calibration AI',
+    'Self-Learning Systems', 'Adaptive Manufacturing', 'Remnant Marketplace', 'Calibration automation',
     'Constraint Programming', 'Genetic Algorithm Optimization', 'ML-Based Algorithm Selection',
     'Production Analytics', 'OEE Tracking', 'Workshop Performance Analytics', 'Material Optimization',
-    'Waste Reduction AI', 'Cross-Project Optimization', 'Multi-Brand CNC Export', 'Machine Health Monitoring',
+    'Waste Reduction automation', 'Cross-Project Optimization', 'Multi-Brand CNC Export', 'Machine Health Monitoring',
     'Sensor Data Analysis', 'Automated Workflow Generation', 'Computer Vision Quality Control',
-    'Natural Language Processing', 'Equipment Recommendation AI', 'Consumption Forecasting',
+    'Natural Language Processing', 'Equipment Recommendation automation', 'Consumption Forecasting',
     'Job Complexity Prediction', 'Workshop Intelligence', 'Production Intelligence',
     'Fabrication Intelligence System', 'No-DXF Tuning', 'Material Waste Reduction', 'Workshop Efficiency',
     'University-Grade Precision', '99.8% Accuracy', 'Remnant-First Optimization', 'Factory Intelligence'
@@ -88,7 +88,7 @@ const SEO = ({
     'Digital Egypt', 'Egypt Vision 2030', 'smart manufacturing Egypt', 'industrial digital transformation Egypt',
     'MCIT', 'ITIDA', 'G5 collaborative regulation', 'sustainable manufacturing', 'CO2 reduction',
     'SME productivity Egypt', 'national pilot project', 'Industry 4.0 Egypt', 'Egyptian manufacturing',
-    'national industrial modernization', 'evidence-based industrial policy', 'Egypt AI strategy',
+    'national industrial modernization', 'evidence-based industrial policy', 'Egypt automation strategy',
     'manufacturing productivity Egypt', 'circular economy Egypt', 'youth upskilling Egypt',
     'digital fabricator certification', 'national remnant marketplace'
   ].join(', ');
@@ -105,10 +105,10 @@ const SEO = ({
       <meta name="robots" content="index, follow" />
       <meta name="language" content="ar" />
       <meta name="revisit-after" content="7 days" />
-      
+
       {/* Industry 4.0 Specific Meta Tags */}
       <meta name="industry" content="Manufacturing, Construction, Industrial Machinery" />
-      <meta name="technology" content="Industry 4.0, AI, Machine Learning, IoT, Digital Twin, Smart Manufacturing" />
+      <meta name="technology" content="Industry 4.0, automation, Machine Learning, IoT, Digital Twin, Smart Manufacturing" />
       <meta name="application-category" content="Industrial Software, Manufacturing Platform, ERP" />
       <meta name="target-audience" content="Manufacturers, Fabricators, Industrial Companies, Construction Companies" />
 
@@ -208,7 +208,7 @@ const SEO = ({
           "knowsAbout": [
             "Industry 4.0",
             "Smart Manufacturing",
-            "Artificial Intelligence",
+            "software assistance",
             "Machine Learning",
             "Digital Twin",
             "Predictive Maintenance",
@@ -219,7 +219,7 @@ const SEO = ({
           ]
         })}
       </script>
-      
+
       {/* Structured Data - Dynamic Product Data */}
       {productData ? (
         <script type="application/ld+json">
@@ -260,7 +260,7 @@ const SEO = ({
               "15-20% material waste reduction",
               "93% workflow time reduction (3.5h → 15min)",
               "300-400% ROI within first year",
-              "AI-Powered Algorithm Predictor (94% accuracy)",
+              "software-assisted Algorithm Predictor (94% accuracy)",
               "Remnant-First Genetic Optimizer (15-30% waste reduction)",
               "SmartScan for shop drawings (85-92% accuracy)",
               "Multi-Brand CNC Integration (Yilmaz, Elumatec, FOMM, Emmegi, Biesse)",

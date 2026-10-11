@@ -16,7 +16,7 @@ import type { DraftingOutput, Geometry2D } from './types/drafting';
  * Constitutional Role: Validates visual 2D design before promoting to Tier 3 Manufacturing Context
  * Authority: AICS-001 §5.8 (Versioning & Explainability), §4.4 (Constraint Enforcement Model)
  * 
- * Determinism Requirement: 100% deterministic validation logic. No fuzzy logic, no AI predictions.
+ * Determinism Requirement: 100% deterministic validation logic. No fuzzy logic, no automation predictions.
  * Gatekeeping: If isValid is false, the "Generate BOM" button is physically disabled.
  * Audit: Every validation attempt generates a distinct validation_id for the audit trail.
  */

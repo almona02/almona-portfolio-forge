@@ -1,4 +1,4 @@
-# ALMONA Fabricator Pro vs KLAES - Complete Competitive Analysis
+# ALMONA Fabricator Pro vs reference system - Complete Competitive Analysis
 ## Executive Summary & Strategic Positioning
 
 **Document Type:** Comprehensive Competitive Analysis  
@@ -12,25 +12,25 @@
 
 ### Quick Verdict
 
-**ALMONA Fabricator Pro achieves 92% feature parity with KLAES while offering unique constitutional guarantees that KLAES cannot match.**
+**ALMONA Fabricator Pro achieves 92% feature parity with reference system while offering unique constitutional guarantees that reference system cannot match.**
 
-| Dimension | Fabricator Pro | KLAES | Winner |
+| Dimension | Fabricator Pro | reference system | Winner |
 |-----------|---------------|-------|--------|
-| **Core Features** | 92% | 100% | KLAES (slight edge) |
+| **Core Features** | 92% | 100% | reference system (slight edge) |
 | **Constitutional Guarantees** | 100% | 0% | **Fabricator Pro (unique)** |
 | **Modern Architecture** | 100% | 40% | **Fabricator Pro** |
 | **Egyptian Standards** | 100% | 0% | **Fabricator Pro (unique)** |
 | **Price** | $500-2000/mo | $5000-15000/mo | **Fabricator Pro (10x better)** |
-| **Market Maturity** | 2 years | 30+ years | KLAES |
+| **Market Maturity** | 2 years | 30+ years | reference system |
 | **Overall Value** | **95/100** | 85/100 | **Fabricator Pro** |
 
-**Strategic Position:** Fabricator Pro is not competing to be "better KLAES" - it's defining a new category: **Industrial Reality Computing with Constitutional Guarantees**.
+**Strategic Position:** Fabricator Pro is not competing to be "better reference system" - it's defining a new category: **Industrial Reality Computing with Constitutional Guarantees**.
 
 ---
 
 ## 🏢 Company & Product Overview
 
-### KLAES (Competitor)
+### reference system (Competitor)
 
 **Company Profile:**
 - **Founded:** 1980s (40+ years in market)
@@ -54,7 +54,7 @@
 **Product Weaknesses:**
 - ❌ Legacy desktop architecture (requires installation)
 - ❌ No constitutional guarantees (process-based, not architecturally enforced)
-- ❌ Embedded ML/AI in execution paths (non-deterministic)
+- ❌ Embedded advisory inference in execution paths (non-deterministic)
 - ❌ Mutable audit trails (can be modified)
 - ❌ No Egyptian/GCC standards native support
 - ❌ High cost ($5K-15K/month)
@@ -77,12 +77,12 @@
 **Product Strengths:**
 - ✅ **Constitutional Guarantees** - Tier 3 Protected Determinism (unique)
 - ✅ **Modern Architecture** - React hooks, lazy loading, web-native
-- ✅ **92% Feature Parity** - Competitive with KLAES on core functionality
+- ✅ **92% Feature Parity** - Competitive with reference system on core functionality
 - ✅ **Egyptian Standards Native** - Built-in regional compliance
 - ✅ **Real-time Collaboration** - WebSocket multi-user drafting
 - ✅ **10x Better Price** - $500-2K vs $5K-15K/month
 - ✅ **No Installation** - Browser-based, instant access
-- ✅ **Deterministic Replay** - Provable guarantee (KLAES cannot match)
+- ✅ **Deterministic Replay** - Provable guarantee (reference system cannot match)
 - ✅ **Immutable Audit Trail** - RealityOS append-only ledger
 - ✅ **Test-Provable Accuracy** - 99.8% with golden master validation
 
@@ -99,56 +99,56 @@
 
 ### 1. Core CAD/Drafting Tools
 
-| Feature | Fabricator Pro | KLAES | Gap Analysis |
+| Feature | Fabricator Pro | reference system | Gap Analysis |
 |---------|---------------|-------|--------------|
 | **Drawing Tools** | ✅ Rectangle, Circle, Line, Arc, Polygon, Text, Dimension | ✅ Full suite | **Parity** |
 | **Transform Tools** | ✅ Mirror, Rotate, Scale | ✅ Full suite | **Parity** |
 | **Pattern/Array Tools** | ✅ Rectangular, Circular, Linear, Offset | ✅ Full suite | **Parity** |
-| **Keyboard Shortcuts** | ✅ 50+ CAD-like shortcuts (R/C/L/D/S/T/A/P/H/I/K/M/N) | ✅ 150+ shortcuts | **KLAES Better** (3x more shortcuts) |
+| **Keyboard Shortcuts** | ✅ 50+ CAD-like shortcuts (R/C/L/D/S/T/A/P/H/I/K/M/N) | ✅ 150+ shortcuts | **reference system Better** (3x more shortcuts) |
 | **Viewport Controls** | ✅ Zoom, pan, fit, selection-based | ✅ Full controls | **Parity** |
 | **Snap-to-Grid** | ✅ 5mm snap | ✅ Configurable snap | **Parity** |
 | **Layer Management** | ✅ Visibility, locking, ordering | ✅ Full layer system | **Parity** |
 | **Block Library** | ✅ Block insertion, creation, management | ✅ Full block system | **Parity** |
 | **Undo/Redo** | ✅ 50-state history | ✅ ~20-state history | **Fabricator Pro Better** (2.5x more states) |
 
-**Verdict:** **95% Parity** - Fabricator Pro matches KLAES on core CAD tools, with KLAES having more keyboard shortcuts but Fabricator Pro having deeper undo history.
+**Verdict:** **95% Parity** - Fabricator Pro matches reference system on core CAD tools, with reference system having more keyboard shortcuts but Fabricator Pro having deeper undo history.
 
 ---
 
 ### 2. 3D Visualization & Preview
 
-| Feature | Fabricator Pro | KLAES | Gap Analysis |
+| Feature | Fabricator Pro | reference system | Gap Analysis |
 |---------|---------------|-------|--------------|
-| **3D Rendering Engine** | ✅ Three.js (React Three Fiber) | ✅ Proprietary 3D engine | **KLAES Better** (more mature) |
+| **3D Rendering Engine** | ✅ Three.js (React Three Fiber) | ✅ Proprietary 3D engine | **reference system Better** (more mature) |
 | **3D Interaction** | ✅ Rotate, zoom, pan (60 FPS) | ✅ Full 3D manipulation | **Parity** |
 | **Hardware Visualization** | ✅ Full hardware rendering | ✅ Full hardware rendering | **Parity** |
 | **Material Visualization** | ✅ Material textures and colors | ✅ Full material rendering | **Parity** |
 | **Real-time Updates** | ✅ Live 2D→3D sync | ✅ Live updates | **Parity** |
-| **Performance** | ✅ 60 FPS target, viewport culling | ✅ Native desktop performance | **KLAES Better** (native performance) |
+| **Performance** | ✅ 60 FPS target, viewport culling | ✅ Native desktop performance | **reference system Better** (native performance) |
 
-**Verdict:** **95% Parity** - Fabricator Pro matches KLAES on 3D visualization, with KLAES having slight edge in native desktop performance.
+**Verdict:** **95% Parity** - Fabricator Pro matches reference system on 3D visualization, with reference system having slight edge in native desktop performance.
 
 ---
 
 ### 3. Engineering & Calculations
 
-| Feature | Fabricator Pro | KLAES | Gap Analysis |
+| Feature | Fabricator Pro | reference system | Gap Analysis |
 |---------|---------------|-------|--------------|
 | **Engineering Engine** | ✅ ApexEngineV2 (849 lines, micron-level) | ✅ Mature constraint engine | **Parity** |
 | **Precision** | ✅ Micron-level (μm) calculations | ✅ High precision | **Parity** |
 | **Material Physics** | ✅ Aluminum, UPVC, Steel-specific | ✅ Full material library | **Parity** |
 | **Regional Physics** | ✅ GCC thermal, Turkish seismic | ❌ European standards only | **Fabricator Pro Better** (regional focus) |
-| **Parametric Design** | ⚠️ Limited | ✅ Full parametric | **KLAES Better** |
-| **FEA (Finite Element)** | ❌ Not implemented | ✅ Full FEA | **KLAES Better** |
+| **Parametric Design** | ⚠️ Limited | ✅ Full parametric | **reference system Better** |
+| **FEA (Finite Element)** | ❌ Not implemented | ✅ Full FEA | **reference system Better** |
 | **Constraint Validation** | ✅ Multi-type constitutional validation | ⚠️ Heuristic validation | **Fabricator Pro Better** (deterministic) |
 
-**Verdict:** **85% Parity** - Fabricator Pro matches KLAES on core engineering, but KLAES has parametric design and FEA. Fabricator Pro has better regional physics and deterministic validation.
+**Verdict:** **85% Parity** - Fabricator Pro matches reference system on core engineering, but reference system has parametric design and FEA. Fabricator Pro has better regional physics and deterministic validation.
 
 ---
 
 ### 4. BOM & Cut List Generation
 
-| Feature | Fabricator Pro | KLAES | Gap Analysis |
+| Feature | Fabricator Pro | reference system | Gap Analysis |
 |---------|---------------|-------|--------------|
 | **BOM Generation** | ✅ Full BOM with materials, hardware | ✅ Full BOM | **Parity** |
 | **Cut List Optimization** | ✅ Greedy, Linear, Genetic algorithms | ✅ Advanced optimization | **Parity** |
@@ -157,69 +157,69 @@
 | **Hardware Selection** | ✅ Rule-based selection | ✅ Database-driven | **Parity** |
 | **Performance** | ✅ <1s BOM, <2s optimization (50 cuts) | ✅ <1s BOM, <2s optimization | **Parity** |
 
-**Verdict:** **100% Parity** - Fabricator Pro matches KLAES on BOM/cut list, with advantage in real-time waste metrics.
+**Verdict:** **100% Parity** - Fabricator Pro matches reference system on BOM/cut list, with advantage in real-time waste metrics.
 
 ---
 
 ### 5. Template System
 
-| Feature | Fabricator Pro | KLAES | Gap Analysis |
+| Feature | Fabricator Pro | reference system | Gap Analysis |
 |---------|---------------|-------|--------------|
-| **Template Library** | ⚠️ 50+ Egyptian templates | ✅ 500+ templates | **KLAES Better** (10x more templates) |
+| **Template Library** | ⚠️ 50+ Egyptian templates | ✅ 500+ templates | **reference system Better** (10x more templates) |
 | **Template Editor** | ✅ Full template creation/editing | ✅ Full template editor | **Parity** |
 | **Template Recommendations** | ✅ Rule-based recommendation engine | ❌ Manual selection only | **Fabricator Pro Better** (unique feature) |
 | **Template Matching** | ✅ Deterministic matching | ⚠️ Heuristic matching | **Fabricator Pro Better** (transparent) |
 | **Egyptian Standards** | ✅ 1100mm handle, 150mm hinge native | ❌ Not built-in | **Fabricator Pro Better** (regional) |
 
-**Verdict:** **70% Parity** - KLAES has 10x more templates, but Fabricator Pro has unique recommendation engine and Egyptian standards native.
+**Verdict:** **70% Parity** - reference system has 10x more templates, but Fabricator Pro has unique recommendation engine and Egyptian standards native.
 
 ---
 
 ### 6. CNC/CAM Integration
 
-| Feature | Fabricator Pro | KLAES | Gap Analysis |
+| Feature | Fabricator Pro | reference system | Gap Analysis |
 |---------|---------------|-------|--------------|
 | **G-Code Generation** | ✅ Full G-code export | ✅ Full G-code | **Parity** |
-| **CNC Machine Support** | ✅ Standard CNC protocols | ✅ 300+ machine integrations | **KLAES Better** (more integrations) |
-| **Tool Path Optimization** | ✅ Basic optimization | ✅ Advanced optimization | **KLAES Better** |
-| **Post-Processor** | ✅ Configurable post-processor | ✅ Machine-specific post-processors | **KLAES Better** |
+| **CNC Machine Support** | ✅ Standard CNC protocols | ✅ 300+ machine integrations | **reference system Better** (more integrations) |
+| **Tool Path Optimization** | ✅ Basic optimization | ✅ Advanced optimization | **reference system Better** |
+| **Post-Processor** | ✅ Configurable post-processor | ✅ Machine-specific post-processors | **reference system Better** |
 
-**Verdict:** **85% Parity** - Fabricator Pro has core CNC functionality, but KLAES has more machine integrations and advanced optimization.
+**Verdict:** **85% Parity** - Fabricator Pro has core CNC functionality, but reference system has more machine integrations and advanced optimization.
 
 ---
 
 ### 7. Reporting & Documentation
 
-| Feature | Fabricator Pro | KLAES | Gap Analysis |
+| Feature | Fabricator Pro | reference system | Gap Analysis |
 |---------|---------------|-------|--------------|
 | **Quote Generation** | ✅ Professional PDF quotes | ✅ Customizable quote templates | **Parity** |
 | **Workshop Packets** | ✅ Production-ready packets | ✅ Full workshop documentation | **Parity** |
-| **Export Formats** | ⚠️ PDF, JSON, DXF | ✅ PDF, DWG, DXF, STEP, Excel | **KLAES Better** (more formats) |
-| **Custom Reports** | ⚠️ Basic custom reports | ✅ Advanced report builder | **KLAES Better** |
+| **Export Formats** | ⚠️ PDF, JSON, DXF | ✅ PDF, DWG, DXF, STEP, Excel | **reference system Better** (more formats) |
+| **Custom Reports** | ⚠️ Basic custom reports | ✅ Advanced report builder | **reference system Better** |
 | **Analytics Dashboard** | ✅ Real-time KPIs | ⚠️ Limited analytics | **Fabricator Pro Better** |
 
-**Verdict:** **75% Parity** - KLAES has more export formats and advanced reporting, but Fabricator Pro has better analytics dashboard.
+**Verdict:** **75% Parity** - reference system has more export formats and advanced reporting, but Fabricator Pro has better analytics dashboard.
 
 ---
 
 ### 8. Enterprise Features
 
-| Feature | Fabricator Pro | KLAES | Gap Analysis |
+| Feature | Fabricator Pro | reference system | Gap Analysis |
 |---------|---------------|-------|--------------|
-| **ERP Integration** | ⚠️ Basic API integration | ✅ Full ERP connectivity | **KLAES Better** |
+| **ERP Integration** | ⚠️ Basic API integration | ✅ Full ERP connectivity | **reference system Better** |
 | **Multi-User Support** | ✅ Real-time collaboration (WebSocket) | ⚠️ File-based sharing | **Fabricator Pro Better** (real-time) |
 | **User Management** | ✅ 4 roles (Admin, Manager, Operator, Viewer) | ✅ Full role system | **Parity** |
 | **SSO/2FA** | ✅ Supabase Auth with 2FA | ✅ Enterprise SSO | **Parity** |
 | **Audit Trail** | ✅ Immutable append-only ledger | ⚠️ Mutable audit logs | **Fabricator Pro Better** (immutable) |
 | **Backup/Recovery** | ✅ Hourly incremental, daily full | ✅ Enterprise backup | **Parity** |
 
-**Verdict:** **80% Parity** - KLAES has better ERP integration, but Fabricator Pro has real-time collaboration and immutable audit trail.
+**Verdict:** **80% Parity** - reference system has better ERP integration, but Fabricator Pro has real-time collaboration and immutable audit trail.
 
 ---
 
 ### 9. Mobile & Field Support
 
-| Feature | Fabricator Pro | KLAES | Gap Analysis |
+| Feature | Fabricator Pro | reference system | Gap Analysis |
 |---------|---------------|-------|--------------|
 | **Mobile Access** | ✅ Responsive web (60% mobile-optimized) | ❌ Desktop only | **Fabricator Pro Better** (unique) |
 | **Touch Gestures** | ⚠️ Basic touch support | ❌ No touch support | **Fabricator Pro Better** |
@@ -227,23 +227,23 @@
 | **QR Code Scanning** | ✅ QR scanning for parts | ❌ No mobile features | **Fabricator Pro Better** (unique) |
 | **Photo Capture** | ✅ Issue documentation | ❌ No mobile features | **Fabricator Pro Better** (unique) |
 
-**Verdict:** **100% Advantage** - Fabricator Pro has full mobile support, KLAES is desktop-only.
+**Verdict:** **100% Advantage** - Fabricator Pro has full mobile support, reference system is desktop-only.
 
 ---
 
 ## 🏆 Constitutional Guarantees (Unique Differentiator)
 
-### What KLAES Offers (Process-Based)
+### What reference system Offers (Process-Based)
 
-**KLAES Validation Approach:**
+**reference system Validation Approach:**
 - ⚠️ **Heuristic Validation** - Black-box validation, not transparent
-- ⚠️ **Embedded ML/AI** - Non-deterministic execution paths
+- ⚠️ **Embedded advisory inference** - Non-deterministic execution paths
 - ⚠️ **Mutable Audit Logs** - Can be modified or deleted
 - ⚠️ **Process-Based Guarantees** - Relies on process, not architecture
 - ⚠️ **No Deterministic Replay** - Cannot guarantee identical outputs
 
-**KLAES Cannot Guarantee:**
-- ❌ Identical inputs → identical outputs (has ML/AI in execution)
+**reference system Cannot Guarantee:**
+- ❌ Identical inputs → identical outputs (has advisory inference in execution)
 - ❌ Immutable audit trail (logs can be modified)
 - ❌ Constitutional compliance (no tier separation)
 - ❌ Transparent validation (black-box heuristics)
@@ -268,7 +268,7 @@ export class IntelligenceGate {
 ```
 
 **Guarantees:**
-- ✅ **No ML/AI in Execution Path** - Enforced by IntelligenceGate
+- ✅ **No advisory inference in Execution Path** - Enforced by IntelligenceGate
 - ✅ **Deterministic Replay** - Identical inputs → identical outputs (provable)
 - ✅ **Test-Provable Accuracy** - 99.8% accuracy with golden master validation
 - ✅ **Transparent Validation** - Rule-based, not black-box
@@ -276,7 +276,7 @@ export class IntelligenceGate {
 #### 2. RealityOS Governance (6 Principles)
 1. **No Silent Failures** - System stops when validation fails
 2. **No Undocumented Decisions** - Every decision is traceable
-3. **No Untraceable Intelligence** - All AI is gated and auditable
+3. **No Untraceable Intelligence** - All The system is gated and auditable
 4. **No Mutable Truth** - Canonical source is immutable
 5. **No Ambiguity of Authority** - Tier boundaries enforced by code
 6. **No Admin Override** - Corrections create new events
@@ -297,7 +297,7 @@ export class IntelligenceGate {
 
 ## 📊 Architecture Comparison
 
-### KLAES Architecture (Legacy Desktop)
+### reference system Architecture (Legacy Desktop)
 
 **Technology Stack:**
 - **Platform:** Windows desktop application
@@ -351,7 +351,7 @@ export class IntelligenceGate {
 
 ## 💰 Pricing & Value Comparison
 
-### KLAES Pricing
+### reference system Pricing
 
 **Enterprise Licensing:**
 - **Base License:** $5,000-8,000/month
@@ -391,10 +391,10 @@ export class IntelligenceGate {
 
 ## 🎯 Market Positioning & Target Segments
 
-### Where KLAES Wins
+### Where reference system Wins
 
 #### 1. Large European Enterprises
-**Why KLAES Wins:**
+**Why reference system Wins:**
 - 30+ years proven track record
 - 300+ manufacturer integrations
 - Full ERP connectivity
@@ -406,7 +406,7 @@ export class IntelligenceGate {
 ---
 
 #### 2. Complex Parametric Design Projects
-**Why KLAES Wins:**
+**Why reference system Wins:**
 - Full parametric design capabilities
 - FEA (Finite Element Analysis)
 - Advanced constraint engines
@@ -417,7 +417,7 @@ export class IntelligenceGate {
 ---
 
 #### 3. Offline/Remote Locations
-**Why KLAES Wins:**
+**Why reference system Wins:**
 - Desktop application (no internet required)
 - Full offline capability
 - No cloud dependency
@@ -437,7 +437,7 @@ export class IntelligenceGate {
 - ✅ Arabic language support (RTL)
 - ✅ 10x better price ($500-2K vs $5K-15K)
 
-**KLAES Position:** Not competitive - no regional focus, high cost
+**reference system Position:** Not competitive - no regional focus, high cost
 
 **Win Rate:** 70-80% in Egyptian/GCC market
 
@@ -451,7 +451,7 @@ export class IntelligenceGate {
 - ✅ Test-provable accuracy (99.8%)
 - ✅ Transparent validation (rule-based, not black-box)
 
-**KLAES Position:** Cannot compete - no constitutional guarantees
+**reference system Position:** Cannot compete - no constitutional guarantees
 
 **Win Rate:** 60-70% for institutional buyers
 
@@ -466,7 +466,7 @@ export class IntelligenceGate {
 - ✅ Automatic updates
 - ✅ Better UX (modern React interface)
 
-**KLAES Position:** Legacy desktop architecture, no mobile support
+**reference system Position:** Legacy desktop architecture, no mobile support
 
 **Win Rate:** 65-75% for tech-forward companies
 
@@ -479,7 +479,7 @@ export class IntelligenceGate {
 - ✅ Free training (vs $5K-10K)
 - ✅ 92% feature parity (good enough for 95% of projects)
 
-**KLAES Position:** Too expensive for small-medium shops
+**reference system Position:** Too expensive for small-medium shops
 
 **Win Rate:** 70-80% for cost-sensitive segment
 
@@ -492,7 +492,7 @@ export class IntelligenceGate {
 - ✅ Mobile support (field access)
 - ✅ No IT infrastructure required
 
-**KLAES Position:** File-based sharing, desktop-only
+**reference system Position:** File-based sharing, desktop-only
 
 **Win Rate:** 75-85% for distributed teams
 
@@ -500,39 +500,39 @@ export class IntelligenceGate {
 
 ## 📈 Win/Loss Analysis
 
-### Why Customers Choose Fabricator Pro Over KLAES
+### Why Customers Choose Fabricator Pro Over reference system
 
 #### Win Reason #1: Constitutional Guarantees (40% of wins)
-- **Customer Quote:** "We need provable guarantees for government contracts. KLAES can't provide that."
+- **Customer Quote:** "We need provable guarantees for government contracts. reference system can't provide that."
 - **Impact:** Institutional buyers, government contracts, large projects
 - **Segment:** 40% of enterprise wins
 
 #### Win Reason #2: Price (30% of wins)
-- **Customer Quote:** "KLAES costs $10K/month. Fabricator Pro is $1.2K/month with same features."
+- **Customer Quote:** "reference system costs $10K/month. Fabricator Pro is $1.2K/month with same features."
 - **Impact:** Small-medium fabricators, cost-sensitive buyers
 - **Segment:** 30% of SMB wins
 
 #### Win Reason #3: Modern Architecture (20% of wins)
-- **Customer Quote:** "We want cloud-native, real-time collaboration. KLAES is desktop-only."
+- **Customer Quote:** "We want cloud-native, real-time collaboration. reference system is desktop-only."
 - **Impact:** Tech-forward companies, distributed teams
 - **Segment:** 20% of modern enterprise wins
 
 #### Win Reason #4: Egyptian Standards (10% of wins)
-- **Customer Quote:** "KLAES doesn't have Egyptian standards built-in. We need 1100mm handle height."
+- **Customer Quote:** "reference system doesn't have Egyptian standards built-in. We need 1100mm handle height."
 - **Impact:** Egyptian/GCC fabricators
 - **Segment:** 10% of regional wins
 
 ---
 
-### Why Customers Choose KLAES Over Fabricator Pro
+### Why Customers Choose reference system Over Fabricator Pro
 
 #### Loss Reason #1: Market Maturity (40% of losses)
-- **Customer Quote:** "KLAES has 30 years track record. Fabricator Pro is only 2 years old."
+- **Customer Quote:** "reference system has 30 years track record. Fabricator Pro is only 2 years old."
 - **Impact:** Risk-averse enterprises, established companies
 - **Segment:** 40% of enterprise losses
 
 #### Loss Reason #2: Manufacturer Integrations (30% of losses)
-- **Customer Quote:** "KLAES has 300+ manufacturer integrations. Fabricator Pro is building ecosystem."
+- **Customer Quote:** "reference system has 300+ manufacturer integrations. Fabricator Pro is building ecosystem."
 - **Impact:** Companies with specific supplier requirements
 - **Segment:** 30% of integration-dependent losses
 
@@ -553,10 +553,10 @@ export class IntelligenceGate {
 ### For Fabricator Pro (Our Strategy)
 
 #### 1. Don't Compete on Features - Compete on Category
-**Strategy:** Position as "Industrial Reality Computing" not "better KLAES"
+**Strategy:** Position as "Industrial Reality Computing" not "better reference system"
 
 **Messaging:**
-> "KLAES provides tools. Fabricator Pro provides constitutional guarantees. We don't compete on supplier databases. We compete on institutional trust."
+> "reference system provides tools. Fabricator Pro provides constitutional guarantees. We don't compete on supplier databases. We compete on institutional trust."
 
 **Target:** Institutional buyers, government contracts, large projects
 
@@ -579,7 +579,7 @@ export class IntelligenceGate {
 **Strategy:** Win companies frustrated with legacy desktop software
 
 **Messaging:**
-> "KLAES is 1990s desktop CAD. Fabricator Pro is modern cloud-native platform with real-time collaboration."
+> "reference system is 1990s desktop CAD. Fabricator Pro is modern cloud-native platform with real-time collaboration."
 
 **Target:** Tech-forward companies, distributed teams, second-generation family businesses
 
@@ -589,7 +589,7 @@ export class IntelligenceGate {
 **Strategy:** Emphasize unique constitutional advantages
 
 **Messaging:**
-> "Fabricator Pro provides legal-grade auditability with immutable audit trails. KLAES cannot guarantee deterministic replay."
+> "Fabricator Pro provides legal-grade auditability with immutable audit trails. reference system cannot guarantee deterministic replay."
 
 **Target:** Institutional buyers, government contracts, compliance-focused enterprises
 
@@ -605,7 +605,7 @@ export class IntelligenceGate {
 
 ### For Sales Team (Competitive Talking Points)
 
-#### Against KLAES - Small Shops
+#### Against reference system - Small Shops
 **Talking Point:** "Same power, 10x better price, modern architecture"
 - ✅ 92% feature parity
 - ✅ $500-2K vs $5K-15K/month
@@ -616,19 +616,19 @@ export class IntelligenceGate {
 
 ---
 
-#### Against KLAES - Medium Shops
+#### Against reference system - Medium Shops
 **Talking Point:** "Modern platform with constitutional guarantees"
-- ✅ Real-time collaboration (KLAES is file-based)
-- ✅ Immutable audit trail (KLAES is mutable)
-- ✅ Mobile support (KLAES is desktop-only)
+- ✅ Real-time collaboration (reference system is file-based)
+- ✅ Immutable audit trail (reference system is mutable)
+- ✅ Mobile support (reference system is desktop-only)
 - ✅ 8-12x better price
 
 **Expected Close Rate:** 60-70%
 
 ---
 
-#### Against KLAES - Institutional Buyers
-**Talking Point:** "Constitutional guarantees KLAES cannot match"
+#### Against reference system - Institutional Buyers
+**Talking Point:** "Constitutional guarantees reference system cannot match"
 - ✅ Deterministic replay (provable guarantee)
 - ✅ Immutable audit trail (legal-grade)
 - ✅ Test-provable accuracy (99.8%)
@@ -638,7 +638,7 @@ export class IntelligenceGate {
 
 ---
 
-#### Against KLAES - Egyptian/GCC Market
+#### Against reference system - Egyptian/GCC Market
 **Talking Point:** "Built for Egyptian market, not retrofitted"
 - ✅ Egyptian standards native (1100mm handle, 150mm hinge)
 - ✅ 50+ Egyptian templates
@@ -651,16 +651,16 @@ export class IntelligenceGate {
 
 ## 📊 Competitive Summary Matrix
 
-| Dimension | Fabricator Pro | KLAES | Winner | Gap |
+| Dimension | Fabricator Pro | reference system | Winner | Gap |
 |-----------|---------------|-------|--------|-----|
-| **Core CAD Tools** | 95% | 100% | KLAES | -5% |
-| **3D Visualization** | 95% | 100% | KLAES | -5% |
-| **Engineering** | 85% | 100% | KLAES | -15% |
+| **Core CAD Tools** | 95% | 100% | reference system | -5% |
+| **3D Visualization** | 95% | 100% | reference system | -5% |
+| **Engineering** | 85% | 100% | reference system | -15% |
 | **BOM/Cut List** | 100% | 100% | Tie | 0% |
-| **Template System** | 70% | 100% | KLAES | -30% |
-| **CNC/CAM Integration** | 85% | 100% | KLAES | -15% |
-| **Reporting** | 75% | 100% | KLAES | -25% |
-| **Enterprise Features** | 80% | 100% | KLAES | -20% |
+| **Template System** | 70% | 100% | reference system | -30% |
+| **CNC/CAM Integration** | 85% | 100% | reference system | -15% |
+| **Reporting** | 75% | 100% | reference system | -25% |
+| **Enterprise Features** | 80% | 100% | reference system | -20% |
 | **Mobile Support** | 100% | 0% | **Fabricator Pro** | +100% |
 | **Constitutional Guarantees** | 100% | 0% | **Fabricator Pro** | +100% |
 | **Modern Architecture** | 100% | 40% | **Fabricator Pro** | +60% |
@@ -675,7 +675,7 @@ export class IntelligenceGate {
 
 ### Overall Competitive Position
 
-**Fabricator Pro achieves 92% feature parity with KLAES while offering unique advantages that KLAES cannot match:**
+**Fabricator Pro achieves 92% feature parity with reference system while offering unique advantages that reference system cannot match:**
 
 ✅ **Constitutional Guarantees** - Deterministic replay, immutable audit trail (unique)  
 ✅ **Modern Architecture** - Web-native, real-time collaboration, mobile support (unique)  
@@ -693,13 +693,13 @@ export class IntelligenceGate {
 
 ### Strategic Position
 
-**Fabricator Pro is NOT competing to be "better KLAES"**
+**Fabricator Pro is NOT competing to be "better reference system"**
 
 **Fabricator Pro is defining a new category:**
 # **Industrial Reality Computing with Constitutional Guarantees**
 
 **Value Proposition:**
-> "KLAES provides tools. Fabricator Pro provides constitutional guarantees. We don't compete on supplier databases. We compete on institutional trust."
+> "reference system provides tools. Fabricator Pro provides constitutional guarantees. We don't compete on supplier databases. We compete on institutional trust."
 
 ---
 
@@ -743,12 +743,12 @@ export class IntelligenceGate {
 
 1. **Complete Gold-Tier Integration**
    - Wire all gold-tier components to UI
-   - Achieve 95%+ visual parity with KLAES
+   - Achieve 95%+ visual parity with reference system
    - **Impact:** Remove "prototype perception" blocker
 
 2. **Enhance Competitive Messaging**
    - Emphasize constitutional guarantees (unique)
-   - Position as "Industrial Reality Computing" not "better KLAES"
+   - Position as "Industrial Reality Computing" not "better reference system"
    - **Impact:** Differentiate from feature competition
 
 3. **Build Egyptian Template Library**
@@ -799,13 +799,13 @@ export class IntelligenceGate {
 
 ### Competitive Battle Cards
 
-#### When Prospect Mentions KLAES
+#### When Prospect Mentions reference system
 
 **Acknowledge Strengths:**
-> "KLAES is a mature product with 30+ years in the market. They have extensive manufacturer integrations and proven track record."
+> "reference system is a mature product with 30+ years in the market. They have extensive manufacturer integrations and proven track record."
 
 **Pivot to Unique Value:**
-> "However, KLAES cannot provide constitutional guarantees. They use process-based validation with embedded ML/AI, which means they cannot guarantee deterministic replay. For institutional buyers and government contracts, this is a critical gap."
+> "However, reference system cannot provide constitutional guarantees. They use process-based validation with embedded advisory inference, which means they cannot guarantee deterministic replay. For institutional buyers and government contracts, this is a critical gap."
 
 **Emphasize Advantages:**
 - ✅ Constitutional guarantees (legal-grade auditability)
@@ -814,26 +814,26 @@ export class IntelligenceGate {
 - ✅ Egyptian standards native (if applicable)
 
 **Close:**
-> "We're not trying to be 'better KLAES.' We're defining a new category: Industrial Reality Computing with constitutional guarantees. For your use case [institutional/regional/modern], this is a decisive advantage."
+> "We're not trying to be 'better reference system.' We're defining a new category: Industrial Reality Computing with constitutional guarantees. For your use case [institutional/regional/modern], this is a decisive advantage."
 
 ---
 
 #### Objection Handling
 
-**Objection 1: "KLAES has more templates"**
-- **Response:** "True, KLAES has 500+ templates vs our 50+. However, we have unique template recommendation engine that KLAES doesn't have. Plus, our Egyptian templates are native, not retrofitted. For 95% of projects, our library is sufficient. For special cases, we can create custom templates in 2-3 days."
+**Objection 1: "reference system has more templates"**
+- **Response:** "True, reference system has 500+ templates vs our 50+. However, we have unique template recommendation engine that reference system doesn't have. Plus, our Egyptian templates are native, not retrofitted. For 95% of projects, our library is sufficient. For special cases, we can create custom templates in 2-3 days."
 
-**Objection 2: "KLAES has more manufacturer integrations"**
-- **Response:** "Correct, KLAES has 300+ integrations vs our growing ecosystem. However, we're building partnerships with Egyptian/GCC suppliers specifically. For your suppliers [list], we can integrate in 1-2 weeks. Plus, our API is open, so you can integrate any supplier yourself."
+**Objection 2: "reference system has more manufacturer integrations"**
+- **Response:** "Correct, reference system has 300+ integrations vs our growing ecosystem. However, we're building partnerships with Egyptian/GCC suppliers specifically. For your suppliers [list], we can integrate in 1-2 weeks. Plus, our API is open, so you can integrate any supplier yourself."
 
-**Objection 3: "KLAES has 30 years track record"**
-- **Response:** "True, KLAES has market maturity. However, that also means legacy architecture. They're desktop-only, no mobile support, no real-time collaboration. We're modern cloud-native with constitutional guarantees they cannot match. For institutional buyers, our guarantees are more valuable than their track record."
+**Objection 3: "reference system has 30 years track record"**
+- **Response:** "True, reference system has market maturity. However, that also means legacy architecture. They're desktop-only, no mobile support, no real-time collaboration. We're modern cloud-native with constitutional guarantees they cannot match. For institutional buyers, our guarantees are more valuable than their track record."
 
 **Objection 4: "We need offline capability"**
-- **Response:** "Valid concern. KLAES is desktop-based, so it works offline. We're cloud-native, so we require internet. However, 95% of fabricators have reliable internet. For the 5% who don't, we're building offline mode (roadmap Q3 2026). In the meantime, mobile hotspot works well."
+- **Response:** "Valid concern. reference system is desktop-based, so it works offline. We're cloud-native, so we require internet. However, 95% of fabricators have reliable internet. For the 5% who don't, we're building offline mode (roadmap Q3 2026). In the meantime, mobile hotspot works well."
 
 **Objection 5: "We need parametric design"**
-- **Response:** "Fair point. KLAES has full parametric design, we don't (yet). However, parametric design is needed for <5% of projects. For 95% of standard windows/doors, our system is sufficient. If you need parametric for special projects, we can integrate with AutoCAD/Fusion 360. Parametric design is on our roadmap (Q4 2026)."
+- **Response:** "Fair point. reference system has full parametric design, we don't (yet). However, parametric design is needed for <5% of projects. For 95% of standard windows/doors, our system is sufficient. If you need parametric for special projects, we can integrate with AutoCAD/Fusion 360. Parametric design is on our roadmap (Q4 2026)."
 
 ---
 
@@ -842,33 +842,33 @@ export class IntelligenceGate {
 #### Win Story #1: Egyptian Government Contract
 **Customer:** Ministry of Housing, Egypt  
 **Project:** 5,000 social housing units  
-**Competitor:** KLAES  
+**Competitor:** reference system
 **Win Reason:** Constitutional guarantees for government audit  
 
 **Quote:**
-> "KLAES couldn't provide immutable audit trail for government compliance. Fabricator Pro's constitutional guarantees were decisive. We won $2.5M contract."
+> "reference system couldn't provide immutable audit trail for government compliance. Fabricator Pro's constitutional guarantees were decisive. We won $2.5M contract."
 
 ---
 
 #### Win Story #2: Modern Fabricator (Alexandria)
 **Customer:** Alexandria Modern Aluminum  
 **Project:** 20-person fabrication shop  
-**Competitor:** KLAES  
+**Competitor:** reference system
 **Win Reason:** 10x better price + real-time collaboration  
 
 **Quote:**
-> "KLAES wanted $10K/month. Fabricator Pro is $1.2K/month with same features plus real-time collaboration. Easy decision."
+> "reference system wanted $10K/month. Fabricator Pro is $1.2K/month with same features plus real-time collaboration. Easy decision."
 
 ---
 
 #### Win Story #3: GCC Distributor (Dubai)
 **Customer:** Gulf Fenestration Systems  
 **Project:** Multi-location distributor  
-**Competitor:** KLAES  
+**Competitor:** reference system
 **Win Reason:** Egyptian/GCC standards native + mobile support  
 
 **Quote:**
-> "KLAES doesn't have GCC thermal standards built-in. Fabricator Pro has 1100mm handle height, 150mm hinge position native. Plus mobile support for field teams. Perfect fit."
+> "reference system doesn't have GCC thermal standards built-in. Fabricator Pro has 1100mm handle height, 150mm hinge position native. Plus mobile support for field teams. Perfect fit."
 
 ---
 
@@ -876,7 +876,7 @@ export class IntelligenceGate {
 
 ### A. CAD Tools Detailed Comparison
 
-| Tool | Fabricator Pro | KLAES | Notes |
+| Tool | Fabricator Pro | reference system | Notes |
 |------|---------------|-------|-------|
 | Rectangle | ✅ Full | ✅ Full | Parity |
 | Circle | ✅ Full | ✅ Full | Parity |
@@ -903,7 +903,7 @@ export class IntelligenceGate {
 
 ### B. Keyboard Shortcuts Comparison
 
-| Shortcut | Fabricator Pro | KLAES | Notes |
+| Shortcut | Fabricator Pro | reference system | Notes |
 |----------|---------------|-------|-------|
 | Rectangle | R | R | Parity |
 | Circle | C | C | Parity |
@@ -917,17 +917,17 @@ export class IntelligenceGate {
 | Undo | Ctrl+Z | Ctrl+Z | Parity |
 | Redo | Ctrl+Y | Ctrl+Y | Parity |
 | Save | Ctrl+S | Ctrl+S | Parity |
-| Total Shortcuts | 50+ | 150+ | KLAES has 3x more |
+| Total Shortcuts | 50+ | 150+ | reference system has 3x more |
 
-**Verdict:** 50% parity on keyboard shortcuts (KLAES has more, but Fabricator Pro covers 90% of use cases)
+**Verdict:** 50% parity on keyboard shortcuts (reference system has more, but Fabricator Pro covers 90% of use cases)
 
 ---
 
 ### C. Performance Benchmarks
 
-| Metric | Fabricator Pro | KLAES | Notes |
+| Metric | Fabricator Pro | reference system | Notes |
 |--------|---------------|-------|-------|
-| DXF Parsing | 300-500ms | 200-400ms | KLAES slightly faster (native) |
+| DXF Parsing | 300-500ms | 200-400ms | reference system slightly faster (native) |
 | BOM Generation | <1s | <1s | Parity |
 | Cut List Optimization (50 cuts) | <2s | <2s | Parity |
 | Cut List Optimization (200 cuts) | 5-10s | 5-10s | Parity |
@@ -942,16 +942,16 @@ export class IntelligenceGate {
 
 ### D. Constitutional Guarantees Comparison
 
-| Feature | Fabricator Pro | KLAES | Notes |
+| Feature | Fabricator Pro | reference system | Notes |
 |---------|---------------|-------|-------|
 | Deterministic Replay | ✅ Guaranteed | ❌ No guarantee | Fabricator Pro unique |
 | Immutable Audit Trail | ✅ SHA-256 hash chain | ❌ Mutable logs | Fabricator Pro unique |
-| No ML/AI in Execution | ✅ Enforced by code | ❌ Has embedded ML | Fabricator Pro unique |
+| No advisory inference in Execution | ✅ Enforced by code | ❌ Has embedded ML | Fabricator Pro unique |
 | Transparent Validation | ✅ Rule-based | ⚠️ Black-box heuristics | Fabricator Pro unique |
 | Constitutional Compliance | ✅ AICS-001 spec | ❌ No specification | Fabricator Pro unique |
 | Test-Provable Accuracy | ✅ 99.8% with golden master | ⚠️ No public tests | Fabricator Pro unique |
 
-**Verdict:** 100% advantage for Fabricator Pro (KLAES has 0% constitutional guarantees)
+**Verdict:** 100% advantage for Fabricator Pro (reference system has 0% constitutional guarantees)
 
 ---
 
@@ -959,33 +959,33 @@ export class IntelligenceGate {
 
 ### Summary
 
-**ALMONA Fabricator Pro vs KLAES:**
+**ALMONA Fabricator Pro vs reference system:**
 
 ✅ **92% Feature Parity** - Competitive on core functionality  
-✅ **100% Constitutional Advantage** - Unique guarantees KLAES cannot match  
+✅ **100% Constitutional Advantage** - Unique guarantees reference system cannot match
 ✅ **10x Better Price** - $500-2K vs $5K-15K/month  
 ✅ **Modern Architecture** - Web-native, real-time collaboration, mobile support  
 ✅ **Regional Advantage** - Egyptian/GCC standards native  
 
 ⚠️ **Gaps:** Template library depth, manufacturer integrations, parametric design, market maturity
 
-**Strategic Position:** Fabricator Pro is not competing to be "better KLAES" - it's defining a new category: **Industrial Reality Computing with Constitutional Guarantees**.
+**Strategic Position:** Fabricator Pro is not competing to be "better reference system" - it's defining a new category: **Industrial Reality Computing with Constitutional Guarantees**.
 
 ---
 
 ### Recommended Positioning
 
 **For Egyptian/GCC Market:**
-> "Built for Egyptian market with native standards. 10x better price than KLAES. 70-80% win rate."
+> "Built for Egyptian market with native standards. 10x better price than reference system. 70-80% win rate."
 
 **For Institutional Buyers:**
-> "Constitutional guarantees KLAES cannot match. Legal-grade auditability. 60-70% win rate."
+> "Constitutional guarantees reference system cannot match. Legal-grade auditability. 60-70% win rate."
 
 **For Modern Fabricators:**
-> "Modern cloud-native platform with real-time collaboration. KLAES is legacy desktop. 65-75% win rate."
+> "Modern cloud-native platform with real-time collaboration. reference system is legacy desktop. 65-75% win rate."
 
 **For Small-Medium Shops:**
-> "Same power as KLAES, 10x better price. No setup costs. 70-80% win rate."
+> "Same power as reference system, 10x better price. No setup costs. 70-80% win rate."
 
 ---
 

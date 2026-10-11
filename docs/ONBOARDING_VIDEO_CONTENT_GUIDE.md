@@ -66,13 +66,13 @@
    - Transition to design phase
 
 **Key Points to Highlight**:
-- AI-powered assistance
+- software-assisted assistance
 - Real-time dimension feedback
 - Easy correction of measurements
 
 ---
 
-### Step 2: AI-Powered Design (3:45)
+### Step 2: Assisted Design (3:45)
 
 **File**: `design.mp4`  
 **Duration**: 3 minutes 45 seconds  
@@ -80,21 +80,21 @@
 
 **Content Outline**:
 1. Introduction (0:00 - 0:20)
-   - What is AI design assistant
-   - Benefits of AI suggestions
+   - What is design assistant
+   - Benefits of automation suggestions
 
 2. Accessing Design Interface (0:20 - 0:50)
    - Navigation to design tab
    - Interface overview
 
-3. AI Suggestions (0:50 - 2:00)
-   - How AI analyzes measurements
+3. automation Suggestions (0:50 - 2:00)
+   - How automation analyzes measurements
    - Profile recommendations
    - Accessory suggestions
    - Layout optimization
 
 4. Customization (2:00 - 3:00)
-   - Modifying AI suggestions
+   - Modifying automation suggestions
    - Manual adjustments
    - Preview options
 
@@ -104,7 +104,7 @@
    - Moving to optimization
 
 **Key Points to Highlight**:
-- AI learns from your preferences
+- automation learns from your preferences
 - Suggestions based on measurements
 - Easy customization options
 

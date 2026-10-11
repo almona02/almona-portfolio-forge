@@ -160,7 +160,7 @@ export const SmartScanUploader: React.FC = () => {
         // Use true batch API for multiple files
         const width = knownWidthMm ? parseFloat(knownWidthMm) : undefined;
         const files = pendingJobs.map((j) => j.file);
-        
+
         setOverallProgress(15);
 
         const batchResponse: BatchScanResponse = await scanBatchProfiles(
@@ -256,10 +256,10 @@ export const SmartScanUploader: React.FC = () => {
       // Global error handling for batch mode
       const error = err instanceof Error ? err : new Error(String(err));
       const errorMessage = error.message || "Batch processing failed";
-      
+
       // Track error for monitoring
       trackError("SmartScan", "batch_processing", errorMessage);
-      
+
       toast.error(`Batch processing failed: ${errorMessage}`);
       setJobs((prev) =>
         prev.map((j) =>
@@ -378,7 +378,7 @@ export const SmartScanUploader: React.FC = () => {
           },
         },
       };
-      
+
       // Validate payload before sending
       if (!payload.specifications.geometry_config.svg_path) {
         throw new Error("Missing SVG path in scan data");
@@ -388,7 +388,7 @@ export const SmartScanUploader: React.FC = () => {
       }
 
       const newId = await saveScannedProfile(payload, user.id);
-      
+
       if (!newId) {
         throw new Error("Failed to save profile - no ID returned");
       }
@@ -405,10 +405,10 @@ export const SmartScanUploader: React.FC = () => {
     } catch (err: unknown) {
       const error = err instanceof Error ? err : new Error(String(err));
       const errorMessage = error.message || "Import failed";
-      
+
       // Track error for monitoring
       trackError("SmartScan", "profile_import", errorMessage);
-      
+
       toast.error(`Import failed: ${errorMessage}`);
       return "";
     }
@@ -434,7 +434,7 @@ export const SmartScanUploader: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="typography-h2 text-xl font-semibold text-white tracking-wide uppercase">
-            AI-Assisted Engineering Drawing Scanner
+            Engineering Drawing Scanner
           </h2>
           <p className="text-sm text-zinc-400">
             Convert catalog pages to vector profiles with automatic dimension detection

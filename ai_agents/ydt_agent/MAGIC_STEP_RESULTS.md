@@ -192,7 +192,7 @@ The knowledge graph contains:
 
 ## Next Steps
 
-1. **Enhance with Vision AI**: Process actual wiring diagram PDF with Gemini Pro Vision
+1. **Enhance with Vision automation**: Process actual wiring diagram PDF with support service Pro Vision
 2. **Add More Components**: Extract sensors, switches, fuses from diagram
 3. **Map Wire Numbers**: Extract wire numbers and colors for tracing
 4. **Build Alarm-to-Component Mapping**: Link alarm codes to specific components

@@ -83,7 +83,7 @@ Proposal → Review → Implementation → Validation → Ratification
 |------|----------------|--------------------------|
 | System Architect | Constitutional design | Truth Authority |
 | Engineering Lead | Implementation compliance | Execution Authority |
-| AI/ML Specialist | Advisory intelligence bounds | Intelligence Authority |
+| advisory inference Specialist | Advisory intelligence bounds | Intelligence Authority |
 | Compliance Officer | Audit readiness | Certification Authority |
 | Enterprise Client | Usage within certified mode | Consumer of guarantees |
 
@@ -94,7 +94,7 @@ Proposal → Review → Implementation → Validation → Ratification
 | Risk | Mitigation | Status |
 |------|------------|--------|
 | Authority Ambiguity | Explicit truth domains | ✅ Resolved |
-| AI Leakage | Tier boundaries | ✅ Prevented |
+| automation Leakage | Tier boundaries | ✅ Prevented |
 | Silent Failures | Fail-loud design | ✅ Eliminated |
 | Knowledge Loss | Institutional preservation | ✅ Avoided |
 

@@ -161,7 +161,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
               {optStatus === 'running' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {optStatus === 'idle' && <Wand2 className="mr-2 h-4 w-4" />}
               {optStatus === 'complete' && <CheckCircle2 className="mr-2 h-4 w-4" />}
-              {optStatus === 'idle' && t('workflow_pro.start_ai_optimization', 'Start AI Optimization')}
+              {optStatus === 'idle' && t('workflow_pro.start_ai_optimization', 'Start Stock Optimization')}
               {optStatus === 'running' && t('workflow_pro.optimizing_generating', 'Optimizing & Generating G-Code...')}
               {optStatus === 'complete' && t('workflow_pro.optimization_complete', 'Optimization Complete')}
             </Button>

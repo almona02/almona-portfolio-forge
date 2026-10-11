@@ -1,7 +1,7 @@
-# AI Equipment Advisor
+# automation Equipment Advisor
 
 ## Features
-- Gemini AI-powered equipment recommendations
+- support service software-assisted equipment recommendations
 - Egyptian market-specific suggestions
 - Wizard-style interface
 - Budget-conscious filtering
@@ -33,6 +33,6 @@ Edit `src/lib/ai/gemini.ts` to adjust:
 
 ## Testing
 Run the component and verify:
-- AI responses are relevant
+- automation responses are relevant
 - Egyptian context is applied
 - Error states are handled gracefully

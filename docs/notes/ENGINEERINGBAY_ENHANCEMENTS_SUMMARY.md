@@ -369,7 +369,7 @@ console.log(`Cost savings: ${comparison.costDifference.difference}`);
 4. Batch operations
 
 ### Long-term (Quarter 2)
-1. AI-powered recommendations
+1. software-assisted recommendations
 2. Supplier integration
 3. Dynamic pricing
 4. Team collaboration

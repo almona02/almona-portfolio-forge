@@ -1,6 +1,6 @@
 /**
  * Cost Optimization Insights
- * AI-driven cost reduction suggestions and analysis
+ * software-assisted cost reduction suggestions and analysis
  */
 
 import React, { useState, useEffect } from 'react';

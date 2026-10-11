@@ -162,7 +162,7 @@ export interface WindowUnit {
     /** Remnant IDs that were sourced from other projects for this unit */
     crossProjectRemnantsUsed?: string[];
   };
-  /** 
+  /**
    * Grid layout for multi-unit structures
    * @since Phase 4
    */
@@ -274,12 +274,12 @@ export interface CuttingCalibration {
   profileId: string;
   systemPackId: string;
   profileType?: 'frame' | 'sash' | 'mullion' | 'interlock' | 'glazing' | 'liner';
-  
+
   /** Legacy: Length modifier in mm (e.g., +2mm or -1mm) */
   lengthModifier: number;
   /** Legacy: Blade width compensation in mm */
   bladeWidthCompensation: number;
-  
+
   /** Enhanced: Comprehensive allowance parameters */
   allowances?: {
     /** Basic cutting allowance in mm */
@@ -291,7 +291,7 @@ export interface CuttingCalibration {
     /** Grain direction factor (multiplier) */
     grainDirectionFactor: number;
   };
-  
+
   /** Enhanced: Stroke and machining parameters */
   strokes?: {
     /** Saw blade thickness in mm */
@@ -301,7 +301,7 @@ export interface CuttingCalibration {
     /** Corner clearance in mm */
     cornerClearance: number;
   };
-  
+
   /** Enhanced: Material and environmental variations */
   variations?: {
     /** Temperature expansion coefficient (mm/°C) */
@@ -311,7 +311,7 @@ export interface CuttingCalibration {
     /** Assembly clearance in mm */
     assemblyClearance: number;
   };
-  
+
   /** Whether this calibration is currently active */
   isActive: boolean;
   /** Optional notes about the calibration */
@@ -584,13 +584,13 @@ export interface SystemPack {
    * Replaces legacy top-level fields
    */
   windowSystemSpec: Record<string, unknown>;
-  
+
   // Legacy fields kept for compatibility during migration
   id?: string;
   name?: string;
   category?: 'aluminum_windows' | 'aluminum_doors' | 'curtain_walls' | 'upvc_windows' | 'upvc_doors';
   brand?: string;
-  
+
   compatibleProfiles?: string[];
   compatibleAccessories?: string[];
   description?: string;
@@ -714,14 +714,14 @@ export interface Cut {
   componentType?: string;
   waste: number;
   /**
-   * Design / assembly reference length (DoWin Design Preview / welded report).
+   * Design / assembly reference length (reference system Design Preview / welded report).
    * Optional. Do not treat as packed or machine length.
    */
   reportedWeldedLengthMm?: number;
   /** Alias of reportedWeldedLengthMm for the FP-024A nominal layer. */
   nominalLengthMm?: number;
   /**
-   * Optimization bar-graphic / packed segment (DoWin Required Parts graphic).
+   * Optimization bar-graphic / packed segment (reference system Required Parts graphic).
    * Optional. Do not fall back to nominal or machine.
    */
   packedSegmentMm?: number;
@@ -735,7 +735,7 @@ export interface Cut {
    * a legitimate machine export. Do not copy packedSegmentMm into this field.
    */
   machineInstructionLengthMm?: number;
-  /** External assembly label (DoWin EXPLANATION2). Provenance only — not Cut.id. */
+  /** External assembly label (reference system EXPLANATION2). Provenance only — not Cut.id. */
   externalAssemblyLabel?: string;
 }
 
@@ -1040,7 +1040,7 @@ export interface FabricationData {
     weight: number;          // kg for shipping
     cost: number;           // Material cost
   }>;
-  
+
   // === HARDWARE INTELLIGENCE (From pattern.accessories) ===
   hardware: Array<{
     id: string;
@@ -1056,7 +1056,7 @@ export interface FabricationData {
     supplierLink?: string;   // URL to purchase
     metadata?: Record<string, unknown>;
   }>;
-  
+
   // === GLAZING CALCULATIONS ===
   glazing: Array<{
     paneId: string;
@@ -1072,7 +1072,7 @@ export interface FabricationData {
     safetyRating?: 'annealed' | 'tempered' | 'laminated';
     glassCode?: string;    // Supplier reference
   }>;
-  
+
   // === VALIDATION INTELLIGENCE ===
   warnings: Array<{
     severity: 'info' | 'warning' | 'error' | 'critical';
@@ -1082,7 +1082,7 @@ export interface FabricationData {
     suggestedAction: string;
     validationRule: string; // Which constraint was violated
   }>;
-  
+
   // === PRODUCTION WORKFLOW ===
   productionSequence: Array<{
     step: number;
@@ -1093,7 +1093,7 @@ export interface FabricationData {
     skillsRequired: 'basic' | 'intermediate' | 'expert';
     qualityGates: string[]; // Must-pass checks
   }>;
-  
+
   // === METADATA & TRACEABILITY ===
   metadata: {
     generationTimestamp: string;

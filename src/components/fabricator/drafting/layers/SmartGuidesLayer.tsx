@@ -14,17 +14,17 @@ export const SmartGuidesLayer: React.FC<SmartGuidesLayerProps> = ({
     snapThreshold,
     zoom
 }) => {
-    // Memoize guides to avoid recalculation on every render frame unless cursor moves drastically
+    // Memoize guides to avoid recalculation on every render frame unless pointer moves drastically
     // Actually for smoothness we need to recalc per frame, but it should be fast.
-    
+
     const guides = useMemo(() => {
         if (!cursorPoint) return [];
-        
+
         // Collect all significant points (corners, centers)
         // Optimization: limit to visible geometry in viewport (handled by parent usually, but here we take all)
         // Optimization: Limit total points checked
         const points: { x: number, y: number }[] = [];
-        
+
         geometry.rectangles.forEach(r => {
             points.push({ x: r.x, y: r.y });
             points.push({ x: r.x + r.width, y: r.y });
@@ -32,7 +32,7 @@ export const SmartGuidesLayer: React.FC<SmartGuidesLayerProps> = ({
             points.push({ x: r.x + r.width, y: r.y + r.height });
             points.push({ x: r.x + r.width/2, y: r.y + r.height/2 });
         });
-        
+
         // Add lines, circles, etc...
         geometry.lines.forEach(l => {
              points.push(l.start);
@@ -43,18 +43,18 @@ export const SmartGuidesLayer: React.FC<SmartGuidesLayerProps> = ({
         // Or if inputs are world units, threshold is world.
         // snapThreshold is usually ~5-10 screen pixels converted to world units
         const threshold = snapThreshold / zoom; 
-        
+
         const activeGuides: { type: 'horizontal' | 'vertical', pos: number, match: Point }[] = [];
-        
+
         // Find X matches (Vertical Guide)
         for (const p of points) {
             if (Math.abs(p.x - cursorPoint.x) < threshold) {
                  activeGuides.push({ type: 'vertical', pos: p.x, match: p });
                  // Only take one per axis to avoid clutter? or closest?
-                 break; 
+                 break;
             }
         }
-        
+
         // Find Y matches (Horizontal Guide)
         for (const p of points) {
             if (Math.abs(p.y - cursorPoint.y) < threshold) {
@@ -62,9 +62,9 @@ export const SmartGuidesLayer: React.FC<SmartGuidesLayerProps> = ({
                  break;
             }
         }
-        
+
         return activeGuides;
-        
+
     }, [cursorPoint, geometry, snapThreshold, zoom]);
 
     if (!cursorPoint || guides.length === 0) return null;

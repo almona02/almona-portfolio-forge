@@ -311,7 +311,7 @@ RealityOS operates in three distinct modes with different safety levels:
 
 ### 3.1 Overview
 
-**Almona Vertical** is the first production vertical on the RealityOS platform, focusing on aluminum/UPVC fabrication with AI-powered calibration.
+**Almona Vertical** is the first production vertical on the RealityOS platform, focusing on aluminum/UPVC fabrication with software-assisted calibration.
 
 **Status:** 🟢 Production-Ready (v1.0.0)  
 **Accuracy:** 99.8% (validated with CNC machines)  
@@ -327,7 +327,7 @@ RealityOS operates in three distinct modes with different safety levels:
 - ✅ Mass Production Optimizer (cross-project optimization)
 - ✅ Multi-format Export (DXF, CSV, PDF)
 
-**AI/ML Features:**
+**advisory inference Features:**
 - ✅ Calibration Safety Net (baseline verification)
 - ✅ Anomaly Detection (drift detection with confidence scoring)
 - ✅ Predictive Analytics (material waste prediction)
@@ -434,7 +434,7 @@ vertical_almona/
 - ✅ Real-time asset status (operational, maintenance, retired)
 
 **Maintenance Compliance:**
-- ✅ AI-powered predictive maintenance (within validation envelope)
+- ✅ software-assisted predictive maintenance (within validation envelope)
 - ✅ Human-verified work completion (QR scan + photos mandatory)
 - ✅ Contractor accountability (immutable work records)
 - ✅ Compliance metrics (on-time rate, overdue rate, missed rate)
@@ -480,7 +480,7 @@ vertical_almona/
 | Phase 1: POC | 6 weeks | $180K | Single hotel validated |
 | Phase 2: IAM + UIP | 12 weeks | $720K | Asset Management + Intelligence Platform |
 | Phase 3: Full Rollout | 16 weeks | $1.2M | All verticals, all sites |
-| Phase 4: Optimization | 8 weeks | $600K | AI learning, performance tuning |
+| Phase 4: Optimization | 8 weeks | $600K | automation learning, performance tuning |
 | **Total** | **42 weeks** | **$2.7M** | **Complete IOMS deployment** |
 
 **ROI Analysis:**
@@ -565,7 +565,7 @@ vertical_tmg_shield/
 - TMG Shield vertical (core engine)
 - Frontend applications (web + mobile)
 - SAP integration (middleware, ERP Bridge)
-- AI/ML services (predictive maintenance)
+- advisory inference services (predictive maintenance)
 - Executive dashboards (real-time KPIs)
 - Implementation services (deployment, training, support)
 

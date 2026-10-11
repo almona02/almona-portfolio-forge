@@ -201,7 +201,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
             <div className="space-y-2 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20 shadow-md shadow-amber-500/10">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center border border-amber-500/30">
-                  <span className="text-xs font-bold text-amber-400">AI</span>
+                  <span className="text-xs font-bold text-amber-400">automation</span>
                 </div>
                 <span className="text-sm font-medium text-amber-400 tracking-wide uppercase">OCR Suggestions</span>
               </div>

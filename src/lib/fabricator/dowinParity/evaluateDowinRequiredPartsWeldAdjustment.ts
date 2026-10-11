@@ -1,5 +1,5 @@
 /**
- * FP-024C.12 — Bounded DoWin parity-adapter Welding Waste rule (AICS-001 Tier 3).
+ * FP-024C.12 — Bounded reference system parity-adapter Welding Waste rule (AICS-001 Tier 3).
  *
  * Isolated from sashInner + Basma + Kaynak + WeldingWaste in DowinParityLengthEngine.
  * Do not call this helper from computeDowinParityLengths, sashHorizontalCutMm,
@@ -185,7 +185,7 @@ export interface DowinRequiredPartsParityResult {
 }
 
 /**
- * Public DoWin parity API for DESIGN_REPORT → REQUIRED_PARTS.
+ * Public reference system parity API for DESIGN_REPORT → REQUIRED_PARTS.
  *
  * This is the C.12.1 wiring point. Callers must supply system, profile,
  * both end angles, Welding Waste, design-report millimetres, and layer

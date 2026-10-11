@@ -71,7 +71,7 @@ vertical_tmg_shield/
 - **TMG Shield vertical** (core engine)
 - **Frontend applications** (web dashboard, mobile app)
 - **SAP integration** (middleware, ERP Bridge)
-- **AI/ML services** (predictive maintenance, analytics)
+- **advisory inference services** (predictive maintenance, analytics)
 - **Executive dashboards** (real-time KPIs)
 - **Implementation services** (deployment, training, support)
 
@@ -135,7 +135,7 @@ TMG IOMS Platform
 - Phase 1: POC (TMG Shield + basic UI + SAP integration)
 - Phase 2: IAM + UIP (TMG Shield + full UI + executive dashboard)
 - Phase 3: Full Rollout (TMG Shield + all verticals + all sites)
-- Phase 4: Optimization (TMG Shield + AI learning + performance tuning)
+- Phase 4: Optimization (TMG Shield + automation learning + performance tuning)
 
 ### 3.3 Value Chain
 
@@ -285,7 +285,7 @@ $19.9M Annual Value
 **Business Solution**:
 - Frontend applications (web, mobile)
 - SAP integration middleware
-- AI/ML services (predictive maintenance)
+- advisory inference services (predictive maintenance)
 - Executive dashboards
 - Implementation services (training, support)
 - Business value proposition ($19.9M)

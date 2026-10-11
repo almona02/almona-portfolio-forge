@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-Since the Blackbox AI browser tool is disabled, I've created an automated Puppeteer script that you can run locally to test your live site.
+Since the Blackbox automation browser tool is disabled, I've created an automated Puppeteer script that you can run locally to test your live site.
 
 ### Step 1: Install Puppeteer
 

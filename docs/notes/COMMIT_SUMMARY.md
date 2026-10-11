@@ -104,9 +104,9 @@
 - **Ahead of origin/main:** 2 commits
 - **Ready for push:** ✅ Yes
 
-### **Cursor Worktrees:**
+### **development tool Worktrees:**
 - **Status:** ✅ Verified - All worktrees in `.cursor/worktrees/` (outside main project)
-- **Impact:** None - Worktrees are cursor's internal management, not affecting main project
+- **Impact:** None - Worktrees are development tool's internal management, not affecting main project
 - **All worktrees pointing to:** Older commit (ab26e97) - Safe, not interfering
 
 ---

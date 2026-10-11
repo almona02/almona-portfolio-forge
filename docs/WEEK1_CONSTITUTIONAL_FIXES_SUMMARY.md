@@ -14,7 +14,7 @@
 
 **What it does:**
 - Honest rule-based algorithm selection
-- No ML claims, no AI, no deception
+- No ML claims, no automation, no deception
 - Fully auditable deterministic logic
 - Constitutional compliance built-in
 
@@ -25,7 +25,7 @@
 
 **Constitutional Status:**
 - ✅ Tier 3 (Protected Determinism)
-- ✅ No AI inference
+- ✅ No automation inference
 - ✅ Fully auditable
 - ✅ No false claims
 
@@ -45,7 +45,7 @@
 - **Constitutional Compliance**
   - No engineering authority
   - No prohibited terminology
-  - Tier 3 purity (zero AI)
+  - Tier 3 purity (zero automation)
 
 **Status:**
 - ✅ Test structure created
@@ -227,7 +227,7 @@ getAlgorithmSelectionStats() {
 ## Risk Assessment
 
 ### If We Don't Complete This Week:
-- ❌ AI deception remains in codebase
+- ❌ automation deception remains in codebase
 - ❌ Constitutional guarantees unprovable
 - ❌ Anchor client trust risk
 - ❌ Legal/regulatory risk

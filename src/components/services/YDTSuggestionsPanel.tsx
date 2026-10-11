@@ -145,7 +145,7 @@ export function YDTSuggestionsPanel({
           )}
         </div>
         <CardDescription>
-          AI-powered suggestions based on YDT knowledge base
+          software-assisted suggestions based on YDT knowledge base
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

@@ -3,7 +3,7 @@
  * 
  * Tools for rounding (fillet) and beveling (chamfer) corners
  * 
- * Constitutional: Deterministic geometry operations, no ML/AI
+ * Constitutional: Deterministic geometry operations, no advisory inference
  * Tier: 3 Protected Determinism
  * 
  * Performance: Input validation, bounds checking, early returns

@@ -1,7 +1,7 @@
 /**
  * RelatedMachinesEngine
  * 
- * AI-powered recommendation engine for "People who viewed this also looked at"
+ * software-assisted recommendation engine for "People who viewed this also looked at"
  * Uses machine learning-style similarity scoring and user behavior patterns.
  */
 
@@ -23,7 +23,7 @@ export interface UserBehaviorData {
 }
 
 export class RelatedMachinesEngine {
-  
+
   // Simulated user behavior data (in production, this would come from analytics)
   private static userBehaviorData: UserBehaviorData[] = [
     {
@@ -55,7 +55,7 @@ export class RelatedMachinesEngine {
     
     candidateMachines.forEach(machine => {
       const score = this.calculateSimilarityScore(targetMachine, machine);
-      
+
       if (score.total > 0.3) { // Minimum similarity threshold
         recommendations.push({
           machine,
@@ -312,7 +312,7 @@ export class RelatedMachinesEngine {
     this.userBehaviorData.forEach(data => {
       const current = viewCounts.get(data.machineId) || 0;
       viewCounts.set(data.machineId, current + 1);
-      
+
       // Count co-views as well
       data.viewedWith.forEach(id => {
         const coViewCount = viewCounts.get(id) || 0;

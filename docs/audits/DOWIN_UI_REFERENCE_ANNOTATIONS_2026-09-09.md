@@ -1,6 +1,6 @@
-# DoWin UI reference annotations (9 September 2026)
+# reference system UI reference annotations (9 September 2026)
 
-Behaviour and information-architecture notes from the licensed DoWin user manual and asdd production exports. **Not** a pixel specification. ALMONA keeps its own typography, tokens, Arabic/RTL, and web layout.
+Behaviour and information-architecture notes from the licensed reference system user manual and asdd production exports. **Not** a pixel specification. ALMONA keeps its own typography, tokens, Arabic/RTL, and web layout.
 
 Copyrighted screenshots are **not** stored in this repository.
 
@@ -32,7 +32,7 @@ Downstream tabs stay unavailable until an active project exists. ALMONA should k
 
 Visible data: finished width/height **mm**, selected object type, profile code, left/right angle.
 
-ALMONA today: `DraftingWorkbench` + `DraftingWorkbenchLayout` (top bar, canvas, right tools). Keep Studio features; do not replace working hit-test/canvas to imitate DoWin.
+ALMONA today: `DraftingWorkbench` + `DraftingWorkbenchLayout` (top bar, canvas, right tools). Keep Studio features; do not replace working hit-test/canvas to imitate reference system.
 
 ---
 
@@ -94,7 +94,7 @@ ALMONA: MDB via `YilmazCutListAdapter`; G-code via `YilmazGCodeGenerator`. NCW i
 
 ## Transferable ideas vs ALMONA identity
 
-| Keep from DoWin (ideas) | Keep ALMONA |
+| Keep from reference system (ideas) | Keep ALMONA |
 |--------------------------|-------------|
 | Task-specific screen regions | Fabricator tokens, Arabic/RTL, responsive web |
 | Physical assembly labels through cut/assembly | Egypt SystemPacks, CRM/ERP, RealityOS |

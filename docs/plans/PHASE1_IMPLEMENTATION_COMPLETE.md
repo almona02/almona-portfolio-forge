@@ -27,7 +27,7 @@
 
 **Algorithm:** First-Fit Decreasing (FFD)
 - Simple, fast, accurate
-- No complex AI, just math that works
+- No complex automation, just math that works
 
 **Features:**
 - ✅ Applies micron corrections before optimization
@@ -128,7 +128,7 @@ return barNominalLength - (barEndTrim * 2) - 50; // 50mm clamp clearance
 ## ❌ FROZEN Features (Do NOT Work On)
 
 - ❌ Nafeza-style UI
-- ❌ Oracle AI system
+- ❌ Oracle automation system
 - ❌ Guild hierarchy UI
 - ❌ University-grade pedagogy UI
 - ❌ Cross-Empire branding

@@ -55,7 +55,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
-  
+
   // Configuration state
   const [config, setConfig] = useState<Partial<PricingConfig>>({
     region: 'global',
@@ -111,7 +111,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
         await engine.loadConfiguration(currentUserId, config.region as any, config.currency as any);
         await engine.loadMaterialRules(currentUserId, config.region as any);
         await engine.loadLaborConfigs(currentUserId, config.region as any);
-        
+
         setPricingEngine(engine);
         setConfig(engine.getConfiguration());
         setLoading(false);
@@ -237,7 +237,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
     try {
       pricingEngine.updateConfiguration(config);
       await pricingEngine.saveConfiguration(userId);
-      
+
       toast.success('Pricing configuration saved successfully');
       onConfigurationUpdate?.(pricingEngine.getConfiguration());
     } catch (error) {
@@ -268,7 +268,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
       reader.onload = async (e) => {
         const text = e.target?.result as string;
         const lines = text.split('\n').filter(l => l.trim());
-        
+
         // Parse CSV (simplified)
         const updates: any[] = [];
         for (let i = 1; i < lines.length; i++) {

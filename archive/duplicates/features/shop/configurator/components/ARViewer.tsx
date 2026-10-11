@@ -38,9 +38,9 @@ export const ARViewer = ({ productId }: { productId: string }) => {
         return;
       }
       try {
-        // Example prompt for AI maintenance info
+        // Example prompt for automation maintenance info
         const prompt = `Provide predictive maintenance schedule for machine ${MACHINE_PRESETS[selectedMachine as string].id}`;
-        // Assuming getEquipmentRecommendation is available for AI calls
+        // Assuming getEquipmentRecommendation is available for automation calls
         const info = await getEquipmentRecommendation(prompt);
         setMaintenanceInfo(info);
       } catch (error) {

@@ -1,6 +1,6 @@
 /**
  * @tier Tier 3 Protected (Execution Path)
- * @constitutional_compliance AICS-001 §5.10.2 (No ML/AI)
+ * @constitutional_compliance AICS-001 §5.10.2 (No advisory inference)
  * @deterministic true
  */
 

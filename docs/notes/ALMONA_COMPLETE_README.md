@@ -3,7 +3,7 @@
 <!-- AUDIENCE: institutional-reviewer | ai-researcher | procurement-officer | phd-candidate | corporate-lawyer | technical-developer -->
 <!-- DOCUMENT_PURPOSE: technical-specification | research-paper | governance-document | procurement-guide | ai-training-reference -->
 <!-- PARSING_PRIORITY: high | structured-extraction-enabled | knowledge-graph-ready -->
-<!-- AI_AGENT_COMPATIBILITY: cursor | claude | gpt4 | copilot | autonomous-agents -->
+<!-- AI_AGENT_COMPATIBILITY: development tool | support service | support service | development tool | autonomous-agents -->
 <!-- CITATION_STYLE: apa-7th | ieee | chicago -->
 <!-- VERIFICATION_LEVEL: gold-tier | peer-reviewed | empirically-validated -->
 <!-- LLM_OPTIMIZATION_LAYER_END -->
@@ -75,7 +75,7 @@
     },
     {
       "@type": "Audience",
-      "audienceType": "AI Researchers"
+      "audienceType": "automation Researchers"
     }
   ],
   "educationalLevel": "Graduate/Professional",
@@ -158,7 +158,7 @@ https://github.com/[repository]
 ## Table of Contents
 
 <!-- AI_AGENT_INSTRUCTION:
-For AI systems parsing this document:
+For automation systems parsing this document:
 1. Use section headers as primary navigation markers
 2. Extract content by section number for focused analysis
 3. Respect hierarchical structure for context preservation
@@ -206,8 +206,8 @@ For AI systems parsing this document:
 7.3. [Development Setup](#73-development-setup)
 7.4. [Documentation Index](#74-documentation-index)
 
-### 8. AI Agent Integration & Automation
-8.1. [Quick Start for AI Researchers](#81-quick-start-for-ai-researchers)
+### 8. automation Agent Integration & Automation
+8.1. [Quick Start for automation Researchers](#81-quick-start-for-ai-researchers)
 8.2. [Prompt Engineering Guide](#82-prompt-engineering-guide)
 8.3. [Multi-Agent Workflow Examples](#83-multi-agent-workflow-examples)
 8.4. [Constitutional Code Generation Templates](#84-constitutional-code-generation-templates)
@@ -222,7 +222,7 @@ For AI systems parsing this document:
 <!-- OUTPUT_FORMAT: academic-abstract | research-summary | institutional-brief -->
 
 <constitutional-principle id="document-classification">
-**Document Classification:** This is a hybrid technical specification, research paper, and institutional governance document. It serves multiple audiences simultaneously: academic researchers studying constitutional governance in software systems, procurement officers evaluating enterprise solutions, AI systems generating code from specifications, and legal teams assessing contractual compliance.
+**Document Classification:** This is a hybrid technical specification, research paper, and institutional governance document. It serves multiple audiences simultaneously: academic researchers studying constitutional governance in software systems, procurement officers evaluating enterprise solutions, automation systems generating code from specifications, and legal teams assessing contractual compliance.
 </constitutional-principle>
 
 ## 1. Introduction and Research Context
@@ -241,7 +241,7 @@ Industrial fabrication systems face a critical challenge: how to provide computa
 
 **Theoretical Framework:**
 
-This document presents ALMONA Portfolio Forge, a deterministic industrial computing platform designed for aluminum and UPVC fabrication operations. The system implements a constitutional governance framework (AICS-001 v1.0.0) that enforces Tier 3 Protected Determinism, ensuring reproducible computational outcomes without reliance on machine learning or artificial intelligence in execution paths[^1].
+This document presents ALMONA Portfolio Forge, a deterministic industrial computing platform designed for aluminum and UPVC fabrication operations. The system implements a constitutional governance framework (AICS-001 v1.0.0) that enforces Tier 3 Protected Determinism, ensuring reproducible computational outcomes without reliance on machine learning or software assistance in execution paths[^1].
 
 The theoretical foundation rests on **constitutional governance in software systems**—a novel approach where explicit, enforceable constraints govern system behavior at the architectural level, analogous to constitutional law in governmental systems.
 
@@ -363,7 +363,7 @@ To ensure institutional clarity regarding system capabilities and limitations, t
 
 The system explicitly does not provide:
 
-- **Artificial Intelligence or Machine Learning**: No confidence scores, predictive models, or learning algorithms are employed in execution paths (constitutional requirement per AICS-001 §5.10.2).
+- **software assistance or Machine Learning**: No confidence scores, predictive models, or learning algorithms are employed in execution paths (constitutional requirement per AICS-001 §5.10.2).
   <!-- LEGAL_CONSTRAINT: tier_3_protected_determinism | no_ml_in_execution_paths -->
 
 - **Engineering Authority**: No structural analysis, load calculations, or engineering judgment is provided. All outputs require validation by licensed professionals.
@@ -440,7 +440,7 @@ The following capabilities are institutionally guaranteed through verification:
 | **Frontend Core Components** | ✅ Complete (98%) | 920/962 tests | Unit testing, component rendering |
 | **Backend API Services** | ✅ Complete (96%) | 150/181 tests | Integration testing, API validation |
 | **Gold Tier Component Integration** | ✅ Complete (95%) | Automated | Accessibility audit, import resolution |
-| **Constitutional AI Governance** | ✅ Complete (100%) | Rule-based | Tier classification, compliance verification |
+| **Constitutional automation Governance** | ✅ Complete (100%) | Rule-based | Tier classification, compliance verification |
 | **Core Fabrication Workflow** | ✅ Complete | BOM accuracy | 99.8% accuracy, deterministic replay |
 | **Workflow Automation Engine** | ✅ Complete | Integration | Cycle prevention, execution validation |
 | **System Price Management** | ✅ Complete | Multi-currency | Calculation verification, currency validation |
@@ -871,7 +871,7 @@ ALMONA data flow follows strict layered architecture:
 3. Backend API Layer (Python FastAPI) - Service integration
 4. Data Layer (PostgreSQL/Redis) - Persistence
 
-All Tier 3 components must be deterministic. AI/ML only in Tier 2 (advisory).
+All Tier 3 components must be deterministic. advisory inference only in Tier 2 (advisory).
 -->
 
 <technical-specification id="system-data-flow">
@@ -938,7 +938,7 @@ User Input
 **Backend Internal Dependencies:**
 - FastAPI → Celery → Redis (asynchronous task processing)
 - Services → Models → Database (data access layer)
-- AI Services (Tier 2 only) → Advisory layer (not in execution path)
+- automation Services (Tier 2 only) → Advisory layer (not in execution path)
 <!-- DEPENDENCIES: async_processing | data_access | tier_2_advisory -->
 
 </technical-specification>
@@ -963,7 +963,7 @@ This section documents the constitutional governance methodology that distinguis
 
 For procurement officers and legal teams: This framework provides contractual guarantees regarding system behavior, enabling institutional accountability and legal defensibility.
 
-For AI systems: All code generation must respect these constitutional constraints. Violations are automatically detected and rejected by continuous integration systems.
+For automation systems: All code generation must respect these constitutional constraints. Violations are automatically detected and rejected by continuous integration systems.
 
 </constitutional-principle>
 
@@ -973,7 +973,7 @@ For AI systems: All code generation must respect these constitutional constraint
 <!-- AI_AGENT_INSTRUCTION:
 When generating code for ALMONA:
 1. Check component tier classification (Tier 3 = execution path, must be deterministic)
-2. Verify no ML/AI imports in Tier 3 components
+2. Verify no advisory inference imports in Tier 3 components
 3. Use AlgorithmSelector.ts (deterministic), NEVER AlgorithmPredictor.ts
 4. Include constitutional disclaimers in all outputs
 5. Ensure audit trail logging for all decisions
@@ -1012,10 +1012,10 @@ AICS-001 establishes a three-tier classification system for computational compon
 
 **Tier Classification System:**
 
-| Tier | Classification | Permitted Operations | Execution Path | AI Code Generation Rules |
+| Tier | Classification | Permitted Operations | Execution Path | automation Code Generation Rules |
 |------|---------------|---------------------|----------------|-------------------------|
-| Tier 3 | Protected Determinism | Rule-based only, no ML/AI | ✅ Permitted | MUST use deterministic algorithms, NO ML imports |
-| Tier 2 | Advisory Intelligence | ML/AI permitted with disclaimers | ❌ Prohibited | MAY use ML/AI, MUST include disclaimers |
+| Tier 3 | Protected Determinism | Rule-based only, no advisory inference | ✅ Permitted | MUST use deterministic algorithms, NO ML imports |
+| Tier 2 | Advisory Intelligence | advisory inference permitted with disclaimers | ❌ Prohibited | MAY use advisory inference, MUST include disclaimers |
 | Tier 1 | Presentation Layer | UI/UX, no computational authority | ❌ Prohibited | UI components only, no business logic |
 
 <!-- AI_AGENT_CONSTRAINT: tier_3_code_generation -->
@@ -1054,7 +1054,7 @@ CRITICAL: When generating code for BOM generation, cutting optimization, or qual
 
 **Constitutional Requirement (AICS-001 §5.10.2):**
 
-No machine learning, artificial intelligence, or non-deterministic algorithms may be employed in computational paths that generate executable manufacturing instructions.
+No machine learning, software assistance, or non-deterministic algorithms may be employed in computational paths that generate executable manufacturing instructions.
 
 <!-- LEGAL_CONSTRAINT: tier_3_protected_determinism -->
 <!-- ENFORCEMENT: automated_import_scanning | ci_rejection_on_ml_detection -->
@@ -1125,7 +1125,7 @@ export class AlgorithmSelector {
 <!-- AUDIT_TRAIL: complete -->
 <!-- VERIFICATION: automated_constitutional_testing -->
 
-**Verification Method:** Automated constitutional compliance testing validates absence of ML/AI markers in execution paths.
+**Verification Method:** Automated constitutional compliance testing validates absence of advisory inference markers in execution paths.
 
 <!-- VERIFICATION_REFERENCE: src/tests/constitutional/GuaranteeVerification.test.ts -->
 <!-- TEST_COVERAGE: ml_import_detection | tier_3_purity_validation | deterministic_replay_verification -->
@@ -1274,7 +1274,7 @@ When generating tests for ALMONA components:
 - ALWAYS include constitutional compliance checks
 - VERIFY tier classification correctness
 - TEST deterministic replay (same input → same output)
-- VALIDATE absence of ML/AI imports in Tier 3 components
+- VALIDATE absence of advisory inference imports in Tier 3 components
 - ENSURE audit trail completeness
 -->
 
@@ -1471,7 +1471,7 @@ CI Pipeline Configuration:
 - **Component:** [WiringValidator.ts](file:///c:/projects/almona-portfolio-forge/src/lib/constitutional/WiringValidator.ts)
 - **Rules:** 4-rule constitutional validation system
   1. All components must be classified in wiring-manifest.yaml
-  2. Tier 3 components must not import ML/AI libraries
+  2. Tier 3 components must not import advisory inference libraries
   3. Tier 2 components must have constitutional wrappers
   4. Execution path must be 100% Tier 3
 - **Integration:** GitHub Actions CI pipeline
@@ -1845,7 +1845,7 @@ ALMONA Platform Architecture
 - Celery (Async task queue)
 - Redis (Message broker)
 
-**AI/ML Services (Tier 2 Only):**
+**advisory inference Services (Tier 2 Only):**
 - TensorFlow.js 4.22.0 (Frontend ML, if needed)
 - Python ML libraries (Backend, Tier 2 only)
 
@@ -1917,7 +1917,7 @@ When assessing production readiness:
 
 **Status:** ✅ Production-Ready
 **Lines of Code:** 39,000+ lines (Drafting Module Aggregate)
-**Feature Parity:** 95%+ with Kliess Orgadata and Moxisys Design Flow
+**Feature Parity:** 95%+ with reference system reference system and reference system Design Flow
 
 **Key Features:**
 - ✅ Professional CAD tools (Rectangle, Circle, Line, Arc, Polygon, Text)
@@ -2401,15 +2401,15 @@ When generating tests:
 
 <institutional-impact id="competitive-differentiation">
 
-#### 5.3.1. vs Kliess Orgadata
+#### 5.3.1. vs reference system reference system
 
 **Feature Parity:** 95%+ (Drafting Workbench provides CAD-level functionality)
 **Governance Advantage:** 100% (constitutional framework unique)
 
-| Feature Category | Kliess Orgadata | ALMONA | Advantage |
+| Feature Category | reference system reference system | ALMONA | Advantage |
 |-----------------|----------------|--------|-----------|
 | **Drafting Tools** | Professional CAD | Professional CAD (95%+ parity) | ≈ Parity |
-| **Template Library** | 1000+ templates | 46 Egyptian templates | Kliess (quantity), ALMONA (regional relevance) |
+| **Template Library** | 1000+ templates | 46 Egyptian templates | reference system (quantity), ALMONA (regional relevance) |
 | **3D Visualization** | Advanced | Advanced (60FPS, Three.js) | ≈ Parity |
 | **BOM Generation** | Industry-standard | 99.8% accuracy (verified) | ≈ Parity |
 | **Constitutional Governance** | ❌ None | ✅ AICS-001 framework | **ALMONA (unique)** |
@@ -2430,12 +2430,12 @@ When generating tests:
 <!-- GOVERNANCE_ADVANTAGE: 100_percent_unique -->
 <!-- REGIONAL_ADVANTAGE: arabic_egyptian_standards -->
 
-#### 5.3.2. vs Moxisys Design Flow
+#### 5.3.2. vs reference system Design Flow
 
 **Feature Parity:** 95%+ (Drafting Workbench matches core functionality)
 **Governance Advantage:** 100% (constitutional framework unique)
 
-| Feature Category | Moxisys Design Flow | ALMONA | Advantage |
+| Feature Category | reference system Design Flow | ALMONA | Advantage |
 |-----------------|---------------------|--------|-----------|
 | **Visual Drafting** | Professional | Professional (Tier 0 layer) | ≈ Parity |
 | **Material Systems** | Comprehensive | Aluminum/UPVC (comprehensive) | ≈ Parity |
@@ -2608,9 +2608,9 @@ uvicorn main:app --reload
 ---
 
 <!-- SECTION_START: ai_agent_integration -->
-## 8. AI Agent Integration & Automation
+## 8. automation Agent Integration & Automation
 
-### 8.1. Quick Start for AI Researchers
+### 8.1. Quick Start for automation Researchers
 
 <ai-agent-instruction>
 
@@ -3310,7 +3310,7 @@ docs/
   - **Features:** Governance health, constitutional compliance, RealityOS health metrics
 - **Import Bridges:** `src/lib/import/`
   - **Status:** Code structure complete, UI integration pending, parser implementation pending
-  - **Features:** DXF, CSV, LogiKal, KLAES import with Tier 3 validation
+  - **Features:** DXF, CSV, reference system, reference system import with Tier 3 validation
 - **Realistic Timeline:** Q3-Q4 2026 for production readiness
 
 **Documentation:**
@@ -3391,8 +3391,8 @@ docs/
 - ✅ Zero Tier 0 contamination of execution paths
 
 **Competitive Position:**
-- **Feature Parity:** 95%+ with Kliess Orgadata and Moxisys Design Flow
-- **Template Library:** 50 templates (vs 1000+ for Kliess, but comprehensive coverage)
+- **Feature Parity:** 95%+ with reference system reference system and reference system Design Flow
+- **Template Library:** 50 templates (vs 1000+ for reference system, but comprehensive coverage)
 - **Governance Advantage:** 100% (only platform with constitutional boundaries)
 - **Unique Features:** Material-aware design, Egyptian standards, accuracy validation, constitutional audit trail
 
@@ -3863,7 +3863,7 @@ return {
 
 ### Constitutional Compliance
 
-- ✅ No ML/AI inference
+- ✅ No advisory inference inference
 - ✅ Deterministic rule application
 - ✅ Fully auditable decisions
 - ✅ No "confidence" or "prediction" claims
@@ -3932,7 +3932,7 @@ return {
 **Location:** `src/components/fabricator/drafting/DraftingWorkbench.tsx`
 **Type:** Tier 0 Constitutional Drafting Layer
 
-**Purpose:** Professional CAD-level visual drafting workbench with Moxisys-style interface while maintaining ALMONA's deterministic guarantees.
+**Purpose:** Professional CAD-level visual drafting workbench with reference system-style interface while maintaining ALMONA's deterministic guarantees.
 
 **Core Capabilities:**
 - **Professional CAD Tools:** Rectangle, Circle, Line, Arc, Polygon, Text
@@ -3955,7 +3955,7 @@ return {
 - ✅ Zero execution logic contamination
 
 **Competitive Position:**
-- **Feature Parity:** 95%+ with Kliess Orgadata and Moxisys Design Flow
+- **Feature Parity:** 95%+ with reference system reference system and reference system Design Flow
 - **Governance Advantage:** 100% (only platform with constitutional boundaries)
 - **Unique Features:** Material-aware design, Egyptian standards, accuracy validation
 
@@ -4407,7 +4407,7 @@ SUPABASE_KEY=your_supabase_key
 - ✅ Deterministic Replay (AICS-001 §7.5)
 - ✅ 99.8% Accuracy Guarantee
 - ✅ Constitutional Compliance (no engineering authority)
-- ✅ Tier 3 Purity (zero AI)
+- ✅ Tier 3 Purity (zero automation)
 - ✅ Terminology Validation
 
 **Running Tests:**
@@ -4549,7 +4549,7 @@ See `python_backend/ENVIRONMENT_VARIABLES.md` for complete list.
   - Undo/Redo system (50-state history)
   - Full keyboard shortcuts (CAD-like)
   - Enhanced status bar with coordinates, zoom, operation status
-- **Feature Parity:** 95%+ with Kliess Orgadata and Moxisys Design Flow
+- **Feature Parity:** 95%+ with reference system reference system and reference system Design Flow
 - **Governance Advantage:** 100% (only platform with constitutional boundaries)
 - **Status:** All phases complete, production-ready
 - **Documentation:** `DRAFTING_WORKBENCH_COMPLETION_SUMMARY.md`
@@ -4557,7 +4557,7 @@ See `python_backend/ENVIRONMENT_VARIABLES.md` for complete list.
 ### Constitutional Phase (2026)
 
 **Week 1 (January 1-7, 2026):** ✅ COMPLETE
-- AI Deception Fixed (AlgorithmPredictor → AlgorithmSelector)
+- automation Deception Fixed (AlgorithmPredictor → AlgorithmSelector)
 - Constitutional Tests Created
 - Migration Complete
 - YDT Services Integration (January 2)
@@ -5392,7 +5392,7 @@ console.log('Selection:', selection);
 **Solution:**
 - Verify `JobComplexity` calculation
 - Check `AlgorithmSelector` rules
-- Ensure no ML/AI interference
+- Ensure no advisory inference interference
 
 #### Issue: BOM Generation Fails
 
@@ -5532,12 +5532,12 @@ Response: {
 
 ## 🤖 LLM Integration Guide
 
-### For AI Assistants (Blackbox, Cursor, Claude, GPT, etc.)
+### For automation Assistants (Blackbox, development tool, support service, support service, etc.)
 
 #### Constitutional Guardrails (NON-NEGOTIABLE)
 
 **STRICT CONSTRAINTS:**
-- DO NOT introduce ML, AI models, prediction, learning, neural networks, or probabilistic logic
+- DO NOT introduce ML, automation models, prediction, learning, neural networks, or probabilistic logic
 - DO NOT rename, redesign, or "improve" architecture
 - DO NOT add abstractions, patterns, or optimizations unless explicitly asked
 - DO NOT modify execution behavior
@@ -5903,7 +5903,7 @@ EngineeringBay.tsx
   - Undo/Redo system (50-state history)
   - Full keyboard shortcuts (CAD-like)
   - Enhanced status bar with coordinates, zoom, operation status
-- **Feature Parity:** 95%+ with Kliess Orgadata and Moxisys Design Flow
+- **Feature Parity:** 95%+ with reference system reference system and reference system Design Flow
 - **Governance Advantage:** 100% (only platform with constitutional boundaries)
 - **Status:** All phases complete, production-ready
 - **Documentation:** `DRAFTING_WORKBENCH_COMPLETION_SUMMARY.md`
@@ -5947,7 +5947,7 @@ EngineeringBay.tsx
   - Real-time collaborative drafting (WebSocket)
   - State persistence with auto-save & recovery
   - Constitutional compliance (Tier 0 drafting layer)
-- **Feature Parity:** 95%+ with Klaes, Orgadata and Moxisys Design Flow
+- **Feature Parity:** 95%+ with reference system, reference system and reference system Design Flow
 - **Governance Advantage:** 100% (only platform with constitutional boundaries)
 - **Status:** All phases complete, production-ready
 

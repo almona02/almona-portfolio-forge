@@ -1,4 +1,4 @@
-"""Simple test to verify Vision AI is working"""
+"""Simple test to verify Vision automation is working"""
 import os
 from dotenv import load_dotenv
 from PIL import Image

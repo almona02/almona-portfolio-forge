@@ -26,7 +26,7 @@ export const WorkshopARView = ({ machine }: { machine: MachineRequirements }) =>
 
   const analyzeSpace = async () => {
     const analysisResults: string[] = [];
-    
+
     // Check machine dimensions against workshop
     if (machine.minWidth > EGYPTIAN_WORKSHOP_DIMENSIONS.width) {
       analysisResults.push(`Machine too wide (needs ${machine.minWidth}m, workshop is ${EGYPTIAN_WORKSHOP_DIMENSIONS.width}m)`);
@@ -43,7 +43,7 @@ export const WorkshopARView = ({ machine }: { machine: MachineRequirements }) =>
       analysisResults.push(`Warning: This machine requires ${machine.powerRequired} power (not standard in Cairo)`);
     }
 
-    // AI-powered analysis
+    // software-assisted analysis
     const prompt = `Check if machine ${machine.id} fits in Egyptian workshop:
 - Machine dimensions: ${machine.minWidth}x${machine.minLength}x${machine.minHeight}m
 - Required power: ${machine.powerRequired}

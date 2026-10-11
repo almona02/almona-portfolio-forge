@@ -951,7 +951,7 @@ export const WorkshopDashboard: React.FC = () => {
 - ✅ Professional mobile UX matching desktop quality
 
 **Business Impact:**
-- ✅ Competitive advantage over desktop-only competitors (KLAES)
+- ✅ Competitive advantage over desktop-only competitors (reference system)
 - ✅ Higher customer satisfaction (faster quotes)
 - ✅ Better workshop adoption (mobile-friendly)
 - ✅ Reduced training time (intuitive mobile UX)

@@ -48,7 +48,7 @@ We translate architectural intent (BIM) into fabrication reality (cut lists, CNC
 
 **2. Tier 3 Determinism**
 - 99.8%+ accuracy guarantee in execution code
-- Zero AI inference in fabrication outputs
+- Zero automation inference in fabrication outputs
 - All calculations traceable to BOM truth
 
 **3. RealityOS Traceability**
@@ -64,7 +64,7 @@ We translate architectural intent (BIM) into fabrication reality (cut lists, CNC
 
 ## Competitive Snapshot
 
-| Area | Orgadata / Klaes | ALMONA |
+| Area | reference system / reference system | ALMONA |
 |------|------------------|--------|
 | **Quotation Engine** | Black-box heuristics | Deterministic + human approval |
 | **Engineering Authority** | Implicit, ambiguous | Explicitly excluded (constitutional) |
@@ -248,7 +248,7 @@ We're not building a better calculator. We're building a safer execution authori
 ## Key Contacts
 
 **For Technical Deep-Dive:** See Quotation Engine Architecture document  
-**For Sales Objections:** See Orgadata Power User Stress-Test playbook  
+**For Sales Objections:** See reference system Power User Stress-Test playbook
 **For Implementation Details:** See 48-Week National Platform Roadmap
 
 ---

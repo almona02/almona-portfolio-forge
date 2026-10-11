@@ -14,7 +14,7 @@
 - ✅ Grid structure management (rows/cols)
 - ✅ Cell type cycling (fixed/sash/sliding/panel/empty)
 - ✅ Mullion tools (frame/sash horizontal/vertical)
-- ✅ Preset pattern selector with AI suggestions
+- ✅ Preset pattern selector with automation suggestions
 - ✅ Column/row proportion input
 - ✅ Real-time SVG visualization
 - ✅ Mullion deletion with visual feedback
@@ -80,7 +80,7 @@ const handleMullionPositionInput = (position: number) => {
   const snappedPosition = gridLines.reduce((prev, curr) => 
     Math.abs(curr - position) < Math.abs(prev - position) ? curr : prev
   );
-  
+
   return snappedPosition;
 };
 ```
@@ -136,7 +136,7 @@ const handleRedo = () => {
 ```typescript
 const calculateLiveCost = useCallback(() => {
   let totalCost = 0;
-  
+
   // Profile costs
   liveProject.components.forEach(comp => {
     if (comp.profile?.costPerMeter) {
@@ -144,20 +144,20 @@ const calculateLiveCost = useCallback(() => {
       totalCost += comp.profile.costPerMeter * length * (comp.quantity || 1);
     }
   });
-  
+
   // Hardware costs
   liveProject.hardware.forEach(hw => {
     if (hw.costPerUnit) {
       totalCost += hw.costPerUnit * (hw.quantity || 1);
     }
   });
-  
+
   // Glass costs
   if (bomData?.glassDetails) {
     const glassPrice = 50; // EGP per m²
     totalCost += bomData.glassDetails.totalGlassArea * glassPrice;
   }
-  
+
   return totalCost;
 }, [liveProject, bomData]);
 ```
@@ -201,7 +201,7 @@ const saveAsTemplate = (name: string, category: string) => {
     createdAt: new Date(),
     createdBy: userId
   };
-  
+
   saveTemplate(template);
 };
 ```
@@ -392,20 +392,20 @@ const [renderedComponents, setRenderedComponents] = useState<WindowComponent[]>(
 
 useEffect(() => {
   if (!liveProject?.components) return;
-  
+
   const batchSize = 10;
   let index = 0;
-  
+
   const renderBatch = () => {
     const batch = liveProject.components.slice(index, index + batchSize);
     setRenderedComponents(prev => [...prev, ...batch]);
     index += batchSize;
-    
+
     if (index < liveProject.components.length) {
       requestAnimationFrame(renderBatch);
     }
   };
-  
+
   renderBatch();
 }, [liveProject?.components]);
 ```
@@ -424,9 +424,9 @@ describe('SmartDrawCanvas', () => {
   it('should update grid structure on row/col change', () => {
     const { getByRole } = render(<SmartDrawCanvas {...props} />);
     const increaseColsBtn = getByRole('button', { name: /increase columns/i });
-    
+
     fireEvent.click(increaseColsBtn);
-    
+
     expect(props.onGridChange).toHaveBeenCalledWith(
       expect.objectContaining({ cols: 2 })
     );
@@ -435,9 +435,9 @@ describe('SmartDrawCanvas', () => {
   it('should cycle cell types on click', () => {
     const { container } = render(<SmartDrawCanvas {...props} />);
     const cell = container.querySelector('[data-cell-id="0-0"]');
-    
+
     fireEvent.click(cell);
-    
+
     expect(props.onGridChange).toHaveBeenCalledWith(
       expect.objectContaining({
         cells: expect.arrayContaining([
@@ -451,10 +451,10 @@ describe('SmartDrawCanvas', () => {
     const { getByPlaceholderText, getByRole } = render(<SmartDrawCanvas {...props} />);
     const input = getByPlaceholderText(/enter positions/i);
     const addBtn = getByRole('button', { name: /add mullion/i });
-    
+
     fireEvent.change(input, { target: { value: '400, 800' } });
     fireEvent.click(addBtn);
-    
+
     expect(props.onGridChange).toHaveBeenCalledWith(
       expect.objectContaining({
         manualMullions: expect.arrayContaining([
@@ -584,7 +584,7 @@ describe('Complete Fabricator Workflow', () => {
 - [ ] Design comparison view
 
 ### Q3 2026
-- [ ] AI-powered design suggestions
+- [ ] software-assisted design suggestions
 - [ ] Automatic layout optimization
 - [ ] Multi-user collaboration
 - [ ] Version control for designs

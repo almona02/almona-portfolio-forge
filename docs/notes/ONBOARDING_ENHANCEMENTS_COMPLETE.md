@@ -12,7 +12,7 @@
 
 **Components Created**:
 - ✅ `SmartMeasuringDemo` - Interactive measuring tutorial
-- ✅ `AIDesignDemo` - AI design suggestions demo
+- ✅ `AIDesignDemo` - automation design suggestions demo
 - ✅ `OptimizationDemo` - Cutting optimization results demo
 - ✅ `CNCExportDemo` - Export format selection demo
 

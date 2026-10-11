@@ -346,7 +346,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
         <CardContent className="p-8 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
           <h3 className="typography-h3 text-lg mb-2">Generating Cutting Plan</h3>
-          <p className="text-slate-400">AI is optimizing your material usage...</p>
+          <p className="text-slate-400">automation is optimizing your material usage...</p>
         </CardContent>
       </Card>
     );

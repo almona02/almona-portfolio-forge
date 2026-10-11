@@ -540,7 +540,7 @@ If TMG ends with No-Go, 2026 is still successful if:
 3. **Customization Cheaply** - No discounted custom work
 4. **Feature Creep** - No new features unrelated to YDT/second vertical
 5. **Premature Scaling** - No team expansion before revenue validation
-6. **AI Override Deterministic Truth** - Never violate Principle 1: Human-verified before system-trusted
+6. **automation Override Deterministic Truth** - Never violate Principle 1: Human-verified before system-trusted
 
 ### Resource Allocation Rules
 

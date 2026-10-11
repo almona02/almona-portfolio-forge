@@ -2,7 +2,7 @@
  * Quality Verification Engine - Tier 3 Protected Determinism
  * 
  * Deterministic quality verification against BOM outputs.
- * NO AI/ML - Rule-based tolerance checking only.
+ * NO advisory inference - Rule-based tolerance checking only.
  * 
  * Constitutional Compliance: AICS-001 §5.10.2 (Tier 3 Protected Determinism)
  * 
@@ -88,7 +88,7 @@ export interface QualityVerificationOptions {
 /**
  * Quality Verification Engine
  * 
- * Tier 3 Protected Determinism - No AI/ML
+ * Tier 3 Protected Determinism - No advisory inference
  */
 export class QualityVerificationEngine {
   // Default tolerance specifications (Egyptian market standards)

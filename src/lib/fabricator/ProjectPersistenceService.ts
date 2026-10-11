@@ -2,7 +2,7 @@
  * Project Persistence Service
  * 
  * Systematically saves and loads drawing poses/projects with full state synchronization.
- * Inspired by ABT HeroFis Turkish app - multi-page navigation with state sync.
+ * Persists project state across multi-page navigation.
  * 
  * Constitutional Tier: Tier 3 (Protected Determinism)
  */

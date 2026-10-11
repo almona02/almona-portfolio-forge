@@ -2,7 +2,7 @@
  * Cut List Viewer - Market-Leader Quality UI
  * 
  * Visual representation of optimized UPVC cutting for Yılmaz single-head machines.
- * Inspired by: Kliess SchüCal, Orgadata LogiKal cutting modules
+ * Displays workshop cutting lists and stock allocation.
  * 
  * Features:
  * - Visual 6m bar representation with cuts

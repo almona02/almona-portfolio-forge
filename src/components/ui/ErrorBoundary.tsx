@@ -23,7 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     this.setState({
       error,
       errorInfo
@@ -57,7 +57,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <p className="text-gray-300 mb-4">
               The application encountered an unexpected error. Please try refreshing the page.
             </p>
-            
+
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="text-left text-sm text-gray-400 mb-4">
                 <summary className="cursor-pointer text-gray-300 mb-2">
@@ -69,7 +69,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 </pre>
               </details>
             )}
-            
+
             <div className="space-y-2">
               <button
                 onClick={() => window.location.reload()}

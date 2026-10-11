@@ -7,7 +7,7 @@
 
 ## 🎯 The Vision
 
-YDT becomes the **"Industry Watchtower"** - an AI that never sleeps, constantly scanning for:
+YDT becomes the **"Industry Watchtower"** - an automation that never sleeps, constantly scanning for:
 - New technologies
 - Price shifts  
 - Global trends

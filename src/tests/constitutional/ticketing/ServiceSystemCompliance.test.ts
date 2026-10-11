@@ -29,7 +29,7 @@ describe('Service System Constitutional Compliance', () => {
       // Strip comments to satisfy the constitutional check without false positives from the headers themselves
       const codeWithoutComments = engineCode.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '');
 
-      // Constitutional check: No ML/AI imports
+      // Constitutional check: No advisory inference imports
       const prohibitedImports = [
         'tensorflow',
         'pytorch',

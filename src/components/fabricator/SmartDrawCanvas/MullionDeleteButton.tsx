@@ -2,7 +2,7 @@
  * Mullion Delete Button Component
  * 
  * Reusable delete button for mullions in SmartDrawCanvas.
- * Constitutional: Pure UI component, no ML/AI.
+ * Constitutional: Pure UI component, no advisory inference.
  */
 
 // Removed unused React import - using new JSX transform

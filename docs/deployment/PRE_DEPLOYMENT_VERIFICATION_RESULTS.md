@@ -32,7 +32,7 @@
   - `doc-pdf`: 935.37 kB
   - `map-engine`: 761.77 kB
 
-**Note:** Some chunks exceed 2000 kB warning threshold, but this is expected for heavy libraries (3D, AI, physics engines).
+**Note:** Some chunks exceed 2000 kB warning threshold, but this is expected for heavy libraries (3D, automation, physics engines).
 
 ### Step 4: Linting Check ⚠️
 - **Status:** ⚠️ 3 Errors, 324 Warnings
@@ -167,7 +167,7 @@ npm run test:api
 
 - Bundle analysis HTML: `dist/bundle-analysis.html` (8.9 MB)
 - Build output: `dist/` directory
-- Largest chunks are expected (3D, AI, physics engines)
+- Largest chunks are expected (3D, automation, physics engines)
 - PWA service worker generated successfully
 - 3 linting errors are non-blocking but should be addressed
 

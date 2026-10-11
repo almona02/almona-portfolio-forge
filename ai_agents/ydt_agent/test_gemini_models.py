@@ -1,4 +1,4 @@
-"""Test script to list available Gemini models"""
+"""Test script to list available support service models"""
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai

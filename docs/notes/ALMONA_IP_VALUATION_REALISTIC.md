@@ -213,8 +213,8 @@ Pre-revenue Discount (40%): €1.25M
 - Accelerate innovation (+25%)
 
 **Likely Buyers:**
-- Moxisys (Turkish, MENA expansion)
-- ERCOM (Italian, tech upgrade)
+- reference system (Turkish, MENA expansion)
+- reference system (Italian, tech upgrade)
 - Regional player (market entry)
 
 ---
@@ -390,7 +390,7 @@ Pre-revenue Discount (40%): €1.25M
 - Total: €960K-1.32M
 
 **Best Buyer Profile:**
-- Strategic competitor (Moxisys, ERCOM)
+- Strategic competitor (reference system, reference system)
 - Regional player entering MENA
 - Industrial software PE fund
 - Value: €1.2M-1.5M with strategic premium

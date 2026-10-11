@@ -36,7 +36,7 @@ export function useVirtualizedMachines({
   const filteredAndSortedMachines = useMemo(() => {
     let filtered = yilmazMachines;
 
-    // Apply AI-powered search if search term exists
+    // Apply software-assisted search if search term exists
     if (searchTerm.trim()) {
       filtered = searchPublicMachines(searchTerm, filtered, copy);
     }
@@ -48,7 +48,7 @@ export function useVirtualizedMachines({
         const legacyMatch = machine.category === categoryFilter;
         const smartCategory = categorizeMachine(machine);
         const smartMatch = smartCategory === categoryFilter;
-        
+
         return legacyMatch || smartMatch;
       });
     }

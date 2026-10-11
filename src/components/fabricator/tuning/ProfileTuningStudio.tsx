@@ -2396,7 +2396,7 @@ const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
                             <Scan className="h-4 w-4 text-amber-400" />
                             {t('profile_tuning_studio.smartscan.title', 'SmartScan (Images & PDFs)')}
                             <Badge variant="outline" className="ml-2 border-amber-500/50 text-amber-400 text-xs bg-amber-500/10">
-                              AI-Powered
+                              software-assisted
                             </Badge>
                           </CardTitle>
                           <CardDescription className="text-xs text-zinc-400 mt-2">

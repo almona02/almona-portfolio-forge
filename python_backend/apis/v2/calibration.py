@@ -61,7 +61,7 @@ class CalibrationSource(str, Enum):
     MANUAL = "manual"           # User entered manually
     TEST_CUT = "test_cut"       # From calibration test cut
     PRODUCTION = "production"   # From production feedback
-    AI_SUGGESTED = "ai_suggested"  # AI recommendation
+    AI_SUGGESTED = "ai_suggested"  # automation recommendation
     IMPORTED = "imported"       # Imported from external source
 
 
@@ -179,7 +179,7 @@ class ProductionFeedback(BaseModel):
 
 
 class KFactorSuggestion(BaseModel):
-    """AI-generated K-factor suggestion."""
+    """automation-generated K-factor suggestion."""
     profile_id: str
     joint_type: JointType
     
@@ -523,7 +523,7 @@ async def get_ai_suggestions(
     )
 ):
     """
-    Get AI-powered K-factor suggestions for a profile.
+    Get software-assisted K-factor suggestions for a profile.
     
     Uses the CalibrationLearner ML model to predict optimal K-factors
     based on historical data from this workshop and (optionally)

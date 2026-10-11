@@ -2,7 +2,7 @@
  * Physics System Utilities
  * 
  * Handles graceful degradation when physics engine (Ammo.js) is unavailable.
- * Constitutional: Pure detection logic, no ML/AI.
+ * Constitutional: Pure detection logic, no advisory inference.
  */
 
 import { useMemo } from 'react';

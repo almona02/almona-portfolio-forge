@@ -18,7 +18,7 @@
     "portal": "Customer Portal",
     "nile_logistics": "Nile Logistics",
     "egypt_support": "Egypt Support",
-    "ai": "AI Features"
+    "ai": "automation Features"
   },
   "cards": {
     "maintenance": {
@@ -76,7 +76,7 @@
     "description": "Our Egyptian operations leverage cutting-edge technology to deliver superior service",
     "features": [
       "IoT-enabled equipment monitoring",
-      "AI-powered predictive maintenance",
+      "software-assisted predictive maintenance",
       "Augmented reality repair guides",
       "Blockchain-based service records"
     ]
@@ -165,7 +165,7 @@
       "period": "pricing",
       "machines": "10+ machines",
       "features": [
-        "Real-time AI predictive maintenance",
+        "Real-time automation predictive maintenance",
         "Dedicated technical team",
         "4-hour emergency response guarantee",
         "Spare parts (40% discount)",
@@ -247,7 +247,7 @@
     "response_time": "Response Time",
     "support_hours": "Support Hours",
     "remote_monitoring": "Remote Monitoring",
-    "ai_predictive": "AI Predictive Maintenance",
+    "ai_predictive": "automation Predictive Maintenance",
     "dedicated_team": "Dedicated Team",
     "custom_reports": "Custom Reports",
     "training_sessions": "Training Sessions",

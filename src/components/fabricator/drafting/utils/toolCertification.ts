@@ -16,7 +16,7 @@ export interface ToolCertification {
   toolId: string;
   /** Human-readable tool name */
   toolName: string;
-  /** Constitutional tier (0: Visual, 1: AI, 3: Deterministic) */
+  /** Constitutional tier (0: Visual, 1: automation, 3: Deterministic) */
   tier: ConstitutionalTier;
   /** Explicit authority boundary - what the tool does */
   authorityBoundary: {
@@ -85,7 +85,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'rectangle': {
     toolId: 'rectangle',
     toolName: 'Rectangle Tool',
@@ -121,7 +121,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'circle': {
     toolId: 'circle',
     toolName: 'Circle Tool',
@@ -155,7 +155,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'line': {
     toolId: 'line',
     toolName: 'Line Tool',
@@ -189,7 +189,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'arc': {
     toolId: 'arc',
     toolName: 'Arc Tool',
@@ -223,7 +223,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'polygon': {
     toolId: 'polygon',
     toolName: 'Polygon Tool',
@@ -257,7 +257,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'text': {
     toolId: 'text',
     toolName: 'Text Annotation Tool',
@@ -291,7 +291,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'dimension': {
     toolId: 'dimension',
     toolName: 'Dimension Tool',
@@ -325,7 +325,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   // Transform Tools
   'mirror': {
     toolId: 'mirror',
@@ -360,7 +360,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'rotate': {
     toolId: 'rotate',
     toolName: 'Rotate Tool',
@@ -394,7 +394,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'scale': {
     toolId: 'scale',
     toolName: 'Scale Tool',
@@ -428,7 +428,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   // Pattern Tools
   'array-rectangular': {
     toolId: 'array-rectangular',
@@ -463,7 +463,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'array-circular': {
     toolId: 'array-circular',
     toolName: 'Circular Array Tool',
@@ -497,7 +497,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'array-linear': {
     toolId: 'array-linear',
     toolName: 'Linear Array Tool',
@@ -531,7 +531,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'pattern-offset': {
     toolId: 'pattern-offset',
     toolName: 'Offset Pattern Tool',
@@ -565,7 +565,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   // Material-Aware Tools
   'hinge': {
     toolId: 'hinge',
@@ -600,7 +600,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'handle': {
     toolId: 'handle',
     toolName: 'Handle Placement Tool',
@@ -634,7 +634,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'lock': {
     toolId: 'lock',
     toolName: 'Lock Placement Tool',
@@ -668,7 +668,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'roller': {
     toolId: 'roller',
     toolName: 'Roller Placement Tool',
@@ -702,7 +702,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   // Structural Tools
   'mullion': {
     toolId: 'mullion',
@@ -737,7 +737,7 @@ export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
       status: 'certified'
     }
   },
-  
+
   'transom': {
     toolId: 'transom',
     toolName: 'Transom Tool',

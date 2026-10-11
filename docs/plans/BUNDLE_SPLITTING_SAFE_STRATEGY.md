@@ -71,7 +71,7 @@ node scripts/verify-build-health.js
 - Focus on:
   - 3D model viewers
   - PDF export components
-  - AI advisor components
+  - automation advisor components
   - Admin dashboard
 
 **Example:**

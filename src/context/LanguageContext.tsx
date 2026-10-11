@@ -82,7 +82,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Maintenance Centers',
     ar: 'مراكز الصيانة'
   },
-  
+
   // Ticket Wizard
   'ticket.create_support_ticket': {
     en: 'Create Support Ticket',
@@ -92,7 +92,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Fill out the form below to create a support ticket. Our team will respond as soon as possible.',
     ar: 'املأ النموذج أدناه لإنشاء تذكرة دعم. سيرد فريقنا في أقرب وقت ممكن.'
   },
-  
+
   // Ticket Wizard Steps
   'ticket.category_priority': {
     en: 'Category & Priority',
@@ -118,7 +118,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Success',
     ar: 'نجح'
   },
-  
+
   // Ticket Types
   'ticket.general_inquiry': {
     en: 'General Inquiry',
@@ -200,7 +200,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Not covered by other categories',
     ar: 'غير مغطى بالفئات الأخرى'
   },
-  
+
   // Ticket Priorities
   'ticket.low': {
     en: 'Low',
@@ -242,7 +242,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Production stopped',
     ar: 'توقف الإنتاج'
   },
-  
+
   // Ticket Form Fields
   'ticket.title': {
     en: 'Title',
@@ -388,7 +388,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Machine Serial Number',
     ar: 'رقم تسلسل الماكينة'
   },
-  
+
   // Portal Page
   'portal.welcome_back': {
     en: 'Welcome back',
@@ -550,7 +550,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Contact Support',
     ar: 'اتصل بالدعم'
   },
-  
+
   // Services Page - Enhanced Industrial Terminology
   'services.subtitle_enhanced': {
     en: 'Machine learning-driven predictive maintenance, real-time equipment monitoring, and intelligent lifecycle management for aluminum window and door manufacturing systems.',
@@ -816,8 +816,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'YILMAZ Double Head Cutting Machine',
     ar: 'ماكينة قطع يلماز برأسين'
   },
-  
-  // Service Cards - AI Predictive Maintenance
+
+  // Service Cards - automation Predictive Maintenance
   'services.ai_predictive_maintenance': {
     en: 'AI Predictive Maintenance',
     ar: 'الصيانة التنبؤية بالذكاء الاصطناعي'
@@ -850,7 +850,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Login to Access',
     ar: 'تسجيل الدخول للوصول'
   },
-  
+
   // Emergency Repairs
   'services.emergency_repairs': {
     en: 'Emergency Repairs',
@@ -884,8 +884,8 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Login for Emergency',
     ar: 'تسجيل الدخول للطوارئ'
   },
-  
-  // AI Operator Training
+
+  // automation Operator Training
   'services.ai_operator_training': {
     en: 'AI Operator Training',
     ar: 'تدريب المشغلين بالذكاء الاصطناعي'
@@ -914,7 +914,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'View Training Programs',
     ar: 'عرض برامج التدريب'
   },
-  
+
   // Fabricator Workflow Pro
   'services.fabricator_workflow_pro': {
     en: 'Fabricator Workflow Pro',
@@ -944,7 +944,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Launch Fabricator',
     ar: 'تشغيل المصنع'
   },
-  
+
   // Customer Packages Section
   'services.customer_packages': {
     en: 'Customer Packages',
@@ -990,7 +990,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Recommended',
     ar: 'موصى به'
   },
-  
+
   // Premium Services Page - Complete Translation
   'services.premium_services': {
     en: 'Premium Services',
@@ -1004,7 +1004,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Smart enough for big factories, simple enough for small workshops.',
     ar: 'ذكية بما يكفي للمصانع الكبيرة، بسيطة بما يكفي للورش الصغيرة.'
   },
-  
+
   // Statistics
   'services.customer_satisfaction': {
     en: 'Customer Satisfaction',
@@ -1022,7 +1022,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Machines Serviced',
     ar: 'ماكينة تم خدمتها'
   },
-  
+
   // Smart Package Calculator
   'services.smart_package_calculator': {
     en: 'Smart Package Calculator',
@@ -1072,7 +1072,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'and click "Get Recommendation" to see your perfect package',
     ar: 'وانقر على "احصل على التوصية" لرؤية باقتك المثالية'
   },
-  
+
   // Business Size Options
   'services.small_workshop': {
     en: 'Small Workshop (1-10 employees)',
@@ -1086,7 +1086,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Large Facility (50+ employees)',
     ar: 'منشأة كبيرة (50+ موظف)'
   },
-  
+
   // Production Volume Options
   'services.low_production': {
     en: 'Low (Seasonal/On-demand)',
@@ -1100,7 +1100,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'High (24/7 production)',
     ar: 'عالي (إنتاج 24/7)'
   },
-  
+
   // Support Urgency Options
   'services.standard_response': {
     en: 'Standard (48-hour response)',
@@ -1114,7 +1114,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Critical (4-hour response)',
     ar: 'حرج (استجابة خلال 4 ساعات)'
   },
-  
+
   // Location Options
   'services.cairo_giza': {
     en: 'Cairo & Giza',
@@ -1128,7 +1128,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Other Governorates',
     ar: 'محافظات أخرى'
   },
-  
+
   // Service Packages
   'services.service_packages': {
     en: 'Service Packages',
@@ -1138,7 +1138,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Choose the perfect care plan for your workshop or factory',
     ar: 'اختر خطة الرعاية المثالية لورشتك أو مصنعك'
   },
-  
+
   // Basic Care Package
   'services.basic_care_package': {
     en: 'Basic Care',
@@ -1176,7 +1176,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Digital machine passport',
     ar: 'جواز سفر الماكينة الرقمي'
   },
-  
+
   // Professional Care Package
   'services.professional_care_package': {
     en: 'Professional Care',
@@ -1218,7 +1218,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Advanced machine diagnostics',
     ar: 'تشخيصات متقدمة للماكينة'
   },
-  
+
   // Enterprise Care Package
   'services.enterprise_care_package': {
     en: 'Enterprise Care',
@@ -1268,7 +1268,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Export compliance support',
     ar: 'دعم الامتثال للتصدير'
   },
-  
+
   // Package Features
   'services.sla_guarantee': {
     en: 'SLA Guarantee',
@@ -1282,7 +1282,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Performance Tracking',
     ar: 'تتبع الأداء'
   },
-  
+
   // Package Comparison
   'services.compare_service_packages': {
     en: 'Compare Our Service Packages',
@@ -1360,7 +1360,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Export Support',
     ar: 'دعم التصدير'
   },
-  
+
   // Package Comparison Features
   'features.health_check': {
     en: 'Health Check',
@@ -1410,7 +1410,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Export Support',
     ar: 'دعم التصدير'
   },
-  
+
   // Regional Service Coverage
   'services.regional_service_coverage': {
     en: 'Regional Service Coverage',
@@ -1456,7 +1456,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Ankara',
     ar: 'أنقرة'
   },
-  
+
   // Success Stories
   'services.success_stories': {
     en: 'Success Stories',
@@ -1470,7 +1470,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'See how ALMONA\'s service packages have transformed businesses across Egypt. From small workshops to large factories, our customers achieve remarkable results.',
     ar: 'شاهد كيف حولت باقات خدمة ألمونا الأعمال في جميع أنحاء مصر. من الورش الصغيرة إلى المصانع الكبيرة، يحقق عملاؤنا نتائج رائعة.'
   },
-  
+
   // Customer Stories
   'services.ahmed_hassan': {
     en: 'Ahmed Hassan',
@@ -1528,7 +1528,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: '60% reduction in maintenance costs',
     ar: '60% تقليل في تكاليف الصيانة'
   },
-  
+
   'services.fatima_alsayed': {
     en: 'Fatima Al-Sayed',
     ar: 'فاطمة السيد'
@@ -1565,7 +1565,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Successfully exported to 3 countries',
     ar: 'تصدير ناجح إلى 3 دول'
   },
-  
+
   'services.ready_write_success_story': {
     en: 'Ready to Write Your Success Story?',
     ar: 'مستعد لكتابة قصتك الناجحة؟'
@@ -1582,7 +1582,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'View All Case Studies',
     ar: 'عرض جميع دراسات الحالة'
   },
-  
+
   // Complete Service Catalog
   'services.complete_service_catalog': {
     en: 'Complete Service Catalog',
@@ -1592,7 +1592,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Everything you need to keep your fabrication business running smoothly',
     ar: 'كل ما تحتاجه لإبقاء أعمال التصنيع تعمل بسلاسة'
   },
-  
+
   // Machine Services
   'services.machine_services': {
     en: 'Machine Services',
@@ -1614,7 +1614,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Technology Upgrades',
     ar: 'ترقيات التكنولوجيا'
   },
-  
+
   // Training Programs
   'services.training_programs': {
     en: 'Training Programs',
@@ -1640,7 +1640,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Safety Certification',
     ar: 'شهادة السلامة'
   },
-  
+
   // Support Services
   'services.support_services': {
     en: 'Support Services',
@@ -1666,7 +1666,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Custom Solutions',
     ar: 'حلول مخصصة'
   },
-  
+
   // How Our Service Works
   'services.how_our_service_works': {
     en: 'How Our Service Works',
@@ -1704,7 +1704,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'Regular maintenance and 24/7 support',
     ar: 'صيانة دورية ودعم 24/7'
   },
-  
+
   // CTA Section
   'services.ready_transform_fabrication_business': {
     en: 'Ready to Transform Your Fabrication Business?',
@@ -1722,7 +1722,7 @@ const translations: Record<string, Record<Language, string>> = {
     en: 'View Case Studies',
     ar: 'عرض دراسات الحالة'
   },
-  
+
   // Common
   'common.next': {
     en: 'Next',

@@ -63,7 +63,7 @@ src/components/ticketing/yilmaz/
 - ✅ Bilingual rule names and preventive actions (EN/AR)
 - ✅ Seasonal factors (Khamsin, Summer, Winter)
 - ✅ Input validation with detailed error messages
-- ✅ No AI, no ML, no learning — pure deterministic logic
+- ✅ No automation, no ML, no learning — pure deterministic logic
 
 **Rules Implemented**:
 1. `YIL-EGY-001` — Khamsin Dust Infiltration & Cabinet Clog

@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-09  
 **Branch:** `feature/fp025a-industrial-ui` (from `origin/main`, **not** `feature/fp024-dowin-external-golden`)  
-**AICS-001:** Presentation only. No ML/AI in execution. Manufacturing truth unchanged.
+**AICS-001:** Presentation only. No advisory inference in execution. Manufacturing truth unchanged.
 
 ---
 
@@ -172,7 +172,7 @@ Legacy live navigations removed from Production QC continue and QualityControl b
 
 ## 10. Screenshots / viewport findings
 
-Screenshots used for review only (not committed). Temp files under Cursor screenshot dir.
+Screenshots used for review only (not committed). Temp files under development tool screenshot dir.
 
 | Viewport | Overflow | Notes |
 |---|---|---|

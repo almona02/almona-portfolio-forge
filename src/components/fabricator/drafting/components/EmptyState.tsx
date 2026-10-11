@@ -4,7 +4,7 @@
  * Enterprise-grade empty state component with contextual messaging,
  * icons, and actionable CTAs for the Drafting Workbench.
  * 
- * Constitutional: Deterministic UI, no ML/AI
+ * Constitutional: Deterministic UI, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

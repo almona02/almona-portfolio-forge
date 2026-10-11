@@ -4,7 +4,7 @@
  * Enterprise-grade typography system for consistent visual hierarchy
  * across the Drafting Workbench.
  * 
- * Constitutional: Deterministic styling, no ML/AI
+ * Constitutional: Deterministic styling, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

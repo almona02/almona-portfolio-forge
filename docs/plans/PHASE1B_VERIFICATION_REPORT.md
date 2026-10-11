@@ -24,7 +24,7 @@
 ### ✅ Step 4: Left Panel (System Configuration)
 - ✅ System Configuration extracted to `systemConfigPanelContent` useMemo (line 949)
 - ✅ Content properly structured in scrollable container
-- ✅ All controls preserved (Pattern Selector, System Pack Info, Constraints, AI Layout button)
+- ✅ All controls preserved (Pattern Selector, System Pack Info, Constraints, automation Layout button)
 
 ### ✅ Step 5: Right Panel (BOM)
 - ✅ BOM moved to `rightPanelContent` via `renderBOM()` (line 1713)

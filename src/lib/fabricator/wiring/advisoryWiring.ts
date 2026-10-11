@@ -13,12 +13,12 @@ import { AdvisoryGate } from './gates/AdvisoryGate';
  * AICS-001 §5.10.2 Tier Classifications:
  * - Tier 2: Collaborative Intelligence (YDT + advisory)
  * - Tier 2 Limited: Suggestions only, no workflow integration
- * - Presentation: Pure read-only, no AI, no state mutation
+ * - Presentation: Pure read-only, no automation, no state mutation
  */
 export const ADVISORY_WIRING = {
   // ================= TIER 2: COLLABORATIVE INTELLIGENCE =================
-  
-  /** AI Suggestions Panel - Alternative design approaches */
+
+  /** automation Suggestions Panel - Alternative design approaches */
   AISuggestionPanel: AdvisoryGate.tier2({
     component: () => import('@/future/advisory-panels/AISuggestionPanel').then(m => ({ default: m.AISuggestionPanel || m.default })),
     purpose: 'Suggest alternative design approaches based on historical patterns',
@@ -58,7 +58,7 @@ export const ADVISORY_WIRING = {
   }),
 
   // ================= TIER 2 LIMITED: SUGGESTIONS ONLY =================
-  
+
   /** Design Mode Selector - Mode switching suggestions */
   DesignModeSelector: AdvisoryGate.tier2Limited({
     component: () => import('@/future/advisory-panels/DesignModeSelector').then(m => ({ default: m.DesignModeSelector || m.default })),
@@ -67,7 +67,7 @@ export const ADVISORY_WIRING = {
   }),
 
   // ================= PRESENTATION LAYER =================
-  
+
   /** Zoom Control - Presentation only */
   ZoomControl: AdvisoryGate.presentation(
     () => import('@/future/ui-experiments/ZoomPresets').then(m => ({ default: m.ZoomPresets || m.default }))

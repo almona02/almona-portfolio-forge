@@ -75,12 +75,12 @@
   },
   "workflow": {
     "title": "Fabricator Workflow Pro",
-    "subtitle": "AI WORKFLOW v4.0",
-    "tagline": "Smart aluminum & UPVC fabrication pipeline: Smart Measuring, Technical Design, AI Optimization, Inventory, Production, Quality Control.",
+    "subtitle": "FABRICATION WORKFLOW v4.0",
+    "tagline": "Smart aluminum & UPVC fabrication pipeline: Smart Measuring, Technical Design, Stock Optimization, Inventory, Production, Quality Control.",
     "workshop_label": "Workshop",
     "header": {
       "fabricator_pro": "FABRICATOR PRO",
-      "ai_workflow": "AI WORKFLOW v4.0",
+      "ai_workflow": "FABRICATION WORKFLOW v4.0",
       "workflow_pro": "Fabricator Workflow Pro"
     },
     "status": {
@@ -139,7 +139,7 @@
       "fabrication_modules": {
         "cutting_optimization": {
           "name": "Cutting Optimization",
-          "description": "AI-powered material nesting"
+          "description": "software-assisted material nesting"
         },
         "machine_control": {
           "name": "Machine Control",
@@ -150,7 +150,7 @@
           "description": "Smart job sequencing"
         },
         "quality_control_ai": {
-          "name": "Quality Control AI",
+          "name": "Quality Control",
           "description": "Computer vision inspection"
         },
         "real_time_analytics": {
@@ -282,7 +282,7 @@
   },
   "inventory": {
     "title": "Inventory Intelligence Hub",
-    "description": "Centralized inventory management with real-time analytics, remnant optimization, and AI-powered stock predictions for Turkish & Egyptian markets.",
+    "description": "Centralized inventory management with real-time analytics, remnant optimization, and software-assisted stock predictions for Turkish & Egyptian markets.",
     "add_profile": "Add Profile",
     "workflow_integration": "Workflow Integration",
     "adding": "Adding...",
@@ -433,11 +433,11 @@
     "steps": {
       "measuring": {
         "title": "Smart Measuring",
-        "description": "Learn how to use our AI-powered measuring tools to quickly and accurately measure window dimensions. Our smart measuring interface guides you through the process step by step."
+        "description": "Learn how to use our software-assisted measuring tools to quickly and accurately measure window dimensions. Our smart measuring interface guides you through the process step by step."
       },
       "design": {
-        "title": "AI-Powered Design",
-        "description": "Discover how our AI design assistant helps you create optimal window configurations. The system suggests profiles, accessories, and layouts based on your measurements."
+        "title": "Assisted Design",
+        "description": "Discover how our design assistant helps you create optimal window configurations. The system suggests profiles, accessories, and layouts based on your measurements."
       },
       "optimization": {
         "title": "Cutting Optimization",
@@ -636,10 +636,10 @@
   },
   "profile_import_tool": {
     "title": "Smart Profile Import Tool",
-    "description": "Import profiles from multiple formats with AI-powered K-factor learning",
+    "description": "Import profiles from multiple formats with software-assisted K-factor learning",
     "tabs": {
       "import": "Import",
-      "kfactor": "K-Factor AI",
+      "kfactor": "K-Factor Assistance",
       "settings": "Settings"
     },
     "upload": {
@@ -661,7 +661,7 @@
     },
     "kfactor": {
       "title": "Smart K-Factor Learning",
-      "description": "AI-powered K-factor suggestions based on imported DXF/DWG measurements",
+      "description": "software-assisted K-factor suggestions based on imported DXF/DWG measurements",
       "auto_optimize": "Auto-Optimize All",
       "auto_optimize_desc": "Automatically apply K-factor suggestions",
       "features": {
@@ -704,7 +704,7 @@
       "import": {
         "title": "Import Settings",
         "kfactor_learning": "K-Factor Learning",
-        "kfactor_learning_desc": "Enable AI K-factor suggestions",
+        "kfactor_learning_desc": "Enable automation K-factor suggestions",
         "enabled": "Enabled",
         "disabled": "Disabled"
       }
@@ -734,7 +734,7 @@
     }
   },
   "profile_scanner_uploader": {
-    "title": "AI-Assisted Engineering Drawing Scanner",
+    "title": "Engineering Drawing Scanner",
     "beta": "BETA",
     "steps": {
       "select": "1. Select Image",
@@ -750,11 +750,11 @@
     },
     "scale": {
       "auto_detect": "Auto-detect scale from drawing",
-      "auto_detect_tooltip": "AI will attempt to detect scale from dimension labels in the image",
+      "auto_detect_tooltip": "The system will attempt to detect scale from dimension labels in the image",
       "manual_scale": "Manual Scale Factor:",
       "manual_scale_unit": "(mm per pixel)",
       "manual_scale_example": "Example: 0.1 means 1 pixel = 0.1 mm (common for engineering drawings)",
-      "ai_active": "AI Scale Detection Active",
+      "ai_active": "automation Scale Detection Active",
       "ai_active_desc": "The system will attempt to detect scale from dimension labels. If successful, you'll be prompted to confirm."
     },
     "processing": {
@@ -766,7 +766,7 @@
     },
     "results": {
       "scale_applied": "Scale Applied",
-      "detected_by_ai": "Detected by AI",
+      "detected_by_ai": "Detected by automation",
       "manually_specified": "Manually specified",
       "quality_assessment": "Quality Assessment",
       "auto_scale_detected": "Auto-scale detected",
@@ -786,7 +786,7 @@
       "view_raw": "View Raw API Response"
     },
     "actions": {
-      "scan_ai": "Scan with AI Detection",
+      "scan_ai": "Scan with automation Detection",
       "scan_manual": "Scan with Manual Scale",
       "scan_another": "Scan Another Drawing",
       "download_svg": "Download SVG",
@@ -800,12 +800,12 @@
       "suggestion": "Suggestion",
       "no_suggestion": "No suggestion available",
       "what_this_means": "What this means:",
-      "high_confidence": "The AI detected a scale with high confidence. You can safely apply it automatically.",
-      "high_confidence_desc": "The AI detected a scale with high confidence. You can safely apply it automatically.",
-      "medium_confidence": "The AI detected a scale with moderate confidence. Please verify the detected value before applying.",
-      "medium_confidence_desc": "The AI detected a scale with moderate confidence. Please verify the detected value before applying.",
-      "low_confidence": "The AI detected a scale with low confidence. Manual verification is recommended.",
-      "low_confidence_desc": "The AI detected a scale with low confidence. Manual verification is recommended.",
+      "high_confidence": "The system detected a scale with high confidence. You can safely apply it automatically.",
+      "high_confidence_desc": "The system detected a scale with high confidence. You can safely apply it automatically.",
+      "medium_confidence": "The system detected a scale with moderate confidence. Please verify the detected value before applying.",
+      "medium_confidence_desc": "The system detected a scale with moderate confidence. Please verify the detected value before applying.",
+      "low_confidence": "The system detected a scale with low confidence. Manual verification is recommended.",
+      "low_confidence_desc": "The system detected a scale with low confidence. Manual verification is recommended.",
       "confidence_high": "High ({percent}%)",
       "confidence_medium": "Medium ({percent}%)",
       "confidence_low": "Low ({percent}%)",
@@ -834,10 +834,10 @@
       "svg_not_available_desc": "SVG file URL not found in results",
       "no_scale": "No Scale Detected",
       "no_scale_title": "No Scale Detected",
-      "no_scale_desc": "AI could not detect a scale. Please enter scale manually.",
+      "no_scale_desc": "The system could not detect a scale. Please enter scale manually.",
       "low_confidence": "Low Confidence Detection",
       "low_confidence_title": "Low Confidence Detection",
-      "low_confidence_desc": "AI detected a scale with low confidence. Please enter scale manually."
+      "low_confidence_desc": "The system detected a scale with low confidence. Please enter scale manually."
     }
   },
   "calibration_wizard": {
@@ -917,8 +917,8 @@
       "test_date": "Test Date"
     },
     "ai": {
-      "training_title": "AI Model Training",
-      "training_desc": "The AI is learning from calibration data. Suggestions will appear once enough data is collected.",
+      "training_title": "Calibration Analysis",
+      "training_desc": "The system is learning from calibration data. Suggestions will appear once enough data is collected.",
       "analyzing": "Analyzing calibration patterns..."
     },
     "quick_insight": {
@@ -936,7 +936,7 @@
   },
   "smart_measuring": {
     "title": "Smart Measuring Interface",
-    "description": "Digital measurement capture with AI-assisted dimension verification",
+    "description": "Digital measurement capture with software-assisted dimension verification",
     "steps": {
       "system": "System Configuration",
       "dimensions": "Dimensions & Layout",
@@ -948,7 +948,7 @@
       "title": "Select System Pack",
       "description": "Choose the system pack for this window unit",
       "no_roles": "This system does not yet expose detailed profile roles.",
-      "ai_recommendation": "AI Recommendation: Based on your region (Egypt), <strong>ROCK 60</strong> is the optimal choice."
+      "ai_recommendation": "Recommendation: Based on your region (Egypt), <strong>ROCK 60</strong> is the optimal choice."
     },
     "dimensions": {
       "title": "Window Dimensions",
@@ -1089,7 +1089,7 @@
     "optimised_jobs": "optimised job",
     "optimised_jobs_plural": "optimised jobs",
     "user": "User",
-    "start_ai_optimization": "Start AI Optimization",
+    "start_ai_optimization": "Start Stock Optimization",
     "optimizing_generating": "Optimizing & Generating G-Code...",
     "optimization_complete": "Optimization Complete",
     "go_to_production": "Go to Production Command",
@@ -1157,7 +1157,7 @@
     "profiles": "Profiles",
     "parts": "Parts",
     "system_constraints": "System constraints and presets are applied automatically to SmartDraw and 3D.",
-    "suggest_ai_layout": "Suggest AI Layout",
+    "suggest_ai_layout": "Suggest automation Layout",
     "structure": "Structure",
     "live_digital_twin": "Live Digital Twin (Apex Engine v6.0)",
     "loading_3d": "Loading 3D Preview...",
@@ -1294,12 +1294,12 @@
     "set_as_default": "Set as Default"
   },
   "cutting_optimization": {
-    "title": "AI-Powered Cutting Optimization",
+    "title": "software-assisted Cutting Optimization",
     "description": "Advanced algorithms for material optimization, waste reduction, and cost efficiency",
     "mass_production": "Mass Production",
     "open_mass_production": "Open Mass Production Cockpit to batch-optimize across all optimized jobs.",
     "panel_title": "Cutting Optimization",
-    "panel_description": "Optimize material usage and minimize waste with AI-powered algorithms",
+    "panel_description": "Optimize material usage and minimize waste with software-assisted algorithms",
     "tabs": {
       "cuts": "Cut Pieces",
       "stock": "Stock",
@@ -1345,9 +1345,9 @@
   },
   "production_command": {
     "title": "Production Command Center",
-    "description": "Review the AI-optimized plan, visualize the cuts, and dispatch to production.",
+    "description": "Review the software-assisted plan, visualize the cuts, and dispatch to production.",
     "generating_plan": "Generating Cutting Plan",
-    "ai_optimizing": "AI is optimizing your material usage...",
+    "ai_optimizing": "The system is optimizing your material usage...",
     "no_optimization": "No Optimization Data",
     "complete_design": "Complete the design phase to generate cutting optimization.",
     "efficiency": "Efficiency",

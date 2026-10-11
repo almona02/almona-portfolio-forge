@@ -13,7 +13,7 @@
 
 ## 🚀 Executive Summary
 
-Almona Portfolio Forge is a production-ready, AI-powered industrial platform that digitally transforms aluminum and UPVC fabrication workshops across Egypt. We have built what international solutions failed to deliver: world-class industrial software made in Egypt, for Egypt.
+Almona Portfolio Forge is a production-ready, software-assisted industrial platform that digitally transforms aluminum and UPVC fabrication workshops across Egypt. We have built what international solutions failed to deliver: world-class industrial software made in Egypt, for Egypt.
 
 **Our Impact (Validated in Pilot Programs):**
 - **93% Time Reduction**: 3.5 hours → 15 minutes per project (validated across 5 pilot workshops)
@@ -133,7 +133,7 @@ We seek a strategic partnership with TIEC to accelerate Egypt's industrial digit
 
 ### Our Unique Value Proposition
 
-1. **Intelligent AI Platform**: The platform improves with usage, learning from workshop data
+1. **Intelligent automation Platform**: The platform improves with usage, learning from workshop data
 2. **Egypt-First Design**: Built specifically for Egyptian workshops, climate, and workflows
 3. **Production-Ready**: Not a prototype - currently deployed in pilot workshops
 4. **Comprehensive Solution**: End-to-end workflow from quote to CNC machine
@@ -159,7 +159,7 @@ We seek a strategic partnership with TIEC to accelerate Egypt's industrial digit
 
 ### Supporting TIEC's Mission
 
-- **Technology Transfer**: Bringing AI/ML capabilities to traditional industries
+- **Technology Transfer**: Bringing advisory inference capabilities to traditional industries
 - **Entrepreneurship**: Supporting Egyptian startup success story
 - **Innovation Ecosystem**: Adding deep-tech industrial software capability
 - **Talent Development**: Creating high-tech employment opportunities for Egyptian engineers
@@ -206,11 +206,11 @@ We seek a strategic partnership with TIEC to accelerate Egypt's industrial digit
 - **Impact**: Measurable efficiency improvements across industrial sector
 - **Success Metrics**: Workshop adoption rate, material waste reduction, time savings
 
-### 2. Egyptian Industrial AI Research Center
+### 2. Egyptian Industrial automation Research Center
 
 - **TIEC Role**: Academic partnerships, research grants, institutional support
 - **Our Role**: Industry data, real-world problems, implementation platform
-- **Focus**: AI for manufacturing optimization, predictive analytics
+- **Focus**: automation for manufacturing optimization, predictive analytics
 - **Outcome**: Research publications, potential patents, academic-industry collaboration
 
 ### 3. ITI-Almona Talent Pipeline
@@ -239,7 +239,7 @@ We seek a strategic partnership with TIEC to accelerate Egypt's industrial digit
 - ✅ **Multi-language Support**: Full Arabic RTL, Turkish, English
 - ✅ **Production Testing**: Validated in real Egyptian workshops
 
-### AI/ML Capabilities
+### advisory inference Capabilities
 
 - **94% Accuracy**: Algorithm prediction for cutting optimization (validated on pilot data)
 - **Continuous Learning**: Platform improves with usage patterns

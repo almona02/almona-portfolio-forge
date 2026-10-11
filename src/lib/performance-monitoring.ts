@@ -91,16 +91,16 @@ class PerformanceMonitoringService {
 
     // Core Web Vitals monitoring
     this.initializeCoreWebVitals();
-    
+
     // Custom performance metrics
     this.initializeCustomMetrics();
-    
+
     // User interaction tracking
     this.initializeInteractionTracking();
-    
+
     // Memory usage monitoring
     this.initializeMemoryMonitoring();
-    
+
     // Network performance monitoring
     this.initializeNetworkMonitoring();
 
@@ -135,14 +135,14 @@ class PerformanceMonitoringService {
   private initializeCustomMetrics() {
     // Time to Interactive (TTI)
     this.measureTimeToInteractive();
-    
+
     // Bundle Loading Time
     this.measureBundleLoadTime();
-    
+
     // Database Query Performance
     this.measureDatabasePerformance();
-    
-    // AI Response Time
+
+    // automation Response Time
     this.measureAIResponseTime();
   }
 
@@ -150,7 +150,7 @@ class PerformanceMonitoringService {
     // Click tracking with performance impact
     document.addEventListener('click', (event) => {
       const startTime = performance.now();
-      
+
       requestAnimationFrame(() => {
         const duration = performance.now() - startTime;
         this.recordInteraction('click', event.target as Element, duration);
@@ -192,35 +192,35 @@ class PerformanceMonitoringService {
       const startTime = performance.now();
       const firstArg = args[0];
       const url = typeof firstArg === 'string' ? firstArg : (firstArg instanceof Request ? firstArg.url : String(firstArg));
-      
+
       // Skip monitoring for non-critical endpoints that may not exist
       const isNonCriticalEndpoint = url.includes('feature_usage_metrics') || url.includes('user_satisfaction_metrics');
-      
+
       try {
         const response = await originalFetch(...args);
         const duration = performance.now() - startTime;
-        
+
         // For non-critical endpoints with 404, don't record metrics or log errors
         if (isNonCriticalEndpoint && response.status === 404) {
           return response; // Return silently for non-critical 404s
         }
-        
+
         this.recordMetric('api_request', duration, 'ms', 'api', {
           url: args[0],
           status: response.status,
           success: response.ok
         });
-        
+
         return response;
       } catch (error) {
         const duration = performance.now() - startTime;
-        
+
         // For non-critical endpoints, don't record metrics or throw errors
         if (isNonCriticalEndpoint) {
           // Return a mock response to prevent error propagation
           return new Response(null, { status: 404, statusText: 'Not Found' });
         }
-        
+
         this.recordMetric('api_request', duration, 'ms', 'api', {
           url: args[0],
           error: error instanceof Error ? error.message : String(error),
@@ -241,7 +241,7 @@ class PerformanceMonitoringService {
         const observer = new PerformanceObserver((list) => {
           list.getEntries().forEach(callback);
         });
-        
+
         // Use new API format for supported entry types
         try {
           observer.observe({ type: entryType, buffered: true });
@@ -351,10 +351,10 @@ class PerformanceMonitoringService {
       (result) => {
         const duration = performance.now() - startTime;
         const memoryDelta = this.getMemoryUsage() - startMemory;
-        
+
         this.recordMetric(`${operationName}_duration`, duration, 'ms', 'api');
         this.recordMetric(`${operationName}_memory`, memoryDelta, 'bytes', 'memory');
-        
+
         return result;
       },
       (error) => {
@@ -478,8 +478,8 @@ class PerformanceMonitoringService {
   }
 
   private measureAIResponseTime() {
-    // Monitor AI chatbot response times
-    // This would be integrated with your AI service calls
+    // Monitor automation chatbot response times
+    // This would be integrated with your automation service calls
   }
 
   private sendToAnalytics(metric: PerformanceMetric): void {
@@ -518,7 +518,7 @@ class PerformanceMonitoringService {
           error_message: usage.error_message,
           performance_data: usage.performance_data
         });
-        
+
         if (error) {
           // Check for 404 or table not found errors
           if (error.code === '42P01' || error.message?.includes('does not exist') || error.message?.includes('404') || error.code === 'PGRST116') {
@@ -538,7 +538,7 @@ class PerformanceMonitoringService {
         this.featureUsageTableExists = false;
       }
     };
-    
+
     // Use requestIdleCallback if available, otherwise setTimeout
     const win = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number };
     if (typeof window !== 'undefined' && win.requestIdleCallback) {
@@ -563,7 +563,7 @@ class PerformanceMonitoringService {
         timestamp: satisfaction.timestamp.toISOString(),
         context: satisfaction.context
       });
-      
+
       if (error) {
         // Check for 404 or table not found errors
         if (error.code === '42P01' || error.message?.includes('does not exist') || error.message?.includes('404') || error.code === 'PGRST116') {
@@ -595,7 +595,7 @@ class PerformanceMonitoringService {
 // React hooks for performance monitoring
 export const usePerformanceMonitoring = () => {
   const [monitoring] = React.useState(() => new PerformanceMonitoringService());
-  
+
   React.useEffect(() => {
     return () => monitoring.stopMonitoring();
   }, [monitoring]);

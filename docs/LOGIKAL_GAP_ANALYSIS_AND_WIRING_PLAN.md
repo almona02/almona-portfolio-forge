@@ -1,14 +1,14 @@
-# ALMONA vs Logikal (Orgadata) — Gap Analysis & Component Wiring Plan
+# ALMONA vs reference system (reference system) — Gap Analysis & Component Wiring Plan
 
-> **Goal**: Transform ALMONA from a collection of impressive but fragmented components into a cohesive, Logikal-class fenestration platform with an unbroken pipeline from project intake to shop-floor production.
+> **Goal**: Transform ALMONA from a collection of impressive but fragmented components into a cohesive, reference system-class fenestration platform with an unbroken pipeline from project intake to shop-floor production.
 
 ---
 
 ## Table of Contents
 
-1. [Logikal Gold Standard Workflow](#1-logikal-gold-standard-workflow)
+1. [reference system Gold Standard Workflow](#1-logikal-gold-standard-workflow)
 2. [ALMONA Current State Assessment](#2-almona-current-state-assessment)
-3. [Gap Analysis: ALMONA vs Logikal](#3-gap-analysis-almona-vs-logikal)
+3. [Gap Analysis: ALMONA vs reference system](#3-gap-analysis-almona-vs-logikal)
 4. [Inventory of Unwired / Fragmented Components](#4-inventory-of-unwired--fragmented-components)
 5. [Wiring Plan — Phase-by-Phase](#5-wiring-plan--phase-by-phase)
 6. [Implementation Priorities](#6-implementation-priorities)
@@ -16,11 +16,11 @@
 
 ---
 
-## 1. Logikal Gold Standard Workflow
+## 1. reference system Gold Standard Workflow
 
-Logikal by Orgadata is the #1 fenestration software globally. Its power comes from a **single unbroken data pipeline** where every step feeds the next automatically.
+reference system by reference system is the #1 fenestration software globally. Its power comes from a **single unbroken data pipeline** where every step feeds the next automatically.
 
-### Logikal's 5-Phase Pipeline
+### reference system's 5-Phase Pipeline
 
 | Phase | What Happens | Key Capability |
 |-------|-------------|----------------|
@@ -30,14 +30,14 @@ Logikal by Orgadata is the #1 fenestration software globally. Its power comes fr
 | **4. Production & CAD** | Construction drawings, installation drawings, bar drawings, CNC data | CAD-Suite 2D; machining data auto-generated from design |
 | **5. Shop Floor (MES)** | Digital work instructions, barcode traceability, CE marking, FPC docs | Real-time production dashboards; component-level tracking |
 
-### What Makes Logikal Best-in-Class
+### What Makes reference system Best-in-Class
 
 1. **Unbroken data chain**: Design data flows directly to CNC machines — no re-entry
 2. **Plausibility checks at every step**: System validates feasibility continuously, not just at the end
 3. **Supplier database integration**: 400+ suppliers with live pricing and technical data
 4. **Automatic document generation**: Bar drawings, workshop drawings, labels, CE documentation — all auto-generated from the design
 5. **MES integration**: Shop-floor tracking with barcode scanning, real-time dashboards
-6. **BIM round-trip**: Import from Revit → design in Logikal → export back to Revit with full specs
+6. **BIM round-trip**: Import from Revit → design in reference system → export back to Revit with full specs
 
 ---
 
@@ -63,7 +63,7 @@ Logikal by Orgadata is the #1 fenestration software globally. Its power comes fr
 
 ### The Core Problem: Fragmentation
 
-ALMONA has **~70% of Logikal's capability already built** — but the components are disconnected:
+ALMONA has **~70% of reference system's capability already built** — but the components are disconnected:
 
 ```
 CURRENT STATE (Fragmented):
@@ -101,22 +101,22 @@ CURRENT STATE (Fragmented):
 
 ---
 
-## 3. Gap Analysis: ALMONA vs Logikal
+## 3. Gap Analysis: ALMONA vs reference system
 
 ### Critical Gaps (Must Fix — These Break the Pipeline)
 
-| # | Gap | Logikal Behavior | ALMONA Current State | Impact |
+| # | Gap | reference system Behavior | ALMONA Current State | Impact |
 |---|-----|-----------------|---------------------|--------|
 | G1 | **BOM not shown in workflow** | BOM auto-generates after design, displayed as editable parts list | `PresetAwareBOMGenerator` exists but is never called from workflow UI | User cannot see what they're manufacturing |
 | G2 | **No quote generation in workflow** | Quote auto-generates from BOM with customer pricing | `QuoteService` + `CostCalculator` exist but aren't triggered | Cannot price jobs → cannot run a business |
 | G3 | **No bar drawings** | Auto-generated per-bar technical drawings with machining marks | `BarDrawing.tsx` component exists but not in production workflow | Workshop cannot read cut instructions |
 | G4 | **No cut sheets** | Per-position cutting lists with angles, lengths, quantities | Data exists in `OptimizationResult.cuttingPlan` but no formatted output | Operators have no instructions |
 | G5 | **No production labels** | QR/barcode labels per piece for traceability | No label generation exists | Cannot track pieces on shop floor |
-| G6 | **Workflow store missing BOM + Quote** | N/A (Logikal uses database) | `workflowStore` has no `bom` or `quote` fields | Data chain broken between steps |
+| G6 | **Workflow store missing BOM + Quote** | N/A (reference system uses database) | `workflowStore` has no `bom` or `quote` fields | Data chain broken between steps |
 
 ### Important Gaps (Should Fix — These Reduce Competitiveness)
 
-| # | Gap | Logikal Behavior | ALMONA Current State | Impact |
+| # | Gap | reference system Behavior | ALMONA Current State | Impact |
 |---|-----|-----------------|---------------------|--------|
 | G7 | **No plausibility checks** | Continuous validation at every step (structural, thermal, hardware fit) | No validation between workflow steps | Invalid designs reach production |
 | G8 | **No U-value / thermal calc** | Auto-calculates U-values, condensation risk | Glass BOM has U-value but no thermal analysis UI | Cannot certify for building codes |
@@ -128,7 +128,7 @@ CURRENT STATE (Fragmented):
 
 ### Strategic Gaps (Future — These Enable Market Leadership)
 
-| # | Gap | Logikal Behavior | ALMONA Current State |
+| # | Gap | reference system Behavior | ALMONA Current State |
 |---|-----|-----------------|---------------------|
 | G14 | **No MES / shop-floor system** | Full MES with digital work instructions, barcode scanning | `ProductionDashboard` exists but is view-only |
 | G15 | **No supplier database integration** | 400+ suppliers with live pricing | Hardcoded system packs; `LmePricingService` exists but unused |
@@ -289,7 +289,7 @@ OptimizationResult.cuttingPlan
 
 ### Phase 2: Add Plausibility & Validation Layer (Weeks 4–5)
 
-**Goal**: Logikal-style continuous validation. Catch problems before they reach the shop floor.
+**Goal**: reference system-style continuous validation. Catch problems before they reach the shop floor.
 
 #### 2.1 Inter-Step Validation
 
@@ -402,7 +402,7 @@ Settings                (existing)
 | `AluminumPricingCalculator` | BOM cost calculation | More accurate material costing |
 | `MachinePricingService` | Shop page — machine pricing | Dynamic machine pricing |
 | `PricingImportExportService` | Settings — "Import/Export Pricing" | Bulk pricing updates from supplier sheets |
-| `YDTPricingOracle` | YDT Agent — pricing questions | AI agent can answer pricing questions |
+| `YDTPricingOracle` | YDT Agent — pricing questions | automation agent can answer pricing questions |
 
 #### 4.2 Teaching & Reasoning Integration
 
@@ -432,7 +432,7 @@ Settings                (existing)
 
 ### Phase 5: Multi-Position Project View (Weeks 10–11)
 
-**Goal**: Logikal-style project-level aggregation. See all positions together.
+**Goal**: reference system-style project-level aggregation. See all positions together.
 
 #### 5.1 Project Summary Dashboard
 
@@ -461,7 +461,7 @@ Settings                (existing)
 
 ### Phase 6: Order Management & Tracking (Weeks 12–13)
 
-**Goal**: Quote → Order conversion with status tracking (Logikal's Phase 3).
+**Goal**: Quote → Order conversion with status tracking (reference system's Phase 3).
 
 #### 6.1 Order Management
 
@@ -599,7 +599,7 @@ For duplicate components, use the **variant pattern**:
 2. **Egyptian market focus** — Governorate-aware, Arabic-first, Egyptian patterns
 3. **Dual-mode design** — Both wizard and CAD modes with data conversion between them
 4. **99.8% BOM accuracy engine** — The engine is excellent; it just needs to be shown to users
-5. **Modern tech stack** — React + TypeScript + Vite is far more modern than Logikal's Windows desktop app
+5. **Modern tech stack** — React + TypeScript + Vite is far more modern than reference system's Windows desktop app
 
 ### What ALMONA Must Fix to Compete
 
@@ -610,6 +610,6 @@ For duplicate components, use the **variant pattern**:
 
 ### The Bottom Line
 
-ALMONA is **not missing capability** — it's missing **connections**. The engines exist. The components exist. The data models exist. What's needed is the wiring to make them into a single, unbroken pipeline. That's what separates a prototype from a platform, and that's what Logikal gets right.
+ALMONA is **not missing capability** — it's missing **connections**. The engines exist. The components exist. The data models exist. What's needed is the wiring to make them into a single, unbroken pipeline. That's what separates a prototype from a platform, and that's what reference system gets right.
 
 **Estimated total effort**: 13 weeks for all 6 phases. Phase 1 alone (3 weeks) transforms ALMONA from a demo into a usable fabrication tool.

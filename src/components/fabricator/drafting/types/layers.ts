@@ -3,7 +3,7 @@
  * 
  * Professional CAD layer management with high precision
  * 
- * Constitutional: Deterministic layer operations, no ML/AI
+ * Constitutional: Deterministic layer operations, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

@@ -42,7 +42,7 @@ interface UseCanvasEventsProps {
   setIsPanning: (p: boolean) => void;
   panStart: Point | null;
   setPanStart: (p: Point | null) => void;
-  
+
   isRotating: boolean;
   setIsRotating: (r: boolean) => void;
   rotationStart: Point | null;
@@ -51,7 +51,7 @@ interface UseCanvasEventsProps {
   setRotationCenter: (p: Point | null) => void;
   rotationStartAngle: number | null;
   setRotationStartAngle: (a: number | null) => void;
-  
+
   // Drawing State
   isDrawing: boolean;
   setIsDrawing: (d: boolean) => void;
@@ -59,7 +59,7 @@ interface UseCanvasEventsProps {
   setStartPoint: (p: Point | null) => void;
   currentPoint: Point | null;
   setCurrentPoint: (p: Point | null) => void;
-  
+
   // Specific Tool States
   arcCenter: Point | null; // Repurposed as Arc Start (P1)
   setArcCenter: (p: Point | null) => void;
@@ -67,22 +67,22 @@ interface UseCanvasEventsProps {
   setArcEnd: (p: Point | null) => void;
   arcStartAngle: number | null; // Unused in 3-pt, but kept for compat if needed?
   setArcStartAngle: (a: number | null) => void;
-  
+
   polygonPoints: Point[];
   setPolygonPoints: (pts: Point[]) => void;
-  
+
   splinePoints: Point[];
   setSplinePoints: (pts: Point[]) => void;
-  
+
   // Text Tool
   setTextInputMode: (val: { position: Point; text: string } | null) => void;
-  
+
   // Block Placement
   blockPlacementScale: number;
   setBlockPlacementScale: (n: number) => void;
   blockPlacementRotation: number;
   setBlockPlacementRotation: (n: number) => void;
-  
+
   // Patterns
   setPatternType: (t: PatternType) => void;
   setPatternConfigOpen: (b: boolean) => void;
@@ -106,10 +106,10 @@ interface UseCanvasEventsProps {
   setBoxSelectStart: (p: Point | null) => void;
   boxSelectEnd: Point | null;
   setBoxSelectEnd: (p: Point | null) => void;
-  
+
   // NEW: Hover State
   setHoveredElementIndex: (i: number | null) => void;
-  
+
   // NEW: Mouse Position Callback
   onMousePositionChange?: (point: Point) => void;
 
@@ -121,10 +121,10 @@ interface UseCanvasEventsProps {
   handleHardwarePlacement: (point: Point, tool: DraftingTool) => void;
   handleStructuralPlacement: (point: Point, tool: DraftingTool) => void;
   logToolOperation: (tool: DraftingTool, operation: string, params: Record<string, unknown>, result?: Record<string, unknown>) => void;
-  
+
   // Refs
   svgRef: React.RefObject<HTMLElement>;
-  
+
   // Handlers
 
 }
@@ -211,7 +211,7 @@ export const useCanvasEvents = ({
         geometry.polygons, 
         geometry.splines
     ];
-    
+
     for (const arr of allArrays) {
         for (let i = 0; i < arr.length; i++) {
             if ((arr[i] as { id?: string }).id === elementRef.id) return globalIndex;
@@ -427,12 +427,12 @@ export const useCanvasEvents = ({
            try {
                // Calculate circle from p1 (Start), p2 (End), p3 (Mid)
                const circle = calculateCircleFromThreePoints(arcCenter, arcEnd, point);
-               
+
                if (!circle) {
                    toast.error('Points are collinear');
                    return;
                }
-               
+
                // Logic to determine direction (CCW vs CW / Swap Start-End)
                // geometryUtils returns standard normalized angles [0, 2π]
                let { startAngle, endAngle } = circle;
@@ -441,15 +441,15 @@ export const useCanvasEvents = ({
                // Calculate p3 angle
                const midAngle = Math.atan2(point.y - circle.cy, point.x - circle.cx);
                const midNorm = (midAngle + 2 * Math.PI) % (2 * Math.PI);
-               
+
                // Calculate sweep
                let sweep = endAngle - startAngle;
                if (sweep < 0) sweep += 2 * Math.PI; // Normalize to [0, 2π]
-               
+
                // Calculate mid relative to start
                let midRel = midNorm - startAngle;
                if (midRel < 0) midRel += 2 * Math.PI;
-               
+
                // If midRel > sweep, then p3 is NOT in the CCW path.
                // This means we need the "other" arc (the major arc if sweep < 180, or minor if sweep > 180).
                // To achieve this in a system that draws Start->End CCW, we swap Start and End.
@@ -459,7 +459,7 @@ export const useCanvasEvents = ({
                    startAngle = endAngle;
                    endAngle = temp;
                }
-               
+
                const arc: Arc = { 
                    cx: circle.cx, 
                    cy: circle.cy, 
@@ -467,7 +467,7 @@ export const useCanvasEvents = ({
                    startAngle, 
                    endAngle 
                };
-               
+
                drafting.addArc(arc);
                logToolOperation('arc', 'create_3pt_arc', { p1: arcCenter, p2: arcEnd, p3: point }, { arc });
            } catch (error) {
@@ -517,10 +517,10 @@ export const useCanvasEvents = ({
               try { validatedPoint = validatePoint(point); } catch (_error) { toast.error('Invalid placement position'); return; }
               const block = drafting.getBlockDefinitions?.()?.find((b) => b.id === placingBlockId);
               if (!block) { toast.error('Block not found'); return; }
-    
+
               const validatedScale = isFinite(blockPlacementScale) && blockPlacementScale > 0 ? blockPlacementScale : 1.0;
               const validatedRotation = isFinite(blockPlacementRotation) ? blockPlacementRotation : 0;
-              
+
               try {
                 const rotationRad = (validatedRotation * Math.PI) / 180;
                 (drafting).insertBlock?.(placingBlockId, validatedPoint, { x: validatedScale, y: validatedScale }, rotationRad);
@@ -682,17 +682,17 @@ export const useCanvasEvents = ({
         setPanStart({ x: e.clientX, y: e.clientY });
         return;
     }
-    
+
     const point = getSVGPoint(e.clientX, e.clientY);
-    
-    // Always track cursor position for tool previews
+
+    // Always track pointer position for tool previews
     setCursorPosition(point);
 
     // Notify parent of mouse position change (optional, for status bar etc)
     if (_onMousePositionChange) {
         _onMousePositionChange(point);
     }
-    
+
     if (isRotating && rotationCenter && rotationStartAngle !== null) {
         const currentAngle = Math.atan2(point.y - rotationCenter.y, point.x - rotationCenter.x);
         const deltaAngle = currentAngle - rotationStartAngle;
@@ -715,7 +715,7 @@ export const useCanvasEvents = ({
 
     if (isDrawing) setCurrentPoint(point);
     if (isBoxSelecting) setBoxSelectEnd(point);
-    
+
      // Hover Logic
     if (selectedTool === 'select') {
          // Throttling for hover is less critical if the array is small, 
@@ -742,7 +742,7 @@ export const useCanvasEvents = ({
         setIsPanning(false); setPanStart(null);
         return;
     }
-    
+
     if (isBoxSelecting && boxSelectStart && boxSelectEnd) {
        const point = getSVGPoint(e.clientX, e.clientY);
        const finalEnd = point;
@@ -767,7 +767,7 @@ export const useCanvasEvents = ({
     }
 
     const point = getSVGPoint(e.clientX, e.clientY);
-    
+
     if (isDrawing && startPoint) {
        if (selectedTool === 'rectangle') {
           const rect = {
@@ -776,7 +776,7 @@ export const useCanvasEvents = ({
           };
           const snapped = drafting.snapToGrid(rect);
           const validated = drafting.validateAgainstTemplates(snapped);
-          
+
           if (validated.width > 10 && validated.height > 10) {
              if (selectedMaterial && selectedSystemPackId && (selectedMaterial === 'aluminum' || selectedMaterial === 'upvc')) {
                  const spec = getMaterialSpec(selectedSystemPackId) ?? getDefaultMaterialSpec(selectedMaterial);
@@ -839,7 +839,7 @@ export const useCanvasEvents = ({
       setLinearArrayStart(null); setTrimTargetLine(null); setExtendTargetLine(null);
       setFilletLine1(null); setChamferLine1(null);
       drafting.clearSelection();
-    } 
+    }
     else if (e.key === 'Delete' || e.key === 'Backspace') {
       drafting.deleteSelected();
     }

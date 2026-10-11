@@ -16,7 +16,7 @@ A **prestigious, eye-catching link** to the YDT Prestige Agent has been added to
    - Smooth color transitions
 4. **Clear Messaging**:
    - "YDT Prestige Agent" (bold, gradient text)
-   - "AI-Powered Machine Assistant • 95% Accuracy" (subtitle)
+   - "software-assisted Machine Assistant • 95% Accuracy" (subtitle)
 5. **Responsive**: Works perfectly on mobile, tablet, and desktop
 
 ### Location:
@@ -48,7 +48,7 @@ The link appears **below the main action buttons** in the Hero section, making i
 When users click the link:
 - Navigates to `/prestige-agent`
 - Opens the full YDT Prestige Agent interface
-- Ready to chat with AI about AIM 7510 machine
+- Ready to chat with automation about AIM 7510 machine
 
 ## ✨ Production Ready
 

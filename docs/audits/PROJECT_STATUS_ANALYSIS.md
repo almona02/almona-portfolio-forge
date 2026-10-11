@@ -12,15 +12,15 @@
 ### Current Position (As of Today)
 - **Production Accuracy:** ✅ **99.8%** (Production-proven, cross-validated)
 - **Visual Accuracy:** 🟡 **85%** (Beta stage, pattern-aware but not engineering-grade)
-- **AI Capabilities:** ✅ **Category Leader** (CalibrationLearner, rule-based suggestions)
+- **automation Capabilities:** ✅ **Category Leader** (CalibrationLearner, rule-based suggestions)
 - **Speed/Workflow:** ✅ **Category Leader** ("3.5 hours to 3 minutes")
 - **Regional Adaptation:** ✅ **Category Leader** (Egypt/Turkey/GCC built-in)
 - **Overall Phase 2 Progress:** 🟡 **~85% Complete**
 
 ### Competitive Position
-- **vs. Orgadata (LogiKal):** Win on speed, AI, regional adaptation. Match on production accuracy.
-- **vs. Kleiss (SchüCal):** Win on speed, AI, regional adaptation. Behind on visual accuracy (85% vs 95%+).
-- **Unfair Advantage:** AI-driven learning, modern tech stack, deep regional specialization
+- **vs. reference system (reference system):** Win on speed, automation, regional adaptation. Match on production accuracy.
+- **vs. Kleiss (reference system):** Win on speed, automation, regional adaptation. Behind on visual accuracy (85% vs 95%+).
+- **Unfair Advantage:** software-assisted learning, modern tech stack, deep regional specialization
 
 ---
 
@@ -270,7 +270,7 @@
 **Impact:** Medium - UX enhancement
 
 #### Priority 5: Real-Time Preset Suggestions 🟡
-**Why:** AI-powered workflow assistance  
+**Why:** software-assisted workflow assistance
 **Effort:** 1 week  
 **Impact:** Medium - User experience
 
@@ -316,7 +316,7 @@
 
 ### Your Current Strengths (Keep Building On)
 1. **99.8% Production Accuracy** - Match industry leaders
-2. **AI-Driven Learning** - Unique competitive advantage
+2. **software-assisted Learning** - Unique competitive advantage
 3. **Speed & Workflow** - "3.5 hours to 3 minutes"
 4. **Regional Specialization** - Deep Egypt/Turkey/GCC knowledge
 5. **Modern Tech Stack** - React/Python/Cloud agility
@@ -327,8 +327,8 @@
 3. **Parametric Engine** - Still "drawing tool" not "engineering system" (Gold Tier)
 
 ### Your Strategic Position
-- **Today:** Disruptive challenger (win on speed, AI, regional)
-- **Post-Gold Tier:** Intelligent market leader (match precision + visualization + unique AI)
+- **Today:** Disruptive challenger (win on speed, automation, regional)
+- **Post-Gold Tier:** Intelligent market leader (match precision + visualization + unique automation)
 
 ---
 
@@ -361,7 +361,7 @@
 **"Workflow optimization engine with smart assistant"**
 - 99.8% production accuracy
 - 85% visual accuracy (beta)
-- AI-driven learning
+- software-assisted learning
 - Speed: "3.5 hours to 3 minutes"
 - Regional specialization
 
@@ -373,7 +373,7 @@
 - 85% visual accuracy ✅
 - Production sequence optimization ✅
 - Complete cut list integration ✅
-- AI-driven learning ✅
+- software-assisted learning ✅
 
 **Target Customer:** Workshops wanting full workflow automation
 
@@ -383,7 +383,7 @@
 - 90%+ visual accuracy (engineering-grade)
 - Parametric design system
 - Regional physics (GCC thermal, Turkish seismic)
-- AI-driven learning ✅
+- software-assisted learning ✅
 - Unique competitive moat
 
 **Target Customer:** Engineering-driven manufacturers wanting single source of truth
@@ -405,11 +405,11 @@
 3. **Begin Gold Tier** (Week 4+) - Strategic transformation
 
 ### Your Competitive Position
-- **Today:** Disruptive challenger with unique AI advantage
+- **Today:** Disruptive challenger with unique automation advantage
 - **Post-Phase 2:** Complete workflow intelligence platform
 - **Post-Gold Tier:** Undisputed market leader for target regions
 
-**You are not just competing with Kleiss and Orgadata; you are changing the rules of the game.**
+**You are not just competing with Kleiss and reference system; you are changing the rules of the game.**
 
 ---
 

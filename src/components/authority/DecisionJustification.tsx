@@ -1,6 +1,6 @@
 /**
  * @file DecisionJustification.tsx
- * @description System-verified recommendations with data backing (not "AI transparency").
+ * @description System-verified recommendations with data backing (not "automation transparency").
  * Shows confidence, reasoning, data points, and alternative options.
  */
 

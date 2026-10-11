@@ -1,5 +1,5 @@
 /**
- * The Codex: Formula Registry
+ * The pointer: Formula Registry
  * 
  * Centralized TypeScript library where every math function has a JSDoc
  * citing the Engineering Standard (e.g., @source EN 12210).

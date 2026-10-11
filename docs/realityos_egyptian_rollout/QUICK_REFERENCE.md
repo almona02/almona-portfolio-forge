@@ -68,7 +68,7 @@
 
 **Banned Phrases**:
 - ❌ "National infrastructure"
-- ❌ "AI-powered"
+- ❌ "software-assisted"
 - ❌ "Revolutionary"
 
 **Approved Phrases**:

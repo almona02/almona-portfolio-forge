@@ -8,7 +8,7 @@
  * - Labor costs (optional)
  * - Markup and profit margins
  * 
- * Constitutional: Deterministic calculations, no ML/AI
+ * Constitutional: Deterministic calculations, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

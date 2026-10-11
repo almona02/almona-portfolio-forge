@@ -8,7 +8,7 @@
  *   1. explicit job/project settings
  *   2. selected machine override
  *   3. selected SystemPack / profile override
- *   4. named named-profile (e.g. yilmazcad-parity)
+ *   4. named named-profile (e.g. reference system-parity)
  *   5. platform default
  *
  * YilmazCAD/DoWin numbers are a named parity profile, not a claim that every
@@ -37,7 +37,7 @@ export interface ManufacturingSettings {
   glazingClearanceMm: number;
   sashOffsetMm: number;
   pvcMullionOffsetMm: number;
-  /** Bar-end trim reserved during packing (DoWin TrimCut analogue). */
+  /** Bar-end trim reserved during packing (reference system TrimCut analogue). */
   trimCutMm: number;
   /**
    * Report-header "End Deduction Total" in AlmonaCuttingEngine.

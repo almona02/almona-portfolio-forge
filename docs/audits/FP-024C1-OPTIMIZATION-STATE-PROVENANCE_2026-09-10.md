@@ -76,7 +76,7 @@ FP-024C.1 answers one question:
 
 Fresh A is ingested as one newly solved observation. Catalog classifier: **AMBIGUOUS** (`cannot claim repeatability`). This is **not** `PERSISTED_STATE_EFFECT_PROVEN`, **not** `ALTERNATIVE_OPTIMIZER_SOLUTION`, **not** `OPTIMIZER_NONDETERMINISM_OR_TIE_BREAKING`.
 
-This audit does **not** claim an ALMONA source finding explains DoWin internals.
+This audit does **not** claim an ALMONA source finding explains reference system internals.
 
 ---
 
@@ -98,7 +98,7 @@ Historical FP-024C.1 files already on the branch (`dowinPhysicalLengthFixture.ts
 
 ## ALMONA forensic file:line findings
 
-These rows describe **ALMONA**. They do not explain DoWin.
+These rows describe **ALMONA**. They do not explain reference system.
 
 | Surface | file:line | Classification | Defect? |
 |---------|-----------|----------------|---------|
@@ -113,7 +113,7 @@ These rows describe **ALMONA**. They do not explain DoWin.
 
 Production optimizer behavior was **not** patched. Defects are evidence-infrastructure classifications only.
 
-These ALMONA surfaces can contaminate **ALMONA** reproducibility evidence (persisted result reuse, equal-length sort order, remnant cache). They are not a DoWin causal claim.
+These ALMONA surfaces can contaminate **ALMONA** reproducibility evidence (persisted result reuse, equal-length sort order, remnant cache). They are not a reference system causal claim.
 
 ---
 
@@ -138,7 +138,7 @@ Fingerprint **excludes** stock-bar UUID and report timestamp. Comparison is not 
 
 ---
 
-## External evidence (already measured; no new DoWin run)
+## External evidence (already measured; no new reference system run)
 
 1B original topology: KASA 965 / KANAT 2203 / ORTA 5080 / CITA 206 / 6160.
 
@@ -488,7 +488,7 @@ The old `FP024C1_FRESH_B` keeps its classification **INVALID_PRE_RUN / STOCK_STA
 3. Do **not** restore CITA/KANAT/KASA/ORTA quantities. Current warehouse is frozen FP-024C.3 baseline **V2** (ORTA 100). ORTA must not be set back to 0 or artificially decremented.
 4. Fresh B and Fresh C stay **BLOCKED**. The FP-024C.3 controlled triplicate is **complete** on baseline V2 — `FP024C3_RUN_A`, `FP024C3_RUN_B` and `FP024C3_RUN_C` all `MEASURED` and all `IMMUTABLE_VERIFIED`. No fourth solve is authorized.
 
-**Implication of the controlled triplicate for FP-024C.1.** The original FP-024C.1 question was whether the Fresh A / historical 1B difference came from stale optimizer state. The triplicate does not answer that question — it was run under baseline V2 and cannot be compared across baselines — but it does change what the FP-024C.1 evidence can be read to mean. Two controlled fresh solves under measured-identical inputs produced different bar assignments, so a topology difference between two DoWin runs is **no longer sufficient on its own** to infer inherited state or a hidden input difference. Any future state-provenance claim must therefore rule out the run-to-run variation now documented in FP-024C.3, and `evaluateFreshRunIntake` remains the required gate. This weakens FP-024C.1's inferential power; it does not resolve it. The FP-024C.3 verdict now exists and was accepted at independent review on 13 September 2026, but 90° stays **GATED**: the same review reprioritised **FP-027 — Optimization Required-Parts Conservation Forensics** ahead of the compensation control, because the repeatable `21 → 24` required-parts surplus is a manufacturing-safety invariant violation. 90° reopens after FP-027 closes.
+**Implication of the controlled triplicate for FP-024C.1.** The original FP-024C.1 question was whether the Fresh A / historical 1B difference came from stale optimizer state. The triplicate does not answer that question — it was run under baseline V2 and cannot be compared across baselines — but it does change what the FP-024C.1 evidence can be read to mean. Two controlled fresh solves under measured-identical inputs produced different bar assignments, so a topology difference between two reference system runs is **no longer sufficient on its own** to infer inherited state or a hidden input difference. Any future state-provenance claim must therefore rule out the run-to-run variation now documented in FP-024C.3, and `evaluateFreshRunIntake` remains the required gate. This weakens FP-024C.1's inferential power; it does not resolve it. The FP-024C.3 verdict now exists and was accepted at independent review on 13 September 2026, but 90° stays **GATED**: the same review reprioritised **FP-027 — Optimization Required-Parts Conservation Forensics** ahead of the compensation control, because the repeatable `21 → 24` required-parts surplus is a manufacturing-safety invariant violation. 90° reopens after FP-027 closes.
 5. RUN_A is deliberately **not** comparable to Fresh A. Fresh A solved against V1-era optimizer stock (48 / 98 / 14 / 0) and RUN_A against V2 (46 / 96 / 13 / 100), so `classifyProvenanceFreshStateExperiment` excludes FP-024C.3 runs. Fresh A's `warehouseStock` axis can never again be `IDENTICAL` to any later run, exactly as this audit already recorded.
 5. Do not merge PR #32. Physical-length score stays 6.0/10. Production formulas stay FROZEN.
 

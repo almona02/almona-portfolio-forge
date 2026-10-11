@@ -2,7 +2,7 @@
  * Simplified Optimization Engine - Phase 2: University-Grade Precision
  * 
  * This is the ENGINE that saves the business.
- * No complex algorithms, no AI, just math that works.
+ * No complex algorithms, no automation, just math that works.
  * 
  * Enhanced to support all 25+ profile roles with comprehensive type safety.
  * Maintains backward compatibility with legacy role names.
@@ -29,7 +29,7 @@ export interface Cut {
   id: string;
   label: string;
   plannedLength: number; // mm - Original design length
-  /** 
+  /**
    * Profile role - supports all 25+ roles from Profile['profileRole']
    * Legacy roles ('frame', 'sash', 'mullion', 'transom', 'bead', 'screen_sash') 
    * are maintained for backward compatibility
@@ -130,7 +130,7 @@ export class SimplifiedOptimizationEngine {
         const kerf = isLastCut 
           ? DEFAULT_BAR_VALUES.DEFAULT_LAST_CUT_KERF_MM 
           : this.micronEngine.getConfig().sawBladeKerf;
-        
+
         // Correction 1: Floating Point Precision
         const toPrecision = (num: number) => 
           Math.round(num * OPTIMIZATION_PRECISION.PRECISION_MULTIPLIER) / OPTIMIZATION_PRECISION.PRECISION_MULTIPLIER;

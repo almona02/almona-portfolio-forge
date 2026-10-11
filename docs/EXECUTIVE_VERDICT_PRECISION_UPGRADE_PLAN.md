@@ -128,7 +128,7 @@ In audits, retroactive events are worse than missing events. Some systems "backf
 
 ### Current Position
 
-**LogiKal / KLAES:**
+**reference system / reference system:**
 → Production orchestration systems
 
 **ALMONA (Current):**
@@ -136,7 +136,7 @@ In audits, retroactive events are worse than missing events. Some systems "backf
 
 ### Post-Phase 3 Position
 
-**LogiKal / KLAES:**
+**reference system / reference system:**
 → Production orchestration systems
 
 **ALMONA (Post Phase 3):**

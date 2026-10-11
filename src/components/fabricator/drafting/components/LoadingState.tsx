@@ -4,7 +4,7 @@
  * Enterprise-grade loading state component with skeleton screens,
  * progress indicators, and contextual messaging for the Drafting Workbench.
  * 
- * Constitutional: Deterministic UI, no ML/AI
+ * Constitutional: Deterministic UI, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

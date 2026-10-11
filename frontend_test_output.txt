@@ -34944,7 +34944,7 @@ Hi, looks like you are running TensorFlow.js in Node.js. To speed things up dram
 
  [31m❯[39m src/components/fabricator/smartscan/ProfileScannerUploader.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 170[2mms[22m[39m
 [31m   [31m×[31m ProfileScannerUploader[2m > [22mrenders uploader controls (smoke test)[39m[32m 169[2mms[22m[39m
-[31m     → Unable to find an element with the text: Profile Scanner (Tier 2 - AI Assisted). This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+[31m     → Unable to find an element with the text: Profile Scanner (Tier 2 - software-assisted). This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
 
 Ignored nodes: comments, script, style
 [36m<body>[31m
@@ -45007,7 +45007,7 @@ Error {
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[56/107]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/fabricator/smartscan/ProfileScannerUploader.test.tsx[2m > [22mProfileScannerUploader[2m > [22mrenders uploader controls (smoke test)
-[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: Profile Scanner (Tier 2 - AI Assisted). This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: Profile Scanner (Tier 2 - software-assisted). This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
 
 Ignored nodes: comments, script, style
 [36m<body>[39m
@@ -45202,7 +45202,7 @@ Ignored nodes: comments, script, style
 [36m [2m❯[22m src/components/fabricator/smartscan/ProfileScannerUploader.test.tsx:[2m11:14[22m[39m
     [90m  9| [39m
     [90m 10| [39m    [34mexpect[39m(
-    [90m 11| [39m      screen[33m.[39m[34mgetByText[39m([32m"Profile Scanner (Tier 2 - AI Assisted)"[39m)
+    [90m 11| [39m      screen[33m.[39m[34mgetByText[39m([32m"Profile Scanner (Tier 2 - software-assisted)"[39m)
     [90m   | [39m             [31m^[39m
     [90m 12| [39m    )[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
     [90m 13| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m"Select Image"[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
@@ -45411,7 +45411,7 @@ Received: [31m"HX-[7m16[27m-A-C"[39m
 [31m[1mAssertionError[22m: expected 'This hardener code selection is deter…' to contain 'no ML'[39m
 
 Expected: [32m"no ML"[39m
-Received: [31m"This hardener code selection is deterministic and rule-based. No AI/ML inference was used. All outputs require human validation by qualified professionals. No engineering judgment, structural analysis, or design authority is claimed."[39m
+Received: [31m"This hardener code selection is deterministic and rule-based. No advisory inference inference was used. All outputs require human validation by qualified professionals. No engineering judgment, structural analysis, or design authority is claimed."[39m
 
 [36m [2m❯[22m src/tests/fabricator/hardener/HardenerIntegration.test.ts:[2m468:49[22m[39m
     [90m466| [39m        [34mexpect[39m(result[33m.[39mdeterministic)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
