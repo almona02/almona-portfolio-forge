@@ -7,6 +7,9 @@ on:
   pull_request:
     paths:
       - "tests/e2e/fabricator-measure-design-reload.spec.ts"
+      - "tests/e2e/fabricator-project-1018-cut-chain.spec.ts"
+      - "scripts/e2e-seed-mfg-1018.ts"
+      - "src/lib/supabase/fabricatorClientV2.ts"
       - "tests/e2e/fabricator-design-tuning-pickers.spec.ts"
       - "src/components/fabricator/SmartMeasuringInterface.tsx"
       - "src/components/fabricator/EnhancedMeasurementTools.tsx"

@@ -20,7 +20,7 @@ ALMONA Portfolio Forge is an industrial computing platform for aluminum & UPVC f
 
 Standard commands are in `package.json` scripts. Key ones:
 
-- **Lint**: `npm run lint` — runs ESLint on `src/`. Expect ~19k warnings (existing state); 0 errors is the goal.
+- **Lint**: `npm run lint` — runs ESLint on `src/`. Measured 2026-10-11: exit 0 with 0 errors and 15792 warnings; keep errors at 0.
 - **Tests (frontend)**: `npm run test` — Vitest; ~126 test files, ~995 tests.
 - **Tests (backend)**: `cd python_backend && python3 -m pytest tests/test_api.py -v` — the health check test fails in cloud VMs because remote Redis/PostgreSQL are not reachable (expected).
 - **Build**: `npm run build` — Vite production build.
@@ -32,8 +32,8 @@ Standard commands are in `package.json` scripts. Key ones:
 - The backend health check (`/health`) reports "unhealthy" in cloud VMs because Redis and PostgreSQL are remote Railway-hosted services. This is normal and does not block local API testing.
 - The `.env` file in the repo root holds Supabase and Redis credentials (needed for full functionality). The `python_backend/.env` holds backend-specific config. **Neither is tracked in Git** - `.gitignore` excludes `.env`, `python_backend/.env`, `pg.env` and `secrets/`, and no commit across all refs has ever touched `.env`. Never commit them, never echo their values, and rotate anything suspected of exposure.
 - The frontend Vite config proxies `/api` requests to `http://localhost:8000`, so the backend must run on port 8000 for API integration to work.
-- `npm run lint` exits with code 1 due to one pre-existing error; this is the current state of the repo.
+- `npm run lint` exits 0 (measured 2026-10-11): 0 errors, 15792 warnings. The older note that it exits 1 on one pre-existing error is stale.
 
 ### Shared agent context
 
-See `docs/agent-context/` - `INDEX.md` (architecture, entry points, commands, gate semantics), `STATUS.md` (verified risks, release-candidate status, next actions), `HANDOFF.md` (contract-bearing files, worktree inventory, integration state). Verified against commit `b98b222f` on 2026-10-11. It is short by design: link to source rather than duplicating it. Corrected here: the two statements above about `.env` being checked in and about `type-check` being `tsc --noEmit` were both false.
+See `docs/agent-context/` - `INDEX.md` (architecture, entry points, commands, gate semantics), `STATUS.md` (verified risks, release-candidate status, next actions), `HANDOFF.md` (contract-bearing files, worktree inventory, integration state). Verified against commit `b98b222f`, re-spot-checked at `0ebe9d53` on branch `main`, on 2026-10-11. It is short by design: link to source rather than duplicating it. Corrected here: the two statements above about `.env` being checked in and about `type-check` being `tsc --noEmit` were both false.
