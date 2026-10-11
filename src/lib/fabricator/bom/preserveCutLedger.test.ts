@@ -188,3 +188,40 @@ describe('preserveCutLedger design fingerprint + multiset (AICS-001)', () => {
     expect(wouldClearPersistedLedger(ledger, ledger)).toBe(false);
   });
 });
+
+
+describe('unchanged fingerprint does not authorize changed cut placements', () => {
+  it.each([
+    ['length', [cuts('PS-FRAME', [1217, 1400, 1200, 1400])]],
+    ['profile', [cuts('PS-SASH', [1200, 1400, 1200, 1400])]],
+    ['angle', [cuts('PS-FRAME', [1200, 1400, 1200, 1400], [90, 45, 45, 45])]],
+    ['multiplicity', [cuts('PS-FRAME', [1200, 1400, 1200, 1400, 1200])]],
+  ])('clears optimization after %s substitution', (_label, incoming) => {
+    const fp = designFingerprintFromWindowUnit(baseDesign);
+    const result = mergeComponentsForSave({ incoming, existing: ledger,
+      incomingDesignFingerprint: fp, existingDesignFingerprint: fp });
+    expect(result.components).toEqual(incoming);
+    expect(result.clearOptimization).toBe(true);
+  });
+
+  it('keeps optimization when only member ordering changes', () => {
+    const fp = designFingerprintFromWindowUnit(baseDesign);
+    const result = mergeComponentsForSave({
+      incoming: [cuts('PS-FRAME', [1400, 1200, 1400, 1200])], existing: ledger,
+      incomingDesignFingerprint: fp, existingDesignFingerprint: fp });
+    expect(result.clearOptimization).toBe(false);
+  });
+
+  it.each(['rowSpan', 'colSpan'] as const)('invalidates an empty-write ledger when %s changes', (span) => {
+    const grid = baseDesign.grid!;
+    const changed = { ...baseDesign, grid: { ...grid,
+      cells: grid.cells.map((cell, index) => index === 0 ? { ...cell, [span]: 2 } : cell) } };
+    const fp = designFingerprintFromWindowUnit(baseDesign);
+    const next = designFingerprintFromWindowUnit(changed);
+    expect(next).not.toBe(fp);
+    const result = mergeComponentsForSave({ incoming: [], existing: ledger,
+      incomingDesignFingerprint: next, existingDesignFingerprint: fp });
+    expect(result.components).toEqual([]);
+    expect(result.clearOptimization).toBe(true);
+  });
+});

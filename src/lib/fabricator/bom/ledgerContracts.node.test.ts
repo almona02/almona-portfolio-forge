@@ -1,10 +1,10 @@
 /**
- * Ledger contract suite — runnable via `npm run test:ledger` (node:test + vite-node).
- * Does not depend on broken Vitest/Storybook describe.config.
+ * Ledger contract suite collected by the standard Vitest CI runner.
+ * The separate `npm run test:ledger` script retains its standalone contract harness.
  */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { describe, it } from 'node:test';
+import { describe, it } from 'vitest';
 import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { WindowComponent, WindowUnit } from '@/types/fabricator';
@@ -79,21 +79,17 @@ describe('AICS-001 cut-ledger contracts', () => {
     }
     const fp = designFingerprint(baseDesign);
     const payload = {
+      glazing: null,
       grid: {
         cells: [
-          { col: 0, id: '0-0', row: 0, type: 'sash' },
-          { col: 1, id: '0-1', row: 0, type: 'sash' },
+          { col: 0, colSpan: 1, id: '0-0', openingDirection: '', row: 0, rowSpan: 1, type: 'sash' },
+          { col: 1, colSpan: 1, id: '0-1', openingDirection: '', row: 0, rowSpan: 1, type: 'sash' },
         ],
-        colWidths: [1, 1],
-        cols: 2,
-        rowHeights: [1],
-        rows: 1,
+        colWidths: [1, 1], cols: 2, rowHeights: [1], rows: 1,
       },
-      overallHeight: 1400,
-      overallWidth: 1200,
-      presetId: 'sliding-2s',
-      systemPackId: 'caluminium-ps',
-      type: 'sliding_window_2sash',
+      hardware: null,
+      overallHeight: 1400, overallWidth: 1200, presetId: 'sliding-2s',
+      systemPackId: 'caluminium-ps', systemProfileSelections: null, type: 'sliding_window_2sash',
     };
     assert.equal(fp, createHash('sha256').update(JSON.stringify(payload), 'utf8').digest('hex'));
   });

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WindowUnit } from '@/types/fabricator';
 import { ProjectSummaryDashboard } from './ProjectSummaryDashboard';
 
@@ -16,13 +16,9 @@ vi.mock('@/hooks/useFabricatorQueries', () => ({ useDeletePose: () => ({}), useU
 vi.mock('@/components/fabricator/project/PoseLayoutPreview', () => ({ PoseLayoutPreview: () => null }));
 vi.mock('@/pages/fabricator/workflow/MeasuringPage', () => ({ nextPoseNumber: () => '2' }));
 vi.mock('@/lib/fabricator/PresetAwareBOMGenerator', () => ({ PresetAwareBOMGenerator: class { generateCompleteBOM = mocks.generate; } }));
-vi.mock('@/lib/fabricator/bom/ledgerParity', () => ({
+vi.mock('@/lib/fabricator/bom/ledgerParity', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/fabricator/bom/ledgerParity')>(),
   resolveExpectedDesignLedger: (...args: unknown[]) => mocks.resolveLedger(...args),
-  savedLedgerNeedsMaterialize: (saved: { cuttingLengths?: number[] }[] | undefined, expected: { cuttingLengths?: number[] }[]) => {
-    const count = (list?: { cuttingLengths?: number[] }[]) =>
-      (list ?? []).reduce((sum, c) => sum + (c.cuttingLengths?.length ?? 0), 0);
-    return count(saved) !== count(expected);
-  },
 }));
 
 const pose = { id: 'pose', systemPackId: 'owned-pack', quantity: 1, overallWidth: 1200, overallHeight: 1400,
@@ -34,6 +30,15 @@ function renderProject(positions: WindowUnit[]) {
 }
 
 describe('project BOM failures', () => {
+  beforeEach(() => {
+    mocks.generate.mockReset();
+    mocks.save.mockReset();
+    mocks.upsert.mockReset().mockResolvedValue({});
+    mocks.resolveLedger.mockReset().mockResolvedValue([
+      { id: 'frame', type: 'frame', profile: { id: 'FRAME' },
+        cuttingLengths: [1200, 1400, 1200, 1400], angles: [45, 45, 45, 45] },
+    ]);
+  });
   it('restores a saved BOM after remount and invalidates changed quantities', async () => {
     const view = render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={{ id: 'project' }} positions={[pose]} onOpenStudio={() => {}} /></MemoryRouter>);
     mocks.generate.mockResolvedValueOnce({ qualification: { requiredPieceCount: 4, generatedPieceCount: 4 },
@@ -93,7 +98,7 @@ describe('project BOM failures', () => {
 
   it('materializes a complete design ledger after pricing when the pose had no saved cuts', async () => {
     const designLedger = [
-      { id: 'frame', type: 'frame', cuttingLengths: [1200, 1400, 1200, 1400] },
+      { id: 'frame', type: 'frame', profile: { id: 'FRAME' }, angles: [45, 45, 45, 45], cuttingLengths: [1200, 1400, 1200, 1400] },
     ];
     mocks.resolveLedger.mockResolvedValueOnce(designLedger);
     mocks.generate.mockResolvedValueOnce({
@@ -115,7 +120,7 @@ describe('project BOM failures', () => {
   it('does not overwrite a pose whose saved cut ledger already matches the expected multiset', async () => {
     mocks.upsert.mockClear();
     mocks.resolveLedger.mockClear();
-    const saved = [{ id: 'frame', type: 'frame', cuttingLengths: [1200, 1400, 1200, 1400] }];
+    const saved = [{ id: 'frame', type: 'frame', profile: { id: 'FRAME' }, angles: [45, 45, 45, 45], cuttingLengths: [1200, 1400, 1200, 1400] }];
     mocks.resolveLedger.mockResolvedValueOnce(saved);
     mocks.generate.mockResolvedValueOnce({
       qualification: { requiredPieceCount: 4, generatedPieceCount: 4 },

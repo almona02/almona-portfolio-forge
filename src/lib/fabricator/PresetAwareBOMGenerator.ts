@@ -24,7 +24,7 @@ import { CostCalculator } from './bom/CostCalculator';
 import { GlassBOMCalculator } from './bom/GlassBOMCalculator';
 import { HardwareBOMCalculator } from './bom/HardwareBOMCalculator';
 import { ProfileBOMCalculator } from './bom/ProfileBOMCalculator';
-import { semanticRevisionDigest } from './bom/preserveCutLedger';
+import { ledgerCutMultiset, semanticRevisionDigest } from './bom/preserveCutLedger';
 import {
     assessBOMQualification,
     type BOMQualification,
@@ -157,6 +157,7 @@ export class PresetAwareBOMGenerator {
       patternId: pattern.id,
       systemPackId: systemPack.id,
       components: windowUnit.components?.length || 0,
+      cutLedger: ledgerCutMultiset(windowUnit.components),
       identity: qualificationContext.identity,
       semanticRevision: semanticRevisionDigest({
         overallWidth: windowUnit.overallWidth,
@@ -294,6 +295,7 @@ export class PresetAwareBOMGenerator {
       patternId: pattern.id,
       systemPackId: systemPack.id,
       components: windowUnit.components?.length || 0,
+      cutLedger: ledgerCutMultiset(windowUnit.components),
       semanticRevision: semanticRevisionDigest({
         overallWidth: windowUnit.overallWidth,
         overallHeight: windowUnit.overallHeight,

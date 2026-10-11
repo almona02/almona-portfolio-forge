@@ -126,6 +126,8 @@ function gridFingerprintSlice(grid: DesignFingerprintInput['grid']): unknown {
           id: String(cell?.id ?? ''),
           row: Number(cell?.row),
           col: Number(cell?.col),
+          rowSpan: Number(cell?.rowSpan ?? 1),
+          colSpan: Number(cell?.colSpan ?? 1),
           type: String(cell?.type ?? ''),
           openingDirection: String(cell?.openingDirection ?? ''),
         }))
@@ -294,7 +296,8 @@ export function mergeComponentsForSave(input: MergeLedgerForSaveInput): MergeLed
       components,
       invalidated: false,
       designFingerprint: input.incomingDesignFingerprint,
-      clearOptimization: designChanged || !fingerprintMatches,
+      clearOptimization: designChanged || !fingerprintMatches
+        || !ledgerMultisetsEqual(input.incoming, input.existing),
     };
   }
 

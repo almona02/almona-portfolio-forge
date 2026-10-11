@@ -77,8 +77,8 @@ await check('browser SHA-256 matches Node createHash vectors', () => {
     glazing: null,
     grid: {
       cells: [
-        { col: 0, id: '0-0', openingDirection: '', row: 0, type: 'sash' },
-        { col: 1, id: '0-1', openingDirection: '', row: 0, type: 'sash' },
+        { col: 0, colSpan: 1, id: '0-0', openingDirection: '', row: 0, rowSpan: 1, type: 'sash' },
+        { col: 1, colSpan: 1, id: '0-1', openingDirection: '', row: 0, rowSpan: 1, type: 'sash' },
       ],
       colWidths: [1, 1],
       cols: 2,
