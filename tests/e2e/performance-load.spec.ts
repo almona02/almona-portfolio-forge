@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('Performance Load Tests', () => {
 
     test('should maintain frame rate with 100+ elements', async ({ page }) => {
+    test.skip(true, 'Legacy route removed. Coverage replaced by fabricator-project-1018-cut-chain.spec.ts and fabricator-measure-design-reload.spec.ts.');
         // 1. Load Drafting
         await page.goto('/fabricator/drafting');
         await expect(page.locator('canvas')).toBeVisible({ timeout: 10000 });
@@ -50,6 +51,7 @@ test.describe('Performance Load Tests', () => {
     });
 
     test('should not leak memory after repeated reload', async ({ page }) => {
+    test.skip(true, 'Legacy route removed. Coverage replaced by fabricator-project-1018-cut-chain.spec.ts and fabricator-measure-design-reload.spec.ts.');
         await page.goto('/fabricator/drafting');
         
         // Baseline memory check (only works in Chromium with flag, but skip check if not available)

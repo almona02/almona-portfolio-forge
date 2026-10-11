@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('Constitutional Persistence & Integrity', () => {
   
   test('should persist drafting state across reloads (Constitutional Check)', async ({ page }) => {
+    test.skip(true, 'Legacy route removed. Coverage replaced by fabricator-project-1018-cut-chain.spec.ts and fabricator-measure-design-reload.spec.ts.');
     // 1. Navigate to drafting
     // 1. Navigate to drafting (using correct Unified Workflow route)
     await page.goto('/fabricator/workflow/design');
@@ -46,6 +47,7 @@ test.describe('Constitutional Persistence & Integrity', () => {
   });
 
   test('should emit audit logs for critical operations', async ({ page }) => {
+    test.skip(true, 'Legacy route removed. Coverage replaced by fabricator-project-1018-cut-chain.spec.ts and fabricator-measure-design-reload.spec.ts.');
     const auditLogs: any[] = [];
     page.on('console', msg => {
         if (msg.text().includes('[CONSTITUTIONAL AUDIT]')) {

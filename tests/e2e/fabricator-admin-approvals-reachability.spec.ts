@@ -71,8 +71,18 @@ async function applyAndAssertPageZoom(page: Page, scale: number): Promise<void> 
 }
 
 async function loginAsAdmin(page: Page): Promise<void> {
-  const email = process.env.E2E_ADMIN_EMAIL?.trim() || 'e2e.admin@almona.local';
-  const password = process.env.E2E_ADMIN_PASSWORD?.trim() || 'E2eAdmin!pass1';
+  // Authenticated acceptance must not soft-pass and must not carry committed
+  // credentials. Set E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD, or E2E_OPTIONAL=1 for a
+  // local soft run against a seeded local stack.
+  const email = process.env.E2E_ADMIN_EMAIL?.trim();
+  const password = process.env.E2E_ADMIN_PASSWORD?.trim();
+  if (!email || !password) {
+    if (process.env.E2E_OPTIONAL === '1') {
+      test.skip(true, 'Set E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD for the authenticated approvals chain');
+      return;
+    }
+    throw new Error('Missing E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD. Authenticated acceptance must not soft-pass.');
+  }
 
   const tokenRes = await page.request.post(
     `${LOCAL_SUPABASE_URL}/auth/v1/token?grant_type=password`,
