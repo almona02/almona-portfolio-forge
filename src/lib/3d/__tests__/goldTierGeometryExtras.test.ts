@@ -41,4 +41,15 @@ describe('Phase 7 gold-tier geometry extras', () => {
     });
     expect(result.ok).toBe(false);
   });
-});
+  it.each([NaN, Infinity, -1, 0])('rejects invalid CSG widths (%s)', width => {
+    expect(() => createFrameWithOpeningPocket({ width, height: 1.5, profileWidth: 0.05 })).toThrow(RangeError);
+  });
+  it.each([NaN, Infinity, -1, 1.5, 65])('rejects invalid subdivision counts (%s)', verticalMullionCount => {
+    const result = solveMullionTransomLayout({ outerWidthMm: 1200, outerHeightMm: 1500, frameWidthMm: 50, verticalMullionCount, horizontalTransomCount: 0 });
+    expect(result.ok).toBe(false);
+  });
+  it('rejects non-finite dimensions and minimum widths', () => {
+    const input = { outerWidthMm: 1200, outerHeightMm: 1500, frameWidthMm: 50, verticalMullionCount: 0, horizontalTransomCount: 0 };
+    expect(solveMullionTransomLayout({ ...input, outerWidthMm: NaN }).ok).toBe(false);
+    expect(solveMullionTransomLayout({ ...input, minPanelWidthMm: -1 }).ok).toBe(false);
+  });});

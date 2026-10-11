@@ -47,7 +47,12 @@ export function solveMullionTransomLayout(input: MullionSolveInput): MullionSolv
     minPanelHeightMm = 250,
   } = input;
 
-  if (outerWidthMm <= 0 || outerHeightMm <= 0 || frameWidthMm < 0) {
+  if (![outerWidthMm, outerHeightMm, frameWidthMm, minPanelWidthMm, minPanelHeightMm].every(Number.isFinite)
+      || outerWidthMm <= 0 || outerHeightMm <= 0 || frameWidthMm < 0
+      || minPanelWidthMm <= 0 || minPanelHeightMm <= 0
+      || !Number.isSafeInteger(verticalMullionCount) || !Number.isSafeInteger(horizontalTransomCount)
+      || verticalMullionCount < 0 || horizontalTransomCount < 0
+      || verticalMullionCount > 64 || horizontalTransomCount > 64) {
     return { ok: false, mullionXs: [], transomYs: [], panelWidthsMm: [], panelHeightsMm: [], error: 'Invalid dimensions' };
   }
 

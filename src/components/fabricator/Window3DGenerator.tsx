@@ -356,33 +356,6 @@ const Window3DModelComponent = (props: {
         showDimensions = false
     } = props;
 
-    // Gold-tier lazy extras (CSG + kiwi) — only when not standard quality
-    useEffect(() => {
-        if (!quality || quality === 'standard' || !windowUnit) return;
-        let cancelled = false;
-        void (async () => {
-            const w = (windowUnit.overallWidth || 1200) / 1000;
-            const h = (windowUnit.overallHeight || 1500) / 1000;
-            const [{ createFrameWithOpeningPocket }, { solveMullionTransomLayout }] = await Promise.all([
-                import('@/lib/3d/csgTrueMiters'),
-                import('@/lib/3d/mullionConstraintSolver'),
-            ]);
-            if (cancelled) return;
-            const pocket = createFrameWithOpeningPocket({ width: w, height: h, profileWidth: 0.05 });
-            pocket.dispose();
-            solveMullionTransomLayout({
-                outerWidthMm: windowUnit.overallWidth || 1200,
-                outerHeightMm: windowUnit.overallHeight || 1500,
-                frameWidthMm: 50,
-                verticalMullionCount: Math.max(0, (windowUnit.grid?.cols ?? 1) - 1),
-                horizontalTransomCount: Math.max(0, (windowUnit.grid?.rows ?? 1) - 1),
-            });
-        })();
-        return () => {
-            cancelled = true;
-        };
-    }, [quality, windowUnit]);
-
     // Stabilize detail config keys for dependency array
     const {
         enableWeatherSeals = true,

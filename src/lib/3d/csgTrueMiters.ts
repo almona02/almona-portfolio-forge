@@ -35,17 +35,27 @@ export function createFrameWithOpeningPocket(spec: CsgMiterPocketSpec): BufferGe
   const { width, height, profileWidth } = spec;
   const depth = spec.pocketDepth ?? Math.max(0.02, profileWidth * 0.6);
 
-  const outer = new Brush(new BoxGeometry(width, height, depth));
+  if (![width, height, profileWidth, depth].every(Number.isFinite)
+      || profileWidth <= 0 || depth <= 0 || width <= 2 * profileWidth || height <= 2 * profileWidth) {
+    throw new RangeError('Frame pocket requires finite positive dimensions and a non-empty opening.');
+  }
+  const material = new MeshNormalMaterial();
+  const outer = new Brush(new BoxGeometry(width, height, depth), material);
   outer.updateMatrixWorld();
 
   const innerW = Math.max(0.01, width - 2 * profileWidth);
   const innerH = Math.max(0.01, height - 2 * profileWidth);
-  const inner = new Brush(new BoxGeometry(innerW, innerH, depth + 0.002));
+  const inner = new Brush(new BoxGeometry(innerW, innerH, depth + 0.002), material);
   inner.updateMatrixWorld();
 
   const evaluator = new Evaluator();
-  const result = evaluator.evaluate(outer, inner, SUBTRACTION);
-  return result.geometry;
+  try {
+    return evaluator.evaluate(outer, inner, SUBTRACTION).geometry;
+  } finally {
+    outer.geometry.dispose();
+    inner.geometry.dispose();
+    material.dispose();
+  }
 }
 
 /**
@@ -63,7 +73,11 @@ export function unionProfileBrushes(
   brushB.position.copy(bOffset);
   brushB.updateMatrixWorld();
   const evaluator = new Evaluator();
-  return evaluator.evaluate(brushA, brushB, ADDITION).geometry;
+  try {
+    return evaluator.evaluate(brushA, brushB, ADDITION).geometry;
+  } finally {
+    mat.dispose();
+  }
 }
 
 /** 45° corner cutter mesh for miter end visualization. */
