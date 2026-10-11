@@ -1,5 +1,8 @@
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import { validateOptimizationInputs, validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
+import {
+  validateOptimizationInputs,
+  validateOptimizationReconciliation,
+} from '@/lib/fabricator/validation/WorkflowValidator';
 import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fabricator';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -80,6 +83,16 @@ export interface WorkflowIdentity {
   positionId: string;
   source: 'v1' | 'v2';
   revision: number;
+}
+
+function samePoseIdentity(a: WorkflowIdentity | null, b: WorkflowIdentity): boolean {
+  return Boolean(
+    a &&
+      a.ownerUserId === b.ownerUserId &&
+      a.projectId === b.projectId &&
+      a.positionId === b.positionId &&
+      a.source === b.source,
+  );
 }
 
 export interface StockReservationEvidence {
@@ -375,6 +388,11 @@ export const useWorkflowStore = create<WorkflowState>()(
         const sameRevision = workflowIdentityMatches(state.workflowIdentity, identity);
         if (sameRevision && state.workflowDraftDirty) return {};
         if (sameRevision) return { currentProject: project, designData: project };
+
+        // Ignore late responses for an older revision of the active pose.
+        if (samePoseIdentity(state.workflowIdentity, identity) &&
+            identity.revision < state.workflowIdentity!.revision) return {};
+
         return {
           workflowIdentity: identity,
           currentProject: project,

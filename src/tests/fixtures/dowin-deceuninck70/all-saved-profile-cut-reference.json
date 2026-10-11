@@ -1,0 +1,1889 @@
+{
+  "source": "live DoWin production preview; nominal profile cuts only",
+  "capturedAt": "2026-10-10T19:04:33.380Z",
+  "positions": [
+    {
+      "key": "asdd",
+      "position": "asdd",
+      "order": "100001",
+      "n": 21,
+      "total": 20504,
+      "layout": "double casement with structural mullion",
+      "cuts": [
+        {
+          "assembly": "asdd.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list.txt"
+        },
+        {
+          "assembly": "asdd.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list.txt"
+        },
+        {
+          "assembly": "asdd.Mullion Vertical",
+          "profileCode": "Deceuninck-ORTA-KAYIT-70",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 90,
+          "rightAngleDeg": 90,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list.txt"
+        },
+        {
+          "assembly": "asdd.Left Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list.txt"
+        },
+        {
+          "assembly": "asdd.Left Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "asdd.Left Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "asdd.Left Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "asdd.Left Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "asdd.Left Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "asdd.Left Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "asdd.Left Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "asdd.Right Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "asdd.Right Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "asdd.Right Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "asdd.Right Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "asdd.Right Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "asdd.Right Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "asdd.Right Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "asdd.Right Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "asdd.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list.txt"
+        },
+        {
+          "assembly": "asdd.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "asdd-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "213254",
+      "position": "213254",
+      "order": "100002",
+      "n": 21,
+      "total": 20504,
+      "layout": "double casement with structural mullion",
+      "cuts": [
+        {
+          "assembly": "213254.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list.txt"
+        },
+        {
+          "assembly": "213254.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list.txt"
+        },
+        {
+          "assembly": "213254.Mullion Vertical",
+          "profileCode": "Deceuninck-ORTA-KAYIT-70",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 90,
+          "rightAngleDeg": 90,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list.txt"
+        },
+        {
+          "assembly": "213254.Left Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list.txt"
+        },
+        {
+          "assembly": "213254.Left Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "213254.Left Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "213254.Left Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "213254.Left Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "213254.Left Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "213254.Left Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "213254.Left Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "213254.Right Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "213254.Right Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "213254.Right Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "213254.Right Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "213254.Right Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "213254.Right Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "213254.Right Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "213254.Right Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "213254.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list.txt"
+        },
+        {
+          "assembly": "213254.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "213254-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "121",
+      "position": "121",
+      "order": "100002",
+      "n": 21,
+      "total": 20504,
+      "layout": "double casement with structural mullion",
+      "cuts": [
+        {
+          "assembly": "121.Right Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "121.Right Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "121.Right Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "121.Right Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list.txt"
+        },
+        {
+          "assembly": "121.Right Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list.txt"
+        },
+        {
+          "assembly": "121.Right Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list.txt"
+        },
+        {
+          "assembly": "121.Right Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list.txt"
+        },
+        {
+          "assembly": "121.Left Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "121.Left Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "121.Left Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "121.Left Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "121.Left Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "121.Left Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "121.Mullion Vertical",
+          "profileCode": "Deceuninck-ORTA-KAYIT-70",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 90,
+          "rightAngleDeg": 90,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "121.Left Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "121.Left Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "121.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "121.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "121.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "121.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "121.Right Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "121-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "fresh-a",
+      "position": "FRESH_A",
+      "order": "100002",
+      "n": 21,
+      "total": 20504,
+      "layout": "double casement with structural mullion",
+      "cuts": [
+        {
+          "assembly": "FRESH_A.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "FRESH_A.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "FRESH_A.Mullion Vertical",
+          "profileCode": "Deceuninck-ORTA-KAYIT-70",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 90,
+          "rightAngleDeg": 90,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "FRESH_A.Left Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "FRESH_A.Left Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "FRESH_A.Left Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "FRESH_A.Left Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "FRESH_A.Left Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "FRESH_A.Left Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "FRESH_A.Left Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "FRESH_A.Left Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "FRESH_A.Right Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "FRESH_A.Right Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "FRESH_A.Right Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "FRESH_A.Right Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "FRESH_A.Right Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "FRESH_A.Right Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "FRESH_A.Right Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "FRESH_A.Right Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "FRESH_A.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "FRESH_A.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "fresh-a-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "run-a",
+      "position": "RUN_A",
+      "order": "100003",
+      "n": 21,
+      "total": 20504,
+      "layout": "double casement with structural mullion",
+      "cuts": [
+        {
+          "assembly": "RUN_A.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_A.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_A.Mullion Vertical",
+          "profileCode": "Deceuninck-ORTA-KAYIT-70",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 90,
+          "rightAngleDeg": 90,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_A.Left Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_A.Left Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "RUN_A.Left Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "RUN_A.Left Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "RUN_A.Left Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "RUN_A.Left Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "RUN_A.Left Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "RUN_A.Left Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "RUN_A.Right Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "RUN_A.Right Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "RUN_A.Right Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "RUN_A.Right Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_A.Right Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_A.Right Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_A.Right Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_A.Right Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_A.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_A.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-a-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "run-b",
+      "position": "RUN_B",
+      "order": "100004",
+      "n": 21,
+      "total": 20504,
+      "layout": "double casement with structural mullion",
+      "cuts": [
+        {
+          "assembly": "RUN_B.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_B.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_B.Mullion Vertical",
+          "profileCode": "Deceuninck-ORTA-KAYIT-70",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 90,
+          "rightAngleDeg": 90,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_B.Left Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_B.Left Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "RUN_B.Left Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "RUN_B.Left Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "RUN_B.Left Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "RUN_B.Left Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "RUN_B.Left Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "RUN_B.Left Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "RUN_B.Right Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "RUN_B.Right Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "RUN_B.Right Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "RUN_B.Right Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_B.Right Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_B.Right Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_B.Right Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_B.Right Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_B.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_B.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-b-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "run-c",
+      "position": "RUN_C",
+      "order": "100005",
+      "n": 21,
+      "total": 20504,
+      "layout": "double casement with structural mullion",
+      "cuts": [
+        {
+          "assembly": "RUN_C.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_C.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_C.Mullion Vertical",
+          "profileCode": "Deceuninck-ORTA-KAYIT-70",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 90,
+          "rightAngleDeg": 90,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_C.Left Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_C.Left Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "RUN_C.Left Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "RUN_C.Left Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "RUN_C.Left Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "RUN_C.Left Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "RUN_C.Left Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "RUN_C.Left Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "RUN_C.Right Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "RUN_C.Right Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "RUN_C.Right Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page6.txt"
+        },
+        {
+          "assembly": "RUN_C.Right Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_C.Right Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_C.Right Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_C.Right Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_C.Right Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list-page7.txt"
+        },
+        {
+          "assembly": "RUN_C.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list.txt"
+        },
+        {
+          "assembly": "RUN_C.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "run-c-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "e3",
+      "position": "E3_KASA_SPARE",
+      "order": "100006",
+      "n": 8,
+      "total": 3664,
+      "layout": "single fixed 500x500",
+      "cuts": [
+        {
+          "assembly": "E3_KASA_SPARE.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e3-production-cut-list.txt"
+        },
+        {
+          "assembly": "E3_KASA_SPARE.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e3-production-cut-list.txt"
+        },
+        {
+          "assembly": "E3_KASA_SPARE.GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 416,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e3-production-cut-list.txt"
+        },
+        {
+          "assembly": "E3_KASA_SPARE.GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 416,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e3-production-cut-list.txt"
+        },
+        {
+          "assembly": "E3_KASA_SPARE.GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 416,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e3-production-cut-list-page2.txt"
+        },
+        {
+          "assembly": "E3_KASA_SPARE.GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 416,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e3-production-cut-list-page2.txt"
+        },
+        {
+          "assembly": "E3_KASA_SPARE.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e3-production-cut-list.txt"
+        },
+        {
+          "assembly": "E3_KASA_SPARE.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e3-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "e1",
+      "position": "E1_DEMAND1_NONORTA",
+      "order": "100007",
+      "n": 12,
+      "total": 13960,
+      "layout": "single casement 1000x1500",
+      "cuts": [
+        {
+          "assembly": "E1_DEMAND1_NONORTA.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 930,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 930,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 810,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 810,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list.txt"
+        },
+        {
+          "assembly": "E1_DEMAND1_NONORTA.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e1-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "e2",
+      "position": "E2_NONORTA_90",
+      "order": "100008",
+      "n": 17,
+      "total": 17166,
+      "layout": "fixed left / casement right 1000x1500",
+      "cuts": [
+        {
+          "assembly": "E2_NONORTA_90.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1500,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Mullion Vertical",
+          "profileCode": "Deceuninck-ORTA-KAYIT-70",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 90,
+          "rightAngleDeg": 90,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Left Area.GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 437,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Left Area.GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 437,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Left Area.GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Left Area.GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1416,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Right Area (Sash).Top",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Right Area (Sash).Bottom",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 451,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Right Area (Sash).Left",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Right Area (Sash).Right",
+          "profileCode": "Deceuninck-KANAT-70",
+          "nominalLengthMm": 1430,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Right Area (Sash).GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Right Area (Sash).GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 331,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Right Area (Sash).GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Right Area (Sash).GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1310,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list-page5.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list.txt"
+        },
+        {
+          "assembly": "E2_NONORTA_90.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1000,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "e2-production-cut-list.txt"
+        }
+      ]
+    },
+    {
+      "key": "control",
+      "position": "FP024C_90_CONTROL_DESIGN",
+      "order": "100009",
+      "n": 13,
+      "total": 12528,
+      "layout": "two fixed panes 1200x1200",
+      "cuts": [
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Frame Leftt",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1200,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Frame Right",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1200,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Mullion Vertical",
+          "profileCode": "Deceuninck-ORTA-KAYIT-70",
+          "nominalLengthMm": 1116,
+          "leftAngleDeg": 90,
+          "rightAngleDeg": 90,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Left Area.GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 537,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Left Area.GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 537,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Left Area.GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1116,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list-page3.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Left Area.GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1116,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Right Area.GlazingBead Top",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 537,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Right Area.GlazingBead Bottom",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 537,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Right Area.GlazingBead Left",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1116,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Right Area.GlazingBeadRight",
+          "profileCode": "Deceuninck-CITA-20",
+          "nominalLengthMm": 1116,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list-page4.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Frame Top",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1200,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list.txt"
+        },
+        {
+          "assembly": "FP024C_90_CONTROL_DESIGN.Frame Bottom",
+          "profileCode": "Deceuninck-KASA-70",
+          "nominalLengthMm": 1200,
+          "leftAngleDeg": 45,
+          "rightAngleDeg": 45,
+          "quantity": 1,
+          "sourceFile": "control-production-cut-list.txt"
+        }
+      ]
+    }
+  ]
+}

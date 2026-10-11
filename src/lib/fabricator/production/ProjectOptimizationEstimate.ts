@@ -4,6 +4,8 @@ import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physical
 import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { countRequiredProfilePieces } from '@/lib/fabricator/bom/bomQualification';
 import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
+import { ledgerCutMultiset } from '@/lib/fabricator/bom/preserveCutLedger';
+import { reconcilePoseCutLedger } from '@/lib/fabricator/bom/ledgerParity';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
 
@@ -12,7 +14,7 @@ import type { SystemPack, WindowUnit } from '@/types/fabricator';
  * use resolveEstimatePattern. Saved sash/sliding/casement ledgers use the
  * position opening type + grid so countRequired matches the design generator.
  */
-function patternForLedgerCount(position: WindowUnit): EgyptianPattern {
+export function patternForLedgerCount(position: WindowUnit): EgyptianPattern {
   const grid = position.grid;
   const hasOperativeCells = !!grid?.cells?.some((cell) => {
     const t = String(cell.type ?? '').toLowerCase();
@@ -43,6 +45,29 @@ export interface ProjectOptimizationEstimate {
   groups: Array<{ profileId: string; systemPackId: string; stockLengthMm: number; kerfMm: number; trimMm: number; result: OptimizationResult }>;
 }
 
+/**
+ * Exact design multiset reconcile (async) then pool estimate.
+ * Prefer this over optimizeProjectEstimate when packs/patterns are available.
+ */
+export async function optimizeProjectEstimateWithDesignParity(
+  positions: readonly WindowUnit[],
+  packs: readonly SystemPack[],
+): Promise<ProjectOptimizationEstimate> {
+  for (const position of positions) {
+    const pack = packs.find((candidate) => candidate.meta.id === position.systemPackId);
+    if (!pack) {
+      throw new Error(`Pose ${position.posNumber || position.id}: saved system pack is unavailable to the signed-in owner.`);
+    }
+    await reconcilePoseCutLedger({
+      position,
+      pattern: patternForLedgerCount(position),
+      pack,
+      revision: position.revision ?? null,
+    });
+  }
+  return optimizeProjectEstimate(positions, packs);
+}
+
 /** Pool only identical saved profiles and settings; never create production evidence. */
 export function optimizeProjectEstimate(positions: readonly WindowUnit[], packs: readonly SystemPack[]): ProjectOptimizationEstimate {
   if (!positions.length) throw new Error('No saved positions to optimize.');
@@ -69,8 +94,14 @@ export function optimizeProjectEstimate(positions: readonly WindowUnit[], packs:
     if (!pack) throw new Error(`${label}: saved system pack is unavailable to the signed-in owner.`);
     const pattern = patternForLedgerCount(position);
     const expected = countRequiredProfilePieces(position, pattern);
-    const actual = (position.components ?? []).reduce((sum, component) => sum + component.cuttingLengths.length, 0);
-    if (actual !== expected) throw new Error(`${label}: incomplete saved cut ledger (${actual}/${expected} pieces). Resolve frame and divider profiles in Design.`);
+    const multiset = ledgerCutMultiset(position.components);
+    if (multiset.length !== expected) {
+      throw new Error(`${label}: incomplete saved cut ledger (${multiset.length}/${expected} pieces` +
+        `${Number.isInteger(position.revision) ? ` at revision ${position.revision}` : ''}). Resolve frame and divider profiles in Design.`);
+    }
+    if (multiset.some((key) => key.split('|').length !== 3)) {
+      throw new Error(`${label}: cut ledger entries must include profile, length, and angle.`);
+    }
     const quantity = position.quantity ?? 1;
     if (!Number.isSafeInteger(quantity) || quantity < 1) throw new Error(`${label}: quantity must be a positive integer.`);
     for (const component of position.components) {

@@ -1,4 +1,6 @@
+import { generateAcknowledgedBOM, StaleBOMGenerationError } from '@/lib/fabricator/bom/generateAcknowledgedBOM';
 import { approvedBOMContext } from '@/lib/fabricator/bom/approvedBOMContext';
+import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
 import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
@@ -11,6 +13,7 @@ import { useWorkflowStore, workflowIdentityMatches } from '@/store/workflowStore
 import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { WorkflowValidator } from '@/lib/fabricator/validation/WorkflowValidator';
+import { fabricatorClientV2 } from '@/lib/supabase/fabricatorClientV2';
 import {
   AlertCircle,
   ClipboardList,
@@ -20,19 +23,29 @@ import {
   Package,
   Wrench,
 } from 'lucide-react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const BOMReviewPanel: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
-  const { currentProject, workflowIdentity, bom, setBOM, completeStep } = useWorkflowStore();
+  const { currentProject, workflowIdentity, bom, setBOM, completeStep } =
+    useWorkflowStore();
   const engineeringPacks = useEngineeringSystemPacks();
   // BOM rows are per window unit; the table reports project totals for the pose quantity.
   const poseQuantity = Math.max(1, Number(currentProject?.quantity ?? 1) || 1);
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const generationRequest = useRef(0);
+  useEffect(() => {
+    // The router can reuse this component before the new pose has hydrated.
+    generationRequest.current += 1;
+    setIsGenerating(false);
+    setError(null);
+    return () => { generationRequest.current += 1; };
+  }, [projectId, poseId]);
+
 
   const systemPack = useMemo(() => {
     const packId = currentProject?.systemPackId;
@@ -49,39 +62,99 @@ export const BOMReviewPanel: React.FC = () => {
     if (!currentProject || !systemPack || !pattern) return;
     const generationProject = currentProject;
     const generationIdentity = workflowIdentity;
+    const generationDirty = useWorkflowStore.getState().workflowDraftDirty;
+    let didPersist = false;
+    const request = ++generationRequest.current;
+    const isCurrent = () => {
+      const latest = useWorkflowStore.getState();
+      return Boolean(generationIdentity) && request === generationRequest.current &&
+        latest.currentProject === generationProject &&
+        latest.workflowDraftDirty === generationDirty &&
+        workflowIdentityMatches(latest.workflowIdentity, generationIdentity!);
+    };
     setIsGenerating(true);
     setError(null);
     try {
+      if (!generationIdentity || !projectId || !poseId ||
+          generationIdentity.projectId !== projectId || generationIdentity.positionId !== poseId) {
+        throw new Error('Save this position before generating its BOM.');
+      }
       const generator = new PresetAwareBOMGenerator();
-      const result = await generator.generateCompleteBOM(
-        currentProject,
-        pattern,
-        systemPack,
-        true,
-        await approvedBOMContext(currentProject, generationIdentity).catch(() => ({
-          identity: generationIdentity,
-        })),
-      );
-      const latest = useWorkflowStore.getState();
-      if (!generationIdentity || latest.currentProject !== generationProject || !workflowIdentityMatches(latest.workflowIdentity, generationIdentity)) return;
-      setBOM(result);
+      await generateAcknowledgedBOM({
+        isCurrent,
+        prepare: async () => {
+          const components = await new ProfileBOMCalculator().resolvePhysicalDesignComponents(
+            generationProject, pattern, systemPack,
+          );
+          if (!components.length) throw new Error('The design has no complete cut ledger.');
+          return { ...generationProject, components };
+        },
+        persist: async (aligned) => {
+          // Re-reading an unchanged saved ledger must not bump its revision and
+          // invalidate an already-approved hardener on every retry.
+          if (!generationDirty && aligned.components === generationProject.components) return;
+          await fabricatorClientV2.savePose(aligned, generationIdentity.ownerUserId, {
+            grid: aligned.grid as Record<string, unknown> | undefined,
+          });
+          didPersist = true;
+        },
+        read: async () => {
+          const saved = await fabricatorClientV2.getAuthoritativePosition(
+            projectId, poseId, generationIdentity.ownerUserId,
+          );
+          if (!saved.identity ||
+              !workflowIdentityMatches(saved.identity, {
+                ...generationIdentity, revision: saved.identity.revision,
+              }) || saved.identity.revision < generationIdentity.revision ||
+              (didPersist && saved.identity.revision === generationIdentity.revision)) {
+            throw new Error('The saved position revision could not be acknowledged. Reload and retry.');
+          }
+          return { ...saved, identity: saved.identity };
+        },
+        qualify: async (saved) => {
+          try {
+            return await approvedBOMContext(saved.position, saved.identity);
+          } catch {
+            // Missing authority produces a visible estimate with qualification
+            // reasons, not a qualified BOM or a false generation-failure screen.
+            return { identity: saved.identity };
+          }
+        },
+        generate: async (saved, context) => {
+          const savedPattern = resolveEstimatePattern(saved.position);
+          if (saved.position.systemPackId !== systemPack.meta.id) {
+            throw new Error('The saved system pack changed. Reload and retry.');
+          }
+          return generator.generateCompleteBOM(saved.position, savedPattern, systemPack, true, context);
+        },
+        publish: (saved, result) => {
+          useWorkflowStore.getState().hydrateAuthoritativePosition(saved.identity, saved.position);
+          setBOM(result);
+        },
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'BOM generation failed');
+      if (!(err instanceof StaleBOMGenerationError) && isCurrent()) {
+        setError(err instanceof Error ? err.message : 'BOM generation failed');
+      }
     } finally {
-      setIsGenerating(false);
+      if (request === generationRequest.current) setIsGenerating(false);
     }
-  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM]);
+  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM, projectId, poseId]);
 
   useEffect(() => {
-    if (!bom && currentProject && systemPack && pattern) {
+    if (!bom && !error && !isGenerating && currentProject && systemPack && pattern &&
+        workflowIdentity?.projectId === projectId && workflowIdentity?.positionId === poseId) {
       void generateBOM();
     }
-  }, [bom, currentProject, systemPack, pattern, generateBOM]);
+  }, [bom, error, isGenerating, currentProject, systemPack, pattern, workflowIdentity, projectId, poseId, generateBOM]);
 
   const handleContinue = () => {
     const validation = WorkflowValidator.validateBOMToOptimization(bom);
     if (!validation.passed) {
-      if (projectId && poseId) navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/optimization`);
+      setError(
+        validation.issues.map((issue) => issue.message).join('; ') ||
+          'Resolve BOM qualification before optimization.',
+      );
       return;
     }
     if (!completeStep('bom')) {

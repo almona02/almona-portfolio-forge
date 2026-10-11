@@ -2,6 +2,10 @@ import { estimateSource } from '@/lib/fabricator/production/estimateSource';
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useDeletePose, useUpsertPose, useUpdateProject } from '@/hooks/useFabricatorQueries';
 import { PresetAwareBOMGenerator, type CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
+import {
+  resolveExpectedDesignLedger,
+  savedLedgerNeedsMaterialize,
+} from '@/lib/fabricator/bom/ledgerParity';
 import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
@@ -81,7 +85,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
     } else setAggregatedBOM(null);
     setIsAggregating(false);
     return () => { ++aggregationGeneration.current; };
-  }, [positions, engineeringPacks, projectMeta?.meta]);
+  }, [projectId, positions, engineeringPacks, projectMeta?.meta]);
 
   const openPoseMeasuring = useCallback((id: string) => {
     if (!projectId) return;
@@ -191,12 +195,25 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
           const pack = engineeringPacks.find(pack => pack.meta.id === pos.systemPackId);
           if (!pack) throw new Error('Saved system pack is unavailable to the signed-in owner.');
           const pattern = resolveEstimatePattern(pos);
-          const bom = await generator.generateCompleteBOM(pos, pattern, pack, false);
+          if (generation !== aggregationGeneration.current) return;
+          const expectedLedger = await resolveExpectedDesignLedger(pos, pattern, pack);
+          if (generation !== aggregationGeneration.current) return;
+          if (pos.components?.length && savedLedgerNeedsMaterialize(pos.components, expectedLedger)) {
+            throw new Error('Saved cuts differ from the design. Regenerate and save cuts in Design before estimating.');
+          }
+          const bom = await generator.generateCompleteBOM({ ...pos, components: expectedLedger }, pattern, pack, false);
+          if (generation !== aggregationGeneration.current) return;
           if (!bom.qualification || bom.qualification.generatedPieceCount !== bom.qualification.requiredPieceCount) {
             throw new Error(`Incomplete profile ledger: ${bom.qualification?.generatedPieceCount ?? 0}/${bom.qualification?.requiredPieceCount ?? '?'} required pieces. Resolve frame and divider profiles in Design.`);
           }
           const qty = pos.quantity ?? 1;
           if (!Number.isSafeInteger(qty) || qty < 1) throw new Error('Pose quantity must be a positive integer.');
+
+          // Estimates never modify authoritative pose data or advance its revision.
+          const required = bom.qualification.requiredPieceCount;
+          if (expectedLedger.reduce((sum, component) => sum + component.cuttingLengths.length, 0) !== required) {
+            throw new Error('Canonical design ledger is incomplete. Resolve profiles in Design.');
+          }
           positionBOMs.set(pos.id, bom);
 
           totalProfiles += bom.profiles.reduce((sum, profile) => sum + profile.cuttingLengths.length, 0) * qty;
@@ -264,7 +281,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
     } finally {
       if (generation === aggregationGeneration.current) setIsAggregating(false);
     }
-  }, [positions, engineeringPacks, projectId, projectMeta, updateProject]);
+  }, [positions, engineeringPacks, projectId, projectMeta, updateProject, upsertPose]);
 
   return (
     <div className="h-full overflow-auto p-6 space-y-6 bg-[#0a0a0a]">

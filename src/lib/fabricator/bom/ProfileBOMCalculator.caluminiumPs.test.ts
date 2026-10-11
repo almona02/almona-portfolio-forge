@@ -118,7 +118,7 @@ describe('caluminium-ps sliding BOM completeness', () => {
     expect(meta?.effectiveDate).toBe(CALUMINIUM_PS_PRICING_EVIDENCE.effectiveDate);
   });
 
-  it('enriches saved components with missing sliding track/interlock (ledger path)', async () => {
+  it('rejects contradictory saved frame/sash dimensions instead of inventing missing members', async () => {
     const frame = CALUMINIUM_PS_PACK.profiles.find((p: Profile) => p.profileRole === 'frame');
     const sash = CALUMINIUM_PS_PACK.profiles.find((p: Profile) =>
       String(p.profileRole || '').includes('sash'),
@@ -146,9 +146,9 @@ describe('caluminium-ps sliding BOM completeness', () => {
       ],
     } as unknown as WindowUnit;
 
-    const profiles = await calculator.calculateProfileBOM(savedUnit, pattern, CALUMINIUM_PS_PACK);
-    expect(profiles.some((p) => p.role === 'interlock')).toBe(true);
-    expect(profiles.some((p) => p.role === 'track')).toBe(true);
-    expect(profiles.some((p) => String(p.profileCode).includes('TRACK'))).toBe(true);
+    // Overall dimensions are not nominal leaf-member lengths. Completing this
+    // partial ledger would conceal wrong sash cuts and fabricate completeness.
+    await expect(calculator.calculateProfileBOM(savedUnit, pattern, CALUMINIUM_PS_PACK))
+      .rejects.toThrow('Saved sliding cuts do not match the design');
   });
 });

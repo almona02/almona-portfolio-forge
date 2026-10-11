@@ -45,11 +45,32 @@ describe('saved manual design estimate resolution', () => {
     expect(result.gridSpec.cells).toHaveLength(2);
   });
 
-  it('rejects mixed fixed/sash manual grids', () => {
+  it('does not map all-sash casement grids to sliding', () => {
+    const casement = position(2, 1);
+    casement.type = 'casement';
+    casement.grid!.cells.forEach((cell, i) => {
+      cell.type = 'sash';
+      cell.openingDirection = i === 0 ? 'left' : 'right';
+    });
+    const result = resolveEstimatePattern(casement);
+    expect(result.type).toBe('casement');
+    expect(result.openingMechanism?.type).toBe('casement');
+    expect(result.mullions).toHaveLength(1);
+    expect(result.id).toContain('manual-casement');
+  });
+
+  it('resolves mixed fixed/side-hung manual grids with structural mullions', () => {
     const mixed = position(2, 1);
+    mixed.type = 'casement';
     mixed.grid!.cells[0].type = 'fixed';
     mixed.grid!.cells[1].type = 'sash';
-    expect(() => resolveEstimatePattern(mixed)).toThrow(/fixed cells|sliding estimate/);
+    mixed.grid!.cells[1].openingDirection = 'right';
+    const result = resolveEstimatePattern(mixed);
+    expect(result.type).toBe('casement');
+    expect(result.openingMechanism?.type).toBe('casement');
+    expect(result.mullions).toHaveLength(1);
+    expect(result.gridSpec.cells[0].type).toBe('fixed');
+    expect(result.gridSpec.cells[1].type).toBe('sash');
   });
   it('rejects unknown explicit presets and invalid proportions', () => {
     const unknown = position(1, 1);
