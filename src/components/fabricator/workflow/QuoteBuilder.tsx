@@ -8,6 +8,7 @@
  */
 
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import {
   validateOptimizationReconciliation,
   validateStepTransition,
@@ -231,9 +232,15 @@ export const QuoteBuilder: React.FC = () => {
     }
   }, [currentProject, quote, optimizationResult, markupPercent, taxRate, branding]);
 
+  const engineeringPacks = useEngineeringSystemPacks();
+
   const handleContinueToProduction = useCallback(() => {
     const validation = validateStepTransition(
-      { measurementData, currentProject, bom, optimizationResult },
+      {
+        measurementData, currentProject, bom, optimizationResult,
+        // Complete the saved design ledger before judging BOM parity (see the Optimize step).
+        systemPack: engineeringPacks.find((pack) => pack.meta.id === currentProject?.systemPackId) ?? null,
+      },
       'production'
     );
     if (!validation.valid) {
@@ -246,7 +253,7 @@ export const QuoteBuilder: React.FC = () => {
     if (projId && posId) {
       navigate(fabricatorRoutes.poseProduction(projId, posId));
     }
-  }, [measurementData, currentProject, bom, optimizationResult, quote, setQuote, projectId, poseId, navigate]);
+  }, [measurementData, currentProject, bom, optimizationResult, quote, setQuote, projectId, poseId, navigate, engineeringPacks]);
 
   if (!currentProject) {
     return (
