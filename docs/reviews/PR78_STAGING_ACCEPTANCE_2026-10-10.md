@@ -1,7 +1,7 @@
 # PR #78 staging acceptance — 10 October 2026
 
 **Composite score remains 88/100 provisional** (no raise without independent review).  
-FP-027 remains **OPEN**; Caluminium evidence does not close DoWin ORTA. No production SQL applied.
+FP-027 remains **OPEN**; Caluminium evidence does not close reference-source ORTA. No production SQL applied.
 
 ## A. Identifiers
 
@@ -75,7 +75,7 @@ Optimize All remains estimate_only (no manufacturing-qualified convert from esti
 | Browser order→release→QC→delivery for all 10 poses | **not run** | Evidence/hardener scripted; full browser manufacturing UI for 10 poses not driven |
 | Hardener reject / revoke / override + cross-owner negatives (full matrix) | **not run** | Partial prior negatives only |
 | Optimize classification `estimate_only` | **expected** | Project estimate path is non-qualifying; qualified evidence is server RPC, not Optimize All |
-| FP-027 | **blocked** (open) | Requires separate DoWin ORTA evidence — Caluminium does not close |
+| FP-027 | **blocked** (open) | Requires separate reference-source ORTA evidence — Caluminium does not close |
 | Production promotion | **not authorized** | Staging only |
 | CI on `ca820035` | **pending** | Pushed; type deltas for TS7006/TS2352/TS2322 addressed — await Actions |
 

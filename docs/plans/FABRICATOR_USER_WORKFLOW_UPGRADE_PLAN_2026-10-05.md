@@ -279,9 +279,9 @@ This section supersedes stale current-state labels above; earlier dated artifact
 Execution order:
 1. Verify the isolated BOM save/qualification repair against current main: failed saves and stale responses cannot publish; new revisions require fresh authority; saved sliding cuts require exact profile/length/angle multiset parity. Do not merge original #80 qualification rebinding.
 2. Repair #78 conflicts and ledger test contracts, then independently review fingerprint preservation. Split upgrade documentation from functional patches.
-3. Complete #81 phase-one production inspector wiring, stable occurrence IDs, DoWin generator parity and catalogue/rule cache invalidation before phases 2-5.
+3. Complete #81 phase-one production inspector wiring, stable occurrence IDs, reference-source generator parity and catalogue/rule cache invalidation before phases 2-5.
 4. Keep Gold flexibility explicit: asymmetric and mixed openings; material-specific aluminum/UPVC accessories; per-occurrence frame/sash/glass editing; authored profile choices must not be silently replaced to force parity.
 5. Address staging schema/security parity through reviewed migrations; no reset or blanket production SQL push.
 6. Resume disposable browser FINAL GOAL only on owner instruction: ten distinct poses, eighteen units, >100 cuts, save/reload/fresh login, hardener negatives and order/release/QC/delivery. Keep 414 uniform cuts and 489 diverse cuts attached to their separate fixtures and dimensions.
 
-Keep implementation, CI, staging SQL, staging browser, live acceptance and production readiness separate. See [the repair report](../reviews/CURSOR_FABRICATOR_BOM_REPAIR_2026-10-11.md).
+Keep implementation, CI, staging SQL, staging browser, live acceptance and production readiness separate. See [the repair report](../reviews/FABRICATOR_BOM_REPAIR_2026-10-11.md).

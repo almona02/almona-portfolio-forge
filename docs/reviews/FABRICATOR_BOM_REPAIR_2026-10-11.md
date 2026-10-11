@@ -1,8 +1,8 @@
-# Cursor BOM repair - 11 October 2026
+# review BOM repair - 11 October 2026
 
 ## Scope
 
-Isolated branch codex/bom-save-qualification-repair, starting from Cursor #80 b98b222f and integrating current main 99fd2520 locally. Cursor checkout and its untracked .tmp-pr-assess/ remain untouched. No production changes, migration writes, approval exceptions or browser E2E.
+Isolated branch codex/bom-save-qualification-repair, starting from review #80 b98b222f and integrating current main 99fd2520 locally. review checkout and its untracked .tmp-pr-assess/ remain untouched. No production changes, migration writes, approval exceptions or browser E2E.
 
 ## Repairs
 
@@ -15,9 +15,9 @@ Isolated branch codex/bom-save-qualification-repair, starting from Cursor #80 b9
 
 ## Verification and limits
 
-Final integrated suite: **72/72 checks across 10 files**, covering panel publication/save failure, authority reads, stale acknowledgements, every awaited cancellation boundary, revision/quantity/glazing invalidation, exact sliding ledger parity and main ledger/fingerprint contracts. The unchanged Windows compiler baseline gate passes: 1774 app diagnostics vs baseline 1791, zero new signatures and zero occurrence increases; node clean. This is not type-clean. Final committed-code production build passed (54.25s); PWA generated. Linux CI and independent review remain pending. No SQL or migration diff against main. No browser acceptance claimed. Non-sliding saved-ledger and Gold custom-profile expansion remain separate phase-one/design work; this narrow gate does not claim universal DoWin generator parity.
+Final integrated suite: **72/72 checks across 10 files**, covering panel publication/save failure, authority reads, stale acknowledgements, every awaited cancellation boundary, revision/quantity/glazing invalidation, exact sliding ledger parity and main ledger/fingerprint contracts. The unchanged Windows compiler baseline gate passes: 1774 app diagnostics vs baseline 1791, zero new signatures and zero occurrence increases; node clean. This is not type-clean. Final committed-code production build passed (54.25s); PWA generated. Linux CI and independent review remain pending. No SQL or migration diff against main. No browser acceptance claimed. Non-sliding saved-ledger and Gold custom-profile expansion remain separate phase-one/design work; this narrow gate does not claim universal reference-source generator parity.
 
-Next: #78 ledger contracts/conflicts, #81 phase-one production wiring and DoWin parity, staging schema/security parity, then owner-resumed disposable FINAL GOAL. FP-027 exports remain blocked and composite held at 88 provisional. Production #76 SQL promotion needs a separate grant.
+Next: #78 ledger contracts/conflicts, #81 phase-one production wiring and reference-source parity, staging schema/security parity, then owner-resumed disposable FINAL GOAL. FP-027 exports remain blocked and composite held at 88 provisional. Production #76 SQL promotion needs a separate grant.
 
 ## Full Pipeline follow-up
 

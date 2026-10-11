@@ -18,7 +18,7 @@
 
 | Lane | Owns | Must not |
 |---|---|---|
-| Source curator | DoWin register, JSON, hashes | Engine/UI edits |
+| Source curator | reference-source register, JSON, hashes | Engine/UI edits |
 | Engine | Opening semantics, geometry, recipes, cache/fingerprint contracts | Drawing chrome |
 | UI | Hit-test, highlight, inspector, select-without-mutate | Duplicate length/BOM formulas |
 | Acceptance | Independent expected multisets, browser evidence | Softening counts to match code |

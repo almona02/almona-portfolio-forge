@@ -1,4 +1,4 @@
-# Cursor stopped-work review — 2026-10-11
+# review stopped-work review — 2026-10-11
 
 Reviewed local object/BOM phase-one work based on PR #78 at cbec1217.
 

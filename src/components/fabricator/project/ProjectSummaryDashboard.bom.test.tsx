@@ -96,7 +96,7 @@ describe('project BOM failures', () => {
     expect(snapshot.bom_estimate.failures).toHaveLength(1);
   });
 
-  it('materializes a complete design ledger after pricing when the pose had no saved cuts', async () => {
+  it('prices the canonical ledger without modifying an empty saved pose', async () => {
     const designLedger = [
       { id: 'frame', type: 'frame', profile: { id: 'FRAME' }, angles: [45, 45, 45, 45], cuttingLengths: [1200, 1400, 1200, 1400] },
     ];
@@ -111,10 +111,9 @@ describe('project BOM failures', () => {
     });
     render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={{ id: 'project' }} positions={[{ ...pose, components: [] }]} onOpenStudio={() => {}} /></MemoryRouter>);
     fireEvent.click(screen.getByRole('button', { name: 'Aggregate Project BOM' }));
-    await waitFor(() => expect(mocks.upsert).toHaveBeenCalled());
-    const write = mocks.upsert.mock.calls.at(-1)![0];
-    expect(write.windowUnit.components).toEqual(designLedger);
-    expect(write.windowUnit.systemPackId).toBe('owned-pack');
+    await waitFor(() => expect(screen.getByText('Project estimate total')).toBeVisible());
+    expect(mocks.upsert).not.toHaveBeenCalled();
+    expect(mocks.generate.mock.calls[0][0].components).toEqual(designLedger);
   });
 
   it('does not overwrite a pose whose saved cut ledger already matches the expected multiset', async () => {
@@ -136,4 +135,24 @@ describe('project BOM failures', () => {
     expect(mocks.resolveLedger).toHaveBeenCalled();
     expect(mocks.upsert).not.toHaveBeenCalled();
   });
-});
+
+  it('rejects same-count saved-cut drift without pricing or changing the pose', async () => {
+    renderProject([{ ...pose, components: [{ id: 'frame', type: 'frame', profile: { id: 'FRAME' }, cuttingLengths: [1217, 1400, 1200, 1400], angles: [45, 45, 45, 45] }] } as WindowUnit]);
+    await waitFor(() => expect(screen.getByText(/Saved cuts differ from the design/)).toBeVisible());
+    expect(mocks.generate).not.toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
+  it('cancels pricing and publication when quantities change during ledger resolution', async () => {
+    let resolve!: (value: unknown) => void;
+    mocks.resolveLedger.mockImplementationOnce(() => new Promise(done => { resolve = done; }));
+    const view = render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={undefined} positions={[pose]} onOpenStudio={() => {}} /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: 'Aggregate Project BOM' }));
+    await waitFor(() => expect(mocks.resolveLedger).toHaveBeenCalled());
+    view.rerender(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={undefined} positions={[{ ...pose, quantity: 2 }]} onOpenStudio={() => {}} /></MemoryRouter>);
+    resolve([]);
+    await new Promise(done => setTimeout(done, 0));
+    expect(mocks.generate).not.toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
+    expect(mocks.save).not.toHaveBeenCalled();
+  });});

@@ -1,4 +1,4 @@
-# Deceuninck 70 PVC — DoWin saved-position golden fixtures
+# Deceuninck 70 PVC — reference-source saved-position golden fixtures
 
 Evidence-only source capture (2026-10-10). Not an approved system pack.
 
