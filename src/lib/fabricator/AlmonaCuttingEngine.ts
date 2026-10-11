@@ -447,7 +447,12 @@ export class AlmonaCuttingEngine {
     lengthsMm: number[],
     barLengthMm: number = this.barLength,
   ): { barsUsed: number; utilization: number; totalRemnantMm: number; sortedLongestFirst: boolean } {
-    const sorted = [...lengthsMm].filter((n) => Number.isFinite(n) && n > 0).sort((a, b) => b - a);
+    if (!Number.isFinite(barLengthMm) || barLengthMm <= 0
+        || lengthsMm.some(length => !Number.isFinite(length) || length <= 0
+          || length + this.sawKerf + 2 * this.settings.trimCutMm > barLengthMm)) {
+      throw new RangeError('Benchmark requires valid lengths that fit the stock with kerf and trim.');
+    }
+    const sorted = [...lengthsMm].sort((a, b) => b - a);
     const items: CutListItem[] = sorted.map((cutLengthMm) => ({
       profileId: 'bench-profile',
       profileName: 'Benchmark',
@@ -460,7 +465,9 @@ export class AlmonaCuttingEngine {
       wasteAfterMm: 0,
     }));
     const partIdMap = generateWorkshopPartIds(items);
-    const bars = this.buildPackedBarsFromItems(
+    // Benchmarks must not populate the production engine's reusable-remnant inventory.
+    const benchmarkEngine = new AlmonaCuttingEngine();
+    const bars = benchmarkEngine.buildPackedBarsFromItems(
       items,
       barLengthMm,
       this.sawKerf,
