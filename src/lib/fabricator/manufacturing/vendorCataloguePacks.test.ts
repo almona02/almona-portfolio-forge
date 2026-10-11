@@ -22,5 +22,8 @@ describe('vendorCataloguePacks', () => {
     );
     expect(Array.isArray(payload.profiles)).toBe(true);
     expect((payload.profiles as unknown[]).length).toBeGreaterThanOrEqual(2);
+    expect(payload.manufacturingSettings).toEqual({ sawKerfMm: 4, trimCutMm: 0 });
+    const rules = payload.cuttingRules as Array<{ deductions?: unknown }>;
+    expect(rules[0]?.deductions).toEqual({ endDeductionMm: 20 });
   });
 });

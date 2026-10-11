@@ -24,9 +24,18 @@ const row = (): ManufacturingAuthorityRpcRow => ({
       { role: 'sash', profileId: 'R60-S', stockLengthMm: 6000, evidenceStatus: 'approved', approvalId: '51000000-0000-0000-0000-000000000002' },
     ],
     cuttingRules: [
-      { ruleId: 'cut', revision: 1, evidenceStatus: 'approved', approvalId: '61000000-0000-0000-0000-000000000001' },
+      {
+        ruleId: 'cut',
+        revision: 1,
+        evidenceStatus: 'approved',
+        approvalId: '61000000-0000-0000-0000-000000000001',
+        deductions: { endDeductionMm: 20 },
+        allowances: { weldMm: 3 },
+        applicability: { materials: ['aluminum'] },
+      },
     ],
     toleranceRule: { ruleId: 'tol', revision: 1, evidenceStatus: 'approved', approvalId: '61000000-0000-0000-0000-000000000002' },
+    manufacturingSettings: { sawKerfMm: 4, trimCutMm: 0 },
   },
 });
 
@@ -36,6 +45,19 @@ describe('FP-028 / P4.5 manufacturing authority resolver', () => {
     expect(resolved.authorityApprovalId).toBe(approvalId);
     expect(resolved.systemPack).toMatchObject({ id: 'rock60', revision: 1 });
     expect(resolved.profiles.map((profile) => profile.role)).toEqual(['frame', 'sash']);
+    expect(resolved.manufacturingSettings).toEqual({ sawKerfMm: 4, trimCutMm: 0 });
+    expect(resolved.cuttingRules[0]?.deductions).toEqual({ endDeductionMm: 20 });
+  });
+
+  it('rejects authority missing manufacturingSettings', () => {
+    const payload = { ...row().authority_payload };
+    delete (payload as { manufacturingSettings?: unknown }).manufacturingSettings;
+    expect(() =>
+      parseManufacturingAuthorityRpcRow(
+        { ...row(), authority_payload: payload },
+        { positionId: 'position-a', revision: 7 },
+      ),
+    ).toThrowError(ManufacturingAuthorityResolutionError);
   });
 
   it.each([
@@ -50,8 +72,10 @@ describe('FP-028 / P4.5 manufacturing authority resolver', () => {
   });
 
   it('rejects unapproved or structurally incomplete authority payloads', () => {
-    const invalid = row();
-    invalid.authority_payload = { ...invalid.authority_payload, profiles: [] };
+    const invalid: ManufacturingAuthorityRpcRow = {
+      ...row(),
+      authority_payload: { ...row().authority_payload, profiles: [] },
+    };
     try {
       parseManufacturingAuthorityRpcRow(invalid, { positionId: 'position-a', revision: 7 });
       throw new Error('Expected invalid authority rejection.');

@@ -116,6 +116,9 @@ export function buildVendorAuthorityPayload(
         revision: 1,
         evidenceStatus: 'approved',
         approvalId: 'c1000000-0000-4000-8000-000000000001',
+        deductions: { endDeductionMm: 20 },
+        allowances: { weldMm: 3 },
+        applicability: { materials: ['aluminum'] },
       },
     ],
     toleranceRule: {
@@ -123,6 +126,10 @@ export function buildVendorAuthorityPayload(
       revision: 1,
       evidenceStatus: 'approved',
       approvalId: 'c1000000-0000-4000-8000-000000000002',
+    },
+    manufacturingSettings: {
+      sawKerfMm: 4,
+      trimCutMm: 0,
     },
   };
 }
