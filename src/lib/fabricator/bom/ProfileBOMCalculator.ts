@@ -423,6 +423,10 @@ export class ProfileBOMCalculator {
    * Frame-only (or sash-missing) sliding saves are treated as incomplete —
    * they must not block sash / interlock / track / bead emission.
    */
+  async resolveCanonicalDesignLedger(windowUnit: WindowUnit, pattern: EgyptianPattern, systemPack: SystemPack): Promise<WindowComponent[]> {
+    return this.resolvePhysicalDesignComponents(windowUnit, pattern, systemPack);
+  }
+
   private async resolveDesignComponents(
     windowUnit: WindowUnit,
     pattern: EgyptianPattern,
