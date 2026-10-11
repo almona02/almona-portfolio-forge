@@ -436,6 +436,20 @@ export class ProfileBOMCalculator {
     return this.ensureSlidingTrackDesignComponents(components, windowUnit, pattern, systemPack);
   }
 
+  /**
+   * Public entry point for the sliding-track completion so the design/persistence
+   * path and the BOM path share one authority instead of drifting apart.
+   * Idempotent by role: returns the components unchanged when a track is present.
+   */
+  completeSlidingTrackDesignComponents(
+    components: WindowComponent[],
+    windowUnit: WindowUnit,
+    pattern: EgyptianPattern,
+    systemPack: SystemPack,
+  ): WindowComponent[] {
+    return this.ensureSlidingTrackDesignComponents(components, windowUnit, pattern, systemPack);
+  }
+
   private ensureSlidingTrackDesignComponents(
     components: WindowComponent[],
     windowUnit: WindowUnit,

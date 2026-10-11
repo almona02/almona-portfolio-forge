@@ -1,4 +1,5 @@
 import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import type { CuttingJob } from '@/algorithms/adaptiveSolver';
 import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
 import { OptimizationCockpit } from '@/components/fabricator/cockpit/OptimizationCockpit';
@@ -56,6 +57,14 @@ export const OptimizationPage: React.FC = () => {
     useEffect(() => { activeProjectRef.current = currentProject; }, [currentProject]);
     useEffect(() => () => { mountedRef.current = false; activeRunRef.current += 1; }, []);
 
+    const engineeringPacksForGate = useEngineeringSystemPacks();
+    // The gate completes the saved design ledger before judging BOM parity, so a pose
+    // saved before the sliding-track completion existed is not blocked forever.
+    const systemPackForGate = useMemo(
+        () => engineeringPacksForGate.find((pack) => pack.meta.id === currentProject?.systemPackId) ?? null,
+        [engineeringPacksForGate, currentProject?.systemPackId],
+    );
+
     const optimizationValidation = useMemo(
         () =>
             validateStepTransition(
@@ -64,10 +73,11 @@ export const OptimizationPage: React.FC = () => {
                     currentProject,
                     bom,
                     optimizationResult,
+                    systemPack: systemPackForGate,
                 },
                 'optimization'
             ),
-        [measurementData, currentProject, bom, optimizationResult]
+        [measurementData, currentProject, bom, optimizationResult, systemPackForGate]
     );
 
     const profiles = useMemo(
