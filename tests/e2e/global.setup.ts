@@ -30,7 +30,7 @@ setup('authenticate', async ({ page }) => {
 
   // 4. Navigate to a known protected route to ensure auth worked
   console.log('[Setup] Navigating to /fabricator/customers');
-  await page.goto('/fabricator/customers');
+  await page.goto('/fabricator/studio/data/customers');
 
   // 5. Wait for authenticated state (Customers page content)
   console.log('[Setup] Verifying authentication');

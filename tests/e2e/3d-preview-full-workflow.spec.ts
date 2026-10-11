@@ -11,8 +11,8 @@
 import { expect, test } from '@playwright/test';
 
 const REAL_LOGIN = {
-  email: 'almona.co@hotmail.com',
-  password: 'abcd1234',
+  email: process.env.E2E_REAL_EMAIL?.trim() ?? '',
+  password: process.env.E2E_REAL_PASSWORD?.trim() ?? '',
 };
 
 /** Assert key content is in viewport and page is scrollable where expected */
@@ -39,6 +39,13 @@ async function assertScrollAndVisibility(
 }
 
 test.describe('3D Preview and full workflow E2E', () => {
+  // Every URL this spec drives (/fabricator/workflow/{measuring,design,preview3d,
+  // optimization,production} and /fabricator/reports) is now a redirect into the
+  // studio hierarchy (src/App.tsx:523-528, 680-681), and there is no live
+  // standalone 3D-preview route. Retired rather than silently passing: rewrite
+  // against /fabricator/studio/projects/:projectId/positions/:poseId/* and the
+  // fixture env (E2E_MFG_PROJECT_ID / E2E_POSE_DESIGN_URL) before re-enabling.
+  test.skip(true, 'Legacy /fabricator/workflow/* routes redirect to the studio; coverage lives in the 1018 and measure-design-reload specs.');
   test.setTimeout(120000);
 
   test.beforeEach(async ({ page }, testInfo) => {
@@ -53,7 +60,7 @@ test.describe('3D Preview and full workflow E2E', () => {
     }
   });
 
-  test('real login with almona.co@hotmail.com', async ({ page }) => {
+  test('real login with the configured acceptance account', async ({ page }) => {
     await page.goto('/login');
     await expect(page.locator('#email')).toBeVisible({ timeout: 20000 });
     await page.locator('#email').fill(REAL_LOGIN.email);

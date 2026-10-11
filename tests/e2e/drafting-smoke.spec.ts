@@ -12,6 +12,7 @@ test.describe('Almona Drafting Smoke Test', () => {
   });
 
   test('should navigate to drafting workbench', async ({ page }) => {
+    test.skip(true, 'Legacy route removed. Coverage replaced by fabricator-project-1018-cut-chain.spec.ts and fabricator-measure-design-reload.spec.ts.');
     // 1. Prepare: Inject a mock project into the store via window.jobsStore
     // We navigate to home first to ensure the app and store are loaded
     await page.goto('/');

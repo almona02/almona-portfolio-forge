@@ -9,6 +9,7 @@ test.describe('Offline Resilience & Degradation', () => {
     });
 
     test('should prevent data loss when network goes offline', async ({ context, page }) => {
+    test.skip(true, 'Legacy route removed. Coverage replaced by fabricator-project-1018-cut-chain.spec.ts and fabricator-measure-design-reload.spec.ts.');
         // 1. Create initial state (e.g. draw a rect)
         // We'll simulate this by injecting state to ensure we have something to lose
         await page.evaluate(() => {

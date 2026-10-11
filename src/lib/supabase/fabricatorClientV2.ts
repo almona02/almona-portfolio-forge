@@ -317,13 +317,31 @@ export const fabricatorClientV2 = {
     if (existingProject?.id) {
       projectId = existingProject.id;
     } else if (isUuid(windowUnit.projectId)) {
-      const { data: inserted, error: projErr } = await supabase
+      // Adopt a project row already referenced by id. A project whose project_code differs
+      // from this unit's order number (legacy or renamed) would otherwise fall through to
+      // the insert below, hit a primary-key conflict (409) and fail the save, blocking the
+      // measure -> design handoff.
+      // The client here is the untyped wrapper whose results are inferred as `never`,
+      // so narrow locally instead of adding to the diagnostics this file already carries.
+      const referencedProjectId = String(windowUnit.projectId);
+      const { data: projectById } = await supabase
         .from('fabricator_projects_v2')
-        .insert({ ...baseProject, id: windowUnit.projectId } as ProjectV2Insert)
         .select('id')
-        .single();
-      if (projErr || !inserted?.id) throw new Error(persistenceErrorMessage(projErr) || 'Failed to create project');
-      projectId = inserted.id;
+        .eq('id', referencedProjectId)
+        .eq('owner_user_id', ownerUserId)
+        .maybeSingle();
+      const adoptedProjectId = (projectById as { id?: string } | null)?.id;
+      if (adoptedProjectId) {
+        projectId = adoptedProjectId;
+      } else {
+        const { data: inserted, error: projErr } = await supabase
+          .from('fabricator_projects_v2')
+          .insert({ ...baseProject, id: windowUnit.projectId } as ProjectV2Insert)
+          .select('id')
+          .single();
+        if (projErr || !inserted?.id) throw new Error(persistenceErrorMessage(projErr) || 'Failed to create project');
+        projectId = inserted.id;
+      }
     } else {
       const { data: v1ByCode } = await supabase
         .from('fabricator_projects')
