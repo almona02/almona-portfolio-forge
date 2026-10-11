@@ -111,7 +111,7 @@ export const SmartMeasuringDemo: React.FC = () => {
 };
 
 /**
- * Step 2: AI-Powered Design Demo
+ * Step 2: Assisted Design Demo
  */
 export const AIDesignDemo: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -134,12 +134,12 @@ export const AIDesignDemo: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Sparkles className="h-5 w-5 text-amber-400" />
-          AI Design Assistant Demo
+          automation Design Assistant Demo
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-gray-300">
-          Click the button below to see how AI suggests optimal window configurations based on your measurements.
+          Click the button below to see how automation suggests optimal window configurations based on your measurements.
         </p>
 
         <Button
@@ -147,12 +147,12 @@ export const AIDesignDemo: React.FC = () => {
           disabled={loading || suggestions.length > 0}
           className="w-full bg-amber-600 hover:bg-amber-700"
         >
-          {loading ? 'Analyzing...' : suggestions.length > 0 ? 'Suggestions Generated' : 'Get AI Suggestions'}
+          {loading ? 'Analyzing...' : suggestions.length > 0 ? 'Suggestions Generated' : 'Get automation Suggestions'}
         </Button>
 
         {suggestions.length > 0 && (
           <div className="space-y-2">
-            <h4 className="typography-h4 text-sm text-amber-300">AI Suggestions:</h4>
+            <h4 className="typography-h4 text-sm text-amber-300">automation Suggestions:</h4>
             {suggestions.map((suggestion, i) => (
               <div
                 key={i}
@@ -171,7 +171,7 @@ export const AIDesignDemo: React.FC = () => {
         {suggestions.length > 0 && (
           <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
             <p className="text-sm text-green-300">
-              ✓ AI has analyzed your measurements and provided optimal recommendations
+              ✓ automation has analyzed your measurements and provided optimal recommendations
             </p>
           </div>
         )}

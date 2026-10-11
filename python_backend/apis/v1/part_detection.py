@@ -49,7 +49,7 @@ async def identify_part(
 
 @router.get("/models", response_model=GetModelsResponse)
 async def get_models():
-    """Get information about available AI models and their versions.""" 
+    """Get information about available automation models and their versions."""
     default_detector = PartDetector()
     model_info = default_detector.get_model_info()
 

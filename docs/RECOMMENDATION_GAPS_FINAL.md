@@ -155,7 +155,7 @@
 **Opportunity:** Trust-building differentiator  
 **Action Required:**
 1. Create customer-friendly explanation of Tier 3
-2. Add "No AI in execution paths" badge
+2. Add "No automation in execution paths" badge
 3. Explain "Identical inputs → identical outputs" guarantee
 4. Market audit trail as compliance feature
 
@@ -236,7 +236,7 @@
 **Why:** Unique differentiator vs Klaes/Orgadata/Moxisys  
 **How:**
 - Market "99.8% accuracy (test-provable)" claim
-- Highlight "No AI in execution paths" guarantee
+- Highlight "No automation in execution paths" guarantee
 - Emphasize "Identical inputs → identical outputs" determinism
 - Position as institutional-grade platform
 

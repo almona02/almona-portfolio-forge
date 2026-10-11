@@ -215,7 +215,7 @@ export const AdvisoryDashboard: React.FC = () => {
                         Advisory Intelligence Dashboard
                     </h1>
                     <p className="dashboard-subtitle">
-                        AI-powered suggestions requiring human validation • AICS-001 Tier 2 Compliant
+                        software-assisted suggestions requiring human validation • AICS-001 Tier 2 Compliant
                     </p>
                 </div>
 
@@ -458,7 +458,7 @@ export const AdvisoryDashboard: React.FC = () => {
 
                                 {metrics?.recommendations && metrics.recommendations.length > 0 && (
                                     <div className="recommendations-box">
-                                        <h5>AI Recommendations</h5>
+                                        <h5>Recommendations</h5>
                                         <ul>
                                             {metrics.recommendations.map((rec, index) => (
                                                 <li key={index}>{rec}</li>

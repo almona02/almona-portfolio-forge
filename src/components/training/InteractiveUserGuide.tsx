@@ -112,20 +112,20 @@ const TRAINING_MODULES: TrainingModule[] = [
   },
   {
     id: 'ai-chatbot-training',
-    title: 'AI Technical Support Assistant',
-    description: 'Master the AI-powered chatbot for instant technical support and emergency assistance',
+    title: 'automation Technical Support Assistant',
+    description: 'Master the software-assisted chatbot for instant technical support and emergency assistance',
     icon: <Zap className="h-5 w-5" />,
     category: 'ai',
     duration: 20,
     difficulty: 'intermediate',
-    completionReward: 'AI Support Expert Badge',
+    completionReward: 'automation Support Expert Badge',
     steps: [
       {
         id: 'chatbot-activation',
-        title: 'Opening the AI Assistant',
-        description: 'Learn to access and initialize the AI technical support chatbot',
+        title: 'Opening the automation Assistant',
+        description: 'Learn to access and initialize the automation technical support chatbot',
         type: 'tutorial',
-        content: 'Click the floating AI bot button in the bottom-right corner to open the 24/7 technical support assistant.',
+        content: 'Click the floating automation bot button in the bottom-right corner to open the 24/7 technical support assistant.',
         targetElement: '[data-testid="ai-chatbot-button"]',
         action: 'click'
       },
@@ -141,10 +141,10 @@ const TRAINING_MODULES: TrainingModule[] = [
       },
       {
         id: 'part-identification',
-        title: 'AI-Powered Part Recognition',
-        description: 'Use camera integration to identify spare parts with AI assistance',
+        title: 'software-assisted Part Recognition',
+        description: 'Use camera integration to identify spare parts with automation assistance',
         type: 'practice',
-        content: 'Take a photo of a machine part using the camera button to get instant AI-powered identification and ordering information.',
+        content: 'Take a photo of a machine part using the camera button to get instant software-assisted identification and ordering information.',
         hints: ['Ensure good lighting and clear view of the part for best results']
       }
     ]
@@ -215,7 +215,7 @@ const TRAINING_MODULES: TrainingModule[] = [
         title: 'Predictive Maintenance Insights',
         description: 'Understand ML-powered failure predictions and maintenance scheduling',
         type: 'interactive',
-        content: 'Review the predictive maintenance panel to see AI-generated forecasts for potential component failures and recommended actions.',
+        content: 'Review the predictive maintenance panel to see automation-generated forecasts for potential component failures and recommended actions.',
         expectedResult: 'Maintenance predictions displayed with confidence levels and timelines'
       },
       {
@@ -241,7 +241,7 @@ export const InteractiveUserGuide: React.FC<{
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
   const [_isPlaying, _setIsPlaying] = useState(false);
   const [_userProgress, _setUserProgress] = useState<Map<string, UserProgress>>(new Map());
-  
+
   const _highlightRef = useRef<HTMLElement | null>(null);
   const spotlightRef = useRef<HTMLDivElement | null>(null);
 
@@ -272,7 +272,7 @@ export const InteractiveUserGuide: React.FC<{
     if (spotlightRef.current) {
       const rect = element.getBoundingClientRect();
       const spotlight = spotlightRef.current;
-      
+
       spotlight.style.display = 'block';
       spotlight.style.left = `${rect.left - 10}px`;
       spotlight.style.top = `${rect.top - 10}px`;
@@ -291,7 +291,7 @@ export const InteractiveUserGuide: React.FC<{
   // Handle step completion
   const completeStep = (stepId: string) => {
     setCompletedSteps(prev => new Set([...prev, stepId]));
-    
+
     // Track step completion
     performanceMonitor.recordFeatureUsage(
       'user_training',
@@ -305,7 +305,7 @@ export const InteractiveUserGuide: React.FC<{
     );
 
     toast.success('Step completed! 🎉');
-    
+
     // Auto-advance to next step
     setTimeout(() => {
       if (selectedModule && currentStep < selectedModule.steps.length - 1) {
@@ -437,7 +437,7 @@ export const InteractiveUserGuide: React.FC<{
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <p className="text-sm text-gray-400">{module.description}</p>
-                        
+
                         <div className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2">
                             {getCategoryIcon(module.category)}

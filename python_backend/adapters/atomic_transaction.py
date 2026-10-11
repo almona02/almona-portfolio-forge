@@ -137,9 +137,9 @@ class AtomicDualWriteTransaction:
         Execute atomic dual-write with validation.
 
         Args:
-            almona_operation: Function that takes cursor, returns result
+            almona_operation: Function that takes development tool, returns result
                 dict
-            realityos_operation: Function that takes cursor, returns result
+            realityos_operation: Function that takes development tool, returns result
                 dict
             validation_callback: Optional function to validate match
                 Returns (is_valid: bool, reason: str)

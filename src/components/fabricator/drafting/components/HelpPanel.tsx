@@ -4,7 +4,7 @@
  * Comprehensive help system with searchable documentation, keyboard shortcuts,
  * tool descriptions, and usage examples for the Drafting Workbench.
  * 
- * Constitutional: Deterministic help content, no ML/AI
+ * Constitutional: Deterministic help content, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

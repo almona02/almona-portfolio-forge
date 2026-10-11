@@ -1,7 +1,7 @@
 /**
  * Fabricator Command Center
  * Understated workshop command — engines, stock, production, and Almona service.
- * AICS-001: no ML/AI marketing in the execution shell; advisory stays gated.
+ * AICS-001: no advisory inference marketing in the execution shell; advisory stays gated.
  */
 
 import { TodayDashboard } from '@/components/dashboard/TodayDashboard';

@@ -1,4 +1,4 @@
-# Cursor implementation comparison — 5 October 2026
+# development tool implementation comparison — 5 October 2026
 
 Compared supplied progress statements against local commits, current source, migration definitions, remote main, and available build evidence. This is an implementation audit, not an end-to-end acceptance certificate.
 
@@ -10,7 +10,7 @@ Compared supplied progress statements against local commits, current source, mig
 - Industrial Docker build completed; runtime pip check passed and app OpenAPI generated 121 paths. However, that built image contains PyJWT **2.15.0**, while current requirement files pin **2.15.1**. Rebuild and recheck the current security revision before shipping this image.
 - Frontend production build evidence exists in batch1-build.log. A newer candidate has been uploaded but not promoted. No new backend deployment or Git push was performed during this comparison.
 
-## Comparison with Cursor claims
+## Comparison with development tool claims
 
 | Area | Implementation evidence | Acceptance limit |
 |---|---|---|

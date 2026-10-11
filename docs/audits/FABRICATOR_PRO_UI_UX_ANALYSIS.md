@@ -141,7 +141,7 @@ The main workflow is organized as a **tab-based interface** with the following s
 
 **Key Features:**
 1. **SmartDrawCanvas:** Visual grid editor for window structure
-2. **AI Layout Suggestions:** "Suggest AI Layout" button (placeholder for future)
+2. **automation Layout Suggestions:** "Suggest automation Layout" button (placeholder for future)
 3. **System Pack Integration:** Auto-loads profiles and constraints
 4. **Real-time BOM:** Updates as design changes
 5. **Profile Verification:** Compares selected profiles against system pack specs
@@ -172,7 +172,7 @@ The main workflow is organized as a **tab-based interface** with the following s
 
 **UX Strengths:**
 - ✅ **Visual Cutting Plan:** Stock bar visualizations show cuts and waste
-- ✅ **Prominent Savings:** AI waste comparison report front-and-center
+- ✅ **Prominent Savings:** automation waste comparison report front-and-center
 - ✅ **Multiple Export Formats:** G-code, PDF, ALM6510 MDB, Split PO
 - ✅ **Machine Validation:** Validates cutting plan against machine constraints
 - ✅ **Installation Calculator:** Egyptian installation cost breakdown
@@ -186,7 +186,7 @@ The main workflow is organized as a **tab-based interface** with the following s
 
 **Key Features:**
 1. **Stock Bar Visualization:** Graphical representation of cuts on stock bars
-2. **Waste Comparison:** Manual vs AI-optimized waste analysis
+2. **Waste Comparison:** Manual vs software-assisted waste analysis
 3. **Machine Selection:** Dropdown for Yilmaz machine models
 4. **G-Code Generation:** Validated, optimized G-code for CNC machines
 5. **PDF Export:** Branded cutting reports with company logo
@@ -404,7 +404,7 @@ The main workflow is organized as a **tab-based interface** with the following s
 1. **Customization:** User preferences and UI themes
 2. **Collaboration:** Multi-user editing and sharing
 3. **Analytics Dashboard:** User behavior insights
-4. **AI Suggestions:** Proactive design suggestions
+4. **automation Suggestions:** Proactive design suggestions
 5. **Offline Mode:** Work without internet connection
 
 ---

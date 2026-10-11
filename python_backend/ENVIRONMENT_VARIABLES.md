@@ -5,7 +5,7 @@
 ### 1. GOOGLE_GEMINI_API_KEY ✅
 **Status**: You already have this!
 
-**What it is**: Your Google Gemini API key for Vision AI processing
+**What it is**: Your Google support service API key for Vision automation processing
 
 **Where to get it**: https://makersuite.google.com/app/apikey
 
@@ -162,7 +162,7 @@ curl -X POST https://your-ydt-service.railway.app/api/v1/chat \
 
 | Variable | Required | Example | Notes |
 |----------|----------|---------|-------|
-| `GOOGLE_GEMINI_API_KEY` | ✅ Yes | `AIza...` | Your Gemini API key |
+| `GOOGLE_GEMINI_API_KEY` | ✅ Yes | `AIza...` | Your support service API key |
 | `SECRET_KEY` | ✅ Yes | `xK9mP2...` | Generate with Python/OpenSSL |
 | `ALLOWED_ORIGINS` | ✅ Yes | `https://almona02.com,...` | Your domains + localhost |
 | `API_WORKERS` | ⚪ Optional | `4` | Number of workers |

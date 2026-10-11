@@ -26,7 +26,7 @@ with code 2 at application type checking; the production build is not reached.
 | P0 | Wider tenant security audit | The earlier profile repair is scoped. Remaining policies, privileged RPCs and endpoints have not received a complete cross-customer audit. |
 | P1 | CI security enforcement | `hardening-validation.yml` swallows pip-audit and bandit failures with `|| true`. Its performance-regression step is still a placeholder. |
 | P1 | CI branch coverage | Several constitutional/hardening PR workflows target main/develop only; the current feature-base/stacked PRs do not automatically run every advertised gate. |
-| P1 | Physical parity acceptance | Passing DoWin tests does not establish full parity: assertions explicitly expect rejection and retain UNPROVEN glass/angle-compensation categories. External evidence and acceptance remain required. |
+| P1 | Physical parity acceptance | Passing reference system tests does not establish full parity: assertions explicitly expect rejection and retain UNPROVEN glass/angle-compensation categories. External evidence and acceptance remain required. |
 | P1 | Pending-price semantics | Quote loading in `QuoteContext` drops `price_pending`; the page infers request-only pricing from a zero amount rather than preserving the explicit state. |
 | P1 | Money precision | Quote-service arithmetic uses Python floats rather than a defined decimal rounding policy. |
 

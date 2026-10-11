@@ -10,7 +10,7 @@ const TestScannerPage: React.FC = () => {
             SmartScan Test Page
           </h1>
           <p className="text-zinc-400 text-sm">
-            Test the AI-Assisted Engineering Drawing Scanner with various file formats
+            Test the Engineering Drawing Scanner with various file formats
           </p>
         </div>
 

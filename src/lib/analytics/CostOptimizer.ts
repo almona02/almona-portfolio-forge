@@ -1,6 +1,6 @@
 /**
  * Cost Optimizer
- * AI-driven cost reduction suggestions
+ * software-assisted cost reduction suggestions
  */
 
 import type { OptimizationResult, Profile } from '@/types/fabricator';
@@ -93,7 +93,7 @@ export class CostOptimizer {
     for (const profile of profiles) {
       if (profile.stockQuantity < profile.minStockLevel) {
         const forecast = await consumptionForecaster.forecastConsumption(profile.id, 'monthly', userId);
-        
+
         if (forecast.predictedUsage > profile.stockQuantity) {
           suggestions.push({
             type: 'inventory',

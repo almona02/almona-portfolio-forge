@@ -69,7 +69,7 @@ export const TOOLTIP_CONTENT: Record<string, TooltipContent> = {
     usageExample: 'Click where you want text, type in the input field that appears.',
     category: 'tool'
   },
-  
+
   // Selection & Dimension Tools
   'select': {
     title: 'Selection Tool',
@@ -85,7 +85,7 @@ export const TOOLTIP_CONTENT: Record<string, TooltipContent> = {
     usageExample: 'Click start point, click end point. Hold Shift for area, Ctrl for angle measurement.',
     category: 'tool'
   },
-  
+
   // Hardware Tools
   'hinge': {
     title: 'Hinge Placement',
@@ -115,7 +115,7 @@ export const TOOLTIP_CONTENT: Record<string, TooltipContent> = {
     usageExample: 'Select a sliding window rectangle, click to place roller at bottom.',
     category: 'tool'
   },
-  
+
   // Structural Tools
   'mullion': {
     title: 'Mullion (Vertical Divider)',
@@ -131,7 +131,7 @@ export const TOOLTIP_CONTENT: Record<string, TooltipContent> = {
     usageExample: 'Click between windows to add horizontal transom divider.',
     category: 'tool'
   },
-  
+
   // Transform Tools
   'mirror': {
     title: 'Mirror Tool',
@@ -154,7 +154,7 @@ export const TOOLTIP_CONTENT: Record<string, TooltipContent> = {
     usageExample: 'Select elements, click scale tool, click center point, drag to scale.',
     category: 'tool'
   },
-  
+
   // Pattern/Array Tools
   'array-rectangular': {
     title: 'Rectangular Array',
@@ -184,20 +184,20 @@ export const TOOLTIP_CONTENT: Record<string, TooltipContent> = {
     usageExample: 'Select element, click tool, configure: offsetX=50mm, offsetY=50mm, count=3.',
     category: 'tool'
   },
-  
+
   // Viewport Controls
   'zoom-in': {
     title: 'Zoom In',
     description: 'Increase zoom level by 10%. Use Ctrl+Mouse Wheel Up for smooth zooming.',
     keyboardShortcut: 'Ctrl+Mouse Wheel Up',
-    usageExample: 'Click button or use Ctrl+Mouse Wheel to zoom in at cursor position.',
+    usageExample: 'Click button or use Ctrl+Mouse Wheel to zoom in at pointer position.',
     category: 'viewport'
   },
   'zoom-out': {
     title: 'Zoom Out',
     description: 'Decrease zoom level by 10%. Use Ctrl+Mouse Wheel Down for smooth zooming.',
     keyboardShortcut: 'Ctrl+Mouse Wheel Down',
-    usageExample: 'Click button or use Ctrl+Mouse Wheel to zoom out at cursor position.',
+    usageExample: 'Click button or use Ctrl+Mouse Wheel to zoom out at pointer position.',
     category: 'viewport'
   },
   'zoom-to-fit': {
@@ -228,7 +228,7 @@ export const TOOLTIP_CONTENT: Record<string, TooltipContent> = {
     usageExample: 'Hold middle mouse button and drag to pan the viewport.',
     category: 'viewport'
   },
-  
+
   // Navigation Controls
   'navigate-left': {
     title: 'Pan Left',
@@ -258,7 +258,7 @@ export const TOOLTIP_CONTENT: Record<string, TooltipContent> = {
     usageExample: 'Click to pan down, or use arrow keys for keyboard navigation.',
     category: 'navigation'
   },
-  
+
   // Actions
   'undo': {
     title: 'Undo',
@@ -292,7 +292,7 @@ export const TOOLTIP_CONTENT: Record<string, TooltipContent> = {
     title: 'Paste',
     description: 'Paste copied element(s) from clipboard.',
     keyboardShortcut: 'Ctrl+V',
-    usageExample: 'Click paste or use Ctrl+V to paste copied elements at cursor position.',
+    usageExample: 'Click paste or use Ctrl+V to paste copied elements at pointer position.',
     category: 'action'
   },
   'export-dxf': {
@@ -449,7 +449,7 @@ export function getTooltipContent(key: string): TooltipContent | null {
  */
 export function formatKeyboardShortcut(shortcut?: string): string {
   if (!shortcut) return '';
-  
+
   return shortcut
     .replace(/Ctrl\+/g, '⌃')
     .replace(/Shift\+/g, '⇧')
@@ -469,7 +469,7 @@ export function formatKeyboardShortcut(shortcut?: string): string {
 export function getFullTooltipText(key: string): string {
   const content = getTooltipContent(key);
   if (!content) return '';
-  
+
   let text = content.title;
   if (content.description) {
     text += `\n\n${content.description}`;
@@ -480,7 +480,7 @@ export function getFullTooltipText(key: string): string {
   if (content.usageExample) {
     text += `\n\nExample: ${content.usageExample}`;
   }
-  
+
   return text;
 }
 

@@ -553,7 +553,7 @@ Adaptive intelligence is permitted only in the following roles:
 
 #### 5.3.1 Parameter Suggestion
 
-AI may suggest values for:
+automation may suggest values for:
 
 - Calibration offsets
 - Default selections
@@ -564,7 +564,7 @@ AI may suggest values for:
 
 #### 5.3.2 Ranking & Prioritization
 
-AI may:
+automation may:
 
 - Rank alternatives
 - Score efficiency
@@ -574,7 +574,7 @@ AI may:
 
 #### 5.3.3 Pattern Recognition
 
-AI may:
+automation may:
 
 - Recognize shapes
 - Detect recurring configurations
@@ -585,7 +585,7 @@ AI may:
 
 #### 5.3.4 Prediction with Confidence Disclosure
 
-AI may:
+automation may:
 
 - Predict outcomes
 - Estimate efficiency
@@ -600,7 +600,7 @@ AI may:
 
 #### 5.3.5 Learning from Outcomes
 
-AI may learn from:
+automation may learn from:
 
 - Production feedback
 - Error reports
@@ -716,11 +716,11 @@ By confining intelligence:
 
 This is institutional continuity, not innovation theater.
 
-### 5.10 Constitutional AI Governance Framework
+### 5.10 Constitutional automation Governance Framework
 
 #### 5.10.1 Definition
 
-The Constitutional AI Governance Framework is a formal enforcement mechanism that operationalizes the principle of bounded intelligence through a three-tier decision architecture.
+The Constitutional automation Governance Framework is a formal enforcement mechanism that operationalizes the principle of bounded intelligence through a three-tier decision architecture.
 
 This framework ensures that adaptive intelligence operates within explicit authority boundaries, with mandatory reasoning validation and real-time governance monitoring.
 
@@ -728,7 +728,7 @@ This framework ensures that adaptive intelligence operates within explicit autho
 
 All system decisions are classified into three tiers, each with distinct authority rules:
 
-**Tier 1: Authoritative AI (Strategic Gate)**
+**Tier 1: Authoritative automation (Strategic Gate)**
 
 - **Scope**: High-level strategic decisions requiring market intelligence, business context, or risk assessment
 - **Authority**: YDT (YILMAZ Digital Twin) is mandatory
@@ -754,14 +754,14 @@ All system decisions are classified into three tiers, each with distinct authori
 **Tier 3: Protected Determinism (Deterministic Operations)**
 
 - **Scope**: Pure computational operations, geometry, mathematics, I/O operations
-- **Authority**: No AI interference permitted
+- **Authority**: No automation interference permitted
 - **Requirements**:
   - No YDT calls allowed
   - No adaptive intelligence permitted
   - Pure deterministic logic only
-  - Operations are audited for AI violations
+  - Operations are audited for automation violations
 - **Examples**: Geometry calculations, CNC path generation, material math, file I/O
-- **Enforcement**: IntelligenceGate.deterministic() audits for AI calls and records violations
+- **Enforcement**: IntelligenceGate.deterministic() audits for automation calls and records violations
 
 #### 5.10.3 Intelligence Gate Enforcement
 
@@ -782,7 +782,7 @@ All adaptive intelligence must pass through an Intelligence Gate that:
    - Low-quality reasoning triggers warning
 
 2. **Tier 3 Protection**:
-   - Any AI call in deterministic path is a Category-1 violation
+   - Any automation call in deterministic path is a Category-1 violation
    - Violations are logged, tracked, and reported
    - System remains operational but alerts are raised
 
@@ -799,8 +799,8 @@ The framework tracks the following metrics:
   - Formula: `100 - (missingReasoning * 10) - (lowQualityReasoning * 5) - (tierViolations * 20)`
 - **Tier 1 Coverage**: Percentage of strategic decisions using YDT
 - **Reasoning Quality**: Percentage of YDT responses with proper reasoning
-- **Tier Violations**: Count of AI operating outside authorized bounds
-- **Deterministic Purity**: Percentage of Tier 3 operations with no AI interference
+- **Tier Violations**: Count of automation operating outside authorized bounds
+- **Deterministic Purity**: Percentage of Tier 3 operations with no automation interference
 
 #### 5.10.5 Real-Time Governance Monitoring
 
@@ -812,22 +812,22 @@ The framework provides real-time visibility into governance health through:
 
 #### 5.10.6 Constitutional Guarantees
 
-A system operating under Constitutional AI Governance guarantees:
+A system operating under Constitutional automation Governance guarantees:
 
-1. **No Silent AI Authority**: All AI decisions are explicitly authorized by tier classification
+1. **No Silent automation Authority**: All automation decisions are explicitly authorized by tier classification
 2. **No Unexplained Decisions**: All Tier 1 decisions include structured reasoning
-3. **No AI in Deterministic Paths**: Tier 3 operations are protected from AI interference
+3. **No automation in Deterministic Paths**: Tier 3 operations are protected from automation interference
 4. **No Undetected Violations**: All governance breaches are logged and reported
 5. **No Ambiguity of Authority**: Tier boundaries are enforced by code, not policy
 
 #### 5.10.7 Relationship to AICS-001 Principles
 
-The Constitutional AI Governance Framework operationalizes:
+The Constitutional automation Governance Framework operationalizes:
 
 - **Section 5.2 (Principle of Subordination)**: Intelligence is subordinate to deterministic authority
 - **Section 5.5 (Intelligence Containment Zones)**: Formal boundaries enforced by code
 - **Section 5.8 (Versioning & Explainability)**: Mandatory reasoning for all Tier 1 decisions
-- **Section 7.3.4 (Intelligence Certification)**: Governance metrics enable AI-level certification
+- **Section 7.3.4 (Intelligence Certification)**: Governance metrics enable automation-level certification
 
 #### 5.10.8 Implementation Status
 
@@ -847,7 +847,7 @@ The Constitutional AI Governance Framework operationalizes:
 - **Tier 1 Coverage**: 100% (all strategic decisions governed)
 - **Reasoning Quality**: 100% (all YDT responses include structured reasoning)
 - **Tier Violations**: 0 (no governance breaches)
-- **Deterministic Purity**: 100% (no AI in Tier 3 operations)
+- **Deterministic Purity**: 100% (no automation in Tier 3 operations)
 
 **Reference Implementation**:
 - `src/lib/ydt/IntelligenceGate.ts`: Tier enforcement service
@@ -865,7 +865,7 @@ The Constitutional AI Governance Framework operationalizes:
 - ✅ AlgorithmPredictor → AlgorithmSelector migration (removed ML claims)
 - ✅ EnhancedAdaptiveSolver updated to use rule-based selection
 - ✅ GuaranteeVerification test structure created
-- ✅ Tier 3 purity verified (no AI in deterministic paths)
+- ✅ Tier 3 purity verified (no automation in deterministic paths)
 
 **Documentation**:
 - `WEEK1_CONSTITUTIONAL_BASELINE.md`: Governance baseline document
@@ -1034,7 +1034,7 @@ Examples:
 - Tool paths
 - Optimization results
 - Visual meshes
-- AI suggestions
+- automation suggestions
 
 If derived data conflicts with canonical truth, the derived data is wrong by definition.
 
@@ -1082,7 +1082,7 @@ Truth must not.
 By isolating truth:
 
 - Code can be rewritten
-- AI models can be replaced
+- automation models can be replaced
 - Interfaces can evolve
 
 Without invalidating past results.
@@ -1175,7 +1175,7 @@ Includes:
 
 This certification answers: **"Was the computation based on valid reality?"**
 
-#### 7.3.4 Intelligence Certification (AI-Level)
+#### 7.3.4 Intelligence Certification (automation-Level)
 
 Certifies that adaptive systems behaved within permitted bounds.
 
@@ -1591,7 +1591,7 @@ Not:
 - A startup
 - A tool
 - A platform
-- An AI product
+- An automation product
 
 Those are transient labels.
 

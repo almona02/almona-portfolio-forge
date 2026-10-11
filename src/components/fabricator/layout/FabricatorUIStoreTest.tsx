@@ -30,7 +30,7 @@ export const FabricatorUIStoreTest: React.FC = () => {
   const togglePanel = useTogglePanel();
   const theme = useTheme();
   const setTheme = useSetTheme();
-  
+
   // Get full store state for testing
   const storeState = useFabricatorUIStore((state) => state);
 
@@ -110,12 +110,12 @@ export const FabricatorUIStoreTest: React.FC = () => {
   const handleTestToggle = (sectionId: SectionId, panel: 'left' | 'right') => {
     const beforeState = useFabricatorUIStore.getState().panelStates[sectionId][panel === 'left' ? 'leftCollapsed' : 'rightCollapsed'];
     togglePanel(sectionId, panel);
-    
+
     // Check state after a brief delay (state updates are async)
     setTimeout(() => {
       const newPanelState = useFabricatorUIStore.getState().panelStates[sectionId];
       const afterState = newPanelState[panel === 'left' ? 'leftCollapsed' : 'rightCollapsed'];
-      
+
       if (beforeState !== afterState) {
         const newResult = { test: `Toggle ${panel} Panel (${sectionId})`, passed: true, message: `Panel toggled: ${beforeState} → ${afterState}` };
         setTestResults(prev => [...prev.filter(r => !r.test.includes(`Toggle ${panel} Panel`)), newResult]);
@@ -130,7 +130,7 @@ export const FabricatorUIStoreTest: React.FC = () => {
   const handleTestThemeToggle = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
-    
+
     setTimeout(() => {
       const currentTheme = useFabricatorUIStore.getState().theme;
       const newResult = { 

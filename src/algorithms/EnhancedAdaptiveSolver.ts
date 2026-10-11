@@ -248,7 +248,7 @@ export class EnhancedAdaptiveSolver extends AdaptiveSolver {
    * Select algorithm using deterministic rules
    * 
    * Constitutional Compliance: Tier 3 (Protected Determinism)
-   * No ML, no AI, no predictions - just transparent, auditable rules.
+   * No ML, no automation, no predictions - just transparent, auditable rules.
    */
   private selectAlgorithmByRule(complexity: JobComplexity): Tier3CuttingAlgorithm {
     const selection = algorithmSelector.selectByRule(complexity);

@@ -13,7 +13,7 @@ This comprehensive quote request system provides a seamless experience for users
 ### 2. QuoteRequestStepper
 - **File**: `QuoteRequestStepper.tsx`
 - **Usage**: Multi-step form for detailed quote requests
-- **Features**: 4-step process with AI assistance
+- **Features**: 4-step process with automation assistance
 
 ### 3. QuoteRequestPage
 - **File**: `QuoteRequestPage.tsx`
@@ -30,7 +30,7 @@ This comprehensive quote request system provides a seamless experience for users
 
 ### 6. QuoteAIHelper
 - **File**: `QuoteAIHelper.tsx`
-- **Usage**: AI-powered suggestions
+- **Usage**: software-assisted suggestions
 
 ### 7. QuoteSummary
 - **File**: `QuoteSummary.tsx`

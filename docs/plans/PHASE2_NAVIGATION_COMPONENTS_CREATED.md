@@ -207,9 +207,9 @@ Admin → /fabricator/admin
 - ✅ Screen reader compatible
 
 ### Market-Leader Patterns
-- ✅ LogiKal-inspired clean hierarchy
-- ✅ Klaes-style clear active states
-- ✅ Moxisys Egyptian-friendly icons
+- ✅ reference system-inspired clean hierarchy
+- ✅ reference system-style clear active states
+- ✅ reference system Egyptian-friendly icons
 - ✅ Intuitive layout
 
 ---

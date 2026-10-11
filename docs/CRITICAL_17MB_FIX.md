@@ -15,11 +15,11 @@
 
 **vite.config.ts** - Updated `manualChunks` to isolate:
 
-1. **AI/ML Engines** (5MB+) → `ai-engine.js`
+1. **advisory inference Engines** (5MB+) → `ai-engine.js`
    - TensorFlow.js
    - ONNX Runtime
    - Hugging Face
-   - Google Generative AI
+   - Google Generative automation
 
 2. **Physics Engine** (5MB+) → `physics-engine.js`
    - Ammo.js
@@ -108,7 +108,7 @@ npm run analyze  # If you have bundle analyzer
 **After**: Just showing reception desk, bringing machines when needed
 
 The homepage doesn't need:
-- ❌ TensorFlow.js (AI features)
+- ❌ TensorFlow.js (automation features)
 - ❌ Ammo.js (Physics engine)
 - ❌ Three.js (3D models)
 - ❌ PDF.js (Document processing)

@@ -203,8 +203,8 @@
 - Performance dashboard
 - Custom template marketplace
 
-### Phase 9: AI & Intelligence (Weeks 17-18)
-- Design suggestions (Tier 1 AI)
+### Phase 9: automation & Intelligence (Weeks 17-18)
+- Design suggestions (Tier 1 automation)
 - Auto-optimization recommendations
 - Pattern recognition
 - Cost estimation

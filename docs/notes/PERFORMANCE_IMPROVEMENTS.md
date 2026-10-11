@@ -67,7 +67,7 @@
 Lazy load heavy components within pages:
 - 3D model viewers (only load when user clicks "View in 3D")
 - PDF export components (only load when user clicks "Export")
-- AI advisor components (only load when user opens advisor)
+- automation advisor components (only load when user opens advisor)
 - Large data tables (only load when user navigates to that section)
 
 **Expected Impact:** Additional 200-300ms TBT reduction

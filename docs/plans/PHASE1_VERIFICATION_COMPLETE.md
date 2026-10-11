@@ -196,7 +196,7 @@ npm run lint
 - ✅ Focus management
 
 ### Market-Leader Patterns
-- ✅ LogiKal-inspired clean interfaces
+- ✅ reference system-inspired clean interfaces
 - ✅ Context-sensitive toolbars
 - ✅ Progressive disclosure
 - ✅ Egyptian market familiarity

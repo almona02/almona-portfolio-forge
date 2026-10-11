@@ -156,21 +156,21 @@ export const AIRecommendationDemo: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
       <div className="text-center">
-        <h1 className="typography-h1 mb-4">AI-Powered Equipment Recommendations</h1>
+        <h1 className="typography-h1 mb-4">software-assisted Equipment Recommendations</h1>
         <p className="text-lg text-muted-foreground mb-6">
-          Experience advanced AI recommendations and interactive 3D configuration
+          Experience advanced automation recommendations and interactive 3D configuration
         </p>
         <Badge variant="outline" className="text-lg px-4 py-2">
           Current Region: {regionState.region}
         </Badge>
       </div>
 
-      {/* AI Recommendations Section */}
+      {/* automation Recommendations Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">🤖</span>
-            AI Equipment Recommendations
+            automation Equipment Recommendations
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -205,7 +205,7 @@ export const AIRecommendationDemo: React.FC = () => {
               </div>
             )}
           </div>
-          
+
           <InteractiveGLBViewer
             modelPath="/models/cnc-machine.glb"
             annotations={mockAnnotations}
@@ -250,7 +250,7 @@ export const AIRecommendationDemo: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="p-4 border rounded-lg">
-              <h3 className="typography-h3 mb-2">✅ AI Recommendation Engine</h3>
+              <h3 className="typography-h3 mb-2">✅ Recommendation Engine</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Advanced ML algorithms</li>
                 <li>• Multi-factor scoring</li>
@@ -258,7 +258,7 @@ export const AIRecommendationDemo: React.FC = () => {
                 <li>• Real-time recommendations</li>
               </ul>
             </div>
-            
+
             <div className="p-4 border rounded-lg">
               <h3 className="typography-h3 mb-2">✅ Enhanced 3D Configuration</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
@@ -268,7 +268,7 @@ export const AIRecommendationDemo: React.FC = () => {
                 <li>• Multi-language support</li>
               </ul>
             </div>
-            
+
             <div className="p-4 border rounded-lg">
               <h3 className="typography-h3 mb-2">✅ Turkish Market Features</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
@@ -300,12 +300,12 @@ export const AIRecommendationDemo: React.FC = () => {
                 </ul>
               </div>
             </div>
-            
+
             <div>
               <h3 className="typography-h3 mb-2">Test Scenarios</h3>
               <ol className="text-sm space-y-2 ml-4">
                 <li>1. <strong>Region Detection:</strong> Verify automatic region detection and manual switching</li>
-                <li>2. <strong>AI Recommendations:</strong> Test recommendation engine with different customer profiles</li>
+                <li>2. <strong>Recommendations:</strong> Test recommendation engine with different customer profiles</li>
                 <li>3. <strong>3D Configuration:</strong> Interact with 3D model and verify pricing updates</li>
                 <li>4. <strong>Turkish Features:</strong> Switch to Turkey region and test compliance documents</li>
                 <li>5. <strong>Multi-Currency:</strong> Verify currency conversion and regional pricing</li>

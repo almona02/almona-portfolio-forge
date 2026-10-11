@@ -43,7 +43,7 @@
   - Reinforcement: >2000mm
   - Corner: 45° Miter
   - Thermal break: 20mm polyamide
-  
+
 - **UPVC:**
   - Max span: 2400mm
   - Reinforcement: >1800mm
@@ -231,7 +231,7 @@ const mullion = {
 ## 📝 Notes
 
 - All tools follow ALMONA's constitutional boundaries (Tier 0)
-- Material specifications are rule-based (no AI)
+- Material specifications are rule-based (no automation)
 - Egyptian standards are hardcoded (1100mm handle, 150mm hinges)
 - System pack compatibility is validated
 - All constraints are deterministic and auditable

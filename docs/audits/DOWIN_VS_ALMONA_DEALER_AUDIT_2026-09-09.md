@@ -1,11 +1,11 @@
-# DoWin (YilmazCAD) vs ALMONA Portfolio Forge — Dealer Audit
+# reference system (reference system) vs ALMONA Portfolio Forge — Dealer Audit
 
 | Field | Value |
 |-------|--------|
 | Date | 9 September 2026 |
 | Auditor context | Official Yilmaz dealer, Egypt — software shared by Yilmaz for audit |
-| DoWin product | YilmazCAD 1.0.0 (installer folder: DoWin) |
-| DoWin build | 17 June 2026, .NET 8 self-contained WPF, win-x64 |
+| reference system product | reference system 1.0.0 (installer folder: reference system) |
+| reference system build | 17 June 2026, .NET 8 self-contained WPF, win-x64 |
 | ALMONA repo | `almona-portfolio-forge` |
 | Classification | Internal dealer review. Do **not** attach SQLCipher keys, DPAPI blobs, or decompiled binaries. |
 
@@ -15,21 +15,21 @@ This document is the third-party review copy of the live comparison. It does not
 
 ## 1. Verdict
 
-DoWin and ALMONA are complementary, not substitutes.
+reference system and ALMONA are complementary, not substitutes.
 
-- **DoWin** is a Windows shop-floor CAD/CAM optimizer: 2D elevation, production plans, column-generation bar nesting, MDB/NCW machine export.
+- **reference system** is a Windows shop-floor CAD/CAM optimizer: 2D elevation, production plans, column-generation bar nesting, MDB/NCW machine export.
 - **ALMONA** is a cloud fabricator + Egypt dealer layer: Arabic, local system packs, EGP quoting, remnant marketplace, Yilmaz after-sales (YDT).
 
 **Recommended operating model**
 
 | Layer | Owner | Why |
 |-------|--------|-----|
-| Design, bar nesting, CAM file | DoWin on the workshop PC | Native CAD, MIP nest, controller files the machine already accepts |
+| Design, bar nesting, CAM file | reference system on the workshop PC | Native CAD, MIP nest, controller files the machine already accepts |
 | Quote, BOM, Arabic UI, inventory, tax | ALMONA in office / field | Egypt packs, EGP, multi-user |
-| Machine service and spare parts | ALMONA YDT + ticketing | DoWin has no after-sales |
-| Hand-off | ALMONA ↔ DoWin via NCW / MDB / plan JSON | One production truth without cloning Yilmaz CAD |
+| Machine service and spare parts | ALMONA YDT + ticketing | reference system has no after-sales |
+| Hand-off | ALMONA ↔ reference system via NCW / MDB / plan JSON | One production truth without cloning Yilmaz CAD |
 
-Do **not** decompile or port DoWin solver code. Treat DoWin as a behavior spec. Reimplement published methods (Gilmore–Gomory, EN 13126 taxonomy, file formats ALMONA already generates).
+Do **not** decompile or port reference system solver code. Treat reference system as a behavior spec. Reimplement published methods (Gilmore–Gomory, EN 13126 taxonomy, file formats ALMONA already generates).
 
 ---
 
@@ -38,14 +38,14 @@ Do **not** decompile or port DoWin solver code. Treat DoWin as a behavior spec. 
 ### Inspected
 
 - `C:\Program Files\DoWin` — installer, `YilmazCAD.deps.json`, `Configuration\*.json`, manuals (not copied), `template.mdb`
-- `C:\YilmazSoftDatabase\DoWin_Designs.db` — SQLCipher 4.5.2, opened with DoWin’s own Windows DPAPI credential on the licensed PC (`%LOCALAPPDATA%\DoWin\database-credential.dpapi`). Passphrase is **not** recorded here.
+- `C:\YilmazSoftDatabase\DoWin_Designs.db` — SQLCipher 4.5.2, opened with reference system’s own Windows DPAPI credential on the licensed PC (`%LOCALAPPDATA%\DoWin\database-credential.dpapi`). Passphrase is **not** recorded here.
 - ALMONA source: `src/lib/fabricator`, `src/integrations/yilmaz`, system packs, remnant marketplace
 
 ### Not done
 
 - No brute-force of SQLCipher
 - Solver / CAD binaries were not decompiled
-- DoWin user manuals were not reproduced
+- reference system user manuals were not reproduced
 - No live nested job exists in the shop DB (fresh install)
 
 ### Database state (9 Sep 2026 15:53)
@@ -58,7 +58,7 @@ SQLCipher: community 4.5.2, page size 4096, KDF 256000 iterations, 21 tables, 19
 
 ## 3. What Yilmaz shipped
 
-Product name in binaries: **YilmazCAD**. Install folder: **DoWin**. Self-contained .NET 8 WPF, ~580 MB.
+Product name in binaries: **reference system**. Install folder: **reference system**. Self-contained .NET 8 WPF, ~580 MB.
 
 ### Assemblies
 
@@ -140,7 +140,7 @@ ProjectStart → Design canvas (hit-test, live dimensions) → Frame / Sash / Mu
 
 Each design is `JsonData` (TEXT) plus optional `ProjectId` / `ProfileSystemId`. There is no live example in this install.
 
-### `OptimizationRuns` metrics DoWin already stores
+### `OptimizationRuns` metrics reference system already stores
 
 `DurationSeconds`, `OverallYieldRate`, `TotalUsedBars`, `TotalUsedLengthMm`, `TotalReusableOffcutLengthMm`.
 
@@ -150,7 +150,7 @@ Each design is `JsonData` (TEXT) plus optional `ProjectId` / `ProfileSystemId`. 
 
 Single row in `Settings`. This is the millimetre contract ALMONA must match.
 
-| Field | DoWin default | ALMONA today |
+| Field | reference system default | ALMONA today |
 |-------|---------------|-------------|
 | WeldingWaste | **3.0 mm** | `burnOffMm` 3.0 — matches |
 | SawThickness (kerf) | **4 mm** | **3 / 5 / 10 mm in three engines** |
@@ -174,7 +174,7 @@ Single row in `Settings`. This is the millimetre contract ALMONA must match.
 | `LinearOptimizer.ts` | 5 mm |
 | `BatchOptimizationService.ts` | 5 mm |
 | `AlmonaCuttingEngine.ts` / `VisualCuttingPlan.tsx` | 10 mm |
-| DoWin `SawThickness` | **4 mm** |
+| reference system `SawThickness` | **4 mm** |
 
 A 20-piece bar packed with 10 mm kerf vs 4 mm kerf differs by 120 mm of assumed waste. Remnant keep/drop then diverges.
 
@@ -201,11 +201,11 @@ ALMONA currently uses `calculateKFactor` (`width × tan(angle/2)` + wall correct
 
 ### Seed catalog vs ALMONA packs
 
-| DoWin seed | ALMONA system packs |
+| reference system seed | ALMONA system packs |
 |------------|-------------------|
 | Deceuninck 70 PVC, Ak-Plast 60 Alu only | ROCK 60, Panda 50/100, Caluminium PS, Anadolu W60, ASAS, Kale, Egyptian UPVC |
 
-DoWin can attach DXF + PNG preview per profile (`DxfData`, `DxfPreviewPng`). Seed rows have those blobs null.
+reference system can attach DXF + PNG preview per profile (`DxfData`, `DxfPreviewPng`). Seed rows have those blobs null.
 
 ---
 
@@ -241,7 +241,7 @@ App setting `MinGlassProductionSize` = **50 mm** (`appsettings.json`).
 
 ## 9. Cut optimizer (architecture, not decompiled)
 
-DoWin `YilmazCAD.Optimization.Core` is a textbook cutting-stock pipeline:
+reference system `YilmazCAD.Optimization.Core` is a textbook cutting-stock pipeline:
 
 1. HeuristicSolvers seed initial patterns  
 2. InitialPatternGenerator builds columns  
@@ -269,7 +269,7 @@ Column generation is linear programming, not ML. It can live in ALMONA’s Pytho
 
 Not timed benchmarks. Audit judgment only.
 
-| Capability | DoWin | ALMONA |
+| Capability | reference system | ALMONA |
 |------------|------:|-------:|
 | Cut optimizer | 92 | 54 |
 | Native CAD / DXF | 88 | 48 |
@@ -286,9 +286,9 @@ Not timed benchmarks. Audit judgment only.
 
 ## 11. Egypt gap (feedback to Yilmaz)
 
-DoWin is a strong Turkish/EU shop CAD. Egypt will not adopt it as-is.
+reference system is a strong Turkish/EU shop CAD. Egypt will not adopt it as-is.
 
-| Egypt need | DoWin | ALMONA |
+| Egypt need | reference system | ALMONA |
 |------------|-------|--------|
 | Arabic UI + RTL | Missing | ar-EG, Cairo timezone default |
 | Local systems | Deceuninck + Ak-Plast only | Panda, Caluminium, Egyptian UPVC |
@@ -304,11 +304,11 @@ Product requests for Yilmaz (not patches to their binaries): Arabic `ar-EG`; off
 
 ## 12. Accuracy plan for ALMONA
 
-**Definition of done:** millimetre length sent to a Yilmaz saw matches DoWin for the same elevation, system, and settings (±0.1 mm per piece). Nest quality is a later yield goal.
+**Definition of done:** millimetre length sent to a Yilmaz saw matches reference system for the same elevation, system, and settings (±0.1 mm per piece). Nest quality is a later yield goal.
 
 ### Phase 0 — one settings object (1–2 days)
 
-New canonical module: `src/lib/fabricator/ManufacturingSettings.ts` matching the DoWin `Settings` row.
+New canonical module: `src/lib/fabricator/ManufacturingSettings.ts` matching the reference system `Settings` row.
 
 | File | Change |
 |------|--------|
@@ -321,7 +321,7 @@ AICS-001: these are deterministic constants, not ML.
 
 ### Phase 1 — length formula (3–5 days)
 
-Replace K-factor-on-width as the only sash correction with DoWin’s split model:
+Replace K-factor-on-width as the only sash correction with reference system’s split model:
 
 | Term | Formula / source |
 |------|------------------|
@@ -334,7 +334,7 @@ Replace K-factor-on-width as the only sash correction with DoWin’s split model
 | Bar packing | Σ(piece + SawThickness) + TrimCut; remnant ≥ 500 kept |
 | Non-square angles | CompLessThan90 or CompGreaterThan90 on each end |
 
-**Golden fixture:** Deceuninck 70 Z sash 12/16/6/6. Build one casement in DoWin, export the cut list, assert ALMONA within 0.1 mm. Until that design exists, unit-test against Settings + Profile rows.
+**Golden fixture:** Deceuninck 70 Z sash 12/16/6/6. Build one casement in reference system, export the cut list, assert ALMONA within 0.1 mm. Until that design exists, unit-test against Settings + Profile rows.
 
 **FP-024B checkpoint (9 Sep 2026):** Compensation reconciliation is ⚠️ CONDITIONAL. asdd piece-layer deltas are recorded; this-run General Settings remain null; isolation templates are pending. No +3/+7 production constants. Score stays **6.0/10**. See `docs/audits/FP-024B-DOWIN-COMPENSATION-RECONCILIATION_2026-09-09.md`.
 
@@ -359,14 +359,14 @@ Without this, accuracy stops at the saw.
 | Check | Pass |
 |-------|--------|
 | Kerf constant | Exactly one default (4 mm), overridable per machine |
-| Deceuninck 70 sash pieces | ±0.1 mm vs DoWin cut list |
+| Deceuninck 70 sash pieces | ±0.1 mm vs reference system cut list |
 | Glass 4+9+4 | Total 17 mm, pane ≥ 50 mm |
-| Remnant keep/drop | Same as DoWin at 500 mm |
+| Remnant keep/drop | Same as reference system at 500 mm |
 | AICS-001 | No ML; settings table; operator accept on sheet |
 
 ---
 
-## 13. ALMONA enhancement backlog (independent of DoWin source)
+## 13. ALMONA enhancement backlog (independent of reference system source)
 
 1. **P0** Single `ManufacturingSettings` (kerf 4, weld 3, sashOffset 7, glassClearance 2.5, remnant 500).
 2. **P0** Per-profile Basma/Kaynak on SystemPack; Deceuninck Z sash 12/16/6/6 as first golden fixture.
@@ -383,21 +383,21 @@ Without this, accuracy stops at the saw.
 
 ## 14. Bridge file formats
 
-| Format | DoWin | ALMONA | Bridge use |
+| Format | reference system | ALMONA | Bridge use |
 |--------|-------|--------|------------|
 | MDB / Access | `MdbWriteHelper` + `template.mdb` | `YilmazCutListAdapter.generateMDB` | Primary CNC interchange |
 | NCW | `NcwExportService` (Job/Bar/Cut/Work) | Missing | Add on ALMONA side |
 | CSV | Not the main path | DC series saws | Keep for DC-421 |
-| G-code | Not the primary path | `YilmazGCodeGenerator` AIM/ALM/PIM | Shops without DoWin |
+| G-code | Not the primary path | `YilmazGCodeGenerator` AIM/ALM/PIM | Shops without reference system |
 | Encrypted SQLite | Shop DB | Supabase | Do not share the encrypted DB |
 
-Suggested flow: quote in ALMONA → production plan JSON or NCW/MDB → DoWin nest + CAM → import `OptimizationRun` (bars, waste, offcuts) back to ALMONA. Do not re-nest in ALMONA after the operator has accepted DoWin’s sheet unless they explicitly re-optimize.
+Suggested flow: quote in ALMONA → production plan JSON or NCW/MDB → reference system nest + CAM → import `OptimizationRun` (bars, waste, offcuts) back to ALMONA. Do not re-nest in ALMONA after the operator has accepted reference system’s sheet unless they explicitly re-optimize.
 
 ---
 
 ## 15. Legal / audit boundary
 
-- Shop DB opened with DoWin’s own CurrentUser DPAPI credential on this licensed PC.
+- Shop DB opened with reference system’s own CurrentUser DPAPI credential on this licensed PC.
 - SQLCipher passphrase and `database-credential.dpapi` contents are **not** in this file and must not be committed.
 - Solver binaries were not decompiled.
 - Independent column generation via public Google OR-Tools APIs is the clean implementation path.
@@ -407,9 +407,9 @@ Suggested flow: quote in ALMONA → production plan JSON or NCW/MDB → DoWin ne
 
 ## 16. Sources
 
-- `C:\Program Files\DoWin` (YilmazCAD.exe 17 Jun 2026)
+- `C:\Program Files\DoWin` (reference system.exe 17 Jun 2026)
 - `C:\YilmazSoftDatabase\DoWin_Designs.db` (opened 9 Sep 2026)
 - `C:\Program Files\DoWin\Configuration\appsettings.json`, `profiles.json`, `accessories.json`
 - ALMONA: `src/lib/fabricator/AlmonaCuttingEngine.ts`, `UPVCCuttingEngine.ts`, `AlgorithmSelector.ts`, `src/integrations/yilmaz/*`
 
-Interactive Cursor copy (same findings, tabbed UI): workspace canvases `dowin-vs-almona-audit.canvas.tsx`.
+Interactive development tool copy (same findings, tabbed UI): workspace canvases `dowin-vs-almona-audit.canvas.tsx`.

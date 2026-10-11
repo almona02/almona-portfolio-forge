@@ -35,12 +35,12 @@ const UsedMachines = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('all');
   const [machineTypeFilter, setMachineTypeFilter] = useState('all');
-  
+
   // Enhanced filtering state
   const priceRange = useMemo(() => getPriceRange(usedMachines), []);
   const [priceFilter, setPriceFilter] = useState<[number, number]>([priceRange.min, priceRange.max]);
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Smart search state
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [parsedQuery, setParsedQuery] = useState<ParsedQuery | null>(null);
@@ -76,19 +76,19 @@ const UsedMachines = () => {
   // Perform intelligent search when filters change
   useEffect(() => {
     setIsLoading(true);
-    
+
     const searchFilters = {
       query: searchQuery,
       priceRange: priceFilter,
       location: locationFilter,
       machineType: machineTypeFilter
     };
-    
+
     const { results, analytics, eventId } = SearchResultsManager.searchMachines(
       usedMachines,
       searchFilters
     );
-    
+
     setSearchResults(results);
     setParsedQuery(analytics);
     setCurrentSearchEventId(eventId);
@@ -126,7 +126,7 @@ const UsedMachines = () => {
     <>
       {/* SEO Component */}
       <MachineSEO machines={usedMachines} isListingPage={true} />
-      
+
       <main className="flex-grow pt-20">
         <div id="top" className="sr-only" aria-hidden="true" />
         <div className="container mx-auto px-4 py-8">
@@ -159,19 +159,19 @@ const UsedMachines = () => {
             </TabsList>
 
             <TabsContent value="browse">
-              {/* AI-Powered Search Section */}
+              {/* software-assisted Search Section */}
               <div className="mb-8 bg-almona-darker p-6 rounded-lg border border-almona-light/20">
                 {/* Smart Search Header */}
                 <div className="flex items-center mb-4">
                   <Brain className="w-5 h-5 text-amber-400 mr-2" />
-                  <h3 className="typography-h3 text-lg text-almona-light">AI-Powered Search</h3>
+                  <h3 className="typography-h3 text-lg text-almona-light">software-assisted Search</h3>
                   {parsedQuery && (
                     <Badge className="ml-3 bg-blue-600/20 text-blue-400 border-blue-400/30">
                       {parsedQuery.intent} • {parsedQuery.urgency} priority
                     </Badge>
                   )}
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                   <div className="md:col-span-2">
                     <SmartSearchBox
@@ -229,7 +229,7 @@ const UsedMachines = () => {
                       currentRange={priceFilter}
                       onRangeChange={setPriceFilter}
                     />
-                    
+
                     {/* Smart Results Summary */}
                     <div className="bg-almona-dark p-4 rounded-lg">
                       <div className="flex items-center mb-3">
@@ -261,7 +261,7 @@ const UsedMachines = () => {
                         )}
                         {parsedQuery?.expandedTerms && parsedQuery.expandedTerms.length > 1 && (
                           <div className="text-xs text-almona-light/60 mt-2 p-2 bg-almona-light/5 rounded">
-                            <strong>AI Enhanced:</strong> Also searching for {parsedQuery.expandedTerms.slice(1, 4).join(', ')}
+                            <strong>software-assisted:</strong> Also searching for {parsedQuery.expandedTerms.slice(1, 4).join(', ')}
                           </div>
                         )}
                         <Button
@@ -280,7 +280,7 @@ const UsedMachines = () => {
               {isLoading ? (
                 <div className="text-center py-12">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mb-4"></div>
-                  <p className="text-almona-light">Searching with AI...</p>
+                  <p className="text-almona-light">Searching with automation...</p>
                 </div>
               ) : searchResults.length === 0 ? (
                 <div className="text-center py-12">
@@ -322,7 +322,7 @@ const UsedMachines = () => {
                   ))}
                 </div>
               )}
-              
+
               {/* Trending Machines Section */}
               {!searchQuery.trim() && (
                 <RelatedMachinesSection

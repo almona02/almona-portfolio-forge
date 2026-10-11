@@ -149,7 +149,7 @@
 ### Constitutional Compliance
 - ✅ All operations logged via `logDraftingAction`
 - ✅ Audit trail for all geometry modifications
-- ✅ Deterministic operations (no ML/AI)
+- ✅ Deterministic operations (no advisory inference)
 - ✅ Tier 3 Protected Determinism
 
 ---

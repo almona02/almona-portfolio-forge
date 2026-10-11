@@ -50,7 +50,7 @@ const InventoryPage: React.FC = () => {
     queryKey: ['inventory-dashboard', user?.id],
     queryFn: async () => {
       if (!user) return [] as Profile[];
-      
+
       // First, sync stock quantities from movements to ensure accurate stock_quantity values
       try {
         const db = supabase as any;
@@ -59,9 +59,9 @@ const InventoryPage: React.FC = () => {
         console.warn('Failed to sync stock from movements:', syncError);
         // Continue loading even if sync fails
       }
-      
+
       // Use untyped client here to avoid friction with generated Supabase types
-       
+
       const db = supabase as any;
       const { data, error } = await db
         .from('fabricator_profiles')
@@ -69,14 +69,14 @@ const InventoryPage: React.FC = () => {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      
+
       // Ensure stock quantities are numbers and not null/undefined
       const profiles = (data || []).map((profile: any) => ({
         ...profile,
         stockQuantity: profile.stock_quantity ? parseFloat(profile.stock_quantity) : 0,
         minStockLevel: profile.min_stock_level ? parseFloat(profile.min_stock_level) : 0,
       })) as Profile[];
-      
+
       return profiles;
     },
     enabled: !!user,
@@ -313,7 +313,7 @@ const InventoryPage: React.FC = () => {
                 {t('inventory.title', 'Inventory Management')}
               </CardTitle>
               <CardDescription className="text-amber-300/80 text-base">
-                {t('inventory.description', 'Centralized inventory management with real-time analytics, remnant optimization, and AI-powered stock predictions for Turkish & Egyptian markets.')}
+                {t('inventory.description', 'Centralized inventory management with real-time analytics, remnant optimization, and software-assisted stock predictions for Turkish & Egyptian markets.')}
               </CardDescription>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">

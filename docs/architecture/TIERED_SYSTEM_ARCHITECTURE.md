@@ -46,16 +46,16 @@ export class UnifiedCognitionEngine {
    * Tier 2: Guided assistance
    * Tier 3: Real-time validation
    */
-  
+
   // Tier 1: Analyze simple input, generate complete window
   async analyzeSimpleInput(input: SimpleInput): Promise<CompleteWindow> {
     const context = await this.buildContext(input);
     const smartDefaults = await this.getSmartDefaults(context);
     const completeWindow = await this.generateWindow(smartDefaults);
-    
+
     return completeWindow;
   }
-  
+
   // Tier 2: Analyze pattern selection, provide guided customization
   async analyzePatternCustomization(
     pattern: SmartPattern,
@@ -64,28 +64,28 @@ export class UnifiedCognitionEngine {
     const baseWindow = await this.generateFromPattern(pattern);
     const customizedWindow = await this.applyCustomizations(baseWindow, customizations);
     const validation = await this.validateDesign(customizedWindow);
-    
+
     return {
       window: customizedWindow,
       validation,
       suggestions: await this.generateSuggestions(validation)
     };
   }
-  
+
   // Tier 3: Analyze custom sketch, provide real-time feedback
   async analyzeCustomSketch(sketch: CustomSketch): Promise<SmartAnalysis> {
     // 1. Recognize design intent from sketch
     const designIntent = await this.recognizeCustomPattern(sketch);
-    
+
     // 2. Apply Fabricator Brain logic
     const fabrication = await this.fabricatorBrain.analyzeCustom(designIntent);
-    
+
     // 3. Apply Engineering Mind validation
     const engineering = await this.engineeringMind.validateCustom(designIntent);
-    
+
     // 4. Apply Platform Intelligence
     const platform = await this.platformIntelligence.contextualizeCustom(designIntent);
-    
+
     // 5. Synthesize into actionable feedback
     return {
       recognizedPattern: designIntent.name,
@@ -98,13 +98,13 @@ export class UnifiedCognitionEngine {
       estimatedTime: fabrication.time
     };
   }
-  
+
   // Pattern recognition for custom sketches
   private async recognizeCustomPattern(sketch: CustomSketch): Promise<DesignIntent> {
     // Use ML to recognize common patterns
     const features = this.extractFeatures(sketch);
     const matches = await this.patternMatcher.findMatches(features);
-    
+
     if (matches.length > 0 && matches[0].confidence > 0.8) {
       return {
         name: matches[0].pattern.name,
@@ -113,7 +113,7 @@ export class UnifiedCognitionEngine {
         customizations: this.detectCustomizations(sketch, matches[0].pattern)
       };
     }
-    
+
     // If no match, analyze as completely custom
     return {
       name: 'Custom Design',
@@ -141,16 +141,16 @@ export const TWO_SASH_WITH_SCREEN: SmartPattern = {
   name: 'Two-Sash Window with Integrated Fly Screen',
   category: 'ventilation',
   complexity: 'intermediate',
-  
+
   // Visual preview
   thumbnail: '/patterns/two-sash-screen.png',
-  
+
   // Description
   description: {
     en: 'Two casement sashes with integrated fly screen for maximum ventilation',
     ar: 'نافذتان مفصليتان مع شبكة ذباب متكاملة للتهوية القصوى'
   },
-  
+
   // Base structure
   baseStructure: {
     rows: 1,
@@ -160,7 +160,7 @@ export const TWO_SASH_WITH_SCREEN: SmartPattern = {
       { row: 0, col: 1, type: 'sash', openingDirection: 'right' }
     ]
   },
-  
+
   // Special features
   specialFeatures: [
     {
@@ -173,7 +173,7 @@ export const TWO_SASH_WITH_SCREEN: SmartPattern = {
       color: 'charcoal_gray' // Most popular
     }
   ],
-  
+
   // Parametric constraints
   parameters: [
     {
@@ -257,7 +257,7 @@ export const TWO_SASH_WITH_SCREEN: SmartPattern = {
       default: 'magnetic'
     }
   ],
-  
+
   // Intelligent constraints
   constraints: [
     {
@@ -276,7 +276,7 @@ export const TWO_SASH_WITH_SCREEN: SmartPattern = {
       message: 'Each sash must be at least 400mm wide to operate comfortably'
     }
   ],
-  
+
   // Fabrication intelligence
   fabricationRules: {
     // Screen frame profile
@@ -286,7 +286,7 @@ export const TWO_SASH_WITH_SCREEN: SmartPattern = {
       material: 'aluminum',
       finish: 'powder_coated'
     },
-    
+
     // Hardware requirements
     hardware: [
       { type: 'hinge', quantity: 4, position: 'calculated' }, // 2 per sash
@@ -294,7 +294,7 @@ export const TWO_SASH_WITH_SCREEN: SmartPattern = {
       { type: 'magnetic_clip', quantity: 8, position: 'screen_corners' },
       { type: 'screen_spline', quantity: 'perimeter', unit: 'meters' }
     ],
-    
+
     // Assembly sequence
     assemblySequence: [
       'Cut main frame profiles',
@@ -311,13 +311,13 @@ export const TWO_SASH_WITH_SCREEN: SmartPattern = {
       'Quality check'
     ]
   },
-  
+
   // Cost calculation
   costCalculation: (params: PatternParameters) => {
     const baseWindowCost = calculateStandardWindowCost(params.width, params.height);
     const screenCost = calculateScreenCost(params.width, params.height, params.screenType);
     const hardwareCost = calculateHardwareCost(params.screenMounting);
-    
+
     return {
       material: baseWindowCost + screenCost,
       hardware: hardwareCost,
@@ -337,12 +337,12 @@ export const PatternLibraryWizard: React.FC = () => {
   const [selectedPattern, setSelectedPattern] = useState<SmartPattern | null>(null);
   const [parameters, setParameters] = useState<PatternParameters>({});
   const [validation, setValidation] = useState<ValidationResult | null>(null);
-  
+
   // Step 1: Browse patterns by category
   const Step1_BrowsePatterns = () => (
     <div className="p-8">
       <h2 className="text-2xl font-bold mb-6">Choose a Pattern</h2>
-      
+
       <Tabs defaultValue="ventilation">
         <TabsList>
           <TabsTrigger value="ventilation">Ventilation</TabsTrigger>
@@ -351,7 +351,7 @@ export const PatternLibraryWizard: React.FC = () => {
           <TabsTrigger value="thermal">Thermal</TabsTrigger>
           <TabsTrigger value="decorative">Decorative</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="ventilation">
           <div className="grid grid-cols-3 gap-6 mt-6">
             {VENTILATION_PATTERNS.map(pattern => (
@@ -366,23 +366,23 @@ export const PatternLibraryWizard: React.FC = () => {
             ))}
           </div>
         </TabsContent>
-        
+
         {/* Other tabs... */}
       </Tabs>
     </div>
   );
-  
+
   // Step 2: Customize parameters
   const Step2_CustomizeParameters = () => {
     if (!selectedPattern) return null;
-    
+
     return (
       <div className="grid grid-cols-2 gap-8 p-8">
         {/* Left: Parameter controls */}
         <div className="space-y-6">
           <h2 className="text-2xl font-bold">{selectedPattern.name}</h2>
           <p className="text-gray-400">{selectedPattern.description.en}</p>
-          
+
           {selectedPattern.parameters.map(param => (
             <ParameterControl
               key={param.name}
@@ -391,19 +391,19 @@ export const PatternLibraryWizard: React.FC = () => {
               onChange={(value) => {
                 const newParams = { ...parameters, [param.name]: value };
                 setParameters(newParams);
-                
+
                 // Real-time validation
                 validateParameters(selectedPattern, newParams).then(setValidation);
               }}
             />
           ))}
-          
+
           {/* Real-time validation feedback */}
           {validation && (
             <ValidationFeedback validation={validation} />
           )}
         </div>
-        
+
         {/* Right: Live 3D preview */}
         <div className="bg-gray-900 rounded-xl p-6">
           <Window3DGenerator
@@ -411,7 +411,7 @@ export const PatternLibraryWizard: React.FC = () => {
             showControls={true}
             quality="high"
           />
-          
+
           {/* Cost summary */}
           <CostSummary
             cost={selectedPattern.costCalculation(parameters)}
@@ -420,7 +420,7 @@ export const PatternLibraryWizard: React.FC = () => {
       </div>
     );
   };
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
       {selectedPattern ? <Step2_CustomizeParameters /> : <Step1_BrowsePatterns />}
@@ -433,7 +433,7 @@ export const PatternLibraryWizard: React.FC = () => {
 
 ## 🎨 Tier 3: Expert Canvas Implementation
 
-### Concept: AI-Assisted Freeform Design
+### Concept: software-assisted Freeform Design
 
 ```typescript
 // src/components/fabricator/ExpertCanvas.tsx
@@ -443,16 +443,16 @@ export const ExpertCanvas: React.FC = () => {
   const [analysis, setAnalysis] = useState<SmartAnalysis | null>(null);
   const [activeElement, setActiveElement] = useState<SketchElement | null>(null);
   const cognitionEngine = useCognitionEngine();
-  
+
   // Real-time analysis as user draws
   const handleSketchUpdate = useCallback(async (newSketch: CustomSketch) => {
     setSketch(newSketch);
-    
+
     // Debounced analysis (every 500ms)
     const analysis = await cognitionEngine.analyzeCustomSketch(newSketch);
     setAnalysis(analysis);
   }, [cognitionEngine]);
-  
+
   return (
     <div className="grid grid-cols-[1fr_400px] h-screen">
       {/* Left: Drawing canvas */}
@@ -463,19 +463,19 @@ export const ExpertCanvas: React.FC = () => {
           activeElement={activeElement}
           onElementSelect={setActiveElement}
         />
-        
+
         {/* Real-time feedback overlays */}
         {analysis && (
           <FeedbackOverlay analysis={analysis} sketch={sketch} />
         )}
-        
+
         {/* Context-aware toolbar */}
         <ContextToolbar
           activeElement={activeElement}
           availableTools={getAvailableTools(activeElement, analysis)}
         />
       </div>
-      
+
       {/* Right: Intelligence panel */}
       <div className="bg-gray-900 border-l border-gray-800 overflow-y-auto">
         <IntelligencePanel analysis={analysis} sketch={sketch} />
@@ -497,14 +497,14 @@ const FeedbackOverlay: React.FC<{ analysis: SmartAnalysis; sketch: CustomSketch 
         .map((suggestion, i) => (
           <OptimalHighlight key={i} suggestion={suggestion} />
         ))}
-      
+
       {/* Yellow warnings */}
       {analysis.warnings
         .filter(w => w.severity === 'warning')
         .map((warning, i) => (
           <WarningHighlight key={i} warning={warning} />
         ))}
-      
+
       {/* Red errors */}
       {analysis.warnings
         .filter(w => w.severity === 'error')
@@ -528,7 +528,7 @@ const IntelligencePanel: React.FC<{ analysis: SmartAnalysis | null; sketch: Cust
       </div>
     );
   }
-  
+
   return (
     <div className="p-6 space-y-6">
       {/* Pattern recognition */}
@@ -562,7 +562,7 @@ const IntelligencePanel: React.FC<{ analysis: SmartAnalysis | null; sketch: Cust
           </CardContent>
         </Card>
       )}
-      
+
       {/* Warnings & Suggestions */}
       {analysis.warnings.length > 0 && (
         <Card>
@@ -581,7 +581,7 @@ const IntelligencePanel: React.FC<{ analysis: SmartAnalysis | null; sketch: Cust
           </CardContent>
         </Card>
       )}
-      
+
       {/* Suggestions */}
       {analysis.suggestions.length > 0 && (
         <Card>
@@ -600,7 +600,7 @@ const IntelligencePanel: React.FC<{ analysis: SmartAnalysis | null; sketch: Cust
           </CardContent>
         </Card>
       )}
-      
+
       {/* Material & Cost */}
       {analysis.materialList && (
         <Card>
@@ -621,7 +621,7 @@ const IntelligencePanel: React.FC<{ analysis: SmartAnalysis | null; sketch: Cust
           </CardContent>
         </Card>
       )}
-      
+
       {/* Production Steps */}
       {analysis.productionSteps && (
         <Card>
@@ -771,8 +771,8 @@ Result: Complex custom design, fully validated
 - Everyone gets 98-99.8% accuracy
 
 **This makes you unbeatable because:**
-- Klaes: Complex for everyone (no simple tier)
-- Orgadata: Technical for everyone (no simple tier)
+- reference system: Complex for everyone (no simple tier)
+- reference system: Technical for everyone (no simple tier)
 - You: Simple for beginners, powerful for experts, intelligent for all
 
 You now have the complete architecture for handling 100% of projects while maintaining your core vision of simplicity + intelligence.

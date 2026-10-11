@@ -162,7 +162,7 @@ npm install lz-string @types/lz-string
 **Why:** Improve first-time user experience, increase adoption
 
 **Features:**
-- 4-step tutorial (Smart Measuring, AI Design, Optimization, CNC Export)
+- 4-step tutorial (Smart Measuring, automation Design, Optimization, CNC Export)
 - Video player integration
 - Contextual tooltips
 - Progress tracking

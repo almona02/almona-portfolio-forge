@@ -30,7 +30,7 @@
 ### Vendor Chunks (8 total):
 1. **vendor-three** - Three.js ecosystem (~800KB target)
 2. **vendor-tfjs** - TensorFlow.js (~700KB target)
-3. **vendor-mediapipe** - MediaPipe Vision AI
+3. **vendor-mediapipe** - MediaPipe Vision automation
 4. **vendor-physics** - Physics engine
 5. **vendor-excel** - ExcelJS
 6. **vendor-pdf** - PDF processing

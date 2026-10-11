@@ -78,7 +78,7 @@
 
 **Competitor Comparison:**
 
-| Feature | ALMONA | Orgadata/Kliess | Moxisys | Gap |
+| Feature | ALMONA | Orgadata/Kliess | reference system | Gap |
 |---------|--------|-----------------|---------|-----|
 | **Layout** | Vertical (64px) | Ribbon (top) | Tabbed (top) | ✅ Better (space-efficient) |
 | **Organization** | Category groups | Ribbon tabs | Tabbed groups | ✅ Better (logical) |
@@ -119,7 +119,7 @@
 
 **Competitor Comparison:**
 
-| Feature | ALMONA | Orgadata/Kliess | Moxisys | Gap |
+| Feature | ALMONA | Orgadata/Kliess | reference system | Gap |
 |---------|--------|-----------------|---------|-----|
 | **Rendering** | SVG (web) | Native CAD | Native CAD | ✅ Better (scalable) |
 | **Grid/Snap** | ✅ Advanced | ✅ Advanced | ✅ Advanced | ✅ Equal |
@@ -155,7 +155,7 @@
 
 **Competitor Comparison:**
 
-| Feature | ALMONA | Orgadata/Kliess | Moxisys | Gap |
+| Feature | ALMONA | Orgadata/Kliess | reference system | Gap |
 |---------|--------|-----------------|---------|-----|
 | **Existence** | ✅ 75% | ✅ Full | ✅ Full | 🟡 Needs completion |
 | **Property Editing** | ✅ Core | ✅ Comprehensive | ✅ Good | 🟡 Needs rotation/transform |
@@ -182,7 +182,7 @@
 
 **Competitor Comparison:**
 
-| Feature | ALMONA | Orgadata/Kliess | Moxisys | Gap |
+| Feature | ALMONA | Orgadata/Kliess | reference system | Gap |
 |---------|--------|-----------------|---------|-----|
 | **Coordinates** | ✅ Real-time | ✅ Yes | ✅ Yes | ✅ Equal |
 | **Tool Info** | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Equal |
@@ -208,7 +208,7 @@
 
 **Competitor Comparison:**
 
-| Feature | ALMONA | Orgadata/Kliess | Moxisys | Gap |
+| Feature | ALMONA | Orgadata/Kliess | reference system | Gap |
 |---------|--------|-----------------|---------|-----|
 | **Actions** | ✅ Core actions | ✅ Comprehensive | ✅ Good | 🟡 Needs expansion |
 | **Menu System** | ❌ No | ✅ Yes | ✅ Yes | 🟡 Missing |
@@ -445,7 +445,7 @@
 
 ### Current State vs. Competitors
 
-| Category | ALMONA | Orgadata | Kliess | Moxisys | Gap |
+| Category | ALMONA | reference system | reference system | reference system | Gap |
 |----------|--------|----------|--------|---------|-----|
 | **Architecture** | ✅ 100% | 🟡 60% | 🟡 60% | 🟡 60% | ✅ Superior |
 | **Visual Design** | ✅ 90% | 🟡 70% | 🟡 70% | ✅ 85% | ✅ Better |

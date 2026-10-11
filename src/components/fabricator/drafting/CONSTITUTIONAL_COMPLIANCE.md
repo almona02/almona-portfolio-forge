@@ -45,7 +45,7 @@
 - **Test**: `ConstitutionalCompliance.test.ts` - Test 7
 - **Checkpoints**: All validation requests require constitutional checkpoint
 
-### ✅ No ML/AI Contamination
+### ✅ No advisory inference Contamination
 - **Status**: VERIFIED
 - **Evidence**: No neural network packages, no probabilistic decisions
 - **Scan Results**: 
@@ -238,10 +238,10 @@ console.log('Violations:', compliance.violations);
 
 ## Constitutional Notes
 
-> **"The drafting layer should LOOK like Moxisys but ACT like ALMONA."**
+> **"The drafting layer should provide clear interaction and preserve manufacturing guarantees."**
 
 This implementation ensures:
-- ✅ Beautiful, intuitive UX (Moxisys-like)
+- ✅ Clear, intuitive interaction
 - ✅ Constitutional guarantees (ALMONA authority)
 - ✅ Complete audit trail (replayable)
 - ✅ Deterministic validation (no ML)

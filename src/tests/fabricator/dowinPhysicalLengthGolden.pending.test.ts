@@ -1,5 +1,5 @@
 /**
- * FP-024A — licensed DoWin asdd three-layer golden. Not accepted.
+ * FP-024A — licensed reference system asdd three-layer golden. Not accepted.
  */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';

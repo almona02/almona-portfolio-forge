@@ -84,7 +84,7 @@
 ### Code Splitting
 - ✅ Isolated 3D engine (2MB)
 - ✅ Isolated Physics engine (1.4MB)
-- ✅ Isolated AI engine (872KB)
+- ✅ Isolated automation engine (872KB)
 - ✅ Isolated Document processing (1.7MB)
 - ✅ Landing page: 406KB only
 

@@ -41,7 +41,7 @@ export class DraftingErrorBoundary extends Component<Props, State> {
 
   static getDerivedStateFromError(error: Error): Partial<State> {
     const errorId = `DRAFT-ERROR-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     // Constitutional audit logging
     logDraftingAction(
       'error_boundary_triggered',

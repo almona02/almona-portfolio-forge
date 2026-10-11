@@ -1,6 +1,6 @@
 """
 Wiring Diagram Processor - DEMO MODE
-Extracts components using pattern matching and OCR fallback when Vision AI unavailable.
+Extracts components using pattern matching and OCR fallback when Vision automation unavailable.
 Shows the "magic step" of building component knowledge graph.
 """
 

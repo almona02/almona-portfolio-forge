@@ -2,7 +2,7 @@
  * Hinge Utilities
  * 
  * Helper functions for finding and matching hinges in window sashes.
- * Constitutional: Pure geometric calculations, no ML/AI.
+ * Constitutional: Pure geometric calculations, no advisory inference.
  */
 
 export interface HardwarePlaceholder {

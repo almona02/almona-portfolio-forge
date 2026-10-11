@@ -291,7 +291,7 @@ const Shop = () => {
   const copy = usePublicCopy();
   const { addCatalogueToQuote: addToQuote, quoteItems } = useQuote();
   const { toast } = useToast();
-  
+
   const [activeTab, setActiveTab] = useState<ProductTab>('industrial-machines');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [advisorOpen, setAdvisorOpen] = useState(false);
@@ -406,7 +406,7 @@ const Shop = () => {
   // Memoized filtering logic
   const filteredProducts = useMemo(() => {
     let products: ShopProduct[] = [];
-    
+
     switch (activeTab) {
       case "industrial-machines":
         products = enhancedProducts;
@@ -519,14 +519,14 @@ const Shop = () => {
           className="relative bg-gradient-to-br from-almona-dark to-almona-darker py-16 overflow-hidden fade-in-up"
         >
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=2000')] opacity-10 mix-blend-overlay"></div>
-          
+
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="typography-h1 md:text-5xl lg:text-6xl mb-6">
                 <span className="text-gradient-orange">{copy("Industrial Equipment Hub")}</span>
               </h1>
               <p className="text-xl text-gray-300 mb-8">{copy("Premium machinery, genuine parts, and expert support for Egypt's manufacturing industry")}</p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <NeonButton 
                   variant="industrial"
@@ -534,8 +534,8 @@ const Shop = () => {
                   onClick={useCallback(() => setAdvisorOpen(true), [])}
                   className="px-8 py-4"
                 >
-                  <Sparkles className="mr-2 h-5 w-5" />{copy("AI Equipment Advisor")}</NeonButton>
-                
+                  <Sparkles className="mr-2 h-5 w-5" />{copy("Equipment Advisor")}</NeonButton>
+
                 <Button 
                   onClick={() => document.getElementById("catalogue")?.scrollIntoView({ behavior: "smooth" })} className="border-almona-light text-white hover:bg-almona-light/10 px-8 py-4"
                 >{copy("Explore Catalog")}</Button>
@@ -566,7 +566,7 @@ const Shop = () => {
                 showPopular={true}
                 desktopMode="dropdown"
               />
-              
+
 
               {/* Value Propositions */}
               <div className="mt-6 space-y-4">
@@ -704,7 +704,7 @@ const Shop = () => {
                   />
                 </TabsContent>
               ))}
-              
+
               <TabsContent value="egypt-standards">
                 <EgyptianStandardsGuide />
               </TabsContent>
@@ -723,7 +723,7 @@ const Shop = () => {
         {/* Recently Viewed */}
         <RecentlyViewedProducts />
 
-        {/* AI Advisor Modal */}
+        {/* automation Advisor Modal */}
         <Suspense fallback={null}>
           <AiEquipmentAdvisor open={advisorOpen} onOpenChange={setAdvisorOpen} />
         </Suspense>

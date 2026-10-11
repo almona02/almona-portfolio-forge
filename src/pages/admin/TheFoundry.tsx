@@ -39,17 +39,17 @@ interface MicronConfig {
   // Saw Blade Configuration
   sawBladeKerf: number; // 4.2mm default (Yilmaz/Elumatec standard)
   barEndTrim: number; // 15mm default per end
-  
+
   // Batch Calibration (Extrusion Tolerance)
   barBatchCalibration: number; // e.g., 6005mm actual vs 6000mm nominal
   extrusionTolerance: number; // ±0.5mm per meter
-  
+
   // Profile-Specific Milling
   transomMillingDepth: number; // Profile-specific: ROCK 60 = 2.5mm, Panda = 2.5mm, JUMBO 100 = 3.0mm
-  
+
   // Panda System Geometry
   screenAdapterOffset: number; // 12-18mm (default 15mm)
-  
+
   // UPVC Welding Parameters
   upvcWeldingLoss: number; // 3mm per corner (standard), 5mm for thick profiles
   upvcWeldingTemperature: number; // 240°C winter, 260°C summer
@@ -65,15 +65,15 @@ interface MaterialScienceConfig {
   // Climate Modes
   coastalMode: boolean; // Simulate corrosion risk (Alexandria)
   thermalStressMode: boolean; // Simulate thermal cycling stress
-  
+
   // Aluminum Grades
   aluminumGrade: '6063-T5' | '6063-T6';
   aluminumTolerance: number; // ±0.5mm per meter (standard), ±0.8mm (Egyptian reality)
-  
+
   // UPVC Formulations
   upvcMix: 'Calcium-Zinc' | 'Lead-Stabilized';
   upvcRegrindPercentage: number; // >30% reduces impact strength by 40%
-  
+
   // Steel Reinforcement
   steelCoating: 'Galvanized' | 'Powder-Coated';
   steelCoatingThickness: number; // μm (min 12μm, typical 8μm in Egypt)
@@ -123,13 +123,13 @@ export const TheFoundry: React.FC = () => {
   const handleDxfUpload = useCallback(async (file: File) => {
     setDxfFile(file);
     setUploadStatus('uploading');
-    
+
     // TODO: Implement DXF ingestion
     // 1. Upload to backend
     // 2. Python ezdxf scans the file
     // 3. Return profile geometry
     // 4. Allow role tagging (Frame, Sash, Glazing Bead)
-    
+
     setTimeout(() => {
       setUploadStatus('success');
     }, 2000);

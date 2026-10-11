@@ -17,7 +17,7 @@
 ### Button Instances Identified
 
 1. **Line ~340:** Pattern selector toggle button
-2. **Line ~350:** "Suggest AI Layout" button
+2. **Line ~350:** "Suggest automation Layout" button
 3. **Line ~380:** "Back to SmartDraw" button (drafting mode)
 4. **Line ~390:** "Go to Measurement" button
 5. **Line ~450:** Theme toggle button
@@ -82,7 +82,7 @@ npx tsc --noEmit
 
 ### Step 3: Test Button Interactions
 - [ ] Pattern selector toggle works
-- [ ] Suggest AI Layout works
+- [ ] Suggest automation Layout works
 - [ ] Back to SmartDraw works
 - [ ] Go to Measurement works
 - [ ] Dimensions button works

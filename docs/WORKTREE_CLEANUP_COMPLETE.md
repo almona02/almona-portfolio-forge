@@ -90,7 +90,7 @@ All 9 worktrees have been removed:
 **Result:**
 - ✅ All worktree directories removed
 - ✅ No files remaining in worktree directories
-- ✅ Cursor will not show worktree files on next restart
+- ✅ development tool will not show worktree files on next restart
 
 ## Next Steps
 

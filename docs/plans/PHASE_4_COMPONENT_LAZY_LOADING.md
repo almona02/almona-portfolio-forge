@@ -40,7 +40,7 @@
 
 **Result:** New chunk `lazyExportHandlers-CmfnyXjs.js` (0.76 kB) created
 
-### ✅ Step 3: AI & Heavy Components (Medium Impact)
+### ✅ Step 3: automation & Heavy Components (Medium Impact)
 **Updated Files:**
 - `src/pages/FabricatorWorkflow.tsx` - All heavy components now use `lazyRetry()`
 - `src/pages/AdminDashboard.tsx` - BusinessKPIDashboard uses `lazyRetry()`
@@ -79,7 +79,7 @@
 ### TBT Reduction
 - **3D Viewers**: ~300-400ms (Three.js + @react-three/drei not loaded until click)
 - **PDF Exports**: ~200-300ms (jspdf, pdf-lib not loaded until export)
-- **AI Components**: ~100-200ms (TensorFlow.js not loaded until tab opened)
+- **automation Components**: ~100-200ms (TensorFlow.js not loaded until tab opened)
 - **Total Expected**: ~600-900ms additional TBT reduction
 
 ### JavaScript Execution Time
@@ -99,7 +99,7 @@
 2. ✅ **New chunks created** - LazyModelWrapper and lazyExportHandlers
 3. ✅ **3D viewers** - Only load on user click
 4. ✅ **PDF exports** - Only load when export button clicked
-5. ✅ **AI components** - Lazy loaded in tabs
+5. ✅ **automation components** - Lazy loaded in tabs
 6. ✅ **No circular dependencies** - Safe configuration maintained
 
 ---
@@ -111,7 +111,7 @@
 - [ ] Run `npm run preview` - ⏳ PENDING
 - [ ] Test 3D viewer "Load" button - ⏳ PENDING
 - [ ] Test PDF export buttons - ⏳ PENDING
-- [ ] Test AI advisor tab - ⏳ PENDING
+- [ ] Test automation advisor tab - ⏳ PENDING
 - [ ] Check Network tab for chunk loading - ⏳ PENDING
 - [ ] Verify no console errors - ⏳ PENDING
 
@@ -120,7 +120,7 @@
 - [ ] Measure TBT improvement
 - [ ] Verify 3D viewers load correctly
 - [ ] Verify PDF exports work
-- [ ] Verify AI components load in tabs
+- [ ] Verify automation components load in tabs
 
 ---
 

@@ -136,7 +136,7 @@
 
 - **52% reduction** from our original state
 - **15-minute downloads** on Egyptian internet (vs 5+ hours before)
-- **Full functionality preserved** including TensorFlow AI, computer vision, and CNC integration
+- **Full functionality preserved** including TensorFlow automation, computer vision, and CNC integration
 - **Arabic-first design** with Egyptian locale configuration
 - **Ready to scale** to 5,000 workshops across Egypt
 

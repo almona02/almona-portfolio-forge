@@ -18,7 +18,7 @@
 
 ### ✅ **Constitutional Framework - OPERATIONAL**
 - **AICS-001 Compliance**: Enforced via IntelligenceGate ✅
-- **Tier 3 Determinism**: No AI/ML in execution paths ✅
+- **Tier 3 Determinism**: No advisory inference in execution paths ✅
 - **Audit Trails**: Built into fabricator operations ✅
 
 ---

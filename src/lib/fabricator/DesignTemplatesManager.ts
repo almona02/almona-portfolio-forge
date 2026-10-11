@@ -8,7 +8,7 @@
  * - Category organization
  * - Thumbnail generation
  * 
- * Constitutional: Deterministic storage, no ML/AI
+ * Constitutional: Deterministic storage, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

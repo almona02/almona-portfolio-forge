@@ -30,7 +30,7 @@ This package contains all documentation and evidence needed for institutional de
 | Guarantee | Description |
 |-----------|-------------|
 | ✅ Deterministic Replay | Identical inputs → identical outputs |
-| ✅ Protected Determinism | No AI in execution paths |
+| ✅ Protected Determinism | No automation in execution paths |
 | ✅ Single Source of Truth | No ambiguous authority |
 | ✅ Personnel Independence | Governance survives team changes |
 | ✅ Audit-Grade Compliance | Every decision traceable |

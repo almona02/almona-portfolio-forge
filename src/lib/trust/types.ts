@@ -34,7 +34,7 @@ export interface GovernanceHealth {
  * Metrics related to AICS-001 constitutional compliance.
  */
 export interface ConstitutionalCompliance {
-  /** Tier 3 purity (0-100) - percentage of operations with no AI */
+  /** Tier 3 purity (0-100) - percentage of operations with no automation */
   tier3Purity: number;
   /** Human validation rate (0-100) - percentage of outputs human-validated */
   humanValidationRate: number;

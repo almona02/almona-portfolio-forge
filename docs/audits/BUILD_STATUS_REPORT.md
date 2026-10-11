@@ -73,7 +73,7 @@ ui-charts:           426 KB   ✅ (lazy-loaded)
 
 ### Chunk Splitting Strategy ✅
 Your aggressive chunk splitting is working:
-- Heavy libraries (3D, AI, Physics) are isolated
+- Heavy libraries (3D, automation, Physics) are isolated
 - Main bundle stays small
 - Lazy loading enabled for heavy features
 
@@ -135,7 +135,7 @@ npm run preview
 - ✅ **Should now load without 404 errors**
 - Verify all pages load
 - Check browser console - should be clean
-- Test heavy features (3D viewer, AI features)
+- Test heavy features (3D viewer, automation features)
 
 ### 3. Verify Chunks Load Correctly
 - Open DevTools → Network tab

@@ -1,5 +1,5 @@
 /**
- * FP-024C.12 — bounded DoWin Required Parts weld adjustment.
+ * FP-024C.12 — bounded reference system Required Parts weld adjustment.
  * Parity adapter only. Fail closed outside measured C.6–C.11 scope.
  */
 import { readFileSync } from 'node:fs';

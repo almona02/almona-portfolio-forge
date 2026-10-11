@@ -65,7 +65,7 @@ This specification defines the Minimal Viable Pipeline (MVP) to be built in Week
 - ❌ Optimization (NO nesting optimization)
 
 **Intelligence:**
-- ❌ AI (NO YDT, NO ML, NO suggestions)
+- ❌ automation (NO YDT, NO ML, NO suggestions)
 - ❌ Tier 2 (NO collaborative intelligence)
 
 **Outputs:**
@@ -247,11 +247,11 @@ interface ValidationResult {
 **File:** `mvp/server/geometry/MVPGeometryPipeline.ts`
 
 **What It Does:**
-- PURE GEOMETRY → CUT LIST (No AI, no optimization, no suggestions)
+- PURE GEOMETRY → CUT LIST (No automation, no optimization, no suggestions)
 - Process: Extract (Tier 3) → Validate against hardcoded client constraints → Apply single system pack rules → Generate CNC for client's specific machine
 
 **What It Does NOT Do:**
-- No AI inference
+- No automation inference
 - No optimization (deterministic calculation only)
 - No suggestions
 - No Tier 2 collaborative intelligence
@@ -290,7 +290,7 @@ interface BOM {
 **Success Criteria:**
 - BOM matches manual calculation within ≤2% variance (MVP target)
 - All calculations traceable to geometry + system pack
-- No AI inference in BOM generation
+- No automation inference in BOM generation
 
 ---
 
@@ -611,7 +611,7 @@ class MVPGuard {
     'aiSuggestion',
     'optimizationOverride'
   ];
-  
+
   validateOperation(operation: string): boolean {
     // In MVP: ANY prohibited term = immediate fail
     return !this.PROHIBITED_IN_MVP.some(term => 
@@ -628,12 +628,12 @@ class MVPGuard {
 // Automatic time tracking
 class MVPTimeTracker {
   private startTime: number;
-  
+
   start(step: string) {
     this.startTime = Date.now();
     console.log(`⏱️ ${step} started`);
   }
-  
+
   end(step: string) {
     const duration = Date.now() - this.startTime;
     console.log(`✅ ${step}: ${duration}ms`);

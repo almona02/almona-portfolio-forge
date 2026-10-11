@@ -3,7 +3,7 @@
  * 
  * Provides copy, cut, and paste operations for drafting geometry.
  * 
- * Constitutional: Deterministic clipboard operations, no ML/AI
+ * Constitutional: Deterministic clipboard operations, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

@@ -334,7 +334,7 @@
   9. Veka/Rehau System (UPVC)
   10. Deceuninck/Legend System (UPVC)
 - **Nafeza-Style UI** (Egyptian Blue #003366, Gold #FFD700, Cairo font, RTL perfection)
-- **System Tuning Studio** (DXF upload, AI scan, role tagging, hardware linking)
+- **System Tuning Studio** (DXF upload, automation scan, role tagging, hardware linking)
 - **UPVC-Specific Logic** (welding parameters, steel reinforcement, climate adjustments)
 - **Egyptian Climate Engine** (UV degradation, thermal stress, corrosion)
 - **System Recommender** (context-aware filtering)

@@ -16,7 +16,7 @@
 **Key Implementation**:
 - Context manager pattern for transaction safety
 - Automatic rollback on any failure
-- Proper cursor cleanup in finally blocks
+- Proper development tool cleanup in finally blocks
 - Validation callback support
 
 **Note on True Atomicity**:

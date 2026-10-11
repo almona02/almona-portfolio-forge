@@ -1,4 +1,4 @@
-# ALMONA Drafting Workbench vs. Kliess Orgadata & Moxisys Design Flow
+# ALMONA Drafting Workbench vs. reference system reference system & reference system Design Flow
 
 **Date:** January 2026  
 **Status:** Post-Phase 1 Enhancement Analysis  
@@ -18,7 +18,7 @@
 
 ### ✅ Where ALMONA Now Wins
 
-| Feature | ALMONA (Post-Enhancement) | Kliess Orgadata | Moxisys Design Flow | Winner |
+| Feature | ALMONA (Post-Enhancement) | reference system reference system | reference system Design Flow | Winner |
 |---------|---------------------------|-----------------|---------------------|--------|
 | **Constitutional Governance** | ✅ Tier 0/1/3 separation, full audit trail | ❌ Black-box heuristics | ❌ No explicit boundaries | **ALMONA** |
 | **Modern Architecture** | ✅ Web-native, API-first, React/TypeScript | ❌ Legacy desktop, proprietary | ❌ Desktop-based | **ALMONA** |
@@ -31,11 +31,11 @@
 | **Grid Toggle** | ✅ Show/hide grid | ✅ Standard feature | ✅ Standard feature | **Tie** |
 | **Multi-Shape Support** | ✅ Rectangle, Circle, Line, Text | ✅ Full CAD primitives | ✅ Full CAD primitives | **Tie** |
 | **Audit Trail** | ✅ Constitutional logging, immutable | ❌ Partial, proprietary | ❌ Limited | **ALMONA** |
-| **Deterministic Guarantees** | ✅ 99.8% accuracy, no AI in Tier 3 | ❌ No explicit guarantees | ❌ No explicit guarantees | **ALMONA** |
+| **Deterministic Guarantees** | ✅ 99.8% accuracy, no automation in Tier 3 | ❌ No explicit guarantees | ❌ No explicit guarantees | **ALMONA** |
 
 ### ⚠️ Where ALMONA Still Lags
 
-| Feature | ALMONA | Kliess Orgadata | Moxisys Design Flow | Gap |
+| Feature | ALMONA | reference system reference system | reference system Design Flow | Gap |
 |---------|--------|-----------------|---------------------|-----|
 | **System Pack Library** | 🟡 ~10 Egyptian templates | ✅ 1000+ certified European systems | ✅ Extensive library | **Large** |
 | **3D Preview** | ✅ Full 3D rendering (Window3DGenerator) | ✅ Full 3D rendering | ✅ Full 3D rendering | **Parity** |
@@ -52,7 +52,7 @@
 
 | Advantage | Description | Competitive Impact |
 |-----------|-------------|-------------------|
-| **Constitutional Boundaries** | Explicit Tier 0/1/3 separation, no AI in production | **Institutional trust, legal defensibility** |
+| **Constitutional Boundaries** | Explicit Tier 0/1/3 separation, no automation in production | **Institutional trust, legal defensibility** |
 | **Deterministic Validation** | Rule-based, auditable, replayable | **Dispute resolution, regulatory compliance** |
 | **Web-Native** | Runs in browser, no installation | **Accessibility, deployment ease** |
 | **Template Intelligence** | Rule-based recommendations (not ML) | **Transparent, explainable suggestions** |
@@ -73,12 +73,12 @@
 - ✅ Dimension tool
 - ✅ Select tool (with handles)
 
-**Kliess Orgadata:**
+**reference system reference system:**
 - ✅ Full CAD primitives (rectangle, circle, line, arc, spline, polygon)
 - ✅ Advanced tools (mirror, rotate, scale, array)
 - ✅ Pattern tools (repeat, offset, trim, extend)
 
-**Moxisys Design Flow:**
+**reference system Design Flow:**
 - ✅ Complete CAD toolset
 - ✅ Parametric constraints
 - ✅ Advanced geometry tools
@@ -94,13 +94,13 @@
 - ✅ One-click template application
 - ✅ Template constraints validation
 
-**Kliess Orgadata:**
+**reference system reference system:**
 - ✅ Massive certified system pack library (1000+)
 - ✅ European standard compliance
 - ✅ Manual template selection
 - ❌ No recommendation engine
 
-**Moxisys Design Flow:**
+**reference system Design Flow:**
 - ✅ Extensive template library
 - ✅ Manual selection
 - ❌ No recommendation engine
@@ -117,13 +117,13 @@
 - ✅ Tool shortcuts displayed
 - ✅ Status bar with element count
 
-**Kliess Orgadata:**
+**reference system reference system:**
 - ✅ Professional CAD feedback
 - ✅ Standard selection/hover
 - ✅ Coordinate display
 - ✅ Grid/snap visualization
 
-**Moxisys Design Flow:**
+**reference system Design Flow:**
 - ✅ Professional CAD feedback
 - ✅ Standard selection/hover
 - ✅ Coordinate display
@@ -138,12 +138,12 @@
 - ✅ Keyboard shortcuts (Ctrl+Z, Ctrl+Y)
 - ✅ Visual undo/redo buttons
 
-**Kliess Orgadata:**
+**reference system reference system:**
 - ✅ Standard undo/redo
 - ✅ History tracking
 - ❌ No constitutional audit
 
-**Moxisys Design Flow:**
+**reference system Design Flow:**
 - ✅ Standard undo/redo
 - ✅ History tracking
 - ❌ No constitutional audit
@@ -159,12 +159,12 @@
 - ✅ Deterministic rule-based (no ML)
 - ✅ Constitutional validation gate
 
-**Kliess Orgadata:**
+**reference system reference system:**
 - ✅ Validation exists
 - ✅ Building code compliance
 - ❌ Black-box heuristics (not transparent)
 
-**Moxisys Design Flow:**
+**reference system Design Flow:**
 - ✅ Validation exists
 - ✅ Constraint checking
 - ❌ Not transparent
@@ -180,13 +180,13 @@
 - ✅ Multi-tenant ready
 - ✅ Constitutional boundaries enforced
 
-**Kliess Orgadata:**
+**reference system reference system:**
 - ❌ Desktop application (Windows)
 - ❌ Legacy architecture
 - ❌ Proprietary format
 - ❌ Single-tenant
 
-**Moxisys Design Flow:**
+**reference system Design Flow:**
 - ❌ Desktop application
 - ❌ Legacy architecture
 - ❌ Proprietary format
@@ -199,17 +199,17 @@
 - ✅ Constitutional Tier 0/1/3 separation
 - ✅ Full audit trail (immutable)
 - ✅ Deterministic guarantees (99.8% accuracy)
-- ✅ No AI in production (Tier 3)
+- ✅ No automation in production (Tier 3)
 - ✅ Explicit authority boundaries
 - ✅ Legal defensibility
 
-**Kliess Orgadata:**
+**reference system reference system:**
 - ❌ No explicit governance model
 - ❌ Black-box calculations
 - ❌ No constitutional guarantees
 - ❌ Ambiguous authority
 
-**Moxisys Design Flow:**
+**reference system Design Flow:**
 - ❌ No explicit governance model
 - ❌ Black-box calculations
 - ❌ No constitutional guarantees
@@ -247,7 +247,7 @@
 ### Where ALMONA Needs Work
 
 1. **Library Depth** ⭐⭐
-   - 10 templates vs 1000+ (Kliess)
+   - 10 templates vs 1000+ (reference system)
    - Need to expand Egyptian template library
    - Need certified system packs
 
@@ -337,7 +337,7 @@
 2. **Collaboration** (Low Priority)
    - WebSocket multi-user
    - Real-time sync
-   - Cursor tracking
+   - development tool tracking
 
 3. **Performance** (Medium Priority)
    - Canvas optimization

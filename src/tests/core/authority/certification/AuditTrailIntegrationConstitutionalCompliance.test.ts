@@ -212,7 +212,7 @@ describe('Audit Trail Integration AICS-001 Constitutional Compliance', () => {
   }, 30000);
 
   it('should maintain Tier 3 compliance (no ML/AI in execution path)', async () => {
-    // AICS-001 Rule 15: Tier 3 compliance means no ML/AI in execution path
+    // AICS-001 Rule 15: Tier 3 compliance means no advisory inference in execution path
     const validationResult = validateDesignWithEnvelope(1200, 1500, testWindowGrid, 'rock60', true);
     
     if (!validationResult.envelopeResult) {
@@ -234,7 +234,7 @@ describe('Audit Trail Integration AICS-001 Constitutional Compliance', () => {
     const endTime = performance.now();
     const executionTime = endTime - startTime;
 
-    // Audit recording should complete deterministically without ML/AI calls
+    // Audit recording should complete deterministically without advisory inference calls
     expect(anchorId).toBeDefined();
     expect(executionTime).toBeLessThan(500); // Should be fast (no async ML model loading)
   }, 30000);

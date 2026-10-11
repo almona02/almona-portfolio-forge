@@ -4,7 +4,7 @@
  * Validates:
  * - Dimensional tolerance checking (±0.01mm precision)
  * - BOM integration accuracy
- * - Constitutional compliance (no AI/ML)
+ * - Constitutional compliance (no advisory inference)
  * - 99.8% accuracy claims
  * 
  * @since Phase 2: Quality Control Integration (January 2026)

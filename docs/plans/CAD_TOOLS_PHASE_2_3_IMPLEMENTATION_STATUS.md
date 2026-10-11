@@ -187,7 +187,7 @@
   - Updates automatically on geometry changes
   - Comprehensive input validation and bounds checking
 - ✅ **Click-to-place block insertion** - Full implementation with preview
-  - Visual preview follows mouse cursor
+  - Visual preview follows mouse development tool
   - Click to place, ESC to cancel
   - Coordinate validation and bounds checking
 - ✅ **Canvas interaction hardening** - All geometry types respect locked layers
@@ -228,7 +228,7 @@
    - Pointer events disabled for locked elements
 
 3. **Click-to-Place Block Insertion** ✅ **COMPLETE**
-   - Visual preview follows mouse cursor
+   - Visual preview follows mouse development tool
    - Click to place, ESC to cancel
    - Coordinate validation and bounds checking
    - Error handling for invalid placements

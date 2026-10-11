@@ -76,7 +76,7 @@ The implementation successfully:
 ### Constitutional Compliance
 
 1. **Tier 3 Purity** (0-100%)
-   - Percentage of operations with no AI (AICS-001 §3.1)
+   - Percentage of operations with no automation (AICS-001 §3.1)
    - Target: 100%
    - Status: Healthy if 100%, Critical otherwise
 

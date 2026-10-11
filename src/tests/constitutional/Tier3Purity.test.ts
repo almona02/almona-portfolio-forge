@@ -2,7 +2,7 @@
  * CONSTITUTIONAL TIER 3 PURITY TEST
  * 
  * PURPOSE: Enforce 100% deterministic execution paths
- * BLOCKS: Any ML/AI imports in production execution code
+ * BLOCKS: Any advisory inference imports in production execution code
  * SCOPE: Tier 3 Protected Determinism (99.8% Accuracy Framework)
  * 
  * EXIT CRITERIA:

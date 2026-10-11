@@ -1,4 +1,4 @@
-# FP-024B — DoWin External Compensation Reconciliation
+# FP-024B — reference system External Compensation Reconciliation
 
 | Field | Value |
 |-------|--------|
@@ -55,7 +55,7 @@ Unknown fields stay null. Platform / `yilmazcad-parity` defaults are **not** cop
 
 ---
 
-## Controlled experiment plan (operator; DoWin is not executed here)
+## Controlled experiment plan (operator; reference system is not executed here)
 
 | Test | Kind | Isolation | Status | Required exports |
 |------|------|-----------|--------|------------------|
@@ -84,7 +84,7 @@ Do **not** commit licensed PDFs, MDB binaries, or screenshots unless project pol
 10. SHA-256 of each external file  
 11. Transcribed nominal / packed / machine / remainder values  
 
-Cursor output after ingest: **delta table + classification only** (`PROVEN EFFECT` / `NO OBSERVED EFFECT` / `AMBIGUOUS` / `NOT MEASURED`). No formula patch.
+development tool output after ingest: **delta table + classification only** (`PROVEN EFFECT` / `NO OBSERVED EFFECT` / `AMBIGUOUS` / `NOT MEASURED`). No formula patch.
 
 First capture the **existing asdd** settings bound to `DOWIN_ASDD_KNOWN_EXPORT_IDENTIFIERS` (Test 1A), then rerun the same design unchanged (Test 1B). **1B is `REPRODUCED`.** Tests 2–4 are now valid causal experiments. Filling only Welding Waste is not enough.
 
@@ -239,7 +239,7 @@ The first manufacturing score increase waits for FP-024C. FP-025B polish must no
 
 ## Legal / IP
 
-Licensed PDFs and ordinary readable MDB table fields only. No binary decompilation, no SQLCipher/DPAPI, no guessed Basma/Kaynak, no DoWin UI clone.
+Licensed PDFs and ordinary readable MDB table fields only. No binary decompilation, no SQLCipher/DPAPI, no guessed Basma/Kaynak, no reference system UI clone.
 
 ---
 

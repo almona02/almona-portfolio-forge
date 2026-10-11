@@ -194,8 +194,8 @@ npm run dev
    - Test API key management
    - Explore commission tracking
 
-6. **AI Sales Acceleration**:
-   - View AI lead scoring (87% accuracy)
+6. **automation Sales Acceleration**:
+   - View automation lead scoring (87% accuracy)
    - Test automated proposal generation
    - Explore predictive analytics
 
@@ -230,7 +230,7 @@ kubectl apply -f k8s-local-deployment.yaml
 
 ### **Enterprise Features**: 
 - **White-Label Portal**: Custom branding for enterprise clients
-- **AI Proposal Generation**: Automated competitive proposals
+- **automation Proposal Generation**: Automated competitive proposals
 - **Client Activation**: Mediterranean Aluminum deal (€102K) ready
 
 ### **EU Market Features**:
@@ -239,7 +239,7 @@ kubectl apply -f k8s-local-deployment.yaml
 - **GDPR Compliance**: Cookie consent and data management
 - **EU Standards**: CE marking and compliance documentation
 
-### **AI Intelligence**:
+### **automation Intelligence**:
 - **Sales Acceleration**: 87% accurate lead scoring
 - **Predictive Analytics**: €2.85M Q2 revenue forecast  
 - **Market Intelligence**: German market €1.2M opportunity identified
@@ -260,7 +260,7 @@ kubectl apply -f k8s-local-deployment.yaml
 2. **Partner Marketplace**: Try onboarding process
 3. **GDPR Compliance**: Verify EU compliance features
 4. **Language Switching**: Test French/German translations
-5. **AI Systems**: Explore predictive analytics and sales acceleration
+5. **automation Systems**: Explore predictive analytics and sales acceleration
 
 ### **THIS WEEK (Prepare Production):**
 1. **Validate locally**: Ensure all features work perfectly
@@ -291,7 +291,7 @@ npm run dev
 - ✅ **EU market readiness** with GDPR and multi-language
 - ✅ **Enterprise sales tools** for high-value clients
 - ✅ **Partner ecosystem** for scalable growth
-- ✅ **AI-powered acceleration** for competitive advantage
+- ✅ **software-assisted acceleration** for competitive advantage
 
 ---
 

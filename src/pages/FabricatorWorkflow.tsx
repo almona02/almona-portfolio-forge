@@ -245,7 +245,7 @@ export const FabricatorWorkflow: React.FC = () => {
   const { state: workspaceState, dispatch: workspaceDispatch } = useFabricatorWorkspace();
   const [activeTab, setActiveTab] = useState(navState?.startTab || 'measuring');
   const { visibleTabs } = usePersona();
-  
+
   // Authority Foundation: Operation Mode
   const { mode, workshopId, isLoading: modeLoading } = useOperationMode();
 
@@ -272,7 +272,7 @@ export const FabricatorWorkflow: React.FC = () => {
   const [showClientPortal, setShowClientPortal] = useState(false);
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const [showMobilePanel, setShowMobilePanel] = useState(false);
-  
+
   // YDT Business Layer for intelligence-driven decisions
   const ydtBusinessLayer = useMemo(() => new YDTBusinessLayer(), []);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
@@ -309,7 +309,7 @@ export const FabricatorWorkflow: React.FC = () => {
   // Performance tracking: Track component mount
   useEffect(() => {
     trackFabricatorLoadTime();
-    
+
     // Mark as ready when workspace is fully loaded (inventory + initial project state)
     const checkReady = () => {
       if (!isLoadingInventory && (inventory.length > 0 || inventoryError)) {
@@ -319,7 +319,7 @@ export const FabricatorWorkflow: React.FC = () => {
         }, 100);
       }
     };
-    
+
     checkReady();
   }, [isLoadingInventory, inventory.length, inventoryError]);
 
@@ -451,7 +451,7 @@ export const FabricatorWorkflow: React.FC = () => {
     ];
     return allWorkflowSteps.filter(step => visibleTabs.includes(step.id));
   }, [visibleTabs, t]);
-  
+
   // Screen reader announcements for state changes - defined first to avoid TDZ error
   const announceStateChange = useCallback((message: string) => {
     const announcement = document.createElement('div');
@@ -494,9 +494,9 @@ export const FabricatorWorkflow: React.FC = () => {
       // Ctrl/Cmd + Arrow keys for tab navigation
       if ((e.ctrlKey || e.metaKey) && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
         e.preventDefault();
-        
+
         const tabIndex = workflowSteps.findIndex(step => step.id === activeTab);
-        
+
         if (e.key === 'ArrowRight' && tabIndex < workflowSteps.length - 1) {
           const nextTab = workflowSteps[tabIndex + 1].id;
           setActiveTab(nextTab);
@@ -509,7 +509,7 @@ export const FabricatorWorkflow: React.FC = () => {
           announceStateChange(`Navigated to ${workflowSteps[tabIndex - 1].name} tab`);
         }
       }
-      
+
       // Ctrl/Cmd + D for detail toggle (if preset selector is visible)
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         e.preventDefault();
@@ -580,7 +580,7 @@ export const FabricatorWorkflow: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const newProject = params.get('new');
-    
+
     // Check for new=true query parameter to open wizard
     if (newProject === 'true') {
       setShowProjectWizard(true);
@@ -626,15 +626,15 @@ export const FabricatorWorkflow: React.FC = () => {
     const loadInventory = async () => {
       setIsLoadingInventory(true);
       setInventoryError(null);
-      
+
       // Track inventory load performance
       const inventoryTracker = trackInventoryLoad();
-      
+
       try {
         // Simulate async loading
         await new Promise(resolve => setTimeout(resolve, 500));
         const legacyData = parseLegacyOrderData();
-        
+
         if (!legacyData.profiles || legacyData.profiles.length === 0) {
           throw new Error('No profiles found in inventory data');
         }
@@ -709,7 +709,7 @@ export const FabricatorWorkflow: React.FC = () => {
         if (!components || components.length === 0) {
           throw new Error('No components provided for cutting plan generation');
         }
-        
+
         if (!profiles || profiles.length === 0) {
           throw new Error('No profiles available in inventory');
         }
@@ -765,7 +765,7 @@ export const FabricatorWorkflow: React.FC = () => {
         // EnhancedAdaptiveSolver — Tier-3 manufacturing truth only (greedy | linear)
         const adaptiveSolver = new EnhancedAdaptiveSolver(solverConfig);
         const startTime = performance.now();
-        
+
         const result = await adaptiveSolver.solveEnhanced(
           {
             components, // Original components with raw cuttingLengths
@@ -783,9 +783,9 @@ export const FabricatorWorkflow: React.FC = () => {
             },
           }
         );
-        
+
         const solveTime = performance.now() - startTime;
-        
+
         // Collect training data for ML model (access protected methods via typed assertion)
         try {
           type SolverWithTraining = { analyzeComplexity(j: CuttingJob, p: Profile[]): JobComplexity; selectAlgorithm(c: JobComplexity): 'greedy' | 'linear' | 'genetic' };
@@ -855,10 +855,10 @@ export const FabricatorWorkflow: React.FC = () => {
         if (!projectMeta) {
           throw new Error('Please create a project header before measuring.');
         }
-        
+
         const width = Number(data.width);
         const height = Number(data.height);
-        
+
         if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
           throw new Error('Invalid measurement data provided');
         }
@@ -964,7 +964,7 @@ export const FabricatorWorkflow: React.FC = () => {
         // Don't require components at measurement stage - they'll be added in design phase
         // Technical validation
         const validation = validateProject(newProject, false);
-        
+
         // YDT Business validation (if workshop context available)
         // Note: currentWorkshop is not yet in FabricatorWorkspaceState
         // For now, skip YDT validation or use mode/workshopId from useOperationMode
@@ -976,12 +976,12 @@ export const FabricatorWorkflow: React.FC = () => {
               material: newProject.systemPackId || 'aluminum',
               estimatedCost: undefined,
             });
-            
+
             // Add YDT recommendations to validation warnings if any
             if (ydtValidation.recommendations.length > 0) {
               console.log('YDT Recommendations:', ydtValidation.recommendations);
             }
-            
+
             // Log YDT verdict
             if (ydtValidation.ydtVerdict === 'REJECTED') {
               console.warn('YDT Business Validation: Project rejected', ydtValidation.ydtReason);
@@ -999,7 +999,7 @@ export const FabricatorWorkflow: React.FC = () => {
             .join(', ');
           throw new Error(errorMessages);
         }
-        
+
         workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: newProject });
         workspaceDispatch({ type: 'SET_MEASUREMENT_DATA', payload: data });
         addOrUpdateJob(newProject);
@@ -1178,7 +1178,7 @@ export const FabricatorWorkflow: React.FC = () => {
         inventory,
         mode
       );
-      
+
       if (!constitutionalValidation.isValid) {
         // Show constitutional errors with consequences
         const enhancedErrors = enhanceValidationWithConsequences(
@@ -1187,7 +1187,7 @@ export const FabricatorWorkflow: React.FC = () => {
             message: e.message
           }))
         );
-        
+
         const errorMessages = enhancedErrors
           .map(e => {
             const consequences = e.consequences && e.consequences.length > 0
@@ -1196,7 +1196,7 @@ export const FabricatorWorkflow: React.FC = () => {
             return `• ${e.message}${consequences}`;
           })
           .join('\n');
-        
+
         setProjectError(
           `Constitutional Compliance Failed:\n${errorMessages}`
         );
@@ -1314,7 +1314,7 @@ export const FabricatorWorkflow: React.FC = () => {
               const errorObj = { field: 'project', message: projectError };
               const enhanced = enhanceValidationWithConsequences([errorObj]);
               const consequences = enhanced[0]?.consequences || [];
-              
+
               return (
                 <LazyMotionDiv
                   initial={{ opacity: 0, y: -20 }}
@@ -1354,7 +1354,7 @@ export const FabricatorWorkflow: React.FC = () => {
             )}
           </LazyAnimatePresence>
 
-          {/* Header Section - FABRICATOR PRO / AI WORKFLOW v4.0 */}
+          {/* Header Section - FABRICATOR PRO / automation WORKFLOW v4.0 */}
           <LazyMotionDiv
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1373,14 +1373,14 @@ export const FabricatorWorkflow: React.FC = () => {
                       {t('fabricator:workflow.header.fabricator_pro', 'FABRICATOR PRO')}
                     </div>
                     <h1 className="typography-h1 md:text-4xl lg:text-5xl bg-gradient-to-r from-amber-400 via-red-400 to-red-500 bg-clip-text text-transparent">
-                      {t('fabricator:workflow.header.ai_workflow', 'AI WORKFLOW v4.0')}
+                      {t('fabricator:workflow.header.ai_workflow', 'FABRICATION WORKFLOW v4.0')}
                     </h1>
                   </div>
                 </div>
                 <p className="text-sm md:text-base text-gray-300 max-w-xl leading-relaxed">
                   {t(
                     'fabricator:workflow.tagline',
-                    'Smart aluminum & UPVC fabrication pipeline: Smart Measuring, Technical Design, AI Optimization, Inventory, Production, Quality Control.',
+                    'Smart aluminum & UPVC fabrication pipeline: Smart Measuring, Technical Design, Stock Optimization, Inventory, Production, Quality Control.',
                   )}
                 </p>
                 {activeWorkshopLabel && (
@@ -1518,7 +1518,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   )}
                 </p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 {projectMeta && !currentProject && (
                   <div className="px-3 py-2 rounded-lg bg-emerald-900/20 border border-emerald-500/50 text-[11px] text-emerald-100">
@@ -1672,7 +1672,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     <div>
                       Smart Measuring Interface
                       <CardDescription className="text-xl text-gray-300 mt-2">
-                        Digital measurement capture with AI-assisted dimension verification and validation
+                        Digital measurement capture with software-assisted dimension verification and validation
                       </CardDescription>
                     </div>
                   </CardTitle>
@@ -2002,7 +2002,7 @@ export const FabricatorWorkflow: React.FC = () => {
                             )}
                           </div>
                         </div>
-                        
+
                         {/* Calibration Wizard removed from Engineering Bay - reduces noise */}
                         {/* Calibration is available in Profile Management / Inventory tabs where it's more appropriate */}
                       </>
@@ -2088,7 +2088,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     </div>
                     <div className="flex-1">
                       <div>
-                        {t('cutting_optimization.title', 'AI-Powered Cutting Optimization')}
+                        {t('cutting_optimization.title', 'software-assisted Cutting Optimization')}
                         <CardDescription className="text-lg text-gray-300 mt-1">
                           {t('cutting_optimization.description', 'Advanced algorithms for material optimization, waste reduction, and cost efficiency')}
                         </CardDescription>
@@ -2486,7 +2486,7 @@ export const FabricatorWorkflow: React.FC = () => {
                 setProjectMeta(newProjectMeta);
                 setUseEgyptWizard(true);
                 setShowProjectWizard(false);
-                
+
                 // CREATE AND PERSIST THE PROJECT as a WindowUnit
                 const newProject: WindowUnit = {
                   id: `project-${Date.now()}-${Math.random().toString(36).substring(7)}`,
@@ -2518,19 +2518,19 @@ export const FabricatorWorkflow: React.FC = () => {
                     openingType: meta.openingType,
                   },
                 };
-                
+
                 // Save to jobs store (this will also persist to Supabase in the background)
                 addOrUpdateJob(newProject);
-                
+
                 // Set as current project in workspace
                 workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: newProject });
-                
+
                 // Set as selected job
                 setSelectedJob(newProject.id);
-                
+
                 // Navigate directly to drafting center (gold tier DraftingWorkbench) after project creation
                 navigate('/fabricator/workflow/engineering-bay?mode=drafting');
-                
+
                 // Show success message
                 toast.success(t('fabricator:project.created', 'Project created successfully. Opening drafting center...'));
               }}
@@ -2580,7 +2580,7 @@ export const FabricatorWorkflow: React.FC = () => {
               {
                 id: 'measuring-tab',
                 title: 'Start Here: Smart Measuring',
-                description: 'Click here to begin measuring window dimensions using our AI-powered tools.',
+                description: 'Click here to begin measuring window dimensions using our software-assisted tools.',
                 targetSelector: '[data-tutorial="measuring-tab"]',
                 trigger: 'after-delay',
                 delay: 5000,
@@ -2589,8 +2589,8 @@ export const FabricatorWorkflow: React.FC = () => {
               },
               {
                 id: 'design-tab',
-                title: 'AI-Powered Design',
-                description: 'After measuring, use this tab to design your window configuration with AI assistance.',
+                title: 'Assisted Design',
+                description: 'After measuring, use this tab to design your window configuration with automation assistance.',
                 targetSelector: '[data-tutorial="design-tab"]',
                 trigger: 'after-delay',
                 delay: 3000,

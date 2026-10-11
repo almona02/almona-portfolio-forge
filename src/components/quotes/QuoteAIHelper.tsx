@@ -28,7 +28,7 @@ export const QuoteAIHelper: React.FC<QuoteAIHelperProps> = ({
       setLoading(true);
       const timer = setTimeout(() => {
         const keywords = projectDescription.toLowerCase().split(/\s+/);
-        
+
         const matchedProducts = yilmazMachinesLegacy.filter(product =>
           keywords.some(keyword => 
             product.name.toLowerCase().includes(keyword) ||
@@ -69,7 +69,7 @@ export const QuoteAIHelper: React.FC<QuoteAIHelperProps> = ({
     <Card className="bg-almona-dark border-almona-light/20">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <span className="text-gradient-orange">AI Suggestions</span>
+          <span className="text-gradient-orange">automation Suggestions</span>
           <Badge variant="outline" className="border-amber-500 text-amber-500">
             Beta
           </Badge>

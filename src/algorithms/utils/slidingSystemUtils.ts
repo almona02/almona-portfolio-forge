@@ -2,7 +2,7 @@
  * Sliding System Utilities
  * 
  * Handles internal divider generation for sliding vs non-sliding window systems.
- * Constitutional: Pure deterministic logic, no ML/AI.
+ * Constitutional: Pure deterministic logic, no advisory inference.
  */
 
 import type { Profile, WindowComponent, WindowGrid } from '@/types/fabricator';

@@ -84,14 +84,14 @@
 - **Pneumatic Cylinders**: C1-C8 (Clamps, supports)
 
 **Processing Method**:
-1. **Vision AI** (Gemini Pro Vision) - Primary method for component extraction
-2. **OCR Fallback** - Text-based extraction if Vision AI unavailable
+1. **Vision automation** (support service Pro Vision) - Primary method for component extraction
+2. **OCR Fallback** - Text-based extraction if Vision automation unavailable
 3. **Pattern Matching** - Component ID patterns (K, M, Q, V, C prefixes)
 
 **Confidence Target**: 85%+ for initial pass (Gold Tier 99.6%+ after human validation)
 
 **Next Steps**:
-1. Configure Google Gemini API key
+1. Configure Google support service API key
 2. Process wiring diagram PDF
 3. Extract electrical components
 4. Extract pneumatic components
@@ -255,7 +255,7 @@ Confidence: 20% (general knowledge only, no component-level diagnosis)
 
 1. **Wiring Diagram Not Processed** (Priority: CRITICAL)
    - **Impact**: Cannot map components, connections, circuits
-   - **Solution**: Process `1-AIM 7410-7510 3P-v8.pdf` with Vision AI
+   - **Solution**: Process `1-AIM 7410-7510 3P-v8.pdf` with Vision automation
    - **Timeline**: Week 2, Day 1-2
 
 2. **Component Knowledge Graph Not Built** (Priority: CRITICAL)
@@ -311,7 +311,7 @@ Confidence: 20% (general knowledge only, no component-level diagnosis)
 
 1. **IMMEDIATE** (This Week):
    - ✅ Fix axis count error (DONE)
-   - 🔄 Process wiring diagram with Vision AI
+   - 🔄 Process wiring diagram with Vision automation
    - 🔄 Build component knowledge graph
    - 🔄 Map alarm codes to components
 

@@ -104,7 +104,7 @@ return combined.filter((pack) => {
 - ✅ Proper ARIA attributes for accessibility
 - ✅ Keyboard event handling (Enter/Space)
 - ✅ Focus styles for accessibility
-- ✅ Cursor pointer for visual feedback
+- ✅ development tool pointer for visual feedback
 
 ---
 

@@ -7,7 +7,7 @@ Calculates Moment of Inertia (Ix, Iy) requirements based on
 wind load and glass weight.
 
 The Gap: Optimization is great, but is the window safe?
-Logikal wins because it calculates static loads.
+reference system wins because it calculates static loads.
 
 The Prestige Solution: Integrate Engineering Physics directly
 into the design flow. Calculate required structural capacity

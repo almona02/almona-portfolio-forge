@@ -54,14 +54,14 @@ export function useCollaborativeDrafting({
   const [isConnected, setIsConnected] = useState(false);
   const [users, setUsers] = useState<CollaborativeUser[]>([]);
   const [error, setError] = useState<string | null>(null);
-  
+
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
   const rateLimiter = useRef(new MessageRateLimiter(100, 60000)); // 100 messages per minute
   const maxMessageSize = 10 * 1024 * 1024; // 10MB
-  
+
   // Generate user color based on ID
   const getUserColor = useCallback((id: string): string => {
     const colors = [
@@ -81,39 +81,39 @@ export function useCollaborativeDrafting({
   // Connect to WebSocket server
   const connect = useCallback(() => {
     if (!enabled) return;
-    
+
     // Validate room ID
     if (!validateRoomId(roomId)) {
       setError('Invalid room ID format');
       return;
     }
-    
+
     // Validate user ID
     if (!validateUserId(userId)) {
       setError('Invalid user ID format');
       return;
     }
-    
+
     // Sanitize user name
     const sanitizedUserName = sanitizeUserName(userName);
-    
+
     try {
       // In production, use actual WebSocket server URL
       const wsUrl = import.meta.env.VITE_WS_URL || `ws://localhost:8080/drafting/${roomId}`;
-      
+
       // Validate URL format (basic check)
       if (!wsUrl.startsWith('ws://') && !wsUrl.startsWith('wss://')) {
         setError('Invalid WebSocket URL format');
         return;
       }
-      
+
       const ws = new WebSocket(wsUrl);
-      
+
       ws.onopen = () => {
         setIsConnected(true);
         setError(null);
         reconnectAttempts.current = 0;
-        
+
         // Send join message (with validation)
         const joinMessage = {
           type: 'user_join' as const,
@@ -122,7 +122,7 @@ export function useCollaborativeDrafting({
           timestamp: Date.now(),
           data: { color: getUserColor(userId) }
         };
-        
+
         // Check rate limit
         const limiter = rateLimiter.current;
         if (!limiter.checkLimit(userId)) {
@@ -130,9 +130,9 @@ export function useCollaborativeDrafting({
           ws.close();
           return;
         }
-        
+
         ws.send(JSON.stringify(joinMessage));
-        
+
         logDraftingAction(
           'collaborative_connected',
           { roomId, userId },
@@ -140,7 +140,7 @@ export function useCollaborativeDrafting({
           'CHECKPOINT-COLLAB-CONNECT'
         );
       };
-      
+
       ws.onmessage = (event) => {
         try {
           // Check message size
@@ -155,26 +155,26 @@ export function useCollaborativeDrafting({
               return;
             }
           }
-          
+
           // Safe JSON parse with validation
           const rawMessage = safeJsonParse<CollaborativeMessage>(event.data as string, maxMessageSize);
-          
+
           // Validate message structure
           const validation = validateWebSocketMessage(rawMessage);
           if (!validation.valid) {
             console.error('Invalid WebSocket message:', validation.error);
             return;
           }
-          
+
           const message = validation.sanitized!;
-          
+
           // Check rate limit
           const limiter = rateLimiter.current;
           if (!limiter.checkLimit(message.userId)) {
             console.warn('Rate limit exceeded for user:', message.userId);
             return;
           }
-          
+
           switch (message.type) {
             case 'user_join':
               if (message.userId !== userId) {
@@ -188,23 +188,23 @@ export function useCollaborativeDrafting({
                 onUserJoin?.(newUser);
               }
               break;
-              
+
             case 'user_leave':
               setUsers(prev => prev.filter(u => u.id !== message.userId));
               onUserLeave?.(message.userId);
               break;
-              
+
             case 'state_sync':
               if (message.userId !== userId && onStateUpdate) {
                 onStateUpdate((message.data as { state: DraftingState }).state);
               }
               break;
-              
+
             case 'cursor_move': {
                 const dataWithCursor = message.data as { cursor?: { x: number; y: number } };
                 if (message.userId !== userId && dataWithCursor?.cursor) {
                 const cursor = dataWithCursor.cursor;
-                // Validate cursor coordinates
+                // Validate pointer coordinates
                 if (typeof cursor.x === 'number' && isFinite(cursor.x) &&
                     typeof cursor.y === 'number' && isFinite(cursor.y) &&
                     cursor.x >= -1000000 && cursor.x <= 1000000 &&
@@ -218,7 +218,7 @@ export function useCollaborativeDrafting({
               }
               }
               break;
-              
+
             case 'selection_change': {
                 const dataWithSel = message.data as { selection?: number | null };
                 if (message.userId !== userId && dataWithSel?.selection !== undefined) {
@@ -235,7 +235,7 @@ export function useCollaborativeDrafting({
               }
               }
               break;
-              
+
             case 'geometry_add':
             case 'geometry_update':
             case 'geometry_delete':
@@ -255,21 +255,21 @@ export function useCollaborativeDrafting({
           console.error('Error parsing WebSocket message:', err);
         }
       };
-      
+
       ws.onerror = (error) => {
         console.error('WebSocket error:', error);
         setError('Connection error');
         setIsConnected(false);
       };
-      
+
       ws.onclose = () => {
         setIsConnected(false);
-        
+
         // Attempt to reconnect
         if (reconnectAttempts.current < maxReconnectAttempts) {
           reconnectAttempts.current++;
           const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
-          
+
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
           }, delay);
@@ -277,7 +277,7 @@ export function useCollaborativeDrafting({
           setError('Failed to connect after multiple attempts');
         }
       };
-      
+
       wsRef.current = ws;
     } catch (err) {
       console.error('Error creating WebSocket:', err);
@@ -307,22 +307,22 @@ export function useCollaborativeDrafting({
         console.warn('Rate limit exceeded, skipping state broadcast');
         return;
       }
-      
+
       const message = {
         type: 'state_sync' as const,
         userId,
         timestamp: Date.now(),
         data: { state }
       };
-      
+
       const messageString = JSON.stringify(message);
-      
+
       // Check message size
       if (messageString.length > maxMessageSize) {
         console.warn('State message too large, skipping broadcast');
         return;
       }
-      
+
       try {
         wsRef.current.send(messageString);
       } catch (error) {
@@ -331,22 +331,22 @@ export function useCollaborativeDrafting({
     }
   }, [userId, maxMessageSize]);
 
-  // Send cursor position (with validation)
+  // Send pointer position (with validation)
   const broadcastCursor = useCallback((cursor: { x: number; y: number }) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      // Validate cursor coordinates
+      // Validate pointer coordinates
       if (typeof cursor.x !== 'number' || !isFinite(cursor.x) ||
           typeof cursor.y !== 'number' || !isFinite(cursor.y) ||
           cursor.x < -1000000 || cursor.x > 1000000 ||
           cursor.y < -1000000 || cursor.y > 1000000) {
-        return; // Invalid cursor, don't send
+        return; // Invalid pointer, don't send
       }
-      
-      // Check rate limit (cursor updates can be frequent)
+
+      // Check rate limit (pointer updates can be frequent)
       if (!rateLimiter.current.checkLimit(`${userId}-cursor`)) {
         return; // Rate limited, skip
       }
-      
+
       try {
         wsRef.current.send(JSON.stringify({
           type: 'cursor_move',
@@ -355,7 +355,7 @@ export function useCollaborativeDrafting({
           data: { cursor: { x: cursor.x, y: cursor.y } }
         }));
       } catch (error) {
-        console.error('Error sending cursor update:', error);
+        console.error('Error sending pointer update:', error);
       }
     }
   }, [userId]);
@@ -369,7 +369,7 @@ export function useCollaborativeDrafting({
            selection < 0 || !Number.isInteger(selection))) {
         return; // Invalid selection, don't send
       }
-      
+
       try {
         wsRef.current.send(JSON.stringify({
           type: 'selection_change',
@@ -391,22 +391,22 @@ export function useCollaborativeDrafting({
         console.warn('Rate limit exceeded, skipping geometry change broadcast');
         return;
       }
-      
+
       const message = {
         type,
         userId,
         timestamp: Date.now(),
         data
       };
-      
+
       const messageString = JSON.stringify(message);
-      
+
       // Check message size
       if (messageString.length > maxMessageSize) {
         console.warn('Geometry change message too large, skipping broadcast');
         return;
       }
-      
+
       try {
         wsRef.current.send(messageString);
       } catch (error) {
@@ -420,14 +420,14 @@ export function useCollaborativeDrafting({
   const disconnectRef = useRef(disconnect);
   connectRef.current = connect;
   disconnectRef.current = disconnect;
-  
+
   useEffect(() => {
     if (enabled) {
       connectRef.current();
     } else {
       disconnectRef.current();
     }
-    
+
     return () => {
       disconnectRef.current();
     };

@@ -112,7 +112,7 @@ PR #32:
 DRAFT / DO NOT MERGE
 ```
 
-This checkpoint establishes the controlled baseline, the stock-isolation rules, the intake gate, and the classification logic, and ingests the **complete controlled triplicate**. No fourth solve is authorized. The three controlled solves require the licensed DoWin application on the operator PC and cannot be produced from this repository. No topology, hash, or provenance value below is invented.
+This checkpoint establishes the controlled baseline, the stock-isolation rules, the intake gate, and the classification logic, and ingests the **complete controlled triplicate**. No fourth solve is authorized. The three controlled solves require the licensed reference system application on the operator PC and cannot be produced from this repository. No topology, hash, or provenance value below is invented.
 
 ---
 
@@ -337,7 +337,7 @@ Total 21 pieces. Encoded as `FP024C3_EXPECTED_FIXTURE_ROWS` / `FP024C3_EXPECTED_
 - present-but-different layer → `GEOMETRY_OR_SYSTEM_INPUT_DIFFERENCE`, that run stops
 - absent layer → `UNPROVEN`
 
-These are transcriptions of previously measured DoWin output. They are **not** a formula. No `+3` / `+7` / Welding-Waste / Saw / Trim expression is encoded anywhere in the evidence code.
+These are transcriptions of previously measured reference system output. They are **not** a formula. No `+3` / `+7` / Welding-Waste / Saw / Trim expression is encoded anywhere in the evidence code.
 
 ---
 
@@ -373,7 +373,7 @@ Expected DC-600 machine rows (transcription target, not a claim): KANAT V 1433 �
 | Bar-by-bar topology | 5 patterns / 6 bars — transcribed below |
 | Pre-run stock check | **PASS** — live re-read, byte-identical to V2 `c8626da5…` |
 | Post-run stock check | **PASS** — byte-identical to V2 |
-| Post-export stock check | **PASS** — byte-identical to V2 after a full DoWin restart (pid 2536 → 31040) |
+| Post-export stock check | **PASS** — byte-identical to V2 after a full reference system restart (pid 2536 → 31040) |
 | Warehouse immutability | **IMMUTABLE_VERIFIED** — UI authoritative + zero `ExecuteStockUpdateCoreAsync` lines |
 
 Reported result: yield **66.2 %**, 6 stock bars used, **0 unplaced**, total offcut **12 559 mm**.
@@ -408,9 +408,9 @@ The RUN_A cutting plan cuts **24 pieces where the design requires 21**.
 
 Confirmed three independent ways:
 
-1. **Arithmetic** — plan consumes 24 812 mm of piece length against 20 564 mm required; 24 812 / 37 500 = 66.2 %, matching DoWin's own reported yield exactly.
+1. **Arithmetic** — plan consumes 24 812 mm of piece length against 20 564 mm required; 24 812 / 37 500 = 66.2 %, matching reference system's own reported yield exactly.
 2. **Visual** — the ORTA bar strip renders `1416 | 1416 | 1416 | 1416 | Remaining Piece` in the same frame as *Required Parts Quantity: 1*.
-3. **DoWin's own diagnostic** — the DC-600 export emitted `3 piece(s) in the optimization plan could not be matched to the detailed production list`.
+3. **reference system's own diagnostic** — the DC-600 export emitted `3 piece(s) in the optimization plan could not be matched to the detailed production list`.
 
 ### Why this matters, and where it stops
 
@@ -428,7 +428,7 @@ It also means **yield is not comparable across runs**. RUN_A's 66.2 % against Fr
 
 ---
 
-## DoWin solver internals (observed, not proven deterministic)
+## reference system solver internals (observed, not proven deterministic)
 
 The RUN_A log exposes the solve pipeline for the first time:
 
@@ -438,7 +438,7 @@ Tamsayılı Çözücü (MIP Solver) — Maliyet ve Stok Limiti Odaklı  → OPTI
 TAVLAMA BENZETİMİ (simulated annealing), MaxIter 210/220, Sıcaklık 100
 ```
 
-Simulated annealing is a **stochastic metaheuristic**. This is the first concrete mechanism by which DoWin could legitimately return different topologies for identical inputs. No seed is logged and no determinism guarantee is documented, so whether DoWin seeds it reproducibly is **UNPROVEN** — and that is precisely what the controlled triplicate is designed to answer.
+Simulated annealing is a **stochastic metaheuristic**. This is the first concrete mechanism by which reference system could legitimately return different topologies for identical inputs. No seed is logged and no determinism guarantee is documented, so whether reference system seeds it reproducibly is **UNPROVEN** — and that is precisely what the controlled triplicate is designed to answer.
 
 RUN_A logged a **fourth** MIP stage at `Toplam Maliyet: 6.50` that is absent from both Fresh A and the stray Id=8 run. Recorded as an observation only.
 
@@ -457,7 +457,7 @@ RUN_A logged a **fourth** MIP stage at `Toplam Maliyet: 6.50` that is absent fro
 | Machine | DC-600 double head cutting machine; DC-550 SKH globally enabled |
 | Artifact hashes | Design Preview `c3626e4b…` / Labels `2ee33658…` / Optimization `4c908def…` / DC-600 `.dw` `25734a04…` |
 | Pre-run stock check | **PASS** — live re-read after panel reload (`SERVICE_INIT` 01:25:37), byte-identical to V2 |
-| Post-export stock check | **PASS** — byte-identical to V2 after a full DoWin restart (session `a1377777268a`) |
+| Post-export stock check | **PASS** — byte-identical to V2 after a full reference system restart (session `a1377777268a`) |
 | Stock Update modal | **SHOWN**; response **NO** |
 | Warehouse immutability | **IMMUTABLE_VERIFIED** — UI authoritative + zero `ExecuteStockUpdateCoreAsync` lines |
 
@@ -556,7 +556,7 @@ Both runs allocated **two** CITA bars at the same cost. The divergence is theref
 
 *Recorded after RUN_B, resolved after RUN_C. Retained for the audit trail.*
 
-Only the CITA and ORTA bar strips were captured for RUN_A, so the within-bar strip order for its KANAT and KASA bars was never measured; the recorded order came from the asdd baseline convention. After RUN_B this was carried as an open limitation, since RUN_B showed DoWin uses no single rendering convention.
+Only the CITA and ORTA bar strips were captured for RUN_A, so the within-bar strip order for its KANAT and KASA bars was never measured; the recorded order came from the asdd baseline convention. After RUN_B this was carried as an open limitation, since RUN_B showed reference system uses no single rendering convention.
 
 RUN_C resolves it: the strip order is **presentation only** and is not the machine cut sequence — see *The bar layout strip is not the machine cut sequence* below. An uncaptured strip order therefore cannot affect any verdict, and this limitation is closed rather than merely mitigated.
 
@@ -761,7 +761,7 @@ All three runs:
 | Pieces | 21 | 24 | +3 |
 | ORTA-KAYIT-70 1416 mm | 1 | 4 | +3 (4248 mm) |
 
-Identical surplus signature in every run, with the identical DoWin warning `3 piece(s) in the optimization plan could not be matched to the detailed production list.`
+Identical surplus signature in every run, with the identical reference system warning `3 piece(s) in the optimization plan could not be matched to the detailed production list.`
 
 ```text
 OPTIMIZATION_REQUIRED_PARTS_CONSERVATION_VIOLATION
@@ -974,8 +974,8 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 - The topology divergence is **observed but unexplained**. It is confined to CITA-20 intra-bar assignment after an identical MIP allocation in all three runs. Localisation after bar-count allocation is `SUPPORTED`, not `PROVEN` — the logs expose the allocation and the annealing invocation but not the assignment step's internal state.
 - **Three samples is a small sample.** Two topologies were seen; nothing here bounds how many exist, nor their relative frequency. `X / Y / X` is an observed sequence, not a distribution.
 - The over-production has **no proven cause**. It is repeatable across all three measured-identical runs and is not correlated with the observed stochastic CITA topology variation, which supports a deterministic or upstream conservation defect — but root cause remains `UNPROVEN`. Three identical outcomes make a stochastic explanation unsupported and increasingly unlikely; they do not mathematically exclude it. The ORTA stock limit lifting from 0 to 100 remains a candidate given the cost-and-stock-limit solver, but testing it requires changing stock, which this protocol forbids. Next gate: **FP-027 — Optimization Required-Parts Conservation Forensics**, opened as forensics, not fixed.
-- DoWin's solver includes simulated annealing, it operates exactly where the divergence is localised, and no seed is exposed in any run. That makes a stochastic cause plausible and consistent with the evidence. It is **not** proven, and it is not the only candidate: because one input axis is unproven, an unobserved input difference remains a live alternative explanation. Authority stays `POSSIBLE_NONDETERMINISTIC_MECHANISM`.
-- The offcut/remnant **inventory** axis has no evidence surface, so complete input equivalence remains `UNPROVEN` after three valid runs — this is precisely what caps the verdict. RUN_C inspected the solver's own Stock Items panel, which is the list it actually consumes, and found whole-bar rows only, with `Add Offcuts to Stock` greyed pre-solve. That is the strongest available statement and it is still not proof of absence: DoWin exposes no remnant surface and no row ids. The offcut **policy** surface is now known (Reusable Offcut Settings, Minimum Offcut Length 500 mm, with *Add Offcuts to Stock* as a separate explicit ribbon action — which explains why the proven 22:17:20 stock write created no remnant rows despite remainders far above 500 mm). Knowing the policy does not prove the inventory is empty; that axis stays `UNPROVEN`.
+- reference system's solver includes simulated annealing, it operates exactly where the divergence is localised, and no seed is exposed in any run. That makes a stochastic cause plausible and consistent with the evidence. It is **not** proven, and it is not the only candidate: because one input axis is unproven, an unobserved input difference remains a live alternative explanation. Authority stays `POSSIBLE_NONDETERMINISTIC_MECHANISM`.
+- The offcut/remnant **inventory** axis has no evidence surface, so complete input equivalence remains `UNPROVEN` after three valid runs — this is precisely what caps the verdict. RUN_C inspected the solver's own Stock Items panel, which is the list it actually consumes, and found whole-bar rows only, with `Add Offcuts to Stock` greyed pre-solve. That is the strongest available statement and it is still not proof of absence: reference system exposes no remnant surface and no row ids. The offcut **policy** surface is now known (Reusable Offcut Settings, Minimum Offcut Length 500 mm, with *Add Offcuts to Stock* as a separate explicit ribbon action — which explains why the proven 22:17:20 stock write created no remnant rows despite remainders far above 500 mm). Knowing the policy does not prove the inventory is empty; that axis stays `UNPROVEN`.
 - The user-visible trigger of the 22:17:20 warehouse write is now **resolved**: the post-export **Stock Update** dialog. Fresh A's `Yes` is inferred from the proven write plus the observed dialog, not directly observed; RUN_A's `No` arm is directly observed. See FP-024C.2.
 - The V2 source hash is a pre-run capture. Each run supplied its own contemporaneous pre- and post-run capture, all byte-identical to V2.
 - Machine-length equality was established by reading `Table1` from all three `.dw` files. The files themselves are licensed output and are **not** committed; only their SHA-256 values are recorded. The differing file hashes reflect the embedded project name, order number and label bitmap, not a length difference — which is why the comparison is column-by-column rather than hash-based.
@@ -984,7 +984,7 @@ Not committed: PDFs, `.dw`, MDB, screenshots, machine binaries. No decompilation
 - Production-plan "approved" versus "optimized" UI flags remain `UNPROVEN` because Production Status is not to be clicked.
 - Baseline V1 was invalidated by a manual stock edit before RUN_A existed. Nothing was measured against V1, so no result was lost — but the ORTA-0 side observation is not recoverable under V2.
 - The manual Stock Management edit path is **unlogged**. Warehouse drift between runs is therefore detectable only by contemporaneous UI capture, which is why the two-source check treats the log as supplementary. An unobserved manual edit between two runs would surface as `STOCK_STATE_MUTATED` at the next capture, not at the moment it happened.
-- `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` is proven for the observed path only and is not generalized to every manual edit surface in DoWin.
+- `MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED` is proven for the observed path only and is not generalized to every manual edit surface in reference system.
 
 ---
 

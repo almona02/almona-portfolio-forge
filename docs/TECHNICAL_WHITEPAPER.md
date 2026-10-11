@@ -8,7 +8,7 @@
 
 ### Abstract
 
-This paper details the technical architecture enabling **99.6-99.8% end-to-end accuracy** in aluminum and UPVC window fabrication. Through proprietary AI algorithms, Egyptian climate adaptation, and multi-brand CNC integration, the system reduces material waste by 40-60% while increasing production throughput by 300%.
+This paper details the technical architecture enabling **99.6-99.8% end-to-end accuracy** in aluminum and UPVC window fabrication. Through proprietary automation algorithms, Egyptian climate adaptation, and multi-brand CNC integration, the system reduces material waste by 40-60% while increasing production throughput by 300%.
 
 **Key Contributions:**
 - Self-learning feedback loop architecture (Define → Control → Calibrate → Reflect → Learn → Predict)
@@ -41,7 +41,7 @@ Import  Strategy   Adjust    Dashboard  Collect Suggest
 
 **Calibrate**: Workshop-specific K-factor adjustment (Egyptian climate compensation)
 - Visual calibration wizard with real-time simulation
-- CalibrationLearner AI suggests optimal K-factors
+- CalibrationLearner automation suggests optimal K-factors
 - Production feedback loop via QR-enabled labels
 
 **Reflect**: Personal analytics dashboard with performance metrics
@@ -134,18 +134,18 @@ const validateHardwareFit = (hardware, profile): ValidationResult => {
   if (hardware.dimensions.width > profile.chamberWidth) {
     return { isValid: false, error: 'Hardware too wide' };
   }
-  
+
   // 2. Load capacity check
   const estimatedSashWeight = calculateSashWeight(profile);
   if (estimatedSashWeight > hardware.maxLoadKg) {
     return { isValid: false, warning: 'Exceeds load capacity' };
   }
-  
+
   // 3. Egyptian security standards
   if (hardware.securityLevel < 2 && isCommercial) {
     return { isValid: true, warning: 'Consider security level 3' };
   }
-  
+
   return { isValid: true };
 };
 ```
@@ -163,13 +163,13 @@ def parse_dxf_with_egyptian_tolerance(file_path):
     """
     import ezdxf
     doc = ezdxf.readfile(file_path)
-    
+
     # Egyptian-specific adjustments:
     # 1. Convert imperial to metric with Egyptian rounding rules
     # 2. Apply 92° cutting angle (not 90°) for UPVC
     # 3. Add 3mm welding burn-off allowance
     # 4. Include 10mm steel reinforcement clearance
-    
+
     return {
         'accuracy': '99.5-99.8%',
         'egyptian_adapted': True,
@@ -208,7 +208,7 @@ def parse_dxf_with_egyptian_tolerance(file_path):
 └─────────────────────────────────────┘
 ```
 
-**After AI Optimization:**
+**After Stock Optimization:**
 ```
 ┌─────────────────────────────────────┐
 │ 6000mm stock                        │
@@ -282,7 +282,7 @@ class CNCMachineMonitor {
 
 ---
 
-## 5. AI/ML Core Architecture
+## 5. advisory inference Core Architecture
 
 ### 5.1 Algorithm Predictor Model
 
@@ -302,7 +302,7 @@ class CNCMachineMonitor {
 
 **Training Data**: 50,000+ real production jobs
 
-### 5.2 CalibrationLearner AI
+### 5.2 CalibrationLearner automation
 
 ```python
 class CalibrationLearner:
@@ -314,7 +314,7 @@ class CalibrationLearner:
             # Output: Optimal K-factor
             tf.keras.layers.Dense(1, activation='linear')
         ])
-    
+
     def predict_k_factor(self, workshop_data):
         # Returns optimal K-factor for specific workshop
         # Confidence score: 0.85-0.95 typical
@@ -437,7 +437,7 @@ const validateCompliance = (design) => {
 - **ROI: 733% | Payback: 0.4 months**
 
 **Customer Testimonial:**
-> "We achieved 99.7% accuracy on our YILMAZ ALM-6510. The AI optimization reduced our material waste from 18% to 8% - that's $12,000 saved monthly. First-time-right CNC files eliminated 3 days/month rework." - Ahmed Mahmoud, Owner, Cairo Aluminum Workshop
+> "We achieved 99.7% accuracy on our YILMAZ ALM-6510. The system optimization reduced our material waste from 18% to 8% - that's $12,000 saved monthly. First-time-right CNC files eliminated 3 days/month rework." - Ahmed Mahmoud, Owner, Cairo Aluminum Workshop
 
 ---
 
@@ -456,7 +456,7 @@ const validateCompliance = (design) => {
 ### Q3 2025
 - **International Standards Expansion**: EU, GCC building codes
 - **Blockchain Supply Chain**: Material traceability
-- **Predictive Maintenance AI**: Machine failure prediction
+- **Predictive Maintenance automation**: Machine failure prediction
 
 ---
 
@@ -465,7 +465,7 @@ const validateCompliance = (design) => {
 The Almona Portfolio Forge achieves 99.6-99.8% production accuracy through a combination of:
 
 1. **Egyptian-specific adaptations** (climate, materials, building codes)
-2. **Proprietary AI algorithms** (self-learning, continuous improvement)
+2. **Proprietary automation algorithms** (self-learning, continuous improvement)
 3. **Deep CNC integration** (multi-brand, machine-specific templates)
 4. **Comprehensive validation** (hardware compatibility, structural analysis)
 

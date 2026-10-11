@@ -71,7 +71,7 @@ export function ModelMeasurementTool({
   const [_labelColor, _setLabelColor] = useState('#ffffff');
   const [autoRotateSpeed, setAutoRotateSpeed] = useState(1);
   const [showGrid, setShowGrid] = useState(false);
-  
+
   const _canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
@@ -110,7 +110,7 @@ export function ModelMeasurementTool({
 
     setMeasurements(prev => [...prev, newMeasurement]);
     onMeasurementAdd?.(newMeasurement);
-    
+
     toast({
       title: "Measurement Added",
       description: `Distance: ${convertedDistance.toFixed(2)} ${unit}`,
@@ -120,7 +120,7 @@ export function ModelMeasurementTool({
   const removeMeasurement = useCallback((measurementId: string) => {
     setMeasurements(prev => prev.filter(m => m.id !== measurementId));
     onMeasurementRemove?.(measurementId);
-    
+
     if (selectedMeasurement === measurementId) {
       setSelectedMeasurement(null);
     }
@@ -370,7 +370,7 @@ export function ModelMeasurementTool({
                 <RotateCcw className="w-4 h-4" />
               </Button>
             </div>
-            
+
             {/* Auto Rotate Control */}
             <div className="flex gap-2">
               <Button
@@ -410,7 +410,7 @@ export function ModelMeasurementTool({
                 exit="exit"
               >
                 <h4 className="typography-h4 text-sm font-medium text-white">Display Settings</h4>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-300">Show Labels</span>
@@ -423,7 +423,7 @@ export function ModelMeasurementTool({
                       {showLabels ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                     </Button>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-300">Snap to Grid</span>
                     <Button
@@ -435,7 +435,7 @@ export function ModelMeasurementTool({
                       {snapToGrid ? <Zap className="w-4 h-4" /> : <Zap className="w-4 h-4 opacity-50" />}
                     </Button>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-300">Show Grid</span>
                     <Button
@@ -477,7 +477,7 @@ export function ModelMeasurementTool({
                   {measurements.length}
                 </Badge>
               </div>
-              
+
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 <LazyAnimatePresence>
                   {measurements.map((measurement) => (

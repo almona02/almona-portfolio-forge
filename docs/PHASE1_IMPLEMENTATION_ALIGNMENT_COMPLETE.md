@@ -27,7 +27,7 @@ Phase 1 design system implementation has been aligned with ComponentStates.md sp
 - ✅ **Active BG:** Updated to Amber 500 (#f59e0b) per tokens
 - ✅ **Active Scale:** Updated to `scale(0.99)` per spec
 - ✅ **Focus Ring:** Added focus-visible styles with amber-400 ring and slate-950 offset
-- ✅ **Disabled State:** Added explicit disabled styles (opacity-50, cursor-not-allowed)
+- ✅ **Disabled State:** Added explicit disabled styles (opacity-50, development tool-not-allowed)
 
 #### Secondary Button (`.btn-secondary`)
 **Changes Made:**

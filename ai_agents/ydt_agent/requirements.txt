@@ -16,7 +16,7 @@ poppler-utils  # System dependency - install separately on Windows
 pandas>=2.0.0
 numpy>=1.24.0
 
-# API Integration (for Gemini Vision)
+# API Integration (for support service Vision)
 google-generativeai>=0.3.0
 requests>=2.31.0
 

@@ -48,7 +48,7 @@ Cut List → CNC Export → Production
 
 **Total Steps:** Streamlined to 4-5 steps (BIM-driven)  
 **Primary Input:** BIM files (Revit/ArchiCAD)  
-**Output:** BOMs, cut lists, CNC files, audit trails  
+**Output:** BOMs, cut lists, CNC files, audit trails
 **Focus:** Windows, doors, curtain walls, facades, skylights, complex glazing
 
 ---
@@ -294,7 +294,7 @@ Cut List → CNC Export → Production
    - Generate BOM from geometry + system pack
    - Calculate parts, quantities, dimensions
    - Apply system pack rules (hardware, gaskets, seals)
-   - **Deterministic (Tier 3, zero AI)**
+   - **Deterministic (Tier 3, zero automation)**
 
 2. **Cut List Generation:**
    - Generate cut list from BOM
@@ -443,7 +443,7 @@ Cut List → CNC Export → Production
 
 **Improvements:**
 - ✅ Higher geometry accuracy (BIM-driven)
-- ✅ Deterministic BOM/cut list (zero AI inference)
+- ✅ Deterministic BOM/cut list (zero automation inference)
 - ✅ Constitutional compliance enforcement
 - ✅ Full audit trail (RealityOS)
 

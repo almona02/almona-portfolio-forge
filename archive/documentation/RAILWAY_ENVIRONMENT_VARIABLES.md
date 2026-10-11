@@ -17,7 +17,7 @@ NODE_ENV=production
 NODE_VERSION=20
 ```
 
-### 🤖 **AI Services (Optional but Recommended)**
+### 🤖 **automation Services (Optional but Recommended)**
 
 ```bash
 # Google Gemini AI
@@ -143,8 +143,8 @@ VITE_ENABLE_ANALYTICS=true
    - Project URL → `VITE_SUPABASE_URL`
    - anon/public key → `VITE_SUPABASE_KEY`
 
-### 2. **Google Gemini API Key**
-1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+### 2. **Google support service API Key**
+1. Go to [Google automation Studio](https://makersuite.google.com/app/apikey)
 2. Create a new API key
 3. Copy the key → `VITE_GEMINI_KEY`
 
@@ -179,7 +179,7 @@ VITE_ENABLE_ANALYTICS=true
 After deployment, verify these work:
 - [ ] Application loads without errors
 - [ ] Supabase connection works (check browser console)
-- [ ] AI features work (if Gemini key provided)
+- [ ] automation features work (if support service key provided)
 - [ ] Maps display correctly (if Maps key provided)
 - [ ] Analytics tracking works (if Analytics ID provided)
 
@@ -188,7 +188,7 @@ After deployment, verify these work:
 ### Common Issues:
 1. **Build Fails**: Check Node.js version is 20+
 2. **White Screen**: Verify Supabase environment variables
-3. **AI Features Don't Work**: Check Gemini API key
+3. **automation Features Don't Work**: Check support service API key
 4. **Maps Don't Load**: Verify Google Maps API key
 
 ### Debug Commands:

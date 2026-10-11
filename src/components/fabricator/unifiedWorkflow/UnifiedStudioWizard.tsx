@@ -10,7 +10,7 @@
  * 
  * Reuses patterns from OnboardingWizard and QuoteRequestStepper.
  * 
- * Constitutional: Deterministic wizard flow, no ML/AI
+ * Constitutional: Deterministic wizard flow, no advisory inference
  * Tier: 3 Protected Determinism
  */
 
@@ -103,7 +103,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
     try {
       // Mark as verified
       const finalData = { ...wizardData, verified: true };
-      
+
       // Save based on studio type
       if (studioType === 'system-pack' && finalData.systemPackData && userId) {
         // Build system pack from wizard data
@@ -116,7 +116,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
           hardware: finalData.systemPackData.hardware || [],
           machiningZones: finalData.micronConfig?.machiningZones || [],
         });
-        
+
         // Save to Supabase - cast to SystemPack type expected by addCustomSystemAsync
         await addCustomSystemAsync(systemPack as any, userId);
       } else if (studioType === 'profile' && finalData.profileData && userId) {
@@ -124,9 +124,9 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
         // This would be handled by ProfileTuningStudio's save logic
         console.log('Profile data ready for save:', finalData.profileData);
       }
-      
+
       await onComplete?.(finalData);
-      
+
       // Navigate to appropriate studio page
       if (studioType === 'profile') {
         navigate('/fabricator/profile-studio');
@@ -135,7 +135,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
       } else {
         navigate('/fabricator/tuning-studio');
       }
-      
+
       onOpenChange(false);
     } catch (error) {
       console.error('Error completing studio wizard:', error);
@@ -331,7 +331,7 @@ interface StepProps {
 const ImportStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId }) => {
   const [_importedProfiles, setImportedProfiles] = useState<any[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
-  
+
   // Dynamic import to avoid circular dependencies
   const DXFProfileImporter = React.lazy(() => 
     import('@/components/fabricator/smartscan/DXFProfileImporter').then(m => ({ default: m.DXFProfileImporter }))
@@ -381,7 +381,7 @@ const ImportStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId })
 const TuneStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId: _userId }) => {
   const [roles, setRoles] = useState<Record<string, any>>({});
   const [_linkedHardware, setLinkedHardware] = useState<any[]>([]);
-  
+
   // Dynamic imports
   const RoleTagger = React.lazy(() => 
     import('@/components/fabricator/smartscan/RoleTagger').then(m => ({ default: m.RoleTagger }))
@@ -623,7 +623,7 @@ const VerifyStep: React.FC<StepProps> = ({ data, onUpdate, studioType }) => {
             ))}
           </ul>
         </div>
-        
+
         {studioType === 'system-pack' && data.systemPackData && (
           <div className="p-4 bg-slate-800/50 rounded-lg border border-amber-600/20">
             <h4 className="text-amber-300 mb-2">System Pack Summary</h4>
@@ -634,7 +634,7 @@ const VerifyStep: React.FC<StepProps> = ({ data, onUpdate, studioType }) => {
             </ul>
           </div>
         )}
-        
+
         <Button
           onClick={handleVerify}
           disabled={!allValid}

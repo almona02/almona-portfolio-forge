@@ -16,7 +16,7 @@
 
 ### **Known Issues (Non-Blocking)**
 - ⚠️ LME website blocks scraping (403) - Use API alternative
-- ⚠️ Gemini not configured - Rule-based analysis working as fallback
+- ⚠️ support service not configured - Rule-based analysis working as fallback
 
 ---
 
@@ -37,7 +37,7 @@ For enhanced LLM analysis, add to `.env`:
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-**Note:** System works without Gemini using rule-based analysis.
+**Note:** System works without support service using rule-based analysis.
 
 ### **Step 3: Register API Router**
 

@@ -154,7 +154,7 @@ async def generate_invoice_event(request: InvoiceGenerationRequest):
 
 @router.post("/profitability/analyze")
 async def analyze_profitability(request: ProfitabilityAnalysisRequest):
-    """Returns AI-calculated margin and recommendations."""
+    """Returns automation-calculated margin and recommendations."""
     try:
         signals = {
             "material_requirements_kg": request.material_kg,

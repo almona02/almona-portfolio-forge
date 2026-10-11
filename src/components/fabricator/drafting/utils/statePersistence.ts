@@ -4,7 +4,7 @@
  * Gold-tier state persistence with versioning, auto-save intervals,
  * crash recovery, and session restoration for the Drafting Workbench.
  * 
- * Constitutional: Deterministic persistence, no ML/AI
+ * Constitutional: Deterministic persistence, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

@@ -128,23 +128,23 @@ All performance claims are based on production validation:
 
 ---
 
-## 4. AI/ML Capabilities Statement
+## 4. advisory inference Capabilities Statement
 
 ### 4.1 Bounded Intelligence Model
 
 **Official Statement**:
 
-> AI/ML components operate within bounded validation envelopes. All AI suggestions are advisory and must pass deterministic validation before acceptance. Intelligence is subordinate to deterministic authority.
+> advisory inference components operate within bounded validation envelopes. All automation suggestions are advisory and must pass deterministic validation before acceptance. Intelligence is subordinate to deterministic authority.
 
 **Technical Implementation**:
 - TensorFlow.js, ONNX Runtime, Google OR-Tools are used for optimization and prediction
-- All AI outputs are validated against deterministic constraints
+- All automation outputs are validated against deterministic constraints
 - No autonomous decision-making without human validation
-- Confidence scoring provided for all AI recommendations
+- Confidence scoring provided for all automation recommendations
 
-**Legal Position**: AI is a tool, not an autonomous agent. Human responsibility is preserved.
+**Legal Position**: The system is a tool, not an autonomous agent. Human responsibility is preserved.
 
-### 4.2 AI Accuracy Claims
+### 4.2 automation Accuracy Claims
 
 - **Algorithm Predictor**: 94% accuracy (validated on production data)
 - **CalibrationLearner**: 0.85-0.95 confidence scores (typical range)

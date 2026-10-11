@@ -1,6 +1,6 @@
 /**
  * @tier Tier 2 Advisory (Response Generation)
- * @gold_tier 95% relevance, Multi-language, Template+AI hybrid
+ * @gold_tier 95% relevance, Multi-language, Template+automation hybrid
  * @constitutional_compliance AICS-001 §5.6 (Advisory only)
  * @performance < 20ms generation, Context-aware
  */
@@ -12,7 +12,7 @@ import { AdvisoryCircuitBreaker } from '../../../lib/ticketing/advisory/CircuitB
 export class ResponseDraftGenerator {
   private circuitBreaker = new AdvisoryCircuitBreaker();
   private metrics = new AdvisoryMetrics();
-  
+
   // Template library (inspired by Zendesk/Intercom best practices)
   private readonly responseTemplates = {
     technical: {
@@ -86,7 +86,7 @@ export class ResponseDraftGenerator {
     conversationHistory: Message[]
   ): Promise<ResponseAdvisory> {
     const startTime = performance.now();
-    
+
     try {
       const result = await this.circuitBreaker.execute('response', async () => {
         const context = this.analyzeContext(ticket, customer, conversationHistory);
@@ -95,7 +95,7 @@ export class ResponseDraftGenerator {
       });
 
       const responseTime = performance.now() - startTime;
-      
+
       // Record metrics
       this.metrics.record({
         type: 'generation',
@@ -130,7 +130,7 @@ export class ResponseDraftGenerator {
 
     } catch (_error) {
       const responseTime = performance.now() - startTime;
-      
+
       this.metrics.record({
         type: 'generation',
         advisoryType: 'response',
@@ -166,13 +166,13 @@ export class ResponseDraftGenerator {
     const urgency = this.determineUrgency(ticket);
     const customerTier = customer.tier || 'standard';
     const language = customer.preferredLanguage || 'en';
-    
+
     // Extract key topics from conversation
     const topics = this.extractTopics(history);
-    
+
     // Check for previous resolutions
     const hasSimilarResolutions = this.checkSimilarResolutions(ticket.type, history);
-    
+
     return {
       ticketType: ticket.type,
       priority: ticket.priority,
@@ -201,17 +201,17 @@ export class ResponseDraftGenerator {
     const opening = this.selectPhrase(templates.opening, context);
     const body = this.generateBody(context);
     const closing = this.selectPhrase(templates.closing || this.responseTemplates.technical.closing, context);
-    
+
     // Add sentiment-aware phrase if appropriate
     const sentimentPhrase = context.sentiment !== 'neutral' 
       ? this.selectPhrase(this.sentimentPhrases[context.sentiment], context)
       : '';
-    
+
     // Personalize with customer name
     const personalizedOpening = context.customerName 
       ? opening.replace('you', context.customerName)
       : opening;
-    
+
     // Construct full draft
     const draft = [
       personalizedOpening,
@@ -219,7 +219,7 @@ export class ResponseDraftGenerator {
       body,
       closing
     ].filter(Boolean).join(' ');
-    
+
     return {
       draft: this.formatDraft(draft),
       confidence: this.calculateConfidence(context),
@@ -238,13 +238,13 @@ export class ResponseDraftGenerator {
    */
   private analyzeSentiment(history: Message[]): 'positive' | 'negative' | 'neutral' {
     const text = history.map(m => m.content).join(' ').toLowerCase();
-    
+
     const positiveWords = ['thanks', 'thank you', 'great', 'good', 'excellent', 'helpful'];
     const negativeWords = ['angry', 'frustrated', 'disappointed', 'bad', 'terrible', 'awful'];
-    
+
     const positiveCount = positiveWords.filter(w => text.includes(w)).length;
     const negativeCount = negativeWords.filter(w => text.includes(w)).length;
-    
+
     if (positiveCount > negativeCount) return 'positive';
     if (negativeCount > positiveCount) return 'negative';
     return 'neutral';
@@ -265,12 +265,12 @@ export class ResponseDraftGenerator {
   private extractTopics(history: Message[]): string[] {
     const topics = new Set<string>();
     const commonTopics = ['payment', 'technical', 'parts', 'installation', 'warranty'];
-    
+
     const text = history.map(m => m.content).join(' ').toLowerCase();
     commonTopics.forEach(topic => {
       if (text.includes(topic)) topics.add(topic);
     });
-    
+
     return Array.from(topics);
   }
 
@@ -289,7 +289,7 @@ export class ResponseDraftGenerator {
 
   private selectPhrase(phrases: string[], context: ConversationContext): string {
     if (phrases.length === 0) return '';
-    
+
     // Simple deterministic selection based on context
     const index = (context.historyLength + context.topics.length) % phrases.length;
     return phrases[index];
@@ -307,7 +307,7 @@ export class ResponseDraftGenerator {
       const priorityKey = `${context.urgency}_priority`;
       return body[priorityKey] ?? '';
     }
-    
+
     // Fallback if ticket type doesn't have body definition or is missing
     return context.urgency === 'high' 
       ? 'This has been prioritized for immediate attention.'
@@ -325,12 +325,12 @@ export class ResponseDraftGenerator {
 
   private calculateConfidence(context: ConversationContext): number {
     let confidence = 0.7; // Base confidence
-    
+
     // Increase confidence based on data quality
     if (context.historyLength > 3) confidence += 0.1;
     if (context.hasSimilarResolutions) confidence += 0.15;
     if (context.customerName) confidence += 0.05;
-    
+
     return Math.min(0.95, confidence);
   }
 
@@ -346,11 +346,11 @@ export class ResponseDraftGenerator {
 
   private extractKeyPoints(context: ConversationContext): string[] {
     const points = [];
-    
+
     if (context.urgency === 'high') points.push('High priority response needed');
     if (context.sentiment === 'negative') points.push('Requires empathetic tone');
     if (context.topics.length > 0) points.push(`Addresses: ${context.topics.join(', ')}`);
-    
+
     return points;
   }
 }

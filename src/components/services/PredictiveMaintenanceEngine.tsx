@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
-import { 
+import {
   Brain,
   Activity,
   Gauge,
@@ -59,7 +59,7 @@ export const PredictiveMaintenanceEngine = () => {
                 <Brain className="h-6 w-6 text-amber-400" />
               </div>
               <div>
-                <CardTitle className="text-amber-400">AI Predictive Maintenance Engine</CardTitle>
+                <CardTitle className="text-amber-400">automation Predictive Maintenance Engine</CardTitle>
                 <CardDescription>Machine learning-driven failure prediction and maintenance optimization</CardDescription>
               </div>
             </div>
@@ -79,7 +79,7 @@ export const PredictiveMaintenanceEngine = () => {
           </TabsTrigger>
           <TabsTrigger value="algorithms" className="flex items-center gap-2">
             <Cpu className="h-4 w-4" />
-            AI Algorithms
+            automation Algorithms
           </TabsTrigger>
           <TabsTrigger value="machinery" className="flex items-center gap-2">
             <LineChart className="h-4 w-4" />
@@ -266,7 +266,7 @@ export const PredictiveMaintenanceEngine = () => {
                 <Cpu className="h-5 w-5 text-amber-400" />
                 Machine Learning Algorithms
               </CardTitle>
-              <CardDescription>Advanced AI algorithms powering predictive maintenance</CardDescription>
+              <CardDescription>Advanced automation algorithms powering predictive maintenance</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -298,7 +298,7 @@ export const PredictiveMaintenanceEngine = () => {
                 <div className="space-y-4">
                   <h4 className="typography-h4 flex items-center gap-2">
                     <Brain className="h-4 w-4 text-amber-400" />
-                    AI Models
+                    automation Models
                   </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
@@ -448,7 +448,7 @@ export const PredictiveMaintenanceEngine = () => {
                 <TrendingUp className="h-5 w-5 text-amber-400" />
                 Remaining Useful Life (RUL) Concept
               </CardTitle>
-              <CardDescription>AI-powered prediction of machinery lifespan</CardDescription>
+              <CardDescription>software-assisted prediction of machinery lifespan</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -532,7 +532,7 @@ export const PredictiveMaintenanceEngine = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   {[
                     { item: "IoT Sensors", cost: "$15,000" },
-                    { item: "AI Software", cost: "$20,000" },
+                    { item: "automation Software", cost: "$20,000" },
                     { item: "Installation", cost: "$10,000" },
                     { item: "Training", cost: "$5,000" },
                   ].map((cost, index) => (

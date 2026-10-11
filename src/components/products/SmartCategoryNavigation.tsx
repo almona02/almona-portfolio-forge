@@ -78,7 +78,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Enhanced AI-powered search suggestions with machine-specific terms
+  // Enhanced software-assisted search suggestions with machine-specific terms
   const generateAiSuggestions = useCallback((query: string) => {
     if (!query.trim()) {
       setAiSuggestions([]);
@@ -86,12 +86,12 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
     }
 
     setIsAiThinking(true);
-    
-    // Enhanced AI suggestions with machine-specific terms
+
+    // Enhanced automation suggestions with machine-specific terms
     setTimeout(() => {
       const queryLower = query.toLowerCase();
       const suggestions = [];
-      
+
       // Machine model suggestions
       if (queryLower.includes('dc') || queryLower.includes('cutting')) {
         suggestions.push('DC 421 PBS', 'DC 421 PSD', 'CDC 600');
@@ -108,7 +108,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       if (queryLower.includes('cnc') || queryLower.includes('machining')) {
         suggestions.push('CNC 608', 'NCR 300', 'PIM 6509');
       }
-      
+
       // Material-specific suggestions
       if (queryLower.includes('aluminum') || queryLower.includes('aluminium')) {
         suggestions.push('aluminum cutting machines', 'aluminum processing', 'aluminum profiles');
@@ -116,7 +116,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       if (queryLower.includes('pvc') || queryLower.includes('upvc')) {
         suggestions.push('PVC welding machines', 'UPVC processing', 'PVC cutting');
       }
-      
+
       // Function-specific suggestions
       if (queryLower.includes('cut') || queryLower.includes('saw')) {
         suggestions.push('cutting machines', 'mitre saw', 'double head cutting');
@@ -130,7 +130,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       if (queryLower.includes('clean') || queryLower.includes('finish')) {
         suggestions.push('corner cleaning', 'finishing machines', 'cooling units');
       }
-      
+
       // Power and specification suggestions
       if (queryLower.includes('2.2') || queryLower.includes('kw')) {
         suggestions.push('2.2 kW machines', 'low power consumption');
@@ -141,7 +141,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       if (queryLower.includes('6500') || queryLower.includes('mm')) {
         suggestions.push('6500mm cutting length', 'large capacity');
       }
-      
+
       // General suggestions
       suggestions.push(
         `${query} machines`,
@@ -155,12 +155,12 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
         `automatic ${query}`,
         `CNC ${query}`
       );
-      
+
       // Filter and limit suggestions
       const filteredSuggestions = suggestions
         .filter(s => s.toLowerCase().includes(queryLower))
         .slice(0, 6);
-      
+
       setAiSuggestions(filteredSuggestions);
       setIsAiThinking(false);
     }, 300);
@@ -171,10 +171,10 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
     setSearchQuery(query);
     setIsSearching(true);
     generateAiSuggestions(query);
-    
+
     // Notify parent component of search change
     onSearchChange?.(query);
-    
+
     // Debounce search
     const timeoutId = setTimeout(() => {
       const results = searchPublicMachines(query, machines, copy);
@@ -182,7 +182,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       setIsSearching(false);
       onSearchResults?.(results);
     }, 300);
-    
+
     return () => clearTimeout(timeoutId);
   }, [machines, onSearchResults, onSearchChange, generateAiSuggestions, copy]);
 
@@ -204,7 +204,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       both: 'border-amber-500/50 text-amber-400',
       unknown: 'border-gray-500/50 text-gray-400'
     };
-    
+
     return (
       <Badge variant="outline" className={`text-xs ${colors[materialType]}`}>
         {materialType.toUpperCase()}
@@ -222,7 +222,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
         {/* Compact Dropdown Trigger */}
         <LazyMotionButton
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          aria-label={copy("Toggle AI Smart Categories")}
+          aria-label={copy("Toggle automation Smart Categories")}
           className="relative w-full flex items-center justify-between p-4 rounded-xl border border-gray-700/60 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-800/70 shadow-[0_10px_40px_rgba(0,0,0,0.35)] overflow-hidden transition-all duration-200 group card-premium"
           whileHover={{ scale: 1.01, y: -1 }}
           whileTap={{ scale: 0.99 }}
@@ -233,7 +233,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               <Brain className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[11px] uppercase tracking-[0.08em] text-amber-200">{copy("AI Smart Categories")}</span>
+              <span className="text-[11px] uppercase tracking-[0.08em] text-amber-200">{copy("automation Smart Categories")}</span>
               <span className="text-sm font-semibold text-white">
                 {selectedCategoryInfo ? `${selectedCategoryInfo.icon} ${copy(selectedCategoryInfo.name)}` : copy('All Machines')}
               </span>
@@ -257,7 +257,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
           </div>
         </LazyMotionButton>
 
-        {/* AI-Powered Dropdown */}
+        {/* software-assisted Dropdown */}
         <LazyAnimatePresence>
           {isDropdownOpen && (
             <LazyMotionDiv
@@ -269,13 +269,13 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               style={{ scrollBehavior: 'smooth' }}
             >
               <div className="p-4">
-                {/* AI Search Section */}
+                {/* automation Search Section */}
                 {showSearch && (
                   <div className="mb-4">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                       <Input
-                        placeholder={copy("AI-powered search... (e.g., 'aluminum cutting')")}
+                        placeholder={copy("software-assisted search... (e.g., 'aluminum cutting')")}
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
                         className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
@@ -290,8 +290,8 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         </div>
                       )}
                     </div>
-                    
-                    {/* AI Suggestions */}
+
+                    {/* automation Suggestions */}
                     {aiSuggestions.length > 0 && (
                       <LazyMotionDiv
                         initial={{ opacity: 0, height: 0 }}
@@ -300,7 +300,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                       >
                         <div className="flex items-center gap-2 text-xs text-amber-400">
                           <Sparkles className="h-3 w-3" />
-                          <span>{copy("AI Suggestions")}</span>
+                          <span>{copy("automation Suggestions")}</span>
                         </div>
                         {aiSuggestions.map((suggestion, index) => (
                           <LazyMotionButton
@@ -366,7 +366,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   {smartCategories.map((category) => {
                     const isSelected = selectedCategory === category.id;
                     const count = categoryCounts[category.id] || 0;
-                    
+
                     return (
                       <LazyMotionButton
                         key={category.id}
@@ -406,7 +406,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   <div className="mt-4 pt-4 border-t border-gray-700/50">
                     <div className="flex items-center gap-2 mb-3">
                       <Lightbulb className="h-4 w-4 text-yellow-400" />
-                      <h3 className="typography-h3 text-sm font-medium text-white">{copy("AI Recommendations")}</h3>
+                      <h3 className="typography-h3 text-sm font-medium text-white">{copy("Recommendations")}</h3>
                     </div>
                     <div className="space-y-2 max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500" style={{ scrollBehavior: 'smooth' }}>
                       {recommendations.map(machine => (
@@ -455,7 +455,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               </div>
             )}
           </div>
-          
+
           {/* Search Results */}
           {searchQuery && searchResults.length > 0 && (
             <LazyMotionDiv
@@ -509,7 +509,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
             {popularCategories.map(categoryId => {
               const category = smartCategories.find(c => c.id === categoryId);
               if (!category) return null;
-              
+
               return (
                 <Button
                   key={categoryId}
@@ -532,12 +532,12 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
           <Filter className="h-4 w-4 text-amber-400" />
           <h3 className="typography-h3 text-lg text-white">{copy("Smart Categories")}</h3>
         </div>
-        
+
         <div className="space-y-2">
           {smartCategories.map(category => {
             const isSelected = selectedCategory === category.id;
             const count = categoryCounts[category.id] || 0;
-            
+
             return (
               <LazyMotionButton
                 key={category.id}

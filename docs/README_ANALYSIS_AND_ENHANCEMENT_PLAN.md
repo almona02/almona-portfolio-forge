@@ -84,7 +84,7 @@ The README.md is comprehensive and well-maintained, but there are several areas 
 
 **Current README Coverage:** Mentioned in Strategic Transformation section
 
-**Recommendation:** Add to AI/ML section
+**Recommendation:** Add to advisory inference section
 
 #### 1.5 YDT Future Intelligence Layer
 **Status:** ✅ Implemented but needs better visibility
@@ -137,7 +137,7 @@ The README.md is comprehensive and well-maintained, but there are several areas 
 
 #### 3.2 Missing Dependencies
 **Found in package.json but not in README:**
-- `@google/generative-ai` - Google Generative AI
+- `@google/generative-ai` - Google Generative automation
 - `@huggingface/inference` - Hugging Face models
 - `maplibre-gl` - Map visualization
 - `pdfjs-dist` - PDF processing
@@ -233,7 +233,7 @@ The README.md is comprehensive and well-maintained, but there are several areas 
 - `src/lib/learning/` - Learning systems
 - `src/lib/predictive/` - Predictive analytics
 - `fabricator-mobile/` - Mobile app
-- `ai_agents/` - AI agents
+- `ai_agents/` - automation agents
 - `ai-architecture-diagrams/` - Architecture diagrams
 
 **Recommendation:** Update project structure section
@@ -280,7 +280,7 @@ The README.md is comprehensive and well-maintained, but there are several areas 
    - Document API endpoints
 
 4. **Cognition Engine**
-   - Add to AI/ML section
+   - Add to advisory inference section
    - Document three-layer system
    - Add use cases
 
@@ -327,7 +327,7 @@ The README.md is comprehensive and well-maintained, but there are several areas 
 1. **Mobile App** (After "For Workshop Owners")
    ```markdown
    ## 📱 Mobile App
-   
+
    ### Features
    - Barcode scanning for remnants
    - Offline-first operation
@@ -338,7 +338,7 @@ The README.md is comprehensive and well-maintained, but there are several areas 
 2. **Application Routes** (After "Architecture Overview")
    ```markdown
    ## 🗺️ Application Routes
-   
+
    ### Fabricator Routes
    - `/fabricator/smart-wizard` - Smart Wizard (Tier 1)
    - `/fabricator/pattern-library` - Pattern Library (Tier 2)
@@ -348,7 +348,7 @@ The README.md is comprehensive and well-maintained, but there are several areas 
 3. **Deployment** (Enhance existing section)
    ```markdown
    ## 🚢 Deployment
-   
+
    ### Frontend (Vercel)
    ### Backend (Railway)
    ### Docker Compose Variants

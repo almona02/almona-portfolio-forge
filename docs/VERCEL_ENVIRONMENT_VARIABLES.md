@@ -32,13 +32,13 @@ VITE_API_URL=https://your-backend-url.railway.app
 
 ## 🎯 Optional Variables (Recommended)
 
-### AI Services
+### automation Services
 ```bash
 VITE_GEMINI_KEY=your_google_gemini_api_key
 ```
 
 **How to get:**
-1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+1. Go to [Google automation Studio](https://makersuite.google.com/app/apikey)
 2. Create API key
 3. Copy → `VITE_GEMINI_KEY`
 

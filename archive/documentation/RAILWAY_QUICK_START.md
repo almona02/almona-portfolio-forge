@@ -37,7 +37,7 @@ npm run railway:env
 
 Follow the prompts to:
 - ✅ Set up Supabase connection
-- ✅ Add AI services (optional)
+- ✅ Add automation services (optional)
 - ✅ Configure maps (optional)
 - ✅ Set up analytics (optional)
 

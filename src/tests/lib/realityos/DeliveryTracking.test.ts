@@ -235,7 +235,7 @@ describe('Delivery Tracking System', () => {
 
   describe('Constitutional Compliance', () => {
     it('should enforce Tier 3 Protected Determinism', async () => {
-      // Delivery tracking should be deterministic (no AI/ML)
+      // Delivery tracking should be deterministic (no advisory inference)
       // Same input should produce same event structure
       const deliveryData = {
         id: mockWindowUnit.id,

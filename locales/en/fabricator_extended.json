@@ -181,10 +181,10 @@
   },
   "profile_import_tool": {
     "title": "Smart Profile Import Tool",
-    "description": "Import profiles from multiple formats with AI-powered K-factor learning",
+    "description": "Import profiles from multiple formats with software-assisted K-factor learning",
     "tabs": {
       "import": "Import",
-      "kfactor": "K-Factor AI",
+      "kfactor": "K-Factor Assistance",
       "settings": "Settings"
     },
     "upload": {
@@ -200,7 +200,7 @@
     },
     "kfactor": {
       "title": "Smart K-Factor Learning",
-      "description": "AI-powered K-factor suggestions based on imported DXF/DWG measurements",
+      "description": "software-assisted K-factor suggestions based on imported DXF/DWG measurements",
       "auto_optimize": "Auto-Optimize All",
       "auto_optimize_desc": "Automatically apply K-factor suggestions",
       "features": {
@@ -237,7 +237,7 @@
       "import": {
         "title": "Import Settings",
         "kfactor_learning": "K-Factor Learning",
-        "kfactor_learning_desc": "Enable AI K-factor suggestions",
+        "kfactor_learning_desc": "Enable automation K-factor suggestions",
         "enabled": "Enabled",
         "disabled": "Disabled"
       }
@@ -264,7 +264,7 @@
     }
   },
   "profile_scanner_uploader": {
-    "title": "AI-Assisted Engineering Drawing Scanner",
+    "title": "Engineering Drawing Scanner",
     "beta": "BETA",
     "steps": {
       "select": "1. Select Image",
@@ -280,11 +280,11 @@
     },
     "scale": {
       "auto_detect": "Auto-detect scale from drawing",
-      "auto_detect_tooltip": "AI will attempt to detect scale from dimension labels in the image",
+      "auto_detect_tooltip": "The system will attempt to detect scale from dimension labels in the image",
       "manual_scale": "Manual Scale Factor:",
       "manual_scale_unit": "(mm per pixel)",
       "manual_scale_example": "Example: 0.1 means 1 pixel = 0.1 mm (common for engineering drawings)",
-      "ai_active": "AI Scale Detection Active",
+      "ai_active": "automation Scale Detection Active",
       "ai_active_desc": "The system will attempt to detect scale from dimension labels. If successful, you'll be prompted to confirm."
     },
     "processing": {
@@ -296,7 +296,7 @@
     },
     "results": {
       "scale_applied": "Scale Applied",
-      "detected_by_ai": "Detected by AI",
+      "detected_by_ai": "Detected by automation",
       "manually_specified": "Manually specified",
       "quality_assessment": "Quality Assessment",
       "auto_scale_detected": "Auto-scale detected",
@@ -314,7 +314,7 @@
       "view_raw": "View Raw API Response"
     },
     "actions": {
-      "scan_ai": "Scan with AI Detection",
+      "scan_ai": "Scan with automation Detection",
       "scan_manual": "Scan with Manual Scale",
       "scan_another": "Scan Another Drawing",
       "download_svg": "Download SVG",
@@ -327,9 +327,9 @@
       "reference_label": "Reference Label",
       "suggestion": "Suggestion",
       "what_this_means": "What this means:",
-      "high_confidence": "The AI detected a scale with high confidence. You can safely apply it automatically.",
-      "medium_confidence": "The AI detected a scale with moderate confidence. Please verify the detected value before applying.",
-      "low_confidence": "The AI detected a scale with low confidence. Manual verification is recommended.",
+      "high_confidence": "The system detected a scale with high confidence. You can safely apply it automatically.",
+      "medium_confidence": "The system detected a scale with moderate confidence. Please verify the detected value before applying.",
+      "low_confidence": "The system detected a scale with low confidence. Manual verification is recommended.",
       "advanced_details": "Advanced Details",
       "samples": "Samples",
       "detected_dimensions": "Detected Dimensions",
@@ -349,9 +349,9 @@
       "svg_not_available": "SVG Not Available",
       "svg_not_available_desc": "SVG file URL not found in results",
       "no_scale": "No Scale Detected",
-      "no_scale_desc": "AI could not detect a scale. Please enter scale manually.",
+      "no_scale_desc": "The system could not detect a scale. Please enter scale manually.",
       "low_confidence": "Low Confidence Detection",
-      "low_confidence_desc": "AI detected a scale with low confidence. Please enter scale manually."
+      "low_confidence_desc": "The system detected a scale with low confidence. Please enter scale manually."
     }
   },
   "calibration_wizard": {
@@ -398,7 +398,7 @@
   },
   "smart_measuring": {
     "title": "Smart Measuring Interface",
-    "description": "Digital measurement capture with AI-assisted dimension verification",
+    "description": "Digital measurement capture with software-assisted dimension verification",
     "steps": {
       "system": "System Configuration",
       "dimensions": "Dimensions & Layout",

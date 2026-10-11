@@ -26,7 +26,7 @@
 
 ### 2. Technical Excellence
 - Modern stack choices (React 18 + TypeScript 5 + FastAPI) are perfect
-- **Self-learning AI** that actually learns from user actions
+- **Self-learning automation** that actually learns from user actions
 - **Progressive optimization** (start fast, refine in background) is smart UX
 
 ### 3. Business Impact
@@ -50,7 +50,7 @@ You've built 3 companies worth of scope:
 - CAD/CAM
 - ERP-lite
 - MES-lite
-- AI optimization engine
+- automation optimization engine
 - Marketplace
 - Service management
 - Analytics suite
@@ -209,7 +209,7 @@ Enterprise buyers will challenge:
 ### ❌ Don't Position As:
 - "CAD/CAM software"
 - "ERP"
-- "AI platform"
+- "automation platform"
 
 **Why:** These categories are crowded and misunderstood
 
@@ -256,7 +256,7 @@ Enterprise buyers will challenge:
 - Simplify where possible
 - Document state interaction patterns
 
-### 2. Client-Side AI Performance
+### 2. Client-Side automation Performance
 **Challenge:** TensorFlow.js on older hardware
 
 **Action:**
@@ -373,7 +373,7 @@ Enterprise buyers will challenge:
 
 ### What You've Built Right
 1. ✅ **Industrial empathy** - You solved real workflows, not digitized screens
-2. ✅ **Hybrid AI approach** - ML + deterministic solvers + rule-based fallbacks
+2. ✅ **Hybrid automation approach** - ML + deterministic solvers + rule-based fallbacks
 3. ✅ **Local market understanding** - Egypt-first with Arabic RTL, local standards
 4. ✅ **Battle-tested thinking** - Awareness of real risks (CNC maintenance, ML drift, adoption)
 
@@ -387,7 +387,7 @@ Enterprise buyers will challenge:
 **You are NOT:**
 - CAD/CAM software
 - ERP system
-- AI platform
+- automation platform
 
 **You ARE:**
 - **Fabrication Intelligence System** that removes decisions, eliminates waste, prevents errors
@@ -406,7 +406,7 @@ Enterprise buyers will challenge:
 
 ---
 
-**Prepared by:** AI Analysis System  
+**Prepared by:** automation Analysis System
 **For:** Mohamed Hassan, CEO - Almona  
 **Date:** December 2025  
 **Status:** Strategic Action Plan - Ready for Implementation

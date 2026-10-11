@@ -62,7 +62,7 @@ interface PrestigiousMatch {
 ```
 
 **Features:**
-- AI-powered matching based on project requirements
+- software-assisted matching based on project requirements
 - Seller reputation scoring (transaction history, ratings)
 - Quality verification badges
 - Distance-based recommendations
@@ -524,7 +524,7 @@ interface TimelineEstimation {
 }
 ```
 
-**AI-Powered Estimation:**
+**software-assisted Estimation:**
 - Historical project data analysis
 - Similar project matching
 - Complexity scoring
@@ -616,7 +616,7 @@ interface TimelineEstimation {
    - Integration enhancements
 
 9. **Pre-Planning Advanced**
-   - AI-powered estimation
+   - software-assisted estimation
    - Advanced resource optimization
    - Integration with all systems
 

@@ -5,11 +5,11 @@
 ### Key Messages
 
 1. **"Fabricator Pro: The First Self-Learning Fabrication Platform"**
-   - Emphasize AI-powered continuous improvement
+   - Emphasize software-assisted continuous improvement
    - Highlight automatic learning from every job
    - Position as next-generation vs legacy systems
 
-2. **"AI-Powered Optimization That Gets Smarter With Every Job"**
+2. **"software-assisted Optimization That Gets Smarter With Every Job"**
    - Focus on ML prediction accuracy
    - Showcase waste reduction improvements
    - Demonstrate speed improvements
@@ -26,18 +26,18 @@
 
 ### Competitive Advantages
 
-| Feature | Fabricator Pro | Logikal | Advantage |
+| Feature | Fabricator Pro | reference system | Advantage |
 |---------|----------------|---------|-----------|
 | Optimization Speed | 2-8s | 10-30s | **2.5x Faster** |
 | Waste Reduction | 8-15% | 5-10% | **12% Better** |
 | ML Prediction | ✅ Yes | ❌ No | **Unique** |
 | Remnant Marketplace | ✅ Yes | ❌ No | **Revenue Stream** |
 | Self-Learning | ✅ Yes | ❌ No | **Continuous Improvement** |
-| User Calibration | ✅ AI-Assisted | ⚠️ Manual | **Precision** |
+| User Calibration | ✅ software-assisted | ⚠️ Manual | **Precision** |
 
 ## 📱 User Onboarding Flow
 
-### Step 1: Welcome to AI-Powered Fabrication
+### Step 1: Welcome to software-assisted Fabrication
 
 **Message:**
 "Your system now learns and improves with every job. Watch as optimization gets faster and more accurate over time."
@@ -160,7 +160,7 @@ const onboardingSteps = [
 
 ### Email Template
 
-**Subject:** Introducing Fabricator Pro's AI-Powered Enhancements
+**Subject:** Introducing Fabricator Pro's software-assisted Enhancements
 
 **Body:**
 ```
@@ -208,7 +208,7 @@ const launchNotification = {
 **After:**
 - Optimization time: 6 seconds (4x faster)
 - Waste percentage: 6.2% (35% improvement)
-- AI-assisted calibration
+- software-assisted calibration
 
 **Impact:**
 - 15% cost savings
@@ -217,7 +217,7 @@ const launchNotification = {
 
 ## 🎯 Competitive Positioning
 
-### vs Logikal
+### vs reference system
 - **Speed:** 2.5x faster optimization
 - **Intelligence:** ML-powered vs rule-based
 - **Innovation:** Self-learning vs static

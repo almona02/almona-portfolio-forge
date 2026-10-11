@@ -3,7 +3,7 @@
  * 
  * Professional CAD block/symbol library browser with high precision
  * 
- * Constitutional: Deterministic block operations, no ML/AI
+ * Constitutional: Deterministic block operations, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

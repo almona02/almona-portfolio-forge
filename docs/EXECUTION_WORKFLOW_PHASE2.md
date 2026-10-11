@@ -10,7 +10,7 @@ This document describes the Phase 2 execution workflow implementation that adds 
 
 ## AICS-001 Constitutional Compliance
 References: AICS-001 Sections 1, 3, 4
-- No ML/AI used in execution path (Section 1)
+- No advisory inference used in execution path (Section 1)
 - Deterministic workflow and transitions (Section 3)
 - Human validation required via explicit operator input for status and feedback (Section 4)
 

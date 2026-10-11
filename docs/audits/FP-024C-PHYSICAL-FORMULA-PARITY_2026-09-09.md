@@ -1,4 +1,4 @@
-# FP-024C — Physical Formula Correction + Real DoWin Parity
+# FP-024C — Physical Formula Correction + Real reference system Parity
 
 | Field | Value |
 |-------|--------|
@@ -14,7 +14,7 @@
 
 ## Independent review (13 September 2026)
 
-C.13 golden replay is **ACCEPTED**. Bounded FP-024C parity is **finished**. Score moved 6.0 → **7.5/10**. Zero further DoWin experiments for FP-024C.
+C.13 golden replay is **ACCEPTED**. Bounded FP-024C parity is **finished**. Score moved 6.0 → **7.5/10**. Zero further reference system experiments for FP-024C.
 
 ```
 FP-024C = COMPLETE (bounded parity scope)
@@ -48,10 +48,10 @@ FP-025A is ✅ ACCEPTED on `main` and did not contaminate manufacturing truth. F
 
 FP-024C formula work starts only after operator isolation identifies which settings actually move:
 
-1. DoWin nominal / report length
-2. DoWin packed / compensated segment
-3. DoWin machine length
-4. DoWin reported bar remainder
+1. reference system nominal / report length
+2. reference system packed / compensated segment
+3. reference system machine length
+4. reference system reported bar remainder
 
 Until then, physical-length correctness stays **6.0/10**.
 
@@ -69,7 +69,7 @@ FP-024B converted tempting constants into hypotheses. None of these may enter `M
 | +3 = Welding Waste | PROVEN on asdd 45° KASA/KANAT packed/machine; UNPROVEN as a general rule | No |
 | +3 = saw compensation | NO OBSERVED EFFECT on asdd packed/machine; remainder AMBIGUOUS | No |
 | KASA/KANAT leftover 7 mm | UNPROVEN | No |
-| Generalized DoWin compensation | NOT ESTABLISHED | No |
+| Generalized reference system compensation | NOT ESTABLISHED | No |
 
 `ingestOperatorCalibrationRun` rejects incomplete packages, multi-setting isolation, geometry/stock/qty changes on SINGLE_SETTING_ISOLATION, setting changes on CONTROL_FIXTURE, BASELINE_REPRODUCTION_RUN, or BASELINE_RESET_VALIDATION, Tests 2–4 until 1B is `REPRODUCED`, the 90° CONTROL_FIXTURE until BASELINE_RESET_VALIDATION recovers 1B, and FP-024C.1 runs whose optimizer provenance is incomplete, reused, or not a fresh project/design.
 
@@ -77,7 +77,7 @@ FP-024B converted tempting constants into hypotheses. None of these may enter `M
 
 ## Operator isolation vs control fixture
 
-DoWin is **not** executed from this repo. Each run needs one evidence package. Do **not** commit licensed PDFs/MDB binaries; ingest SHA-256 + transcribed millimetres.
+reference system is **not** executed from this repo. Each run needs one evidence package. Do **not** commit licensed PDFs/MDB binaries; ingest SHA-256 + transcribed millimetres.
 
 Live General Settings (Test 1A) are **not** proof they governed the original 18:14 export. Test 1B must rerun the same asdd 1000×1500 design with currently captured Weld=3 / Saw=4 / Trim=0 and DC-600. If 451→454, 1430→1433, 1000→1003, 1500→1503 and bar remainders do not match, **stop** — Tests 2–4 are not clean.
 
@@ -106,7 +106,7 @@ Package per run:
 10. SHA-256 of each external file  
 11. Transcribed nominal / packed / machine / remainder values  
 
-After Tests 2–4, Cursor produces **only** a delta table and authority classification:
+After Tests 2–4, development tool produces **only** a delta table and authority classification:
 
 `PROVEN EFFECT` / `NO OBSERVED EFFECT` / `AMBIGUOUS` / `NOT MEASURED`
 
@@ -127,7 +127,7 @@ The asdd baseline General Settings screenshot is captured (SHA-256 `95652321b98d
 | KASA/KANAT remainder +12 mm | **PROVEN CONSISTENT EFFECT** |
 | CITA packing topology | **DOWNSTREAM OPTIMIZER RESPONSE** (does not veto the −3 mm) |
 | “All 45° profiles always add WeldingWaste” | **UNPROVEN GENERALIZATION** |
-| Exact proprietary DoWin formula | **UNPROVEN** |
+| Exact proprietary reference system formula | **UNPROVEN** |
 
 CITA remainder topology 206/6160 → 3195×2 is a downstream packing response and is classified separately. A causal length change may legitimately change which bar pattern is optimal.
 
@@ -142,7 +142,7 @@ Package-level classification is **CONDITIONAL**. Production formulas stay frozen
 | Saw has a proven bar-remainder effect | **UNPROVEN** |
 | Test-3 remainder signature | **AMBIGUOUS** |
 | Exact remainder delta = N × Δsaw | **UNPROVEN** |
-| Exact proprietary DoWin formula | **UNPROVEN** |
+| Exact proprietary reference system formula | **UNPROVEN** |
 
 Welding Waste moved packed/machine; Saw Thickness did not. Remainder movement that survives a Saw=4 reset is a provenance question, not a kerf formula. Package-level classification is **AMBIGUOUS**. Production formulas stay frozen.
 
@@ -155,7 +155,7 @@ Welding Waste moved packed/machine; Saw Thickness did not. Remainder movement th
 | Trim 0→10 changes DC-600 LENGTH | **NO OBSERVED EFFECT** |
 | Trim has a proven bar-remainder effect | **UNPROVEN** |
 | Test-4 remainder signature | **AMBIGUOUS** / possible optimizer-state or recomputation confound |
-| Exact proprietary DoWin formula | **UNPROVEN** |
+| Exact proprietary reference system formula | **UNPROVEN** |
 
 KASA 960 / ORTA 5079 / CITA 3178×2 is the Test 3 saw remainder signature, despite Saw 5→4 and Trim 0→10. That is too suspicious to treat as Trim evidence. Possible stale optimization state, a setting that needs a fresh cycle, other persisted state, or an internal relationship. None assumed. Do not encode Trim Cut. Do not repeat Trim now.
 
@@ -244,14 +244,14 @@ Physical-length score stays **6.0/10**. It must not move until FP-024C.1 explain
 |------------|----------------|
 | No ML in execution | No solver / GA work in this gate (that is FP-016) |
 | No silent production swap | Formula freeze until isolation PROVEN EFFECT |
-| Human validation | Operator DoWin exports; no invented millimetres |
+| Human validation | Operator reference system exports; no invented millimetres |
 | Constitutional lock | FP-023B kerf tests remain the canonical bar-pack identity |
 
 ---
 
 ## Legal / IP
 
-Licensed PDFs and readable MDB table fields only. No binary decompilation, no SQLCipher/DPAPI, no guessed Basma/Kaynak, no DoWin UI clone.
+Licensed PDFs and readable MDB table fields only. No binary decompilation, no SQLCipher/DPAPI, no guessed Basma/Kaynak, no reference system UI clone.
 
 ---
 
@@ -338,13 +338,13 @@ Record A (`FP024C_90_CONTROL_COMPENSATION`) is primary. Record B may passively t
 
 ### Authorization
 
-`evaluateIndependentNinetyControlFixtureSpec()` passes. `evaluateControlFixtureAuthorization()` is `READY_FOR_OPERATOR_RUN`. That permits the evidence run. It does not mean the control passed, parity passed, a formula is proven, or the score may move. Score stays **6.0/10**. Formulas stay **FROZEN**. Control status **NOT_RUN**. Do not open DoWin from this specification.
+`evaluateIndependentNinetyControlFixtureSpec()` passes. `evaluateControlFixtureAuthorization()` is `READY_FOR_OPERATOR_RUN`. That permits the evidence run. It does not mean the control passed, parity passed, a formula is proven, or the score may move. Score stays **6.0/10**. Formulas stay **FROZEN**. Control status **NOT_RUN**. Do not open reference system from this specification.
 
 ---
 
 ## FP-024C.5 — independent 90° control executed (13 September 2026)
 
-Live licensed DoWin run. Evidence only. No formula implementation.
+Live licensed reference system run. Evidence only. No formula implementation.
 
 ### Fixture validity
 
@@ -781,7 +781,7 @@ Independent review (13 September 2026, 21:10): **FP-024C.8 = ACCEPTED**. Weld 3�
 
 ## FP-024C.9 — existing-artifact profile coverage (13 September 2026)
 
-Existing artifacts only. **DoWin was not opened.** Settings unchanged. Welding Waste left at persisted **0 mm**. No plan. No solve. No new export. No formula change.
+Existing artifacts only. **reference system was not opened.** Settings unchanged. Welding Waste left at persisted **0 mm**. No plan. No solve. No new export. No formula change.
 
 Source PDF: `OptimizationReport_20260913_191321_DesignPreview.pdf`  
 SHA-256 `2c2e558cba2016b2924266ba63768cd3ffe9e8bc2bba8d9b2880770d32c9e0f7` (re-hashed). Render PNG SHA-256 `115698c570479e999b4e334bc3a50847a0a5758ac2c5d284dbf30ef04c610da5`. Licensed file **not committed**.

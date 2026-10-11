@@ -1,7 +1,7 @@
 /**
  * Import Bridge Service
  * 
- * Handles imports from various formats (DXF, CSV, LogiKal, KLAES) with Tier 3 validation.
+ * Handles imports from various formats (DXF, CSV, reference system, reference system) with Tier 3 validation.
  * 
  * Constitutional Compliance: AICS-001 §7.4 (Audit Trail Doctrine)
  * All imports require Tier 3 validation and human verification.
@@ -178,7 +178,7 @@ export class ImportBridgeService {
   }
 
   /**
-   * Import LogiKal export
+   * Import reference system export
    * 
    * Limited import - only what we can validate deterministically.
    */
@@ -188,7 +188,7 @@ export class ImportBridgeService {
     operatorId: string
   ): Promise<ImportResult> {
     try {
-      // 1. Parse LogiKal export
+      // 1. Parse reference system export
       const logikalData = await this.parseLogiKalExport(file);
 
       // 2. Map only validated fields
@@ -246,7 +246,7 @@ export class ImportBridgeService {
   }
 
   /**
-   * Import KLAES export
+   * Import reference system export
    * 
    * Limited import - only what we can validate deterministically.
    */
@@ -256,7 +256,7 @@ export class ImportBridgeService {
     operatorId: string
   ): Promise<ImportResult> {
     try {
-      // 1. Parse KLAES export
+      // 1. Parse reference system export
       const klaesData = await this.parseKLAESExport(file);
 
       // 2. Map only validated fields
@@ -388,7 +388,7 @@ export class ImportBridgeService {
   }
 
   private async parseLogiKalExport(file: File): Promise<any> {
-    // In production, implement LogiKal export parser
+    // In production, implement reference system export parser
     // For now, return mock structure
     const text = await file.text();
     return {
@@ -402,7 +402,7 @@ export class ImportBridgeService {
     _logikalData: any,
     _options: { allowPartial: boolean; requireValidation: boolean; mapOnlyValidated: boolean }
   ): WindowUnit {
-    // In production, implement LogiKal to WindowUnit mapping
+    // In production, implement reference system to WindowUnit mapping
     // For now, return minimal structure
     return {
       id: `imported_${Date.now()}`,
@@ -417,7 +417,7 @@ export class ImportBridgeService {
   }
 
   private async parseKLAESExport(file: File): Promise<any> {
-    // In production, implement KLAES export parser
+    // In production, implement reference system export parser
     // For now, return mock structure
     const text = await file.text();
     return {
@@ -431,7 +431,7 @@ export class ImportBridgeService {
     _klaesData: any,
     _options: { allowPartial: boolean; requireValidation: boolean; mapOnlyValidated: boolean }
   ): WindowUnit {
-    // In production, implement KLAES to WindowUnit mapping
+    // In production, implement reference system to WindowUnit mapping
     // For now, return minimal structure
     return {
       id: `imported_${Date.now()}`,

@@ -326,7 +326,7 @@ export function validateStepAccess(state: WorkflowState, step: WorkflowStep): Wo
  * WorkflowValidator — Validates data completeness and feasibility between
  * each workflow step. Prevents invalid data from reaching downstream steps.
  *
- * Inspired by Logikal's continuous plausibility checks.
+ * Continuous workflow plausibility checks.
  *
  * @since Phase 2: Validation Layer
  */

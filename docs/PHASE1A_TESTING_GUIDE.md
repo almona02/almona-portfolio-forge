@@ -176,7 +176,7 @@ Import `FabricatorLayoutTest` in any existing page temporarily to test.
 
 2. **Hover over button**
    - ✅ Should scale slightly (hover:scale-105)
-   - ✅ Cursor should change to pointer
+   - ✅ development tool should change to pointer
 
 **Modal Expansion:**
 1. **Click the cost calculator button**

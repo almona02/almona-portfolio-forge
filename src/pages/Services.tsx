@@ -68,7 +68,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-// AI-Powered Maintenance Data Types
+// software-assisted Maintenance Data Types
 interface PredictiveAlert {
   id: string;
   machineId: string;
@@ -137,7 +137,7 @@ const Services = () => {
   }, []);
 
   const loadPredictiveData = useCallback(() => {
-    // Simulated AI-powered predictive data
+    // Simulated software-assisted predictive data
     const mockAlerts: PredictiveAlert[] = [
       {
         id: '1',
@@ -213,7 +213,7 @@ const Services = () => {
 
 
   useEffect(() => {
-    document.title = "AI Industrial Services - ALMONA";
+    document.title = "automation Industrial Services - ALMONA";
     loadPredictiveData();
 
     // Start simulated real-time data
@@ -341,7 +341,7 @@ const Services = () => {
         title="Machine Services and Training | Almona Co."
         description="Contact ALMONA for machine maintenance, spare parts and training. Service scope, availability and fees are confirmed in a written quotation."
         url={currentUrl}
-        keywords="industrial services, AI advisor, machine training, fabrication services, maintenance services Egypt"
+        keywords="industrial services, automation advisor, machine training, fabrication services, maintenance services Egypt"
       />
       <main className="flex-grow pt-20 bg-[#0a0a0a]">
         <div id="top" className="sr-only" aria-hidden="true" />
@@ -360,7 +360,7 @@ const Services = () => {
           ) : (
             <>
               <p role="note" className="rounded-lg border border-amber-500 p-4 text-amber-200">Demonstration dashboard: the metrics and alerts below are sample data, not measured site performance or service commitments.</p>
-              {/* Enhanced Hero Section with AI Focus */}
+              {/* Enhanced Hero Section with automation Focus */}
               <div className="mb-16 text-center">
                 <div className="inline-flex items-center gap-3 mb-6 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500/10 to-amber-500/10 border border-amber-500/20 fade-in-up">
                   <Brain className="h-6 w-6 text-amber-400" />
@@ -487,7 +487,7 @@ const Services = () => {
                   </TabsTrigger>
                 </TabsList>
 
-                {/* AI-Powered Services Overview */}
+                {/* software-assisted Services Overview */}
                 <TabsContent value="overview">
                   <div className="space-y-8 fade-in-up">
                     {/* Predictive Alerts Section */}
@@ -698,7 +698,7 @@ const Services = () => {
                   </div>
                 </TabsContent>
 
-                {/* AI Maintenance Dashboard */}
+                {/* automation Maintenance Dashboard */}
                 <TabsContent value="dashboard">
                   <div className="fade-in-up">
                     <Suspense fallback={<div className="space-y-4"><FormSkeleton /><FormSkeleton /></div>}>

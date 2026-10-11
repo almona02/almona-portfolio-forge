@@ -1,13 +1,13 @@
 /**
  * Master Layout Component - ALMONA Dark Gold Prestige Ultra
  * 
- * Ultra-prestige layout matching Orgadata/Klaes/iWindow/Moxisys standards:
+ * Workspace layout for fabrication operations:
  * - 80px Luxury Top Bar (ALMONA branding, project info, actions)
  * - 80px Elite Progress Stepper (5 phases with visual indicators)
  * - 3-Column Main Workspace (280px | flex | 400px)
  * - 40px Prestige Status Bar (Constitutional badge, live metrics)
  * 
- * Constitutional: Deterministic layout, no ML/AI
+ * Constitutional: Deterministic layout, no advisory inference
  * Tier: 3 Protected Determinism
  */
 
@@ -40,11 +40,11 @@ const NotificationCenter = React.lazy(() => import('@/core/notifications/Notific
 // Notification Center Wrapper Component
 const NotificationCenterWrapper: React.FC = () => {
   const { user } = useAuth();
-  
+
   if (!user?.id) {
     return null;
   }
-  
+
   return (
     <Suspense fallback={null}>
       <NotificationCenter userId={user.id} variant="popover" />
@@ -178,7 +178,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
   // Get phases based on unified mode
   const phases = React.useMemo(() => getPhases(), []);
   const currentPhaseIndex = phases.findIndex(p => p.id === currentPhase);
-  
+
   // Check if we're on a workflow page (design phase or after)
   // Intelligence Hub should only be visible on workflow pages (design and after)
   // Only show workflow UI on actual workflow routes, not on general fabricator pages like /projects, /customers, etc.
@@ -189,7 +189,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                                    !location.pathname.includes('/fabricator-workflow');
   const isDesignOrAfter = currentPhaseIndex >= 0; // design is index 0, so any phase >= 0 means design or after
   const shouldShowIntelligenceHub = isWorkflowPage && isDesignOrAfter && rightPanelOpen;
-  
+
   // Hide workflow stepper and project intelligence panel on non-workflow pages
   // Don't show on general fabricator pages like /fabricator/projects, /fabricator/customers, etc.
   const shouldShowWorkflowStepper = isWorkflowPage && !isGeneralFabricatorPage;
@@ -206,7 +206,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                                    isDesignRoute && 
                                    !isMeasuringRoute &&
                                    !isGeneralFabricatorPage;
-  
+
   // Handler for Save Draft button
   const handleSaveDraft = useCallback(() => {
     try {
@@ -232,7 +232,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       toast.warning('Phase change handler not available');
       return;
     }
-    
+
     const nextPhaseIndex = currentPhaseIndex + 1;
     if (nextPhaseIndex < phases.length) {
       const nextPhase = phases[nextPhaseIndex];
@@ -242,10 +242,10 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       toast.info('Already on the last phase');
     }
   }, [onPhaseChange, currentPhaseIndex, phases]);
-  
+
   // Check if Continue button should be enabled (not on last phase)
   const canContinue = currentPhaseIndex >= 0 && currentPhaseIndex < phases.length - 1;
-  
+
   // Check if we're on optimization page or phase
   const isOptimizationActive = currentPhase === 'optimize' || 
                                 location.pathname.includes('optimization') ||
@@ -258,7 +258,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current);
       }
-      
+
       // Set new timeout to hide after 5 seconds
       hideTimeoutRef.current = setTimeout(() => {
         setIsAlgorithmPanelVisible(false);
@@ -290,7 +290,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
     if (shouldShowWorkflowStepper) {
       return projectName;
     }
-    
+
     if (isGeneralFabricatorPage) {
       if (location.pathname.includes('/projects')) return 'Projects & Positions';
       if (location.pathname.includes('/customers')) return 'Customer Management';
@@ -299,7 +299,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       if (location.pathname.includes('/commercial')) return 'Commercial & Pricing';
       if (location.pathname.includes('/reports')) return 'Reports & Analytics';
     }
-    
+
     return 'Fabricator Workspace';
   }, [shouldShowWorkflowStepper, isGeneralFabricatorPage, location.pathname, projectName]);
 
@@ -307,7 +307,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
     if (shouldShowWorkflowStepper) {
       return `Client: ${clientName}`;
     }
-    
+
     if (isGeneralFabricatorPage) {
       if (location.pathname.includes('/projects')) return 'Manage your fabrication projects';
       if (location.pathname.includes('/customers')) return 'Customer database and contacts';
@@ -316,7 +316,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       if (location.pathname.includes('/commercial')) return 'Quotes, invoices, and payments';
       if (location.pathname.includes('/reports')) return 'Business intelligence and analytics';
     }
-    
+
     return 'Project Management';
   }, [shouldShowWorkflowStepper, isGeneralFabricatorPage, location.pathname, clientName]);
 
@@ -325,7 +325,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       <div className="flex h-screen w-screen overflow-hidden">
         {/* Universal Navigation Sidebar */}
         <UniversalNavSidebar />
-      
+
       {/* Main Layout Content - Existing MasterLayout structure */}
       <div className="flex flex-col flex-1 h-screen bg-[#0a0a0a] font-sans text-amber-200 overflow-hidden relative">
       {/* Classical Textured Background */}
@@ -338,17 +338,17 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
         backgroundSize: '40px 40px, 200px 200px, 200px 200px',
         backgroundPosition: '0 0, 0 0, 0 0'
       }} />
-      
+
       {/* Ornate Border Frame */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top Border with Pediment */}
         <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-amber-600/40 to-transparent" />
         <div className="absolute top-2 left-1/2 -translate-x-1/2 w-32 h-8 border-t border-x border-amber-600/50 rounded-t-lg" />
-        
+
         {/* Side Pillars */}
         <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-600/30 via-amber-500/20 to-amber-600/30" />
         <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-600/30 via-amber-500/20 to-amber-600/30" />
-        
+
         {/* Bottom Border */}
         <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-amber-600/40 to-transparent" />
       </div>
@@ -359,10 +359,10 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
           backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(245, 158, 11, 0.1) 2px, rgba(245, 158, 11, 0.1) 4px)'
         }} />
-        
+
         {/* Animated background gradient - minimized to thin line */}
         <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent animate-pulse pointer-events-none" />
-        
+
         {/* Left Section: Logo + Title */}
         <div className="flex items-center gap-4 relative z-10 flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -377,25 +377,25 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
               <div className="text-[10px] text-amber-600/90 tracking-[0.2em] uppercase font-semibold leading-none mt-0.5">Prestige Edition</div>
             </div>
           </div>
-          
+
           <div className="h-6 w-px bg-gradient-to-b from-transparent via-amber-600/60 to-transparent flex-shrink-0" />
-          
+
           <div className="flex flex-col min-w-0 flex-1 justify-center">
             <div className="text-xs text-amber-200 font-medium truncate leading-tight">{pageTitle}</div>
             <div className="text-[10px] text-amber-600/70 truncate leading-tight">{pageDescription}</div>
           </div>
         </div>
-        
+
         {/* Right Section: Actions + Badge */}
         <div className="flex items-center gap-3 relative z-10 flex-shrink-0">
           {/* Notification Center - Gold Tier Feature */}
           <NotificationCenterWrapper />
-          
+
           <div className="flex items-center gap-1.5 px-2 py-1 card-dark rounded">
             <Gem className="w-3 h-3 text-amber-400 text-shadow-glow flex-shrink-0" />
             <span className="text-xs text-amber-200 font-semibold tracking-wide whitespace-nowrap">AICS-001</span>
           </div>
-          
+
           {shouldShowWorkflowStepper && (
             <>
               <button 
@@ -460,7 +460,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                     <div className="absolute bottom-0 right-0 w-24 h-24 border-b border-r border-amber-600/50 rounded-br-lg" />
                     <div className="absolute bottom-2 right-2 w-20 h-20 border-b border-r border-amber-500/30" />
                   </div>
-                  
+
                   {/* Grid Visualization */}
                   <div className="grid grid-cols-3 grid-rows-2 gap-3 aspect-[3/2] relative">
                     {[...Array(6)].map((_, i) => (
@@ -470,14 +470,14 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                       >
                         {/* Classical shine effect */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-amber-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                        
+
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <div className="text-center">
                             <div className="text-sm font-bold text-amber-300 mb-1 text-shadow-glow">Opening {i + 1}</div>
                             <div className="text-xs text-amber-600/70">Click to configure</div>
                           </div>
                         </div>
-                        
+
                         {/* Classical corner indicators */}
                         <div className="absolute top-2 left-2 w-3 h-3 border-t border-l rounded-tl card-premium" />
                         <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r rounded-br card-premium" />
@@ -577,7 +577,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                   <Shield className="w-4 h-4 text-amber-500 text-shadow-glow" />
                   <span className="text-xs font-bold text-amber-300 uppercase tracking-[0.15em]">Validation Status</span>
                 </div>
-                
+
                 <div className="space-y-2">
                   {validationItems.map((item, i) => (
                     <div key={i} className="flex items-center justify-between py-2 px-3 card-dark rounded">
@@ -596,7 +596,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                   <FileCheck className="w-4 h-4 text-amber-500 text-shadow-glow" />
                   <span className="text-xs font-bold text-amber-300 uppercase tracking-[0.15em]">Bill of Materials</span>
                 </div>
-                
+
                 <div className="space-y-3">
                   {bomItems.map(item => (
                     <div key={item.category} className="card-dark p-4">
@@ -645,7 +645,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       <div className="h-8 border-t flex items-center px-4 text-[10px] justify-between -xl relative z-10 card-glass-dark">
         {/* Decorative horizontal bar */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-0.5 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent" />
-        
+
         <div className="flex items-center gap-4 text-amber-600/80">
           <span className="flex items-center gap-1.5">
             <Gem className="w-2.5 h-2.5 text-amber-500 text-shadow-glow" />
@@ -656,7 +656,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
           <span className="text-amber-600/30">|</span>
           <span className="font-medium">Tier 3 Determinism</span>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {/* Algorithm Panel - Only visible during optimization */}
           {isOptimizationActive && (
@@ -705,7 +705,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
               </div>
             </div>
           )}
-          
+
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
             <span className="text-amber-400 font-bold">System Active</span>

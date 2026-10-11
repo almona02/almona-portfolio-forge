@@ -122,7 +122,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
         if (comp.profile?.id) {
           uniqueProfiles.add(comp.profile.id);
         }
-        
+
         // Calculate from cutting lengths if available
         if (comp.cuttingLengths && comp.cuttingLengths.length > 0) {
           comp.cuttingLengths.forEach((len) => {
@@ -221,7 +221,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
               </p>
               <p className="text-[10px] text-blue-400/60 mt-1">Optimized cuts</p>
             </div>
-            
+
             <div className="relative p-4 bg-gradient-to-br from-green-500/10 to-green-600/5 rounded-lg border border-green-500/30 shadow-lg hover:shadow-green-500/20 transition-all duration-300 group">
               <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <p className="text-xs font-semibold text-green-300/80 uppercase tracking-wider mb-2">Profiles</p>
@@ -230,7 +230,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
               </p>
               <p className="text-[10px] text-green-400/60 mt-1">Unique types</p>
             </div>
-            
+
             <div className="btn-primary-gradient">
               <div className="absolute top-2 right-2 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
               <p className="text-xs font-semibold text-amber-300/80 uppercase tracking-wider mb-2">Material Length</p>
@@ -245,7 +245,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
                   : 'No material'}
               </p>
             </div>
-            
+
             <div className="relative p-4 bg-gradient-to-br from-amber-500/10 to-amber-600/5 rounded-lg border border-amber-500/30 shadow-lg hover:shadow-amber-500/20 transition-all duration-300 group">
               <div className="absolute top-2 right-2 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
               <p className="text-xs font-semibold text-amber-300/80 uppercase tracking-wider mb-2">Est. Bars</p>

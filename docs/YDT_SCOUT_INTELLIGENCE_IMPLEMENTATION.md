@@ -6,7 +6,7 @@
 
 ## 🎯 Overview
 
-The Scout Intelligence system implements a **human-augmented AI** approach to collect market intelligence. Instead of automated scraping (which faces API restrictions), this system empowers:
+The Scout Intelligence system implements a **human-augmented automation** approach to collect market intelligence. Instead of automated scraping (which faces API restrictions), this system empowers:
 
 1. **Human Scouts** - Team members with browser extension/Telegram bot
 2. **Crowdsourced Reports** - Workshop owners reporting prices (Waze model)
@@ -308,7 +308,7 @@ const handleReportPrice = async () => {
       workshop_id: user.id
     })
   });
-  
+
   const result = await response.json();
   if (result.verified) {
     toast.success('Price verified! Premium unlocked for this week.');

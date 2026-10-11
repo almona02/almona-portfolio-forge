@@ -42,7 +42,7 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
   const machineCards = useMemo(() => {
     return machines.map((machine) => {
       const isSelected = selectedMachines.some(m => m.id === machine.id);
-      
+
       return (
         <div
           key={machine.id}
@@ -68,7 +68,7 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
       <div className={gridClasses}>
         {machineCards}
       </div>
-      
+
       {/* Load more button - optimized for mobile */}
       {hasMore && (
         <div className="flex justify-center mt-8 px-4">

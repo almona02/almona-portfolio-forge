@@ -104,7 +104,7 @@ addMaterialAwareWindow(window: MaterialAwareRectangle)
 ## 📝 Technical Notes
 
 - All changes must maintain ALMONA's constitutional boundaries
-- Material specs are rule-based (no AI)
+- Material specs are rule-based (no automation)
 - Egyptian standards are deterministic
 - Validation must be auditable
 

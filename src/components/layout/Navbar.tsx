@@ -44,7 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
   const [isMobile, setIsMobile] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  
+
   const location = useLocation();
   const navbarRef = useRef<HTMLElement>(null);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout>();
@@ -183,8 +183,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
         type: "dropdown",
         badge: "PRO",
         items: [
-          { name: t('navigation.services.all_services.name', 'All Services'), path: "/services", description: t('navigation.services.all_services.description', 'Complete AI-powered services overview') },
-          { name: t('navigation.services.ai_equipment_advisor.name', 'AI Equipment Advisor'), path: "/services/ai-advisor", description: t('navigation.services.ai_equipment_advisor.description', 'Smart recommendations') },
+          { name: t('navigation.services.all_services.name', 'All Services'), path: "/services", description: t('navigation.services.all_services.description', 'Complete software-assisted services overview') },
+          { name: t('navigation.services.ai_equipment_advisor.name', 'Equipment Advisor'), path: "/services/ai-advisor", description: t('navigation.services.ai_equipment_advisor.description', 'Smart recommendations') },
           { name: t('navigation.services.machine_sales.name', 'Machine Sales'), path: "/services/sales", description: t('navigation.services.machine_sales.description', 'Best deals guaranteed') },
           { name: t('navigation.services.technical_training.name', 'Technical Training'), path: "/services/training", description: t('navigation.services.technical_training.description', 'Expert-led sessions') },
           { name: t('navigation.services.fabrication_services.name', 'Fabrication Services'), path: "/fabrication-services", description: t('navigation.services.fabrication_services.description', 'Precision engineering') }
@@ -340,7 +340,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
     >
       <div className="mx-auto px-3 sm:px-4 md:px-6 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl">
         <div className="flex items-center justify-start gap-3 lg:gap-4 xl:gap-5 2xl:gap-6 h-14 sm:h-16 md:h-18 lg:h-20 xl:h-20 2xl:h-24">
-          
+
           {/* Logo */}
           <Link 
             to="/" 
@@ -359,7 +359,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
           <div className="hidden lg:flex items-center gap-2 xl:gap-3 2xl:gap-4 flex-shrink-0">
             {navItems.map((item) => {
               const isActive = isActivePath(item.path);
-              
+
               if (item.type === "link") {
                 return (
                   <Link
@@ -451,7 +451,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
               variant="icons" 
               className="px-1.5 py-1" 
             />
-            
+
             {/* User Menu */}
             {user ? (
               <div className="relative z-50">
@@ -647,7 +647,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                       className="w-full border-gray-700/50 hover: text-gray-300 hover:text-white bg-transparent hover:bg-white/5 rounded-xl px-4 py-3 justify-center -sm transition-all duration-200 card-glass-dark" 
                     />
                   </div>
-                  
+
                   {user ? (
                     <div className="space-y-2 px-2">
                       <div className="px-4 py-3 text-gray-300 border border-amber-500/20 rounded-xl">

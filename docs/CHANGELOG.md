@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Phase 5: Vertical Plugin System (Almona as first vertical)
 
 ### Changed
-- **Positioning**: Updated from "AI startup" to "Industrial Computing System with Verified Intelligence"
+- **Positioning**: Updated from "automation startup" to "Industrial Computing System with Verified Intelligence"
 - **Architecture**: Added constitutional architecture diagram showing deterministic authority hierarchy
 - **Documentation**: Created documentation hierarchy (ARCHITECTURE.md, DEPLOYMENT.md, API.md, CASE_STUDIES.md, CHANGELOG.md)
 
@@ -57,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Verification suite executed
   - Production-ready validation complete
 
-- **Calibration Safety Net**: Enterprise-grade AI safety guardrails
+- **Calibration Safety Net**: Enterprise-grade automation safety guardrails
   - ACID transactions
   - Cryptographic signatures
   - Government-ready audit trails
@@ -91,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Feature Categories
 
-### AI/ML Enhancements
+### advisory inference Enhancements
 - ✅ Egyptian Fabrication Intelligence (100% shape coverage)
 - ✅ Workshop Pattern Learning
 - ✅ Real-time Quote Calculator

@@ -4,7 +4,7 @@
  * Professional menu system for Drafting Workbench with File, Edit, View, Tools, and Help menus.
  * Reuses existing dropdown menu components and integrates with drafting operations.
  * 
- * Constitutional: Deterministic menu system, no ML/AI
+ * Constitutional: Deterministic menu system, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

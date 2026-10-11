@@ -1,21 +1,21 @@
 {
   "page": {
     "title": "Ürünler | Almona",
-    "description": "Akıllı imalat. Mısır mükemmelliği. YILMAZ makineleri, Fabricator Pro AI, Endüstri 4.0.",
+    "description": "Akıllı imalat. Mısır mükemmelliği. YILMAZ makineleri, Fabricator Pro automation, Endüstri 4.0.",
     "keywords": "YILMAZ makineleri, CNC tezgahları Mısır, endüstriyel ekipman, alüminyum işleme, PVC makineleri, kopya yönlendiricileri"
   },
   "hero": {
     "title": "Endüstri 4.0",
     "subtitle": "Akıllı Üretim",
-    "description": "Yapay zeka destekli öneriler, IoT bağlantısı ve dijital ikiz teknolojisi ile endüstriyel makinelerin geleceğini deneyimleyin. Akıllı otomasyon ve tahmine dayalı analitik ile üretiminizi dönüştürün.",
-    "aiWizard": "🚀 AI Makine Sihirbazı",
+    "description": "otomasyon destekli öneriler, IoT bağlantısı ve dijital ikiz teknolojisi ile endüstriyel makinelerin geleceğini deneyimleyin. Akıllı otomasyon ve tahmine dayalı analitik ile üretiminizi dönüştürün.",
+    "aiWizard": "🚀 automation Makine Sihirbazı",
     "liveConfigurator": "⚙️ Canlı Yapılandırıcı",
     "viewAnalytics": "📊 Analitikleri Görüntüle"
   },
   "industry40": {
     "features": {
       "aiSearch": {
-        "title": "Yapay Zeka Destekli Arama",
+        "title": "otomasyon Destekli Arama",
         "description": "Gereksinimlerinize göre akıllı makine önerileri"
       },
       "analytics": {
@@ -73,7 +73,7 @@
   "technology": {
     "title": "Gelişmiş Teknoloji",
     "aiRecommendations": {
-      "title": "AI Önerileri",
+      "title": "automation Önerileri",
       "description": "Makine öğrenme algoritmaları, özel üretim ihtiyaçlarınız için mükemmel ekipmanı önermek üzere gereksinimlerinizi analiz eder."
     },
     "iotConnectivity": {
@@ -89,7 +89,7 @@
     "title": "Sık Sorulan Sorular",
     "industry40": {
       "question": "YILMAZ makinelerini Endüstri 4.0'a hazır yapan nedir?",
-      "answer": "YILMAZ makineleri, IoT bağlantısı, AI destekli tanılama, tahmine dayalı bakım ve optimal performans izleme için dijital ikiz teknolojisi özelliklerine sahiptir."
+      "answer": "YILMAZ makineleri, IoT bağlantısı, automation destekli tanılama, tahmine dayalı bakım ve optimal performans izleme için dijital ikiz teknolojisi özelliklerine sahiptir."
     },
     "installation": {
       "question": "Kurulum ve eğitim sağlıyor musunuz?",
@@ -138,7 +138,7 @@
     "comingSoon": "Yapılandırıcı Yakında",
     "comingSoonDescription": "Makineleri özelleştirmenize, 3D modelleri görüntülemenize ve gerçek zamanlı fiyatlandırma almanıza olanak tanıyacak gelişmiş bir etkileşimli yapılandırıcı üzerinde çalışıyoruz.",
     "close": "Kapat",
-    "tryWizard": "Bunun Yerine AI Sihirbazını Deneyin"
+    "tryWizard": "Bunun Yerine automation Sihirbazını Deneyin"
   },
   "comparison": {
     "maxReached": "Maksimuma ulaşıldı",

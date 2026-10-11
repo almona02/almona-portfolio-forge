@@ -30,13 +30,13 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # CRITICAL: Scan for ML/AI imports in Tier 0 components
+      # CRITICAL: Scan for advisory inference imports in Tier 0 components
       - name: 🚨 Scan for ML/AI Contamination (AICS-001 §5.10.2)
         id: ml-scan
         run: |
           echo "🔍 Scanning Tier 0 components for ML/AI imports..."
 
-          # Define forbidden ML/AI libraries
+          # Define forbidden advisory inference libraries
           FORBIDDEN_IMPORTS=(
             "tensorflow"
             "pytorch"

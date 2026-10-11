@@ -60,7 +60,7 @@
 ## Part 3: Violation Simulation (4 minutes)
 
 ### Step 1: Attempt Constitutional Violation
-> "Watch what happens when we try to add AI to a protected zone"
+> "Watch what happens when we try to add automation to a protected zone"
 
 **Demonstrate:**
 ```typescript
@@ -118,7 +118,7 @@ import { YDTService } from '@/lib/ydt/YDTService';
 | Trust | "Governance isn't policy - it's code that blocks violations" |
 | Audit | "Every decision traceable, verifiable, defensible" |
 | Continuity | "Survives team changes, technology shifts, market evolution" |
-| Risk | "AI bounded, execution deterministic, authority explicit" |
+| Risk | "automation bounded, execution deterministic, authority explicit" |
 
 ---
 
@@ -141,6 +141,6 @@ import { YDTService } from '@/lib/ydt/YDTService';
 ## Demo Success Criteria
 
 - [ ] Stakeholders understand constitutional vs conventional software
-- [ ] Can articulate key guarantees (deterministic replay, no silent AI, etc.)
+- [ ] Can articulate key guarantees (deterministic replay, no silent automation, etc.)
 - [ ] See value in institutional-grade governance
 - [ ] Trust through observable enforcement, not promises

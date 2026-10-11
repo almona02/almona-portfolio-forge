@@ -11,7 +11,7 @@
 ### Testimonial 1: Cairo Aluminum Workshop
 
 **Quote:**
-> "We achieved 99.7% accuracy on our YILMAZ ALM-6510. The AI optimization reduced our material waste from 18% to 8% - that's $12,000 saved monthly. First-time-right CNC files eliminated 3 days/month rework."
+> "We achieved 99.7% accuracy on our YILMAZ ALM-6510. The system optimization reduced our material waste from 18% to 8% - that's $12,000 saved monthly. First-time-right CNC files eliminated 3 days/month rework."
 
 **Attribution:** Ahmed Mahmoud, Owner, Cairo Aluminum Workshop
 

@@ -1,5 +1,5 @@
 
- 
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button-gold-tier';
 import { GoldTierCard as Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card-gold-tier';
@@ -72,7 +72,7 @@ const Login = () => {
     } catch (error: any) {
       const errorMessage = error?.message || error?.error?.message || 'We were unable to complete your login request. Please verify your credentials and try again.';
       setError(errorMessage);
-      
+
       toast.error(errorMessage, {
         duration: 6000,
         style: {
@@ -83,7 +83,7 @@ const Login = () => {
           borderRadius: '8px',
         },
       });
-      
+
       console.error('Login error details:', {
         message: errorMessage,
         originalError: error,
@@ -102,7 +102,7 @@ const Login = () => {
         style={{ backgroundImage: "url('/images/machines/cutting-machine.jpg')" }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-almona-dark/55 via-almona-dark/20 to-almona-dark/65 backdrop-blur-[1px]" />
-        
+
         <motion.div 
           variants={SCALE_IN}
           initial="hidden"
@@ -188,7 +188,7 @@ const Login = () => {
                   </Button>
                 </motion.div>
               </form>
-              
+
               <div className="mt-8 text-center text-sm text-gray-400">
                 {t('auth.dont_have_account', "Don't have an account?")}{' '}
                 <a href="/register" className="font-semibold text-amber-500 hover:text-amber-400 hover:underline transition-colors">
@@ -204,4 +204,4 @@ const Login = () => {
 };
 
 export default withErrorBoundary(Login);
-            
+

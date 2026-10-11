@@ -31,7 +31,7 @@ The Precision Upgrade Plan correctly identifies the three real competitive gaps 
 
 **Your Rule:**
 > "No upgrade is allowed to:
-> - Introduce AI into Tier 3 execution
+> - Introduce automation into Tier 3 execution
 > - Break deterministic replay
 > - Create mutable truth
 > - Shift authority from human + constitution to software convenience"
@@ -101,7 +101,7 @@ The Precision Upgrade Plan correctly identifies the three real competitive gaps 
 class Phase1DiscoveryMode {
   private discoveryMode: boolean = true;
   private systemStopLog: SystemStopRecord[] = [];
-  
+
   /**
    * Handle system stop in discovery mode
    */
@@ -117,16 +117,16 @@ class Phase1DiscoveryMode {
       resolution: 'PENDING',
       ruleRefinement: null
     };
-    
+
     this.systemStopLog.push(record);
-    
+
     // In discovery mode, system stops are expected and correct
     console.log(`[DISCOVERY MODE] System stop recorded: ${reason}`);
     console.log(`[DISCOVERY MODE] This is expected behavior. Rule refinement may be needed.`);
-    
+
     return record;
   }
-  
+
   /**
    * Refine rules based on discovery period learnings
    */
@@ -135,7 +135,7 @@ class Phase1DiscoveryMode {
     // 1. Incomplete rules
     // 2. Edge cases
     // 3. Standards interpretation inconsistencies
-    
+
     const refinedRules = this.analyzeAndRefine(learnings);
     return refinedRules;
   }
@@ -196,7 +196,7 @@ interface HardenerRule {
   sashSize: { width: { min: number; max: number }; height: { min: number; max: number } }; // ✅ Allowed
   openingType: string[];         // ✅ Allowed
   egyptianCodeCompliant: boolean; // ✅ Allowed
-  
+
   // ❌ FORBIDDEN: Supplier data dependencies
   // supplierId?: string;        // ❌ FORBIDDEN
   // supplierPrice?: number;     // ❌ FORBIDDEN
@@ -215,7 +215,7 @@ class HardenerRuleValidator {
       'supplierPrice' in rule ||
       'supplierAvailability' in rule ||
       'supplierPackId' in rule;
-    
+
     if (hasSupplierDependency) {
       return {
         isValid: false,
@@ -224,7 +224,7 @@ class HardenerRuleValidator {
         requiresSystemStop: true
       };
     }
-    
+
     return { isValid: true };
   }
 }
@@ -332,7 +332,7 @@ class HardenerValidationGate {
         requiresHumanIntervention: true
       };
     }
-    
+
     if (selection.validation === 'WARNING') {
       return {
         isValid: true,
@@ -341,7 +341,7 @@ class HardenerValidationGate {
         requiresHumanAcknowledgment: true
       };
     }
-    
+
     return {
       isValid: true,
       systemStop: false,
@@ -378,7 +378,7 @@ export const HardenerDisplay: React.FC<HardenerDisplayProps> = ({
         <span className="value">{hardenerSelection.hardenerCode}</span>
         <span className="tier-badge">Tier 3</span>
       </div>
-      
+
       <div className="hardener-justification">
         <span className="label">Selection Rule:</span>
         <span className="rule-id">{hardenerSelection.ruleId}</span>
@@ -386,19 +386,19 @@ export const HardenerDisplay: React.FC<HardenerDisplayProps> = ({
           <InfoIcon />
         </Tooltip>
       </div>
-      
+
       {hardenerSelection.validationDetails.egyptianCodeCompliant && (
         <div className="compliance-badge">
           ✅ Egyptian Code 2020 Compliant
         </div>
       )}
-      
+
       {mode === 'certified' && (
         <div className="certified-notice">
           ⚠️ Certified Mode: Hardener selection cannot be overridden
         </div>
       )}
-      
+
       {mode !== 'certified' && (
         <Button 
           onClick={handleOverride}
@@ -489,7 +489,7 @@ interface SupplierPack {
   hardware: Hardware[];
   priceReference: PriceReference;
   certification: Certification;
-  
+
   // ❌ FORBIDDEN: Constraint definitions
   // constraints?: Constraint[];  // ❌ FORBIDDEN
   // requirements?: Requirement[]; // ❌ FORBIDDEN
@@ -508,7 +508,7 @@ class SupplierPackValidator {
       'rules' in pack ||
       pack.profiles.some(p => 'constraints' in p) ||
       pack.hardware.some(h => 'constraints' in h);
-    
+
     if (hasConstraintDefinitions) {
       return {
         isValid: false,
@@ -517,13 +517,13 @@ class SupplierPackValidator {
         requiresSystemStop: true
       };
     }
-    
+
     // Supplier packs may only reference existing Tier 3 constraints
     const referencedConstraints = this.extractConstraintReferences(pack);
     const allConstraintsValid = referencedConstraints.every(ref => 
       this.tier3ConstraintEngine.constraintExists(ref)
     );
-    
+
     if (!allConstraintsValid) {
       return {
         isValid: false,
@@ -532,7 +532,7 @@ class SupplierPackValidator {
         requiresSystemStop: true
       };
     }
-    
+
     return { isValid: true };
   }
 }
@@ -550,7 +550,7 @@ interface SupplierPackCertification {
   certificationStatus: 'pending' | 'certified' | 'rejected' | 'superseded';
   certificationDate: Date;
   certifiedBy: string;  // Human certifier ID
-  
+
   validationResults: {
     geometryCompatibility: {
       status: 'PASS' | 'FAIL' | 'WARNING';
@@ -568,7 +568,7 @@ interface SupplierPackCertification {
       immutable: boolean;
     };
   };
-  
+
   constitutionalMetadata: {
     tier: 'Tier 2';  // Advisory only
     deterministic: false;  // Prices can change
@@ -601,7 +601,7 @@ class SupplierPackService {
     supplierPackId: string
   ): ProfileSuggestion {
     const pack = this.loadSupplierPack(supplierPackId);
-    
+
     // Tier 2: Suggest, don't decide
     const suggestions = pack.profiles
       .filter(profile => this.matchesConstraints(profile, windowUnit))
@@ -613,14 +613,14 @@ class SupplierPackService {
         tier: 'Tier 2' as const,
         deterministic: false
       }));
-    
+
     return {
       suggestions,
       constitutionalNote: 'These are advisory suggestions. Final selection must pass Tier 3 validation.',
       requiresTier3Validation: true
     };
   }
-  
+
   /**
    * Validate supplier suggestion against Tier 3 constraints
    */
@@ -633,7 +633,7 @@ class SupplierPackService {
       suggestion.profileId,
       windowUnit
     );
-    
+
     if (!validation.isValid) {
       return {
         isValid: false,
@@ -643,7 +643,7 @@ class SupplierPackService {
         systemStop: true
       };
     }
-    
+
     return {
       isValid: true,
       tier: 'Tier 3',
@@ -744,7 +744,7 @@ class AlmonaRealityOSEventEmitter {
     const eventTime = timestamp.getTime();
     const currentTime = Date.now();
     const timeDifference = currentTime - eventTime;
-    
+
     // Allow 5-second tolerance for clock skew, but reject anything older
     if (timeDifference > 5000) {
       // Emit FAULT event instead of retroactive event
@@ -757,13 +757,13 @@ class AlmonaRealityOSEventEmitter {
         requiresHumanInvestigation: true
       });
     }
-    
+
     // Validate proof requirements
     const validation = this.validateProof(proof, eventType);
     if (!validation.isValid) {
       throw new ProofValidationError(validation.errors);
     }
-    
+
     // Map to RealityOS event
     const mapping = this.getEventMapping(eventType);
     const realityOSEvent = this.mapToRealityOSEvent(
@@ -773,14 +773,14 @@ class AlmonaRealityOSEventEmitter {
       mapping,
       timestamp  // Use provided timestamp (within tolerance)
     );
-    
+
     // Emit to RealityOS Event Ledger
     const eventLedger = new EventLedger();
     const recordedEvent = await eventLedger.record(realityOSEvent);
-    
+
     return recordedEvent;
   }
-  
+
   /**
    * Emit FAULT event when original event was missed
    */
@@ -805,7 +805,7 @@ class AlmonaRealityOSEventEmitter {
         constitutional_note: 'Retroactive event emission is forbidden. FAULT event emitted instead (AICS-001 §7.4, RealityOS Principle 2).'
       }
     };
-    
+
     const eventLedger = new EventLedger();
     return await eventLedger.record(faultEvent);
   }
@@ -914,7 +914,7 @@ class AlmonaRealityOSEventEmitter {
     if (!validation.isValid) {
       throw new ProofValidationError(validation.errors);
     }
-    
+
     // 2. Map to RealityOS event
     const mapping = this.getEventMapping(eventType);
     const realityOSEvent = this.mapToRealityOSEvent(
@@ -923,15 +923,15 @@ class AlmonaRealityOSEventEmitter {
       proof,
       mapping
     );
-    
+
     // 3. Emit to RealityOS Event Ledger
     const eventLedger = new EventLedger();
     const recordedEvent = await eventLedger.record(realityOSEvent);
-    
+
     // 4. Return for audit
     return recordedEvent;
   }
-  
+
   /**
    * Emit at critical decision points
    */
@@ -950,7 +950,7 @@ class AlmonaRealityOSEventEmitter {
       }
     );
   }
-  
+
   async emitCutListAuthorized(
     cutList: CutList,
     operatorId: string,
@@ -967,7 +967,7 @@ class AlmonaRealityOSEventEmitter {
       }
     );
   }
-  
+
   async emitCNCFileReleased(
     cncFile: CNCFile,
     operatorId: string,
@@ -986,7 +986,7 @@ class AlmonaRealityOSEventEmitter {
       }
     );
   }
-  
+
   async emitProductionStarted(
     production: Production,
     operatorId: string,
@@ -1005,7 +1005,7 @@ class AlmonaRealityOSEventEmitter {
       }
     );
   }
-  
+
   async emitProductionCompleted(
     production: Production,
     operatorId: string,
@@ -1036,31 +1036,31 @@ class AlmonaRealityOSEventEmitter {
 // 1. EngineeringBay.tsx - Fabrication Intent Created
 const handleGenerateComponents = async () => {
   const components = generateComponentsFromGrid(...);
-  
+
   // Emit RealityOS event
   await realityOSEventEmitter.emitFabricationIntentCreated(
     windowUnit,
     currentUser.id
   );
-  
+
   // Continue with component generation
 };
 
 // 2. CuttingOptimizationPanel.tsx - Cut List Authorized
 const handleAuthorizeCutList = async () => {
   const cutList = generateCuttingList(...);
-  
+
   // Take screenshot for proof
   const screenshot = await captureScreenshot();
   const screenshotHash = await hashImage(screenshot);
-  
+
   // Emit RealityOS event
   await realityOSEventEmitter.emitCutListAuthorized(
     cutList,
     currentUser.id,
     screenshotHash
   );
-  
+
   // Continue with authorization
 };
 
@@ -1069,7 +1069,7 @@ const handleExportCNC = async () => {
   const cncFile = generateCNCFile(...);
   const fileHash = await hashFile(cncFile);
   const qrCode = await generateQRCode(cncFile.id);
-  
+
   // Emit RealityOS event
   await realityOSEventEmitter.emitCNCFileReleased(
     cncFile,
@@ -1077,7 +1077,7 @@ const handleExportCNC = async () => {
     fileHash,
     qrCode
   );
-  
+
   // Continue with export
 };
 
@@ -1085,7 +1085,7 @@ const handleExportCNC = async () => {
 const handleStartProduction = async () => {
   const machineQR = await scanMachineQR();
   const workshopGPS = await getCurrentGPS();
-  
+
   // Emit RealityOS event
   await realityOSEventEmitter.emitProductionStarted(
     production,
@@ -1093,7 +1093,7 @@ const handleStartProduction = async () => {
     machineQR,
     workshopGPS
   );
-  
+
   // Continue with production
 };
 ```
@@ -1148,13 +1148,13 @@ class ImportBridgeService {
   async importDXF(file: File): Promise<ImportResult> {
     // 1. Parse DXF
     const dxfData = await parseDXF(file);
-    
+
     // 2. Map to WindowUnit
     const windowUnit = this.mapDXFToWindowUnit(dxfData);
-    
+
     // 3. Validate (Tier 3)
     const validation = this.tier3Validator.validate(windowUnit);
-    
+
     if (!validation.isValid) {
       return {
         success: false,
@@ -1163,7 +1163,7 @@ class ImportBridgeService {
         constitutionalNote: 'DXF import failed Tier 3 validation. System stop required.'
       };
     }
-    
+
     return {
       success: true,
       windowUnit,
@@ -1171,20 +1171,20 @@ class ImportBridgeService {
       constitutionalNote: 'DXF import successful. All outputs require human validation.'
     };
   }
-  
+
   async importLogiKalExport(file: File): Promise<ImportResult> {
     // Limited import - only what we can validate deterministically
     const logikalData = await parseLogiKalExport(file);
-    
+
     // Map only validated fields
     const windowUnit = this.mapLogiKalToWindowUnit(logikalData, {
       allowPartial: true,
       requireValidation: true
     });
-    
+
     // Tier 3 validation
     const validation = this.tier3Validator.validate(windowUnit);
-    
+
     return {
       success: validation.isValid,
       windowUnit: validation.isValid ? windowUnit : null,
@@ -1217,14 +1217,14 @@ interface ExecutiveTrustDashboard {
     replayAuditAvailability: number;  // Percentage of outputs with replay packages
     certifiedOutputsPercentage: number;
   };
-  
+
   constitutionalCompliance: {
     tier3Purity: number;  // Percentage of operations with no AI
     humanValidationRate: number;  // Percentage of outputs human-validated
     systemStopCount: number;  // System stops (correct behavior)
     auditTrailCompleteness: number;  // Percentage of decisions with full audit trail
   };
-  
+
   realityOSHealth: {
     eventEmissionRate: number;  // Events per day
     humanVerificationRate: number;  // Percentage of events human-verified
@@ -1236,39 +1236,39 @@ interface ExecutiveTrustDashboard {
 // Dashboard Component
 export const ExecutiveTrustDashboard: React.FC = () => {
   const metrics = useTrustMetrics();
-  
+
   return (
     <div className="executive-trust-dashboard">
       <h2>Governance Health</h2>
-      
+
       <MetricCard
         title="Determinism Score"
         value={metrics.governanceHealth.determinismScore}
         target={100}
         status={metrics.governanceHealth.determinismScore >= 95 ? 'healthy' : 'warning'}
       />
-      
+
       <MetricCard
         title="System Stops"
         value={metrics.constitutionalCompliance.systemStopCount}
         description="System stops are correct behavior (AICS-001 §2.8)"
         status="info"
       />
-      
+
       <MetricCard
         title="Replay Audit Availability"
         value={metrics.governanceHealth.replayAuditAvailability}
         target={100}
         status={metrics.governanceHealth.replayAuditAvailability >= 90 ? 'healthy' : 'warning'}
       />
-      
+
       <MetricCard
         title="Tier 3 Purity"
         value={metrics.constitutionalCompliance.tier3Purity}
         target={100}
         status={metrics.constitutionalCompliance.tier3Purity === 100 ? 'healthy' : 'critical'}
       />
-      
+
       <MetricCard
         title="RealityOS Chain Integrity"
         value={metrics.realityOSHealth.chainIntegrity}

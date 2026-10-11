@@ -35,9 +35,9 @@ const features: Feature[] = [
   },
   {
     icon: Sparkles,
-    title: 'AI-Powered Optimization',
+    title: 'software-assisted Optimization',
     description:
-      'Our learning algorithms reduce material waste by an average of 12%, saving you money on every job. Let our AI turn your offcuts back into profit.',
+      'Our learning algorithms reduce material waste by an average of 12%, saving you money on every job. Let our automation turn your offcuts back into profit.',
     highlight: true,
   },
   {
@@ -48,9 +48,9 @@ const features: Feature[] = [
   },
   {
     icon: Brain,
-    title: 'AI-Powered Suggestions',
+    title: 'software-assisted Suggestions',
     description:
-      'Our CalibrationLearner AI acts as your personal advisor, suggesting optimal settings based on the collective knowledge of the entire user base, helping you achieve perfect cuts from day one.',
+      'Our CalibrationLearner automation acts as your personal advisor, suggesting optimal settings based on the collective knowledge of the entire user base, helping you achieve perfect cuts from day one.',
     highlight: true,
   },
   {

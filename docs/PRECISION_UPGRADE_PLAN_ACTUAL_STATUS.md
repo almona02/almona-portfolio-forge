@@ -291,8 +291,8 @@
 **Week 5-8: Import Bridge Implementation**
 - [ ] Implement DXF parser (real implementation)
 - [ ] Implement CSV parser (real implementation)
-- [ ] Implement LogiKal parser (limited)
-- [ ] Implement KLAES parser (limited)
+- [ ] Implement reference system parser (limited)
+- [ ] Implement reference system parser (limited)
 - [ ] Create import UI component
 - [ ] Integrate into workflow
 

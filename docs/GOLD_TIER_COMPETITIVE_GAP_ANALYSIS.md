@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This document identifies what ALMONA needs to reach functional parity with gold-tier competitors (Orgadata Logikal, Klaes) while maintaining constitutional boundaries. The analysis separates **must-have features** from **should-not-copy traps**.
+This document identifies what ALMONA needs to reach functional parity with gold-tier competitors (reference system reference system, reference system) while maintaining constitutional boundaries. The analysis separates **must-have features** from **should-not-copy traps**.
 
 **Key Insight:** ALMONA does not need to out-feature them—it needs to **out-trust them at the institutional level** while matching 80% of their visible capabilities.
 
@@ -22,7 +22,7 @@ You are **not behind** in these areas—actually **ahead**:
 | Area | ALMONA Advantage | Competitive Impact |
 |------|------------------|-------------------|
 | **Governance & Authority Separation** | Constitutional boundaries, Tier 3 purity | Institutional trust, legal defensibility |
-| **Execution Determinism** | 99.8%+ accuracy, zero AI in Tier 3 | Production-floor reliability |
+| **Execution Determinism** | 99.8%+ accuracy, zero automation in Tier 3 | Production-floor reliability |
 | **RealityOS / Traceability** | Full audit trail, ledger-based truth | National platform readiness |
 | **Modern Architecture** | Web-native, API-first, multi-tenant | Scalability, integration ease |
 | **National Platform Direction** | Multi-tenant, white-label ready | Government/enterprise sales |
@@ -46,7 +46,7 @@ These are **expectation gaps**, not architectural risks.
 - Integration with BOM truth
 
 **Why This Matters:**
-> Orgadata & Klaes win sales rooms, not workshops. The quotation engine is how technical offices evaluate software before workshops ever see it.
+> reference system & reference system win sales rooms, not workshops. The quotation engine is how technical offices evaluate software before workshops ever see it.
 
 **ALMONA Needs:**
 - **Quotation Compiler** (Tier 1 + Tier 3 hybrid)
@@ -94,7 +94,7 @@ These are **expectation gaps**, not architectural risks.
   - "Tested against [Standard]"
 
 **Constitutional Constraint:**
-- ❌ No "AI-generated" system packs
+- ❌ No "automation-generated" system packs
 - ✅ All system packs must have explicit certification authority
 - ✅ Versioning is immutable (constitutional truth)
 
@@ -188,7 +188,7 @@ These are **expectation gaps**, not architectural risks.
   - Constitutional boundaries as a feature, not a limitation
 - **Institutional Guarantees:**
   - "99.8%+ accuracy guarantee" (Tier 3 determinism)
-  - "Zero AI in execution code" (constitutional compliance)
+  - "Zero automation in execution code" (constitutional compliance)
   - "Full audit trail" (RealityOS traceability)
 - **Governance Artifacts:**
   - Constitutional Guardian Dashboard (show institutional health)
@@ -218,7 +218,7 @@ These are **not features**—they are **expectation enablers** that gold-tier bu
 
 **ALMONA Needs:**
 - **Cost Breakdown Narrative Generator:**
-  - Not AI "recommendation" (constitutionally prohibited)
+  - Not automation "recommendation" (constitutionally prohibited)
   - Deterministic explanation from BOM deltas
   - Output: "Option B costs +7.4% because mullion depth increased from 120mm → 150mm and hardware set changed."
 - **Sensitivity Analysis:**
@@ -229,7 +229,7 @@ These are **not features**—they are **expectation enablers** that gold-tier bu
 **Constitutional Constraint:**
 - ❌ No pricing "recommendations" (that's business judgment)
 - ✅ Cost explanation from BOM deltas (deterministic, factual)
-- ✅ Sensitivity analysis from system pack rules (not AI inference)
+- ✅ Sensitivity analysis from system pack rules (not automation inference)
 
 **Where It Fits:**
 **Phase 2 (Week 17-20), inside Quotation Engine, not a new module.**
@@ -249,7 +249,7 @@ These are **not features**—they are **expectation enablers** that gold-tier bu
 - Legacy project "lock & archive" functionality
 
 **Why This Matters:**
-> Gold-tier buyers fear: "We already have 10 years of Orgadata projects. What happens to them?" You don't need full migration—but you need a safety net that reduces switching anxiety.
+> Gold-tier buyers fear: "We already have 10 years of reference system projects. What happens to them?" You don't need full migration—but you need a safety net that reduces switching anxiety.
 
 **ALMONA Needs:**
 - **Legacy Project Reference Mode:**
@@ -269,8 +269,8 @@ These are **not features**—they are **expectation enablers** that gold-tier bu
 **Phase 1.5 (between Week 13-16), very small scope, huge trust gain.**
 
 **Files to Create:**
-- `src/lib/legacy/OrgadataImporter.ts` - Read-only Orgadata import
-- `src/lib/legacy/KlaesImporter.ts` - Read-only Klaes import
+- `src/lib/legacy/OrgadataImporter.ts` - Read-only reference system import
+- `src/lib/legacy/KlaesImporter.ts` - Read-only reference system import
 - `src/lib/legacy/LegacyProjectViewer.ts` - Reference viewer
 - `src/lib/legacy/BOMComparator.ts` - Historical comparison
 - `src/components/legacy/LegacyProjectArchive.tsx` - Archive UI
@@ -301,7 +301,7 @@ These are **not features**—they are **expectation enablers** that gold-tier bu
   - Immutable audit trail
 
 **Constitutional Constraint:**
-- ❌ No automatic overrides (that's AI judgment)
+- ❌ No automatic overrides (that's automation judgment)
 - ✅ Explicit human responsibility (visible, auditable)
 - ✅ Override reasons required (accountability)
 
@@ -374,7 +374,7 @@ Do **not** chase these traps:
 |------------------------|-------------------|--------|-------------------|
 | **System Pack Library** | `src/data/profileSystems/` | ✅ Exists | Needs certification governance |
 | **BOM Generation** | `CurtainWallBOMGenerator.ts` | ✅ Phase 1 | Tier 3, deterministic |
-| **Cut List Export** | `CurtainWallCutListGenerator.ts` | ✅ Phase 1 | Tier 3, zero AI |
+| **Cut List Export** | `CurtainWallCutListGenerator.ts` | ✅ Phase 1 | Tier 3, zero automation |
 | **CNC Integration** | `MachineExportManager.ts` | ✅ Exists | Multi-brand support |
 | **Quotation Engine** | ❌ Missing | 🔴 Phase 2 | Critical gap |
 | **Installation Diagrams** | ❌ Missing | 🟠 Phase 2 | Site reality layer |
@@ -388,7 +388,7 @@ Do **not** chase these traps:
 
 ## 5. The Real Competitive Truth
 
-**Orgadata & Klaes are gold-tier for engineers.**  
+**reference system & reference system are gold-tier for engineers.**
 **ALMONA can become gold-tier for institutions.**
 
 That's a different crown.
@@ -428,10 +428,10 @@ That's a different crown.
 ### For Workshops (Production Floor)
 
 **Message:**
-> "ALMONA generates the same cut lists and CNC code as Orgadata/Klaes, but with 99.8%+ accuracy guarantee and zero AI in execution. That's production-floor reliability."
+> "ALMONA generates the same cut lists and CNC code as Orgadata/Klaes, but with 99.8%+ accuracy guarantee and zero automation in execution. That's production-floor reliability."
 
 **Key Differentiators:**
-- Tier 3 determinism (zero AI inference)
+- Tier 3 determinism (zero automation inference)
 - Multi-brand CNC support (not locked to one vendor)
 - Fabrication-first mindset (workshop-optimized)
 - Constitutional compliance (no surprises)

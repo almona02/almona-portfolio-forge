@@ -110,7 +110,7 @@ This document provides comprehensive implementation metrics and codebase structu
 - `manualMullionRenderer.ts` - Mullion rendering
 - `hardwarePlaceholder.ts` - Hardware visualization
 
-**AI/ML Services** (20+ files):
+**advisory inference Services** (20+ files):
 - `CalibrationLearner.ts` - K-factor prediction
 - `PresetMatcher.ts` - Pattern matching
 - `AlgorithmPredictor.ts` - Strategy selection
@@ -195,7 +195,7 @@ This document provides comprehensive implementation metrics and codebase structu
 - `dxf_parser.py` - DXF parsing
 - `profile_import.py` - Profile import
 
-**Intelligence & AI**:
+**Intelligence & automation**:
 - `smart_scan.py` - OCR/CV processing
 - `smart_scan_enhanced.py` - Enhanced scanning
 - `smart_scan_assembly.py` - Assembly scanning
@@ -401,8 +401,8 @@ This document provides comprehensive implementation metrics and codebase structu
 - Vercel (Frontend hosting, CDN)
 - Railway (Backend hosting)
 
-**AI/ML Services**:
-- Google Generative AI
+**advisory inference Services**:
+- Google Generative automation
 - Hugging Face Transformers
 - TensorFlow.js (client-side)
 - ONNX Runtime (server-side)

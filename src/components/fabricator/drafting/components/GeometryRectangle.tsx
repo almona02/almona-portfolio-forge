@@ -52,18 +52,18 @@ export const GeometryRectangle = React.memo<GeometryRectangleProps>(({
   const centerY = rect.y + rect.height / 2;
   const rotationAngle = rect.rotation || 0;
   const rotationRad = (rotationAngle * Math.PI) / 180;
-  
+
   // Get active template for grid rendering
   const activeTemplate = drafting.getActiveTemplate();
   const availableTemplates = drafting.getAvailableTemplates();
   const template = availableTemplates.find(t => t.id === activeTemplate);
-  
+
   // Calculate grid lines based on template
   const gridLines: React.ReactNode[] = [];
   if (template && template.rows > 0 && template.cols > 0) {
     const cellWidth = rect.width / template.cols;
     const cellHeight = rect.height / template.rows;
-    
+
     // Draw vertical mullions (between columns)
     for (let col = 1; col < template.cols; col++) {
       const x = rect.x + col * cellWidth;
@@ -81,7 +81,7 @@ export const GeometryRectangle = React.memo<GeometryRectangleProps>(({
         />
       );
     }
-    
+
     // Draw horizontal transoms (between rows)
     for (let row = 1; row < template.rows; row++) {
       const y = rect.y + row * cellHeight;
@@ -100,7 +100,7 @@ export const GeometryRectangle = React.memo<GeometryRectangleProps>(({
       );
     }
   }
-  
+
   return (
     <g key={rect.id || index}>
       {/* Hover overlay - Enhanced with amber theme */}
@@ -117,7 +117,7 @@ export const GeometryRectangle = React.memo<GeometryRectangleProps>(({
           className="pointer-events-none transition-all duration-150"
         />
       )}
-      
+
       {/* Selection overlay - Enhanced with amber theme and glow */}
       {isSelected && (
         <>
@@ -159,7 +159,7 @@ export const GeometryRectangle = React.memo<GeometryRectangleProps>(({
           />
         </>
       )}
-      
+
       {/* Main rectangle - Layer-aware rendering with rotation */}
       <g transform={`translate(${centerX}, ${centerY}) rotate(${rotationAngle}) translate(${-centerX}, ${-centerY})`}>
         <rect
@@ -182,11 +182,11 @@ export const GeometryRectangle = React.memo<GeometryRectangleProps>(({
           onMouseLeave={onMouseLeave}
           onKeyDown={onKeyDown}
         />
-        
+
         {/* Template grid lines (mullions/transoms) */}
         {gridLines}
       </g>
-      
+
       {/* Selection handles (only when selected and not locked) */}
       {isSelected && !isLocked && (
         <>
@@ -208,13 +208,13 @@ export const GeometryRectangle = React.memo<GeometryRectangleProps>(({
               className="cursor-nwse-resize transition-all duration-150 hover:scale-110"
             />
           ))}
-          
+
           {/* Rotation handle and arc indicator */}
           {rotationAngle !== 0 && (() => {
             const handleRadius = 25;
             const handleX = centerX + handleRadius * Math.cos(rotationRad - Math.PI / 2);
             const handleY = centerY + handleRadius * Math.sin(rotationRad - Math.PI / 2);
-            
+
             return (
               <g>
                 {/* Rotation arc indicator */}
@@ -254,7 +254,7 @@ export const GeometryRectangle = React.memo<GeometryRectangleProps>(({
           })()}
         </>
       )}
-      
+
       {/* Cell type indicator */}
       <text
         x={centerX}

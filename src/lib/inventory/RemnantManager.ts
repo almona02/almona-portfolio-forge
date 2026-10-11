@@ -1,7 +1,7 @@
 /**
  * Enhanced Remnant Management System - CONSTITUTIONAL COMPLIANCE
  * 
- * Tier 3 Protected Determinism - NO AI/ML
+ * Tier 3 Protected Determinism - NO advisory inference
  * 
  * Provides database-integrated remnant tracking with deterministic matching,
  * append-only lifecycle, cryptographic provenance, and constitutional compliance.
@@ -26,7 +26,7 @@ import { supabase } from '../supabase';
  * - available → reserved → used → expired
  * - Status transitions are immutable and tracked in RealityOS
  * 
- * Matching: DETERMINISTIC ONLY (no AI/ML)
+ * Matching: DETERMINISTIC ONLY (no advisory inference)
  * - Exact profile match + system pack + length efficiency + FIFO + location
  * 
  * Provenance: CRYPTOGRAPHIC BINDING
@@ -105,7 +105,7 @@ export class RemnantManager {
    * Warehouse / marketplace keep-drop floor — not bar-pack consumed-length.
    * Canonical bar remnant millimetres come from barRemnantLengthMm.
    * Default is platform ManufacturingSettings (300 mm), not a third 200 mm threshold.
-   * Use fromManufacturingSettings() for yilmazcad-parity (500 mm).
+   * Use fromManufacturingSettings() for reference system-parity (500 mm).
    */
   private minRemnantLength: number;
   private defaultExpirationDays: number = 90; // Default expiration period
@@ -288,7 +288,7 @@ export class RemnantManager {
       if (error) throw error;
       if (!remnants || remnants.length === 0) return [];
 
-      // Map remnants and calculate deterministic scores (CONSTITUTIONAL: NO ML/AI)
+      // Map remnants and calculate deterministic scores (CONSTITUTIONAL: NO advisory inference)
       const remnantScores: Array<{
         remnant: Remnant;
         remnantPredictor: number; // Deterministic rule-based predictor
@@ -298,33 +298,33 @@ export class RemnantManager {
 
       for (const remnantData of remnants) {
         const remnant = this.mapRemnantFromDb(remnantData);
-        
-        // DETERMINISTIC RULE-BASED RANKING (NO ML/AI)
+
+        // DETERMINISTIC RULE-BASED RANKING (NO advisory inference)
         // Ranking factors:
         // 1. Exact profile match (already filtered by query)
         // 2. Same system pack (if available) - 40 points
         // 3. Length efficiency (closer to required length) - 30 points
         // 4. FIFO (older remnants first) - 20 points
         // 5. Location priority - 10 points
-        
+
         let rankingScore = 0;
-        
+
         // Factor 1: System pack match (40 points)
         // Assuming system pack info is in profile or remnant metadata
         // For now, prioritize same profile (already filtered)
         rankingScore += 40;
-        
+
         // Factor 2: Length efficiency (30 points)
         // Score based on how close remnant length is to minimum required cut
         const minCutLength = Math.min(...cuts.map(c => c.length));
         const lengthEfficiency = minCutLength / remnant.length;
         rankingScore += lengthEfficiency * 30;
-        
+
         // Factor 3: FIFO - older remnants first (20 points)
         const ageInDays = (Date.now() - remnant.createdAt.getTime()) / (1000 * 60 * 60 * 24);
         const fifoScore = Math.min(ageInDays / 90, 1) * 20; // Max 20 points for 90+ days old
         rankingScore += fifoScore;
-        
+
         // Factor 4: Location priority (10 points)
         let locationPriority = 0;
         if (prioritizeLocation) {

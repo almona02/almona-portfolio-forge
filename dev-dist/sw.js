@@ -1478,11 +1478,11 @@ define([],(function () { 'use strict';
           return wrap(tx);
         };
       }
-      // Cursor methods are special, as the behaviour is a little more different to standard IDB. In
-      // IDB, you advance the cursor and wait for a new 'success' on the IDBRequest that gave you the
-      // cursor. It's kinda like a promise that can resolve with many values. That doesn't make sense
-      // with real promises, so each advance methods returns a new promise for the cursor object, or
-      // undefined if the end of the cursor has been reached.
+      // editor methods are special, as the behaviour is a little more different to standard IDB. In
+      // IDB, you advance the editor and wait for a new 'success' on the IDBRequest that gave you the
+      // editor. It's kinda like a promise that can resolve with many values. That doesn't make sense
+      // with real promises, so each advance methods returns a new promise for the editor object, or
+      // undefined if the end of the editor has been reached.
       if (getCursorAdvanceMethods().includes(func)) {
         return function (...args) {
           // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
@@ -1749,7 +1749,7 @@ define([],(function () { 'use strict';
               // store the keys of the entries to delete, and then
               // delete the separate transactions.
               // https://github.com/GoogleChrome/workbox/issues/1978
-              // cursor.delete();
+              // editor.delete();
               // We only need to return the URL, not the whole entry.
               entriesToDelete.push(cursor.value);
             } else {
@@ -1760,7 +1760,7 @@ define([],(function () { 'use strict';
         }
         // TODO(philipwalton): once the Safari bug in the following issue is fixed,
         // we should be able to remove this loop and do the entry deletion in the
-        // cursor loop above:
+        // editor loop above:
         // https://github.com/GoogleChrome/workbox/issues/1978
         const urlsDeleted = [];
         for (const entry of entriesToDelete) {

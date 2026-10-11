@@ -33,7 +33,7 @@
 ## 🎯 CONSTITUTIONAL GUARANTEES NOW ENFORCED
 
 ### Tier 3 Protected Determinism - ACTIVE
-✅ **No ML/AI/prediction/learning logic in execution path**
+✅ **No advisory inference/prediction/learning logic in execution path**
 - AlgorithmSelector uses deterministic rules only
 - No confidence scores, no training data, no learning
 - Rule-based selection: `totalCuts < 50 → greedy`, `50-500 → linear`, `500+ → genetic`
@@ -63,7 +63,7 @@
 - No prohibited terminology (analyze, calculate, design, recommend)
 - No engineering authority fields
 - Tier 3 purity verification
-- AI/ML marker detection
+- advisory inference marker detection
 
 ---
 
@@ -138,7 +138,7 @@ npm run build
 
 ### Provable Claims
 - ✅ "ALMONA uses deterministic algorithms only" - TRUE (after AlgorithmPredictor deletion)
-- ✅ "No ML/AI in execution path" - TRUE (after AlgorithmPredictor deletion)
+- ✅ "No advisory inference in execution path" - TRUE (after AlgorithmPredictor deletion)
 - ✅ "Deterministic replay guaranteed" - TRUE (test framework proves it)
 - ✅ "99.8% accuracy" - PROVABLE (framework ready, needs real data)
 
@@ -148,7 +148,7 @@ npm run build
 
 | Requirement | Status | Evidence |
 |------------|--------|----------|
-| No ML/AI in Tier 3 | ✅ ENFORCED | AlgorithmSelector uses rules only |
+| No advisory inference in Tier 3 | ✅ ENFORCED | AlgorithmSelector uses rules only |
 | Deterministic replay | ✅ IMPLEMENTED | Test framework proves it |
 | Human validation required | ✅ ENFORCED | Disclaimers in all outputs |
 | No engineering authority | ✅ ENFORCED | No prohibited fields |
@@ -185,7 +185,7 @@ npm run build
 ✅ **Government-approvable platform** - Tier 3 Protected Determinism
 
 ### What ALMONA Is NOT:
-❌ "Smart design tool" - No AI/ML claims  
+❌ "Smart design tool" - No advisory inference claims
 ❌ "Engineering software" - No authority claims  
 ❌ "Predictive system" - No confidence scores
 
@@ -194,10 +194,10 @@ npm run build
 ## 📝 EVIDENCE FOR STAKEHOLDERS
 
 ### For Workshops:
-"ALMONA uses the same deterministic rules every time. No AI, no learning, no surprises. If you input the same project twice, you get the exact same result."
+"ALMONA uses the same deterministic rules every time. No automation, no learning, no surprises. If you input the same project twice, you get the exact same result."
 
 ### For Enterprises:
-"ALMONA's execution path is fully auditable. Every decision is traceable to a specific rule. Constitutional test suite proves deterministic replay. No ML/AI in Tier 3 operations."
+"ALMONA's execution path is fully auditable. Every decision is traceable to a specific rule. Constitutional test suite proves deterministic replay. No advisory inference in Tier 3 operations."
 
 ### For Government:
 "ALMONA complies with Tier 3 Protected Determinism. All outputs include constitutional disclaimers. No engineering authority claimed. Human validation explicitly required."
@@ -220,7 +220,7 @@ You are now executing how fast you want it adopted.
 
 If you need:
 - Pre-anchor technical assurance memo
-- "Why no AI" explanation for enterprises
+- "Why no automation" explanation for enterprises
 - Government-grade compliance narrative
 
 The constitutional foundation is ready to support any of these.

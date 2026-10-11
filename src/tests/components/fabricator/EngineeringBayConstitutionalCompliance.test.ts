@@ -194,12 +194,12 @@ describe('EngineeringBay AICS-001 Constitutional Compliance', () => {
   });
 
   it('should handle Tier 3 compliance (no ML/AI in execution path)', () => {
-    // AICS-001 Rule 15: Tier 3 compliance means no ML/AI in execution path
+    // AICS-001 Rule 15: Tier 3 compliance means no advisory inference in execution path
     const result = validateDesignWithEnvelope(1200, 1500, testWindowGrid, 'rock60', true);
 
     expect(result.envelopeResult).toBeDefined();
     
-    // Validation should complete without requiring ML/AI models
+    // Validation should complete without requiring advisory inference models
     // This is verified by the validation completing synchronously/quickly
     expect(result).toBeDefined();
     expect(typeof result.isValid).toBe('boolean');

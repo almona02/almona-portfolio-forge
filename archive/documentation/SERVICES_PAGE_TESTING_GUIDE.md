@@ -12,8 +12,8 @@
 ### **1. View Toggle Testing** 🔄
 - [ ] **Visit**: http://localhost:3001/services
 - [ ] **Default View**: Should show "Customer Packages" (Simple View)
-- [ ] **Toggle to Advanced**: Click "AI Technical Hub" button
-- [ ] **Verify**: Advanced view shows existing AI features
+- [ ] **Toggle to Advanced**: Click "automation Technical Hub" button
+- [ ] **Verify**: Advanced view shows existing automation features
 - [ ] **Toggle Back**: Click "Customer Packages" button
 - [ ] **Verify**: Simple view shows 3-tier packages
 
@@ -107,7 +107,7 @@
 - [ ] **Check Performance**: No memory leaks
 
 ### **Component Integration**
-- [ ] **Existing Features**: AI features still work in Advanced view
+- [ ] **Existing Features**: automation features still work in Advanced view
 - [ ] **Ticket System**: Package selection creates proper tickets
 - [ ] **Authentication**: Login/logout works correctly
 - [ ] **Routing**: Navigation works properly

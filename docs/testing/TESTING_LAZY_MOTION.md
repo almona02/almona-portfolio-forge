@@ -48,7 +48,7 @@ Open browser DevTools (F12) and check:
 - [ ] **EnhancedModel3DDialog** - Open 3D model dialog
 - [ ] **Model3DGallery** - View 3D model gallery
 - [ ] **EngineeringValidationOverlay** - View validation overlay
-- [ ] **AITechnicalChatbot** - Open AI chatbot
+- [ ] **AITechnicalChatbot** - Open automation chatbot
 - [ ] **PackageComparisonTable** - View package comparison
 - [ ] **SilkRoadTracker** - View supply chain tracker
 - [ ] **ModelMeasurementTool** - Use measurement tool

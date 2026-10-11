@@ -1,11 +1,11 @@
 /**
- * GovernanceHealthMini - Constitutional AI Health Dashboard
+ * GovernanceHealthMini - Constitutional automation Health Dashboard
  * 
  * Displays real-time governance metrics:
  * - Constitutional Health Score (0-100)
  * - Tier 1 Coverage (% strategic decisions using YDT)
  * - Reasoning Quality (% YDT responses with proper reasoning)
- * - Tier Violations (AI operating outside authority bounds)
+ * - Tier Violations (automation operating outside authority bounds)
  * 
  * Updates every 5 seconds.
  */
@@ -77,11 +77,11 @@ export function GovernanceHealthMini() {
       backgroundColor: '#f8f9fa',
       fontFamily: 'system-ui, -apple-system, sans-serif'
     }}>
-      <div style={{ 
+      <div style={{
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
-        marginBottom: '12px' 
+        marginBottom: '12px'
       }}>
         <h3 style={{ 
           margin: 0, 
@@ -89,7 +89,7 @@ export function GovernanceHealthMini() {
           fontWeight: 600,
           color: '#212529'
         }} className="typography-h3">
-          Constitutional AI Health
+          Constitutional automation Health
         </h3>
         <div style={{
           padding: '4px 12px',
@@ -103,7 +103,7 @@ export function GovernanceHealthMini() {
         </div>
       </div>
 
-      <div style={{ 
+      <div style={{
         display: 'grid', 
         gridTemplateColumns: '1fr 1fr', 
         gap: '12px',

@@ -12,7 +12,7 @@ class Settings(BaseSettings):
         env_nested_delimiter='__'
     )
 
-    # AI Model
+    # automation Model
     MODEL_PATH: str = "ai_services/part_detection/models/yolov8n.pt"
     MODEL_VERSIONS: Optional[Dict[str, str]] = Field(default_factory=dict)
     

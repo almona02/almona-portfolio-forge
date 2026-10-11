@@ -64,7 +64,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     // Load Turkish custom profiles from localStorage
     const loadTurkishProfiles = () => {
       const turkishProfiles: any[] = [];
-      
+
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key?.startsWith('custom-profile-')) {
@@ -93,12 +93,12 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
           }
         }
       }
-      
+
       setAvailableSystemPacks([...SYSTEM_PACKS, ...turkishProfiles]);
     };
 
     loadTurkishProfiles();
-    
+
     // Listen for new Turkish profiles
     const handleLoadTurkishProfile = (e: any) => {
       // Load specific profile into project
@@ -109,10 +109,10 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
         console.log('Load Turkish profile:', profile);
       }
     };
-    
+
     window.addEventListener('customProfileAdded', loadTurkishProfiles);
     window.addEventListener('loadTurkishProfile', handleLoadTurkishProfile);
-    
+
     return () => {
       window.removeEventListener('customProfileAdded', loadTurkishProfiles);
       window.removeEventListener('loadTurkishProfile', handleLoadTurkishProfile);
@@ -141,7 +141,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     // Parse layout string to determine grid dimensions
     let rows: number = GRID_DEFAULTS.DEFAULT_ROWS;
     let cols: number = GRID_DEFAULTS.DEFAULT_COLS;
-    
+
     // Extract number from layout string (e.g., "2-panel sliding" -> 2)
     const panelMatch = pattern.layout.match(/(\d+)[- ]panel/);
     if (panelMatch) {
@@ -171,7 +171,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
       for (let c = 0; c < newGrid.cols; c++) {
         const cellId = `${r}-${c}`;
         let cellType: GridCell['type'] = 'fixed';
-        
+
         // Determine cell type based on pattern
         if (pattern.type === 'sliding' || pattern.type === 'door') {
           cellType = 'sliding'; // All cells are sliding for sliding patterns
@@ -187,7 +187,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
             cellType = 'sash';
           }
         }
-        
+
         newGrid.cells.push({
           id: cellId,
           row: r,
@@ -317,10 +317,10 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
   const rowWeights = grid.rowHeights && grid.rowHeights.length === grid.rows 
     ? grid.rowHeights 
     : Array(grid.rows).fill(1);
-  
+
   const totalColWeight = colWeights.reduce((a, b) => a + b, 0) || grid.cols;
   const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0) || grid.rows;
-  
+
   // Memoize array calculations to prevent unnecessary re-renders
   const { colStarts, rowStarts, colWidthsPx, rowHeightsPx } = useMemo(() => {
     const colStarts: number[] = [];
@@ -575,11 +575,11 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     const container = containerRef.current;
     const containerWidth = container.clientWidth - 40; // padding
     const containerHeight = container.clientHeight - 40;
-    
+
     const scaleX = containerWidth / svgWidth;
     const scaleY = containerHeight / svgHeight;
     const newZoom = Math.min(scaleX, scaleY, 1);
-    
+
     setZoom(newZoom);
     setPan({ x: 0, y: 0 });
   }, [project, svgWidth, svgHeight]);
@@ -650,7 +650,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
             <span className="text-gray-900">{colorInfo}</span>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-4">
           {/* Pattern Selector */}
           {availablePatterns.length > 0 && (
@@ -676,7 +676,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
               </Select>
             </div>
           )}
-          
+
           {/* Quick Zoom Controls in Top Bar */}
           <div className="flex items-center gap-2 border-l border-gray-300 pl-4">
             <span className="text-xs text-gray-500 mr-1">Zoom:</span>
@@ -773,7 +773,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
             width={Math.round(svgWidth)}
             height={Math.round(svgHeight)}
             className="bg-white border-2 border-gray-800 shadow-2xl"
-            style={{ 
+            style={{
               minWidth: Math.round(svgWidth),
               minHeight: Math.round(svgHeight),
               cursor: dragState.type ? 'grabbing' : 'default'

@@ -356,7 +356,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
     return () => window.removeEventListener('resize', updateCanvasSize);
   }, [externalViewport, onViewportChange]);
 
-  // Convert mouse to world coordinates (use actual container size so cursor location is accurate)
+  // Convert mouse to world coordinates (use actual container size so pointer location is accurate)
   const getSVGPoint = useCallback((clientX: number, clientY: number): Point => {
     try {
       if (!containerRef.current) {

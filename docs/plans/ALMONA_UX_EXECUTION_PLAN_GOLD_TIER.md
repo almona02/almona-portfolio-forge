@@ -25,7 +25,7 @@
 - [ ] **Performance:** Lighthouse 90+, 60fps animations
 - [ ] **Testing:** Unit tests, integration tests, visual regression
 - [ ] **UX Audit:** Market leader comparison, accessibility WCAG 2.1 AA
-- [ ] **Constitutional:** No AI leaks, deterministic guarantees maintained
+- [ ] **Constitutional:** No automation leaks, deterministic guarantees maintained
 
 ---
 

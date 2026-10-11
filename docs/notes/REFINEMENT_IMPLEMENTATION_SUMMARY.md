@@ -12,7 +12,7 @@
 #### 1. Constitutional Validation Checkpoint
 **File:** `src/lib/authority/constitutionalValidation.ts` (NEW)
 - Created comprehensive Tier 3 validation system
-- Validates no ML/AI logic in optimization results
+- Validates no advisory inference logic in optimization results
 - Checks project structure and components
 - Returns structured errors with consequences
 

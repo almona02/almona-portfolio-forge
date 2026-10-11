@@ -18,7 +18,7 @@ import ErrorBoundary from '../../ErrorBoundary';
 import { Sparkles, CheckCircle2 } from 'lucide-react';
 
 /**
- * Props for the AI Equipment Advisor component
+ * Props for the Equipment Advisor component
  */
 interface AiEquipmentAdvisorProps {
   /** Whether the dialog is open */
@@ -33,7 +33,7 @@ interface AiEquipmentAdvisorProps {
 type PartIdentificationMethod = 'image' | 'description' | 'symptom' | 'predictiveInventory' | 'equipmentWizard';
 
 /**
- * AI Equipment Advisor Component
+ * Equipment Advisor Component
  * 
  * A comprehensive tool for identifying spare parts using multiple methods:
  * - Image recognition: Upload a photo of the part
@@ -43,7 +43,7 @@ type PartIdentificationMethod = 'image' | 'description' | 'symptom' | 'predictiv
  * 
  * Features:
  * - Multiple identification methods via tabs
- * - Real-time AI-powered part identification
+ * - Real-time software-assisted part identification
  * - Analytics tracking for usage patterns
  * - Error handling with user-friendly messages
  */
@@ -55,7 +55,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
   const [result, setResult] = useState('');
   const [_productId, _setProductId] = useState('');
   const [_location, _setLocation] = useState('');
-  
+
   // Equipment wizard state
   const [wizardStep, setWizardStep] = useState(1);
   const [windowTypes, setWindowTypes] = useState<string[]>([]);
@@ -113,10 +113,10 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-center">
-            AI Spare Parts Finder
+            automation Spare Parts Finder
           </DialogTitle>
         </DialogHeader>
-        
+
         <Tabs value={method} onValueChange={(v) => setMethod(v as PartIdentificationMethod)}>
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="image">Image</TabsTrigger>
@@ -402,7 +402,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
 };
 
 const AiEquipmentAdvisor = (props: AiEquipmentAdvisorProps) => (
-  <ErrorBoundary fallback={<div className="p-4 bg-red-50 text-red-800">AI advisor failed</div>}>
+  <ErrorBoundary fallback={<div className="p-4 bg-red-50 text-red-800">automation advisor failed</div>}>
     <AiEquipmentAdvisorComponent {...props} />
   </ErrorBoundary>
 );

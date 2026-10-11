@@ -215,7 +215,7 @@ quotes/
 
 **Key Features:**
 - Multi-step quote wizard
-- AI-powered recommendations
+- software-assisted recommendations
 - Real-time price calculations
 - PDF quote generation
 - Quote approval workflow
@@ -293,7 +293,7 @@ shop/
 ```
 
 **Key Features:**
-- AI-powered product recommendations
+- software-assisted product recommendations
 - 3D product configuration
 - AR visualization in real environments
 - Advanced filtering and search
@@ -603,8 +603,8 @@ apis/
 - File upload handling
 - Rate limiting and throttling
 
-### 🤖 AI Services (`python_backend/ai_services/`)
-Machine learning and AI-powered features.
+### 🤖 automation Services (`python_backend/ai_services/`)
+Machine learning and software-assisted features.
 
 ```
 ai_services/
@@ -627,7 +627,7 @@ ai_services/
     └── image_processor.py           # Image processing utilities
 ```
 
-**AI Capabilities:**
+**automation Capabilities:**
 - Computer vision for spare parts identification
 - Equipment recommendation algorithms
 - Predictive maintenance models

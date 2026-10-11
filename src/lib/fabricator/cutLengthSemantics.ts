@@ -1,7 +1,7 @@
 /**
  * FP-024A — Three-layer cut-length semantics (AICS-001 Tier 3)
  *
- * DoWin's asdd export publishes three millimetre concepts for one physical piece:
+ * reference system's asdd export publishes three millimetre concepts for one physical piece:
  *   1. nominal / report     — Design Preview / assembly table (frame 1000)
  *   2. packed / compensated — optimization bar-graphic label (frame 1003)
  *   3. machine instruction   — DC-600 MDB LENGTH when that row exists

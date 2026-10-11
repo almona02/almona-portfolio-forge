@@ -63,7 +63,7 @@ docker compose -f docker-compose.prod.yml ps
 Key variables in `.env.production`:
 
 - `API_WORKERS`: Number of worker processes (default: 4)
-- `GOOGLE_GEMINI_API_KEY`: Your Gemini API key
+- `GOOGLE_GEMINI_API_KEY`: Your support service API key
 - `ALLOWED_ORIGINS`: Comma-separated list of allowed CORS origins
 - `LOG_LEVEL`: Logging level (INFO, DEBUG, WARNING, ERROR)
 

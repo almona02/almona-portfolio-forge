@@ -2,7 +2,7 @@
  * Animation Utilities
  * 
  * Provides easing functions and animation helpers for smooth 3D animations.
- * Constitutional: Pure mathematical functions, no ML/AI.
+ * Constitutional: Pure mathematical functions, no advisory inference.
  */
 
 /**

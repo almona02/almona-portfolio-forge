@@ -43,7 +43,7 @@ export const ServiceViewToggle: React.FC<ServiceViewToggleProps> = ({
           }`}
         >
           <Brain className="h-4 w-4" />
-          AI Technical Hub
+          automation Technical Hub
         </Button>
       </div>
     </div>

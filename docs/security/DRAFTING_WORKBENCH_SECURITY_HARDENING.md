@@ -31,7 +31,7 @@ Comprehensive security hardening has been implemented across the Drafting Workbe
 - ✅ **Safe JSON Parsing:** `safeJsonParse()` with size limits and prototype pollution protection
 - ✅ **Input Sanitization:** `sanitizeUserName()` for user names
 - ✅ **ID Validation:** `validateRoomId()` and `validateUserId()` with regex patterns
-- ✅ **Cursor Validation:** Coordinate bounds checking (-1,000,000 to 1,000,000)
+- ✅ **development tool Validation:** Coordinate bounds checking (-1,000,000 to 1,000,000)
 - ✅ **Selection Validation:** Type checking and bounds validation
 
 **Files Modified:**
@@ -125,7 +125,7 @@ Comprehensive security hardening has been implemented across the Drafting Workbe
 #### Issues Found:
 - ❌ User names not sanitized
 - ❌ Room IDs not validated
-- ❌ Cursor positions not validated
+- ❌ development tool positions not validated
 - ❌ Selection indices not validated
 
 #### Fixes Implemented:
@@ -193,7 +193,7 @@ Comprehensive security hardening has been implemented across the Drafting Workbe
 
 ### 3. Rate Limiting
 - ✅ WebSocket message rate limiting (100/min)
-- ✅ Cursor update rate limiting
+- ✅ development tool update rate limiting
 - ✅ State broadcast debouncing
 
 ### 4. Size Limits

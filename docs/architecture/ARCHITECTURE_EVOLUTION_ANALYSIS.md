@@ -117,7 +117,7 @@ Celery (Background Tasks)
 - Single PostgreSQL for all workloads (OLTP + OLAP)
 - No separation of transactional vs. analytical queries
 - Limited search capabilities (PostgreSQL full-text only)
-- No vector database for ML/AI features
+- No vector database for advisory inference features
 
 🟡 **Basic Event System** (Correctly Deferred)
 - Celery + Redis (not true event bus)
@@ -300,11 +300,11 @@ DATABASE_URL = "postgresql://..."  # All queries go here
    - **Effort:** 2-3 weeks (indexing + integration)
    - **ROI:** Better user experience, faster search
 
-3. **pgvector for AI Features** (Medium Priority)
+3. **pgvector for automation Features** (Medium Priority)
    - **Current:** No vector search
    - **Impact:** ML-powered recommendations, similarity search
    - **Effort:** 2-3 weeks (pgvector extension + migration)
-   - **ROI:** Enables advanced AI features
+   - **ROI:** Enables advanced automation features
 
 ---
 
@@ -430,7 +430,7 @@ class OfflineSyncService {
 | Gap | Current State | Impact | Effort | Priority | Consultant Validation |
 |-----|--------------|--------|--------|----------|---------------------|
 | **Redis Cluster** | Single instance | High availability, traffic spikes | Low | 🟡 Medium | ✅ Correct |
-| **Vector Database** | None | AI features, similarity search | Medium | 🟡 Medium | ✅ Correct |
+| **Vector Database** | None | automation features, similarity search | Medium | 🟡 Medium | ✅ Correct |
 | **EGP Payments** | None | Local bank integration (trust) | Low | 🟡 Medium | ⚠️ **Added** - Critical for Egyptian market trust |
 
 ### 3.3 Deferred Gaps (Post-National Traction)
@@ -1011,14 +1011,14 @@ Edge Nodes (Alexandria, 10th Ramadan, Asyut)
 # Event-shaped messages in PostgreSQL
 class EventLog(Base):
     __tablename__ = 'event_logs'
-    
+
     id = Column(UUID, primary_key=True)
     event_type = Column(String)  # 'order.created', 'inventory.updated'
     aggregate_id = Column(UUID)  # order_id, inventory_id
     payload = Column(JSONB)
     timestamp = Column(DateTime)
     metadata = Column(JSONB)  # user_id, correlation_id, etc.
-    
+
     # Also store in S3 for long-term replay
     s3_key = Column(String)
 

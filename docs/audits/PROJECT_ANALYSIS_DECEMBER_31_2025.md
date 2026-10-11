@@ -34,7 +34,7 @@
 #### Backend
 - **API:** Python FastAPI (python_backend/)
 - **Database:** Supabase PostgreSQL with Row-Level Security
-- **AI/ML:** TensorFlow.js 4.22.0, Google Generative AI 0.24.1
+- **advisory inference:** TensorFlow.js 4.22.0, Google Generative automation 0.24.1
 - **Task Queue:** Celery with Redis
 
 #### Infrastructure
@@ -335,7 +335,7 @@
 - ✅ Performance Optimization - 85%
 
 **In Progress:**
-- ⚠️ AI/ML Capabilities - 60%
+- ⚠️ advisory inference Capabilities - 60%
 - ⚠️ Compliance & Security - 75%
 
 **Missing:**
@@ -359,7 +359,7 @@
 
 **Frozen Features (Phase 2+):**
 - ❌ Neo-Pharaonic UI (Nafeza-style)
-- ❌ Oracle AI system
+- ❌ Oracle automation system
 - ❌ Guild hierarchy UI
 - ❌ University-grade pedagogy UI
 - ❌ Complex Tuning Studio
@@ -503,7 +503,7 @@
 
 ### Innovation
 - ✅ **Egyptian Solution** - Built for local needs
-- ✅ **AI Integration** - TensorFlow.js, Gemini AI
+- ✅ **automation Integration** - TensorFlow.js, support service automation
 - ✅ **3D/AR Capabilities** - Advanced visualization
 - ✅ **Multi-Language** - 5 languages supported
 - ✅ **Machine Integration** - 5 CNC manufacturers
@@ -590,7 +590,7 @@ The project demonstrates:
 - ✅ **Business Viability** - Proven metrics, real customers
 - ✅ **Strategic Positioning** - Egyptian solution, institutional support
 - ✅ **Scalability** - Cloud-native, multi-tenant architecture
-- ✅ **Innovation** - AI/ML, 3D/AR, machine integration
+- ✅ **Innovation** - advisory inference, 3D/AR, machine integration
 
 **Current Status:** Production-ready with ~70% feature completion across enhancement plans. The foundation is solid, the engine is proven, and the path to market leadership is clear.
 

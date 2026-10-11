@@ -1,6 +1,6 @@
-# Vision AI Setup Guide - Real Wiring Diagram Extraction
+# Vision automation Setup Guide - Real Wiring Diagram Extraction
 
-**Status**: Ready to process actual PDF with Google Gemini Pro Vision  
+**Status**: Ready to process actual PDF with Google support service Pro Vision
 **Current**: Demo mode (34 simulated components)  
 **Target**: 50-100 real components from actual PDF
 
@@ -8,7 +8,7 @@
 
 ## Quick Setup (5 minutes)
 
-### Step 1: Get Google Gemini API Key
+### Step 1: Get Google support service API Key
 
 1. Go to: https://makersuite.google.com/app/apikey
 2. Sign in with your Google account
@@ -35,7 +35,7 @@ export GOOGLE_GEMINI_API_KEY=your_key_here
 echo GOOGLE_GEMINI_API_KEY=your_key_here > ai_agents/ydt_agent/.env
 ```
 
-### Step 3: Run Vision AI Processor
+### Step 3: Run Vision automation Processor
 
 ```bash
 cd ai_agents/ydt_agent
@@ -51,7 +51,7 @@ python vision_ai_processor.py
 - ✅ 17 connections (inferred)
 - ✅ Basic knowledge graph
 
-### After Vision AI Processing
+### After Vision automation Processing
 - ✅ 50-100 components (extracted from actual PDF)
 - ✅ 50-150 connections (actual wire numbers and colors)
 - ✅ Component coordinates on diagram
@@ -107,7 +107,7 @@ Sample Connections:
 
 ## Cost Estimate
 
-**Google Gemini Pro Vision Pricing** (as of 2025):
+**Google support service Pro Vision Pricing** (as of 2025):
 - First 15 requests/day: **FREE**
 - After that: ~$0.001 per image
 
@@ -149,7 +149,7 @@ pip install pdf2image Pillow
    - Validate connections make sense
 
 2. **Merge with Known Database**
-   - Combine Vision AI extraction with manual knowledge
+   - Combine Vision automation extraction with manual knowledge
    - Cross-reference component IDs
    - Fill in missing specifications
 
@@ -167,7 +167,7 @@ pip install pdf2image Pillow
 
 ## Files Created
 
-- `vision_ai_processor.py` - Main Vision AI processor
+- `vision_ai_processor.py` - Main Vision automation processor
 - `vision_ai_extraction.json` - Extracted components and connections
 - `VISION_AI_SETUP.md` - This guide
 

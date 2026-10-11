@@ -110,7 +110,7 @@ if (isCasement) {
   const rotationDirection = openingDirection === 'left' ? -1 : 1;
   const newRotY = restRotation.y + (openAngle * rotationDirection * progress);
   child.rotation.set(restRotation.x, newRotY, restRotation.z);
-  
+
   // Simple pivot around center - NOT ACCURATE
   const pivotOffset = 0.15;
   child.position.set(
@@ -143,14 +143,14 @@ if (isCasement) {
 export class EnhancedPresetMatcher {
   matchPattern(windowUnit: WindowUnit): PatternMatch[] {
     const features = this.extractFeatures(windowUnit);
-    
+
     const matches = this.patterns.map(pattern => {
       const score = this.calculateSimilarity(features, pattern);
       const confidence = this.calculateConfidence(score, features);
-      
+
       return { pattern, score, confidence };
     });
-    
+
     // Return matches with >70% confidence (up from 50%)
     return matches
       .filter(m => m.confidence > 0.7)
@@ -176,7 +176,7 @@ export class EnhancedPresetMatcher {
 export class AdvancedProfileGenerator {
   generateProfileShape(spec: AdvancedProfileSpec): Shape {
     const shape = new Shape();
-    
+
     // 1. Outer perimeter (realistic dimensions)
     const hw = spec.outerWidth / 2;
     const hh = spec.outerHeight / 2;
@@ -185,7 +185,7 @@ export class AdvancedProfileGenerator {
     shape.lineTo(hw, hh);
     shape.lineTo(-hw, hh);
     shape.lineTo(-hw, -hh);
-    
+
     // 2. Internal chambers (hollow structure)
     spec.chambers.forEach(chamber => {
       const hole = new Path();
@@ -193,30 +193,30 @@ export class AdvancedProfileGenerator {
       const cy = chamber.position.y;
       const cw = chamber.width / 2;
       const ch = chamber.height / 2;
-      
+
       hole.moveTo(cx - cw, cy - ch);
       hole.lineTo(cx + cw, cy - ch);
       hole.lineTo(cx + cw, cy + ch);
       hole.lineTo(cx - cw, cy + ch);
       hole.lineTo(cx - cw, cy - ch);
-      
+
       shape.holes.push(hole);
     });
-    
+
     // 3. Glass pocket (U-shaped notch)
     const pocket = new Path();
     const px = spec.glassPocket.position.x;
     const py = spec.glassPocket.position.y;
     const pw = spec.glassPocket.width / 2;
     const pd = spec.glassPocket.depth;
-    
+
     pocket.moveTo(px - pw, py);
     pocket.lineTo(px - pw, py - pd);
     pocket.lineTo(px + pw, py - pd);
     pocket.lineTo(px + pw, py);
-    
+
     shape.holes.push(pocket);
-    
+
     return shape;
   }
 }
@@ -233,20 +233,20 @@ const glassMaterial = new MeshPhysicalMaterial({
   color: glassColor,
   metalness: 0,
   roughness: 0.05,
-  
+
   // KEY: Transmission (see-through with refraction)
   transmission: 0.95,
   thickness: 0.01,
   ior: 1.52, // Glass index of refraction
-  
+
   // Reflections
   reflectivity: 0.5,
   clearcoat: 1.0,
   clearcoatRoughness: 0.05,
-  
+
   // Environment mapping
   envMapIntensity: 2.0,
-  
+
   side: DoubleSide
 });
 
@@ -257,7 +257,7 @@ const aluminumMaterial = new MeshStandardMaterial({
   normalMap: brushedAluminumNormal,
   roughnessMap: brushedAluminumRoughness,
   metalnessMap: brushedAluminumMetalness,
-  
+
   metalness: 0.9,
   roughness: 0.3,
   envMapIntensity: 1.5
@@ -274,23 +274,23 @@ const aluminumMaterial = new MeshStandardMaterial({
 // NEW: Detailed hinge model
 private generateHinge(): Group {
   const group = new Group();
-  
+
   // Hinge barrel (cylinder)
   const barrelGeometry = new CylinderGeometry(0.008, 0.008, 0.06, 16);
   const barrel = new Mesh(barrelGeometry, metalMaterial);
   barrel.rotation.z = Math.PI / 2;
   group.add(barrel);
-  
+
   // Hinge plates (2 flat rectangles)
   const plateGeometry = new BoxGeometry(0.04, 0.06, 0.002);
   const plate1 = new Mesh(plateGeometry, metalMaterial);
   plate1.position.set(-0.015, 0, 0);
   group.add(plate1);
-  
+
   const plate2 = new Mesh(plateGeometry, metalMaterial);
   plate2.position.set(0.015, 0, 0);
   group.add(plate2);
-  
+
   // Screws (4 per plate)
   const screwGeometry = new CylinderGeometry(0.002, 0.002, 0.003, 8);
   [-0.02, 0.02].forEach(y => {
@@ -301,7 +301,7 @@ private generateHinge(): Group {
       group.add(screw);
     });
   });
-  
+
   return group;
 }
 ```
@@ -359,29 +359,29 @@ export class OpeningKinematicsEngine {
     // 1. Find actual hinge line (not approximate)
     const topHinge = hinges.find(h => h.type === 'hinge' && h.position.y > 0);
     const bottomHinge = hinges.find(h => h.type === 'hinge' && h.position.y < 0);
-    
+
     if (!topHinge || !bottomHinge) {
       return this.fallbackPath(sash, openAngle);
     }
-    
+
     // 2. Calculate pivot point (center of hinge line)
     const pivotPoint = new Vector3(
       topHinge.position.x,
       (topHinge.position.y + bottomHinge.position.y) / 2,
       topHinge.position.z
     );
-    
+
     // 3. Rotate sash around pivot point
     const sashCenter = sash.openingPath.position;
     const relativePos = sashCenter.clone().sub(pivotPoint);
-    
+
     // Apply rotation
     const rotation = new Euler(0, openAngle * Math.PI / 180, 0);
     relativePos.applyEuler(rotation);
-    
+
     // 4. Calculate new position
     const newPosition = pivotPoint.clone().add(relativePos);
-    
+
     return { position: newPosition, rotation };
   }
 }
@@ -402,11 +402,11 @@ export class CollisionDetector {
     otherSashes: SashData[]
   ): Collision[] {
     const collisions: Collision[] = [];
-    
+
     // Check if sash intersects frame
     const sashBounds = this.calculateBounds(sash);
     const frameBounds = this.calculateBounds(frame);
-    
+
     if (this.boundsIntersect(sashBounds, frameBounds)) {
       collisions.push({
         type: 'frame',
@@ -414,7 +414,7 @@ export class CollisionDetector {
         message: 'Sash collides with frame'
       });
     }
-    
+
     return collisions;
   }
 }
@@ -685,7 +685,7 @@ Result: YOU WIN (Best visual + Best production)
 - Some edge cases need fine-tuning
 - Egyptian-specific patterns need validation with real workshops
 
-**But:** Even at 95% accuracy, you'll be **better than Klaes and Orgadata** for the Egyptian market.
+**But:** Even at 95% accuracy, you'll be **better than reference system and reference system** for the Egyptian market.
 
 ---
 

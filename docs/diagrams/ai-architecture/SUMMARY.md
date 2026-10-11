@@ -1,4 +1,4 @@
-# AI Architecture Diagrams - Enhancement Summary
+# automation Architecture Diagrams - Enhancement Summary
 
 ## ✅ Completed Enhancements
 

@@ -25,7 +25,7 @@
   },
   "dashboard": {
     "title": "Fabricator Pro Pano",
-    "subtitle": "Gerçek zamanlı içgörülerle AI destekli atölye yönetimi",
+    "subtitle": "Gerçek zamanlı içgörülerle automation destekli atölye yönetimi",
     "performance": {
       "title": "Performans Özeti",
       "optimization_speed": "Optimizasyon Hızı",
@@ -42,12 +42,12 @@
   },
   "workflow": {
     "title": "Fabricator İş Akışı Pro",
-    "subtitle": "AI İŞ AKIŞI v4.0",
-    "tagline": "Akıllı alüminyum ve UPVC üretim hattı: Akıllı Ölçüm, Teknik Tasarım, Yapay Zeka Optimizasyonu, Envanter, Üretim, Kalite Kontrol.",
+    "subtitle": "automation İŞ AKIŞI v4.0",
+    "tagline": "Akıllı alüminyum ve UPVC üretim hattı: Akıllı Ölçüm, Teknik Tasarım, otomasyon Optimizasyonu, Envanter, Üretim, Kalite Kontrol.",
     "workshop_label": "Atölye",
     "header": {
       "fabricator_pro": "FABRICATOR PRO",
-      "ai_workflow": "AI İŞ AKIŞI v4.0",
+      "ai_workflow": "automation İŞ AKIŞI v4.0",
       "workflow_pro": "Fabricator İş Akışı Pro"
     },
     "status": {
@@ -117,7 +117,7 @@
           "description": "Akıllı iş sıralaması"
         },
         "quality_control_ai": {
-          "name": "Kalite Kontrol AI",
+          "name": "Kalite Kontrol automation",
           "description": "Bilgisayarla görme denetimi"
         },
         "real_time_analytics": {
@@ -249,7 +249,7 @@
   },
   "inventory": {
     "title": "Envanter Zeka Merkezi",
-    "description": "Türk ve Mısır pazarları için gerçek zamanlı analitik, artık optimizasyonu ve AI destekli stok tahminleri ile merkezi envanter yönetimi.",
+    "description": "Türk ve Mısır pazarları için gerçek zamanlı analitik, artık optimizasyonu ve automation destekli stok tahminleri ile merkezi envanter yönetimi.",
     "add_profile": "Profil Ekle",
     "workflow_integration": "İş Akışı Entegrasyonu",
     "adding": "Ekleniyor...",
@@ -400,11 +400,11 @@
     "steps": {
       "measuring": {
         "title": "Akıllı Ölçüm",
-        "description": "Pencere boyutlarını hızlı ve doğru bir şekilde ölçmek için AI destekli ölçüm araçlarımızı nasıl kullanacağınızı öğrenin. Akıllı ölçüm arayüzümüz sizi adım adım süreç boyunca yönlendirir."
+        "description": "Pencere boyutlarını hızlı ve doğru bir şekilde ölçmek için automation destekli ölçüm araçlarımızı nasıl kullanacağınızı öğrenin. Akıllı ölçüm arayüzümüz sizi adım adım süreç boyunca yönlendirir."
       },
       "design": {
-        "title": "AI Destekli Tasarım",
-        "description": "AI tasarım asistanımızın ölçümlerinize dayalı olarak optimal pencere konfigürasyonları oluşturmanıza, profil, aksesuar ve düzen önerileri sunmanıza nasıl yardımcı olduğunu keşfedin."
+        "title": "automation Destekli Tasarım",
+        "description": "automation tasarım asistanımızın ölçümlerinize dayalı olarak optimal pencere konfigürasyonları oluşturmanıza, profil, aksesuar ve düzen önerileri sunmanıza nasıl yardımcı olduğunu keşfedin."
       },
       "optimization": {
         "title": "Kesim Optimizasyonu",
@@ -599,10 +599,10 @@
   },
   "profile_import_tool": {
     "title": "Akıllı Profil İçe Aktarma Aracı",
-    "description": "AI destekli K-faktör öğrenmesi ile birden fazla formattan profil içe aktar",
+    "description": "automation destekli K-faktör öğrenmesi ile birden fazla formattan profil içe aktar",
     "tabs": {
       "import": "İçe Aktar",
-      "kfactor": "K-Faktör AI",
+      "kfactor": "K-Faktör automation",
       "settings": "Ayarlar"
     },
     "upload": {
@@ -624,7 +624,7 @@
     },
     "kfactor": {
       "title": "Akıllı K-Faktör Öğrenme",
-      "description": "İçe aktarılan DXF/DWG ölçümlerine dayalı AI destekli K-faktör önerileri",
+      "description": "İçe aktarılan DXF/DWG ölçümlerine dayalı automation destekli K-faktör önerileri",
       "auto_optimize": "Tümünü Otomatik Optimize Et",
       "auto_optimize_desc": "K-faktör önerilerini otomatik olarak uygula",
       "features": {
@@ -667,7 +667,7 @@
       "import": {
         "title": "İçe Aktarma Ayarları",
         "kfactor_learning": "K-Faktör Öğrenme",
-        "kfactor_learning_desc": "AI K-faktör önerilerini etkinleştir",
+        "kfactor_learning_desc": "automation K-faktör önerilerini etkinleştir",
         "enabled": "Etkin",
         "disabled": "Devre Dışı"
       }
@@ -677,7 +677,7 @@
     }
   },
   "profile_scanner_uploader": {
-    "title": "AI Destekli Mühendislik Çizimi Tarayıcı",
+    "title": "automation Destekli Mühendislik Çizimi Tarayıcı",
     "beta": "BETA",
     "steps": {
       "select": "1. Görüntü Seç",
@@ -693,11 +693,11 @@
     },
     "scale": {
       "auto_detect": "Çizimden ölçeği otomatik algıla",
-      "auto_detect_tooltip": "AI görüntüdeki boyut etiketlerinden ölçeği algılamaya çalışacaktır",
+      "auto_detect_tooltip": "automation görüntüdeki boyut etiketlerinden ölçeği algılamaya çalışacaktır",
       "manual_scale": "Manuel Ölçek Faktörü:",
       "manual_scale_unit": "(piksel başına mm)",
       "manual_scale_example": "Örnek: 0.1, 1 piksel = 0.1 mm anlamına gelir (mühendislik çizimleri için yaygın)",
-      "ai_active": "AI Ölçek Algılama Aktif",
+      "ai_active": "automation Ölçek Algılama Aktif",
       "ai_active_desc": "Sistem boyut etiketlerinden ölçeği algılamaya çalışacaktır. Başarılı olursa, onaylamanız istenecektir."
     },
     "processing": {
@@ -709,7 +709,7 @@
     },
     "results": {
       "scale_applied": "Ölçek Uygulandı",
-      "detected_by_ai": "AI tarafından algılandı",
+      "detected_by_ai": "automation tarafından algılandı",
       "manually_specified": "Manuel olarak belirtildi",
       "quality_assessment": "Kalite Değerlendirmesi",
       "auto_scale_detected": "Otomatik ölçek algılandı",
@@ -727,7 +727,7 @@
       "view_raw": "Ham API Yanıtını Görüntüle"
     },
     "actions": {
-      "scan_ai": "AI Algılama ile Tara",
+      "scan_ai": "automation Algılama ile Tara",
       "scan_manual": "Manuel Ölçek ile Tara",
       "scan_another": "Başka Bir Çizim Tara",
       "download_svg": "SVG İndir",
@@ -740,9 +740,9 @@
       "reference_label": "Referans Etiketi",
       "suggestion": "Öneri",
       "what_this_means": "Bu ne anlama geliyor:",
-      "high_confidence": "AI yüksek güvenle bir ölçek algıladı. Bunu otomatik olarak güvenle uygulayabilirsiniz.",
-      "medium_confidence": "AI orta güvenle bir ölçek algıladı. Lütfen uygulamadan önce algılanan değeri doğrulayın.",
-      "low_confidence": "AI düşük güvenle bir ölçek algıladı. Manuel doğrulama önerilir.",
+      "high_confidence": "automation yüksek güvenle bir ölçek algıladı. Bunu otomatik olarak güvenle uygulayabilirsiniz.",
+      "medium_confidence": "automation orta güvenle bir ölçek algıladı. Lütfen uygulamadan önce algılanan değeri doğrulayın.",
+      "low_confidence": "automation düşük güvenle bir ölçek algıladı. Manuel doğrulama önerilir.",
       "advanced_details": "Gelişmiş Detaylar",
       "samples": "Örnekler",
       "detected_dimensions": "Algılanan Boyutlar",
@@ -762,9 +762,9 @@
       "svg_not_available": "SVG Mevcut Değil",
       "svg_not_available_desc": "Sonuçlarda SVG dosya URL'si bulunamadı",
       "no_scale": "Ölçek Algılanmadı",
-      "no_scale_desc": "AI bir ölçek algılayamadı. Lütfen ölçeği manuel olarak girin.",
+      "no_scale_desc": "automation bir ölçek algılayamadı. Lütfen ölçeği manuel olarak girin.",
       "low_confidence": "Düşük Güven Algılama",
-      "low_confidence_desc": "AI düşük güvenle bir ölçek algıladı. Lütfen ölçeği manuel olarak girin."
+      "low_confidence_desc": "automation düşük güvenle bir ölçek algıladı. Lütfen ölçeği manuel olarak girin."
     }
   },
   "calibration_wizard": {
@@ -811,7 +811,7 @@
   },
   "smart_measuring": {
     "title": "Akıllı Ölçüm Arayüzü",
-    "description": "AI destekli boyut doğrulama ile dijital ölçüm yakalama",
+    "description": "automation destekli boyut doğrulama ile dijital ölçüm yakalama",
     "steps": {
       "system": "Sistem Yapılandırması",
       "dimensions": "Boyutlar ve Düzen",
@@ -948,7 +948,7 @@
     "profiles": "Profiller",
     "parts": "Parçalar",
     "system_constraints": "Sistem kısıtlamaları ve ön ayarlar otomatik olarak SmartDraw ve 3D'ye uygulanır.",
-    "suggest_ai_layout": "AI Düzeni Öner",
+    "suggest_ai_layout": "automation Düzeni Öner",
     "structure": "Yapı",
     "live_digital_twin": "Canlı Dijital İkiz (Apex Motor v6.0)",
     "loading_3d": "3D Önizleme Yükleniyor...",
@@ -1084,12 +1084,12 @@
     "set_as_default": "Varsayılan Olarak Ayarla"
   },
   "cutting_optimization": {
-    "title": "AI Destekli Kesim Optimizasyonu",
+    "title": "automation Destekli Kesim Optimizasyonu",
     "description": "Malzeme optimizasyonu, atık azaltma ve maliyet verimliliği için gelişmiş algoritmalar",
     "mass_production": "Toplu Üretim",
     "open_mass_production": "Tüm optimize edilmiş işler arasında toplu optimizasyon için Toplu Üretim Kokpitini açın.",
     "panel_title": "Kesim Optimizasyonu",
-    "panel_description": "AI destekli algoritmalarla malzeme kullanımını optimize edin ve atığı en aza indirin",
+    "panel_description": "automation destekli algoritmalarla malzeme kullanımını optimize edin ve atığı en aza indirin",
     "tabs": {
       "cuts": "Kesim Parçaları",
       "stock": "Stok",
@@ -1140,7 +1140,7 @@
     "optimised_jobs": "optimize edilmiş iş",
     "optimised_jobs_plural": "optimize edilmiş işler",
     "user": "Kullanıcı",
-    "start_ai_optimization": "AI Optimizasyonunu Başlat",
+    "start_ai_optimization": "automation Optimizasyonunu Başlat",
     "optimizing_generating": "Optimize Ediliyor ve G-Kodu Oluşturuluyor...",
     "optimization_complete": "Optimizasyon Tamamlandı",
     "go_to_production": "Üretim Komutuna Git",
@@ -1166,9 +1166,9 @@
   },
   "production_command": {
     "title": "Üretim Komuta Merkezi",
-    "description": "AI ile optimize edilmiş planı inceleyin, kesimleri görselleştirin ve üretime gönderin.",
+    "description": "automation ile optimize edilmiş planı inceleyin, kesimleri görselleştirin ve üretime gönderin.",
     "generating_plan": "Kesim Planı Oluşturuluyor",
-    "ai_optimizing": "AI malzeme kullanımınızı optimize ediyor...",
+    "ai_optimizing": "automation malzeme kullanımınızı optimize ediyor...",
     "no_optimization": "Optimizasyon Verisi Yok",
     "complete_design": "Kesim optimizasyonunu oluşturmak için tasarım aşamasını tamamlayın.",
     "efficiency": "Verimlilik",

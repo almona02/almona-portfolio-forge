@@ -114,7 +114,7 @@ Applied the same engineering discipline to the next 10% of fabricator files, foc
 ## Constitutional Compliance
 
 All enhancements maintain:
-- ✅ **Tier 3 Purity**: No ML/AI in execution paths
+- ✅ **Tier 3 Purity**: No advisory inference in execution paths
 - ✅ **Deterministic Logic**: All calculations are rule-based
 - ✅ **Type Safety**: Full TypeScript compliance
 - ✅ **Maintainability**: Clear separation of concerns

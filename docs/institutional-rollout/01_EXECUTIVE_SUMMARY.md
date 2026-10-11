@@ -8,14 +8,14 @@ ALMONA is an **industrial computing institution** for aluminum and UPVC fabricat
 
 | Feature | Conventional Software | ALMONA (Constitutional) |
 |---------|----------------------|-------------------------|
-| AI Control | Policy-based | Code-enforced boundaries |
+| automation Control | Policy-based | Code-enforced boundaries |
 | Decision Audit | Optional logging | Mandatory audit trail |
 | Governance | Document-based | CI-enforced validation |
 | Knowledge Loss | Personnel-dependent | Institutionally preserved |
 
 ### Constitutional Guarantees
 
-1. **No Silent AI Authority** - All AI decisions explicitly authorized and explained
+1. **No Silent automation Authority** - All automation decisions explicitly authorized and explained
 2. **Deterministic Replay** - Any past decision can be reproduced exactly
 3. **Single Source of Truth** - No ambiguity in material, geometry, or process rules
 4. **Personnel Independence** - Governance doesn't depend on individuals
@@ -23,7 +23,7 @@ ALMONA is an **industrial computing institution** for aluminum and UPVC fabricat
 
 ### Enterprise Value Proposition
 
-- **Risk Mitigation**: Constitutionally prevents unauthorized AI execution
+- **Risk Mitigation**: Constitutionally prevents unauthorized automation execution
 - **Regulatory Readiness**: Audit trails for every advisory decision
 - **Operational Continuity**: Survives team changes without knowledge loss
 - **Legal Defensibility**: Provable compliance with industrial standards

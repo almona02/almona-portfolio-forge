@@ -2,7 +2,7 @@
 
 Execution started: [6 October implementation and verification record](../audits/FABRICATOR_REPAIR_EXECUTION_2026-10-06.md). Initial local repairs pass targeted checks; the full live exit remains open. The live QC screen cannot publish governing rules: factory admin/technical-office approval needs a dedicated authorized workflow, not an inspection checkbox.
 
-Date: 5 October 2026 (Africa/Cairo). Baseline local HEAD: 5242a35. Scope: all findings in the live workflow audit and Cursor implementation comparison, plus optimization contract checks below. This document plans implementation; it does not certify a successful live solve or authorize invented manufacturing approvals.
+Date: 5 October 2026 (Africa/Cairo). Baseline local HEAD: 5242a35. Scope: all findings in the live workflow audit and development tool implementation comparison, plus optimization contract checks below. This document plans implementation; it does not certify a successful live solve or authorize invented manufacturing approvals.
 
 ## Execution update — 6 October 2026
 

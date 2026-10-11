@@ -23,7 +23,7 @@ Successfully implemented **Phase 1: Legal Framework for Existing Tools**, provid
 **Features:**
 - ✅ **Tool Certification Registry:** All 24 drafting tools constitutionally certified
 - ✅ **Authority Boundaries:** Explicit scope and limitations for each tool
-- ✅ **Tier Classification:** Tier 0 (Visual), Tier 1 (AI), Tier 3 (Deterministic)
+- ✅ **Tier Classification:** Tier 0 (Visual), Tier 1 (automation), Tier 3 (Deterministic)
 - ✅ **Accuracy Guarantees:** 99.8% accuracy promise for all tools
 - ✅ **Deterministic Replay:** All tools support replayable operations
 

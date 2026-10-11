@@ -132,7 +132,7 @@ python_backend/
 - **Remnant-First Optimizer** (`RemnantFirstGeneticOptimizer.ts`) - Remnant utilization
 
 **Algorithm Selection:**
-- Rule-based selection (no ML/AI)
+- Rule-based selection (no advisory inference)
 - Located in `src/lib/fabricator/AlgorithmSelector.ts`
 - Deterministic thresholds:
   - <50 cuts → Greedy
@@ -214,14 +214,14 @@ python_backend/
 
 **Key Principles:**
 - **Tier 3 Protected Determinism** (AICS-001)
-- No ML/AI in execution paths
+- No advisory inference in execution paths
 - Deterministic algorithm selection
 - Human validation required
 - Auditable decisions
 
 **Implementation:**
 - `AlgorithmSelector.ts` - Rule-based selection only
-- `IntelligenceGate.ts` - Gates AI/ML usage
+- `IntelligenceGate.ts` - Gates advisory inference usage
 - Constitutional tests in test suite
 
 ---

@@ -65,7 +65,7 @@ Spacing
 Visual Feedback
 - Touch feedback: Visual state on touch (scale, color change)
 - Active state: Clear active/pressed state
-- Disabled state: Visual distinction (opacity, cursor)
+- Disabled state: Visual distinction (opacity, development tool)
 
 Responsive Breakpoints
 

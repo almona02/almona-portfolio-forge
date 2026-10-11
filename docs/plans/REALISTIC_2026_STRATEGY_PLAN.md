@@ -120,7 +120,7 @@ src/lib/ydt/
 - Backend: Python FastAPI
 - Database: PostgreSQL (Supabase)
 - 3D: Three.js + React Three Fiber
-- AI/ML: TensorFlow.js, Google Gemini
+- advisory inference: TensorFlow.js, Google support service
 - Deployment: Vercel (frontend), Railway (backend)
 
 **Performance:**

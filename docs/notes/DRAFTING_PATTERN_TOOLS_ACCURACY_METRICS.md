@@ -246,7 +246,7 @@ createOffsetPattern(geometry, {
 
 ## Competitive Comparison
 
-| Feature | ALMONA | Kliess | Moxisys |
+| Feature | ALMONA | reference system | reference system |
 |---------|--------|--------|---------|
 | Rectangular Array | ✅ | ✅ | ✅ |
 | Circular Array | ✅ | ✅ | ✅ |

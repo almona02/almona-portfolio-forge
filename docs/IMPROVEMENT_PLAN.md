@@ -1,6 +1,6 @@
 # ALMONA Pipeline Improvement Plan
 
-> **Goal**: Transform the fragmented pose-centric workflow into an unbroken pipeline from design to production, aligned with the Logikal gold standard.
+> **Goal**: Transform the fragmented pose-centric workflow into an unbroken pipeline from design to production, aligned with the reference system gold standard.
 
 **Based on**: [GAP_ANALYSIS_VERIFICATION_REPORT.md](GAP_ANALYSIS_VERIFICATION_REPORT.md)
 **Deferred work**: [DEFERRED_WORK.md](DEFERRED_WORK.md)
@@ -94,7 +94,7 @@
 - **B**: Tab within design step (Design | BOM)
 - **C**: Auto-generate on design complete; show in Optimization or Commercial step
 
-**Recommendation**: Option A — dedicated BOM step for clarity and Logikal alignment.
+**Recommendation**: Option A — dedicated BOM step for clarity and reference system alignment.
 
 ### 1.3 Wire Quote Generation
 

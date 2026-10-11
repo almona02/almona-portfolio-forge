@@ -21,7 +21,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
 }) => {
   const copy = usePublicCopy();
   const breadcrumb = getCategoryBreadcrumb(currentCategoryId);
-  
+
   if (breadcrumb.length === 0) {
     return null;
   }
@@ -41,10 +41,10 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
           <ChevronRight className="h-4 w-4 text-gray-500" />
         </>
       )}
-      
+
       {breadcrumb.map((category, index) => {
         const isLast = index === breadcrumb.length - 1;
-        
+
         return (
           <React.Fragment key={category.id}>
             <Button
@@ -62,7 +62,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
             >
               {copy(category.name)}
             </Button>
-            
+
             {!isLast && (
               <ChevronRight className="h-4 w-4 text-gray-500" />
             )}

@@ -146,7 +146,7 @@ The ALMONA Fabricator Workflow demonstrates **exceptional architectural vision**
 - Text: 18px bold for numeric values (proper emphasis)
 - Consistent spacing: gap-3 (12px) creates breathing room
 
-**4. Suggested Patterns AI Section** (Lines 788-822)
+**4. Suggested Patterns automation Section** (Lines 788-822)
 **⭐ GOLD TIER UX PATTERN:**
 ```tsx
 <div className="bg-cyan-500/10 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-3">
@@ -154,7 +154,7 @@ The ALMONA Fabricator Workflow demonstrates **exceptional architectural vision**
   <span className="text-xs font-medium text-cyan-300 tracking-[0.05em] uppercase">Suggested Patterns:</span>
 ```
 **Visual Hierarchy Excellence:**
-- AI indication: Sparkles icon + cyan color scheme
+- automation indication: Sparkles icon + cyan color scheme
 - Confidence badges: Font size (10px) + percentage creates trustworthiness
 - Hover states: scale-105 provides tactile feedback
 
@@ -684,13 +684,13 @@ if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))
 **Impact:** Keyboard-only users cannot access canvas
 **Recommendation:**
 ```tsx
-<svg 
-  ref={canvasRef} 
+<svg
+  ref={canvasRef}
   tabIndex={0}
   role="application"
   aria-label="Window design canvas"
   onKeyDown={handleCanvasKeyboard}
-  viewBox={...} 
+  viewBox={...}
   className="w-full h-full focus:outline-none focus:ring-2 focus:ring-amber-500"
 >
 ```
@@ -705,7 +705,7 @@ const handleCanvasKeyboard = (e: React.KeyboardEvent) => {
     const nextIndex = e.shiftKey 
       ? (currentIndex - 1 + cells.length) % cells.length 
       : (currentIndex + 1) % cells.length;
-    
+
     selectCell(cells[nextIndex].id);
     e.preventDefault();
   } else if (e.key === 'Enter' || e.key === ' ') {
@@ -746,8 +746,8 @@ const handleCanvasKeyboard = (e: React.KeyboardEvent) => {
 <svg ref={canvasRef} viewBox={...}>
 
 // Recommended
-<svg 
-  ref={canvasRef} 
+<svg
+  ref={canvasRef}
   role="application"
   aria-label="Window design canvas - Click cells to change type, use Ctrl+Z to undo"
   aria-describedby="canvas-instructions"
@@ -953,17 +953,17 @@ className="text-slate-300 hover:text-slate-100" // Improved contrast: 4.73:1
   --color-bg-primary: theme('colors.slate.900');
   --color-bg-secondary: theme('colors.slate.800');
   --color-bg-card: theme('colors.gray.800/30');
-  
+
   /* Semantic Text Colors (WCAG AA Compliant) */
   --color-text-primary: theme('colors.white');
   --color-text-secondary: theme('colors.slate.300'); /* 4.73:1 on dark bg */
   --color-text-tertiary: theme('colors.slate.400'); /* Use only for large text */
   --color-text-helper: theme('colors.amber.500/80'); /* 4.21:1 */
-  
+
   /* Semantic Border Colors */
   --color-border-primary: theme('colors.gray.700');
   --color-border-accent: theme('colors.amber.500/30');
-  
+
   /* Status Colors (Accessible Palette) */
   --color-status-success: theme('colors.emerald.400'); /* 4.82:1 */
   --color-status-warning: theme('colors.amber.400'); /* 6.12:1 */
@@ -1015,16 +1015,16 @@ module.exports = {
   --workspace-nav-height: 4rem; /* 64px */
   --workspace-header-height: 5rem; /* 80px */
   --workspace-gutter: 1rem; /* 16px */
-  
+
   /* Sidebar Widths */
   --sidebar-width-collapsed: 3rem; /* 48px */
   --sidebar-width-expanded: 20rem; /* 320px */
   --sidebar-width: var(--sidebar-width-collapsed); /* Default */
-  
+
   /* Touch Target Minimums */
   --touch-target-min-desktop: 2rem; /* 32px */
   --touch-target-min-mobile: 2.75rem; /* 44px */
-  
+
   /* Spacing Scale (Constitutional) */
   --spacing-unit: 0.25rem; /* 4px base unit */
   --spacing-tight: calc(var(--spacing-unit) * 2); /* 8px */
@@ -1083,7 +1083,7 @@ const handleCanvasKeydown = useCallback((e: React.KeyboardEvent<SVGSVGElement>) 
       const nextIndex = e.shiftKey
         ? (currentIndex - 1 + cells.length) % cells.length
         : (currentIndex + 1) % cells.length;
-      
+
       selectCell(cells[nextIndex].id);
       e.preventDefault();
       break;
@@ -1340,7 +1340,7 @@ export const useFocusManagement = (
       document.addEventListener('keydown', handleKeyDown);
       return () => {
         document.removeEventListener('keydown', handleKeyDown);
-        
+
         // Return focus to previous element
         if (returnFocus && previousFocusRef.current) {
           previousFocusRef.current.focus();
@@ -1594,7 +1594,7 @@ describe('EngineeringBay Accessibility', () => {
         onDesignComplete={jest.fn()}
       />
     );
-    
+
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
@@ -1602,7 +1602,7 @@ describe('EngineeringBay Accessibility', () => {
   it('should have proper heading hierarchy', () => {
     const { container } = render(<EngineeringBay {...props} />);
     const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    
+
     // Verify no heading levels are skipped
     let prevLevel = 0;
     headings.forEach((heading) => {
@@ -1619,7 +1619,7 @@ describe('EngineeringBay Accessibility', () => {
         'color-contrast': { enabled: true }
       }
     });
-    
+
     expect(results.violations.filter(v => v.id === 'color-contrast')).toHaveLength(0);
   });
 });
@@ -1932,7 +1932,7 @@ Where L1 is lighter color, L2 is darker color
 **ALMONA Custom:**
 - Alt+D: Toggle Drafting Mode
 - Alt+W: Toggle Wizard Mode
-- Alt+A: Suggest AI Layout
+- Alt+A: Suggest automation Layout
 - Shift+?: Show keyboard shortcuts
 - Ctrl+Enter: Validate/Confirm design
 

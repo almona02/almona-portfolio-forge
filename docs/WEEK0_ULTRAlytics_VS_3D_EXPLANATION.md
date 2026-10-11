@@ -13,7 +13,7 @@ User uploads image → YOLO model detects parts → Returns bounding boxes + lab
 **API Endpoint:** `/api/v1/part-detection/identify-part`
 - **Input:** Image file (JPG, PNG, etc.)
 - **Output:** Detected parts with bounding boxes, confidence scores
-- **Use Case:** "Take a photo of a broken window part, AI identifies what part it is"
+- **Use Case:** "Take a photo of a broken window part, automation identifies what part it is"
 
 ### Where It's Used
 
@@ -63,7 +63,7 @@ User uploads image → YOLO model detects parts → Returns bounding boxes + lab
 
 **Use Case:** Industrial spare parts identification
 - Customer takes photo of broken window part
-- AI analyzes image and identifies the part
+- automation analyzes image and identifies the part
 - System suggests replacement or repair options
 
 **This is completely separate from:**

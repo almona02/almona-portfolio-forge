@@ -291,7 +291,7 @@ Based on the codebase audit, the consultant's strategy is validated. Here's the 
 > - *Every change is audit-trailed*
 > - *Every quote is traceable to its source calculations*
 > 
-> *When the auditor asks 'why did you order 47 meters of profile?' — we can prove it mathematically. Can LogiKal do that?"*
+> *When the auditor asks 'why did you order 47 meters of profile?' — we can prove it mathematically. Can reference system do that?"*
 
 ---
 

@@ -158,7 +158,7 @@ async def scan_profile(
     # If auto-detected scale is available, use it even when confidence is
     # moderate/low so the client can decide whether to accept or override.
     # This avoids hard failure while still exposing confidence for the
-    # "AI suggests, human verifies" flow.
+    # "automation suggests, human verifies" flow.
     if (
         applied_scale is None
         and detected_scale_info

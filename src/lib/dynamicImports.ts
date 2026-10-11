@@ -3,7 +3,7 @@
  * Use these instead of static imports to reduce initial bundle size
  */
 
-// AI/ML Services
+// advisory inference Services
 export const loadTensorFlow = () => import('@tensorflow/tfjs');
 export const loadGoogleAI = () => import('@google/generative-ai');
 

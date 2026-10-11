@@ -1,4 +1,4 @@
-// Simplified AI-Powered Smart Categories
+// Simplified software-assisted Smart Categories
 // Intelligent categorization that learns from machine features rather than rigid hierarchies
 
 export interface SmartCategory {
@@ -112,17 +112,17 @@ export const smartCategories: SmartCategory[] = [
   }
 ];
 
-// AI-powered machine categorization function
+// software-assisted machine categorization function
 export const categorizeMachine = (machine: Machine): string => {
   const name = machine.name.toLowerCase();
   const description = machine.description?.toLowerCase() || '';
   const type = machine.type?.toLowerCase() || '';
   const tags = machine.tags?.join(' ').toLowerCase() || '';
   const specifications = machine.specifications?.join(' ').toLowerCase() || '';
-  
+
   // Combine all text for analysis
   const combinedText = `${name} ${description} ${type} ${tags} ${specifications}`;
-  
+
   // Smart keyword matching with scoring
   const categoryScores: Record<string, number> = {
     cutting: 0,
@@ -130,18 +130,18 @@ export const categorizeMachine = (machine: Machine): string => {
     routing: 0,
     finishing: 0
   };
-  
+
   // Score each category based on keyword matches
   smartCategories.forEach(category => {
     if (category.id === 'all') return;
-    
+
     // Check keywords
     category.keywords.forEach(keyword => {
       if (combinedText.includes(keyword)) {
         categoryScores[category.id] += 2; // Higher weight for direct keywords
       }
     });
-    
+
     // Check synonyms
     category.synonyms.forEach(synonym => {
       if (combinedText.includes(synonym)) {
@@ -149,12 +149,12 @@ export const categorizeMachine = (machine: Machine): string => {
       }
     });
   });
-  
+
   // Find the category with the highest score
   const bestCategory = Object.entries(categoryScores).reduce((a, b) => 
     categoryScores[a[0]] > categoryScores[b[0]] ? a : b
   );
-  
+
   // Return the best category if it has a score > 0, otherwise return 'all'
   return bestCategory[1] > 0 ? bestCategory[0] : 'all';
 };
@@ -164,17 +164,17 @@ export const detectMaterialType = (machine: Machine): 'aluminum' | 'upvc' | 'bot
   const name = machine.name.toLowerCase();
   const description = machine.description?.toLowerCase() || '';
   const combinedText = `${name} ${description}`;
-  
+
   const aluminumKeywords = ['aluminum', 'aluminium', 'alum', 'metal', 'steel'];
   const upvcKeywords = ['upvc', 'pvc', 'plastic', 'vinyl', 'window', 'door'];
-  
+
   const hasAluminum = aluminumKeywords.some(keyword => combinedText.includes(keyword));
   const hasUpvc = upvcKeywords.some(keyword => combinedText.includes(keyword));
-  
+
   if (hasAluminum && hasUpvc) return 'both';
   if (hasAluminum) return 'aluminum';
   if (hasUpvc) return 'upvc';
-  
+
   return 'unknown';
 };
 
@@ -190,57 +190,57 @@ const normalizeModelNumber = (model: string): string => {
 const extractModelNumbers = (query: string): string[] => {
   // Check if query contains comma-separated model numbers
   const commaSeparated = query.split(',').map(s => s.trim()).filter(s => s.length > 0);
-  
+
   // If multiple items found, treat as model number list
   if (commaSeparated.length > 1) {
     return commaSeparated;
   }
-  
+
   // Otherwise, try to extract model patterns from single query
   // Pattern: 2-3 letters, optional space/hyphen, 3-4 digits, optional space/hyphen, optional letters
   const modelPattern = /[a-z]{2,3}[\s\-]?\d{3,4}[\s\-]?[a-z]*/gi;
   const matches = query.match(modelPattern);
-  
+
   return matches || [];
 };
 
 // Enhanced intelligent search with comprehensive machine data
 export const intelligentSearch = (query: string, machines: Machine[]): Machine[] => {
   const normalizedQuery = query.toLowerCase().trim();
-  
+
   if (!normalizedQuery) return machines;
-  
+
   // Extract model numbers from query (handles comma-separated list)
   const modelNumbers = extractModelNumbers(normalizedQuery);
-  
+
   // If model numbers are detected, prioritize exact model matching
   if (modelNumbers.length > 0) {
     const normalizedModelNumbers = modelNumbers.map(normalizeModelNumber);
-    
+
     // Filter machines that match any of the model numbers
     const modelMatches = machines.filter(machine => {
       const normalizedMachineName = normalizeModelNumber(machine.name);
-      
+
       // Check if machine name matches any of the queried model numbers
       return normalizedModelNumbers.some(modelNum => {
         // Exact match
         if (normalizedMachineName === modelNum) return true;
-        
+
         // Extract core model pattern (letters + numbers) for both
         const corePattern = /([a-z]{2,3})(\d{3,4})/i;
         const machineMatch = machine.name.match(corePattern);
         const queryMatch = modelNum.match(corePattern);
-        
+
         if (machineMatch && queryMatch) {
           const machineCore = `${machineMatch[1].toLowerCase()}${machineMatch[2]}`;
           const queryCore = `${queryMatch[1].toLowerCase()}${queryMatch[2]}`;
-          
+
           // Core pattern must match (e.g., "km215" in both "km 215 s" and "KM-215-S")
           if (machineCore === queryCore) {
             return true;
           }
         }
-        
+
         // Fallback: check if one contains the other (for cases like "km215" vs "km215s")
         if (normalizedMachineName.includes(modelNum) || modelNum.includes(normalizedMachineName)) {
           // Additional check: ensure at least the core pattern matches
@@ -250,23 +250,23 @@ export const intelligentSearch = (query: string, machines: Machine[]): Machine[]
             return machineCore === queryCore;
           }
         }
-        
+
         return false;
       });
     });
-    
+
     // If we found matches, return only those (exact model number search)
     if (modelMatches.length > 0) {
       return modelMatches;
     }
-    
+
     // If no matches found but model numbers were detected, return empty
     // This ensures we don't return unrelated machines when user searches for specific models
     if (modelNumbers.length > 1) {
       return [];
     }
   }
-  
+
   // Extract potential categories from search query
   const queryCategories = smartCategories
     .filter(category => 
@@ -274,10 +274,10 @@ export const intelligentSearch = (query: string, machines: Machine[]): Machine[]
       category.synonyms.some(synonym => normalizedQuery.includes(synonym))
     )
     .map(category => category.id);
-  
+
   // Extract material type from query
   const materialType = detectMaterialType({ name: normalizedQuery, description: normalizedQuery } as Machine);
-  
+
   return machines.filter(machine => {
     const name = machine.name.toLowerCase();
     const description = machine.description?.toLowerCase() || '';
@@ -289,18 +289,18 @@ export const intelligentSearch = (query: string, machines: Machine[]): Machine[]
     const airConsumption = machine.airSpec?.consumption?.toLowerCase() || '';
     const certifications = machine.certifications?.join(' ').toLowerCase() || '';
     const safetyFeatures = machine.safetyFeatures?.join(' ').toLowerCase() || '';
-    
+
     // Comprehensive text search across all machine properties
     const combinedText = `${name} ${description} ${type} ${tags} ${specifications} ${category} ${powerConsumption} ${airConsumption} ${certifications} ${safetyFeatures}`;
-    
+
     // Direct text match (highest priority)
     if (combinedText.includes(normalizedQuery)) return true;
-    
+
     // Single model number matching (e.g., "DC 421", "KM 212")
     if (modelNumbers.length === 1) {
       const normalizedModel = normalizeModelNumber(modelNumbers[0]);
       const normalizedMachineName = normalizeModelNumber(machine.name);
-      
+
       // Exact or partial match
       if (normalizedMachineName === normalizedModel || 
           normalizedMachineName.includes(normalizedModel) || 
@@ -308,39 +308,39 @@ export const intelligentSearch = (query: string, machines: Machine[]): Machine[]
         return true;
       }
     }
-    
+
     // Partial word matching for better search results
     const queryWords = normalizedQuery.split(' ').filter(word => word.length > 2);
     const wordMatches = queryWords.filter(word => combinedText.includes(word));
     if (wordMatches.length >= Math.ceil(queryWords.length * 0.6)) return true;
-    
+
     // Category-based match
     if (queryCategories.length > 0) {
       const machineCategory = categorizeMachine(machine);
       if (queryCategories.includes(machineCategory)) return true;
     }
-    
+
     // Material type match
     if (materialType !== 'unknown') {
       const machineMaterial = detectMaterialType(machine);
       if (machineMaterial === materialType || machineMaterial === 'both') return true;
     }
-    
+
     // Legacy model number matching pattern (for backward compatibility)
     const modelPattern = /[a-z]{2,3}\s*\d{3,4}/i;
     const queryModelMatch = normalizedQuery.match(modelPattern);
     if (queryModelMatch && name.includes(queryModelMatch[0].toLowerCase())) return true;
-    
+
     // Power specification matching (e.g., "2.2 kW", "400V")
     const powerPattern = /(\d+\.?\d*)\s*(kw|w|volt|v)/i;
     const queryPowerMatch = normalizedQuery.match(powerPattern);
     if (queryPowerMatch && powerConsumption.includes(queryPowerMatch[0].toLowerCase())) return true;
-    
+
     // Dimension matching (e.g., "6500mm", "2200mm")
     const dimensionPattern = /(\d+\.?\d*)\s*(mm|cm|m)/i;
     const queryDimensionMatch = normalizedQuery.match(dimensionPattern);
     if (queryDimensionMatch && combinedText.includes(queryDimensionMatch[0].toLowerCase())) return true;
-    
+
     return false;
   });
 };
@@ -354,21 +354,21 @@ export const getCategoryMachineCounts = (machines: Machine[]): Record<string, nu
     routing: 0,
     finishing: 0
   };
-  
+
   machines.forEach(machine => {
     const category = categorizeMachine(machine);
     if (category !== 'all') {
       counts[category]++;
     }
   });
-  
+
   return counts;
 };
 
 // Get machines by category
 export const getMachinesByCategory = (machines: Machine[], categoryId: string): Machine[] => {
   if (categoryId === 'all') return machines;
-  
+
   return machines.filter(machine => categorizeMachine(machine) === categoryId);
 };
 
@@ -376,27 +376,27 @@ export const getMachinesByCategory = (machines: Machine[], categoryId: string): 
 export const getSmartRecommendations = (selectedMachine: Machine, allMachines: Machine[]): Machine[] => {
   const selectedCategory = categorizeMachine(selectedMachine);
   const selectedMaterial = detectMaterialType(selectedMachine);
-  
+
   // Find complementary machines
   const recommendations = allMachines
     .filter(machine => {
       const machineCategory = categorizeMachine(machine);
       const machineMaterial = detectMaterialType(machine);
-      
+
       // Same material type, different category (workflow continuation)
       if (machineMaterial === selectedMaterial && machineCategory !== selectedCategory) {
         return true;
       }
-      
+
       // Same category, different material (alternative material)
       if (machineCategory === selectedCategory && machineMaterial !== selectedMaterial) {
         return true;
       }
-      
+
       return false;
     })
     .slice(0, 4); // Limit to 4 recommendations
-  
+
   return recommendations;
 };
 

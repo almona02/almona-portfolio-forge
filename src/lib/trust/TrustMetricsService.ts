@@ -55,7 +55,7 @@ export class TrustMetricsService {
   private async calculateGovernanceHealth(timePeriod: string): Promise<GovernanceHealth> {
     // In production, this would query the database for actual metrics
     // For now, we'll use mock data that demonstrates the structure
-    
+
     // Calculate time period boundaries
     const periodDays = this.parseTimePeriod(timePeriod);
     const cutoffDate = new Date();
@@ -93,7 +93,7 @@ export class TrustMetricsService {
     // Mock data - in production, query from database
     const totalOutputs = 1000;
     const humanValidatedOutputs = 990; // 99% human-validated
-    const tier3Operations = 1000; // 100% Tier 3 (no AI in execution)
+    const tier3Operations = 1000; // 100% Tier 3 (no automation in execution)
     const systemStops = 12; // System stops are correct behavior
     const auditedOperations = 995; // 99.5% have full audit trail
 
@@ -130,11 +130,11 @@ export class TrustMetricsService {
     const humanVerifiedEvents = periodEvents.filter(
       (event) => event.proof.verifiedBy !== 'system'
     ).length;
-    
+
     // Verify chain integrity
     const chainVerification = await this.eventLedger.verifyChainIntegrity();
     const validChainEvents = chainVerification.isValid ? totalEvents : totalEvents - chainVerification.errors.length;
-    
+
     const faultEvents = periodEvents.filter((event) => event.eventType === 'FAULT').length;
 
     // Calculate rates

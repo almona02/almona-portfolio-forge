@@ -213,7 +213,7 @@ if (selectedElements.length > 1) {
 - ✅ Accessible zoom controls in UI (ZoomControls component integrated)
 - ✅ Pan tool button in toolbar (DraftingToolbar.tsx line 33 - verified)
 - ✅ Viewport presets in header (DraftingWorkbench.tsx lines 514-548)
-- ✅ Pan tool cursor (cursor-grab when selected, cursor-grabbing when active)
+- ✅ Pan tool development tool (development tool-grab when selected, development tool-grabbing when active)
 - ✅ Viewport synchronization (bidirectional sync between parent and child)
 
 ### Precision Implementation Requirements
@@ -366,7 +366,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ ... }) => {
           <DropdownMenuItem onClick={onImport}>Import...</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       {/* Edit Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger>Edit</DropdownMenuTrigger>
@@ -396,7 +396,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ ... }) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       {/* View Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger>View</DropdownMenuTrigger>
@@ -422,7 +422,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ ... }) => {
           </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       {/* Tools Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger>Tools</DropdownMenuTrigger>
@@ -446,7 +446,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ ... }) => {
           <DropdownMenuItem onClick={onPreferences}>Preferences...</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       {/* Help Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger>Help</DropdownMenuTrigger>

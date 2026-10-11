@@ -3,7 +3,7 @@
  *
  * Behavioural formulas from the licensed dealer audit (9 Sep 2026).
  * Not wired into generateOptimizedCutList / K-factor engines.
- * Do not treat ALMONA outputs from this module as DoWin expected lengths.
+ * Do not treat ALMONA outputs from this module as reference system expected lengths.
  *
  * Evidenced:
  *   sash rebate = finished − 2 × SashOffset
@@ -12,7 +12,7 @@
  *   glass           = daylight − 2 × GlazingClearance; reject < minGlass
  *   angle ends      = CompLessThan90 or CompGreaterThan90 left+right
  *
- * Unevidenced (DoWin seed Basma/Kaynak null on frame; mullion formula incomplete):
+ * Unevidenced (reference system seed Basma/Kaynak null on frame; mullion formula incomplete):
  *   frame horizontal / vertical, PVC mullion full length.
  *
  * FP-024C.12 bounded weld rule: evaluateDowinRequiredPartsWeldAdjustment.
@@ -250,7 +250,7 @@ export function computeDowinParityLengths(
   return { sashInnerWidthMm, sashInnerHeightMm, lines };
 }
 
-/** Convenience input using yilmazcad-parity settings + Deceuninck 70 Z overlap. */
+/** Convenience input using reference system-parity settings + Deceuninck 70 Z overlap. */
 export function deceuninck70zParityInput(
   finishedWidthMm: number,
   finishedHeightMm: number

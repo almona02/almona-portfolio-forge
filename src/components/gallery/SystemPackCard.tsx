@@ -23,12 +23,12 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 group flex flex-col h-full">
-      
+
       {/* Header Bar - Color Coded by Category */}
       <div className={`h-2 w-full ${system.category === 'aluminum' ? 'bg-[#003366]' : 'bg-[#27ae60]'}`}></div>
 
       <div className="p-5 flex-1 flex flex-col relative">
-        
+
         {/* Market Share Badge */}
         <div className="absolute top-4 left-4 bg-gray-100 px-2 py-1 rounded text-xs font-mono font-bold text-gray-600 border border-gray-200">
           Share: {system.marketShare}%
@@ -131,7 +131,7 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
               غير متاح للورشة
             </button>
           )}
-          
+
           <button 
             onClick={handleTuneSystem}
             className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors"
@@ -139,7 +139,7 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
           >
             ⚙️
           </button>
-          
+
           <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors">
             📄
           </button>

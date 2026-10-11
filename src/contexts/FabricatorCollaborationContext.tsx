@@ -69,7 +69,7 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
   };
 
   /**
-   * Update cursor position (throttled)
+   * Update pointer position (throttled)
    */
   const updateCursor = useCallback((x: number, y: number, element?: string) => {
     if (cursorUpdateTimeoutRef.current) {
@@ -134,7 +134,7 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
     // Simple last-write-wins for now
     // In production, implement proper operational transform
     console.log('Resolving conflict:', conflict);
-    
+
     // Apply the most recent edit
     if (conflict.edits && conflict.edits.length > 0) {
       const latestEdit = conflict.edits.sort(
@@ -200,7 +200,7 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
       lastSeen: new Date().toISOString(),
     });
 
-    // Listen for cursor updates
+    // Listen for pointer updates
     channel.on('broadcast', { event: 'cursor' }, ({ payload }) => {
       if (payload.userId !== userId) {
         setCollaborators(prev => prev.map(collab =>

@@ -2,7 +2,7 @@
  * Hybrid Egyptian Maalem
  * 
  * Combines three layers for unbeatable intelligence:
- * - AI Layer: Language processing, pattern recognition
+ * - automation Layer: Language processing, pattern recognition
  * - Knowledge Layer: YOUR proprietary data (docs, code, market)
  * - Human Layer: Captured maalem wisdom (stories, tricks, warnings)
  */
@@ -48,7 +48,7 @@ export interface HybridContext {
  * Hybrid Egyptian Maalem
  * 
  * The ultimate intelligence system combining:
- * - AI processing
+ * - automation processing
  * - Proprietary knowledge
  * - Human maalem wisdom
  */
@@ -76,7 +76,7 @@ export class HybridEgyptianMaalem {
   async answer(context: HybridContext): Promise<HybridResponse> {
     const { userId, question, userType, location, workshopContext } = context;
 
-    // 1. AI LAYER: Process question
+    // 1. automation LAYER: Process question
     const aiAnswer = await this.processWithAI(question, userType, location);
 
     // 2. KNOWLEDGE LAYER: Query proprietary knowledge
@@ -130,7 +130,7 @@ export class HybridEgyptianMaalem {
   }
 
   /**
-   * AI LAYER: Process with AI
+   * automation LAYER: Process with automation
    */
   private async processWithAI(
     question: string,
@@ -202,7 +202,7 @@ export class HybridEgyptianMaalem {
     technical: string;
     maalem: string;
   } {
-    // Prioritize: Knowledge > Human > AI
+    // Prioritize: Knowledge > Human > automation
     let technical = knowledgeAnswer.answer;
     if (!technical || technical === 'Knowledge not found') {
       technical = aiAnswer.answer;

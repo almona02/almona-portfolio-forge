@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The 3D Preview enhancement for the Drafting Workbench has been successfully completed with precision, discipline, and gold-tier standards. The DraftingPreview3D component now provides full 3D fenestration visualization matching gold-tier competitors (Orgadata LogiKal, KLAES, Moxisys Design Flow) while maintaining ALMONA's architectural advantages.
+The 3D Preview enhancement for the Drafting Workbench has been successfully completed with precision, discipline, and gold-tier standards. The DraftingPreview3D component now provides full 3D fenestration visualization matching gold-tier competitors (reference system reference system, reference system, reference system Design Flow) while maintaining ALMONA's architectural advantages.
 
 **Key Achievement:** ALMONA Drafting Workbench now achieves **feature parity** on 3D preview capabilities with **100% governance advantage** over competitors.
 
@@ -161,7 +161,7 @@ The 3D Preview enhancement for the Drafting Workbench has been successfully comp
 ### Constitutional Compliance ✅
 - ✅ Tier 0 Drafting Layer (visual only, no execution logic)
 - ✅ No execution logic contamination
-- ✅ Deterministic conversion (no ML/AI)
+- ✅ Deterministic conversion (no advisory inference)
 - ✅ Error tracking for audit trail
 
 ---

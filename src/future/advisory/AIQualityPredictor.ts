@@ -1,5 +1,5 @@
 /**
- * AI-Powered Quality Prediction System
+ * software-assisted Quality Prediction System
  * Features:
  * - Defect prediction based on historical cut quality data
  * - Optimal parameter suggestions (saw speeds/feeds)

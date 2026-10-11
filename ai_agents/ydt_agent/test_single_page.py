@@ -1,4 +1,4 @@
-"""Test processing a single page to verify Vision AI is working"""
+"""Test processing a single page to verify Vision automation is working"""
 import os
 from pathlib import Path
 from vision_ai_processor import VisionAIWiringProcessor

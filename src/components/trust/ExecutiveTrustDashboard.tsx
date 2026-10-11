@@ -268,7 +268,7 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
       target: 100,
       unit: '%',
       status: metrics.constitutionalCompliance.tier3Purity === 100 ? 'healthy' : 'critical',
-      description: 'Percentage of operations with no AI (AICS-001 §3.1)',
+      description: 'Percentage of operations with no automation (AICS-001 §3.1)',
     },
     {
       title: 'Human Validation Rate',
@@ -390,7 +390,7 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
                 <div className="max-w-xs text-xs">
                   <p>
                     Constitutional compliance metrics ensure adherence to AICS-001 framework.
-                    Tier 3 Purity must be 100% (no AI in execution paths).
+                    Tier 3 Purity must be 100% (no automation in execution paths).
                   </p>
                 </div>
               </TooltipContent>

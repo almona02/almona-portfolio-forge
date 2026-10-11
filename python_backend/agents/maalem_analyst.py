@@ -76,17 +76,17 @@ class MaalemAnalyst:
     
     async def _llm_analyze(self, article_text: str) -> Optional[Dict[str, Any]]:
         """
-        Use LLM (Gemini) to analyze article
+        Use LLM (support service) to analyze article
         
-        In production, this would call Gemini API with a well-crafted prompt
+        In production, this would call support service API with a well-crafted prompt
         """
         try:
-            # Check if Gemini is available
+            # Check if support service is available
             try:
                 import google.generativeai as genai
                 from core.config import settings
                 
-                # Initialize Gemini
+                # Initialize support service
                 api_key = getattr(settings, 'GEMINI_API_KEY', None)
                 if not api_key:
                     return None
@@ -133,7 +133,7 @@ Only respond with valid JSON.
                 return result
                 
             except ImportError:
-                # Gemini not available - silently fall back to rule-based
+                # support service not available - silently fall back to rule-based
                 return None
             except Exception as e:
                 # LLM not available or error - silently fall back to rule-based

@@ -65,7 +65,7 @@ export class YDTCoreService {
   private knowledgeGraph: YDTKnowledgeGraph;
   private marketIntelligence: MarketIntelligenceDB;
   private workshopPatterns: PatternDatabase;
-  
+
   /**
    * Get optimization strategy based on YDT knowledge
    */
@@ -77,13 +77,13 @@ export class YDTCoreService {
       location: context.location,
       projectType: context.projectType
     });
-    
+
     // Augment with local workshop patterns
     const localPatterns = await this.workshopPatterns.findSimilarProjects(context);
-    
+
     return this.synthesizeStrategy(ydtAdvice, localPatterns);
   }
-  
+
   /**
    * Get market-validated pricing
    */
@@ -95,7 +95,7 @@ export class YDTCoreService {
       season: this.getCurrentSeason(),
       competitionLevel: await this.analyzeLocalCompetition(project.location)
     });
-    
+
     return {
       materialCost: marketData.materialCost,
       laborCost: this.calculateLaborWithYDT(project, marketData),
@@ -106,14 +106,14 @@ export class YDTCoreService {
       source: `YDT Market Intelligence (${marketData.sampleSize} projects)`
     };
   }
-  
+
   /**
    * Generate dynamic presets based on YDT learning
    */
   async generateDynamicPresets(location: string): Promise<WindowPreset[]> {
     const trendingStyles = await this.knowledgeGraph.getTrendingStyles(location);
     const commonMistakes = await this.knowledgeGraph.getCommonErrors(location);
-    
+
     return trendingStyles.map(style => ({
       id: `ydt_${style.name}_${location}`,
       name: `${style.name} (YDT Recommended for ${location})`,
@@ -140,7 +140,7 @@ import { YDTCoreService } from '@/lib/ydt/YDTCoreService';
 
 export class OptimizationEngine {
   private ydt: YDTCoreService;
-  
+
   async optimize(cuts: Cut[], context: OptimizationContext): Promise<OptimizationResult> {
     // BEFORE optimization: Get YDT strategy
     const ydtStrategy = await this.ydt.getOptimizationStrategy({
@@ -149,14 +149,14 @@ export class OptimizationEngine {
       location: context.location,
       projectType: context.projectType
     });
-    
+
     // Use YDT advice to guide optimization
     const result = await this.performOptimization(cuts, {
       strategy: ydtStrategy.strategy, // "remnant-first" or "speed-first"
       constraints: ydtStrategy.constraints,
       priorities: ydtStrategy.priorities // YDT knows what matters in this market
     });
-    
+
     // Enrich result with YDT intelligence
     return {
       ...result,
@@ -180,7 +180,7 @@ import { YDTCoreService } from '@/lib/ydt/YDTCoreService';
 
 export class YDTPricingOracle {
   private ydt: YDTCoreService;
-  
+
   /**
    * Calculate price using YDT market intelligence
    * This replaces static pricing formulas
@@ -188,7 +188,7 @@ export class YDTPricingOracle {
   async calculatePrice(project: Project): Promise<PriceBreakdown> {
     // Get REAL market prices from YDT
     const marketPricing = await this.ydt.getMarketPricing(project);
-    
+
     return {
       materialCost: marketPricing.materialCost,
       laborCost: marketPricing.laborCost,
@@ -204,7 +204,7 @@ export class YDTPricingOracle {
       recommendations: await this.getPricingRecommendations(project, marketPricing)
     };
   }
-  
+
   private async getMarketComparison(project: Project): Promise<MarketComparison> {
     return {
       averageMarketPrice: await this.ydt.getAverageMarketPrice(project),
@@ -223,7 +223,7 @@ export class YDTPricingOracle {
 ```python
 class YDTBusinessValidator:
     """Validate if project makes BUSINESS sense, not just technical"""
-    
+
     async def validate_project_viability(self, project: Project) -> ValidationResult:
         # Query YDT: "Is this project profitable in Cairo?"
         market_analysis = await self.ydt.analyze_market_viability(
@@ -231,27 +231,27 @@ class YDTBusinessValidator:
             location=project.location,
             estimated_cost=project.estimated_cost
         )
-        
+
         if market_analysis.profit_margin < 0.15:
             return ValidationResult.error(
                 "YDT Analysis: This project type has thin margins in your area. "
                 "Consider upselling to premium materials.",
                 recommendations=market_analysis.alternatives
             )
-        
+
         # Check competition
         competition_analysis = await self.ydt.analyze_competition(
             location=project.location,
             project_type=project.type
         )
-        
+
         if competition_analysis.undercutting_detected:
             return ValidationResult.warning(
                 f"YDT Alert: Competitors in {project.location} are charging "
                 f"{competition_analysis.price_difference}% less. Consider value-add strategy.",
                 recommendations=competition_analysis.value_add_options
             )
-        
+
         return ValidationResult.success(
             market_analysis=market_analysis,
             confidence=market_analysis.confidence_score
@@ -315,14 +315,14 @@ export class EgyptianFabricationRules {
       alternatives: {} as Record<string, string[]>
     }
   };
-  
+
   static getMaterialStrategy(projectType: string, location: string): MaterialStrategy {
     const patterns = this.CAIRO_MARKET_PATTERNS;
     const material = patterns.materialPreferences[projectType] || 'Aluminum 65mm';
     const multiplier = patterns.pricingMultipliers[location] || 1.0;
     const season = this.getCurrentSeason();
     const seasonalAdj = patterns.seasonalAdjustments[season];
-    
+
     return {
       recommendedMaterial: material,
       basePrice: this.getBasePrice(material),
@@ -333,7 +333,7 @@ export class EgyptianFabricationRules {
       source: 'YDT Egyptian Market Intelligence'
     };
   }
-  
+
   static getOptimalMargin(projectType: string, location: string): number {
     // YDT knows optimal margins per project type/location
     const marginMatrix = {
@@ -341,7 +341,7 @@ export class EgyptianFabricationRules {
       commercial: { cairo_city: 0.25, giza: 0.22, alexandria: 0.24 },
       luxury: { cairo_city: 0.40, giza: 0.35, alexandria: 0.38 }
     };
-    
+
     return marginMatrix[projectType]?.[location] || 0.25;
   }
 }
@@ -356,7 +356,7 @@ import { YDTCoreService } from '@/lib/ydt/YDTCoreService';
 
 export class YDTPresetGenerator {
   private ydt: YDTCoreService;
-  
+
   /**
    * Generate dynamic presets based on YDT learning
    * These are NOT static - they evolve with market intelligence
@@ -364,13 +364,13 @@ export class YDTPresetGenerator {
   async generateDynamicPresets(location: string): Promise<WindowPreset[]> {
     // Query YDT: "What window styles are trending in Alexandria?"
     const trendingStyles = await this.ydt.getTrendingStyles(location);
-    
+
     // Get common mistakes to avoid
     const commonMistakes = await this.ydt.getCommonErrors(location);
-    
+
     // Get market-validated parameters
     const marketParameters = await this.ydt.getOptimalParameters(location);
-    
+
     return trendingStyles.map(style => ({
       id: `ydt_${style.name}_${location}`,
       name: `${style.name} (YDT Recommended for ${location})`,
@@ -391,13 +391,13 @@ export class YDTPresetGenerator {
       source: 'YDT Market Intelligence'
     }));
   }
-  
+
   /**
    * Get preset recommendations for a specific project
    */
   async recommendPresets(project: Project): Promise<PresetRecommendation[]> {
     const marketAnalysis = await this.ydt.analyzeProjectContext(project);
-    
+
     return marketAnalysis.recommendedPresets.map(preset => ({
       preset: preset,
       reason: preset.recommendationReason,
@@ -419,36 +419,36 @@ export class YDTPresetGenerator {
 ```typescript
 export const YDTAnalyticsDashboard: React.FC = () => {
   const ydtMetrics = useYDTAnalytics();
-  
+
   return (
     <div className="ydt-analytics-dashboard">
       <h2>YDT Intelligence Impact</h2>
-      
+
       {/* Business Metrics */}
       <MetricCard
         title="Average Margin Improvement"
         value={`+${ydtMetrics.marginImprovement}%`}
         description="Workshops using YDT recommendations"
       />
-      
+
       <MetricCard
         title="Project Success Rate"
         value={`${ydtMetrics.successRate}%`}
         description="Projects following YDT advice"
       />
-      
+
       {/* Market Intelligence */}
       <MarketIntelligencePanel>
         <Question>What's the optimal markup for aluminum windows in Giza this month?</Question>
         <Answer>{ydtMetrics.optimalMarkup.giza}</Answer>
         <Source>Based on {ydtMetrics.sampleSize} projects</Source>
       </MarketIntelligencePanel>
-      
+
       <MarketIntelligencePanel>
         <Question>Which competitors are undercutting prices in Alexandria?</Question>
         <Answer>{ydtMetrics.competitorAnalysis.alexandria}</Answer>
       </MarketIntelligencePanel>
-      
+
       {/* Trending Insights */}
       <TrendingInsights>
         <h3>YDT Market Insights</h3>
@@ -473,12 +473,12 @@ export const YDTAnalyticsDashboard: React.FC = () => {
 ```python
 class ProtectedKnowledgeBase:
     """Encrypt sensitive market intelligence"""
-    
+
     def __init__(self, encryption_key: str):
         self.cipher = AESCipher(encryption_key)
         self.ydt_knowledge = self.load_encrypted_knowledge()
         self.watermark_service = WatermarkService()
-    
+
     def get_market_insight(self, query: str, workshop_id: str) -> MarketInsight:
         # Decrypt only for authorized workshops
         if self.is_workshop_authorized(workshop_id):
@@ -495,7 +495,7 @@ class ProtectedKnowledgeBase:
         else:
             # Return generic insight for unauthorized access
             return self.get_generic_insight(query)
-    
+
     def detect_unauthorized_sharing(self, watermark: str) -> bool:
         """Detect if market intelligence is being shared outside authorized workshops"""
         watermark_data = self.watermark_service.decode(watermark)
@@ -525,7 +525,7 @@ export const YDTIntelligenceReports: React.FC = () => {
   return (
     <div className="ydt-reports">
       <h1>YDT Market Intelligence Reports</h1>
-      
+
       <ReportCard
         title="Monthly Market Analysis - Cairo"
         description="Trending materials, optimal margins, competitor analysis"
@@ -538,13 +538,13 @@ export const YDTIntelligenceReports: React.FC = () => {
           'Optimal margin recommendations'
         ]}
       />
-      
+
       <ReportCard
         title="Regional Intelligence - Alexandria"
         description="Alexandria-specific market patterns and opportunities"
         price="EGP 1,800/month"
       />
-      
+
       <ReportCard
         title="Competitive Intelligence Dashboard"
         description="Real-time competitor analysis and pricing strategies"
@@ -567,20 +567,20 @@ async def query_ydt_intelligence(
 ):
     """
     YDT Intelligence API - For partners and integrations
-    
+
     This is the API that makes YDT accessible to:
     - Third-party software
     - Partner integrations
     - White-label solutions
     """
     ydt_service = YDTCoreService()
-    
+
     result = await ydt_service.query_intelligence(
         query=query.query,
         context=query.context,
         workshop_id=current_user.workshop_id
     )
-    
+
     return {
         "intelligence": result.intelligence,
         "confidence": result.confidence,
@@ -597,7 +597,7 @@ async def query_ydt_intelligence(
 ```typescript
 export class CompetitiveIntelligenceTracker {
   private ydt: YDTCoreService;
-  
+
   /**
    * Track competitive landscape and feed back into YDT
    */
@@ -610,10 +610,10 @@ export class CompetitiveIntelligenceTracker {
       newEntrants: await this.detectNewCompetitors(location),
       pricingStrategies: await this.analyzePricingStrategies(location)
     };
-    
+
     // Feed back into YDT for learning
     await this.ydt.learnCompetitiveLandscape(location, competitiveData);
-    
+
     // Generate alerts
     if (competitiveData.newEntrants.length > 0) {
       await this.alertService.sendAlert({
@@ -638,11 +638,11 @@ export class YDTImpactAnalyzer {
    */
   async analyzeImpact(workshopId: string, period: TimePeriod): Promise<YDTImpact> {
     const projects = await this.getProjects(workshopId, period);
-    
+
     // Compare projects with YDT vs without
     const withYDT = projects.filter(p => p.usedYDT);
     const withoutYDT = projects.filter(p => !p.usedYDT);
-    
+
     return {
       marginImprovement: this.calculateMarginImprovement(withYDT, withoutYDT),
       successRateImprovement: this.calculateSuccessRate(withYDT, withoutYDT),
@@ -660,7 +660,7 @@ export class YDTImpactAnalyzer {
 ## 🎯 New Value Proposition
 
 ### Current Pitch (Wrong)
-"We provide AI-powered fabrication software with 99.8% accuracy."
+"We provide software-assisted fabrication software with 99.8% accuracy."
 
 ### New Pitch (Right)
 **"YDT-Powered Fabrication Intelligence Platform"**

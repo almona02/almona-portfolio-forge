@@ -28,7 +28,7 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Chunk loading error:', error, errorInfo);
-    
+
     // Log chunk loading errors
     if (process.env.NODE_ENV === 'production') {
       console.error('Chunk loading error in production:', {
@@ -41,10 +41,10 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
 
   private handleRetry = () => {
     const newRetryCount = this.state.retryCount + 1;
-    
+
     if (newRetryCount <= 3) {
       this.setState({ retryCount: newRetryCount });
-      
+
       // Clear the error and retry
       setTimeout(() => {
         this.setState({ hasChunkError: false });
@@ -68,7 +68,7 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
             <p className="text-gray-300 mb-4">
               Failed to load application resources. This might be due to a network issue or outdated cache.
             </p>
-            
+
             <div className="space-y-2">
               <button
                 onClick={this.handleRetry}
@@ -77,7 +77,7 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
               >
                 {this.state.retryCount >= 3 ? 'Max Retries Reached' : `Retry (${this.state.retryCount}/3)`}
               </button>
-              
+
               <button
                 onClick={() => {
                   // Clear all caches and reload
@@ -94,7 +94,7 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
               >
                 Clear Cache & Reload
               </button>
-              
+
               <button
                 onClick={() => window.location.href = '/'}
                 className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition-colors"
@@ -102,7 +102,7 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
                 Go to Homepage
               </button>
             </div>
-            
+
             {this.state.retryCount >= 3 && (
               <p className="text-red-400 text-sm mt-4">
                 If the problem persists, please check your internet connection or try again later.

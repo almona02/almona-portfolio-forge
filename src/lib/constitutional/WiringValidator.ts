@@ -38,7 +38,7 @@ const FORBIDDEN_CALLBACKS = [
   'onConfirm', 'onSubmit', 'onCommit', 'onAuthorize'
 ];
 
-// AI-related imports that shouldn't appear in Tier 3
+// automation-related imports that shouldn't appear in Tier 3
 const AI_PATTERNS = [
   'IntelligenceGate', 'AdvisoryGate', 'YDT', 'TensorFlow',
   'model.predict', 'neural', 'confidence'
@@ -50,33 +50,33 @@ export class WiringValidator {
 
   async validate(): Promise<WiringValidationResult> {
     console.log('⚖️  AICS-001 Constitutional Wiring Validation\n');
-    
+
     this.violations = [];
-    
+
     // Load manifest
     this.loadManifest();
-    
+
     // Run all validations
     await this.validateSingleSourceOfTruth();
     await this.validateTierBoundaries();
     await this.validateFutureContainment();
     await this.validateCallbackConstraints();
-    
+
     // Calculate metrics
     const metrics = this.calculateMetrics();
-    
+
     // Generate result
     const result = this.generateResult(metrics);
-    
+
     // Output report
     this.outputReport(result);
-    
+
     return result;
   }
 
   private loadManifest(): void {
     const manifestPath = path.join(process.cwd(), 'src/components/fabricator/wiring-manifest.yaml');
-    
+
     if (!fs.existsSync(manifestPath)) {
       this.addViolation({
         type: 'AUTHORITY_AMBIGUITY',
@@ -105,7 +105,7 @@ export class WiringValidator {
 
     const content = fs.readFileSync(manifestPath, 'utf-8');
     const componentPaths = content.match(/src\/[^\s:]+\.tsx/g) || [];
-    
+
     const seen = new Map<string, number>();
     for (const comp of componentPaths) {
       seen.set(comp, (seen.get(comp) || 0) + 1);
@@ -129,7 +129,7 @@ export class WiringValidator {
    * RULE 2: Tier Boundary Enforcement (AICS-001 §5.10.2)
    */
   private async validateTierBoundaries(): Promise<void> {
-    // Check Tier 3 components for AI patterns
+    // Check Tier 3 components for automation patterns
     const tier3Components = [
       'src/components/fabricator/EngineeringBay.tsx',
       'src/lib/fabricator/AlgorithmSelector.ts'
@@ -140,14 +140,14 @@ export class WiringValidator {
       if (!fs.existsSync(fullPath)) continue;
 
       const content = fs.readFileSync(fullPath, 'utf-8');
-      
+
       for (const pattern of AI_PATTERNS) {
         if (content.includes(pattern)) {
           // Exception: AlgorithmSelector is allowed to reference selection logic
           if (componentPath.includes('AlgorithmSelector') && pattern === 'confidence') {
             continue;
           }
-          
+
           this.addViolation({
             type: 'TIER_LEAKAGE',
             component: componentPath,
@@ -167,7 +167,7 @@ export class WiringValidator {
   private async validateFutureContainment(): Promise<void> {
     const srcDir = path.join(process.cwd(), 'src');
     const files = this.scanFiles(srcDir);
-    
+
     // Allowed files that can import from /future/
     // These are gateway/proxy files that provide stable import paths
     const allowedImporters = [
@@ -181,15 +181,15 @@ export class WiringValidator {
       if (allowedImporters.includes(basename)) continue;
       // Test files are allowed to import from /future/ for testing purposes
       if (basename.endsWith('.test.ts') || basename.endsWith('.test.tsx') || file.includes('__tests__')) continue;
-      
+
       const content = fs.readFileSync(file, 'utf-8');
       const futureImports = content.match(/from\s+['"]@\/future\/[^'"]+['"]/g);
-      
+
       if (futureImports && futureImports.length > 0) {
         for (const imp of futureImports) {
           // Advisory panels through wiring are ok
           if (imp.includes('advisory-panels')) continue;
-          
+
           const relativePath = file.replace(process.cwd() + path.sep, '');
           this.addViolation({
             type: 'FUTURE_EXECUTION',
@@ -212,10 +212,10 @@ export class WiringValidator {
     if (!fs.existsSync(advisoryDir)) return;
 
     const files = this.scanFiles(advisoryDir);
-    
+
     for (const file of files) {
       const content = fs.readFileSync(file, 'utf-8');
-      
+
       for (const callback of FORBIDDEN_CALLBACKS) {
         const pattern = new RegExp(`\\b${callback}\\b`, 'g');
         if (pattern.test(content)) {
@@ -235,15 +235,15 @@ export class WiringValidator {
 
   private scanFiles(dir: string): string[] {
     const files: string[] = [];
-    
+
     if (!fs.existsSync(dir)) return files;
-    
+
     const walk = (currentDir: string) => {
       const entries = fs.readdirSync(currentDir, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         const fullPath = path.join(currentDir, entry.name);
-        
+
         if (entry.isDirectory()) {
           if (!['node_modules', '.git', 'dist', 'build'].includes(entry.name)) {
             walk(fullPath);
@@ -255,7 +255,7 @@ export class WiringValidator {
         }
       }
     };
-    
+
     walk(dir);
     return files;
   }
@@ -267,10 +267,10 @@ export class WiringValidator {
   private calculateMetrics() {
     const errors = this.violations.filter(v => v.severity === 'ERROR');
     const warnings = this.violations.filter(v => v.severity === 'WARNING');
-    
+
     // Health score: 100 - (errors * 10) - (warnings * 2)
     const healthScore = Math.max(0, 100 - (errors.length * 10) - (warnings.length * 2));
-    
+
     return {
       totalComponents: 244,
       constitutionalHealth: healthScore,
@@ -281,7 +281,7 @@ export class WiringValidator {
 
   private generateResult(metrics: any): WiringValidationResult {
     const hasErrors = this.violations.some(v => v.severity === 'ERROR');
-    
+
     return {
       valid: !hasErrors,
       violations: this.violations,
@@ -294,15 +294,15 @@ export class WiringValidator {
     console.log('='.repeat(60));
     console.log('⚖️  AICS-001 CONSTITUTIONAL VALIDATION REPORT');
     console.log('='.repeat(60));
-    
+
     console.log('\n📊 METRICS:');
     console.log(`  Constitutional Health: ${result.metrics.constitutionalHealth}/100`);
     console.log(`  Tier 3 Purity: ${result.metrics.tier3Purity}%`);
     console.log(`  Truth Clarity: ${result.metrics.truthClarity}%`);
-    
+
     const errors = result.violations.filter(v => v.severity === 'ERROR');
     const warnings = result.violations.filter(v => v.severity === 'WARNING');
-    
+
     if (errors.length > 0) {
       console.log('\n❌ ERRORS (Build-blocking):');
       errors.forEach((v, i) => {
@@ -311,7 +311,7 @@ export class WiringValidator {
         console.log(`     🔧 ${v.remediation}`);
       });
     }
-    
+
     if (warnings.length > 0) {
       console.log('\n⚠️  WARNINGS:');
       warnings.forEach((v, i) => {
@@ -319,11 +319,11 @@ export class WiringValidator {
         console.log(`     ${v.message}`);
       });
     }
-    
+
     if (result.violations.length === 0) {
       console.log('\n✅ NO VIOLATIONS DETECTED');
     }
-    
+
     console.log('\n' + '='.repeat(60));
     if (result.valid) {
       console.log('✅ CONSTITUTIONAL VALIDATION PASSED');

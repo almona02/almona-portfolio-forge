@@ -100,7 +100,7 @@ interface ProjectHeaderMeta {
 
 2. **Quick Design Options**:
    - **Pattern Selection**: Choose from 50+ Egyptian templates
-   - **Smart Suggestions**: AI suggests based on dimensions
+   - **Smart Suggestions**: automation suggests based on dimensions
    - **Manual Grid**: Use `SmartDrawCanvas` for custom layouts
 
 3. **Engineering Bay Configuration**:
@@ -287,7 +287,7 @@ interface OptimizationResult {
 
 ### 1. **Pattern Intelligence**
 - **Egyptian Templates**: 50+ pre-configured patterns
-- **AI Suggestions**: Smart pattern matching based on dimensions
+- **automation Suggestions**: Smart pattern matching based on dimensions
 - **Bulk Application**: Apply patterns to similar units
 
 ### 2. **Constitutional Guarantees**
@@ -367,7 +367,7 @@ ApexEngineV2.generateAssembly()   // Engineering calculations
 - **Egyptian Context**: Built-in regional standards
 - **Constitutional Guarantees**: Deterministic replay
 - **Real-time 3D**: Instant visual validation
-- **Pattern Intelligence**: AI-powered suggestions
+- **Pattern Intelligence**: software-assisted suggestions
 
 ### vs Regional Competitors
 - **Professional Workflow**: Enterprise-grade process
@@ -411,7 +411,7 @@ ApexEngineV2.generateAssembly()   // Engineering calculations
 - **API Throughput**: 200+ req/s
 
 ### Constitutional Compliance
-- **Tier 3 Enforcement**: No AI/ML in execution paths
+- **Tier 3 Enforcement**: No advisory inference in execution paths
 - **Audit Trail**: Every decision traceable
 - **Human Validation**: Required at key checkpoints
 - **Deterministic Replay**: Guaranteed reproducibility

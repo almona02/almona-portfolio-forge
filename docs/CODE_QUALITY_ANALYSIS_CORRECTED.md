@@ -14,7 +14,7 @@
 
 **Overall Assessment:** ALMONA has institutional-grade governance documents but prototype-grade implementation in some areas. The gap between governance claims and code reality is the real risk—not generic "code quality" metrics.
 
-**Constitutional Risk Level:** **HIGH** — Some code violates constitutional guarantees (AI deception, unprovable accuracy claims, mock data in production).
+**Constitutional Risk Level:** **HIGH** — Some code violates constitutional guarantees (automation deception, unprovable accuracy claims, mock data in production).
 
 ---
 
@@ -24,7 +24,7 @@
 
 These are real problems that threaten constitutional guarantees or anchor client trust.
 
-#### 1. AI Deception: Pseudo-ML Claims (CRITICAL)
+#### 1. automation Deception: Pseudo-ML Claims (CRITICAL)
 
 **File:** `src/lib/ml/AlgorithmPredictor.ts`
 
@@ -45,7 +45,7 @@ class AlgorithmPredictor {
 
 **Constitutional Violation:**
 - Claims "ML-based prediction" but uses simple math
-- Violates Tier 1 Authoritative AI requirements (must have reasoning)
+- Violates Tier 1 Authoritative automation requirements (must have reasoning)
 - If discovered by anchor client, destroys trust: "You claim YDT intelligence but use basic math"
 
 **Impact:**
@@ -67,14 +67,14 @@ class AlgorithmPredictor {
       historicalData: await this.getHistoricalData(),
       workshopContext: complexity.workshopId
     });
-    
+
     // Constitutional validation
     if (!ydtResponse.reasoning) {
       throw new ConstitutionalViolationError(
         'Tier 1 requires reasoning - YDT response missing reasoning'
       );
     }
-    
+
     return {
       algorithm: ydtResponse.algorithm,
       confidence: ydtResponse.confidence,
@@ -130,15 +130,15 @@ describe('AICS-001 Section 7.5: Deterministic Replay', () => {
     const input = loadGoldenInput('project_A_revit.rvt');
     const bom1 = await generateBOM(input);
     const bom2 = await generateBOM(input);
-    
+
     expect(bom1).toEqual(bom2); // Exact match required
   });
-  
+
   it('should produce identical cut list from identical BOM', async () => {
     const bom = loadGoldenBOM('project_A_bom.json');
     const cutList1 = await generateCutList(bom);
     const cutList2 = await generateCutList(bom);
-    
+
     expect(cutList1).toEqual(cutList2); // Exact match required
   });
 });
@@ -149,14 +149,14 @@ describe('99.8% Accuracy Guarantee', () => {
     const goldenTests = loadGoldenTestSuite();
     let correct = 0;
     let total = 0;
-    
+
     for (const test of goldenTests) {
       const result = await processProject(test.input);
       const accuracy = calculateAccuracy(result, test.expected);
       if (accuracy >= 0.998) correct++;
       total++;
     }
-    
+
     const overallAccuracy = correct / total;
     expect(overallAccuracy).toBeGreaterThanOrEqual(0.998);
   });
@@ -171,7 +171,7 @@ describe('EngineeringBay Constitutional Compliance', () => {
     expect(result.output).not.toContain('load');
     expect(result.output).not.toContain('deflection');
   });
-  
+
   it('should include constitutional disclaimer in all outputs', () => {
     const { result } = render(<EngineeringBay project={testProject} />);
     expect(result.disclaimer).toContain('manufacturable instructions');
@@ -235,7 +235,7 @@ export const BOMDisplaySection: React.FC<BOMDisplayProps> = ({ bom, project }) =
       );
     }
   }, [bom]);
-  
+
   return (
     <Card>
       <CardHeader>
@@ -303,7 +303,7 @@ useEffect(() => {
       setIsLoading(false);
     }
   };
-  
+
   if (projectId) {
     loadCutPieces();
   }
@@ -418,7 +418,7 @@ These would harm your strategy.
 |--------|----------------|------------|--------|
 | **Code Testing** | 70-80% coverage (legacy but tested) | 15% coverage | 90%+ critical paths |
 | **Component Size** | Large but stable (years of fixes) | Large and fragile | <500 lines, tested |
-| **AI Claims** | Minimal (they don't claim much) | **Overclaimed (pseudo-ML)** | Accurate (real ML or accurate claims) |
+| **automation Claims** | Minimal (they don't claim much) | **Overclaimed (pseudo-ML)** | Accurate (real ML or accurate claims) |
 | **Production Data** | Real (decades of use) | **Mock (prototype)** | Real + verified |
 | **Constitutional Governance** | None | **Institutional-grade** | Maintained |
 | **Execution Boundary** | Implicit | **Explicit** | Enforced |
@@ -433,7 +433,7 @@ These would harm your strategy.
 
 ### Phase A: Truth Foundation (Weeks 1-2)
 
-**Week 1: Fix AI Deception**
+**Week 1: Fix automation Deception**
 - [ ] Option 1: Implement real YDT integration in AlgorithmPredictor
 - [ ] Option 2: Rename to RuleBasedAlgorithmSelector, remove "ML" claims
 - [ ] Update all documentation to match implementation
@@ -518,7 +518,7 @@ These would harm your strategy.
 
 | Risk | Severity | Timeline | Impact if Not Fixed |
 |------|----------|----------|---------------------|
-| **AI Deception** | CRITICAL | Week 1 | Anchor client discovers false claims → trust destroyed |
+| **automation Deception** | CRITICAL | Week 1 | Anchor client discovers false claims → trust destroyed |
 | **Test Coverage** | CRITICAL | Weeks 1-4 | Cannot prove 99.8% accuracy → constitutional guarantee broken |
 | **Mock Data** | HIGH | Week 2 | Cannot demonstrate real-world capability → validation fails |
 | **God Components** | MEDIUM | Weeks 5-6 | Maintenance risk, but not blocking for MVP |
@@ -589,13 +589,13 @@ These would harm your strategy.
 - You accept risk of trust damage if gaps discovered
 - You can fix issues during Phase 1
 
-**⚠️ Warning:** If anchor client discovers AI deception or unprovable accuracy claims, constitutional trust is destroyed. This is hard to recover from.
+**⚠️ Warning:** If anchor client discovers automation deception or unprovable accuracy claims, constitutional trust is destroyed. This is hard to recover from.
 
 ---
 
 ## Immediate Action Items (This Week)
 
-### Priority 1: Fix AI Deception (Week 1)
+### Priority 1: Fix automation Deception (Week 1)
 
 **Decision Required:**
 - [ ] Option A: Implement real YDT integration
@@ -664,7 +664,7 @@ ALMONA has institutional-grade governance documents but prototype-grade implemen
 
 **The Fix:**
 Not a wholesale rewrite, but surgical fixes to:
-1. **AI deception** (Week 1)
+1. **automation deception** (Week 1)
 2. **Test coverage** (Weeks 1-4)
 3. **God components** (Weeks 5-6)
 4. **Mock data** (Week 2)
@@ -681,7 +681,7 @@ After 8 weeks, ALMONA will have:
 ---
 
 **Document Status:** ✅ Strategic Reframe Complete  
-**Next Review:** After Week 1 fixes (AI deception resolution)
+**Next Review:** After Week 1 fixes (automation deception resolution)
 
 
 

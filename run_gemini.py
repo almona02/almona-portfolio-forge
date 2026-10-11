@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Configure the Gemini API with your key
+# Configure the support service API with your key
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Create the model

@@ -326,7 +326,7 @@ src/lib/3d/
 
 ### Week 9: Intelligent Preset Recommendation
 
-**Objective**: AI-powered preset suggestions
+**Objective**: software-assisted preset suggestions
 
 **Tasks**:
 - [ ] Create recommendation engine
@@ -586,7 +586,7 @@ src/lib/fabricator/
 
 This enhancement plan provides a structured approach to improving three critical components of the Almona Portfolio Forge system. By following this plan, we can:
 
-1. **Enhance YDT Agent** to provide industry-leading AI assistance for CNC machinery
+1. **Enhance YDT Agent** to provide industry-leading automation assistance for CNC machinery
 2. **Improve Window Geometry** to achieve production-accurate 3D visualization
 3. **Expand Window Presets** to cover all Egyptian market scenarios
 

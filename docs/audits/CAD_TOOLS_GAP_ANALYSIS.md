@@ -364,7 +364,7 @@
 
 ## 💡 Competitive Analysis
 
-### **Kliess (Industry Leader)**
+### **reference system (Industry Leader)**
 - ✅ Full CAD toolset (all basic + advanced)
 - ✅ Layers system
 - ✅ Blocks library
@@ -372,14 +372,14 @@
 - ✅ Cutting optimization visualization
 - ✅ Material utilization tracking
 
-### **Moxisys**
+### **reference system**
 - ✅ Full CAD toolset
 - ✅ Layers
 - ✅ Blocks
 - ⚠️ Limited parametric features
 - ✅ Good visualization tools
 
-### **Orgadata Logikal**
+### **reference system reference system**
 - ✅ Professional CAD tools
 - ✅ Advanced nesting
 - ✅ Material optimization
@@ -447,9 +447,9 @@
 
 ### **Competitive Position**
 - **Current:** Good basic CAD, missing advanced features
-- **After Phase 1-2:** Competitive with Moxisys
+- **After Phase 1-2:** Competitive with reference system
 - **After Phase 3:** Unique advantage with fabrication integration
-- **After Phase 4-5:** Matches Kliess feature set
+- **After Phase 4-5:** Matches reference system feature set
 
 ---
 

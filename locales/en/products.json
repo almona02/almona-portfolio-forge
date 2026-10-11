@@ -1,21 +1,21 @@
 {
   "page": {
     "title": "Products | Almona",
-    "description": "Smart fabrication. Egyptian excellence. YILMAZ machinery, Fabricator Pro AI, Industry 4.0.",
+    "description": "Smart fabrication. Egyptian excellence. YILMAZ machinery, Fabricator Pro automation, Industry 4.0.",
     "keywords": "YILMAZ machines, CNC machines Egypt, industrial machinery, aluminum processing, PVC machines, copy routers"
   },
   "hero": {
     "title": "Industry 4.0",
     "subtitle": "Smart Manufacturing",
-    "description": "Experience the future of industrial machinery with AI-powered recommendations, IoT connectivity, and digital twin technology. Transform your production with intelligent automation and predictive analytics.",
-    "aiWizard": "🚀 AI Machine Wizard",
+    "description": "Experience the future of industrial machinery with software-assisted recommendations, IoT connectivity, and digital twin technology. Transform your production with intelligent automation and predictive analytics.",
+    "aiWizard": "🚀 automation Machine Wizard",
     "liveConfigurator": "⚙️ Live Configurator",
     "viewAnalytics": "📊 View Analytics"
   },
   "industry40": {
     "features": {
       "aiSearch": {
-        "title": "AI-Powered Search",
+        "title": "software-assisted Search",
         "description": "Intelligent machine recommendations based on your requirements"
       },
       "analytics": {
@@ -73,7 +73,7 @@
   "technology": {
     "title": "Advanced Technology",
     "aiRecommendations": {
-      "title": "AI Recommendations",
+      "title": "Recommendations",
       "description": "Machine learning algorithms analyze your requirements to suggest the perfect equipment for your specific manufacturing needs."
     },
     "iotConnectivity": {
@@ -89,7 +89,7 @@
     "title": "Frequently Asked Questions",
     "industry40": {
       "question": "What makes YILMAZ machines Industry 4.0 ready?",
-      "answer": "YILMAZ machines feature IoT connectivity, AI-powered diagnostics, predictive maintenance, and digital twin technology for optimal performance monitoring."
+      "answer": "YILMAZ machines feature IoT connectivity, software-assisted diagnostics, predictive maintenance, and digital twin technology for optimal performance monitoring."
     },
     "installation": {
       "question": "Do you provide installation and training?",
@@ -138,7 +138,7 @@
     "comingSoon": "Configurator Coming Soon",
     "comingSoonDescription": "We're working on an advanced interactive configurator that will allow you to customize machines, view 3D models, and get real-time pricing.",
     "close": "Close",
-    "tryWizard": "Try AI Wizard Instead"
+    "tryWizard": "Try automation Wizard Instead"
   },
   "comparison": {
     "maxReached": "Maximum reached",

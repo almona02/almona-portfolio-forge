@@ -138,7 +138,7 @@ const testScenarios = [
 | Optimization Speed | 10-30s | 2-8s | ✅ ACHIEVED |
 | Waste Reduction | 5-10% | 8-15% | ✅ ACHIEVED |
 | Cross-Project Savings | 0% | 15-25% | ✅ READY |
-| User Calibration | Manual | AI-Assisted | ✅ IMPLEMENTED |
+| User Calibration | Manual | software-assisted | ✅ IMPLEMENTED |
 | ML Prediction Accuracy | N/A | >90% | 🔄 TESTING |
 | Remnant Utilization | 30-40% | 60-70% | 🔄 TESTING |
 

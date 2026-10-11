@@ -25,7 +25,7 @@
 1. ✅ Ant Design - Already using named imports (tree-shakeable)
 2. ✅ Recharts - Already lazy loaded (verified in Phase 5B)
 3. ✅ Three.js - Already lazy loaded via LazyModelWrapper
-4. ✅ TensorFlow.js - Already lazy loaded in AI components
+4. ✅ TensorFlow.js - Already lazy loaded in automation components
 
 ### Priority 2: Framer Motion Lazy Loading (High Impact, Medium Risk)
 **Challenge:** 66 files use Framer Motion, many in above-the-fold components

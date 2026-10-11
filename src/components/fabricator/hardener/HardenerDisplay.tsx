@@ -2,7 +2,7 @@
  * HardenerDisplay - Hardener Code Display Component
  * 
  * Displays selected hardener code with constitutional compliance indicators.
- * Inspired by LogiKal/KLAES interface patterns with ALMONA's constitutional guarantees.
+ * Displays reinforcement choices with manufacturing validation.
  * 
  * @since Phase 1: Precision Upgrade Plan (January 2026)
  */

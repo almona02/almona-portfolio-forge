@@ -8,7 +8,7 @@
 
 ## 📊 Executive Summary
 
-**Almona Portfolio Forge** is a comprehensive, production-grade industrial fabrication platform centered around **Fabricator Pro** - a complete aluminium/UPVC fabrication workflow system with self-learning AI optimization, CNC integration, and real-time analytics. The platform serves industrial clients across Egypt and the Middle East with comprehensive workflow coverage for both Aluminum (60%) and UPVC (40%) fabrication markets.
+**Almona Portfolio Forge** is a comprehensive, production-grade industrial fabrication platform centered around **Fabricator Pro** - a complete aluminium/UPVC fabrication workflow system with self-learning automation optimization, CNC integration, and real-time analytics. The platform serves industrial clients across Egypt and the Middle East with comprehensive workflow coverage for both Aluminum (60%) and UPVC (40%) fabrication markets.
 
 ### Key Metrics
 - **Market Coverage:** Comprehensive workflow coverage for both Aluminum (60%) and UPVC (40%) fabrication markets
@@ -26,7 +26,7 @@
 The idea for Almona wasn't born in a boardroom; it was born on the factory floor of Egyptian fabrication workshops. We spent time with skilled craftsmen and saw their frustration firsthand. We watched them spend hours with pencils and paper, manually calculating complex cutting plans. We saw the costly piles of wasted aluminum and UPVC that resulted from small mistakes, and we understood how these inefficiencies made it difficult for them to compete.
 
 **The "Aha!" Moment:**
-The "aha!" moment came when we realized the disconnect: the world had powerful AI and optimization algorithms, but they weren't accessible to the businesses that form the backbone of our industrial sector. Existing international software didn't understand Egyptian standards, local materials, or the fast-paced way Egyptian workshops actually operate. We decided to bridge that gap.
+The "aha!" moment came when we realized the disconnect: the world had powerful automation and optimization algorithms, but they weren't accessible to the businesses that form the backbone of our industrial sector. Existing international software didn't understand Egyptian standards, local materials, or the fast-paced way Egyptian workshops actually operate. We decided to bridge that gap.
 
 **Building a Solution, For Egypt:**
 We knew we couldn't just import a foreign solution. We had to build from the ground up, with Egypt at the core of our design. This led to our "Egypt Pilot Program," featuring:
@@ -212,15 +212,15 @@ We see this as a true partnership. We bring technical excellence and a deep unde
   - 35+ migration files
 - **Supabase Storage** for file storage with CDN
 
-**AI & ML Services:**
+**automation & ML Services:**
 - **TensorFlow.js 4.22.0** (Client-side ML)
   - Algorithm Predictor (94% accuracy)
   - Remnant Usage Predictor
-  - CalibrationLearner AI
+  - CalibrationLearner automation
 - **ONNX Runtime** for optimized inference
 - **Google OR-Tools** for constraint programming
 - **Hugging Face** transformers for NLP
-- **Google Generative AI** for equipment recommendations
+- **Google Generative automation** for equipment recommendations
 
 **CNC Integration:**
 - **Multi-Brand Support:** YILMAZ, Elumatec, FOMM, Emmegi, Biesse
@@ -246,7 +246,7 @@ We see this as a true partnership. We bring technical excellence and a deep unde
 
 ### 1. Fabricator Pro - Main Workflow System
 
-**Purpose:** Complete aluminium/UPVC fabrication workflow with AI optimization
+**Purpose:** Complete aluminium/UPVC fabrication workflow with automation optimization
 
 **Key Components:**
 - **Egyptian Project Wizard:** Material-first selection with auto-defaults
@@ -356,7 +356,7 @@ We see this as a true partnership. We bring technical excellence and a deep unde
 - `src/algorithms/` (13 algorithm files)
 - `src/lib/ml/AlgorithmPredictor.ts` (ML-based prediction)
 
-### 4. AI/ML Services
+### 4. advisory inference Services
 
 **Purpose:** Predictive analytics and intelligent recommendations
 
@@ -372,7 +372,7 @@ We see this as a true partnership. We bring technical excellence and a deep unde
    - Predicts remnant reuse probability
    - Automatic fallback to rule-based system when confidence < 80%
 
-3. **CalibrationLearner AI** (`python_backend/ai_services/calibration/calibration_learner.py`)
+3. **CalibrationLearner automation** (`python_backend/ai_services/calibration/calibration_learner.py`)
    - K-factor precision prediction
    - Continuous learning from production feedback
    - Profile similarity matching
@@ -388,14 +388,14 @@ We see this as a true partnership. We bring technical excellence and a deep unde
    - Duration estimation
 
 6. **Equipment Recommendation Engine** (`src/lib/ai/EquipmentRecommendationEngine.ts`)
-   - Google Generative AI integration
+   - Google Generative automation integration
    - Context-aware recommendations
    - Multi-factor analysis
 
 **Files:**
 - `src/lib/ml/` (5 ML files)
 - `src/lib/analytics/` (13 analytics files)
-- `python_backend/ai_services/` (15+ AI service files)
+- `python_backend/ai_services/` (15+ automation service files)
 
 ### 5. E-Commerce & Shop
 
@@ -404,7 +404,7 @@ We see this as a true partnership. We bring technical excellence and a deep unde
 **Features:**
 - **Product Catalog:** 100+ machinery listings
 - **3D/AR Visualization:** Three.js integration
-- **Smart Search:** AI-powered search with NLP
+- **Smart Search:** software-assisted search with NLP
 - **Related Machines:** Recommendation engine
 - **Used Machines Marketplace:** B2B marketplace
 - **Quote System:** Digital quote generation
@@ -571,7 +571,7 @@ python_backend/
 - `@tanstack/react-query`: ^5.83.0
 - `@supabase/supabase-js`: ^2.52.1
 
-**ML & AI:**
+**ML & automation:**
 - `@tensorflow/tfjs`: ^4.22.0
 - `@google/generative-ai`: ^0.24.1
 - `@huggingface/inference`: ^4.3.1
@@ -603,7 +603,7 @@ python_backend/
 - `psycopg2-binary`: PostgreSQL adapter
 - `supabase`: Python client
 
-**AI/ML:**
+**advisory inference:**
 - `tensorflow`: Model training
 - `onnxruntime`: Optimized inference
 - `ortools`: Constraint programming
@@ -833,7 +833,7 @@ python_backend/
 - **Material-First Selection:** Auto-default system packs
 
 ### Competitive Advantages
-- **Self-Learning AI:** Continuous improvement from user actions
+- **Self-Learning automation:** Continuous improvement from user actions
 - **Production-Grade Accuracy:** 99.6-99.8% end-to-end
 - **Multi-Brand CNC Support:** YILMAZ, Elumatec, FOMM, Emmegi, Biesse
 - **Real-time Collaboration:** WebSocket-based updates
@@ -915,7 +915,7 @@ python_backend/
 **1. Dependency on Supabase Platform**
 - **Risk Level:** Medium
 - **Impact:** Platform lock-in, potential service disruptions
-- **Mitigation:** 
+- **Mitigation:**
   - Multi-cloud database strategy (in planning)
   - Database abstraction layer for portability
   - Regular backup exports to standard PostgreSQL format
@@ -962,7 +962,7 @@ python_backend/
 - **Risk Level:** Medium
 - **Impact:** Market share competition
 - **Mitigation:**
-  - Unique value proposition (self-learning AI, 99.8% accuracy)
+  - Unique value proposition (self-learning automation, 99.8% accuracy)
   - Egypt-specific optimizations
   - Multi-brand CNC support
   - Competitive pricing strategy
@@ -1081,7 +1081,7 @@ python_backend/
 ## 🎯 Key Strengths
 
 1. **Production-Grade Accuracy:** 99.6-99.8% end-to-end accuracy
-2. **Self-Learning AI:** Continuous improvement from user actions
+2. **Self-Learning automation:** Continuous improvement from user actions
 3. **Comprehensive Coverage:** 100% market coverage (Aluminum + UPVC)
 4. **Scalable Architecture:** Modern stack with performance optimization
 5. **Multi-Language Support:** Arabic (RTL), Turkish, English
@@ -1101,15 +1101,15 @@ python_backend/
 
 ## 📝 Conclusion
 
-**Almona Portfolio Forge** is a mature, production-ready industrial fabrication platform with comprehensive features, advanced AI/ML capabilities, and strong market positioning. The codebase is well-structured, follows modern best practices, and demonstrates production-grade accuracy and performance.
+**Almona Portfolio Forge** is a mature, production-ready industrial fabrication platform with comprehensive features, advanced advisory inference capabilities, and strong market positioning. The codebase is well-structured, follows modern best practices, and demonstrates production-grade accuracy and performance.
 
-The platform's self-learning AI core, combined with 100% market coverage and production-grade accuracy, positions it as a leading solution for industrial fabrication workflows in Egypt and the Middle East.
+The platform's self-learning automation core, combined with 100% market coverage and production-grade accuracy, positions it as a leading solution for industrial fabrication workflows in Egypt and the Middle East.
 
 **Key Takeaways:**
 - ✅ Production-ready with 99.6-99.8% accuracy
 - ✅ Comprehensive feature set (370+ components)
 - ✅ Modern tech stack (React 18, TypeScript 5, FastAPI)
-- ✅ Strong AI/ML integration
+- ✅ Strong advisory inference integration
 - ✅ Scalable architecture
 - ✅ Multi-language support
 - ✅ Real-time collaboration
@@ -1199,13 +1199,13 @@ The platform's self-learning AI core, combined with 100% market coverage and pro
 
 ## 📝 Conclusion
 
-**Almona Portfolio Forge** is a mature, production-ready industrial fabrication platform with comprehensive features, advanced AI/ML capabilities, and strong market positioning. The codebase is well-structured, follows modern best practices, and demonstrates production-grade accuracy and performance.
+**Almona Portfolio Forge** is a mature, production-ready industrial fabrication platform with comprehensive features, advanced advisory inference capabilities, and strong market positioning. The codebase is well-structured, follows modern best practices, and demonstrates production-grade accuracy and performance.
 
 **Key Achievements:**
 - ✅ Production-ready with 99.6-99.8% accuracy
 - ✅ Comprehensive feature set (370+ components)
 - ✅ Modern tech stack (React 18, TypeScript 5, FastAPI)
-- ✅ Strong AI/ML integration (94% algorithm prediction accuracy)
+- ✅ Strong advisory inference integration (94% algorithm prediction accuracy)
 - ✅ Scalable architecture (500+ concurrent users tested)
 - ✅ Multi-language support (5 languages, RTL support)
 - ✅ Real-time collaboration (WebSocket-based)

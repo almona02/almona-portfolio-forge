@@ -1,7 +1,7 @@
 # Wave 3 Zero-Budget Implementation Plan — Codebase Investigation
 
 **Date:** January 2026  
-**Scope:** Compare the “ZERO-BUDGET WAVE 3 IMPLEMENTATION PLAN” (Cursor + Antigravity, YILMAZ Egypt Predictive Maintenance) against the actual codebase.  
+**Scope:** Compare the “ZERO-BUDGET WAVE 3 IMPLEMENTATION PLAN” (development tool + Antigravity, YILMAZ Egypt Predictive Maintenance) against the actual codebase.
 **Method:** Code search and file inspection only (no README or marketing docs).
 
 ---

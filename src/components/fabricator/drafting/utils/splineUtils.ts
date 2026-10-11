@@ -3,7 +3,7 @@
  * 
  * Utilities for generating smooth bezier curves from control points
  * 
- * Constitutional: Deterministic geometry operations, no ML/AI
+ * Constitutional: Deterministic geometry operations, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

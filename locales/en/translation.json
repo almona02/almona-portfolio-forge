@@ -40,10 +40,10 @@
       "title": "Services",
       "all_services": {
         "name": "All Services",
-        "description": "Complete AI-powered services overview"
+        "description": "Complete software-assisted services overview"
       },
       "ai_equipment_advisor": {
-        "name": "AI Equipment Advisor",
+        "name": "Equipment Advisor",
         "description": "Smart recommendations"
       },
       "machine_sales": {

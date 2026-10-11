@@ -40,7 +40,7 @@ All four phases have been successfully implemented:
 - `HardenerSelectionPanel.tsx` - UI component
 
 **Constitutional Compliance:**
-- ✅ Tier 3 Protected Determinism (no AI/ML)
+- ✅ Tier 3 Protected Determinism (no advisory inference)
 - ✅ Hardener Independence Invariant (no supplier data dependency)
 - ✅ System stop on validation failure (correct behavior)
 - ✅ Full audit trail
@@ -107,7 +107,7 @@ All four phases have been successfully implemented:
 **Import Bridge Service:**
 - `ImportBridgeService.ts` - Import orchestration
 - `Tier3Validator.ts` - Deterministic validation
-- Support for: DXF, CSV, LogiKal, KLAES
+- Support for: DXF, CSV, reference system, reference system
 
 **Constitutional Compliance:**
 - ✅ Tier 3 validation for all imports
@@ -151,7 +151,7 @@ All four phases have been successfully implemented:
 
 ### Phase 4: Enterprise Adoption Accelerators
 - ✅ Executive Trust Dashboard operational
-- ✅ Import bridges functional (DXF, CSV, LogiKal, KLAES)
+- ✅ Import bridges functional (DXF, CSV, reference system, reference system)
 - ✅ 100% Tier 3 validation for imports
 
 ---

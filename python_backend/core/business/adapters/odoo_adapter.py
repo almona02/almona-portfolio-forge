@@ -3,7 +3,7 @@ Production-grade Odoo adapter (XML-RPC).
 
 Minimal, dependency-light connector with:
 - Authentication and health checks
-- Draft invoice creation with AI costing context
+- Draft invoice creation with automation costing context
 - Optional Egyptian e-invoice XML attachment
 """
 

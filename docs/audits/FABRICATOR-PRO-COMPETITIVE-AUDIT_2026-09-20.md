@@ -1,6 +1,6 @@
-# Fabricator Pro — Logikal / Klaes audit and upgrade plan
+# Fabricator Pro — reference system / reference system audit and upgrade plan
 
-**Decision:** retain and harden the current platform. The inspected implementation does not yet justify a claim of production equivalence to Logikal or Klaes. Prioritize manufacturing correctness, revision integrity and release enforcement before expanding the feature catalogue.
+**Decision:** retain and harden the current platform. The inspected implementation does not yet justify a claim of production equivalence to reference system or reference system. Prioritize manufacturing correctness, revision integrity and release enforcement before expanding the feature catalogue.
 
 **Scope and evidence — 20 September 2026**
 
@@ -18,11 +18,11 @@ Competitor capabilities below are documented by their vendors, not independently
 
 **Competitive comparison**
 
-Logikal is the more useful reference for supplier-driven construction rules and design-to-machining continuity. Its documentation describes compatible-item selection, CNC machining definitions and BIM interfaces. [Logikal product](https://www.logikal-software.com/en/product/logikal), [technical FAQ](https://www.logikal-software.com/en/faq), [CNC documentation](https://help.orgadata.com/en/documentation/cnc/programming-basics/create-machining/).
+reference system is the more useful reference for supplier-driven construction rules and design-to-machining continuity. Its documentation describes compatible-item selection, CNC machining definitions and BIM interfaces. [reference system product](https://www.logikal-software.com/en/product/logikal), [technical FAQ](https://www.logikal-software.com/en/faq), [CNC documentation](https://help.orgadata.com/en/documentation/cnc/programming-basics/create-machining/).
 
-Klaes is the more useful reference for connected order processing, procurement, capacity planning and factory execution. Its product portfolio documents invoicing, material ordering, workstation scanning and machine control. [Klaes workflow overview](https://portal.klaes.de/en-tour).
+reference system is the more useful reference for connected order processing, procurement, capacity planning and factory execution. Its product portfolio documents invoicing, material ordering, workstation scanning and machine control. [reference system workflow overview](https://portal.klaes.de/en-tour).
 
-| Capability | Logikal reference | Klaes reference | Fabricator evidence and gap | Priority |
+| Capability | reference system reference | reference system reference | Fabricator evidence and gap | Priority |
 |---|---|---|---|---|
 | System and supplier data | Supplier catalogue with compatibility checks | Supplier configurators and material workflows | Regional system packs, profiles and constraints exist. Supplier-approved revisions, compatibility coverage and update qualification were not demonstrated. | P1 |
 | Design and detailing | Rule-aware element design and machining | Window/door design, sections; separate 3D offering | SmartDraw, drafting, 3D and constraint modules exist. Preserve them; qualify supported configurations rather than equating visual output with manufacturing approval. | P1 |
@@ -35,7 +35,7 @@ Klaes is the more useful reference for connected order processing, procurement, 
 | BIM and external systems | IFC, Revit and ERP interfaces | ERP/accounting interfaces and specialist modules | IFC exporter is a scaffold; SAP/Odoo page explicitly says planned. Real interoperability is a later workstream. | P2 |
 | Regional operations | Validate required regional modules in procurement | Validate required regional modules in procurement | Arabic/English resources, Egyptian packs and EGP defaults are useful foundations. Arabic workshop workflows plus Almona machine service/passport integration are a proposed differentiation, not a proven comparative advantage. | P1/P2 |
 
-The specific Logikal BIM reference documents IFC and Revit interfaces. [Orgadata BIM](https://help.orgadata.com/en/documentation/interfaces/bim/). Klaes CAPA documents forward/backward/fixed-date scheduling and shared planning views. [Klaes capacity planning](https://www.klaes.de/en-capacity-planning).
+The specific reference system BIM reference documents IFC and Revit interfaces. [reference system BIM](https://help.orgadata.com/en/documentation/interfaces/bim/). reference system CAPA documents forward/backward/fixed-date scheduling and shared planning views. [reference system capacity planning](https://www.klaes.de/en-capacity-planning).
 
 **Actionable audit findings**
 
@@ -60,9 +60,9 @@ P0 = release blocker for the affected manufacturing capability. P1 = required fo
 
 The canonical Studio route hierarchy, regional packs, SmartDraw/drafting/3D components, supplier-profile hooks, stock-movement RPCs and remnant lifecycle are reusable foundations. V2 schemas and queries include owner scoping and row-level security; live enforcement still needs integration verification. Deterministic manufacturing tests, explicit unsupported NCW handling and the existing evidence/provenance work are valuable controls.
 
-The DoWin tests deliberately preserve unresolved external evidence. [Golden replay test:151](/C:/projects/almona-portfolio-forge/src/tests/fabricator/fp024c13GoldenReplay.test.ts:151) asserts no canonical production integration and an unproven FP-027 root cause. A passing test preserves that boundary; it does not establish machine parity. The older FP-027 forensic report concerns observations from a licensed comparator workflow and must not be relabelled as a newly reproduced Fabricator solver defect.
+The reference system tests deliberately preserve unresolved external evidence. [Golden replay test:151](/C:/projects/almona-portfolio-forge/src/tests/fabricator/fp024c13GoldenReplay.test.ts:151) asserts no canonical production integration and an unproven FP-027 root cause. A passing test preserves that boundary; it does not establish machine parity. The older FP-027 forensic report concerns observations from a licensed comparator workflow and must not be relabelled as a newly reproduced Fabricator solver defect.
 
-Older [Logikal gap documentation](/C:/projects/almona-portfolio-forge/docs/LOGIKAL_GAP_ANALYSIS_AND_WIRING_PLAN.md) and [competitive summaries](/C:/projects/almona-portfolio-forge/docs/COMPETITIVE_REALITY_VS_DOCUMENTATION_EXECUTIVE_SUMMARY.md) contain completion/accuracy/parity percentages. They are not acceptance evidence for this release.
+Older [reference system gap documentation](/C:/projects/almona-portfolio-forge/docs/LOGIKAL_GAP_ANALYSIS_AND_WIRING_PLAN.md) and [competitive summaries](/C:/projects/almona-portfolio-forge/docs/COMPETITIVE_REALITY_VS_DOCUMENTATION_EXECUTIVE_SUMMARY.md) contain completion/accuracy/parity percentages. They are not acceptance evidence for this release.
 
 **Upgrade sequence**
 
@@ -89,7 +89,7 @@ Use licensed, operator-produced Logikal/Klaes outputs where available, plus supp
 |---|---|
 | Reference jobs | Initially 30 approved jobs: 10 aluminium, 10 UPVC, 5 multi-position/batch jobs, 5 invalid/boundary cases. Cover different opening types, reinforcement, hardware, both end angles, weld allowances, stock sizes and remnant cases. Increase coverage for each added system/model. |
 | Conservation | Exact required/placed/exported piece identity and quantity; zero unexplained extra or missing pieces. Stock balance includes cuts, kerf, trim and remainder under the approved convention. |
-| Dimensions | Every piece passes its documented operation-specific tolerance. The existing ±0.1 mm DoWin fixture criterion is scoped evidence, not a universal machine tolerance. Never average away an individual failure. |
+| Dimensions | Every piece passes its documented operation-specific tolerance. The existing ±0.1 mm reference system fixture criterion is scoped evidence, not a universal machine tolerance. Never average away an individual failure. |
 | Revision integrity | Editing size, profile, glass, hardware, price or settings invalidates affected artifacts. Refresh/deep link and switching users/poses cannot reuse another revision's outputs. |
 | Controller acceptance | Schema-valid file plus successful target-controller import, operation review and measured sample. Offline/disconnected send cannot report acceptance. |
 | Pricing | Screen, persisted quote and PDF agree at the agreed monetary precision; taxes/discounts/currency use configured, versioned business rules. This audit makes no tax-compliance determination. |
@@ -99,7 +99,7 @@ Use licensed, operator-produced Logikal/Klaes outputs where available, plus supp
 
 **Validation record**
 
-The main Vitest run selected kerf accounting, Gate 2 manufacturing truth, DoWin physical-length evidence, golden replay, optimizer authority, Studio protection, execution service and drafting constitutional tests: **11 files / 80 tests passed**. The operator/isolation-filtered compensation reconciliation run: **1 passed / 17 unselected tests skipped**. Neither run was a full suite or physical machine qualification.
+The main Vitest run selected kerf accounting, Gate 2 manufacturing truth, reference system physical-length evidence, golden replay, optimizer authority, Studio protection, execution service and drafting constitutional tests: **11 files / 80 tests passed**. The operator/isolation-filtered compensation reconciliation run: **1 passed / 17 unselected tests skipped**. Neither run was a full suite or physical machine qualification.
 
 Isolated probes loaded local frontend modules in memory, without remote writes: switching poses retained the previous plan/quote; editing design retained the previous plan; an empty-state `commercial` validation returned valid; impossible thermal geometry returned `Lg = -0.4`. These prove module behavior, not an authenticated browser reproduction. A first probe launcher failed due to its runtime environment; the probes completed using the installed TypeScript transpiler.
 

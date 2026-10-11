@@ -242,7 +242,7 @@ The file header claims “Converted from EGYPTIAN_PATTERNS” and “50+ templat
 
 **Reusable canonical drawings:** PARTIAL. Grids exist. They are not one library.
 
-**Coupled to Deceuninck?** No template library is Deceuninck-specific. Deceuninck exists only in the DoWin parity evidence path.
+**Coupled to Deceuninck?** No template library is Deceuninck-specific. Deceuninck exists only in the reference system parity evidence path.
 
 **Can a user create 1200×1500 double casement from a generic template then apply another system?** UI can apply `egyptian_casement_double_1x2` or `casement-double` then change pack in measuring/selector. There is **no** guaranteed rebind that recomputes manufacturing from the new pack without going through `generateCuttingListFromSystemPack`. Compatibility lists include systems that cannot physically do casement vs sliding.
 
@@ -361,7 +361,7 @@ Gold Tier `ProfileSpec.role` is a **smaller** set including `glazingBead` vs `gl
 
 SmartScan `RoleTagger` is a third subset (`RoleTagger.tsx:9-17`).
 
-**Do manufacturers map codes to roles?** Sometimes, when `Profile.profileRole` is authored (Wintech `W-6410` → `frame`, `upvc-systems.ts:33-50`). Otherwise `UnifiedProfileCatalog.guessRoleFromCode` (`:316-336`) or ROCK60 config object keys (`frame_profiles` / `sash_profiles`). Business logic still keys many paths on raw `profileCode` (DoWin Deceuninck-KASA-70 allowlists).
+**Do manufacturers map codes to roles?** Sometimes, when `Profile.profileRole` is authored (Wintech `W-6410` → `frame`, `upvc-systems.ts:33-50`). Otherwise `UnifiedProfileCatalog.guessRoleFromCode` (`:316-336`) or ROCK60 config object keys (`frame_profiles` / `sash_profiles`). Business logic still keys many paths on raw `profileCode` (reference system Deceuninck-KASA-70 allowlists).
 
 **Readiness:** roles are ready as a vocabulary. Pack-authored role maps are not mandatory. Heuristic guessing is not fail-closed.
 
@@ -406,12 +406,12 @@ See 5.2. Additional coupling:
 |----------|----------|----------------|
 | K-factor / 45° weld | `UPVCCuttingEngine.calculateKFactor` | GLOBAL UPVC + HARDCODED empirical 0.3 wall correction |
 | Bar pack kerf / remnant | `ManufacturingSettings` + `barPackAccounting` | GLOBAL CONFIGURABLE (job > machine > systemPack > namedProfile > platform) |
-| YilmazCAD parity numbers | `YILMAZCAD_PARITY_MANUFACTURING_SETTINGS` | NAMED PROFILE / PARITY-ONLY |
+| reference system parity numbers | `YILMAZCAD_PARITY_MANUFACTURING_SETTINGS` | NAMED PROFILE / PARITY-ONLY |
 | ROCK60 L+60 / H+60 / L-44 / L-167 | `ROCK60_WINDOW_SYSTEM_TEMPLATE` | SYSTEM-SPECIFIC HARDCODED strings |
 | SYSTEM_CUTTING_RULES ROCK60/PANDA | `cuttingListConstants.ts:85-103` | SYSTEM-SPECIFIC HARDCODED |
 | Default frame +50 / sash −40 / bead −167 | `DEFAULT_CUTTING_RULE_OFFSETS` | GLOBAL HARDCODED fallback |
 | Wintech overlap 8 mm / burn-off 3 mm | `upvc-systems.ts` comments + upvcSpec | SYSTEM-SPECIFIC CONFIGURABLE data |
-| DoWin sash rebate / weld | `DowinParityLengthEngine.ts` | PARITY-ONLY; **not wired** to production (`:1-7,20-22`) |
+| reference system sash rebate / weld | `DowinParityLengthEngine.ts` | PARITY-ONLY; **not wired** to production (`:1-7,20-22`) |
 | Bounded Deceuninck 45° weld | FP-024C.12 adapter | PARITY-ONLY; production does not consume |
 | ApexEngineV6 GENERIC-60 | `ApexEngineV6.ts:92-111` | HARDCODED unsafe default |
 | Machine trim (Micron 15 mm) | `MACHINE_MANUFACTURING_OVERRIDES` | MACHINE-SPECIFIC CONFIGURABLE |
@@ -434,7 +434,7 @@ Leakage / risk:
 - YilmazAdapter embeds `new Date().toISOString()` in G-code (`YilmazAdapter.ts:49`) — non-deterministic replay.
 - Multiple parallel CNC families (`integrations/cnc/*`, `lib/cnc/adapters/*`, ALM6510 MDB) — existence of 12 files ≠ one adapter bus.
 - Profile system does **not** cleanly emit canonical cuts then adapt: DualOutputGenerator calls `generateCuttingListFromSystemPack` which already encodes system-specific offsets.
-- DoWin MDB evidence is Deceuninck-specific and isolated.
+- reference system MDB evidence is Deceuninck-specific and isolated.
 
 Machine-specific assumptions **do** leak backward into named manufacturing profiles (`yilmazcad-parity`) and into UPVCCuttingEngine’s “Yılmaz single-head” comments. They do **not** currently leak into EgyptianTemplate geometry.
 
@@ -451,7 +451,7 @@ Tier-3 determinism: AlgorithmSelector remains rule-based (`AlgorithmSelector.ts:
 | `fabricator_system_packs` | `spec` JSON blob, `regions`, `brands`, `scope` (`database.ts:1397-1408`) | no version column |
 | `fabricator_profiles` | profile row + `specifications` JSON | no pack FK |
 | `design_templates` | grid + `system_pack_id` | timestamps; no template version. **CREATE TABLE UNPROVEN** in `migrations/` — RLS-only reference |
-| DoWin optimizer provenance | `settingsSnapshotSha256` | **parity jobs only** |
+| reference system optimizer provenance | `settingsSnapshotSha256` | **parity jobs only** |
 | FenestrationSystem.metadata | versionHistory + validationStatus | Gold Tier type; not production snapshot |
 
 **Template versioning (section S):** persisted designs store **copied grid + optional presetId**, not template version. DualOutputGenerator re-loads `EGYPTIAN_PATTERNS` by `windowUnit.presetId` (`DualOutputGenerator.ts:121-141` → `presetUtils.ts:20-21`). That is an in-memory catalog lookup, not a database snapshot.
@@ -549,7 +549,7 @@ Existing knobs:
 - `FenestrationSystemValidator` — Gold Tier structural/business rules, including UPVC welding required.
 - `isCertifiedPack` — two legacy packs (`CertifiedSystemPacks.ts:47-49`).
 - Constitutional tests: `GuaranteeVerification.test.ts`, `ManufacturingSettingsContract.test.ts`.
-- DoWin golden fixtures — Deceuninck 70 bounded parity only.
+- reference system golden fixtures — Deceuninck 70 bounded parity only.
 - `GOLD_TIER_ENABLED` feature flag (`src/lib/featureFlags.ts:40`).
 
 **A system may be visible before L6 but must not become Tier-3 machine-authoritative.** Today packs are selectable with no maturity gate. ApexEngineV6 will invent aluminium GENERIC-60 rather than fail closed.
@@ -625,7 +625,7 @@ Adapt, do not replace:
 2. **TemplateBlueprintRegistry** = new JSON packs validated against a TS interface; migrate EgyptianTemplate/EgyptianPattern ids behind it. Stop adding parallel arrays.
 3. **ProfileSystemRegistry** = existing `SYSTEM_PACKS` + `fabricator_system_packs`, but **one** `SystemPack` schema (retire certified-legacy shape; stop treating FenestrationSystem as a second production pack).
 4. **SystemTemplateCompatibility** = promote `EgyptianPattern.compatibleSystems` to a validated matrix keyed by packId × blueprintFamily. Delete stale ids.
-5. **ManufacturingRulePack** = *pointer* from SystemPack to named rule set (including “use current UPVCCuttingEngine”, “use ROCK60 spec strings”, “use bounded DoWin parity adapter”). **Do not** fold Deceuninck 70 into the generalized formula.
+5. **ManufacturingRulePack** = *pointer* from SystemPack to named rule set (including “use current UPVCCuttingEngine”, “use ROCK60 spec strings”, “use bounded reference system parity adapter”). **Do not** fold Deceuninck 70 into the generalized formula.
 6. **RegionalVariantPack** = overlay on packId, not inheritance of ManufacturingSettings.
 7. **ValidationCertificate** = L0–L6 on the pack, enforced at optimize/production.
 
@@ -744,7 +744,7 @@ Modified from the requested A–G because evidence says **maturity and identity 
 ### Phase D — Validation / maturity (moved earlier)
 
 - **Goal:** L0–L6; production routes require L4+.
-- **Reuse:** FenestrationSystemValidator idea, GuaranteeVerification, DoWin goldens as L4/L5 examples.
+- **Reuse:** FenestrationSystemValidator idea, GuaranteeVerification, reference system goldens as L4/L5 examples.
 - **Tier-3 impact:** positive (fail closed).
 - **Gate:** uncertified pack visible in catalogue, blocked on optimize.
 
@@ -865,8 +865,8 @@ Adding “one more Egyptian UPVC pack” as TypeScript today is possible as **ca
 | Where Tier-3 begins | Instantiated mm geometry + pack-declared rules → Cut lengths → optimize → machine bytes. |
 | Unvalidated packs | Selectable at L0–L2; fail closed on optimize/production. |
 | Advisory vs certified | DualOutput visual DNA is advisory; CuttingListGenerator / AlmonaCuttingEngine is currently treated as production truth **without** pack maturity — that is the gap. |
-| Replay must capture | blueprintVersion, packVersion, regionalVersion, rulePackVersion, adapterVersion, ManufacturingSettings snapshot (DoWin jobs already snapshot settings; Studio jobs do not). |
-| ML/AI | Not required for authoritative execution. AlgorithmSelector remains rules. Do not put IntelligenceGate on cut lengths. |
+| Replay must capture | blueprintVersion, packVersion, regionalVersion, rulePackVersion, adapterVersion, ManufacturingSettings snapshot (reference system jobs already snapshot settings; Studio jobs do not). |
+| advisory inference | Not required for authoritative execution. AlgorithmSelector remains rules. Do not put IntelligenceGate on cut lengths. |
 
 ---
 
@@ -917,7 +917,7 @@ Coupling exposed: **material engine × hardcoded SYSTEM_CUTTING_RULES × stale c
 
 ---
 
-## Golden fixture matrix (section AI) — propose only
+## Golden fixture matrix (section automation) — propose only
 
 Minimum family to certify a pack without FP-024C:
 

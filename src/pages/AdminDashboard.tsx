@@ -191,12 +191,12 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <DashboardStats stats={stats} />
-            
-            {/* Constitutional AI Governance Section */}
+
+            {/* Constitutional automation Governance Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                <h3 className="typography-h3 text-lg">Constitutional AI Governance</h3>
+                <h3 className="typography-h3 text-lg">Constitutional automation Governance</h3>
               </div>
               <GovernanceHealthMini />
               <div className="p-4 bg-muted/50 border border-border rounded-lg text-sm">
@@ -223,7 +223,7 @@ const AdminDashboard: React.FC = () => {
                   <div>
                     <div className="font-medium text-foreground">Tier Violations</div>
                     <div className="text-xs text-muted-foreground mt-1">
-                      Count of AI operating outside authority bounds. Should always be 0.
+                      Count of automation operating outside authority bounds. Should always be 0.
                     </div>
                   </div>
                 </div>
@@ -234,7 +234,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <React.Suspense fallback={<div className="h-56 flex items-center justify-center text-sm text-muted-foreground">Loading chart...</div>}>
                 <SalesChart />

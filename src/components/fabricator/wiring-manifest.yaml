@@ -159,7 +159,7 @@ validationRules:
     description: Every component must have explicit truth domain
     enforcement: WiringValidator rejection
   noTierLeakage:
-    description: No AI in Tier 3, no execution in Tier 2
+    description: No automation in Tier 3, no execution in Tier 2
     enforcement: IntelligenceGate rejection
   noFutureExecution:
     description: /future/ components cannot be imported directly

@@ -62,7 +62,7 @@ All platforms support these variables:
 |----------|----------|---------|-------------|
 | `PORT` | Auto-set | 8000 | Server port |
 | `API_WORKERS` | No | 4 | Uvicorn workers |
-| `GOOGLE_GEMINI_API_KEY` | Yes | - | Gemini API key |
+| `GOOGLE_GEMINI_API_KEY` | Yes | - | support service API key |
 | `SECRET_KEY` | Recommended | - | Secret key |
 | `ALLOWED_ORIGINS` | Recommended | - | CORS origins |
 | `LOG_LEVEL` | No | INFO | Logging level |

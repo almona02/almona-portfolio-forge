@@ -30,19 +30,19 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
 }) => {
   const certification = getToolCertification(tool);
   const isCertified = isToolCertified(tool);
-  
+
   if (!isCertified) {
     return null; // Don't show badge for uncertified tools
   }
-  
+
   const badgeVariant = certification.certification.status === 'certified' 
     ? 'default' 
     : certification.certification.status === 'experimental'
     ? 'secondary'
     : 'outline';
-  
+
   const iconSize = size === 'sm' ? 12 : size === 'md' ? 14 : 16;
-  
+
   const badgeContent = (
     <Badge 
       variant={badgeVariant}
@@ -52,11 +52,11 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
       <span className="sr-only">Constitutionally Certified</span>
     </Badge>
   );
-  
+
   if (!showDetails) {
     return badgeContent;
   }
-  
+
   const disclaimer = formatDisclaimerForUI({
     toolName: certification.toolName,
     operation: 'Tool Operation',
@@ -69,7 +69,7 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
     disclaimerText: '',
     timestamp: new Date()
   });
-  
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -82,13 +82,13 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
               <Shield className="w-5 h-5 text-green-600" />
               <h4 className="font-semibold text-sm">Constitutionally Certified</h4>
             </div>
-            
+
             <div className="text-xs space-y-2">
               <div>
                 <span className="font-medium">Tool:</span> {certification.toolName}
               </div>
               <div>
-                <span className="font-medium">Tier:</span> {certification.tier === 0 ? 'Visual Drafting' : certification.tier === 1 ? 'Authoritative AI' : 'Protected Determinism'}
+                <span className="font-medium">Tier:</span> {certification.tier === 0 ? 'Visual Drafting' : certification.tier === 1 ? 'Authoritative automation' : 'Protected Determinism'}
               </div>
               <div>
                 <span className="font-medium">Accuracy:</span> {certification.accuracyGuarantee}%
@@ -97,12 +97,12 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
                 <span className="font-medium">Status:</span> {certification.certification.status}
               </div>
             </div>
-            
+
             <div className="pt-2 border-t">
               <div className="text-xs font-medium mb-1">Scope:</div>
               <div className="text-xs text-gray-600">{disclaimer.scope}</div>
             </div>
-            
+
             {disclaimer.limitations.length > 0 && (
               <div className="pt-2 border-t">
                 <div className="text-xs font-medium mb-1">Limitations:</div>
@@ -113,7 +113,7 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
                 </ul>
               </div>
             )}
-            
+
             {disclaimer.approvalRequired && (
               <div className="pt-2 border-t">
                 <div className="flex items-center gap-2 text-xs text-amber-600">
@@ -122,7 +122,7 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
                 </div>
               </div>
             )}
-            
+
             <div className="pt-2 border-t">
               <div className="text-xs text-gray-500">
                 Certified by: {certification.certification.certifiedBy}

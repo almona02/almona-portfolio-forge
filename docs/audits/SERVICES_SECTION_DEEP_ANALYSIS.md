@@ -205,7 +205,7 @@ export interface MaintenanceSchedule {
 - ✅ Maintenance schedule generation
 - ✅ Alert system (critical, high, medium severity)
 - ✅ Sensor-based health monitoring
-- ✅ AI algorithms (LSTM, Isolation Forest, Random Forest)
+- ✅ automation algorithms (LSTM, Isolation Forest, Random Forest)
 
 **Current Algorithms:**
 - Vibration Analysis (FFT)
@@ -294,12 +294,12 @@ interface YDTDiagnosticService {
     errorCodes: string[],
     machineId: string
   ): Promise<DiagnosisResult>;
-  
+
   suggestRepairSteps(
     componentId: string,
     faultType: string
   ): Promise<RepairProcedure[]>;
-  
+
   predictFailureProbability(
     machineId: string,
     component: string
@@ -349,19 +349,19 @@ interface YDTDiagnosticService {
 interface ARDiagnosticSystem {
   // Load machine wiring diagram
   loadWiringDiagram(machineId: string): Promise<WiringDiagram>;
-  
+
   // Overlay component information in AR
   overlayComponentInfo(
     componentId: string,
     cameraView: CameraView
   ): Promise<AROverlay>;
-  
+
   // Highlight fault path in diagram
   highlightFaultPath(
     faultChain: Component[],
     diagram: WiringDiagram
   ): Promise<ARHighlight>;
-  
+
   // Show repair steps in AR
   showRepairSteps(
     componentId: string,
@@ -403,13 +403,13 @@ interface ARDiagnosticSystem {
 interface PreParsedFaultDatabase {
   // Pre-parse all known faults from YDT knowledge base
   faults: Map<ComponentID, FaultInfo[]>;
-  
+
   // Pre-parse all fixes from documentation
   fixes: Map<FaultType, FixProcedure[]>;
-  
+
   // Component-level fault mapping
   componentFaults: Map<ComponentID, FaultProbability[]>;
-  
+
   // Quick lookup for AR overlay
   getFaultInfo(componentId: string, symptom: string): FaultInfo;
   getFixProcedure(faultId: string): FixProcedure;
@@ -450,37 +450,37 @@ interface MachinePassport {
   installationDate: Date;
   location: string;
   owner: string;
-  
+
   // Service History
   serviceHistory: ServiceRecord[];
   maintenanceSchedules: MaintenanceSchedule[];
   warrantyInfo: WarrantyPeriod;
-  
+
   // Performance Metrics
   totalOperatingHours: number;
   totalProductionJobs: number;
   averageHealthScore: number;
   criticalFailures: number;
-  
+
   // Component Records
   componentHistory: ComponentRecord[];
   sparePartsUsed: SparePartRecord[];
   modifications: ModificationRecord[];
-  
+
   // Diagnostic History
   diagnosticRecords: DiagnosticRecord[];
   faultHistory: FaultRecord[];
   repairHistory: RepairRecord[];
-  
+
   // Production Integration
   fabricatorProJobs: JobReference[];
   qualityMetrics: QualityMetrics;
   efficiencyMetrics: EfficiencyMetrics;
-  
+
   // YDT Integration
   ydtDiagnostics: YDTDiagnosticRecord[];
   knowledgeBaseEntries: KnowledgeEntry[];
-  
+
   // AR Data
   arDiagramReferences: ARDiagramReference[];
   componentLocations: ComponentLocation[];
@@ -562,10 +562,10 @@ interface MachineProductionLink {
   endTime?: Date;
   qualityMetrics: QualityMetrics;
   machineMetrics: MachineMetrics;
-  
+
   // Correlate production with machine health
   correlateHealthWithQuality(): CorrelationResult;
-  
+
   // Predict maintenance needs from production load
   predictMaintenanceFromLoad(): MaintenancePrediction;
 }
@@ -598,22 +598,22 @@ interface MachineProductionLink {
 interface RunningMachineCompilation {
   // Real-time machine status
   machines: Map<MachineID, MachineStatus>;
-  
+
   // Production jobs per machine
   activeJobs: Map<MachineID, Job[]>;
-  
+
   // Health metrics per machine
   healthMetrics: Map<MachineID, HealthMetrics>;
-  
+
   // Predictive maintenance per machine
   maintenancePredictions: Map<MachineID, MaintenancePrediction>;
-  
+
   // Compile unified view
   compileFleetStatus(): FleetStatus;
-  
+
   // Predict fleet-wide maintenance needs
   predictFleetMaintenance(): FleetMaintenancePlan;
-  
+
   // Optimize machine allocation
   optimizeAllocation(jobs: Job[]): AllocationPlan;
 }
@@ -648,7 +648,7 @@ interface RunningMachineCompilation {
 interface EnhancedMachineMetrics {
   // Existing IoT metrics
   iotMetrics: IoTSensorData;
-  
+
   // Production metrics from Fabricator Pro
   productionMetrics: {
     jobsCompleted: number;
@@ -658,10 +658,10 @@ interface EnhancedMachineMetrics {
     qualityScore: number;
     wastePercentage: number;
   };
-  
+
   // Combined health score
   combinedHealthScore: number;
-  
+
   // Predictive maintenance
   maintenancePrediction: {
     nextMaintenanceDate: Date;
@@ -684,17 +684,17 @@ interface EnhancedMachineMetrics {
 interface HistoricalDataAnalysis {
   // Load pre-saved machine data
   loadHistoricalData(machineId: string, period: TimePeriod): HistoricalData;
-  
+
   // Pattern recognition
   identifyPatterns(data: HistoricalData): Patterns;
-  
+
   // Machine learning prediction
   predictFromHistory(
     machineId: string,
     currentMetrics: MachineMetrics,
     historicalData: HistoricalData
   ): PredictionResult;
-  
+
   // Anomaly detection
   detectAnomalies(
     currentMetrics: MachineMetrics,
@@ -736,13 +736,13 @@ interface MachineYDTInstance {
   machineId: string;
   ydtKnowledge: YDTKnowledgeBase;
   machineSpecificData: MachineData;
-  
+
   // Machine-specific diagnostics
   diagnoseMachineSpecific(symptoms: string[]): Diagnosis;
-  
+
   // Component-level knowledge
   getComponentKnowledge(componentId: string): ComponentInfo;
-  
+
   // Maintenance recommendations
   recommendMaintenance(context: MachineContext): MaintenancePlan;
 }
@@ -753,13 +753,13 @@ interface MachineYDTInstance {
 interface FabricationYDTIntegration {
   // Fabrication-specific knowledge
   fabricationKnowledge: FabricationKnowledgeBase;
-  
+
   // Material recommendations
   recommendMaterials(project: Project): MaterialRecommendation[];
-  
+
   // Process optimization
   optimizeProcess(project: Project): OptimizationResult;
-  
+
   // Quality prediction
   predictQuality(project: Project, machine: Machine): QualityPrediction;
 }
@@ -770,13 +770,13 @@ interface FabricationYDTIntegration {
 class UnifiedYDTService {
   // Machine diagnostics
   diagnoseMachine(machineId: string, symptoms: string[]): Diagnosis;
-  
+
   // Fabrication assistance
   assistFabrication(project: Project): FabricationAssistance;
-  
+
   // Maintenance planning
   planMaintenance(machineId: string, context: Context): MaintenancePlan;
-  
+
   // Quality optimization
   optimizeQuality(project: Project, machine: Machine): Optimization;
 }
@@ -791,22 +791,22 @@ class UnifiedYDTService {
 interface YDTKnowledgeGraph {
   // Machine components
   components: Map<ComponentID, ComponentNode>;
-  
+
   // Connections
   connections: Map<ConnectionID, ConnectionEdge>;
-  
+
   // Fault patterns
   faultPatterns: Map<PatternID, FaultPattern>;
-  
+
   // Repair procedures
   repairProcedures: Map<ProcedureID, RepairProcedure>;
-  
+
   // Fabrication knowledge
   fabricationPatterns: Map<PatternID, FabricationPattern>;
-  
+
   // Material knowledge
   materialSpecs: Map<MaterialID, MaterialSpec>;
-  
+
   // Query interface
   query(query: string, context: Context): QueryResult;
 }

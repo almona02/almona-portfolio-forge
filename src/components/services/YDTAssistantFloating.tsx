@@ -49,7 +49,7 @@ export function YDTAssistantFloating() {
                     </div>
                     <div>
                         <h3 className="font-bold text-white text-sm">YDT Assistant</h3>
-                        <p className="text-[10px] text-amber-100 font-medium opacity-90">Powered by Gemini</p>
+                        <p className="text-[10px] text-amber-100 font-medium opacity-90">Machinery technical support</p>
                     </div>
                 </div>
                 <button onClick={toggleOpen} className="text-white/70 hover:text-white transition-colors">
@@ -57,7 +57,7 @@ export function YDTAssistantFloating() {
                 </button>
              </div>
           </CardHeader>
-          
+
           <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-950/30">
               {messages.map((msg, idx) => (
                   <div key={idx} className={cn("flex gap-3 text-sm", msg.role === 'user' ? "flex-row-reverse" : "flex-row")}>
@@ -75,7 +75,7 @@ export function YDTAssistantFloating() {
                       </div>
                   </div>
               ))}
-              
+
               {isThinking && (
                   <div className="flex gap-3 text-sm">
                        <div className="w-8 h-8 rounded-full bg-amber-500/10 border-amber-500/30 text-amber-500 flex items-center justify-center border">

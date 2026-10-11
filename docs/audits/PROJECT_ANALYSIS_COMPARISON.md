@@ -21,7 +21,7 @@ Your project demonstrates a **strong foundation** with core manufacturing workfl
 
 **Comparison to Industry:**
 - Matches **Soft Tech V6** workflow structure
-- Exceeds **Moxisys** in technical depth
+- Exceeds **reference system** in technical depth
 - Comparable to **Stolcad** in optimization capabilities
 
 ### 1.2 Yilmaz Machine Integration ✅
@@ -57,7 +57,7 @@ Your project demonstrates a **strong foundation** with core manufacturing workfl
 
 **Comparison to Industry:**
 - Matches **Joinerysoft (JMS)** in compliance depth
-- Exceeds **Moxisys** in certification management
+- Exceeds **reference system** in certification management
 - Comparable to **Stolcad** in standards coverage
 
 ### 1.4 Quoting & Cost Analysis ✅
@@ -190,7 +190,7 @@ interface Window3DGeneratorProps {
 
 **Required Feature:**
 - Allow clients to see designed windows superimposed on photos of their building
-- Similar to Moxisys "photo-match" feature
+- Similar to reference system "photo-match" feature
 
 **Implementation Needed:**
 ```typescript
@@ -281,7 +281,7 @@ interface SubscriptionTier {
 
 ## 4. 📊 Feature Comparison Matrix
 
-| Feature | Your Project | Soft Tech V6 | Stolcad | Moxisys | Joinerysoft |
+| Feature | Your Project | Soft Tech V6 | Stolcad | reference system | Joinerysoft |
 |---------|-------------|--------------|---------|---------|-------------|
 | **Core Workflow** | ✅ Complete | ✅ | ✅ | ✅ | ✅ |
 | **Cutting Optimization** | ✅ 92.5% efficiency | ✅ | ✅ "Best" | ⚠️ Basic | ✅ |
@@ -323,7 +323,7 @@ interface SubscriptionTier {
 - `src/components/fabricator/CuttingOptimizationEngine.tsx` - Add export button
 
 #### 5.2 Build Window-Specific 3D Generator
-**Why:** Matches Moxisys strength, critical for sales
+**Why:** Matches reference system strength, critical for sales
 **Action Items:**
 1. Create `Window3DGenerator` component
 2. Generate 3D models from `WindowUnit` data
@@ -361,7 +361,7 @@ interface SubscriptionTier {
 - `src/pages/FabricatorWorkflow.tsx` - Add machine dashboard tab
 
 #### 5.5 Mobile-First Quoting Interface
-**Why:** Enables field sales, matches Moxisys
+**Why:** Enables field sales, matches reference system
 **Action Items:**
 1. Create mobile-optimized quote UI
 2. Add offline support (PWA)
@@ -414,7 +414,7 @@ interface SubscriptionTier {
 
 ### 6.2 Areas to Improve to Match Competitors
 
-1. **Visual Sales Tools** (Match Moxisys)
+1. **Visual Sales Tools** (Match reference system)
    - Photo-match technology
    - Mobile-first quoting
    - Client presentation mode
@@ -436,7 +436,7 @@ interface SubscriptionTier {
 3. ✅ Photo-match technology
 4. ✅ Mobile-first quoting
 
-**Outcome:** Competitive with Moxisys in sales tools, superior in machine integration
+**Outcome:** Competitive with reference system in sales tools, superior in machine integration
 
 ### Phase 2: Differentiation (2-3 months)
 **Goal:** Exceed competitors in key areas

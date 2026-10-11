@@ -85,7 +85,7 @@ curl -X POST https://your-app.railway.app/api/v1/chat \
 
 ### Required
 - `PORT` - Auto-set by Railway (don't override)
-- `GOOGLE_GEMINI_API_KEY` - Your Gemini API key
+- `GOOGLE_GEMINI_API_KEY` - Your support service API key
 
 ### Optional
 - `API_WORKERS` - Number of workers (default: 4)

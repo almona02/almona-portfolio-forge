@@ -4,7 +4,7 @@
 **Scope:** UI / UX only. No manufacturing formula, Cut identity, kerf, optimizer math, or FP-024 fixture changes.  
 **Branch:** `feature/fp025a-industrial-ui` (from `main`)
 
-DoWin is an information-architecture reference only. ALMONA remains its own product.
+reference system is an information-architecture reference only. ALMONA remains its own product.
 
 ---
 
@@ -139,7 +139,7 @@ Preserve undo/redo (`DraftingWorkbenchLayout` already wires `draftingEngine.undo
 
 ## 7. Production cockpit
 
-Adapt DoWin’s four-zone pattern to web:
+Adapt reference system’s four-zone pattern to web:
 
 - LEFT: batches / work orders **only if** `massProductionMeta.includedInBatchIds` exists; otherwise “Not recorded”
 - CENTER TOP: design / position summary from `currentProject`

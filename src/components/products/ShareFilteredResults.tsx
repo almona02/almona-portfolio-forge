@@ -34,22 +34,22 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
     const baseUrl = window.location.origin;
     const path = '/products';
     const params = new URLSearchParams();
-    
+
     if (searchQuery.trim()) {
       params.set('search', searchQuery.trim());
     }
-    
+
     if (category && category !== 'all') {
       params.set('category', category);
     }
-    
+
     if (sortOption && sortOption !== 'featured') {
       params.set('sort', sortOption);
     }
-    
+
     // Add scroll anchor to center on results
     params.set('scroll', 'results');
-    
+
     const queryString = params.toString();
     return `${baseUrl}${path}${queryString ? `?${queryString}` : ''}`;
   };
@@ -81,9 +81,9 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
     const message = `${copy('Recommended machines')} (${resultCount}):\n\n${url}`;
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-    
+
     window.open(whatsappUrl, '_blank');
-    
+
     toast({
       title: copy("Opening WhatsApp..."),
       description: copy("Share the link with your customer"),
@@ -123,7 +123,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
   if (resultCount === 0) {
     return null;
   }
-  
+
   // Show if there's a filter applied (search, category, or sort)
   const hasFilter = searchQuery.trim() || (category && category !== 'all') || (sortOption && sortOption !== 'featured');
   if (!hasFilter) {

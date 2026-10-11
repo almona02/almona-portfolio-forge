@@ -123,7 +123,7 @@ export const MILESTONES: Milestone[] = [
     ],
     impact: [
       "Cut service response times and improved inventory accuracy",
-      "Created the baseline for later AI- and analytics-enabled workflows",
+      "Created the baseline for later automation- and analytics-enabled workflows",
     ],
     media: [
       {
@@ -136,7 +136,7 @@ export const MILESTONES: Milestone[] = [
   {
     year: 2019,
     title: "Refactoring & Resilience",
-    description: "Navigated Egypt’s refactoring waves and the COVID era by tightening operations, protecting service uptime, and preparing for AI-enabled support.",
+    description: "Navigated Egypt’s refactoring waves and the COVID era by tightening operations, protecting service uptime, and preparing for automation-enabled support.",
     details: [
       "Hardened supply and service operations ahead of COVID disruptions",
       "Refactored internal tooling to keep field service responsive under constraints",
@@ -155,15 +155,15 @@ export const MILESTONES: Milestone[] = [
   },
   {
     year: 2020,
-    title: "AI Integration",
-    description: "Introduced AI-powered equipment advisory and predictive maintenance solutions, revolutionizing customer support.",
+    title: "automation Integration",
+    description: "Introduced software-assisted equipment advisory and predictive maintenance solutions, revolutionizing customer support.",
     details: [
-      "Launched AI advisory for equipment selection and maintenance predictions",
+      "Launched automation advisory for equipment selection and maintenance predictions",
       "Started telemetry-driven support for proactive issue detection",
     ],
     impact: [
       "Reduced downtime through predictive maintenance recommendations",
-      "Improved equipment fit and ROI via AI-guided advisory",
+      "Improved equipment fit and ROI via automation-guided advisory",
     ],
     media: [
       {

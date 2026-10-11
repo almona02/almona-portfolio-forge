@@ -1,11 +1,11 @@
 # Fabricator Pro improvement plan
 
-Based on the authenticated Fabricator and running DoWin review of 22 September
+Based on the authenticated Fabricator and running reference system review of 22 September
 2026. Companion evidence: `FABRICATOR-DOWIN-USABILITY_2026-09-22.md`.
 
 ## Product direction
 
-Build a dependable Arabic/English workshop platform with DoWin's directness in
+Build a dependable Arabic/English workshop platform with reference system's directness in
 design-to-cutting and ALMONA's regional systems, quoting and service integration.
 Retain React/Vite, Supabase and FastAPI. A framework migration does not address
 the observed problems. Retain the existing drawing tools and deterministic solver;
@@ -13,14 +13,14 @@ repair their shared data and release boundaries before adding features.
 
 ## Revised comparison
 
-| Area | DoWin observed | Fabricator observed | Decision |
+| Area | reference system observed | Fabricator observed | Decision |
 | --- | --- | --- | --- |
 | Starting work | Project form and saved-project list together | Project summary, position cards and measurements available | Preserve Fabricator summary; add a prominent Resume job / New job action instead of making analytics the primary entrance. |
 | Design clarity | Large 2D drawing, dimensions, context-sensitive controls | SmartDraw, 3D and broad drafting tools; crowded nested panels | Make 2D the default work surface; show 3D, physics and advanced tools on demand. |
-| Design continuity | Opened one saved drawing and its matching preview | Same position rendered differently across Measure/Design; header/editor later disagreed | Fix authoritative position loading before UI redesign. DoWin continuity across edits was not tested. |
+| Design continuity | Opened one saved drawing and its matching preview | Same position rendered differently across Measure/Design; header/editor later disagreed | Fix authoritative position loading before UI redesign. reference system continuity across edits was not tested. |
 | Cutting review | Assembly names, profile codes, lengths, both end angles, totals | Aggregate rows, one displayed angle, high confidence despite defaults | Build piece-level traceability rather than another summary dashboard. |
 | Optimization | Required parts, stock, results and unplaced-parts views together | Strategy controls dominate while required pieces and stock are missing | Present real demand and stock first; advanced weights belong in a drawer. Neither solver was benchmarked in this review. |
-| Commercial | Project/customer information inspected; costing workflow not fully tested | EGP quote preview and Orders exist, but approval/persistence handoff is incomplete | Complete revision-linked estimate → approved quote → order. No claim that DoWin lacks commercial features. |
+| Commercial | Project/customer information inspected; costing workflow not fully tested | EGP quote preview and Orders exist, but approval/persistence handoff is incomplete | Complete revision-linked estimate → approved quote → order. No claim that reference system lacks commercial features. |
 | Quality/delivery | Not inspected as equivalent modules | QC checklist and Delivery screen exist; QC approval lacks enforcement | Persist inspection evidence before calling this factory execution. |
 | Catalogue | Two visible systems with role/code/dimension tables | 26 advertised packs; readiness/count contradictions | Qualify a small pilot catalogue before expanding its size. |
 | Localization | English interface with Turkish text in places | Arabic/RTL foundations; inspected route still contains hard-coded English | Test a complete Arabic job; retain Latin profile codes and unambiguous numbers/units. |
@@ -62,7 +62,7 @@ approved revision. QC and Delivery remain visible production milestones.
 Persistent header: project, position, revision, system and confirmed save state.
 Main canvas: largest usable area. Left: collapsible position list. Right: only
 selected-element properties. Secondary drawers: 3D, engineering evidence,
-catalogue editing, advanced solver settings and AI assistance. AI suggestions
+catalogue editing, advanced solver settings and automation assistance. automation suggestions
 remain advisory and cannot override manufacturing calculations or approvals.
 
 Remove development wording, fixed demo KPIs and unexplained confidence scores
@@ -74,7 +74,7 @@ with a precise next action. Keep actual failure details available for support.
 Create a matched reference suite from approved supplier data: fixed, sliding,
 casement, asymmetric/mullioned, repeated positions, mixed stock and shortage cases.
 Include invalid inputs, non-finite values, missing profiles, save failures, solver
-failures, reloads, two users and edits after optimization. Compare DoWin and
+failures, reloads, two users and edits after optimization. Compare reference system and
 Fabricator on identical inputs; do not infer accuracy from the different jobs
 viewed during this audit.
 

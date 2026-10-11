@@ -3,7 +3,7 @@
 ## ✅ Required Variables (Set These)
 
 ### 1. GOOGLE_GEMINI_API_KEY
-**Value**: Your Gemini API key
+**Value**: Your support service API key
 **Status**: ✅ You already have this
 
 ### 2. SECRET_KEY

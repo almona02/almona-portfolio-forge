@@ -7,7 +7,7 @@ from PIL import Image, ImageEnhance, ImageFilter
 logger = logging.getLogger(__name__)
 
 class ImageProcessor:
-    """Image preprocessing service for AI model optimization"""
+    """Image preprocessing service for automation model optimization"""
     
     def __init__(self):
         self.supported_operations = [

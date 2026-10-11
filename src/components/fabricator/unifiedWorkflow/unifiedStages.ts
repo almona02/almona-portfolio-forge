@@ -7,7 +7,7 @@
  * 3. Production (combines Inventory + Production)
  * 4. Quality & Delivery (combines Quality + Delivery)
  * 
- * Constitutional: Deterministic stage definitions, no ML/AI
+ * Constitutional: Deterministic stage definitions, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

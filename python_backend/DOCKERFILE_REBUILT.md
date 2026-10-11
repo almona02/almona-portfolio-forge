@@ -54,7 +54,7 @@ In Railway Dashboard for YDT service:
 
 1. **Python Dependencies**
    - FastAPI, Uvicorn, Pydantic
-   - Google Generative AI
+   - Google Generative automation
    - All requirements from `requirements_prestige.txt`
 
 2. **YDT Agent Code**

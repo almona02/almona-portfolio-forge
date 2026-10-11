@@ -132,13 +132,13 @@ import { RemnantMarketplacePreview } from '@/components/fabricator/RemnantMarket
 // In your dashboard component:
 <div className="space-y-6">
   {/* Existing dashboard components */}
-  
+
   {/* Workshop Performance Analytics */}
   <WorkshopPerformanceWidget 
     workshopId={currentWorkshopId}
     timeframe="30d"
   />
-  
+
   {/* Remnant Marketplace Preview */}
   <Card>
     <CardHeader>
@@ -178,7 +178,7 @@ Add calibration section to `ProfileManagement.tsx`:
 
 ### 3. Quality Control Integration
 
-Connect AI Quality Predictor to QC tab:
+Connect automation Quality Predictor to QC tab:
 
 ```tsx
 import { aiQualityPredictor } from '@/lib/quality/AIQualityPredictor';
@@ -202,7 +202,7 @@ const qualityPrediction = await aiQualityPredictor.predictQuality(
 - [ ] Calibration Wizard integrated into design tab
 - [ ] Dashboard widgets integrated
 - [ ] Profile Management calibration section added
-- [ ] Quality Control AI integration
+- [ ] Quality Control integration
 - [ ] Testing with real data
 
 ## 🚀 Quick Wins Implemented

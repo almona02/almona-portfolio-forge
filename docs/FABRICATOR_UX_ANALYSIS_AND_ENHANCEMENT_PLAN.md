@@ -182,7 +182,7 @@ This analysis evaluates the current fabricator UX against real workshop needs, i
    - Contains: Properties, BOM summary, cost calculator
 
 4. **Quick Access Toolbar** (Floating/Edge-based):
-   - Position: Bottom edge or floating near cursor
+   - Position: Bottom edge or floating near development tool
    - Contains: Undo, Redo, Save, Measure, Zoom presets
    - Auto-hide when not in use (show on hover)
 
@@ -252,7 +252,7 @@ This analysis evaluates the current fabricator UX against real workshop needs, i
 
 **Floating Tool Windows**:
 1. **Contextual Tool Panels**:
-   - Tools appear near cursor when activated
+   - Tools appear near development tool when activated
    - Auto-dismiss when tool deselected
    - Example: Measure tool → panel appears with current measurement
 
@@ -407,7 +407,7 @@ This analysis evaluates the current fabricator UX against real workshop needs, i
 **Status**: ContextMenu component completed. Store support for minimalistMode and focusMode exists. Contextual tool panels and shortcuts overlay pending.
 
 **Tasks**:
-1. ❌ Implement contextual tool panels (near cursor) - Pending
+1. ❌ Implement contextual tool panels (near development tool) - Pending
 2. ✅ Add right-click context menus - Completed (ContextMenu.tsx)
 3. ❌ Create keyboard shortcuts overlay (hover tooltips) - Pending
 4. ✅ Implement minimalist mode toggle - Store support exists, UI component pending
@@ -465,21 +465,21 @@ interface FabricatorUIState {
   // Panel states
   leftPanelCollapsed: boolean;
   rightPanelCollapsed: boolean;
-  
+
   // Theme
   theme: 'dark' | 'light';
-  
+
   // Zoom
   zoomLevel: number;
   zoomPreset: 'fit' | '1:1' | '200%' | 'custom';
-  
+
   // UI modes
   minimalistMode: boolean;
   focusMode: boolean;
-  
+
   // Quick access
   quickAccessToolbarVisible: boolean;
-  
+
   // Actions
   toggleLeftPanel: () => void;
   toggleRightPanel: () => void;
@@ -567,10 +567,10 @@ interface FabricatorUIState {
 
 ### 7.1 AICS-001 Compliance
 
-✅ **No ML/AI in UX improvements**: All enhancements are deterministic UI/UX changes  
+✅ **No advisory inference in UX improvements**: All enhancements are deterministic UI/UX changes
 ✅ **Tier 3 determinism**: Calculations remain deterministic (cost, dimensions)  
 ✅ **Audit trail**: UI actions logged (panel toggles, theme changes)  
-✅ **No ML/AI predictions**: Template suggestions remain heuristic-based  
+✅ **No advisory inference predictions**: Template suggestions remain heuristic-based
 
 ### 7.2 Backward Compatibility
 
@@ -619,8 +619,8 @@ interface FabricatorUIState {
 ### Inspiration Sources
 
 - **LogiKal/Orgadata**: Clean German engineering interfaces, logical tool grouping
-- **Klaes**: Simple modal workflows, context-sensitive toolbars
-- **Moxisys**: Egyptian market familiarity, intuitive iconography
+- **reference system**: Simple modal workflows, context-sensitive toolbars
+- **reference system**: Egyptian market familiarity, intuitive iconography
 
 ### Related Documentation
 
@@ -632,7 +632,7 @@ interface FabricatorUIState {
 
 **Document Status**: Implementation Status Updated  
 **Last Updated**: 2026-01-11  
-**Author**: AI Analysis (Auto)  
+**Author**: automation Analysis (Auto)
 **Implementation Status**:
 - ✅ Phase 1: COMPLETED (Collapsible Panels & Quick Access Toolbar)
 - ⚠️ Phase 2: PARTIALLY COMPLETED (Store infrastructure done, UI components pending)

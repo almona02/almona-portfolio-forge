@@ -9,8 +9,8 @@
  * - RealityOS event emission
  * - Market-leader inspired UX
  * 
- * Constitutional: Tier 3 Protected Determinism, no ML/AI
- * Inspired by: Kliess Orgadata, Moxisys Design Flow
+ * Constitutional: Tier 3 Protected Determinism, no advisory inference
+ * Inspired by: reference system reference system, reference system Design Flow
  * 
  * @since Phase 2: Quality Control Integration (January 2026)
  */

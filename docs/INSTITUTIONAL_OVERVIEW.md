@@ -28,7 +28,7 @@ Almona is formally defined as:
 
 > *"A governed industrial computing institution with bounded intelligence, canonical truth, deterministic authority, and audit-grade certification."*
 
-**Not**: A startup, a tool, a platform, or an AI product.  
+**Not**: A startup, a tool, a platform, or an automation product.
 **Is**: An Industrial Computing System with Verified Intelligence.
 
 > **Classification Note**: While the reference implementation is delivered using a SaaS deployment model, the institutional identity, authority hierarchy, and guarantees of the system are defined independently of delivery or business model.
@@ -185,15 +185,15 @@ This figure illustrates the YILMAZ Digital Twin as a Probabilistic Inference Mod
 - [YDT Future Intelligence Implementation](docs/YDT_FUTURE_INTELLIGENCE_IMPLEMENTATION.md)
 - [YDT Knowledge Base](ai_agents/README.md)
 
-#### Constitutional AI Governance Framework
+#### Constitutional automation Governance Framework
 
 **Status**: Operational (Week 1, January 2026)
 
-**Purpose**: The Constitutional AI Governance Framework enforces formal authority boundaries for adaptive intelligence through a three-tier decision architecture, ensuring AI operates within defined limits with mandatory reasoning validation and real-time governance monitoring.
+**Purpose**: The Constitutional automation Governance Framework enforces formal authority boundaries for adaptive intelligence through a three-tier decision architecture, ensuring automation operates within defined limits with mandatory reasoning validation and real-time governance monitoring.
 
-**Figure 3: Constitutional AI Governance Architecture** (AICS-001 Section 5.10)
+**Figure 3: Constitutional automation Governance Architecture** (AICS-001 Section 5.10)
 
-This figure illustrates the three-tier decision architecture that governs all system decisions, ensuring AI authority is bounded and deterministic operations are protected. This is a conceptual model of the governance framework, not a detailed implementation specification.
+This figure illustrates the three-tier decision architecture that governs all system decisions, ensuring automation authority is bounded and deterministic operations are protected. This is a conceptual model of the governance framework, not a detailed implementation specification.
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -219,7 +219,7 @@ This figure illustrates the three-tier decision architecture that governs all sy
 
 **Three-Tier Architecture** (AICS-001 Section 5.10.2):
 
-1. **Tier 1 (Authoritative AI)**: Strategic decisions requiring YDT intelligence
+1. **Tier 1 (Authoritative automation)**: Strategic decisions requiring YDT intelligence
    - **Authority**: YDT mandatory
    - **Requirements**: Structured reasoning (primary factor, change triggers, assumptions)
    - **Enforcement**: Code-level via IntelligenceGate.strategic()
@@ -231,7 +231,7 @@ This figure illustrates the three-tier decision architecture that governs all sy
    - **Status**: ⏳ Defined; implementation in progress
 
 3. **Tier 3 (Protected Determinism)**: Pure computational operations
-   - **Authority**: No AI permitted
+   - **Authority**: No automation permitted
    - **Requirements**: Pure deterministic logic only
    - **Enforcement**: IntelligenceGate.deterministic() audits for violations
    - **Status**: ✅ Operational (100% purity maintained)
@@ -242,7 +242,7 @@ This figure illustrates the three-tier decision architecture that governs all sy
 - **Tier 1 Coverage**: 100% (all strategic decisions governed)
 - **Reasoning Quality**: 100% (all YDT responses include reasoning)
 - **Tier Violations**: 0 (no governance breaches)
-- **Deterministic Purity**: 100% (no AI in Tier 3 operations)
+- **Deterministic Purity**: 100% (no automation in Tier 3 operations)
 
 **Real-Time Monitoring** (AICS-001 Section 5.10.5):
 
@@ -252,14 +252,14 @@ This figure illustrates the three-tier decision architecture that governs all sy
 
 **Constitutional Guarantees** (AICS-001 Section 5.10.6):
 
-1. No Silent AI Authority: All AI decisions explicitly authorized
+1. No Silent automation Authority: All automation decisions explicitly authorized
 2. No Unexplained Decisions: All Tier 1 decisions include structured reasoning
-3. No AI in Deterministic Paths: Tier 3 operations protected
+3. No automation in Deterministic Paths: Tier 3 operations protected
 4. No Undetected Violations: All breaches logged and reported
 5. No Ambiguity of Authority: Tier boundaries enforced by code
 
 **Reference**:
-- [AICS-001 Section 5.10: Constitutional AI Governance Framework](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md#510-constitutional-ai-governance-framework)
+- [AICS-001 Section 5.10: Constitutional automation Governance Framework](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md#510-constitutional-ai-governance-framework)
 - [YDT Intelligence Gate Architecture](architecture/YDT_INTELLIGENCE_GATE_ARCHITECTURE.md)
 - [Week 1 Constitutional Baseline](architecture/WEEK1_CONSTITUTIONAL_BASELINE.md)
 
@@ -314,7 +314,7 @@ This figure illustrates the three-tier decision architecture that governs all sy
 
 **Execution Classes** (AICS-001 §5.10.2):
 
-| Class | Authority | AI Allowed | Components |
+| Class | Authority | automation Allowed | Components |
 |-------|-----------|------------|------------|
 | **Tier 3** | Absolute | No | EngineeringBay, drafting/, bom/ |
 | **Tier 2** | Advisory | Yes (gated) | AISuggestionPanel, JobRiskIndicator |
@@ -443,19 +443,19 @@ A system operating in **Certified Mode** (as defined in AICS-001, Section 7.6.3)
 
 1. **No Silent Failures**: All failures are detectable, traceable, recoverable, auditable (AICS-001, 7.9)
 2. **No Undocumented Decisions**: Every decision is provable after the fact (AICS-001, 7.2)
-3. **No Untraceable Intelligence**: All AI contributions are logged and auditable (AICS-001, 7.3.4)
+3. **No Untraceable Intelligence**: All automation contributions are logged and auditable (AICS-001, 7.3.4)
 4. **No Mutable Truth**: Canonical truth is versioned, immutable by default (AICS-001, 6.4)
 5. **No Ambiguity of Authority**: Deterministic hierarchy is absolute (AICS-001, 4.2)
 
 **These are structural guarantees, not accuracy claims.**
 
-### 4.2 Constitutional AI Governance Guarantees (AICS-001 Section 5.10)
+### 4.2 Constitutional automation Governance Guarantees (AICS-001 Section 5.10)
 
-A system operating under **Constitutional AI Governance** (as defined in AICS-001, Section 5.10) guarantees:
+A system operating under **Constitutional automation Governance** (as defined in AICS-001, Section 5.10) guarantees:
 
-1. **No Silent AI Authority**: All AI decisions are explicitly authorized by tier classification (AICS-001, 5.10.6)
+1. **No Silent automation Authority**: All automation decisions are explicitly authorized by tier classification (AICS-001, 5.10.6)
 2. **No Unexplained Decisions**: All Tier 1 decisions include structured reasoning (primary factor, change triggers, assumptions) (AICS-001, 5.10.3)
-3. **No AI in Deterministic Paths**: Tier 3 operations are protected from AI interference (AICS-001, 5.10.2)
+3. **No automation in Deterministic Paths**: Tier 3 operations are protected from automation interference (AICS-001, 5.10.2)
 4. **No Undetected Violations**: All governance breaches are logged and reported in real-time (AICS-001, 5.10.5)
 5. **No Ambiguity of Authority**: Tier boundaries are enforced by code, not policy (AICS-001, 5.10.3)
 
@@ -782,7 +782,7 @@ The following technologies represent the current reference implementation. They 
 - [Gold Tier Phase 1, Task 1 Implementation](plans/GOLD_TIER_PHASE1_TASK1_IMPLEMENTATION_COMPLETE.md)
 - [Gold Tier Task 2.1 Implementation](notes/GOLD_TIER_TASK2_1_COMPLETE.md)
 
-### 12.2 Constitutional AI Governance Framework - Week 1 Implementation
+### 12.2 Constitutional automation Governance Framework - Week 1 Implementation
 
 **Status**: ✅ Operational (Week 1, January 2026)
 
@@ -813,7 +813,7 @@ The following technologies represent the current reference implementation. They 
 - **Tier 1 Coverage**: 100% (all strategic decisions governed)
 - **Reasoning Quality**: 100% (all YDT responses include structured reasoning)
 - **Tier Violations**: 0 (no governance breaches)
-- **Deterministic Purity**: 100% (no AI in Tier 3 operations)
+- **Deterministic Purity**: 100% (no automation in Tier 3 operations)
 
 **Reference**:
 - [Week 1 Constitutional Baseline](architecture/WEEK1_CONSTITUTIONAL_BASELINE.md)
@@ -850,7 +850,7 @@ The following technologies represent the current reference implementation. They 
 
 **Status**: ✅ Complete (Week 1, January 2026)
 
-**Achievement**: Fixed AI deception in algorithm selection, restored constitutional integrity.
+**Achievement**: Fixed automation deception in algorithm selection, restored constitutional integrity.
 
 **Completed Components**:
 

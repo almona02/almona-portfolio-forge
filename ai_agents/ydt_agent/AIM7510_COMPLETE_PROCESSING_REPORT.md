@@ -114,8 +114,8 @@
 1. `GOLD_TIER_EXTRACTION_AIM7510.md` - Specification extraction report
 2. `AGENT_UNDERSTANDING_ASSESSMENT.md` - Agent capability assessment
 3. `MAGIC_STEP_RESULTS.md` - Component knowledge graph results
-4. `ACCURACY_REPORT.md` - Vision AI accuracy analysis
-5. `VISION_AI_TEST_RESULTS.md` - Vision AI test results
+4. `ACCURACY_REPORT.md` - Vision automation accuracy analysis
+5. `VISION_AI_TEST_RESULTS.md` - Vision automation test results
 6. `CRITICAL_ERROR_CORRECTION.md` - Axis count correction
 7. `AIM7510_COMPLETE_PROCESSING_REPORT.md` - This file
 
@@ -123,7 +123,7 @@
 1. `manual_parser.py` - Manual text/table extraction
 2. `specification_extractor.py` - Gold Tier spec extraction
 3. `wiring_diagram_processor_demo.py` - Component graph builder
-4. `vision_ai_processor.py` - Vision AI extraction
+4. `vision_ai_processor.py` - Vision automation extraction
 5. `spare_parts_processor.py` - Spare parts extraction
 6. `process_all_aim7510.py` - Complete processing pipeline
 

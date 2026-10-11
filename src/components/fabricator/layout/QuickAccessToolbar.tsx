@@ -40,16 +40,16 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
     setQuickAccessToolbarVisible,
     setQuickAccessToolbarPinned,
   } = useFabricatorUIStore();
-  
+
   const [isHovered, setIsHovered] = useState(false);
   const isHoveredRef = useRef(false);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Keep ref in sync with state
   useEffect(() => {
     isHoveredRef.current = isHovered;
   }, [isHovered]);
-  
+
   const standardTools: ToolbarItem[] = [
     {
       icon: <Undo2 size={16} />,
@@ -78,36 +78,36 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
       shortcut: 'Ctrl+H',
     },
   ];
-  
+
   const allTools = [...standardTools, ...sectionTools];
-  
+
   const resetInactivityTimer = useCallback(() => {
     if (inactivityTimerRef.current) {
       clearTimeout(inactivityTimerRef.current);
       inactivityTimerRef.current = null;
     }
-    
+
     if (!quickAccessToolbarPinned && quickAccessToolbarVisible) {
       const timer = setTimeout(() => {
         if (!isHoveredRef.current) {
           setQuickAccessToolbarVisible(false);
         }
       }, 3000); // Hide after 3 seconds of inactivity
-      
+
       inactivityTimerRef.current = timer;
     }
   }, [quickAccessToolbarPinned, quickAccessToolbarVisible, setQuickAccessToolbarVisible]);
-  
+
   useEffect(() => {
     const handleMouseMove = () => {
       setQuickAccessToolbarVisible(true);
       resetInactivityTimer();
     };
-    
+
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [resetInactivityTimer, setQuickAccessToolbarVisible]);
-  
+
   useEffect(() => {
     resetInactivityTimer();
     return () => {
@@ -117,9 +117,9 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
       }
     };
   }, [resetInactivityTimer]);
-  
+
   if (!quickAccessToolbarVisible) return null;
-  
+
   const getPositionClasses = () => {
     switch (quickAccessToolbarPosition) {
       case 'top':
@@ -134,11 +134,11 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
         return 'bottom-5 right-5';
     }
   };
-  
+
   const handlePinToggle = () => {
     setQuickAccessToolbarPinned(!quickAccessToolbarPinned);
   };
-  
+
   return (
     <div
       className={cn(
@@ -171,22 +171,22 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
         >
           {quickAccessToolbarPinned ? <Pin size={14} /> : <PinOff size={14} />}
         </button>
-        
+
         <div className={cn(
           quickAccessToolbarPosition === 'top' || quickAccessToolbarPosition === 'bottom' 
             ? 'w-px h-6 bg-gray-700/50' 
             : 'h-px w-6 bg-gray-700/50'
         )} />
-        
+
         {/* Zoom Presets */}
         <ZoomPresets workspaceType="default" size="sm" variant="ghost" className="mx-1" />
-        
+
         <div className={cn(
           quickAccessToolbarPosition === 'top' || quickAccessToolbarPosition === 'bottom' 
             ? 'w-px h-6 bg-gray-700/50' 
             : 'h-px w-6 bg-gray-700/50'
         )} />
-        
+
         {/* Tools */}
         {allTools.map((tool, index) => (
           <button

@@ -46,7 +46,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
             value: 100,
             target: 100,
             status: 'healthy',
-            description: 'No AI in execution paths',
+            description: 'No automation in execution paths',
             reference: '§5.10.2 Protected Determinism'
         },
         {

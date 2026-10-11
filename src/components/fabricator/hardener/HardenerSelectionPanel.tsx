@@ -2,7 +2,7 @@
  * HardenerSelectionPanel - Hardener Selection Panel Component
  * 
  * Full-featured panel for hardener code selection and display.
- * Inspired by LogiKal/KLAES interface patterns with ALMONA's constitutional guarantees.
+ * Selects reinforcement with manufacturing validation.
  * 
  * Constitutional Compliance: AICS-001 §4.3.5 (Certification Constraints)
  * 

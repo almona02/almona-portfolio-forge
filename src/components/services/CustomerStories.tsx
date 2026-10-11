@@ -123,7 +123,7 @@ const getCustomerStories = (t: any): CustomerStory[] => [
       'Technology upgrade needs'
     ],
     solutions: [
-      'AI predictive maintenance',
+      'automation predictive maintenance',
       'Dedicated technical team',
       'Custom production reports',
       'Export compliance support'
@@ -314,7 +314,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
                       {/* Metrics */}
                       <div className="space-y-6">
                         <h4 className="typography-h4 text-white">{t('services.results_achieved')}</h4>
-                        
+
                         <div className="grid grid-cols-3 gap-4">
                           <div className="btn-secondary">
                             <TrendingUp className="h-6 w-6 text-green-400 mx-auto mb-2" />
@@ -367,7 +367,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            
+
             <div className="flex gap-2">
               {stories.map((_, index) => (
                 <button
@@ -429,7 +429,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
                     ))}
                   </div>
                 </div>
-                
+
                 <p className="text-gray-300 text-sm line-clamp-3">
                   {story.testimonial}
                 </p>

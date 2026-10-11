@@ -78,15 +78,15 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
 
   const onSubmit = async (data: EmergencyFormData) => {
     setIsSubmitting(true);
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Send SMS notification
       const smsMessage = `🚨 EMERGENCY: ${data.emergencyType} at ${data.location}. Contact: ${data.contactName} - ${data.phone}`;
       await sendSms({ to: data.phone, message: smsMessage });
-      
+
       setSubmitted(true);
       setTimeout(() => {
         onOpenChange(false);

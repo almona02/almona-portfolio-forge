@@ -142,10 +142,10 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
             <AlertTitle>{t('profile_scanner_uploader.scale_modal.what_this_means', 'What this means:')}</AlertTitle>
             <AlertDescription>
               {isHighConfidence
-                ? t('profile_scanner_uploader.scale_modal.high_confidence_desc', 'The AI detected a scale with high confidence. You can safely apply it automatically.')
+                ? t('profile_scanner_uploader.scale_modal.high_confidence_desc', 'The system detected a scale with high confidence. You can safely apply it automatically.')
                 : isMediumConfidence
-                ? t('profile_scanner_uploader.scale_modal.medium_confidence_desc', 'The AI detected a scale with moderate confidence. Please verify the detected value before applying.')
-                : t('profile_scanner_uploader.scale_modal.low_confidence_desc', 'The AI detected a scale with low confidence. Manual verification is recommended.')}
+                ? t('profile_scanner_uploader.scale_modal.medium_confidence_desc', 'The system detected a scale with moderate confidence. Please verify the detected value before applying.')
+                : t('profile_scanner_uploader.scale_modal.low_confidence_desc', 'The system detected a scale with low confidence. Manual verification is recommended.')}
             </AlertDescription>
           </Alert>
 
@@ -244,13 +244,13 @@ export function ProfileScannerUploader({
           toast.warning(t('profile_scanner_uploader.errors.low_confidence_title', 'Low Confidence Detection'), {
             description:
               detection.suggestion_text ||
-              t('profile_scanner_uploader.errors.low_confidence_desc', 'AI detected a scale with low confidence. Please enter scale manually.'),
+              t('profile_scanner_uploader.errors.low_confidence_desc', 'The system detected a scale with low confidence. Please enter scale manually.'),
           });
           setManualScaleMode(true);
         }
       } else {
         toast.info(t('profile_scanner_uploader.errors.no_scale_title', 'No Scale Detected'), {
-          description: t('profile_scanner_uploader.errors.no_scale_desc', 'AI could not detect a scale. Please enter scale manually.'),
+          description: t('profile_scanner_uploader.errors.no_scale_desc', 'The system could not detect a scale. Please enter scale manually.'),
         });
         setManualScaleMode(true);
       }
@@ -376,7 +376,7 @@ export function ProfileScannerUploader({
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="flex items-center gap-2">
           <ScanSearch className="w-5 h-5" />
-          {t('profile_scanner_uploader.title', 'AI-Assisted Engineering Drawing Scanner')}
+          {t('profile_scanner_uploader.title', 'Engineering Drawing Scanner')}
           <Badge variant="secondary">{t('profile_scanner_uploader.beta', 'BETA')}</Badge>
         </CardTitle>
         {result && (
@@ -459,7 +459,7 @@ export function ProfileScannerUploader({
                       </label>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {t('profile_scanner_uploader.scale.auto_detect_tooltip', 'AI will attempt to detect scale from dimension labels in the image')}
+                      {t('profile_scanner_uploader.scale.auto_detect_tooltip', 'The system will attempt to detect scale from dimension labels in the image')}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -493,7 +493,7 @@ export function ProfileScannerUploader({
 
               {autoDetectScale && !manualScaleMode && (
                 <Alert>
-                  <AlertTitle>{t('profile_scanner_uploader.scale.ai_active', 'AI Scale Detection Active')}</AlertTitle>
+                  <AlertTitle>{t('profile_scanner_uploader.scale.ai_active', 'automation Scale Detection Active')}</AlertTitle>
                   <AlertDescription>{t('profile_scanner_uploader.scale.ai_active_desc', 'The system will attempt to detect scale from dimension labels. If successful, you\'ll be prompted to confirm.')}</AlertDescription>
                 </Alert>
               )}
@@ -536,7 +536,7 @@ export function ProfileScannerUploader({
                 <AlertDescription>
                   <div className="space-y-1">
                     <p className="font-medium">{result.dimensions.scale_used?.toFixed(6) ?? "N/A"} mm/px</p>
-                    <p className="text-sm text-muted-foreground">{result.scaleDetection?.detected ? t('profile_scanner_uploader.results.detected_by_ai', 'Detected by AI') : t('profile_scanner_uploader.results.manually_specified', 'Manually specified')}</p>
+                    <p className="text-sm text-muted-foreground">{result.scaleDetection?.detected ? t('profile_scanner_uploader.results.detected_by_ai', 'Detected by automation') : t('profile_scanner_uploader.results.manually_specified', 'Manually specified')}</p>
                   </div>
                 </AlertDescription>
               </Alert>
@@ -603,7 +603,7 @@ export function ProfileScannerUploader({
           <div className="flex justify-center">
             <Button onClick={handleScan} disabled={uploading} size="lg" className="min-w-[200px]">
               <ScanSearch className="w-4 h-4 mr-2" />
-              {autoDetectScale ? t('profile_scanner_uploader.actions.scan_ai', 'Scan with AI Detection') : t('profile_scanner_uploader.actions.scan_manual', 'Scan with Manual Scale')}
+              {autoDetectScale ? t('profile_scanner_uploader.actions.scan_ai', 'Scan with automation Detection') : t('profile_scanner_uploader.actions.scan_manual', 'Scan with Manual Scale')}
             </Button>
           </div>
         )}

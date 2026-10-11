@@ -279,12 +279,12 @@
 - Advanced BI dashboards
 - Workflow automation builder
 
-### ⚠️ AI/ML Capabilities (60% Complete)
+### ⚠️ advisory inference Capabilities (60% Complete)
 
 | Feature | Status | Location | Notes |
 |---------|--------|----------|-------|
 | Fault Detection | ✅ Complete | `src/lib/ai/faultDetection.ts` | TensorFlow.js integration |
-| Gemini AI Integration | ✅ Complete | `src/lib/ai/gemini.ts` | Equipment recommendations |
+| support service automation Integration | ✅ Complete | `src/lib/ai/gemini.ts` | Equipment recommendations |
 | Predictive Analytics | ✅ Complete | `src/lib/predictive/` | Data processing |
 
 **Missing**: 
@@ -341,7 +341,7 @@
 - Egyptian System Packs (50%) - CALUMINIUM PS exists, NC missing
 - Production Scheduling (40%) - Basic component, needs full engine
 - Enterprise Features (70%) - Core complete, advanced features missing
-- AI/ML Capabilities (60%) - Core exists, automation missing
+- advisory inference Capabilities (60%) - Core exists, automation missing
 
 ### ❌ Not Started (0-30%)
 - Constraint Programming for 2D Glass Nesting

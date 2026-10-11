@@ -2,7 +2,7 @@
  * Navigation State Manager
  * 
  * Manages multi-page navigation with state synchronization.
- * Inspired by ABT HeroFis Turkish app - seamless page transitions with state preservation.
+ * Inspired by ABT reference system Turkish app - seamless page transitions with state preservation.
  * 
  * Constitutional Tier: Tier 3 (Protected Determinism)
  */
@@ -50,7 +50,7 @@ export class NavigationStateManager {
     }
   ): void {
     const previousPage = this.currentContext?.currentPage;
-    
+
     this.currentContext = {
       currentPage: page,
       previousPage,
@@ -131,17 +131,17 @@ export class NavigationStateManager {
    */
   loadState(): NavigationContext | null {
     if (typeof window === 'undefined') return null;
-    
+
     try {
       const raw = localStorage.getItem(NavigationStateManager.STORAGE_KEY);
       if (!raw) return null;
-      
+
       const parsed = JSON.parse(raw);
       this.currentContext = {
         ...parsed,
         lastSaved: parsed.lastSaved ? new Date(parsed.lastSaved) : undefined,
       };
-      
+
       return this.currentContext;
     } catch (error) {
       console.error('Error loading navigation state:', error);
@@ -154,7 +154,7 @@ export class NavigationStateManager {
    */
   private saveState(): void {
     if (typeof window === 'undefined' || !this.currentContext) return;
-    
+
     try {
       // Also save to ProjectPersistenceService for cross-service sync
       const navState: ProjectNavigationState = {

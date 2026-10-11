@@ -1,5 +1,5 @@
 /**
- * Intelligence Gate - Constitutional AI Governance
+ * Intelligence Gate - Constitutional automation Governance
  * 
  * Enforces three-tier decision architecture:
  * - Tier 1: Strategic (YDT mandatory)
@@ -44,7 +44,7 @@ export interface TierViolationMetrics {
 /**
  * Intelligence Gate Service
  * 
- * Enforces Constitutional AI governance:
+ * Enforces Constitutional automation governance:
  * - Strategic decisions: YDT mandatory with reasoning
  * - Execution decisions: YDT provides context, TensorFlow decides
  * - Deterministic operations: No YDT allowed
@@ -108,7 +108,7 @@ export class IntelligenceGate {
       try {
         const contextResult = await ydtContextMethod(inputs);
         ydtContext = contextResult.data;
-        
+
         // Validate YDT context has reasoning (if provided)
         if (contextResult.reasoning) {
           this.validateReasoningQuality(operation, contextResult);
@@ -169,7 +169,7 @@ export class IntelligenceGate {
 
     // Check reasoning quality (structure, not just length)
     const reasoning = response.reasoning;
-    
+
     // Must have primary factor
     if (!reasoning.includes('because') && 
         !reasoning.includes('due to') && 
@@ -184,7 +184,7 @@ export class IntelligenceGate {
     // Check if metadata includes structured reasoning
     if (response.metadata?.reasoning) {
       const structuredReasoning = response.metadata.reasoning as Partial<YDTReasoning>;
-      
+
       if (!structuredReasoning.primaryFactor) {
         this.violationMetrics.lowQualityReasoningCount++;
         console.warn(
@@ -196,7 +196,7 @@ export class IntelligenceGate {
   }
 
   /**
-   * Audit for AI violation in deterministic operations
+   * Audit for automation violation in deterministic operations
    */
   private static auditForAIViolation(operation: string): void {
     // Check if operation name suggests YDT usage
@@ -220,7 +220,7 @@ export class IntelligenceGate {
     error: any
   ): void {
     this.violationMetrics.tierViolationCount++;
-    
+
     console.error(
       `🚨 Tier violation in ${tier} operation "${operation}":`,
       error

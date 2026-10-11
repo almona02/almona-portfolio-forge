@@ -244,9 +244,9 @@ docs/
 
 ### Long-term (Phase 3)
 
-1. **AI & Automation**
+1. **automation & Automation**
    - [ ] Voice-controlled operations
-   - [ ] AI-powered quality control
+   - [ ] software-assisted quality control
    - [ ] Predictive maintenance
    - [ ] Automated supplier integration
 
@@ -310,5 +310,5 @@ All immediate next steps for production deployment preparation have been complet
 3. Security audit
 4. Final production deployment
 
-The foundation is in place for Phase 3 expansion, including AI automation, supplier integration, and IoT device connectivity.
+The foundation is in place for Phase 3 expansion, including automation automation, supplier integration, and IoT device connectivity.
 

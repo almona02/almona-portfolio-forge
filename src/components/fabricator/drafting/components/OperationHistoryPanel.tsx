@@ -4,7 +4,7 @@
  * Gold-tier operation history visualization with undo/redo navigation,
  * version management, and operation descriptions for the Drafting Workbench.
  * 
- * Constitutional: Deterministic UI, no ML/AI
+ * Constitutional: Deterministic UI, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

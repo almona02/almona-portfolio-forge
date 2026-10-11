@@ -72,7 +72,7 @@ for one proven path.
 
 | Time (+03) | Event | Log evidence |
 |------------|-------|--------------|
-| 23:32:56 | DoWin restarted after operator shutdown | session start entries |
+| 23:32:56 | reference system restarted after operator shutdown | session start entries |
 | 23:57:36 | Management Panel opened | `[RawMaterialsViewModel] [SERVICE_INIT]` and three sibling `SERVICE_INIT` lines |
 | 23:57:36 – 23:58:45 | Manual `Deceuninck-ORTA-KAYIT-70` stock-card quantity edit, 0 → 100, saved | **none** |
 | 23:58:45 | Independent `PrintWindow` capture of Stock Management showed ORTA 6500 ×100 | capture SHA-256 `c8626da5166731e393a74ae731b663410ef77f2bde2b05bcfa572531e6c32012` |
@@ -89,7 +89,7 @@ MANUAL_STOCK_CARD_EDIT_IS_UNLOGGED = PROVEN FOR OBSERVED PATH
 
 Wording to use: *observed Stock Management card edit path can mutate quantity without the
 optimization stock-update log event.* This is **not** generalized to every manual edit surface
-in DoWin; only the observed path is proven.
+in reference system; only the observed path is proven.
 
 ### The two warehouse-write paths behave differently
 
@@ -158,9 +158,9 @@ CITA/KANAT/KASA deltas match used-bar counts. ORTA stayed 0 because the stock-up
 
 ---
 
-## DoWin workflow actions that can mutate stock
+## reference system workflow actions that can mutate stock
 
-Licensed UI (Optimization ribbon, observed on Fresh A screenshots `41-opt-prerun.png` / `46-results-after-ok.png`) plus *DoWin User Manual* v1.0 (EN), chapter **Offcuts, Stock Update, and Maintenance**:
+Licensed UI (Optimization ribbon, observed on Fresh A screenshots `41-opt-prerun.png` / `46-results-after-ok.png`) plus *reference system User Manual* v1.0 (EN), chapter **Offcuts, Stock Update, and Maintenance**:
 
 | Visible action | Expected to mutate warehouse? | Observed on Fresh A |
 |----------------|-------------------------------|---------------------|
@@ -185,7 +185,7 @@ All times **UTC+3**, 12 September 2026. Confirmation clicks that are not evidenc
 
 | Time | Screen / action | Input state | Output artifact | Stock if observed | Confirmation clicked? | Known/suspected to mutate stock |
 |------|-----------------|-------------|-----------------|-------------------|------------------------|----------------------------------|
-| 21:19:21 | DoWin session start | — | Session `7404479a981c` | UNKNOWN | n/a | no |
+| 21:19:21 | reference system session start | — | Session `7404479a981c` | UNKNOWN | n/a | no |
 | 21:20 | Management Panel (pre-run) | Saw live **5** | Settings SHA `ad9cbc0d…` | Warehouse as-found 48/98/14/0 | no | no |
 | 21:24:58 | Language accidentally Russian | — | log: language `ru` | UNKNOWN | UNKNOWN | no |
 | 21:25:15 | English restored | — | log: language `en` | UNKNOWN | UNKNOWN | no |
@@ -263,7 +263,7 @@ This is consistent with crossing a **stock-commit** boundary (used bars deducted
 
 ### EXPECTED_PRODUCT_BEHAVIOR
 
-From *DoWin User Manual* v1.0 EN (licensed file not committed):
+From *reference system User Manual* v1.0 EN (licensed file not committed):
 
 - Standard flow step 9: “After production approval, update stock or import reusable offcuts.”
 - Update stock: after machine export **or** production approval, use **Update Stock**, confirm quantities, deduct used bars, refresh list.
@@ -286,7 +286,7 @@ The manual describes stock update as an explicit post-optimization warehouse act
 ## Limitations
 
 - Encrypted shop database was not opened.
-- DoWin was not decompiled.
+- reference system was not decompiled.
 - Fresh A history UI was not re-opened (possible mutation risk).
 - PDF export has a file timestamp but no matching `[USER_ACTION]` log line.
 - Stock-update log line has no `[USER_ACTION]` tag. ~~so ribbon click vs other invoke is AMBIGUOUS.~~ **Explained 13 September 2026**: the confirmation is a modal dialog, not a ribbon command, and dialog confirmations are not `[USER_ACTION]`-tagged.
@@ -350,8 +350,8 @@ Answering **Yes** commits the warehouse write. Answering **No** does not.
 ### What this explains that was previously unexplained
 
 1. **The 14 min 23 s gap.** The interval between export and write was never explained by any logged command. It is the dialog sitting open, waiting for an answer.
-2. **The missing `[USER_ACTION]` tag.** DoWin tags ribbon commands, not modal confirmations. The write looked untriggered because the trigger is not a ribbon command.
-3. **Why shutdown looked suspicious.** The shutdown 21 s after the write was a coincidence of timing — the operator answered the dialog and then closed the application. RUN_A independently clears shutdown as a writer: DoWin was closed and relaunched after the RUN_A export and the warehouse did not change.
+2. **The missing `[USER_ACTION]` tag.** reference system tags ribbon commands, not modal confirmations. The write looked untriggered because the trigger is not a ribbon command.
+3. **Why shutdown looked suspicious.** The shutdown 21 s after the write was a coincidence of timing — the operator answered the dialog and then closed the application. RUN_A independently clears shutdown as a writer: reference system was closed and relaunched after the RUN_A export and the warehouse did not change.
 
 ### Classification
 
@@ -359,7 +359,7 @@ Answering **Yes** commits the warehouse write. Answering **No** does not.
 
 ### This vindicates the recorded FP-026 concern
 
-`FP-026 STOCK_COMMIT_BOUNDARY` was recorded on the suspicion that DoWin commits stock at an ill-defined boundary. It does: the commit is bound to a machine export and gated only by an easily mis-clicked modal. ALMONA must not copy this. A stock commit belongs to an explicit, auditable inventory transaction, not to a dialog raised as a side effect of writing a machine file.
+`FP-026 STOCK_COMMIT_BOUNDARY` was recorded on the suspicion that reference system commits stock at an ill-defined boundary. It does: the commit is bound to a machine export and gated only by an easily mis-clicked modal. ALMONA must not copy this. A stock commit belongs to an explicit, auditable inventory transaction, not to a dialog raised as a side effect of writing a machine file.
 
 ### Offcut policy surface (related, discovered in the same session)
 

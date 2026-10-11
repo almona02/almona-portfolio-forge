@@ -70,7 +70,7 @@ This analysis maps every controversial dependency to actual usage in the codebas
 
 ---
 
-## 3. AI/ML Libraries (Constitutional & Bundle Impact)
+## 3. advisory inference Libraries (Constitutional & Bundle Impact)
 
 ### 3a. @google/generative-ai — **KEEP**
 
@@ -79,7 +79,7 @@ This analysis maps every controversial dependency to actual usage in the codebas
 - `getTechnicalSupport`, `identifyPartFromImage` — AITechnicalChatbot, SparePartsService
 - `getWorkshopLayout`, `getDiagnosticGuidance`, `getMaintenanceAdvice`
 
-**Note:** Gemini 503 errors are provider-side capacity issues, not bundle issues. The library is correctly lazy-loaded via dynamic imports when AI features are used.
+**Note:** support service 503 errors are provider-side capacity issues, not bundle issues. The library is correctly lazy-loaded via dynamic imports when automation features are used.
 
 ---
 
@@ -103,11 +103,11 @@ This analysis maps every controversial dependency to actual usage in the codebas
 ### 3c. @tensorflow/tfjs — **EVALUATE (Consider Remove)**
 
 **Usage:** 3 files, all lazy-loaded
-- `src/lib/ai/faultDetection.ts` — AI fault detection
+- `src/lib/ai/faultDetection.ts` — automation fault detection
 - `src/lib/ml/ModelTrainer.ts` — ML model training
 - `src/future/advisory/RemnantUsagePredictor.ts` — predictive remnant usage
 
-**Constitutional Note:** Tier 3 forbids AI/ML in `src/algorithms`, `src/lib/constitutional`, `src/lib/pricing`, `src/realityos_core`. TensorFlow is in `src/lib/ai`, `src/lib/ml`, `src/future` — **not** in Tier 3 paths. So the test passes, but the Gemini discussion raised "Tier 3 Protected Determinism (No AI in execution)" as a design principle.
+**Constitutional Note:** Tier 3 forbids advisory inference in `src/algorithms`, `src/lib/constitutional`, `src/lib/pricing`, `src/realityos_core`. TensorFlow is in `src/lib/ai`, `src/lib/ml`, `src/future` — **not** in Tier 3 paths. So the test passes, but the support service discussion raised "Tier 3 Protected Determinism (No automation in execution)" as a design principle.
 
 **Recommendation:**
 - **Option A:** If these features are shipped and used → keep, ensure they stay lazy-loaded (already in `ml-engine` chunk)
@@ -151,7 +151,7 @@ This analysis maps every controversial dependency to actual usage in the codebas
 | **recharts** | Primary charts (commercial, analytics, advisory) |
 | **exceljs** | Excel import/export (lazy) |
 | **maplibre-gl** | Service coverage map (lazy) |
-| **@google/generative-ai** | Gemini AI features (equipment, support, parts) |
+| **@google/generative-ai** | support service automation features (equipment, support, parts) |
 | **dxf-writer** | DXF export |
 | **@uiw/react-md-editor** | Ticket description (lazy in TicketWizardDialog) |
 

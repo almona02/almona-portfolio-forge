@@ -48,7 +48,7 @@
 
 3. ✅ **Package Analysis**
    - Identified TensorFlow (931MB) as main contributor
-   - Other packages reasonable for industrial AI platform
+   - Other packages reasonable for industrial automation platform
 
 ### Frontend Optimizations
 
@@ -85,7 +85,7 @@
 **Realistic Assessment:**
 - TensorFlow-CPU at 931MB is larger than expected (~400MB)
 - May need to test different versions (2.15.0, 2.16.1)
-- Other packages are reasonable for industrial AI
+- Other packages are reasonable for industrial automation
 
 ### Frontend (875MB)
 

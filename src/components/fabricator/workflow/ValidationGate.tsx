@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
  * and the page content. Shows errors, warnings, and pass status based on
  * the current workflow step's prerequisites.
  *
- * Inspired by Logikal's continuous plausibility checks.
+ * Continuous workflow plausibility checks.
  */
 export const ValidationGate: React.FC = () => {
   const location = useLocation();

@@ -2,7 +2,7 @@
  * Bar Drawing Component
  * 
  * Professional auto-generated bar drawings for cutting plans.
- * Matches/exceeds competitor quality (Orgadata Logikal, Kliess).
+ * Displays stock bars and their cutting segments.
  * 
  * Features:
  * - Auto-generated from cutting plans

@@ -26,7 +26,7 @@ export const CollaborativeCursors: React.FC<CollaborativeCursorsProps> = ({
     <g>
       {usersWithCursors.map((u) => (
           <g key={u.id}>
-            {/* Cursor */}
+            {/* editor */}
             <circle
               cx={u.cursor.x}
               cy={u.cursor.y}

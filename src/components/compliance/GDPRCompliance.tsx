@@ -90,7 +90,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
         activity: { /* user activity data */ },
         exportDate: new Date().toISOString(),
       };
-      
+
       const blob = new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -174,7 +174,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                 {t('gdpr.cookiePreferences', 'Cookie Preferences')}
               </h2>
             </div>
-            
+
             <div className="space-y-6">
               <div className="border-b pb-4">
                 <div className="flex items-center justify-between">
@@ -192,7 +192,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                   </div>
                 </div>
               </div>
-              
+
               <div className="border-b pb-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -212,7 +212,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                   </label>
                 </div>
               </div>
-              
+
               <div className="border-b pb-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -233,7 +233,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                 </div>
               </div>
             </div>
-            
+
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleSavePreferences}
@@ -260,11 +260,11 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
         <Shield className="w-6 h-6 text-green-600" />
         <h2 className="typography-h2 text-lg font-semibold">{t('gdpr.dataRights', 'Your Data Rights')}</h2>
       </div>
-      
+
       <p className="text-gray-600 mb-6">
         {t('gdpr.dataRightsDesc', 'Under GDPR, you have the right to access, correct, or delete your personal data.')}
       </p>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <button
           onClick={() => setShowPreferences(true)}
@@ -273,7 +273,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
           <Eye className="w-5 h-5 text-blue-600" />
           <span>{t('gdpr.viewPreferences', 'View Preferences')}</span>
         </button>
-        
+
         <button
           onClick={() => void handleDataExport()}
           className="flex items-center gap-2 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
@@ -281,7 +281,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
           <Download className="w-5 h-5 text-green-600" />
           <span>{t('gdpr.exportData', 'Export Data')}</span>
         </button>
-        
+
         <button
           onClick={() => void handleDataDeletion()}
           className="flex items-center gap-2 p-4 border border-gray-200 rounded-lg hover:bg-red-50 transition-colors"

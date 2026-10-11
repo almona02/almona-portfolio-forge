@@ -284,7 +284,7 @@ useEffect(() => {
 
 ## 📊 Part 3: AICS-001 Constitutional Compliance
 
-### Requirement: "No AI/ML in Execution Path"
+### Requirement: "No advisory inference in Execution Path"
 **AICS-001 Says:**
 - Algorithm selection uses deterministic rules only
 - No training data, no confidence scores, no learning

@@ -194,7 +194,7 @@ This document provides a comprehensive three-way analysis comparing:
 |------------------|---------------|--------------|--------------|--------|
 | Fabricator Pro Workflow | ✅ Claimed | ✅ Verified | ✅ Exists | ✅ Complete |
 | 3D Visualization | ✅ Claimed | ✅ Verified | ✅ Exists | ✅ Complete |
-| AI/ML Services | ✅ Claimed | ✅ Verified | ✅ Exists | ✅ Complete |
+| advisory inference Services | ✅ Claimed | ✅ Verified | ✅ Exists | ✅ Complete |
 | Internationalization | ✅ Claimed | ✅ Verified | ✅ Exists | ✅ Complete |
 | CNC Integration | ✅ Claimed | ✅ Verified | ✅ Exists | ✅ Complete |
 | SmartScan/OCR | ✅ Claimed | ✅ Verified | ✅ Exists | ✅ Complete |

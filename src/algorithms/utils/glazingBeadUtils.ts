@@ -2,7 +2,7 @@
  * Glazing Bead Utilities
  * 
  * Generates glazing bead components for window cells.
- * Constitutional: Pure deterministic logic, no ML/AI.
+ * Constitutional: Pure deterministic logic, no advisory inference.
  */
 
 import type { WindowComponent, Profile } from '@/types/fabricator';

@@ -86,7 +86,7 @@
    - Complete lifecycle history
 
 2. **Maintenance Compliance** (Validation Envelope)
-   - AI proposes, rules decide
+   - automation proposes, rules decide
    - Human verification required
    - 90%+ compliance rate (from 60%)
 
@@ -136,7 +136,7 @@
 | **Phase 1: POC** | 6 weeks | $180K | Single hotel validated |
 | **Phase 2: IAM + UIP** | 12 weeks | $720K | Asset Management + Dashboard |
 | **Phase 3: Full Rollout** | 16 weeks | $1.2M | All verticals, all sites |
-| **Phase 4: Optimization** | 8 weeks | $600K | AI learning, tuning |
+| **Phase 4: Optimization** | 8 weeks | $600K | automation learning, tuning |
 
 **Go/No-Go Decision Point**: After Phase 1 POC
 
@@ -150,7 +150,7 @@
 
 **Data Quality Risk**:
 - Phase 0: Data cleansing before POC
-- AI learning phase (6 months)
+- automation learning phase (6 months)
 - Continuous quality improvement
 
 **SAP Gatekeepers Risk**:

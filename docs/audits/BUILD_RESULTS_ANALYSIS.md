@@ -14,7 +14,7 @@
 |---------|-------|------|--------|
 | 3D Engine | `3d-engine-Cf3JX9PM.js` | 1,998.68 kB | ✅ Isolated |
 | Physics | `physics-engine-DKwdRmnU.js` | 1,356.94 kB | ✅ Isolated |
-| AI/ML | `ai-engine-Q_Azf6Hz.js` | 872.16 kB | ✅ Isolated |
+| advisory inference | `ai-engine-Q_Azf6Hz.js` | 872.16 kB | ✅ Isolated |
 | Documents | `document-vendor-C5_Yyylk.js` | 1,735.85 kB | ✅ Isolated |
 | Maps | `map-vendor-7DBR6jrI.js` | 761.25 kB | ✅ Isolated |
 | Charts | `chart-vendor-jkxY58mQ.js` | 363.22 kB | ✅ Isolated |

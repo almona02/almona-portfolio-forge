@@ -18,11 +18,11 @@
   - Network effects
   - Unique differentiator
   - Aligns with Vision 2030
-  
+
 - **Option B: ERP Phase 1**
   - Enterprise credibility
   - Creates stickiness
-  
+
 - **Option C: Gold Tier Foundation**
   - Technical superiority
   - Premium pricing opportunity
@@ -171,7 +171,7 @@
 
 ### Your Genius Moves
 1. **Two-Track Approach** - 85% visual + 99.8% production is commercially brilliant
-2. **AI That Actually Learns** - Genuine ML creates switching costs
+2. **automation That Actually Learns** - Genuine ML creates switching costs
 3. **Regional First** - Deep Egypt/Turkey specialization is better strategy
 4. **Remnant Marketplace** - Network effect potential (could become primary business)
 
@@ -182,7 +182,7 @@
 4. **Focus** - Biggest risk isn't technical, it's focus
 
 ### Strategic Position
-- **Today:** Disruptive challenger with unique AI advantage
+- **Today:** Disruptive challenger with unique automation advantage
 - **Post-Q1 2025:** Complete workflow intelligence platform
 - **Post-Gold Tier:** Undisputed market leader for target regions
 

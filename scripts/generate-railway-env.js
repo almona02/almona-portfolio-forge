@@ -61,10 +61,10 @@ async function generateEnvironmentVariables() {
 
   console.log('\n');
 
-  // Optional AI Services
+  // Optional automation Services
   colorLog('bright', '🤖 AI SERVICES (Optional - for AI features)');
   const includeAI = await question('Include AI services? (y/n): ');
-  
+
   if (includeAI.toLowerCase() === 'y') {
     envVars.VITE_GEMINI_KEY = await question('🔑 Google Gemini API Key: ');
     envVars.VITE_OPENAI_API_KEY = await question('🔑 OpenAI API Key (optional): ');
@@ -75,7 +75,7 @@ async function generateEnvironmentVariables() {
   // Optional Maps
   colorLog('bright', '🗺️ MAPS & LOCATION (Optional - for map features)');
   const includeMaps = await question('Include Google Maps? (y/n): ');
-  
+
   if (includeMaps.toLowerCase() === 'y') {
     envVars.VITE_GOOGLE_MAPS_API_KEY = await question('🗺️ Google Maps API Key: ');
   }
@@ -85,7 +85,7 @@ async function generateEnvironmentVariables() {
   // Optional Analytics
   colorLog('bright', '📊 ANALYTICS (Optional - for tracking)');
   const includeAnalytics = await question('Include Analytics? (y/n): ');
-  
+
   if (includeAnalytics.toLowerCase() === 'y') {
     envVars.VITE_GOOGLE_ANALYTICS_ID = await question('📊 Google Analytics ID: ');
     envVars.VITE_ENABLE_ANALYTICS = 'true';
@@ -104,7 +104,7 @@ async function generateEnvironmentVariables() {
   // Social Media (optional)
   colorLog('bright', '📱 SOCIAL MEDIA (Optional)');
   const includeSocial = await question('Include Social Media URLs? (y/n): ');
-  
+
   if (includeSocial.toLowerCase() === 'y') {
     envVars.VITE_FACEBOOK_URL = await question('📘 Facebook URL: ');
     envVars.VITE_LINKEDIN_URL = await question('💼 LinkedIn URL: ');
@@ -115,7 +115,7 @@ async function generateEnvironmentVariables() {
 
   // Generate the environment file
   const envContent = generateEnvFile(envVars);
-  
+
   // Save to file
   const envFilePath = path.join(process.cwd(), 'railway.env');
   fs.writeFileSync(envFilePath, envContent);
@@ -128,7 +128,7 @@ async function generateEnvironmentVariables() {
   colorLog('cyan', '==========');
   colorLog('green', `✅ Required variables: ${Object.keys(envVars).filter(key => ['VITE_SUPABASE_URL', 'VITE_SUPABASE_KEY', 'NODE_ENV', 'NODE_VERSION'].includes(key)).length}`);
   colorLog('blue', `🔧 Total variables: ${Object.keys(envVars).length}`);
-  
+
   console.log('\n');
   colorLog('yellow', '🚀 NEXT STEPS:');
   colorLog('yellow', '1. Copy the contents of railway.env');

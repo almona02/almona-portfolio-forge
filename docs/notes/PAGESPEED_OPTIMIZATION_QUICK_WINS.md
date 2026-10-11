@@ -41,7 +41,7 @@ npm uninstall <unused-package>
 
 **Check if heavy libraries are loading on homepage**:
 - Three.js (should only load on 3D pages)
-- TensorFlow.js (should only load on AI pages)
+- TensorFlow.js (should only load on automation pages)
 - Physics engine (should only load when needed)
 
 **Verify lazy loading is working**:

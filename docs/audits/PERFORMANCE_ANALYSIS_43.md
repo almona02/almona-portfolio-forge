@@ -67,7 +67,7 @@
 
 **Solutions:**
 1. **Further code splitting:**
-   - ✅ Phase 4 complete (3D viewers, PDF exports, AI components)
+   - ✅ Phase 4 complete (3D viewers, PDF exports, automation components)
    - Consider splitting more route chunks
    - Lazy load more components within pages
 
@@ -89,7 +89,7 @@
 ### Phase 4 Impact (Component-Level Lazy Loading)
 - **3D Viewers:** ~300-400ms TBT reduction (when not clicked)
 - **PDF Exports:** ~200-300ms TBT reduction (when not exported)
-- **AI Components:** ~100-200ms TBT reduction (when tab not opened)
+- **automation Components:** ~100-200ms TBT reduction (when tab not opened)
 - **Total Expected:** ~600-900ms TBT reduction
 
 **Note:** These improvements only apply when users don't interact with these features. If the test page includes 3D viewers or PDF exports, the improvement might be less visible.

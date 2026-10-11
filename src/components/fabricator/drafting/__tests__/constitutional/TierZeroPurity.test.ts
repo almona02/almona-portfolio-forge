@@ -36,8 +36,8 @@ describe('Tier 0 Constitutional Purity', () => {
     'selectAlgorithm'
   ];
 
-  // Test 1: No ML/AI imports in Tier 0 components
-  it('should not import ML/AI libraries in Tier 0 components', () => {
+  // Test 1: No advisory inference imports in Tier 0 components
+  it('should not import advisory inference libraries in Tier 0 components', () => {
     const violations: string[] = [];
 
     TIER_0_PATHS.forEach(tierPath => {

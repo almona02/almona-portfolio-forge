@@ -8,7 +8,7 @@ describe("ProfileScannerUploader", () => {
     render(<ProfileScannerUploader authToken="dummy-token" />);
 
     expect(
-      screen.getByText("AI-Assisted Engineering Drawing Scanner")
+      screen.getByText("Engineering Drawing Scanner")
     ).toBeInTheDocument();
     expect(screen.getByText("1. Select Image")).toBeInTheDocument();
   });

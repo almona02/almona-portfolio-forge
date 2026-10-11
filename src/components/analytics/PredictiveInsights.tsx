@@ -102,7 +102,7 @@ const mockPredictions: Prediction[] = [
     id: 'pred-002',
     type: 'customer',
     title: 'Customer Acquisition Acceleration',
-    description: 'AI predicts 45% increase in high-value customer acquisitions',
+    description: 'automation predicts 45% increase in high-value customer acquisitions',
     timeframe: 'Next 6 Months',
     confidence: 78,
     impact: 'high',
@@ -241,7 +241,7 @@ const mockRiskAssessments: RiskAssessment[] = [
  * 
  * Advanced predictive analytics and business intelligence platform.
  * Features:
- * - AI-powered market forecasting
+ * - software-assisted market forecasting
  * - Customer behavior prediction
  * - Risk assessment and mitigation
  * - Revenue and growth projections
@@ -313,7 +313,7 @@ export const PredictiveInsights: React.FC = () => {
         <CardContent>
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">{prediction.description}</p>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-2xl font-bold">
@@ -476,7 +476,7 @@ export const PredictiveInsights: React.FC = () => {
                       €{segment.value.toLocaleString()} avg
                     </span>
                   </div>
-                  
+
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
                       <span className="text-muted-foreground">Growth: </span>
@@ -505,7 +505,7 @@ export const PredictiveInsights: React.FC = () => {
       {/* Customer Insights */}
       <Card>
         <CardHeader>
-          <CardTitle>AI Customer Insights</CardTitle>
+          <CardTitle>automation Customer Insights</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -570,7 +570,7 @@ export const PredictiveInsights: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="font-medium">{risk.risk}</p>
-              
+
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <h4 className="typography-h4 font-medium mb-2">Risk Metrics</h4>
@@ -640,13 +640,13 @@ export const PredictiveInsights: React.FC = () => {
             Predictive Insights
           </h2>
           <p className="text-muted-foreground">
-            AI-powered forecasting, risk assessment, and strategic intelligence
+            software-assisted forecasting, risk assessment, and strategic intelligence
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="flex items-center gap-1">
             <Zap className="h-3 w-3" />
-            AI Powered
+            software-assisted
           </Badge>
           <Badge variant="outline" className="flex items-center gap-1">
             <Star className="h-3 w-3" />

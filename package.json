@@ -320,7 +320,6 @@
     "eslint-plugin-storybook": "10.6.0",
     "globals": "^15.9.0",
     "jsdom": "^26.1.0",
-    "lovable-tagger": "^1.1.7",
     "playwright": "^1.54.1",
     "postcss": "^8.5.28",
     "rollup-plugin-visualizer": "^6.0.5",

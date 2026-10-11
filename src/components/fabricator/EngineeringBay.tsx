@@ -15,8 +15,8 @@ import { ManufacturingApprovalPanel } from './workflow/ManufacturingApprovalPane
  *   load profiles; it pre-configures the grid with a recommended layout.
  * - Unified Component & Hardware Management: A single, clean interface manages the
  *   bill of materials generated from the visual design.
- * - AI-Powered Suggestions: The "Apply Template" button is now an intelligent
- *   "Suggest Layout" that uses AI/heuristics to propose an optimal grid.
+ * - software-assisted Suggestions: The "Apply Template" button is now an intelligent
+ *   "Suggest Layout" that uses heuristics to propose an optimal grid.
  * - Seamless 3D Integration: The Apex Engine is not a "preview"; it's a live,
  *   interactive twin of the engineering design.
  */
@@ -539,7 +539,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         onClick={() => switchMode('drafting')}
                                         disabled={isSwitching}
                                         className="border-blue-400 text-blue-200 hover:bg-blue-900/30 disabled:opacity-50"
-                                        title="Switch to ALMONA Drafting Workbench (Moxisys-style visual drafting)"
+                                        title="Switch to ALMONA Drafting Workbench"
                                     >
                                         <Ruler className="h-4 w-4 mr-1" />
                                         {isSwitching ? 'Switching...' : 'Drafting Mode'}

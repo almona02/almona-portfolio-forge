@@ -3,7 +3,7 @@
  * 
  * Real-time waste calculation and efficiency display for drafting
  * 
- * Constitutional: Deterministic calculations, no ML/AI
+ * Constitutional: Deterministic calculations, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

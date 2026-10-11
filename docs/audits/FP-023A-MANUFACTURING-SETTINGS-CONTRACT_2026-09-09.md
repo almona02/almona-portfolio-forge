@@ -10,7 +10,7 @@
 | Scope | Manufacturing settings contract only. **Not** FP-023B, FP-024, FP-016, or FP-017. |
 | Gate | ⚠️ **CONDITIONAL** — worth committing as a checkpoint; not a production-manufacturing score increase |
 
-DoWin numbers in this document are licensed-dealer **reference settings**, not universal physical constants and not copied implementation.
+reference system numbers in this document are licensed-dealer **reference settings**, not universal physical constants and not copied implementation.
 
 ---
 
@@ -20,13 +20,13 @@ The FP-012 update is accepted as the institutional frame for this work:
 
 | FP-012 statement | FP-023A consequence |
 |------------------|---------------------|
-| Manufacturing correctness scored **60** after DoWin evidence (down from 66) | This task unifies **settings resolution**, not piece-length golden parity. The 60 score must not be raised here. |
-| DoWin 4 / 3 / 7 / 500 mm must not be mixed into FP-016/017 | Settings live in `ManufacturingSettings.ts`. Genetic authority and QC identity were not changed as part of this gate. |
+| Manufacturing correctness scored **60** after reference system evidence (down from 66) | This task unifies **settings resolution**, not piece-length golden parity. The 60 score must not be raised here. |
+| reference system 4 / 3 / 7 / 500 mm must not be mixed into FP-016/017 | Settings live in `ManufacturingSettings.ts`. Genetic authority and QC identity were not changed as part of this gate. |
 | Intended order was FP-023A → FP-024 → FP-016 → FP-017 | This report closes only FP-023A. Next is **FP-023B** (kerf accounting), then FP-024. |
 | Gate-1 credential rotation remains UNVERIFIED | Unchanged. Not in scope. |
 | P0.11 ticketing DB boundary PROVEN | Unchanged. Not in scope. |
 
-DoWin is a **validated parity profile**, not ALMONA’s universal remnant/kerf truth. Platform remnant stays **300 mm**; `yilmazcad-parity` is **500 mm**.
+reference system is a **validated parity profile**, not ALMONA’s universal remnant/kerf truth. Platform remnant stays **300 mm**; `yilmazcad-parity` is **500 mm**.
 
 ---
 
@@ -65,11 +65,11 @@ Evidence is from `HEAD` at the start of this gate (file:line). Two similarly nam
 | Local greedy kerf | `src/lib/api/pythonHeavyClient.ts:301,113` | **3 mm** | Local fallback + Python API default | No | Third packing default |
 | Apex adapter kerf | `src/lib/fabricator/goldTier/ApexEngineV6.ts:119` | **1500 µm (1.5 mm)** | FenestrationSystem fallback; **unused by packing before this gate** | No | Silent independent kerf if wired naively |
 | Welding / burn-off | `UPVCCuttingEngine` callers / tests | **3 mm** typical | Piece-length K-factor / weld, **not** saw kerf | Separate | Must not be replaced by saw kerf |
-| Usable remnant | `src/lib/fabricator/AlmonaCuttingEngine.ts:124` | **300 mm** | Keep/drop on packed bars | Egypt keep/drop | Not DoWin 500 |
+| Usable remnant | `src/lib/fabricator/AlmonaCuttingEngine.ts:124` | **300 mm** | Keep/drop on packed bars | Egypt keep/drop | Not reference system 500 |
 | Inventory remnant floor | `src/algorithms/remnantManagement.ts:42,318` | **200 mm** | In-memory remnant inventory | No | Third remnant threshold |
 | Inventory remnant floor | `src/optimization/yilmaz-specific/RemnantTracker.ts:47` | **200 mm** | DC-series remnant tracker | No | Same |
 | Warehouse remnant floor | `src/lib/inventory/RemnantManager.ts:100` | **200 mm** | Supabase remnant RPC | **Non-canonical / legacy** until FP-023B | Third remnant threshold; wire to `ManufacturingSettings` or keep explicitly out of the canonical path |
-| Report end deduction | `AlmonaCuttingEngine` / `CutListExport.ts:507` | **20 mm** | Report header only | Not packing | **Not** DoWin `TrimCut` (0) |
+| Report end deduction | `AlmonaCuttingEngine` / `CutListExport.ts:507` | **20 mm** | Report header only | Not packing | **Not** reference system `TrimCut` (0) |
 | BOM piece kerf | `src/lib/fabricator/dualOutputConstants.ts:81` | **2 mm** | `ProductionUtils.applyKerfCompensation` on BOM lengths | Different concept | Piece-length compensation, not bar-pack saw kerf |
 | Aluminum micron kerf | `src/lib/fabricator/MicronEngine.ts` / constants | **4.2 mm** + **15 mm**/end trim | Micron aluminum path | Machine-specific | Mapped as catalog `aluminum-micron`, not platform default |
 | Python remnant min | `src/lib/api/pythonHeavyClient.ts:114` | **100 mm** | Heavy optimizer request default | Unchanged | Still not the cut-sheet threshold |
@@ -78,9 +78,9 @@ Evidence is from `HEAD` at the start of this gate (file:line). Two similarly nam
 
 | Pair | Decision |
 |------|----------|
-| `trimCutMm` vs `endDeductionMm` | **Do not alias.** `endDeductionMm` (20) is report-header only. DoWin `TrimCut` is 0. Micron `barEndTrim` is 15 mm/end. Apex `barEndTrim` 5000 µm is 5 mm. |
+| `trimCutMm` vs `endDeductionMm` | **Do not alias.** `endDeductionMm` (20) is report-header only. reference system `TrimCut` is 0. Micron `barEndTrim` is 15 mm/end. Apex `barEndTrim` 5000 µm is 5 mm. |
 | BOM 2 mm vs bar-pack kerf | Different operation. BOM compensation was **not** rewritten to 4 mm. |
-| Inventory 200 vs cut-sheet 300 vs DoWin 500 | Ownership is **job manufacturing settings**. Warehouse `RemnantManager` default remains 200 unless constructed `fromManufacturingSettings`. |
+| Inventory 200 vs cut-sheet 300 vs reference system 500 | Ownership is **job manufacturing settings**. Warehouse `RemnantManager` default remains 200 unless constructed `fromManufacturingSettings`. |
 | `calculateKFactor` vs Basma/Kaynak | Different length models. K-factor **not deleted**. Formula migration is FP-024. |
 
 ---
@@ -120,7 +120,7 @@ No `Date.now()` / `Math.random()` in resolution.
 
 ### Platform default
 
-Unifies the undocumented 3/5/10 mm **bar-pack kerf split** without forcing DoWin remnant 500 on every Egypt job:
+Unifies the undocumented 3/5/10 mm **bar-pack kerf split** without forcing reference system remnant 500 on every Egypt job:
 
 | Field | Platform |
 |------:|----------|
@@ -134,7 +134,7 @@ Unifies the undocumented 3/5/10 mm **bar-pack kerf split** without forcing DoWin
 | minimumReusableLengthMm | **300** |
 | remaining comps / waste / robot | 0 |
 
-### YilmazCAD parity profile (`namedProfileId: 'yilmazcad-parity'`)
+### reference system parity profile (`namedProfileId: 'yilmazcad-parity'`)
 
 Same as platform except `minimumReusableLengthMm = 500`. Overridable. Not a claim that every Yilmaz machine or Egyptian system uses these values.
 
@@ -218,7 +218,7 @@ Commands run 9 September 2026. Failures classified: **none introduced**. No test
 | Schema / types | `src/lib/fabricator/golden/dowinPhysicalLengthFixture.ts` |
 | Harness test | `src/tests/fabricator/dowinPhysicalLengthGolden.pending.test.ts` |
 | External expected lengths | `PENDING_EXTERNAL_FIXTURE`; `rows: []` |
-| Invented DoWin cut list | **None** |
+| Invented reference system cut list | **None** |
 | ±0.1 mm parity claim | **Not made** |
 
 Preferred future fixture (settings context only): Deceuninck 70 Z sash — horizontal Basma 12, vertical Basma 16, Kaynak 6/6, sash offset 7, welding waste 3, saw kerf 4.
@@ -236,7 +236,7 @@ Not `PROVEN` as a complete manufacturing-accuracy closure because:
 - LinearOptimizer still uses N−1 kerf accounting vs visualization N;
 - warehouse remnant default remains 200 mm;
 - piece-length formulas (K-factor, Basma/Kaynak, sash offset) are prepared on the type, not migrated;
-- no real DoWin exported cut list exists.
+- no real reference system exported cut list exists.
 
 Not `NOT ACCEPTED`: conflicting 3/5/10 mm **canonical-path defaults** are gone; machine override works; type-check and build are green; fabricator + constitutional suites passed.
 
@@ -255,15 +255,15 @@ Not `NOT ACCEPTED`: conflicting 3/5/10 mm **canonical-path defaults** are gone; 
 | 7 | Type-check passes | Met |
 | 8 | Build passes | Met |
 | 9 | Fabricator + constitutional tests pass | Met |
-| 10 | No claimed DoWin ±0.1 mm parity | Met |
+| 10 | No claimed reference system ±0.1 mm parity | Met |
 
 ---
 
 ## Next gates
 
-Do **not** start ±0.1 mm DoWin parity while one canonical subsystem counts **N−1** kerfs and another counts **N**.
+Do **not** start ±0.1 mm reference system parity while one canonical subsystem counts **N−1** kerfs and another counts **N**.
 
 1. **FP-023B — Kerf accounting consistency.** For a bar with N physical cuts, how many kerf losses does the selected Yilmaz cutting process physically consume, and do optimizer, visual plan, CutSheet, remnant calculation and export all use that same rule? Do not blindly flip LinearOptimizer to N or VisualCuttingPlan to N−1. Also close the warehouse-200 remnant default (wire or classify). Leave BOM 2 mm and MicronEngine 4.2/15 mm untouched until their semantics are proven equivalent.
-2. **FP-024** — physical-length golden parity against a real exported DoWin cut list.
+2. **FP-024** — physical-length golden parity against a real exported reference system cut list.
 3. **FP-016** — Tier-3 deterministic optimization authority (genetic advisory-only).
 4. **FP-017** — QC by physical `cutId`, not `componentId`.

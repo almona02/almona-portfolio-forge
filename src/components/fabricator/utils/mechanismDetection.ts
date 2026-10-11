@@ -2,7 +2,7 @@
  * Opening Mechanism Detection
  * 
  * Determines the opening mechanism type for a window cell with clear priority order.
- * Constitutional: Pure deterministic logic, no ML/AI.
+ * Constitutional: Pure deterministic logic, no advisory inference.
  */
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';

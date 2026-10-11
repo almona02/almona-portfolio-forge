@@ -8,7 +8,7 @@
  * Pure rule-based selection for transparency and auditability.
  * 
  * Constitutional Compliance:
- * - No AI inference in algorithm selection
+ * - No automation inference in algorithm selection
  * - Deterministic rule application only
  * - Fully auditable decision logic
  * - No "confidence" or "prediction" claims
@@ -29,7 +29,7 @@ import { ManufacturingAuthorityError } from './manufacturingAuthority';
  * Algorithm Selection Result
  * 
  * Note: This is NOT a "prediction" - it is a deterministic selection
- * based on explicit rules. No ML, no AI, no uncertainty.
+ * based on explicit rules. No ML, no automation, no uncertainty.
  */
 export interface AlgorithmSelection {
   /**
@@ -41,23 +41,23 @@ export interface AlgorithmSelection {
    * Rationale: Clear explanation of which rule was applied
    */
   rationale: string;
-  
+
   /**
    * When true, selection is advisory/search-only and must not drive Tier-3 manufacturing truth (FP-016 Option B).
    */
   advisoryOnly?: boolean;
-  
+
   /**
    * Expected performance metrics (based on historical averages, not predictions)
    */
   expectedWastePercentage: number;
   expectedDuration: number; // milliseconds
-  
+
   /**
    * Constitutional note: Explicitly states tier and authority
    */
   constitutionalNote: string;
-  
+
   /**
    * Rule identifier: Which specific rule was applied
    */
@@ -68,7 +68,7 @@ export interface AlgorithmSelection {
  * Rule-Based Algorithm Selector
  * 
  * Selects optimization algorithm using deterministic rules only.
- * No ML, no AI, no predictions - just transparent, auditable logic.
+ * No ML, no automation, no predictions - just transparent, auditable logic.
  */
 export class AlgorithmSelector {
   /**
@@ -93,7 +93,7 @@ export class AlgorithmSelector {
         ruleId: 'rule_1.1_simple_job'
       };
     }
-    
+
     // Rule 2: Medium jobs (50-500 cuts) → Linear Programming
     if (complexity.totalCuts < ALGORITHM_THRESHOLDS.MEDIUM_JOB_MAX_CUTS) {
       return {
@@ -105,7 +105,7 @@ export class AlgorithmSelector {
         ruleId: 'rule_1.2_medium_job'
       };
     }
-    
+
     // Rule 3: Complex jobs (500+ cuts) → Greedy (Tier-3 deterministic, scalable).
     // Genetic remains available as advisory/search-only via suggestAdvisoryGenetic() — FP-016 Option B.
     return {
@@ -134,7 +134,7 @@ export class AlgorithmSelector {
       advisoryOnly: true,
     };
   }
-  
+
   /**
    * Get all available rules (for transparency and auditability)
    */
@@ -171,7 +171,7 @@ export class AlgorithmSelector {
       }
     ];
   }
-  
+
   /**
    * Promote a selection to Tier-3 manufacturing authority.
    * Advisory/genetic selections fail closed (FP-016 Option B).
@@ -200,25 +200,25 @@ export class AlgorithmSelector {
     errors: string[];
   } {
     const errors: string[] = [];
-    
-    // Check: No AI claims
+
+    // Check: No automation claims
     if (selection.rationale.toLowerCase().includes('ml') ||
         selection.rationale.toLowerCase().includes('machine learning') ||
         selection.rationale.toLowerCase().includes('ai') ||
         selection.rationale.toLowerCase().includes('predict')) {
       errors.push('Selection rationale contains prohibited AI/ML terminology');
     }
-    
+
     // Check: Constitutional note present
     if (!selection.constitutionalNote) {
       errors.push('Selection missing required constitutional note');
     }
-    
+
     // Check: Rule ID present
     if (!selection.ruleId) {
       errors.push('Selection missing required rule identifier');
     }
-    
+
     // Check: Rationale explains rule (Tier-3) or advisory classification
     if (
       !selection.advisoryOnly &&
@@ -232,7 +232,7 @@ export class AlgorithmSelector {
     if (selection.algorithm === 'genetic' && !selection.advisoryOnly) {
       errors.push('Genetic selection must set advisoryOnly=true (FP-016 Option B)');
     }
-    
+
     return {
       isValid: errors.length === 0,
       errors

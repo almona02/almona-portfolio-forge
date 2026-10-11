@@ -12,24 +12,24 @@
 - All MUST be deterministic, rule-based, and auditable
 
 ### §1.2 Advisory Components (Tier 2)
-- AI routing suggestions
+- automation routing suggestions
 - Failure probability indicators
 - Response draft generators
 - Parts recommendation advisors
 - All MUST include constitutional disclaimers and human validation gates
 
 ### §1.3 Prohibitions (Constitutional Violations)
-- ❌ NO ML/AI in execution paths
+- ❌ NO advisory inference in execution paths
 - ❌ NO autonomous ticket creation
 - ❌ NO automatic priority changes without human validation
 - ❌ NO predictive maintenance execution without technician confirmation
 
 ## Article II: Human Validation Doctrine
 ### §2.1 Mandatory Validation Gates
-1. **Assignment Gate**: AI suggestions → Human review → Rule-based assignment
-2. **Resolution Gate**: AI resolution draft → Technician validation → Status change
+1. **Assignment Gate**: automation suggestions → Human review → Rule-based assignment
+2. **Resolution Gate**: automation resolution draft → Technician validation → Status change
 3. **Preventive Gate**: Risk detection → Technician confirmation → Ticket creation
-4. **Parts Gate**: AI recommendation → Pricing approval → Order creation
+4. **Parts Gate**: automation recommendation → Pricing approval → Order creation
 
 ### §2.2 Evidence Requirements
 All state changes require:

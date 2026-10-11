@@ -21,7 +21,7 @@ interface RelatedMachinesSectionProps {
  * RelatedMachinesSection Component
  * 
  * Displays "People who viewed this also looked at" recommendations
- * and trending machines based on AI-powered similarity analysis.
+ * and trending machines based on software-assisted similarity analysis.
  */
 const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
   currentMachine,
@@ -30,12 +30,12 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
   title,
   className = ""
 }) => {
-  
+
   // Get related machines or trending machines
   const recommendations: MachineRecommendation[] = currentMachine 
     ? RelatedMachinesEngine.getRelatedMachines(currentMachine, allMachines, 4)
     : [];
-    
+
   const trendingMachines = showTrending 
     ? RelatedMachinesEngine.getTrendingMachines(allMachines, 4)
     : [];
@@ -75,7 +75,7 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
         {machinesToShow.map((item, _index) => {
           const machine = 'machine' in item ? item.machine : item;
           const recommendation = 'score' in item ? item : undefined;
-          
+
           return (
             <Card 
               key={machine.id} 
@@ -91,12 +91,12 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
                   width={300}
                   height={200}
                 />
-                
+
                 {/* Condition Badge */}
                 <div className="absolute top-2 left-2">
                   <ConditionBadge condition={machine.condition} size="sm" />
                 </div>
-                
+
                 {/* Recommendation Score */}
                 {recommendation && recommendation.score > 0.7 && (
                   <Badge className="absolute top-2 right-2 bg-green-600/90 text-white text-xs">

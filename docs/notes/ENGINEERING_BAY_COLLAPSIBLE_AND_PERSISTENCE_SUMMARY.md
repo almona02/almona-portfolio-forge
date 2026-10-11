@@ -12,7 +12,7 @@ Comprehensive enhancement to Engineering Bay, Drawing, and Optimization pages wi
 - ✅ Collapsible cards for better screen space management
 - ✅ Optimized SmartDraw canvas (minimal screen space)
 - ✅ Systematic project persistence (drawing poses saved automatically)
-- ✅ Multi-page navigation state management (inspired by ABT HeroFis)
+- ✅ Multi-page navigation state management (inspired by ABT reference system)
 - ✅ Auto-save functionality
 - ✅ Performance optimizations
 

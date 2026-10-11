@@ -16,7 +16,7 @@ Almona Portfolio Forge is not just software—it's a **governed industrial compu
 
 **What We Thought We Had:**
 - Fabrication software with 99.8% accuracy
-- Nice AI chatbot (45% complete)
+- Nice automation chatbot (45% complete)
 - Single vertical tool
 
 **What We Actually Have:**
@@ -213,7 +213,7 @@ CAIRO_MARKET_PATTERNS = {
 ### 2.5 New Value Proposition
 
 **Current Pitch (Wrong):**
-> "We provide AI-powered fabrication software with 99.8% accuracy."
+> "We provide software-assisted fabrication software with 99.8% accuracy."
 
 **New Pitch (Right):**
 > **"YDT-Powered Fabrication Intelligence Platform"**
@@ -451,7 +451,7 @@ RealityOS Platform
 - TMG Shield vertical (core engine)
 - Frontend applications (web + mobile)
 - SAP integration (middleware)
-- AI/ML services
+- advisory inference services
 - Executive dashboards
 - Implementation services
 
@@ -464,7 +464,7 @@ RealityOS Platform
 | Phase 1: POC | 6 weeks | $180K | Single hotel validated |
 | Phase 2: IAM + UIP | 12 weeks | $720K | Asset Management + Intelligence Platform |
 | Phase 3: Full Rollout | 16 weeks | $1.2M | All verticals, all sites |
-| Phase 4: Optimization | 8 weeks | $600K | AI learning, performance tuning |
+| Phase 4: Optimization | 8 weeks | $600K | automation learning, performance tuning |
 | **Total** | **42 weeks** | **$2.7M** | **Complete IOMS deployment** |
 
 **ROI Analysis:**
@@ -520,7 +520,7 @@ RealityOS Platform
 
 1. **No Silent Failures** - All failures detectable, traceable, auditable
 2. **No Undocumented Decisions** - Every decision provable after the fact
-3. **No Untraceable Intelligence** - All AI contributions logged
+3. **No Untraceable Intelligence** - All automation contributions logged
 4. **No Mutable Truth** - Canonical truth is versioned, immutable
 5. **No Ambiguity of Authority** - Deterministic hierarchy is absolute
 

@@ -15,10 +15,10 @@ Features:
 The Learning Loop:
 1. Define: User creates profile from technical data sheets
 2. Control: User sets optimization strategy
-3. Calibrate: Initial K-factors from test cuts or AI suggestions
+3. Calibrate: Initial K-factors from test cuts or automation suggestions
 4. Reflect: Dashboard shows analytics and trends
 5. Learn: Production feedback collected via QR codes
-6. Predict: AI suggests improved K-factors
+6. Predict: automation suggests improved K-factors
 
 This class implements steps 5-6: Learn and Predict.
 """

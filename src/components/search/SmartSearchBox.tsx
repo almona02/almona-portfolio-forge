@@ -19,7 +19,7 @@ interface SmartSearchBoxProps {
 /**
  * SmartSearchBox Component
  * 
- * AI-powered search input with intelligent suggestions, natural language processing,
+ * software-assisted search input with intelligent suggestions, natural language processing,
  * and real-time search analytics tracking.
  */
 const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
@@ -34,7 +34,7 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [popularSearches, setPopularSearches] = useState<string[]>([]);
   const [_currentSearchEventId, setCurrentSearchEventId] = useState<string | null>(null);
-  
+
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -42,7 +42,7 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
   useEffect(() => {
     const popular = SearchAnalyticsTracker.getPopularSearchSuggestions(6);
     setPopularSearches(popular);
-    
+
     // Load recent searches from localStorage
     const recent = localStorage.getItem('recentSearches');
     if (recent) {
@@ -55,7 +55,7 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
     if (value.length >= 2) {
       const nlpSuggestions = NaturalLanguageProcessor.generateSearchSuggestions(value);
       const synonymSuggestions = SearchSynonymsService.getSearchSuggestions(value, 3);
-      
+
       // Combine and deduplicate suggestions
       const allSuggestions = [...new Set([...nlpSuggestions, ...synonymSuggestions])];
       setSuggestions(allSuggestions.slice(0, 6));
@@ -69,19 +69,19 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
   // Handle search execution
   const executeSearch = (query: string) => {
     if (!query.trim()) return;
-    
+
     // Parse query with NLP
     const parsedQuery = NaturalLanguageProcessor.parseQuery(query);
-    
+
     // Track search analytics
     const eventId = SearchAnalyticsTracker.trackSearch(query, 0, parsedQuery);
     setCurrentSearchEventId(eventId);
-    
+
     // Save to recent searches
     const updatedRecent = [query, ...recentSearches.filter(s => s !== query)].slice(0, 5);
     setRecentSearches(updatedRecent);
     localStorage.setItem('recentSearches', JSON.stringify(updatedRecent));
-    
+
     // Execute search callback
     onSearch?.(query);
     setShowSuggestions(false);
@@ -90,7 +90,7 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
   // Handle input change
   const handleInputChange = (newValue: string) => {
     onChange(newValue);
-    
+
     if (newValue.trim() === '') {
       setShowSuggestions(false);
     }
@@ -131,7 +131,7 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
       {/* Main Search Input */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-almona-light/60 w-4 h-4" />
-        
+
         <Input
           ref={inputRef}
           value={value}
@@ -145,7 +145,7 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
           placeholder={placeholder}
           className="bg-almona-dark border-almona-light pl-10 pr-12 h-12 text-base"
         />
-        
+
         {/* Clear button */}
         {value && (
           <Button
@@ -183,7 +183,7 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
       {/* Suggestions Dropdown */}
       {showSuggestions && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-almona-darker border border-almona-light/20 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
-          
+
           {/* Current Query Suggestions */}
           {suggestions.length > 0 && (
             <div className="p-3">

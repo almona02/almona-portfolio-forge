@@ -1,5 +1,5 @@
 /**
- * Live Cursor Overlay
+ * Live pointer Overlay
  * Shows collaborator cursors and selections in real-time
  */
 

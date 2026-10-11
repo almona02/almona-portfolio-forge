@@ -128,10 +128,10 @@
 const handlePresetSelect = (presetId: string) => {
   const preset = getPresetById(presetId, SIMPLE_PRESETS);
   const result = applyPresetIntelligence(preset, width, height);
-  
+
   // Update grid
   setCurrentGrid(result.windowGrid);
-  
+
   // Update system pack
   if (result.recommendedSystem) {
     setActiveSystemPackId(matchingSystemPack);
@@ -228,7 +228,7 @@ const handlePresetSelect = (presetId: string) => {
 - [ ] Preset sharing
 
 ### Phase 3 (Optional)
-- [ ] AI-powered preset suggestions (constitutional)
+- [ ] software-assisted preset suggestions (constitutional)
 - [ ] Preset analytics
 - [ ] Preset performance tracking
 - [ ] User preset favorites

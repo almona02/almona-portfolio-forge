@@ -4,7 +4,7 @@
  * Validates imported data against Tier 3 constraints (AICS-001 §3.1).
  * 
  * Constitutional Compliance: AICS-001 §3.1 (Tier 3 Protected Determinism)
- * All validation must be deterministic and rule-based (no AI/ML).
+ * All validation must be deterministic and rule-based (no advisory inference).
  * 
  * @since Phase 4: Precision Upgrade Plan (January 2026)
  */

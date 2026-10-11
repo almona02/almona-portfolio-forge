@@ -181,14 +181,14 @@
 
 ---
 
-## Section 5.10: Constitutional AI Governance
+## Section 5.10: Constitutional automation Governance
 
 **Status:** ✅ **100% COMPLETE**
 
 | Component | Status | Details |
 |-----------|--------|---------|
 | **IntelligenceGate** | ✅ Operational | Three-tier governance operational |
-| **Tier 1 (Authoritative AI)** | ✅ Operational | Fully functional |
+| **Tier 1 (Authoritative automation)** | ✅ Operational | Fully functional |
 | **Tier 2 (Collaborative Intelligence)** | ✅ Operational | Fully functional |
 | **Tier 3 (Protected Determinism)** | ✅ Operational | Fully functional |
 | **Integration** | ✅ Complete | Integrated into decision workflows |
@@ -230,7 +230,7 @@
 | Section | Weight | Score | Points | Status |
 |---------|--------|-------|--------|--------|
 | **4.3/4.4: ValidationEnvelope** | 20% | 100% | 20.0 | ✅ Complete |
-| **5.10: Constitutional AI Governance** | 20% | 100% | 20.0 | ✅ Complete |
+| **5.10: Constitutional automation Governance** | 20% | 100% | 20.0 | ✅ Complete |
 | **6.0: Canonical Source of Truth** | 20% | 80% | 16.0 | 🟡 Integration pending |
 | **7.4: Audit Trail** | 20% | 85% | 17.0 | 🟡 Integration pending |
 | **7.5: Deterministic Replay** | 20% | 95% | 19.0 | 🟡 Integration pending |
@@ -249,7 +249,7 @@
 - ✅ Audit trail service operational with cryptographic linking
 - ✅ Deterministic replay engine operational
 - ✅ All 5 truth domain services operational
-- ✅ Constitutional AI governance fully operational
+- ✅ Constitutional automation governance fully operational
 
 ### 🟡 In Progress
 

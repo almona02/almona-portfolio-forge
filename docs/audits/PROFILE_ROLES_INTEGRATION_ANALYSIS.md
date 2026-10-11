@@ -77,7 +77,7 @@ The system learns profile roles from:
    - Auto-detects roles from profile names
    - Uses pattern matching (e.g., "bead" → `glazing_bead`)
 
-### How AI/ML Should Learn Profile Roles
+### How advisory inference Should Learn Profile Roles
 
 **Current State:**
 - ✅ Role definitions exist in `Profile['profileRole']` type (25+ roles)

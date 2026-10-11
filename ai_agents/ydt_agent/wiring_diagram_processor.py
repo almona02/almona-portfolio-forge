@@ -1,7 +1,7 @@
 """
 Wiring Diagram Processor for YILMAZ Machines
 Extracts electrical and pneumatic components from wiring diagram PDFs
-using Vision AI.
+using Vision automation.
 
 Gold Tier accuracy required - NO EXCUSES for CNC machines.
 """
@@ -96,7 +96,7 @@ class WiringDiagramAnalysis:
 
 
 class WiringDiagramProcessor:
-    """Process wiring diagrams with Vision AI for component extraction"""
+    """Process wiring diagrams with Vision automation for component extraction"""
 
     def __init__(self, raw_manuals_path: Path, api_key: Optional[str] = None):
         self.raw_manuals_path = Path(raw_manuals_path)
@@ -162,7 +162,7 @@ class WiringDiagramProcessor:
             logger.info(f"[WIRING DIAGRAM] Processing page {page_num}/{total_pages}")
 
             if self.model:
-                # Use Vision AI to extract components
+                # Use Vision automation to extract components
                 (page_components, page_connections, page_errors) = (
                     self._extract_from_image(image, page_num, machine_id)
                 )
@@ -225,7 +225,7 @@ class WiringDiagramProcessor:
     def _extract_from_image(
         self, image, page_num: int, machine_id: str
     ) -> Tuple[List, List, List]:
-        """Extract components using Vision AI"""
+        """Extract components using Vision automation"""
         if not self.model:
             return [], [], ["Vision AI model not available"]
 

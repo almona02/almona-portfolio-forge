@@ -239,7 +239,7 @@ const Contact = () => {
                       <p className="text-sm text-gray-400">{copy("Click to view on Google Maps")}</p>
                     </div>
                   </div>
-                  
+
                   {/* Hover overlay */}
                   <div className="absolute inset-0 flex items-center justify-center bg-almona-orange bg-opacity-90 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="text-center text-white">
@@ -251,7 +251,7 @@ const Contact = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Neighborhood Discovery Button */}
               <div className="mt-4 text-center">
                 <Button variant="outline" className="w-full border-almona-light/30 hover:bg-almona-light/10" onClick={handleNeighborhoodClick}>{copy("Explore Our Neighborhood")}</Button>

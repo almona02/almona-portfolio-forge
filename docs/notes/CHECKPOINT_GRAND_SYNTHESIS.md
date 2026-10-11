@@ -8,7 +8,7 @@
 1. ✅ Neo-Pharaonic Industrial Theme (Tailwind config)
 2. ✅ Firman System (Legal decrees with citations)
 3. ✅ Guild System (Apprentice/Master/Vizier)
-4. ✅ Codex Structure (Maalem Wiki, Formula Registry)
+4. ✅ development tool Structure (Maalem Wiki, Formula Registry)
 5. ✅ TheFoundry (Tuning Studio - complex version)
 6. ✅ SilkRoadTracker (Supply chain visualization)
 7. ✅ Egyptian Window Patterns Database
@@ -32,7 +32,7 @@
 
 ### Frozen Features (Do NOT Work On)
 - ❌ Nafeza-style UI
-- ❌ Oracle AI system
+- ❌ Oracle automation system
 - ❌ Guild hierarchy UI
 - ❌ University-grade pedagogy UI
 - ❌ Cross-Empire branding

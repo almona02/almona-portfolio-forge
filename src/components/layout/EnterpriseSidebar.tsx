@@ -151,7 +151,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   const _workflowStages = [
     { id: 'measuring', name: t('fabricator:workflow.steps.measuring.name', 'Smart Measuring'), icon: Ruler, status: 'active' },
     { id: 'design', name: t('fabricator:workflow.steps.design.name', 'Technical Design'), icon: Settings, status: 'pending' },
-    { id: 'optimization', name: t('fabricator:workflow.steps.optimization.name', 'AI Optimization'), icon: Sparkles, status: 'pending' },
+    { id: 'optimization', name: t('fabricator:workflow.steps.optimization.name', 'Stock Optimization'), icon: Sparkles, status: 'pending' },
     { id: 'inventory', name: t('fabricator:workflow.steps.inventory.name', 'Inventory Check'), icon: Package, status: 'pending' },
     { id: 'production', name: t('fabricator:workflow.steps.production.name', 'Production'), icon: Factory, status: 'pending' },
     { id: 'quality', name: t('fabricator:workflow.steps.quality.name', 'Quality Control'), icon: Zap, status: 'pending' }
@@ -165,7 +165,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       icon: Scissors,
       status: "verified", // Enhanced status
       efficiency: "99.8%", // Gold tier accuracy
-      description: t('fabricator:navbar.fabrication_modules.cutting_optimization.description', 'AI-powered material nesting'),
+      description: t('fabricator:navbar.fabrication_modules.cutting_optimization.description', 'software-assisted material nesting'),
       goldTierVerified: true
     },
     {
@@ -185,7 +185,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       description: t('fabricator:navbar.fabrication_modules.production_scheduler.description', 'Smart job sequencing')
     },
     {
-      name: t('fabricator:navbar.fabrication_modules.quality_control_ai.name', 'Quality Control AI'),
+      name: t('fabricator:navbar.fabrication_modules.quality_control_ai.name', 'Quality Control'),
       path: "/fabricator/quality",
       icon: Brain,
       status: "monitoring",
@@ -298,10 +298,10 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         icon: Workflow,
         description: 'Fabrication pipeline',
         children: [
-          { id: 'measuring', label: 'Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: 'AI' },
+          { id: 'measuring', label: 'Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: "PRO" },
           { id: 'design', label: 'Design', icon: Settings, path: '/fabricator-workflow#design', badge: 'PRO' },
           { id: 'preview3d', label: '3D Preview', icon: Box, path: '/fabricator-workflow#preview3d', badge: '3D' },
-          { id: 'optimization', label: 'Optimization', icon: Scissors, path: '/fabricator-workflow#optimization', badge: 'AI' },
+          { id: 'optimization', label: 'Optimization', icon: Scissors, path: '/fabricator-workflow#optimization', badge: "PRO" },
           { id: 'production', label: 'Production', icon: Factory, path: '/fabricator-workflow#production' },
           { id: 'quality', label: 'Quality', icon: Zap, path: '/fabricator-workflow#quality' }
         ]
@@ -434,13 +434,13 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       const currentWidth = sidebarWidth.get();
       document.documentElement.style.setProperty('--sidebar-width', `${currentWidth}px`);
     };
-    
+
     // Initial set
     updateWidth();
-    
+
     // Subscribe to motion value changes
     const unsubscribe = sidebarWidth.on('change', updateWidth);
-    
+
     return () => {
       unsubscribe();
     };
@@ -506,7 +506,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             }}
             className="flex items-center gap-3 group relative cursor-pointer"
           >
-            
+
             <AlmonaNavbarLogo size={40} />
             {!isCollapsed && (
               <motion.div
@@ -524,7 +524,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             )}
           </div>
         </motion.div>
-        
+
         {/* Compact Animated Toggle Button - Right Side */}
         <motion.button
           whileHover={{ scale: 1.15 }}
@@ -574,7 +574,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           )}
         </motion.button>
       </div>
-      
+
       {/* Animated Arrow on First Open - positioned outside sidebar */}
       <AnimatePresence>
         {!isCollapsed && !hasOpenedOnce && (

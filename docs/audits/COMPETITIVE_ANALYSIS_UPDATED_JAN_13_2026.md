@@ -12,7 +12,7 @@
 
 ### Current Competitive Position
 
-**Overall Parity with Gold-Tier (Klaes, Orgadata, Moxisys, iWindow):** 85-92%
+**Overall Parity with Gold-Tier (reference system, reference system, reference system, reference system):** 85-92%
 
 **ALMONA's Unique Advantage:** Modern cloud-native platform vs. legacy desktop CAD systems  
 **ALMONA's Critical Gap:** 15-20% visual/UX maturity creating 50% perception gap  
@@ -70,7 +70,7 @@
 
 **Competitive Reality:**
 - **Klaes/Orgadata:** 20+ years of UI refinement, every pixel crafted
-- **Moxisys:** Modern but desktop CAD (heavyweight feel)
+- **reference system:** Modern but desktop CAD (heavyweight feel)
 - **ALMONA Advantage:** Web-native (actually lighter, faster), but feels "incomplete"
 
 **Phase 1 Impact (Wks 1-4):**
@@ -227,8 +227,8 @@
 
 #### Segment 1: Small Fabrication Shops (5-15 people)
 **Current:** Competing effectively (ALMONA 85-90% parity)  
-**Perception:** "Modern alternative to legacy Klaes" ✅  
-**Close Rate:** 60-70%  
+**Perception:** "Modern alternative to legacy reference system" ✅
+**Close Rate:** 60-70%
 **Action Needed:** None immediately
 
 ---
@@ -296,8 +296,8 @@
 - **Win Rate:** 25-35% of prospects (especially younger team members)
 - **Segment:** Tech-forward companies, second-generation family businesses
 
-#### Win Reason #5: Cost (1/10th of Klaes)
-- **Fact:** $500-2000/month vs. $5000-15000/month for enterprise Klaes
+#### Win Reason #5: Cost (1/10th of reference system)
+- **Fact:** $500-2000/month vs. $5000-15000/month for enterprise reference system
 - **User Benefit:** 10x better ROI, faster payback period
 - **Win Rate:** 40-50% of SMB segment
 - **Segment:** Price-sensitive, efficient operators
@@ -313,12 +313,12 @@
 - **Mitigation:** Phase 1 (visual polish) closes this by Week 4
 
 #### Loss Reason #2: "Missing Enterprise Features"
-- **Fact:** 50% enterprise feature gap vs. Klaes
+- **Fact:** 50% enterprise feature gap vs. reference system
 - **Impact:** "Can't run our business on this"
 - **Loss Rate:** 30-40% of medium+ segment
 - **Mitigation:** Phase 3 (enterprise features) closes this by Week 8
 
-#### Loss Reason #3: "Our Team Knows Klaes"
+#### Loss Reason #3: "Our Team Knows reference system"
 - **Fact:** Switching costs (retraining, learning curve)
 - **Impact:** "It's working fine; why change?"
 - **Loss Rate:** 15-25% (especially established companies)
@@ -542,7 +542,7 @@ TOTAL MONTHLY REVENUE TRAJECTORY:
 
 #### TODAY (Before Phase 1):
 - "Modern cloud platform"
-- "1/10th the cost of Klaes"
+- "1/10th the cost of reference system"
 - "Built for Egyptian market"
 - "Unified workflow"
 
@@ -559,7 +559,7 @@ TOTAL MONTHLY REVENUE TRAJECTORY:
 #### After Phase 5 (Week 12):
 - Add: "Mobile + office integration"
 - Add: "Full team adoption"
-- Add: "95% parity with Klaes"
+- Add: "95% parity with reference system"
 
 ---
 
@@ -567,7 +567,7 @@ TOTAL MONTHLY REVENUE TRAJECTORY:
 
 ### 8.1 LOW-HANGING FRUIT (Pursue NOW)
 
-**Segment:** Small shops, tech-forward, current Klaes users frustrated with cost
+**Segment:** Small shops, tech-forward, current reference system users frustrated with cost
 
 **Talking Point:** "Same power, 1/10th the price, cloud-native"
 
@@ -603,7 +603,7 @@ TOTAL MONTHLY REVENUE TRAJECTORY:
 
 ## ⚠️ Part 9: Competitive Threats & Mitigation
 
-### Threat 1: Klaes Launches "Cloud Edition"
+### Threat 1: reference system Launches "Cloud Edition"
 **Risk:** Competitors modernize architecture  
 **Likelihood:** 20% by end of 2026  
 **Mitigation:** Finish Phase 1-5 by Week 12; establish market lock-in

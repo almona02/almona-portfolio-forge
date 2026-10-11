@@ -9,7 +9,7 @@
 
 ## 📋 Executive Summary
 
-This document outlines a comprehensive enhancement plan to transform the Almona fabricator platform into a powerful, user-empowered tool with advanced customization, robust reporting, and cutting-edge optimization algorithms. The plan focuses on competitive advantages for the Turkish and Egyptian markets, and on reaching parity with, then surpassing, major aluminium design / cutting / reporting systems (Orgadata / Logikal, KLAES, ERCOM 2000, etc.) for fabricators across Egypt, Turkey, MENA, and the Gulf.
+This document outlines a comprehensive enhancement plan to transform the Almona fabricator platform into a powerful, user-empowered tool with advanced customization, robust reporting, and cutting-edge optimization algorithms. The plan focuses on competitive advantages for the Turkish and Egyptian markets, and on reaching parity with, then surpassing, major aluminium design / cutting / reporting systems (reference system / reference system, reference system, reference system 2000, etc.) for fabricators across Egypt, Turkey, MENA, and the Gulf.
 
 ---
 
@@ -37,7 +37,7 @@ This section condenses the competitive strategy into three pillars that map onto
     - Packs can be turned on/off per tenant/region.
 
 - **Machine‑ready cutting, not just lists**
-  - Move from human‑readable lists to **machine‑ready post‑processors**, similar to Logikal exports:
+  - Move from human‑readable lists to **machine‑ready post‑processors**, similar to reference system exports:
     - DXF per profile/element with reference points for machining centers.
     - CSV/XML/JSON outputs aligned with common saw / machining center formats (Elumatec, Fom, Emmegi, etc.).
     - Per‑machine export profiles (column mapping, units, rounding, tolerances, file naming).
@@ -333,7 +333,7 @@ This section captures the latest implemented features so the roadmap can be upda
   - `PUT /api/v2/fabricator/accessories/{id}` - Update accessory
   - `DELETE /api/v2/fabricator/accessories/{id}` - Delete accessory
 
-**Estimated Effort:** 3-4 weeks  
+**Estimated Effort:** 3-4 weeks
 **Dependencies:** Database migration, Supabase setup
 
 ---
@@ -394,7 +394,7 @@ This section captures the latest implemented features so the roadmap can be upda
   );
   ```
 
-**Estimated Effort:** 2-3 weeks  
+**Estimated Effort:** 2-3 weeks
 **Dependencies:** Profile/Accessory management (1.1)
 
 ---
@@ -465,7 +465,7 @@ This section captures the latest implemented features so the roadmap can be upda
   );
   ```
 
-**Estimated Effort:** 2-3 weeks  
+**Estimated Effort:** 2-3 weeks
 **Dependencies:** Profile management (1.1)
 
 ---
@@ -503,7 +503,7 @@ This section captures the latest implemented features so the roadmap can be upda
   - Customizable templates
   - Multi-language support (EN, AR, TR)
 
-**Estimated Effort:** 2 weeks  
+**Estimated Effort:** 2 weeks
 **Dependencies:** Cutting optimization engine
 
 ---
@@ -996,18 +996,18 @@ This combined plan is now the single source of truth for both the original phase
 
 ## 🏆 Almona Fabricator Platform: Ultimate Competitive Domination Plan
 
-This addendum refines the competitive positioning of the existing phases into a **6‑month, execution‑ready roadmap** focused on beating both **European benchmarks** (Orgadata/Logikal, Klaes, ERCOM 2000) and **regional players** (Technosoft/Herofis, ECOTAL, Fenestra+).
+This addendum refines the competitive positioning of the existing phases into a **6‑month, execution‑ready roadmap** focused on beating both **European benchmarks** (Orgadata/Logikal, reference system, reference system 2000) and **regional players** (Technosoft/Herofis, ECOTAL, Fenestra+).
 
 ### 🎯 Competitive Intelligence Summary
 
 - **High‑End European Systems (Benchmarks)**
   - Orgadata/Logikal: 18,000+ users, 400+ supplier integrations, strong ERP connectivity.
-  - Klaes: Mature constraint engines, extensive European system libraries.
-  - ERCOM 2000: Legacy desktop systems with 20+ years of profile data.
+  - reference system: Mature constraint engines, extensive European system libraries.
+  - reference system 2000: Legacy desktop systems with 20+ years of profile data.
   - **Weakness:** Slow to adapt to regional needs, expensive for local fabricators, desktop UX.
 
 - **Regional Players (Targets)**
-  - Technosoft / Herofis: Local market knowledge but weak optimization.
+  - reference system / reference system: Local market knowledge but weak optimization.
   - ECOTAL: Regional presence but limited cloud capabilities.
   - Fenestra+: PVC focus, different product category.
 

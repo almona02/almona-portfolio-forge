@@ -67,7 +67,7 @@ This document provides a comprehensive testing checklist for Phase 1B Engineerin
   - [ ] Egyptian Pattern Selector Panel
   - [ ] System Pack info (profiles/parts count)
   - [ ] System constraints alert
-  - [ ] Suggest AI Layout button (if applicable)
+  - [ ] Suggest automation Layout button (if applicable)
 - [ ] Panel state persists after page refresh (check localStorage)
 
 **Issues Found:** ________________________________

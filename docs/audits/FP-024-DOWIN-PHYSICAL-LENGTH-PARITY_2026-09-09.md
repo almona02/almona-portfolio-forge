@@ -1,4 +1,4 @@
-# FP-024 — DoWin Physical-Length Golden Parity
+# FP-024 — reference system Physical-Length Golden Parity
 
 > **Superseded for the asdd three-layer gate by** [`FP-024A-EXTERNAL-DOWIN-GOLDEN-PARITY_2026-09-09.md`](./FP-024A-EXTERNAL-DOWIN-GOLDEN-PARITY_2026-09-09.md).
 > This file remains as the earlier dual-length checkpoint. Verdict is still ❌ NOT ACCEPTED. Score remains 6.0/10.
@@ -10,8 +10,8 @@
 | Repository | `almona-portfolio-forge` |
 | Branch | `main` |
 | Depends on | FP-023A (settings contract), FP-023B (canonical kerf identity) |
-| Scope | Per-piece physical length vs a **real exported DoWin cut list**. Not FP-016, FP-017, kerf count, or production K-factor replacement. |
-| Job | DoWin design **asdd**, Deceuninck 70 Z, 1000 × 1500 mm, two 500 mm sashes, vertical mullion |
+| Scope | Per-piece physical length vs a **real exported reference system cut list**. Not FP-016, FP-017, kerf count, or production K-factor replacement. |
+| Job | reference system design **asdd**, Deceuninck 70 Z, 1000 × 1500 mm, two 500 mm sashes, vertical mullion |
 | Gate | ❌ **NOT ACCEPTED** — expected cut list populated; `dowinParityGatePasses` is **false**. No score increase. |
 | Physical-length score | **Unchanged at 6.0/10** |
 
@@ -19,7 +19,7 @@
 
 ## Acceptance (unchanged, strict)
 
-> Same elevation + same system + same manufacturing settings → ALMONA cut lengths within **±0.1 mm** of a **real exported DoWin cut list**, per physical piece.
+> Same elevation + same system + same manufacturing settings → ALMONA cut lengths within **±0.1 mm** of a **real exported reference system cut list**, per physical piece.
 
 Categories scored independently. A sash match must not hide a frame, mullion, glass, or angle fail.
 
@@ -31,7 +31,7 @@ Categories scored independently. A sash match must not hide a frame, mullion, gl
 
 Sources (MDB/PDF not committed; millimetres transcribed only):
 
-- DoWin Optimization **Required Parts** (saw-bound)
+- reference system Optimization **Required Parts** (saw-bound)
 - DC-600 machine export `asdasd_2026.09.09_18.15.mdb` `Table1` (13 profile pieces)
 - `OptimizationReport_20260909_181432.pdf`
 - `OptimizationReport_20260909_181432_Labels.pdf`
@@ -39,7 +39,7 @@ Sources (MDB/PDF not committed; millimetres transcribed only):
 
 The MDB is the machine-bound cut list. `LENGTH` matches Optimization Required Parts exactly. It does **not** match the Labels/Design Preview PDF (those 45° pieces are 3 mm shorter). `FRAME_X`/`FRAME_Y` on every MDB row are overall finished **1000 × 1500**, while frame `LENGTH` is **1003 / 1503**. Beads and glass are absent from this DC-600 file (13 rows = 4 frame + 8 sash + 1 mullion).
 
-DoWin publishes **two** millimetre columns for 45° pieces, 3 mm apart (`WeldingWaste`):
+reference system publishes **two** millimetre columns for 45° pieces, 3 mm apart (`WeldingWaste`):
 
 | Piece | Labels / Design Preview (finished) | Optimization Required Parts (saw) |
 |-------|-------------------------------------:|----------------------------------:|
@@ -130,6 +130,6 @@ After every category passes, this score may move from 6.0 toward **~8.0–8.5**.
 
 ## Gate verdict
 
-**NOT ACCEPTED.** Real DoWin expected cut list is populated for asdd. Comparison ran. Six of seven categories fail. Angle compensation passes at 0 mm. Physical-length score stays **6.0/10**.
+**NOT ACCEPTED.** Real reference system expected cut list is populated for asdd. Comparison ran. Six of seven categories fail. Angle compensation passes at 0 mm. Physical-length score stays **6.0/10**.
 
 Do not treat fixture status `READY` as acceptance. `READY` only means expected millimetres exist.

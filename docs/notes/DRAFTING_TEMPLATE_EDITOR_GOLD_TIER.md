@@ -33,7 +33,7 @@ The Template Editor is a **unique gold-tier feature** that reverse engineers ALM
 ### 3. **Visual Template Editor UI**
 - **Extract from Design:** Extract template from current design
 - **Workshop History:** Analyze all past projects to find common patterns
-- **Recommendations:** Get AI-powered template recommendations based on dimensions
+- **Recommendations:** Get software-assisted template recommendations based on dimensions
 - **Knowledge Base:** View workshop insights and patterns
 
 ### 4. **Pattern Recognition**
@@ -156,7 +156,7 @@ TemplateKnowledge {
 - Batch extraction
 
 ### Tab 3: Recommendations
-- AI-powered recommendations based on:
+- software-assisted recommendations based on:
   - Current design dimensions
   - Material preferences
   - Room type
@@ -228,11 +228,11 @@ confidence = Math.min(100, 60 + (frequency - minFrequency) * 10)
 
 ### Tier 0 (Visual Drafting)
 - ✅ Template extraction is **deterministic**
-- ✅ No ML/AI in extraction logic
+- ✅ No advisory inference in extraction logic
 - ✅ Rule-based pattern matching
 - ✅ 100% auditable
 
-### Tier 1 (Authoritative AI)
+### Tier 1 (Authoritative automation)
 - ✅ `EgyptianJobPatternRecognizer` provides recommendations
 - ✅ All recommendations are **suggestions only**
 - ✅ User must approve template selection
@@ -241,7 +241,7 @@ confidence = Math.min(100, 60 + (frequency - minFrequency) * 10)
 ### Tier 3 (Protected Determinism)
 - ✅ Template structure is deterministic
 - ✅ Grid normalization is rule-based
-- ✅ No AI in core extraction
+- ✅ No automation in core extraction
 
 ---
 

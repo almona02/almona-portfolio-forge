@@ -40,7 +40,7 @@
 
 **Kleiss/Orgadata Comparison:**
 - Kleiss: **Preset library with 1-click application** → 95% accuracy
-- Orgadata: **Real-time constraint validation** → 98% accuracy
+- reference system: **Real-time constraint validation** → 98% accuracy
 - Our gap: **-23% accuracy** due to manual-only workflow
 
 ### Gold Tier Improvements (Target: 95-98%)
@@ -84,13 +84,13 @@ const detectPatternFromGrid = (grid: WindowGrid): {
 } => {
   // Extract features: rows, cols, cell types, proportions
   const features = extractGridFeatures(grid);
-  
+
   // Match against EGYPTIAN_PATTERNS
   const matches = EGYPTIAN_PATTERNS.map(pattern => ({
     pattern,
     score: calculateMatchScore(features, pattern)
   })).sort((a, b) => b.score - a.score);
-  
+
   return {
     matchedPattern: matches[0]?.score > 0.85 ? matches[0].pattern : null,
     confidence: matches[0]?.score || 0
@@ -110,7 +110,7 @@ const validateGridAgainstPattern = (
 ): ValidationResult => {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   // Check cell types match pattern
   pattern.gridSpec.cells.forEach(patternCell => {
     const userCell = grid.cells.find(
@@ -120,7 +120,7 @@ const validateGridAgainstPattern = (
       warnings.push(`Cell [${patternCell.row},${patternCell.col}] should be ${patternCell.type}`);
     }
   });
-  
+
   // Check proportions match pattern
   if (pattern.gridSpec.colWidths) {
     const userProportions = grid.colWidths || Array(grid.cols).fill(1);
@@ -129,14 +129,14 @@ const validateGridAgainstPattern = (
       warnings.push('Column proportions do not match pattern specification');
     }
   }
-  
+
   // Check constraints
   if (pattern.constraints) {
     grid.cells.forEach(cell => {
       if (cell.type === 'sash' || cell.type === 'sliding') {
         const cellWidth = calculateCellWidth(cell, grid, project);
         const cellHeight = calculateCellHeight(cell, grid, project);
-        
+
         if (pattern.constraints.minSashWidth && cellWidth < pattern.constraints.minSashWidth) {
           errors.push(`Sash width ${cellWidth}mm < minimum ${pattern.constraints.minSashWidth}mm`);
         }
@@ -149,7 +149,7 @@ const validateGridAgainstPattern = (
       }
     });
   }
-  
+
   return { isValid: errors.length === 0, errors, warnings };
 };
 ```
@@ -179,7 +179,7 @@ const validateGridAgainstPattern = (
 
 **Kleiss/Orgadata Comparison:**
 - Kleiss: **Pattern-specific mullion templates** → 97% accuracy
-- Orgadata: **Auto-positioning based on preset** → 99% accuracy
+- reference system: **Auto-positioning based on preset** → 99% accuracy
 - Our gap: **-14% accuracy** due to manual mullion placement
 
 ### Gold Tier Improvements (Target: 97-99%)
@@ -194,15 +194,15 @@ const applyPatternMullions = (
   if (!pattern.mullions || pattern.mullions.length === 0) {
     return []; // Sliding systems use interlock, not mullions
   }
-  
+
   const mullionsMm: number[] = [];
   const overallWidth = project.overallWidth;
-  
+
   // Use pattern.colWidths for proportional positioning
   const colWidths = pattern.gridSpec.colWidths || 
     Array(pattern.gridSpec.cols).fill(1);
   const totalWeight = colWidths.reduce((a, b) => a + b, 0);
-  
+
   pattern.mullions.forEach(mullion => {
     // Calculate position from column index
     const colIndex = mullion.position;
@@ -212,7 +212,7 @@ const applyPatternMullions = (
       mullionsMm.push(positionMm);
     }
   });
-  
+
   return mullionsMm.sort((a, b) => a - b);
 };
 ```
@@ -230,7 +230,7 @@ const selectMullionProfileForPattern = (
   const requiresStructural = pattern.mullions?.some(m => 
     m.type === 'structural' || m.reinforcement === true
   );
-  
+
   if (requiresStructural) {
     // Find structural mullion profile (wider, reinforced)
     return profiles.find(p => 
@@ -238,7 +238,7 @@ const selectMullionProfileForPattern = (
       (p.width >= 60 || p.name.toLowerCase().includes('structural'))
     ) || null;
   }
-  
+
   // Standard mullion for regular patterns
   return profiles.find(p => p.profileRole === 'mullion') || null;
 };
@@ -254,9 +254,9 @@ const effectiveConstraints = useMemo(() => {
   const pattern = selectedPatternId 
     ? EGYPTIAN_PATTERNS.find(p => p.id === selectedPatternId)
     : null;
-  
+
   if (!pattern?.constraints) return base;
-  
+
   return {
     ...base,
     // Pattern constraints override system pack defaults
@@ -298,7 +298,7 @@ const effectiveConstraints = useMemo(() => {
 
 **Kleiss/Orgadata Comparison:**
 - Kleiss: **Pattern-specific component generation** → 98% accuracy
-- Orgadata: **FabricationData with machining operations** → 99.5% accuracy
+- reference system: **FabricationData with machining operations** → 99.5% accuracy
 - Our gap: **-20% accuracy** due to generic generation
 
 ### Gold Tier Improvements (Target: 98-99.5%)
@@ -313,13 +313,13 @@ export function generateComponentsFromGrid(
   systemPackId: string | null,
   systemPack?: any | null,
   pattern?: EgyptianPattern  // NEW: Pattern parameter
-): { 
+): {
   components: WindowComponent[]; 
   hardware: any[];
   fabrication: FabricationData;  // NEW: Production data
 } {
   // ... existing frame generation ...
-  
+
   // ENHANCED: Use pattern mullion specifications
   if (pattern?.mullions && pattern.mullions.length > 0) {
     pattern.mullions.forEach(mullion => {
@@ -328,7 +328,7 @@ export function generateComponentsFromGrid(
         // Use pattern-specified mullion width
         const mullionWidth = mullion.width || mullionProfile.width;
         const mullionHeight = height - (2 * frameProfile.width);
-        
+
         components.push({
           id: `mullion_pattern_${mullion.position}`,
           type: 'mullion',
@@ -351,7 +351,7 @@ export function generateComponentsFromGrid(
     // Fallback to existing logic if no pattern
     // ... existing mullion generation ...
   }
-  
+
   // ENHANCED: Use pattern transom specifications
   if (pattern?.transoms && pattern.transoms.length > 0) {
     pattern.transoms.forEach(transom => {
@@ -359,7 +359,7 @@ export function generateComponentsFromGrid(
       if (transomProfile) {
         const transomHeight = transom.height || transomProfile.width;
         const transomWidth = width - (2 * frameProfile.width);
-        
+
         components.push({
           id: `transom_pattern_${transom.position}`,
           type: 'transom',
@@ -376,7 +376,7 @@ export function generateComponentsFromGrid(
       }
     });
   }
-  
+
   // NEW: Generate FabricationData
   const fabrication: FabricationData = {
     profiles: components.map(comp => ({
@@ -414,7 +414,7 @@ export function generateComponentsFromGrid(
       }),
     warnings: validatePatternConstraints(grid, pattern, project)
   };
-  
+
   return { components, hardware, fabrication };
 }
 ```
@@ -430,9 +430,9 @@ const generatePatternHardware = (
   project: WindowUnit
 ): any[] => {
   const hardware: any[] = [];
-  
+
   if (!pattern.accessories) return hardware;
-  
+
   pattern.accessories.forEach(accessory => {
     if (accessory === 'anti-lift blocks') {
       // Add anti-lift blocks for sliding systems
@@ -447,7 +447,7 @@ const generatePatternHardware = (
         });
       });
     }
-    
+
     if (accessory === 'interlock kit') {
       // Add interlock kit for sliding systems
       if (grid.cols > 1) {
@@ -460,7 +460,7 @@ const generatePatternHardware = (
         });
       }
     }
-    
+
     if (accessory.includes('heavy-duty rollers')) {
       // Check if sashes exceed area threshold
       grid.cells.forEach(cell => {
@@ -468,7 +468,7 @@ const generatePatternHardware = (
           const cellW = (project.overallWidth - 100) / grid.cols;
           const cellH = project.overallHeight - 100;
           const area = (cellW * cellH) / 1_000_000;
-          
+
           if (area > 2.5) {
             hardware.push({
               id: `roller_hd_${cell.id}`,
@@ -482,7 +482,7 @@ const generatePatternHardware = (
       });
     }
   });
-  
+
   return hardware;
 };
 ```
@@ -512,7 +512,7 @@ const generatePatternHardware = (
 
 **Kleiss/Orgadata Comparison:**
 - Kleiss: **Pattern-specific hardware catalogs** → 96% accuracy
-- Orgadata: **Automated hardware selection based on preset** → 98% accuracy
+- reference system: **Automated hardware selection based on preset** → 98% accuracy
 - Our gap: **-23% accuracy** due to manual selection
 
 ### Gold Tier Improvements (Target: 96-98%)
@@ -525,7 +525,7 @@ const getPatternCompatibleHardware = (
   compatibleHardware: EgyptianHardware[]
 ): EgyptianHardware[] => {
   if (!pattern?.accessories) return compatibleHardware;
-  
+
   // Filter to hardware that matches pattern requirements
   return compatibleHardware.filter(hw => {
     // Check if hardware category matches pattern needs
@@ -533,21 +533,21 @@ const getPatternCompatibleHardware = (
         hw.category === 'roller') {
       return true; // Rollers needed for sliding
     }
-    
+
     if (pattern.accessories!.includes('interlock kit') && 
         hw.category === 'corner_key') {
       return true; // Corner keys for interlock
     }
-    
+
     // Pattern-specific hardware requirements
     if (pattern.openingMechanism?.type === 'sliding') {
       return hw.category === 'roller' || hw.category === 'lock';
     }
-    
+
     if (pattern.openingMechanism?.type === 'casement') {
       return hw.category === 'hinge' || hw.category === 'handle';
     }
-    
+
     return true; // Default: show all compatible
   });
 };
@@ -565,21 +565,21 @@ const calculateSashWeightAccurate = (
 ): number => {
   const width = profile.width || 0;
   const height = profile.height || 0;
-  
+
   // Profile weight (aluminum perimeter)
   const profileDensity = 2.7; // g/cm³
   const profileThickness = profile.thickness || 1.4; // mm
   const perimeterM = 2 * (width + height) / 1000;
   const profileWeight = perimeterM * profileThickness * profileDensity * 0.001; // kg
-  
+
   // Glass weight (area-based)
   const glassAreaM2 = (width * height) / 1_000_000;
   const glassDensity = 2.5; // g/cm³
   const glassWeight = glassAreaM2 * (glassThickness / 1000) * glassDensity * 1000; // kg
-  
+
   // Hardware weight (estimated)
   const hardwareWeight = 0.5; // kg (handle, locks, etc.)
-  
+
   return profileWeight + glassWeight + hardwareWeight;
 };
 ```
@@ -595,7 +595,7 @@ const validateHardwareAgainstPattern = (
   profile: ProfileDims
 ): ValidationResult => {
   const warnings: string[] = [];
-  
+
   // Check if hardware matches pattern opening mechanism
   if (pattern.openingMechanism) {
     if (pattern.openingMechanism.type === 'sliding' && 
@@ -603,14 +603,14 @@ const validateHardwareAgainstPattern = (
         hardware.category !== 'lock') {
       warnings.push('Sliding windows typically require rollers and locks');
     }
-    
+
     if (pattern.openingMechanism.type === 'casement' && 
         hardware.category !== 'hinge' && 
         hardware.category !== 'handle') {
       warnings.push('Casement windows require hinges and handles');
     }
   }
-  
+
   // Check pattern-specific requirements
   if (pattern.constraints?.maxSashArea) {
     const area = ((profile.width || 0) * (profile.height || 0)) / 1_000_000;
@@ -621,7 +621,7 @@ const validateHardwareAgainstPattern = (
       warnings.push(`Sash area exceeds ${pattern.constraints.maxSashArea}m² - consider heavy-duty hardware`);
     }
   }
-  
+
   return {
     isValid: true,
     errors: [],
@@ -656,7 +656,7 @@ const validateHardwareAgainstPattern = (
 
 **Kleiss/Orgadata Comparison:**
 - Kleiss: **Pattern-specific validation rules** → 99% accuracy
-- Orgadata: **FabricationData validation with accuracy metrics** → 99.8% accuracy
+- reference system: **FabricationData validation with accuracy metrics** → 99.8% accuracy
 - Our gap: **-10% accuracy** due to generic validation
 
 ### Gold Tier Improvements (Target: 99-99.8%)
@@ -671,9 +671,9 @@ const validatePatternConstraints = (
 ): ValidationResult => {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   if (!pattern?.constraints) return { isValid: true, errors, warnings };
-  
+
   // Check sash dimensions
   components
     .filter(comp => comp.type === 'sash')
@@ -684,14 +684,14 @@ const validatePatternConstraints = (
           `Sash width ${sash.width}mm < pattern minimum ${pattern.constraints.minSashWidth}mm`
         );
       }
-      
+
       if (pattern.constraints.maxSashWidth && 
           sash.width > pattern.constraints.maxSashWidth) {
         warnings.push(
           `Sash width ${sash.width}mm > pattern maximum ${pattern.constraints.maxSashWidth}mm`
         );
       }
-      
+
       const area = (sash.width * sash.height) / 1_000_000;
       if (pattern.constraints.maxSashArea && area > pattern.constraints.maxSashArea) {
         warnings.push(
@@ -699,7 +699,7 @@ const validatePatternConstraints = (
         );
       }
     });
-  
+
   // Check reinforcement requirements
   if (pattern.constraints.requiresReinforcement) {
     const hasReinforcement = components.some(comp => 
@@ -707,12 +707,12 @@ const validatePatternConstraints = (
         op.code === 'REINFORCEMENT_POCKET'
       )
     );
-    
+
     if (!hasReinforcement) {
       errors.push('Pattern requires steel reinforcement - missing in components');
     }
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -732,7 +732,7 @@ const validateFabricationData = (
 ): ValidationResult => {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   // Compare profile counts
   const fabricationProfileCount = fabrication.profiles.reduce(
     (sum, p) => sum + p.quantity, 0
@@ -740,32 +740,32 @@ const validateFabricationData = (
   const cuttingListProfileCount = cuttingList.components.reduce(
     (sum, c) => sum + c.quantity, 0
   );
-  
+
   if (Math.abs(fabricationProfileCount - cuttingListProfileCount) > 1) {
     warnings.push(
       `Profile count mismatch: FabricationData=${fabricationProfileCount}, CuttingList=${cuttingListProfileCount}`
     );
   }
-  
+
   // Compare total material length (allow ±1mm tolerance)
   const fabricationLength = fabrication.profiles.reduce(
     (sum, p) => sum + (p.length * p.quantity), 0
   );
   const cuttingListLength = cuttingList.totalMaterialLength;
-  
+
   const lengthDiff = Math.abs(fabricationLength - cuttingListLength);
   if (lengthDiff > 1) {
     warnings.push(
       `Material length mismatch: ${lengthDiff.toFixed(2)}mm difference (FabricationData=${fabricationLength.toFixed(0)}mm, CuttingList=${cuttingListLength.toFixed(0)}mm)`
     );
   }
-  
+
   // Check hardware counts
   const fabricationHardwareCount = fabrication.hardware.reduce(
     (sum, h) => sum + h.quantity, 0
   );
   // Compare against BOM if available
-  
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -791,23 +791,23 @@ const calculateAccuracyMetrics = (
 } => {
   // Dimension accuracy (from optimization result)
   const dimensionAccuracy = optimizationResult?.accuracy || 99.5;
-  
+
   // Constraint accuracy (pattern validation)
   const constraintErrors = pattern 
     ? validatePatternConstraints(components, pattern, project).errors.length
     : 0;
   const constraintAccuracy = constraintErrors === 0 ? 100 : Math.max(0, 100 - (constraintErrors * 5));
-  
+
   // Calibration accuracy (from calibration status)
   const calibrationAccuracy = calibrationStatus.allCalibrated ? 100 : 85;
-  
+
   // Overall accuracy (weighted average)
   const overallAccuracy = (
     dimensionAccuracy * 0.5 +
     constraintAccuracy * 0.3 +
     calibrationAccuracy * 0.2
   );
-  
+
   return {
     overallAccuracy,
     dimensionAccuracy,

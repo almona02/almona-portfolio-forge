@@ -4,7 +4,7 @@
  * Provides unified workflow state management and stage navigation.
  * Handles mapping between legacy tabs and unified stages.
  * 
- * Constitutional: Deterministic state management, no ML/AI
+ * Constitutional: Deterministic state management, no advisory inference
  * Tier: 3 Protected Determinism
  */
 

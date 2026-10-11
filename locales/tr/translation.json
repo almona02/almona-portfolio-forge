@@ -97,10 +97,10 @@
       "title": "Hizmetler",
       "all_services": {
         "name": "Tüm Hizmetler",
-        "description": "AI destekli hizmetlerin kapsamlı genel bakışı"
+        "description": "automation destekli hizmetlerin kapsamlı genel bakışı"
       },
       "ai_equipment_advisor": {
-        "name": "AI Ekipman Danışmanı",
+        "name": "automation Ekipman Danışmanı",
         "description": "Akıllı öneriler"
       },
       "machine_sales": {
@@ -358,7 +358,7 @@
     "highly_recommended": "Çok Önerilen",
     "recommended": "Önerilen",
     "consider": "Değerlendir",
-    "ai_recommendations": "AI Destekli Öneriler",
+    "ai_recommendations": "automation Destekli Öneriler",
     "expert_analysis": "Uzman Analizi",
     "cost_benefit": "Maliyet-Fayda Analizi",
     "performance_metrics": "Performans Metrikleri"
