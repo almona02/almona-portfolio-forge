@@ -11,19 +11,36 @@ type EngineeringPacks = typeof SYSTEM_PACKS;
  * Nine studio surfaces mount this hook (engineering bay, project studio, project
  * summary, BOM review, tuning studio, workflow bar, optimize, produce, quote), and
  * previously every mount issued its own remote round trip - several per page view -
- * which made studio navigation slow. Requests for the same owner now share one
- * result.
+ * which made studio navigation slow. Requests for the same owner now share one result.
  *
+ * Correctness of invalidation:
+ *  - Each owner carries a generation. A request captures the generation it started in
+ *    and may only populate the cache while that generation is still current, so a
+ *    response that was invalidated mid-flight is discarded instead of overwriting the
+ *    newer list.
+ *  - Invalidating also drops the in-flight entry, so the next caller starts a fresh
+ *    request instead of reusing one that has already been invalidated.
+ *  - Cleanup only clears the entry it owns, so a newer request is never evicted by an
+ *    older one finishing late.
  * The cache is keyed by owner id, is never shared between owners, and is dropped on
- * sign-out and when a custom profile is added (the same invalidation the hook always
- * relied on), so it cannot serve another tenant's packs or stale edits.
+ * sign-out and on customProfileAdded, so it cannot serve another tenant's packs, a
+ * pre-logout list, or a list that an edit has superseded.
  */
 const packCache = new Map<string, EngineeringPacks>();
 const inFlight = new Map<string, Promise<EngineeringPacks>>();
+const generations = new Map<string, number>();
+
+const generationOf = (ownerId: string): number => generations.get(ownerId) ?? 0;
 
 export function invalidateEngineeringSystemPacks(ownerId?: string): void {
-  if (ownerId) packCache.delete(ownerId);
-  else packCache.clear();
+  const owners = ownerId
+    ? [ownerId]
+    : Array.from(new Set([...packCache.keys(), ...inFlight.keys(), ...generations.keys()]));
+  for (const owner of owners) {
+    generations.set(owner, generationOf(owner) + 1);
+    packCache.delete(owner);
+    inFlight.delete(owner);
+  }
 }
 
 async function loadEngineeringSystemPacksCached(ownerId: string): Promise<EngineeringPacks> {
@@ -31,14 +48,17 @@ async function loadEngineeringSystemPacksCached(ownerId: string): Promise<Engine
   if (cached) return cached;
   const pending = inFlight.get(ownerId);
   if (pending) return pending;
+
+  const startedIn = generationOf(ownerId);
   const request = loadCustomSystemsFromSupabase(ownerId)
     .then((packs) => {
       const resolved = packs.filter((pack) => !pack.isArchived) as EngineeringPacks;
-      packCache.set(ownerId, resolved);
+      // A response that an invalidation has superseded must not enter the cache.
+      if (generationOf(ownerId) === startedIn) packCache.set(ownerId, resolved);
       return resolved;
     })
     .finally(() => {
-      inFlight.delete(ownerId);
+      if (inFlight.get(ownerId) === request) inFlight.delete(ownerId);
     });
   inFlight.set(ownerId, request);
   return request;
