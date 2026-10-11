@@ -72,21 +72,25 @@ await check('browser SHA-256 matches Node createHash vectors', () => {
     assert.equal(sha256HexSync(text), createHash('sha256').update(text, 'utf8').digest('hex'));
   }
   const fp = designFingerprint(baseDesign);
+  // Must match sortedKeys() payload in designFingerprint (incl. leaf/glazing/hardware slices).
   const payload = {
+    glazing: null,
     grid: {
       cells: [
-        { col: 0, id: '0-0', row: 0, type: 'sash' },
-        { col: 1, id: '0-1', row: 0, type: 'sash' },
+        { col: 0, id: '0-0', openingDirection: '', row: 0, type: 'sash' },
+        { col: 1, id: '0-1', openingDirection: '', row: 0, type: 'sash' },
       ],
       colWidths: [1, 1],
       cols: 2,
       rowHeights: [1],
       rows: 1,
     },
+    hardware: null,
     overallHeight: 1400,
     overallWidth: 1200,
     presetId: 'sliding-2s',
     systemPackId: 'caluminium-ps',
+    systemProfileSelections: null,
     type: 'sliding_window_2sash',
   };
   assert.equal(fp, createHash('sha256').update(JSON.stringify(payload), 'utf8').digest('hex'));
