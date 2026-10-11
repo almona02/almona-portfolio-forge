@@ -27,7 +27,7 @@ interface StudioLayoutProps {
 export const StudioLayout: React.FC<StudioLayoutProps> = ({ studioId }) => {
   const location = useLocation();
   const { user, supabaseUser, loading } = useAuth();
-  const { i18n } = useTranslation('fabricator');
+  const { t, i18n } = useTranslation('fabricator');
   const rtl = isRTL(i18n.language);
   const project = useActiveStudioProject();
   const narrow = useNarrowStudioShell();
@@ -62,7 +62,11 @@ export const StudioLayout: React.FC<StudioLayoutProps> = ({ studioId }) => {
                     type="button"
                     onClick={() => togglePanel('navigation', 'left')}
                     className="p-2 -ms-1 rounded-md border border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
-                    aria-label={navCollapsed ? 'Open navigation' : 'Close navigation'}
+                    aria-label={
+                      navCollapsed
+                        ? t('nav.open_navigation', 'Open navigation')
+                        : t('nav.close_navigation', 'Close navigation')
+                    }
                     aria-expanded={!navCollapsed}
                     data-testid="studio-nav-menu"
                   >
@@ -73,7 +77,7 @@ export const StudioLayout: React.FC<StudioLayoutProps> = ({ studioId }) => {
                   ALMONA
                 </span>
                 <span className="text-[10px] font-mono text-amber-700 uppercase tracking-widest hidden sm:inline truncate">
-                  {activeStudio} studio
+                  {t('nav.studio_suffix', '{{name}} studio', { name: activeStudio })}
                 </span>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-medium text-amber-600/80 flex-shrink-0">
@@ -111,13 +115,18 @@ export const StudioLayout: React.FC<StudioLayoutProps> = ({ studioId }) => {
   );
 };
 
-const StudioLoadingScreen = () => (
-  <div className="flex items-center justify-center h-full w-full bg-[#0a0a0a]">
-    <div className="flex flex-col items-center gap-4">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500" />
-      <div className="text-amber-500 font-mono text-sm">INITIALIZING STUDIO ENV...</div>
+const StudioLoadingScreen = () => {
+  const { t } = useTranslation('fabricator');
+  return (
+    <div className="flex items-center justify-center h-full w-full bg-[#0a0a0a]">
+      <div className="flex flex-col items-center gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500" />
+        <div className="text-amber-500 font-mono text-sm">
+          {t('nav.initializing', 'INITIALIZING STUDIO ENV...')}
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default StudioLayout;
