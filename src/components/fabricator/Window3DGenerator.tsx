@@ -38,7 +38,9 @@ import {
     Bounds,
     CameraControls,
     Environment, Html,
+    Lightformer,
     Line,
+    MeshTransmissionMaterial,
     OrbitControls,
     Text
 } from '@react-three/drei';
@@ -70,6 +72,7 @@ import { MaterialPerformanceMonitor } from '@/lib/3d/performance/MaterialPerform
 
 // Tree-shakeable imports
 import {
+    BufferGeometry,
     Euler,
     ExtrudeGeometry,
     Group,
@@ -192,6 +195,32 @@ function MiteredFramePart({ part, material, enableShadows, userData }: { part: M
     }, [part]);
 
     return <mesh geometry={geometry} material={material} castShadow={enableShadows} receiveShadow={enableShadows} userData={userData} />;
+}
+
+/** Gold-tier glass via drei MeshTransmissionMaterial (premium/ultra only). */
+function GoldTransmissionGlass({
+  geometry,
+  enableShadows,
+  userData,
+}: {
+  geometry: BufferGeometry;
+  enableShadows: boolean;
+  userData?: Record<string, unknown>;
+}) {
+  return (
+    <mesh geometry={geometry} receiveShadow={enableShadows} userData={userData}>
+      <MeshTransmissionMaterial
+        thickness={0.02}
+        anisotropy={0.05}
+        chromaticAberration={0.015}
+        ior={1.5}
+        roughness={0.05}
+        transmission={0.95}
+        samples={4}
+        resolution={256}
+      />
+    </mesh>
+  );
 }
 
 /**
@@ -326,6 +355,33 @@ const Window3DModelComponent = (props: {
         detailConfig, // Get raw prop possibly undefined
         showDimensions = false
     } = props;
+
+    // Gold-tier lazy extras (CSG + kiwi) — only when not standard quality
+    useEffect(() => {
+        if (!quality || quality === 'standard' || !windowUnit) return;
+        let cancelled = false;
+        void (async () => {
+            const w = (windowUnit.overallWidth || 1200) / 1000;
+            const h = (windowUnit.overallHeight || 1500) / 1000;
+            const [{ createFrameWithOpeningPocket }, { solveMullionTransomLayout }] = await Promise.all([
+                import('@/lib/3d/csgTrueMiters'),
+                import('@/lib/3d/mullionConstraintSolver'),
+            ]);
+            if (cancelled) return;
+            const pocket = createFrameWithOpeningPocket({ width: w, height: h, profileWidth: 0.05 });
+            pocket.dispose();
+            solveMullionTransomLayout({
+                outerWidthMm: windowUnit.overallWidth || 1200,
+                outerHeightMm: windowUnit.overallHeight || 1500,
+                frameWidthMm: 50,
+                verticalMullionCount: Math.max(0, (windowUnit.grid?.cols ?? 1) - 1),
+                horizontalTransomCount: Math.max(0, (windowUnit.grid?.rows ?? 1) - 1),
+            });
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [quality, windowUnit]);
 
     // Stabilize detail config keys for dependency array
     const {
@@ -1401,7 +1457,15 @@ const Window3DModelComponent = (props: {
                     )}
 
                     {/* Render Glass and Spacers inside the sash */}
-                    {sash.glass.map((glassGeom, i) => (
+                    {sash.glass.map((glassGeom, i) =>
+                      quality && quality !== 'standard' ? (
+                        <GoldTransmissionGlass
+                          key={`glass-${sashIndex}-${i}`}
+                          geometry={glassGeom}
+                          enableShadows={!!enableShadows}
+                          userData={{ componentKey: `glass-${sashIndex}-${i}` }}
+                        />
+                      ) : (
                         <mesh
                             key={`glass-${sashIndex}-${i}`}
                             geometry={glassGeom}
@@ -1409,7 +1473,8 @@ const Window3DModelComponent = (props: {
                             receiveShadow={enableShadows}
                             userData={{ componentKey: `glass-${sashIndex}-${i}` }}
                         />
-                    ))}
+                      ),
+                    )}
                     {sash.spacers.map((spacerGeom, i) => (
                         <mesh
                             key={`spacer-${sashIndex}-${i}`}
@@ -1423,9 +1488,17 @@ const Window3DModelComponent = (props: {
             ))}
 
             {/* Render Fixed Glass (if any) */}
-            {modelData.fixedGlass.map((glassGeom, i) => (
+            {modelData.fixedGlass.map((glassGeom, i) =>
+              quality && quality !== 'standard' ? (
+                <GoldTransmissionGlass
+                  key={`fixed-glass-${i}`}
+                  geometry={glassGeom}
+                  enableShadows={!!enableShadows}
+                />
+              ) : (
                 <mesh key={`fixed-glass-${i}`} geometry={glassGeom} material={materials.glass} receiveShadow={enableShadows} />
-            ))}
+              ),
+            )}
 
             {/* Render Fixed Spacers (if any) */}
             {modelData.fixedSpacers.map((spacerGeom, i) => (
@@ -2215,7 +2288,10 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                 >
                     <Suspense fallback={<Html center><div className="text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</div></Html>}>
                         {/* --- SCENE SETUP --- */}
-                        <Environment preset="apartment" />
+                        <Environment preset="apartment">
+                          <Lightformer form="rect" intensity={2} position={[0, 5, -2]} scale={[12, 2, 1]} />
+                          <Lightformer form="ring" intensity={1.2} position={[-4, 1, -1]} scale={4} />
+                        </Environment>
                         <ambientLight intensity={0.6} />
                         <directionalLight
                             position={[10, 15, 10]}

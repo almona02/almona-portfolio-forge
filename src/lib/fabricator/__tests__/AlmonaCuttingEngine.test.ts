@@ -96,6 +96,15 @@ describe('AlmonaCuttingEngine', () => {
       expect(report.metrics.utilization).toBeGreaterThan(0);
       expect(report.metrics.utilization).toBeLessThanOrEqual(1);
     });
+
+    it('benchmarkLengths packs longest-first with high utilization', () => {
+      const engine = new AlmonaCuttingEngine({ barLengthMm: 6000, sawKerfMm: 4 });
+      const result = engine.benchmarkLengths([2500, 2500, 2500, 1200, 1200, 800], 6000);
+      expect(result.sortedLongestFirst).toBe(true);
+      expect(result.barsUsed).toBeGreaterThan(0);
+      expect(result.utilization).toBeGreaterThan(0.7);
+      expect(result.totalRemnantMm).toBeGreaterThanOrEqual(0);
+    });
   });
 
   describe('generateOptimizedCutListForBatch', () => {
