@@ -67,8 +67,9 @@ VALUES (
       {"role":"frame","profileId":"R60-F","stockLengthMm":6000,"evidenceStatus":"approved","approvalId":"51000000-0000-0000-0000-000000000001"},
       {"role":"sash","profileId":"R60-S","stockLengthMm":6000,"evidenceStatus":"approved","approvalId":"51000000-0000-0000-0000-000000000002"}
     ],
-    "cuttingRules":[{"ruleId":"rock60-cut","revision":1,"evidenceStatus":"approved","approvalId":"61000000-0000-0000-0000-000000000001"}],
-    "toleranceRule":{"ruleId":"rock60-tolerance","revision":1,"evidenceStatus":"approved","approvalId":"61000000-0000-0000-0000-000000000002"}
+    "cuttingRules":[{"ruleId":"rock60-cut","revision":1,"evidenceStatus":"approved","approvalId":"61000000-0000-0000-0000-000000000001","deductions":{"endDeductionMm":20},"allowances":{"weldMm":3},"applicability":{"materials":["aluminum"]}}],
+    "toleranceRule":{"ruleId":"rock60-tolerance","revision":1,"evidenceStatus":"approved","approvalId":"61000000-0000-0000-0000-000000000002"},
+    "manufacturingSettings":{"sawKerfMm":4,"trimCutMm":0}
   }'::JSONB,
   '11000000-0000-0000-0000-000000000001'
 );

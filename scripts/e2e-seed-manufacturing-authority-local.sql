@@ -64,7 +64,10 @@ SELECT
         'ruleId', 'caluminium-ps-cut',
         'revision', 1,
         'evidenceStatus', 'approved',
-        'approvalId', 'c1000000-0000-4000-8000-000000000001'
+        'approvalId', 'c1000000-0000-4000-8000-000000000001',
+        'deductions', jsonb_build_object('endDeductionMm', 20),
+        'allowances', jsonb_build_object('weldMm', 3),
+        'applicability', jsonb_build_object('materials', jsonb_build_array('aluminum'))
       )
     ),
     'toleranceRule', jsonb_build_object(
@@ -72,7 +75,8 @@ SELECT
       'revision', 1,
       'evidenceStatus', 'approved',
       'approvalId', 'c1000000-0000-4000-8000-000000000002'
-    )
+    ),
+    'manufacturingSettings', jsonb_build_object('sawKerfMm', 4, 'trimCutMm', 0)
   ),
   'a1000000-0000-4000-8000-000000000001'::UUID,
   'seed'

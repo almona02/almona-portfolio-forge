@@ -22,6 +22,13 @@ const profileSchema = approvedReferenceSchema.extend({
 const ruleSchema = approvedReferenceSchema.extend({
   ruleId: z.string().min(1),
   revision: z.number().int().positive(),
+  deductions: z.record(z.unknown()).optional(),
+  allowances: z.record(z.unknown()).optional(),
+  applicability: z.record(z.unknown()).optional(),
+});
+const manufacturingSettingsSchema = z.object({
+  sawKerfMm: z.number().finite().nonnegative(),
+  trimCutMm: z.number().finite().nonnegative(),
 });
 const authorityPayloadSchema = z.object({
   schema: z.literal('almona.manufacturing-authority'),
@@ -31,6 +38,7 @@ const authorityPayloadSchema = z.object({
   profiles: z.array(profileSchema).min(2),
   cuttingRules: z.array(ruleSchema).min(1),
   toleranceRule: ruleSchema,
+  manufacturingSettings: manufacturingSettingsSchema,
 }).strict();
 
 export interface ManufacturingAuthorityRpcRow {
@@ -44,6 +52,11 @@ export interface ManufacturingAuthorityRpcRow {
   readonly authority_payload: Record<string, unknown>;
 }
 
+export interface AuthorityManufacturingSettings {
+  readonly sawKerfMm: number;
+  readonly trimCutMm: number;
+}
+
 export interface ResolvedManufacturingAuthority {
   readonly projectId: string;
   readonly positionId: string;
@@ -55,6 +68,7 @@ export interface ResolvedManufacturingAuthority {
   readonly profiles: readonly Readonly<ApprovedProfileReference>[];
   readonly cuttingRules: readonly Readonly<ApprovedRuleReference>[];
   readonly toleranceRule: Readonly<ApprovedRuleReference>;
+  readonly manufacturingSettings: Readonly<AuthorityManufacturingSettings>;
 }
 
 export class ManufacturingAuthorityResolutionError extends Error {
@@ -106,6 +120,7 @@ export function parseManufacturingAuthorityRpcRow(
     profiles: Object.freeze(parsed.data.profiles.map((profile) => Object.freeze(profile))),
     cuttingRules: Object.freeze(parsed.data.cuttingRules.map((rule) => Object.freeze(rule))),
     toleranceRule: Object.freeze(parsed.data.toleranceRule),
+    manufacturingSettings: Object.freeze(parsed.data.manufacturingSettings),
   });
 }
 

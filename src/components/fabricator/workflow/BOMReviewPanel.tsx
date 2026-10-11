@@ -60,11 +60,14 @@ export const BOMReviewPanel: React.FC = () => {
     if (!currentProject || !systemPack || !pattern) return;
     const generationProject = currentProject;
     const generationIdentity = workflowIdentity;
+    const generationDirty = useWorkflowStore.getState().workflowDraftDirty;
+    let didPersist = false;
     const request = ++generationRequest.current;
     const isCurrent = () => {
       const latest = useWorkflowStore.getState();
       return Boolean(generationIdentity) && request === generationRequest.current &&
         latest.currentProject === generationProject &&
+        latest.workflowDraftDirty === generationDirty &&
         workflowIdentityMatches(latest.workflowIdentity, generationIdentity!);
     };
     setIsGenerating(true);
@@ -85,9 +88,13 @@ export const BOMReviewPanel: React.FC = () => {
           return { ...generationProject, components };
         },
         persist: async (aligned) => {
+          // Re-reading an unchanged saved ledger must not bump its revision and
+          // invalidate an already-approved hardener on every retry.
+          if (!generationDirty && aligned.components === generationProject.components) return;
           await fabricatorClientV2.savePose(aligned, generationIdentity.ownerUserId, {
             grid: aligned.grid as Record<string, unknown> | undefined,
           });
+          didPersist = true;
         },
         read: async () => {
           const saved = await fabricatorClientV2.getAuthoritativePosition(
@@ -96,7 +103,8 @@ export const BOMReviewPanel: React.FC = () => {
           if (!saved.identity ||
               !workflowIdentityMatches(saved.identity, {
                 ...generationIdentity, revision: saved.identity.revision,
-              }) || saved.identity.revision <= generationIdentity.revision) {
+              }) || saved.identity.revision < generationIdentity.revision ||
+              (didPersist && saved.identity.revision === generationIdentity.revision)) {
             throw new Error('The saved position revision could not be acknowledged. Reload and retry.');
           }
           return { ...saved, identity: saved.identity };
@@ -104,10 +112,9 @@ export const BOMReviewPanel: React.FC = () => {
         qualify: async (saved) => {
           try {
             return await approvedBOMContext(saved.position, saved.identity);
-          } catch (authorityErr) {
-            if (isCurrent()) setError(authorityErr instanceof Error
-              ? authorityErr.message : 'Approved manufacturing authority is unavailable.');
-            // Persisted estimates remain usable for review; no authority is invented.
+          } catch {
+            // Missing authority produces a visible estimate with qualification
+            // reasons, not a qualified BOM or a false generation-failure screen.
             return { identity: saved.identity };
           }
         },

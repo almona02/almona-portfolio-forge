@@ -1,12 +1,11 @@
 # Fabricator user workflow upgrade plan
 
-Date: 6 October 2026 (scorecard refreshed **10 October 2026**).
-Status: Batches 1–6 implementation ~94%; manufacturing stack #61–#68 **merged** via #69; #70–#75 on `main` tip `f27f0317`. Staging §5.2 + Phase B fail-closed gates **pass**; Phase C prod #71/#72 SQL **applied**. Live acceptance ~55%; production readiness **PARTIAL**. Composite provisional **~89/100** — see [Oct 9 scorecard](../reviews/FABRICATOR_SCORECARD_2026-10-09.md) and synced [upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md). Next: §5.3 positive convert + live FINAL GOAL. See the [staging/promote plan](FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md), [repair exit](FABRICATOR_REPAIR_AND_OPTIMIZATION_EXIT_PLAN_2026-10-05.md), and [responsive/PDF audit](../audits/FABRICATOR_OPTIMIZATION_RESPONSIVE_AUDIT_2026-10-06.md).
+Date: 6 October 2026 (scorecard refreshed 8 October 2026).
+Status refreshed 11 October 2026: main `99fd2520` includes #76/#77. Staging reviewed SQL delta passed 39/39; browser FINAL GOAL remains unaccepted. Composite **88/100 provisional**, controlled pre-production. Production #76 SQL promotion remains separately gated; E2E paused. See the verified-status section below.
 
 | Companion | Role |
 |---|---|
-| [Oct 9 scorecard](../reviews/FABRICATOR_SCORECARD_2026-10-09.md) | Current provisional scores + Phase B/C evidence |
-| [Upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) | Synced gate-by-gate companion (10 Oct) |
+| [Upgrade scorecard](FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) | Gate-by-gate evidence (refreshed) |
 | [Batch 1 implementation](FABRICATOR_BATCH1_IMPLEMENTATION_2026-10-05.md) | What shipped and how it was verified |
 | [Batch 1 readiness](FABRICATOR_BATCH1_READINESS_2026-10-05.md) | Pre-implementation toolchain baseline |
 | [Security remediation](SECURITY_DEPENDABOT_REMEDIATION_BATCH_2026-10-05.md) | Dependabot clearable pins + blocked braces/node-forge |
@@ -83,7 +82,7 @@ Keep adapters centralized. Do not add another global store that owns manufacturi
 
 | Batch | Scope | Status | Score | Exit gate |
 |---|---|---|---|---|
-| **0** | Toolchain + disposable fixtures + deploy baseline | **NEAR EXIT** | ~85% | Owners seeded; §5.3 positive convert + FINAL GOAL still open |
+| **0** | Toolchain + disposable fixtures + deploy baseline | **PARTIAL** | ~60% | Baseline doc + seed template; operators still needed |
 | **1** | Truthful readiness / nav / demos / public lead | **DONE** | ~95% | Product exit met; fixtures/Redis provision optional for “release-perfect” |
 | **2** | Profiles / systems / inventory | **DONE** | ~95% | Soft reservation exit; DB reservation deferred |
 | **3** | Customer / pattern / revision handoffs | **DONE** | ~90% | UP-11…14 |
@@ -93,18 +92,18 @@ Keep adapters centralized. Do not add another global store that owns manufacturi
 
 ---
 
-## Batch 0 — Staging baseline (NEAR EXIT)
+## Batch 0 — Staging baseline (PARTIAL — close next)
 
-**Done:** npm/Vitest restored; `npm run test:batch1`; production builds; Railway Redis honesty; git on `main`; release metadata pattern (`batch1-verification.json`); [Batch 0 baseline doc](BATCH0_STAGING_BASELINE_2026-10-05.md) + seed template; two-owner fixtures seeded; Phase B fail-closed + cross-owner gates recorded.
+**Done:** npm/Vitest restored; `npm run test:batch1`; production builds; Railway Redis honesty; git on `main`; release metadata pattern (`batch1-verification.json`); [Batch 0 baseline doc](BATCH0_STAGING_BASELINE_2026-10-05.md) + seed template.
 
 **Still required:**
 
-1. §5.3 positive convert on disposable fixture with approved authority.
-2. Expand multi-revision poses if needed for release/QC walk.
+1. Designate disposable two-owner accounts/projects (never mutate customer workshop data).
+2. Expand [`supabase/seeds/batch0_disposable_fixtures.sql`](../../supabase/seeds/batch0_disposable_fixtures.sql) with real owner UUIDs / multi-revision poses.
 3. Restore points for fixture data.
-4. Record Railway image digest on next staging/prod promote.
+4. Record Railway image digest on next staging deploy.
 
-**Exit:** targeted identity/validation/QC suites run against fixtures; failures classified; route inventory + deploy baseline recorded; positive convert + release→QC→delivery evidenced.
+**Exit:** targeted identity/validation/QC suites run against fixtures; failures classified; route inventory + deploy baseline recorded.
 
 ---
 
@@ -155,13 +154,13 @@ Tickets:
 
 ---
 
-## Batch 4 — Quote → order + admin separation (DONE ~92% implementation; staging positive convert open)
+## Batch 4 — Quote → order + admin separation
 
-- **UP-15:** **DONE** — Persist quotes/lines bound to project/position/revision; draft estimate vs priced. **FUA-08**
-- **UP-16:** **DONE (code)** — Server convert-to-order + durable optimize gate (#67/#69); live positive convert still §5.3. **FUA-09**
-- **UP-17:** **DONE** — Orders UX + admin bulk gated. **FUA-10**
+- **UP-15:** Persist quotes/lines bound to project/position/revision; draft estimate vs priced vs accepted/superseded/expired. **FUA-08**
+- **UP-16:** Atomic idempotent quote→order; no double tax; preserve links + revision snapshot. **FUA-09**
+- **UP-17:** One user Orders UX; admin bulk payment/status server-gated; currency-aware totals. **FUA-10**
 
-**Exit (product):** one order after retries; PDF/list/order match; unauthorized writes fail server-side. **Residual:** §5.3 fixture convert under approved authority.
+**Exit:** one order after retries; PDF/list/order match; unauthorized writes fail server-side; label-only “Delivered” impossible.
 
 ---
 
@@ -261,10 +260,28 @@ Metrics (no PII/secrets): hydration failures, blocked reasons, save ack latency,
 
 ## Immediate next sequence
 
-1. **§5.3 positive convert** on disposable Batch 0 (or dedicated) fixture: approved manufacturing authority → qualified BOM → durable optimize evidence → convert-to-order.
-2. Complete release → QC → delivery + hardener approve/override/revoke audit; attach digests (Git / Vercel / Railway / migrations).
-3. Live FINAL GOAL walk on almona02.com; raise Oct 9 scorecard live layer only with evidence.
-4. Triage open follow-ons #76–#79; close superseded Phase PRs #54–#57 when owner agrees.
-5. Keep FP-028 accuracy and Phase 6/7 (#59/#60) off the manufacturing critical path until live exit.
+1. **Start Batch 4** — UP-15 quote persist, UP-16 quote→order, UP-17 Orders UX.
+2. Polish Batch 2/3 remainders only if they block quote/order.
+3. Close Batch 0 fixtures when operators available.
+4. Keep FP-028 accuracy on its own track.
 
-No delivery-date commitment until §5.3 convert and live FINAL GOAL evidence are attached.
+No delivery-date commitment until Batch 4 quote/order exit and Batch 0 fixtures are agreed.
+
+## 11 October verified status and next steps
+
+This section supersedes stale current-state labels above; earlier dated artifacts remain historical evidence.
+
+- Main **99fd2520** includes **#76 and #77**. One required approval was restored after the owner-authorized #76 exception; required checks retained. No further review bypass authorized.
+- Composite remains **88/100 provisional**, controlled pre-production. Batch DONE labels describe implementation, not completed browser/manufacturing contracts. Partial DXF, soft stock reservation, flag-dependent customer persistence and quote/order integration remain bounded gaps.
+- Staging-only reviewed delta **20261011094729** (`pr76_reviewed_staging_evidence_delta`) passed **39/39 SQL checks**: owner/stock 8, canonical 15, binding 8, ledger/kerf 8. Test transactions rolled back and no fixtures persisted. This supplements prior staging SQL/Auth evidence, not browser or full convert acceptance. Production #76 SQL remains separately gated.
+- E2E is **paused by owner instruction**. No new FINAL GOAL or workshop-readiness claim. FP-027 remains a machine-export blocker. Staging security remains open: 14 public tables without RLS and 24 anonymous security-definer findings.
+
+Execution order:
+1. Verify the isolated BOM save/qualification repair against current main: failed saves and stale responses cannot publish; new revisions require fresh authority; saved sliding cuts require exact profile/length/angle multiset parity. Do not merge original #80 qualification rebinding.
+2. Repair #78 conflicts and ledger test contracts, then independently review fingerprint preservation. Split upgrade documentation from functional patches.
+3. Complete #81 phase-one production inspector wiring, stable occurrence IDs, DoWin generator parity and catalogue/rule cache invalidation before phases 2-5.
+4. Keep Gold flexibility explicit: asymmetric and mixed openings; material-specific aluminum/UPVC accessories; per-occurrence frame/sash/glass editing; authored profile choices must not be silently replaced to force parity.
+5. Address staging schema/security parity through reviewed migrations; no reset or blanket production SQL push.
+6. Resume disposable browser FINAL GOAL only on owner instruction: ten distinct poses, eighteen units, >100 cuts, save/reload/fresh login, hardener negatives and order/release/QC/delivery. Keep 414 uniform cuts and 489 diverse cuts attached to their separate fixtures and dimensions.
+
+Keep implementation, CI, staging SQL, staging browser, live acceptance and production readiness separate. See [the repair report](../reviews/CURSOR_FABRICATOR_BOM_REPAIR_2026-10-11.md).

@@ -1,53 +1,38 @@
 # Fabricator scorecard — 9–10 October 2026
 
-**Assessment: 89/100 provisional** (implementation + CI + staging §5.2 + Phase B fail-closed gates + prod Phase C SQL smoke).  
-**Live acceptance on almona02.com: not demonstrated.** Do not treat this score as FINAL GOAL completion.
+**Assessment: 88/100 provisional** (implementation + CI + staging §5.2/§5.3 + prod Phase C SQL smoke; live FINAL GOAL open).  
+**Live acceptance on almona02.com: not demonstrated.** Do not treat this score as FINAL GOAL completion.  
+**Oct 10 execution pack:** [OCT10_READINESS_EXECUTION_2026-10-10.md](./OCT10_READINESS_EXECUTION_2026-10-10.md). Composite **held at 88**.  
+Browser FINAL GOAL: Egyptian wizard project `FP-2HUUKV` / Pose 1 measuring on staging (caluminium-ps) — **not** custom pack; **not** 10 poses / 18 units.
 
-Canonical prior scorecard: [FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md](../plans/FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md) (synced 10 Oct).  
+Canonical prior scorecard: [FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md](../plans/FABRICATOR_UPGRADE_SCORECARD_2026-10-05.md).  
 Staging / promote plan: [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../plans/FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md).
 
-## Independent head verification (refreshed 10 Oct)
+## Independent head verification (refreshed)
 
 | Artifact | Status |
 |---|---|
-| `origin/main` tip | **`f27f0317`** — #75 docs on tip of #74→#71→#72→#70→#73 (`8a1ac7d7`) |
-| Stack #61–#68 via #69 | **merged** (`f9954be9`) |
-| PR #70–#74 | **merged** |
-| PR #75 | **merged** (Phase B/C docs) |
-| PR #64 empty-DB replay | open draft (parallel) |
-| Open follow-ons | #76 evidence binding, #77 Approvals reachability, #78 cut-ledger fingerprint, #79 materials purchase |
-| Vercel Production | deploy recorded for `f27f0317` / `8a1ac7d7` family |
-| Railway | production deploy success for tip |
-| Staging Supabase `apnmoevmvihfzcnttctx` | #71+#72 applied; §5.2 smoke **pass** |
-| Prod Supabase `shfsebdncjnncqqnewfj` | #71+#72 applied; §5.2 reject-only smoke **pass**; `evil-no-hardener` **true** |
-| Phase B fixture walk | fail-closed + cross-owner **PASS**; positive convert **OPEN** |
+| `origin/main` tip | **`99fd2520`** including #76 and #77 |
+| PR #74–#73 / #75 | **merged** |
+| PR #76/#77 | **merged** in main `99fd2520`; production #76 SQL still gated |
+| PR #64 empty-DB replay | open draft (parallel); empty-DB applied to staging via MCP |
+| Main protection | One required approval restored after owner-authorized #76 merge; required checks retained |
+| FP-027 machine export | **OPEN / UNPROVEN** — Caluminium 414/489 cannot close |
+| Vercel Production | deploy recorded for `8a1ac7d7` |
+| Staging `apnmoevmvihfzcnttctx` | #71/#72 + ledger/kerf + binding; §5.2 smoke + §5.3 positive chain **PASS** |
+| Prod `shfsebdncjnncqqnewfj` | #71/#72 Phase C + §5.2 reject-only smoke **pass** (`evil-no-hardener` **true**); ledger/kerf + binding **not applied** |
 
 ## Layer scores (separate — do not flatten)
 
 | Layer | Score | Meaning |
 |---|---|---|
-| **Verified implementation** | **~94** | Product surface + stack code largely present |
+| **Verified implementation** | **~95** | Binding + ledger/kerf + manufacturing surface |
 | **Current-head CI** | **~96** | Merge chain landed; tip deploy green |
-| **Local / staging acceptance** | **~68** | Estimate 10/18 + staging §5.2 + Phase B gates; §5.3 positive convert open |
-| **Live acceptance** | **~55** | Prod SQL hardenings live; FINAL GOAL walk **not run** |
-| **Production readiness** | **PARTIAL** | Phase C SQL done; live manufacturing walk still required |
+| **Local / staging acceptance** | **~82** | §5.2 reject + §5.3 positive chain + Auth login on staging |
+| **Live acceptance** | **~55** | Prod SQL hardenings (#71/#72) live; FINAL GOAL walk **not run** |
+| **Production readiness** | **PARTIAL** | Phase C SQL done; staging gates green; binding promote **blocked** pending auth |
 
-Composite provisional **88 → 89/100** after Phase B fail-closed / isolation evidence. Raising further needs §5.3 positive convert and/or live FINAL GOAL.
-
-## Phase B fixture walk (Batch 0 Owner A)
-
-| Check | Result |
-|---|---|
-| Login Owner A | **pass** |
-| Measure valid | **pass** |
-| Design without approved authority | **`estimate_only`** (fail-closed) |
-| BOM | **blocked** — prerequisites / unsupported pattern until authority |
-| Stock / Optimize / Quote / Production–QC–Delivery | **locked** (expected under estimate) |
-| Cross-owner position access | **reject** — “Position was not found for this owner and project.” |
-| Positive convert-to-order | **not run** — blocked upstream of quote |
-
-Artifacts: `/opt/cursor/artifacts/phaseb-walk-evidence.json`, `phaseb_*.webp`, `phaseb_gates_estimate_bom_cross_owner.mp4`.  
-Fixture: project `ed7226b3-f51a-4903-8fca-ca2e69a46712`, position `cbb21cb0-5767-4e32-a9c0-9bab69477eee`.
+Composite provisional remains **88/100** after Phase C SQL + staging §5.3. Raising further needs live FINAL GOAL.
 
 ## READ-ONLY deploy / DB audit (post Phase C)
 
@@ -55,7 +40,16 @@ Prod tip migrations include `fabricator_optimization_evidence_hardening` and `fa
 Pre-apply: `system_pack_requires_hardener('evil-no-hardener')` was **false** (LIKE loophole). Post-apply: **true**.  
 Evidence table row count at apply: **0**. `is_admin(uuid)` restored to profiles-based definition after smoke.
 
-Also applied earlier (stack): manufacturing admin workflow, convert-to-order, hardener admin verification / gate hardening (see Phase B evidence `migrationsApplied`).
+## Evidence harden follow-up (post-#71 review)
+
+| Gap | Status |
+|---|---|
+| Stock validation ignores kerf/trim | **fixed** — FP-023B; Vitest + staging |
+| Placement not reconciled to design ledger | **fixed** — server-derived ledger; no placement fallback |
+| Rule version is a free-form label | **fixed** — full rule-content fingerprint |
+| Kerf/trim/stock client tampering | **fixed** — authority `manufacturingSettings` + catalogue stocks |
+| Successful manufacturing path + §5.3 walk | **done on staging** — see `staging-s53-positive-chain.log` |
+| Reload / fresh login persistence | **done on staging** — SQL reload + Auth password login |
 
 ## Measured pooled E2E (`estimate_only`)
 
@@ -73,15 +67,14 @@ npm run test -- --run src/lib/fabricator/__tests__/manufacturingChain.caluminium
 |---|---|
 | Classification | `estimate_only` / not manufacturing-eligible |
 | Positions / units | **10 / 18** |
-| Cuts per unit (ledger) | **23** |
 | Placed / unplaced cuts | **414 / 0** |
-| Bars | **74** (local artifact) / **75** (CI diverse-path note — use artifact for this row) |
+| Bars | **75** |
 | Kerf / trim | **4 mm / 0 mm** |
-| Waste | **45057 mm** |
-| Efficiency | **89.85%** |
-| Reload re-BOM | **23** matches required |
+| Waste | **50157 mm** |
+| Efficiency | **88.85%** |
+| Area | **30.24 m²** (1200×1400 × 18) |
 
-### Diverse-pose fixture (local / CI verified)
+### Diverse-pose fixture (local verified)
 
 | Metric | Value |
 |---|---|
@@ -94,7 +87,7 @@ npm run test -- --run src/lib/fabricator/__tests__/manufacturingChain.caluminium
 | Waste | **47894 mm** |
 | Efficiency | **93.56%** |
 | Area | **76.68 m²** |
-| Reload / fresh login | **not run** (browser) |
+| Reload / fresh login | **staging fixture done**; live open |
 | Live project persistence | **not run** |
 
 CI workflow: `.github/workflows/fabricator-measured-pooled-e2e.yml`.
@@ -112,31 +105,53 @@ CI workflow: `.github/workflows/fabricator-measured-pooled-e2e.yml`.
 
 | Goal item | Status |
 |---|---|
-| Dedicated user, customer, project | **partial** — Batch 0 fixtures; not custom live pack |
-| Custom system pack + profiles/roles/stock | **not run** |
+| Dedicated user, customer, project | **staging fixture done**; live open |
+| Custom system pack + profiles/roles/stock | **partial** — authority catalogue on staging |
 | 10 genuinely different poses / 18 units | **partial** — diverse estimate fixture |
 | Complete BOM + optimize >100 placed cuts | **partial** — estimate 489 / 414 |
-| Quantities, area, bars, trim, kerf, waste, zero unplaced | **partial** |
-| Save + reload + fresh login | **not run** (live) |
-| Hardener approve / override / reject / revoke / invalidation | **partial** — prod §5.2 reject paths; live walk open |
-| Order → release → QC → delivery + negatives | **not run** |
+| Quantities, area, bars, trim, kerf, waste, zero unplaced | **partial** — server kerf/trim + binding gates |
+| Save + reload + fresh login | **staging done**; live open |
+| Hardener approve / override / reject / revoke / invalidation | **staging approve path done**; prod §5.2 reject paths; full negatives/live open |
+| Order → release → QC → delivery + negatives | **staging positive done**; negatives/live open |
+| Gold-tier flexibility | **partial** — remains on checklist |
 | Egyptian / Turkish / custom Profile Studio | **partial** — #74 contract |
-| Fail-closed without authority / cross-owner | **pass** — Phase B |
 
 ## Remaining blockers → next action
 
 1. ~~Merge chain~~ **done** (`8a1ac7d7` / tip `f27f0317`).
-2. ~~Staging Option A + §5.2~~ **done**.
+2. ~~Staging Option A + §5.2 / §5.3~~ **done**.
 3. ~~Phase C prod #71/#72~~ **done** (owner grant).
-4. ~~Phase B fail-closed + isolation~~ **done**.
-5. §5.3 positive convert on disposable fixture (approved authority + compatible pattern).
-6. Live FINAL GOAL on almona02.com → honest scorecard close.
-7. Optionally close superseded open PRs #54–#57; triage #76–#79.
+4. **Owner:** apply main protection/rulesets (proposal only — not auto-applied).
+5. Merge #76 after protection + review + green CI on post-fix tip.
+6. **Separate owner authorization** before any prod apply of `20261010010000_*` / `20261010020000_*`.
+7. FP-027 DoWin ORTA conservation evidence (export remains blocked).
+8. Browser FINAL GOAL (staging then disposable prod) → honest scorecard close.
 
 ## Explicit non-claims
 
-- 89/100 ≠ workshop readiness.
+- 88/100 ≠ workshop readiness.
+- Staging §5.3 disposable fixture ≠ live FINAL GOAL.
 - Prod SQL smoke ≠ manufacturing-qualified BOM.
-- Phase B gate PASS ≠ positive convert or release→QC→delivery.
+- Prod still lacks ledger/kerf and authoritative binding SQL.
 - Closing `%-no-hardener` ≠ full hardener approve/override/revoke walk.
 - Diverse estimate 10/18 ≠ live custom-pack project on almona02.com.
+- No production promote of binding without separate authorization.
+
+## 11 October verified status and next steps
+
+This section supersedes stale current-state labels above; earlier dated artifacts remain historical evidence.
+
+- Main **99fd2520** includes **#76 and #77**. One required approval was restored after the owner-authorized #76 exception; required checks retained. No further review bypass authorized.
+- Composite remains **88/100 provisional**, controlled pre-production. Batch DONE labels describe implementation, not completed browser/manufacturing contracts. Partial DXF, soft stock reservation, flag-dependent customer persistence and quote/order integration remain bounded gaps.
+- Staging-only reviewed delta **20261011094729** (`pr76_reviewed_staging_evidence_delta`) passed **39/39 SQL checks**: owner/stock 8, canonical 15, binding 8, ledger/kerf 8. Test transactions rolled back and no fixtures persisted. This supplements prior staging SQL/Auth evidence, not browser or full convert acceptance. Production #76 SQL remains separately gated.
+- E2E is **paused by owner instruction**. No new FINAL GOAL or workshop-readiness claim. FP-027 remains a machine-export blocker. Staging security remains open: 14 public tables without RLS and 24 anonymous security-definer findings.
+
+Execution order:
+1. Verify the isolated BOM save/qualification repair against current main: failed saves and stale responses cannot publish; new revisions require fresh authority; saved sliding cuts require exact profile/length/angle multiset parity. Do not merge original #80 qualification rebinding.
+2. Repair #78 conflicts and ledger test contracts, then independently review fingerprint preservation. Split upgrade documentation from functional patches.
+3. Complete #81 phase-one production inspector wiring, stable occurrence IDs, DoWin generator parity and catalogue/rule cache invalidation before phases 2-5.
+4. Keep Gold flexibility explicit: asymmetric and mixed openings; material-specific aluminum/UPVC accessories; per-occurrence frame/sash/glass editing; authored profile choices must not be silently replaced to force parity.
+5. Address staging schema/security parity through reviewed migrations; no reset or blanket production SQL push.
+6. Resume disposable browser FINAL GOAL only on owner instruction: ten distinct poses, eighteen units, >100 cuts, save/reload/fresh login, hardener negatives and order/release/QC/delivery. Keep 414 uniform cuts and 489 diverse cuts attached to their separate fixtures and dimensions.
+
+Keep implementation, CI, staging SQL, staging browser, live acceptance and production readiness separate. See [the repair report](CURSOR_FABRICATOR_BOM_REPAIR_2026-10-11.md).
