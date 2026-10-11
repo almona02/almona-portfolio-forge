@@ -11,7 +11,7 @@
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
 import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physicalCutContract';
-import type { MeasurementData, OptimizationResult, SystemPack, WindowUnit } from '@/types/fabricator';
+import type { MeasurementData, OptimizationResult, SystemPack, WindowComponent, WindowUnit } from '@/types/fabricator';
 import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 
@@ -59,6 +59,26 @@ export interface WorkflowState {
 const finitePositive = (value: number): boolean => Number.isFinite(value) && value > 0;
 const finiteNonNegative = (value: number): boolean => Number.isFinite(value) && value >= 0;
 
+/**
+ * Complete a saved design ledger with the deterministic sliding subsystem the BOM path
+ * always applies. Used wherever a ledger drives a manufacturing decision, so poses saved
+ * before that completion existed are neither blocked by the parity gate nor optimised
+ * without their track pair. Returns the components unchanged when no pack is supplied.
+ */
+export function completeDesignLedger(
+  project: WindowUnit | null,
+  systemPack?: SystemPack | null,
+): WindowComponent[] {
+  if (!project?.components?.length) return [];
+  if (!systemPack) return project.components;
+  return new ProfileBOMCalculator().completeSlidingTrackDesignComponents(
+    project.components,
+    project,
+    { id: 'ledger-completion', type: String(project.type ?? ''), gridSpec: project.grid, mullions: [], transoms: [] } as unknown as EgyptianPattern,
+    systemPack,
+  );
+}
+
 export function bomMatchesPhysicalDesign(
   bom: CompleteBOM | null,
   project: WindowUnit | null,
@@ -72,14 +92,7 @@ export function bomMatchesPhysicalDesign(
   // path always applies. Complete it deterministically before comparing, otherwise a
   // short ledger blocks the workflow forever and regenerating the BOM cannot help.
   // Nothing is invented here: this is the same rule ProfileBOMCalculator applies.
-  const designComponents = systemPack
-    ? new ProfileBOMCalculator().completeSlidingTrackDesignComponents(
-        project.components,
-        project,
-        { id: 'parity-completion', type: String(project.type ?? ''), gridSpec: project.grid, mullions: [], transoms: [] } as unknown as EgyptianPattern,
-        systemPack,
-      )
-    : project.components;
+  const designComponents = completeDesignLedger(project, systemPack);
   const expected = designComponents.flatMap(component => component.cuttingLengths.map((_, index) => {
     const cut = physicalCutForOccurrence(component, index, component.profile, project.systemPackId);
     return key(component.profile.id, cut.length, cut.angle);

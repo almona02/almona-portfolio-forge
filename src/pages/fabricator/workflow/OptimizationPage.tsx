@@ -7,7 +7,7 @@ import { WorkflowValidationGate } from '@/components/fabricator/workflow/Workflo
 import { useAuth } from '@/context/AuthContext';
 import { recordOptimizationEvidence } from '@/lib/fabricator/commercial/recordOptimizationEvidence';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
-import { validateOptimizationReconciliation, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
+import { completeDesignLedger, validateOptimizationReconciliation, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { AdaptiveSolverConfig, OptimizationResult } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
@@ -102,7 +102,9 @@ export const OptimizationPage: React.FC = () => {
         setOptimizationError(null);
         setIsOptimizing(true);
         try {
-            const components = currentProject.components ?? [];
+            // Optimise the completed ledger, not the stored one: a pose saved before the
+            // sliding-track completion existed would otherwise be cut without its track pair.
+            const components = completeDesignLedger(currentProject, systemPackForGate);
             if (!components.length) throw new Error('No manufacturing components are available.');
             const job: CuttingJob = { components, profiles, defaultStockLength: 6000, systemPackId: currentProject.systemPackId ?? undefined };
             const solverConfig: AdaptiveSolverConfig = { maxSolvingTime: 30, complexityThresholds: { simple: 50, medium: 500 } };
