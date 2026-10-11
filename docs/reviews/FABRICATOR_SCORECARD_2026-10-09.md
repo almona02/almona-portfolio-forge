@@ -12,11 +12,11 @@ Staging / promote plan: [FABRICATOR_STAGING_MIGRATION_PLAN_2026-10-09.md](../pla
 
 | Artifact | Status |
 |---|---|
-| `origin/main` tip | **`f27f0317`** (#75) on Phase C chain `8a1ac7d7` |
+| `origin/main` tip | **`99fd2520`** including #76 and #77 |
 | PR #74–#73 / #75 | **merged** |
-| PR #76 | OPEN — plan-level kerf authority fix + convert pgTAP sync; **no prod SQL** |
+| PR #76/#77 | **merged** in main `99fd2520`; production #76 SQL still gated |
 | PR #64 empty-DB replay | open draft (parallel); empty-DB applied to staging via MCP |
-| Main protection / rulesets | **unprotected** (404 + `[]`); [proposal](../governance/MAIN_BRANCH_PROTECTION_PROPOSAL_2026-10-10.md) not applied |
+| Main protection | One required approval restored after owner-authorized #76 merge; required checks retained |
 | FP-027 machine export | **OPEN / UNPROVEN** — Caluminium 414/489 cannot close |
 | Vercel Production | deploy recorded for `8a1ac7d7` |
 | Staging `apnmoevmvihfzcnttctx` | #71/#72 + ledger/kerf + binding; §5.2 smoke + §5.3 positive chain **PASS** |
@@ -124,7 +124,7 @@ CI workflow: `.github/workflows/fabricator-measured-pooled-e2e.yml`.
 4. **Owner:** apply main protection/rulesets (proposal only — not auto-applied).
 5. Merge #76 after protection + review + green CI on post-fix tip.
 6. **Separate owner authorization** before any prod apply of `20261010010000_*` / `20261010020000_*`.
-7. FP-027 DoWin ORTA conservation evidence (export remains blocked).
+7. FP-027 reference-source ORTA conservation evidence (export remains blocked).
 8. Browser FINAL GOAL (staging then disposable prod) → honest scorecard close.
 
 ## Explicit non-claims
@@ -136,3 +136,22 @@ CI workflow: `.github/workflows/fabricator-measured-pooled-e2e.yml`.
 - Closing `%-no-hardener` ≠ full hardener approve/override/revoke walk.
 - Diverse estimate 10/18 ≠ live custom-pack project on almona02.com.
 - No production promote of binding without separate authorization.
+
+## 11 October verified status and next steps
+
+This section supersedes stale current-state labels above; earlier dated artifacts remain historical evidence.
+
+- Main **99fd2520** includes **#76 and #77**. One required approval was restored after the owner-authorized #76 exception; required checks retained. No further review bypass authorized.
+- Composite remains **88/100 provisional**, controlled pre-production. Batch DONE labels describe implementation, not completed browser/manufacturing contracts. Partial DXF, soft stock reservation, flag-dependent customer persistence and quote/order integration remain bounded gaps.
+- Staging-only reviewed delta **20261011094729** (`pr76_reviewed_staging_evidence_delta`) passed **39/39 SQL checks**: owner/stock 8, canonical 15, binding 8, ledger/kerf 8. Test transactions rolled back and no fixtures persisted. This supplements prior staging SQL/Auth evidence, not browser or full convert acceptance. Production #76 SQL remains separately gated.
+- E2E is **paused by owner instruction**. No new FINAL GOAL or workshop-readiness claim. FP-027 remains a machine-export blocker. Staging security remains open: 14 public tables without RLS and 24 anonymous security-definer findings.
+
+Execution order:
+1. Verify the isolated BOM save/qualification repair against current main: failed saves and stale responses cannot publish; new revisions require fresh authority; saved sliding cuts require exact profile/length/angle multiset parity. Do not merge original #80 qualification rebinding.
+2. Repair #78 conflicts and ledger test contracts, then independently review fingerprint preservation. Split upgrade documentation from functional patches.
+3. Complete #81 phase-one production inspector wiring, stable occurrence IDs, reference-source generator parity and catalogue/rule cache invalidation before phases 2-5.
+4. Keep Gold flexibility explicit: asymmetric and mixed openings; material-specific aluminum/UPVC accessories; per-occurrence frame/sash/glass editing; authored profile choices must not be silently replaced to force parity.
+5. Address staging schema/security parity through reviewed migrations; no reset or blanket production SQL push.
+6. Resume disposable browser FINAL GOAL only on owner instruction: ten distinct poses, eighteen units, >100 cuts, save/reload/fresh login, hardener negatives and order/release/QC/delivery. Keep 414 uniform cuts and 489 diverse cuts attached to their separate fixtures and dimensions.
+
+Keep implementation, CI, staging SQL, staging browser, live acceptance and production readiness separate. See [the repair report](FABRICATOR_BOM_REPAIR_2026-10-11.md).

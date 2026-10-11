@@ -1,4 +1,5 @@
 import { useActiveStudioProject } from '@/hooks/fabricator/useActiveStudioProject';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import {
   STUDIO_WORKFLOW_STAGES,
   deriveStageVisualStatus,
@@ -84,8 +85,15 @@ export const FabricatorWorkflowBar: React.FC = () => {
   const positionRelease = useWorkflowStore((s) => s.positionRelease);
   const deliveryAcknowledgement = useWorkflowStore((s) => s.deliveryAcknowledgement);
 
+  const engineeringPacks = useEngineeringSystemPacks();
+  const systemPack = useMemo(
+    () => engineeringPacks.find((pack) => pack.meta.id === currentProject?.systemPackId) ?? null,
+    [engineeringPacks, currentProject?.systemPackId],
+  );
+
   const evidence: StudioWorkflowEvidence = useMemo(
     () => ({
+      systemPack,
       currentProject,
       measurementData,
       designData,

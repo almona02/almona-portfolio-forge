@@ -2087,3 +2087,28 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
         muntins
     };
 }
+
+/**
+ * Gold-tier: true frame pocket via three-bvh-csg (lazy). Keeps CSG out of sync import graph.
+ * AICS-001: deterministic CSG only.
+ */
+export async function createTrueMiteredFramePocketCSG(
+  widthM: number,
+  heightM: number,
+  profileWidthM: number,
+): Promise<import('three').BufferGeometry> {
+  const { createFrameWithOpeningPocket } = await import('./csgTrueMiters');
+  return createFrameWithOpeningPocket({
+    width: widthM,
+    height: heightM,
+    profileWidth: profileWidthM,
+  });
+}
+
+/** Gold-tier: mullion/transom Cassowary solve (lazy @lume/kiwi). */
+export async function solveGridDivisionsWithKiwi(
+  input: import('./mullionConstraintSolver').MullionSolveInput,
+): Promise<import('./mullionConstraintSolver').MullionSolveResult> {
+  const { solveMullionTransomLayout } = await import('./mullionConstraintSolver');
+  return solveMullionTransomLayout(input);
+}

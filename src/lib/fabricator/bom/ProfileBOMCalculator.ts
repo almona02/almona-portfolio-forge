@@ -403,18 +403,43 @@ export class ProfileBOMCalculator {
   }
 
   /**
-   * Resolve design-level components: prefer saved ledger, else synthesise via
-   * generateComponentsFromGrid (+ sliding track) so empty and saved paths share
-   * the same physicalCutForOccurrence contract.
+   * Public: design components that authority the BOM cut ledger (saved when
+   * complete; otherwise synthesised). Callers should align workflow project
+   * components to this list so bomMatchesPhysicalDesign can pass.
    */
+  async resolvePhysicalDesignComponents(
+    windowUnit: WindowUnit,
+    pattern: EgyptianPattern,
+    systemPack: SystemPack,
+  ): Promise<WindowComponent[]> {
+    return this.resolveDesignComponents(windowUnit, pattern, systemPack);
+  }
+
+  /**
+   * Resolve design-level components: prefer a complete saved ledger, else
+   * synthesise via generateComponentsFromGrid (+ sliding track) so empty and
+   * partial saved paths share the same physicalCutForOccurrence contract.
+   *
+   * Frame-only (or sash-missing) sliding saves are treated as incomplete —
+   * they must not block sash / interlock / track / bead emission.
+   */
+  async resolveCanonicalDesignLedger(windowUnit: WindowUnit, pattern: EgyptianPattern, systemPack: SystemPack): Promise<WindowComponent[]> {
+    return this.resolvePhysicalDesignComponents(windowUnit, pattern, systemPack);
+  }
+
   private async resolveDesignComponents(
     windowUnit: WindowUnit,
     pattern: EgyptianPattern,
     systemPack: SystemPack,
   ): Promise<WindowComponent[]> {
-    if (windowUnit.components?.length) {
+    const saved = windowUnit.components ?? [];
+    const sliding = this.isSlidingOpening(windowUnit, pattern);
+    const savedHasSash = saved.some((component) => componentHasLedgerRole(component, 'sash'));
+    const useSaved = saved.length > 0 && !sliding;
+
+    if (useSaved) {
       return this.ensureSlidingTrackDesignComponents(
-        windowUnit.components,
+        saved,
         windowUnit,
         pattern,
         systemPack,
@@ -422,17 +447,51 @@ export class ProfileBOMCalculator {
     }
 
     const grid = (windowUnit.grid ?? pattern.gridSpec) as WindowGrid | undefined;
-    if (!grid?.cells?.length) return [];
+    if (!grid?.cells?.length) {
+      if (sliding && saved.length) {
+        throw new Error('A complete sliding design grid is required to verify saved cuts.');
+      }
+      return [];
+    }
 
     const { generateComponentsFromGrid } = await import('@/algorithms/smartDraw');
     const packId = windowUnit.systemPackId || systemPack.meta?.id || systemPack.id || null;
     const { components } = generateComponentsFromGrid(
-      { ...windowUnit, grid },
+      { ...windowUnit, grid, components: [] },
       grid,
       systemPack.profiles ?? [],
       packId,
       systemPack,
     );
+    const generated = this.ensureSlidingTrackDesignComponents(components, windowUnit, pattern, systemPack);
+    if (savedHasSash) {
+      const enriched = this.ensureSlidingTrackDesignComponents(saved, windowUnit, pattern, systemPack);
+      const multiset = (ledger: WindowComponent[]) => ledger.flatMap(component =>
+        component.cuttingLengths.map((_, index) => {
+          const cut = physicalCutForOccurrence(component, index, component.profile, packId ?? undefined);
+          return `${component.profile.id}:${cut.length.toFixed(3)}:${cut.angle}`;
+        }),
+      ).sort();
+      if (JSON.stringify(multiset(enriched)) !== JSON.stringify(multiset(generated))) {
+        // Preserve authored profile choices; do not silently replace a conflicting saved ledger.
+        throw new Error('Saved sliding cuts do not match the design. Regenerate cuts in Design before reviewing the BOM.');
+      }
+      return enriched;
+    }
+    return generated;
+  }
+
+  /**
+   * Public entry point for the sliding-track completion so the design/persistence
+   * path and the BOM path share one authority instead of drifting apart.
+   * Idempotent by role: returns the components unchanged when a track is present.
+   */
+  completeSlidingTrackDesignComponents(
+    components: WindowComponent[],
+    windowUnit: WindowUnit,
+    pattern: EgyptianPattern,
+    systemPack: SystemPack,
+  ): WindowComponent[] {
     return this.ensureSlidingTrackDesignComponents(components, windowUnit, pattern, systemPack);
   }
 
@@ -637,6 +696,21 @@ export class ProfileBOMCalculator {
         ),
       );
     };
+
+    // Partial saved ledgers (e.g. frame-only measure hydration) must still emit
+    // sash perimeter cuts so countRequiredProfilePieces (23 for 2-sash PS) matches.
+    if (!hasRole('sash') && sashCuttingLengthsHint.length > 0) {
+      const sashProfile = this.getProfileByRole(systemPack, 'sash');
+      if (sashProfile) {
+        pushPhysical(
+          sashProfile,
+          'sash',
+          sashCuttingLengthsHint,
+          fillNumbers(sashCuttingLengthsHint.length, MITER_ANGLES.CORNER_MITER),
+          sashCount,
+        );
+      }
+    }
 
     if (!hasRole('interlock')) {
       const interlockProfile = this.getProfileByRole(systemPack, 'interlock');

@@ -21,7 +21,12 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          // Node's test-runner fixture is excluded from the app compilation,
+          // but still receives all type-aware ESLint rules and app path aliases.
+          allowDefaultProject: ['src/lib/fabricator/bom/ledgerContracts.node.test.ts'],
+          defaultProject: 'tsconfig.app.json',
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },

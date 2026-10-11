@@ -55,7 +55,9 @@ import { StructuralValidator } from '@/lib/physics/StructuralValidator';
 import { ThermalEngine } from '@/lib/physics/ThermalEngine';
 import { PoseQuickEditModal } from './PoseQuickEditModal';
 import { SmartDrawCanvas } from './SmartDrawCanvas';
-import { DraftingWorkbench } from './drafting/DraftingWorkbench';
+const DraftingWorkbench = React.lazy(() =>
+  import('./drafting/DraftingWorkbench').then((m) => ({ default: m.DraftingWorkbench })),
+);
 import { ArchitecturalPresetSelector, SIMPLE_PRESETS } from './drafting/prestige';
 import { applyPresetIntelligence, getPresetById } from './drafting/prestige/presetApplication';
 import type { DraftingOutput } from './drafting/types/drafting';
@@ -454,16 +456,24 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     if (designMode === 'drafting') {
         return (
             <div className="h-full">
-                <DraftingWorkbench
-                    onDesignValidated={handleDraftingValidated}
-                    onExit={() => {
-                        setDesignMode('smartdraw');
-                        void switchMode('smartdraw');
-                    }}
-                    project={project}
-                    onMoveToNext={moveToNextForDrafting}
-                    onOpenPoseQuickEdit={project ? () => setShowQuickEditModal(true) : undefined}
-                />
+                <React.Suspense
+                  fallback={
+                    <div className="flex h-full items-center justify-center bg-[#0a0a0a] text-amber-500 font-mono text-sm">
+                      Loading drafting workbench…
+                    </div>
+                  }
+                >
+                  <DraftingWorkbench
+                      onDesignValidated={handleDraftingValidated}
+                      onExit={() => {
+                          setDesignMode('smartdraw');
+                          void switchMode('smartdraw');
+                      }}
+                      project={project}
+                      onMoveToNext={moveToNextForDrafting}
+                      onOpenPoseQuickEdit={project ? () => setShowQuickEditModal(true) : undefined}
+                  />
+                </React.Suspense>
                 {project && (
                     <PoseQuickEditModal
                         pose={project}

@@ -1,15 +1,25 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WindowUnit } from '@/types/fabricator';
 import { ProjectSummaryDashboard } from './ProjectSummaryDashboard';
 
-const mocks = vi.hoisted(() => ({ generate: vi.fn(), save: vi.fn(), upsert: vi.fn().mockResolvedValue({}), packs: [{ meta: { id: 'owned-pack' } }] }));
+const mocks = vi.hoisted(() => ({
+  generate: vi.fn(),
+  save: vi.fn(),
+  upsert: vi.fn().mockResolvedValue({}),
+  resolveLedger: vi.fn(),
+  packs: [{ meta: { id: 'owned-pack' } }],
+}));
 vi.mock('@/hooks/fabricator/useEngineeringSystemPacks', () => ({ useEngineeringSystemPacks: () => mocks.packs }));
 vi.mock('@/hooks/useFabricatorQueries', () => ({ useDeletePose: () => ({}), useUpsertPose: () => ({ mutateAsync: mocks.upsert }), useUpdateProject: () => ({ mutate: mocks.save }) }));
 vi.mock('@/components/fabricator/project/PoseLayoutPreview', () => ({ PoseLayoutPreview: () => null }));
 vi.mock('@/pages/fabricator/workflow/MeasuringPage', () => ({ nextPoseNumber: () => '2' }));
 vi.mock('@/lib/fabricator/PresetAwareBOMGenerator', () => ({ PresetAwareBOMGenerator: class { generateCompleteBOM = mocks.generate; } }));
+vi.mock('@/lib/fabricator/bom/ledgerParity', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/fabricator/bom/ledgerParity')>(),
+  resolveExpectedDesignLedger: (...args: unknown[]) => mocks.resolveLedger(...args),
+}));
 
 const pose = { id: 'pose', systemPackId: 'owned-pack', quantity: 1, overallWidth: 1200, overallHeight: 1400,
   grid: { rows: 1, cols: 1, cells: [{ id: 'cell', row: 0, col: 0, type: 'fixed' }] },
@@ -20,6 +30,15 @@ function renderProject(positions: WindowUnit[]) {
 }
 
 describe('project BOM failures', () => {
+  beforeEach(() => {
+    mocks.generate.mockReset();
+    mocks.save.mockReset();
+    mocks.upsert.mockReset().mockResolvedValue({});
+    mocks.resolveLedger.mockReset().mockResolvedValue([
+      { id: 'frame', type: 'frame', profile: { id: 'FRAME' },
+        cuttingLengths: [1200, 1400, 1200, 1400], angles: [45, 45, 45, 45] },
+    ]);
+  });
   it('restores a saved BOM after remount and invalidates changed quantities', async () => {
     const view = render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={{ id: 'project' }} positions={[pose]} onOpenStudio={() => {}} /></MemoryRouter>);
     mocks.generate.mockResolvedValueOnce({ qualification: { requiredPieceCount: 4, generatedPieceCount: 4 },
@@ -76,4 +95,64 @@ describe('project BOM failures', () => {
     expect(snapshot.bom_estimate.positionBOMs).toEqual([]);
     expect(snapshot.bom_estimate.failures).toHaveLength(1);
   });
-});
+
+  it('prices the canonical ledger without modifying an empty saved pose', async () => {
+    const designLedger = [
+      { id: 'frame', type: 'frame', profile: { id: 'FRAME' }, angles: [45, 45, 45, 45], cuttingLengths: [1200, 1400, 1200, 1400] },
+    ];
+    mocks.resolveLedger.mockResolvedValueOnce(designLedger);
+    mocks.generate.mockResolvedValueOnce({
+      qualification: { requiredPieceCount: 4, generatedPieceCount: 4 },
+      profiles: [{ cuttingLengths: [1200, 1200, 1400, 1400] }],
+      hardware: [],
+      glazing: [],
+      accessories: [],
+      cost: { materialCost: 100, hardwareCost: 0, glazingCost: 0, accessoriesCost: 0, laborCost: 0 },
+    });
+    render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={{ id: 'project' }} positions={[{ ...pose, components: [] }]} onOpenStudio={() => {}} /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: 'Aggregate Project BOM' }));
+    await waitFor(() => expect(screen.getByText('Project estimate total')).toBeVisible());
+    expect(mocks.upsert).not.toHaveBeenCalled();
+    expect(mocks.generate.mock.calls[0][0].components).toEqual(designLedger);
+  });
+
+  it('does not overwrite a pose whose saved cut ledger already matches the expected multiset', async () => {
+    mocks.upsert.mockClear();
+    mocks.resolveLedger.mockClear();
+    const saved = [{ id: 'frame', type: 'frame', profile: { id: 'FRAME' }, angles: [45, 45, 45, 45], cuttingLengths: [1200, 1400, 1200, 1400] }];
+    mocks.resolveLedger.mockResolvedValueOnce(saved);
+    mocks.generate.mockResolvedValueOnce({
+      qualification: { requiredPieceCount: 4, generatedPieceCount: 4 },
+      profiles: [{ cuttingLengths: [1200, 1200, 1400, 1400] }],
+      hardware: [],
+      glazing: [],
+      accessories: [],
+      cost: { materialCost: 100, hardwareCost: 0, glazingCost: 0, accessoriesCost: 0, laborCost: 0 },
+    });
+    render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={{ id: 'project' }} positions={[{ ...pose, components: saved as never }]} onOpenStudio={() => {}} /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: 'Aggregate Project BOM' }));
+    await waitFor(() => expect(screen.getByText('Project estimate total')).toBeVisible());
+    expect(mocks.resolveLedger).toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
+  it('rejects same-count saved-cut drift without pricing or changing the pose', async () => {
+    renderProject([{ ...pose, components: [{ id: 'frame', type: 'frame', profile: { id: 'FRAME' }, cuttingLengths: [1217, 1400, 1200, 1400], angles: [45, 45, 45, 45] }] } as WindowUnit]);
+    await waitFor(() => expect(screen.getByText(/Saved cuts differ from the design/)).toBeVisible());
+    expect(mocks.generate).not.toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
+  it('cancels pricing and publication when quantities change during ledger resolution', async () => {
+    let resolve!: (value: unknown) => void;
+    mocks.resolveLedger.mockImplementationOnce(() => new Promise(done => { resolve = done; }));
+    const view = render(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={undefined} positions={[pose]} onOpenStudio={() => {}} /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: 'Aggregate Project BOM' }));
+    await waitFor(() => expect(mocks.resolveLedger).toHaveBeenCalled());
+    view.rerender(<MemoryRouter><ProjectSummaryDashboard projectId="project" projectMeta={undefined} positions={[{ ...pose, quantity: 2 }]} onOpenStudio={() => {}} /></MemoryRouter>);
+    resolve([]);
+    await new Promise(done => setTimeout(done, 0));
+    expect(mocks.generate).not.toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
+    expect(mocks.save).not.toHaveBeenCalled();
+  });});

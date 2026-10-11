@@ -437,4 +437,51 @@ export class AlmonaCuttingEngine {
     const savedFraction = Math.max(0, utilization - INDUSTRY_BASELINE_UTILIZATION);
     return (totalM * pricePerM * savedFraction);
   }
+
+  /**
+   * Deterministic utilization benchmark for a flat piece-length mix.
+   * Extends AlmonaCuttingEngine packing — does not introduce a third nesting engine.
+   * Longest-first ordering improves remnant chaining for typical Egyptian bar stock.
+   */
+  benchmarkLengths(
+    lengthsMm: number[],
+    barLengthMm: number = this.barLength,
+  ): { barsUsed: number; utilization: number; totalRemnantMm: number; sortedLongestFirst: boolean } {
+    if (!Number.isFinite(barLengthMm) || barLengthMm <= 0
+        || lengthsMm.some(length => !Number.isFinite(length) || length <= 0
+          || length + this.sawKerf + 2 * this.settings.trimCutMm > barLengthMm)) {
+      throw new RangeError('Benchmark requires valid lengths that fit the stock with kerf and trim.');
+    }
+    const sorted = [...lengthsMm].sort((a, b) => b - a);
+    const items: CutListItem[] = sorted.map((cutLengthMm) => ({
+      profileId: 'bench-profile',
+      profileName: 'Benchmark',
+      role: 'frame',
+      cutLengthMm,
+      quantity: 1,
+      cuttingAngle: 90,
+      barNumber: 0,
+      positionOnBarMm: 0,
+      wasteAfterMm: 0,
+    }));
+    const partIdMap = generateWorkshopPartIds(items);
+    // Benchmarks must not populate the production engine's reusable-remnant inventory.
+    const benchmarkEngine = new AlmonaCuttingEngine();
+    const bars = benchmarkEngine.buildPackedBarsFromItems(
+      items,
+      barLengthMm,
+      this.sawKerf,
+      partIdMap,
+      this.settings,
+    );
+    const totalBar = bars.length * barLengthMm;
+    const totalRemnantMm = bars.reduce((s, b) => s + b.remnant, 0);
+    const utilization = totalBar > 0 ? (totalBar - totalRemnantMm) / totalBar : 0;
+    return {
+      barsUsed: bars.length,
+      utilization,
+      totalRemnantMm,
+      sortedLongestFirst: true,
+    };
+  }
 }

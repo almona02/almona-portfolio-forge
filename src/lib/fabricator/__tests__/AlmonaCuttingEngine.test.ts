@@ -96,6 +96,24 @@ describe('AlmonaCuttingEngine', () => {
       expect(report.metrics.utilization).toBeGreaterThan(0);
       expect(report.metrics.utilization).toBeLessThanOrEqual(1);
     });
+
+    it.each([NaN, Infinity, -1, 0, 6001])('rejects invalid benchmark pieces (%s)', length => {
+      expect(() => new AlmonaCuttingEngine().benchmarkLengths([length], 6000)).toThrow(RangeError);
+    });
+    it('does not populate production remnants during a benchmark', () => {
+      const engine = new AlmonaCuttingEngine();
+      const before = engine.getRemnants();
+      engine.benchmarkLengths([1200, 1000], 6000);
+      expect(engine.getRemnants()).toEqual(before);
+    });
+    it('benchmarkLengths packs longest-first with high utilization', () => {
+      const engine = new AlmonaCuttingEngine({ barLengthMm: 6000, sawKerfMm: 4 });
+      const result = engine.benchmarkLengths([2500, 2500, 2500, 1200, 1200, 800], 6000);
+      expect(result.sortedLongestFirst).toBe(true);
+      expect(result.barsUsed).toBeGreaterThan(0);
+      expect(result.utilization).toBeGreaterThan(0.7);
+      expect(result.totalRemnantMm).toBeGreaterThanOrEqual(0);
+    });
   });
 
   describe('generateOptimizedCutListForBatch', () => {
