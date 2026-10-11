@@ -6,10 +6,63 @@ import { supabase } from '@/lib/supabase';
 import { resolveManufacturingAuthority } from '@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver';
 import { Button } from '@/shared/ui/ui/button';
 
+type OwnerApprovalRequest = {
+  position_revision: number;
+  status: string;
+  catalogue_reference: string;
+  rule_reference: string;
+};
+
 // Legacy database tables omit Relationships; keep the RPC boundary narrowly typed.
 const approvalClient = supabase as unknown as {
   rpc(name: 'request_fabricator_manufacturing_approval', args: Database['public']['Functions']['request_fabricator_manufacturing_approval']['Args']): PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  from(table: 'fabricator_manufacturing_approval_requests'): {
+    select(columns: string): {
+      eq(column: 'position_id', value: string): {
+        order(column: 'requested_at', options: { ascending: boolean }): {
+          limit(count: number): {
+            maybeSingle(): PromiseLike<{ data: OwnerApprovalRequest | null; error: { message: string } | null }>;
+          };
+        };
+      };
+    };
+  };
 };
+
+/**
+ * Saving a pose bumps qc_revision (public.bump_fabricator_qc_revision fires on every
+ * update), and a manufacturing authority is bound to the revision it was approved for.
+ * An approval therefore stops applying without any visible error, which leaves the
+ * Optimize step blocked for reasons the operator cannot see. Report the operator's own
+ * latest request so the drift is explicit and actionable.
+ */
+async function explainAuthorityGap(
+  identity: { positionId: string; revision: number },
+  error: unknown,
+): Promise<string> {
+  const base = error instanceof Error && error.message
+    ? error.message
+    : 'Approved manufacturing authority unavailable.';
+  const result = await approvalClient
+    .from('fabricator_manufacturing_approval_requests')
+    .select('position_revision,status,catalogue_reference,rule_reference')
+    .eq('position_id', identity.positionId)
+    .order('requested_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+    .then(
+      value => value,
+      () => ({ data: null } as { data: OwnerApprovalRequest | null }),
+    );
+  const latest = result.data;
+  if (!latest) {
+    return `${base} No approval request exists for this position yet - submit one for revision ${identity.revision}.`;
+  }
+  if (latest.position_revision !== identity.revision) {
+    return `${base} The latest request covers revision ${latest.position_revision} (${latest.status}) but this pose is now revision ${identity.revision}: every pose save bumps the revision and voids the approval. Submit a new request for revision ${identity.revision}.`;
+  }
+  return `${base} The latest request covers revision ${latest.position_revision} and is ${latest.status}. Manufacturing stays blocked until an admin approves it.`;
+}
 
 /** Requests are evidence for review, never client-side manufacturing approval. */
 export function ManufacturingApprovalPanel() {
@@ -37,7 +90,13 @@ export function ManufacturingApprovalPanel() {
         if (!z.string().uuid().safeParse(data).success) throw new Error('No valid approval request receipt was returned.');
         setMessage(`Review request ${String(data)} submitted. Manufacturing remains blocked until admin approval.`);
       } else {
-        const authority = await resolveManufacturingAuthority(identity.positionId, identity.revision);
+        let authority: Awaited<ReturnType<typeof resolveManufacturingAuthority>>;
+        try {
+          authority = await resolveManufacturingAuthority(identity.positionId, identity.revision);
+        } catch (error) {
+          setMessage(await explainAuthorityGap(identity, error));
+          return;
+        }
         setMessage(`Approved ${authority.systemPack.id} catalogue revision ${authority.systemPack.revision}. Cutting rules: ${authority.cuttingRules.map(rule => `${rule.ruleId} r${rule.revision}`).join(', ')}. Regenerate the BOM to use this evidence.`);
       }
     } catch (error) {

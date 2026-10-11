@@ -3,6 +3,7 @@ import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingS
 import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physicalCutContract';
 import { resolveEstimatePattern } from '@/lib/fabricator/bom/resolveEstimatePattern';
 import { countRequiredProfilePieces } from '@/lib/fabricator/bom/bomQualification';
+import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
 
@@ -48,7 +49,19 @@ export function optimizeProjectEstimate(positions: readonly WindowUnit[], packs:
   const groups = new Map<string, ProjectOptimizationEstimate['groups'][number] & { requests: CutRequest[] }>();
   const positionIds = new Set<string>();
   let pieces = 0;
-  for (const position of positions) {
+  for (const rawPosition of positions) {
+    // Complete the saved ledger with the sliding track pair the contract requires and
+    // the BOM path always applies, so poses saved before that completion existed are
+    // not rejected as incomplete.
+    const rawPack = packs.find(candidate => candidate.meta.id === rawPosition.systemPackId);
+    const position = rawPack
+      ? { ...rawPosition, components: new ProfileBOMCalculator().completeSlidingTrackDesignComponents(
+          rawPosition.components,
+          rawPosition,
+          patternForLedgerCount(rawPosition),
+          rawPack,
+        ) }
+      : rawPosition;
     const label = `Pose ${position.posNumber || position.id}`;
     if (positionIds.has(position.id)) throw new Error(`${label}: duplicate position identity.`);
     positionIds.add(position.id);

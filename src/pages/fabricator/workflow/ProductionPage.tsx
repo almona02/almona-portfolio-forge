@@ -5,6 +5,7 @@ import { catalogProfilesOrEmpty } from '@/lib/fabricator/catalog/CatalogResolver
 import { freezePositionRelease } from '@/lib/fabricator/positionRelease';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { lazyRetry } from '@/utils/lazyImport';
 import { AlertCircle, Loader2 } from 'lucide-react';
@@ -44,6 +45,10 @@ export const ProductionPage: React.FC = () => {
         setPositionRelease,
     } = useWorkflowStore();
 
+    const engineeringPacks = useEngineeringSystemPacks();
+    // Supply the system pack so the gate completes the saved design ledger before judging
+    // BOM parity; otherwise a pose saved before the sliding-track completion existed is
+    // blocked at Produce exactly as it was at Optimize.
     const productionValidation = useMemo(
         () =>
             validateStepTransition(
@@ -52,10 +57,11 @@ export const ProductionPage: React.FC = () => {
                     currentProject,
                     bom,
                     optimizationResult,
+                    systemPack: engineeringPacks.find((pack) => pack.meta.id === currentProject?.systemPackId) ?? null,
                 },
                 'production'
             ),
-        [measurementData, currentProject, bom, optimizationResult]
+        [measurementData, currentProject, bom, optimizationResult, engineeringPacks]
     );
 
     const [isGenerating, _setIsGenerating] = useState(false);

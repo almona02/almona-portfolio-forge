@@ -1,4 +1,5 @@
 import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import type { CuttingJob } from '@/algorithms/adaptiveSolver';
 import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
 import { OptimizationCockpit } from '@/components/fabricator/cockpit/OptimizationCockpit';
@@ -6,7 +7,7 @@ import { WorkflowValidationGate } from '@/components/fabricator/workflow/Workflo
 import { useAuth } from '@/context/AuthContext';
 import { recordOptimizationEvidence } from '@/lib/fabricator/commercial/recordOptimizationEvidence';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
-import { validateOptimizationReconciliation, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
+import { completeDesignLedger, validateOptimizationReconciliation, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import type { AdaptiveSolverConfig, OptimizationResult } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
@@ -56,6 +57,14 @@ export const OptimizationPage: React.FC = () => {
     useEffect(() => { activeProjectRef.current = currentProject; }, [currentProject]);
     useEffect(() => () => { mountedRef.current = false; activeRunRef.current += 1; }, []);
 
+    const engineeringPacksForGate = useEngineeringSystemPacks();
+    // The gate completes the saved design ledger before judging BOM parity, so a pose
+    // saved before the sliding-track completion existed is not blocked forever.
+    const systemPackForGate = useMemo(
+        () => engineeringPacksForGate.find((pack) => pack.meta.id === currentProject?.systemPackId) ?? null,
+        [engineeringPacksForGate, currentProject?.systemPackId],
+    );
+
     const optimizationValidation = useMemo(
         () =>
             validateStepTransition(
@@ -64,10 +73,11 @@ export const OptimizationPage: React.FC = () => {
                     currentProject,
                     bom,
                     optimizationResult,
+                    systemPack: systemPackForGate,
                 },
                 'optimization'
             ),
-        [measurementData, currentProject, bom, optimizationResult]
+        [measurementData, currentProject, bom, optimizationResult, systemPackForGate]
     );
 
     const profiles = useMemo(
@@ -92,7 +102,9 @@ export const OptimizationPage: React.FC = () => {
         setOptimizationError(null);
         setIsOptimizing(true);
         try {
-            const components = currentProject.components ?? [];
+            // Optimise the completed ledger, not the stored one: a pose saved before the
+            // sliding-track completion existed would otherwise be cut without its track pair.
+            const components = completeDesignLedger(currentProject, systemPackForGate);
             if (!components.length) throw new Error('No manufacturing components are available.');
             const job: CuttingJob = { components, profiles, defaultStockLength: 6000, systemPackId: currentProject.systemPackId ?? undefined };
             const solverConfig: AdaptiveSolverConfig = { maxSolvingTime: 30, complexityThresholds: { simple: 50, medium: 500 } };

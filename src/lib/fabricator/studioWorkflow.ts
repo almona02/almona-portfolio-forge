@@ -8,7 +8,7 @@
 
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
-import type { MeasurementData, OptimizationResult, WindowUnit } from '@/types/fabricator';
+import type { MeasurementData, OptimizationResult, SystemPack, WindowUnit } from '@/types/fabricator';
 import { workflowIdentityMatches, type ProductionDocuments, type WorkflowQuote, type WorkflowIdentity, type QualityApprovalAcknowledgement } from '@/store/workflowStore';
 import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
 import { bomMatchesPhysicalDesign, validateOptimizationInputs, validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
@@ -51,6 +51,8 @@ export interface StudioWorkflowEvidence {
   workflowIdentity?: WorkflowIdentity | null;
   qualityApproval?: QualityApprovalAcknowledgement | null;
   workflowDraftDirty?: boolean;
+  /** Optional: enables design-ledger completion before the parity check. */
+  systemPack?: SystemPack | null;
   /** UP-10 soft reservation acknowledgement bound to workflow identity. */
   stockReservation?: import('@/store/workflowStore').StockReservationEvidence | null;
   /** UP-18 frozen release for the active revision. */
@@ -162,7 +164,7 @@ export const STUDIO_WORKFLOW_STAGES: StudioWorkflowStageDef[] = [
 ];
 
 function hasCurrentQualifiedBOM(e: StudioWorkflowEvidence): boolean {
-  if (!bomMatchesPhysicalDesign(e.bom, e.currentProject)) return false;
+  if (!bomMatchesPhysicalDesign(e.bom, e.currentProject, e.systemPack)) return false;
   return Boolean(!e.workflowDraftDirty && e.workflowIdentity && e.currentProject?.id === e.workflowIdentity.positionId && (e.currentProject.revision === undefined || e.currentProject.revision === e.workflowIdentity.revision) && isQualifiedBOM(e.bom) && workflowIdentityMatches(e.bom?.qualification?.identity ?? null, e.workflowIdentity));
 }
 
