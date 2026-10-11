@@ -135,7 +135,9 @@ export async function recordOptimizationEvidence(
     }
     kerfMm = settings.sawKerfMm;
     trimMm = settings.trimCutMm;
-    permittedStocks = authority.profiles.map((p) => p.stockLengthMm).filter((s) => s > 0);
+    permittedStocks = [...new Set(authority.profiles
+      .filter((p) => p.evidenceStatus === 'approved')
+      .map((p) => p.stockLengthMm).filter((s) => s > 0))];
     if (permittedStocks.length === 0) {
       return { ok: false, error: 'Approved catalogue stock lengths are required.' };
     }
@@ -146,8 +148,11 @@ export async function recordOptimizationEvidence(
         return { ok: false, error: 'cutting plan stock length is not in approved catalogue' };
       }
       const profileId = plan.profile?.id ?? '';
-      if (!authority.profiles.some((p) => p.profileId === profileId)) {
+      if (!authority.profiles.some((p) => p.profileId === profileId && p.evidenceStatus === 'approved')) {
         return { ok: false, error: 'cutting plan profile is not in approved catalogue' };
+      }
+      if (!authority.profiles.some((p) => p.profileId === profileId && p.evidenceStatus === 'approved' && p.stockLengthMm === stock)) {
+        return { ok: false, error: 'cutting plan stock length is not approved for this profile' };
       }
     }
 

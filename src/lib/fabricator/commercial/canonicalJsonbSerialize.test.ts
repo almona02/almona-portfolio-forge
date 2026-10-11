@@ -16,6 +16,9 @@ const VECTORS: Array<{ name: string; value: unknown; expected: string }> = [
   { name: 'int', value: 4, expected: '4' },
   { name: 'zero', value: 0, expected: '0' },
   { name: 'decimal', value: 1.5, expected: '1.5' },
+  { name: 'fractional kerf', value: 4.2, expected: '4.2' },
+  { name: 'fractional allowance', value: 0.1, expected: '0.1' },
+  { name: 'small exponent', value: 1e-7, expected: '0.0000001' },
   { name: 'empty object', value: {}, expected: '{}' },
   { name: 'empty array', value: [], expected: '[]' },
   {

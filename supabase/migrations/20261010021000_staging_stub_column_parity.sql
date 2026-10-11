@@ -12,48 +12,8 @@ ALTER TABLE public.fabricator_manufacturing_authority_revisions
   ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now(),
   ADD COLUMN IF NOT EXISTS provenance TEXT;
 
-UPDATE public.fabricator_manufacturing_authority_revisions
-SET authority_payload = coalesce(
-  authority_payload,
-  jsonb_build_object(
-    'schema', 'almona.manufacturing-authority',
-    'schemaVersion', 1,
-    'system', jsonb_build_object('id', system_pack_id),
-    'systemPack', jsonb_build_object(
-      'id', system_pack_id,
-      'revision', system_pack_revision,
-      'evidenceStatus', 'approved',
-      'approvalId', approval_id::TEXT
-    ),
-    'profiles', jsonb_build_array(
-      jsonb_build_object(
-        'role', 'frame', 'profileId', 'STUB-FRAME', 'stockLengthMm', 6000,
-        'evidenceStatus', 'approved', 'approvalId', 'b1000000-0000-4000-8000-000000000001'
-      ),
-      jsonb_build_object(
-        'role', 'sash', 'profileId', 'STUB-SASH', 'stockLengthMm', 6000,
-        'evidenceStatus', 'approved', 'approvalId', 'b1000000-0000-4000-8000-000000000002'
-      )
-    ),
-    'cuttingRules', jsonb_build_array(
-      jsonb_build_object(
-        'ruleId', system_pack_id || '-cut', 'revision', 1,
-        'evidenceStatus', 'approved',
-        'approvalId', 'c1000000-0000-4000-8000-000000000001',
-        'deductions', jsonb_build_object('endDeductionMm', 20),
-        'allowances', jsonb_build_object('weldMm', 3),
-        'applicability', jsonb_build_object('materials', jsonb_build_array('aluminum'))
-      )
-    ),
-    'toleranceRule', jsonb_build_object(
-      'ruleId', system_pack_id || '-tolerance', 'revision', 1,
-      'evidenceStatus', 'approved',
-      'approvalId', 'c1000000-0000-4000-8000-000000000002'
-    ),
-    'manufacturingSettings', jsonb_build_object('sawKerfMm', 4, 'trimCutMm', 0)
-  )
-)
-WHERE authority_payload IS NULL;
+-- Missing authority payloads remain unqualified. Schema parity must never
+-- fabricate approved profiles, rules or machining settings for existing rows.
 
 -- Positions v2: stub lacked workflow / identity columns used by convert/QC/release
 ALTER TABLE public.fabricator_positions_v2

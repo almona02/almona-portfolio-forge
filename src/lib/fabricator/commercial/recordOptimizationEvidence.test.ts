@@ -299,3 +299,27 @@ describe('recordOptimizationEvidence (authoritative binding)', () => {
     expect(result.error).toMatch(/authority is unavailable/i);
   });
 });
+
+describe('profile-bound stock authority', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resolveManufacturingAuthority.mockResolvedValue(mockAuthority({
+      profiles: [
+        { profileId: 'PS-FRAME', stockLengthMm: 6000, evidenceStatus: 'approved' },
+        { profileId: 'PS-SASH', stockLengthMm: 6500, evidenceStatus: 'approved' },
+        { profileId: 'PS-FRAME', stockLengthMm: 7000, evidenceStatus: 'pending' },
+      ],
+    }));
+  });
+
+  it.each([6500, 7000])('rejects stock %s not approved for the placed profile before RPC', async (stockLength) => {
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: { ...sampleResult, cuttingPlan: sampleResult.cuttingPlan.map(plan => ({ ...plan, stockLength })) } as never,
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/stock length.*approved/);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+});

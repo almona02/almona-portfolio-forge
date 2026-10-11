@@ -12,7 +12,7 @@ $reset_pgtap$;
 
 BEGIN;
 SET LOCAL search_path TO public, extensions, pg_temp;
-SELECT plan(12);
+SELECT plan(15);
 
 SELECT is(public.canonical_jsonb_serialize('null'::jsonb), 'null', 'null');
 SELECT is(public.canonical_jsonb_serialize('true'::jsonb), 'true', 'true');
@@ -20,6 +20,9 @@ SELECT is(public.canonical_jsonb_serialize('false'::jsonb), 'false', 'false');
 SELECT is(public.canonical_jsonb_serialize('4'::jsonb), '4', 'int');
 SELECT is(public.canonical_jsonb_serialize('0'::jsonb), '0', 'zero');
 SELECT is(public.canonical_jsonb_serialize('1.5'::jsonb), '1.5', 'decimal');
+SELECT is(public.canonical_jsonb_serialize('4.2'::jsonb), '4.2', 'fractional kerf');
+SELECT is(public.canonical_jsonb_serialize('0.1'::jsonb), '0.1', 'fractional allowance');
+SELECT is(public.canonical_jsonb_serialize('1e-7'::jsonb), '0.0000001', 'small exponent');
 SELECT is(public.canonical_jsonb_serialize('{}'::jsonb), '{}', 'empty object');
 SELECT is(public.canonical_jsonb_serialize('[]'::jsonb), '[]', 'empty array');
 

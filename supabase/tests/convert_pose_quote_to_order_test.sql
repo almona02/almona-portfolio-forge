@@ -200,9 +200,7 @@ DO $hardener_clear$
 DECLARE
   v_prop UUID;
 BEGIN
-  INSERT INTO public.profiles(id, full_name, role)
-  VALUES ('13000000-0000-0000-0000-000000000099', 'Convert Admin', 'admin')
-  ON CONFLICT (id) DO UPDATE SET role = 'admin';
+  -- Admin fixture was created above before switching to authenticated owner claims.
 
   PERFORM set_config(
     'request.jwt.claims',

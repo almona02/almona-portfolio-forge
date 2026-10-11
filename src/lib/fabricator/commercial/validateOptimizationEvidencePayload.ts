@@ -388,8 +388,19 @@ export function canonicalJsonbSerialize(value: unknown): string {
   if (typeof value === 'number') {
     if (!Number.isFinite(value)) return 'null';
     if (Number.isSafeInteger(value)) return String(value);
-    const fixed = value.toFixed(20).replace(/\.?0+$/, '');
-    return fixed === '-0' ? '0' : fixed;
+    // Expand JS's shortest decimal, rather than exposing binary rounding via toFixed(20).
+    const decimal = String(value);
+    if (!/[eE]/.test(decimal)) return decimal;
+    const [mantissa, exponentText] = decimal.toLowerCase().split('e');
+    const negative = mantissa.startsWith('-');
+    const unsigned = negative ? mantissa.slice(1) : mantissa;
+    const [integer, fraction = ''] = unsigned.split('.');
+    const digits = integer + fraction;
+    const point = integer.length + Number(exponentText);
+    const expanded = point <= 0 ? `0.${'0'.repeat(-point)}${digits}`
+      : point >= digits.length ? digits + '0'.repeat(point - digits.length)
+      : `${digits.slice(0, point)}.${digits.slice(point)}`;
+    return negative ? `-${expanded}` : expanded;
   }
   if (typeof value === 'string') return JSON.stringify(value);
   if (Array.isArray(value)) {
@@ -446,7 +457,7 @@ export async function authorityContentFingerprint(input: {
   cuttingRules: ReadonlyArray<ApprovedRuleContent>;
 }): Promise<string> {
   const rulesFp = await approvedRuleContentFingerprint(input.cuttingRules);
-  const stocks = [...input.permittedStockLengths]
+  const stocks = [...new Set(input.permittedStockLengths)]
     .filter((s) => s > 0)
     .sort((a, b) => a - b)
     .join(',');
