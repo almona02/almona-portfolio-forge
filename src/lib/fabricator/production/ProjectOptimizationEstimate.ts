@@ -53,11 +53,16 @@ export async function optimizeProjectEstimateWithDesignParity(
   positions: readonly WindowUnit[],
   packs: readonly SystemPack[],
 ): Promise<ProjectOptimizationEstimate> {
-  for (const position of positions) {
-    const pack = packs.find((candidate) => candidate.meta.id === position.systemPackId);
+  const completedPositions: WindowUnit[] = [];
+  for (const rawPosition of positions) {
+    const pack = packs.find((candidate) => candidate.meta.id === rawPosition.systemPackId);
     if (!pack) {
-      throw new Error(`Pose ${position.posNumber || position.id}: saved system pack is unavailable to the signed-in owner.`);
+      throw new Error(`Pose ${rawPosition.posNumber || rawPosition.id}: saved system pack is unavailable to the signed-in owner.`);
     }
+    const position = { ...rawPosition, components: new ProfileBOMCalculator().completeSlidingTrackDesignComponents(
+      rawPosition.components, rawPosition, patternForLedgerCount(rawPosition), pack,
+    ) };
+    completedPositions.push(position);
     await reconcilePoseCutLedger({
       position,
       pattern: patternForLedgerCount(position),
@@ -65,7 +70,7 @@ export async function optimizeProjectEstimateWithDesignParity(
       revision: position.revision ?? null,
     });
   }
-  return optimizeProjectEstimate(positions, packs);
+  return optimizeProjectEstimate(completedPositions, packs);
 }
 
 /** Pool only identical saved profiles and settings; never create production evidence. */
