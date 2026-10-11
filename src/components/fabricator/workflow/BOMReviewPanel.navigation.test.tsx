@@ -7,7 +7,7 @@ import { BOMReviewPanel } from './BOMReviewPanel';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import type { WindowUnit } from '@/types/fabricator';
 
-it('opens position-specific prerequisites without marking an estimate complete', () => {
+it('blocks optimization without marking an estimate complete', () => {
   useWorkflowStore.getState().clearWorkflow();
   useWorkflowStore.setState({ currentProject: { id: 'position-a', components: [] } as unknown as WindowUnit, bom: {
     profiles: [{ role: 'frame', quantity: 1, length: 1000 }], hardware: [], glazing: [], accessories: [], assemblySequence: [], confidence: 1,
@@ -21,6 +21,8 @@ it('opens position-specific prerequisites without marking an estimate complete',
   </Routes></MemoryRouter>);
   expect(screen.getAllByText('Approved cutting rules missing')[0]).toBeVisible();
   fireEvent.click(screen.getByRole('button', { name: 'Review optimization prerequisites' }));
-  expect(screen.getByText('Position-specific optimization prerequisites')).toBeVisible();
+  expect(screen.queryByText('Position-specific optimization prerequisites')).not.toBeInTheDocument();
+  expect(screen.getByText('BOM Generation Failed')).toBeVisible();
+  expect(screen.getAllByText('Approved cutting rules missing')[0]).toBeVisible();
   expect(useWorkflowStore.getState().completedSteps.has('bom')).toBe(false);
 });

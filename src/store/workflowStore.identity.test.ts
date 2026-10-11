@@ -56,7 +56,7 @@ describe('identity-scoped workflow hydration', () => {
     expect(useWorkflowStore.getState()).toMatchObject({ bom: null, quote: null, productionDocuments: null, optimizationResult: null, qualityApproval: null });
   });
 
-  it('keeps matching BOM across qc_revision bump on the same pose', () => {
+  it('invalidates matching BOM qualification across a revision bump', () => {
     const profile = { id: 'PS-6601-FRAME', cuttingAllowance: 3 } as never;
     const designed = {
       ...position,
@@ -71,7 +71,7 @@ describe('identity-scoped workflow hydration', () => {
           angles: [45],
         },
       ],
-    } as WindowUnit;
+    } as unknown as WindowUnit;
     useWorkflowStore.getState().hydrateAuthoritativePosition(identity, designed);
     useWorkflowStore.setState({
       bom: {
@@ -97,10 +97,31 @@ describe('identity-scoped workflow hydration', () => {
 
     const state = useWorkflowStore.getState();
     expect(state.workflowIdentity).toEqual(bumped);
-    expect(state.bom?.qualification?.identity).toEqual(bumped);
-    expect(state.bom?.qualification?.status).toBe('qualified');
+    expect(state.bom).toBeNull();
     expect(state.optimizationResult).toBeNull();
-    expect(state.completedSteps.has('bom')).toBe(true);
+    expect(state.completedSteps.has('bom')).toBe(false);
     expect(state.completedSteps.has('optimization')).toBe(false);
   });
+  it('ignores a late backwards-revision response for the active pose', () => {
+    useWorkflowStore.getState().hydrateAuthoritativePosition(identity, position);
+    const current = useWorkflowStore.getState().currentProject;
+    useWorkflowStore.getState().hydrateAuthoritativePosition(
+      { ...identity, revision: 3 }, { ...position, overallWidth: 999 },
+    );
+    expect(useWorkflowStore.getState().workflowIdentity).toEqual(identity);
+    expect(useWorkflowStore.getState().currentProject).toBe(current);
+  });
+
+  it.each([
+    { quantity: 2 },
+    { glazing: { type: 'double', color: 'clear' } },
+  ])('invalidates qualification for changed manufacturing inputs: %j', (change) => {
+    useWorkflowStore.getState().hydrateAuthoritativePosition(identity, position);
+    useWorkflowStore.setState({ bom: { qualification: { status: 'qualified', identity } } as never });
+    useWorkflowStore.getState().hydrateAuthoritativePosition(
+      { ...identity, revision: 5 }, { ...position, ...change },
+    );
+    expect(useWorkflowStore.getState().bom).toBeNull();
+  });
+
 });

@@ -431,7 +431,7 @@ export class ProfileBOMCalculator {
     const saved = windowUnit.components ?? [];
     const sliding = this.isSlidingOpening(windowUnit, pattern);
     const savedHasSash = saved.some((component) => componentHasLedgerRole(component, 'sash'));
-    const useSaved = saved.length > 0 && (!sliding || savedHasSash);
+    const useSaved = saved.length > 0 && !sliding;
 
     if (useSaved) {
       return this.ensureSlidingTrackDesignComponents(
@@ -444,10 +444,10 @@ export class ProfileBOMCalculator {
 
     const grid = (windowUnit.grid ?? pattern.gridSpec) as WindowGrid | undefined;
     if (!grid?.cells?.length) {
-      // Last resort: keep partial saved frames so optimization inputs stay non-empty.
-      return saved.length
-        ? this.ensureSlidingTrackDesignComponents(saved, windowUnit, pattern, systemPack)
-        : [];
+      if (sliding && saved.length) {
+        throw new Error('A complete sliding design grid is required to verify saved cuts.');
+      }
+      return [];
     }
 
     const { generateComponentsFromGrid } = await import('@/algorithms/smartDraw');
@@ -459,7 +459,22 @@ export class ProfileBOMCalculator {
       packId,
       systemPack,
     );
-    return this.ensureSlidingTrackDesignComponents(components, windowUnit, pattern, systemPack);
+    const generated = this.ensureSlidingTrackDesignComponents(components, windowUnit, pattern, systemPack);
+    if (savedHasSash) {
+      const enriched = this.ensureSlidingTrackDesignComponents(saved, windowUnit, pattern, systemPack);
+      const multiset = (ledger: WindowComponent[]) => ledger.flatMap(component =>
+        component.cuttingLengths.map((_, index) => {
+          const cut = physicalCutForOccurrence(component, index, component.profile, packId ?? undefined);
+          return `${component.profile.id}:${cut.length.toFixed(3)}:${cut.angle}`;
+        }),
+      ).sort();
+      if (JSON.stringify(multiset(enriched)) !== JSON.stringify(multiset(generated))) {
+        // Preserve authored profile choices; do not silently replace a conflicting saved ledger.
+        throw new Error('Saved sliding cuts do not match the design. Regenerate cuts in Design before reviewing the BOM.');
+      }
+      return enriched;
+    }
+    return generated;
   }
 
   private ensureSlidingTrackDesignComponents(

@@ -1,6 +1,5 @@
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import {
-  bomMatchesPhysicalDesign,
   validateOptimizationInputs,
   validateOptimizationReconciliation,
 } from '@/lib/fabricator/validation/WorkflowValidator';
@@ -94,21 +93,6 @@ function samePoseIdentity(a: WorkflowIdentity | null, b: WorkflowIdentity): bool
       a.positionId === b.positionId &&
       a.source === b.source,
   );
-}
-
-/** Rebind BOM qualification to a new authoritative revision after a save bump. */
-function rebindBomQualificationIdentity(
-  bom: CompleteBOM | null,
-  identity: WorkflowIdentity,
-): CompleteBOM | null {
-  if (!bom?.qualification) return bom;
-  return {
-    ...bom,
-    qualification: {
-      ...bom.qualification,
-      identity,
-    },
-  };
 }
 
 export interface StockReservationEvidence {
@@ -405,50 +389,9 @@ export const useWorkflowStore = create<WorkflowState>()(
         if (sameRevision && state.workflowDraftDirty) return {};
         if (sameRevision) return { currentProject: project, designData: project };
 
-        // Save bumps qc_revision (BEFORE UPDATE trigger). Same pose + BOM still
-        // matching the physical design must not wipe the BOM→optimize handoff.
-        const revisionOnlyAdvance =
-          samePoseIdentity(state.workflowIdentity, identity) &&
-          (state.workflowIdentity?.revision ?? 0) !== identity.revision;
-        if (
-          revisionOnlyAdvance &&
-          state.bom &&
-          bomMatchesPhysicalDesign(state.bom, project)
-        ) {
-          return {
-            workflowIdentity: identity,
-            currentProject: project,
-            designData: project,
-            workflowDraftDirty: false,
-            measurementData: {
-              ...project.positionMeta,
-              width: String(project.overallWidth),
-              height: String(project.overallHeight),
-              manufacturingWidth: project.overallWidth,
-              manufacturingHeight: project.overallHeight,
-              windowType: project.type,
-              systemPackId: project.systemPackId,
-              measurementMode: project.measurementMode ?? 'manufacturing',
-              glazingType: (project.glazing as { type?: string })?.type,
-              glassColor: (project.glazing as { color?: string })?.color,
-              color: project.color,
-              grid: project.grid,
-              presetId: project.presetId,
-            } as MeasurementData,
-            bom: rebindBomQualificationIdentity(state.bom, identity),
-            // Optimization evidence is revision-bound — clear on bump.
-            optimizationResult: null,
-            quote: null,
-            productionDocuments: null,
-            qualityApproval: null,
-            stockReservation: null,
-            positionRelease: null,
-            deliveryAcknowledgement: null,
-            completedSteps: new Set(
-              [...state.completedSteps].filter((step) => step === 'measuring' || step === 'design' || step === 'bom'),
-            ),
-          };
-        }
+        // Ignore late responses for an older revision of the active pose.
+        if (samePoseIdentity(state.workflowIdentity, identity) &&
+            identity.revision < state.workflowIdentity!.revision) return {};
 
         return {
           workflowIdentity: identity,

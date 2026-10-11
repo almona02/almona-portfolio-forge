@@ -1,3 +1,4 @@
+import { generateAcknowledgedBOM, StaleBOMGenerationError } from '@/lib/fabricator/bom/generateAcknowledgedBOM';
 import { approvedBOMContext } from '@/lib/fabricator/bom/approvedBOMContext';
 import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
 import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
@@ -22,18 +23,27 @@ import {
   Package,
   Wrench,
 } from 'lucide-react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const BOMReviewPanel: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const navigate = useNavigate();
-  const { currentProject, workflowIdentity, bom, setBOM, completeStep, alignShellProject } =
+  const { currentProject, workflowIdentity, bom, setBOM, completeStep } =
     useWorkflowStore();
   const engineeringPacks = useEngineeringSystemPacks();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const generationRequest = useRef(0);
+  useEffect(() => {
+    // The router can reuse this component before the new pose has hydrated.
+    generationRequest.current += 1;
+    setIsGenerating(false);
+    setError(null);
+    return () => { generationRequest.current += 1; };
+  }, [projectId, poseId]);
+
 
   const systemPack = useMemo(() => {
     const packId = currentProject?.systemPackId;
@@ -50,89 +60,84 @@ export const BOMReviewPanel: React.FC = () => {
     if (!currentProject || !systemPack || !pattern) return;
     const generationProject = currentProject;
     const generationIdentity = workflowIdentity;
+    const request = ++generationRequest.current;
+    const isCurrent = () => {
+      const latest = useWorkflowStore.getState();
+      return Boolean(generationIdentity) && request === generationRequest.current &&
+        latest.currentProject === generationProject &&
+        workflowIdentityMatches(latest.workflowIdentity, generationIdentity!);
+    };
     setIsGenerating(true);
     setError(null);
     try {
+      if (!generationIdentity || !projectId || !poseId ||
+          generationIdentity.projectId !== projectId || generationIdentity.positionId !== poseId) {
+        throw new Error('Save this position before generating its BOM.');
+      }
       const generator = new PresetAwareBOMGenerator();
-      const physicalDesign = await new ProfileBOMCalculator().resolvePhysicalDesignComponents(
-        currentProject,
-        pattern,
-        systemPack,
-      );
-      const aligned = { ...generationProject, components: physicalDesign };
-      // Authority context must validate the physical design ledger (not stale frame-only).
-      let qualificationContext: Awaited<ReturnType<typeof approvedBOMContext>>;
-      try {
-        qualificationContext = await approvedBOMContext(aligned, generationIdentity);
-      } catch (authorityErr) {
-        const message =
-          authorityErr instanceof Error
-            ? authorityErr.message
-            : 'Approved manufacturing authority is unavailable for this BOM.';
-        setError(message);
-        qualificationContext = { identity: generationIdentity ?? undefined };
-      }
-      const result = await generator.generateCompleteBOM(
-        aligned,
-        pattern,
-        systemPack,
-        true,
-        qualificationContext,
-      );
-      const latest = useWorkflowStore.getState();
-      if (
-        !generationIdentity ||
-        latest.currentProject !== generationProject ||
-        !workflowIdentityMatches(latest.workflowIdentity, generationIdentity)
-      ) {
-        return;
-      }
-      // Align + persist design ledger. savePose bumps qc_revision; hydrate must
-      // rebind BOM identity (see workflowStore) so optimize handoff survives.
-      if (physicalDesign.length) {
-        alignShellProject(aligned);
-        const ownerUserId = generationIdentity.ownerUserId;
-        if (ownerUserId && projectId && poseId) {
-          try {
-            await fabricatorClientV2.savePose(aligned, ownerUserId, {
-              grid: aligned.grid as Record<string, unknown> | undefined,
-            });
-            const authoritative = await fabricatorClientV2.getAuthoritativePosition(
-              projectId,
-              poseId,
-              ownerUserId,
-            );
-            useWorkflowStore
-              .getState()
-              .hydrateAuthoritativePosition(authoritative.identity, {
-                ...authoritative.position,
-                components: physicalDesign,
-              });
-            // Re-stamp qualification onto the post-bump identity before setBOM.
-            if (result.qualification && authoritative.identity) {
-              result.qualification = {
-                ...result.qualification,
-                identity: authoritative.identity,
-              };
-            }
-          } catch (persistErr) {
-            console.warn('BOM design ledger persist failed', persistErr);
+      await generateAcknowledgedBOM({
+        isCurrent,
+        prepare: async () => {
+          const components = await new ProfileBOMCalculator().resolvePhysicalDesignComponents(
+            generationProject, pattern, systemPack,
+          );
+          if (!components.length) throw new Error('The design has no complete cut ledger.');
+          return { ...generationProject, components };
+        },
+        persist: async (aligned) => {
+          await fabricatorClientV2.savePose(aligned, generationIdentity.ownerUserId, {
+            grid: aligned.grid as Record<string, unknown> | undefined,
+          });
+        },
+        read: async () => {
+          const saved = await fabricatorClientV2.getAuthoritativePosition(
+            projectId, poseId, generationIdentity.ownerUserId,
+          );
+          if (!saved.identity ||
+              !workflowIdentityMatches(saved.identity, {
+                ...generationIdentity, revision: saved.identity.revision,
+              }) || saved.identity.revision <= generationIdentity.revision) {
+            throw new Error('The saved position revision could not be acknowledged. Reload and retry.');
           }
-        }
-      }
-      setBOM(result);
+          return { ...saved, identity: saved.identity };
+        },
+        qualify: async (saved) => {
+          try {
+            return await approvedBOMContext(saved.position, saved.identity);
+          } catch (authorityErr) {
+            if (isCurrent()) setError(authorityErr instanceof Error
+              ? authorityErr.message : 'Approved manufacturing authority is unavailable.');
+            // Persisted estimates remain usable for review; no authority is invented.
+            return { identity: saved.identity };
+          }
+        },
+        generate: async (saved, context) => {
+          const savedPattern = resolveEstimatePattern(saved.position);
+          if (saved.position.systemPackId !== systemPack.meta.id) {
+            throw new Error('The saved system pack changed. Reload and retry.');
+          }
+          return generator.generateCompleteBOM(saved.position, savedPattern, systemPack, true, context);
+        },
+        publish: (saved, result) => {
+          useWorkflowStore.getState().hydrateAuthoritativePosition(saved.identity, saved.position);
+          setBOM(result);
+        },
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'BOM generation failed');
+      if (!(err instanceof StaleBOMGenerationError) && isCurrent()) {
+        setError(err instanceof Error ? err.message : 'BOM generation failed');
+      }
     } finally {
-      setIsGenerating(false);
+      if (request === generationRequest.current) setIsGenerating(false);
     }
-  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM, alignShellProject, projectId, poseId]);
+  }, [currentProject, workflowIdentity, systemPack, pattern, setBOM, projectId, poseId]);
 
   useEffect(() => {
-    if (!bom && currentProject && systemPack && pattern) {
+    if (!bom && !error && !isGenerating && currentProject && systemPack && pattern &&
+        workflowIdentity?.projectId === projectId && workflowIdentity?.positionId === poseId) {
       void generateBOM();
     }
-  }, [bom, currentProject, systemPack, pattern, generateBOM]);
+  }, [bom, error, isGenerating, currentProject, systemPack, pattern, workflowIdentity, projectId, poseId, generateBOM]);
 
   const handleContinue = () => {
     const validation = WorkflowValidator.validateBOMToOptimization(bom);
