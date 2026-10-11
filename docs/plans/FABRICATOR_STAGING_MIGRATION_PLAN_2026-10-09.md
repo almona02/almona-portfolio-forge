@@ -1,7 +1,7 @@
 # Fabricator merge + staging readiness — 9–10 October 2026
 
 **Status:** Phase A **complete**. Phase B staging §5.2 **complete**. Phase C prod SQL (#71 then #72) **applied** with reject-only smoke. **Authoritative binding + §5.3 staging positive chain complete** on `apnmoevmvihfzcnttctx`. Live FINAL GOAL on almona02.com still open.  
-Draft **#76** retained — **no production promote** of ledger/kerf or binding SQL without separate authorization.  
+**#76 code merged; production SQL hold retained** — **no production promote** of ledger/kerf or binding SQL without separate authorization.  
 **Do not force-push from this document.**
 
 Canonical scorecard: [FABRICATOR_SCORECARD_2026-10-09.md](../reviews/FABRICATOR_SCORECARD_2026-10-09.md).
@@ -72,7 +72,7 @@ Artifact: `/opt/cursor/artifacts/phase-c-prod-smoke-results.log`.
 
 ---
 
-## 4. Authoritative binding (draft #76)
+## 4. Authoritative binding (#76 code merged)
 
 Migration `20261010020000_fabricator_evidence_authoritative_binding.sql` + TS mirror:
 
@@ -129,7 +129,7 @@ Still open: live FINAL GOAL on almona02.com; disposable-project walk on **prod**
 - [x] Merge order #74 → #71 → #72 → #70 → #73  
 - [x] No auto SQL on merge/deploy  
 - [x] Production deploy SHA `8a1ac7d7`  
-- [ ] Merge draft #76 (authoritative binding) after review  
+- [x] #76 code merged; one required approval restored afterward  
 
 ### Staging (Phase B)
 
@@ -155,3 +155,22 @@ Still open: live FINAL GOAL on almona02.com; disposable-project walk on **prod**
 - Closing `%-no-hardener` loophole ≠ live hardener workflow walk  
 - Estimate 10/18 metrics ≠ live FINAL GOAL  
 - Phase C #71/#72 grant does **not** authorize ledger/kerf or binding SQL promote  
+
+## 11 October verified status and next steps
+
+This section supersedes stale current-state labels above; earlier dated artifacts remain historical evidence.
+
+- Main **99fd2520** includes **#76 and #77**. One required approval was restored after the owner-authorized #76 exception; required checks retained. No further review bypass authorized.
+- Composite remains **88/100 provisional**, controlled pre-production. Batch DONE labels describe implementation, not completed browser/manufacturing contracts. Partial DXF, soft stock reservation, flag-dependent customer persistence and quote/order integration remain bounded gaps.
+- Staging-only reviewed delta **20261011094729** (`pr76_reviewed_staging_evidence_delta`) passed **39/39 SQL checks**: owner/stock 8, canonical 15, binding 8, ledger/kerf 8. Test transactions rolled back and no fixtures persisted. This supplements prior staging SQL/Auth evidence, not browser or full convert acceptance. Production #76 SQL remains separately gated.
+- E2E is **paused by owner instruction**. No new FINAL GOAL or workshop-readiness claim. FP-027 remains a machine-export blocker. Staging security remains open: 14 public tables without RLS and 24 anonymous security-definer findings.
+
+Execution order:
+1. Verify the isolated BOM save/qualification repair against current main: failed saves and stale responses cannot publish; new revisions require fresh authority; saved sliding cuts require exact profile/length/angle multiset parity. Do not merge original #80 qualification rebinding.
+2. Repair #78 conflicts and ledger test contracts, then independently review fingerprint preservation. Split upgrade documentation from functional patches.
+3. Complete #81 phase-one production inspector wiring, stable occurrence IDs, DoWin generator parity and catalogue/rule cache invalidation before phases 2-5.
+4. Keep Gold flexibility explicit: asymmetric and mixed openings; material-specific aluminum/UPVC accessories; per-occurrence frame/sash/glass editing; authored profile choices must not be silently replaced to force parity.
+5. Address staging schema/security parity through reviewed migrations; no reset or blanket production SQL push.
+6. Resume disposable browser FINAL GOAL only on owner instruction: ten distinct poses, eighteen units, >100 cuts, save/reload/fresh login, hardener negatives and order/release/QC/delivery. Keep 414 uniform cuts and 489 diverse cuts attached to their separate fixtures and dimensions.
+
+Keep implementation, CI, staging SQL, staging browser, live acceptance and production readiness separate. See [the repair report](../reviews/CURSOR_FABRICATOR_BOM_REPAIR_2026-10-11.md).

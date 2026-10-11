@@ -1,10 +1,10 @@
 # Fabricator user-workflow upgrade scorecard
 
 Date: 5 October 2026 (Batch 0 owners seeded on almona02).  
-Refreshed: **8 October 2026** (stack #61–#68 local/CI evidence).  
+Refreshed: **11 October 2026**, composite **88/100 provisional**. Main `99fd2520` includes #76/#77; see current verification below. Prior 8 October metrics remain historical fixture evidence.  
 Canonical sequencing: [upgrade plan](FABRICATOR_USER_WORKFLOW_UPGRADE_PLAN_2026-10-05.md) · [Batch 0 baseline](BATCH0_STAGING_BASELINE_2026-10-05.md) · [repair exit](FABRICATOR_REPAIR_AND_OPTIMIZATION_EXIT_PLAN_2026-10-05.md).
 
-## Latest verification — 8 October 2026
+## Historical fixture verification — 8 October 2026
 
 | Evidence | Result |
 |---|---|
@@ -17,7 +17,7 @@ Canonical sequencing: [upgrade plan](FABRICATOR_USER_WORKFLOW_UPGRADE_PLAN_2026-
 
 Artifacts: `/opt/cursor/artifacts/e2e-1018-metrics.json`. Earlier 6 Oct repair baseline (22 tests / PDF / responsive) remains valid for Batches 1–6 local repairs.
 
-## Verdict
+## Historical 8 October layer estimates
 
 | Layer | Score | Meaning |
 |---|---|---|
@@ -112,3 +112,22 @@ Merge order (bottom → top). Do not flatten onto `main` until #61 undrafts and 
 1. Fix #62 tsc vs #61; undraft integration layers in merge order.
 2. Execute Phase B on staging with Batch 0 fixtures; attach digests to this scorecard.
 3. Only then Phase C production promote and scorecard live-exit update.
+
+## 11 October verified status and next steps
+
+This section supersedes stale current-state labels above; earlier dated artifacts remain historical evidence.
+
+- Main **99fd2520** includes **#76 and #77**. One required approval was restored after the owner-authorized #76 exception; required checks retained. No further review bypass authorized.
+- Composite remains **88/100 provisional**, controlled pre-production. Batch DONE labels describe implementation, not completed browser/manufacturing contracts. Partial DXF, soft stock reservation, flag-dependent customer persistence and quote/order integration remain bounded gaps.
+- Staging-only reviewed delta **20261011094729** (`pr76_reviewed_staging_evidence_delta`) passed **39/39 SQL checks**: owner/stock 8, canonical 15, binding 8, ledger/kerf 8. Test transactions rolled back and no fixtures persisted. This supplements prior staging SQL/Auth evidence, not browser or full convert acceptance. Production #76 SQL remains separately gated.
+- E2E is **paused by owner instruction**. No new FINAL GOAL or workshop-readiness claim. FP-027 remains a machine-export blocker. Staging security remains open: 14 public tables without RLS and 24 anonymous security-definer findings.
+
+Execution order:
+1. Verify the isolated BOM save/qualification repair against current main: failed saves and stale responses cannot publish; new revisions require fresh authority; saved sliding cuts require exact profile/length/angle multiset parity. Do not merge original #80 qualification rebinding.
+2. Repair #78 conflicts and ledger test contracts, then independently review fingerprint preservation. Split upgrade documentation from functional patches.
+3. Complete #81 phase-one production inspector wiring, stable occurrence IDs, DoWin generator parity and catalogue/rule cache invalidation before phases 2-5.
+4. Keep Gold flexibility explicit: asymmetric and mixed openings; material-specific aluminum/UPVC accessories; per-occurrence frame/sash/glass editing; authored profile choices must not be silently replaced to force parity.
+5. Address staging schema/security parity through reviewed migrations; no reset or blanket production SQL push.
+6. Resume disposable browser FINAL GOAL only on owner instruction: ten distinct poses, eighteen units, >100 cuts, save/reload/fresh login, hardener negatives and order/release/QC/delivery. Keep 414 uniform cuts and 489 diverse cuts attached to their separate fixtures and dimensions.
+
+Keep implementation, CI, staging SQL, staging browser, live acceptance and production readiness separate. See [the repair report](../reviews/CURSOR_FABRICATOR_BOM_REPAIR_2026-10-11.md).
