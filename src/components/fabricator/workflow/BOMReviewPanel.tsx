@@ -28,6 +28,8 @@ export const BOMReviewPanel: React.FC = () => {
   const navigate = useNavigate();
   const { currentProject, workflowIdentity, bom, setBOM, completeStep } = useWorkflowStore();
   const engineeringPacks = useEngineeringSystemPacks();
+  // BOM rows are per window unit; the table reports project totals for the pose quantity.
+  const poseQuantity = Math.max(1, Number(currentProject?.quantity ?? 1) || 1);
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -252,7 +254,7 @@ export const BOMReviewPanel: React.FC = () => {
           </TabsList>
 
           <TabsContent value="profiles" className="mt-4">
-            <ProfilesTable profiles={bom.profiles} />
+            <ProfilesTable profiles={bom.profiles} poseQuantity={poseQuantity} />
           </TabsContent>
           <TabsContent value="hardware" className="mt-4">
             <HardwareTable hardware={bom.hardware} />
@@ -323,7 +325,10 @@ const CostCard: React.FC<{ label: string; value: number; highlight?: boolean }> 
   </Card>
 );
 
-export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles'] }> = ({ profiles }) => (
+/** BOM rows are per window unit; the table reports project totals for the pose quantity. */
+const unitQuantityOf = (poseQuantity?: number) => Math.max(1, Number(poseQuantity ?? 1) || 1);
+
+export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles']; poseQuantity?: number }> = ({ profiles, poseQuantity }) => (
   <Card className="bg-slate-900/40 border-amber-600/20">
     <CardHeader className="pb-2">
       <CardTitle className="text-sm text-amber-200">Profile Cut List</CardTitle>
@@ -347,7 +352,7 @@ export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles'] }> = ({
                 <td className="py-2 px-3 text-amber-300 font-medium">{p.role}</td>
                 <td className="py-2 px-3 text-slate-400">{p.profileCode || '—'}</td>
                 <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.length ? p.cuttingLengths.map((length, cutIndex) => <div key={cutIndex}>{length.toFixed(1)}</div>) : p.length?.toFixed(1) ?? '—'}</td>
-                <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.length || p.quantity}</td>
+                <td className="py-2 px-3 text-right text-slate-300">{((p.cuttingLengths?.length ?? 0) || p.quantity) * unitQuantityOf(poseQuantity)}</td>
                 <td className="py-2 px-3 text-right text-slate-400">{p.angles?.length ? p.angles.map((angle, cutIndex) => <div key={cutIndex}>{angle}°</div>) : '90°'}</td>
                 <td className="py-2 px-3 text-right text-amber-200">{p.cost?.toFixed(2) ?? '—'}</td>
               </tr>
@@ -357,7 +362,7 @@ export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles'] }> = ({
             <tr className="border-t border-amber-600/30 font-bold">
               <td colSpan={3} className="py-2 px-3 text-amber-200">Total</td>
               <td className="py-2 px-3 text-right text-amber-200">
-                {profiles.reduce((s, p) => s + (p.cuttingLengths?.length || p.quantity), 0)}
+                {profiles.reduce((s, p) => s + ((p.cuttingLengths?.length ?? 0) || p.quantity) * unitQuantityOf(poseQuantity), 0)}
               </td>
               <td />
               <td className="py-2 px-3 text-right text-amber-300">

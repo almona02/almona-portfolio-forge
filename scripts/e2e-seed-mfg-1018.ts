@@ -107,8 +107,8 @@ function pickProfile(pack: any, role: string) {
   );
 }
 
-function buildLedger(pack: any) {
-  const components = MEMBER_CUTS.map((member) => {
+function buildLedger(pack: any, omitRoles: readonly string[] = []) {
+  const components = MEMBER_CUTS.filter((member) => !omitRoles.includes(member.role)).map((member) => {
     const profile = pickProfile(pack, member.role);
     if (!profile?.id) throw new Error(`caluminium-ps pack has no profile for role ${member.role}`);
     return {
@@ -189,7 +189,11 @@ async function main() {
   for (let i = 0; i < 10; i++) {
     const quantity = i < 8 ? 2 : 1;
     const poseId = `a1000000-1018-4000-8000-${String(i + 1).padStart(12, '0')}`;
-    const components = buildLedger(pack as any);
+    // E2E_LEGACY_LEDGER_POSE=n reproduces a pose saved before the sliding-track
+    // completion existed: the ledger is deliberately short, so the completeness
+    // self-check below is skipped for that pose only.
+    const legacy = process.env.E2E_LEGACY_LEDGER_POSE === String(i + 1);
+    const components = buildLedger(pack as any, legacy ? ['track'] : []);
 
     const windowUnit = {
       id: poseId,
@@ -206,7 +210,9 @@ async function main() {
     // Self-check against the estimate contract using only Node-safe modules.
     const expected = countRequiredProfilePieces(windowUnit as any, ledgerPattern(windowUnit) as any);
     const actual = components.reduce((sum, component) => sum + component.cuttingLengths.length, 0);
-    if (actual !== expected) {
+    if (legacy) {
+      console.log(`pose ${i + 1}: LEGACY ledger ${actual}/${expected} pieces (deliberately short regression fixture)`);
+    } else if (actual !== expected) {
       console.error(`pose ${i + 1}: ledger ${actual}/${expected} pieces would be rejected by the estimate contract`);
       process.exit(1);
     }
@@ -250,7 +256,11 @@ async function main() {
 
   console.log(`E2E_MFG_PROJECT_ID=${PROJECT_ID}`);
   console.log(`E2E_USER_ID=${ownerId}`);
-  console.log(`Seeded 10 positions (18 units) for ${SYSTEM_PACK_ID} sliding with complete saved ledgers.`);
+  const legacyPose = Number(process.env.E2E_LEGACY_LEDGER_POSE ?? 0);
+  const legacyNote = legacyPose >= 1 && legacyPose <= 10
+    ? `pose ${legacyPose} as a DELIBERATELY SHORT legacy ledger and the rest complete`
+    : 'complete saved ledgers';
+  console.log(`Seeded 10 positions (18 units) for ${SYSTEM_PACK_ID} sliding with ${legacyNote}.`);
 }
 
 main().catch((err) => {
