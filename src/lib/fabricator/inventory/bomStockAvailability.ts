@@ -117,27 +117,10 @@ export function resolveOwnedProfileForBomLine(
     finish,
   });
   // Prefer exact catalogue+pack+material+finish; allow pack-only catalogue match when finish/material empty on BOM.
-  const exact = owned.find((p) => {
-    const keys = profileCatalogueKeys(p);
-    if (!keys.includes(code.toLowerCase())) return false;
-    return ownedMatchKey({
-      catalogueKey: code,
-      pack: profilePack(p),
-      material: (p.material || '').toLowerCase(),
-      finish: profileFinish(p),
-    }) === ownedMatchKey({
-      catalogueKey: code,
-      pack: pack || profilePack(p),
-      material: (p.material || '').toLowerCase(),
-      finish: profileFinish(p),
-    });
-  });
-  if (exact) return exact;
-
   const byCodeAndPack = owned.filter((p) => {
     const keys = profileCatalogueKeys(p);
     if (!keys.includes(code.toLowerCase())) return false;
-    if (pack && profilePack(p) && profilePack(p).toLowerCase() !== pack.toLowerCase()) return false;
+    if (pack && profilePack(p).toLowerCase() !== pack.toLowerCase()) return false;
     return true;
   });
   if (byCodeAndPack.length === 1) return byCodeAndPack[0];
@@ -149,7 +132,9 @@ export function resolveOwnedProfileForBomLine(
 export function buildBomDemandReport(
   bomProfiles: FabricationData['profiles'],
   ownedInventory: Profile[],
+  poseQuantity = 1,
 ): BomDemandReport {
+  if (!Number.isSafeInteger(poseQuantity) || poseQuantity < 1) throw new Error('Pose quantity must be a positive integer.');
   if (!bomProfiles.length) {
     throw new Error('BOM has no physical profile ledger.');
   }
@@ -166,7 +151,8 @@ export function buildBomDemandReport(
   const stockVersionByProfile: Record<string, number> = {};
 
   if (uuidDemand) {
-    for (const [ownedId, requiredMetres] of Object.entries(uuidDemand)) {
+    for (const [ownedId, unitMetres] of Object.entries(uuidDemand)) {
+      const requiredMetres = unitMetres * poseQuantity;
       const owned = ownedInventory.find((p) => p.id === ownedId) ?? null;
       const sample = bomProfiles.find(
         (p) => (p.profileCode || p.id) === ownedId || p.id === ownedId,
@@ -218,7 +204,7 @@ export function buildBomDemandReport(
         throw new Error(`Profile ${line.id} has an invalid physical cut ledger.`);
       }
       const requiredMetres =
-        line.cuttingLengths.reduce((sum, length) => sum + length, 0) / 1000;
+        line.cuttingLengths.reduce((sum, length) => sum + length, 0) / 1000 * poseQuantity;
       const owned = resolveOwnedProfileForBomLine(line, ownedInventory);
       if (!owned) {
         rows.push({

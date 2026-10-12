@@ -55,7 +55,7 @@ export const OptimizationPage: React.FC = () => {
     const projectIdentity = currentProject ? `${currentProject.id}:${currentProject.updatedAt instanceof Date ? currentProject.updatedAt.toISOString() : String(currentProject.updatedAt ?? '')}` : null;
     useEffect(() => { projectIdentityRef.current = projectIdentity; }, [projectIdentity]);
     useEffect(() => { activeProjectRef.current = currentProject; }, [currentProject]);
-    useEffect(() => () => { mountedRef.current = false; activeRunRef.current += 1; }, []);
+    useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; activeRunRef.current += 1; }; }, []);
 
     const engineeringPacksForGate = useEngineeringSystemPacks();
     // The gate completes the saved design ledger before judging BOM parity, so a pose
@@ -80,9 +80,13 @@ export const OptimizationPage: React.FC = () => {
         [measurementData, currentProject, bom, optimizationResult, systemPackForGate]
     );
 
+    const completedProject = useMemo(() => currentProject
+        ? { ...currentProject, components: completeDesignLedger(currentProject, systemPackForGate) }
+        : null, [currentProject, systemPackForGate]);
+
     const profiles = useMemo(
-        () => Array.from(new Map((currentProject?.components ?? []).filter(component => component.profile?.id).map(component => [component.profile.id, component.profile])).values()),
-        [currentProject?.components],
+        () => Array.from(new Map((completedProject?.components ?? []).filter(component => component.profile?.id).map(component => [component.profile.id, component.profile])).values()),
+        [completedProject?.components],
     );
 
     const hasRequiredData = currentProject !== null;
@@ -110,11 +114,11 @@ export const OptimizationPage: React.FC = () => {
             const solverConfig: AdaptiveSolverConfig = { maxSolvingTime: 30, complexityThresholds: { simple: 50, medium: 500 } };
             const optimizationResult: OptimizationResult = await new AdaptiveSolver(solverConfig).solve(job, profiles);
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
-            const resultValidation = validateOptimizationReconciliation(optimizationResult, runProject);
+            const resultValidation = validateOptimizationReconciliation(optimizationResult, { ...runProject, components });
             if (!resultValidation.valid) throw new Error(resultValidation.errors[0]?.message ?? 'Optimization result is invalid.');
 
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
-            setOptimizationResult(optimizationResult);
+
             // Server-stamped evidence only — client JSON on positions_v2.optimization is not convert-eligible.
             const revision =
                 workflowIdentity?.revision ??
@@ -134,7 +138,9 @@ export const OptimizationPage: React.FC = () => {
             } else if (user?.id && poseId) {
                 throw new Error('Authoritative position revision is required before optimization can be recorded.');
             }
-            alignShellProject({ ...runProject, status: 'optimized', updatedAt: new Date() });
+            if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
+            alignShellProject({ ...runProject, components, status: 'optimized', updatedAt: new Date() });
+            setOptimizationResult(optimizationResult);
             if (!completeStep('optimization')) throw new Error('Optimization evidence could not be verified.');
 
         } catch (err) {
@@ -148,9 +154,9 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, navigate, invalidateStep, projectIdentity, bom, workflowIdentity]);
+    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, navigate, invalidateStep, projectIdentity, bom, workflowIdentity, systemPackForGate]);
 
-    const validOptimization = validateOptimizationReconciliation(optimizationResult, currentProject).valid;
+    const validOptimization = validateOptimizationReconciliation(optimizationResult, completedProject).valid;
 
     const LoadingFallback = (
         <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
@@ -193,8 +199,9 @@ export const OptimizationPage: React.FC = () => {
 
     return (
         <div className="flex flex-col h-full bg-[#0a0a0a]">
+            <p className="px-3 py-2 text-xs text-slate-400">Cut plan per window · pose quantity {currentProject?.quantity ?? 1}. Use project optimization to pool repeated windows; verify inventory before production.</p>
             <Suspense fallback={LoadingFallback}>
-                <OptimizationCockpit result={optimizationResult} algorithmLabel={null} authority={null}>
+                <OptimizationCockpit result={optimizationResult} requiredProfiles={bom?.profiles} stockProfiles={profiles} algorithmLabel={null} authority={null}>
                     <OptimizationEqualizer
                         userId={user?.id || 'guest'}
                         profiles={profiles}

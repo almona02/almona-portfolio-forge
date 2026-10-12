@@ -1,3 +1,4 @@
+import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { NOT_RECORDED } from '@/lib/fabricator/studioWorkflow';
 import type { CuttingPlan } from '@/types/fabricator';
 import React from 'react';
@@ -5,12 +6,13 @@ import { useTranslation } from 'react-i18next';
 
 export interface RequiredCutsPanelProps {
   plans: CuttingPlan[] | null | undefined;
+  profiles?: CompleteBOM['profiles'];
 }
 
 /**
  * Displays required cuts from an existing cutting plan. No length math.
  */
-export const RequiredCutsPanel: React.FC<RequiredCutsPanelProps> = ({ plans }) => {
+export const RequiredCutsPanel: React.FC<RequiredCutsPanelProps> = ({ plans, profiles }) => {
   const { t } = useTranslation('fabricator');
   const rows =
     plans?.flatMap((plan, pi) =>
@@ -22,7 +24,10 @@ export const RequiredCutsPanel: React.FC<RequiredCutsPanelProps> = ({ plans }) =
         angle: cut.angle,
         componentId: cut.componentId,
       })),
-    ) ?? [];
+    ) ?? profiles?.flatMap(profile => profile.cuttingLengths.map((length, index) => ({
+      key: profile.id + ':' + index, cutId: profile.id + ':' + index,
+      profile: profile.profileCode, length, angle: profile.angles?.[index], componentId: profile.id,
+    }))) ?? [];
 
   return (
     <section

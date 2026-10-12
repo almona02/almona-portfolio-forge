@@ -282,9 +282,12 @@ export class CalibrationAnalytics {
     try {
       // Store in a generic calibration_analytics table
       // If the table doesn't exist yet, we'll create it in a migration
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user.id) return;
       const { error } = await supabase.from('calibration_analytics').insert({
-        event_type: eventType,
-        event_data: data,
+        user_id: session.user.id,
+        event_type: ({ verification_gate: 'calibration_applied', production_feedback: 'job_result', adjustment_suggestion: 'adjustment' } as Record<string, string>)[eventType] ?? eventType,
+        event_data: { ...data, event_subtype: eventType },
         created_at: new Date().toISOString(),
       } as any);
 

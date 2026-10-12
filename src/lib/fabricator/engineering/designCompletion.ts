@@ -8,6 +8,7 @@
 import type { WindowComponent, WindowGrid } from '@/types/fabricator';
 
 export interface DesignCompletionPayload {
+  readonly closeAfterSave?: boolean;
   readonly components: WindowComponent[];
   readonly grid: WindowGrid;
   readonly systemPackId: string | null;

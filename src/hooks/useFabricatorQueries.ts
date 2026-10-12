@@ -102,16 +102,23 @@ export function useAuthoritativePosition(projectId: string | undefined, position
       source: query.data.identity.source,
       revision: query.data.identity.revision,
     };
-    hydrate(identity, query.data.position);
+    hydrate(identity, query.data.position, query.data.review);
   }, [hydrate, query.data, user?.id, projectId, positionId]);
   const expectedIdentity = query.data?.identity ?? null;
   const isHydrated = Boolean(
     expectedIdentity &&
-    workflowIdentityMatches(workflowIdentity, expectedIdentity) &&
+    workflowIdentityMatches(workflowIdentity, { ...expectedIdentity, revision: workflowIdentity?.revision ?? expectedIdentity.revision }) &&
+    (workflowIdentity?.revision ?? 0) >= expectedIdentity.revision &&
     currentProject?.id === expectedIdentity.positionId &&
     (currentProject as (WindowUnit & { projectId?: string }) | null)?.projectId === expectedIdentity.projectId,
   );
-  return { ...query, isHydrated };
+  // The workspace must consume the acknowledged store projection, not an older
+  // query response that hydration correctly refused to install.
+  const data = isHydrated && query.data && currentProject && workflowIdentity
+    ? { ...query.data, identity: workflowIdentity, position: currentProject,
+        review: workflowIdentityMatches(workflowIdentity, query.data.identity) ? query.data.review : undefined }
+    : query.data;
+  return { ...query, data, isHydrated };
 }
 
 export function useUpsertPose() {

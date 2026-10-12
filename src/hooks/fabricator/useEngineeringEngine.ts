@@ -333,7 +333,7 @@ export const useEngineeringEngine = ({
         setError(null);
     }, []);
 
-    const validate = useCallback((): boolean => {
+    const validate = useCallback((closeAfterSave?: unknown): boolean => {
         if (!liveProject) {
             setError('Cannot complete design: project data is missing.');
             return false;
@@ -372,6 +372,7 @@ export const useEngineeringEngine = ({
         setError(null);
         // FP-028 / P5.3: persist grid + system + template with components
         onDesignComplete({
+            ...(closeAfterSave === true ? { closeAfterSave: true } : {}),
             components: liveProject.components,
             grid: currentGrid,
             systemPackId: activeSystemPackId,

@@ -611,7 +611,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     let filtered = profiles;
 
     if (searchTerm) {
-      const query = searchTerm.toLowerCase();
+      const query = searchTerm.trim().toLowerCase();
       filtered = filtered.filter((p) => {
         // Search across multiple fields
         const name = p.name?.toLowerCase() || '';
@@ -622,7 +622,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         const height = p.height?.toString() || '';
         const code = (p.specifications as any)?.supplierCode?.toLowerCase() ||
           (p.specifications as any)?.internalCode?.toLowerCase() || '';
-        const role = (p.specifications as any)?.profileRole?.toLowerCase() || '';
+        const role = [p.profileRole, (p.specifications as any)?.profileRole, (p.specifications as any)?.role].filter(Boolean).join(' ').toLowerCase();
+        const identity = [p.id, ...(p.systemPackIds ?? []), (p.specifications as any)?.systemPackId, (p.specifications as any)?.profileCode].filter(Boolean).join(' ').toLowerCase();
 
         return (
           name.includes(query) ||
@@ -632,7 +633,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           width.includes(query) ||
           height.includes(query) ||
           code.includes(query) ||
-          role.includes(query)
+          role.includes(query) || identity.includes(query)
         );
       });
     }

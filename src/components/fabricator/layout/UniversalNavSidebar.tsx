@@ -1,3 +1,5 @@
+import { publishActiveProject } from '@/lib/fabricator/activeProjectBridge';
+import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { FabricatorContext } from '@/contexts/FabricatorContextProvider';
@@ -19,7 +21,7 @@ import {
 } from 'lucide-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CollapsiblePanel } from './CollapsiblePanel';
 
 function roleLabel(role: string | undefined | null): string {
@@ -52,7 +54,8 @@ interface UniversalNavSidebarProps {
 export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ activeStudio }) => {
   const location = useLocation();
   const { t } = useTranslation('fabricator');
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const { state: workspace } = useFabricatorWorkspace();
   const narrow = useNarrowStudioShell();
   const setPanelState = useFabricatorUIStore((s) => s.setPanelState);
@@ -350,6 +353,11 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
               <p className="text-xs text-gray-400 truncate" title={displayRole}>
                 {displayRole}
               </p>
+              <button type="button" className="mt-2 text-xs text-amber-300 underline" onClick={async () => {
+                if (draftDirty) { toast.error('Save the current position before changing user.'); return; }
+                try { await signOut(); publishActiveProject(null); useWorkflowStore.getState().clearWorkflow(); navigate('/login', { replace: true }); }
+                catch { toast.error('Unable to sign out. Please retry.'); }
+              }}>Change user</button>
             </div>
             <Bell size={16} className="text-gray-400" aria-hidden />
           </div>

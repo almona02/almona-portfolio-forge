@@ -14,7 +14,7 @@ export interface ProfileDefinitionInput {
   height: number;
   materialThickness: number;
   weightPerMeter: number;
-  role: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory';
+  role: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'screen_track' | 'accessory';
   material: 'aluminum' | 'upvc' | 'wood';
   defaultKFactor45?: number;
   defaultKFactor90?: number;

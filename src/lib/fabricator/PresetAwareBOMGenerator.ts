@@ -1,3 +1,4 @@
+import { applyWorkshopBOMRules } from './bom/workshopBOMRules';
 /**
  * PresetAwareBOMGenerator - Complete BOM Generator with Preset Awareness
  * 
@@ -48,6 +49,7 @@ export interface CompleteBOM {
     unitPrice: number; // EGP
     totalCost: number; // EGP
     supplier: string;
+    unit?: 'piece' | 'metre';
   }>;
   assemblySequence: FabricationData['productionSequence'];
   cost: {
@@ -199,12 +201,14 @@ export class PresetAwareBOMGenerator {
         };
         
         // Generate all BOM components in parallel for performance
-        const [profiles, hardware, glazing, accessories] = await Promise.all([
+        const [profiles, defaultHardware, glazing, defaultAccessories] = await Promise.all([
           this.profileCalculator.calculateProfileBOM(wu, pat, sp),
           this.hardwareCalculator.calculateHardwareBOM(wu, pat, sp),
           this.glassCalculator.calculateGlassBOM(wu, pat),
           this.accessoriesCalculator.calculateAccessoriesBOM(wu, pat, sp)
         ]);
+
+        const { hardware, accessories } = applyWorkshopBOMRules(sp, wu, defaultHardware, defaultAccessories);
 
         // Generate assembly sequence
         const assemblySequence = await this.assemblyGenerator.generateAssemblySequence(

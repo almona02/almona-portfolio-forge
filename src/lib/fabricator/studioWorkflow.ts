@@ -233,6 +233,7 @@ export function stageRecoveryStage(stage: StudioWorkflowStageDef, e: StudioWorkf
   if (stage.id === 'design') return 'measure';
   if (!validateOptimizationInputs(e.currentProject).valid) return 'design';
   if (!hasCurrentQualifiedBOM(e)) return 'bom';
+  if (['optimize','production','qc'].includes(stage.id) && !hasCurrentStockReservation(e)) return 'stock';
   return 'optimize';
 }
 

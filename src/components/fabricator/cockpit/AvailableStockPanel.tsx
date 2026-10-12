@@ -1,16 +1,17 @@
 import { NOT_RECORDED } from '@/lib/fabricator/studioWorkflow';
-import type { CuttingPlan } from '@/types/fabricator';
+import type { CuttingPlan, Profile } from '@/types/fabricator';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface AvailableStockPanelProps {
   plans: CuttingPlan[] | null | undefined;
+  profiles?: Profile[];
 }
 
 /**
  * Stock / remnant lengths as recorded on the cutting plan. No remnant math.
  */
-export const AvailableStockPanel: React.FC<AvailableStockPanelProps> = ({ plans }) => {
+export const AvailableStockPanel: React.FC<AvailableStockPanelProps> = ({ plans, profiles }) => {
   const { t } = useTranslation('fabricator');
   const bars = plans ?? [];
 
@@ -24,7 +25,8 @@ export const AvailableStockPanel: React.FC<AvailableStockPanelProps> = ({ plans 
       </header>
       <div className="flex-1 overflow-auto">
         {bars.length === 0 ? (
-          <p className="p-3 text-xs text-slate-500">{NOT_RECORDED}</p>
+          <div><p className="p-3 text-xs text-slate-500">{profiles?.length ? 'Catalogue stock lengths — confirm owned availability in Stock.' : NOT_RECORDED}</p>
+          {profiles?.map(profile => <p key={profile.id} className="px-3 py-1 text-xs">{profile.name || profile.id}: {profile.barLength ?? NOT_RECORDED} mm · <a className="underline" href="/fabricator/studio/data/stock">Check inventory</a></p>)}</div>
         ) : (
           <table className="w-full text-xs">
             <thead className="sticky top-0 bg-[#111] text-[10px] uppercase text-amber-700">

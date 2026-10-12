@@ -34,33 +34,6 @@ export class UnifiedProfileCatalog {
 
   static async getAllSystems(userId?: string): Promise<CatalogSystem[]> {
     let systems: CatalogSystem[] = [];
-    const userProfilesMap: Map<string, any> = new Map();
-
-    // Pre-fetch user profiles if userId is provided to use their roles
-    if (userId) {
-      try {
-         
-        const db = supabase as any;
-        const { data: userProfiles } = await db
-          .from('fabricator_profiles')
-          .select('*')
-          .eq('user_id', userId);
-
-        if (userProfiles && userProfiles.length > 0) {
-          // Create a map by supplierCode/internalCode for quick lookup
-          userProfiles.forEach((p: any) => {
-            const specs = p.specifications || {};
-            const code = specs.supplierCode || specs.internalCode;
-            if (code) {
-              userProfilesMap.set(code.toLowerCase(), p);
-            }
-          });
-        }
-      } catch (e) {
-        console.error("Failed to pre-fetch user profiles for role mapping", e);
-      }
-    }
-
     // Use cached systems for the static parts if available, but we always re-fetch user profiles
     // Ideally we should cache static parts separately. For now, we rebuild static parts if not cached.
     if (this.cachedSystems) {
@@ -69,15 +42,21 @@ export class UnifiedProfileCatalog {
       systems = [];
       // 1. Import from System Packs (High confidence, structured)
       for (const pack of SYSTEM_PACKS) {
-        const profiles: CatalogProfile[] = [];
+        const profiles: CatalogProfile[] = (pack.profiles ?? []).map(p => ({
+          profileCode: p.id, name: p.name || p.id, systemName: pack.meta.name,
+          systemPackId: pack.meta.id, category: p.category ?? 'window',
+          role: p.profileRole ?? 'other' as Profile['profileRole'],
+          weightPerMeter: p.weightPerMeter ?? p.unitWeight,
+          dimensions: { width: p.width, height: p.height, thickness: p.thickness },
+          specifications: p.specifications,
+        }));
         
         // Helper to extract from JUMBO100 style
         const packSpec = pack.windowSystemSpec;
         if (packSpec.aluminum_profiles) {
           for (const p of packSpec.aluminum_profiles) {
             // Check if user has this profile in database with a defined role
-            const userProfile = userProfilesMap.get(p.profile_number.toLowerCase());
-            const dbRole = userProfile?.specifications?.profileRole || userProfile?.profile_role;
+            const dbRole = undefined;
             
             profiles.push({
               profileCode: p.profile_number,
@@ -103,8 +82,7 @@ export class UnifiedProfileCatalog {
           
           // Frames
           Object.values(config.frame_profiles || {}).forEach((fp: any) => {
-            const userProfile = userProfilesMap.get(fp.profile_code?.toLowerCase());
-            const dbRole = userProfile?.specifications?.profileRole || userProfile?.profile_role;
+            const dbRole = undefined;
             
             profiles.push({
               profileCode: fp.profile_code,
@@ -120,8 +98,7 @@ export class UnifiedProfileCatalog {
 
           // Sashes
           Object.values(config.sash_profiles || {}).forEach((sp: any) => {
-            const userProfile = userProfilesMap.get(sp.profile_code?.toLowerCase());
-            const dbRole = userProfile?.specifications?.profileRole || userProfile?.profile_role;
+            const dbRole = undefined;
             
             profiles.push({
               profileCode: sp.profile_code,
@@ -137,8 +114,7 @@ export class UnifiedProfileCatalog {
 
           // Beads
           Object.values(config.glazing_beads || {}).forEach((bp: any) => {
-            const userProfile = userProfilesMap.get(bp.profile_code?.toLowerCase());
-            const dbRole = userProfile?.specifications?.profileRole || userProfile?.profile_role;
+            const dbRole = undefined;
             
             profiles.push({
               profileCode: bp.profile_code,
@@ -198,8 +174,7 @@ export class UnifiedProfileCatalog {
             // Avoid duplicates if already populated from pack
             if (!system.profiles.find(p => p.profileCode === item.profileNumber)) {
               // Check if user has this profile in database with a defined role
-              const userProfile = userProfilesMap.get(item.profileNumber?.toLowerCase());
-              const dbRole = userProfile?.specifications?.profileRole || userProfile?.profile_role;
+              const dbRole = undefined;
               
               system.profiles.push({
                 profileCode: item.profileNumber,
@@ -261,10 +236,12 @@ export class UnifiedProfileCatalog {
 
             for (const p of items) {
               const specs = p.specifications || {};
-              const code = specs.supplierCode || specs.internalCode || p.name;
+              const code = specs.supplierCode || specs.profileCode || specs.internalCode || p.name;
               
               // Only add if not already in the system (by code)
-              if (!system.profiles.find(existing => existing.profileCode === code)) {
+              const existingProfile = system.profiles.find(existing => existing.profileCode === code);
+              if (existingProfile) existingProfile.role = p.profile_role || specs.profileRole || specs.role || existingProfile.role;
+              if (!existingProfile) {
                 system.profiles.push({
                   profileCode: code,
                   oldProfileCode: specs.internalCode,
@@ -272,7 +249,7 @@ export class UnifiedProfileCatalog {
                   systemName: sysName,
                   systemPackId: system.id,
                   category: p.category || specs.category || 'window',
-                  role: p.profile_role || specs.profileRole || 'other',
+                  role: p.profile_role || specs.profileRole || specs.role || 'other',
                   weightPerMeter: p.weight_per_meter || specs.weightPerMeterKg,
                   dimensions: {
                     width: p.width,

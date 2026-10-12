@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { STUDIO_WORKFLOW_STAGES, deriveStageVisualStatus, stageBlockedReason, type StudioWorkflowEvidence } from './studioWorkflow';
+import { STUDIO_WORKFLOW_STAGES, deriveStageVisualStatus, stageBlockedReason, stageRecoveryStage, type StudioWorkflowEvidence } from './studioWorkflow';
 import type { WindowUnit } from '@/types/fabricator';
 
 const identity = { ownerUserId: 'owner', projectId: 'project', positionId: 'pose', source: 'v2' as const, revision: 4 };
@@ -155,3 +155,5 @@ describe('Studio readiness', () => {
     expect(stageBlockedReason(stage('delivery'), released)).toContain('QC');
   });
 });
+
+it('sends stock-blocked optimization to the stock prerequisite',()=>{expect(stageRecoveryStage(stage('optimize'),{...base,bom:qualified})).toBe('stock');});

@@ -1,3 +1,7 @@
+import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
+import { validateOptimizationReconciliation, completeDesignLedger } from '@/lib/fabricator/validation/WorkflowValidator';
+import { groupProfileCuts } from '@/lib/fabricator/bom/profileCutDisplay';
+import { countRequiredProfilePieces } from '@/lib/fabricator/bom/bomQualification';
 import { generateAcknowledgedBOM, StaleBOMGenerationError } from '@/lib/fabricator/bom/generateAcknowledgedBOM';
 import { approvedBOMContext } from '@/lib/fabricator/bom/approvedBOMContext';
 import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
@@ -113,11 +117,11 @@ export const BOMReviewPanel: React.FC = () => {
         },
         qualify: async (saved) => {
           try {
-            return await approvedBOMContext(saved.position, saved.identity);
-          } catch {
+            return await approvedBOMContext(saved.position, saved.identity, systemPack);
+          } catch (approvalError) {
             // Missing authority produces a visible estimate with qualification
             // reasons, not a qualified BOM or a false generation-failure screen.
-            return { identity: saved.identity };
+            return { identity: saved.identity, blockers: [approvalError instanceof Error ? approvalError.message : 'Manufacturing approval unavailable.'] };
           }
         },
         generate: async (saved, context) => {
@@ -130,6 +134,10 @@ export const BOMReviewPanel: React.FC = () => {
         publish: (saved, result) => {
           useWorkflowStore.getState().hydrateAuthoritativePosition(saved.identity, saved.position);
           setBOM(result);
+          const recorded = saved.review?.optimizationResult;
+          if (recorded && isQualifiedBOM(result) && validateOptimizationReconciliation(recorded,{...saved.position,components:completeDesignLedger(saved.position,systemPack)}).valid) {
+            useWorkflowStore.getState().setOptimizationResult(recorded);
+          }
         },
       });
     } catch (err) {
@@ -147,6 +155,13 @@ export const BOMReviewPanel: React.FC = () => {
       void generateBOM();
     }
   }, [bom, error, isGenerating, currentProject, systemPack, pattern, workflowIdentity, projectId, poseId, generateBOM]);
+
+  useEffect(() => {
+    if (bom && pattern && currentProject && bom.qualification &&
+        (bom.qualification.requiredPieceCount !== countRequiredProfilePieces(currentProject, pattern) || (bom.qualification.status === 'qualified' && !/^[a-f0-9]{64}$/i.test(bom.qualification.ruleVersion ?? '')))) {
+      setBOM(null);
+    }
+  }, [bom, pattern, currentProject, setBOM]);
 
   const handleContinue = () => {
     const validation = WorkflowValidator.validateBOMToOptimization(bom);
@@ -416,7 +431,7 @@ export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles']; poseQu
               <th className="text-right py-2 px-3">Cut lengths (mm)</th>
               <th className="text-right py-2 px-3">Pieces</th>
               <th className="text-right py-2 px-3">Angles</th>
-              <th className="text-right py-2 px-3">Cost (EGP)</th>
+              <th className="text-right py-2 px-3">Cost (EGP / unit)</th>
             </tr>
           </thead>
           <tbody>
@@ -424,7 +439,7 @@ export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles']; poseQu
               <tr key={i} className="border-b border-slate-800/50 hover:bg-amber-500/5">
                 <td className="py-2 px-3 text-amber-300 font-medium">{p.role}</td>
                 <td className="py-2 px-3 text-slate-400">{p.profileCode || '—'}</td>
-                <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.length ? p.cuttingLengths.map((length, cutIndex) => <div key={cutIndex}>{length.toFixed(1)}</div>) : p.length?.toFixed(1) ?? '—'}</td>
+                <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.length ? groupProfileCuts(p).map((cut, cutIndex) => <div key={cutIndex}>{cut.length.toFixed(1)} × {cut.count * unitQuantityOf(poseQuantity)}</div>) : p.length?.toFixed(1) ?? '—'}</td>
                 <td className="py-2 px-3 text-right text-slate-300">{((p.cuttingLengths?.length ?? 0) || p.quantity) * unitQuantityOf(poseQuantity)}</td>
                 <td className="py-2 px-3 text-right text-slate-400">{p.angles?.length ? p.angles.map((angle, cutIndex) => <div key={cutIndex}>{angle}°</div>) : '90°'}</td>
                 <td className="py-2 px-3 text-right text-amber-200">{p.cost?.toFixed(2) ?? '—'}</td>
