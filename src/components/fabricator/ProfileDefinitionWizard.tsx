@@ -34,7 +34,7 @@ interface ProfileDefinitionWizardProps {
     height?: number;
     materialThickness?: number;
     weightPerMeter?: number;
-    role?: 'frame' | 'mullion' | 'transom' | 'sash' | 'glazing_bead' | 'interlock' | 'accessory';
+    role?: 'frame' | 'mullion' | 'transom' | 'sash' | 'glazing_bead' | 'interlock' | 'screen_track' | 'accessory';
     material?: 'aluminum' | 'upvc' | 'wood';
     defaultKFactor45?: number;
     defaultKFactor90?: number;
@@ -237,15 +237,15 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
 
       // Map role to valid ProfileDefinitionInput role
       const roleValue: string = formData.role;
-      const validRole: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory' = 
+      const validRole: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'screen_track' | 'accessory' =
         (roleValue === 'casement' || roleValue === 'tilt' || roleValue === 'turn') ? 'sash' :
         (roleValue === 'fixed' || roleValue === 'ventilator') ? 'frame' :
-        (roleValue === 'frame' || roleValue === 'sash' || roleValue === 'mullion' || roleValue === 'transom' || roleValue === 'glazing_bead' || roleValue === 'interlock' || roleValue === 'accessory') ? roleValue :
+        (roleValue === 'frame' || roleValue === 'sash' || roleValue === 'mullion' || roleValue === 'transom' || roleValue === 'glazing_bead' || roleValue === 'interlock' || roleValue === 'screen_track' || roleValue === 'accessory') ? roleValue :
         'frame'; // Default fallback
 
       // Map material to valid ProfileDefinitionInput material (remove 'steel')
       const materialValue: string = formData.material;
-      const validMaterial: 'aluminum' | 'upvc' | 'wood' = 
+      const validMaterial: 'aluminum' | 'upvc' | 'wood' =
         materialValue === 'steel' ? 'aluminum' :
         (materialValue === 'aluminum' || materialValue === 'upvc' || materialValue === 'wood') ? materialValue :
         'aluminum'; // Default fallback
@@ -480,6 +480,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                       <SelectItem value="transom">Transom</SelectItem>
                       <SelectItem value="glazing_bead">Glazing Bead</SelectItem>
                       <SelectItem value="interlock">Interlock</SelectItem>
+                      <SelectItem value="screen_track">Track</SelectItem>
                       <SelectItem value="accessory">Accessory</SelectItem>
                     </SelectContent>
                   </Select>

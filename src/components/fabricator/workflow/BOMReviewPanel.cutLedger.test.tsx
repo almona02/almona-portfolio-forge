@@ -7,14 +7,14 @@ describe('BOM cut ledger display', () => {
     const profiles = [{ id: 'frame', role: 'frame', profileCode: 'TEST-FRAME', length: 4800, quantity: 1, cuttingLengths: [1000,1400,1000,1400], angles: [45,45,45,45], cost: 48 }] as CompleteBOM['profiles'];
     render(<ProfilesTable profiles={profiles} />);
     const rows = screen.getAllByRole('row');
-    expect(within(rows[1]).getAllByText('1000.0')).toHaveLength(2);
-    expect(within(rows[1]).getAllByText('1400.0')).toHaveLength(2);
+    expect(within(rows[1]).getByText('1000.0 × 2')).toBeTruthy();
+    expect(within(rows[1]).getByText('1400.0 × 2')).toBeTruthy();
     expect(within(rows[1]).getAllByText('45°')).toHaveLength(4);
     expect(within(rows[1]).getByText('4')).toBeTruthy();
     expect(within(rows[2]).getByText('4')).toBeTruthy();
     expect(within(rows[2]).getByText('48.00')).toBeTruthy();
   });
-});
+});
   it('reports project totals for the pose quantity instead of a single window', () => {
     const profiles = [{ id: 'frame', role: 'frame', profileCode: 'TEST-FRAME', length: 4800, quantity: 1, cuttingLengths: [1000, 1400, 1000, 1400], angles: [45, 45, 45, 45], cost: 48 }] as CompleteBOM['profiles'];
     // Four windows of the same pose: 4 cut occurrences per window become 16 pieces.

@@ -1,0 +1,12 @@
+# Configure a workshop system pack
+
+1. Open Profile Studio and create an owned system pack, or open Tuning and create an owned workshop copy of a catalogue pack. Keep catalogue profile IDs separate from display names.
+2. Add frame, sash, interlock, glazing bead and track profiles with their real dimensions, stock lengths and material data. Track is available as a profile role. Save profile changes before leaving Tuning.
+3. In Workshop BOM requirements, add hardware or accessories. Choose a category, quantity per window or opening sash, or an overall-perimeter multiplier for gaskets measured in metres. A configured category replaces the default for that category; disabling it omits the category, while removing an override restores the default.
+4. Save requirements and regenerate the BOM. Workshop configuration is an estimate until the authorized technical office approves it. Names and costs alone do not grant manufacturing authority.
+5. Submit catalogue and cutting-rule document references through the BOM approval panel. Admin Approvals must bind the actual pack, profiles, cutting rules, tolerances, stock lengths and machine kerf/trim to the saved position. After reviewing custom BOM requirements, include the Technical review reference as workshopBomRulesFingerprint in cutting-rule applicability. Regenerate after approval or any changed revision.
+6. Stock mappings are separate from catalogue approval. Use the stock page to inspect active-revision demand and create a purchase-order draft, including profile bars, hardware and accessories. Review proposed bar lengths, kerf, packaging units, supplier prices and existing stock before ordering. Exporting a draft does not create inventory balances. Receive delivered profiles through the purchase wizard to create owned mappings and stock movements.
+7. Profile and purchase searches include names, catalogue codes, roles and pack identifiers. Use Change user to sign out and authenticate another existing account; administrative rights follow that account's permissions.
+8. Measuring and Design have Save & close actions that save their actual form/design inputs. BOM and Optimization offer Save and Save & close. Review snapshots are scoped to owner, pose and revision, and are requalified against current approvals; optimization restoration uses current server evidence. Closing clears the active project header.
+
+The pose cutting plan is per window; use project optimization to pool repeated windows. BOM profile quantities and stock demand include the pose quantity.

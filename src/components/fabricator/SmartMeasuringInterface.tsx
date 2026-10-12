@@ -148,6 +148,7 @@ interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
   /** Save current pose measures then start the next pose in this project. */
   onSaveAndNextPose?: (data: MeasurementData) => void;
+  onSaveAndClose?: (data: MeasurementData) => void;
   /** Seed width/height and location fields from a stored pose. */
   initialData?: Partial<MeasurementData> | null;
   /** Optional preselected system pack ID, typically from NewProjectWizard */
@@ -159,7 +160,7 @@ interface SmartMeasuringInterfaceProps {
 
 export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = ({
   onMeasurementComplete,
-  onSaveAndNextPose,
+  onSaveAndNextPose, onSaveAndClose,
   initialData,
   systemPackId,
   region,
@@ -597,7 +598,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
   };
 
-  const handleSubmit = (nextPose = false) => {
+  const handleSubmit = (nextPose = false, closeAfterSave = false) => {
     const rawWidth = Number(measurements.width);
     const rawHeight = Number(measurements.height);
     const deduction = Number(measurements.wallDeduction || '0');
@@ -734,7 +735,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     };
 
     // Call the callback
-    if (nextPose && onSaveAndNextPose) {
+    if (closeAfterSave && onSaveAndClose) { onSaveAndClose(payload); }
+    else if (nextPose && onSaveAndNextPose) {
       onSaveAndNextPose(payload);
     } else if (onMeasurementComplete) {
       onMeasurementComplete(payload);
@@ -1870,6 +1872,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               >
                 {t('smart_measuring.actions.complete', 'Save Pose & Design')} <CheckCircle2 className="ml-2 h-4 w-4" />
               </Button>
+              {onSaveAndClose && <Button variant="outline" disabled={!verificationConfirmed || appearanceSuggestions.some(s => !confirmedAppearanceKinds.has(s.kind)) || Boolean(pendingPatternFit?.requiresConfirmation && pendingPatternFit.canApplyAsTemplate && !patternTemplateConfirmed)} onClick={() => handleSubmit(false, true)}>Save & close</Button>}
               {onSaveAndNextPose && (
                 <Button
                   onClick={() => handleSubmit(true)}

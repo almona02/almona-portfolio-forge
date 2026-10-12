@@ -1,6 +1,7 @@
+import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { isCadDesktopLayout, useStudioBreakpoint } from '@/hooks/useStudioBreakpoint';
 import { cn } from '@/lib/utils';
-import type { OptimizationResult } from '@/types/fabricator';
+import type { OptimizationResult, Profile } from '@/types/fabricator';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DesktopWorkspaceNotice } from '../shell/DesktopWorkspaceNotice';
@@ -14,13 +15,15 @@ export interface OptimizationCockpitProps {
   algorithmLabel?: string | null;
   authority?: 'deterministic' | 'advisory' | null;
   children?: React.ReactNode;
+  requiredProfiles?: CompleteBOM['profiles'];
+  stockProfiles?: Profile[];
 }
 
 export const OptimizationCockpit: React.FC<OptimizationCockpitProps> = ({
   result,
   algorithmLabel,
   authority,
-  children,
+  children, requiredProfiles, stockProfiles,
 }) => {
   const { t } = useTranslation('fabricator');
   const bp = useStudioBreakpoint();
@@ -47,14 +50,14 @@ export const OptimizationCockpit: React.FC<OptimizationCockpitProps> = ({
           )}
         >
           <div className={cn(bp === 'desktop' && 'row-span-1 min-h-0')}>
-            <RequiredCutsPanel plans={plans} />
+            <RequiredCutsPanel plans={plans} profiles={requiredProfiles} />
           </div>
           <div className="min-h-0 overflow-auto space-y-2">
             {children}
             <CutPatternViewer plans={plans} />
           </div>
           <div className="min-h-0">
-            <AvailableStockPanel plans={plans} />
+            <AvailableStockPanel plans={plans} profiles={stockProfiles} />
           </div>
         </div>
       )}

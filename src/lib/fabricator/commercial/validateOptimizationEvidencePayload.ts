@@ -30,6 +30,7 @@ export interface OptimizationEvidencePayload {
   trimMm?: number;
   /** Authoritative design ledger — every required piece exactly once. */
   requiredCuts?: EvidenceCutSpec[];
+  displayResult?: { costBreakdown: import('@/types/fabricator').OptimizationResult['costBreakdown']; estimatedProductionTime: number };
   cuttingPlan: Array<{
     stockLength?: number;
     stockLengthMm?: number;

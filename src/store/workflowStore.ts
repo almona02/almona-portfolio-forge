@@ -1,3 +1,4 @@
+import type { VerifiedReview } from '@/lib/fabricator/reviewSnapshot';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import {
   validateOptimizationInputs,
@@ -173,7 +174,7 @@ export interface WorkflowState {
   setCurrentProject: (project: WindowUnit | null) => void;
   /** Soft align for shell header — does not wipe workflow when updating same pose. */
   alignShellProject: (project: WindowUnit | null) => void;
-  hydrateAuthoritativePosition: (identity: WorkflowIdentity, project: WindowUnit) => void;
+  hydrateAuthoritativePosition: (identity: WorkflowIdentity, project: WindowUnit, review?: VerifiedReview) => void;
   markWorkflowDraftSaved: () => void;
 }
 
@@ -382,12 +383,12 @@ export const useWorkflowStore = create<WorkflowState>()(
         });
       },
 
-      hydrateAuthoritativePosition: (identity, project) => {
+      hydrateAuthoritativePosition: (identity, project, review) => {
         assertHydrationIdentity(identity, project);
         set(state => {
         const sameRevision = workflowIdentityMatches(state.workflowIdentity, identity);
         if (sameRevision && state.workflowDraftDirty) return {};
-        if (sameRevision) return { currentProject: project, designData: project };
+        if (sameRevision) return { currentProject: project, designData: project, bom: state.bom ?? review?.bom ?? null, optimizationResult: state.optimizationResult ?? review?.optimizationResult ?? null };
 
         // Ignore late responses for an older revision of the active pose.
         if (samePoseIdentity(state.workflowIdentity, identity) &&
@@ -413,8 +414,8 @@ export const useWorkflowStore = create<WorkflowState>()(
             presetId: project.presetId,
           } as MeasurementData,
           designData: null,
-          bom: null,
-          optimizationResult: null,
+          bom: review?.bom ?? null,
+          optimizationResult: review?.optimizationResult ?? null,
           quote: null,
           productionDocuments: null,
           qualityApproval: null,

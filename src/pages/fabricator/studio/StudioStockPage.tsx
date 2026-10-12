@@ -1,3 +1,4 @@
+import { PurchaseOrderDraftPanel } from '@/components/fabricator/PurchaseOrderDraftPanel';
 import { InventoryDashboard } from '@/components/fabricator/InventoryDashboard';
 import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
@@ -62,13 +63,13 @@ export const StudioStockPage: React.FC = () => {
   const demandReport = useMemo(() => {
     if (!bom?.profiles?.length || !data?.profiles) return null;
     try {
-      return buildBomDemandReport(bom.profiles, data.profiles);
+      return buildBomDemandReport(bom.profiles, data.profiles, currentProject?.quantity ?? 1);
     } catch (err) {
       return {
         error: err instanceof Error ? err.message : 'Unable to compute BOM demand.',
       } as const;
     }
-  }, [bom, data?.profiles]);
+  }, [bom, data?.profiles, currentProject?.quantity]);
 
   const report = demandReport && 'rows' in demandReport ? demandReport : null;
   const demandError = demandReport && 'error' in demandReport ? demandReport.error : null;
@@ -274,6 +275,8 @@ export const StudioStockPage: React.FC = () => {
           </Alert>
         ) : null}
 
+        {bom && currentProject && user?.id && workflowIdentity?.ownerUserId === user.id &&
+          <PurchaseOrderDraftPanel bom={bom} pose={currentProject} ownerId={user.id} revision={workflowIdentity.revision} />}
         {report ? (
           <div className="rounded-md border border-amber-700/40 bg-black/20 overflow-x-auto">
             <div className="px-3 py-2 text-sm text-amber-100 font-medium">

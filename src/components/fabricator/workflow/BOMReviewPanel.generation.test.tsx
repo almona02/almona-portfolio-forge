@@ -45,7 +45,7 @@ beforeEach(() => {
   mocks.resolve.mockResolvedValue(position.components);
   mocks.save.mockResolvedValue(undefined);
   mocks.read.mockResolvedValue({ identity, position });
-  mocks.authority.mockResolvedValue({ identity, catalogueVersion: 'fresh', ruleVersion: 'fresh' });
+  mocks.authority.mockResolvedValue({ identity, catalogueVersion: 'fresh', ruleVersion: 'a'.repeat(64) });
   // Stop before presentation; these tests check the panel's actual async wiring.
   mocks.generate.mockRejectedValue(new Error('presentation sentinel'));
 });
@@ -56,7 +56,7 @@ describe('BOM panel authoritative generation', () => {
     mount();
     await screen.findByText('presentation sentinel');
     expect(mocks.save).not.toHaveBeenCalled();
-    expect(mocks.authority).toHaveBeenCalledWith(position, identity);
+    expect(mocks.authority).toHaveBeenCalledWith(position, identity, mocks.packs[0]);
     expect(mocks.generate.mock.calls[0][0]).toBe(position);
     expect(useWorkflowStore.getState().bom).toBeNull();
   });
@@ -80,7 +80,7 @@ describe('BOM panel authoritative generation', () => {
     mount();
     await screen.findByText('presentation sentinel');
     expect(mocks.save).toHaveBeenCalledOnce();
-    expect(mocks.authority).toHaveBeenCalledWith(saved, savedIdentity);
+    expect(mocks.authority).toHaveBeenCalledWith(saved, savedIdentity, mocks.packs[0]);
     expect(mocks.generate.mock.calls[0][0]).toBe(saved);
   });
 
@@ -93,8 +93,8 @@ describe('BOM panel authoritative generation', () => {
       profiles: [], hardware: [], glazing: [], accessories: [], assemblySequence: [], confidence: 1,
       cost: { materialCost: 0, hardwareCost: 0, glazingCost: 0, accessoriesCost: 0, laborCost: 0, totalCost: 0 },
       metadata: { checksum: 'acknowledged-test', generationTimestamp: '2026-10-11', patternUsed: 'test', systemPackUsed: 'test-pack' },
-      qualification: { status: 'qualified', identity: savedIdentity, catalogueVersion: 'fresh', ruleVersion: 'fresh',
-        requiredPieceCount: 1, generatedPieceCount: 1, unplacedPieceCount: 0, reasons: [] },
+      qualification: { status: 'qualified', identity: savedIdentity, catalogueVersion: 'fresh', ruleVersion: 'a'.repeat(64),
+        requiredPieceCount: 14, generatedPieceCount: 14, unplacedPieceCount: 0, reasons: [] },
     };
     mocks.generate.mockResolvedValueOnce(bom);
     mount();
@@ -103,7 +103,7 @@ describe('BOM panel authoritative generation', () => {
     expect(useWorkflowStore.getState().workflowIdentity).toEqual(savedIdentity);
     expect(useWorkflowStore.getState().bom).toBe(bom);
     expect(mocks.save).toHaveBeenCalledOnce();
-    expect(mocks.authority).toHaveBeenCalledWith(saved, savedIdentity);
+    expect(mocks.authority).toHaveBeenCalledWith(saved, savedIdentity, expect.objectContaining({ meta: { id: 'test-pack' } }));
   });
 
   it('keeps an acknowledged estimate visible when approved authority is unavailable', async () => {
@@ -113,13 +113,13 @@ describe('BOM panel authoritative generation', () => {
       cost: { materialCost: 0, hardwareCost: 0, glazingCost: 0, accessoriesCost: 0, laborCost: 0, totalCost: 0 },
       metadata: { checksum: 'estimate-test', generationTimestamp: '2026-10-11', patternUsed: 'test', systemPackUsed: 'test-pack' },
       qualification: { status: 'estimate', identity, catalogueVersion: null, ruleVersion: null,
-        requiredPieceCount: 1, generatedPieceCount: 1, unplacedPieceCount: 0, reasons: ['Approved authority missing'] },
+        requiredPieceCount: 14, generatedPieceCount: 14, unplacedPieceCount: 0, reasons: ['Approved authority missing'] },
     });
     mount();
     await screen.findByText('Estimate only');
     for (const reason of screen.getAllByText('Approved authority missing')) expect(reason).toBeVisible();
     expect(screen.queryByText('Manufacturing qualified')).not.toBeInTheDocument();
-    expect(mocks.generate.mock.calls[0][4]).toEqual({ identity });
+    expect(mocks.generate.mock.calls[0][4]).toEqual({ identity, blockers: ['approval missing'] });
     expect(useWorkflowStore.getState().bom?.qualification?.status).toBe('estimate');
     expect(useWorkflowStore.getState().completedSteps.has('bom')).toBe(false);
   });

@@ -1,3 +1,5 @@
+import { SavePoseActions } from '@/components/fabricator/SavePoseActions';
+import { useLocation } from 'react-router-dom';
 import { ValidationGate } from '@/components/fabricator/workflow/ValidationGate';
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
@@ -42,6 +44,7 @@ class PoseRouteBoundary extends Component<{ children: ReactNode }, { failed: boo
 const PoseWorkflowCoordinator: React.FC = () => {
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { dispatch } = useFabricatorWorkspace();
+  const location = useLocation();
   const { data, isLoading, error, isHydrated } = useAuthoritativePosition(projectId, poseId);
   useEffect(() => {
     if (data?.position) dispatch({ type: 'SET_CURRENT_PROJECT', payload: data.position });
@@ -52,6 +55,7 @@ const PoseWorkflowCoordinator: React.FC = () => {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <ValidationGate />
+      {(/\/(bom|optimization)$/.test(location.pathname)) && <SavePoseActions />}
       <div className="flex-1 overflow-hidden min-h-0">
         <Outlet />
       </div>

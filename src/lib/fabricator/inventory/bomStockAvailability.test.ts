@@ -97,3 +97,13 @@ describe('bomStockAvailability', () => {
     ).toBe(false);
   });
 });
+
+it('fails closed on ambiguous same-code catalogue mappings',()=>{
+ const bom=[{id:'line',profileCode:'CAT-FRAME',systemPack:'pack',cuttingLengths:[1000]}] as never;
+ const owned=[{id:'a',stockQuantity:10,specifications:{supplierCode:'CAT-FRAME',systemPackId:'pack'}},{id:'b',stockQuantity:10,specifications:{supplierCode:'CAT-FRAME',systemPackId:'pack'}}] as never;
+ expect(buildBomDemandReport(bom,owned).missingMappingCount).toBe(1);
+});
+it('includes every repeated window in active revision demand',()=>{
+ const bom=[{id:'line',profileCode:'CAT-FRAME',systemPack:'pack',cuttingLengths:[1000,1000]}] as never;
+ expect(buildBomDemandReport(bom,[],5).totalRequiredMetres).toBe(10);
+});

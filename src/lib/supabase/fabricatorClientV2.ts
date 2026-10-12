@@ -1,3 +1,5 @@
+import { loadReviewSnapshot, type VerifiedReview } from '@/lib/fabricator/reviewSnapshot';
+import { loadSavedOptimizationEvidence } from '@/lib/fabricator/commercial/loadSavedOptimizationEvidence';
 /**
  * Fabricator v2 Supabase client: canonical read/write for fabricator_projects_v2 and fabricator_positions_v2.
  * Used by React Query hooks as the single data layer when FABRICATOR_READ_V2 is true.
@@ -271,7 +273,7 @@ export const fabricatorClientV2 = {
     return mapPositionRowToWindowUnit(data as PositionV2Row);
   },
 
-  async getAuthoritativePosition(projectId: string, positionId: string, ownerUserId: string): Promise<{ identity: AuthoritativePositionIdentity; position: WindowUnit }> {
+  async getAuthoritativePosition(projectId: string, positionId: string, ownerUserId: string): Promise<{ identity: AuthoritativePositionIdentity; position: WindowUnit; review?: VerifiedReview }> {
     if (!isUuid(projectId) || !isUuid(positionId)) throw new Error('Authoritative project and position IDs are required.');
     const { data, error } = await supabase.from('fabricator_positions_v2').select('*')
       .eq('id', positionId).eq('project_id', projectId).eq('owner_user_id', ownerUserId).maybeSingle();
@@ -280,7 +282,11 @@ export const fabricatorClientV2 = {
     const position = mapPositionRowToWindowUnit(data as PositionV2Row);
     if (!position || !Number.isFinite(position.overallWidth) || position.overallWidth <= 0 || !Number.isFinite(position.overallHeight) || position.overallHeight <= 0 || !Number.isInteger(data.qc_revision) || data.qc_revision < 1) throw new Error('Authoritative position dimensions, source, or revision are unavailable.');
     if (position.id !== positionId || position.projectId !== projectId || data.owner_user_id !== ownerUserId) throw new Error('Authoritative position identity does not match the requested route.');
-    return { identity: { ownerUserId, projectId, positionId, source: 'v2', revision: data.qc_revision }, position };
+    const identity: AuthoritativePositionIdentity = { ownerUserId, projectId, positionId, source: 'v2', revision: data.qc_revision };
+    const [bom,optimizationResult] = await Promise.all([
+      loadReviewSnapshot(identity,position),loadSavedOptimizationEvidence(identity,position),
+    ]);
+    return { identity, position, review: {bom,optimizationResult} };
   },
 
   /** Atomic save: upsert project + position from WindowUnit; returns saved pose id. */

@@ -1,3 +1,4 @@
+import { publishActiveProject } from '@/lib/fabricator/activeProjectBridge';
 /**
  * EngineeringBayWrapper - Connects EngineeringBay to FabricatorWorkspaceContext
  * 
@@ -126,6 +127,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
         savingDesign.current = false;
       }
     }
+    if (payload.closeAfterSave) { publishActiveProject(null); navigate(fabricatorRoutes.studioProjects()); return; }
     completeStep('design');
 
     const projKey = resolvedProjectId ?? projectId ?? 'default';

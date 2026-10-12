@@ -1,0 +1,21 @@
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { WindowUnit } from '@/types/fabricator';
+import { useWorkflowStore } from '@/store/workflowStore';
+import { SavePoseActions } from './SavePoseActions';
+const mocks = vi.hoisted(() => ({ save: vi.fn(), read: vi.fn(), navigate: vi.fn(), publish: vi.fn(), snapshot: vi.fn(), error: vi.fn() }));
+vi.mock('@/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'owner' } }) }));
+vi.mock('react-router-dom', () => ({ useNavigate: () => mocks.navigate }));
+vi.mock('@/lib/supabase/fabricatorClientV2', () => ({ fabricatorClientV2: { savePose: mocks.save, getAuthoritativePosition: mocks.read } }));
+vi.mock('@/lib/fabricator/activeProjectBridge', () => ({ publishActiveProject: mocks.publish }));
+vi.mock('@/lib/fabricator/reviewSnapshot', () => ({ saveReviewSnapshot: mocks.snapshot }));
+vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: mocks.error } }));
+const identity = { ownerUserId: 'owner', projectId: 'project', positionId: 'pose', source: 'v2' as const, revision: 4 };
+const pose = { id: 'pose', projectId: 'project', overallWidth: 1200, overallHeight: 1400, components: [] } as unknown as WindowUnit;
+beforeEach(() => { vi.clearAllMocks(); useWorkflowStore.getState().clearWorkflow(); useWorkflowStore.getState().hydrateAuthoritativePosition(identity, pose); mocks.save.mockResolvedValue(undefined); mocks.read.mockResolvedValue({ identity: { ...identity, revision: 5 }, position: pose }); });
+afterEach(cleanup);
+describe('save and close', () => {
+    it('closes an unchanged saved revision without invalidating manufacturing evidence', async () => { render(<SavePoseActions />); fireEvent.click(screen.getByRole('button', { name: 'Save & close' })); await waitFor(() => expect(mocks.navigate).toHaveBeenCalledWith('/fabricator/studio/projects')); expect(mocks.save).not.toHaveBeenCalled(); expect(mocks.publish).toHaveBeenCalledWith(null); expect(mocks.snapshot).toHaveBeenCalledWith(identity, null); });
+    it('keeps the page open when saving the changed design fails', async () => { useWorkflowStore.getState().setDesignData({ ...pose, overallWidth: 1300 }); mocks.save.mockRejectedValue(new Error('save denied')); render(<SavePoseActions />); fireEvent.click(screen.getByRole('button', { name: 'Save & close' })); await waitFor(() => expect(mocks.error).toHaveBeenCalledWith('save denied')); expect(mocks.navigate).not.toHaveBeenCalled(); expect(mocks.publish).not.toHaveBeenCalled(); });
+    it('does not rehydrate the previous account after an account change during saving', async () => { useWorkflowStore.getState().setDesignData({ ...pose, overallWidth: 1300 }); mocks.read.mockImplementation(async () => { useWorkflowStore.getState().clearWorkflow(); useWorkflowStore.getState().hydrateAuthoritativePosition({ ...identity, ownerUserId: 'other' }, pose); return { identity: { ...identity, revision: 5 }, position: pose }; }); render(<SavePoseActions />); fireEvent.click(screen.getByRole('button', { name: 'Save & close' })); await waitFor(() => expect(mocks.read).toHaveBeenCalled()); expect(useWorkflowStore.getState().workflowIdentity?.ownerUserId).toBe('other'); expect(mocks.navigate).not.toHaveBeenCalled(); expect(mocks.snapshot).not.toHaveBeenCalled(); });
+});

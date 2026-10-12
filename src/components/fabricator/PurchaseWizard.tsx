@@ -101,7 +101,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
   const currentSystemProfiles = useMemo(() => {
     if (!selectedSystem) return [];
     const query = profileQuery.trim().toLowerCase();
-    return selectedSystem.profiles.filter(p => !query || `${p.name} ${p.profileCode} ${p.oldProfileCode || ''}`.toLowerCase().includes(query));
+    return selectedSystem.profiles.filter(p => !query || `${p.name} ${p.profileCode} ${p.oldProfileCode || ''} ${p.systemName} ${p.systemPackId || ''} ${p.role || ''}`.toLowerCase().includes(query));
   }, [selectedSystem, profileQuery]);
 
   const profilesByRole = useMemo(() => {
@@ -112,11 +112,13 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
       glazing_bead: [],
       interlock: [],
       accessory: [],
+      screen_track: [],
       other: []
     };
 
     currentSystemProfiles.forEach(p => {
-      const role = p.role || 'other';
+      const rawRole = p.role || 'other';
+      const role = rawRole.startsWith('sash') ? 'sash' : rawRole.startsWith('glazing_bead') ? 'glazing_bead' : rawRole;
       if (grouped[role]) {
         grouped[role].push(p);
       } else {
@@ -411,7 +413,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                       setProfileQuery('');
                       setEditingQuantityFor(null);
                       const firstRole = sys.profiles[0]?.role || 'other';
-                      setActiveRoleTab(['frame', 'sash', 'mullion', 'glazing_bead', 'interlock', 'accessory'].includes(firstRole) ? firstRole : 'other');
+                      setActiveRoleTab(['frame', 'sash', 'mullion', 'glazing_bead', 'interlock', 'screen_track', 'accessory'].includes(firstRole) ? firstRole : 'other');
                       setStep('profile-select');
                     }}
                   >
@@ -457,6 +459,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                   <TabsTrigger value="mullion">Mullions</TabsTrigger>
                   <TabsTrigger value="glazing_bead">Beads</TabsTrigger>
                   <TabsTrigger value="interlock">Interlocks</TabsTrigger>
+                  <TabsTrigger value="screen_track">Tracks</TabsTrigger>
                   <TabsTrigger value="accessory">Accessory</TabsTrigger>
                   <TabsTrigger value="other">Other roles</TabsTrigger>
                 </TabsList>
@@ -502,6 +505,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                                           <SelectItem value="mullion">Mullion</SelectItem>
                                           <SelectItem value="glazing_bead">Bead</SelectItem>
                                           <SelectItem value="interlock">Interlock</SelectItem>
+                                          <SelectItem value="screen_track">Track</SelectItem>
                                           <SelectItem value="accessory">Accessory</SelectItem>
                                           <SelectItem value="other">Other</SelectItem>
                                         </SelectContent>

@@ -67,6 +67,7 @@ function buildEvidencePayload(
   return {
     schema: 'almona.optimization-result',
     schemaVersion: 2,
+    displayResult: { costBreakdown: result.costBreakdown, estimatedProductionTime: result.estimatedProductionTime },
     materialUsage: result.materialUsage,
     wastePercentage: result.wastePercentage,
     nestingEfficiency: result.nestingEfficiency,

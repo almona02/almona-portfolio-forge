@@ -14,7 +14,7 @@ const project = { id: identity.positionId, systemPackId: 'test-pack', overallWid
   grid: { rows: 1, cols: 1, cells: [{ id: 'fixed', row: 0, col: 0, type: 'fixed' }] },
   components: [{ id: 'frame', type: 'frame', profile, quantity: 1, cuttingLengths: [1200,1400,1200,1400], angles: [90,90,90,90] }],
 } as WindowUnit;
-const authority = { projectId: identity.projectId, positionSource: identity.source, systemPack: { id: 'test-pack', revision: 1 }, authorityApprovalId: 'test-approval', profiles: [{ profileId: profile.id }], cuttingRules: [{ approvalId: 'test-rule-approval', ruleId: 'test-cut-rule', revision: 1 }] };
+const authority = { projectId: identity.projectId, positionSource: identity.source, systemPack: { id: 'test-pack', revision: 1 }, authorityApprovalId: 'test-approval', profiles: [{ profileId: profile.id }], cuttingRules: [{ approvalId: 'test-rule-approval', ruleId: 'test-cut-rule', revision: 1, evidenceStatus: 'approved' }] };
 
 describe('approved catalogue to cutting optimization integration (test evidence)', () => {
   it('qualifies a complete fixed-frame ledger and reconciles real deterministic optimization', async () => {

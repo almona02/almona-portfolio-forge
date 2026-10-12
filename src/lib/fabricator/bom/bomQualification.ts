@@ -15,6 +15,7 @@ export interface BOMQualification {
 }
 
 export interface BOMQualificationContext {
+  blockers?: string[];
   identity?: WorkflowIdentity | null;
   catalogueVersion?: string | null;
   ruleVersion?: string | null;
@@ -102,6 +103,7 @@ export function assessBOMQualification(
   if (!context.identity) reasons.push('Authoritative workflow identity is missing');
   if (!context.catalogueVersion) reasons.push('Approved catalogue version is missing');
   if (!context.ruleVersion) reasons.push('Approved manufacturing rule version is missing');
+  reasons.push(...(context.blockers ?? []));
   if (generatedPieceCount !== requiredPieceCount) {
     reasons.push(`Piece ledger mismatch: required ${requiredPieceCount}, generated ${generatedPieceCount}`);
   }

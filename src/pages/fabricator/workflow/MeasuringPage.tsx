@@ -1,3 +1,4 @@
+import { publishActiveProject } from '@/lib/fabricator/activeProjectBridge';
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useAuth } from '@/context/AuthContext';
 import { useDeletePose, useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
@@ -135,7 +136,7 @@ export const MeasuringPage: React.FC = () => {
         });
     }, [pose, projectId, user?.id, upsertPose]);
 
-    const handleMeasurementComplete = async (data: MeasurementData) => {
+    const handleMeasurementComplete = async (data: MeasurementData, closeAfterSave = false) => {
         if (!projectId || !poseId) {
             setMeasurementData(data);
             completeStep('measuring');
@@ -148,7 +149,8 @@ export const MeasuringPage: React.FC = () => {
             setMeasurementData(data);
             completeStep('measuring');
             toast.success(`Pose ${posNumber} saved: ${data.width} × ${data.height} mm`);
-            navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
+            if (closeAfterSave) { publishActiveProject(null); navigate(fabricatorRoutes.studioProjects()); }
+            else navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
         } catch (err) {
             toast.error(`Failed to save pose: ${persistenceErrorMessage(err)}`);
         }
@@ -335,6 +337,7 @@ export const MeasuringPage: React.FC = () => {
                     <SmartMeasuringInterface
                         key={poseId ?? 'new'}
                         onMeasurementComplete={handleMeasurementComplete}
+                        onSaveAndClose={(data: MeasurementData) => { void handleMeasurementComplete(data, true); }}
                         onSaveAndNextPose={handleSaveAndNext}
                         initialData={initialData}
                         systemPackId={pose?.systemPackId}

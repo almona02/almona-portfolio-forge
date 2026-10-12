@@ -573,6 +573,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         <Wand2 className="h-4 w-4 mr-2" />
                                         Wizard Mode
                                     </Button>
+<Button variant="outline" onClick={() => actions.validate(true)}>Save & close</Button>
                                     <Button
                                         onClick={actions.validate}
                                         className="bg-green-600 hover:bg-green-700 text-white shadow-lg"

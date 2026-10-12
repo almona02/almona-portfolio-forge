@@ -1,3 +1,6 @@
+import { WorkshopBOMRulesEditor } from './WorkshopBOMRulesEditor';
+import { Input } from '@/shared/ui/ui/input';
+import { loadCustomSystemsFromSupabase } from '@/lib/fabricator/systemPackSupabase';
 /**
  * System Pack Tuning Studio
  * 
@@ -56,7 +59,7 @@ import { ProfileTuningStudio } from './tuning/ProfileTuningStudio';
 interface SystemPackProfile {
   id: string;
   name: string;
-  type: 'frame' | 'sash' | 'mullion' | 'transom' | 'bead';
+  type: 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'interlock' | 'screen_track' | 'accessory';
   material: string;
   unitWeight?: number;
   barLength?: number;
@@ -128,7 +131,8 @@ export const SystemPackTuningStudio: React.FC = () => {
       const roleOf = (p: any): SystemPackProfile['type'] => {
         const role = p.profileRole || p.type || p.role;
         if (role === 'glazing_bead' || role === 'bead') return 'bead';
-        if (role === 'sash' || role === 'mullion' || role === 'transom' || role === 'frame') return role;
+        if (String(role).startsWith('sash')) return 'sash';
+        if (role === 'mullion' || role === 'transom' || role === 'frame' || role === 'interlock' || role === 'screen_track' || role === 'accessory') return role;
         return 'frame';
       };
 
@@ -512,6 +516,20 @@ export const SystemPackTuningStudio: React.FC = () => {
     }));
   };
 
+  const saveProfileNames = async () => {
+    if (!systemPack || !systemPackId || !userId) return;
+    try {
+      const existing = (await loadCustomSystemsFromSupabase(userId)).find(p=>p.meta.id===systemPackId);
+      if (!existing) throw new Error('Create an owned workshop copy before changing catalogue profiles.');
+      if (systemPack.profiles.some(p=>!p.name.trim())) throw new Error('Profile names cannot be empty.');
+      await addCustomSystemAsync({...existing,profiles:systemPack.profiles.map(profile=>{
+        const previous=existing.profiles?.find(p=>p.id===profile.id),converted=convertToProfile(profile);
+        return {...previous,...converted,costPerMeter:previous?.costPerMeter??converted.costPerMeter,cuttingAllowance:previous?.cuttingAllowance??converted.cuttingAllowance,specifications:{...previous?.specifications,...converted.specifications},calibrations:previous?.calibrations??converted.calibrations};
+      })},userId);
+      setHasUnsavedChanges(false);window.dispatchEvent(new Event('customProfileAdded'));toast.success('Profile changes saved.');
+    } catch(error) { toast.error(error instanceof Error?error.message:'Unable to save profile names.'); }
+  };
+
   const handleSaveAndReturn = async () => {
     if (!systemPack || !allProfilesTuned) return;
 
@@ -716,9 +734,11 @@ export const SystemPackTuningStudio: React.FC = () => {
         >
           <Card className="bg-slate-800/50 border-slate-700 /50 card-dark">
             <CardContent className="pt-6">
+              {systemPackId && userId && <WorkshopBOMRulesEditor packId={systemPackId} ownerId={userId} />}
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="typography-h3 text-white mb-1">{systemPack.name}</h3>
+                  {systemPackId?.startsWith('custom-pack-')&&<Button variant="outline" onClick={()=>void saveProfileNames()}>Save profile changes</Button>}
                   <p className="text-slate-400 text-sm">{systemPack.manufacturer} • {systemPack.region.toUpperCase()}</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -819,7 +839,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                               </div>
                               <div>
                                 <CardTitle className="text-base text-white capitalize">
-                                  {profile.name}
+                                  <Input aria-label={'Profile name '+profile.id} value={profile.name} disabled={!systemPackId?.startsWith('custom-pack-')} onChange={event=>{setSystemPack(previous=>previous?{...previous,profiles:previous.profiles.map(p=>p.id===profile.id?{...p,name:event.target.value}:p)}:previous);setHasUnsavedChanges(true);}} />
                                 </CardTitle>
                                 <CardDescription className="text-xs text-slate-400">
                                   {profile.type} • {profile.material}
