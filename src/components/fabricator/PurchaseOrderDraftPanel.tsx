@@ -16,7 +16,7 @@ export function PurchaseOrderDraftPanel({ bom, pose, ownerId, revision }: {
 }) {
     const [open, setOpen] = useState(false), [lines, setLines] = useState<PurchaseOrderLine[]>([]), [supplier, setSupplier] = useState(''), [query, setQuery] = useState('');
     const [stockLength, setStockLength] = useState(6000), [kerf, setKerf] = useState(3), [catalogue, setCatalogue] = useState<PurchaseOrderLine[]>([]);
-    const sourceFingerprint = fingerprintBom(bom);
+    const sourceFingerprint = JSON.stringify({ bom: fingerprintBom(bom), quantity: pose.quantity ?? 1, profileCosts: bom.profiles.map(profile => [profile.id, profile.cost]), hardware: bom.hardware.map(item => [item.id, item.name, item.quantity, item.metadata?.unitPriceEgp]), accessories: bom.accessories });
     const reference = 'PO-' + (pose.projectCode || pose.id.slice(0, 8)) + '-R' + revision;
     const key = 'workshop-purchase-order:' + ownerId + ':' + pose.id + ':' + revision;
     useEffect(() => { let cancelled = false; void loadCustomSystemsFromSupabase(ownerId).then(custom => { if (cancelled)
