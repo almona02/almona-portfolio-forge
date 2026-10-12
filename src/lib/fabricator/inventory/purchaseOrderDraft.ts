@@ -33,9 +33,12 @@ export function buildPurchaseOrderLines(bom: CompleteBOM, pose: WindowUnit, stoc
 export function purchaseOrderCsv(lines: PurchaseOrderLine[], supplier: string, reference: string): string {
     if (!supplier.trim() || !reference.trim())
         throw new Error('Supplier and order reference are required.');
-    const cell = (v: unknown) => '"' + String(v ?? '').replace(/^(?=[=+@-])/, "'").replace(/"/g, '""') + '"';
+    if (!lines.length) throw new Error('Add at least one reviewed order item.');
+    const cell = (v: unknown) => '"' + String(v ?? '').replace(/^(?=[\t\r\n ]*[=+@-])/, "'").replace(/"/g, '""') + '"';
     const rows: unknown[][] = [['Order', reference], ['Supplier', supplier], ['Status', 'Draft — verify catalogue mappings, stock length, units and prices before ordering'], [], ['Code', 'Name', 'Category', 'Quantity', 'Unit', 'Stock mm', 'Unit price EGP', 'Total EGP']];
     for (const l of lines) {
+        if (!l.code?.trim() || !l.name?.trim() || /^unknown$/i.test(l.code.trim()) || /^hardware item$/i.test(l.name.trim())) throw new Error('Replace unknown item names and supplier codes before exporting.');
+        if (!['bar', 'piece', 'metre'].includes(l.unit) || (l.unit !== 'metre' && !Number.isSafeInteger(l.quantity))) throw new Error('Bars and pieces require whole quantities; confirm the order unit.');
         if (!Number.isFinite(l.quantity) || l.quantity <= 0 || !Number.isFinite(l.unitPrice) || l.unitPrice < 0)
             throw new Error('Invalid order quantity or price.');
         rows.push([l.code, l.name, l.category, l.quantity, l.unit, l.stockLengthMm ?? '', l.unitPrice, l.quantity * l.unitPrice]);
