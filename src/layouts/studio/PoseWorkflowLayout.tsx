@@ -47,8 +47,8 @@ const PoseWorkflowCoordinator: React.FC = () => {
   const location = useLocation();
   const { data, isLoading, error, isHydrated } = useAuthoritativePosition(projectId, poseId);
   useEffect(() => {
-    if (data?.position) dispatch({ type: 'SET_CURRENT_PROJECT', payload: data.position });
-  }, [data?.position, dispatch]);
+    if (isHydrated && data?.position) dispatch({ type: 'SET_CURRENT_PROJECT', payload: data.position });
+  }, [data?.position, dispatch, isHydrated]);
   if (!projectId || !poseId) return <div role="alert" className="p-8 text-red-300">Authoritative project and position identifiers are required.</div>;
   if (isLoading || (data && !isHydrated)) return <div className="flex h-full items-center justify-center bg-slate-950 text-amber-300">Loading authoritative position…</div>;
   if (error || !data) return <div role="alert" className="p-8 text-red-300">{error instanceof Error ? error.message : 'Position hydration failed.'}</div>;

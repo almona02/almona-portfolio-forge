@@ -16,7 +16,7 @@ export function PurchaseOrderDraftPanel({ bom, pose, ownerId, revision }: {
 }) {
     const [open, setOpen] = useState(false), [lines, setLines] = useState<PurchaseOrderLine[]>([]), [supplier, setSupplier] = useState(''), [query, setQuery] = useState('');
     const [stockLength, setStockLength] = useState(6000), [kerf, setKerf] = useState(3), [catalogue, setCatalogue] = useState<PurchaseOrderLine[]>([]);
-    const sourceFingerprint = fingerprintBom(bom);
+    const sourceFingerprint = JSON.stringify({ bom: fingerprintBom(bom), quantity: pose.quantity ?? 1, profileCosts: bom.profiles.map(profile => [profile.id, profile.cost]), hardware: bom.hardware.map(item => [item.id, item.name, item.quantity, item.metadata?.unitPriceEgp]), accessories: bom.accessories });
     const reference = 'PO-' + (pose.projectCode || pose.id.slice(0, 8)) + '-R' + revision;
     const key = 'workshop-purchase-order:' + ownerId + ':' + pose.id + ':' + revision;
     useEffect(() => { let cancelled = false; void loadCustomSystemsFromSupabase(ownerId).then(custom => { if (cancelled)
@@ -32,6 +32,7 @@ export function PurchaseOrderDraftPanel({ bom, pose, ownerId, revision }: {
     } setCatalogue(rows); }); return () => { cancelled = true; }; }, [ownerId]);
     useEffect(() => { setOpen(false); setLines([]); setSupplier(''); }, [bom, pose.id, pose.quantity, revision, ownerId]);
     const update = (i: number, field: 'quantity' | 'unitPrice', value: number) => setLines(previous => previous.map((line, index) => index === i ? { ...line, [field]: value } : line));
+    const updateText = (i: number, field: 'name' | 'code', value: string) => setLines(previous => previous.map((line, index) => index === i ? { ...line, [field]: value } : line));
     return <section className="my-3 rounded border border-amber-700/40 p-3">
   <Button onClick={() => { try {
         const saved = localStorage.getItem(key);
@@ -64,7 +65,7 @@ export function PurchaseOrderDraftPanel({ bom, pose, ownerId, revision }: {
    <Input aria-label="Purchase order supplier" placeholder="Supplier" value={supplier} onChange={e => setSupplier(e.target.value)}/>
    <Input aria-label="Search purchase order items" placeholder="Search profiles, accessories, name or code" value={query} onChange={e => setQuery(e.target.value)}/>
    <details><summary className="text-xs">Search accessory catalogue</summary>{catalogue.filter(item => (item.name + ' ' + item.code).toLowerCase().includes(query.toLowerCase())).slice(0, 30).map(item => <Button key={item.code} variant="outline" className="m-1 text-xs" onClick={() => setLines(previous => { const existing = previous.findIndex(line => line.code === item.code); return existing < 0 ? [...previous, { ...item }] : previous.map((line, index) => index === existing ? { ...line, quantity: line.quantity + 1 } : line); })}>Add {item.name}</Button>)}</details>
-   <div className="overflow-auto"><table className="w-full text-xs"><thead><tr><th>Item</th><th>Category / unit</th><th>Quantity</th><th>Unit price EGP</th></tr></thead><tbody>{lines.map((line, index) => !((line.name + ' ' + line.code + ' ' + line.category).toLowerCase().includes(query.toLowerCase())) ? null : <tr key={line.category + ':' + line.code + ':' + index}><td>{line.name}<br />{line.code}</td><td>{line.category} · {line.unit}</td><td><Input aria-label={'Order quantity ' + line.code} type="number" min="0" value={line.quantity} onChange={e => update(index, 'quantity', Number(e.target.value))}/></td><td><Input aria-label={'Order price ' + line.code} type="number" min="0" value={line.unitPrice} onChange={e => update(index, 'unitPrice', Number(e.target.value))}/></td></tr>)}</tbody></table></div>
+   <div className="overflow-auto"><table className="w-full text-xs"><thead><tr><th>Item</th><th>Category / unit</th><th>Quantity</th><th>Unit price EGP</th></tr></thead><tbody>{lines.map((line, index) => !((line.name + ' ' + line.code + ' ' + line.category).toLowerCase().includes(query.toLowerCase())) ? null : <tr key={line.category + ':' + index}><td><Input aria-label={'Order item name ' + index} value={line.name} onChange={e => updateText(index, 'name', e.target.value)}/><Input aria-label={'Order supplier code ' + index} value={line.code} onChange={e => updateText(index, 'code', e.target.value)}/></td><td>{line.category} · {line.unit}</td><td><Input aria-label={'Order quantity ' + line.code} type="number" min="0" value={line.quantity} onChange={e => update(index, 'quantity', Number(e.target.value))}/></td><td><Input aria-label={'Order price ' + line.code} type="number" min="0" value={line.unitPrice} onChange={e => update(index, 'unitPrice', Number(e.target.value))}/></td></tr>)}</tbody></table></div>
    <Button onClick={() => { try {
             const csv = purchaseOrderCsv(lines, supplier, reference);
             localStorage.setItem(key, JSON.stringify({ lines, supplier, revision, bomFingerprint: sourceFingerprint, stockLength, kerf }));
@@ -78,7 +79,7 @@ export function PurchaseOrderDraftPanel({ bom, pose, ownerId, revision }: {
         catch (error) {
             toast.error(error instanceof Error ? error.message : 'Invalid purchase draft');
         } }}>Save draft & export purchase order</Button>
-   <p className="text-xs text-slate-400">Includes profile bars, hardware and accessories. Confirm units and supplier prices; receive delivered profiles through the purchase wizard to establish owned catalogue mappings.</p>
+   <p className="text-xs text-slate-400">Includes profile bars, hardware and accessories. Replace unknown names and supplier codes, and confirm units and prices; receive delivered profiles through the purchase wizard to establish owned catalogue mappings.</p>
   </div>}
  </section>;
 }

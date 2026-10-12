@@ -8,3 +8,7 @@ describe('purchase order draft', () => {
     it('fails closed when pieces cannot fit or settings are invalid', () => { expect(() => buildPurchaseOrderLines(bom, { quantity: 5 } as WindowUnit, 2000)).toThrow(); expect(() => buildPurchaseOrderLines(bom, { quantity: 0 } as WindowUnit)).toThrow(); });
     it('requires supplier data and escapes spreadsheet formula content', () => { const lines = buildPurchaseOrderLines(bom, { quantity: 1 } as WindowUnit); expect(() => purchaseOrderCsv(lines, '', 'PO1')).toThrow(); const csv = purchaseOrderCsv(lines, '=malicious', 'PO1'); expect(csv).toContain("'="); expect(csv).toContain('FRAME'); expect(csv).toContain('Draft'); });
 });
+
+describe('purchase item review', () => {
+ it('requires identifiable items and whole bar quantities before exporting', () => { const line = { code: 'FRAME', name: 'Frame', category: 'profile', quantity: 1, unit: 'bar' as const, unitPrice: 10 }; expect(() => purchaseOrderCsv([{ ...line, code: 'UNKNOWN' }], 'Supplier', 'PO1')).toThrow('unknown'); expect(() => purchaseOrderCsv([{ ...line, quantity: 1.5 }], 'Supplier', 'PO1')).toThrow('whole'); expect(() => purchaseOrderCsv([], 'Supplier', 'PO1')).toThrow('order item'); expect(purchaseOrderCsv([{ ...line, name: '  =1+1' }], 'Supplier', 'PO1')).toContain("'  =1+1"); });
+});
