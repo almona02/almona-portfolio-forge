@@ -9,6 +9,7 @@
 import { ActivityLogger } from '@/core/activity/ActivityLogger';
 import { ActivityEventTypes } from '@/core/activity/activityTypes';
 import { supabase } from '@/lib/supabase';
+import { PAYMENT_PUBLIC_COLUMNS } from '@/lib/data/clientPortalClient';
 import type { Payment, PaymentIntentResult } from './paymentTypes';
 
 export type { Payment, PaymentIntentResult };
@@ -69,7 +70,7 @@ export class PaymentService {
   ): Promise<Payment[]> {
     try {
       let query = payments()
-        .select('*')
+        .select(PAYMENT_PUBLIC_COLUMNS)
         .gte('created_at', startDate.toISOString())
         .lte('created_at', endDate.toISOString())
         .order('created_at', { ascending: false });
@@ -92,7 +93,7 @@ export class PaymentService {
   static async getPaymentHistory(invoiceId: string): Promise<Payment[]> {
     try {
       const { data, error } = await payments()
-        .select('*')
+        .select(PAYMENT_PUBLIC_COLUMNS)
         .eq('invoice_id', invoiceId)
         .order('created_at', { ascending: false });
 
@@ -109,7 +110,7 @@ export class PaymentService {
 
   static async getPayment(paymentId: string): Promise<Payment | null> {
     try {
-      const { data, error } = await payments().select('*').eq('id', paymentId).single();
+      const { data, error } = await payments().select(PAYMENT_PUBLIC_COLUMNS).eq('id', paymentId).single();
       if (error || !data) {
         if (error) console.error('Failed to fetch payment:', error);
         return null;
@@ -127,28 +128,30 @@ export class PaymentService {
     currency: string = 'USD',
     method: Payment['method'] = 'cash',
     notes?: string,
+    idempotencyKey: string = crypto.randomUUID(),
   ): Promise<string> {
     try {
-      const { data: payment, error } = await payments()
-        .insert({
-          invoice_id: invoiceId,
-          amount,
-          currency: currency.toUpperCase(),
-          method,
-          status: 'completed',
-          completed_at: new Date().toISOString(),
-          notes,
-        })
-        .select()
-        .single();
+      if (!invoiceId) throw new Error('A persisted invoice is required for a manual payment.');
+      const rpc = supabase as unknown as {
+        rpc(name: string, args: Record<string, unknown>): PromiseLike<{
+          data: unknown; error: { message: string } | null;
+        }>;
+      };
+      const { data: paymentId, error } = await rpc.rpc('record_manual_invoice_payment', {
+        p_invoice_id: invoiceId,
+        p_amount: amount,
+        p_currency: currency.toUpperCase(),
+        p_method: method,
+        p_idempotency_key: idempotencyKey,
+        p_notes: notes ?? null,
+      });
 
       if (error) {
         console.error('Failed to create manual payment:', error);
         throw error;
       }
-      if (!payment) throw new Error('Failed to create payment record');
-
-      const paymentData = payment as { id: string };
+      if (typeof paymentId !== 'string') throw new Error('Failed to create payment record');
+      const paymentData = { id: paymentId };
 
       if (invoiceId) {
         await ActivityLogger.log({

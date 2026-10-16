@@ -114,7 +114,10 @@ docs/
 
 # Scripts
 # Allow build-control script to run on Vercel
-scripts/
+scripts/*
+!scripts/build/
+scripts/build/*
+!scripts/build/publicEnv.ts
 !scripts/should-build.mjs
 *.sh
 *.bat

@@ -12,6 +12,7 @@
 
 import { formatCurrency } from '@/lib/i18n/formatters';
 import { supabase } from '@/lib/supabase';
+import { PAYMENT_PUBLIC_COLUMNS } from '@/lib/data/clientPortalClient';
 import { cn } from '@/lib/utils';
 import { PaymentLinkGenerator } from '@/services/payments';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -35,7 +36,7 @@ import {
     ExternalLink,
     XCircle,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 interface ClientPaymentProcessorProps {
@@ -46,40 +47,54 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
   const [invoices, setInvoices] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const requestId = useRef(0);
+  const [loadedFor, setLoadedFor] = useState(customerId);
+  const [loadError, setLoadError] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
   const [paymentLink, setPaymentLink] = useState<string | null>(null);
 
   const loadData = async () => {
+    const token = ++requestId.current;
+    setLoadedFor(customerId);
     setLoading(true);
+    setLoadError(false);
+    setInvoices([]);
+    setPayments([]);
+    setSelectedInvoice(null);
+    setPaymentLink(null);
+    if (!customerId) { setLoading(false); return; }
     try {
       // Load unpaid invoices
-      const { data: invoicesData } = await supabase
+      const { data: invoicesData, error: invoicesError } = await supabase
         .from('invoices')
         .select('*')
-        .eq('customer_id', customerId)
-        .neq('status', 'paid')
+        .in('status', ['pending', 'sent', 'partial'])
         .order('created_at', { ascending: false });
 
       // Load payment history
-      const { data: paymentsData } = await supabase
+      const { data: paymentsData, error: paymentsError } = await supabase
         .from('payments')
-        .select('*')
-        .eq('customer_id', customerId)
+        .select(PAYMENT_PUBLIC_COLUMNS)
         .order('completed_at', { ascending: false })
         .limit(20);
 
+      if (invoicesError || paymentsError) throw new Error('Payment data unavailable');
+      if (token !== requestId.current) return;
       setInvoices(invoicesData || []);
       setPayments(paymentsData || []);
     } catch (error) {
+      if (token !== requestId.current) return;
+      setLoadError(true);
       console.error('Failed to load payment data:', error);
       toast.error('Failed to load payment data');
     } finally {
-      setLoading(false);
+      if (token === requestId.current) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
+    void loadData();
+    return () => { ++requestId.current; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId]);
 
@@ -96,7 +111,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
       toast.success('Payment link generated');
     } catch (error) {
       console.error('Failed to generate payment link:', error);
-      toast.error('Failed to generate payment link');
+      toast.error(error instanceof Error ? error.message : 'Failed to generate payment link');
     }
   };
 
@@ -132,7 +147,14 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
     );
   };
 
-  if (loading) {
+  if (loadError && loadedFor === customerId) {
+    return <Card><CardContent className="p-8" role="alert">
+      <p>Unable to load payment data. Please try again.</p>
+      <Button onClick={() => void loadData()}>Retry</Button>
+    </CardContent></Card>;
+  }
+
+  if (loading || loadedFor !== customerId) {
     return (
       <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">

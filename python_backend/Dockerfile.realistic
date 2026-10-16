@@ -71,6 +71,8 @@ RUN pip install --no-cache-dir -r requirements-prod.txt \
 # 3. Copy ONLY essential application code
 # Build context is project root (Railway), so prefix with python_backend/
 COPY python_backend/apis/ apis/
+COPY ai_agents/ydt_agent/ydt_chatbot_engine.py ai_agents/ydt_agent/arabic_support.py ai_agents/ydt_agent/gcode_ydt_integration.py ai_agents/ydt_agent/university_curriculum.py ai_agents/ydt_agent/
+COPY ai_agents/ydt_agent/knowledge/processed/aim-7510/structure.json ai_agents/ydt_agent/knowledge/processed/aim-7510/vision_ai_extraction.json ai_agents/ydt_agent/knowledge/processed/aim-7510/spare_parts.json ai_agents/ydt_agent/knowledge/processed/aim-7510/specifications_gold_tier.json ai_agents/ydt_agent/knowledge/processed/aim-7510/wiring_diagram_analysis.json ai_agents/ydt_agent/knowledge/processed/aim-7510/
 COPY python_backend/core/ core/
 COPY python_backend/services/ services/
 COPY python_backend/models/ models/

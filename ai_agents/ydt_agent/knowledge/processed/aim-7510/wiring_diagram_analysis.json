@@ -1,0 +1,959 @@
+{
+  "machine_id": "aim-7510",
+  "diagram_filename": "1-AIM 7410-7510 3P-v8.pdf",
+  "components": [
+    {
+      "component_id": "M1",
+      "component_type": "motor",
+      "category": "electrical",
+      "description": "Spindle motor",
+      "specifications": {
+        "power": "8.7 kW",
+        "speed": "20000 RPM"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "M2",
+      "component_type": "motor",
+      "category": "electrical",
+      "description": "X-axis servo motor",
+      "specifications": {
+        "power": "1.5 kW"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "M3",
+      "component_type": "motor",
+      "category": "electrical",
+      "description": "Y-axis servo motor",
+      "specifications": {
+        "power": "0.4 kW"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "M4",
+      "component_type": "motor",
+      "category": "electrical",
+      "description": "Z-axis servo motor",
+      "specifications": {
+        "power": "1.5 kW"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "M5",
+      "component_type": "motor",
+      "category": "electrical",
+      "description": "A-axis servo motor",
+      "specifications": {
+        "power": "0.4 kW"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "M6",
+      "component_type": "motor",
+      "category": "electrical",
+      "description": "C-axis servo motor",
+      "specifications": {
+        "power": "0.4 kW"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "M7",
+      "component_type": "motor",
+      "category": "electrical",
+      "description": "Tool magazine motor",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "K1",
+      "component_type": "relay",
+      "category": "electrical",
+      "description": "Main control relay",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "K2",
+      "component_type": "relay",
+      "category": "electrical",
+      "description": "Spindle control relay",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "K3",
+      "component_type": "relay",
+      "category": "electrical",
+      "description": "X-axis control relay",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "K4",
+      "component_type": "relay",
+      "category": "electrical",
+      "description": "Y-axis control relay",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "K5",
+      "component_type": "relay",
+      "category": "electrical",
+      "description": "Z-axis control relay",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "K6",
+      "component_type": "relay",
+      "category": "electrical",
+      "description": "A-axis control relay",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "K7",
+      "component_type": "relay",
+      "category": "electrical",
+      "description": "C-axis control relay",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "K8",
+      "component_type": "relay",
+      "category": "electrical",
+      "description": "Tool magazine control relay",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "Q1",
+      "component_type": "contactor",
+      "category": "electrical",
+      "description": "Main power contactor",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "Q2",
+      "component_type": "contactor",
+      "category": "electrical",
+      "description": "Spindle power contactor",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "Q3",
+      "component_type": "contactor",
+      "category": "electrical",
+      "description": "Auxiliary power contactor",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "V1",
+      "component_type": "valve",
+      "category": "pneumatic",
+      "description": "Clamp 1 control valve",
+      "specifications": {
+        "pressure": "6 bar"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "V2",
+      "component_type": "valve",
+      "category": "pneumatic",
+      "description": "Clamp 2 control valve",
+      "specifications": {
+        "pressure": "6 bar"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "V3",
+      "component_type": "valve",
+      "category": "pneumatic",
+      "description": "Clamp 3 control valve",
+      "specifications": {
+        "pressure": "6 bar"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "V4",
+      "component_type": "valve",
+      "category": "pneumatic",
+      "description": "Clamp 4 control valve",
+      "specifications": {
+        "pressure": "6 bar"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "V5",
+      "component_type": "valve",
+      "category": "pneumatic",
+      "description": "Clamp 5 control valve",
+      "specifications": {
+        "pressure": "6 bar"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "V6",
+      "component_type": "valve",
+      "category": "pneumatic",
+      "description": "Clamp 6 control valve",
+      "specifications": {
+        "pressure": "6 bar"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "V7",
+      "component_type": "valve",
+      "category": "pneumatic",
+      "description": "Clamp 7 control valve",
+      "specifications": {
+        "pressure": "6 bar"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "V8",
+      "component_type": "valve",
+      "category": "pneumatic",
+      "description": "Clamp 8 control valve",
+      "specifications": {
+        "pressure": "6 bar"
+      },
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "C1",
+      "component_type": "cylinder",
+      "category": "pneumatic",
+      "description": "Clamp 1 cylinder",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "C2",
+      "component_type": "cylinder",
+      "category": "pneumatic",
+      "description": "Clamp 2 cylinder",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "C3",
+      "component_type": "cylinder",
+      "category": "pneumatic",
+      "description": "Clamp 3 cylinder",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "C4",
+      "component_type": "cylinder",
+      "category": "pneumatic",
+      "description": "Clamp 4 cylinder",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "C5",
+      "component_type": "cylinder",
+      "category": "pneumatic",
+      "description": "Clamp 5 cylinder",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "C6",
+      "component_type": "cylinder",
+      "category": "pneumatic",
+      "description": "Clamp 6 cylinder",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "C7",
+      "component_type": "cylinder",
+      "category": "pneumatic",
+      "description": "Clamp 7 cylinder",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    },
+    {
+      "component_id": "C8",
+      "component_type": "cylinder",
+      "category": "pneumatic",
+      "description": "Clamp 8 cylinder",
+      "specifications": {},
+      "connections": [],
+      "page_number": 1
+    }
+  ],
+  "connections": [
+    {
+      "from_component": "K2",
+      "to_component": "M1",
+      "wire_type": "power",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "K3",
+      "to_component": "M2",
+      "wire_type": "power",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "K4",
+      "to_component": "M3",
+      "wire_type": "power",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "K5",
+      "to_component": "M4",
+      "wire_type": "power",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "K6",
+      "to_component": "M5",
+      "wire_type": "power",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "K7",
+      "to_component": "M6",
+      "wire_type": "power",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "K8",
+      "to_component": "M7",
+      "wire_type": "power",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "Q1",
+      "to_component": "K1",
+      "wire_type": "power",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "Q2",
+      "to_component": "K2",
+      "wire_type": "power",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "V1",
+      "to_component": "C1",
+      "wire_type": "pneumatic",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "V2",
+      "to_component": "C2",
+      "wire_type": "pneumatic",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "V3",
+      "to_component": "C3",
+      "wire_type": "pneumatic",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "V4",
+      "to_component": "C4",
+      "wire_type": "pneumatic",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "V5",
+      "to_component": "C5",
+      "wire_type": "pneumatic",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "V6",
+      "to_component": "C6",
+      "wire_type": "pneumatic",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "V7",
+      "to_component": "C7",
+      "wire_type": "pneumatic",
+      "wire_number": null,
+      "page_number": 1
+    },
+    {
+      "from_component": "V8",
+      "to_component": "C8",
+      "wire_type": "pneumatic",
+      "wire_number": null,
+      "page_number": 1
+    }
+  ],
+  "knowledge_graph": {
+    "nodes": {
+      "M1": {
+        "type": "motor",
+        "category": "electrical",
+        "description": "Spindle motor",
+        "specifications": {
+          "power": "8.7 kW",
+          "speed": "20000 RPM"
+        },
+        "connected_to": [
+          "K2"
+        ]
+      },
+      "M2": {
+        "type": "motor",
+        "category": "electrical",
+        "description": "X-axis servo motor",
+        "specifications": {
+          "power": "1.5 kW"
+        },
+        "connected_to": [
+          "K3"
+        ]
+      },
+      "M3": {
+        "type": "motor",
+        "category": "electrical",
+        "description": "Y-axis servo motor",
+        "specifications": {
+          "power": "0.4 kW"
+        },
+        "connected_to": [
+          "K4"
+        ]
+      },
+      "M4": {
+        "type": "motor",
+        "category": "electrical",
+        "description": "Z-axis servo motor",
+        "specifications": {
+          "power": "1.5 kW"
+        },
+        "connected_to": [
+          "K5"
+        ]
+      },
+      "M5": {
+        "type": "motor",
+        "category": "electrical",
+        "description": "A-axis servo motor",
+        "specifications": {
+          "power": "0.4 kW"
+        },
+        "connected_to": [
+          "K6"
+        ]
+      },
+      "M6": {
+        "type": "motor",
+        "category": "electrical",
+        "description": "C-axis servo motor",
+        "specifications": {
+          "power": "0.4 kW"
+        },
+        "connected_to": [
+          "K7"
+        ]
+      },
+      "M7": {
+        "type": "motor",
+        "category": "electrical",
+        "description": "Tool magazine motor",
+        "specifications": {},
+        "connected_to": [
+          "K8"
+        ]
+      },
+      "K1": {
+        "type": "relay",
+        "category": "electrical",
+        "description": "Main control relay",
+        "specifications": {},
+        "connected_to": [
+          "Q1"
+        ]
+      },
+      "K2": {
+        "type": "relay",
+        "category": "electrical",
+        "description": "Spindle control relay",
+        "specifications": {},
+        "connected_to": [
+          "M1",
+          "Q2"
+        ]
+      },
+      "K3": {
+        "type": "relay",
+        "category": "electrical",
+        "description": "X-axis control relay",
+        "specifications": {},
+        "connected_to": [
+          "M2"
+        ]
+      },
+      "K4": {
+        "type": "relay",
+        "category": "electrical",
+        "description": "Y-axis control relay",
+        "specifications": {},
+        "connected_to": [
+          "M3"
+        ]
+      },
+      "K5": {
+        "type": "relay",
+        "category": "electrical",
+        "description": "Z-axis control relay",
+        "specifications": {},
+        "connected_to": [
+          "M4"
+        ]
+      },
+      "K6": {
+        "type": "relay",
+        "category": "electrical",
+        "description": "A-axis control relay",
+        "specifications": {},
+        "connected_to": [
+          "M5"
+        ]
+      },
+      "K7": {
+        "type": "relay",
+        "category": "electrical",
+        "description": "C-axis control relay",
+        "specifications": {},
+        "connected_to": [
+          "M6"
+        ]
+      },
+      "K8": {
+        "type": "relay",
+        "category": "electrical",
+        "description": "Tool magazine control relay",
+        "specifications": {},
+        "connected_to": [
+          "M7"
+        ]
+      },
+      "Q1": {
+        "type": "contactor",
+        "category": "electrical",
+        "description": "Main power contactor",
+        "specifications": {},
+        "connected_to": [
+          "K1"
+        ]
+      },
+      "Q2": {
+        "type": "contactor",
+        "category": "electrical",
+        "description": "Spindle power contactor",
+        "specifications": {},
+        "connected_to": [
+          "K2"
+        ]
+      },
+      "Q3": {
+        "type": "contactor",
+        "category": "electrical",
+        "description": "Auxiliary power contactor",
+        "specifications": {},
+        "connected_to": []
+      },
+      "V1": {
+        "type": "valve",
+        "category": "pneumatic",
+        "description": "Clamp 1 control valve",
+        "specifications": {
+          "pressure": "6 bar"
+        },
+        "connected_to": [
+          "C1"
+        ]
+      },
+      "V2": {
+        "type": "valve",
+        "category": "pneumatic",
+        "description": "Clamp 2 control valve",
+        "specifications": {
+          "pressure": "6 bar"
+        },
+        "connected_to": [
+          "C2"
+        ]
+      },
+      "V3": {
+        "type": "valve",
+        "category": "pneumatic",
+        "description": "Clamp 3 control valve",
+        "specifications": {
+          "pressure": "6 bar"
+        },
+        "connected_to": [
+          "C3"
+        ]
+      },
+      "V4": {
+        "type": "valve",
+        "category": "pneumatic",
+        "description": "Clamp 4 control valve",
+        "specifications": {
+          "pressure": "6 bar"
+        },
+        "connected_to": [
+          "C4"
+        ]
+      },
+      "V5": {
+        "type": "valve",
+        "category": "pneumatic",
+        "description": "Clamp 5 control valve",
+        "specifications": {
+          "pressure": "6 bar"
+        },
+        "connected_to": [
+          "C5"
+        ]
+      },
+      "V6": {
+        "type": "valve",
+        "category": "pneumatic",
+        "description": "Clamp 6 control valve",
+        "specifications": {
+          "pressure": "6 bar"
+        },
+        "connected_to": [
+          "C6"
+        ]
+      },
+      "V7": {
+        "type": "valve",
+        "category": "pneumatic",
+        "description": "Clamp 7 control valve",
+        "specifications": {
+          "pressure": "6 bar"
+        },
+        "connected_to": [
+          "C7"
+        ]
+      },
+      "V8": {
+        "type": "valve",
+        "category": "pneumatic",
+        "description": "Clamp 8 control valve",
+        "specifications": {
+          "pressure": "6 bar"
+        },
+        "connected_to": [
+          "C8"
+        ]
+      },
+      "C1": {
+        "type": "cylinder",
+        "category": "pneumatic",
+        "description": "Clamp 1 cylinder",
+        "specifications": {},
+        "connected_to": [
+          "V1"
+        ]
+      },
+      "C2": {
+        "type": "cylinder",
+        "category": "pneumatic",
+        "description": "Clamp 2 cylinder",
+        "specifications": {},
+        "connected_to": [
+          "V2"
+        ]
+      },
+      "C3": {
+        "type": "cylinder",
+        "category": "pneumatic",
+        "description": "Clamp 3 cylinder",
+        "specifications": {},
+        "connected_to": [
+          "V3"
+        ]
+      },
+      "C4": {
+        "type": "cylinder",
+        "category": "pneumatic",
+        "description": "Clamp 4 cylinder",
+        "specifications": {},
+        "connected_to": [
+          "V4"
+        ]
+      },
+      "C5": {
+        "type": "cylinder",
+        "category": "pneumatic",
+        "description": "Clamp 5 cylinder",
+        "specifications": {},
+        "connected_to": [
+          "V5"
+        ]
+      },
+      "C6": {
+        "type": "cylinder",
+        "category": "pneumatic",
+        "description": "Clamp 6 cylinder",
+        "specifications": {},
+        "connected_to": [
+          "V6"
+        ]
+      },
+      "C7": {
+        "type": "cylinder",
+        "category": "pneumatic",
+        "description": "Clamp 7 cylinder",
+        "specifications": {},
+        "connected_to": [
+          "V7"
+        ]
+      },
+      "C8": {
+        "type": "cylinder",
+        "category": "pneumatic",
+        "description": "Clamp 8 cylinder",
+        "specifications": {},
+        "connected_to": [
+          "V8"
+        ]
+      }
+    },
+    "edges": [
+      {
+        "from": "K2",
+        "to": "M1",
+        "type": "power"
+      },
+      {
+        "from": "K3",
+        "to": "M2",
+        "type": "power"
+      },
+      {
+        "from": "K4",
+        "to": "M3",
+        "type": "power"
+      },
+      {
+        "from": "K5",
+        "to": "M4",
+        "type": "power"
+      },
+      {
+        "from": "K6",
+        "to": "M5",
+        "type": "power"
+      },
+      {
+        "from": "K7",
+        "to": "M6",
+        "type": "power"
+      },
+      {
+        "from": "K8",
+        "to": "M7",
+        "type": "power"
+      },
+      {
+        "from": "Q1",
+        "to": "K1",
+        "type": "power"
+      },
+      {
+        "from": "Q2",
+        "to": "K2",
+        "type": "power"
+      },
+      {
+        "from": "V1",
+        "to": "C1",
+        "type": "pneumatic"
+      },
+      {
+        "from": "V2",
+        "to": "C2",
+        "type": "pneumatic"
+      },
+      {
+        "from": "V3",
+        "to": "C3",
+        "type": "pneumatic"
+      },
+      {
+        "from": "V4",
+        "to": "C4",
+        "type": "pneumatic"
+      },
+      {
+        "from": "V5",
+        "to": "C5",
+        "type": "pneumatic"
+      },
+      {
+        "from": "V6",
+        "to": "C6",
+        "type": "pneumatic"
+      },
+      {
+        "from": "V7",
+        "to": "C7",
+        "type": "pneumatic"
+      },
+      {
+        "from": "V8",
+        "to": "C8",
+        "type": "pneumatic"
+      }
+    ],
+    "fault_paths": {
+      "K1": [
+        "K2",
+        "K3",
+        "K4",
+        "K5",
+        "K6",
+        "K7",
+        "K8",
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "M6",
+        "M7"
+      ],
+      "Q1": [
+        "K1",
+        "K2",
+        "K3",
+        "K4",
+        "K5",
+        "K6",
+        "K7",
+        "K8",
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "M6",
+        "M7"
+      ],
+      "K2": [
+        "M1"
+      ],
+      "K3": [
+        "M2"
+      ],
+      "V1": [
+        "C1"
+      ],
+      "V2": [
+        "C2"
+      ],
+      "V3": [
+        "C3"
+      ],
+      "V4": [
+        "C4"
+      ],
+      "V5": [
+        "C5"
+      ],
+      "V6": [
+        "C6"
+      ],
+      "V7": [
+        "C7"
+      ],
+      "V8": [
+        "C8"
+      ]
+    }
+  },
+  "statistics": {
+    "total_components": 34,
+    "electrical_components": 18,
+    "pneumatic_components": 16,
+    "total_connections": 17,
+    "extraction_method": "known_database + pattern_matching"
+  }
+}

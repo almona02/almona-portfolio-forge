@@ -207,7 +207,7 @@ export const AIRecommendationDemo: React.FC = () => {
           </div>
 
           <InteractiveGLBViewer
-            modelPath="/models/cnc-machine.glb"
+            modelPath="/models/demo-machine.glb"
             annotations={mockAnnotations}
             enablePartSelection={true}
             enablePricing={true}
@@ -293,11 +293,7 @@ export const AIRecommendationDemo: React.FC = () => {
               <h3 className="typography-h3 mb-2">Live Testing on almona02.com</h3>
               <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
                 <p className="text-sm mb-2"><strong>URL:</strong> https://almona02.com/demo/ai-recommendations</p>
-                <p className="text-sm mb-2"><strong>Credentials:</strong></p>
-                <ul className="text-sm ml-4 space-y-1">
-                  <li>• Username: almona.co@hotmail.com</li>
-                  <li>• Password: abcd1234</li>
-                </ul>
+                <p className="text-sm">Use your own account to test authenticated features.</p>
               </div>
             </div>
 

@@ -161,7 +161,7 @@ export function ModelViewerDemo() {
                 <h4 className="typography-h4 mb-2">Basic Usage</h4>
                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
                   <code>{`<EnhancedGLBViewer 
-  modelPath="/models/model.glb" 
+  modelPath="/models/demo-machine.glb"
 />`}</code>
                 </pre>
               </div>
@@ -169,7 +169,7 @@ export function ModelViewerDemo() {
                 <h4 className="typography-h4 mb-2">Advanced Usage</h4>
                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
                   <code>{`<EnhancedGLBViewer 
-  modelPath="/models/model.glb"
+  modelPath="/models/demo-machine.glb"
   scale={1.5}
   autoRotate={true}
   autoRotateSpeed={1}

@@ -37,13 +37,13 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
     // Group cuts by bar number
     const barGroups = useMemo(() => {
         const groups: Record<number, VisualSegment[]> = {};
-        cutList.items.forEach((item) => {
+        cutList.items.forEach((item, itemIndex) => {
             for (let i = 0; i < item.quantity; i++) {
                 const barNum = item.barNumber;
                 if (!groups[barNum]) groups[barNum] = [];
                 groups[barNum].push({
                     ...item,
-                    id: `${barNum}-${item.profileId}-${item.cutLengthMm}-${item.cuttingAngle}-${i}`,
+                    id: `${barNum}-${item.profileId}-${itemIndex}-${i}`,
                 });
             }
         });

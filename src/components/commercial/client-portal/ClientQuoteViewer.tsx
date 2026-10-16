@@ -36,7 +36,7 @@ import {
     Search,
     XCircle,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 interface ClientQuoteViewerProps {
@@ -46,30 +46,43 @@ interface ClientQuoteViewerProps {
 export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId }) => {
   const [quotes, setQuotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const requestId = useRef(0);
+  const [loadedFor, setLoadedFor] = useState(customerId);
+  const [loadError, setLoadError] = useState(false);
   const [selectedQuote, setSelectedQuote] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadQuotes = async () => {
+    const token = ++requestId.current;
+    setLoadedFor(customerId);
     setLoading(true);
+    setLoadError(false);
+    setQuotes([]);
+    setSelectedQuote(null);
+    if (!customerId) { setLoading(false); return; }
     try {
       const { data, error } = await supabase
         .from('quotes')
         .select('*')
-        .eq('customer_id', customerId)
+        .eq('user_id', customerId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      if (token !== requestId.current) return;
       setQuotes(data || []);
     } catch (error) {
+      if (token !== requestId.current) return;
+      setLoadError(true);
       console.error('Failed to load quotes:', error);
       toast.error('Failed to load quotes');
     } finally {
-      setLoading(false);
+      if (token === requestId.current) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadQuotes();
+    void loadQuotes();
+    return () => { ++requestId.current; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId]);
 
@@ -120,7 +133,14 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
     );
   });
 
-  if (loading) {
+  if (loadError && loadedFor === customerId) {
+    return <Card><CardContent className="p-8" role="alert">
+      <p>Unable to load quotes. Please try again.</p>
+      <Button onClick={() => void loadQuotes()}>Retry</Button>
+    </CardContent></Card>;
+  }
+
+  if (loading || loadedFor !== customerId) {
     return (
       <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">

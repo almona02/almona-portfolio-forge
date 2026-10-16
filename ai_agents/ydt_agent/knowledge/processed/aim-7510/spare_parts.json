@@ -1,0 +1,2538 @@
+{
+  "machine_id": "aim-7510",
+  "catalog_filename": "AIM 7510 parts.pdf",
+  "status": "processed",
+  "total_pages": 24,
+  "parts": [
+    {
+      "part_number": "1SC170000-0017",
+      "description": "1  14  328 1SA050000-0854 3",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0044",
+      "description": "12  1  330 1SA050000-0856 1",
+      "quantity": 12,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0045",
+      "description": "13  1  332 1SA050000-0858 1",
+      "quantity": 13,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0087",
+      "description": "27  10  342 1SA050000-0868 1",
+      "quantity": 27,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0039",
+      "description": "80  1  345 1EL250000-0500 1",
+      "quantity": 80,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0845",
+      "description": "106  1  374 3UA920030-0034 1",
+      "quantity": 106,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0057",
+      "description": "133  1  405 3UA920030-0015 1",
+      "quantity": 133,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0006",
+      "description": "163  1  436 3UA920030-0016 1",
+      "quantity": 163,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0008",
+      "description": "214  1  445 3UA920030-0029 1",
+      "quantity": 214,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0031",
+      "description": "229  1  459 1EL020000-0050 1",
+      "quantity": 229,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0048",
+      "description": "236  1  475 3UA920030-0062 1",
+      "quantity": 236,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0046",
+      "description": "248  1",
+      "quantity": 248,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0854",
+      "description": "STOCK KODU QTY STOCK KODU\n1 1SC170000-0017 14 328 1SA050000-0854 3\n12 3UA920030-0044 1 330 1SA050000-0856 1\n13 3UA920030-0045 1 332 1SA050000-0858 1\n27 3UA920030-00",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0856",
+      "description": "7 14 328 1SA050000-0854 3\n12 3UA920030-0044 1 330 1SA050000-0856 1\n13 3UA920030-0045 1 332 1SA050000-0858 1\n27 3UA920030-0087 10 342 1SA050000-0868 1\n80 3UA920030-0",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0858",
+      "description": "44 1 330 1SA050000-0856 1\n13 3UA920030-0045 1 332 1SA050000-0858 1\n27 3UA920030-0087 10 342 1SA050000-0868 1\n80 3UA920030-0039 1 345 1EL250000-0500 1\n106 1SA050000-",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0868",
+      "description": "5 1 332 1SA050000-0858 1\n27 3UA920030-0087 10 342 1SA050000-0868 1\n80 3UA920030-0039 1 345 1EL250000-0500 1\n106 1SA050000-0845 1 374 3UA920030-0034 1\n133 3UA920030-",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL250000-0500",
+      "description": "7 10 342 1SA050000-0868 1\n80 3UA920030-0039 1 345 1EL250000-0500 1\n106 1SA050000-0845 1 374 3UA920030-0034 1\n133 3UA920030-0057 1 405 3UA920030-0015 1\n163 3UA920030",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0034",
+      "description": "9 1 345 1EL250000-0500 1\n106 1SA050000-0845 1 374 3UA920030-0034 1\n133 3UA920030-0057 1 405 3UA920030-0015 1\n163 3UA920030-0006 1 436 3UA920030-0016 1\n214 3UA920030",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0015",
+      "description": "5 1 374 3UA920030-0034 1\n133 3UA920030-0057 1 405 3UA920030-0015 1\n163 3UA920030-0006 1 436 3UA920030-0016 1\n214 3UA920030-0008 1 445 3UA920030-0029 1\n229 3UA920030",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0016",
+      "description": "7 1 405 3UA920030-0015 1\n163 3UA920030-0006 1 436 3UA920030-0016 1\n214 3UA920030-0008 1 445 3UA920030-0029 1\n229 3UA920030-0031 1 459 1EL020000-0050 1\n236 3UA920030",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0029",
+      "description": "6 1 436 3UA920030-0016 1\n214 3UA920030-0008 1 445 3UA920030-0029 1\n229 3UA920030-0031 1 459 1EL020000-0050 1\n236 3UA920030-0048 1 475 3UA920030-0062 1\n248 3UA920030",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL020000-0050",
+      "description": "8 1 445 3UA920030-0029 1\n229 3UA920030-0031 1 459 1EL020000-0050 1\n236 3UA920030-0048 1 475 3UA920030-0062 1\n248 3UA920030-0046 1\n1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0062",
+      "description": "1 1 459 1EL020000-0050 1\n236 3UA920030-0048 1 475 3UA920030-0062 1\n248 3UA920030-0046 1\n1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 1,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL120000-0040",
+      "description": "112    2    475 1SA050000-0899   1",
+      "quantity": 112,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0847",
+      "description": "114    1    476 1SA050000-0900   1",
+      "quantity": 114,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0887",
+      "description": "134    1    477 1SA050000-0902   1",
+      "quantity": 134,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0347",
+      "description": "332    4    478 1SA050000-0901   1",
+      "quantity": 332,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0438",
+      "description": "333    2    479 1SA050000-0903   1",
+      "quantity": 333,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0439",
+      "description": "334    6    480 1SA050000-0904   1",
+      "quantity": 334,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0897",
+      "description": "473    1    481 1SA050000-0905   1",
+      "quantity": 473,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0898",
+      "description": "474    1",
+      "quantity": 474,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0899",
+      "description": "KODU QTY STOCK KODU QTY\n112 1EL120000-0040 2 475 1SA050000-0899 1\n114 1SA050000-0847 1 476 1SA050000-0900 1\n134 1SA050000-0887 1 477 1SA050000-0902 1\n332 1SR080000",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0900",
+      "description": "0 2 475 1SA050000-0899 1\n114 1SA050000-0847 1 476 1SA050000-0900 1\n134 1SA050000-0887 1 477 1SA050000-0902 1\n332 1SR080000-0347 4 478 1SA050000-0901 1\n333 1SR080000",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0902",
+      "description": "7 1 476 1SA050000-0900 1\n134 1SA050000-0887 1 477 1SA050000-0902 1\n332 1SR080000-0347 4 478 1SA050000-0901 1\n333 1SR080000-0438 2 479 1SA050000-0903 1\n334 1SR080000",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0901",
+      "description": "7 1 477 1SA050000-0902 1\n332 1SR080000-0347 4 478 1SA050000-0901 1\n333 1SR080000-0438 2 479 1SA050000-0903 1\n334 1SR080000-0439 6 480 1SA050000-0904 1\n473 1SA050000",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0903",
+      "description": "7 4 478 1SA050000-0901 1\n333 1SR080000-0438 2 479 1SA050000-0903 1\n334 1SR080000-0439 6 480 1SA050000-0904 1\n473 1SA050000-0897 1 481 1SA050000-0905 1\n474 1SA050000",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0904",
+      "description": "8 2 479 1SA050000-0903 1\n334 1SR080000-0439 6 480 1SA050000-0904 1\n473 1SA050000-0897 1 481 1SA050000-0905 1\n474 1SA050000-0898 1\n2",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0905",
+      "description": "9 6 480 1SA050000-0904 1\n473 1SA050000-0897 1 481 1SA050000-0905 1\n474 1SA050000-0898 1\n2",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 2,
+      "image_reference": null
+    },
+    {
+      "part_number": "1DL110000-0016",
+      "description": "4    8    467 1SR080000-0453   2",
+      "quantity": 4,
+      "unit_price": null,
+      "category": null,
+      "page_number": 3,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UB010030-0010",
+      "description": "366    1    468 1SR080000-0454   2",
+      "quantity": 366,
+      "unit_price": null,
+      "category": null,
+      "page_number": 3,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0455",
+      "description": "466    8",
+      "quantity": 466,
+      "unit_price": null,
+      "category": null,
+      "page_number": 3,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0453",
+      "description": "CK KODU QTY STOCK KODU QTY\n4 1DL110000-0016 8 467 1SR080000-0453 2\n366 3UB010030-0010 1 468 1SR080000-0454 2\n466 1SR080000-0455 8\n3",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 3,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0454",
+      "description": "6 8 467 1SR080000-0453 2\n366 3UB010030-0010 1 468 1SR080000-0454 2\n466 1SR080000-0455 8\n3",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 3,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0003",
+      "description": "2 -02   1    33 1SA050000-0890  1",
+      "quantity": 2,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0003",
+      "description": "5 -05   1    36 2TU013410-0322  1",
+      "quantity": 5,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0003",
+      "description": "8 -12   1    60 3UA920030-0080  1",
+      "quantity": 8,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0003",
+      "description": "9 -13   1    77 2TU013410-0092  2",
+      "quantity": 9,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0003",
+      "description": "10 -14   1    78 1EL020000-0450  1",
+      "quantity": 10,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0003",
+      "description": "11 -15   1    79 1EL020000-0450_1  1",
+      "quantity": 11,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0003",
+      "description": "15 -19   1    80 2TU012210-1712  1",
+      "quantity": 15,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0003",
+      "description": "20 -08   1    81 2TU012210-1713  1",
+      "quantity": 20,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0003",
+      "description": "30 -23   1    86 2TU013410-0092  2",
+      "quantity": 30,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0890",
+      "description": "KODU QTY STOCK KODU QTY\n2 1SA920000-0003-02 1 33 1SA050000-0890 1\n5 1SA920000-0003-05 1 36 2TU013410-0322 1\n8 1SA920000-0003-12 1 60 3UA920030-0080 1\n9 1SA920000-0",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU013410-0322",
+      "description": "02 1 33 1SA050000-0890 1\n5 1SA920000-0003-05 1 36 2TU013410-0322 1\n8 1SA920000-0003-12 1 60 3UA920030-0080 1\n9 1SA920000-0003-13 1 77 2TU013410-0092 2\n10 1SA920000-",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0080",
+      "description": "05 1 36 2TU013410-0322 1\n8 1SA920000-0003-12 1 60 3UA920030-0080 1\n9 1SA920000-0003-13 1 77 2TU013410-0092 2\n10 1SA920000-0003-14 1 78 1EL020000-0450 1\n11 1SA920000",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU013410-0092",
+      "description": "12 1 60 3UA920030-0080 1\n9 1SA920000-0003-13 1 77 2TU013410-0092 2\n10 1SA920000-0003-14 1 78 1EL020000-0450 1\n11 1SA920000-0003-15 1 79 1EL020000-0450_1 1\n15 1SA920",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL020000-0450",
+      "description": "3 1 77 2TU013410-0092 2\n10 1SA920000-0003-14 1 78 1EL020000-0450 1\n11 1SA920000-0003-15 1 79 1EL020000-0450_1 1\n15 1SA920000-0003-19 1 80 2TU012210-1712 1\n20 1SA920",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-1712",
+      "description": "1 79 1EL020000-0450_1 1\n15 1SA920000-0003-19 1 80 2TU012210-1712 1\n20 1SA920000-0003-08 1 81 2TU012210-1713 1\n30 1SA920000-0003-23 1 86 2TU013410-0092 2\n4",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-1713",
+      "description": "9 1 80 2TU012210-1712 1\n20 1SA920000-0003-08 1 81 2TU012210-1713 1\n30 1SA920000-0003-23 1 86 2TU013410-0092 2\n4",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 4,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR010000-0024",
+      "description": "62   6    78 2TU012210-2220  1",
+      "quantity": 62,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU013210-0282",
+      "description": "66   1    79 2TU012410-0623  1",
+      "quantity": 66,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-2252",
+      "description": "67   1    80 2TU012210-2219  1",
+      "quantity": 67,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-2252",
+      "description": "69   1    81 2TU011110-2251  2",
+      "quantity": 69,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-2000",
+      "description": "73   1    82 2TU011110-2253  2",
+      "quantity": 73,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR050000-0005",
+      "description": "74   2    83 2TU011110-2250  2",
+      "quantity": 74,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1532",
+      "description": "75   2    84 2TU012210-2222  1",
+      "quantity": 75,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "1YY011000-0270",
+      "description": "76   2    86 1SC151000-0053  1",
+      "quantity": 76,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011310-0347",
+      "description": "77   1",
+      "quantity": 77,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-2220",
+      "description": "CK KODU QTY STOCK KODU QTY\n62 1SR010000-0024 6 78 2TU012210-2220 1\n66 2TU013210-0282 1 79 2TU012410-0623 1\n67 2TU011110-2252 1 80 2TU012210-2219 1\n69 2TU011110-2252",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012410-0623",
+      "description": "0024 6 78 2TU012210-2220 1\n66 2TU013210-0282 1 79 2TU012410-0623 1\n67 2TU011110-2252 1 80 2TU012210-2219 1\n69 2TU011110-2252 1 81 2TU011110-2251 2\n73 2TU012210-2000",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-2219",
+      "description": "0282 1 79 2TU012410-0623 1\n67 2TU011110-2252 1 80 2TU012210-2219 1\n69 2TU011110-2252 1 81 2TU011110-2251 2\n73 2TU012210-2000 1 82 2TU011110-2253 2\n74 1SR050000-0005",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-2251",
+      "description": "2252 1 80 2TU012210-2219 1\n69 2TU011110-2252 1 81 2TU011110-2251 2\n73 2TU012210-2000 1 82 2TU011110-2253 2\n74 1SR050000-0005 2 83 2TU011110-2250 2\n75 2TU011110-1532",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-2253",
+      "description": "2252 1 81 2TU011110-2251 2\n73 2TU012210-2000 1 82 2TU011110-2253 2\n74 1SR050000-0005 2 83 2TU011110-2250 2\n75 2TU011110-1532 2 84 2TU012210-2222 1\n76 1YY011000-0270",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-2250",
+      "description": "2000 1 82 2TU011110-2253 2\n74 1SR050000-0005 2 83 2TU011110-2250 2\n75 2TU011110-1532 2 84 2TU012210-2222 1\n76 1YY011000-0270 2 86 1SC151000-0053 1\n77 2TU011310-0347",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-2222",
+      "description": "0005 2 83 2TU011110-2250 2\n75 2TU011110-1532 2 84 2TU012210-2222 1\n76 1YY011000-0270 2 86 1SC151000-0053 1\n77 2TU011310-0347 1\n5",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SC151000-0053",
+      "description": "1532 2 84 2TU012210-2222 1\n76 1YY011000-0270 2 86 1SC151000-0053 1\n77 2TU011310-0347 1\n5",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 5,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011210-1097",
+      "description": "1   1    15 1SR100000-0007  1",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0374",
+      "description": "5   2    16 2TU012110-1126  1",
+      "quantity": 5,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0373",
+      "description": "6   8    17 2TU011441-1278  1",
+      "quantity": 6,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012510-0601",
+      "description": "7   1    18 2TU011441-1768  1",
+      "quantity": 7,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL430000-0055",
+      "description": "8   1    19 1SR080000-0037  1",
+      "quantity": 8,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1903",
+      "description": "9   1    20 1PL010000-0118  1",
+      "quantity": 9,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-0756",
+      "description": "10   1    21 3UA920030-0310  1",
+      "quantity": 10,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-0767",
+      "description": "11   2    23 2TU012510-0570  1",
+      "quantity": 11,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-2167",
+      "description": "12   1    24 1PN140000-0015  1",
+      "quantity": 12,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1712",
+      "description": "13   1    25 1SR010000-0073  1",
+      "quantity": 13,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR010000-0047",
+      "description": "14   1    26 2TU012210-1608  1",
+      "quantity": 14,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR100000-0007",
+      "description": "OCK KODU QTY STOCK KODU QTY\n1 2TU011210-1097 1 15 1SR100000-0007 1\n5 1SR080000-0374 2 16 2TU012110-1126 1\n6 1SR080000-0373 8 17 2TU011441-1278 1\n7 2TU012510-0601 1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012110-1126",
+      "description": "-1097 1 15 1SR100000-0007 1\n5 1SR080000-0374 2 16 2TU012110-1126 1\n6 1SR080000-0373 8 17 2TU011441-1278 1\n7 2TU012510-0601 1 18 2TU011441-1768 1\n8 1EL430000-0055 1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1278",
+      "description": "-0374 2 16 2TU012110-1126 1\n6 1SR080000-0373 8 17 2TU011441-1278 1\n7 2TU012510-0601 1 18 2TU011441-1768 1\n8 1EL430000-0055 1 19 1SR080000-0037 1\n9 2TU011110-1903 1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1768",
+      "description": "-0373 8 17 2TU011441-1278 1\n7 2TU012510-0601 1 18 2TU011441-1768 1\n8 1EL430000-0055 1 19 1SR080000-0037 1\n9 2TU011110-1903 1 20 1PL010000-0118 1\n10 2TU011110-0756 1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0037",
+      "description": "-0601 1 18 2TU011441-1768 1\n8 1EL430000-0055 1 19 1SR080000-0037 1\n9 2TU011110-1903 1 20 1PL010000-0118 1\n10 2TU011110-0756 1 21 3UA920030-0310 1\n11 2TU011110-0767",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PL010000-0118",
+      "description": "-0055 1 19 1SR080000-0037 1\n9 2TU011110-1903 1 20 1PL010000-0118 1\n10 2TU011110-0756 1 21 3UA920030-0310 1\n11 2TU011110-0767 2 23 2TU012510-0570 1\n12 2TU012210-2167",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0310",
+      "description": "1903 1 20 1PL010000-0118 1\n10 2TU011110-0756 1 21 3UA920030-0310 1\n11 2TU011110-0767 2 23 2TU012510-0570 1\n12 2TU012210-2167 1 24 1PN140000-0015 1\n13 2TU011441-1712",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012510-0570",
+      "description": "0756 1 21 3UA920030-0310 1\n11 2TU011110-0767 2 23 2TU012510-0570 1\n12 2TU012210-2167 1 24 1PN140000-0015 1\n13 2TU011441-1712 1 25 1SR010000-0073 1\n14 1SR010000-0047",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PN140000-0015",
+      "description": "0767 2 23 2TU012510-0570 1\n12 2TU012210-2167 1 24 1PN140000-0015 1\n13 2TU011441-1712 1 25 1SR010000-0073 1\n14 1SR010000-0047 1 26 2TU012210-1608 1\n6",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR010000-0073",
+      "description": "2167 1 24 1PN140000-0015 1\n13 2TU011441-1712 1 25 1SR010000-0073 1\n14 1SR010000-0047 1 26 2TU012210-1608 1\n6",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-1608",
+      "description": "1712 1 25 1SR010000-0073 1\n14 1SR010000-0047 1 26 2TU012210-1608 1\n6",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 6,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR010000-0026",
+      "description": "6   4    20 2TU011210-0339  1",
+      "quantity": 6,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0308",
+      "description": "11   2    22 2TU011441-1277  2",
+      "quantity": 11,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0411",
+      "description": "12   2    23 2TU011210-1285  1",
+      "quantity": 12,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL390000-0551",
+      "description": "13   1    26 2TU011410-0179  1",
+      "quantity": 13,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR090000-0367",
+      "description": "14   1    27 1SR090000-0366  1",
+      "quantity": 14,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR100000-0015",
+      "description": "15   1    28 2TU011110-1686  3",
+      "quantity": 15,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR070000-0037",
+      "description": "16   1    29 2TU013110-0125  1",
+      "quantity": 16,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1400",
+      "description": "17   1    30 2TU011110-1685  2",
+      "quantity": 17,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012510-0569",
+      "description": "18   1    32 1EL070030-0101  1",
+      "quantity": 18,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1DL110000-0015",
+      "description": "19   1    33 1PL010000-0120  1",
+      "quantity": 19,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011210-0339",
+      "description": "OCK KODU QTY STOCK KODU QTY\n6 1SR010000-0026 4 20 2TU011210-0339 1\n11 1SR080000-0308 2 22 2TU011441-1277 2\n12 1SR080000-0411 2 23 2TU011210-1285 1\n13 1EL390000-0551",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1277",
+      "description": "0026 4 20 2TU011210-0339 1\n11 1SR080000-0308 2 22 2TU011441-1277 2\n12 1SR080000-0411 2 23 2TU011210-1285 1\n13 1EL390000-0551 1 26 2TU011410-0179 1\n14 1SR090000-0367",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011210-1285",
+      "description": "0308 2 22 2TU011441-1277 2\n12 1SR080000-0411 2 23 2TU011210-1285 1\n13 1EL390000-0551 1 26 2TU011410-0179 1\n14 1SR090000-0367 1 27 1SR090000-0366 1\n15 1SR100000-0015",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011410-0179",
+      "description": "0411 2 23 2TU011210-1285 1\n13 1EL390000-0551 1 26 2TU011410-0179 1\n14 1SR090000-0367 1 27 1SR090000-0366 1\n15 1SR100000-0015 1 28 2TU011110-1686 3\n16 1SR070000-0037",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR090000-0366",
+      "description": "0551 1 26 2TU011410-0179 1\n14 1SR090000-0367 1 27 1SR090000-0366 1\n15 1SR100000-0015 1 28 2TU011110-1686 3\n16 1SR070000-0037 1 29 2TU013110-0125 1\n17 2TU011441-1400",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1686",
+      "description": "0367 1 27 1SR090000-0366 1\n15 1SR100000-0015 1 28 2TU011110-1686 3\n16 1SR070000-0037 1 29 2TU013110-0125 1\n17 2TU011441-1400 1 30 2TU011110-1685 2\n18 2TU012510-0569",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU013110-0125",
+      "description": "0015 1 28 2TU011110-1686 3\n16 1SR070000-0037 1 29 2TU013110-0125 1\n17 2TU011441-1400 1 30 2TU011110-1685 2\n18 2TU012510-0569 1 32 1EL070030-0101 1\n19 1DL110000-0015",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1685",
+      "description": "0037 1 29 2TU013110-0125 1\n17 2TU011441-1400 1 30 2TU011110-1685 2\n18 2TU012510-0569 1 32 1EL070030-0101 1\n19 1DL110000-0015 1 33 1PL010000-0120 1\n7",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL070030-0101",
+      "description": "1400 1 30 2TU011110-1685 2\n18 2TU012510-0569 1 32 1EL070030-0101 1\n19 1DL110000-0015 1 33 1PL010000-0120 1\n7",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PL010000-0120",
+      "description": "0569 1 32 1EL070030-0101 1\n19 1DL110000-0015 1 33 1PL010000-0120 1\n7",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 7,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR010000-0026",
+      "description": "7   2    32 2TU011110-1685  1",
+      "quantity": 7,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL070006-0009",
+      "description": "21   1    33 2TU013110-0124  1",
+      "quantity": 21,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012410-0474",
+      "description": "22   1    34 1SR100000-0015  1",
+      "quantity": 22,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL070030-0101",
+      "description": "25   1    35 2TU012210-1894  1",
+      "quantity": 25,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012110-1093",
+      "description": "26   1    36 1SR090000-0367  1",
+      "quantity": 26,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL390000-0551",
+      "description": "27   1    37 2TU012410-0476  1",
+      "quantity": 27,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR090000-0366",
+      "description": "28   1    38 1EL020000-0250  1",
+      "quantity": 28,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR070000-0037",
+      "description": "29   1    39 2TU011210-1098  1",
+      "quantity": 29,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1399",
+      "description": "30   2    40 2TU011441-1329  1",
+      "quantity": 30,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1685",
+      "description": "31   1    41 2TU011441-1330  1",
+      "quantity": 31,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU013110-0124",
+      "description": "0026 2 32 2TU011110-1685 1\n21 1EL070006-0009 1 33 2TU013110-0124 1\n22 2TU012410-0474 1 34 1SR100000-0015 1\n25 1EL070030-0101 1 35 2TU012210-1894 1\n26 2TU012110-1093",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-1894",
+      "description": "0474 1 34 1SR100000-0015 1\n25 1EL070030-0101 1 35 2TU012210-1894 1\n26 2TU012110-1093 1 36 1SR090000-0367 1\n27 1EL390000-0551 1 37 2TU012410-0476 1\n28 1SR090000-0366",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012410-0476",
+      "description": "1093 1 36 1SR090000-0367 1\n27 1EL390000-0551 1 37 2TU012410-0476 1\n28 1SR090000-0366 1 38 1EL020000-0250 1\n29 1SR070000-0037 1 39 2TU011210-1098 1\n30 2TU011441-1399",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL020000-0250",
+      "description": "0551 1 37 2TU012410-0476 1\n28 1SR090000-0366 1 38 1EL020000-0250 1\n29 1SR070000-0037 1 39 2TU011210-1098 1\n30 2TU011441-1399 2 40 2TU011441-1329 1\n31 2TU011110-1685",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011210-1098",
+      "description": "0366 1 38 1EL020000-0250 1\n29 1SR070000-0037 1 39 2TU011210-1098 1\n30 2TU011441-1399 2 40 2TU011441-1329 1\n31 2TU011110-1685 1 41 2TU011441-1330 1\n8",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1329",
+      "description": "0037 1 39 2TU011210-1098 1\n30 2TU011441-1399 2 40 2TU011441-1329 1\n31 2TU011110-1685 1 41 2TU011441-1330 1\n8",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1330",
+      "description": "1399 2 40 2TU011441-1329 1\n31 2TU011110-1685 1 41 2TU011441-1330 1\n8",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 8,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0373",
+      "description": "5   8    15 1SR100000-0019  1",
+      "quantity": 5,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012510-0650",
+      "description": "6   1    18 3UA920030-0018  1",
+      "quantity": 6,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL390000-0530",
+      "description": "11   1    23 2TU011441-1281  1",
+      "quantity": 11,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-1607",
+      "description": "12   1    27 2TU011441-1439  1",
+      "quantity": 12,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL070030-0409",
+      "description": "13   1    28 2TU012510-0631  4",
+      "quantity": 13,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "1DL100000-0014",
+      "description": "14   1",
+      "quantity": 14,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR100000-0019",
+      "description": "OCK KODU QTY STOCK KODU QTY\n5 1SR080000-0373 8 15 1SR100000-0019 1\n6 2TU012510-0650 1 18 3UA920030-0018 1\n11 1EL390000-0530 1 23 2TU011441-1281 1\n12 2TU012210-1607",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0018",
+      "description": "-0373 8 15 1SR100000-0019 1\n6 2TU012510-0650 1 18 3UA920030-0018 1\n11 1EL390000-0530 1 23 2TU011441-1281 1\n12 2TU012210-1607 1 27 2TU011441-1439 1\n13 1EL070030-0409",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1281",
+      "description": "0650 1 18 3UA920030-0018 1\n11 1EL390000-0530 1 23 2TU011441-1281 1\n12 2TU012210-1607 1 27 2TU011441-1439 1\n13 1EL070030-0409 1 28 2TU012510-0631 4\n14 1DL100000-0014",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1439",
+      "description": "0530 1 23 2TU011441-1281 1\n12 2TU012210-1607 1 27 2TU011441-1439 1\n13 1EL070030-0409 1 28 2TU012510-0631 4\n14 1DL100000-0014 1\n9",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012510-0631",
+      "description": "1607 1 27 2TU011441-1439 1\n13 1EL070030-0409 1 28 2TU012510-0631 4\n14 1DL100000-0014 1\n9",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 9,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA920000-0002",
+      "description": "21   1    63 2TU011410-0178  1",
+      "quantity": 21,
+      "unit_price": null,
+      "category": null,
+      "page_number": 10,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1736",
+      "description": "35   6    66 2TU012410-0452  1",
+      "quantity": 35,
+      "unit_price": null,
+      "category": null,
+      "page_number": 10,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL390000-0534",
+      "description": "38   1    67 2TU012210-1781  1",
+      "quantity": 38,
+      "unit_price": null,
+      "category": null,
+      "page_number": 10,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL070030-0400",
+      "description": "52   1    71 2TU011441-1378  1",
+      "quantity": 52,
+      "unit_price": null,
+      "category": null,
+      "page_number": 10,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011410-0178",
+      "description": "CK KODU QTY STOCK KODU QTY\n21 1SA920000-0002 1 63 2TU011410-0178 1\n35 2TU011110-1736 6 66 2TU012410-0452 1\n38 1EL390000-0534 1 67 2TU012210-1781 1\n52 1EL070030-0400",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 10,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012410-0452",
+      "description": "0002 1 63 2TU011410-0178 1\n35 2TU011110-1736 6 66 2TU012410-0452 1\n38 1EL390000-0534 1 67 2TU012210-1781 1\n52 1EL070030-0400 1 71 2TU011441-1378 1\n10",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 10,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-1781",
+      "description": "1736 6 66 2TU012410-0452 1\n38 1EL390000-0534 1 67 2TU012210-1781 1\n52 1EL070030-0400 1 71 2TU011441-1378 1\n10",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 10,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1378",
+      "description": "0534 1 67 2TU012210-1781 1\n52 1EL070030-0400 1 71 2TU011441-1378 1\n10",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 10,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SC101000-0001",
+      "description": "1   48    17 1YY011000-0267  48",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 11,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-1613",
+      "description": "13   12    32 2TU012410-0224  2",
+      "quantity": 13,
+      "unit_price": null,
+      "category": null,
+      "page_number": 11,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR050000-0005",
+      "description": "15   48    33 2TU012110-1086  1",
+      "quantity": 15,
+      "unit_price": null,
+      "category": null,
+      "page_number": 11,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1532",
+      "description": "16   48    45 2TU011110-1735  12",
+      "quantity": 16,
+      "unit_price": null,
+      "category": null,
+      "page_number": 11,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SC101000-0001",
+      "description": "1   48",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 11,
+      "image_reference": null
+    },
+    {
+      "part_number": "1YY011000-0267",
+      "description": "CK KODU QTY STOCK KODU QTY\n1 1SC101000-0001 48 17 1YY011000-0267 48\n13 2TU012210-1613 12 32 2TU012410-0224 2\n15 1SR050000-0005 48 33 2TU012110-1086 1\n16 2TU011110-1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 11,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012410-0224",
+      "description": "1 48 17 1YY011000-0267 48\n13 2TU012210-1613 12 32 2TU012410-0224 2\n15 1SR050000-0005 48 33 2TU012110-1086 1\n16 2TU011110-1532 48 45 2TU011110-1735 12\n1 1SC101000-00",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 11,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012110-1086",
+      "description": "13 12 32 2TU012410-0224 2\n15 1SR050000-0005 48 33 2TU012110-1086 1\n16 2TU011110-1532 48 45 2TU011110-1735 12\n1 1SC101000-0001 48\n11",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 11,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1735",
+      "description": "05 48 33 2TU012110-1086 1\n16 2TU011110-1532 48 45 2TU011110-1735 12\n1 1SC101000-0001 48\n11",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 11,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR010000-0402",
+      "description": "2   2    27 1PN020000-0267  1",
+      "quantity": 2,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR110000-0038",
+      "description": "13   2    30 2TU012210-1924  1",
+      "quantity": 13,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-0299",
+      "description": "15   2    31 2TU014010-0274  1",
+      "quantity": 15,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1562",
+      "description": "16   2    32 1SR110000-0032  2",
+      "quantity": 16,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR070000-0034",
+      "description": "17   1    33 2TU011210-1325  1",
+      "quantity": 17,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR090000-0017",
+      "description": "18   1    35 2TU011110-1571  1",
+      "quantity": 18,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR090000-0018",
+      "description": "19   1    36 2TU011441-1369  2",
+      "quantity": 19,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1528",
+      "description": "20   1    37 1SR080000-0381  2",
+      "quantity": 20,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR010000-0403",
+      "description": "21   1    38 1SR080000-0360  2",
+      "quantity": 21,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PN020000-0267",
+      "description": "OCK KODU QTY STOCK KODU QTY\n2 1SR010000-0402 2 27 1PN020000-0267 1\n13 1SR110000-0038 2 30 2TU012210-1924 1\n15 2TU011110-0299 2 31 2TU014010-0274 1\n16 2TU011110-1562",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-1924",
+      "description": "0402 2 27 1PN020000-0267 1\n13 1SR110000-0038 2 30 2TU012210-1924 1\n15 2TU011110-0299 2 31 2TU014010-0274 1\n16 2TU011110-1562 2 32 1SR110000-0032 2\n17 1SR070000-0034",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU014010-0274",
+      "description": "0038 2 30 2TU012210-1924 1\n15 2TU011110-0299 2 31 2TU014010-0274 1\n16 2TU011110-1562 2 32 1SR110000-0032 2\n17 1SR070000-0034 1 33 2TU011210-1325 1\n18 1SR090000-0017",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR110000-0032",
+      "description": "0299 2 31 2TU014010-0274 1\n16 2TU011110-1562 2 32 1SR110000-0032 2\n17 1SR070000-0034 1 33 2TU011210-1325 1\n18 1SR090000-0017 1 35 2TU011110-1571 1\n19 1SR090000-0018",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011210-1325",
+      "description": "1562 2 32 1SR110000-0032 2\n17 1SR070000-0034 1 33 2TU011210-1325 1\n18 1SR090000-0017 1 35 2TU011110-1571 1\n19 1SR090000-0018 1 36 2TU011441-1369 2\n20 2TU011110-1528",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1571",
+      "description": "0034 1 33 2TU011210-1325 1\n18 1SR090000-0017 1 35 2TU011110-1571 1\n19 1SR090000-0018 1 36 2TU011441-1369 2\n20 2TU011110-1528 1 37 1SR080000-0381 2\n21 1SR010000-0403",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1369",
+      "description": "0017 1 35 2TU011110-1571 1\n19 1SR090000-0018 1 36 2TU011441-1369 2\n20 2TU011110-1528 1 37 1SR080000-0381 2\n21 1SR010000-0403 1 38 1SR080000-0360 2\n12",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0381",
+      "description": "0018 1 36 2TU011441-1369 2\n20 2TU011110-1528 1 37 1SR080000-0381 2\n21 1SR010000-0403 1 38 1SR080000-0360 2\n12",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0360",
+      "description": "1528 1 37 1SR080000-0381 2\n21 1SR010000-0403 1 38 1SR080000-0360 2\n12",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 12,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012510-0630",
+      "description": "1   1    37 2TU013210-0258  1",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0346",
+      "description": "2   4    38 1PL010000-0016  1",
+      "quantity": 2,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0397",
+      "description": "3   1    39 1ET039000-0091  1",
+      "quantity": 3,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PN010000-0157",
+      "description": "4   1    40 2TU011441-1643  1",
+      "quantity": 4,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0349",
+      "description": "5   1    41 1SA050000-0866  1",
+      "quantity": 5,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0024",
+      "description": "13   1    45 2TU011410-0166  1",
+      "quantity": 13,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-2113",
+      "description": "35   1",
+      "quantity": 35,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU013210-0258",
+      "description": "OCK KODU QTY STOCK KODU QTY\n1 2TU012510-0630 1 37 2TU013210-0258 1\n2 1SR080000-0346 4 38 1PL010000-0016 1\n3 1SR080000-0397 1 39 1ET039000-0091 1\n4 1PN010000-0157 1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PL010000-0016",
+      "description": "-0630 1 37 2TU013210-0258 1\n2 1SR080000-0346 4 38 1PL010000-0016 1\n3 1SR080000-0397 1 39 1ET039000-0091 1\n4 1PN010000-0157 1 40 2TU011441-1643 1\n5 1SR080000-0349 1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "1ET039000-0091",
+      "description": "-0346 4 38 1PL010000-0016 1\n3 1SR080000-0397 1 39 1ET039000-0091 1\n4 1PN010000-0157 1 40 2TU011441-1643 1\n5 1SR080000-0349 1 41 1SA050000-0866 1\n13 3UA920030-0024 1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1643",
+      "description": "-0397 1 39 1ET039000-0091 1\n4 1PN010000-0157 1 40 2TU011441-1643 1\n5 1SR080000-0349 1 41 1SA050000-0866 1\n13 3UA920030-0024 1 45 2TU011410-0166 1\n35 2TU012210-2113",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA050000-0866",
+      "description": "-0157 1 40 2TU011441-1643 1\n5 1SR080000-0349 1 41 1SA050000-0866 1\n13 3UA920030-0024 1 45 2TU011410-0166 1\n35 2TU012210-2113 1\n13",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011410-0166",
+      "description": "0349 1 41 1SA050000-0866 1\n13 3UA920030-0024 1 45 2TU011410-0166 1\n35 2TU012210-2113 1\n13",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 13,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0049",
+      "description": "8   1    21 3UA740030-0043  1",
+      "quantity": 8,
+      "unit_price": null,
+      "category": null,
+      "page_number": 14,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-1504",
+      "description": "11   1    25 3UA040030-0026  1",
+      "quantity": 11,
+      "unit_price": null,
+      "category": null,
+      "page_number": 14,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR080000-0344",
+      "description": "20   1",
+      "quantity": 20,
+      "unit_price": null,
+      "category": null,
+      "page_number": 14,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA740030-0043",
+      "description": "OCK KODU QTY STOCK KODU QTY\n8 3UA920030-0049 1 21 3UA740030-0043 1\n11 2TU012210-1504 1 25 3UA040030-0026 1\n20 1SR080000-0344 1\n14",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 14,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA040030-0026",
+      "description": "0049 1 21 3UA740030-0043 1\n11 2TU012210-1504 1 25 3UA040030-0026 1\n20 1SR080000-0344 1\n14",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 14,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012510-0629",
+      "description": "7   1    13 2TU011210-1435  1",
+      "quantity": 7,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU012210-2078",
+      "description": "8   2    14 2TU011441-1731  2",
+      "quantity": 8,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011410-0191",
+      "description": "9   1    19 1PN020000-0280  1",
+      "quantity": 9,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU014010-0328",
+      "description": "10   1    20 2TU011441-1762  1",
+      "quantity": 10,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SR110000-0020",
+      "description": "11   2    21 2TU011110-1919  1",
+      "quantity": 11,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU014010-0329",
+      "description": "12   2",
+      "quantity": 12,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011210-1435",
+      "description": "OCK KODU QTY STOCK KODU QTY\n7 2TU012510-0629 1 13 2TU011210-1435 1\n8 2TU012210-2078 2 14 2TU011441-1731 2\n9 2TU011410-0191 1 19 1PN020000-0280 1\n10 2TU014010-0328 1",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1731",
+      "description": "-0629 1 13 2TU011210-1435 1\n8 2TU012210-2078 2 14 2TU011441-1731 2\n9 2TU011410-0191 1 19 1PN020000-0280 1\n10 2TU014010-0328 1 20 2TU011441-1762 1\n11 1SR110000-0020",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PN020000-0280",
+      "description": "-2078 2 14 2TU011441-1731 2\n9 2TU011410-0191 1 19 1PN020000-0280 1\n10 2TU014010-0328 1 20 2TU011441-1762 1\n11 1SR110000-0020 2 21 2TU011110-1919 1\n12 2TU014010-0329",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011441-1762",
+      "description": "0191 1 19 1PN020000-0280 1\n10 2TU014010-0328 1 20 2TU011441-1762 1\n11 1SR110000-0020 2 21 2TU011110-1919 1\n12 2TU014010-0329 2\n15",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1919",
+      "description": "0328 1 20 2TU011441-1762 1\n11 1SR110000-0020 2 21 2TU011110-1919 1\n12 2TU014010-0329 2\n15",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 15,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL390000-0534",
+      "description": "1   1    3 2TU011110-1518  1",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 16,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL070030-0400",
+      "description": "2   1    5 1DL100000-0319  1",
+      "quantity": 2,
+      "unit_price": null,
+      "category": null,
+      "page_number": 16,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL250000-0500",
+      "description": "1   1",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 16,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU011110-1518",
+      "description": "TOCK KODU QTY STOCK KODU QTY\n1 1EL390000-0534 1 3 2TU011110-1518 1\n2 1EL070030-0400 1 5 1DL100000-0319 1\n16\n17\nSTOK KODU ADET STOK KODU ADET\nNO NO\nSTOCK KODU QTY ST",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 16,
+      "image_reference": null
+    },
+    {
+      "part_number": "1DL100000-0319",
+      "description": "00-0534 1 3 2TU011110-1518 1\n2 1EL070030-0400 1 5 1DL100000-0319 1\n16\n17\nSTOK KODU ADET STOK KODU ADET\nNO NO\nSTOCK KODU QTY STOCK KODU QTY\n1 1EL250000-0500 1\n17",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 16,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA020000-0102",
+      "description": "1 -01  1    10 1EL010000-0033  1",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 17,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA020000-0102",
+      "description": "2 -02  1    12 1EL140000-0061  1",
+      "quantity": 2,
+      "unit_price": null,
+      "category": null,
+      "page_number": 17,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA020000-0102",
+      "description": "7 -05  1    13 1EL390000-0008  2",
+      "quantity": 7,
+      "unit_price": null,
+      "category": null,
+      "page_number": 17,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL070020-0010",
+      "description": "8   2    14 1HD030000-0005  1",
+      "quantity": 8,
+      "unit_price": null,
+      "category": null,
+      "page_number": 17,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL140000-0060",
+      "description": "9   1",
+      "quantity": 9,
+      "unit_price": null,
+      "category": null,
+      "page_number": 17,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL010000-0033",
+      "description": "KODU QTY STOCK KODU QTY\n1 1SA020000-0102-01 1 10 1EL010000-0033 1\n2 1SA020000-0102-02 1 12 1EL140000-0061 1\n7 1SA020000-0102-05 1 13 1EL390000-0008 2\n8 1EL070020-0",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 17,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL140000-0061",
+      "description": "01 1 10 1EL010000-0033 1\n2 1SA020000-0102-02 1 12 1EL140000-0061 1\n7 1SA020000-0102-05 1 13 1EL390000-0008 2\n8 1EL070020-0010 2 14 1HD030000-0005 1\n9 1EL140000-0060",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 17,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL390000-0008",
+      "description": "02 1 12 1EL140000-0061 1\n7 1SA020000-0102-05 1 13 1EL390000-0008 2\n8 1EL070020-0010 2 14 1HD030000-0005 1\n9 1EL140000-0060 1\n18",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 17,
+      "image_reference": null
+    },
+    {
+      "part_number": "1HD030000-0005",
+      "description": "02-05 1 13 1EL390000-0008 2\n8 1EL070020-0010 2 14 1HD030000-0005 1\n9 1EL140000-0060 1\n18",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 17,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SA020000-0091",
+      "description": "7   1    12 1EL390000-0500  1",
+      "quantity": 7,
+      "unit_price": null,
+      "category": null,
+      "page_number": 18,
+      "image_reference": null
+    },
+    {
+      "part_number": "2ET022441-0102",
+      "description": "10   1    13 1EL390000-0504  1",
+      "quantity": 10,
+      "unit_price": null,
+      "category": null,
+      "page_number": 18,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL390000-0500",
+      "description": "OCK KODU QTY STOCK KODU QTY\n7 1SA020000-0091 1 12 1EL390000-0500 1\n10 2ET022441-0102 1 13 1EL390000-0504 1\n19",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 18,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL390000-0504",
+      "description": "0091 1 12 1EL390000-0500 1\n10 2ET022441-0102 1 13 1EL390000-0504 1\n19",
+      "quantity": null,
+      "unit_price": null,
+      "category": null,
+      "page_number": 18,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0087",
+      "description": "1    MENGENE GRUBU",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0037",
+      "description": "2",
+      "quantity": 2,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PN020000-0192",
+      "description": "3    -A",
+      "quantity": 3,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU013210-0282",
+      "description": "4",
+      "quantity": 4,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK010000-0210",
+      "description": "5    350X3,0/2,2X30 Z=100 (192796)",
+      "quantity": 5,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA040030-0026",
+      "description": "6",
+      "quantity": 6,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL020000-0250",
+      "description": "7    IMB08-02BPSVT0K- M8\nNORMALDE ACIK",
+      "quantity": 7,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "1HD030000-0049",
+      "description": "8",
+      "quantity": 8,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "1HD030000-0050",
+      "description": "9",
+      "quantity": 9,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SC170000-0017",
+      "description": "10    -AL 12 2015",
+      "quantity": 10,
+      "unit_price": null,
+      "category": null,
+      "page_number": 19,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL020000-0125",
+      "description": "11    -8M-A-PS-24V-E-0,3-\nM8D(574334) (FESTO)",
+      "quantity": 11,
+      "unit_price": null,
+      "category": null,
+      "page_number": 20,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL090000-0009",
+      "description": "12",
+      "quantity": 12,
+      "unit_price": null,
+      "category": null,
+      "page_number": 20,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL090000-0005",
+      "description": "13    XB4BA42 YAYLI STOP BUTONU",
+      "quantity": 13,
+      "unit_price": null,
+      "category": null,
+      "page_number": 20,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PN010000-1025",
+      "description": "14    -5/2 FESTO\n566499 (VUVG-L14-M52-AT-G18-\n1P3)",
+      "quantity": 14,
+      "unit_price": null,
+      "category": null,
+      "page_number": 20,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PN010000-1140",
+      "description": "15    VALF BOBIN SOKETI FESTO\n573919 (VAVE-L1-1VR8-LP) M8",
+      "quantity": 15,
+      "unit_price": null,
+      "category": null,
+      "page_number": 20,
+      "image_reference": null
+    },
+    {
+      "part_number": "1PN010000-1030",
+      "description": "16    VALF CIFT BOBINLI 1/8-5/2 FESTO\n566500 ( VUVG-L14-B52-T-G18-1P3\n)",
+      "quantity": 16,
+      "unit_price": null,
+      "category": null,
+      "page_number": 20,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0050",
+      "description": "1    AIM 7510 TOOL & APARATUS KIT\n-",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 21,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0038",
+      "description": "2   -Z1 KARBUR FLEX-\n-Z1 CARBIDE CUTTER",
+      "quantity": 2,
+      "unit_price": null,
+      "category": null,
+      "page_number": 21,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0039",
+      "description": "3   -Z1 KARBUR FLEX-\n-Z1 CARBIDE CUTTER",
+      "quantity": 3,
+      "unit_price": null,
+      "category": null,
+      "page_number": 21,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0040",
+      "description": "4   -Z1 KARBUR FLEX-\n-Z1 CARBIDE CUTTER",
+      "quantity": 4,
+      "unit_price": null,
+      "category": null,
+      "page_number": 21,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0018",
+      "description": "5   -Z2 KARBUR FLEX -\n2-Z2 CARBIDE CUTTER",
+      "quantity": 5,
+      "unit_price": null,
+      "category": null,
+      "page_number": 21,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0072",
+      "description": "6   -Z2 KARBUR FLEX -\n-Z2 CARBIDE CUTTER",
+      "quantity": 6,
+      "unit_price": null,
+      "category": null,
+      "page_number": 21,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0056",
+      "description": "7   -Z2 KARBUR FREZE -\n-Z2 CARBIDE CUTTER",
+      "quantity": 7,
+      "unit_price": null,
+      "category": null,
+      "page_number": 21,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0031",
+      "description": "8",
+      "quantity": 8,
+      "unit_price": null,
+      "category": null,
+      "page_number": 21,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0256",
+      "description": "9   TAKIM TUTUCU HSK F63\nTOOL HOLDER",
+      "quantity": 9,
+      "unit_price": null,
+      "category": null,
+      "page_number": 21,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0023",
+      "description": "10     470 E-6 ER32 Q6 PENS\n-6)\n470 E- -6)",
+      "quantity": 10,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0057",
+      "description": "11     470 E-8 ER32 Q8 PENS\n-8)\n470 E-8 ER32 Q8 COLLET\n-8)",
+      "quantity": 11,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0024",
+      "description": "12     470 E- -\n10)\n470 E- -\n10)",
+      "quantity": 12,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0073",
+      "description": "13     470 E- -\n12)\n470 E- -\n12)",
+      "quantity": 13,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0058",
+      "description": "14     470 E- -\n14)\n470 E- -\n14)",
+      "quantity": 14,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK050000-0048",
+      "description": "15     470 E-20 ER32- -20)\n470E-20 ER32- -\n20)",
+      "quantity": 15,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "2TU013210-0196",
+      "description": "16     ad)MOULD HEIGHT PART (12 pc)",
+      "quantity": 16,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0087",
+      "description": "17     AIM 7510 CLAMPING UNIT",
+      "quantity": 17,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK400000-0001",
+      "description": "18     DIGITAL TOOL LENGTH\nMEASUREMENT GAUGE (300 mm)",
+      "quantity": 18,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK400000-0002",
+      "description": "19     HSK F63 MASTAR (A63.18.40.300)\nHSK F63 GAUGE(A63.18.40.300)",
+      "quantity": 19,
+      "unit_price": null,
+      "category": null,
+      "page_number": 22,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK400000-0003",
+      "description": "20     -\n08-7- -\n08-7-NC)",
+      "quantity": 20,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK400000-0004",
+      "description": "21     -10)\nDIAL GAUGE MOUNTING APPARATUS\n(INSIZE 6211-10)",
+      "quantity": 21,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0056",
+      "description": "22     -M8)\nTAPPING CHUCK (M5 -M8)",
+      "quantity": 22,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0059",
+      "description": "23",
+      "quantity": 23,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "1SK010000-0210",
+      "description": "24     (LEUCO)",
+      "quantity": 24,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL180000-0047",
+      "description": "25     ET3U-16kVA IN 3x208-220-240V / OUT\nET3U-16kVA IN 3x208-220-240V / OUT\n3x400V PE TRANSFORMER",
+      "quantity": 25,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL180000-0510",
+      "description": "26     C/A3-\nKVA) C/A3-020A VOLTAGE STABILIZER\n(20 KVA)",
+      "quantity": 26,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0065",
+      "description": "27     TOPLAYICI\nGRUBU\nMISTRAZE OIL MIST BLOWER",
+      "quantity": 27,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "1TC100001-0050",
+      "description": "28     TAKIM ARABASI\nTOOL CAR",
+      "quantity": 28,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "EL180000-0047",
+      "description": "1",
+      "quantity": 1,
+      "unit_price": null,
+      "category": null,
+      "page_number": 23,
+      "image_reference": null
+    },
+    {
+      "part_number": "1TC100001-0060",
+      "description": "29     T 1700 WORKSTATION PC FOR\nCAM APPLICATIONS",
+      "quantity": 29,
+      "unit_price": null,
+      "category": null,
+      "page_number": 24,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0035",
+      "description": "30     AIM 7510 HIGH SAFETY FENS",
+      "quantity": 30,
+      "unit_price": null,
+      "category": null,
+      "page_number": 24,
+      "image_reference": null
+    },
+    {
+      "part_number": "0AA020000-0842",
+      "description": "31     CADXTRACT PROGRAMI (3D",
+      "quantity": 31,
+      "unit_price": null,
+      "category": null,
+      "page_number": 24,
+      "image_reference": null
+    },
+    {
+      "part_number": "1EL320000-0011",
+      "description": "32     BARKOD OKUYUCU&KABLO\nKITI(QD2130) ( CAB-327- RS232 )\nBARCODE SCANNER&\nCABLE&SW KIT",
+      "quantity": 32,
+      "unit_price": null,
+      "category": null,
+      "page_number": 24,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA740030-0511",
+      "description": "33",
+      "quantity": 33,
+      "unit_price": null,
+      "category": null,
+      "page_number": 24,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA740030-0510",
+      "description": "34     CLAMP PRESSURE SYSTEM",
+      "quantity": 34,
+      "unit_price": null,
+      "category": null,
+      "page_number": 24,
+      "image_reference": null
+    },
+    {
+      "part_number": "3UA920030-0082",
+      "description": "35     AIM 7510 HAND CONTROL\nAPPLICATION",
+      "quantity": 35,
+      "unit_price": null,
+      "category": null,
+      "page_number": 24,
+      "image_reference": null
+    },
+    {
+      "part_number": "0AA020000-0842",
+      "description": "No description",
+      "quantity": 842,
+      "unit_price": null,
+      "category": null,
+      "page_number": 24,
+      "image_reference": null
+    }
+  ],
+  "parts_count": 281
+}

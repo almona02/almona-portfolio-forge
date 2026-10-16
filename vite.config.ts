@@ -4,6 +4,8 @@ import { defineConfig, loadEnv } from "vite";
 /// <reference types="vitest" />
 import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
+import type { NormalizedOutputOptions, OutputBundle, PluginContext } from 'rollup';
+import { sanitizeClientEnv } from './scripts/build/publicEnv';
 
 // https://vitejs.dev/config/
 // Updated: 2024-09-26 - Simplified build config to fix chunk rendering issues
@@ -11,6 +13,7 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), "");
   const isProduction = mode === "production";
+  const eagerJavascript = new Set<string>();
   
   // Simplified build configuration
 
@@ -73,6 +76,28 @@ export default defineConfig(({ mode }) => {
       sourcemapIgnoreList: true,
     },
     plugins: [
+      {
+        name: 'protect-public-environment',
+        configResolved(config) {
+          const removed = sanitizeClientEnv(config.env);
+          if (removed.length) console.warn(`Excluded server credentials from the browser environment: ${removed.join(', ')}`);
+        },
+      },
+      {
+        name: 'entry-asset-boundary',
+        generateBundle(this: PluginContext, _options: NormalizedOutputOptions, bundle: OutputBundle) {
+          eagerJavascript.clear();
+          const queue = Object.values(bundle).filter((asset) => asset.type === 'chunk' && asset.isEntry).map((asset) => asset.fileName);
+          while (queue.length) {
+            const name = queue.shift()!;
+            if (eagerJavascript.has(name)) continue;
+            eagerJavascript.add(name);
+            if (/vendor-3d/.test(name)) this.error(`3D code leaked into the application entry: ${name}`);
+            const chunk = bundle[name];
+            if (chunk?.type === 'chunk') queue.push(...chunk.imports.filter((dependency) => dependency in bundle));
+          }
+        },
+      },
       react({
         // Optimize JSX runtime
         jsxRuntime: 'automatic'
@@ -158,6 +183,11 @@ export default defineConfig(({ mode }) => {
           navigateFallback: 'index.html',
         },
         workbox: {
+          // Cache the app shell first; lazy routes enter the runtime cache when visited.
+          manifestTransforms: [async (entries) => ({
+            manifest: entries.filter((entry) => !entry.url.endsWith('.js') || eagerJavascript.has(entry.url.replace(/^\//, ''))),
+            warnings: [],
+          })],
           globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
           globIgnores: [
             '**/hero01*.png',
@@ -193,7 +223,8 @@ export default defineConfig(({ mode }) => {
               urlPattern: /\.(?:png|jpg|jpeg|webp|svg|gif)$/,
               handler: 'CacheFirst',
               options: {
-                cacheName: 'images-cache',
+                cacheName: 'images-cache-v2',
+                cacheableResponse: { statuses: [200] },
                 expiration: {
                   maxEntries: 100,
                   maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
@@ -380,6 +411,10 @@ export default defineConfig(({ mode }) => {
           
           // STRATEGIC BUNDLE SPLITTING
           manualChunks: (id) => {
+             // Rollup's shared CommonJS helper must not live in a lazy 3D chunk.
+             if (id.includes('commonjsHelpers') || id.includes('preload-helper') || id.includes('modulepreload-polyfill') || id.includes('node_modules/@babel/runtime/') || id.includes('node_modules/tslib/')) {
+               return 'vendor-runtime';
+             }
              // Exclude app code
              if (id.includes('/src/') || id.includes('\\src\\')) {
                return undefined;
