@@ -31,3 +31,14 @@ Thumbs.db
 # Logs
 *.log
 
+
+# Explicit runtime assets for the advisory API
+!knowledge/processed/
+knowledge/processed/*
+!knowledge/processed/aim-7510/
+knowledge/processed/aim-7510/*
+!knowledge/processed/aim-7510/structure.json
+!knowledge/processed/aim-7510/vision_ai_extraction.json
+!knowledge/processed/aim-7510/spare_parts.json
+!knowledge/processed/aim-7510/specifications_gold_tier.json
+!knowledge/processed/aim-7510/wiring_diagram_analysis.json

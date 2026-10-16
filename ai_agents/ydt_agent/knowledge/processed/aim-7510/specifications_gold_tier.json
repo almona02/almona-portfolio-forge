@@ -1,0 +1,50 @@
+{
+  "machine_id": "aim-7510",
+  "model_code": "AIM-7510",
+  "power_voltage": null,
+  "power_frequency": "60Hz",
+  "power_phase": null,
+  "power_consumption": "15 kW",
+  "power_amperage": null,
+  "air_consumption": "250 L/min",
+  "air_pressure": "6 bar",
+  "dimension_length": null,
+  "dimension_width": null,
+  "dimension_height": null,
+  "weight_net": "4500 kg",
+  "weight_gross": "4800 kg",
+  "working_x1": "995mm",
+  "working_x2": null,
+  "working_y1": "220mm",
+  "working_y2": null,
+  "working_z1": "240mm",
+  "working_z2": null,
+  "spindle_speed": null,
+  "spindle_power": null,
+  "tool_collet": null,
+  "saw_diameter": "350 mm",
+  "saw_bore": "30 mm",
+  "saw_speed": "3000 RPM",
+  "saw_motor_power": null,
+  "cnc_axes": null,
+  "clamping_width_max": null,
+  "clamping_width_min": null,
+  "clamping_height_max": null,
+  "clamping_height_min": null,
+  "clamping_length_max": null,
+  "clamping_length_min": null,
+  "extraction_confidence": 1.0,
+  "validation_errors": [],
+  "source_pages": [
+    5
+  ],
+  "validation_report": {
+    "confidence": 1.0,
+    "confidence_percentage": "100.0%",
+    "errors": [],
+    "is_gold_tier": true,
+    "source_pages": [
+      5
+    ]
+  }
+}
