@@ -79,10 +79,7 @@ export class ConsumptionForecaster {
 
       let query = supabase
         .from('fabricator_cutting_plans')
-        .select(`
-          *,
-          fabricator_profiles!inner(id, name)
-        `)
+        .select('id,profile_id,user_id,created_at,cuts')
         .eq('profile_id', profileId)
         .gte('created_at', cutoffDate.toISOString())
         .order('created_at', { ascending: true });

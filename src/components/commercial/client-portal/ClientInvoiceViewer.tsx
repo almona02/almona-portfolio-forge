@@ -36,7 +36,7 @@ import {
     Eye,
     Search,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 interface ClientInvoiceViewerProps {
@@ -46,30 +46,42 @@ interface ClientInvoiceViewerProps {
 export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ customerId }) => {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const requestId = useRef(0);
+  const [loadedFor, setLoadedFor] = useState(customerId);
+  const [loadError, setLoadError] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadInvoices = async () => {
+    const token = ++requestId.current;
+    setLoadedFor(customerId);
     setLoading(true);
+    setLoadError(false);
+    setInvoices([]);
+    setSelectedInvoice(null);
+    if (!customerId) { setLoading(false); return; }
     try {
       const { data, error } = await supabase
         .from('invoices')
         .select('*')
-        .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      if (token !== requestId.current) return;
       setInvoices(data || []);
     } catch (error) {
+      if (token !== requestId.current) return;
+      setLoadError(true);
       console.error('Failed to load invoices:', error);
       toast.error('Failed to load invoices');
     } finally {
-      setLoading(false);
+      if (token === requestId.current) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadInvoices();
+    void loadInvoices();
+    return () => { ++requestId.current; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId]);
 
@@ -130,7 +142,14 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
     );
   };
 
-  if (loading) {
+  if (loadError && loadedFor === customerId) {
+    return <Card><CardContent className="p-8" role="alert">
+      <p>Unable to load invoices. Please try again.</p>
+      <Button onClick={() => void loadInvoices()}>Retry</Button>
+    </CardContent></Card>;
+  }
+
+  if (loading || loadedFor !== customerId) {
     return (
       <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">

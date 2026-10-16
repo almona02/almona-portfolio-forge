@@ -8,6 +8,7 @@ import type {
     AlmonaCutReport,
     PackedBar
 } from './AlmonaCuttingEngine';
+import { AlmonaCuttingEngine } from './AlmonaCuttingEngine';
 import { PLATFORM_MANUFACTURING_DEFAULTS } from './ManufacturingSettings';
 import { OptimizedCutList } from './UPVCCuttingEngine';
 

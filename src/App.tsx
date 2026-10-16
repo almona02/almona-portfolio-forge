@@ -561,7 +561,7 @@ const App = memo(() => {
                                     path="/admin/feedback"
                                     element={
                                       <Suspense fallback={getLoadingComponent('/admin/feedback')}>
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requireAdmin>
                                           <FeedbackDashboardPage />
                                         </ProtectedRoute>
                                       </Suspense>
@@ -571,7 +571,7 @@ const App = memo(() => {
                                     path="/admin/pilot-monitoring"
                                     element={
                                       <Suspense fallback={getLoadingComponent('/admin/pilot-monitoring')}>
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requireAdmin>
                                           <PilotMonitoringPage />
                                         </ProtectedRoute>
                                       </Suspense>
@@ -597,7 +597,7 @@ const App = memo(() => {
                                     path="/admin/beta-dashboard"
                                     element={
                                       <Suspense fallback={getLoadingComponent('/admin/beta-dashboard')}>
-                                        <ProtectedRoute>
+                                        <ProtectedRoute requireAdmin>
                                           <BetaDashboardPage />
                                         </ProtectedRoute>
                                       </Suspense>
@@ -664,10 +664,10 @@ const App = memo(() => {
                                   <Route path="/portal/register-machine" element={<Suspense fallback={getLoadingComponent('/portal')}><ProtectedRoute><RegisterMachinePage /></ProtectedRoute></Suspense>} />
 
                                   {/* Admin */}
-                                  <Route path="/admin" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
+                                  <Route path="/admin" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute></Suspense>} />
                                   <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
                                   <Route path="/admin/demo" element={<Navigate to="/admin" replace />} />
-                                  <Route path="/admin/validation" element={<Suspense fallback={getLoadingComponent('/admin/validation')}><ProtectedRoute><ValidationDashboardPage /></ProtectedRoute></Suspense>} />
+                                  <Route path="/admin/validation" element={<Suspense fallback={getLoadingComponent('/admin/validation')}><ProtectedRoute requireAdmin><ValidationDashboardPage /></ProtectedRoute></Suspense>} />
 
                                   {/* Executive Trust Dashboard */}
                                   <Route path="/executive/trust" element={<Suspense fallback={getLoadingComponent('/executive')}><ProtectedRoute><ExecutiveTrustDashboard /></ProtectedRoute></Suspense>} />

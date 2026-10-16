@@ -3,7 +3,7 @@
  * React hook for interacting with YDT Prestige Agent API
  */
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 // YDT Agent API URL — prefer VITE_YDT_API_URL; never use Supabase REST as the agent host.
 const getApiBaseUrl = () => {
@@ -22,6 +22,15 @@ const getApiBaseUrl = () => {
 };
 
 const API_BASE_URL = getApiBaseUrl();
+const API_PREFIX = '/api/v2/prestige';
+
+async function readAgentResponse<T>(response: Response): Promise<T> {
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(typeof data.detail === 'string' ? data.detail : data.error || `Agent request failed (HTTP ${response.status})`);
+  }
+  return data as T;
+}
 
 interface ChatResponse {
   success: boolean;
@@ -106,6 +115,7 @@ export const usePrestigeAgent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
   const abortControllerRef = useRef<AbortController | null>(null);
+  useEffect(() => () => abortControllerRef.current?.abort(), []);
 
   const sendMessage = useCallback(async (
     message: string,
@@ -117,7 +127,8 @@ export const usePrestigeAgent = () => {
       abortControllerRef.current.abort();
     }
     
-    abortControllerRef.current = new AbortController();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     setIsLoading(true);
 
     try {
@@ -127,13 +138,13 @@ export const usePrestigeAgent = () => {
           error: 'Prestige Agent is paused until the backend is deployed. Set VITE_YDT_API_URL or VITE_API_URL.',
         };
       }
-      const response = await fetch(`${API_BASE_URL}/api/v1/chat`, {
+      const response = await fetch(`${API_BASE_URL}${API_PREFIX}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        signal: abortControllerRef.current.signal,
+        signal: controller.signal,
         body: JSON.stringify({
           message,
           persona,
@@ -152,7 +163,7 @@ export const usePrestigeAgent = () => {
         let errorMessage = `HTTP error! status: ${response.status}`;
         try {
           const errorData = JSON.parse(errorText);
-          errorMessage = errorData.message || errorData.error || errorMessage;
+          errorMessage = errorData.message || errorData.error || errorData.detail || errorMessage;
         } catch {
           errorMessage = errorText || errorMessage;
         }
@@ -182,8 +193,10 @@ export const usePrestigeAgent = () => {
         error: error.message || 'Failed to connect to server. Please try again.' 
       };
     } finally {
-      setIsLoading(false);
-      abortControllerRef.current = null;
+      if (abortControllerRef.current === controller) {
+        setIsLoading(false);
+        abortControllerRef.current = null;
+      }
     }
   }, [sessionId]);
 
@@ -197,7 +210,7 @@ export const usePrestigeAgent = () => {
       return { success: false, error: 'Prestige Agent backend is not configured.' };
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/gcode/validate`, {
+      const response = await fetch(`${API_BASE_URL}${API_PREFIX}/gcode/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -208,7 +221,7 @@ export const usePrestigeAgent = () => {
         }),
       });
 
-      const data = await response.json();
+      const data = await readAgentResponse<GCodeValidationResponse>(response);
       return data;
     } catch (error: any) {
       console.error('G-code validation error:', error);
@@ -221,8 +234,8 @@ export const usePrestigeAgent = () => {
       return { success: false, error: 'Prestige Agent backend is not configured.' };
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/learn/modules?language=${language}`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE_URL}${API_PREFIX}/learn/modules?language=${encodeURIComponent(language)}`);
+      const data = await readAgentResponse<LearningModulesResponse>(response);
       return data;
     } catch (error: any) {
       console.error('Learning modules error:', error);
@@ -239,7 +252,7 @@ export const usePrestigeAgent = () => {
       return { success: false, error: 'Prestige Agent backend is not configured.' };
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/diagnose`, {
+      const response = await fetch(`${API_BASE_URL}${API_PREFIX}/diagnose`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -249,7 +262,7 @@ export const usePrestigeAgent = () => {
         }),
       });
 
-      const data = await response.json();
+      const data = await readAgentResponse<DiagnosisResponse>(response);
       return data;
     } catch (error: any) {
       console.error('Diagnosis error:', error);
@@ -262,7 +275,7 @@ export const usePrestigeAgent = () => {
       return { success: false, error: 'Prestige Agent backend is not configured.' };
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/knowledge/stats`, {
+      const response = await fetch(`${API_BASE_URL}${API_PREFIX}/knowledge/stats`, {
         signal: AbortSignal.timeout(5000) // 5 second timeout
       });
       if (!response.ok) {
@@ -285,7 +298,7 @@ export const usePrestigeAgent = () => {
       return { success: false, error: 'Prestige Agent backend is not configured.' };
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/machine/capabilities`, {
+      const response = await fetch(`${API_BASE_URL}${API_PREFIX}/machine/capabilities`, {
         signal: AbortSignal.timeout(5000) // 5 second timeout
       });
       if (!response.ok) {

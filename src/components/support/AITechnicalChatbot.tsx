@@ -286,8 +286,9 @@ export const AITechnicalChatbot: React.FC = () => {
 
   // Log chat interaction for analytics and improvement
   const logChatInteraction = async (userMsg: ChatMessage, botMsg: ChatMessage) => {
+    if (!user?.id) return;
     try {
-      await (supabase as any).from('chat_interactions').insert({
+      const { error } = await (supabase as any).from('chat_interactions').insert({
         user_id: user?.id,
         user_message: userMsg.content,
         bot_response: botMsg.content,
@@ -295,6 +296,7 @@ export const AITechnicalChatbot: React.FC = () => {
         severity: userMsg.severity,
         created_at: new Date().toISOString()
       });
+      if (error) throw error;
     } catch (error) {
       console.error('Failed to log chat interaction:', error);
     }

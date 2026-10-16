@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from apis.v2.prestige import router as prestige_router
 from fastapi.exceptions import RequestValidationError, HTTPException
 
 # Import individual v2 routers
@@ -47,6 +48,7 @@ from apis.v2.core.errors import (
 # router should NOT add an additional `/api/v2` prefix. Individual v2
 # routers use relative prefixes like `/tickets`, `/auth`, `/fabricator`, etc.
 router = APIRouter()
+router.include_router(prestige_router)
 
 # Note: Exception handlers are registered at the FastAPI app level in v2_app.
 # FastAPI's APIRouter does not support add_exception_handler; registering here

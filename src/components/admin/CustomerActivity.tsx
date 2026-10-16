@@ -2,7 +2,7 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { supabase } from '@/lib/supabase'
 
-type ProfileRow = { id: string; full_name: string | null; email: string | null; created_at: string }
+type ProfileRow = { id: string; full_name: string | null; created_at: string }
 type OrderRow = { id: string; created_at: string }
 
 export const CustomerActivity: React.FC = () => {
@@ -17,7 +17,7 @@ export const CustomerActivity: React.FC = () => {
       setError(null)
 
       const [profilesRes, ordersRes] = await Promise.all([
-        supabase.from('profiles').select('id,full_name,email,created_at').order('created_at', { ascending: false }).limit(5),
+        supabase.from('profiles').select('id,full_name,created_at').order('created_at', { ascending: false }).limit(5),
         supabase.from('orders').select('id,created_at').order('created_at', { ascending: false }).limit(5),
       ])
 
@@ -33,7 +33,7 @@ export const CustomerActivity: React.FC = () => {
       }
 
       const profileItems = ((profilesRes.data as ProfileRow[]) || []).map((p) => ({
-        label: `${p.full_name || p.email || 'New user'} • Registered`,
+        label: `${p.full_name || 'New user'} • Registered`,
         time: new Date(p.created_at).toLocaleString(),
       }))
       const orderItems = ((ordersRes.data as OrderRow[]) || []).map((o) => ({

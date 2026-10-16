@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import ProtectedRoute from './ProtectedRoute';
 
 const authState = {
-  user: null as { id: string } | null,
+  user: null as { id: string; role?: string } | null,
   supabaseUser: null as { id: string } | null,
   loading: false,
 };
@@ -13,15 +13,16 @@ vi.mock('@/context/AuthContext', () => ({
   useAuth: () => authState,
 }));
 
-function renderAt(path: string) {
+function renderAt(path: string, requireAdmin = false) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
+        <Route path="/" element={<div>home-page</div>} />
         <Route path="/login" element={<div>login-page</div>} />
         <Route
           path="/portal"
           element={(
-            <ProtectedRoute>
+            <ProtectedRoute requireAdmin={requireAdmin}>
               <div>portal-ok</div>
             </ProtectedRoute>
           )}
@@ -32,6 +33,25 @@ function renderAt(path: string) {
 }
 
 describe('ProtectedRoute', () => {
+  it.each([
+    { id: 'customer-1', role: 'customer' },
+    null,
+  ])('denies admin pages when the profile is not an admin: %j', (user) => {
+    authState.loading = false;
+    authState.user = user;
+    authState.supabaseUser = { id: 'session-1' };
+    renderAt('/portal', true);
+    expect(screen.getByText('home-page')).toBeInTheDocument();
+    expect(screen.queryByText('portal-ok')).not.toBeInTheDocument();
+  });
+
+  it('allows an admin profile to open an admin page', () => {
+    authState.loading = false;
+    authState.user = { id: 'admin-1', role: 'admin' };
+    authState.supabaseUser = { id: 'admin-1' };
+    renderAt('/portal', true);
+    expect(screen.getByText('portal-ok')).toBeInTheDocument();
+  });
   it('shows loading and does not bounce to login while auth is unresolved', () => {
     authState.loading = true;
     authState.user = null;

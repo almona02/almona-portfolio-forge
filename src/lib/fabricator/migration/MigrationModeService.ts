@@ -5,11 +5,7 @@
  * - Runtime read/write mode is derived from append-only RealityOS events.
  * - No silent flags; mode changes must be represented by new ledger events.
  *
- * RealityOS schema nuance:
- * - Some environments may have `reality_events_readonly` as a VIEW (041 migration),
- *   others may have it converted to a SECURITY INVOKER FUNCTION (049 migration).
- * - This service supports both by trying `supabase.rpc('reality_events_readonly')` first,
- *   then falling back to `.from('reality_events_readonly')`.
+ * Browser access uses a restricted state projection. Raw ledger storage is server-only.
  */
 import { supabase } from '@/lib/supabase';
 
@@ -57,41 +53,17 @@ export class MigrationModeService {
   private constructor() {}
 
   /**
-   * Fetch recent ledger rows from reality_events_readonly (function or view).
-   * We intentionally keep this narrow and filter client-side for robustness across
-   * PostgREST JSON-filter quirks and view/function differences.
+   * Fetch the latest migration transition without exposing unrelated ledger data.
    */
-  private async fetchRecentLedgerRows(limit: number = 200): Promise<LedgerRow[]> {
-    // Prefer RPC if migration 049 was applied (reality_events_readonly() function).
-    try {
-      const { data, error } = await supabase.rpc('reality_events_readonly', {});
-      if (!error && Array.isArray(data)) return data as LedgerRow[];
-    } catch {
-      // Fall back below.
-    }
-
-    // Fallback for environments where reality_events_readonly is still a view.
-    try {
-      const { data, error } = await supabase
-        .from('reality_events_readonly')
-        .select('event_hash,chain_position,payload,recorded_at')
-        .order('chain_position', { ascending: false })
-        .limit(limit);
-
-      if (!error) return (data || []) as LedgerRow[];
-    } catch {
-      // Fall back below.
-    }
-
-    // Final fallback: query base table (requires SELECT permission / RLS alignment).
-    const { data, error } = await supabase
-      .from('reality_events')
-      .select('event_hash,chain_position,payload,recorded_at')
-      .order('chain_position', { ascending: false })
-      .limit(limit);
-
+  private async fetchRecentLedgerRows(): Promise<LedgerRow[]> {
+    const rpc = supabase as unknown as {
+      rpc(name: 'get_fabricator_migration_mode_events'): PromiseLike<{
+        data: LedgerRow[] | null; error: { message: string } | null;
+      }>;
+    };
+    const { data, error } = await rpc.rpc('get_fabricator_migration_mode_events');
     if (error) throw error;
-    return (data || []) as LedgerRow[];
+    return data || [];
   }
 
   private deriveContextFromLatestMigrationEvent(row: LedgerRow): FabricatorMigrationModeContext {
@@ -159,7 +131,7 @@ export class MigrationModeService {
    * Public API: derive the current Fabricator migration mode from RealityOS ledger.
    */
   async getCurrentMode(): Promise<FabricatorMigrationModeContext> {
-    const rows = await this.fetchRecentLedgerRows(250);
+    const rows = await this.fetchRecentLedgerRows();
 
     const latest = rows.find((r) => {
       const t = (r?.payload as { almona_event_type?: string } | undefined)?.almona_event_type;

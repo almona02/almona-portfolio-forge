@@ -21,6 +21,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 import React, { useMemo } from 'react';
+import { FileDown, Printer, Scissors } from 'lucide-react';
 import { CutListViewer } from './CutListViewer';
 
 export interface AlmonaCutListViewerProps {

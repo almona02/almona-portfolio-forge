@@ -20,6 +20,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { formatCurrency } from '@/lib/i18n/formatters';
 import { supabase } from '@/lib/supabase';
+import { getClientPortalSummary, type ClientPortalSummary } from '@/lib/data/clientPortalClient';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -37,8 +38,7 @@ import {
     Search,
     TrendingUp,
 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
+import React, { useEffect, useState } from 'react';
 import { ClientCommunicationCenter } from './ClientCommunicationCenter';
 import { ClientDocumentCenter } from './ClientDocumentCenter';
 import { ClientInvoiceViewer } from './ClientInvoiceViewer';
@@ -55,79 +55,70 @@ export const ClientPortalDashboard: React.FC = () => {
   const [quotes, setQuotes] = useState<any[]>([]);
   const [invoices, setInvoices] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      // Load quotes
-      const { data: quotesData } = await supabase
-        .from('quotes')
-        .select('*')
-        .eq('customer_id', user!.id)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      // Load invoices
-      const { data: invoicesData } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('customer_id', user!.id)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      setQuotes(quotesData || []);
-      setInvoices(invoicesData || []);
-    } catch (error) {
-      console.error('Failed to load client data:', error);
-      toast.error('Failed to load data');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [summary, setSummary] = useState<ClientPortalSummary | null>(null);
 
   useEffect(() => {
-    if (user?.id) {
-      loadData();
+    let cancelled = false;
+    setQuotes([]);
+    setInvoices([]);
+    setSummary(null);
+    setLoadError(false);
+    if (!user?.id) {
+      setLoading(false);
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
-
-  // Calculate summary metrics
-  const summary = useMemo(() => {
-    const totalQuotes = quotes.length;
-    const pendingQuotes = quotes.filter((q: any) => q.status === 'pending' || q.status === 'draft').length;
-    const acceptedQuotes = quotes.filter((q: any) => q.status === 'accepted').length;
-
-    const totalInvoices = invoices.length;
-    const paidInvoices = invoices.filter((i: any) => i.status === 'paid').length;
-    const pendingInvoices = invoices.filter((i: any) => i.status === 'pending' || i.status === 'sent').length;
-    const overdueInvoices = invoices.filter((i: any) => {
-      if (!i.due_date || i.status === 'paid') return false;
-      return new Date(i.due_date) < new Date();
-    }).length;
-
-    const totalRevenue = invoices
-      .filter((i: any) => i.status === 'paid')
-      .reduce((sum, i: any) => sum + parseFloat(i.total_amount?.toString() || '0'), 0);
-
-    const pendingAmount = invoices
-      .filter((i: any) => i.status === 'pending' || i.status === 'sent')
-      .reduce((sum, i: any) => sum + parseFloat(i.total_amount?.toString() || '0'), 0);
-
-    return {
-      totalQuotes,
-      pendingQuotes,
-      acceptedQuotes,
-      totalInvoices,
-      paidInvoices,
-      pendingInvoices,
-      overdueInvoices,
-      totalRevenue,
-      pendingAmount,
+    const userId = user.id;
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const [quotesResult, invoicesResult, accountSummary] = await Promise.all([
+          supabase
+            .from('quotes')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(10),
+          supabase
+            .from('invoices')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(10),
+          getClientPortalSummary(),
+        ]);
+        // Supabase resolves database failures with an error field rather than throwing.
+        if (quotesResult.error || invoicesResult.error) throw new Error('Portal data unavailable');
+        if (!cancelled) {
+          setQuotes(quotesResult.data || []);
+          setInvoices(invoicesResult.data || []);
+          setSummary(accountSummary);
+        }
+      } catch {
+        if (!cancelled) setLoadError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     };
-  }, [quotes, invoices]);
+    void loadData();
+    return () => { cancelled = true; };
+  }, [user?.id, reloadKey]);
 
-  if (loading) {
+  if (!user?.id) {
+    return <div role="status" className="p-6">Sign in to view your account.</div>;
+  }
+
+  if (loadError) {
+    return (
+      <div role="alert" className="min-h-screen bg-[#0a0a0a] p-6 text-amber-200">
+        <h1 className="text-2xl font-bold mb-2">Account data unavailable</h1>
+        <p className="mb-4">We could not load your quotes and invoices. Your account totals are unavailable. Please try again.</p>
+        <Button onClick={() => setReloadKey((key) => key + 1)}>Try again</Button>
+      </div>
+    );
+  }
+
+  if (loading || !summary) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] p-6">
         <div className="max-w-7xl mx-auto">
@@ -165,7 +156,7 @@ export const ClientPortalDashboard: React.FC = () => {
               />
             </div>
             <Button
-              onClick={loadData}
+              onClick={() => setReloadKey((key) => key + 1)}
               variant="outline"
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >
@@ -211,9 +202,11 @@ export const ClientPortalDashboard: React.FC = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600/70 mb-1">Total Revenue</p>
+                  <p className="text-sm text-amber-600/70 mb-1">Paid Invoice Total</p>
                   <p className="text-2xl font-bold text-amber-200">
-                    {formatCurrency(summary.totalRevenue, 'en', 'USD', { notation: 'compact' })}
+                    {summary.currencies.length === 0 ? 'No paid invoices' : summary.currencies.map((item) => (
+                      <span key={item.currency} className="block">{formatCurrency(item.totalRevenue, 'en', item.currency)}</span>
+                    ))}
                   </p>
                   <p className="text-xs text-amber-600/50 mt-1">
                     {summary.paidInvoices} paid
@@ -230,7 +223,9 @@ export const ClientPortalDashboard: React.FC = () => {
                 <div>
                   <p className="text-sm text-amber-600/70 mb-1">Pending Amount</p>
                   <p className="text-2xl font-bold text-amber-200">
-                    {formatCurrency(summary.pendingAmount, 'en', 'USD', { notation: 'compact' })}
+                    {summary.currencies.length === 0 ? 'No pending invoices' : summary.currencies.map((item) => (
+                      <span key={item.currency} className="block">{formatCurrency(item.pendingAmount, 'en', item.currency)}</span>
+                    ))}
                   </p>
                   {summary.overdueInvoices > 0 && (
                     <p className="text-xs text-red-400 mt-1">

@@ -31,7 +31,7 @@ import {
     Receipt,
     Search,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 interface ClientDocumentCenterProps {
@@ -51,25 +51,33 @@ interface Document {
 export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ customerId }) => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
+  const requestId = useRef(0);
+  const [loadedFor, setLoadedFor] = useState(customerId);
+  const [loadError, setLoadError] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadDocuments = async () => {
+    const token = ++requestId.current;
+    setLoadedFor(customerId);
     setLoading(true);
+    setLoadError(false);
+    setDocuments([]);
+    if (!customerId) { setLoading(false); return; }
     try {
       // Load quotes
-      const { data: quotes } = await supabase
+      const { data: quotes, error: quotesError } = await supabase
         .from('quotes')
         .select('id, quote_number, created_at, total_amount, currency')
-        .eq('customer_id', customerId)
+        .eq('user_id', customerId)
         .order('created_at', { ascending: false });
 
       // Load invoices
-      const { data: invoices } = await supabase
+      const { data: invoices, error: invoicesError } = await supabase
         .from('invoices')
         .select('id, invoice_number, created_at, total_amount, currency')
-        .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
 
+      if (quotesError || invoicesError) throw new Error('Documents unavailable');
       const docs: Document[] = [
         ...(quotes || []).map((q: any) => ({
           id: q.id,
@@ -91,17 +99,21 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
         })),
       ].sort((a, b) => b.date.getTime() - a.date.getTime());
 
+      if (token !== requestId.current) return;
       setDocuments(docs);
     } catch (error) {
+      if (token !== requestId.current) return;
+      setLoadError(true);
       console.error('Failed to load documents:', error);
       toast.error('Failed to load documents');
     } finally {
-      setLoading(false);
+      if (token === requestId.current) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadDocuments();
+    void loadDocuments();
+    return () => { ++requestId.current; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId]);
 
@@ -158,7 +170,14 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
     );
   });
 
-  if (loading) {
+  if (loadError && loadedFor === customerId) {
+    return <Card><CardContent className="p-8" role="alert">
+      <p>Unable to load documents. Please try again.</p>
+      <Button onClick={() => void loadDocuments()}>Retry</Button>
+    </CardContent></Card>;
+  }
+
+  if (loading || loadedFor !== customerId) {
     return (
       <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">
