@@ -899,30 +899,32 @@ ${copy('Prepared by ALMONA.')}
               {recommendations.length > 0 ? recommendations.map(machine => (
                 <Card key={machine.id} className="hover:bg-gray-800/50 transition-colors">
                   <CardContent className="p-3 sm:p-4">
-                    <div className="flex items-start space-x-3 sm:space-x-4">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-almona-orange" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="typography-h4 text-base sm:text-lg">{machine.name}</h4>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1 line-clamp-2">{copy(machine.description)}</p>
-                        <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
-                          {machine.tags?.slice(0, 3).map(tag => (
-                            <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
-                          ))}
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-3">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-almona-orange" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="typography-h4 text-base sm:text-lg">{machine.name}</h4>
+                          <p className="text-xs sm:text-sm text-gray-400 mt-1 line-clamp-2">{copy(machine.description)}</p>
+                          <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
+                            {machine.tags?.slice(0, 3).map(tag => (
+                              <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                      <div className="flex flex-col gap-2 flex-shrink-0">
+                      <div className="flex gap-2 sm:flex-col sm:flex-shrink-0 sm:items-stretch">
                         <Button 
                           size="sm" 
-                          className="bg-almona-orange hover:bg-almona-orange-dark text-xs sm:text-sm"
+                          className="flex-1 sm:flex-none bg-almona-orange hover:bg-almona-orange-dark text-xs sm:text-sm"
                           onClick={() => handleDownloadSpecs(machine)}
                         >
                           <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />{copy("View Specs")}</Button>
                         <Button 
                           size="sm" 
                           variant="outline"
-                          className="text-xs sm:text-sm"
+                          className="flex-1 sm:flex-none text-xs sm:text-sm"
                           onClick={() => handleAddToQuote(machine)}
                         >
                           <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />{copy("Add to Quote")}</Button>
@@ -950,7 +952,7 @@ ${copy('Prepared by ALMONA.')}
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[92vw] max-w-3xl sm:max-w-4xl h-[82vh] sm:h-[85vh] max-h-[760px] sm:max-h-[800px] overflow-hidden flex flex-col top-[52%]">
+      <DialogContent className="w-[94vw] sm:w-[92vw] max-w-3xl sm:max-w-4xl h-[88vh] max-h-[840px] overflow-hidden flex flex-col top-[50%]">
         <DialogHeader className="border-b border-gray-700 pb-4 flex-shrink-0">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex-1">
@@ -987,7 +989,7 @@ ${copy('Prepared by ALMONA.')}
                       )}
                     </div>
                     {index < steps.length - 1 && (
-                      <div className={`w-6 sm:w-12 h-0.5 mx-1 sm:mx-2 transition-all ${
+                      <div className={`w-4 sm:w-10 h-0.5 mx-0.5 sm:mx-2 transition-all ${
                         isCompleted ? 'bg-almona-orange' : 'bg-gray-600'
                       }`} />
                     )}
