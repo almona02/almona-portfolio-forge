@@ -52,7 +52,6 @@ const SmartScanAssembly = lazy(() => import("./pages/SmartScanAssembly.tsx"));
 const Shop = lazyRetry(() => import("./pages/Shop"), "Shop");
 const UsedMachines = lazyRetry(() => import("./pages/UsedMachines.tsx"), "UsedMachines");
 const UsedMachineDetailPage = lazyRetry(() => import("./pages/UsedMachineDetail.tsx"), "UsedMachineDetail");
-const SellUsedMachine = lazyRetry(() => import("./pages/SellUsedMachine.tsx"), "SellUsedMachine");
 const SpareParts = lazyRetry(() => import("./pages/SpareParts.tsx"), "SpareParts");
 
 // Product details - lazy loaded
@@ -609,8 +608,8 @@ const App = memo(() => {
                                   <Route path="/optimizer" element={<Suspense fallback={getLoadingComponent('/optimizer')}><PublicOptimizer /></Suspense>} />
                                   {/* Canonical: /used-machines (SEO); /usedmachines redirects for legacy */}
                                   <Route path="/used-machines" element={<Suspense fallback={getLoadingComponent('/used-machines')}><UsedMachines /></Suspense>} />
+                                  <Route path="/used-machines/sell" element={<Navigate to="/used-machines?tab=sell" replace />} />
                                   <Route path="/used-machines/:id" element={<Suspense fallback={getLoadingComponent('/used-machines')}><UsedMachineDetailPage /></Suspense>} />
-                                  <Route path="/used-machines/sell" element={<Suspense fallback={getLoadingComponent('/used-machines')}><ProtectedRoute><SellUsedMachine /></ProtectedRoute></Suspense>} />
                                   <Route path="/usedmachines/*" element={<Navigate to="/used-machines" replace />} />
                                   <Route path="/spare-parts" element={<Suspense fallback={getLoadingComponent('/spare-parts')}><SpareParts /></Suspense>} />
                                   <Route

@@ -1,3 +1,7 @@
+// Used Machines Marketplace — public listing shape.
+// Keeps legacy field names (price as formatted string, seller, type, year/hours) for
+// backward compatibility with existing search/related components, plus contact fields.
+
 export interface Seller {
   name: string;
   rating: number;
@@ -7,72 +11,65 @@ export interface Seller {
 export interface UsedMachine {
   id: string;
   title: string;
-  price: string;
+  price: string; // formatted e.g. "EGP 180,000"
+  currency: string;
   location: string;
   condition: string;
-  type: string;
+  type: string; // machine category
   year: number;
   hours: number;
   images: string[];
   description: string;
   seller: Seller;
+  contactName: string;
+  contactPhone: string;
+  contactWhatsapp: string | null;
+  status: string;
+  views: number;
+  createdAt: string;
 }
 
-const unapprovedUsedMachines: UsedMachine[] = [
-  {
-    id: '1',
-    title: 'Yılmaz K 139 Copy Router',
-    price: 'EGP 180,000',
-    location: 'Cairo',
-    condition: 'Excellent',
-    type: 'copy-router',
-    year: 2020,
-    hours: 3200,
-    images: ['/images/machines/1-1.jpg', '/images/machines/1-2.jpg'],
-    description: 'Well-maintained copy router with automatic feeding system. Perfect for UPVC window production.',
-    seller: {
-      name: 'El Masria Fabricators',
-      rating: 4.8,
-      verified: true
-    }
-  },
-  {
-    id: '2',
-    title: 'Altınsoy Double Head Cutting Machine',
-    price: 'EGP 120,000',
-    location: 'Alexandria',
-    condition: 'Good',
-    type: 'cutting',
-    year: 2018,
-    hours: 5800,
-    images: ['/images/machines/2-1.jpg', '/images/machines/2-2.jpg'],
-    description: 'Reliable cutting machine for aluminum profiles. Includes pneumatic clamping system.',
-    seller: {
-      name: 'Mediterranean Aluminum',
-      rating: 4.5,
-      verified: true
-    }
-  },
-  {
-    id: '3',
-    title: 'YILMAZ CA601',
-    price: 'EGP 125,000',
-    location: 'Giza',
-    condition: 'GOOD',
-    type: 'CLEANING MACHINE',
-    year: 2015,
-    hours: 2000,
-    images: ['/images/machines/3-1.jpg', '/images/machines/3-2.jpg'],
-    description: 'AUTOMATIC CLEANING MACHINE FOR UPVC PROFILES.',
-    seller: {
-      name: 'ALMONA-COMPANY',
-      rating: 3.5,
-      verified: true
-    }
+export function formatMachinePrice(price: number, currency = 'EGP'): string {
+  try {
+    return new Intl.NumberFormat('en-EG', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  } catch {
+    return `${price} ${currency}`;
   }
-];
+}
 
-// Existing draft listings lack verified photographs and seller approval.
-// Keep them unpublished until each listing is reviewed.
+// Placeholder is empty; the page fetches live listings from Supabase via UsedMachineService.
 export const usedMachines: UsedMachine[] = [];
-export const usedMachineDraftCount = unapprovedUsedMachines.length;
+
+// Map a Supabase row (snake_case) to the camelCase UsedMachine shape.
+export function mapListingToMachine(row: {
+  id: string; title: string; price: number; currency: string; location: string;
+  condition: string; category: string; year: number | null; hours: number | null;
+  description: string; contact_name: string; contact_phone: string; contact_whatsapp: string | null;
+  images: string[]; status: string; views: number; created_at: string;
+}): UsedMachine {
+  return {
+    id: row.id,
+    title: row.title,
+    price: formatMachinePrice(row.price, row.currency),
+    currency: row.currency,
+    location: row.location,
+    condition: row.condition,
+    type: row.category,
+    year: row.year ?? 0,
+    hours: row.hours ?? 0,
+    images: row.images ?? [],
+    description: row.description,
+    seller: { name: row.contact_name, rating: 0, verified: false },
+    contactName: row.contact_name,
+    contactPhone: row.contact_phone,
+    contactWhatsapp: row.contact_whatsapp,
+    status: row.status,
+    views: row.views,
+    createdAt: row.created_at,
+  };
+}

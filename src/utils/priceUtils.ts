@@ -10,12 +10,12 @@ export interface PriceRange {
 }
 
 /**
- * Extract numeric price from string format
- * Handles formats like "EGP 180,000", "180000", "$180,000"
+ * Extract numeric price from string or number
+ * Handles formats like "EGP 180,000", "180000", "$180,000", 180000
  */
-export const extractNumericPrice = (priceString: string): number => {
-  // Remove all non-digit characters and convert to number
-  const numericValue = priceString.replace(/[^\d]/g, '');
+export const extractNumericPrice = (price: string | number): number => {
+  if (typeof price === 'number') return price || 0;
+  const numericValue = price.replace(/[^\d]/g, '');
   return parseInt(numericValue) || 0;
 };
 
@@ -41,9 +41,9 @@ export const formatEGP = (price: number, compact = false): string => {
 };
 
 /**
- * Get price range from array of machines
+ * Get price range from array of machines (numeric price)
  */
-export const getPriceRange = (machines: Array<{price: string}>): PriceRange => {
+export const getPriceRange = (machines: Array<{price: number | string}>): PriceRange => {
   const prices = machines
     .map(machine => extractNumericPrice(machine.price))
     .filter(price => price > 0);
@@ -62,7 +62,7 @@ export const getPriceRange = (machines: Array<{price: string}>): PriceRange => {
  * Check if machine price falls within range
  */
 export const isPriceInRange = (
-  machinePrice: string, 
+  machinePrice: string | number,
   range: [number, number]
 ): boolean => {
   const price = extractNumericPrice(machinePrice);

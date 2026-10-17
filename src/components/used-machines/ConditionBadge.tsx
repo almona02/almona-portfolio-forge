@@ -1,6 +1,7 @@
 import React from 'react';
 import { Badge } from '@/shared/ui/ui/badge';
 import { cn } from '@/lib/utils';
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 
 export type MachineCondition = 'Excellent' | 'Good' | 'Fair' | 'Needs Repair' | 'As-Is';
 
@@ -23,6 +24,7 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
   showIcon = true,
   className
 }) => {
+  const copy = usePublicCopy();
 
   // Normalize condition string (handle inconsistent casing)
   const normalizeCondition = (cond: string): MachineCondition => {
@@ -98,7 +100,7 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
             {config.icon}
           </span>
         )}
-        {normalizedCondition}
+        {copy(normalizedCondition)}
       </Badge>
 
       {/* Tooltip on hover */}
