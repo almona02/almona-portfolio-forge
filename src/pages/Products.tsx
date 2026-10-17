@@ -32,7 +32,7 @@ import { Input } from "@/shared/ui/ui/input";
 import { Separator } from "@/shared/ui/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import type { Machine as UiMachine } from "@/types/index";
-import { Eye, X } from "lucide-react";
+import { Eye, Search, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
 
@@ -461,6 +461,20 @@ const Products = function ProductsPage() {
             <TabsTrigger value="pvc">{t('machines.tabs.pvc', 'PVC')}</TabsTrigger>
           </TabsList>
         </Tabs>
+        {/* Visible search bar — shared across both Aluminium & PVC tabs */}
+        <div className="mb-6 max-w-xl mx-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              type="search"
+              value={filters.searchTerm}
+              onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+              placeholder={copy("Search machines (e.g. cutting, welding, AIM 4420)")}
+              className="pl-10 bg-gray-900/80 border-gray-700 focus:border-amber-500 focus:ring-amber-500/20"
+            />
+          </div>
+        </div>
+
             {/* Smart Category Navigation - Above grid for better visibility on large screens */}
             <div className="mb-6">
               <SmartCategoryNavigation

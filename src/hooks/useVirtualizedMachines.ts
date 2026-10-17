@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useYilmazMachines } from './useYilmazMachines';
 import { categorizeMachine } from '@/constants/smartCategories';
 import { searchPublicMachines } from '@/lib/publicMachineSearch';
@@ -33,6 +33,12 @@ export function useVirtualizedMachines({
   const { data: yilmazMachines = [], isLoading: isDataLoading } = useYilmazMachines();
   const [isLoading, setIsLoading] = useState(false);
   const isLoadingData = isDataLoading || isLoading;
+
+  // Reset pagination whenever the active filter changes (tab/category/search/sort)
+  // so switching Aluminium <-> PVC (or changing any filter) starts back at page 1.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [materialFilter, categoryFilter, searchTerm, sortOption]);
 
   // Memoize filtered and sorted machines to prevent unnecessary recalculations
   const filteredAndSortedMachines = useMemo(() => {
