@@ -5,6 +5,7 @@ import { Download, Plus, RotateCw, Search, Trash2, X } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import type { Machine } from '@/constants/yilmazMachines';
+import type { LayoutPdfItem, WorkshopLayoutPdfOptions } from '@/lib/reports/workshopLayoutPdf';
 
 type ItemKind =
   | 'machine'
@@ -310,18 +311,19 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
       }
     } catch { /* logo optional */ }
 
-    const pdfItems = items.map((it) => ({ label: it.label, x: it.x, y: it.y, w: it.w, h: it.h, color: it.color }));
+    const pdfItems: LayoutPdfItem[] = items.map((it) => ({ label: it.label, x: it.x, y: it.y, w: it.w, h: it.h, color: it.color }));
     const componentMap = new Map<string, number>();
     for (const it of items) {
       componentMap.set(it.label, (componentMap.get(it.label) || 0) + 1);
     }
     const components = [...componentMap.entries()].map(([label, qty]) => ({ label, qty }));
-    const bytes = await generateWorkshopLayoutPDF(factoryW, factoryL, pdfItems, logoDataUrl, {
+    const options: WorkshopLayoutPdfOptions = {
       components,
       totalPowerKw: totals.powerKw,
       totalAirLmin: totals.airLmin,
       workshopHeight: factoryH,
-    });
+    };
+    const bytes = await generateWorkshopLayoutPDF(factoryW, factoryL, pdfItems, logoDataUrl, options);
     const blob = new Blob([new Uint8Array(bytes)], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
