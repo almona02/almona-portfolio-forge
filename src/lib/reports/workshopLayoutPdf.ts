@@ -117,10 +117,20 @@ export async function generateWorkshopLayoutPDF(
     const pw = it.w * s;
     const ph = it.h * s;
     page.drawRectangle({ x: px, y: py, width: pw, height: ph, color: rgb(c.r, c.g, c.b, 0.15), borderColor: rgb(c.r, c.g, c.b), borderWidth: 1 });
-    // always write the label (font sized to fit)
     if (pw > 10 && ph > 8) {
+      // label (centered, sized to fit)
       const ls = Math.max(3.5, Math.min(7, pw / 9));
-      page.drawText(it.label, { x: px + 2, y: py + ph / 2 - ls / 2, size: ls, font: bold, color: rgb(0.15, 0.15, 0.15) });
+      const labelW = bold.widthOfTextAtSize(it.label, ls);
+      const lx = px + Math.max(0, (pw - labelW) / 2);
+      page.drawText(it.label, { x: lx, y: py + ph / 2 + 2, size: ls, font: bold, color: rgb(0.15, 0.15, 0.15) });
+      // dimension (centered below the label)
+      if (ph > 24) {
+        const ds = Math.max(3, Math.min(6, pw / 13));
+        const dim = `${it.w.toFixed(1)} × ${it.h.toFixed(1)} m`;
+        const dimW = font.widthOfTextAtSize(dim, ds);
+        const dx = px + Math.max(0, (pw - dimW) / 2);
+        page.drawText(dim, { x: dx, y: py + ph / 2 - ds - 4, size: ds, font, color: rgb(0.25, 0.25, 0.25) });
+      }
     }
   }
 
