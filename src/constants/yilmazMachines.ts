@@ -3616,8 +3616,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "3250mm",
+      "width": "2200mm",
       "height": "On request"
     },
     "tags": [
@@ -3755,8 +3755,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "250mm",
+      "width": "220mm",
       "height": "On request"
     },
     "tags": [
@@ -3827,8 +3827,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "3250mm",
+      "width": "2200mm",
       "height": "On request"
     },
     "tags": [
@@ -4345,8 +4345,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "2300mm",
+      "width": "620mm",
       "height": "On request"
     },
     "tags": [
