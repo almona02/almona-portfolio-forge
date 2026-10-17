@@ -233,8 +233,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "2000mm",
-      "length": "5200mm",
+      "length": "5160mm",
+      "width": "2410mm",
       "height": "2200mm"
     },
     "weight": {
@@ -393,8 +393,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "2000mm",
       "length": "11720mm",
+      "width": "2000mm",
       "height": "2310mm"
     },
     "weight": {
@@ -514,8 +514,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "1450mm",
       "length": "4510mm",
+      "width": "1450mm",
       "height": "1670mm"
     },
     "weight": {
@@ -609,9 +609,9 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "4100mm",
-      "length": "1700mm",
-      "height": "800mm"
+      "length": "4100mm",
+      "width": "1700mm",
+      "height": "On request"
     },
     "weight": {
       "net": "611 kg",
@@ -686,8 +686,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "800 W"
     },
     "dimensions": {
-      "width": "570mm",
       "length": "510mm",
+      "width": "570mm",
       "height": "420mm"
     },
     "weight": {
@@ -767,8 +767,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "1290mm",
       "length": "5560mm",
+      "width": "1290mm",
       "height": "1440mm"
     },
     "weight": {
@@ -866,8 +866,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "550mm",
       "length": "580mm",
+      "width": "550mm",
       "height": "1335mm"
     },
     "weight": {
@@ -953,8 +953,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "2790mm",
       "length": "13440mm",
+      "width": "2790mm",
       "height": "2310mm"
     },
     "weight": {
@@ -1072,8 +1072,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "4720mm",
-      "length": "11730mm",
+      "length": "11725mm",
+      "width": "2472mm",
       "height": "2070mm"
     },
     "weight": {
@@ -1182,8 +1182,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "2510mm",
       "length": "1560mm",
+      "width": "2510mm",
       "height": "1160mm"
     },
     "weight": {
@@ -1289,8 +1289,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "1450mm",
       "length": "4510mm",
+      "width": "1450mm",
       "height": "1670mm"
     },
     "weight": {
@@ -1383,8 +1383,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "4 bar"
     },
     "dimensions": {
-      "length": "2000mm",
-      "width": "1500mm",
+      "length": "4260mm",
+      "width": "1130mm",
       "height": "1500mm"
     },
     "tags": [
@@ -1429,8 +1429,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "4 bar"
     },
     "dimensions": {
-      "length": "850mm",
-      "width": "560mm",
+      "length": "560mm",
+      "width": "850mm",
       "height": "1470mm"
     },
     "tags": [
@@ -1477,9 +1477,9 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "1635mm",
       "length": "2810mm",
-      "height": "2180mm"
+      "width": "1635mm",
+      "height": "On request"
     },
     "weight": {
       "net": "520 kg",
@@ -1578,8 +1578,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "3 bar"
     },
     "dimensions": {
-      "length": "1500mm",
-      "width": "1000mm",
+      "length": "1945mm",
+      "width": "745mm",
       "height": "1200mm"
     },
     "tags": [
@@ -1623,8 +1623,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "4 bar"
     },
     "dimensions": {
-      "length": "1200mm",
-      "width": "800mm",
+      "length": "8350mm",
+      "width": "420mm",
       "height": "1500mm"
     },
     "tags": [
@@ -1668,8 +1668,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "1260mm",
       "length": "2900mm",
+      "width": "1260mm",
       "height": "1870mm"
     },
     "weight": {
@@ -1756,8 +1756,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "3 bar"
     },
     "dimensions": {
-      "length": "730mm",
-      "width": "610mm",
+      "length": "610mm",
+      "width": "730mm",
       "height": "1300mm"
     },
     "tags": [
@@ -1801,8 +1801,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "4 bar"
     },
     "dimensions": {
-      "length": "1500mm",
-      "width": "1000mm",
+      "length": "800mm",
+      "width": "900mm",
       "height": "1200mm"
     },
     "tags": [
@@ -1889,8 +1889,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "4 bar"
     },
     "dimensions": {
-      "length": "900mm",
-      "width": "800mm",
+      "length": "760mm",
+      "width": "1840mm",
       "height": "1200mm"
     },
     "tags": [
@@ -2032,8 +2032,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "3 bar"
     },
     "dimensions": {
-      "length": "1035mm",
-      "width": "485mm",
+      "length": "2495mm",
+      "width": "1035mm",
       "height": "1050mm"
     },
     "tags": [
@@ -2163,8 +2163,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "1525mm",
       "length": "2405mm",
+      "width": "1525mm",
       "height": "1295mm"
     },
     "weight": {
@@ -2248,8 +2248,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "3 bar"
     },
     "dimensions": {
-      "length": "700mm",
-      "width": "840mm",
+      "length": "840mm",
+      "width": "700mm",
       "height": "670mm"
     },
     "tags": [
@@ -2292,8 +2292,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "4 bar"
     },
     "dimensions": {
-      "length": "720mm",
-      "width": "760mm",
+      "length": "760mm",
+      "width": "720mm",
       "height": "1570mm"
     },
     "tags": [
@@ -2337,8 +2337,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "4 bar"
     },
     "dimensions": {
-      "length": "620mm",
-      "width": "760mm",
+      "length": "760mm",
+      "width": "820mm",
       "height": "785mm"
     },
     "tags": [
@@ -2382,8 +2382,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "3 bar"
     },
     "dimensions": {
-      "length": "590mm",
-      "width": "530mm",
+      "length": "520mm",
+      "width": "590mm",
       "height": "465mm"
     },
     "tags": [
@@ -2427,8 +2427,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "3 bar"
     },
     "dimensions": {
-      "length": "590mm",
-      "width": "560mm",
+      "length": "520mm",
+      "width": "590mm",
       "height": "465mm"
     },
     "tags": [
@@ -2472,8 +2472,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "3 bar"
     },
     "dimensions": {
-      "length": "500mm",
-      "width": "450mm",
+      "length": "485mm",
+      "width": "680mm",
       "height": "400mm"
     },
     "tags": [
@@ -2516,8 +2516,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "4 bar"
     },
     "dimensions": {
-      "length": "440mm",
-      "width": "740mm",
+      "length": "740mm",
+      "width": "440mm",
       "height": "1160mm"
     },
     "tags": [
@@ -2724,8 +2724,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
+      "length": "19150mm",
       "width": "600mm",
-      "length": "1915mm",
       "height": "1400mm"
     },
     "weight": {
@@ -2800,8 +2800,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "715mm",
-      "length": "1825mm",
+      "length": "2290mm",
+      "width": "1090mm",
       "height": "1420mm"
     },
     "weight": {
@@ -2879,8 +2879,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "1375mm",
       "length": "2405mm",
+      "width": "1375mm",
       "height": "1255mm"
     },
     "weight": {
@@ -2963,8 +2963,8 @@ export const yilmazMachines: Machine[] = [
       "pressure": "6-8 bar"
     },
     "dimensions": {
-      "width": "5190mm",
-      "length": "1880mm",
+      "length": "5090mm",
+      "width": "1850mm",
       "height": "1210mm"
     },
     "weight": {
@@ -3156,8 +3156,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "2030mm",
+      "width": "840mm",
       "height": "On request"
     },
     "tags": [
@@ -3437,8 +3437,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "30500mm",
-      "width": "9000mm",
+      "length": "3050mm",
+      "width": "900mm",
       "height": "24000mm"
     },
     "tags": [
@@ -3512,7 +3512,7 @@ export const yilmazMachines: Machine[] = [
     "dimensions": {
       "length": "5550mm",
       "width": "3340mm",
-      "height": "1880mm"
+      "height": "On request"
     },
     "tags": [
       "CNC",
@@ -3686,8 +3686,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "3450mm",
+      "width": "2000mm",
       "height": "On request"
     },
     "tags": [
@@ -3719,8 +3719,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "4000mm",
+      "width": "855mm",
       "height": "On request"
     },
     "tags": [
@@ -3791,8 +3791,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "700mm",
+      "width": "1400mm",
       "height": "On request"
     },
     "tags": [
@@ -3860,8 +3860,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "1500mm",
+      "width": "990mm",
       "height": "On request"
     },
     "tags": [
@@ -3896,8 +3896,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "1500mm",
+      "width": "990mm",
       "height": "On request"
     },
     "tags": [
@@ -3932,8 +3932,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "1540mm",
+      "width": "1740mm",
       "height": "On request"
     },
     "tags": [
@@ -3968,8 +3968,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "1600mm",
+      "width": "990mm",
       "height": "On request"
     },
     "tags": [
@@ -4004,8 +4004,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "1500mm",
+      "width": "990mm",
       "height": "On request"
     },
     "tags": [
@@ -4040,8 +4040,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "1500mm",
+      "width": "1980mm",
       "height": "On request"
     },
     "tags": [
@@ -4109,8 +4109,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "3000mm",
+      "width": "650mm",
       "height": "On request"
     },
     "tags": [
@@ -4185,8 +4185,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "2.2 kW"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "2540mm",
+      "width": "705mm",
       "height": "On request"
     },
     "tags": [
@@ -4417,7 +4417,7 @@ export const yilmazMachines: Machine[] = [
       "consumption": "0.3 kW"
     },
     "dimensions": {
-      "length": "On request",
+      "length": "3050mm",
       "width": "540mm",
       "height": "3050mm"
     },
@@ -4453,8 +4453,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "3120mm",
+      "width": "510mm",
       "height": "On request"
     },
     "tags": [
@@ -4594,8 +4594,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "0.75 kW"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "840mm",
+      "width": "700mm",
       "height": "On request"
     },
     "tags": [
@@ -4710,8 +4710,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "On request"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "4110mm",
+      "width": "2000mm",
       "height": "On request"
     },
     "tags": [
@@ -4943,8 +4943,8 @@ export const yilmazMachines: Machine[] = [
       "consumption": "4.0 kW"
     },
     "dimensions": {
-      "length": "On request",
-      "width": "On request",
+      "length": "4540mm",
+      "width": "1250mm",
       "height": "On request"
     },
     "tags": [
@@ -4967,23 +4967,3 @@ export const yilmazMachines: Machine[] = [
   }
 ];
 
-
-// Utilities to support comparison summaries
-export const getTotalPowerKw = (machines: Machine[]) => machines.reduce((sum, m) => {
-  const match = m.powerSpec?.consumption?.match(/([0-9]+(?:\.[0-9]+)?)/);
-  return sum + (match ? parseFloat(match[1]) : 0);
-}, 0);
-
-export const getTotalAirConsumption = (machines: Machine[]) => machines.reduce((sum, m) => {
-  const air = m.airSpec?.consumption;
-  const match = air?.match(/([0-9]+(?:\.[0-9]+)?)/);
-  return sum + (match ? parseFloat(match[1]) : 0);
-}, 0);
-
-// Export legacy format for backward compatibility
-export const yilmazMachinesLegacy = yilmazMachines.map(machine => ({
-  ...machine,
-  category: 'machines',
-  power: `${machine.powerSpec.consumption}`,
-  dimensions: `${machine.dimensions.length} × ${machine.dimensions.width} × ${machine.dimensions.height}`
-}));
