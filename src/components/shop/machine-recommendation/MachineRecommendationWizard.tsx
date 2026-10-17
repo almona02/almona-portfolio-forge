@@ -968,11 +968,10 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
         <DialogHeader className="border-b border-gray-700 pb-4 flex-shrink-0">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex-1">
-              <DialogTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-almona-orange" />
-                <span className="truncate">{copy("Precision automation Machine Wizard")}</span>
+              <DialogTitle className="text-xl sm:text-2xl font-bold">
+                <span className="truncate">{copy("Machine Wizard")}</span>
               </DialogTitle>
-              <p className="text-gray-400 mt-1 text-sm sm:text-base">{copy("ISO-grade, Industry 4.0 aligned guidance for aluminum & UPVC production investments.")}</p>
+              <p className="text-gray-400 mt-1 text-sm sm:text-base">{copy("Guidance for aluminium & UPVC production investments.")}</p>
             </div>
             <div className="text-sm text-gray-400 flex-shrink-0">{copy("Step")} {currentStepIndex + 1} {copy("of")} {steps.length}
             </div>
