@@ -110,7 +110,7 @@ license-expression==30.4.4
 limits==5.5.0
 locust
 locust-cloud
-Mako==1.4.1
+Mako==1.4.3
 Markdown==3.9
 markdown-it-py==4.0.0
 MarkupSafe==3.0.2
