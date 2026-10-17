@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { Button } from '@/shared/ui/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
@@ -17,12 +18,15 @@ const GOVERNORATES = ['Cairo', 'Giza', 'Alexandria', 'Dakahlia', 'Sharqia', 'Qal
 
 const UsedMachines = () => {
   const copy = usePublicCopy();
+  const [searchParams] = useSearchParams();
   const [machines, setMachines] = useState<UsedMachine[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState('browse');
+  const [tab, setTab] = useState(searchParams.get('tab') === 'sell' ? 'sell' : 'browse');
   const [q, setQ] = useState('');
   const [location, setLocation] = useState('all');
   const [category, setCategory] = useState('all');
+  const [sort, setSort] = useState<'newest' | 'oldest'>('newest');
+  const [within, setWithin] = useState<'all' | '24h' | '7d' | '30d'>('all');
 
   const load = () => {
     UsedMachineService.listActiveListings()
@@ -35,13 +39,21 @@ const UsedMachines = () => {
 
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
-    return machines.filter((m) => {
-      if (location !== 'all' && m.location !== location) return false;
-      if (category !== 'all' && m.type !== category) return false;
-      if (query && !(m.title.toLowerCase().includes(query) || m.description.toLowerCase().includes(query))) return false;
-      return true;
-    });
-  }, [machines, q, location, category]);
+    const now = Date.now();
+    const withinMs = within === '24h' ? 86400000 : within === '7d' ? 7 * 86400000 : within === '30d' ? 30 * 86400000 : 0;
+    return machines
+      .filter((m) => {
+        if (location !== 'all' && m.location !== location) return false;
+        if (category !== 'all' && m.type !== category) return false;
+        if (query && !(m.title.toLowerCase().includes(query) || m.description.toLowerCase().includes(query))) return false;
+        if (withinMs && now - new Date(m.createdAt).getTime() > withinMs) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        const d = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return sort === 'newest' ? d : -d;
+      });
+  }, [machines, q, location, category, sort, within]);
 
   return (
     <>
@@ -66,7 +78,7 @@ const UsedMachines = () => {
 
             <TabsContent value="browse">
               {/* Search + filters */}
-              <div className="mb-6 bg-almona-darker p-4 rounded-lg border border-almona-light/20 grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="mb-6 bg-almona-darker p-4 rounded-lg border border-almona-light/20 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 <div className="relative md:col-span-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={copy('Search machines…')} className="pl-9 bg-almona-dark border-almona-light text-white" />
@@ -75,7 +87,7 @@ const UsedMachines = () => {
                   <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder={copy('All governorates')} /></SelectTrigger>
                   <SelectContent className="bg-almona-darker text-white">
                     <SelectItem value="all">{copy('All governorates')}</SelectItem>
-                    {GOVERNORATES.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+                    {GOVERNORATES.map((g) => <SelectItem key={g} value={g}>{copy(g)}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={category} onValueChange={setCategory}>
@@ -83,6 +95,22 @@ const UsedMachines = () => {
                   <SelectContent className="bg-almona-darker text-white">
                     <SelectItem value="all">{copy('All categories')}</SelectItem>
                     {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{copy(c)}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={sort} onValueChange={(v) => setSort(v as 'newest' | 'oldest')}>
+                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder={copy('Sort by')} /></SelectTrigger>
+                  <SelectContent className="bg-almona-darker text-white">
+                    <SelectItem value="newest">{copy('Newest first')}</SelectItem>
+                    <SelectItem value="oldest">{copy('Oldest first')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={within} onValueChange={(v) => setWithin(v as 'all' | '24h' | '7d' | '30d')}>
+                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder={copy('All time')} /></SelectTrigger>
+                  <SelectContent className="bg-almona-darker text-white">
+                    <SelectItem value="all">{copy('All time')}</SelectItem>
+                    <SelectItem value="24h">{copy('Last 24 hours')}</SelectItem>
+                    <SelectItem value="7d">{copy('Last 7 days')}</SelectItem>
+                    <SelectItem value="30d">{copy('Last 30 days')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

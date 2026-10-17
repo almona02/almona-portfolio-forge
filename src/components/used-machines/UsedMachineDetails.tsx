@@ -58,7 +58,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
 
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-amber-500" /> {machine.location}
+              <MapPin className="w-5 h-5 text-amber-500" /> {copy(machine.location)}
             </li>
             <li className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-amber-500" /> {copy('Year')}: {machine.year ?? '—'}

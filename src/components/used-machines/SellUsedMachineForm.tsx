@@ -4,7 +4,7 @@ import { Input } from '@/shared/ui/ui/input';
 import { Textarea } from '@/shared/ui/ui/textarea';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Loader2, Upload } from 'lucide-react';
+import { Loader2, Upload, Camera } from 'lucide-react';
 import { toast } from 'sonner';
 import { UsedMachineService } from '@/lib/usedMachines/UsedMachineService';
 import { usePublicCopy } from '@/hooks/usePublicCopy';
@@ -32,8 +32,8 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
 
   const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? []);
-    const images = selected.filter((f) => f.type.startsWith('image/')).slice(0, 8);
-    setFiles(images);
+    const images = selected.filter((f) => f.type.startsWith('image/'));
+    setFiles((prev) => [...prev, ...images].slice(0, 8));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,7 +131,7 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
           <Select value={location} onValueChange={setLocation}>
             <SelectTrigger className={inputCls}><SelectValue placeholder={copy('Select governorate')} /></SelectTrigger>
             <SelectContent className="bg-almona-darker text-white">
-              {GOVERNORATES.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+              {GOVERNORATES.map((g) => <SelectItem key={g} value={g}>{copy(g)}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
@@ -153,16 +153,24 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
 
         <div className="md:col-span-2">
           <Label className="text-gray-300">{copy('Photos * (1–8)')}</Label>
-          <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-almona-light/40 rounded-lg p-6 cursor-pointer hover:border-amber-500/60">
-            <Upload className="h-6 w-6 text-amber-400" />
-            <span className="text-sm text-gray-400">{files.length ? `${files.length} ${copy('photo(s) selected')}` : copy('Tap to add photos')}</span>
-            <input type="file" multiple accept="image/*" onChange={handleFiles} className="hidden" />
-          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-almona-light/40 rounded-lg p-5 cursor-pointer hover:border-amber-500/60">
+              <Camera className="h-7 w-7 text-amber-400" />
+              <span className="text-sm text-gray-300 text-center">{copy('Take photo')}</span>
+              <input type="file" accept="image/*" capture="environment" onChange={handleFiles} className="hidden" />
+            </label>
+            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-almona-light/40 rounded-lg p-5 cursor-pointer hover:border-amber-500/60">
+              <Upload className="h-7 w-7 text-amber-400" />
+              <span className="text-sm text-gray-300 text-center">{copy('Upload from gallery')}</span>
+              <input type="file" multiple accept="image/*" onChange={handleFiles} className="hidden" />
+            </label>
+          </div>
           {files.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {files.map((f, i) => (
                 <div key={i} className="relative">
-                  <img src={URL.createObjectURL(f)} alt="" className="w-16 h-16 object-cover rounded border border-almona-light/40" />
+                  <img src={URL.createObjectURL(f)} alt="" className="w-20 h-20 object-cover rounded border border-almona-light/40" />
+                  <button type="button" onClick={() => setFiles((prev) => prev.filter((_, idx) => idx !== i))} className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs leading-none flex items-center justify-center">×</button>
                 </div>
               ))}
             </div>

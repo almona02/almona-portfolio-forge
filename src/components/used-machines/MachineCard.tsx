@@ -25,6 +25,18 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
   const imageHeight = isCompact ? 'h-32' : 'h-48';
   const phone = machine.contactWhatsapp || machine.contactPhone;
   const waLink = UsedMachineService.whatsappLink(phone);
+  const daysAgo = Math.floor((Date.now() - new Date(machine.createdAt).getTime()) / 86400000);
+  const relativeDate = daysAgo < 1
+    ? copy('Today')
+    : daysAgo === 1
+      ? copy('Yesterday')
+      : daysAgo < 7
+        ? `${daysAgo} ${copy('days ago')}`
+        : daysAgo < 30
+          ? `${Math.floor(daysAgo / 7)} ${copy('weeks ago')}`
+          : daysAgo < 365
+            ? `${Math.floor(daysAgo / 30)} ${copy('months ago')}`
+            : new Date(machine.createdAt).toLocaleDateString();
 
   return (
     <Card className={`bg-almona-darker border-almona-light overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 group flex flex-col ${cardHeight}`}>
@@ -49,6 +61,7 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
           {machine.title}
         </CardTitle>
         <div className="text-amber-400 font-bold text-xl">{machine.price}</div>
+        <div className="text-xs text-gray-500">{copy('Posted')} {relativeDate}</div>
       </CardHeader>
 
       <CardContent className={isCompact ? 'py-2' : 'py-4'}>
@@ -56,7 +69,7 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />
-            <span className="truncate">{machine.location}</span>
+            <span className="truncate">{copy(machine.location)}</span>
           </div>
           <div className="flex items-center">
             <Calendar className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />
