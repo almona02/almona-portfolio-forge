@@ -8,6 +8,7 @@ import type { Machine } from '@/constants/yilmazMachines';
 interface UseVirtualizedMachinesOptions {
   searchTerm?: string;
   categoryFilter?: string;
+  materialFilter?: string;
   sortOption?: string;
   pageSize?: number;
 }
@@ -23,6 +24,7 @@ interface VirtualizedResult {
 export function useVirtualizedMachines({
   searchTerm = '',
   categoryFilter = 'all',
+  materialFilter = 'all',
   sortOption = 'featured',
   pageSize = 12
 }: UseVirtualizedMachinesOptions = {}): VirtualizedResult {
@@ -53,6 +55,13 @@ export function useVirtualizedMachines({
       });
     }
 
+    // Apply material filter (aluminium / pvc). 'both' machines appear in both tabs.
+    if (materialFilter !== 'all') {
+      filtered = filtered.filter((machine) =>
+        machine.material === materialFilter || machine.material === 'both'
+      );
+    }
+
     return [...filtered].sort((a, b) => {
       switch (sortOption) {
         case 'name-asc':
@@ -66,7 +75,7 @@ export function useVirtualizedMachines({
           return a.featured ? -1 : b.featured ? 1 : 0;
       }
     });
-  }, [yilmazMachines, searchTerm, categoryFilter, sortOption, copy]);
+  }, [yilmazMachines, searchTerm, categoryFilter, materialFilter, sortOption, copy]);
 
   // Get current page of machines
   const machines = useMemo(() => {

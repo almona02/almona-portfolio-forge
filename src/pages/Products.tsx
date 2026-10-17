@@ -30,7 +30,7 @@ import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
 import { Separator } from "@/shared/ui/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import type { Machine as UiMachine } from "@/types/index";
 import { Eye, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -91,6 +91,9 @@ const Products = function ProductsPage() {
     category: searchParams.get('category') || "all",
     sortOption: searchParams.get('sort') || "featured"
   });
+
+  // Material tab (Aluminium / PVC) for the main catalog tabs
+  const [materialTab, setMaterialTab] = useState<'aluminium' | 'pvc'>('aluminium');
 
   // Refs for scrolling to results
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -225,6 +228,7 @@ const Products = function ProductsPage() {
   } = useVirtualizedMachines({
     searchTerm: filters.searchTerm,
     categoryFilter: getLegacyCategoryFilter(filters.category),
+    materialFilter: materialTab,
     sortOption: filters.sortOption,
     pageSize: 12
   });
@@ -450,13 +454,13 @@ const Products = function ProductsPage() {
           </p>
         </div>
 
-        <Tabs defaultValue="yilmaz" className="mb-8">
+        <Tabs value={materialTab} onValueChange={(v) => setMaterialTab(v as 'aluminium' | 'pvc')} className="mb-8">
           {/* Category selection with adaptive gradient */}
-          <TabsList className="grid w-full grid-cols-1 max-w-xs mx-auto rounded-md shadow-sm border border-gray-700 bg-[linear-gradient(135deg,rgba(0,0,0,0.85)_0%,rgba(30,30,30,0.85)_60%,rgba(55,55,55,0.75)_100%)] backdrop-blur">
-            <TabsTrigger value="yilmaz">{t('machines.tabs.yilmaz')}</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto rounded-md shadow-sm border border-gray-700 bg-[linear-gradient(135deg,rgba(0,0,0,0.85)_0%,rgba(30,30,30,0.85)_60%,rgba(55,55,55,0.75)_100%)] backdrop-blur">
+            <TabsTrigger value="aluminium">{t('machines.tabs.aluminium', 'Aluminium')}</TabsTrigger>
+            <TabsTrigger value="pvc">{t('machines.tabs.pvc', 'PVC')}</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="yilmaz">
+        </Tabs>
             {/* Smart Category Navigation - Above grid for better visibility on large screens */}
             <div className="mb-6">
               <SmartCategoryNavigation
@@ -575,9 +579,6 @@ const Products = function ProductsPage() {
                 </div>
               )}
             </div>
-          </TabsContent>
-
-        </Tabs>
 
         <Separator className="my-12 bg-almona-light/20" />
 
