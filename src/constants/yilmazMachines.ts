@@ -3040,7 +3040,7 @@ export const yilmazMachines: Machine[] = [
     "id": "ym-040",
     "name": "SKN 301",
     "description": "Conveyor for aluminium & PVC profile fabrication. (YILMAZ model SKN 301 — specifications on request.)",
-    "imageUrl": "/images/machines/placeholder.jpg",
+    "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115645/TCAT01000003891.jpg",
     "specPdf": "/documents/specs/SKN-301.pdf",
     "category": "conveying",
     "material": "both",
