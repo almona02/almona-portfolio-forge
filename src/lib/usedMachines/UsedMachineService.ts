@@ -46,7 +46,7 @@ export function sanitizePhone(phone: string): string {
 }
 
 export function whatsappLink(phone: string): string {
-  const digits = sanitizePhone(phone);
+  const digits = phone.replace(/\D/g, '');
   const intl = digits.startsWith('20') ? digits : `20${digits.replace(/^0/, '')}`;
   return `https://wa.me/${intl}`;
 }
@@ -115,7 +115,6 @@ export const UsedMachineService = {
         contact_phone: sanitizePhone(input.contactPhone),
         contact_whatsapp: whatsapp,
         images: imageUrls,
-        status: 'active',
       })
       .select()
       .single();
