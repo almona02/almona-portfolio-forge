@@ -326,6 +326,12 @@ function main(): void {
   const app = runTsc("tsconfig.app.json");
   const combined = `${app.stdout}\n${app.stderr}`;
   const parsed = parseDiagnostics(combined);
+  // Diagnostic: print exact source lines for any FactoryLayoutPlanner error (Linux-only repro aid).
+  for (const line of combined.split("\n")) {
+    if (line.includes("FactoryLayoutPlanner")) {
+      console.error(`  [tsc-line] ${line.trim()}`);
+    }
+  }
   assertCompilerFailClosed("app", app, parsed.errorCount);
 
   if (WRITE_BASELINE) {
