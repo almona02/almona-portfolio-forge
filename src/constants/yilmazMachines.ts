@@ -212,8 +212,8 @@ export const yilmazMachines: Machine[] = [
     "name": "AIM 3410",
     "description": "4-axis CNC aluminium profile machining center with 24,000 RPM electro spindle, 7+1 automatic tool magazine, and integrated saw operations.",
     "imageUrl": "/images/machines/AIM-3410_1.png",
-    "specPdf": "/documents/specs/AIM-3410.pdf",
-    "youtubeUrl": "https://youtu.be/qKC5xdpxKyY?si=0mTzSJphFoI_hmVZ",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2022/12/23154213/AIM-3410.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=7COagnAyCLs",
     "modelPath": "/models/aim-3410.glb",
     "has3DModel": false,
     "category": "processing-centers",
@@ -305,8 +305,8 @@ export const yilmazMachines: Machine[] = [
     "name": "KP 180",
     "description": "Hydraulic aluminium corner crimping machine with dual 5-ton heads, adjustable knives, and synchronized hydraulic pressing.",
     "imageUrl": "/images/machines/kp-180.png",
-    "specPdf": "/documents/specs/KP-180-00021103.pdf",
-    "youtubeUrl": "https://youtu.be/sy5hs4OIBkE?si=lTfXMq59M8afKqKU",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=EJh4AsZyz8Y",
     "category": "corner-crimping",
     "subcategory": "hydraulic-crimping",
     "featured": true,
@@ -375,7 +375,7 @@ export const yilmazMachines: Machine[] = [
     "name": "ALM 6510",
     "description": "Aluminium Profile Machining Center - 8-axis CNC servo control for milling, drilling, and cutting operations on four sides of profiles",
     "imageUrl": "/images/machines/cutting-machine.jpg",
-    "specPdf": "/documents/specs/ALM-6510.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2022/12/23155138/ALM-6510-1.pdf",
     "youtubeUrl": "https://www.youtube.com/watch?v=CeGDjE9QCqQ",
     "category": "processing-centers",
     "featured": true,
@@ -496,8 +496,8 @@ export const yilmazMachines: Machine[] = [
     "name": "DC-421-PBS",
     "description": "Full Automatic Double Head Mitre Saw Machine - Windows based industrial PC with 15'' LCD touch screen, automatic tilting to 90° and 45° inwards",
     "imageUrl": "/images/machines/DC-421-PBS.jpg",
-    "specPdf": "/documents/specs/DC-421-PBS.pdf",
-    "youtubeUrl": "https://youtu.be/1B5elf1hDG4?si=PEHCxCA5sUsz2w8G",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/23170644/DC-421-PBS-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=oWJxpaXi7TY",
     "category": "cutting-machines",
     "featured": true,
     "releaseDate": "2012-05-10",
@@ -592,8 +592,8 @@ export const yilmazMachines: Machine[] = [
     "name": "DK 502",
     "description": "Double Corner PVC Welding Machine - Fully automatic two corner welding of PVC window profiles at 90° with single head welding possibility",
     "imageUrl": "/images/machines/DK-502.jpg",
-    "specPdf": "/documents/specs/DK-502.pdf",
-    "youtubeUrl": "https://youtu.be/jOLX0XMXC9A?si=U6F-JPhfUVARqUx1",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24101509/DK-502.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=qTKWlJogrJ8",
     "category": "welding-machines",
     "featured": true,
     "releaseDate": "2012-05-10",
@@ -673,8 +673,8 @@ export const yilmazMachines: Machine[] = [
     "name": "KM 212",
     "description": "Portable End Milling Machine - High quality end-milling operations with manual controls for aluminum and PVC profiles",
     "imageUrl": "/images/machines/KM-212.jpg",
-    "specPdf": "/documents/specs/KM-212.pdf",
-    "youtubeUrl": "https://youtu.be/1iiAfHwLhsQ?si=UQYOLQVwQq5N9143",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/24152334/KM-212.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=yjA7seSX4dE",
     "category": "end-milling",
     "featured": false,
     "releaseDate": "2012-05-10",
@@ -749,8 +749,8 @@ export const yilmazMachines: Machine[] = [
     "name": "KD-402-S",
     "description": "Double Head Mitre Saw Machine - Semi-automatic with two circular saws for flat or angled cutting of PVC, aluminium and wooden materials",
     "imageUrl": "/images/machines/KD-402-S.jpg",
-    "specPdf": "/documents/specs/KD-402-S.pdf",
-    "youtubeUrl": "https://youtu.be/3GTWyawzxMw?si=6E8Xa5UsjBEcoUYG",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24151601/KD-402-S-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=WOhV9UpccXg",
     "category": "cutting-machines",
     "featured": false,
     "releaseDate": "2023-05-15",
@@ -849,8 +849,8 @@ export const yilmazMachines: Machine[] = [
     "name": "FR-221-S",
     "description": "Pneumatic Template Copy Router - For opening locks, drilling handles, hinges, espagnolette and barrel holes on PVC and aluminium profiles",
     "imageUrl": "/images/machines/FR-221-S.jpg",
-    "specPdf": "/documents/specs/FR-221-S.pdf",
-    "youtubeUrl": "https://youtu.be/T-yF2tKITb8?si=TuuxsTJYm23LaMHp",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/24104300/FR-221-S.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=T-yF2tKITb8",
     "category": "copy-routers",
     "featured": false,
     "releaseDate": "2023-05-15",
@@ -935,8 +935,8 @@ export const yilmazMachines: Machine[] = [
     "name": "PIM 6509",
     "description": "PVC Profile Machining and Cutting Center - 8-axis CNC servo control for milling, water slots, drilling, and cutting operations on four sides",
     "imageUrl": "/images/machines/PIM-6509.jpg",
-    "specPdf": "/documents/specs/PIM-6509.pdf",
-    "youtubeUrl": "https://youtu.be/lQlX-jXfegU?si=_N5SbMJyFHa1obiG",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24162556/PIM-6509-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=4T4zbqKRPlg",
     "category": "processing-centers",
     "featured": false,
     "releaseDate": "2023-01-01",
@@ -1055,8 +1055,8 @@ export const yilmazMachines: Machine[] = [
     "name": "CCL 1661",
     "description": "PVC Welding and Corner Cleaning Line - Complete automated production line with 4-head welding, CNC corner cleaning, and robot transfer system",
     "imageUrl": "/images/machines/CCL-1661.jpg",
-    "specPdf": "/documents/specs/CCL-1661.pdf",
-    "youtubeUrl": "https://youtu.be/feWx5BXMSn0?si=1b5AP3moNi37475i",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/27102021/CCL-1661.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=7fsXdpaGIRc",
     "category": "fabrication-equipment",
     "featured": false,
     "releaseDate": "2023-01-01",
@@ -1164,8 +1164,8 @@ export const yilmazMachines: Machine[] = [
     "name": "CDC 600",
     "description": "Full Automatic Double Head Compound Cutting Machine - 2x Ø600mm saw blades with compound cuts (45°x45°) pivoting and tilting on both heads",
     "imageUrl": "/images/machines/CDC-600.jpg",
-    "specPdf": "/documents/specs/CDC-600.pdf",
-    "youtubeUrl": "https://youtu.be/GywonVe7yMk?si=WBR_PUqDDJB6f8Bb",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2022/12/23155726/CDC-600-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=ByE9gEzfG9s",
     "category": "cutting-machines",
     "featured": false,
     "releaseDate": "2022-01-01",
@@ -1272,8 +1272,8 @@ export const yilmazMachines: Machine[] = [
     "name": "DC-421-PSD",
     "description": "Full Automatic Double Head Mitre Saw Machine - 9'' touch screen with automatic tilting to 90° and 45° inwards, USB cutting list transfer",
     "imageUrl": "/images/machines/DC-421-PSD.jpg",
-    "specPdf": "/documents/specs/DC-421-PSD.pdf",
-    "youtubeUrl": "https://youtu.be/5pluTvKsQs4?si=YwmMnIQDV_g9kLH6",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/23170853/DC-421-PSD-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=uN-7JwTkWCM",
     "category": "cutting-machines",
     "featured": false,
     "releaseDate": "2022-01-01",
@@ -1366,8 +1366,8 @@ export const yilmazMachines: Machine[] = [
     "name": "ACK-420-S",
     "description": "Up-Cutting Saw Machine for specialized operations",
     "imageUrl": "/images/machines/ACK-420-S.jpg",
-    "specPdf": "/documents/specs/ACK-420-S.pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=PLACEHOLDER",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/23140250/ACK-420-S-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=wo8fT3YyRKg",
     "category": "cutting-machines",
     "featured": false,
     "releaseDate": "2021-01-01",
@@ -1412,8 +1412,7 @@ export const yilmazMachines: Machine[] = [
     "name": "FR-226-S",
     "description": "Automatic Copy Router Machine for precision operations",
     "imageUrl": "/images/machines/FR-226-S.jpg",
-    "specPdf": "/documents/specs/FR-226-S.pdf",
-    "youtubeUrl": "https://youtu.be/IAy11Z3XeZY?si=HGpR2n8R1rSZrv5V",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/24105159/FR-226-S.pdf",
     "category": "processing-centers",
     "featured": false,
     "releaseDate": "2023-01-01",
@@ -1460,8 +1459,8 @@ export const yilmazMachines: Machine[] = [
     "name": "NCR 300",
     "description": "4 Axis Numerical Controlled NC Router Machine - Designed for daily operations on PVC, aluminium and low alloy materials to machine four surfaces simultaneously",
     "imageUrl": "/images/machines/NCR-300.jpg",
-    "specPdf": "/documents/specs/NCR-300.pdf",
-    "youtubeUrl": "https://youtu.be/ThfN9iUPsnU?si=863zRTryzWJhHbgH",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/24155456/NCR-300.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=ThfN9iUPsnU",
     "category": "routers",
     "featured": true,
     "releaseDate": "2023-01-01",
@@ -1561,8 +1560,8 @@ export const yilmazMachines: Machine[] = [
     "name": "TK 505",
     "description": "Single Corner PVC Welding Machine",
     "imageUrl": "/images/machines/TK-505.jpg",
-    "specPdf": "/documents/specs/TK-505.pdf",
-    "youtubeUrl": "https://youtu.be/SDWJKEaAB8Y?si=X4drWLgi_Sgwmonf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24173000/TK-505.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=SDWJKEaAB8Y",
     "category": "welding-machines",
     "featured": true,
     "releaseDate": "2022-01-01",
@@ -1606,8 +1605,8 @@ export const yilmazMachines: Machine[] = [
     "name": "KM-215-S",
     "description": "Semi Automatic End Milling Machine for aluminum profiles",
     "imageUrl": "/images/machines/KM-215-S.jpg",
-    "specPdf": "/documents/specs/KM-215-S.pdf",
-    "youtubeUrl": "https://youtu.be/VThz1mkR7o8?si=yv7IHffK1lGY4w7G",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/24152457/KM-215-S.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=yjA7seSX4dE",
     "category": "end-milling",
     "featured": true,
     "releaseDate": "2023-01-01",
@@ -1651,8 +1650,8 @@ export const yilmazMachines: Machine[] = [
     "name": "CRM-250-S",
     "description": "3 Spindle Copy Router Machine - 1x vertical and 2x horizontal spindle motors for complex aluminium profile operations on 3 sides without releasing",
     "imageUrl": "/images/machines/CRM-250-S.jpg",
-    "specPdf": "/documents/specs/CRM-250-S.pdf",
-    "youtubeUrl": "https://youtu.be/cipBYN8sKG4?si=UlU-2KoUWpvEoeRg",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/23170048/CRM-250-S.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=TqeQ8mA70VU",
     "category": "copy-routers",
     "featured": true,
     "releaseDate": "2023-01-01",
@@ -1739,8 +1738,8 @@ export const yilmazMachines: Machine[] = [
     "name": "ST 264",
     "description": "Automatic PVC Water Slot Machine",
     "imageUrl": "/images/machines/ST-264.jpg",
-    "specPdf": "/documents/specs/ST-264.pdf",
-    "youtubeUrl": "https://youtu.be/yYJ9NYoYKGI?si=P9Kfcl-1LRZVJGF1",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/24172506/ST-264.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=yYJ9NYoYKGI",
     "category": "processing-centers",
     "featured": false,
     "releaseDate": "2022-01-01",
@@ -1784,8 +1783,7 @@ export const yilmazMachines: Machine[] = [
     "name": "SDT 275",
     "description": "Reinforcement Steel and Square Profile Cutting Saw",
     "imageUrl": "/images/machines/SDT-275.jpg",
-    "specPdf": "/documents/specs/SDT-275.pdf",
-    "youtubeUrl": "https://youtu.be/i3A8_92iNjA?si=LjXpb1R_nUuJT9qE",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/06/24164608/SDT-275.pdf",
     "category": "cutting-machines",
     "featured": true,
     "releaseDate": "2021-01-01",
@@ -1828,8 +1826,8 @@ export const yilmazMachines: Machine[] = [
     "name": "MK 450",
     "description": "Single Head Cutting Machine with versatile angle options",
     "imageUrl": "/images/machines/MK-450.jpg",
-    "specPdf": "/documents/specs/MK-450.pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=PLACEHOLDER",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=H6jls_GuVBc",
     "category": "cutting-machines",
     "featured": true,
     "releaseDate": "2021-01-01",
@@ -1872,8 +1870,8 @@ export const yilmazMachines: Machine[] = [
     "name": "RYK-420-W",
     "description": "Radial Saw Machine with ergonomic design",
     "imageUrl": "/images/machines/RYK-420-W.jpg",
-    "specPdf": "/documents/specs/RYK-420-W.pdf",
-    "youtubeUrl": "https://youtu.be/g_Nqd7qs6FM?si=nrCiN6ZVnoGSLJJ2",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2022/12/24163421/RYK-420-W-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=g_Nqd7qs6FM",
     "category": "cutting-machines",
     "featured": false,
     "releaseDate": "2021-01-01",
@@ -1917,8 +1915,8 @@ export const yilmazMachines: Machine[] = [
     "name": "SCM 420 L4 / SCM 420 L7",
     "description": "Servo Controlled Serial Cutting Machine - 3.6 m (L4) and 6.6 m (L7) pushing strokes with 300 mm of conveyor width",
     "imageUrl": "/images/machines/SCM-420-L4.jpg",
-    "specPdf": "/documents/specs/SCM_420_L4-L7_TR_EN.pdf",
-    "youtubeUrl": "https://youtu.be/OzPLbizCU0Y?si=0nkKACiAtVQnWgoh",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24164342/SCM-420-L4-L7-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=OzPLbizCU0Y",
     "category": "cutting-machines",
     "featured": false,
     "releaseDate": "2022-01-01",
@@ -2015,8 +2013,8 @@ export const yilmazMachines: Machine[] = [
     "name": "CK 412",
     "description": "PVC Glazing Bead Saw for precise cutting",
     "imageUrl": "/images/machines/CK-412.jpg",
-    "specPdf": "/documents/specs/CK-412.pdf",
-    "youtubeUrl": "https://youtu.be/xXFc1Jc8m6U?si=gNbbV-Y-03xfo5Bk",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/23155903/CK-412.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=jsvlmvh6lRs",
     "category": "cutting-machines",
     "featured": true,
     "releaseDate": "2021-01-01",
@@ -2059,8 +2057,7 @@ export const yilmazMachines: Machine[] = [
     "name": "DK 540",
     "description": "Four Corner PVC Welding Machine - Fully automatic four corner welding of PVC window profiles at 90°",
     "imageUrl": "/images/machines/DK-540.jpg",
-    "specPdf": "/documents/specs/DK 540.pdf",
-    "youtubeUrl": "https://youtu.be/gGwtxmf1_9k?si=9EWSs9j1FeCVSiRi",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24101633/DK-540.pdf",
     "category": "welding-machines",
     "featured": false,
     "releaseDate": "2022-01-01",
@@ -2146,8 +2143,8 @@ export const yilmazMachines: Machine[] = [
     "name": "CA 603",
     "description": "PVC Corner Cleaning Machine (4 Cutters) - High quality stripping and cleaning operations by means of the hydro-pneumatic system with 4 different cutter sets",
     "imageUrl": "/images/machines/CA-603.jpg",
-    "specPdf": "/documents/specs/CA 603.pdf",
-    "youtubeUrl": "https://youtu.be/cbCvF9Phsq0?si=0rEsbv8tX9XrD82H",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/23155448/CA-603.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=cbCvF9Phsq0",
     "category": "cleaning-machines",
     "featured": false,
     "releaseDate": "2022-01-01",
@@ -2231,8 +2228,8 @@ export const yilmazMachines: Machine[] = [
     "name": "KD 305",
     "description": "Mitre Saw Machine with manual operation",
     "imageUrl": "/images/machines/KD-305.jpg",
-    "specPdf": "/documents/specs/KD-305.pdf",
-    "youtubeUrl": "https://youtu.be/zaLEsyS-fo8?si=Ole803MbU5SXmBbT",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24120042/KD-305-KY-305.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=C_Jdxxsh1l8",
     "category": "cutting-machines",
     "featured": true,
     "releaseDate": "2020-01-01",
@@ -2275,8 +2272,8 @@ export const yilmazMachines: Machine[] = [
     "name": "KD-350-PS",
     "description": "Mitre Saw Machine with pneumatic system",
     "imageUrl": "/images/machines/KD-350-PS.jpg",
-    "specPdf": "/documents/specs/KD-350-PS.pdf",
-    "youtubeUrl": "https://youtu.be/YIGYIfwFeys?si=QSiOXsi_RoxEr_OR",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24143522/KD-350-D-350-PS.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=rXQjfMppzE4",
     "category": "cutting-machines",
     "featured": false,
     "releaseDate": "2020-01-01",
@@ -2320,8 +2317,8 @@ export const yilmazMachines: Machine[] = [
     "name": "KD-350-M",
     "description": "Compact Mitre Saw Machine",
     "imageUrl": "/images/machines/KD-350-M.jpg",
-    "specPdf": "/documents/specs/KD-350-M.pdf",
-    "youtubeUrl": "https://youtu.be/YIGYIfwFeys?si=6dQKo94HM9KD94_1",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24150234/KD-350-M-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=rXQjfMppzE4",
     "category": "cutting-machines",
     "featured": false,
     "releaseDate": "2020-01-01",
@@ -2364,8 +2361,8 @@ export const yilmazMachines: Machine[] = [
     "name": "FR 223",
     "description": "Portable Template Copy Router",
     "imageUrl": "/images/machines/FR-223.jpg",
-    "specPdf": "/documents/specs/FR-223.pdf",
-    "youtubeUrl": "https://youtu.be/nMbHEJgK5Jg?si=VvBWWNUAnJqJNwmt",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=Akf7pU0uXYU",
     "modelPath": "/models/demo-machine.glb",
     "category": "processing-centers",
     "featured": true,
@@ -2409,8 +2406,8 @@ export const yilmazMachines: Machine[] = [
     "name": "FR-223-S",
     "description": "Portable Template Copy Router with spray cooling",
     "imageUrl": "/images/machines/FR-223-S.jpg",
-    "specPdf": "/documents/specs/FR-223-S.pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=PLACEHOLDER",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=Akf7pU0uXYU",
     "modelPath": "/models/demo-machine.glb",
     "category": "processing-centers",
     "featured": false,
@@ -2454,8 +2451,8 @@ export const yilmazMachines: Machine[] = [
     "name": "FR 222",
     "description": "Economical Portable Template Copy Router",
     "imageUrl": "/images/machines/FR-222.jpg",
-    "specPdf": "/documents/specs/FR-222.pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=PLACEHOLDER",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/21173757/FR-222-1.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=Akf7pU0uXYU",
     "modelPath": "/models/FR-222.glb",
     "category": "processing-centers",
     "featured": true,
@@ -2499,8 +2496,8 @@ export const yilmazMachines: Machine[] = [
     "name": "KM-211-S",
     "description": "Manual End Milling Machine with pneumatic clamps",
     "imageUrl": "/images/machines/KM-211-S.jpg",
-    "specPdf": "/documents/specs/KM-211-S.pdf",
-    "youtubeUrl": "https://youtu.be/esqIqnukjBQ?si=jQPewW9VCLEvUU97",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/24152128/KM-211-S.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=yjA7seSX4dE",
     "category": "end-milling",
     "featured": false,
     "releaseDate": "2020-01-01",
@@ -2543,8 +2540,8 @@ export const yilmazMachines: Machine[] = [
     "name": "KD 400 D / KD 400 PS",
     "description": "Single Head Mitre Saw Machine - Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
     "imageUrl": "/images/machines/KD-400-D.jpg",
-    "specPdf": "/documents/specs/KD 400 D - 400 PS.pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=PLACEHOLDER",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24150554/KD-400-D-PS.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=XpgCgbeIA2E",
     "category": "cutting-machines",
     "featured": true,
     "releaseDate": "2020-01-01",
@@ -2623,8 +2620,8 @@ export const yilmazMachines: Machine[] = [
     "name": "MK 420 / MK 420 PS / MK 450",
     "description": "Manual Up-Cutting Saw Machine - Manual upward saw stroke for wide and flat profiles",
     "imageUrl": "/images/machines/MK-420.jpg",
-    "specPdf": "/documents/specs/MK 420 - 420 PS - 450 (1).pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=PLACEHOLDER",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=H6jls_GuVBc",
     "category": "cutting-machines",
     "featured": true,
     "releaseDate": "2021-01-01",
@@ -2707,8 +2704,8 @@ export const yilmazMachines: Machine[] = [
     "name": "TK 503",
     "description": "Single Corner PVC Welding Machine - All parameters such as melting time, welding time and welding pressure are set independently",
     "imageUrl": "/images/machines/TK-503.jpg",
-    "specPdf": "/documents/specs/TK 503.pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=PLACEHOLDER",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/11/24172748/TK-503.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=SDWJKEaAB8Y",
     "category": "welding-machines",
     "featured": true,
     "releaseDate": "2022-01-01",
@@ -2782,8 +2779,8 @@ export const yilmazMachines: Machine[] = [
     "name": "VK 420",
     "description": "V-Notch and Arrow Cutting Machine - Designed to precisely cut PVC profiles in V notch or arrow shapes",
     "imageUrl": "/images/machines/VK-300.jpg",
-    "specPdf": "/documents/specs/VK 300.pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=PLACEHOLDER",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24173527/VK-420.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=4X_Xke-pXGc",
     "category": "cutting-machines",
     "featured": false,
     "releaseDate": "2021-01-01",
@@ -2862,8 +2859,8 @@ export const yilmazMachines: Machine[] = [
     "name": "CA 601",
     "description": "Semi-Automatic PVC Corner Cleaning Machine - High quality stripping and cleaning operations by means of the hydro-pneumatic system",
     "imageUrl": "/images/machines/CA-601.jpg",
-    "specPdf": "/documents/specs/CA 601.pdf",
-    "youtubeUrl": "https://youtu.be/qnCphTUy0qs?si=K81XL4fG81yDbsZk",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/23155219/CA-601.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=IYA-V4Wdjm8",
     "category": "cleaning-machines",
     "featured": true,
     "releaseDate": "2022-01-01",
@@ -2946,8 +2943,8 @@ export const yilmazMachines: Machine[] = [
     "name": "DC 550 PB",
     "description": "Full Automatic Double Head Mitre Saw Machine - Designed for the strait or angular cutting operations of large size of profiles made of PVC and aluminium materials",
     "imageUrl": "/images/machines/DC-550-PB.jpg",
-    "specPdf": "/documents/specs/DC 550 PB.pdf",
-    "youtubeUrl": "https://youtu.be/s48cmGhtHhI?si=c6yjBdp9sO1w3ZjH",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=s48cmGhtHhI",
     "category": "cutting-machines",
     "featured": true,
     "releaseDate": "2022-01-01",
@@ -3041,7 +3038,7 @@ export const yilmazMachines: Machine[] = [
     "name": "SKN 301",
     "description": "Conveyor for aluminium & PVC profile fabrication. (YILMAZ model SKN 301 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115645/TCAT01000003891.jpg",
-    "specPdf": "/documents/specs/SKN-301.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "conveying",
     "material": "both",
     "featured": false,
@@ -3070,14 +3067,15 @@ export const yilmazMachines: Machine[] = [
     "safetyFeatures": [],
     "weight": {
       "net": "81.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=aSxn2crTMMw"
   },
   {
     "id": "ym-041",
     "name": "VCE 3500",
     "description": "Swarf / Chip Extractor for PVC profile fabrication. (YILMAZ model VCE 3500 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2026/06/04230324/0084511052026142654IMG.jpg",
-    "specPdf": "/documents/specs/VCE-3500.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "swarf-extraction",
     "material": "pvc",
     "featured": false,
@@ -3103,14 +3101,15 @@ export const yilmazMachines: Machine[] = [
       "Swarf / Chip Extractor for pvc profile fabrication"
     ],
     "certifications": [],
-    "safetyFeatures": []
+    "safetyFeatures": [],
+    "youtubeUrl": "https://www.youtube.com/watch?v=9JekzoQw514"
   },
   {
     "id": "ym-042",
     "name": "VCE 4000",
     "description": "Swarf / Chip Extractor for aluminium & PVC profile fabrication. (YILMAZ model VCE 4000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/11/03113706/0075328102025162156IMG.jpg",
-    "specPdf": "/documents/specs/VCE-4000.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "swarf-extraction",
     "material": "both",
     "featured": false,
@@ -3136,14 +3135,15 @@ export const yilmazMachines: Machine[] = [
       "Swarf / Chip Extractor (shared for aluminium & PVC lines)"
     ],
     "certifications": [],
-    "safetyFeatures": []
+    "safetyFeatures": [],
+    "youtubeUrl": "https://www.youtube.com/watch?v=X8wyF35lHOg"
   },
   {
     "id": "ym-043",
     "name": "VCE 1570",
     "description": "Swarf / Chip Extractor for aluminium profile fabrication. (YILMAZ model VCE 1570 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/11/03113711/0077328102025172153IMG.png",
-    "specPdf": "/documents/specs/VCE-1570.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/10/24173129/VCE-1570.pdf",
     "category": "swarf-extraction",
     "material": "aluminium",
     "featured": false,
@@ -3169,14 +3169,15 @@ export const yilmazMachines: Machine[] = [
       "Swarf / Chip Extractor for aluminium profile fabrication"
     ],
     "certifications": [],
-    "safetyFeatures": []
+    "safetyFeatures": [],
+    "youtubeUrl": "https://www.youtube.com/watch?v=LdYmdPUGaF4"
   },
   {
     "id": "ym-044",
     "name": "AIM 7420",
     "description": "CNC Profile Machining Center for aluminium profile fabrication. (YILMAZ model AIM 7420 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115150/TCAT01000000391.jpg",
-    "specPdf": "/documents/specs/AIM-7420.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "processing-centers",
     "material": "aluminium",
     "featured": false,
@@ -3206,14 +3207,15 @@ export const yilmazMachines: Machine[] = [
     "airSpec": {
       "consumption": "250.0 L/min",
       "pressure": "6-8 bar"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=6l5WpdrpjwA"
   },
   {
     "id": "ym-045",
     "name": "AIM 4420",
     "description": "CNC Profile Machining Center for aluminium profile fabrication. (YILMAZ model AIM 4420 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115316/TCAT01000000261.jpg",
-    "specPdf": "/documents/specs/AIM-4420.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "processing-centers",
     "material": "aluminium",
     "featured": false,
@@ -3246,14 +3248,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "2.85 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=hdzAQ18gkYg"
   },
   {
     "id": "ym-046",
     "name": "WGM 202",
     "description": "PVC Corner Cleaning Machine for PVC profile fabrication. (YILMAZ model WGM 202 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/11/03113627/0074828102025161837IMG.jpg",
-    "specPdf": "/documents/specs/WGM-202.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "cleaning",
     "material": "pvc",
     "featured": false,
@@ -3279,14 +3282,15 @@ export const yilmazMachines: Machine[] = [
       "PVC Corner Cleaning Machine for pvc profile fabrication"
     ],
     "certifications": [],
-    "safetyFeatures": []
+    "safetyFeatures": [],
+    "youtubeUrl": "https://www.youtube.com/watch?v=mcTj_89GO4k"
   },
   {
     "id": "ym-047",
     "name": "MCA 801",
     "description": "Reinforcement Screwdriving Machine for PVC profile fabrication. (YILMAZ model MCA 801 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25120033/0040421082024160630IMG.png",
-    "specPdf": "/documents/specs/MCA-801.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "screwdriving",
     "material": "pvc",
     "featured": false,
@@ -3312,14 +3316,15 @@ export const yilmazMachines: Machine[] = [
       "Reinforcement Screwdriving Machine for pvc profile fabrication"
     ],
     "certifications": [],
-    "safetyFeatures": []
+    "safetyFeatures": [],
+    "youtubeUrl": "https://www.youtube.com/watch?v=6QVvZyyf4Uo"
   },
   {
     "id": "ym-048",
     "name": "SM 201 SD",
     "description": "Reinforcement Screwdriving Machine for PVC profile fabrication. (YILMAZ model SM 201 SD — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25120012/0032722042024132446IMG.jpg",
-    "specPdf": "/documents/specs/SM-201-SD.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "screwdriving",
     "material": "pvc",
     "featured": false,
@@ -3355,7 +3360,7 @@ export const yilmazMachines: Machine[] = [
     "name": "KP 130 CNC",
     "description": "Corner Crimping Press for aluminium profile fabrication. (YILMAZ model KP 130 CNC — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2022/12/17165600/KP130CNC_1.png",
-    "specPdf": "/documents/specs/KP-130-CNC.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/12/24153217/KP-130-CNC.pdf",
     "category": "corner-crimping",
     "material": "aluminium",
     "featured": false,
@@ -3384,14 +3389,15 @@ export const yilmazMachines: Machine[] = [
     "safetyFeatures": [],
     "weight": {
       "net": "580.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=ETXmyWUrB-0"
   },
   {
     "id": "ym-050",
     "name": "PIM 6508 SE",
     "description": "CNC Profile Machining Center for PVC profile fabrication. (YILMAZ model PIM 6508 SE — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/11/10180128/0066711072025171420IMG.jpg",
-    "specPdf": "/documents/specs/PIM-6508-SE.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "processing-centers",
     "material": "pvc",
     "featured": false,
@@ -3417,14 +3423,15 @@ export const yilmazMachines: Machine[] = [
       "CNC Profile Machining Center for pvc profile fabrication"
     ],
     "certifications": [],
-    "safetyFeatures": []
+    "safetyFeatures": [],
+    "youtubeUrl": "https://www.youtube.com/watch?v=nmQSvPodsYw"
   },
   {
     "id": "ym-051",
     "name": "GAS 301",
     "description": "Assembly Table / Station for aluminium & PVC profile fabrication. (YILMAZ model GAS 301 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/06/06171039/GAS-301-1-scaled.webp",
-    "specPdf": "/documents/specs/GAS-301.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "assembling",
     "material": "both",
     "featured": false,
@@ -3453,14 +3460,15 @@ export const yilmazMachines: Machine[] = [
     "safetyFeatures": [],
     "weight": {
       "net": "610.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=Gk-rAH5I0r0"
   },
   {
     "id": "ym-052",
     "name": "CNC 611",
     "description": "PVC Corner Cleaning Machine for PVC profile fabrication. (YILMAZ model CNC 611 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/06/14151511/cnc-609-6011-8.webp",
-    "specPdf": "/documents/specs/CNC-611.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/06/23160154/CNC-609-611.pdf",
     "category": "cleaning",
     "material": "pvc",
     "featured": false,
@@ -3490,14 +3498,15 @@ export const yilmazMachines: Machine[] = [
     "airSpec": {
       "consumption": "180.0 L/min",
       "pressure": "6-8 BAR"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=wp4haloVU-g"
   },
   {
     "id": "ym-053",
     "name": "CPM 4150 S",
     "description": "CNC Profile Machining Center for aluminium profile fabrication. (YILMAZ model CPM 4150 S — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/06/06171619/CPM-4150-scaled.webp",
-    "specPdf": "/documents/specs/CPM-4150-S.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "processing-centers",
     "material": "aluminium",
     "featured": false,
@@ -3530,14 +3539,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "2.01 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=OTt3o2kZhss"
   },
   {
     "id": "ym-054",
     "name": "MKN 150 / 300 / 301",
     "description": "Conveyor for aluminium & PVC profile fabrication. (YILMAZ model MKN 150 / 300 / 301 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2026/03/05130059/0081302032026095231IMG.png",
-    "specPdf": "/documents/specs/MKN-150-300-301.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "conveying",
     "material": "both",
     "featured": false,
@@ -3570,7 +3580,7 @@ export const yilmazMachines: Machine[] = [
     "name": "RS 1000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model RS 1000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115723/TCAT01000008841.png",
-    "specPdf": "/documents/specs/RS-1000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/06/24163027/RS-1000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -3603,7 +3613,7 @@ export const yilmazMachines: Machine[] = [
     "name": "PWB 4100",
     "description": "Assembly Table / Station for aluminium & PVC profile fabrication. (YILMAZ model PWB 4100 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25120654/0045730012025104642IMG.png",
-    "specPdf": "/documents/specs/PWB-4100.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24173956/WB-4000-PWB-4100.pdf",
     "category": "assembling",
     "material": "both",
     "featured": false,
@@ -3636,7 +3646,7 @@ export const yilmazMachines: Machine[] = [
     "name": "CNC 609",
     "description": "PVC Corner Cleaning Machine for PVC profile fabrication. (YILMAZ model CNC 609 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/06/14151511/cnc-609-6011-8.webp",
-    "specPdf": "/documents/specs/CNC-609.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2024/06/23160154/CNC-609-611.pdf",
     "category": "cleaning",
     "material": "pvc",
     "featured": false,
@@ -3666,14 +3676,15 @@ export const yilmazMachines: Machine[] = [
     "airSpec": {
       "consumption": "180.0 L/min",
       "pressure": "6-8 Bar"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=wp4haloVU-g"
   },
   {
     "id": "ym-058",
     "name": "NSM 352 / NSM 353",
     "description": "Assembly Table / Station for PVC profile fabrication. (YILMAZ model NSM 352 / NSM 353 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25120121/0038905072024103454IMG.png",
-    "specPdf": "/documents/specs/NSM-352-NSM-353.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/06/24155715/NSM-352-353.pdf",
     "category": "assembling",
     "material": "pvc",
     "featured": false,
@@ -3699,14 +3710,15 @@ export const yilmazMachines: Machine[] = [
       "Assembly Table / Station for pvc profile fabrication"
     ],
     "certifications": [],
-    "safetyFeatures": []
+    "safetyFeatures": [],
+    "youtubeUrl": "https://www.youtube.com/watch?v=z4xep3o2gks"
   },
   {
     "id": "ym-059",
     "name": "PC 4000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model PC 4000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2026/06/04230517/0084611052026145722IMG.jpg",
-    "specPdf": "/documents/specs/PC-4000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24161725/PC-4000-PT-2000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -3742,7 +3754,7 @@ export const yilmazMachines: Machine[] = [
     "name": "PYE 101 / 102 / 103 / 104",
     "description": "Punch Press for aluminium profile fabrication. (YILMAZ model PYE 101 / 102 / 103 / 104 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115630/TCAT01000003551.jpg",
-    "specPdf": "/documents/specs/PYE-101-102-103-104.pdf",
+    "specPdf": "/documents/ALUMINIUM-KATALOG.pdf",
     "category": "pressing",
     "material": "aluminium",
     "featured": false,
@@ -3778,7 +3790,7 @@ export const yilmazMachines: Machine[] = [
     "name": "RT 1000",
     "description": "Assembly Table / Station for aluminium & PVC profile fabrication. (YILMAZ model RT 1000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115702/TCAT01000007701.png",
-    "specPdf": "/documents/specs/RT-1000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24112516/GT-1000-RT-1000.pdf",
     "category": "assembling",
     "material": "both",
     "featured": false,
@@ -3814,7 +3826,7 @@ export const yilmazMachines: Machine[] = [
     "name": "WB 4000",
     "description": "Assembly Table / Station for aluminium & PVC profile fabrication. (YILMAZ model WB 4000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115148/TCAT01000008741.jpg",
-    "specPdf": "/documents/specs/WB-4000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24173956/WB-4000-PWB-4100.pdf",
     "category": "assembling",
     "material": "both",
     "featured": false,
@@ -3847,7 +3859,7 @@ export const yilmazMachines: Machine[] = [
     "name": "GPT 1000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model GPT 1000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115648/TCAT01000008731.png",
-    "specPdf": "/documents/specs/GPT-1000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24111537/GPT-1000-PT-1000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -3883,7 +3895,7 @@ export const yilmazMachines: Machine[] = [
     "name": "PT 1000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model PT 1000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115912/0046118032025134934IMG.jpg",
-    "specPdf": "/documents/specs/PT-1000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24111537/GPT-1000-PT-1000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -3919,7 +3931,7 @@ export const yilmazMachines: Machine[] = [
     "name": "PT 2000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model PT 2000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115910/0037903062024101256IMG.png",
-    "specPdf": "/documents/specs/PT-2000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24161725/PC-4000-PT-2000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -3955,7 +3967,7 @@ export const yilmazMachines: Machine[] = [
     "name": "HP 1000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model HP 1000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115700/TCAT01000008851.png",
-    "specPdf": "/documents/specs/HP-1000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24114124/HP-1000-VP-1000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -3991,7 +4003,7 @@ export const yilmazMachines: Machine[] = [
     "name": "VP 1000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model VP 1000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115706/TCAT01000008861.png",
-    "specPdf": "/documents/specs/VP-1000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24114124/HP-1000-VP-1000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -4027,7 +4039,7 @@ export const yilmazMachines: Machine[] = [
     "name": "VP 2000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model VP 2000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115725/TCAT01000007881.png",
-    "specPdf": "/documents/specs/VP-2000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24173723/VP-2000-WAS-1000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -4063,7 +4075,7 @@ export const yilmazMachines: Machine[] = [
     "name": "GT 1000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model GT 1000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115622/TCAT01000007691.png",
-    "specPdf": "/documents/specs/GT-1000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24112516/GT-1000-RT-1000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -4096,7 +4108,7 @@ export const yilmazMachines: Machine[] = [
     "name": "WAS 1000",
     "description": "Profile Transport Cart for aluminium & PVC profile fabrication. (YILMAZ model WAS 1000 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115139/TCAT01000008751.png",
-    "specPdf": "/documents/specs/WAS-1000.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/05/24173723/VP-2000-WAS-1000.pdf",
     "category": "transport",
     "material": "both",
     "featured": false,
@@ -4132,7 +4144,7 @@ export const yilmazMachines: Machine[] = [
     "name": "KP 110",
     "description": "Corner Crimping Press for aluminium profile fabrication. (YILMAZ model KP 110 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115608/TCAT01000002581.jpg",
-    "specPdf": "/documents/specs/KP-110.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/24152911/KP-110.pdf",
     "category": "corner-crimping",
     "material": "aluminium",
     "featured": false,
@@ -4165,14 +4177,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "320.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=RCYCshHs9tE"
   },
   {
     "id": "ym-072",
     "name": "CRM 201 S",
     "description": "Copy Router / Milling Machine for PVC profile fabrication. (YILMAZ model CRM 201 S — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115329/TCAT01000001031.jpg",
-    "specPdf": "/documents/specs/CRM-201-S.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/23165052/CRM-201-S.pdf",
     "category": "milling",
     "material": "pvc",
     "featured": false,
@@ -4205,14 +4218,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "130.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=ZnpDZatB5t0"
   },
   {
     "id": "ym-073",
     "name": "MEM 128",
     "description": "End Milling / Notching Machine for PVC profile fabrication. (YILMAZ model MEM 128 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/17145137/MEM-128.png",
-    "specPdf": "/documents/specs/MEM-128.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/24153453/MEM-128.pdf",
     "category": "end-milling",
     "material": "pvc",
     "featured": false,
@@ -4245,14 +4259,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "255.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=THNSer33kzs"
   },
   {
     "id": "ym-074",
     "name": "CPM 6161",
     "description": "CNC Profile Machining Center for aluminium profile fabrication. (YILMAZ model CPM 6161 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115159/TCAT01000000971.jpg",
-    "specPdf": "/documents/specs/CPM-6161.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/23160924/CPM-6161.pdf",
     "category": "processing-centers",
     "material": "aluminium",
     "featured": false,
@@ -4285,14 +4300,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "2.661 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=9vfBLBcmTQI"
   },
   {
     "id": "ym-075",
     "name": "AIM 7510",
     "description": "CNC Profile Machining Center for aluminium profile fabrication. (YILMAZ model AIM 7510 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/17145121/aim-7510_6.png",
-    "specPdf": "/documents/specs/AIM-7510.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/04/23154751/AIM-7510.pdf",
     "category": "processing-centers",
     "material": "aluminium",
     "featured": false,
@@ -4325,14 +4341,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "4.49 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=0UJoJnH0BUk"
   },
   {
     "id": "ym-076",
     "name": "SM 201",
     "description": "Reinforcement Screwdriving Machine for PVC profile fabrication. (YILMAZ model SM 201 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115321/TCAT01000006691.png",
-    "specPdf": "/documents/specs/SM-201.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24165715/SM-201.pdf",
     "category": "screwdriving",
     "material": "pvc",
     "featured": false,
@@ -4368,7 +4385,7 @@ export const yilmazMachines: Machine[] = [
     "name": "SM 206",
     "description": "Reinforcement Screwdriving Machine for PVC profile fabrication. (YILMAZ model SM 206 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/01100656/0086431082026141050IMG.webp",
-    "specPdf": "/documents/specs/SM-206.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24165908/SM-206.pdf",
     "category": "screwdriving",
     "material": "pvc",
     "featured": false,
@@ -4404,7 +4421,7 @@ export const yilmazMachines: Machine[] = [
     "name": "SKN 300-600",
     "description": "Conveyor for aluminium & PVC profile fabrication. (YILMAZ model SKN 300-600 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115645/TCAT01000003891.jpg",
-    "specPdf": "/documents/specs/SKN-300-600.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24165527/SKN-300-600.pdf",
     "category": "conveying",
     "material": "both",
     "featured": false,
@@ -4440,7 +4457,7 @@ export const yilmazMachines: Machine[] = [
     "name": "DKN 302-602",
     "description": "Conveyor for aluminium & PVC profile fabrication. (YILMAZ model DKN 302-602 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25120001/TCAT01000008051.jpg",
-    "specPdf": "/documents/specs/DKN-302-602.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24103931/DKN-302-602.pdf",
     "category": "conveying",
     "material": "both",
     "featured": false,
@@ -4476,7 +4493,7 @@ export const yilmazMachines: Machine[] = [
     "name": "HDL 400 / HDL 700",
     "description": "Conveyor for aluminium & PVC profile fabrication. (YILMAZ model HDL 400 / HDL 700 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115748/TCAT01000007931.png",
-    "specPdf": "/documents/specs/HDL-400-HDL-700.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24113749/HDL-400-700.pdf",
     "category": "conveying",
     "material": "both",
     "featured": false,
@@ -4512,7 +4529,7 @@ export const yilmazMachines: Machine[] = [
     "name": "KD 400 M",
     "description": "Cutting Machine for aluminium profile fabrication. (YILMAZ model KD 400 M — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115555/TCAT01000002251.jpg",
-    "specPdf": "/documents/specs/KD-400-M.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24151432/KD-400-M-1.pdf",
     "category": "cutting",
     "material": "aluminium",
     "featured": false,
@@ -4541,14 +4558,15 @@ export const yilmazMachines: Machine[] = [
     "safetyFeatures": [],
     "weight": {
       "net": "71.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=XpgCgbeIA2E"
   },
   {
     "id": "ym-082",
     "name": "KD 350 D",
     "description": "Cutting Machine for PVC profile fabrication. (YILMAZ model KD 350 D — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115431/0063226062025144112IMG.png",
-    "specPdf": "/documents/specs/KD-350-D.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24143522/KD-350-D-350-PS.pdf",
     "category": "cutting",
     "material": "pvc",
     "featured": false,
@@ -4574,14 +4592,15 @@ export const yilmazMachines: Machine[] = [
       "Cutting Machine for pvc profile fabrication"
     ],
     "certifications": [],
-    "safetyFeatures": []
+    "safetyFeatures": [],
+    "youtubeUrl": "https://www.youtube.com/watch?v=rXQjfMppzE4"
   },
   {
     "id": "ym-083",
     "name": "KY 305",
     "description": "Cutting Machine for aluminium & PVC profile fabrication. (YILMAZ model KY 305 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/17145132/KY-305.png",
-    "specPdf": "/documents/specs/KY-305.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24120042/KD-305-KY-305.pdf",
     "category": "cutting",
     "material": "both",
     "featured": false,
@@ -4610,14 +4629,15 @@ export const yilmazMachines: Machine[] = [
     "safetyFeatures": [],
     "weight": {
       "net": "26.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=ejGnoN_YrIQ"
   },
   {
     "id": "ym-084",
     "name": "DC 550 SKH",
     "description": "Cutting Machine for aluminium profile fabrication. (YILMAZ model DC 550 SKH — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/17145020/550-SKH.png",
-    "specPdf": "/documents/specs/DC-550-SKH.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24094514/DC-550-SK-SKH-1.pdf",
     "category": "cutting",
     "material": "aluminium",
     "featured": false,
@@ -4650,14 +4670,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "1.202 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=s48cmGhtHhI"
   },
   {
     "id": "ym-085",
     "name": "RYK 420 S",
     "description": "Cutting Machine for aluminium profile fabrication. (YILMAZ model RYK 420 S — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115126/TCAT01000008871.png",
-    "specPdf": "/documents/specs/RYK-420-S.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24163229/RYK-420-S-1.pdf",
     "category": "cutting",
     "material": "aluminium",
     "featured": false,
@@ -4690,14 +4711,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "202.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=8AN4Axu1nf4"
   },
   {
     "id": "ym-086",
     "name": "SDT 280",
     "description": "Cutting Machine for PVC profile fabrication. (YILMAZ model SDT 280 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/11/03113714/0076528102025162816IMG.jpg",
-    "specPdf": "/documents/specs/SDT-280.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24164750/SDT-280.pdf",
     "category": "cutting",
     "material": "pvc",
     "featured": false,
@@ -4733,7 +4755,7 @@ export const yilmazMachines: Machine[] = [
     "name": "SNM 560 SRV",
     "description": "End Milling / Notching Machine for aluminium profile fabrication. (YILMAZ model SNM 560 SRV — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/17145013/snm-560.png",
-    "specPdf": "/documents/specs/SNM-560-SRV.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24172151/SNM-560-SRV.pdf",
     "category": "end-milling",
     "material": "aluminium",
     "featured": false,
@@ -4766,14 +4788,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "1.2 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=3S996AnQLL4"
   },
   {
     "id": "ym-088",
     "name": "SNM 560 M",
     "description": "End Milling / Notching Machine for aluminium profile fabrication. (YILMAZ model SNM 560 M — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115746/0045508012025110735IMG-scaled.jpg",
-    "specPdf": "/documents/specs/SNM-560-M.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24172057/SNM-560-M.pdf",
     "category": "end-milling",
     "material": "aluminium",
     "featured": false,
@@ -4806,14 +4829,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "1.18 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=3S996AnQLL4"
   },
   {
     "id": "ym-089",
     "name": "SK 500 D",
     "description": "Cutting Machine for aluminium profile fabrication. (YILMAZ model SK 500 D — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115907/TCAT01000007481.png",
-    "specPdf": "/documents/specs/SK-500-D.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24165148/SK-500-D.pdf",
     "category": "cutting",
     "material": "aluminium",
     "featured": false,
@@ -4843,14 +4867,15 @@ export const yilmazMachines: Machine[] = [
     "airSpec": {
       "consumption": "150.0 L/min",
       "pressure": "6-8 bar"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=p29d9KK1l9Q"
   },
   {
     "id": "ym-090",
     "name": "SK 500",
     "description": "Cutting Machine for aluminium profile fabrication. (YILMAZ model SK 500 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115418/TCAT01000003731.jpg",
-    "specPdf": "/documents/specs/SK-500.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24165243/SK-500-1.pdf",
     "category": "cutting",
     "material": "aluminium",
     "featured": false,
@@ -4883,14 +4908,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "540.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=p29d9KK1l9Q"
   },
   {
     "id": "ym-091",
     "name": "ACK 700",
     "description": "Cutting Machine for aluminium profile fabrication. (YILMAZ model ACK 700 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115315/TCAT01000005451.jpg",
-    "specPdf": "/documents/specs/ACK-700.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/23153958/ACK-700-1.pdf",
     "category": "cutting",
     "material": "aluminium",
     "featured": false,
@@ -4923,14 +4949,15 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "500.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=v6B4MOS3DzA"
   },
   {
     "id": "ym-092",
     "name": "ACK 550",
     "description": "Cutting Machine for aluminium profile fabrication. (YILMAZ model ACK 550 — specifications on request.)",
     "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2026/06/04230431/0083106052026161606IMG.png",
-    "specPdf": "/documents/specs/ACK-550.pdf",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/23153753/ACK-550-1.pdf",
     "category": "cutting",
     "material": "aluminium",
     "featured": false,
@@ -4963,7 +4990,8 @@ export const yilmazMachines: Machine[] = [
     },
     "weight": {
       "net": "376.0 kg"
-    }
+    },
+    "youtubeUrl": "https://www.youtube.com/watch?v=v6B4MOS3DzA"
   }
 ];
 

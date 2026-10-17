@@ -12,6 +12,13 @@ export interface LayoutPdfItem {
   color?: string; // hex like "#f59e0b"
 }
 
+export interface WorkshopLayoutPdfOptions {
+  components?: { label: string; qty: number }[];
+  totalPowerKw?: number;
+  totalAirLmin?: number;
+  companyName?: string;
+}
+
 function hexToRgb(hex: string) {
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!m) return { r: 0.4, g: 0.4, b: 0.4 };
@@ -27,7 +34,7 @@ export async function generateWorkshopLayoutPDF(
   factoryL: number,
   items: LayoutPdfItem[],
   logoDataUrl?: string,
-  companyName = 'YILMAZ MACHINES'
+  options: WorkshopLayoutPdfOptions = {}
 ): Promise<Uint8Array> {
   if (!PDFDocument) {
     const mod = await import('pdf-lib');
@@ -35,6 +42,8 @@ export async function generateWorkshopLayoutPDF(
     StandardFonts = mod.StandardFonts;
     rgb = mod.rgb;
   }
+
+  const { components = [], totalPowerKw = 0, totalAirLmin = 0, companyName = 'YILMAZ MACHINES' } = options;
 
   const pdf = await PDFDocument.create();
   const page = pdf.addPage([842, 595]); // landscape A4
@@ -72,11 +81,11 @@ export async function generateWorkshopLayoutPDF(
   page.drawText('WORKSHOP LAYOUT PLAN', { x: 842 - margin - 170, y: 595 - margin - 18, size: 11, font: bold, color: primary });
   page.drawText(`Factory: ${factoryL} m × ${factoryW} m`, { x: 842 - margin - 170, y: 595 - margin - 32, size: 8, font, color: secondary });
 
-  // Layout area (scale floor into the page)
+  // Layout area — shifted down ~1cm to clear the logo line; bottom space reserved for components/footer.
   const areaX = margin;
-  const areaY = 70;
+  const areaY = 100;
   const areaW = 842 - margin * 2;
-  const areaH = 595 - 70 - 70;
+  const areaH = 595 - areaY - 105;
   const s = Math.min(areaW / factoryL, areaH / factoryW);
   const floorW = factoryL * s;
   const floorH = factoryW * s;
@@ -99,10 +108,28 @@ export async function generateWorkshopLayoutPDF(
     }
   }
 
+  // Components list (bottom-left)
+  let cy = 84;
+  page.drawText('COMPONENTS', { x: margin, y: cy, size: 9, font: bold, color: primary });
+  cy -= 13;
+  const col2 = 260;
+  let col = 0;
+  for (const c of components) {
+    page.drawText(`${c.qty}×  ${c.label}`, { x: margin + col * col2, y: cy, size: 7, font, color: secondary });
+    cy -= 10;
+    if (cy < 26) { cy = 84 - 13; col = 1; }
+  }
+
+  // Total power + electricity (bottom-right, above footer)
+  const trx = 842 - margin - 230;
+  page.drawText('TOTAL POWER & ELECTRICITY', { x: trx, y: 84, size: 9, font: bold, color: primary });
+  page.drawText(`Total Power: ${totalPowerKw} kW`, { x: trx, y: 70, size: 8, font, color: secondary });
+  page.drawText(`Total Air Consumption: ${totalAirLmin} L/min`, { x: trx, y: 58, size: 8, font, color: secondary });
+
   // Footer
-  page.drawText(companyName, { x: margin, y: 40, size: 9, font: bold, color: primary });
-  page.drawText('ALMONA CO. IMPORT EXPORT COMMERCIAL AGENCIES', { x: margin, y: 28, size: 7, font, color: secondary });
-  page.drawText(`Generated: ${new Date().toLocaleDateString()}`, { x: 842 - margin - 130, y: 28, size: 7, font, color: secondary });
+  page.drawText(companyName, { x: margin, y: 30, size: 9, font: bold, color: primary });
+  page.drawText('ALMONA CO. IMPORT EXPORT COMMERCIAL AGENCIES', { x: margin, y: 18, size: 7, font, color: secondary });
+  page.drawText(`Generated: ${new Date().toLocaleDateString()}`, { x: 842 - margin - 130, y: 18, size: 7, font, color: secondary });
 
   return await pdf.save();
 }

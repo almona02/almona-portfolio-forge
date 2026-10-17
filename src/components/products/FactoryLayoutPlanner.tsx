@@ -17,7 +17,8 @@ type ItemKind =
   | 'toilets'
   | 'assembly'
   | 'glass'
-  | 'accessories';
+  | 'accessories'
+  | 'electricity';
 
 interface LayoutItem {
   id: string;
@@ -50,6 +51,7 @@ const ZONES: Record<string, { label: string; color: string; w: number; h: number
   assembly: { label: 'Assembly Area', color: '#f472b6', w: 6, h: 4 },
   glass: { label: 'Glass Area', color: '#7dd3fc', w: 4, h: 3 },
   accessories: { label: 'Accessories Warehouse', color: '#fbbf24', w: 4, h: 3 },
+  electricity: { label: 'Electricity Panel', color: '#fde047', w: 1.5, h: 0.6 },
 };
 
 function parseMeters(s?: string): number {
@@ -61,6 +63,7 @@ let idc = 0;
 const uid = () => `it-${Date.now()}-${++idc}`;
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+const snap = (v: number) => Math.round(v / 0.25) * 0.25;
 
 export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
   const copy = usePublicCopy();
@@ -73,6 +76,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
   const [search, setSearch] = useState('');
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<{ id: string; dx: number; dy: number } | null>(null);
+  const doorDragRef = useRef<{ id: string; dx: number } | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -178,7 +182,22 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     svgRef.current?.setPointerCapture(e.pointerId);
   }, [toMeters]);
 
+  const onDoorPointerDown = useCallback((e: React.PointerEvent, door: Door) => {
+    e.stopPropagation();
+    const { mx } = toMeters(e.clientX, e.clientY);
+    doorDragRef.current = { id: door.id, dx: mx - door.offset };
+    svgRef.current?.setPointerCapture(e.pointerId);
+  }, [toMeters]);
+
   const onPointerMove = useCallback((e: React.PointerEvent) => {
+    const doorDrag = doorDragRef.current;
+    if (doorDrag) {
+      const { mx } = toMeters(e.clientX, e.clientY);
+      setDoors((prev) =>
+        prev.map((d) => (d.id === doorDrag.id ? { ...d, offset: clamp(snap(mx - doorDrag.dx), 0, Math.max(0, factoryL - d.width)) } : d))
+      );
+      return;
+    }
     const drag = dragRef.current;
     if (!drag) return;
     const { mx, my } = toMeters(e.clientX, e.clientY);
@@ -187,8 +206,8 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
         if (it.id !== drag.id) return it;
         return {
           ...it,
-          x: clamp(mx - drag.dx, 0, Math.max(0, factoryL - it.w)),
-          y: clamp(my - drag.dy, 0, Math.max(0, factoryW - it.h)),
+          x: clamp(snap(mx - drag.dx), 0, Math.max(0, factoryL - it.w)),
+          y: clamp(snap(my - drag.dy), 0, Math.max(0, factoryW - it.h)),
         };
       })
     );
@@ -196,6 +215,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
   const onPointerUp = useCallback(() => {
     dragRef.current = null;
+    doorDragRef.current = null;
   }, []);
 
   const exportPdf = useCallback(async () => {
@@ -215,7 +235,23 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     } catch { /* logo optional */ }
 
     const pdfItems = items.map((it) => ({ label: it.label, x: it.x, y: it.y, w: it.w, h: it.h, color: it.color }));
-    const bytes = await generateWorkshopLayoutPDF(factoryW, factoryL, pdfItems, logoDataUrl);
+    const componentMap = new Map<string, number>();
+    let totalPowerKw = 0;
+    let totalAirLmin = 0;
+    for (const it of items) {
+      componentMap.set(it.label, (componentMap.get(it.label) || 0) + 1);
+      if (it.kind === 'machine') {
+        const machine = machines.find((m) => m.id === it.modelId);
+        totalPowerKw += parseFloat((machine?.powerSpec?.consumption || '0').match(/[\d.]+/)?.[0] || '0');
+        totalAirLmin += parseFloat((machine?.airSpec?.consumption || '0').match(/[\d.]+/)?.[0] || '0');
+      }
+    }
+    const components = [...componentMap.entries()].map(([label, qty]) => ({ label, qty }));
+    const bytes = await generateWorkshopLayoutPDF(factoryW, factoryL, pdfItems, logoDataUrl, {
+      components,
+      totalPowerKw: Math.round(totalPowerKw * 10) / 10,
+      totalAirLmin: Math.round(totalAirLmin),
+    });
     const blob = new Blob([new Uint8Array(bytes)], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -343,7 +379,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
                   const dw = d.width * svg.scale;
                   const dy = d.side === 'bottom' ? svg.oy + svg.floorH : svg.oy;
                   return (
-                    <g key={d.id}>
+                    <g key={d.id} onPointerDown={(e) => onDoorPointerDown(e, d)} style={{ cursor: 'ew-resize' }}>
                       <rect x={dx} y={d.side === 'bottom' ? dy - 6 : dy} width={dw} height={6} fill="#fff" stroke="#f87171" strokeWidth={2} />
                       <text x={dx + dw / 2} y={d.side === 'bottom' ? dy - 10 : dy + 14} textAnchor="middle" fill="#f87171" fontSize={9}>{d.label}</text>
                     </g>
