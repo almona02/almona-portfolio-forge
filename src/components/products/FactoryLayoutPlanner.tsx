@@ -1,243 +1,356 @@
 import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { useYilmazMachines } from '@/hooks/useYilmazMachines';
-import React, { useMemo, useState } from 'react';
-import { Search, X } from 'lucide-react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Download, Plus, Search, Trash2, X } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
+import type { Machine } from '@/constants/yilmazMachines';
 
-/** Parse a dimension string like "8850mm" or "On request" into meters. */
-function parseMeters(s?: string): number {
-  const m = String(s || '').match(/([\d.]+)/);
-  return m ? parseFloat(m[1]) / 1000 : 1; // mm -> m (default 1m if unknown)
-}
+type ItemKind =
+  | 'machine'
+  | 'workbench'
+  | 'storage'
+  | 'pickup'
+  | 'air'
+  | 'manager'
+  | 'workers'
+  | 'toilets'
+  | 'assembly'
+  | 'glass'
+  | 'accessories';
 
 interface LayoutItem {
   id: string;
-  name: string;
-  w: number; // footprint length (m) along X
-  h: number; // footprint width (m) along Y
+  kind: ItemKind;
+  label: string;
+  modelId?: string;
+  w: number; // meters (x)
+  h: number; // meters (y)
   x: number;
   y: number;
+  color: string;
 }
+
+interface Door {
+  id: string;
+  label: string;
+  side: 'bottom' | 'top';
+  offset: number; // meters along the wall from left
+  width: number; // meters
+}
+
+const ZONES: Record<string, { label: string; color: string; w: number; h: number }> = {
+  storage: { label: 'Storage Area', color: '#a78bfa', w: 6, h: 3 },
+  pickup: { label: 'Pickup / Discharge', color: '#34d399', w: 4, h: 4 },
+  air: { label: 'Air Compressor', color: '#f87171', w: 3, h: 3 },
+  manager: { label: 'Manager Office', color: '#60a5fa', w: 3, h: 3 },
+  workers: { label: 'Workers Office', color: '#2dd4bf', w: 4, h: 3 },
+  toilets: { label: 'Toilets', color: '#22d3ee', w: 2, h: 2 },
+  assembly: { label: 'Assembly Area', color: '#f472b6', w: 6, h: 4 },
+  glass: { label: 'Glass Area', color: '#7dd3fc', w: 4, h: 3 },
+  accessories: { label: 'Accessories Warehouse', color: '#fbbf24', w: 4, h: 3 },
+};
+
+function parseMeters(s?: string): number {
+  const m = String(s || '').match(/([\d.]+)/);
+  return m ? parseFloat(m[1]) / 1000 : 1;
+}
+
+let idc = 0;
+const uid = () => `it-${Date.now()}-${++idc}`;
+
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
 export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
   const copy = usePublicCopy();
   const { data: machines = [] } = useYilmazMachines();
-  const [selected, setSelected] = useState<string[]>([]);
+  const [factoryW, setFactoryW] = useState(20);
+  const [factoryL, setFactoryL] = useState(30);
+  const [items, setItems] = useState<LayoutItem[]>([]);
+  const [doors, setDoors] = useState<Door[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [factoryW, setFactoryW] = useState(20); // meters (depth / Y)
-  const [factoryL, setFactoryL] = useState(30); // meters (width / X)
+  const svgRef = useRef<SVGSVGElement>(null);
+  const dragRef = useRef<{ id: string; dx: number; dy: number } | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return machines.filter((m) =>
-      !q ||
-      m.name.toLowerCase().includes(q) ||
-      (m.description || '').toLowerCase().includes(q) ||
-      (m.category || '').toLowerCase().includes(q)
+    return machines.filter(
+      (m) => !q || m.name.toLowerCase().includes(q) || (m.category || '').toLowerCase().includes(q)
     );
   }, [search, machines]);
 
-  const toggle = (id: string) =>
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-
-  const selectedMachines = useMemo(
-    () => machines.filter((m) => selected.includes(m.id)),
-    [machines, selected]
+  const qtyOf = useCallback(
+    (modelId: string) => items.filter((it) => it.modelId === modelId).length,
+    [items]
   );
 
-  // Simple row-wrap ("shelf") packing: largest machines first, wrap when exceeding factory length.
-  const layout = useMemo(() => {
-    const sorted = selectedMachines
-      .map((m) => ({
-        id: m.id,
-        name: m.name,
-        w: parseMeters(m.dimensions?.length),
-        h: parseMeters(m.dimensions?.width),
-      }))
-      .sort((a, b) => b.w * b.h - a.w * a.h);
+  const addMachine = useCallback((m: Machine) => {
+    const w = parseMeters(m.dimensions?.length);
+    const h = parseMeters(m.dimensions?.width);
+    setItems((prev) => [...prev, { id: uid(), kind: 'machine', label: m.name, modelId: m.id, w, h, x: 0, y: 0, color: '#f59e0b' }]);
+  }, []);
 
-    const gap = 1; // 1 m aisle between machines
-    const items: LayoutItem[] = [];
-    let x = 0;
-    let y = 0;
-    let rowH = 0;
-    for (const it of sorted) {
-      if (x + it.w > factoryL) {
-        x = 0;
-        y += rowH + gap;
-        rowH = 0;
-      }
-      items.push({ ...it, x, y });
-      x += it.w + gap;
-      rowH = Math.max(rowH, it.h);
-    }
-    return items;
-  }, [selectedMachines, factoryL]);
+  const addWorkbench = useCallback(() => {
+    setItems((prev) => [...prev, { id: uid(), kind: 'workbench', label: 'Workbench', w: 2, h: 0.8, x: 0, y: 0, color: '#94a3b8' }]);
+  }, []);
+
+  const addZone = useCallback((kind: string) => {
+    const z = ZONES[kind];
+    setItems((prev) => [...prev, { id: uid(), kind: kind as ItemKind, label: z.label, w: z.w, h: z.h, x: 0, y: 0, color: z.color }]);
+  }, []);
+
+  const addDoor = useCallback((n: number) => {
+    setDoors((prev) => [...prev, { id: uid(), label: `Door ${n}`, side: 'bottom', offset: 2, width: 2 }]);
+  }, []);
+
+  const removeItem = useCallback((id: string) => {
+    setItems((prev) => prev.filter((it) => it.id !== id));
+    setSelectedId((s) => (s === id ? null : s));
+  }, []);
+
+  const clearAll = useCallback(() => {
+    setItems([]);
+    setDoors([]);
+    setSelectedId(null);
+  }, []);
 
   const svg = useMemo(() => {
-    const svgW = 760;
+    const svgW = 800;
     const svgH = 560;
     const s = Math.min((svgW - 60) / factoryL, (svgH - 60) / factoryW);
-    return {
-      scale: s,
-      floorW: factoryL * s,
-      floorH: factoryW * s,
-      ox: (svgW - factoryL * s) / 2,
-      oy: (svgH - factoryW * s) / 2,
-      svgW,
-      svgH,
-    };
+    return { svgW, svgH, scale: s, ox: (svgW - factoryL * s) / 2, oy: (svgH - factoryW * s) / 2, floorW: factoryL * s, floorH: factoryW * s };
   }, [factoryW, factoryL]);
 
-  const totalArea = useMemo(
-    () => selectedMachines.reduce((a, m) => a + parseMeters(m.dimensions?.length) * parseMeters(m.dimensions?.width), 0),
-    [selectedMachines]
-  );
-  const coverage = factoryW * factoryL > 0 ? (totalArea / (factoryW * factoryL)) * 100 : 0;
+  const toMeters = useCallback((clientX: number, clientY: number) => {
+    const el = svgRef.current;
+    if (!el) return { mx: 0, my: 0 };
+    const r = el.getBoundingClientRect();
+    const px = ((clientX - r.left) / r.width) * svg.svgW;
+    const py = ((clientY - r.top) / r.height) * svg.svgH;
+    return { mx: (px - svg.ox) / svg.scale, my: (py - svg.oy) / svg.scale };
+  }, [svg]);
+
+  const onPointerDown = useCallback((e: React.PointerEvent, it: LayoutItem) => {
+    e.stopPropagation();
+    setSelectedId(it.id);
+    const { mx, my } = toMeters(e.clientX, e.clientY);
+    dragRef.current = { id: it.id, dx: mx - it.x, dy: my - it.y };
+    svgRef.current?.setPointerCapture(e.pointerId);
+  }, [toMeters]);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    const drag = dragRef.current;
+    if (!drag) return;
+    const { mx, my } = toMeters(e.clientX, e.clientY);
+    setItems((prev) =>
+      prev.map((it) => {
+        if (it.id !== drag.id) return it;
+        return {
+          ...it,
+          x: clamp(mx - drag.dx, 0, Math.max(0, factoryL - it.w)),
+          y: clamp(my - drag.dy, 0, Math.max(0, factoryW - it.h)),
+        };
+      })
+    );
+  }, [toMeters, factoryL, factoryW]);
+
+  const onPointerUp = useCallback(() => {
+    dragRef.current = null;
+  }, []);
+
+  const exportPdf = useCallback(async () => {
+    const { generateWorkshopLayoutPDF } = await import('@/lib/reports/workshopLayoutPdf');
+    let logoDataUrl: string | undefined;
+    try {
+      const res = await fetch('/logo-bg-removed.png');
+      if (res.ok) {
+        const blob = await res.blob();
+        logoDataUrl = await new Promise<string>((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result as string);
+          r.onerror = () => reject(r.error);
+          r.readAsDataURL(blob);
+        });
+      }
+    } catch { /* logo optional */ }
+
+    const pdfItems = items.map((it) => ({ label: it.label, x: it.x, y: it.y, w: it.w, h: it.h, color: it.color }));
+    const bytes = await generateWorkshopLayoutPDF(factoryW, factoryL, pdfItems, logoDataUrl);
+    const blob = new Blob([new Uint8Array(bytes)], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const ts = new Date().toISOString().replace(/[:T]/g, '-').split('.')[0];
+    a.download = `almona-workshop-layout-${ts}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [items, factoryW, factoryL]);
+
+  const selected = items.find((it) => it.id === selectedId) || null;
 
   return (
-    <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2 sm:p-4"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100] p-2 sm:p-4" onClick={onClose}>
       <div
-        className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-6xl max-h-[92vh] overflow-hidden flex flex-col"
+        className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-[1400px] max-h-[94vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-700 flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-700 flex-shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-white">{copy("Factory Layout Planner")}</h2>
-            <p className="text-xs text-gray-400">{copy("Select machines and enter your factory space to preview a 2D layout.")}</p>
+            <h2 className="text-lg font-bold text-white">{copy("Workshop Layout Planner")}</h2>
+            <p className="text-xs text-gray-400">{copy("Add machines and zones, drag to position them, then export a PDF.")}</p>
           </div>
-          <button onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-white p-1">
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" onClick={exportPdf} className="bg-amber-500 hover:bg-amber-600 text-white">
+              <Download className="h-4 w-4 mr-1" />{copy("Export PDF")}
+            </Button>
+            <button onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-white p-1">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-[320px_1fr]">
-          {/* Machine selection */}
-          <div className="border-b lg:border-b-0 lg:border-r border-gray-700 p-4 flex flex-col min-h-0">
-            <div className="relative mb-3">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={copy("Search machines...")}
-                className="pl-10 bg-gray-800 border-gray-600"
-              />
+        <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[340px_1fr]">
+          {/* Sidebar */}
+          <div className="border-b lg:border-b-0 lg:border-r border-gray-700 flex flex-col min-h-0">
+            <div className="p-3 border-b border-gray-700">
+              <div className="flex gap-2 mb-2">
+                <div className="flex-1">
+                  <label className="text-xs text-gray-400 block mb-1">{copy("Width (m)")}</label>
+                  <Input type="number" min={1} value={factoryW} onChange={(e) => setFactoryW(Math.max(1, Number(e.target.value) || 1))} className="bg-gray-800 border-gray-600 h-8" />
+                </div>
+                <div className="flex-1">
+                  <label className="text-xs text-gray-400 block mb-1">{copy("Length (m)")}</label>
+                  <Input type="number" min={1} value={factoryL} onChange={(e) => setFactoryL(Math.max(1, Number(e.target.value) || 1))} className="bg-gray-800 border-gray-600 h-8" />
+                </div>
+              </div>
+
+              {/* Zones */}
+              <div className="flex flex-wrap gap-1 mb-2">
+                {Object.entries(ZONES).map(([k, z]) => (
+                  <button key={k} onClick={() => addZone(k)} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">
+                    + {z.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-1">
+                <button onClick={addWorkbench} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">+ Workbench</button>
+                <button onClick={() => addDoor(1)} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">+ Door 1</button>
+                <button onClick={() => addDoor(2)} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">+ Door 2</button>
+                <button onClick={clearAll} className="text-[11px] px-2 py-1 rounded border border-red-700 text-red-400 hover:bg-red-900/30">Clear</button>
+              </div>
             </div>
-            <div className="flex items-center justify-between mb-2 text-xs text-gray-400">
-              <span>{copy("Selected")}: {selected.length}</span>
-              <button className="text-amber-400 hover:underline" onClick={() => setSelected([])}>
-                {copy("Clear")}
-              </button>
+
+            <div className="p-3 border-b border-gray-700">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={copy("Search machines...")} className="pl-9 bg-gray-800 border-gray-600 h-8" />
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto space-y-1 pr-1">
-              {filtered.slice(0, 120).map((m) => {
-                const on = selected.includes(m.id);
+
+            <div className="flex-1 overflow-y-auto p-2">
+              {filtered.slice(0, 150).map((m) => {
+                const q = qtyOf(m.id);
                 return (
-                  <label
-                    key={m.id}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm border ${
-                      on ? 'border-amber-500/50 bg-amber-500/10' : 'border-transparent hover:bg-gray-800'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={on}
-                      onChange={() => toggle(m.id)}
-                      className="accent-amber-500"
-                    />
-                    <span className="text-gray-200 truncate">{m.name}</span>
-                    <span className="text-gray-500 text-xs ml-auto capitalize">{m.category?.replace(/-/g, ' ')}</span>
-                  </label>
+                  <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-800">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-gray-200 truncate">{m.name}</div>
+                      <div className="text-[10px] text-gray-500 capitalize">{m.category?.replace(/-/g, ' ')}</div>
+                    </div>
+                    {q > 0 && <span className="text-xs text-amber-400 font-bold">{q}×</span>}
+                    <button onClick={() => addMachine(m)} className="text-amber-400 hover:text-amber-300 p-1" aria-label={`Add ${m.name}`}>
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Layout */}
-          <div className="p-4 flex flex-col min-h-0">
-            <div className="flex flex-wrap items-end gap-4 mb-4">
-              <div>
-                <label className="text-xs text-gray-400 block mb-1">{copy("Factory width (m)")}</label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={factoryW}
-                  onChange={(e) => setFactoryW(Math.max(1, Number(e.target.value) || 1))}
-                  className="w-28 bg-gray-800 border-gray-600"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-400 block mb-1">{copy("Factory length (m)")}</label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={factoryL}
-                  onChange={(e) => setFactoryL(Math.max(1, Number(e.target.value) || 1))}
-                  className="w-28 bg-gray-800 border-gray-600"
-                />
-              </div>
-              <div className="text-xs text-gray-400 ml-auto text-right">
-                <div>{copy("Machines")}: {selectedMachines.length}</div>
-                <div>{copy("Footprint")}: {totalArea.toFixed(0)} m² / {factoryW * factoryL} m² ({coverage.toFixed(0)}%)</div>
-              </div>
+          {/* Canvas */}
+          <div className="p-3 flex flex-col min-h-0">
+            <div className="flex items-center justify-between mb-2 text-xs text-gray-400">
+              <span>{copy("Drag items to position them. Click to select.")}</span>
+              <span>{items.length} {copy("items")}</span>
+            </div>
+            <div className="flex-1 min-h-[380px] bg-gray-950 border border-gray-700 rounded-lg overflow-hidden">
+              <svg
+                ref={svgRef}
+                viewBox={`0 0 ${svg.svgW} ${svg.svgH}`}
+                className="w-full h-full touch-none"
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
+                onPointerLeave={onPointerUp}
+              >
+                {/* grid */}
+                {Array.from({ length: Math.ceil(factoryL) + 1 }).map((_, i) => (
+                  <line key={`v${i}`} x1={svg.ox + i * svg.scale} y1={svg.oy} x2={svg.ox + i * svg.scale} y2={svg.oy + svg.floorH} stroke="#1f2937" strokeWidth={1} />
+                ))}
+                {Array.from({ length: Math.ceil(factoryW) + 1 }).map((_, i) => (
+                  <line key={`h${i}`} x1={svg.ox} y1={svg.oy + i * svg.scale} x2={svg.ox + svg.floorW} y2={svg.oy + i * svg.scale} stroke="#1f2937" strokeWidth={1} />
+                ))}
+
+                {/* floor */}
+                <rect x={svg.ox} y={svg.oy} width={svg.floorW} height={svg.floorH} fill="none" stroke="#64748b" strokeWidth={2} />
+                <text x={svg.ox + svg.floorW / 2} y={svg.oy + svg.floorH + 16} textAnchor="middle" fill="#94a3b8" fontSize={11}>{factoryL} m</text>
+                <text x={svg.ox - 14} y={svg.oy + svg.floorH / 2} textAnchor="middle" fill="#94a3b8" fontSize={11} transform={`rotate(-90 ${svg.ox - 14} ${svg.oy + svg.floorH / 2})`}>{factoryW} m</text>
+
+                {/* doors */}
+                {doors.map((d) => {
+                  const dx = svg.ox + d.offset * svg.scale;
+                  const dw = d.width * svg.scale;
+                  const dy = d.side === 'bottom' ? svg.oy + svg.floorH : svg.oy;
+                  return (
+                    <g key={d.id}>
+                      <rect x={dx} y={d.side === 'bottom' ? dy - 6 : dy} width={dw} height={6} fill="#fff" stroke="#f87171" strokeWidth={2} />
+                      <text x={dx + dw / 2} y={d.side === 'bottom' ? dy - 10 : dy + 14} textAnchor="middle" fill="#f87171" fontSize={9}>{d.label}</text>
+                    </g>
+                  );
+                })}
+
+                {/* items */}
+                {items.map((it) => {
+                  const px = svg.ox + it.x * svg.scale;
+                  const py = svg.oy + it.y * svg.scale;
+                  const pw = it.w * svg.scale;
+                  const ph = it.h * svg.scale;
+                  const sel = selectedId === it.id;
+                  return (
+                    <g
+                      key={it.id}
+                      onPointerDown={(e) => onPointerDown(e, it)}
+                      style={{ cursor: 'grab' }}
+                    >
+                      <rect x={px} y={py} width={pw} height={ph} fill={`${it.color}33`} stroke={it.color} strokeWidth={sel ? 3 : 1.5} rx={2} />
+                      {pw > 34 && ph > 18 ? (
+                        <>
+                          <text x={px + pw / 2} y={py + ph / 2 + 1} textAnchor="middle" fill="#fff" fontSize={Math.min(11, pw / 8)} fontWeight={600} style={{ pointerEvents: 'none' }}>
+                            {it.label}
+                          </text>
+                          <text x={px + pw / 2} y={py + ph / 2 + 13} textAnchor="middle" fill="#cbd5e1" fontSize={9} style={{ pointerEvents: 'none' }}>
+                            {it.w.toFixed(1)} × {it.h.toFixed(1)} m
+                          </text>
+                        </>
+                      ) : null}
+                    </g>
+                  );
+                })}
+              </svg>
             </div>
 
-            <div className="flex-1 min-h-[300px] bg-gray-950 border border-gray-700 rounded-lg overflow-hidden">
-              {selectedMachines.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-gray-500 text-sm">
-                  {copy("Select machines to preview the layout")}
-                </div>
-              ) : (
-                <svg viewBox={`0 0 ${svg.svgW} ${svg.svgH}`} className="w-full h-full">
-                  {/* Factory floor */}
-                  <rect
-                    x={svg.ox}
-                    y={svg.oy}
-                    width={svg.floorW}
-                    height={svg.floorH}
-                    fill="none"
-                    stroke="#64748b"
-                    strokeWidth={2}
-                    strokeDasharray="6 4"
-                  />
-                  {/* Dimension labels for the floor */}
-                  <text x={svg.ox + svg.floorW / 2} y={svg.oy + svg.floorH + 18} textAnchor="middle" fill="#94a3b8" fontSize={12}>
-                    {factoryL} m
-                  </text>
-                  <text x={svg.ox - 14} y={svg.oy + svg.floorH / 2} textAnchor="middle" fill="#94a3b8" fontSize={12} transform={`rotate(-90 ${svg.ox - 14} ${svg.oy + svg.floorH / 2})`}>
-                    {factoryW} m
-                  </text>
-
-                  {layout.map((it) => {
-                    const px = svg.ox + it.x * svg.scale;
-                    const py = svg.oy + it.y * svg.scale;
-                    const pw = it.w * svg.scale;
-                    const ph = it.h * svg.scale;
-                    return (
-                      <g key={it.id}>
-                        <rect x={px} y={py} width={pw} height={ph} fill="#f59e0b22" stroke="#f59e0b" strokeWidth={1.5} rx={2} />
-                        {pw > 50 && ph > 24 ? (
-                          <>
-                            <text x={px + pw / 2} y={py + ph / 2 - 4} textAnchor="middle" fill="#fbbf24" fontSize={11} fontWeight={600}>
-                              {it.name}
-                            </text>
-                            <text x={px + pw / 2} y={py + ph / 2 + 10} textAnchor="middle" fill="#94a3b8" fontSize={9}>
-                              {it.w.toFixed(1)} × {it.h.toFixed(1)} m
-                            </text>
-                          </>
-                        ) : null}
-                      </g>
-                    );
-                  })}
-                </svg>
-              )}
-            </div>
+            {/* selected item actions */}
+            {selected && (
+              <div className="mt-2 flex items-center gap-3 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2">
+                <span className="text-gray-200 font-medium truncate">{selected.label}</span>
+                <span className="text-gray-500 text-xs">{selected.w.toFixed(1)} × {selected.h.toFixed(1)} m</span>
+                <button onClick={() => removeItem(selected.id)} className="ml-auto text-red-400 hover:text-red-300 flex items-center gap-1">
+                  <Trash2 className="h-4 w-4" />{copy("Remove")}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
