@@ -24,6 +24,7 @@ interface LayoutItem {
   kind: ItemKind;
   label: string;
   modelId?: string;
+  description?: string;
   w: number; // meters (x)
   h: number; // meters (y)
   x: number;
@@ -53,7 +54,7 @@ const ZONES: Record<string, { label: string; color: string; w: number; h: number
 
 function parseMeters(s?: string): number {
   const m = String(s || '').match(/([\d.]+)/);
-  return m ? parseFloat(m[1]) / 1000 : 1;
+  return m ? parseFloat(m[1]) / 1000 : 0;
 }
 
 let idc = 0;
@@ -86,18 +87,21 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
   );
 
   const addMachine = useCallback((m: Machine) => {
-    const w = parseMeters(m.dimensions?.length);
-    const h = parseMeters(m.dimensions?.width);
-    setItems((prev) => [...prev, { id: uid(), kind: 'machine', label: m.name, modelId: m.id, w, h, x: 0, y: 0, color: '#f59e0b' }]);
+    const len = parseMeters(m.dimensions?.length);
+    const wid = parseMeters(m.dimensions?.width);
+    const unknown = len <= 0 || wid <= 0;
+    const w = unknown ? 2 : len;
+    const h = unknown ? 1.2 : wid;
+    setItems((prev) => [...prev, { id: uid(), kind: 'machine', label: unknown ? `${m.name} *` : m.name, modelId: m.id, description: m.description, w, h, x: 0, y: 0, color: '#f59e0b' }]);
   }, []);
 
   const addWorkbench = useCallback(() => {
-    setItems((prev) => [...prev, { id: uid(), kind: 'workbench', label: 'Workbench', w: 2, h: 0.8, x: 0, y: 0, color: '#94a3b8' }]);
+    setItems((prev) => [...prev, { id: uid(), kind: 'workbench', label: 'Workbench', description: 'Workbench for manual assembly and fitting', w: 2, h: 0.8, x: 0, y: 0, color: '#94a3b8' }]);
   }, []);
 
   const addZone = useCallback((kind: string) => {
     const z = ZONES[kind];
-    setItems((prev) => [...prev, { id: uid(), kind: kind as ItemKind, label: z.label, w: z.w, h: z.h, x: 0, y: 0, color: z.color }]);
+    setItems((prev) => [...prev, { id: uid(), kind: kind as ItemKind, label: z.label, description: z.label, w: z.w, h: z.h, x: 0, y: 0, color: z.color }]);
   }, []);
 
   const addDoor = useCallback((n: number) => {
@@ -378,36 +382,41 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
             {/* selected item actions */}
             {selected && (
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2">
-                <span className="text-gray-200 font-medium truncate">{selected.label}</span>
-                <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                  <span>W</span>
-                  <Input
-                    type="number"
-                    min={0.5}
-                    step={0.1}
-                    value={selected.w}
-                    onChange={(e) => updateSize(selected.id, 'w', Number(e.target.value))}
-                    className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
-                  />
-                  <span>×</span>
-                  <span>L</span>
-                  <Input
-                    type="number"
-                    min={0.5}
-                    step={0.1}
-                    value={selected.h}
-                    onChange={(e) => updateSize(selected.id, 'h', Number(e.target.value))}
-                    className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
-                  />
-                  <span>m</span>
+              <div className="mt-2 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 space-y-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-gray-200 font-medium truncate">{selected.label}</span>
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                    <span>W</span>
+                    <Input
+                      type="number"
+                      min={0.5}
+                      step={0.1}
+                      value={selected.w}
+                      onChange={(e) => updateSize(selected.id, 'w', Number(e.target.value))}
+                      className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                    />
+                    <span>×</span>
+                    <span>L</span>
+                    <Input
+                      type="number"
+                      min={0.5}
+                      step={0.1}
+                      value={selected.h}
+                      onChange={(e) => updateSize(selected.id, 'h', Number(e.target.value))}
+                      className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                    />
+                    <span>m</span>
+                  </div>
+                  <button onClick={() => rotateItem(selected.id)} className="text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                    <RotateCw className="h-4 w-4" />{copy("Rotate")}
+                  </button>
+                  <button onClick={() => removeItem(selected.id)} className="ml-auto text-red-400 hover:text-red-300 flex items-center gap-1">
+                    <Trash2 className="h-4 w-4" />{copy("Remove")}
+                  </button>
                 </div>
-                <button onClick={() => rotateItem(selected.id)} className="text-amber-400 hover:text-amber-300 flex items-center gap-1">
-                  <RotateCw className="h-4 w-4" />{copy("Rotate")}
-                </button>
-                <button onClick={() => removeItem(selected.id)} className="ml-auto text-red-400 hover:text-red-300 flex items-center gap-1">
-                  <Trash2 className="h-4 w-4" />{copy("Remove")}
-                </button>
+                {selected.description && (
+                  <p className="text-xs text-gray-400 leading-relaxed border-t border-gray-700 pt-2">{selected.description}</p>
+                )}
               </div>
             )}
           </div>
