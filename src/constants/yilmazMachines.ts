@@ -1608,7 +1608,7 @@ export const yilmazMachines: Machine[] = [
     "imageUrl": "/images/machines/KM-215-S.jpg",
     "specPdf": "/documents/specs/KM-215-S.pdf",
     "youtubeUrl": "https://youtu.be/VThz1mkR7o8?si=yv7IHffK1lGY4w7G",
-    "category": "processing-centers",
+    "category": "end-milling",
     "featured": true,
     "releaseDate": "2023-01-01",
     "type": "End Milling Machine",
