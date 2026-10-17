@@ -1,7 +1,7 @@
 import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { useYilmazMachines } from '@/hooks/useYilmazMachines';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Download, Plus, Search, Trash2, X } from 'lucide-react';
+import { Download, Plus, RotateCw, Search, Trash2, X } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import type { Machine } from '@/constants/yilmazMachines';
@@ -108,6 +108,41 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     setItems((prev) => prev.filter((it) => it.id !== id));
     setSelectedId((s) => (s === id ? null : s));
   }, []);
+
+  const rotateItem = useCallback((id: string) => {
+    setItems((prev) =>
+      prev.map((it) => {
+        if (it.id !== id) return it;
+        const w = it.h;
+        const h = it.w;
+        return {
+          ...it,
+          w,
+          h,
+          x: clamp(it.x, 0, Math.max(0, factoryL - w)),
+          y: clamp(it.y, 0, Math.max(0, factoryW - h)),
+        };
+      })
+    );
+  }, [factoryL, factoryW]);
+
+  const updateSize = useCallback((id: string, key: 'w' | 'h', value: number) => {
+    setItems((prev) =>
+      prev.map((it) => {
+        if (it.id !== id) return it;
+        const v = clamp(value, 0.5, 50);
+        const w = key === 'w' ? v : it.w;
+        const h = key === 'h' ? v : it.h;
+        return {
+          ...it,
+          w,
+          h,
+          x: clamp(it.x, 0, Math.max(0, factoryL - w)),
+          y: clamp(it.y, 0, Math.max(0, factoryW - h)),
+        };
+      })
+    );
+  }, [factoryL, factoryW]);
 
   const clearAll = useCallback(() => {
     setItems([]);
@@ -343,9 +378,33 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
             {/* selected item actions */}
             {selected && (
-              <div className="mt-2 flex items-center gap-3 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2">
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2">
                 <span className="text-gray-200 font-medium truncate">{selected.label}</span>
-                <span className="text-gray-500 text-xs">{selected.w.toFixed(1)} × {selected.h.toFixed(1)} m</span>
+                <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                  <span>W</span>
+                  <Input
+                    type="number"
+                    min={0.5}
+                    step={0.1}
+                    value={selected.w}
+                    onChange={(e) => updateSize(selected.id, 'w', Number(e.target.value))}
+                    className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                  />
+                  <span>×</span>
+                  <span>L</span>
+                  <Input
+                    type="number"
+                    min={0.5}
+                    step={0.1}
+                    value={selected.h}
+                    onChange={(e) => updateSize(selected.id, 'h', Number(e.target.value))}
+                    className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                  />
+                  <span>m</span>
+                </div>
+                <button onClick={() => rotateItem(selected.id)} className="text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                  <RotateCw className="h-4 w-4" />{copy("Rotate")}
+                </button>
                 <button onClick={() => removeItem(selected.id)} className="ml-auto text-red-400 hover:text-red-300 flex items-center gap-1">
                   <Trash2 className="h-4 w-4" />{copy("Remove")}
                 </button>
