@@ -128,8 +128,9 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     const len = parseMeters(m.dimensions?.length);
     const wid = parseMeters(m.dimensions?.width);
     const unknown = len <= 0 || wid <= 0;
-    const w = unknown ? 2 : len;
-    const h = unknown ? 1.2 : wid;
+    const CLEAR = 0.5; // 50 cm clearance stroke on each side
+    const w = (unknown ? 2 : len) + CLEAR * 2;
+    const h = (unknown ? 1.2 : wid) + CLEAR * 2;
     setItems((prev) => {
       const pos = findFreePosition(w, h, prev);
       return [...prev, { id: uid(), kind: 'machine', label: unknown ? `${m.name} *` : m.name, modelId: m.id, description: m.description, w, h, x: pos.x, y: pos.y, color: '#f59e0b' }];
