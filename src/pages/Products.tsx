@@ -169,48 +169,45 @@ const Products = function ProductsPage() {
   const [isTourPlaying, setIsTourPlaying] = useState(false);
   const _scrolled = useScrollThreshold(48);
 
-  // Debounced filter handler for search performance
-  const debouncedSetFilters = useMemo(
-    () => debounce((key: keyof typeof filters, value: string) => {
-      setFilters(prev => ({ ...prev, [key]: value }));
-      // Update URL parameter when search changes (debounced)
-      if (key === 'searchTerm') {
-        const newParams = new URLSearchParams(searchParams);
-        if (value.trim()) {
-          newParams.set('search', value.trim());
-        } else {
-          newParams.delete('search');
-        }
-        setSearchParams(newParams, { replace: true });
+  // Debounced URL sync for the search param only — filtering itself is instant.
+  const debouncedSyncSearchUrl = useMemo(
+    () => debounce((value: string) => {
+      const newParams = new URLSearchParams(searchParams);
+      if (value.trim()) {
+        newParams.set('search', value.trim());
+      } else {
+        newParams.delete('search');
       }
-    }, 300),
+      setSearchParams(newParams, { replace: true });
+    }, 500),
     [searchParams, setSearchParams]
   );
 
   const handleFilterChange = useCallback((key: keyof typeof filters, value: string) => {
-    // For search, use debounce (which will update URL); for others, update immediately
+    // Filtering is instant for all keys (92 machines is trivial); only the URL write is debounced.
+    setFilters(prev => ({ ...prev, [key]: value }));
+
     if (key === 'searchTerm') {
-      debouncedSetFilters(key, value);
-    } else {
-      setFilters(prev => ({ ...prev, [key]: value }));
-      // Update URL params for category and sort
-      const newParams = new URLSearchParams(searchParams);
-      if (key === 'category') {
-        if (value && value !== 'all') {
-          newParams.set('category', value);
-        } else {
-          newParams.delete('category');
-        }
-      } else if (key === 'sortOption') {
-        if (value && value !== 'featured') {
-          newParams.set('sort', value);
-        } else {
-          newParams.delete('sort');
-        }
-      }
-      setSearchParams(newParams, { replace: true });
+      debouncedSyncSearchUrl(value);
+      return;
     }
-  }, [debouncedSetFilters, searchParams, setSearchParams]);
+
+    const newParams = new URLSearchParams(searchParams);
+    if (key === 'category') {
+      if (value && value !== 'all') {
+        newParams.set('category', value);
+      } else {
+        newParams.delete('category');
+      }
+    } else if (key === 'sortOption') {
+      if (value && value !== 'featured') {
+        newParams.set('sort', value);
+      } else {
+        newParams.delete('sort');
+      }
+    }
+    setSearchParams(newParams, { replace: true });
+  }, [debouncedSyncSearchUrl, searchParams, setSearchParams]);
 
   // Map smart category to legacy category for filtering
   const getLegacyCategoryFilter = useCallback((smartCategory: string) => {
