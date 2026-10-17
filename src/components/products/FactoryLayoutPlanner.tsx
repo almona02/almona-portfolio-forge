@@ -93,23 +93,34 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     );
   }, [search, machines]);
 
-  const qtyOf = useCallback(
-    (modelId: string) => items.filter((it) => it.modelId === modelId).length,
-    [items]
-  );
+  const machinesById = useMemo(() => {
+    const map = new Map<string, Machine>();
+    for (const m of machines) map.set(m.id, m);
+    return map;
+  }, [machines]);
+
+  const qtyMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const it of items) {
+      if (it.modelId) map.set(it.modelId, (map.get(it.modelId) || 0) + 1);
+    }
+    return map;
+  }, [items]);
+
+  const qtyOf = useCallback((modelId: string) => qtyMap.get(modelId) || 0, [qtyMap]);
 
   const totals = useMemo(() => {
     let powerKw = 0;
     let airLmin = 0;
     for (const it of items) {
       if (it.kind === 'machine') {
-        const machine = machines.find((m) => m.id === it.modelId);
+        const machine = it.modelId ? machinesById.get(it.modelId) : undefined;
         powerKw += parseKw(machine?.powerSpec?.consumption);
         airLmin += parseFloat((machine?.airSpec?.consumption || '0').match(/[\d.]+/)?.[0] || '0');
       }
     }
     return { powerKw: Math.round(powerKw * 10) / 10, airLmin: Math.round(airLmin) };
-  }, [items, machines]);
+  }, [items, machinesById]);
 
   const findFreePosition = useCallback((w: number, h: number, existing: LayoutItem[]) => {
     const step = 0.25;
@@ -209,6 +220,27 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     return { svgW, svgH, scale: s, ox: (svgW - factoryL * s) / 2, oy: (svgH - factoryW * s) / 2, floorW: factoryL * s, floorH: factoryW * s };
   }, [factoryW, factoryL]);
 
+  // Static layer (grid + floor + scale bar) — only depends on factory dims, not on items/drag.
+  const gridLayer = useMemo(() => (
+    <>
+      {Array.from({ length: Math.ceil(factoryL) + 1 }).map((_, i) => (
+        <line key={`v${i}`} x1={svg.ox + i * svg.scale} y1={svg.oy} x2={svg.ox + i * svg.scale} y2={svg.oy + svg.floorH} stroke="#1f2937" strokeWidth={1} />
+      ))}
+      {Array.from({ length: Math.ceil(factoryW) + 1 }).map((_, i) => (
+        <line key={`h${i}`} x1={svg.ox} y1={svg.oy + i * svg.scale} x2={svg.ox + svg.floorW} y2={svg.oy + i * svg.scale} stroke="#1f2937" strokeWidth={1} />
+      ))}
+      <rect x={svg.ox} y={svg.oy} width={svg.floorW} height={svg.floorH} fill="none" stroke="#64748b" strokeWidth={2} />
+      <text x={svg.ox + svg.floorW / 2} y={svg.oy + svg.floorH + 16} textAnchor="middle" fill="#94a3b8" fontSize={11}>{factoryL} m</text>
+      <text x={svg.ox - 14} y={svg.oy + svg.floorH / 2} textAnchor="middle" fill="#94a3b8" fontSize={11} transform={`rotate(-90 ${svg.ox - 14} ${svg.oy + svg.floorH / 2})`}>{factoryW} m</text>
+      <g style={{ pointerEvents: 'none' }}>
+        <line x1={svg.ox + 10} y1={svg.oy + 12} x2={svg.ox + 10 + 5 * svg.scale} y2={svg.oy + 12} stroke="#94a3b8" strokeWidth={1.5} />
+        <line x1={svg.ox + 10} y1={svg.oy + 8} x2={svg.ox + 10} y2={svg.oy + 16} stroke="#94a3b8" strokeWidth={1.5} />
+        <line x1={svg.ox + 10 + 5 * svg.scale} y1={svg.oy + 8} x2={svg.ox + 10 + 5 * svg.scale} y2={svg.oy + 16} stroke="#94a3b8" strokeWidth={1.5} />
+        <text x={svg.ox + 10 + 2.5 * svg.scale} y={svg.oy + 24} textAnchor="middle" fill="#94a3b8" fontSize={9}>5 m</text>
+      </g>
+    </>
+  ), [svg, factoryL, factoryW]);
+
   const toMeters = useCallback((clientX: number, clientY: number) => {
     const el = svgRef.current;
     if (!el) return { mx: 0, my: 0 };
@@ -272,7 +304,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
         logoDataUrl = await new Promise<string>((resolve, reject) => {
           const r = new FileReader();
           r.onload = () => resolve(r.result as string);
-          r.onerror = () => reject(r.error);
+          r.onerror = () => reject(r.error ?? new Error('Failed to read logo'));
           r.readAsDataURL(blob);
         });
       }
@@ -317,7 +349,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
             <p className="text-xs text-gray-400">{copy("Add machines and zones, drag to position them, then export a PDF.")}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button size="sm" onClick={exportPdf} className="bg-amber-500 hover:bg-amber-600 text-white">
+            <Button size="sm" onClick={() => void exportPdf()} className="bg-amber-500 hover:bg-amber-600 text-white">
               <Download className="h-4 w-4 mr-1" />{copy("Export PDF")}
             </Button>
             <button onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-white p-1">
@@ -410,26 +442,8 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
                 onPointerUp={onPointerUp}
                 onPointerLeave={onPointerUp}
               >
-                {/* grid */}
-                {Array.from({ length: Math.ceil(factoryL) + 1 }).map((_, i) => (
-                  <line key={`v${i}`} x1={svg.ox + i * svg.scale} y1={svg.oy} x2={svg.ox + i * svg.scale} y2={svg.oy + svg.floorH} stroke="#1f2937" strokeWidth={1} />
-                ))}
-                {Array.from({ length: Math.ceil(factoryW) + 1 }).map((_, i) => (
-                  <line key={`h${i}`} x1={svg.ox} y1={svg.oy + i * svg.scale} x2={svg.ox + svg.floorW} y2={svg.oy + i * svg.scale} stroke="#1f2937" strokeWidth={1} />
-                ))}
-
-                {/* floor */}
-                <rect x={svg.ox} y={svg.oy} width={svg.floorW} height={svg.floorH} fill="none" stroke="#64748b" strokeWidth={2} />
-                <text x={svg.ox + svg.floorW / 2} y={svg.oy + svg.floorH + 16} textAnchor="middle" fill="#94a3b8" fontSize={11}>{factoryL} m</text>
-                <text x={svg.ox - 14} y={svg.oy + svg.floorH / 2} textAnchor="middle" fill="#94a3b8" fontSize={11} transform={`rotate(-90 ${svg.ox - 14} ${svg.oy + svg.floorH / 2})`}>{factoryW} m</text>
-
-                {/* scale bar */}
-                <g style={{ pointerEvents: 'none' }}>
-                  <line x1={svg.ox + 10} y1={svg.oy + 12} x2={svg.ox + 10 + 5 * svg.scale} y2={svg.oy + 12} stroke="#94a3b8" strokeWidth={1.5} />
-                  <line x1={svg.ox + 10} y1={svg.oy + 8} x2={svg.ox + 10} y2={svg.oy + 16} stroke="#94a3b8" strokeWidth={1.5} />
-                  <line x1={svg.ox + 10 + 5 * svg.scale} y1={svg.oy + 8} x2={svg.ox + 10 + 5 * svg.scale} y2={svg.oy + 16} stroke="#94a3b8" strokeWidth={1.5} />
-                  <text x={svg.ox + 10 + 2.5 * svg.scale} y={svg.oy + 24} textAnchor="middle" fill="#94a3b8" fontSize={9}>5 m</text>
-                </g>
+                {/* static layer: grid + floor + scale bar */}
+                {gridLayer}
 
                 {/* doors */}
                 {doors.map((d) => {
