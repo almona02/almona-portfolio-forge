@@ -5,7 +5,6 @@ import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { ChevronRight, MapPin, Calendar, Gauge, MessageCircle, Phone } from 'lucide-react';
 import { UsedMachine } from '@/data/usedMachines';
-import OptimizedImage from '@/components/shared/OptimizedImage';
 import ConditionBadge from '@/components/used-machines/ConditionBadge';
 import { UsedMachineService } from '@/lib/usedMachines/UsedMachineService';
 import { usePublicCopy } from '@/hooks/usePublicCopy';
@@ -43,7 +42,7 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
       <div className="relative">
         <div className={`${imageHeight} overflow-hidden bg-almona-dark`}>
           {machine.images[0] ? (
-            <OptimizedImage src={machine.images[0]} alt={machine.title} className="w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" width={400} height={300} />
+            <img src={machine.images[0]} alt={machine.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-600">{copy('No photo')}</div>
           )}
