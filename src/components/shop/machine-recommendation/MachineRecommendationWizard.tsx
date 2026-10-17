@@ -21,7 +21,7 @@ import {
   Printer,
   Settings,
   ShoppingCart,
-  Sparkles,
+  RefreshCw,
   Square,
   TrendingUp
 } from 'lucide-react';
@@ -64,50 +64,41 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
     { id: 'results', title: copy("Recommendations"), icon: Award }
   ];
 
-  const categoryMeta: Record<string, { label: string; icon: string; description: string }> = {
+  const categoryMeta: Record<string, { label: string; description: string }> = {
     'processing-centers': {
       label: copy("Processing Centers"),
-      icon: '🧠',
       description: copy("CNC machining, drilling, and profile processing lines")
     },
     'cutting-machines': {
       label: copy("Cutting & Mitre"),
-      icon: '✂️',
       description: copy("Mitre saws, compound cutting, and high-precision length cuts")
     },
     'welding-machines': {
       label: copy("Welding Lines"),
-      icon: '🔗',
       description: copy("UPVC welding, seamless finish, and multi-head production")
     },
     'corner-crimping': {
       label: copy("Corner Crimping"),
-      icon: '🧱',
       description: copy("Aluminium corner joining with deformation-free results")
     },
     'end-milling': {
       label: copy("End Milling"),
-      icon: '🛠️',
       description: copy("End preparation for tight joints and tolerance control")
     },
     'copy-routers': {
       label: copy("Copy Routers"),
-      icon: '📐',
       description: copy("Lock/hinge routing with multi-side accuracy")
     },
     'fabrication-equipment': {
       label: copy("Fabrication Lines"),
-      icon: '🏭',
       description: copy("Integrated welding/cleaning lines for high throughput")
     },
     routers: {
       label: copy("Routers"),
-      icon: '🌀',
       description: copy("NC routing and multi-surface machining")
     },
     accessories: {
       label: copy("Accessories"),
-      icon: '⚙️',
       description: copy("Cooling units, robot transfer, and supporting equipment")
     }
   };
@@ -297,7 +288,6 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
       .map(([id, count]) => {
         const meta = categoryMeta[id] ?? {
           label: id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-          icon: '🛠️',
           description: copy("Industrial machinery")
         };
         return { id, count, ...meta };
@@ -364,7 +354,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
       }
     };
 
-    addToQuote(shopProduct);
+    void addToQuote(shopProduct);
     toast({
       title: copy("Added to Quote"),
       description: `${copy('Added to your quote')}: ${machine.name}`,
@@ -451,7 +441,7 @@ ${copy('Selections')}:
 ${copy('Recommended machines')}:
 ${recommendations.map((m, i) => `${i + 1}. ${m.name} - ${copy(m.description)}`).join('\n')}
 
-${copy('Prepared with the ALMONA machine selection assistant.')}
+${copy('Prepared by ALMONA.')}
     `.trim();
 
     // Create and download the summary as a text file
@@ -535,8 +525,8 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
           >
             <div className="text-center">
               <Building2 className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Select Primary Substrate")}</h3>
-              <p className="text-gray-400 text-sm sm:text-base">{copy("What substrate dominates your current or planned production mix?")}</p>
+              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Select Material")}</h3>
+              <p className="text-gray-400 text-sm sm:text-base">{copy("Which material dominates your production mix?")}</p>
             </div>
             <SelectionStrip />
             <RadioGroup value={copy(answers.material)} onValueChange={(v) => handleValueChange('material', v)}>
@@ -550,7 +540,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                       <RadioGroupItem value="aluminum" id="aluminum" className="mt-1" />
                       <div className="flex-1 min-w-0">
                         <Label htmlFor="aluminum" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Aluminum")}</Label>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("High-rigidity frames with premium finishing and corrosion resistance")}</p>
+                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Rigid frames, premium finish and corrosion resistance")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">{copy("High Strength")}</Badge>
                           <Badge variant="secondary" className="text-xs">{copy("Weather Resistant")}</Badge>
@@ -568,7 +558,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                       <RadioGroupItem value="upvc" id="upvc" className="mt-1" />
                       <div className="flex-1 min-w-0">
                         <Label htmlFor="upvc" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("UPVC")}</Label>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Thermal-first systems with low maintenance and superior acoustic insulation")}</p>
+                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Thermal insulation, low maintenance and acoustic insulation")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">{copy("Energy Efficient")}</Badge>
                           <Badge variant="secondary" className="text-xs">{copy("Low Maintenance")}</Badge>
@@ -586,7 +576,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                       <RadioGroupItem value="both" id="both" className="mt-1" />
                       <div className="flex-1 min-w-0">
                         <Label htmlFor="both" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Both Materials")}</Label>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Dual-line capability for mixed aluminum and UPVC portfolios")}</p>
+                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Mixed aluminium and UPVC production")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">{copy("Versatile")}</Badge>
                           <Badge variant="secondary" className="text-xs">{copy("Multi-Material")}</Badge>
@@ -609,8 +599,8 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
           >
             <div className="text-center">
               <Square className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Core Operation Focus")}</h3>
-              <p className="text-gray-400 text-sm sm:text-base">{copy("Choose the operation family that drives your current workload.")}</p>
+              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Application")}</h3>
+              <p className="text-gray-400 text-sm sm:text-base">{copy("Select the operation that matches your main workload.")}</p>
             </div>
             <SelectionStrip />
             <Card
@@ -631,7 +621,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                     <Label className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Workshop Bundle (recommended)")}</Label>
                   </div>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-400 mt-2">{copy("Auto-selects a complete workshop set based on your production scale: 1-50 units/day ≈ 7 machines, 50-100 units/day ≈ 12 machines, 100+ units/day scales up accordingly.")}</p>
+                <p className="text-xs sm:text-sm text-gray-400 mt-2">{copy("Selects a complete workshop set based on your production scale: 1-50 units/day ≈ 7 machines, 50-100 units/day ≈ 12 machines, 100+ units/day scales accordingly.")}</p>
               </CardContent>
             </Card>
             <RadioGroup value={copy(answers.application)} onValueChange={(v) => handleValueChange('application', v)}>
@@ -657,11 +647,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                               {copy(category.description)}
                             </p>
                             <div className="flex flex-wrap gap-1 sm:gap-2 mt-2 items-center">
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                                <span>{category.icon}</span>
-                                <span>{copy("Category")}</span>
-                              </Badge>
-                              <Badge variant="secondary" className="text-xs">
+                                                            <Badge variant="secondary" className="text-xs">
                                 {category.count}{copy("machines")}</Badge>
                               {category.id === 'fabrication-equipment' && (
                                 <Badge variant="outline" className="text-[11px] border-amber-400/50 text-amber-300">{copy("Full line (recommended)")}</Badge>
@@ -691,7 +677,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
             <div className="text-center">
               <Cpu className="h-12 w-12 text-almona-orange mx-auto mb-4" />
               <h3 className="typography-h3 mb-2">{copy("Automation Level")}</h3>
-              <p className="text-gray-400">{copy("Select the control philosophy that matches your quality and throughput targets.")}</p>
+              <p className="text-gray-400">{copy("Select the automation level for your quality and throughput targets.")}</p>
             </div>
             <SelectionStrip />
             <RadioGroup value={copy(answers.automation)} onValueChange={(v) => handleValueChange('automation', v)}>
@@ -705,7 +691,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                       <RadioGroupItem value="manual" id="manual" />
                       <div className="flex-1">
                         <Label htmlFor="manual" className="typography-label text-lg font-semibold cursor-pointer">{copy("Manual Operation")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Operator-first cells for bespoke work and low-volume series")}</p>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Operator-controlled for custom work and low-volume production")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Operator Control")}</Badge>
                           <Badge variant="secondary">{copy("Custom Work")}</Badge>
@@ -723,7 +709,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                       <RadioGroupItem value="automatic" id="automatic" />
                       <div className="flex-1">
                         <Label htmlFor="automatic" className="typography-label text-lg font-semibold cursor-pointer">{copy("Semi-Automatic")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Assisted automation with safeguarded repeatability and human oversight")}</p>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Semi-automatic with operator supervision")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Automated Process")}</Badge>
                           <Badge variant="secondary">{copy("Operator Supervised")}</Badge>
@@ -741,7 +727,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                       <RadioGroupItem value="optimized" id="optimized" />
                       <div className="flex-1">
                         <Label htmlFor="optimized" className="typography-label text-lg font-semibold cursor-pointer">{copy("Optimized (Recommended)")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Auto-prioritize CNC/automatic cells for throughput and quality.")}</p>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Prioritize CNC/automatic machines for throughput and quality.")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Preset")}</Badge>
                           <Badge variant="secondary">{copy("Balanced Speed/QA")}</Badge>
@@ -759,7 +745,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                       <RadioGroupItem value="cnc" id="cnc" />
                       <div className="flex-1">
                         <Label htmlFor="cnc" className="typography-label text-lg font-semibold cursor-pointer">{copy("CNC & Fully Automatic")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Closed-loop CNC control for high-volume output and micron-level fidelity")}</p>
+                        <p className="text-sm text-gray-400 mt-1">{copy("CNC control for high-volume output and repeatable precision")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("CNC Control")}</Badge>
                           <Badge variant="secondary">{copy("High Precision")}</Badge>
@@ -783,7 +769,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
             <div className="text-center">
               <TrendingUp className="h-12 w-12 text-almona-orange mx-auto mb-4" />
               <h3 className="typography-h3 mb-2">{copy("Production Scale")}</h3>
-              <p className="text-gray-400">{copy("Align capacity with demand to right-size the cell and investment.")}</p>
+              <p className="text-gray-400">{copy("Match capacity to your daily production target.")}</p>
             </div>
             <SelectionStrip />
             <RadioGroup value={copy(answers.production)} onValueChange={(v) => handleValueChange('production', v)}>
@@ -797,7 +783,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                       <RadioGroupItem value="small-scale" id="small-scale" />
                       <div className="flex-1">
                         <Label htmlFor="small-scale" className="typography-label text-lg font-semibold cursor-pointer">{copy("Small Scale (1-50 units/day)")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Custom work, prototyping, and boutique fabrication lines")}</p>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Custom work and prototyping")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Custom Work")}</Badge>
                           <Badge variant="secondary">{copy("Flexible")}</Badge>
@@ -815,7 +801,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                       <RadioGroupItem value="medium-scale" id="medium-scale" />
                       <div className="flex-1">
                         <Label htmlFor="medium-scale" className="typography-label text-lg font-semibold cursor-pointer">{copy("Medium Scale (50-200 units/day)")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Balanced throughput for regional demand with disciplined quality")}</p>
+                        <p className="text-sm text-gray-400 mt-1">{copy("Balanced throughput for regional demand")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Regional Scale")}</Badge>
                           <Badge variant="secondary">{copy("Growing Business")}</Badge>
@@ -856,7 +842,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
               </Button>
             </div>
             {answers.production && usePresetBundle && (
-              <div className="text-xs text-gray-300 bg-gray-800/60 border border-gray-700/60 rounded-lg p-3">{copy("We’ll prioritize a balanced production set for")}{answers.production.replace('-', ' ')}{copy(". Example bundle for high-volume could include dual cutters, routers, milling, cleaning, and welding stations sized to ~100 units/day.")}</div>
+              <div className="text-xs text-gray-300 bg-gray-800/60 border border-gray-700/60 rounded-lg p-3">{copy("A balanced production set for")}{answers.production.replace('-', ' ')}{copy(". Example bundle for high-volume could include dual cutters, routers, milling, cleaning, and welding stations sized to ~100 units/day.")}</div>
             )}
           </LazyMotionDiv>
         );
@@ -870,8 +856,8 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
           >
             <div className="text-center">
               <Award className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Precision-Fit Recommendations")}</h3>
-              <p className="text-gray-400 text-sm sm:text-base">{copy("Curated to your inputs with CE/ISO-grade alignment and production readiness.")}</p>
+              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Recommended Machines")}</h3>
+              <p className="text-gray-400 text-sm sm:text-base">{copy("Matched to your selections.")}</p>
             </div>
 
             {/* Summary Report */}
@@ -947,9 +933,9 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
               )) : (
                 <Card>
                   <CardContent className="p-8 text-center">
-                    <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h4 className="typography-h4 mb-2">{copy("Let’s Curate This Together")}</h4>
-                    <p className="text-gray-400 mb-4">{copy("Share your project constraints and we will build a precision short-list for you.")}</p>
+                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h4 className="typography-h4 mb-2">{copy("No Machines Matched")}</h4>
+                    <p className="text-gray-400 mb-4">{copy("Adjust your selections to see matching machines.")}</p>
                     <Button asChild className="bg-almona-orange hover:bg-almona-orange-dark">
                       <Link to="/contact">{copy("Contact Our Experts")}</Link>
                     </Button>
@@ -1028,7 +1014,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-300">
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="bg-gray-700/60 text-gray-100 border-gray-600">
-                  {previewMatches.length}{copy("matching now")}</Badge>
+                  {previewMatches.length}{copy("matching")}</Badge>
                 <span className="text-[11px] text-gray-400">{copy("Filters stay active through the wizard.")}</span>
               </div>
               {usePresetBundle && (
@@ -1055,7 +1041,7 @@ ${copy('Prepared with the ALMONA machine selection assistant.')}
                     >
                       <Printer className="h-4 w-4" />{copy("Print Report")}</Button>
                     <Button variant="outline" onClick={resetWizard} className="flex items-center gap-2 flex-1 sm:flex-none">
-                      <Sparkles className="h-4 w-4" />{copy("Start Over")}</Button>
+                      <RefreshCw className="h-4 w-4" />{copy("Start Over")}</Button>
                   </>
                 ) : (
                   <Button 
