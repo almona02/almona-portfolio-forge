@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useEffect, useMemo, useRef } from 'react';
 import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import type { Machine } from '@/constants/yilmazMachines';
 
@@ -26,6 +26,25 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
   isLoading
 }) => {
   const copy = usePublicCopy();
+
+  // Scroll to the first newly-loaded machine when "Load More" appends cards
+  const prevIdsRef = useRef<string[]>([]);
+  useEffect(() => {
+    const prevIds = prevIdsRef.current;
+    if (machines.length > prevIds.length && prevIds.length > 0) {
+      const isAppend = prevIds.every((id, i) => machines[i]?.id === id);
+      if (isAppend) {
+        const firstNew = machines[prevIds.length];
+        if (firstNew) {
+          requestAnimationFrame(() => {
+            document.getElementById(`machine-${firstNew.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+      }
+    }
+    prevIdsRef.current = machines.map((m) => m.id);
+  }, [machines]);
+
   // Optimize grid layout for mobile devices with better aspect ratio support
   const gridClasses = useMemo(() => {
     return `
@@ -46,7 +65,8 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
       return (
         <div
           key={machine.id}
-          className="transform transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          id={`machine-${machine.id}`}
+          className="transform transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] scroll-mt-28"
         >
           <EnhancedProductCard
             machine={machine}

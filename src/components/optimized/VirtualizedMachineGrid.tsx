@@ -4,7 +4,7 @@ import { usePublicCopy } from '@/hooks/usePublicCopy';
  * Simple grid layout for machine cards with proper spacing and alignment
  */
 
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import { Button } from '@/shared/ui/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -34,6 +34,25 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
   isLoading
 }) => {
   const copy = usePublicCopy();
+
+  // Scroll to the first newly-loaded machine when "Load More" appends cards
+  const prevIdsRef = useRef<string[]>([]);
+  useEffect(() => {
+    const prevIds = prevIdsRef.current;
+    if (machines.length > prevIds.length && prevIds.length > 0) {
+      const isAppend = prevIds.every((id, i) => machines[i]?.id === id);
+      if (isAppend) {
+        const firstNew = machines[prevIds.length];
+        if (firstNew) {
+          requestAnimationFrame(() => {
+            document.getElementById(`machine-${firstNew.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+      }
+    }
+    prevIdsRef.current = machines.map((m) => m.id);
+  }, [machines]);
+
   return (
     <div className="w-full">
       {/* Simple CSS Grid - cards auto-size to content with equal heights per row */}
@@ -41,7 +60,7 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
         {machines.map((machine) => {
           const isSelected = selectedMachines.some(m => m.id === machine.id);
           return (
-            <div key={machine.id} className="h-full">
+            <div key={machine.id} id={`machine-${machine.id}`} className="h-full scroll-mt-28">
               <EnhancedProductCard
                 machine={machine}
                 isSelected={isSelected}
