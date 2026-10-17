@@ -16,6 +16,7 @@ import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigati
 import { useQuote } from '@/context/QuoteContext';
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
+import FactoryLayoutPlanner from "@/components/products/FactoryLayoutPlanner";
 import { smartCategoryMapping } from "@/constants/smartCategories";
 import type { Machine } from "@/constants/yilmazMachines";
 import { useAuth } from "@/context/AuthContext";
@@ -833,55 +834,7 @@ const Products = function ProductsPage() {
         onOpenChange={setWizardOpen}
       />
 
-      {/* Live Configurator Modal Placeholder */}
-      {showConfigurator && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 fade-in-up"
-          onClick={handleConfiguratorClose}
-        >
-          <div
-            className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto fade-in-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center">
-              <h2 className="typography-h2 mb-4">
-                <span className="text-gradient-orange">{t('configurator.title')}</span>
-              </h2>
-              <p className="text-gray-300 mb-8">{copy("Interactive configuration is not available yet. Contact ALMONA to confirm machine options and pricing.")}</p>
-
-              {/* Placeholder for configurator content */}
-              <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 mb-6">
-                <div className="text-center text-gray-400">
-                  <div className="text-6xl mb-4">⚙️</div>
-                  <p className="text-lg">{t('configurator.comingSoon')}</p>
-                  <p className="text-sm mt-2">
-                    {t('configurator.comingSoonDescription')}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 justify-center">
-                <Button
-                  onClick={handleConfiguratorClose}
-                  variant="outline"
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                >
-                  {t('configurator.close')}
-                </Button>
-                <Button
-                  onClick={() => {
-                    handleConfiguratorClose();
-                    handleWizardOpen();
-                  }}
-                  className="btn-primary-gradient"
-                >
-                  {t('configurator.tryWizard')}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {showConfigurator && <FactoryLayoutPlanner onClose={handleConfiguratorClose} />}
       </main>
     </>
   );
