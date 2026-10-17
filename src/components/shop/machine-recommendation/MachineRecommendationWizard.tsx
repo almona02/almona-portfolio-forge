@@ -1,5 +1,6 @@
 import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { yilmazMachines, type Machine } from '@/constants/yilmazMachines';
+import { WIZARD_OPERATIONS, WIZARD_AUTOMATION, WIZARD_PRODUCTION, resolveBundle, operationMachineCount } from '@/constants/machineWizardConfig';
 import { useQuote } from '@/context/QuoteContext';
 import { useToast } from '@/hooks/useToast';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -47,7 +48,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
   const [step, setStep] = useState<Step>('material');
   const [answers, setAnswers] = useState<WizardAnswers>({ 
     material: 'both', 
-    application: 'fabrication-equipment', 
+    application: 'profile-cutting', 
     automation: 'optimized',
     production: ''
   });
@@ -64,245 +65,72 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
     { id: 'results', title: copy("Recommendations"), icon: Award }
   ];
 
-  const categoryMeta: Record<string, { label: string; description: string }> = {
-    'processing-centers': {
-      label: copy("Processing Centers"),
-      description: copy("CNC machining, drilling, and profile processing lines")
-    },
-    'cutting-machines': {
-      label: copy("Cutting & Mitre"),
-      description: copy("Mitre saws, compound cutting, and high-precision length cuts")
-    },
-    'welding-machines': {
-      label: copy("Welding Lines"),
-      description: copy("UPVC welding, seamless finish, and multi-head production")
-    },
-    'corner-crimping': {
-      label: copy("Corner Crimping"),
-      description: copy("Aluminium corner joining with deformation-free results")
-    },
-    'end-milling': {
-      label: copy("End Milling"),
-      description: copy("End preparation for tight joints and tolerance control")
-    },
-    'copy-routers': {
-      label: copy("Copy Routers"),
-      description: copy("Lock/hinge routing with multi-side accuracy")
-    },
-    'fabrication-equipment': {
-      label: copy("Fabrication Lines"),
-      description: copy("Integrated welding/cleaning lines for high throughput")
-    },
-    routers: {
-      label: copy("Routers"),
-      description: copy("NC routing and multi-surface machining")
-    },
-    accessories: {
-      label: copy("Accessories"),
-      description: copy("Cooling units, robot transfer, and supporting equipment")
-    }
-  };
-
-  const categoryKeywordMap: Record<string, string[]> = useMemo(() => ({
-    'processing-centers': ['processing', 'milling', 'drilling', 'cnc', 'machining'],
-    'cutting-machines': ['cutting', 'mitre', 'miter', 'saw'],
-    'welding-machines': ['welding', 'seamless', 'fusion'],
-    'corner-crimping': ['crimp', 'crimping'],
-    'end-milling': ['end-milling', 'end milling'],
-    'copy-routers': ['router', 'routing', 'copy'],
-    'fabrication-equipment': ['fabrication', 'line', 'cleaning', 'robot', 'welding line'],
-    routers: ['router', 'nc'],
-    accessories: ['accessory', 'cooling', 'robot', 'unit']
-  }), []);
-
-  const bundleIdMap: Record<'small-scale' | 'medium-scale' | 'high-volume', string[]> = {
-    'small-scale': [
-      'ym-010', // DC-421-PSD cutting
-      'ym-029', // FR-223-S router
-      'ym-004', // KM-212 end-milling
-      'ym-025', // KD-305 mitre saw
-      'ym-003', // DK 502 welding
-      'ym-022', // CK 412 glazing
-      'ym-031'  // KM-211-S end milling/manual
-    ],
-    'medium-scale': [
-      'ym-002', // DC-421-PBS cutting
-      'ym-010', // DC-421-PSD cutting
-      'ym-016', // CRM-250-S copy router
-      'ym-015', // KM-215-S end milling
-      'ym-003', // DK 502 welding
-      'ym-023', // DK 540 welding line
-      'ym-022', // CK 412 glazing
-      'ym-004', // KM-212
-      'ym-026', // KD-350-PS mitre
-      'ym-028', // FR-223 portable router
-      'ym-018', // SDT 275 reinforcement saw
-      'ym-011'  // ACK-420-S up-cut saw
-    ],
-    'high-volume': [
-      'ym-009', // CDC 600 compound cutting
-      'ym-002', // DC-421-PBS
-      'ym-010', // DC-421-PSD
-      'ym-007', // PIM 6509 processing center
-      'ym-001', // AIM 3410 processing center
-      'ym-023', // DK 540 welding line
-      'ym-008', // CCL 1661 fabrication line
-      'ym-016', // CRM-250-S
-      'ym-015', // KM-215-S
-      'ym-018', // SDT 275
-      'ym-011', // ACK-420-S
-      'ym-022', // CK 412
-      'ym-004', // KM-212
-      'ym-026', // KD-350-PS
-      'ym-025', // KD-305
-      'ym-028'  // FR-223
-    ]
-  };
-
-  const bundleForScale = (production: string): Machine[] => {
-    const ids = bundleIdMap[production as keyof typeof bundleIdMap];
-    if (!ids) return [];
-    return ids
-      .map(id => yilmazMachines.find(m => m.id === id))
-      .filter((m): m is Machine => Boolean(m));
-  };
+  const operationStats = WIZARD_OPERATIONS.map((op) => ({
+    ...op,
+    count: operationMachineCount(yilmazMachines, op),
+  })).sort((a, b) => b.count - a.count);
 
   const filterMachines = useCallback((criteria: WizardAnswers, options: { allowIncomplete?: boolean } = {}) => {
     const { allowIncomplete = false } = options;
     let filtered = yilmazMachines;
 
-    // Material-based filtering
-    if (criteria.material === 'aluminum') {
-      filtered = filtered.filter(m => 
-        m.tags?.some(tag => tag.toLowerCase().includes('aluminum')) ||
-        m.name.toLowerCase().includes('aluminum') ||
-        m.category.includes('aluminum') ||
-        m.category.includes('cutting') ||
-        m.category.includes('crimping')
-      );
-    } else if (criteria.material === 'upvc') {
-      filtered = filtered.filter(m => 
-        m.tags?.some(tag => tag.toLowerCase().includes('pvc') || tag.toLowerCase().includes('upvc')) ||
-        m.name.toLowerCase().includes('pvc') ||
-        m.category.includes('pvc') ||
-        m.category.includes('welding') ||
-        m.category.includes('cutting')
-      );
-    } else if (criteria.material === 'both') {
-      filtered = filtered.filter(m => 
-        m.tags?.some(tag => 
-          tag.toLowerCase().includes('aluminum') || 
-          tag.toLowerCase().includes('pvc') || 
-          tag.toLowerCase().includes('upvc')
-        ) ||
-        m.name.toLowerCase().includes('aluminum') ||
-        m.name.toLowerCase().includes('pvc') ||
-        m.category.includes('cutting') ||
-        m.category.includes('welding') ||
-        m.category.includes('processing')
-      );
+    if (criteria.material === 'aluminium') {
+      filtered = filtered.filter((m) => m.material === 'aluminium' || m.material === 'both');
+    } else if (criteria.material === 'pvc') {
+      filtered = filtered.filter((m) => m.material === 'pvc' || m.material === 'both');
     }
 
-    // Application-based filtering using category keywords
     if (criteria.application) {
-      const keywords = categoryKeywordMap[criteria.application] || [criteria.application];
-      filtered = filtered.filter((m) => {
-        const haystack = [
-          m.category.toLowerCase(),
-          m.name.toLowerCase(),
-          ...(m.tags || []).map((t) => t.toLowerCase())
-        ];
-        return (
-          m.category === criteria.application ||
-          keywords.some((kw) => haystack.some((text) => text.includes(kw)))
-        );
-      });
+      const op = WIZARD_OPERATIONS.find((o) => o.id === criteria.application);
+      if (op) filtered = filtered.filter((m) => op.categories.includes(m.category));
     }
 
-    // Automation-based filtering
     if (criteria.automation) {
-      if (criteria.automation === 'cnc') {
-        filtered = filtered.filter(m => 
-          m.tags?.includes('CNC') ||
-          m.type.toLowerCase().includes('cnc') ||
-          m.name.toLowerCase().includes('cnc')
-        );
-      } else if (criteria.automation === 'automatic') {
-        filtered = filtered.filter(m => 
-          m.tags?.includes('Automatic') ||
-          m.type.toLowerCase().includes('automatic') ||
-          m.name.toLowerCase().includes('automatic')
-        );
-      } else if (criteria.automation === 'manual') {
-        filtered = filtered.filter(m => 
-          !m.tags?.includes('CNC') && 
-          !m.tags?.includes('Automatic') &&
-          !m.name.toLowerCase().includes('cnc') &&
-          !m.name.toLowerCase().includes('automatic')
-        );
-      } else if (criteria.automation === 'optimized') {
-        // Prefer CNC or Automatic, but keep a broader set until production scale is chosen
-        filtered = filtered.filter(m => 
-          m.tags?.includes('CNC') ||
-          m.tags?.includes('Automatic') ||
-          m.type.toLowerCase().includes('cnc') ||
-          m.type.toLowerCase().includes('automatic') ||
-          m.name.toLowerCase().includes('cnc') ||
-          m.name.toLowerCase().includes('automatic')
-        );
-      }
+      const isCnc = (m: Machine) => m.tags?.includes('CNC') || m.type.toLowerCase().includes('cnc') || m.name.toLowerCase().includes('cnc');
+      const isAuto = (m: Machine) => m.tags?.includes('Automatic') || m.type.toLowerCase().includes('automatic') || m.name.toLowerCase().includes('automatic');
+      if (criteria.automation === 'cnc') filtered = filtered.filter(isCnc);
+      else if (criteria.automation === 'semi-automatic') filtered = filtered.filter(isAuto);
+      else if (criteria.automation === 'manual') filtered = filtered.filter((m) => !isCnc(m) && !isAuto(m));
+      else if (criteria.automation === 'optimized') filtered = filtered.filter((m) => isCnc(m) || isAuto(m));
     }
 
-    // Production scale filtering (skip when incomplete if allowed)
     if (criteria.production) {
-      if (criteria.production === 'high-volume') {
-        filtered = filtered.filter(m => 
-          m.tags?.includes('High Volume') || 
-          m.tags?.includes('Production Line') ||
-          m.name.toLowerCase().includes('production') ||
-          m.name.toLowerCase().includes('line')
-        );
-      } else if (criteria.production === 'small-scale') {
-        filtered = filtered.filter(m => 
-          m.tags?.includes('Small Scale') || 
-          m.tags?.includes('Manual') ||
-          m.name.toLowerCase().includes('manual') ||
-          m.name.toLowerCase().includes('small')
-        );
+      if (criteria.production === 'high') {
+        filtered = filtered.filter((m) => m.tags?.includes('High Volume') || m.tags?.includes('Production Line') || m.name.toLowerCase().includes('production') || m.name.toLowerCase().includes('line'));
+      } else if (criteria.production === 'small') {
+        filtered = filtered.filter((m) => m.tags?.includes('Small Scale') || m.tags?.includes('Manual') || m.name.toLowerCase().includes('manual') || m.name.toLowerCase().includes('small'));
       }
-      // medium-scale keeps balanced set; no extra filter
     } else if (!allowIncomplete) {
       return [];
     }
 
     return filtered;
-  }, [categoryKeywordMap]);
-
-  const categoryStats = (() => {
-    const counts = new Map<string, number>();
-    yilmazMachines.forEach((machine) => {
-      counts.set(machine.category, (counts.get(machine.category) || 0) + 1);
-    });
-
-    return Array.from(counts.entries())
-      .map(([id, count]) => {
-        const meta = categoryMeta[id] ?? {
-          label: id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-          description: copy("Industrial machinery")
-        };
-        return { id, count, ...meta };
-      })
-      .sort((a, b) => b.count - a.count);
-  })();
+  }, []);
 
   const totalMachines = yilmazMachines.length;
   const previewMatches = useMemo(() => filterMachines(answers, { allowIncomplete: true }), [answers, filterMachines]);
+  const answerLabel = useCallback((key: keyof WizardAnswers): string => {
+    const v = answers[key];
+    if (!v) return '—';
+    switch (key) {
+      case 'material':
+        return v === 'aluminium' ? copy('Aluminum') : v === 'pvc' ? copy('UPVC') : copy('Both Materials');
+      case 'application':
+        return WIZARD_OPERATIONS.find((o) => o.id === v)?.label ?? v;
+      case 'automation':
+        return WIZARD_AUTOMATION.find((a) => a.id === v)?.label ?? v;
+      case 'production':
+        return WIZARD_PRODUCTION.find((p) => p.id === v)?.label ?? v;
+      default:
+        return v;
+    }
+  }, [answers, copy]);
   const SelectionStrip = () => (
     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-300">
-      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Material:")}{copy(answers.material || '—')}</Badge>
-      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Operation:")}{copy(answers.application || '—')}</Badge>
-      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Automation:")}{copy(answers.automation || '—')}</Badge>
-      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Production:")}{copy(answers.production || '—')}</Badge>
+      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Material:")}{answerLabel('material')}</Badge>
+      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Operation:")}{answerLabel('application')}</Badge>
+      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Automation:")}{answerLabel('automation')}</Badge>
+      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Production:")}{answerLabel('production')}</Badge>
       <Badge variant="secondary" className="bg-gray-700/60 text-gray-100 border-gray-600">{copy("Matching:")}{previewMatches.length} / {totalMachines}
       </Badge>
       {usePresetBundle && (
@@ -433,10 +261,10 @@ ${copy('Machine selection brief')}
 ${copy('Generated')}: ${new Date().toLocaleDateString(document.documentElement.lang || 'en')}
 
 ${copy('Selections')}:
-- ${copy('Material:')} ${copy(answers.material)}
-- ${copy('Application:')} ${copy(answers.application)}
-- ${copy('Automation:')} ${copy(answers.automation)}
-- ${copy('Production Scale')}: ${copy(answers.production)}
+- ${copy('Material:')} ${answerLabel('material')}
+- ${copy('Application:')} ${answerLabel('application')}
+- ${copy('Automation:')} ${answerLabel('automation')}
+- ${copy('Production Scale')}: ${answerLabel('production')}
 
 ${copy('Recommended machines')}:
 ${recommendations.map((m, i) => `${i + 1}. ${m.name} - ${copy(m.description)}`).join('\n')}
@@ -482,7 +310,7 @@ ${copy('Prepared by ALMONA.')}
   const getRecommendations = () => {
     const filtered = filterMachines(answers, { allowIncomplete: false });
     if (usePresetBundle && answers.production) {
-      const bundled = bundleForScale(answers.production);
+      const bundled = resolveBundle(answers.material, answers.production, yilmazMachines);
       setRecommendations(bundled.length ? bundled : filtered);
     } else {
       setRecommendations(filtered);
@@ -492,7 +320,7 @@ ${copy('Prepared by ALMONA.')}
 
   const resetWizard = () => {
     setStep('material');
-    setAnswers({ material: 'both', application: 'fabrication-equipment', automation: 'optimized', production: '' });
+    setAnswers({ material: 'both', application: 'profile-cutting', automation: 'optimized', production: '' });
     setUsePresetBundle(true);
     setRecommendations([]);
   };
@@ -529,17 +357,17 @@ ${copy('Prepared by ALMONA.')}
               <p className="text-gray-400 text-sm sm:text-base">{copy("Which material dominates your production mix?")}</p>
             </div>
             <SelectionStrip />
-            <RadioGroup value={copy(answers.material)} onValueChange={(v) => handleValueChange('material', v)}>
+            <RadioGroup value={answers.material} onValueChange={(v) => handleValueChange('material', v)}>
               <div className="grid gap-3 sm:gap-4">
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.material === 'aluminum' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
-                  onClick={() => handleValueChange('material', 'aluminum')}
+                  className={`cursor-pointer transition-all ${answers.material === 'aluminium' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  onClick={() => handleValueChange('material', 'aluminium')}
                 >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-start space-x-3 sm:space-x-4">
-                      <RadioGroupItem value="aluminum" id="aluminum" className="mt-1" />
+                      <RadioGroupItem value="aluminium" id="aluminium" className="mt-1" />
                       <div className="flex-1 min-w-0">
-                        <Label htmlFor="aluminum" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Aluminum")}</Label>
+                        <Label htmlFor="aluminium" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Aluminum")}</Label>
                         <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Rigid frames, premium finish and corrosion resistance")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">{copy("High Strength")}</Badge>
@@ -550,14 +378,14 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.material === 'upvc' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
-                  onClick={() => handleValueChange('material', 'upvc')}
+                  className={`cursor-pointer transition-all ${answers.material === 'pvc' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  onClick={() => handleValueChange('material', 'pvc')}
                 >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-start space-x-3 sm:space-x-4">
-                      <RadioGroupItem value="upvc" id="upvc" className="mt-1" />
+                      <RadioGroupItem value="pvc" id="pvc" className="mt-1" />
                       <div className="flex-1 min-w-0">
-                        <Label htmlFor="upvc" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("UPVC")}</Label>
+                        <Label htmlFor="pvc" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("UPVC")}</Label>
                         <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Thermal insulation, low maintenance and acoustic insulation")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">{copy("Energy Efficient")}</Badge>
@@ -624,37 +452,31 @@ ${copy('Prepared by ALMONA.')}
                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{copy("Selects a complete workshop set based on your production scale: 1-50 units/day ≈ 7 machines, 50-100 units/day ≈ 12 machines, 100+ units/day scales accordingly.")}</p>
               </CardContent>
             </Card>
-            <RadioGroup value={copy(answers.application)} onValueChange={(v) => handleValueChange('application', v)}>
+            <RadioGroup value={answers.application} onValueChange={(v) => handleValueChange('application', v)}>
               <div className="grid gap-3 sm:gap-4">
-                {categoryStats.map((category) => {
-                  const isSelected = answers.application === category.id;
+                {operationStats.map((op) => {
+                  const isSelected = answers.application === op.id;
                   return (
                     <Card
-                      key={category.id}
+                      key={op.id}
                       className={`cursor-pointer transition-all ${
                         isSelected ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'
                       }`}
-                      onClick={() => handleValueChange('application', category.id)}
+                      onClick={() => handleValueChange('application', op.id)}
                     >
                       <CardContent className="p-3 sm:p-4">
                         <div className="flex items-start space-x-3 sm:space-x-4">
-                          <RadioGroupItem value={category.id} id={category.id} className="mt-1" />
+                          <RadioGroupItem value={op.id} id={op.id} className="mt-1" />
                           <div className="flex-1 min-w-0">
-                            <Label htmlFor={category.id} className="typography-label text-base sm:text-lg font-semibold cursor-pointer">
-                              {category.label}
+                            <Label htmlFor={op.id} className="typography-label text-base sm:text-lg font-semibold cursor-pointer">
+                              {op.label}
                             </Label>
                             <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                              {copy(category.description)}
+                              {copy(op.description)}
                             </p>
                             <div className="flex flex-wrap gap-1 sm:gap-2 mt-2 items-center">
                                                             <Badge variant="secondary" className="text-xs">
-                                {category.count}{copy("machines")}</Badge>
-                              {category.id === 'fabrication-equipment' && (
-                                <Badge variant="outline" className="text-[11px] border-amber-400/50 text-amber-300">{copy("Full line (recommended)")}</Badge>
-                              )}
-                              {usePresetBundle && category.id === 'fabrication-equipment' && (
-                                <Badge variant="secondary" className="btn-primary">{copy("Workshop set active")}</Badge>
-                              )}
+                                {op.count}{copy("machines")}</Badge>
                             </div>
                           </div>
                         </div>
@@ -680,7 +502,7 @@ ${copy('Prepared by ALMONA.')}
               <p className="text-gray-400">{copy("Select the automation level for your quality and throughput targets.")}</p>
             </div>
             <SelectionStrip />
-            <RadioGroup value={copy(answers.automation)} onValueChange={(v) => handleValueChange('automation', v)}>
+            <RadioGroup value={answers.automation} onValueChange={(v) => handleValueChange('automation', v)}>
               <div className="grid gap-4">
                 <Card 
                   className={`cursor-pointer transition-all ${answers.automation === 'manual' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
@@ -701,14 +523,14 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.automation === 'automatic' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
-                  onClick={() => handleValueChange('automation', 'automatic')}
+                  className={`cursor-pointer transition-all ${answers.automation === 'semi-automatic' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  onClick={() => handleValueChange('automation', 'semi-automatic')}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-4">
-                      <RadioGroupItem value="automatic" id="automatic" />
+                      <RadioGroupItem value="semi-automatic" id="semi-automatic" />
                       <div className="flex-1">
-                        <Label htmlFor="automatic" className="typography-label text-lg font-semibold cursor-pointer">{copy("Semi-Automatic")}</Label>
+                        <Label htmlFor="semi-automatic" className="typography-label text-lg font-semibold cursor-pointer">{copy("Semi-Automatic")}</Label>
                         <p className="text-sm text-gray-400 mt-1">{copy("Semi-automatic with operator supervision")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Automated Process")}</Badge>
@@ -772,17 +594,17 @@ ${copy('Prepared by ALMONA.')}
               <p className="text-gray-400">{copy("Match capacity to your daily production target.")}</p>
             </div>
             <SelectionStrip />
-            <RadioGroup value={copy(answers.production)} onValueChange={(v) => handleValueChange('production', v)}>
+            <RadioGroup value={answers.production} onValueChange={(v) => handleValueChange('production', v)}>
               <div className="grid gap-4">
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.production === 'small-scale' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
-                  onClick={() => handleValueChange('production', 'small-scale')}
+                  className={`cursor-pointer transition-all ${answers.production === 'small' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  onClick={() => handleValueChange('production', 'small')}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-4">
-                      <RadioGroupItem value="small-scale" id="small-scale" />
+                      <RadioGroupItem value="small" id="small" />
                       <div className="flex-1">
-                        <Label htmlFor="small-scale" className="typography-label text-lg font-semibold cursor-pointer">{copy("Small Scale (1-50 units/day)")}</Label>
+                        <Label htmlFor="small" className="typography-label text-lg font-semibold cursor-pointer">{copy("Small Scale (1-50 units/day)")}</Label>
                         <p className="text-sm text-gray-400 mt-1">{copy("Custom work and prototyping")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Custom Work")}</Badge>
@@ -793,14 +615,14 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.production === 'medium-scale' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
-                  onClick={() => handleValueChange('production', 'medium-scale')}
+                  className={`cursor-pointer transition-all ${answers.production === 'medium' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  onClick={() => handleValueChange('production', 'medium')}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-4">
-                      <RadioGroupItem value="medium-scale" id="medium-scale" />
+                      <RadioGroupItem value="medium" id="medium" />
                       <div className="flex-1">
-                        <Label htmlFor="medium-scale" className="typography-label text-lg font-semibold cursor-pointer">{copy("Medium Scale (50-200 units/day)")}</Label>
+                        <Label htmlFor="medium" className="typography-label text-lg font-semibold cursor-pointer">{copy("Medium Scale (50-200 units/day)")}</Label>
                         <p className="text-sm text-gray-400 mt-1">{copy("Balanced throughput for regional demand")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Regional Scale")}</Badge>
@@ -811,14 +633,14 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.production === 'high-volume' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
-                  onClick={() => handleValueChange('production', 'high-volume')}
+                  className={`cursor-pointer transition-all ${answers.production === 'high' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  onClick={() => handleValueChange('production', 'high')}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-4">
-                      <RadioGroupItem value="high-volume" id="high-volume" />
+                      <RadioGroupItem value="high" id="high" />
                       <div className="flex-1">
-                        <Label htmlFor="high-volume" className="typography-label text-lg font-semibold cursor-pointer">{copy("High Volume (200+ units/day)")}</Label>
+                        <Label htmlFor="high" className="typography-label text-lg font-semibold cursor-pointer">{copy("High Volume (200+ units/day)")}</Label>
                         <p className="text-sm text-gray-400 mt-1">{copy("Integrated production lines for sustained volume with QA checkpoints")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Production Line")}</Badge>
@@ -842,7 +664,7 @@ ${copy('Prepared by ALMONA.')}
               </Button>
             </div>
             {answers.production && usePresetBundle && (
-              <div className="text-xs text-gray-300 bg-gray-800/60 border border-gray-700/60 rounded-lg p-3">{copy("A balanced production set for")}{answers.production.replace('-', ' ')}{copy(". Example bundle for high-volume could include dual cutters, routers, milling, cleaning, and welding stations sized to ~100 units/day.")}</div>
+              <div className="text-xs text-gray-300 bg-gray-800/60 border border-gray-700/60 rounded-lg p-3">{copy("A balanced production set for")}{answerLabel('production')}{copy(". Example bundle for high-volume could include dual cutters, routers, milling, cleaning, and welding stations sized to ~100 units/day.")}</div>
             )}
           </LazyMotionDiv>
         );
@@ -877,19 +699,19 @@ ${copy('Prepared by ALMONA.')}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                   <div>
                     <span className="text-gray-400">{copy("Material:")}</span>
-                    <p className="font-medium capitalize">{copy(answers.material)}</p>
+                    <p className="font-medium capitalize">{answerLabel('material')}</p>
                   </div>
                   <div>
                     <span className="text-gray-400">{copy("Application:")}</span>
-                    <p className="font-medium capitalize">{answers.application.replace('-', ' ')}</p>
+                    <p className="font-medium capitalize">{answerLabel('application')}</p>
                   </div>
                   <div>
                     <span className="text-gray-400">{copy("Automation:")}</span>
-                    <p className="font-medium capitalize">{copy(answers.automation)}</p>
+                    <p className="font-medium capitalize">{answerLabel('automation')}</p>
                   </div>
                   <div>
                     <span className="text-gray-400">{copy("Production:")}</span>
-                    <p className="font-medium capitalize">{answers.production.replace('-', ' ')}</p>
+                    <p className="font-medium capitalize">{answerLabel('production')}</p>
                   </div>
                 </div>
               </CardContent>
