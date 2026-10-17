@@ -78,8 +78,6 @@ desktop.ini
 # Build artifacts
 dist/
 build/
-!scripts/build/
-!scripts/build/publicEnv.ts
 *.egg-info/
 
 # Node (if applicable)
