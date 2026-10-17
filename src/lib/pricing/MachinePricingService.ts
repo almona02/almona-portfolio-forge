@@ -48,7 +48,7 @@ const MACHINE_PRICES: Record<string, { price: number; currency: string }> = {
   'ym-034': { price: 110000, currency: 'EGP' }, // KD 400 D/PS - Single Head Mitre Saw Machine
   'ym-035': { price: 100000, currency: 'EGP' }, // MK 420/420 PS/450 - Manual Up-Cutting Saw Machine
   'ym-036': { price: 210000, currency: 'EGP' }, // TK 503 - Single Corner PVC Welding Machine
-  'ym-037': { price: 0, currency: 'EGP' }, // VK 300 - V-Notch and Arrow Cutting Machine
+  'ym-037': { price: 0, currency: 'EGP' }, // VK 420 - V-Notch and Arrow Cutting Machine
   'ym-038': { price: 260000, currency: 'EGP' }, // CA 601 - Semi-Automatic PVC Corner Cleaning Machine
   'ym-039': { price: 1900000, currency: 'EGP' }, // DC 550 PB - Full Automatic Double Head Mitre Saw
 };

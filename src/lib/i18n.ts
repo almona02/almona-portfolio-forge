@@ -900,27 +900,13 @@ Object.assign(trTranslations, {
   }
 
   const resources = baseResources;
-  
-  const inferDefaultLanguage = () => {
-    try {
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-      const nav = (typeof navigator !== 'undefined' && navigator.language) ? navigator.language.toLowerCase() : '';
-      if (nav.startsWith('ar') || tz.toLowerCase().includes('cairo')) return 'ar-EG';
-      if (nav.startsWith('tr') || tz.toLowerCase().includes('istanbul')) return 'tr';
-    } catch {
-      // ignore
-    }
-    return 'en';
-  };
-
-  const defaultFallback = inferDefaultLanguage();
 
   i18n
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
       resources,
-      fallbackLng: defaultFallback,
+      fallbackLng: 'en',
       debug: false,
       interpolation: {
         escapeValue: false // React already escapes

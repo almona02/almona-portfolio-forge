@@ -16,6 +16,7 @@ import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigati
 import { useQuote } from '@/context/QuoteContext';
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
+import FactoryLayoutPlanner from "@/components/products/FactoryLayoutPlanner";
 import { smartCategoryMapping } from "@/constants/smartCategories";
 import type { Machine } from "@/constants/yilmazMachines";
 import { useAuth } from "@/context/AuthContext";
@@ -30,9 +31,9 @@ import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
 import { Separator } from "@/shared/ui/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import type { Machine as UiMachine } from "@/types/index";
-import { Eye, X } from "lucide-react";
+import { Eye, Search, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
 
@@ -91,6 +92,9 @@ const Products = function ProductsPage() {
     category: searchParams.get('category') || "all",
     sortOption: searchParams.get('sort') || "featured"
   });
+
+  // Material tab (Aluminium / PVC) for the main catalog tabs
+  const [materialTab, setMaterialTab] = useState<'aluminium' | 'pvc'>('aluminium');
 
   // Refs for scrolling to results
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -166,48 +170,45 @@ const Products = function ProductsPage() {
   const [isTourPlaying, setIsTourPlaying] = useState(false);
   const _scrolled = useScrollThreshold(48);
 
-  // Debounced filter handler for search performance
-  const debouncedSetFilters = useMemo(
-    () => debounce((key: keyof typeof filters, value: string) => {
-      setFilters(prev => ({ ...prev, [key]: value }));
-      // Update URL parameter when search changes (debounced)
-      if (key === 'searchTerm') {
-        const newParams = new URLSearchParams(searchParams);
-        if (value.trim()) {
-          newParams.set('search', value.trim());
-        } else {
-          newParams.delete('search');
-        }
-        setSearchParams(newParams, { replace: true });
+  // Debounced URL sync for the search param only — filtering itself is instant.
+  const debouncedSyncSearchUrl = useMemo(
+    () => debounce((value: string) => {
+      const newParams = new URLSearchParams(searchParams);
+      if (value.trim()) {
+        newParams.set('search', value.trim());
+      } else {
+        newParams.delete('search');
       }
-    }, 300),
+      setSearchParams(newParams, { replace: true });
+    }, 500),
     [searchParams, setSearchParams]
   );
 
   const handleFilterChange = useCallback((key: keyof typeof filters, value: string) => {
-    // For search, use debounce (which will update URL); for others, update immediately
+    // Filtering is instant for all keys (92 machines is trivial); only the URL write is debounced.
+    setFilters(prev => ({ ...prev, [key]: value }));
+
     if (key === 'searchTerm') {
-      debouncedSetFilters(key, value);
-    } else {
-      setFilters(prev => ({ ...prev, [key]: value }));
-      // Update URL params for category and sort
-      const newParams = new URLSearchParams(searchParams);
-      if (key === 'category') {
-        if (value && value !== 'all') {
-          newParams.set('category', value);
-        } else {
-          newParams.delete('category');
-        }
-      } else if (key === 'sortOption') {
-        if (value && value !== 'featured') {
-          newParams.set('sort', value);
-        } else {
-          newParams.delete('sort');
-        }
-      }
-      setSearchParams(newParams, { replace: true });
+      debouncedSyncSearchUrl(value);
+      return;
     }
-  }, [debouncedSetFilters, searchParams, setSearchParams]);
+
+    const newParams = new URLSearchParams(searchParams);
+    if (key === 'category') {
+      if (value && value !== 'all') {
+        newParams.set('category', value);
+      } else {
+        newParams.delete('category');
+      }
+    } else if (key === 'sortOption') {
+      if (value && value !== 'featured') {
+        newParams.set('sort', value);
+      } else {
+        newParams.delete('sort');
+      }
+    }
+    setSearchParams(newParams, { replace: true });
+  }, [debouncedSyncSearchUrl, searchParams, setSearchParams]);
 
   // Map smart category to legacy category for filtering
   const getLegacyCategoryFilter = useCallback((smartCategory: string) => {
@@ -225,6 +226,7 @@ const Products = function ProductsPage() {
   } = useVirtualizedMachines({
     searchTerm: filters.searchTerm,
     categoryFilter: getLegacyCategoryFilter(filters.category),
+    materialFilter: materialTab,
     sortOption: filters.sortOption,
     pageSize: 12
   });
@@ -393,20 +395,17 @@ const Products = function ProductsPage() {
         keywords={t('page.keywords')}
       />
       <main className="flex-grow pt-24">
-      <div className="mx-auto px-4 xl:px-8 py-12 max-w-screen-2xl">
-        {/* Industry 4.0 Hero Section */}
-        <div className="mb-16 text-center relative overflow-hidden">
-          <div
-            className="relative z-10 fade-in-up"
-          >
-            <h1 className="typography-h1 md:text-6xl mb-6">
-              <span className="text-gradient-orange">{copy("Industrial Machinery")}</span>
-              <br />
+      <div className="mx-auto px-4 xl:px-8 py-8 max-w-screen-2xl">
+        {/* Hero Section */}
+        <div className="mb-8 text-center">
+          <div className="fade-in-up">
+            <h1 className="typography-h1 md:text-4xl lg:text-5xl mb-4">
+              <span className="text-gradient-orange">{copy("Industrial Machinery")}</span>{' '}
               <span className="text-white">{copy("For Aluminium & UPVC Workshops")}</span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed">{copy("Browse machine models and discuss your production requirements with ALMONA.")}</p>
+            <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-6 leading-relaxed">{copy("Browse machine models and discuss your production requirements with ALMONA.")}</p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Button
                 onClick={handleWizardOpen}
                 aria-label={t('hero.aiWizard')}
@@ -429,34 +428,41 @@ const Products = function ProductsPage() {
               </Button>
             </div>
           </div>
-
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 -z-10">
-            <div className="btn-primary"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl animate-bounce"></div>
-          </div>
         </div>
 
-        <p className="max-w-3xl mx-auto mb-12 text-center text-gray-300">{copy("Prices, stock, delivery, warranty and model-specific certificates are confirmed in a written quotation. Digital integrations depend on the exact machine and configuration.")}</p>
+        <p className="max-w-3xl mx-auto mb-6 text-center text-sm text-gray-400">{copy("Prices, stock, delivery, warranty and model-specific certificates are confirmed in a written quotation. Digital integrations depend on the exact machine and configuration.")}</p>
 
         {/* Existing Products page content */}
-        <div ref={productsSectionRef} id="products-section" className="scroll-mt-24 mb-12 text-center">
-          <h2 className="typography-h2 mb-4">
+        <div ref={productsSectionRef} id="products-section" className="scroll-mt-24 mb-6 text-center">
+          <h2 className="typography-h2 mb-2">
             <span className="text-gradient-orange">{t('machines.title')}</span>
           </h2>
-          <p className="text-gray-400 max-w-3xl mx-auto">
+          <p className="text-gray-400 max-w-3xl mx-auto text-sm">
             {t('machines.subtitle')}
           </p>
         </div>
 
-        <Tabs defaultValue="yilmaz" className="mb-8">
+        <Tabs value={materialTab} onValueChange={(v) => setMaterialTab(v as 'aluminium' | 'pvc')} className="mb-8">
           {/* Category selection with adaptive gradient */}
-          <TabsList className="grid w-full grid-cols-1 max-w-xs mx-auto rounded-md shadow-sm border border-gray-700 bg-[linear-gradient(135deg,rgba(0,0,0,0.85)_0%,rgba(30,30,30,0.85)_60%,rgba(55,55,55,0.75)_100%)] backdrop-blur">
-            <TabsTrigger value="yilmaz">{t('machines.tabs.yilmaz')}</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto rounded-md shadow-sm border border-gray-700 bg-[linear-gradient(135deg,rgba(0,0,0,0.85)_0%,rgba(30,30,30,0.85)_60%,rgba(55,55,55,0.75)_100%)] backdrop-blur">
+            <TabsTrigger value="aluminium">{t('machines.tabs.aluminium', 'Aluminium')}</TabsTrigger>
+            <TabsTrigger value="pvc">{t('machines.tabs.pvc', 'PVC')}</TabsTrigger>
           </TabsList>
+        </Tabs>
+        {/* Visible search bar — shared across both Aluminium & PVC tabs */}
+        <div className="mb-6 max-w-xl mx-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              type="search"
+              value={filters.searchTerm}
+              onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+              placeholder={copy("Search machines (e.g. cutting, welding, AIM 4420)")}
+              className="pl-10 bg-gray-900/80 border-gray-700 focus:border-amber-500 focus:ring-amber-500/20"
+            />
+          </div>
+        </div>
 
-          <TabsContent value="yilmaz">
             {/* Smart Category Navigation - Above grid for better visibility on large screens */}
             <div className="mb-6">
               <SmartCategoryNavigation
@@ -575,9 +581,6 @@ const Products = function ProductsPage() {
                 </div>
               )}
             </div>
-          </TabsContent>
-
-        </Tabs>
 
         <Separator className="my-12 bg-almona-light/20" />
 
@@ -821,55 +824,7 @@ const Products = function ProductsPage() {
         onOpenChange={setWizardOpen}
       />
 
-      {/* Live Configurator Modal Placeholder */}
-      {showConfigurator && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 fade-in-up"
-          onClick={handleConfiguratorClose}
-        >
-          <div
-            className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto fade-in-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center">
-              <h2 className="typography-h2 mb-4">
-                <span className="text-gradient-orange">{t('configurator.title')}</span>
-              </h2>
-              <p className="text-gray-300 mb-8">{copy("Interactive configuration is not available yet. Contact ALMONA to confirm machine options and pricing.")}</p>
-
-              {/* Placeholder for configurator content */}
-              <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 mb-6">
-                <div className="text-center text-gray-400">
-                  <div className="text-6xl mb-4">⚙️</div>
-                  <p className="text-lg">{t('configurator.comingSoon')}</p>
-                  <p className="text-sm mt-2">
-                    {t('configurator.comingSoonDescription')}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 justify-center">
-                <Button
-                  onClick={handleConfiguratorClose}
-                  variant="outline"
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                >
-                  {t('configurator.close')}
-                </Button>
-                <Button
-                  onClick={() => {
-                    handleConfiguratorClose();
-                    handleWizardOpen();
-                  }}
-                  className="btn-primary-gradient"
-                >
-                  {t('configurator.tryWizard')}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {showConfigurator && <FactoryLayoutPlanner onClose={handleConfiguratorClose} />}
       </main>
     </>
   );

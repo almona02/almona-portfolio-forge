@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import type { Machine } from '@/constants/yilmazMachines';
 
@@ -26,6 +26,23 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
   isLoading
 }) => {
   const copy = usePublicCopy();
+
+  // Scroll to the first newly-loaded machine after "Load More" appends cards.
+  // Data-attribute + retrying timeout: no ref callbacks, no rAF/timing guesswork.
+  const handleLoadMore = useCallback(() => {
+    const firstNewIndex = machines.length;
+    onLoadMore();
+    const tryScroll = (attempt: number) => {
+      const el = document.querySelector(`[data-scroll-target="m-${firstNewIndex}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (attempt < 6) {
+        setTimeout(() => tryScroll(attempt + 1), 200);
+      }
+    };
+    setTimeout(() => tryScroll(0), 400);
+  }, [onLoadMore, machines.length]);
+
   // Optimize grid layout for mobile devices with better aspect ratio support
   const gridClasses = useMemo(() => {
     return `
@@ -38,29 +55,28 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
     `.trim().replace(/\s+/g, ' ');
   }, []);
 
-  // Memoize machine cards to prevent unnecessary re-renders
-  const machineCards = useMemo(() => {
-    return machines.map((machine) => {
-      const isSelected = selectedMachines.some(m => m.id === machine.id);
+  // Map machines to cards inline — the callback ref needs the index to detect the first new card
+  const machineCards = machines.map((machine, index) => {
+    const isSelected = selectedMachines.some(m => m.id === machine.id);
 
-      return (
-        <div
-          key={machine.id}
-          className="transform transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
-        >
-          <EnhancedProductCard
-            machine={machine}
-            isSelected={isSelected}
-            onSelect={onSelectMachine}
-            onQuoteRequest={onQuoteRequest}
-            on3DView={on3DView}
-            onQuickPreview={onQuickPreview}
-            show3DBadge={true}
-          />
-        </div>
-      );
-    });
-  }, [machines, selectedMachines, onSelectMachine, onQuoteRequest, on3DView, onQuickPreview]);
+    return (
+      <div
+        key={machine.id}
+        data-scroll-target={`m-${index}`}
+        className="transform transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] scroll-mt-28"
+      >
+        <EnhancedProductCard
+          machine={machine}
+          isSelected={isSelected}
+          onSelect={onSelectMachine}
+          onQuoteRequest={onQuoteRequest}
+          on3DView={on3DView}
+          onQuickPreview={onQuickPreview}
+          show3DBadge={true}
+        />
+      </div>
+    );
+  });
 
   return (
     <div className="w-full">
@@ -73,7 +89,7 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
       {hasMore && (
         <div className="flex justify-center mt-8 px-4">
           <button
-            onClick={onLoadMore}
+            onClick={handleLoadMore}
             disabled={isLoading}
             className={`
               w-full max-w-sm

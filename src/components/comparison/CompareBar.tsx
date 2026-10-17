@@ -3,6 +3,7 @@ import { Machine } from "@/constants/productsData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X, BarChart2 } from "lucide-react";
+import { usePublicCopy } from "@/hooks/usePublicCopy";
 
 interface CompareBarProps {
   machines: Machine[];
@@ -17,6 +18,7 @@ const CompareBar: React.FC<CompareBarProps> = ({
   onCompare,
   onClear
 }) => {
+  const copy = usePublicCopy();
   if (machines.length === 0) return null;
 
   return (
@@ -51,7 +53,7 @@ const CompareBar: React.FC<CompareBarProps> = ({
             onClick={onClear}
             className="bg-white/5 border-white/20 text-white hover:bg-white/10 w-full"
           >
-            Clear
+            {copy("Clear")}
           </Button>
           
           <Button 
@@ -62,7 +64,7 @@ const CompareBar: React.FC<CompareBarProps> = ({
             className="w-full text-base sm:text-sm py-3 sm:py-2 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 text-white hover:from-amber-400 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-600 shadow-lg shadow-amber-500/25 ring-1 ring-amber-400/60 hover:ring-amber-300/70 transition-all active:translate-y-[1px]"
           >
             <BarChart2 size={14} className="mr-1" />
-            Compare ({machines.length})
+            {copy("Compare")} ({machines.length})
           </Button>
         </div>
       </div>

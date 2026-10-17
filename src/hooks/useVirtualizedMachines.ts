@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useYilmazMachines } from './useYilmazMachines';
 import { categorizeMachine } from '@/constants/smartCategories';
 import { searchPublicMachines } from '@/lib/publicMachineSearch';
@@ -8,6 +8,7 @@ import type { Machine } from '@/constants/yilmazMachines';
 interface UseVirtualizedMachinesOptions {
   searchTerm?: string;
   categoryFilter?: string;
+  materialFilter?: string;
   sortOption?: string;
   pageSize?: number;
 }
@@ -23,6 +24,7 @@ interface VirtualizedResult {
 export function useVirtualizedMachines({
   searchTerm = '',
   categoryFilter = 'all',
+  materialFilter = 'all',
   sortOption = 'featured',
   pageSize = 12
 }: UseVirtualizedMachinesOptions = {}): VirtualizedResult {
@@ -31,6 +33,12 @@ export function useVirtualizedMachines({
   const { data: yilmazMachines = [], isLoading: isDataLoading } = useYilmazMachines();
   const [isLoading, setIsLoading] = useState(false);
   const isLoadingData = isDataLoading || isLoading;
+
+  // Reset pagination whenever the active filter changes (tab/category/search/sort)
+  // so switching Aluminium <-> PVC (or changing any filter) starts back at page 1.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [materialFilter, categoryFilter, searchTerm, sortOption]);
 
   // Memoize filtered and sorted machines to prevent unnecessary recalculations
   const filteredAndSortedMachines = useMemo(() => {
@@ -53,6 +61,15 @@ export function useVirtualizedMachines({
       });
     }
 
+    // Apply material filter (aluminium / pvc). 'both' machines appear in both tabs.
+    // When searching, span BOTH materials so a customer can find any machine number
+    // regardless of the active tab.
+    if (materialFilter !== 'all' && !searchTerm.trim()) {
+      filtered = filtered.filter((machine) =>
+        machine.material === materialFilter || machine.material === 'both'
+      );
+    }
+
     return [...filtered].sort((a, b) => {
       switch (sortOption) {
         case 'name-asc':
@@ -66,7 +83,7 @@ export function useVirtualizedMachines({
           return a.featured ? -1 : b.featured ? 1 : 0;
       }
     });
-  }, [yilmazMachines, searchTerm, categoryFilter, sortOption, copy]);
+  }, [yilmazMachines, searchTerm, categoryFilter, materialFilter, sortOption, copy]);
 
   // Get current page of machines
   const machines = useMemo(() => {

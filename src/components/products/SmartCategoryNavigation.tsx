@@ -12,7 +12,7 @@ import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { LazyAnimatePresence, LazyMotionButton, LazyMotionDiv } from '@/utils/lazyMotion';
-import { Brain, ChevronDown, Filter, Lightbulb, Search, Sparkles, TrendingUp } from 'lucide-react';
+import { ChevronDown, Filter, Lightbulb, Search, TrendingUp } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ShareFilteredResults } from './ShareFilteredResults';
 import { searchPublicMachines } from '@/lib/publicMachineSearch';
@@ -230,14 +230,14 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
           <span className="btn-primary" />
           <div className="flex items-center gap-3 relative z-10">
             <div className="btn-primary">
-              <Brain className="h-5 w-5" />
+              <Filter className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[11px] uppercase tracking-[0.08em] text-amber-200">{copy("automation Smart Categories")}</span>
+              <span className="text-[11px] uppercase tracking-[0.08em] text-amber-200">{copy("Smart Categories")}</span>
               <span className="text-sm font-semibold text-white">
                 {selectedCategoryInfo ? `${selectedCategoryInfo.icon} ${copy(selectedCategoryInfo.name)}` : copy('All Machines')}
               </span>
-              <span className="text-[11px] text-gray-400">{copy("Industry 4.0 tuned filters")}</span>
+              <span className="text-[11px] text-gray-400">{copy("Filter by category")}</span>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 relative z-10">
@@ -275,7 +275,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                       <Input
-                        placeholder={copy("software-assisted search... (e.g., 'aluminum cutting')")}
+                        placeholder={copy("Search machines... (e.g. cutting, welding)")}
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
                         className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
@@ -298,9 +298,8 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         animate={{ opacity: 1, height: 'auto' }}
                         className="mt-2 space-y-1"
                       >
-                        <div className="flex items-center gap-2 text-xs text-amber-400">
-                          <Sparkles className="h-3 w-3" />
-                          <span>{copy("automation Suggestions")}</span>
+                        <div className="text-xs text-amber-400">
+                          <span>{copy("Suggestions")}</span>
                         </div>
                         {aiSuggestions.map((suggestion, index) => (
                           <LazyMotionButton
@@ -444,7 +443,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder={copy("Search machines... (e.g., 'aluminum cutting', 'UPVC welding')")}
+              placeholder={copy("Search machines... (e.g. cutting, welding)")}
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"

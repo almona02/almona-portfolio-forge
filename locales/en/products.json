@@ -8,9 +8,9 @@
     "title": "Industry 4.0",
     "subtitle": "Smart Manufacturing",
     "description": "Experience the future of industrial machinery with software-assisted recommendations, IoT connectivity, and digital twin technology. Transform your production with intelligent automation and predictive analytics.",
-    "aiWizard": "🚀 automation Machine Wizard",
-    "liveConfigurator": "⚙️ Live Configurator",
-    "viewAnalytics": "📊 View Analytics"
+    "aiWizard": "Machine Wizard",
+    "liveConfigurator": "Yilmaz Planner",
+    "viewAnalytics": "View Analytics"
   },
   "industry40": {
     "features": {

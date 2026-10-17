@@ -1,12 +1,14 @@
 import React from "react";
 import { Machine } from "@/types/index";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/ui/table";
+import { usePublicCopy } from "@/hooks/usePublicCopy";
 
 interface CompareTableProps {
   machines: Machine[];
 }
 
 const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
+  const copy = usePublicCopy();
   // Handle both legacy and new machine types with proper data sync
   const getMachineValue = (machine: Machine | Record<string, unknown>, key: string) => {
     const m = machine as Machine & Record<string, unknown>;
@@ -15,7 +17,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
       case 'name':
         return m.name;
       case 'type':
-        return m.type;
+        return copy(m.type);
       case 'releaseDate':
         return m.releaseDate;
       case 'power':
@@ -101,7 +103,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
         return Array.isArray(value) ? (
           <ul className="list-disc pl-5 space-y-1 text-left">
             {value.map((spec, i) => (
-              <li key={i}>{spec}</li>
+              <li key={i}>{copy(spec)}</li>
             ))}
           </ul>
         ) : value;
@@ -122,13 +124,13 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
       {specCategories.map((category) => (
         <div key={category.name} className="border rounded-lg overflow-hidden shadow-sm bg-background/50">
           <div className="bg-muted/60 backdrop-blur-sm px-4 py-2 flex items-center justify-between">
-            <h3 className="typography-h3 text-sm text-muted-foreground/90">{category.name}</h3>
+            <h3 className="typography-h3 text-sm text-muted-foreground/90">{copy(category.name)}</h3>
           </div>
           <div className="overflow-x-auto supports-[backdrop-filter]:backdrop-blur-xs">
             <Table className="border-collapse w-full min-w-[640px]">
               <TableHeader>
                 <TableRow className="bg-gradient-to-r from-muted/70 to-muted/40">
-                  <TableHead className="w-[200px] sticky left-0 z-20 bg-muted/70 backdrop-blur-sm shadow-[2px_0_4px_-2px_rgba(0,0,0,0.15)]">Specification</TableHead>
+                  <TableHead className="w-[200px] sticky left-0 z-20 bg-muted/70 backdrop-blur-sm shadow-[2px_0_4px_-2px_rgba(0,0,0,0.15)]">{copy("Specification")}</TableHead>
                   {machines.map((machine) => (
                     <TableHead key={machine.id} className="text-center whitespace-nowrap">
                       {machine.name}
@@ -143,7 +145,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
                     <TableRow key={spec.key} className={differs ? 'bg-amber-50/40 dark:bg-amber-950/10' : rowIdx % 2 === 0 ? 'bg-background/40' : 'bg-background/20'}>
                       <TableCell className="font-medium sticky left-0 z-10 bg-background/80 backdrop-blur-sm border-r border-border/40">
                         <span className="inline-flex items-center gap-1">
-                          {spec.name}
+                          {copy(spec.name)}
                           {differs && <span className="btn-primary" aria-label="Values differ across machines" />}
                         </span>
                       </TableCell>
