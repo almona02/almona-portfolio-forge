@@ -1,29 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, Factory, Calendar, Gauge, ChevronLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
-
-interface Seller {
-  name: string;
-  rating: number;
-  verified: boolean;
-}
-
-interface UsedMachine {
-  id: string;
-  title: string;
-  price: string;
-  location: string;
-  condition: string;
-  type: string;
-  year: number;
-  hours: number;
-  images: string[];
-  description: string;
-  seller: Seller;
-}
+import { MapPin, Calendar, Gauge, Phone, MessageCircle, Flag, ChevronLeft } from 'lucide-react';
+import { UsedMachine } from '@/data/usedMachines';
+import { UsedMachineService } from '@/lib/usedMachines/UsedMachineService';
+import { usePublicCopy } from '@/hooks/usePublicCopy';
+import { toast } from 'sonner';
 
 interface UsedMachineDetailsProps {
   machine: UsedMachine;
@@ -31,68 +13,88 @@ interface UsedMachineDetailsProps {
 }
 
 const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack }) => {
+  const copy = usePublicCopy();
+  const phone = machine.contactWhatsapp || machine.contactPhone;
+
+  useEffect(() => {
+    UsedMachineService.incrementViews(machine.id);
+  }, [machine.id]);
+
+  const handleReport = async () => {
+    try {
+      await UsedMachineService.reportListing(machine.id);
+      toast.success(copy('Listing reported. Thank you.'));
+    } catch {
+      toast.error(copy('Could not report listing.'));
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto p-4 text-right text-white">
+    <div className="max-w-4xl mx-auto p-4 text-white">
       <Button variant="outline" onClick={onBack} className="mb-4 flex items-center">
-        <ChevronLeft className="mr-2" /> العودة
+        <ChevronLeft className="mr-2 h-4 w-4" /> {copy('Back to listings')}
       </Button>
-      <Card className="bg-almona-darker border-almona-light">
-        <CardHeader>
-          <CardTitle className="text-3xl">{machine.title}</CardTitle>
-          <div className="flex justify-between items-center text-amber-400 font-bold text-xl mt-2">
-            {machine.price}
-            {machine.seller.verified && (
-              <Badge variant="secondary" className="bg-blue-600">
-                موثقة
-              </Badge>
-            )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Images */}
+        <div className="space-y-3">
+          {(machine.images.length ? machine.images : ['']).map((img, idx) => (
+            img ? (
+              <img key={idx} src={img} alt={`${machine.title} ${idx + 1}`} className="w-full object-cover rounded-lg border border-almona-light/30 max-h-96" />
+            ) : (
+              <div key={idx} className="w-full h-64 flex items-center justify-center bg-almona-darker rounded-lg text-gray-600">No photo</div>
+            )
+          ))}
+        </div>
+
+        {/* Info */}
+        <div className="space-y-4">
+          <div>
+            <h1 className="text-2xl font-bold">{machine.title}</h1>
+            <div className="text-amber-400 font-bold text-2xl mt-1">{machine.price}</div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              {machine.images.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`${machine.title} image ${idx + 1}`}
-                  className="mb-4 rounded shadow-md w-full object-cover"
-                />
-              ))}
-            </div>
-            <div>
-              <p className="mb-4">{machine.description}</p>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center">
-                  <MapPin className="w-5 h-5 text-amber-500 mr-2" />
-                  الموقع: {machine.location}
-                </li>
-                <li className="flex items-center">
-                  <Factory className="w-5 h-5 text-amber-500 mr-2" />
-                  البائع: {machine.seller.name}
-                </li>
-                <li className="flex items-center">
-                  <Calendar className="w-5 h-5 text-amber-500 mr-2" />
-                  سنة الصنع: {machine.year}
-                </li>
-                <li className="flex items-center">
-                  <Gauge className="w-5 h-5 text-amber-500 mr-2" />
-                  ساعات التشغيل: {machine.hours.toLocaleString()}
-                </li>
-                <li>
-                  الحالة: <Badge className="bg-green-600">{machine.condition === 'Excellent' ? 'ممتازة' : 'جيدة'}</Badge>
-                </li>
-              </ul>
-              <div className="mt-6 flex space-x-4 justify-end">
-                <Button variant="outline">طلب معاينة</Button>
-                <Button asChild>
-                  <Link to="/used-machines">عودة إلى القائمة</Link>
-                </Button>
-              </div>
+
+          <p className="text-gray-300">{machine.description}</p>
+
+          <ul className="space-y-2 text-sm">
+            <li className="flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-amber-500" /> {machine.location}
+            </li>
+            <li className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-amber-500" /> {copy('Year')}: {machine.year ?? '—'}
+            </li>
+            <li className="flex items-center gap-2">
+              <Gauge className="w-5 h-5 text-amber-500" /> {copy('Hours')}: {machine.hours != null ? machine.hours.toLocaleString() : '—'}
+            </li>
+            <li className="flex items-center gap-2">
+              <Badge className="bg-green-600 capitalize">{machine.condition.replace(/-/g, ' ')}</Badge>
+              <span className="text-gray-500 text-xs">{machine.views} views</span>
+            </li>
+          </ul>
+
+          {/* Seller contact */}
+          <div className="bg-almona-darker border border-almona-light/30 rounded-lg p-4">
+            <div className="text-sm text-gray-400 mb-1">{copy('Seller')}</div>
+            <div className="font-medium mb-3">{machine.contactName}</div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button asChild className="bg-green-600 hover:bg-green-700 text-white flex-1">
+                <a href={UsedMachineService.whatsappLink(phone)} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                  <MessageCircle className="w-4 h-4" /> WhatsApp
+                </a>
+              </Button>
+              <Button asChild variant="outline" className="flex-1">
+                <a href={`tel:${UsedMachineService.sanitizePhone(machine.contactPhone)}`} className="flex items-center justify-center gap-2">
+                  <Phone className="w-4 h-4" /> {copy('Call')}
+                </a>
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          <button onClick={handleReport} className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-400">
+            <Flag className="w-3 h-3" /> {copy('Report this listing')}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

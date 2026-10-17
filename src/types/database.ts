@@ -117,6 +117,64 @@ export interface Database {
           updated_at?: string
         }
       }
+      used_machine_listings: {
+        Row: {
+          id: string
+          title: string
+          price: number
+          currency: string
+          location: string
+          condition: string
+          category: string
+          year: number | null
+          hours: number | null
+          description: string
+          contact_name: string
+          contact_phone: string
+          contact_whatsapp: string | null
+          images: string[]
+          status: string
+          views: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          price: number
+          currency?: string
+          location: string
+          condition: string
+          category: string
+          year?: number | null
+          hours?: number | null
+          description: string
+          contact_name: string
+          contact_phone: string
+          contact_whatsapp?: string | null
+          images?: string[]
+          status?: string
+          views?: number
+          created_at?: string
+        }
+        Update: {
+          title?: string
+          price?: number
+          currency?: string
+          location?: string
+          condition?: string
+          category?: string
+          year?: number | null
+          hours?: number | null
+          description?: string
+          contact_name?: string
+          contact_phone?: string
+          contact_whatsapp?: string | null
+          images?: string[]
+          status?: string
+          views?: number
+        }
+        Relationships: []
+      }
       service_tickets: {
         Row: {
           id: string
