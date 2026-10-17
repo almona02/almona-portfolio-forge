@@ -2492,7 +2492,7 @@ export const yilmazMachines: Machine[] = [
     "safetyFeatures": [
       "EmergencyStop"
     ],
-    "material": "pvc"
+    "material": "aluminium"
   },
   {
     "id": "ym-031",

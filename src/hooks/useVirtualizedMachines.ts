@@ -62,7 +62,9 @@ export function useVirtualizedMachines({
     }
 
     // Apply material filter (aluminium / pvc). 'both' machines appear in both tabs.
-    if (materialFilter !== 'all') {
+    // When searching, span BOTH materials so a customer can find any machine number
+    // regardless of the active tab.
+    if (materialFilter !== 'all' && !searchTerm.trim()) {
       filtered = filtered.filter((machine) =>
         machine.material === materialFilter || machine.material === 'both'
       );
