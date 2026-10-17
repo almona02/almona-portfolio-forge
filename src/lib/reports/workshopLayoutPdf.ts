@@ -16,6 +16,7 @@ export interface WorkshopLayoutPdfOptions {
   components?: { label: string; qty: number }[];
   totalPowerKw?: number;
   totalAirLmin?: number;
+  workshopHeight?: number;
   companyName?: string;
 }
 
@@ -39,7 +40,7 @@ export async function generateWorkshopLayoutPDF(
     rgb = mod.rgb;
   }
 
-  const { components = [], totalPowerKw = 0, totalAirLmin = 0, companyName = 'YILMAZ MACHINES' } = options;
+  const { components = [], totalPowerKw = 0, totalAirLmin = 0, workshopHeight = 0, companyName = 'YILMAZ MACHINES' } = options;
 
   const pdf = await PDFDocument.create();
   const page = pdf.addPage([842, 595]); // landscape A4
@@ -73,8 +74,8 @@ export async function generateWorkshopLayoutPDF(
   }
   page.drawText(companyName, { x: logoX, y: 595 - margin - 16, size: 15, font: bold, color: primary });
   page.drawText('ALMONA CO. IMPORT EXPORT COMMERCIAL AGENCIES', { x: logoX, y: 595 - margin - 32, size: 8, font, color: secondary });
-  page.drawText('YILMAZ WORKSHOP PLAN', { x: 842 - margin - 170, y: 595 - margin - 18, size: 11, font: bold, color: primary });
-  page.drawText(`Factory: ${factoryL} m × ${factoryW} m`, { x: 842 - margin - 170, y: 595 - margin - 32, size: 8, font, color: secondary });
+  page.drawText('YILMAZ WORKSHOP PLAN', { x: 842 - margin - 200, y: 595 - margin - 18, size: 11, font: bold, color: primary });
+  page.drawText(`Workshop: Length ${factoryL} m × Width ${factoryW} m × Height ${workshopHeight || '—'} m`, { x: 842 - margin - 260, y: 595 - margin - 32, size: 9, font, color: secondary });
 
   // ---- Left sidebar: components + totals ----
   const sidebarX = margin;
