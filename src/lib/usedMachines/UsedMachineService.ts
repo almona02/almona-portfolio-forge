@@ -115,7 +115,6 @@ export const UsedMachineService = {
         contact_phone: sanitizePhone(input.contactPhone),
         contact_whatsapp: whatsapp,
         images: imageUrls,
-        status: 'active',
       })
       .select()
       .single();
