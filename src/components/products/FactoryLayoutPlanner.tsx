@@ -59,6 +59,13 @@ function parseMeters(s?: string): number {
   return m ? parseFloat(m[1]) / 1000 : 0;
 }
 
+function parseKw(s?: string): number {
+  const str = String(s || '').toLowerCase();
+  const v = parseFloat(str.match(/[\d.]+/)?.[0] || '0');
+  if (str.includes('w') && !str.includes('kw')) return v / 1000; // watts → kW
+  return v;
+}
+
 let idc = 0;
 const uid = () => `it-${Date.now()}-${++idc}`;
 
@@ -70,6 +77,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
   const { data: machines = [] } = useYilmazMachines();
   const [factoryW, setFactoryW] = useState(20);
   const [factoryL, setFactoryL] = useState(30);
+  const [factoryH, setFactoryH] = useState(6);
   const [items, setItems] = useState<LayoutItem[]>([]);
   const [doors, setDoors] = useState<Door[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -89,6 +97,19 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     (modelId: string) => items.filter((it) => it.modelId === modelId).length,
     [items]
   );
+
+  const totals = useMemo(() => {
+    let powerKw = 0;
+    let airLmin = 0;
+    for (const it of items) {
+      if (it.kind === 'machine') {
+        const machine = machines.find((m) => m.id === it.modelId);
+        powerKw += parseKw(machine?.powerSpec?.consumption);
+        airLmin += parseFloat((machine?.airSpec?.consumption || '0').match(/[\d.]+/)?.[0] || '0');
+      }
+    }
+    return { powerKw: Math.round(powerKw * 10) / 10, airLmin: Math.round(airLmin) };
+  }, [items, machines]);
 
   const addMachine = useCallback((m: Machine) => {
     const len = parseMeters(m.dimensions?.length);
@@ -236,21 +257,15 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
     const pdfItems = items.map((it) => ({ label: it.label, x: it.x, y: it.y, w: it.w, h: it.h, color: it.color }));
     const componentMap = new Map<string, number>();
-    let totalPowerKw = 0;
-    let totalAirLmin = 0;
     for (const it of items) {
       componentMap.set(it.label, (componentMap.get(it.label) || 0) + 1);
-      if (it.kind === 'machine') {
-        const machine = machines.find((m) => m.id === it.modelId);
-        totalPowerKw += parseFloat((machine?.powerSpec?.consumption || '0').match(/[\d.]+/)?.[0] || '0');
-        totalAirLmin += parseFloat((machine?.airSpec?.consumption || '0').match(/[\d.]+/)?.[0] || '0');
-      }
     }
     const components = [...componentMap.entries()].map(([label, qty]) => ({ label, qty }));
     const bytes = await generateWorkshopLayoutPDF(factoryW, factoryL, pdfItems, logoDataUrl, {
       components,
-      totalPowerKw: Math.round(totalPowerKw * 10) / 10,
-      totalAirLmin: Math.round(totalAirLmin),
+      totalPowerKw: totals.powerKw,
+      totalAirLmin: totals.airLmin,
+      workshopHeight: factoryH,
     });
     const blob = new Blob([new Uint8Array(bytes)], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
@@ -262,7 +277,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [items, factoryW, factoryL]);
+  }, [items, factoryW, factoryL, factoryH, totals]);
 
   const selected = items.find((it) => it.id === selectedId) || null;
 
@@ -292,7 +307,8 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
           {/* Sidebar */}
           <div className="border-b lg:border-b-0 lg:border-r border-gray-700 flex flex-col min-h-0">
             <div className="p-3 border-b border-gray-700">
-              <div className="flex gap-2 mb-2">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80 mb-1.5">{copy("Factory Dimensions")}</div>
+              <div className="flex gap-2 mb-3">
                 <div className="flex-1">
                   <label className="text-xs text-gray-400 block mb-1">{copy("Width (m)")}</label>
                   <Input type="number" min={1} value={factoryW} onChange={(e) => setFactoryW(Math.max(1, Number(e.target.value) || 1))} className="bg-gray-800 border-gray-600 h-8" />
@@ -301,16 +317,22 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
                   <label className="text-xs text-gray-400 block mb-1">{copy("Length (m)")}</label>
                   <Input type="number" min={1} value={factoryL} onChange={(e) => setFactoryL(Math.max(1, Number(e.target.value) || 1))} className="bg-gray-800 border-gray-600 h-8" />
                 </div>
+                <div className="flex-1">
+                  <label className="text-xs text-gray-400 block mb-1">{copy("Height (m)")}</label>
+                  <Input type="number" min={1} value={factoryH} onChange={(e) => setFactoryH(Math.max(1, Number(e.target.value) || 1))} className="bg-gray-800 border-gray-600 h-8" />
+                </div>
               </div>
 
-              {/* Zones */}
-              <div className="flex flex-wrap gap-1 mb-2">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80 mb-1.5">{copy("Zones")}</div>
+              <div className="flex flex-wrap gap-1 mb-3">
                 {Object.entries(ZONES).map(([k, z]) => (
                   <button key={k} onClick={() => addZone(k)} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">
                     + {z.label}
                   </button>
                 ))}
               </div>
+
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80 mb-1.5">{copy("Equipment & Openings")}</div>
               <div className="flex flex-wrap gap-1">
                 <button onClick={addWorkbench} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">+ Workbench</button>
                 <button onClick={() => addDoor(1)} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">+ Door 1</button>
@@ -347,9 +369,14 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
           {/* Canvas */}
           <div className="p-3 flex flex-col min-h-0">
-            <div className="flex items-center justify-between mb-2 text-xs text-gray-400">
+            <div className="flex items-center justify-between mb-2 text-xs text-gray-400 gap-3 flex-wrap">
               <span>{copy("Drag items to position them. Click to select.")}</span>
-              <span>{items.length} {copy("items")}</span>
+              <div className="flex items-center gap-3 font-mono text-[11px]">
+                <span className="text-gray-300">{items.length} items</span>
+                <span className="text-amber-400/90">Power {totals.powerKw} kW</span>
+                <span className="text-sky-400/90">Air {totals.airLmin} L/min</span>
+                <span className="text-gray-400">{factoryL}×{factoryW}×{factoryH} m</span>
+              </div>
             </div>
             <div className="flex-1 min-h-[380px] bg-gray-950 border border-gray-700 rounded-lg overflow-hidden">
               <svg
@@ -372,6 +399,14 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
                 <rect x={svg.ox} y={svg.oy} width={svg.floorW} height={svg.floorH} fill="none" stroke="#64748b" strokeWidth={2} />
                 <text x={svg.ox + svg.floorW / 2} y={svg.oy + svg.floorH + 16} textAnchor="middle" fill="#94a3b8" fontSize={11}>{factoryL} m</text>
                 <text x={svg.ox - 14} y={svg.oy + svg.floorH / 2} textAnchor="middle" fill="#94a3b8" fontSize={11} transform={`rotate(-90 ${svg.ox - 14} ${svg.oy + svg.floorH / 2})`}>{factoryW} m</text>
+
+                {/* scale bar */}
+                <g style={{ pointerEvents: 'none' }}>
+                  <line x1={svg.ox + 10} y1={svg.oy + 12} x2={svg.ox + 10 + 5 * svg.scale} y2={svg.oy + 12} stroke="#94a3b8" strokeWidth={1.5} />
+                  <line x1={svg.ox + 10} y1={svg.oy + 8} x2={svg.ox + 10} y2={svg.oy + 16} stroke="#94a3b8" strokeWidth={1.5} />
+                  <line x1={svg.ox + 10 + 5 * svg.scale} y1={svg.oy + 8} x2={svg.ox + 10 + 5 * svg.scale} y2={svg.oy + 16} stroke="#94a3b8" strokeWidth={1.5} />
+                  <text x={svg.ox + 10 + 2.5 * svg.scale} y={svg.oy + 24} textAnchor="middle" fill="#94a3b8" fontSize={9}>5 m</text>
+                </g>
 
                 {/* doors */}
                 {doors.map((d) => {
