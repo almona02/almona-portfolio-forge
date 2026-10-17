@@ -111,23 +111,45 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     return { powerKw: Math.round(powerKw * 10) / 10, airLmin: Math.round(airLmin) };
   }, [items, machines]);
 
+  const findFreePosition = useCallback((w: number, h: number, existing: LayoutItem[]) => {
+    const step = 0.25;
+    const r = (v: number) => Math.round(v * 4) / 4;
+    const collides = (x: number, y: number) =>
+      existing.some((it) => x < it.x + it.w && x + w > it.x && y < it.y + it.h && y + h > it.y);
+    for (let y = 0; y + h <= factoryW + 1e-6; y += step) {
+      for (let x = 0; x + w <= factoryL + 1e-6; x += step) {
+        if (!collides(x, y)) return { x: r(x), y: r(y) };
+      }
+    }
+    return { x: 0, y: 0 };
+  }, [factoryW, factoryL]);
+
   const addMachine = useCallback((m: Machine) => {
     const len = parseMeters(m.dimensions?.length);
     const wid = parseMeters(m.dimensions?.width);
     const unknown = len <= 0 || wid <= 0;
     const w = unknown ? 2 : len;
     const h = unknown ? 1.2 : wid;
-    setItems((prev) => [...prev, { id: uid(), kind: 'machine', label: unknown ? `${m.name} *` : m.name, modelId: m.id, description: m.description, w, h, x: 0, y: 0, color: '#f59e0b' }]);
-  }, []);
+    setItems((prev) => {
+      const pos = findFreePosition(w, h, prev);
+      return [...prev, { id: uid(), kind: 'machine', label: unknown ? `${m.name} *` : m.name, modelId: m.id, description: m.description, w, h, x: pos.x, y: pos.y, color: '#f59e0b' }];
+    });
+  }, [findFreePosition]);
 
   const addWorkbench = useCallback(() => {
-    setItems((prev) => [...prev, { id: uid(), kind: 'workbench', label: 'Workbench', description: 'Workbench for manual assembly and fitting', w: 2, h: 0.8, x: 0, y: 0, color: '#94a3b8' }]);
-  }, []);
+    setItems((prev) => {
+      const pos = findFreePosition(2, 0.8, prev);
+      return [...prev, { id: uid(), kind: 'workbench', label: 'Workbench', description: 'Workbench for manual assembly and fitting', w: 2, h: 0.8, x: pos.x, y: pos.y, color: '#94a3b8' }];
+    });
+  }, [findFreePosition]);
 
   const addZone = useCallback((kind: string) => {
     const z = ZONES[kind];
-    setItems((prev) => [...prev, { id: uid(), kind: kind as ItemKind, label: z.label, description: z.label, w: z.w, h: z.h, x: 0, y: 0, color: z.color }]);
-  }, []);
+    setItems((prev) => {
+      const pos = findFreePosition(z.w, z.h, prev);
+      return [...prev, { id: uid(), kind: kind as ItemKind, label: z.label, description: z.label, w: z.w, h: z.h, x: pos.x, y: pos.y, color: z.color }];
+    });
+  }, [findFreePosition]);
 
   const addDoor = useCallback((n: number) => {
     setDoors((prev) => [...prev, { id: uid(), label: `Door ${n}`, side: 'bottom', offset: 2, width: 2 }]);
