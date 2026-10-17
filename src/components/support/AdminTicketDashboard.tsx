@@ -33,6 +33,7 @@ import { TicketStatusBadge } from './TicketStatusBadge'
 import { TicketMetrics } from './TicketMetrics'
 import { TicketAssignmentDialog } from './TicketAssignmentDialog'
 import { TicketStatusUpdateDialog } from './TicketStatusUpdateDialog'
+import { TicketDetailDialog } from './TicketDetailDialog'
 import { 
   getAllTickets, 
   getTicketMetrics, 
@@ -59,6 +60,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
   const [selectedTicket, setSelectedTicket] = useState<TicketWithDetails | null>(null)
   const [assignmentDialogOpen, setAssignmentDialogOpen] = useState(false)
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [filters, setFilters] = useState({
     status: '' as TicketStatus | '',
     priority: '' as TicketPriority | '',
@@ -243,8 +245,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedTicket(ticket)
-                  // Navigate to ticket detail view
-                  console.log('View ticket:', ticket.id)
+                  setDetailDialogOpen(true)
                 }}
               >
                 <Eye className="mr-2 h-4 w-4" />
@@ -291,6 +292,33 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
     })
   }
 
+  const handleExportCsv = () => {
+    const headers = ['Ticket #', 'Title', 'Customer', 'Status', 'Priority', 'Type', 'Assigned To', 'Created']
+    const rows = filteredTickets.map((t) => [
+      t.ticket_number,
+      t.title,
+      t.user_profile?.full_name || 'Unknown',
+      t.status,
+      t.priority,
+      t.type,
+      t.assigned_user?.full_name || 'Unassigned',
+      new Date(t.created_at).toISOString(),
+    ])
+    const csv = [headers, ...rows]
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
+      .join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `tickets-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    toast.success(`Exported ${filteredTickets.length} tickets`)
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -306,7 +334,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
             <RefreshCw className={`mr-2 h-4 w-4 ${loadingTickets ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportCsv}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
@@ -450,6 +478,15 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
         isOpen={statusDialogOpen}
         onClose={() => {
           setStatusDialogOpen(false)
+          setSelectedTicket(null)
+        }}
+      />
+
+      <TicketDetailDialog
+        ticket={selectedTicket}
+        isOpen={detailDialogOpen}
+        onClose={() => {
+          setDetailDialogOpen(false)
           setSelectedTicket(null)
         }}
       />
