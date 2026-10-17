@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import type { Machine } from '@/constants/yilmazMachines';
 
@@ -27,29 +27,27 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
 }) => {
   const copy = usePublicCopy();
 
-  // Scroll to the first newly-loaded machine when "Load More" appends cards
-  const prevIdsRef = useRef<string[]>([]);
+  // Scroll to the first newly-loaded machine when "Load More" appends cards.
+  // Deterministic: the click records the target index, and the card's callback
+  // ref scrolls to it the moment its DOM node mounts (no rAF/timing guesswork).
+  const prevCountRef = useRef(machines.length);
+  const pendingScrollIndexRef = useRef<number | null>(null);
+
   useEffect(() => {
-    const prevIds = prevIdsRef.current;
-    if (machines.length > prevIds.length && prevIds.length > 0) {
-      const isAppend = prevIds.every((id, i) => machines[i]?.id === id);
-      if (isAppend) {
-        const firstNew = machines[prevIds.length];
-        if (firstNew) {
-          const targetId = `machine-m-${firstNew.id}`;
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              const el = document.getElementById(targetId);
-              if (el && el.offsetParent !== null) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
-            });
-          });
-        }
-      }
-    }
-    prevIdsRef.current = machines.map((m) => m.id);
+    prevCountRef.current = machines.length;
   }, [machines]);
+
+  const handleLoadMore = useCallback(() => {
+    pendingScrollIndexRef.current = prevCountRef.current;
+    onLoadMore();
+  }, [onLoadMore]);
+
+  const setCardRef = useCallback((index: number) => (node: HTMLDivElement | null) => {
+    if (node && pendingScrollIndexRef.current === index) {
+      pendingScrollIndexRef.current = null;
+      node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   // Optimize grid layout for mobile devices with better aspect ratio support
   const gridClasses = useMemo(() => {
@@ -63,30 +61,28 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
     `.trim().replace(/\s+/g, ' ');
   }, []);
 
-  // Memoize machine cards to prevent unnecessary re-renders
-  const machineCards = useMemo(() => {
-    return machines.map((machine) => {
-      const isSelected = selectedMachines.some(m => m.id === machine.id);
+  // Map machines to cards inline — the callback ref needs the index to detect the first new card
+  const machineCards = machines.map((machine, index) => {
+    const isSelected = selectedMachines.some(m => m.id === machine.id);
 
-      return (
-        <div
-          key={machine.id}
-          id={`machine-m-${machine.id}`}
-          className="transform transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] scroll-mt-28"
-        >
-          <EnhancedProductCard
-            machine={machine}
-            isSelected={isSelected}
-            onSelect={onSelectMachine}
-            onQuoteRequest={onQuoteRequest}
-            on3DView={on3DView}
-            onQuickPreview={onQuickPreview}
-            show3DBadge={true}
-          />
-        </div>
-      );
-    });
-  }, [machines, selectedMachines, onSelectMachine, onQuoteRequest, on3DView, onQuickPreview]);
+    return (
+      <div
+        key={machine.id}
+        ref={setCardRef(index)}
+        className="transform transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] scroll-mt-28"
+      >
+        <EnhancedProductCard
+          machine={machine}
+          isSelected={isSelected}
+          onSelect={onSelectMachine}
+          onQuoteRequest={onQuoteRequest}
+          on3DView={on3DView}
+          onQuickPreview={onQuickPreview}
+          show3DBadge={true}
+        />
+      </div>
+    );
+  });
 
   return (
     <div className="w-full">
@@ -99,7 +95,7 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
       {hasMore && (
         <div className="flex justify-center mt-8 px-4">
           <button
-            onClick={onLoadMore}
+            onClick={handleLoadMore}
             disabled={isLoading}
             className={`
               w-full max-w-sm

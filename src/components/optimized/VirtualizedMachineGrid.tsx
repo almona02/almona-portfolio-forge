@@ -4,7 +4,7 @@ import { usePublicCopy } from '@/hooks/usePublicCopy';
  * Simple grid layout for machine cards with proper spacing and alignment
  */
 
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
 import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import { Button } from '@/shared/ui/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -35,39 +35,36 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
 }) => {
   const copy = usePublicCopy();
 
-  // Scroll to the first newly-loaded machine when "Load More" appends cards
-  const prevIdsRef = useRef<string[]>([]);
+  // Scroll to the first newly-loaded machine when "Load More" appends cards.
+  // Deterministic: the click records the target index, and the card's callback
+  // ref scrolls to it the moment its DOM node mounts (no rAF/timing guesswork).
+  const prevCountRef = useRef(machines.length);
+  const pendingScrollIndexRef = useRef<number | null>(null);
+
   useEffect(() => {
-    const prevIds = prevIdsRef.current;
-    if (machines.length > prevIds.length && prevIds.length > 0) {
-      const isAppend = prevIds.every((id, i) => machines[i]?.id === id);
-      if (isAppend) {
-        const firstNew = machines[prevIds.length];
-        if (firstNew) {
-          const targetId = `machine-d-${firstNew.id}`;
-          // Double rAF ensures the DOM is committed and laid out before scrolling
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              const el = document.getElementById(targetId);
-              if (el && el.offsetParent !== null) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
-            });
-          });
-        }
-      }
-    }
-    prevIdsRef.current = machines.map((m) => m.id);
+    prevCountRef.current = machines.length;
   }, [machines]);
+
+  const handleLoadMore = useCallback(() => {
+    pendingScrollIndexRef.current = prevCountRef.current;
+    onLoadMore();
+  }, [onLoadMore]);
+
+  const setCardRef = useCallback((index: number) => (node: HTMLDivElement | null) => {
+    if (node && pendingScrollIndexRef.current === index) {
+      pendingScrollIndexRef.current = null;
+      node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   return (
     <div className="w-full">
       {/* Simple CSS Grid - cards auto-size to content with equal heights per row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-fr">
-        {machines.map((machine) => {
+        {machines.map((machine, index) => {
           const isSelected = selectedMachines.some(m => m.id === machine.id);
           return (
-            <div key={machine.id} id={`machine-d-${machine.id}`} className="h-full scroll-mt-28">
+            <div key={machine.id} ref={setCardRef(index)} className="h-full scroll-mt-28">
               <EnhancedProductCard
                 machine={machine}
                 isSelected={isSelected}
@@ -85,7 +82,7 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
       {hasMore && (
         <div className="flex justify-center mt-8">
           <Button
-            onClick={onLoadMore}
+            onClick={handleLoadMore}
             disabled={isLoading}
             variant="outline"
             className="min-w-[200px]"
