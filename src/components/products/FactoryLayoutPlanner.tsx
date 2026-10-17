@@ -2,7 +2,7 @@ import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { useTranslation } from 'react-i18next';
 import { useYilmazMachines } from '@/hooks/useYilmazMachines';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Download, Plus, RotateCw, Search, Trash2, X } from 'lucide-react';
+import { Download, Plus, RotateCw, Search, SlidersHorizontal, Trash2, X } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import type { Machine } from '@/constants/yilmazMachines';
@@ -85,6 +85,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
   const [doors, setDoors] = useState<Door[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [showPanel, setShowPanel] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<{ id: string; dx: number; dy: number } | null>(null);
   const doorDragRef = useRef<{ id: string; dx: number } | null>(null);
@@ -348,14 +349,20 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-700 flex-shrink-0">
-          <div>
-            <h2 className="text-lg font-bold text-white">{copy("Yilmaz Workshop Planner")}</h2>
-            <p className="text-xs text-gray-400">{copy("Add machines and zones, drag to position them, then export a PDF.")}</p>
+        <div className="flex items-center justify-between px-3 sm:px-5 py-2 sm:py-3 border-b border-gray-700 flex-shrink-0 gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              onClick={() => setShowPanel((v) => !v)}
+              className="lg:hidden text-gray-300 hover:text-white p-1.5 rounded border border-gray-700"
+              aria-label="Toggle add panel"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </button>
+            <h2 className="text-base sm:text-lg font-bold text-white truncate">{copy("Yilmaz Workshop Planner")}</h2>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Button size="sm" onClick={() => void exportPdf()} className="bg-amber-500 hover:bg-amber-600 text-white">
-              <Download className="h-4 w-4 mr-1" />{copy("Export PDF")}
+              <Download className="h-4 w-4 mr-1" /><span className="hidden sm:inline">{copy("Export PDF")}</span>
             </Button>
             <button onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-white p-1">
               <X className="h-5 w-5" />
@@ -365,7 +372,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
         <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[340px_1fr]">
           {/* Sidebar */}
-          <div className="border-b lg:border-b-0 lg:border-r border-gray-700 flex flex-col min-h-0">
+          <div className={`${showPanel ? 'flex' : 'hidden'} lg:flex border-b lg:border-b-0 lg:border-r border-gray-700 flex-col min-h-0 max-h-[45vh] lg:max-h-none`}>
             <div className="p-3 border-b border-gray-700">
               <div className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80 mb-1.5">{copy("Factory Dimensions")}</div>
               <div className="flex gap-2 mb-3">
@@ -415,7 +422,6 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
                   <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-800">
                     <div className="flex-1 min-w-0">
                       <div className="text-sm text-gray-200 truncate">{m.name}</div>
-                      <div className="text-[10px] text-gray-500 capitalize">{m.category?.replace(/-/g, ' ')}</div>
                     </div>
                     {q > 0 && <span className="text-xs text-amber-400 font-bold">{q}×</span>}
                     <button onClick={() => addMachine(m)} className="text-amber-400 hover:text-amber-300 p-1" aria-label={`Add ${m.name}`}>
@@ -429,12 +435,11 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
           {/* Canvas */}
           <div className="p-3 flex flex-col min-h-0">
-            <div className="flex items-center justify-between mb-2 text-xs text-gray-400 gap-3 flex-wrap">
-              <span>{copy("Drag items to position them. Click to select.")}</span>
+            <div className="flex items-center justify-end mb-2 text-xs text-gray-400 gap-3 flex-wrap">
               <div className="flex items-center gap-3 font-mono text-[11px]">
-                <span className="text-gray-300">{items.length} items</span>
-                <span className="text-amber-400/90">Power {totals.powerKw} kW</span>
-                <span className="text-sky-400/90">Air {totals.airLmin} L/min</span>
+                <span className="text-gray-300">{items.length}</span>
+                <span className="text-amber-400/90">{totals.powerKw} kW</span>
+                <span className="text-sky-400/90">{totals.airLmin} L/min</span>
                 <span className="text-gray-400">{factoryL}×{factoryW}×{factoryH} m</span>
               </div>
             </div>
@@ -492,49 +497,40 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* editing bar — fixed height so the canvas never rescales on select/deselect */}
-            <div className="mt-2 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 h-[92px] overflow-y-auto">
+            <div className="mt-2 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 h-[64px] overflow-y-auto">
               {selected ? (
-                <>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="text-gray-200 font-medium truncate">{selected.label}</span>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                      <span>W</span>
-                      <Input
-                        type="number"
-                        min={0.5}
-                        step={0.1}
-                        value={selected.w}
-                        onChange={(e) => updateSize(selected.id, 'w', Number(e.target.value))}
-                        className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
-                      />
-                      <span>×</span>
-                      <span>L</span>
-                      <Input
-                        type="number"
-                        min={0.5}
-                        step={0.1}
-                        value={selected.h}
-                        onChange={(e) => updateSize(selected.id, 'h', Number(e.target.value))}
-                        className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
-                      />
-                      <span>m</span>
-                    </div>
-                    <button onClick={() => rotateItem(selected.id)} className="text-amber-400 hover:text-amber-300 flex items-center gap-1">
-                      <RotateCw className="h-4 w-4" />{copy("Rotate")}
-                    </button>
-                    <button onClick={() => removeItem(selected.id)} className="ml-auto text-red-400 hover:text-red-300 flex items-center gap-1">
-                      <Trash2 className="h-4 w-4" />{copy("Remove")}
-                    </button>
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-gray-200 font-medium truncate max-w-[140px]">{selected.label}</span>
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                    <span>W</span>
+                    <Input
+                      type="number"
+                      min={0.5}
+                      step={0.1}
+                      value={selected.w}
+                      onChange={(e) => updateSize(selected.id, 'w', Number(e.target.value))}
+                      className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                    />
+                    <span>×</span>
+                    <span>L</span>
+                    <Input
+                      type="number"
+                      min={0.5}
+                      step={0.1}
+                      value={selected.h}
+                      onChange={(e) => updateSize(selected.id, 'h', Number(e.target.value))}
+                      className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                    />
+                    <span>m</span>
                   </div>
-                  {selected.description && (
-                    <p className="text-xs text-gray-400 leading-relaxed border-t border-gray-700 pt-1 mt-1">{selected.description}</p>
-                  )}
-                </>
-              ) : (
-                <div className="h-full flex items-center text-xs text-gray-500">
-                  {copy("Click an item on the layout to edit its size and position")}
+                  <button onClick={() => rotateItem(selected.id)} className="text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                    <RotateCw className="h-4 w-4" /><span className="hidden sm:inline">{copy("Rotate")}</span>
+                  </button>
+                  <button onClick={() => removeItem(selected.id)} className="ml-auto text-red-400 hover:text-red-300 flex items-center gap-1">
+                    <Trash2 className="h-4 w-4" /><span className="hidden sm:inline">{copy("Remove")}</span>
+                  </button>
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
