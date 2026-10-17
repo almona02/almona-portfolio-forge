@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { sanitizeClientEnv } from '../../../scripts/build/publicEnv';
+import { sanitizeClientEnv } from '../../../vite.clientEnv';
 
 describe('browser environment sanitization', () => {
   it('removes privileged names without removing public configuration', () => {

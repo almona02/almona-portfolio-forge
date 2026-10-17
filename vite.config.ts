@@ -5,7 +5,7 @@ import { defineConfig, loadEnv } from "vite";
 import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
 import type { NormalizedOutputOptions, OutputBundle, PluginContext } from 'rollup';
-import { sanitizeClientEnv } from './scripts/build/publicEnv';
+import { sanitizeClientEnv } from './vite.clientEnv';
 
 // https://vitejs.dev/config/
 // Updated: 2024-09-26 - Simplified build config to fix chunk rendering issues
