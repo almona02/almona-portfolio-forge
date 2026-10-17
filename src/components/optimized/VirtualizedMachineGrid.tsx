@@ -4,7 +4,7 @@ import { usePublicCopy } from '@/hooks/usePublicCopy';
  * Simple grid layout for machine cards with proper spacing and alignment
  */
 
-import React, { memo, useCallback, useEffect, useRef } from 'react';
+import React, { memo, useCallback } from 'react';
 import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import { Button } from '@/shared/ui/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -35,27 +35,22 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
 }) => {
   const copy = usePublicCopy();
 
-  // Scroll to the first newly-loaded machine when "Load More" appends cards.
-  // Deterministic: the click records the target index, and the card's callback
-  // ref scrolls to it the moment its DOM node mounts (no rAF/timing guesswork).
-  const prevCountRef = useRef(machines.length);
-  const pendingScrollIndexRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    prevCountRef.current = machines.length;
-  }, [machines]);
-
+  // Scroll to the first newly-loaded machine after "Load More" appends cards.
+  // Data-attribute + retrying timeout: no ref callbacks, no rAF/timing guesswork.
   const handleLoadMore = useCallback(() => {
-    pendingScrollIndexRef.current = prevCountRef.current;
+    const firstNewIndex = machines.length;
     onLoadMore();
-  }, [onLoadMore]);
-
-  const setCardRef = useCallback((index: number) => (node: HTMLDivElement | null) => {
-    if (node && pendingScrollIndexRef.current === index) {
-      pendingScrollIndexRef.current = null;
-      node.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, []);
+    const tryScroll = (attempt: number) => {
+      const el = document.querySelector(`[data-scroll-target="d-${firstNewIndex}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (attempt < 6) {
+        setTimeout(() => tryScroll(attempt + 1), 200);
+      }
+    };
+    // the hook's loadMore has a ~300ms delay before the new cards render
+    setTimeout(() => tryScroll(0), 400);
+  }, [onLoadMore, machines.length]);
 
   return (
     <div className="w-full">
@@ -64,7 +59,7 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
         {machines.map((machine, index) => {
           const isSelected = selectedMachines.some(m => m.id === machine.id);
           return (
-            <div key={machine.id} ref={setCardRef(index)} className="h-full scroll-mt-28">
+            <div key={machine.id} data-scroll-target={`d-${index}`} className="h-full scroll-mt-28">
               <EnhancedProductCard
                 machine={machine}
                 isSelected={isSelected}

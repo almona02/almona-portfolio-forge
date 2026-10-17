@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import type { Machine } from '@/constants/yilmazMachines';
 
@@ -27,27 +27,21 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
 }) => {
   const copy = usePublicCopy();
 
-  // Scroll to the first newly-loaded machine when "Load More" appends cards.
-  // Deterministic: the click records the target index, and the card's callback
-  // ref scrolls to it the moment its DOM node mounts (no rAF/timing guesswork).
-  const prevCountRef = useRef(machines.length);
-  const pendingScrollIndexRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    prevCountRef.current = machines.length;
-  }, [machines]);
-
+  // Scroll to the first newly-loaded machine after "Load More" appends cards.
+  // Data-attribute + retrying timeout: no ref callbacks, no rAF/timing guesswork.
   const handleLoadMore = useCallback(() => {
-    pendingScrollIndexRef.current = prevCountRef.current;
+    const firstNewIndex = machines.length;
     onLoadMore();
-  }, [onLoadMore]);
-
-  const setCardRef = useCallback((index: number) => (node: HTMLDivElement | null) => {
-    if (node && pendingScrollIndexRef.current === index) {
-      pendingScrollIndexRef.current = null;
-      node.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, []);
+    const tryScroll = (attempt: number) => {
+      const el = document.querySelector(`[data-scroll-target="m-${firstNewIndex}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (attempt < 6) {
+        setTimeout(() => tryScroll(attempt + 1), 200);
+      }
+    };
+    setTimeout(() => tryScroll(0), 400);
+  }, [onLoadMore, machines.length]);
 
   // Optimize grid layout for mobile devices with better aspect ratio support
   const gridClasses = useMemo(() => {
@@ -68,7 +62,7 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
     return (
       <div
         key={machine.id}
-        ref={setCardRef(index)}
+        data-scroll-target={`m-${index}`}
         className="transform transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] scroll-mt-28"
       >
         <EnhancedProductCard
