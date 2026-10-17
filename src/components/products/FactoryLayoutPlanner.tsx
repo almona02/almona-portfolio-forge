@@ -400,16 +400,14 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
                       style={{ cursor: 'grab' }}
                     >
                       <rect x={px} y={py} width={pw} height={ph} fill={`${it.color}33`} stroke={it.color} strokeWidth={sel ? 3 : 1.5} rx={2} />
-                      {pw > 34 && ph > 18 ? (
-                        <>
-                          <text x={px + pw / 2} y={py + ph / 2 + 1} textAnchor="middle" fill="#fff" fontSize={Math.min(11, pw / 8)} fontWeight={600} style={{ pointerEvents: 'none' }}>
-                            {it.label}
-                          </text>
-                          <text x={px + pw / 2} y={py + ph / 2 + 13} textAnchor="middle" fill="#cbd5e1" fontSize={9} style={{ pointerEvents: 'none' }}>
-                            {it.w.toFixed(1)} × {it.h.toFixed(1)} m
-                          </text>
-                        </>
-                      ) : null}
+                      <text x={px + pw / 2} y={py + ph / 2 + 1} textAnchor="middle" fill="#fff" fontSize={Math.max(7, Math.min(11, pw / 6))} fontWeight={600} style={{ pointerEvents: 'none' }}>
+                        {it.label}
+                      </text>
+                      {pw > 26 && ph > 16 && (
+                        <text x={px + pw / 2} y={py + ph / 2 + 12} textAnchor="middle" fill="#cbd5e1" fontSize={9} style={{ pointerEvents: 'none' }}>
+                          {it.w.toFixed(1)} × {it.h.toFixed(1)} m
+                        </text>
+                      )}
                     </g>
                   );
                 })}
