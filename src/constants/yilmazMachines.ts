@@ -157,29 +157,6 @@ export interface Machine {
   };
 }
 
-// Helper function to parse dimensions (unused but kept for potential future use)
-const _parseDimensions = (dimensionStr: string) => {
-  const parts = dimensionStr.split(' × ');
-  return {
-    length: parts[0] as `${number}mm`,
-    width: parts[1] as `${number}mm`, 
-    height: parts[2] as `${number}mm`
-  };
-};
-
-// Helper function to create power specification (unused but kept for potential future use)
-const _createPowerSpec = (powerStr: string): PowerSpecification => {
-  const powerMatch = powerStr.match(/([\d.]+)\s*kW/);
-  const power = powerMatch ? `${powerMatch[1]} kW` as const : '0 kW' as const;
-  
-  return {
-    voltage: '400V',
-    frequency: '50Hz',
-    phase: '3',
-    consumption: power
-  };
-};
-
 // DEPRECATED: Use useYilmazMachines() hook instead for async loading
 // This export is kept for backward compatibility but will be removed
 // The data is now loaded from /data/yilmazMachines.json
@@ -193,8 +170,9 @@ export async function getYilmazMachines(): Promise<Machine[]> {
   try {
     const response = await fetch('/data/yilmazMachines.json');
     if (response.ok) {
-      _yilmazMachinesCache = await response.json();
-      return _yilmazMachinesCache;
+      const data = (await response.json()) as Machine[];
+      _yilmazMachinesCache = data;
+      return data;
     }
   } catch (error) {
     console.warn('Failed to fetch machines from /data, using fallback:', error);
