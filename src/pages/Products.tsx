@@ -395,20 +395,17 @@ const Products = function ProductsPage() {
         keywords={t('page.keywords')}
       />
       <main className="flex-grow pt-24">
-      <div className="mx-auto px-4 xl:px-8 py-12 max-w-screen-2xl">
-        {/* Industry 4.0 Hero Section */}
-        <div className="mb-16 text-center relative overflow-hidden">
-          <div
-            className="relative z-10 fade-in-up"
-          >
-            <h1 className="typography-h1 md:text-6xl mb-6">
-              <span className="text-gradient-orange">{copy("Industrial Machinery")}</span>
-              <br />
+      <div className="mx-auto px-4 xl:px-8 py-8 max-w-screen-2xl">
+        {/* Hero Section */}
+        <div className="mb-8 text-center">
+          <div className="fade-in-up">
+            <h1 className="typography-h1 md:text-4xl lg:text-5xl mb-4">
+              <span className="text-gradient-orange">{copy("Industrial Machinery")}</span>{' '}
               <span className="text-white">{copy("For Aluminium & UPVC Workshops")}</span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed">{copy("Browse machine models and discuss your production requirements with ALMONA.")}</p>
+            <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-6 leading-relaxed">{copy("Browse machine models and discuss your production requirements with ALMONA.")}</p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Button
                 onClick={handleWizardOpen}
                 aria-label={t('hero.aiWizard')}
@@ -431,23 +428,16 @@ const Products = function ProductsPage() {
               </Button>
             </div>
           </div>
-
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 -z-10">
-            <div className="btn-primary"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl animate-bounce"></div>
-          </div>
         </div>
 
-        <p className="max-w-3xl mx-auto mb-12 text-center text-gray-300">{copy("Prices, stock, delivery, warranty and model-specific certificates are confirmed in a written quotation. Digital integrations depend on the exact machine and configuration.")}</p>
+        <p className="max-w-3xl mx-auto mb-6 text-center text-sm text-gray-400">{copy("Prices, stock, delivery, warranty and model-specific certificates are confirmed in a written quotation. Digital integrations depend on the exact machine and configuration.")}</p>
 
         {/* Existing Products page content */}
-        <div ref={productsSectionRef} id="products-section" className="scroll-mt-24 mb-12 text-center">
-          <h2 className="typography-h2 mb-4">
+        <div ref={productsSectionRef} id="products-section" className="scroll-mt-24 mb-6 text-center">
+          <h2 className="typography-h2 mb-2">
             <span className="text-gradient-orange">{t('machines.title')}</span>
           </h2>
-          <p className="text-gray-400 max-w-3xl mx-auto">
+          <p className="text-gray-400 max-w-3xl mx-auto text-sm">
             {t('machines.subtitle')}
           </p>
         </div>
