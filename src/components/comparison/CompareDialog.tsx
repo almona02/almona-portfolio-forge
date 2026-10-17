@@ -6,6 +6,8 @@ import CompareTable from "./CompareTable";
 import { Download, Share2, Loader2 } from "lucide-react";
 import type { ComparisonMachine } from "@/lib/reports/comparisonPdf";
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
+import { usePublicCopy } from "@/hooks/usePublicCopy";
+import { useTranslation } from "react-i18next";
 
 interface CompareDialogProps {
   open: boolean;
@@ -20,6 +22,8 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
 }) => {
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const copy = usePublicCopy();
+  const { i18n } = useTranslation();
   
   // Removed unit/orientation controls for simplified UI: infer orientation by machine count
   const inferredOrientation: 'landscape' | 'portrait' = machines.length > 3 ? 'landscape' : 'portrait';
@@ -64,9 +68,9 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
       }
       
       const pdfBytes = await generateComparisonPDF(
-        machines as ComparisonMachine[], 
+        machines.map((m) => ({ ...m, type: copy(m.type) })) as ComparisonMachine[], 
         logoDataUrl,
-        { orientation: inferredOrientation }
+        { orientation: inferredOrientation, lang: i18n.language }
       );
       
       const bytes = new Uint8Array(pdfBytes);
@@ -92,7 +96,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
   };
 
   const handleShare = () => {
-    alert("Share feature coming soon");
+    alert(copy("Share feature coming soon"));
   };
 
   const handleRequestQuote = () => {
@@ -125,10 +129,10 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
             <div className="flex justify-between items-start">
               <div>
                 <DialogTitle className="text-2xl">
-                  Machine Comparison ({machines.length})
+                  {copy("Machine Comparison")} ({machines.length})
                 </DialogTitle>
                 <DialogDescription className="text-sm text-muted-foreground">
-                  Side-by-side comparison of selected machines with detailed specifications and performance metrics
+                  {copy("Side-by-side comparison of selected machines with detailed specifications and performance metrics")}
                 </DialogDescription>
               </div>
               <div className="flex gap-2">
@@ -138,7 +142,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
                   onClick={handleShare}
                 >
                   <Share2 size={16} className="mr-1" />
-                  Share
+                  {copy("Share")}
                 </Button>
                 <Button 
                   variant="outline" 
@@ -163,16 +167,16 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
             </div>
       <div className="border rounded-lg p-4 bg-muted/30 text-sm grid gap-4 sm:grid-cols-3">
               <div>
-                <h4 className="typography-h4 mb-1">Total Power Required</h4>
+                <h4 className="typography-h4 mb-1">{copy("Total Power Required")}</h4>
         <p>{totalPowerKw.toFixed(2)} kW</p>
               </div>
               <div>
-                <h4 className="typography-h4 mb-1">Total Air Consumption</h4>
+                <h4 className="typography-h4 mb-1">{copy("Total Air Consumption")}</h4>
         <p>{totalAir.toFixed(2)} L/min</p>
               </div>
               <div className="sm:col-span-1">
-                <h4 className="typography-h4 mb-1">Notes</h4>
-                <p className="text-muted-foreground">Ensure facility electrical & pneumatic capacity exceeds totals with safety margin (recommend 20%).</p>
+                <h4 className="typography-h4 mb-1">{copy("Notes")}</h4>
+                <p className="text-muted-foreground">{copy("Ensure facility electrical & pneumatic capacity exceeds totals with safety margin (recommend 20%).")}</p>
               </div>
             </div>
           </div>
@@ -182,13 +186,13 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
               variant="outline" 
               onClick={() => onOpenChange(false)}
             >
-              Close
+              {copy("Close")}
             </Button>
             <Button 
               onClick={handleRequestQuote}
               className="bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600 text-white"
             >
-              Request Quote for All ({machines.length}) Machines
+              {copy("Request Quote for All")} ({machines.length}) {copy("Machines")}
             </Button>
           </div>
         </DialogContent>

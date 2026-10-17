@@ -39,12 +39,29 @@ export interface ComparisonPdfOptions {
   includeFooter?: boolean;
   companyName?: string;
   companyTagline?: string;
+  lang?: string;
   contactInfo?: {
     website?: string;
     email?: string;
     phone?: string;
   };
 }
+
+// Helvetica (WinAnsi) covers Latin + Turkish; Arabic needs an embedded font, so Arabic falls back to English.
+const PDF_LABELS: Record<string, Record<string, string>> = {
+  en: {
+    title: 'Machines Requirements', date: 'Date', time: 'Time', page: 'Page', of: 'of',
+    equipmentModel: 'Equipment Model', type: 'Type', power: 'Power Consumption', voltage: 'Voltage', air: 'Air Consumption',
+    total: 'TOTAL', summaryTitle: 'TECHNICAL SPECIFICATION SUMMARY',
+    analyzed: 'Equipment Analyzed', totalPower: 'Total Power Requirement', totalAir: 'Total Air Consumption', analysisDate: 'Analysis Date',
+  },
+  tr: {
+    title: 'Makine Gereksinimleri', date: 'Tarih', time: 'Saat', page: 'Sayfa', of: '/',
+    equipmentModel: 'Ekipman Modeli', type: 'Tür', power: 'Güç Tüketimi', voltage: 'Voltaj', air: 'Hava Tüketimi',
+    total: 'TOPLAM', summaryTitle: 'TEKNİK ÖZELLİK ÖZETİ',
+    analyzed: 'İncelenen Ekipman', totalPower: 'Toplam Güç Gereksinimi', totalAir: 'Toplam Hava Tüketimi', analysisDate: 'Analiz Tarihi',
+  },
+};
 
 // Power conversion and formatting utilities
 function formatPower(valueKw: number, unit: 'kW' | 'HP', both: boolean) {
@@ -88,12 +105,14 @@ export async function generateComparisonPDF(
     includeFooter = true,
     companyName = 'YILMAZ MACHINES',
     companyTagline = 'Professional Industrial Equipment Solutions',
+    lang = 'en',
     contactInfo = {
       website: 'almona02.com',
       email: 'info@almona02.com',
       phone: ''
     }
   } = options;
+  const L = PDF_LABELS[lang] || PDF_LABELS.en;
 
   const pdf = await PDFDocument.create();
   
@@ -236,7 +255,7 @@ export async function generateComparisonPDF(
     const docY = headerY + 40;
 
     // Document title with enhanced styling
-    page.drawText('Machines Requirements', {
+    page.drawText(L.title, {
       x: docX,
       y: docY,
       size: 12,
@@ -244,7 +263,7 @@ export async function generateComparisonPDF(
       color: primaryColor
     });
 
-    page.drawText(`Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, {
+    page.drawText(`${L.date}: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, {
       x: docX,
       y: docY - 15,
       size: 8,
@@ -252,7 +271,7 @@ export async function generateComparisonPDF(
       color: secondaryColor
     });
 
-    page.drawText(`Time: ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`, {
+    page.drawText(`${L.time}: ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`, {
       x: docX,
       y: docY - 28,
       size: 8,
@@ -261,7 +280,7 @@ export async function generateComparisonPDF(
     });
 
     if (totalPages) {
-      page.drawText(`Page ${pageIndex + 1} of ${totalPages}`, {
+      page.drawText(`${L.page} ${pageIndex + 1} ${L.of} ${totalPages}`, {
         x: docX,
         y: docY - 40,
         size: 7,
@@ -275,11 +294,11 @@ export async function generateComparisonPDF(
 
   // Build professional tabular data
   const columns = [
-    'Equipment Model',
-    'Type',
-    showBothUnits ? 'Power Consumption (kW / HP)' : `Power (${powerUnit})`,
-    'Voltage',
-    showBothUnits ? 'Air Consumption (L/min / m³/h)' : `Air (${airUnit})`
+    L.equipmentModel,
+    L.type,
+    showBothUnits ? `${L.power} (kW / HP)` : `${L.power} (${powerUnit})`,
+    L.voltage,
+    showBothUnits ? `${L.air} (L/min / m³/h)` : `${L.air} (${airUnit})`
   ];
 
   const rows = limitedMachines.map(m => {
@@ -301,7 +320,7 @@ export async function generateComparisonPDF(
 
   // Add professional spacing and total row
   rows.push(['', '', '', '', '']);
-  rows.push(['TOTAL', '', totalPowerDisplay, '', totalAirDisplay]);
+  rows.push([L.total, '', totalPowerDisplay, '', totalAirDisplay]);
 
   // Enhanced text sanitizer
   const sanitize = (text: string) => text
@@ -481,7 +500,7 @@ export async function generateComparisonPDF(
     }
 
     let cx = tableX + 5; // Reduced from 8 to 5
-    const isTotal = row[0] === 'TOTAL';
+    const isTotal = row[0] === L.total;
     const isEmpty = row[0] === '';
 
     // Professional row styling
@@ -553,7 +572,7 @@ export async function generateComparisonPDF(
   });
 
   // Summary title with perfect alignment
-  const summaryTitle = 'TECHNICAL SPECIFICATION SUMMARY';
+  const summaryTitle = L.summaryTitle;
   const titleWidth = bold.widthOfTextAtSize(summaryTitle, 13);
   page.drawText(summaryTitle, {
     x: tableX + (tableWidth - titleWidth) / 2, // Perfectly centered
@@ -567,10 +586,10 @@ export async function generateComparisonPDF(
 
   // Enhanced summary content with consistent alignment
   const summaryContent = [
-    `Equipment Analyzed: ${limitedMachines.length} units${machines.length > limitedMachines.length ? ` (showing first ${limitedMachines.length} of ${machines.length})` : ''}`,
-    `Total Power Requirement: ${totalPowerDisplay}`,
-    `Total Air Consumption: ${totalAirDisplay}`,
-    `Analysis Date: ${new Date().toLocaleDateString()}`
+    `${L.analyzed}: ${limitedMachines.length} ${lang === 'tr' ? 'ünite' : 'units'}${machines.length > limitedMachines.length ? ` (showing first ${limitedMachines.length} of ${machines.length})` : ''}`,
+    `${L.totalPower}: ${totalPowerDisplay}`,
+    `${L.totalAir}: ${totalAirDisplay}`,
+    `${L.analysisDate}: ${new Date().toLocaleDateString()}`
   ];
 
   summaryContent.forEach((line, index) => {

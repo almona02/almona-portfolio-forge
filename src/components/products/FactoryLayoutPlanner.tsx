@@ -1,4 +1,5 @@
 import { usePublicCopy } from '@/hooks/usePublicCopy';
+import { useTranslation } from 'react-i18next';
 import { useYilmazMachines } from '@/hooks/useYilmazMachines';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Download, Plus, RotateCw, Search, Trash2, X } from 'lucide-react';
@@ -75,6 +76,7 @@ const snap = (v: number) => Math.round(v / 0.25) * 0.25;
 
 export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
   const copy = usePublicCopy();
+  const { i18n } = useTranslation();
   const { data: machines = [] } = useYilmazMachines();
   const [factoryW, setFactoryW] = useState(20);
   const [factoryL, setFactoryL] = useState(30);
@@ -322,6 +324,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
       totalPowerKw: totals.powerKw,
       totalAirLmin: totals.airLmin,
       workshopHeight: factoryH,
+      lang: i18n.language,
     };
     const bytes = await generateWorkshopLayoutPDF(factoryW, factoryL, pdfItems, logoDataUrl, options);
     const blob = new Blob([new Uint8Array(bytes)], { type: 'application/pdf' });

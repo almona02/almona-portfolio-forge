@@ -18,7 +18,14 @@ export interface WorkshopLayoutPdfOptions {
   totalAirLmin?: number;
   workshopHeight?: number;
   companyName?: string;
+  lang?: string;
 }
+
+// Helvetica (WinAnsi) covers Latin + Turkish; Arabic needs an embedded font, so Arabic falls back to English labels.
+const PDF_LABELS: Record<string, { title: string; components: string; totals: string; power: string; air: string; workshop: string; generated: string; length: string; width: string; height: string }> = {
+  en: { title: 'YILMAZ WORKSHOP PLAN', components: 'COMPONENTS', totals: 'TOTAL POWER & ELECTRICITY', power: 'Power', air: 'Air', workshop: 'Workshop', generated: 'Generated', length: 'Length', width: 'Width', height: 'Height' },
+  tr: { title: 'YILMAZ ATÖLYE PLANI', components: 'BİLEŞENLER', totals: 'TOPLAM GÜÇ VE ELEKTRİK', power: 'Güç', air: 'Hava', workshop: 'Atölye', generated: 'Oluşturuldu', length: 'Uzunluk', width: 'Genişlik', height: 'Yükseklik' },
+};
 
 function hexToRgb(hex: string) {
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -40,7 +47,8 @@ export async function generateWorkshopLayoutPDF(
     rgb = mod.rgb;
   }
 
-  const { components = [], totalPowerKw = 0, totalAirLmin = 0, workshopHeight = 0, companyName = 'YILMAZ MACHINES' } = options;
+  const { components = [], totalPowerKw = 0, totalAirLmin = 0, workshopHeight = 0, companyName = 'YILMAZ MACHINES', lang = 'en' } = options;
+  const L = PDF_LABELS[lang] || PDF_LABELS.en;
 
   const pdf = await PDFDocument.create();
   const page = pdf.addPage([842, 595]); // landscape A4
@@ -74,8 +82,8 @@ export async function generateWorkshopLayoutPDF(
   }
   page.drawText(companyName, { x: logoX, y: 595 - margin - 16, size: 15, font: bold, color: primary });
   page.drawText('ALMONA CO. IMPORT EXPORT COMMERCIAL AGENCIES', { x: logoX, y: 595 - margin - 32, size: 8, font, color: secondary });
-  page.drawText('YILMAZ WORKSHOP PLAN', { x: 842 - margin - 200, y: 595 - margin - 18, size: 11, font: bold, color: primary });
-  page.drawText(`Workshop: Length ${factoryL} m × Width ${factoryW} m × Height ${workshopHeight || '—'} m`, { x: 842 - margin - 260, y: 595 - margin - 32, size: 9, font, color: secondary });
+  page.drawText(L.title, { x: 842 - margin - 200, y: 595 - margin - 18, size: 11, font: bold, color: primary });
+  page.drawText(`${L.workshop}: ${L.length} ${factoryL} m × ${L.width} ${factoryW} m × ${L.height} ${workshopHeight || '—'} m`, { x: 842 - margin - 260, y: 595 - margin - 32, size: 9, font, color: secondary });
 
   // ---- Left sidebar: components + totals ----
   const sidebarX = margin;
@@ -83,7 +91,7 @@ export async function generateWorkshopLayoutPDF(
   const sidebarTop = 480;
   let sy = sidebarTop;
 
-  page.drawText('COMPONENTS', { x: sidebarX, y: sy, size: 9, font: bold, color: primary });
+  page.drawText(L.components, { x: sidebarX, y: sy, size: 9, font: bold, color: primary });
   sy -= 14;
 
   const truncate = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
@@ -94,9 +102,9 @@ export async function generateWorkshopLayoutPDF(
   }
 
   // totals at the bottom of the sidebar
-  page.drawText('TOTAL POWER & ELECTRICITY', { x: sidebarX, y: 96, size: 8, font: bold, color: primary });
-  page.drawText(`Power: ${totalPowerKw} kW`, { x: sidebarX, y: 84, size: 7, font, color: secondary });
-  page.drawText(`Air: ${totalAirLmin} L/min`, { x: sidebarX, y: 73, size: 7, font, color: secondary });
+  page.drawText(L.totals, { x: sidebarX, y: 96, size: 8, font: bold, color: primary });
+  page.drawText(`${L.power}: ${totalPowerKw} kW`, { x: sidebarX, y: 84, size: 7, font, color: secondary });
+  page.drawText(`${L.air}: ${totalAirLmin} L/min`, { x: sidebarX, y: 73, size: 7, font, color: secondary });
 
   // ---- Floor plan (right of sidebar) ----
   const areaX = margin + sidebarW + 20; // 232
@@ -138,7 +146,7 @@ export async function generateWorkshopLayoutPDF(
   // ---- Footer ----
   page.drawText(companyName, { x: margin, y: 30, size: 9, font: bold, color: primary });
   page.drawText('ALMONA CO. IMPORT EXPORT COMMERCIAL AGENCIES', { x: margin, y: 18, size: 7, font, color: secondary });
-  page.drawText(`Generated: ${new Date().toLocaleDateString()}`, { x: 842 - margin - 130, y: 18, size: 7, font, color: secondary });
+  page.drawText(`${L.generated}: ${new Date().toLocaleDateString()}`, { x: 842 - margin - 130, y: 18, size: 7, font, color: secondary });
 
   return await pdf.save();
 }
