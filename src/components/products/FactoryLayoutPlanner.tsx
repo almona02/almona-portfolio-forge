@@ -414,45 +414,51 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
               </svg>
             </div>
 
-            {/* selected item actions */}
-            {selected && (
-              <div className="mt-2 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 space-y-2">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-gray-200 font-medium truncate">{selected.label}</span>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                    <span>W</span>
-                    <Input
-                      type="number"
-                      min={0.5}
-                      step={0.1}
-                      value={selected.w}
-                      onChange={(e) => updateSize(selected.id, 'w', Number(e.target.value))}
-                      className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
-                    />
-                    <span>×</span>
-                    <span>L</span>
-                    <Input
-                      type="number"
-                      min={0.5}
-                      step={0.1}
-                      value={selected.h}
-                      onChange={(e) => updateSize(selected.id, 'h', Number(e.target.value))}
-                      className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
-                    />
-                    <span>m</span>
+            {/* editing bar — fixed height so the canvas never rescales on select/deselect */}
+            <div className="mt-2 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 h-[92px] overflow-y-auto">
+              {selected ? (
+                <>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-gray-200 font-medium truncate">{selected.label}</span>
+                    <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                      <span>W</span>
+                      <Input
+                        type="number"
+                        min={0.5}
+                        step={0.1}
+                        value={selected.w}
+                        onChange={(e) => updateSize(selected.id, 'w', Number(e.target.value))}
+                        className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                      />
+                      <span>×</span>
+                      <span>L</span>
+                      <Input
+                        type="number"
+                        min={0.5}
+                        step={0.1}
+                        value={selected.h}
+                        onChange={(e) => updateSize(selected.id, 'h', Number(e.target.value))}
+                        className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                      />
+                      <span>m</span>
+                    </div>
+                    <button onClick={() => rotateItem(selected.id)} className="text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                      <RotateCw className="h-4 w-4" />{copy("Rotate")}
+                    </button>
+                    <button onClick={() => removeItem(selected.id)} className="ml-auto text-red-400 hover:text-red-300 flex items-center gap-1">
+                      <Trash2 className="h-4 w-4" />{copy("Remove")}
+                    </button>
                   </div>
-                  <button onClick={() => rotateItem(selected.id)} className="text-amber-400 hover:text-amber-300 flex items-center gap-1">
-                    <RotateCw className="h-4 w-4" />{copy("Rotate")}
-                  </button>
-                  <button onClick={() => removeItem(selected.id)} className="ml-auto text-red-400 hover:text-red-300 flex items-center gap-1">
-                    <Trash2 className="h-4 w-4" />{copy("Remove")}
-                  </button>
+                  {selected.description && (
+                    <p className="text-xs text-gray-400 leading-relaxed border-t border-gray-700 pt-1 mt-1">{selected.description}</p>
+                  )}
+                </>
+              ) : (
+                <div className="h-full flex items-center text-xs text-gray-500">
+                  {copy("Click an item on the layout to edit its size and position")}
                 </div>
-                {selected.description && (
-                  <p className="text-xs text-gray-400 leading-relaxed border-t border-gray-700 pt-2">{selected.description}</p>
-                )}
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
