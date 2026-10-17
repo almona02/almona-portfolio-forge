@@ -13,18 +13,12 @@ import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import {
   ArrowLeft,
   ArrowRight,
-  Award,
-  Building2,
-  CheckCircle,
-  Cpu,
   Download,
   FileText,
   Printer,
-  Settings,
-  ShoppingCart,
   RefreshCw,
-  Square,
-  TrendingUp
+  Settings,
+  ShoppingCart
 } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -58,11 +52,11 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
   const { toast } = useToast();
 
   const steps = [
-    { id: 'material', title: copy("Material Type"), icon: Building2 },
-    { id: 'application', title: copy("Application"), icon: Square },
-    { id: 'automation', title: copy("Automation Level"), icon: Cpu },
-    { id: 'production', title: copy("Production Scale"), icon: TrendingUp },
-    { id: 'results', title: copy("Recommendations"), icon: Award }
+    { id: 'material', title: copy("Material Type") },
+    { id: 'application', title: copy("Application") },
+    { id: 'automation', title: copy("Automation Level") },
+    { id: 'production', title: copy("Production Scale") },
+    { id: 'results', title: copy("Recommendations") }
   ];
 
   const operationStats = WIZARD_OPERATIONS.map((op) => ({
@@ -349,16 +343,15 @@ ${copy('Prepared by ALMONA.')}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <div className="text-center">
-              <Building2 className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Select Material")}</h3>
-              <p className="text-gray-400 text-sm sm:text-base">{copy("Which material dominates your production mix?")}</p>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">{copy("Select Material")}</h3>
+              <p className="text-gray-400 text-sm">{copy("Which material dominates your production mix?")}</p>
             </div>
             <SelectionStrip />
             <RadioGroup value={answers.material} onValueChange={(v) => handleValueChange('material', v)}>
-              <div className="grid gap-3 sm:gap-4">
+              <div className="grid gap-3 sm:grid-cols-3">
                 <Card 
                   className={`cursor-pointer transition-all ${answers.material === 'aluminium' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
                   onClick={() => handleValueChange('material', 'aluminium')}
@@ -423,12 +416,11 @@ ${copy('Prepared by ALMONA.')}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <div className="text-center">
-              <Square className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Application")}</h3>
-              <p className="text-gray-400 text-sm sm:text-base">{copy("Select the operation that matches your main workload.")}</p>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">{copy("Application")}</h3>
+              <p className="text-gray-400 text-sm">{copy("Select the operation that matches your main workload.")}</p>
             </div>
             <SelectionStrip />
             <Card
@@ -453,7 +445,7 @@ ${copy('Prepared by ALMONA.')}
               </CardContent>
             </Card>
             <RadioGroup value={answers.application} onValueChange={(v) => handleValueChange('application', v)}>
-              <div className="grid gap-3 sm:gap-4">
+              <div className="grid gap-3 sm:grid-cols-2">
                 {operationStats.map((op) => {
                   const isSelected = answers.application === op.id;
                   return (
@@ -494,16 +486,15 @@ ${copy('Prepared by ALMONA.')}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <div className="text-center">
-              <Cpu className="h-12 w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 mb-2">{copy("Automation Level")}</h3>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">{copy("Automation Level")}</h3>
               <p className="text-gray-400">{copy("Select the automation level for your quality and throughput targets.")}</p>
             </div>
             <SelectionStrip />
             <RadioGroup value={answers.automation} onValueChange={(v) => handleValueChange('automation', v)}>
-              <div className="grid gap-4">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <Card 
                   className={`cursor-pointer transition-all ${answers.automation === 'manual' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
                   onClick={() => handleValueChange('automation', 'manual')}
@@ -586,16 +577,15 @@ ${copy('Prepared by ALMONA.')}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <div className="text-center">
-              <TrendingUp className="h-12 w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 mb-2">{copy("Production Scale")}</h3>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">{copy("Production Scale")}</h3>
               <p className="text-gray-400">{copy("Match capacity to your daily production target.")}</p>
             </div>
             <SelectionStrip />
             <RadioGroup value={answers.production} onValueChange={(v) => handleValueChange('production', v)}>
-              <div className="grid gap-4">
+              <div className="grid gap-3 sm:grid-cols-3">
                 <Card 
                   className={`cursor-pointer transition-all ${answers.production === 'small' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
                   onClick={() => handleValueChange('production', 'small')}
@@ -674,12 +664,11 @@ ${copy('Prepared by ALMONA.')}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <div className="text-center">
-              <Award className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="typography-h3 sm:text-2xl mb-2">{copy("Recommended Machines")}</h3>
-              <p className="text-gray-400 text-sm sm:text-base">{copy("Matched to your selections.")}</p>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">{copy("Recommended Machines")}</h3>
+              <p className="text-gray-400 text-sm">{copy("Matched to your selections.")}</p>
             </div>
 
             {/* Summary Report */}
@@ -775,59 +764,22 @@ ${copy('Prepared by ALMONA.')}
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[94vw] sm:w-[92vw] max-w-3xl sm:max-w-4xl h-[88vh] max-h-[840px] overflow-hidden flex flex-col top-[50%]">
-        <DialogHeader className="border-b border-gray-700 pb-4 flex-shrink-0">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex-1">
-              <DialogTitle className="text-xl sm:text-2xl font-bold">
-                <span className="truncate">{copy("Machine Wizard")}</span>
-              </DialogTitle>
-              <p className="text-gray-400 mt-1 text-sm sm:text-base">{copy("Guidance for aluminium & UPVC production investments.")}</p>
+        <DialogHeader className="border-b border-gray-700 pb-3 flex-shrink-0">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-baseline gap-3 min-w-0">
+              <DialogTitle className="text-lg font-bold truncate">{copy("Machine Wizard")}</DialogTitle>
+              <span className="text-xs text-gray-400 flex-shrink-0">{copy("Step")} {currentStepIndex + 1}/{steps.length}</span>
             </div>
-            <div className="text-sm text-gray-400 flex-shrink-0">{copy("Step")} {currentStepIndex + 1} {copy("of")} {steps.length}
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-4">
-            <div className="flex items-center justify-between mb-2 overflow-x-auto">
-              {steps.map((stepItem, index) => {
-                const Icon = stepItem.icon;
-                const isCompleted = index < currentStepIndex;
-                const isCurrent = index === currentStepIndex;
-
-                return (
-                  <div key={stepItem.id} className="flex items-center flex-shrink-0">
-                    <div className={`flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 transition-all ${
-                      isCompleted 
-                        ? 'bg-almona-orange border-almona-orange text-white' 
-                        : isCurrent 
-                        ? 'border-almona-orange text-almona-orange' 
-                        : 'border-gray-600 text-gray-400'
-                    }`}>
-                      {isCompleted ? (
-                        <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                      ) : (
-                        <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
-                      )}
-                    </div>
-                    {index < steps.length - 1 && (
-                      <div className={`w-4 sm:w-10 h-0.5 mx-0.5 sm:mx-2 transition-all ${
-                        isCompleted ? 'bg-almona-orange' : 'bg-gray-600'
-                      }`} />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <div className="text-center">
-              <span className="text-xs sm:text-sm font-medium text-almona-orange">
-                {steps[currentStepIndex]?.title}
-              </span>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {steps.map((_, index) => (
+                <div key={index} className={`w-2 h-2 rounded-full transition-all ${index <= currentStepIndex ? 'bg-almona-orange' : 'bg-gray-600'}`} />
+              ))}
             </div>
           </div>
+          <div className="mt-1.5 text-xs font-medium text-almona-orange">{steps[currentStepIndex]?.title}</div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto py-4 sm:py-6 px-2 sm:px-0">
+        <div className="flex-1 overflow-y-auto py-3 sm:py-4 px-2 sm:px-0">
           <LazyAnimatePresence mode="wait">
         {renderStep()}
           </LazyAnimatePresence>
