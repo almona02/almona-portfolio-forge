@@ -73,7 +73,7 @@ export async function generateWorkshopLayoutPDF(
   }
   page.drawText(companyName, { x: logoX, y: 595 - margin - 16, size: 15, font: bold, color: primary });
   page.drawText('ALMONA CO. IMPORT EXPORT COMMERCIAL AGENCIES', { x: logoX, y: 595 - margin - 32, size: 8, font, color: secondary });
-  page.drawText('WORKSHOP LAYOUT PLAN', { x: 842 - margin - 170, y: 595 - margin - 18, size: 11, font: bold, color: primary });
+  page.drawText('YILMAZ WORKSHOP PLAN', { x: 842 - margin - 170, y: 595 - margin - 18, size: 11, font: bold, color: primary });
   page.drawText(`Factory: ${factoryL} m × ${factoryW} m`, { x: 842 - margin - 170, y: 595 - margin - 32, size: 8, font, color: secondary });
 
   // ---- Left sidebar: components + totals ----

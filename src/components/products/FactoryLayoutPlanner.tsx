@@ -275,7 +275,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-700 flex-shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-white">{copy("Workshop Layout Planner")}</h2>
+            <h2 className="text-lg font-bold text-white">{copy("Yilmaz Workshop Planner")}</h2>
             <p className="text-xs text-gray-400">{copy("Add machines and zones, drag to position them, then export a PDF.")}</p>
           </div>
           <div className="flex items-center gap-2">
