@@ -42,7 +42,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
             img ? (
               <img key={idx} src={img} alt={`${machine.title} ${idx + 1}`} className="w-full object-cover rounded-lg border border-almona-light/30 max-h-96" />
             ) : (
-              <div key={idx} className="w-full h-64 flex items-center justify-center bg-almona-darker rounded-lg text-gray-600">No photo</div>
+              <div key={idx} className="w-full h-64 flex items-center justify-center bg-almona-darker rounded-lg text-gray-600">{copy('No photo')}</div>
             )
           ))}
         </div>
@@ -68,7 +68,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
             </li>
             <li className="flex items-center gap-2">
               <Badge className="bg-green-600 capitalize">{machine.condition.replace(/-/g, ' ')}</Badge>
-              <span className="text-gray-500 text-xs">{machine.views} views</span>
+              <span className="text-gray-500 text-xs">{machine.views} {copy('views')}</span>
             </li>
           </ul>
 
@@ -79,7 +79,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
             <div className="flex flex-col sm:flex-row gap-2">
               <Button asChild className="bg-green-600 hover:bg-green-700 text-white flex-1">
                 <a href={UsedMachineService.whatsappLink(phone)} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
-                  <MessageCircle className="w-4 h-4" /> WhatsApp
+                  <MessageCircle className="w-4 h-4" /> {copy('WhatsApp')}
                 </a>
               </Button>
               <Button asChild variant="outline" className="flex-1">

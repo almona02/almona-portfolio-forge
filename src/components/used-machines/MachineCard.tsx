@@ -8,6 +8,7 @@ import { UsedMachine } from '@/data/usedMachines';
 import OptimizedImage from '@/components/shared/OptimizedImage';
 import ConditionBadge from '@/components/used-machines/ConditionBadge';
 import { UsedMachineService } from '@/lib/usedMachines/UsedMachineService';
+import { usePublicCopy } from '@/hooks/usePublicCopy';
 
 interface MachineCardProps {
   machine: UsedMachine;
@@ -19,6 +20,7 @@ interface MachineCardProps {
  * MachineCard — public listing card with direct contact (WhatsApp + phone).
  */
 const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, onClick }) => {
+  const copy = usePublicCopy();
   const cardHeight = isCompact ? 'h-80' : 'h-auto';
   const imageHeight = isCompact ? 'h-32' : 'h-48';
   const phone = machine.contactWhatsapp || machine.contactPhone;
@@ -31,7 +33,7 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
           {machine.images[0] ? (
             <OptimizedImage src={machine.images[0]} alt={machine.title} className="w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" width={400} height={300} />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-600">No photo</div>
+            <div className="w-full h-full flex items-center justify-center text-gray-600">{copy('No photo')}</div>
           )}
         </div>
         <div className="absolute top-2 left-2">
@@ -58,11 +60,11 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
           </div>
           <div className="flex items-center">
             <Calendar className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />
-            <span>Year: {machine.year ?? '—'}</span>
+            <span>{copy('Year:')} {machine.year ?? '—'}</span>
           </div>
           <div className="flex items-center">
             <Gauge className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />
-            <span>Hours: {machine.hours != null ? machine.hours.toLocaleString() : '—'}</span>
+            <span>{copy('Hours:')} {machine.hours != null ? machine.hours.toLocaleString() : '—'}</span>
           </div>
           <div className="flex items-center">
             <Phone className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />
@@ -74,12 +76,12 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
       <CardFooter className="flex gap-2 mt-auto">
         <Button asChild size={isCompact ? 'sm' : 'default'} className="bg-green-600 hover:bg-green-700 text-white flex-1">
           <a href={waLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1">
-            <MessageCircle className="w-4 h-4" /> WhatsApp
+            <MessageCircle className="w-4 h-4" /> {copy('WhatsApp')}
           </a>
         </Button>
         <Button asChild variant="outline" size={isCompact ? 'sm' : 'default'} className="flex-1">
           <Link to={`/used-machines/${machine.id}`} className="flex items-center justify-center" onClick={onClick}>
-            Details <ChevronRight className="w-4 h-4 ml-1" />
+            {copy('Details')} <ChevronRight className="w-4 h-4 ml-1" />
           </Link>
         </Button>
       </CardFooter>

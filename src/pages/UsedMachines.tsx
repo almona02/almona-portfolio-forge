@@ -50,18 +50,18 @@ const UsedMachines = () => {
         <div className="container mx-auto px-4 py-8">
           {/* Hero — simple & fast */}
           <div className="mb-8 text-center bg-gradient-to-r from-amber-900 to-amber-700 py-10 px-4 rounded-xl">
-            <h1 className="typography-h1 md:text-5xl mb-3 text-white">Used Machines Marketplace</h1>
-            <p className="text-xl text-amber-100 mb-2">Simple &amp; fast — buy and sell used machinery, free.</p>
-            <p className="text-sm text-amber-200/80 mb-6">Post in 2 minutes. No account needed. Buyers contact you directly.</p>
+            <h1 className="typography-h1 md:text-5xl mb-3 text-white">{copy('Used Machines Marketplace')}</h1>
+            <p className="text-xl text-amber-100 mb-2">{copy('Simple & fast — buy and sell used machinery, free.')}</p>
+            <p className="text-sm text-amber-200/80 mb-6">{copy('Post in 2 minutes. No account needed. Buyers contact you directly.')}</p>
             <Button size="lg" className="bg-white text-amber-700 hover:bg-amber-100" onClick={() => setTab('sell')}>
-              <Plus className="w-5 h-5 mr-2" /> Post your machine — free
+              <Plus className="w-5 h-5 mr-2" /> {copy('Post your machine — free')}
             </Button>
           </div>
 
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="grid w-full grid-cols-2 max-w-xl mx-auto mb-8">
-              <TabsTrigger value="browse">Browse Machines</TabsTrigger>
-              <TabsTrigger value="sell">Sell a Machine</TabsTrigger>
+              <TabsTrigger value="browse">{copy('Browse Machines')}</TabsTrigger>
+              <TabsTrigger value="sell">{copy('Sell a Machine')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="browse">
@@ -69,32 +69,32 @@ const UsedMachines = () => {
               <div className="mb-6 bg-almona-darker p-4 rounded-lg border border-almona-light/20 grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="relative md:col-span-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search machines…" className="pl-9 bg-almona-dark border-almona-light text-white" />
+                  <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={copy('Search machines…')} className="pl-9 bg-almona-dark border-almona-light text-white" />
                 </div>
                 <Select value={location} onValueChange={setLocation}>
-                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder="All governorates" /></SelectTrigger>
+                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder={copy('All governorates')} /></SelectTrigger>
                   <SelectContent className="bg-almona-darker text-white">
-                    <SelectItem value="all">All governorates</SelectItem>
+                    <SelectItem value="all">{copy('All governorates')}</SelectItem>
                     {GOVERNORATES.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder="All categories" /></SelectTrigger>
+                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder={copy('All categories')} /></SelectTrigger>
                   <SelectContent className="bg-almona-darker text-white">
-                    <SelectItem value="all">All categories</SelectItem>
-                    {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    <SelectItem value="all">{copy('All categories')}</SelectItem>
+                    {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{copy(c)}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
 
               {loading ? (
-                <div className="text-center py-16 text-gray-400">Loading listings…</div>
+                <div className="text-center py-16 text-gray-400">{copy('Loading listings…')}</div>
               ) : filtered.length === 0 ? (
                 <div className="text-center py-16">
                   <p className="text-xl text-gray-300 mb-2">{copy('No listings yet — be the first to post.')}</p>
-                  <p className="text-sm text-gray-500 mb-6">Free, no account needed.</p>
+                  <p className="text-sm text-gray-500 mb-6">{copy('Free, no account needed.')}</p>
                   <Button className="btn-primary" onClick={() => setTab('sell')}>
-                    <Plus className="w-4 h-4 mr-2" /> Post a machine
+                    <Plus className="w-4 h-4 mr-2" /> {copy('Post a machine')}
                   </Button>
                 </div>
               ) : (
@@ -105,7 +105,7 @@ const UsedMachines = () => {
 
               {filtered.length > 0 && (
                 <p className="text-center text-xs text-gray-500 mt-10">
-                  {filtered.length} listing{filtered.length !== 1 ? 's' : ''} · prices are indicative — confirm with the seller.
+                  {filtered.length} {filtered.length === 1 ? copy('listing') : copy('listings')} · {copy('prices are indicative — confirm with the seller.')}
                 </p>
               )}
             </TabsContent>
