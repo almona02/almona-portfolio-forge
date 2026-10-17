@@ -36,8 +36,14 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
       if (isAppend) {
         const firstNew = machines[prevIds.length];
         if (firstNew) {
+          const targetId = `machine-m-${firstNew.id}`;
           requestAnimationFrame(() => {
-            document.getElementById(`machine-${firstNew.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            requestAnimationFrame(() => {
+              const el = document.getElementById(targetId);
+              if (el && el.offsetParent !== null) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            });
           });
         }
       }
@@ -65,7 +71,7 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
       return (
         <div
           key={machine.id}
-          id={`machine-${machine.id}`}
+          id={`machine-m-${machine.id}`}
           className="transform transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] scroll-mt-28"
         >
           <EnhancedProductCard

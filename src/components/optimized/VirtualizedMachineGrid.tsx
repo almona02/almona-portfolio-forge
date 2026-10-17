@@ -44,8 +44,15 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
       if (isAppend) {
         const firstNew = machines[prevIds.length];
         if (firstNew) {
+          const targetId = `machine-d-${firstNew.id}`;
+          // Double rAF ensures the DOM is committed and laid out before scrolling
           requestAnimationFrame(() => {
-            document.getElementById(`machine-${firstNew.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            requestAnimationFrame(() => {
+              const el = document.getElementById(targetId);
+              if (el && el.offsetParent !== null) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            });
           });
         }
       }
@@ -60,7 +67,7 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
         {machines.map((machine) => {
           const isSelected = selectedMachines.some(m => m.id === machine.id);
           return (
-            <div key={machine.id} id={`machine-${machine.id}`} className="h-full scroll-mt-28">
+            <div key={machine.id} id={`machine-d-${machine.id}`} className="h-full scroll-mt-28">
               <EnhancedProductCard
                 machine={machine}
                 isSelected={isSelected}
