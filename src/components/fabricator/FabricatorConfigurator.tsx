@@ -43,17 +43,17 @@ export const FabricatorConfigurator: React.FC = () => {
     try {
       await fabricatorConfigApi.createRule({ name: ruleName.trim(), rule_type: ruleType, applies_to: ruleAppliesTo.trim() || null })
       setRuleName(''); setRuleAppliesTo(''); await refresh(); toast({ title: 'Rule added' })
-    } catch (e) { toast({ title: 'Add failed', variant: 'destructive' }) }
+    } catch { toast({ title: 'Add failed', variant: 'destructive' }) }
   }
 
   const setRuleStatus = async (id: string, status: 'approved' | 'rejected') => {
     try { await fabricatorConfigApi.setRuleStatus(id, status); await refresh(); toast({ title: `Rule ${status}` }) }
-    catch (e) { toast({ title: 'Update failed', variant: 'destructive' }) }
+    catch { toast({ title: 'Update failed', variant: 'destructive' }) }
   }
 
   const saveTuning = async (key: string, value: number) => {
     try { await fabricatorConfigApi.saveTuning(key, value); await refresh(); toast({ title: 'Tuning saved' }) }
-    catch (e) { toast({ title: 'Save failed', variant: 'destructive' }) }
+    catch { toast({ title: 'Save failed', variant: 'destructive' }) }
   }
 
   useEffect(() => { void refresh() }, [refresh])
@@ -63,18 +63,18 @@ export const FabricatorConfigurator: React.FC = () => {
     try {
       const rows = await fabricatorConfigApi.listProfileAccessories(p.id)
       setKitAccessories(rows.map((r) => r.accessory))
-    } catch (e) { toast({ title: 'Unable to load kit', variant: 'destructive' }) }
+    } catch { toast({ title: 'Unable to load kit', variant: 'destructive' }) }
   }
 
   const link = async (accessoryId: string) => {
     if (!kitProfile) return
     try { await fabricatorConfigApi.linkAccessory(kitProfile.id, accessoryId); await loadKit(kitProfile); toast({ title: 'Accessory added to kit' }) }
-    catch (e) { toast({ title: 'Link failed', variant: 'destructive' }) }
+    catch { toast({ title: 'Link failed', variant: 'destructive' }) }
   }
   const unlink = async (accessoryId: string) => {
     if (!kitProfile) return
     try { await fabricatorConfigApi.unlinkAccessory(kitProfile.id, accessoryId); await loadKit(kitProfile); toast({ title: 'Accessory removed' }) }
-    catch (e) { toast({ title: 'Unlink failed', variant: 'destructive' }) }
+    catch { toast({ title: 'Unlink failed', variant: 'destructive' }) }
   }
 
   const tabs: Array<{ id: Tab; label: string; icon: typeof Layers }> = [

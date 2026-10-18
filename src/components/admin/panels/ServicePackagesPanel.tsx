@@ -43,7 +43,7 @@ export const ServicePackagesPanel: React.FC = () => {
       await db.from('service_packages').update({ is_active: !p.is_active }).eq('id', p.id)
       toast({ title: `${p.title_en} ${p.is_active ? 'deactivated' : 'activated'}` })
       await refresh()
-    } catch (e) { toast({ title: 'Update failed', variant: 'destructive' }) }
+    } catch { toast({ title: 'Update failed', variant: 'destructive' }) }
   }
 
   return (

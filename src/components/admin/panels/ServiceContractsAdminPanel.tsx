@@ -118,7 +118,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
     try {
       const v = await serviceContractApi.listVisits(contract.id)
       setPrintContract({ contract, visits: v })
-    } catch (e) { toast({ title: 'Unable to load contract visits', variant: 'destructive' }) }
+    } catch { toast({ title: 'Unable to load contract visits', variant: 'destructive' }) }
   }
 
   return (
