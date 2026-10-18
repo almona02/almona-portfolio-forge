@@ -1,4 +1,4 @@
-import { BarChart3, Boxes, ClipboardCheck, DollarSign, Factory, FileText, HardHat, HelpCircle, Package, Settings, ShieldCheck, ShoppingCart, UserCog, Users, Wrench, Zap } from 'lucide-react'
+import { BarChart3, Boxes, ClipboardCheck, DollarSign, Factory, FileText, HardHat, HelpCircle, Package, Settings, ShieldCheck, ShoppingCart, SlidersHorizontal, UserCog, Users, Wrench, Zap } from 'lucide-react'
 
 /** Sections implemented by the /admin dashboard. Shared with the global menu. */
 export const adminNavigationItems = [
@@ -18,6 +18,7 @@ export const adminNavigationItems = [
   { id: 'audit-log', label: 'Audit Log', icon: ShieldCheck },
   { id: 'finance', label: 'Finance', icon: DollarSign },
   { id: 'reports', label: 'Reports', icon: FileText },
+  { id: 'configuration', label: 'Configuration', icon: SlidersHorizontal },
   { id: 'settings', label: 'Settings', icon: Settings },
 ] as const
 
