@@ -1,11 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
 /**
- * Fetches live product prices from the `products` table (public read),
- * keyed by SKU (machine model number). Returns an empty map until loaded.
+ * Normalize a machine name / SKU so hyphens, spaces and case never break the match:
+ * "ACK-420-S" -> "ACK 420 S", "ack 420 s" -> "ACK 420 S".
  */
-export function useLiveProductPrices(): Map<string, number> {
+function normalizeKey(value: string): string {
+  return (value || '').toUpperCase().replace(/[\s\-_.]+/g, ' ').trim();
+}
+
+/**
+ * Fetches live product prices from the `products` table (public read) and returns a
+ * lookup function keyed by normalized SKU/model. Returns undefined for unpriced items.
+ */
+export function useLiveProductPrices(): (name: string) => number | undefined {
   const [prices, setPrices] = useState<Map<string, number>>(new Map());
 
   useEffect(() => {
@@ -20,7 +28,7 @@ export function useLiveProductPrices(): Map<string, number> {
         for (const row of (data ?? []) as { sku: string; price: number | string | null }[]) {
           if (row.price == null) continue;
           const v = Number(row.price);
-          if (Number.isFinite(v) && v > 0) map.set(row.sku, v);
+          if (Number.isFinite(v) && v > 0) map.set(normalizeKey(row.sku), v);
         }
         setPrices(map);
       });
@@ -29,5 +37,5 @@ export function useLiveProductPrices(): Map<string, number> {
     };
   }, []);
 
-  return prices;
+  return useCallback((name: string) => prices.get(normalizeKey(name)), [prices]);
 }
