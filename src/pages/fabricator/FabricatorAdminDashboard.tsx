@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -10,7 +9,8 @@ import { useToast } from '@/hooks/use-toast'
 import { listAdminUsers, type AdminUserRow } from '@/lib/adminUsersApi'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Loader2, RefreshCw, UserPlus, Trash2, Package, SlidersHorizontal, Layers, Wrench } from 'lucide-react'
+import { FabricatorConfigurator } from '@/components/fabricator/FabricatorConfigurator'
+import { Loader2, RefreshCw, UserPlus, Trash2 } from 'lucide-react'
 
 const FACTORY_ROLES = ['technical_office', 'operator', 'technician', 'supervisor', 'manager'] as const
 
@@ -23,7 +23,6 @@ const db = supabase as any
 const FabricatorAdminDashboard: React.FC = () => {
   const { user } = useAuth()
   const { toast } = useToast()
-  const navigate = useNavigate()
   const [workshop, setWorkshop] = useState<Workshop | null>(null)
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
@@ -66,13 +65,6 @@ const FabricatorAdminDashboard: React.FC = () => {
       await refresh()
     } catch (e) { toast({ title: 'Remove failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' }) }
   }
-
-  const config = [
-    { title: 'System Packs', desc: 'Configure window/door system packs.', icon: Package, path: '/fabricator/studio/profiles' },
-    { title: 'Profiles', desc: 'Manage profile library and roles.', icon: Layers, path: '/fabricator/studio/profiles' },
-    { title: 'Tuning', desc: 'Optimization and cut-list parameters.', icon: SlidersHorizontal, path: '/fabricator/studio' },
-    { title: 'Manufacturing Rules', desc: 'Machining and assembly rules.', icon: Wrench, path: '/fabricator/studio' },
-  ]
 
   return (
     <div className="container mx-auto py-6 px-4 space-y-6">
@@ -121,20 +113,7 @@ const FabricatorAdminDashboard: React.FC = () => {
         </CardContent>
       </Card>
 
-      <div>
-        <h2 className="text-lg font-semibold mb-3">Configuration</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {config.map((c) => (
-            <Card key={c.title} className="cursor-pointer hover:border-amber-500/40 transition-colors" onClick={() => navigate(c.path)}>
-              <CardContent className="pt-6">
-                <c.icon className="h-6 w-6 text-amber-500" />
-                <CardTitle className="text-base mt-3">{c.title}</CardTitle>
-                <CardDescription className="mt-1">{c.desc}</CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <FabricatorConfigurator />
 
       <AddMemberDialog open={addOpen} onClose={() => setAddOpen(false)} workshopId={workshop?.id ?? ''} onAdded={() => void refresh()} />
     </div>
