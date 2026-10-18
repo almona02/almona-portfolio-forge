@@ -130,6 +130,35 @@ export const fabricatorConfigApi = {
     const { error } = await db.from('fabricator_tuning').upsert({ key, value, unit }, { onConflict: 'owner_id,key' })
     if (error) throw error
   },
+
+  async listPacks(): Promise<SystemPack[]> {
+    const { data, error } = await supabase.from('fabricator_system_packs').select('*').order('label')
+    if (error) throw error
+    return (data ?? []) as SystemPack[]
+  },
+
+  async createPack(input: { label: string; scope?: string; brands?: string[] }): Promise<void> {
+    const { error } = await db.from('fabricator_system_packs').insert({ label: input.label, scope: input.scope || 'tenant', brands: input.brands || [], spec: {} })
+    if (error) throw error
+  },
+
+  async togglePack(id: string, is_active: boolean): Promise<void> {
+    const { error } = await db.from('fabricator_system_packs').update({ is_active }).eq('id', id)
+    if (error) throw error
+  },
+
+  async deletePack(id: string): Promise<void> {
+    const { error } = await db.from('fabricator_system_packs').delete().eq('id', id)
+    if (error) throw error
+  },
+}
+
+export interface SystemPack {
+  id: string
+  label: string
+  brands: string[] | null
+  scope: string
+  is_active: boolean
 }
 
 export interface ManufacturingRule {

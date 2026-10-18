@@ -7,10 +7,10 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { useToast } from '@/hooks/use-toast'
-import { fabricatorConfigApi, ACCESSORY_TYPES, MATERIALS, type FabricatorProfile, type FabricatorAccessory, type ManufacturingRule, type TuningParam } from '@/lib/fabricatorConfigApi'
-import { Loader2, RefreshCw, Plus, Trash2, Layers, Package, Link2, CheckCircle2, XCircle, Settings2 } from 'lucide-react'
+import { fabricatorConfigApi, ACCESSORY_TYPES, MATERIALS, type FabricatorProfile, type FabricatorAccessory, type ManufacturingRule, type TuningParam, type SystemPack } from '@/lib/fabricatorConfigApi'
+import { Loader2, RefreshCw, Plus, Trash2, Layers, Package, Link2, CheckCircle2, XCircle, Settings2, Boxes } from 'lucide-react'
 
-type Tab = 'profiles' | 'accessories' | 'kits' | 'rules' | 'tuning'
+type Tab = 'profiles' | 'accessories' | 'kits' | 'rules' | 'tuning' | 'packs'
 
 export const FabricatorConfigurator: React.FC = () => {
   const { toast } = useToast()
@@ -24,6 +24,8 @@ export const FabricatorConfigurator: React.FC = () => {
   const [kitAccessories, setKitAccessories] = useState<FabricatorAccessory[]>([])
   const [rules, setRules] = useState<ManufacturingRule[]>([])
   const [tuning, setTuning] = useState<TuningParam[]>([])
+  const [packs, setPacks] = useState<SystemPack[]>([])
+  const [packLabel, setPackLabel] = useState('')
   const [ruleName, setRuleName] = useState('')
   const [ruleType, setRuleType] = useState('machining')
   const [ruleAppliesTo, setRuleAppliesTo] = useState('')
@@ -31,8 +33,8 @@ export const FabricatorConfigurator: React.FC = () => {
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const [p, a, r, t] = await Promise.all([fabricatorConfigApi.listProfiles(), fabricatorConfigApi.listAccessories(), fabricatorConfigApi.listRules(), fabricatorConfigApi.listTuning()])
-      setProfiles(p); setAccessories(a); setRules(r); setTuning(t)
+      const [p, a, r, t, pk] = await Promise.all([fabricatorConfigApi.listProfiles(), fabricatorConfigApi.listAccessories(), fabricatorConfigApi.listRules(), fabricatorConfigApi.listTuning(), fabricatorConfigApi.listPacks()])
+      setProfiles(p); setAccessories(a); setRules(r); setTuning(t); setPacks(pk)
     } catch (e) { console.error(e) } finally { setLoading(false) }
   }, [])
 
@@ -81,6 +83,7 @@ export const FabricatorConfigurator: React.FC = () => {
     { id: 'kits', label: 'Set Kits', icon: Link2 },
     { id: 'rules', label: 'Rules', icon: CheckCircle2 },
     { id: 'tuning', label: 'Tuning', icon: Settings2 },
+    { id: 'packs', label: 'Packs', icon: Boxes },
   ]
 
   return (
@@ -196,6 +199,27 @@ export const FabricatorConfigurator: React.FC = () => {
             <TuningRow label="Bar end trim (mm)" k="bar_end_trim_mm" tuning={tuning} onSave={saveTuning} />
             <TuningRow label="Min remnant length (mm)" k="min_remnant_mm" tuning={tuning} onSave={saveTuning} />
             <TuningRow label="Yield margin (%)" k="yield_margin_pct" tuning={tuning} onSave={saveTuning} />
+          </div>
+        )}
+
+        {tab === 'packs' && (
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2 items-end">
+              <div className="w-64"><Label>Pack label</Label><Input value={packLabel} onChange={(e) => setPackLabel(e.target.value)} placeholder="e.g. PS-6600 Series" /></div>
+              <Button size="sm" onClick={() => { if (!packLabel.trim()) { toast({ title: 'Enter a pack label', variant: 'destructive' }); return } void fabricatorConfigApi.createPack({ label: packLabel.trim() }).then(() => { setPackLabel(''); void refresh(); toast({ title: 'Pack added' }) }) }}><Plus className="mr-2 h-4 w-4" /> Add pack</Button>
+            </div>
+            {packs.length === 0 ? <p className="text-sm text-muted-foreground">No system packs yet.</p> : (
+              <div className="space-y-2">
+                {packs.map((pk) => (
+                  <div key={pk.id} className="flex flex-wrap items-center gap-3 rounded-md border p-2">
+                    <div className="flex-1 min-w-[160px]"><div className="text-sm font-medium">{pk.label}</div><div className="text-xs text-muted-foreground capitalize">{pk.scope}{pk.brands?.length ? ` · ${pk.brands.join(', ')}` : ''}</div></div>
+                    <Badge variant={pk.is_active ? 'default' : 'secondary'}>{pk.is_active ? 'active' : 'inactive'}</Badge>
+                    <Button size="sm" variant="outline" onClick={() => void fabricatorConfigApi.togglePack(pk.id, !pk.is_active).then(refresh)}>{pk.is_active ? 'Deactivate' : 'Activate'}</Button>
+                    <Button size="sm" variant="ghost" onClick={() => void fabricatorConfigApi.deletePack(pk.id).then(refresh)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </CardContent>
