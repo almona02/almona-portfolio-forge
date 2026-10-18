@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import * as Dialog from '@radix-ui/react-dialog'
 import { adminNavigationItems } from '@/components/admin/adminNavigation'
+import '@/styles/admin-theme.css'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase'
@@ -53,6 +54,9 @@ const BusinessKPIDashboard = lazyRetry(() => import('../components/analytics/Bus
 // Phase 4: Analytics components
 const AnalyticsDashboard = lazyRetry(() => import('../components/ui/AnalyticsDashboard').then(m => ({ default: m.AnalyticsDashboard })), 'AnalyticsDashboard')
 const AnalyticsQueryBuilder = lazyRetry(() => import('../components/ui/AnalyticsQueryBuilder').then(m => ({ default: m.AnalyticsQueryBuilder })), 'AnalyticsQueryBuilder')
+const AuditLogPanel = lazyRetry(() => import('@/components/admin/panels/AuditLogPanel'), 'AuditLogPanel')
+const UserRolePanel = lazyRetry(() => import('@/components/admin/panels/UserRolePanel'), 'UserRolePanel')
+const TechnicianWorkloadPanel = lazyRetry(() => import('@/components/admin/panels/TechnicianWorkloadPanel'), 'TechnicianWorkloadPanel')
 
 type Notification = { id: string; title: string; message: string; created_at: string }
 
@@ -89,6 +93,11 @@ const AdminDashboard: React.FC = () => {
   })
 
   const navigationItems = adminNavigationItems
+
+  useEffect(() => {
+    document.body.classList.add('almona-admin-theme')
+    return () => document.body.classList.remove('almona-admin-theme')
+  }, [])
 
   useEffect(() => {
     fetchDashboardData()
@@ -250,6 +259,24 @@ const AdminDashboard: React.FC = () => {
         )
       case 'support':
         return <AdminTicketDashboard currentUserId={user?.id || ''} userRole="admin" />
+      case 'technicians':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading technicians…</div>}>
+            <TechnicianWorkloadPanel />
+          </React.Suspense>
+        )
+      case 'users':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading users…</div>}>
+            <UserRolePanel currentUserId={user?.id || ''} />
+          </React.Suspense>
+        )
+      case 'audit-log':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading audit log…</div>}>
+            <AuditLogPanel />
+          </React.Suspense>
+        )
       case 'spare-parts':
         return <SparePartsImportPanel />
       case 'products':
@@ -336,7 +363,7 @@ const AdminDashboard: React.FC = () => {
           variant="ghost"
           aria-current={activeTab === id ? 'page' : undefined}
           onClick={() => selectTab(id)}
-          className={cn('min-h-11 w-full justify-start gap-3', activeTab === id && 'bg-amber-100 text-amber-950 hover:bg-amber-200')}
+          className={cn('min-h-11 w-full justify-start gap-3', activeTab === id && 'border border-amber-500/30 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25')}
         >
           <Icon aria-hidden="true" className="h-5 w-5 shrink-0" />
           {label}
@@ -346,13 +373,13 @@ const AdminDashboard: React.FC = () => {
   )
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="almona-admin-theme almona-admin-shell min-h-screen bg-background text-foreground">
       <a href="#admin-main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-background focus:p-3 focus:text-foreground focus:ring-2 focus:ring-ring">
         Skip to admin content
       </a>
-      <aside aria-label="Administration" className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r bg-background lg:flex">
+      <aside aria-label="Administration" className="admin-desktop-sidebar fixed bottom-0 left-0 z-40 hidden w-64 flex-col border-r border-amber-500/15 bg-slate-950 lg:flex">
         <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <Shield aria-hidden="true" className="h-6 w-6 text-amber-600" />
+          <Shield aria-hidden="true" className="h-6 w-6 text-amber-400" />
           <span className="text-xl font-semibold">Almona Admin</span>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">{navigation}</div>
@@ -374,7 +401,7 @@ const AdminDashboard: React.FC = () => {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Header */}
-        <header className="border-b bg-background">
+        <header className="sticky z-30 border-b border-amber-500/15 bg-slate-950/95 backdrop-blur">
           <div className="flex min-h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-2">
               <Dialog.Root open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -384,9 +411,9 @@ const AdminDashboard: React.FC = () => {
                   </Button>
                 </Dialog.Trigger>
                 <Dialog.Portal>
-                  <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60" />
+                  <Dialog.Overlay className="fixed inset-0 z-[1090] bg-black/60" />
                   <Dialog.Content
-                    className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[90vw] flex-col bg-background text-foreground shadow-xl"
+                    className="fixed inset-y-0 left-0 z-[1100] flex w-72 max-w-[90vw] flex-col bg-background text-foreground shadow-xl"
                     onCloseAutoFocus={event => {
                       if (pendingFocus.current) {
                         event.preventDefault()

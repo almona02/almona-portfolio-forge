@@ -19,28 +19,28 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
       title: 'Total Revenue',
       value: `EGP ${stats.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
-      trend: '+12.5%',
+      trend: null,
       trendPositive: true,
     },
     {
       title: 'Total Orders',
       value: stats.totalOrders.toLocaleString(),
       icon: ShoppingCart,
-      trend: '+8.2%',
+      trend: null,
       trendPositive: true,
     },
     {
       title: 'Total Customers',
       value: stats.totalCustomers.toLocaleString(),
       icon: Users,
-      trend: '+5.7%',
+      trend: null,
       trendPositive: true,
     },
     {
       title: 'Total Products',
       value: stats.totalProducts.toLocaleString(),
       icon: Package,
-      trend: '+3.1%',
+      trend: null,
       trendPositive: true,
     },
     {
@@ -71,7 +71,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              <p className={`text-xs ${stat.trendPositive ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</p>
+              <p className={`text-xs ${stat.trendPositive ? 'text-emerald-400' : 'text-red-400'}`}>{stat.trend || 'Current database total'}</p>
             </CardContent>
           </Card>
         )

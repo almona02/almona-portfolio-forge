@@ -1,4 +1,4 @@
-import { BarChart3, Boxes, DollarSign, FileText, HelpCircle, Package, Settings, ShoppingCart, Users, Wrench, Zap } from 'lucide-react'
+import { BarChart3, Boxes, DollarSign, FileText, HardHat, HelpCircle, Package, Settings, ShieldCheck, ShoppingCart, UserCog, Users, Wrench, Zap } from 'lucide-react'
 
 /** Sections implemented by the /admin dashboard. Shared with the global menu. */
 export const adminNavigationItems = [
@@ -11,6 +11,9 @@ export const adminNavigationItems = [
   { id: 'inventory', label: 'Inventory', icon: Boxes },
   { id: 'spare-parts', label: 'Spare Parts', icon: Wrench },
   { id: 'support', label: 'Support Tickets', icon: HelpCircle },
+  { id: 'technicians', label: 'Technicians', icon: HardHat },
+  { id: 'users', label: 'Users & Roles', icon: UserCog },
+  { id: 'audit-log', label: 'Audit Log', icon: ShieldCheck },
   { id: 'finance', label: 'Finance', icon: DollarSign },
   { id: 'reports', label: 'Reports', icon: FileText },
   { id: 'settings', label: 'Settings', icon: Settings },

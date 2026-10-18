@@ -1,3 +1,4 @@
+import { csvCell } from '@/lib/csv'
 import React, { useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ColumnDef } from '@tanstack/react-table'
@@ -26,13 +27,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/shared/ui/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/ui/data-table'
 import { TicketStatusBadge } from './TicketStatusBadge'
 import { TicketMetrics } from './TicketMetrics'
 import { TicketAssignmentDialog } from './TicketAssignmentDialog'
 import { TicketStatusUpdateDialog } from './TicketStatusUpdateDialog'
+import { TicketDetailDialog } from './TicketDetailDialog'
 import { 
   getAllTickets, 
   getTicketMetrics, 
@@ -59,6 +61,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
   const [selectedTicket, setSelectedTicket] = useState<TicketWithDetails | null>(null)
   const [assignmentDialogOpen, setAssignmentDialogOpen] = useState(false)
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [filters, setFilters] = useState({
     status: '' as TicketStatus | '',
     priority: '' as TicketPriority | '',
@@ -69,7 +72,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
   const queryClient = useQueryClient()
 
   // Fetch tickets with filters
-  const { data: tickets = [], isLoading: loadingTickets, refetch } = useQuery({
+  const { data: tickets = [], isLoading: loadingTickets, error: ticketsError, refetch } = useQuery({
     queryKey: ['admin-tickets', filters],
     queryFn: () => getAllTickets({
       status: filters.status ? [filters.status] : undefined,
@@ -80,7 +83,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
   })
 
   // Fetch metrics
-  const { data: metrics, isLoading: loadingMetrics } = useQuery({
+  const { data: metrics, isLoading: loadingMetrics, error: metricsError } = useQuery({
     queryKey: ['ticket-metrics'],
     queryFn: getTicketMetrics,
     refetchInterval: 60000, // Refetch every minute
@@ -243,8 +246,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedTicket(ticket)
-                  // Navigate to ticket detail view
-                  console.log('View ticket:', ticket.id)
+                  setDetailDialogOpen(true)
                 }}
               >
                 <Eye className="mr-2 h-4 w-4" />
@@ -291,6 +293,33 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
     })
   }
 
+  const handleExportCsv = () => {
+    const headers = ['Ticket #', 'Title', 'Customer', 'Status', 'Priority', 'Type', 'Assigned To', 'Created']
+    const rows = filteredTickets.map((t) => [
+      t.ticket_number,
+      t.title,
+      t.user_profile?.full_name || 'Unknown',
+      t.status,
+      t.priority,
+      t.type,
+      t.assigned_user?.full_name || 'Unassigned',
+      new Date(t.created_at).toISOString(),
+    ])
+    const csv = [headers, ...rows]
+      .map((r) => r.map(csvCell).join(','))
+      .join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `tickets-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    toast.success(`Exported ${filteredTickets.length} tickets`)
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -306,13 +335,15 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
             <RefreshCw className={`mr-2 h-4 w-4 ${loadingTickets ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportCsv} disabled={loadingTickets || !!ticketsError}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
         </div>
       </div>
 
+      {ticketsError && <p role="alert" className="rounded border border-red-500/40 p-3 text-red-300">Unable to load tickets. Use Refresh to retry.</p>}
+      {metricsError && <p role="alert" className="text-red-300">Ticket metrics are unavailable.</p>}
       {/* Metrics */}
       {metrics && (
         <TicketMetrics metrics={metrics} isLoading={loadingMetrics} />
@@ -329,19 +360,23 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="space-y-2">
-              <label className="typography-label text-sm font-medium">Status</label>
+              <label htmlFor="admin-ticket-status" className="typography-label text-sm font-medium">Status</label>
               <Select
-                value={filters.status}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, status: value as TicketStatus }))}
+                value={filters.status || "all"}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, status: (value === "all" ? "" : value) as TicketStatus }))}
               >
-                <SelectTrigger>
+                <SelectTrigger id="admin-ticket-status">
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All statuses</SelectItem>
+                  <SelectItem value="all">All statuses</SelectItem>
                   <SelectItem value="open">Open</SelectItem>
                   <SelectItem value="assigned">Assigned</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="awaiting_parts">Awaiting parts</SelectItem>
+                  <SelectItem value="awaiting_customer">Awaiting customer</SelectItem>
+                  <SelectItem value="pending_approval">Pending approval</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
                   <SelectItem value="resolved">Resolved</SelectItem>
                   <SelectItem value="closed">Closed</SelectItem>
                 </SelectContent>
@@ -349,16 +384,16 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="typography-label text-sm font-medium">Priority</label>
+              <label htmlFor="admin-ticket-priority" className="typography-label text-sm font-medium">Priority</label>
               <Select
-                value={filters.priority}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, priority: value as TicketPriority }))}
+                value={filters.priority || "all"}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, priority: (value === "all" ? "" : value) as TicketPriority }))}
               >
-                <SelectTrigger>
+                <SelectTrigger id="admin-ticket-priority">
                   <SelectValue placeholder="All priorities" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All priorities</SelectItem>
+                  <SelectItem value="all">All priorities</SelectItem>
                   <SelectItem value="low">Low</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
                   <SelectItem value="high">High</SelectItem>
@@ -369,16 +404,16 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="typography-label text-sm font-medium">Type</label>
+              <label htmlFor="admin-ticket-type" className="typography-label text-sm font-medium">Type</label>
               <Select
-                value={filters.type}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, type: value as TicketType }))}
+                value={filters.type || "all"}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, type: (value === "all" ? "" : value) as TicketType }))}
               >
-                <SelectTrigger>
+                <SelectTrigger id="admin-ticket-type">
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All types</SelectItem>
+                  <SelectItem value="all">All types</SelectItem>
                   <SelectItem value="general">General</SelectItem>
                   <SelectItem value="technical">Technical</SelectItem>
                   <SelectItem value="billing">Billing</SelectItem>
@@ -392,16 +427,16 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="typography-label text-sm font-medium">Assignee</label>
+              <label htmlFor="admin-ticket-assignee" className="typography-label text-sm font-medium">Assignee</label>
               <Select
-                value={filters.assignee}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, assignee: value }))}
+                value={filters.assignee || "all"}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, assignee: value === "all" ? "" : value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger id="admin-ticket-assignee">
                   <SelectValue placeholder="All assignees" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All assignees</SelectItem>
+                  <SelectItem value="all">All assignees</SelectItem>
                   <SelectItem value="unassigned">Unassigned</SelectItem>
                   <SelectItem value="me">Assigned to me</SelectItem>
                 </SelectContent>
@@ -425,12 +460,12 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable
+          {loadingTickets ? <p role="status">Loading tickets…</p> : !ticketsError && <DataTable
             columns={columns}
             data={filteredTickets}
             searchKey="title"
             searchPlaceholder="Search tickets..."
-          />
+          />}
         </CardContent>
       </Card>
 
@@ -450,6 +485,15 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
         isOpen={statusDialogOpen}
         onClose={() => {
           setStatusDialogOpen(false)
+          setSelectedTicket(null)
+        }}
+      />
+
+      <TicketDetailDialog
+        ticket={selectedTicket}
+        isOpen={detailDialogOpen}
+        onClose={() => {
+          setDetailDialogOpen(false)
           setSelectedTicket(null)
         }}
       />

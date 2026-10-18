@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/ui/data-table'
-import { MoreHorizontal, Pencil, CheckCircle2, XCircle, Star, ArrowUpDown } from 'lucide-react'
+import { MoreHorizontal, Pencil, CheckCircle2, XCircle, Star, ArrowUpDown, DollarSign } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/ui/alert-dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import ProductEditDialog, { ProductEditValues } from '@/components/admin/dialogs/ProductEditDialog'
@@ -61,6 +61,7 @@ export const ProductsPanel: React.FC = () => {
     | { type: 'feature' }
     | { type: 'unfeature' }
     | { type: 'stock'; delta: number | '' }
+    | { type: 'price'; price: number | '' }
   >()
 
   // filters
@@ -209,6 +210,28 @@ export const ProductsPanel: React.FC = () => {
     setSelectionResetKey((k) => k + 1)
   }
 
+  const bulkSetPrice = async (price: number) => {
+    const ids = selectedRows.map((r) => r.id)
+    if (!ids.length) return
+    if (!Number.isFinite(price) || price < 0) {
+      toast({ title: 'Enter a valid non-negative price', variant: 'destructive' })
+      return
+    }
+    const prev = [...data]
+    setData((rows) => rows.map((r) => (ids.includes(r.id) ? { ...r, price } : r)))
+    const { error } = await (table('products') as unknown as InClient)
+      .update({ price })
+      .in('id', ids)
+    if (error) {
+      setData(prev)
+      const msg = (error as { message?: string } | null)?.message ?? 'Unknown error'
+      toast({ title: 'Bulk price update failed', description: msg, variant: 'destructive' })
+      return
+    }
+    toast({ title: `Updated price for ${ids.length} product(s)` })
+    setSelectionResetKey((k) => k + 1)
+  }
+
   const columns: ColumnDef<Product>[] = [
     { accessorKey: 'sku', header: 'SKU' },
     { accessorKey: 'name_en', header: 'Name' },
@@ -263,6 +286,9 @@ export const ProductsPanel: React.FC = () => {
           </Button>
           <Button size="sm" variant="outline" disabled={!hasSelection} onClick={() => { setPendingAction({ type: 'stock', delta: 1 }); setConfirmOpen(true) }}>
             <ArrowUpDown className="mr-2 h-4 w-4" /> Adjust stock
+          </Button>
+          <Button size="sm" variant="outline" disabled={!hasSelection} onClick={() => { setPendingAction({ type: 'price', price: '' }); setConfirmOpen(true) }}>
+            <DollarSign className="mr-2 h-4 w-4" /> Set price
           </Button>
         </div>
         <div className="flex flex-wrap gap-3 items-end">
@@ -350,6 +376,7 @@ export const ProductsPanel: React.FC = () => {
               {pendingAction?.type === 'feature' && 'Mark selected as featured?'}
               {pendingAction?.type === 'unfeature' && 'Remove featured from selected?'}
               {pendingAction?.type === 'stock' && 'Adjust stock for selected?'}
+              {pendingAction?.type === 'price' && 'Set price for selected?'}
             </AlertDialogTitle>
             <AlertDialogDescription>
               You are about to update {selectedRows.length} product(s). This action can be reverted manually if needed.
@@ -369,6 +396,21 @@ export const ProductsPanel: React.FC = () => {
               />
             </div>
           )}
+          {pendingAction?.type === 'price' && (
+            <div className="mt-2">
+              <label className="typography-label text-xs text-muted-foreground">New price (EGP)</label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={pendingAction.price === '' ? '' : String(pendingAction.price)}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setPendingAction({ type: 'price', price: v === '' ? '' : Number(v) })
+                }}
+              />
+            </div>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
@@ -380,6 +422,9 @@ export const ProductsPanel: React.FC = () => {
                 if (pendingAction.type === 'unfeature') await bulkMarkFeatured(false)
                 if (pendingAction.type === 'stock' && pendingAction.delta !== '' && Number.isFinite(Number(pendingAction.delta))) {
                   await bulkAdjustStock(Number(pendingAction.delta))
+                }
+                if (pendingAction.type === 'price' && pendingAction.price !== '' && Number.isFinite(Number(pendingAction.price))) {
+                  await bulkSetPrice(Number(pendingAction.price))
                 }
                 setConfirmOpen(false)
               })()}
