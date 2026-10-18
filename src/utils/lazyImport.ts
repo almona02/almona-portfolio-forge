@@ -8,7 +8,7 @@ import { ComponentType, lazy } from 'react';
  * @param componentName - Name of component for debugging and session storage key
  * @returns React lazy component with retry logic
  */
-export function lazyRetry<T extends ComponentType<unknown>>(
+export function lazyRetry<T extends ComponentType<any>>(
   componentImport: () => Promise<{ default: T }>,
   componentName: string = 'Unknown'
 ): React.LazyExoticComponent<T> {
