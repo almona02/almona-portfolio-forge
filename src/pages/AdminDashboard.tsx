@@ -58,6 +58,7 @@ const AuditLogPanel = lazyRetry(() => import('@/components/admin/panels/AuditLog
 const UserRolePanel = lazyRetry(() => import('@/components/admin/panels/UserRolePanel'), 'UserRolePanel')
 const TechnicianWorkloadPanel = lazyRetry(() => import('@/components/admin/panels/TechnicianWorkloadPanel'), 'TechnicianWorkloadPanel')
 const UsedMachinesAdminPanel = lazyRetry(() => import('@/components/admin/panels/UsedMachinesAdminPanel'), 'UsedMachinesAdminPanel')
+const MachinesAdminPanel = lazyRetry(() => import('@/components/admin/panels/MachinesAdminPanel'), 'MachinesAdminPanel')
 const ServiceContractsAdminPanel = lazyRetry(() => import('@/components/admin/panels/ServiceContractsAdminPanel'), 'ServiceContractsAdminPanel')
 const AdminSettingsPanel = lazyRetry(() => import('@/components/admin/panels/AdminSettingsPanel'), 'AdminSettingsPanel')
 const ServicePackagesPanel = lazyRetry(() => import('@/components/admin/panels/ServicePackagesPanel'), 'ServicePackagesPanel')
@@ -287,6 +288,12 @@ const AdminDashboard: React.FC = () => {
         return (
           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading used machines…</div>}>
             <UsedMachinesAdminPanel />
+          </React.Suspense>
+        )
+      case 'machines':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading machine catalog…</div>}>
+            <MachinesAdminPanel />
           </React.Suspense>
         )
       case 'service-contracts':
