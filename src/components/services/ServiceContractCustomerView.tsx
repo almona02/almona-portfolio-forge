@@ -105,8 +105,7 @@ const FreqAR: Record<ServiceContract['visit_frequency'], string> = {
  * Printable service contract agreement (Arabic + English) with visit history,
  * photo evidence and customer stamp/signature blocks.
  */
-const ContractAgreement: React.FC<{ contract: ServiceContract; visits: ServiceVisit[]; onClose: () => void }> = ({ contract, visits, onClose }) => {
-  const period = `${fmt(contract.start_date)} → ${fmt(contract.end_date)}`
+export const ContractAgreement: React.FC<{ contract: ServiceContract; visits: ServiceVisit[]; onClose: () => void }> = ({ contract, visits, onClose }) => {  const period = `${fmt(contract.start_date)} → ${fmt(contract.end_date)}`
   const price = contract.price ? `${contract.price} ${contract.currency}` : '—'
   const completed = visits.filter((v) => v.status === 'completed')
   const allPhotos = completed.flatMap((v) => v.photos)

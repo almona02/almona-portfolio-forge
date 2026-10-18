@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from '@/hooks/use-toast'
 import { serviceContractApi, VISIT_FREQUENCIES, type ServiceContract, type ServiceVisit } from '@/lib/serviceContractApi'
 import { listAdminUsers, type AdminUserRow } from '@/lib/adminUsersApi'
+import { ContractAgreement } from '@/components/services/ServiceContractCustomerView'
 
 const freqLabel = (f: string) => f.replace(/i/, 'i').replace(/([a-z])(?=[A-Z])/g, '$1 ')
 
@@ -43,6 +44,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
   const [visitDialog, setVisitDialog] = useState<{ contract: ServiceContract; visit: ServiceVisit } | null>(null)
 
   const [confirmDelete, setConfirmDelete] = useState<ServiceContract | null>(null)
+  const [printContract, setPrintContract] = useState<{ contract: ServiceContract; visits: ServiceVisit[] } | null>(null)
 
   const refresh = useCallback(async () => {
     setLoading(true)
@@ -112,7 +114,15 @@ export const ServiceContractsAdminPanel: React.FC = () => {
     } catch (e) { toast({ title: 'Update failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' }) }
   }
 
+  const openPrint = async (contract: ServiceContract) => {
+    try {
+      const v = await serviceContractApi.listVisits(contract.id)
+      setPrintContract({ contract, visits: v })
+    } catch (e) { toast({ title: 'Unable to load contract visits', variant: 'destructive' }) }
+  }
+
   return (
+    <>
     <Card>
       <CardHeader className="flex-row flex-wrap items-center justify-between gap-3 space-y-0">
         <CardTitle>Service Contracts</CardTitle>
@@ -156,6 +166,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
                             {c.status === 'active' && <DropdownMenuItem className="text-red-500" onClick={() => void changeStatus(c, 'cancelled')}>Cancel contract</DropdownMenuItem>}
                           </DropdownMenuContent>
                         </DropdownMenu>
+                        <Button size="sm" variant="ghost" onClick={() => void openPrint(c)} title="Print contract (AR/EN)"><Printer className="h-4 w-4" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => setConfirmDelete(c)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
                       </div>
                     </td>
@@ -260,6 +271,11 @@ export const ServiceContractsAdminPanel: React.FC = () => {
         </AlertDialogContent>
       </AlertDialog>
     </Card>
+
+    {printContract && (
+      <ContractAgreement contract={printContract.contract} visits={printContract.visits} onClose={() => setPrintContract(null)} />
+    )}
+    </>
   )
 }
 
