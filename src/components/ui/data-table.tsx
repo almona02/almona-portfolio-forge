@@ -4,6 +4,9 @@ import * as React from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
+  PaginationState,
+  RowSelectionState,
+  TableOptions,
   SortingState,
   VisibilityState,
   flexRender,
@@ -34,6 +37,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import type { CheckedState } from "@radix-ui/react-checkbox"
 
+const EMPTY_SELECTION: RowSelectionState = {}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -44,6 +49,7 @@ interface DataTableProps<TData, TValue> {
   showSelection?: boolean
   onSelectionChange?: (rows: TData[]) => void
   clearSelectionKey?: number | string
+  getRowId?: TableOptions<TData>["getRowId"]
 }
 
 export function DataTable<TData, TValue>({
@@ -56,11 +62,37 @@ export function DataTable<TData, TValue>({
   showSelection = false,
   onSelectionChange,
   clearSelectionKey,
+  getRowId,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
+  // A selection belongs to the exact records, filter and page the operator saw.
+  // Invalidate during render so a new dataset can never inherit old checkboxes.
+  const [selection, setSelection] = React.useState(() => ({
+    data, filters: columnFilters, pageIndex: pagination.pageIndex, pageSize: pagination.pageSize,
+    clearSelectionKey, enabled: showSelection, rows: EMPTY_SELECTION,
+  }))
+  const selectionIsCurrent = selection.data === data && selection.filters === columnFilters &&
+    selection.pageIndex === pagination.pageIndex && selection.pageSize === pagination.pageSize &&
+    selection.clearSelectionKey === clearSelectionKey && selection.enabled === showSelection
+  const rowSelection = selectionIsCurrent ? selection.rows : EMPTY_SELECTION
+
+  React.useEffect(() => {
+    if (showSelection && !selectionIsCurrent) {
+      setSelection({
+        data, filters: columnFilters, pageIndex: pagination.pageIndex, pageSize: pagination.pageSize,
+        clearSelectionKey, enabled: showSelection, rows: EMPTY_SELECTION,
+      })
+    }
+  }, [selectionIsCurrent, data, columnFilters, pagination.pageIndex, pagination.pageSize, clearSelectionKey, showSelection])
+
+  const resolveRowId = React.useCallback<NonNullable<TableOptions<TData>["getRowId"]>>((record, index) => {
+    if (typeof record === "object" && record !== null && "id" in record &&
+      (typeof record.id === "string" || typeof record.id === "number")) return String(record.id)
+    return String(index)
+  }, [])
 
   const selectionColumn = React.useMemo<ColumnDef<TData, unknown> | null>(() => {
     if (!showSelection) return null
@@ -74,7 +106,7 @@ export function DataTable<TData, TValue>({
           <Checkbox
             checked={checked}
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Select all"
+            aria-label="Select all rows on this page"
           />
         )
       },
@@ -83,7 +115,7 @@ export function DataTable<TData, TValue>({
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           onClick={(e) => e.stopPropagation()}
-          aria-label="Select row"
+          aria-label={`Select row ${row.id}`}
         />
       ),
       enableSorting: false,
@@ -97,6 +129,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns: tableColumns,
+    getRowId: getRowId ?? resolveRowId,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -104,26 +137,34 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
+    onRowSelectionChange: updater => {
+      setSelection(previous => {
+        const current = previous.data === data && previous.filters === columnFilters &&
+          previous.pageIndex === pagination.pageIndex && previous.pageSize === pagination.pageSize &&
+          previous.clearSelectionKey === clearSelectionKey && previous.enabled === showSelection
+          ? previous.rows : EMPTY_SELECTION
+        return {
+          data, filters: columnFilters, pageIndex: pagination.pageIndex, pageSize: pagination.pageSize,
+          clearSelectionKey, enabled: showSelection,
+          rows: typeof updater === "function" ? updater(current) : updater,
+        }
+      })
+    },
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
   })
 
   React.useEffect(() => {
     if (!onSelectionChange) return
-    const rows = table.getSelectedRowModel().rows.map((r) => r.original)
+    const rows = showSelection ? table.getFilteredSelectedRowModel().rows.map((r) => r.original) : []
     onSelectionChange(rows)
-  }, [rowSelection, onSelectionChange, table])
-
-  React.useEffect(() => {
-    if (clearSelectionKey !== undefined) {
-      setRowSelection({})
-    }
-  }, [clearSelectionKey])
+  }, [rowSelection, data, columnFilters, pagination.pageIndex, pagination.pageSize, showSelection, onSelectionChange, table])
 
   return (
     <div className="w-full">
@@ -168,6 +209,11 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      {showSelection && (
+        <p role="status" className="pb-3 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} selected on this page.
+        </p>
+      )}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -210,7 +256,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className="h-24 text-center"
                 >
                   No results.
