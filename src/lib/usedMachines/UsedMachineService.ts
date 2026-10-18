@@ -138,6 +138,25 @@ export const UsedMachineService = {
     if (error) throw error;
   },
 
+  // Admin-only: list every status (active, sold, flagged, removed). Relies on
+  // the admin read policy granting admins full SELECT.
+  async listAllListings(limit = 500): Promise<UsedMachineListing[]> {
+    const { data, error } = await supabase
+      .from('used_machine_listings')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return (data ?? []) as UsedMachineListing[];
+  },
+
+  // Admin-only: hard delete a listing (reported/flagged or sold). Relies on the
+  // admin delete policy.
+  async deleteListing(id: string): Promise<void> {
+    const { error } = await db.from('used_machine_listings').delete().eq('id', id);
+    if (error) throw error;
+  },
+
   async incrementViews(id: string): Promise<void> {
     const { data } = await supabase
       .from('used_machine_listings')

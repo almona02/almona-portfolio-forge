@@ -7,9 +7,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { TicketStatusBadge } from './TicketStatusBadge';
 import { TicketWithDetails } from '@/types/tickets';
 import { format } from 'date-fns';
+import { Link2, MessageCircle, Mail } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface TicketDetailDialogProps {
   ticket: TicketWithDetails | null;
@@ -25,6 +28,33 @@ const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, ch
 );
 
 export const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({ ticket, isOpen, onClose }) => {
+  const { toast } = useToast();
+
+  const ticketUrl = typeof window !== 'undefined' ? `${window.location.origin}/support/tickets/${ticket?.id}` : `/support/tickets/${ticket?.id}`;
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(ticketUrl);
+      toast({ title: 'Ticket link copied' });
+    } catch {
+      toast({ title: 'Copy failed', description: ticketUrl, variant: 'destructive' });
+    }
+  };
+
+  const sendToCustomer = () => {
+    if (!ticket) return;
+    const text = encodeURIComponent(`Your Almona support ticket ${ticket.ticket_number}: ${ticketUrl}`);
+    if (ticket.contact_phone) {
+      const digits = (ticket.contact_phone || '').replace(/\D/g, '');
+      const intl = digits.startsWith('20') ? digits : `20${digits.replace(/^0/, '')}`;
+      window.open(`https://wa.me/${intl}?text=${text}`, '_blank', 'noopener,noreferrer');
+    } else if (ticket.contact_email) {
+      window.location.href = `mailto:${ticket.contact_email}?subject=${encodeURIComponent(`Your Almona support ticket ${ticket.ticket_number}`)}&body=${encodeURIComponent(ticketUrl)}`;
+    } else {
+      void copyLink();
+    }
+  };
+
   if (!ticket) return null;
 
   return (
@@ -67,6 +97,22 @@ export const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({ ticket, 
             <p className="text-sm text-muted-foreground whitespace-pre-wrap bg-muted/40 rounded-md p-3">{ticket.resolution_summary}</p>
           </div>
         )}
+
+        <div className="mt-4 flex flex-wrap gap-2 border-t pt-4">
+          <Button variant="outline" size="sm" onClick={() => void copyLink()}>
+            <Link2 className="mr-2 h-4 w-4" /> Copy link
+          </Button>
+          {ticket.contact_email && (
+            <Button variant="outline" size="sm" onClick={() => { window.location.href = `mailto:${ticket.contact_email}?subject=${encodeURIComponent(`Your Almona support ticket ${ticket.ticket_number}`)}&body=${encodeURIComponent(ticketUrl)}`; }}>
+              <Mail className="mr-2 h-4 w-4" /> Email customer
+            </Button>
+          )}
+          {ticket.contact_phone && (
+            <Button variant="outline" size="sm" onClick={sendToCustomer}>
+              <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp customer
+            </Button>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

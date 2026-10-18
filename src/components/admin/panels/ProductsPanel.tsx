@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/ui/data-table'
-import { MoreHorizontal, Pencil, CheckCircle2, XCircle, Star, ArrowUpDown, DollarSign } from 'lucide-react'
+import { MoreHorizontal, Pencil, CheckCircle2, XCircle, Star, ArrowUpDown, DollarSign, Search, Loader2 } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/ui/alert-dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import ProductEditDialog, { ProductEditValues } from '@/components/admin/dialogs/ProductEditDialog'
@@ -84,7 +84,7 @@ export const ProductsPanel: React.FC = () => {
     if (stock === 'low') query = query.gt('stock_quantity', 0).lte('stock_quantity', 10)
     if (stock === 'out') query = query.eq('stock_quantity', 0)
     if (stock === 'in') query = query.gt('stock_quantity', 10)
-    if (search) query = query.ilike('sku', `%${search}%`)
+    if (search) query = query.or(`sku.ilike.%${search}%,name_en.ilike.%${search}%,name_ar.ilike.%${search}%`)
 
     const from = (page - 1) * pageSize
     const to = from + pageSize - 1
@@ -232,6 +232,59 @@ export const ProductsPanel: React.FC = () => {
     setSelectionResetKey((k) => k + 1)
   }
 
+  // Quick price edit (autofill): type a name/SKU, pick a product, edit its price.
+  const [quickQuery, setQuickQuery] = React.useState('')
+  const [quickResults, setQuickResults] = React.useState<Product[]>([])
+  const [quickSelected, setQuickSelected] = React.useState<Product | null>(null)
+  const [quickPrice, setQuickPrice] = React.useState('')
+  const [quickLoading, setQuickLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    if (quickSelected) return
+    if (!quickQuery.trim()) { setQuickResults([]); setQuickLoading(false); return }
+    const t = setTimeout(() => {
+      setQuickLoading(true)
+      void supabase
+        .from('products')
+        .select('*')
+        .or(`sku.ilike.%${quickQuery}%,name_en.ilike.%${quickQuery}%,name_ar.ilike.%${quickQuery}%`)
+        .order('created_at', { ascending: false })
+        .limit(8)
+        .then(({ data }) => {
+          setQuickResults((data as Product[] | null) ?? [])
+          setQuickLoading(false)
+        })
+    }, 250)
+    return () => clearTimeout(t)
+  }, [quickQuery, quickSelected])
+
+  const selectQuick = (p: Product) => {
+    setQuickSelected(p)
+    setQuickPrice(String(p.price ?? ''))
+    setQuickResults([])
+    setQuickQuery('')
+  }
+
+  const saveQuickPrice = async () => {
+    if (!quickSelected) return
+    const price = Number(quickPrice)
+    if (!Number.isFinite(price) || price < 0) {
+      toast({ title: 'Enter a valid non-negative price', variant: 'destructive' })
+      return
+    }
+    type EqClient = { update: (v: unknown) => { eq: (col: string, val: string) => Promise<{ error: unknown }> } }
+    const { error } = await (table('products') as unknown as EqClient).update({ price }).eq('id', quickSelected.id)
+    if (error) {
+      const msg = (error as { message?: string } | null)?.message ?? 'Unknown error'
+      toast({ title: 'Price update failed', description: msg, variant: 'destructive' })
+      return
+    }
+    toast({ title: 'Price updated', description: `${quickSelected.name_en || quickSelected.sku} → EGP ${price}` })
+    setQuickSelected(null)
+    setQuickPrice('')
+    void fetchServerPage().then(({ rows, total }) => { setData(rows); setTotal(total) })
+  }
+
   const columns: ColumnDef<Product>[] = [
     { accessorKey: 'sku', header: 'SKU' },
     { accessorKey: 'name_en', header: 'Name' },
@@ -271,6 +324,41 @@ export const ProductsPanel: React.FC = () => {
         <CardTitle>Products</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Quick price edit (autofill) */}
+        <div className="rounded-lg border p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Quick price edit</span>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="relative w-72 max-w-full">
+              <label htmlFor="admin-products-quick" className="typography-label text-xs text-muted-foreground">Product (autofill by name or SKU)</label>
+              <Input id="admin-products-quick" value={quickSelected ? (quickSelected.name_en || quickSelected.sku) : quickQuery} onChange={(e) => { setQuickQuery(e.target.value); setQuickSelected(null) }} placeholder="Type to search products…" />
+              {quickLoading && <Loader2 className="absolute right-2 top-8 h-4 w-4 animate-spin text-muted-foreground" />}
+              {!quickSelected && quickResults.length > 0 && (
+                <div className="absolute z-10 mt-1 w-full border rounded-md bg-popover text-popover-foreground max-h-56 overflow-y-auto shadow-md">
+                  {quickResults.map((p) => (
+                    <button key={p.id} type="button" onClick={() => selectQuick(p)} className="w-full text-left px-3 py-2 text-sm hover:bg-muted">
+                      <span className="font-medium">{p.name_en || p.sku}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">{p.sku} · {new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP' }).format(Number(p.price ?? 0))}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {quickSelected && (
+              <>
+                <div className="w-40">
+                  <label htmlFor="admin-products-quick-price" className="typography-label text-xs text-muted-foreground">New price (EGP)</label>
+                  <Input id="admin-products-quick-price" type="number" step="0.01" min="0" value={quickPrice} onChange={(e) => setQuickPrice(e.target.value)} />
+                </div>
+                <Button onClick={() => void saveQuickPrice()}><DollarSign className="mr-2 h-4 w-4" /> Save price</Button>
+                <Button variant="ghost" onClick={() => { setQuickSelected(null); setQuickPrice('') }}>Cancel</Button>
+              </>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-wrap gap-2 items-center">
           <Button size="sm" variant="secondary" disabled={!hasSelection} onClick={() => { setPendingAction({ type: 'activate' }); setConfirmOpen(true) }}>
             <CheckCircle2 className="mr-2 h-4 w-4" /> Activate
