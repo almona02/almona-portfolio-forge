@@ -14,6 +14,7 @@ const ROLE_COLORS: Record<AdminUserRole, string> = {
   sales_rep: 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300',
   technician: 'border-amber-500/40 bg-amber-500/15 text-amber-300',
   support: 'border-violet-500/40 bg-violet-500/15 text-violet-300',
+  fabricator_admin: 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300',
 }
 
 export const UserRolePanel: React.FC<{ currentUserId: string }> = ({ currentUserId }) => {

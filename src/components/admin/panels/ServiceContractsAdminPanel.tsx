@@ -5,10 +5,11 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, RefreshCw, Loader2, Trash2, CalendarPlus, CheckCircle2, Printer, Camera } from 'lucide-react'
+import { Plus, RefreshCw, Loader2, Trash2, CalendarPlus, CheckCircle2, Printer, Camera, MoreHorizontal, Power } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/ui/alert-dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useToast } from '@/hooks/use-toast'
 import { serviceContractApi, VISIT_FREQUENCIES, type ServiceContract, type ServiceVisit } from '@/lib/serviceContractApi'
 import { listAdminUsers, type AdminUserRow } from '@/lib/adminUsersApi'
@@ -103,6 +104,14 @@ export const ServiceContractsAdminPanel: React.FC = () => {
     } catch (e) { toast({ title: 'Schedule failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' }) }
   }
 
+  const changeStatus = async (contract: ServiceContract, status: ServiceContract['status']) => {
+    try {
+      await serviceContractApi.updateContract(contract.id, { status })
+      toast({ title: `Contract ${status}` })
+      await refresh()
+    } catch (e) { toast({ title: 'Update failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' }) }
+  }
+
   return (
     <Card>
       <CardHeader className="flex-row flex-wrap items-center justify-between gap-3 space-y-0">
@@ -137,6 +146,16 @@ export const ServiceContractsAdminPanel: React.FC = () => {
                       <div className="flex flex-wrap gap-1">
                         <Button size="sm" variant="outline" onClick={() => void loadVisits(c)}>Visits</Button>
                         <Button size="sm" variant="outline" onClick={() => void scheduleVisit(c)}><CalendarPlus className="h-4 w-4" /></Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button size="sm" variant="ghost" aria-label={`Change status for ${c.factory_name}`}><MoreHorizontal className="h-4 w-4" /></Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {c.status !== 'active' && <DropdownMenuItem onClick={() => void changeStatus(c, 'active')}><Power className="mr-2 h-4 w-4" /> Activate</DropdownMenuItem>}
+                            {c.status === 'active' && <DropdownMenuItem onClick={() => void changeStatus(c, 'expired')}>Mark expired</DropdownMenuItem>}
+                            {c.status === 'active' && <DropdownMenuItem className="text-red-500" onClick={() => void changeStatus(c, 'cancelled')}>Cancel contract</DropdownMenuItem>}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         <Button size="sm" variant="ghost" onClick={() => setConfirmDelete(c)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
                       </div>
                     </td>
