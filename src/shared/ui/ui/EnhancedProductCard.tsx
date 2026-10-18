@@ -112,8 +112,8 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
 }) => {
   const copy = usePublicCopy();
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const livePrices = useLiveProductPrices();
-  const livePrice = livePrices.get(machine.name);
+  const getPrice = useLiveProductPrices();
+  const livePrice = getPrice(machine.name);
 
   const handleSelect = () => {
     onSelect?.(machine, !isSelected);
