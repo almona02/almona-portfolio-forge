@@ -1,3 +1,4 @@
+import { csvCell } from '@/lib/csv'
 import React, { useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ColumnDef } from '@tanstack/react-table'
@@ -305,7 +306,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       new Date(t.created_at).toISOString(),
     ])
     const csv = [headers, ...rows]
-      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
+      .map((r) => r.map(csvCell).join(','))
       .join('\n')
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)

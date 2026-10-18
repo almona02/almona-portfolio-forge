@@ -4,7 +4,6 @@ import {
   validateStatusTransition,
 } from '@/lib/ticketing/TicketGovernanceService';
 import { recordServiceEvent } from '@/lib/ticketing/serviceEventLedger';
-import { logAdminAction } from '@/lib/adminAudit';
 import {
   ServiceTicket,
   TicketWithDetails,
@@ -154,14 +153,6 @@ export const assignTicket = async (
     verifiedBy: assignedBy,
   });
 
-  await logAdminAction({
-    action: 'ticket_assigned',
-    entityType: 'ticket',
-    entityId: ticketId,
-    details: { assigned_to: assigneeId, previous_status: currentStatus },
-    actorId: assignedBy,
-  });
-
   return baseMap(data);
 }
 
@@ -208,18 +199,6 @@ export const updateTicketStatusAndPriority = async (
         newStatus: updates.status,
       },
       verifiedBy: actorId,
-    });
-
-    await logAdminAction({
-      action: 'ticket_status',
-      entityType: 'ticket',
-      entityId: ticketId,
-      details: {
-        previous_status: currentRow.status,
-        new_status: updates.status,
-        priority: updates.priority ?? null,
-      },
-      actorId,
     });
   }
 

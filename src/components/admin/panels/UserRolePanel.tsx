@@ -1,123 +1,113 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { logAdminAction } from '@/lib/adminAudit';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search } from 'lucide-react';
-import { toast } from 'sonner';
-
-type Role = 'customer' | 'admin' | 'sales_rep' | 'technician' | 'support';
-const ROLES: Role[] = ['customer', 'sales_rep', 'technician', 'support', 'admin'];
-
-interface UserRow {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-  company_name: string | null;
-  role: Role;
-}
+import React, { useEffect, useRef, useState } from 'react'
+import { ADMIN_USER_ROLES, changeAdminUserRole, listAdminUsers, type AdminUserRole, type AdminUserRow } from '@/lib/adminUsersApi'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/ui/alert-dialog'
+import { toast } from 'sonner'
 
 export const UserRolePanel: React.FC<{ currentUserId: string }> = ({ currentUserId }) => {
-  const [users, setUsers] = useState<UserRow[]>([]);
-  const [q, setQ] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<AdminUserRow[]>([])
+  const [q, setQ] = useState('')
+  const [page, setPage] = useState(0)
+  const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [revision, setRevision] = useState(0)
+  const [pending, setPending] = useState<{ user: AdminUserRow; role: AdminUserRole } | null>(null)
+  const savingRef = useRef(false)
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+    const timeout = setTimeout(() => {
+      void listAdminUsers(page, q).then(result => {
+        if (!cancelled) { setUsers(result.users); setTotal(result.total) }
+      }).catch((failure: unknown) => {
+        if (!cancelled) { setUsers([]); setError(failure instanceof Error ? failure.message : 'Unable to load users') }
+      }).finally(() => { if (!cancelled) setLoading(false) })
+    }, 250)
+    return () => { cancelled = true; clearTimeout(timeout) }
+  }, [page, q, revision])
 
-  const load = async () => {
-    setLoading(true);
+  const confirmRole = async () => {
+    if (!pending || savingRef.current) return
+    savingRef.current = true
+    setSaving(true)
     try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('id,full_name,email,company_name,role')
-        .order('full_name');
-      setUsers((data ?? []) as UserRow[]);
-    } catch {
-      setUsers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const changeRole = async (userId: string, newRole: Role) => {
-    const prev = users.find((u) => u.id === userId);
-    const { error } = await (supabase as any).from('profiles').update({ role: newRole }).eq('id', userId);
-    if (error) {
-      toast.error('Failed to update role: ' + error.message);
-      return;
-    }
-    setUsers((prevUsers) => prevUsers.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
-    await logAdminAction({
-      action: 'role_changed',
-      entityType: 'profile',
-      entityId: userId,
-      details: { previous_role: prev?.role ?? null, new_role: newRole },
-      actorId: currentUserId,
-    });
-    toast.success('Role updated');
-  };
-
-  const filtered = users.filter((u) => {
-    const query = q.trim().toLowerCase();
-    if (!query) return true;
-    return (u.full_name || '').toLowerCase().includes(query) || (u.email || '').toLowerCase().includes(query) || (u.company_name || '').toLowerCase().includes(query);
-  });
+      const result = await changeAdminUserRole(pending.user.id, pending.role)
+      setUsers(previous => previous.map(user => user.id === result.id ? { ...user, role: result.role } : user))
+      setPending(null)
+      toast.success('Role updated and recorded in the audit log')
+    } catch (failure) {
+      toast.error(failure instanceof Error ? failure.message : 'Unable to update role')
+    } finally { savingRef.current = false; setSaving(false) }
+  }
 
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between space-y-0">
+      <CardHeader className="flex-row flex-wrap items-center justify-between gap-3 space-y-0">
         <CardTitle>Users & Roles</CardTitle>
-        <div className="relative w-64">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search users…" className="pl-8" />
+        <div className="w-64 max-w-full">
+          <label htmlFor="admin-users-search" className="sr-only">Search users by name, username or company</label>
+          <Input id="admin-users-search" value={q} disabled={saving} maxLength={100} onChange={event => { setQ(event.target.value); setPage(0) }} placeholder="Search users…" />
         </div>
       </CardHeader>
-      <CardContent>
-        {loading ? (
-          <div className="py-8 text-center text-muted-foreground">Loading users…</div>
-        ) : (
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">Role changes require confirmation. You cannot change your own role.</p>
+        {loading ? <div role="status">Loading users…</div> : error ? (
+          <div role="alert" className="space-y-2">
+            <p>{error}</p><Button variant="outline" onClick={() => setRevision(value => value + 1)}>Retry</Button>
+          </div>
+        ) : users.length === 0 ? <p role="status">No users found.</p> : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-muted-foreground border-b">
-                  <th className="p-2">Name</th>
-                  <th className="p-2">Email</th>
-                  <th className="p-2">Company</th>
-                  <th className="p-2">Role</th>
+              <thead><tr className="border-b text-left text-muted-foreground">
+                <th scope="col" className="p-2">Name</th><th scope="col" className="p-2">Username</th>
+                <th scope="col" className="p-2">Company</th><th scope="col" className="p-2">Role</th>
+              </tr></thead>
+              <tbody>{users.map(user => (
+                <tr key={user.id} className="border-b">
+                  <td className="p-2 font-medium">{user.full_name || '—'}</td>
+                  <td className="p-2">{user.username || '—'}</td><td className="p-2">{user.company_name || '—'}</td>
+                  <td className="p-2">
+                    <Select value={user.role} disabled={saving || user.id === currentUserId} onValueChange={value => {
+                      if (value !== user.role) setPending({ user, role: value as AdminUserRole })
+                    }}>
+                      <SelectTrigger aria-label={`Role for ${user.full_name || user.username || user.id}`}><SelectValue /></SelectTrigger>
+                      <SelectContent>{ADMIN_USER_ROLES.map(role => <SelectItem key={role} value={role}>{role.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
+                    </Select>
+                    {user.id === currentUserId && <Badge variant="outline" className="mt-1">You</Badge>}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filtered.map((u) => (
-                  <tr key={u.id} className="border-b">
-                    <td className="p-2 font-medium">{u.full_name || '—'}</td>
-                    <td className="p-2 text-muted-foreground">{u.email || '—'}</td>
-                    <td className="p-2 text-muted-foreground">{u.company_name || '—'}</td>
-                    <td className="p-2">
-                      <Select value={u.role} onValueChange={(v) => { void changeRole(u.id, v as Role); }}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {ROLES.map((r) => (
-                            <SelectItem key={r} value={r}>
-                              <span className="capitalize">{r.replace(/_/g, ' ')}</span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {u.id === currentUserId && <Badge variant="outline" className="ml-2">You</Badge>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              ))}</tbody>
             </table>
           </div>
         )}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-sm text-muted-foreground">Page {page + 1} · {total} users</span>
+          <div className="flex gap-2">
+            <Button variant="outline" disabled={loading || saving || page === 0} onClick={() => setPage(value => value - 1)}>Previous</Button>
+            <Button variant="outline" disabled={loading || saving || !!error || (page + 1) * 50 >= total} onClick={() => setPage(value => value + 1)}>Next</Button>
+          </div>
+        </div>
+        <AlertDialog open={pending !== null} onOpenChange={open => { if (!open && !savingRef.current) setPending(null) }}>
+          <AlertDialogContent>
+            <AlertDialogHeader><AlertDialogTitle>Change user role?</AlertDialogTitle>
+              <AlertDialogDescription>Change {pending?.user.full_name || pending?.user.username || pending?.user.id} from {pending?.user.role} to {pending?.role}? This changes their access to the platform.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={saving}>Cancel</AlertDialogCancel>
+              <AlertDialogAction disabled={saving} onClick={event => { event.preventDefault(); void confirmRole() }}>{saving ? 'Saving…' : 'Confirm role change'}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
-  );
-};
-
-export default UserRolePanel;
+  )
+}
+export default UserRolePanel

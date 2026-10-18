@@ -13,7 +13,6 @@ import { useToast } from '@/hooks/use-toast'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { supabase } from '@/lib/supabase'
 import { table } from '@/lib/data/clientCore'
-import { logAdminAction } from '@/lib/adminAudit'
 import type { Database, ProductCategory } from '@/types/database'
 
 type Product = Database['public']['Tables']['products']['Row']
@@ -144,12 +143,6 @@ export const ProductsPanel: React.FC = () => {
       return
     }
     toast({ title: 'Product updated', description: `${selected.sku} saved successfully.` })
-    await logAdminAction({
-      action: 'price_updated',
-      entityType: 'product',
-      entityId: selected.id,
-      details: { sku: selected.sku, previous_price: selected.price, new_price: values.price, stock_quantity: values.stock_quantity },
-    })
   }
 
   // bulk actions
@@ -220,6 +213,10 @@ export const ProductsPanel: React.FC = () => {
   const bulkSetPrice = async (price: number) => {
     const ids = selectedRows.map((r) => r.id)
     if (!ids.length) return
+    if (!Number.isFinite(price) || price < 0) {
+      toast({ title: 'Enter a valid non-negative price', variant: 'destructive' })
+      return
+    }
     const prev = [...data]
     setData((rows) => rows.map((r) => (ids.includes(r.id) ? { ...r, price } : r)))
     const { error } = await (table('products') as unknown as InClient)
@@ -232,12 +229,6 @@ export const ProductsPanel: React.FC = () => {
       return
     }
     toast({ title: `Updated price for ${ids.length} product(s)` })
-    await logAdminAction({
-      action: 'bulk_price_updated',
-      entityType: 'product',
-      entityId: ids.join(','),
-      details: { new_price: price, product_ids: ids },
-    })
     setSelectionResetKey((k) => k + 1)
   }
 

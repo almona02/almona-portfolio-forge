@@ -16,6 +16,7 @@ interface TechnicianWorkload {
 export const TechnicianWorkloadPanel: React.FC = () => {
   const [technicians, setTechnicians] = useState<TechnicianWorkload[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     void load();
@@ -23,17 +24,20 @@ export const TechnicianWorkloadPanel: React.FC = () => {
 
   const load = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const { data: techs } = await supabase
+      const { data: techs, error: techError } = await supabase
         .from('profiles')
         .select('id,full_name,phone')
         .eq('role', 'technician');
+      if (techError) throw techError;
       const list = (techs ?? []) as Array<{ id: string; full_name: string | null; phone: string | null }>;
 
-      const { data: tickets } = await supabase
+      const { data: tickets, error: ticketError } = await supabase
         .from('service_tickets')
         .select('assigned_to,status')
         .not('assigned_to', 'is', null);
+      if (ticketError) throw ticketError;
       const rows = (tickets ?? []) as Array<{ assigned_to: string; status: string }>;
 
       const map = new Map<string, { open: number; inProgress: number; total: number }>();
@@ -41,7 +45,7 @@ export const TechnicianWorkloadPanel: React.FC = () => {
         const entry = map.get(t.assigned_to) ?? { open: 0, inProgress: 0, total: 0 };
         entry.total += 1;
         if (t.status === 'in_progress') entry.inProgress += 1;
-        if (['open', 'assigned'].includes(t.status)) entry.open += 1;
+        if (!['resolved', 'closed', 'cancelled'].includes(t.status)) entry.open += 1;
         map.set(t.assigned_to, entry);
       }
 
@@ -54,7 +58,7 @@ export const TechnicianWorkloadPanel: React.FC = () => {
         })),
       );
     } catch {
-      setTechnicians([]);
+      setError('Unable to load technician workload. Reload to retry.');
     } finally {
       setLoading(false);
     }
@@ -66,8 +70,8 @@ export const TechnicianWorkloadPanel: React.FC = () => {
         <CardTitle>Technician Workload</CardTitle>
       </CardHeader>
       <CardContent>
-        {loading ? (
-          <div className="py-8 text-center text-muted-foreground">Loading technicians…</div>
+        {error ? <p role="alert">{error}</p> : loading ? (
+          <div role="status" className="py-8 text-center text-muted-foreground">Loading technicians…</div>
         ) : technicians.length === 0 ? (
           <div className="py-8 text-center text-muted-foreground">No technicians found.</div>
         ) : (
@@ -83,7 +87,7 @@ export const TechnicianWorkloadPanel: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <Badge variant={t.openTickets > 3 ? 'destructive' : 'secondary'}>{t.openTickets} open</Badge>
-                  <div className="text-xs text-muted-foreground mt-1">{t.total} total</div>
+                  <div className="text-xs text-muted-foreground mt-1">{t.inProgress} in progress · {t.total} total</div>
                 </div>
               </div>
             ))}

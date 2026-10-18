@@ -11,40 +11,16 @@ export interface AdminAuditEntry {
   created_at: string;
 }
 
-/**
- * Append an admin action to the audit trail. Best-effort: never throws,
- * so auditing can never block the underlying business action.
- */
-export async function logAdminAction(params: {
-  action: string;
-  entityType: 'product' | 'ticket' | 'profile' | 'machine';
-  entityId?: string;
-  details?: Record<string, unknown>;
-  actorId?: string;
-  actorName?: string;
-}): Promise<void> {
-  try {
-    await (supabase as unknown as { from: (t: string) => any })
-      .from('admin_audit_log')
-      .insert({
-        actor_id: params.actorId ?? null,
-        actor_name: params.actorName ?? null,
-        action: params.action,
-        entity_type: params.entityType,
-        entity_id: params.entityId ?? null,
-        details: params.details ?? {},
-      });
-  } catch (e) {
-    console.warn('[adminAudit] failed to write audit entry', e);
-  }
-}
+// Records are written by database triggers and the service-only role RPC.
+// Browser clients have read-only access and cannot forge actor identities.
+type AuditClient = { from: (name: string) => { select: (columns: string) => { order: (column: string, options: { ascending: boolean }) => { limit: (limit: number) => Promise<{ data: AdminAuditEntry[] | null; error: { message: string } | null }> } } } }
 
 export async function listAuditLog(limit = 200): Promise<AdminAuditEntry[]> {
-  const { data, error } = await (supabase as unknown as { from: (t: string) => any })
+  const { data, error } = await (supabase as unknown as AuditClient)
     .from('admin_audit_log')
     .select('*')
     .order('created_at', { ascending: false })
     .limit(limit);
   if (error) throw new Error(error.message);
-  return (data ?? []) as AdminAuditEntry[];
+  return data ?? [];
 }
