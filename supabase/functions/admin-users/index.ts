@@ -7,7 +7,7 @@ const cors = {
   'Cache-Control': 'no-store',
 }
 const reply = (status: number, body: unknown) => Response.json(body, { status, headers: cors })
-const roles = ['customer', 'sales_rep', 'technician', 'support', 'admin']
+const roles = ['customer', 'sales_rep', 'technician', 'support', 'fabricator_admin', 'admin']
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 Deno.serve(async request => {

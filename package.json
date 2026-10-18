@@ -317,6 +317,7 @@
     "@vitest/coverage-v8": "4.1.11",
     "@vitest/ui": "4.1.11",
     "autoprefixer": "^10.4.20",
+    "axe-core": "4.11.0",
     "baseline-browser-mapping": "^2.8.32",
     "cross-env": "^10.1.0",
     "cssnano": "^7.1.1",

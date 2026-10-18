@@ -26,6 +26,11 @@ const ServiceROIAnalytics = lazy(() =>
     default: module.ServiceROIAnalytics,
   }))
 );
+const ServiceContractCustomerView = lazy(() =>
+  import("@/components/services/ServiceContractCustomerView").then((module) => ({
+    default: module.ServiceContractCustomerView,
+  }))
+);
 
 import BusinessKPIDashboard from '@/components/analytics/BusinessKPIDashboard';
 import { OperatorTrainingIncentiveDialog } from "@/components/services/OperatorTrainingIncentiveDialog";
@@ -57,6 +62,7 @@ import {
   Camera,
   CheckCircle2,
   CircuitBoard,
+  ClipboardCheck,
   Clock,
   Database,
   Factory,
@@ -460,7 +466,7 @@ const Services = () => {
 
               {/* Main Services Content */}
               <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="grid w-full grid-cols-1 sm:grid-cols-6 max-w-6xl mx-auto mb-12 bg-gradient-to-r from-gray-900 to-black border 500/20 p-2 rounded-xl card-glass-dark">
+                <TabsList className="grid w-full grid-cols-1 sm:grid-cols-7 max-w-6xl mx-auto mb-12 bg-gradient-to-r from-gray-900 to-black border 500/20 p-2 rounded-xl card-glass-dark">
                   <TabsTrigger value="overview" className="flex items-center gap-2">
                     <Activity className="h-4 w-4" />
                     {t('services.ai_overview')}
@@ -472,6 +478,10 @@ const Services = () => {
                   <TabsTrigger value="register" className="flex items-center gap-2">
                     <Database className="h-4 w-4" />
                     {t('services.register_machine')}
+                  </TabsTrigger>
+                  <TabsTrigger value="contracts" className="flex items-center gap-2">
+                    <ClipboardCheck className="h-4 w-4" />
+                    Service Contracts
                   </TabsTrigger>
                   <TabsTrigger value="dashboard" className="flex items-center gap-2">
                     <BarChart3 className="h-4 w-4" />
@@ -694,6 +704,15 @@ const Services = () => {
                   <div className="fade-in-up">
                     <Suspense fallback={<FormSkeleton />}>
                       <MachineRegistrationEnhanced />
+                    </Suspense>
+                  </div>
+                </TabsContent>
+
+                {/* Service Contracts */}
+                <TabsContent value="contracts">
+                  <div className="fade-in-up">
+                    <Suspense fallback={<FormSkeleton />}>
+                      {user ? <ServiceContractCustomerView userId={user.id} /> : <p className="text-muted-foreground">Sign in to view your service contracts.</p>}
                     </Suspense>
                   </div>
                 </TabsContent>

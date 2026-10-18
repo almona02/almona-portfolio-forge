@@ -1,5 +1,6 @@
 import { getServicePackages } from '@/data/servicePackages';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { useLanguage } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,8 +48,28 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
 }) => {
   const { t, language } = useLanguage();
 
+  // Live pricing from the admin-editable service_packages table.
+  const [livePrice, setLivePrice] = useState<{ price: number; currency: string } | null>(null);
+  useEffect(() => {
+    let mounted = true;
+    void supabase
+      .from('service_packages')
+      .select('price,currency')
+      .eq('package_id', packageId)
+      .eq('is_active', true)
+      .maybeSingle()
+      .then(({ data }) => {
+        const row = data as { price: number; currency: string } | null;
+        if (mounted && row && Number(row.price) > 0) {
+          setLivePrice({ price: Number(row.price), currency: row.currency });
+        }
+      });
+    return () => { mounted = false };
+  }, [packageId]);
+
   // Package data based on packageId
   const packageData = getServicePackages(language)[packageId];
+  const priceDisplay = livePrice ? `${livePrice.price.toLocaleString()} ${livePrice.currency}` : (packageData?.price || 'N/A');
   const colors = packageColors[packageId];
   const icon = packageIcons[packageId];
   const isPopular = packageData?.popular || false;
@@ -89,7 +110,7 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
           
           <div className="mt-4">
             <div className="text-4xl font-bold text-white">
-              {packageData?.price || 'N/A'}
+              {priceDisplay}
             </div>
           </div>
         </CardHeader>

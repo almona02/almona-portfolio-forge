@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 
-export const ADMIN_USER_ROLES = ['customer', 'sales_rep', 'technician', 'support', 'admin'] as const
+export const ADMIN_USER_ROLES = ['customer', 'sales_rep', 'technician', 'support', 'fabricator_admin', 'admin'] as const
 export type AdminUserRole = typeof ADMIN_USER_ROLES[number]
 export interface AdminUserRow {
   id: string

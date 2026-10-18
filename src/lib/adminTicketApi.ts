@@ -15,7 +15,7 @@ import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 
 type ServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'];
-type ProfileRow = Pick<Database['public']['Tables']['profiles']['Row'], 'id' | 'full_name' | 'company_name' | 'phone'>;
+type ProfileRow = Pick<Database['public']['Tables']['profiles']['Row'], 'id' | 'full_name' | 'company_name' | 'phone' | 'role'>;
 
 // Helper: map raw ticket row to ServiceTicket/TicketWithDetails
 function baseMap(row: ServiceTicketRow): ServiceTicket {
@@ -93,17 +93,17 @@ export const getAllTickets = async (filters?: TicketFilters): Promise<TicketWith
     }
   }
   // Optional profile fetch for display (batch)
-  const userIds = [...new Set(rows.map((r) => r.user_id))];
-  let profiles: Record<string, { full_name: string | null; company_name: string | null; phone: string | null }> = {};
+  const userIds = [...new Set(rows.flatMap(r => r.assigned_to ? [r.user_id, r.assigned_to] : [r.user_id]))];
+  let profiles: Record<string, { full_name: string | null; company_name: string | null; phone: string | null; role: string }> = {};
   if (userIds.length) {
     const { data: prof } = await supabase
       .from('profiles')
-      .select('id,full_name,company_name,phone')
+      .select('id,full_name,company_name,phone,role')
       .in('id', userIds);
     if (prof) {
-      profiles = (prof as ProfileRow[]).reduce<Record<string, { full_name: string | null; company_name: string | null; phone: string | null }>>(
+      profiles = (prof as ProfileRow[]).reduce<Record<string, { full_name: string | null; company_name: string | null; phone: string | null; role: string }>>(
         (acc, p) => {
-          acc[p.id] = { full_name: p.full_name, company_name: p.company_name, phone: p.phone };
+          acc[p.id] = { full_name: p.full_name, company_name: p.company_name, phone: p.phone, role: p.role };
           return acc;
         },
         {}
@@ -113,6 +113,7 @@ export const getAllTickets = async (filters?: TicketFilters): Promise<TicketWith
   return rows.map((row: ServiceTicketRow) => ({
     ...baseMap(row),
     user_profile: profiles[row.user_id],
+    assigned_user: row.assigned_to ? profiles[row.assigned_to] : undefined,
     message_count: counts[row.id] ?? 0,
   }));
 }
@@ -231,19 +232,42 @@ export const updateTicketStatusAndPriority = async (
   return mapped;
 }
 
-export const getAvailableAssignees = async (): Promise<Array<{ id: string; full_name: string | null; role: string | null }>> => {
+export const getAvailableAssignees = async (): Promise<Array<{ id: string; full_name: string | null; role: string | null; phone: string | null }>> => {
   const { data, error: err } = await supabase
     .from('profiles')
-    .select('id,full_name,role')
+    .select('id,full_name,role,phone')
     .in('role', ['technician', 'admin', 'support']);
   if (err) throw new Error(String((err as { message?: string }).message ?? 'Unknown error'));
-  const list = (data ?? []) as Array<{ id: string; full_name: string | null; role: string | null }>;
+  const list = (data ?? []) as Array<{ id: string; full_name: string | null; role: string | null; phone: string | null }>;
   return list.map((p) => ({
     id: p.id,
     full_name: p.full_name,
     role: p.role,
+    phone: p.phone,
   }));
 };
+
+// Pre-launch fast path: notify a technician on assignment via a one-tap WhatsApp deep link.
+export const buildTicketAssignmentMessage = (
+  ticket: { ticket_number: string; title: string; priority: string },
+  customerName: string | null | undefined,
+): string => {
+  return [
+    `Ticket #${ticket.ticket_number}: ${ticket.title}`,
+    `Priority: ${ticket.priority}`,
+    customerName ? `Customer: ${customerName}` : null,
+    'Assigned by Almona Admin. Please review and update the ticket status.',
+  ].filter(Boolean).join('\n')
+}
+
+export const buildTicketWhatsAppLink = (phone: string | null | undefined, message: string): string | null => {
+  if (!phone) return null
+  const digits = phone.replace(/\D/g, '')
+  if (!digits) return null
+  // Normalise to international for wa.me (defaults to Egypt country code 20).
+  const intl = digits.startsWith('20') ? digits : `20${digits.replace(/^0/, '')}`
+  return `https://wa.me/${intl}?text=${encodeURIComponent(message)}`
+}
 
 export const getTicketMetrics = async (): Promise<{
   totalTickets: number

@@ -140,7 +140,7 @@ export const OrdersPanel: React.FC = () => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <Button variant="ghost" size="icon" className="h-8 w-8 p-0" aria-label={`Actions for order ${item.id}`}>
                 <MoreHorizontal className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -168,7 +168,7 @@ export const OrdersPanel: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-400">Bulk status:</span>
             <Select value={bulkStatusValue ?? undefined} onValueChange={(v: string) => { setBulkStatusValue(v as Order['status']); if (hasSelection) { setPendingAction({ type: 'status', value: v as Order['status'] }); setConfirmOpen(true) } }}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger aria-label="Bulk order status" className="w-[180px]">
                 <SelectValue placeholder={hasSelection ? 'Select status' : 'Select rows first'} />
               </SelectTrigger>
               <SelectContent>
@@ -187,7 +187,7 @@ export const OrdersPanel: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-400">Bulk payment:</span>
             <Select value={bulkPaymentValue ?? undefined} onValueChange={(v: string) => { setBulkPaymentValue(v); if (hasSelection) { setPendingAction({ type: 'payment', value: v }); setConfirmOpen(true) } }}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger aria-label="Bulk payment status" className="w-[180px]">
                 <SelectValue placeholder={hasSelection ? 'Select payment' : 'Select rows first'} />
               </SelectTrigger>
               <SelectContent>
@@ -202,13 +202,13 @@ export const OrdersPanel: React.FC = () => {
         </div>
         <div className="flex flex-wrap gap-3 items-end">
           <div className="w-56">
-            <label className="typography-label text-xs text-muted-foreground">Search ID</label>
-            <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. 8d2f..." />
+            <label htmlFor="admin-orders-field-1" className="typography-label text-xs text-muted-foreground">Search ID</label>
+            <Input id="admin-orders-field-1" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. 8d2f..." />
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Status</label>
+            <label htmlFor="admin-orders-field-2" className="typography-label text-xs text-muted-foreground">Status</label>
             <Select value={status} onValueChange={(v: string) => { setStatus(v as OrderStatus | 'all'); setPage(1) }}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger id="admin-orders-field-2" className="w-[160px]">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -226,12 +226,12 @@ export const OrdersPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">From</label>
-            <Input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1) }} />
+            <label htmlFor="admin-orders-field-3" className="typography-label text-xs text-muted-foreground">From</label>
+            <Input id="admin-orders-field-3" type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1) }} />
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">To</label>
-            <Input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1) }} />
+            <label htmlFor="admin-orders-field-4" className="typography-label text-xs text-muted-foreground">To</label>
+            <Input id="admin-orders-field-4" type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1) }} />
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button variant="outline" onClick={() => { setSearch(''); setStatus('all'); setDateFrom(''); setDateTo(''); setPage(1) }}>Reset</Button>

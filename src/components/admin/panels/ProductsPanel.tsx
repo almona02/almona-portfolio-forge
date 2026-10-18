@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/ui/data-table'
-import { MoreHorizontal, Pencil, CheckCircle2, XCircle, Star, ArrowUpDown, DollarSign } from 'lucide-react'
+import { MoreHorizontal, Pencil, CheckCircle2, XCircle, Star, ArrowUpDown, DollarSign, Search, Loader2 } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/ui/alert-dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import ProductEditDialog, { ProductEditValues } from '@/components/admin/dialogs/ProductEditDialog'
 import { useToast } from '@/hooks/use-toast'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { supabase } from '@/lib/supabase'
 import { table } from '@/lib/data/clientCore'
 import type { Database, ProductCategory } from '@/types/database'
@@ -84,7 +84,7 @@ export const ProductsPanel: React.FC = () => {
     if (stock === 'low') query = query.gt('stock_quantity', 0).lte('stock_quantity', 10)
     if (stock === 'out') query = query.eq('stock_quantity', 0)
     if (stock === 'in') query = query.gt('stock_quantity', 10)
-    if (search) query = query.ilike('sku', `%${search}%`)
+    if (search) query = query.or(`sku.ilike.%${search}%,name_en.ilike.%${search}%,name_ar.ilike.%${search}%`)
 
     const from = (page - 1) * pageSize
     const to = from + pageSize - 1
@@ -232,6 +232,59 @@ export const ProductsPanel: React.FC = () => {
     setSelectionResetKey((k) => k + 1)
   }
 
+  // Quick price edit (autofill): type a name/SKU, pick a product, edit its price.
+  const [quickQuery, setQuickQuery] = React.useState('')
+  const [quickResults, setQuickResults] = React.useState<Product[]>([])
+  const [quickSelected, setQuickSelected] = React.useState<Product | null>(null)
+  const [quickPrice, setQuickPrice] = React.useState('')
+  const [quickLoading, setQuickLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    if (quickSelected) return
+    if (!quickQuery.trim()) { setQuickResults([]); setQuickLoading(false); return }
+    const t = setTimeout(() => {
+      setQuickLoading(true)
+      void supabase
+        .from('products')
+        .select('*')
+        .or(`sku.ilike.%${quickQuery}%,name_en.ilike.%${quickQuery}%,name_ar.ilike.%${quickQuery}%`)
+        .order('created_at', { ascending: false })
+        .limit(8)
+        .then(({ data }) => {
+          setQuickResults((data as Product[] | null) ?? [])
+          setQuickLoading(false)
+        })
+    }, 250)
+    return () => clearTimeout(t)
+  }, [quickQuery, quickSelected])
+
+  const selectQuick = (p: Product) => {
+    setQuickSelected(p)
+    setQuickPrice(String(p.price ?? ''))
+    setQuickResults([])
+    setQuickQuery('')
+  }
+
+  const saveQuickPrice = async () => {
+    if (!quickSelected) return
+    const price = Number(quickPrice)
+    if (!Number.isFinite(price) || price < 0) {
+      toast({ title: 'Enter a valid non-negative price', variant: 'destructive' })
+      return
+    }
+    type EqClient = { update: (v: unknown) => { eq: (col: string, val: string) => Promise<{ error: unknown }> } }
+    const { error } = await (table('products') as unknown as EqClient).update({ price }).eq('id', quickSelected.id)
+    if (error) {
+      const msg = (error as { message?: string } | null)?.message ?? 'Unknown error'
+      toast({ title: 'Price update failed', description: msg, variant: 'destructive' })
+      return
+    }
+    toast({ title: 'Price updated', description: `${quickSelected.name_en || quickSelected.sku} → EGP ${price}` })
+    setQuickSelected(null)
+    setQuickPrice('')
+    void fetchServerPage().then(({ rows, total }) => { setData(rows); setTotal(total) })
+  }
+
   const columns: ColumnDef<Product>[] = [
     { accessorKey: 'sku', header: 'SKU' },
     { accessorKey: 'name_en', header: 'Name' },
@@ -247,7 +300,7 @@ export const ProductsPanel: React.FC = () => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <Button variant="ghost" size="icon" className="h-8 w-8 p-0" aria-label={`Actions for product ${item.id}`}>
                 <MoreHorizontal className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -271,6 +324,41 @@ export const ProductsPanel: React.FC = () => {
         <CardTitle>Products</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Quick price edit (autofill) */}
+        <div className="rounded-lg border p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Quick price edit</span>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="relative w-72 max-w-full">
+              <label htmlFor="admin-products-quick" className="typography-label text-xs text-muted-foreground">Product (autofill by name or SKU)</label>
+              <Input id="admin-products-quick" value={quickSelected ? (quickSelected.name_en || quickSelected.sku) : quickQuery} onChange={(e) => { setQuickQuery(e.target.value); setQuickSelected(null) }} placeholder="Type to search products…" />
+              {quickLoading && <Loader2 className="absolute right-2 top-8 h-4 w-4 animate-spin text-muted-foreground" />}
+              {!quickSelected && quickResults.length > 0 && (
+                <div className="absolute z-10 mt-1 w-full border rounded-md bg-popover text-popover-foreground max-h-56 overflow-y-auto shadow-md">
+                  {quickResults.map((p) => (
+                    <button key={p.id} type="button" onClick={() => selectQuick(p)} className="w-full text-left px-3 py-2 text-sm hover:bg-muted">
+                      <span className="font-medium">{p.name_en || p.sku}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">{p.sku} · {new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP' }).format(Number(p.price ?? 0))}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {quickSelected && (
+              <>
+                <div className="w-40">
+                  <label htmlFor="admin-products-quick-price" className="typography-label text-xs text-muted-foreground">New price (EGP)</label>
+                  <Input id="admin-products-quick-price" type="number" step="0.01" min="0" value={quickPrice} onChange={(e) => setQuickPrice(e.target.value)} />
+                </div>
+                <Button onClick={() => void saveQuickPrice()}><DollarSign className="mr-2 h-4 w-4" /> Save price</Button>
+                <Button variant="ghost" onClick={() => { setQuickSelected(null); setQuickPrice('') }}>Cancel</Button>
+              </>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-wrap gap-2 items-center">
           <Button size="sm" variant="secondary" disabled={!hasSelection} onClick={() => { setPendingAction({ type: 'activate' }); setConfirmOpen(true) }}>
             <CheckCircle2 className="mr-2 h-4 w-4" /> Activate
@@ -293,13 +381,13 @@ export const ProductsPanel: React.FC = () => {
         </div>
         <div className="flex flex-wrap gap-3 items-end">
           <div className="w-56">
-            <label className="typography-label text-xs text-muted-foreground">Search SKU</label>
-            <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. ALM-123" />
+            <label htmlFor="admin-products-field-1" className="typography-label text-xs text-muted-foreground">Search SKU</label>
+            <Input id="admin-products-field-1" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. ALM-123" />
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Category</label>
+            <label htmlFor="admin-products-field-2" className="typography-label text-xs text-muted-foreground">Category</label>
             <Select value={category} onValueChange={(v: string) => { setCategory(v as ProductCategory | 'all'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-products-field-2">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -313,9 +401,9 @@ export const ProductsPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Stock</label>
+            <label htmlFor="admin-products-field-3" className="typography-label text-xs text-muted-foreground">Stock</label>
             <Select value={stock} onValueChange={(v: string) => { setStock(v as 'all' | 'low' | 'out' | 'in'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-products-field-3">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -327,9 +415,9 @@ export const ProductsPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Active</label>
+            <label htmlFor="admin-products-field-4" className="typography-label text-xs text-muted-foreground">Active</label>
             <Select value={active} onValueChange={(v: string) => { setActive(v as 'all' | 'active' | 'inactive'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-products-field-4">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -384,8 +472,8 @@ export const ProductsPanel: React.FC = () => {
           </AlertDialogHeader>
           {pendingAction?.type === 'stock' && (
             <div className="mt-2">
-              <label className="typography-label text-xs text-muted-foreground">Delta (can be negative)</label>
-              <Input
+              <label htmlFor="admin-products-field-5" className="typography-label text-xs text-muted-foreground">Delta (can be negative)</label>
+              <Input id="admin-products-field-5"
                 type="number"
                 step="1"
                 value={pendingAction.delta === '' ? '' : String(pendingAction.delta)}

@@ -18,14 +18,14 @@ export const ReportsPanel: React.FC = () => {
         <CardTitle>Reports</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-3 items-end">
+        <div className="flex flex-wrap gap-3 items-end">
           <div>
-            <label className="typography-label text-xs text-muted-foreground">From</label>
-            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+            <label htmlFor="admin-reports-field-1" className="typography-label text-xs text-muted-foreground">From</label>
+            <Input id="admin-reports-field-1" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">To</label>
-            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+            <label htmlFor="admin-reports-field-2" className="typography-label text-xs text-muted-foreground">To</label>
+            <Input id="admin-reports-field-2" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
           <div className="ml-auto">
             <Button onClick={generateReport}>Generate</Button>

@@ -1,0 +1,40 @@
+/* Admin-only Dark Gold palette, including Radix portals mounted under body. */
+.almona-admin-theme {
+  --background: 222 47% 7%;
+  --foreground: 210 40% 96%;
+  --card: 222 35% 11%;
+  --card-foreground: 210 40% 96%;
+  --popover: 222 35% 11%;
+  --popover-foreground: 210 40% 96%;
+  --muted: 217 25% 17%;
+  --muted-foreground: 215 20% 72%;
+  --border: 217 25% 24%;
+  --input: 217 25% 24%;
+  --ring: 38 92% 50%;
+  --secondary: 217 25% 17%;
+  --secondary-foreground: 210 40% 96%;
+  --fg: #f1f5f9;
+  --br: #334155;
+  --admin-navbar-height: 3.5rem;
+  color-scheme: dark;
+}
+.almona-admin-shell { padding-top: var(--admin-navbar-height); }
+.almona-admin-shell .admin-desktop-sidebar,
+.almona-admin-shell header { top: var(--admin-navbar-height); }
+.almona-admin-theme input:not([type='checkbox']):not([type='radio']),
+.almona-admin-theme textarea {
+  background-color: #0f172a;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+.almona-admin-theme input::placeholder,
+.almona-admin-theme textarea::placeholder { color: #94a3b8; }
+@media (min-width: 640px) { .almona-admin-theme { --admin-navbar-height: 4rem; } }
+@media (min-width: 768px) { .almona-admin-theme { --admin-navbar-height: 4.5rem; } }
+@media (min-width: 1024px) { .almona-admin-theme { --admin-navbar-height: 5rem; } }
+@media (min-width: 1536px) { .almona-admin-theme { --admin-navbar-height: 6rem; } }
+
+/* Modal portals must remain above the global navigation while on admin pages. */
+.almona-admin-theme [role='dialog'],
+.almona-admin-theme [role='alertdialog'] { z-index: 1100; }
+.almona-admin-theme [data-radix-popper-content-wrapper] { z-index: 1200 !important; }
