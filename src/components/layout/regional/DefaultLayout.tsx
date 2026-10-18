@@ -29,6 +29,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   const location = useLocation();
   const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
   const isBatchCutListDemo = location.pathname === '/demo/batch-cut-list' || location.pathname === '/batch-cut-list-demo';
+  const isAdminRoute = location.pathname === '/admin';
   const _rtl = isRTL(i18n.language);
   
   const _handleRegionChange = (region: RegionCode) => {
@@ -47,7 +48,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
       </div>
 
       {/* Footer - Hidden for fabricator routes and batch cut list demo */}
-      {!isFabricatorRoute && !isBatchCutListDemo && <Footer />}
+      {!isFabricatorRoute && !isBatchCutListDemo && !isAdminRoute && <Footer />}
 
       {/* WhatsApp Contact */}
       <WhatsAppContact 

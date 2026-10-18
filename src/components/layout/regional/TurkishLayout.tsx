@@ -28,6 +28,7 @@ export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
   const location = useLocation();
   const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
   const isBatchCutListDemo = location.pathname === '/demo/batch-cut-list' || location.pathname === '/batch-cut-list-demo';
+  const isAdminRoute = location.pathname === '/admin';
   const _rtl = isRTL(i18n.language);
   
   return (
@@ -42,7 +43,7 @@ export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
       </div>
 
       {/* Footer - Hidden for fabricator routes and batch cut list demo */}
-      {!isFabricatorRoute && !isBatchCutListDemo && <Footer />}
+      {!isFabricatorRoute && !isBatchCutListDemo && !isAdminRoute && <Footer />}
     </div>
   );
 };

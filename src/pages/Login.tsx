@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { GoldTierInput as Input, PasswordInput } from '@/components/ui/input-gold-tier';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
+import { roleHomePath } from '@/lib/roleRouting';
 import { FADE_IN, SCALE_IN, SLIDE_UP } from '@/lib/animations/motion';
 import { motion } from 'framer-motion';
 import { Mail } from 'lucide-react';
@@ -28,7 +29,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from;
-  const postLoginPath = from && from.startsWith('/') && !from.startsWith('//') ? from : '/';
+  const postLoginPath = from && from.startsWith('/') && !from.startsWith('//') ? from : roleHomePath(user?.role);
 
   useEffect(() => {
     if (user) {

@@ -14,11 +14,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/shared/ui/ui/select'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Loader2, User } from 'lucide-react'
-import { assignTicket, getAvailableAssignees } from '@/lib/adminTicketApi'
+import { Loader2, MessageCircle, User } from 'lucide-react'
+import { assignTicket, buildTicketAssignmentMessage, buildTicketWhatsAppLink, getAvailableAssignees } from '@/lib/adminTicketApi'
 import { TicketWithDetails } from '@/types/tickets'
 import { toast } from 'sonner'
 
@@ -39,11 +39,19 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
   const queryClient = useQueryClient()
 
   // Fetch available assignees
-  const { data: assignees, isLoading: loadingAssignees } = useQuery({
+  const { data: assignees, isLoading: loadingAssignees, isError: assigneesFailed } = useQuery({
     queryKey: ['assignees'],
     queryFn: getAvailableAssignees,
     enabled: isOpen
   })
+
+  const selected = assignees?.find(assignee => assignee.id === selectedAssignee)
+  const whatsappHref = selected?.phone && ticket
+    ? buildTicketWhatsAppLink(selected.phone, buildTicketAssignmentMessage(
+        { ticket_number: ticket.ticket_number, title: ticket.title, priority: ticket.priority },
+        ticket.user_profile?.full_name,
+      ))
+    : null
 
   // Assignment mutation
   const assignMutation = useMutation({
@@ -52,7 +60,12 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
       queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
-      toast.success('Ticket assigned successfully')
+      if (whatsappHref) {
+        window.open(whatsappHref, '_blank', 'noopener,noreferrer')
+        toast.success(`Ticket assigned — WhatsApp opened for ${selected?.full_name || 'technician'}`)
+      } else {
+        toast.success('Ticket assigned successfully')
+      }
       onClose()
       setSelectedAssignee('')
     },
@@ -62,7 +75,7 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
   })
 
   const handleAssign = () => {
-    if (!ticket || !selectedAssignee) return
+    if (!ticket || !selectedAssignee || !assignees?.some(assignee => assignee.id === selectedAssignee)) return
     
     assignMutation.mutate({
       ticketId: ticket.id,
@@ -71,6 +84,7 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
   }
 
   const handleClose = () => {
+    if (assignMutation.isPending) return
     onClose()
     setSelectedAssignee('')
   }
@@ -78,7 +92,7 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
   if (!ticket) return null
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={open => { if (!open) handleClose() }}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -124,13 +138,14 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
             <Select
               value={selectedAssignee}
               onValueChange={setSelectedAssignee}
+              disabled={loadingAssignees || assigneesFailed || assignMutation.isPending}
             >
-              <SelectTrigger>
+              <SelectTrigger id="assignee">
                 <SelectValue placeholder="Select team member..." />
               </SelectTrigger>
               <SelectContent>
                 {loadingAssignees ? (
-                  <SelectItem value="loading">
+                  <SelectItem value="loading" disabled>
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Loading...
@@ -151,16 +166,29 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
                 )}
               </SelectContent>
             </Select>
+            {assigneesFailed && <p role="alert">Unable to load team members. Reopen this dialog to retry.</p>}
           </div>
         </div>
 
         <DialogFooter>
+          {whatsappHref && (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 text-sm font-medium text-white transition-colors hover:bg-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
+              aria-label={`Notify ${selected?.full_name || 'technician'} on WhatsApp`}
+            >
+              <MessageCircle className="h-4 w-4" />
+              Notify on WhatsApp
+            </a>
+          )}
           <Button variant="outline" onClick={handleClose} disabled={assignMutation.isPending}>
             Cancel
           </Button>
           <Button 
             onClick={handleAssign} 
-            disabled={!selectedAssignee || assignMutation.isPending}
+            disabled={!selectedAssignee || loadingAssignees || assigneesFailed || assignMutation.isPending}
           >
             {assignMutation.isPending ? (
               <>

@@ -6,6 +6,7 @@ import { Button } from "@/shared/ui/ui/button";
 import { Eye, ShoppingCart, GitCompare, Play, Pause, Download } from "lucide-react";
 import { OptimizedImage } from "@/components/optimized/OptimizedImage";
 import { ProductVideoPlayer } from "@/components/ui/ProductVideoPlayer";
+import { useLiveProductPrices } from '@/hooks/useLiveProductPrices';
 // ProductHoverPreview removed to avoid duplicate info popup
 import type { Machine } from "@/constants/yilmazMachines";
 
@@ -111,6 +112,8 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
 }) => {
   const copy = usePublicCopy();
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const getPrice = useLiveProductPrices();
+  const livePrice = getPrice(machine.name);
 
   const handleSelect = () => {
     onSelect?.(machine, !isSelected);
@@ -301,7 +304,9 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             transition={{ duration: 0.2 }}
           >
             <div className="text-gray-400 text-xs mb-1">{copy("Price")}</div>
-            <div className="text-amber-400 font-bold text-xl">{copy("Contact for a quote")}</div>
+            <div className="text-amber-400 font-bold text-xl">
+              {livePrice != null ? `${livePrice.toLocaleString()} EGP` : copy("Contact for a quote")}
+            </div>
           </LazyMotionDiv>
         )}
 

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/ui/data-table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
 
@@ -125,9 +125,9 @@ export const FinancePanel: React.FC = () => {
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-3 items-end">
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Payment</label>
+            <label htmlFor="admin-finance-field-1" className="typography-label text-xs text-muted-foreground">Payment</label>
             <Select value={payment} onValueChange={(v: string) => { setPayment(v as typeof payment); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-finance-field-1">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -140,12 +140,12 @@ export const FinancePanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">From</label>
-            <Input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1) }} />
+            <label htmlFor="admin-finance-field-2" className="typography-label text-xs text-muted-foreground">From</label>
+            <Input id="admin-finance-field-2" type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1) }} />
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">To</label>
-            <Input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1) }} />
+            <label htmlFor="admin-finance-field-3" className="typography-label text-xs text-muted-foreground">To</label>
+            <Input id="admin-finance-field-3" type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1) }} />
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button variant="outline" onClick={() => { setPayment('all'); setDateFrom(''); setDateTo(''); setPage(1) }}>Reset</Button>

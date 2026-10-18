@@ -14,7 +14,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/shared/ui/ui/select'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -115,6 +115,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
   }
 
   const handleClose = () => {
+    if (updateMutation.isPending) return
     onClose()
     resetForm()
   }
@@ -137,7 +138,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
     (resolutionSummary.trim() && resolutionSummary !== (ticket.resolution_summary || ''))
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={open => { if (!open) handleClose() }}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -185,7 +186,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
               value={selectedStatus}
               onValueChange={(value) => setSelectedStatus(value as TicketStatus)}
             >
-              <SelectTrigger>
+              <SelectTrigger id="status">
                 <SelectValue placeholder="Select status..." />
               </SelectTrigger>
               <SelectContent>
@@ -208,7 +209,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
               value={selectedPriority}
               onValueChange={(value) => setSelectedPriority(value as TicketPriority)}
             >
-              <SelectTrigger>
+              <SelectTrigger id="priority">
                 <SelectValue placeholder="Select priority..." />
               </SelectTrigger>
               <SelectContent>

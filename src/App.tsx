@@ -156,6 +156,10 @@ const BatchCutListDemo = lazyRetry(() => import("./pages/BatchCutListDemo.tsx"),
 // Ticket Details - lazy loaded
 const TicketDetailPage = lazy(() => import("./pages/TicketDetailPage.tsx"));
 
+// Role dashboards
+const TechnicianDashboard = lazy(() => import("./pages/technician/TechnicianDashboard.tsx"));
+const FabricatorAdminDashboard = lazy(() => import("./pages/fabricator/FabricatorAdminDashboard.tsx"));
+
 // Executive Trust Dashboard - Phase 4: Precision Upgrade Plan
 const ExecutiveTrustDashboard = lazy(() => import("./components/trust/ExecutiveTrustDashboard.tsx").then(m => ({ default: m.ExecutiveTrustDashboard })));
 
@@ -661,6 +665,8 @@ const App = memo(() => {
                                   <Route path="/support/tickets/new" element={<Suspense fallback={getLoadingComponent('/support')}><ProtectedRoute><CreateTicketPage /></ProtectedRoute></Suspense>} />
                                   <Route path="/support/new" element={<Navigate to="/support/tickets/new" replace />} />
                                   <Route path="/portal/register-machine" element={<Suspense fallback={getLoadingComponent('/portal')}><ProtectedRoute><RegisterMachinePage /></ProtectedRoute></Suspense>} />
+                                  <Route path="/technician" element={<Suspense fallback={getLoadingComponent('/technician')}><ProtectedRoute><TechnicianDashboard /></ProtectedRoute></Suspense>} />
+                                  <Route path="/fabricator-admin" element={<Suspense fallback={getLoadingComponent('/fabricator-admin')}><ProtectedRoute><FabricatorAdminDashboard /></ProtectedRoute></Suspense>} />
 
                                   {/* Admin */}
                                   <Route path="/admin" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute></Suspense>} />

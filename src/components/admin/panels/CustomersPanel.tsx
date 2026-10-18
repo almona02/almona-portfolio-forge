@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/ui/data-table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { supabase } from '@/lib/supabase'
 import type { Database, UserRole, SectorType } from '@/types/database'
 
@@ -105,13 +105,13 @@ export const CustomersPanel: React.FC = () => {
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-3 items-end">
           <div className="w-56">
-            <label className="typography-label text-xs text-muted-foreground">Search name/company/username</label>
-            <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. Mohamed / Almona / m.ahmed" />
+            <label htmlFor="admin-customers-field-1" className="typography-label text-xs text-muted-foreground">Search name/company/username</label>
+            <Input id="admin-customers-field-1" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. Mohamed / Almona / m.ahmed" />
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Role</label>
+            <label htmlFor="admin-customers-field-2" className="typography-label text-xs text-muted-foreground">Role</label>
             <Select value={role} onValueChange={(v: string) => { setRole(v as UserRole | 'all'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-customers-field-2">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -125,9 +125,9 @@ export const CustomersPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Sector</label>
+            <label htmlFor="admin-customers-field-3" className="typography-label text-xs text-muted-foreground">Sector</label>
             <Select value={sector} onValueChange={(v: string) => { setSector(v as SectorType | 'all'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-customers-field-3">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -141,13 +141,13 @@ export const CustomersPanel: React.FC = () => {
             </Select>
           </div>
           <div className="w-40">
-            <label className="typography-label text-xs text-muted-foreground">Governorate</label>
-            <Input value={governorate} onChange={(e) => { setGovernorate(e.target.value); setPage(1) }} placeholder="Cairo, Giza..." />
+            <label htmlFor="admin-customers-field-4" className="typography-label text-xs text-muted-foreground">Governorate</label>
+            <Input id="admin-customers-field-4" value={governorate} onChange={(e) => { setGovernorate(e.target.value); setPage(1) }} placeholder="Cairo, Giza..." />
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Verified</label>
+            <label htmlFor="admin-customers-field-5" className="typography-label text-xs text-muted-foreground">Verified</label>
             <Select value={verified} onValueChange={(v: string) => { setVerified(v as 'all' | 'verified' | 'unverified'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-customers-field-5">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>

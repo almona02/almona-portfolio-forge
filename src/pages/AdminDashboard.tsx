@@ -12,34 +12,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
+import * as Dialog from '@radix-ui/react-dialog'
+import { adminNavigationItems } from '@/components/admin/adminNavigation'
+import '@/styles/admin-theme.css'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 import {
   AlertCircle,
-  BarChart3,
   Bell,
-  Boxes,
-  DollarSign,
-  FileText,
-  HelpCircle,
   LogOut,
   Menu,
-  Package,
-  Search,
   Settings,
   Shield,
-  ShoppingCart,
-  User as UserIcon,
-  Users,
-  Wrench,
-  X,
   Zap,
 } from 'lucide-react'
-import React, { useEffect, useMemo, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import React, { useEffect, useRef, useState } from 'react'
+import { Navigate, useSearchParams } from 'react-router-dom'
 // Dashboard components
 import { YDTPerformanceDashboard } from '@/components/admin/YDTPerformanceDashboard'
 import { GovernanceHealthMini } from '@/components/governance/GovernanceHealthMini'
@@ -64,20 +54,39 @@ const BusinessKPIDashboard = lazyRetry(() => import('../components/analytics/Bus
 // Phase 4: Analytics components
 const AnalyticsDashboard = lazyRetry(() => import('../components/ui/AnalyticsDashboard').then(m => ({ default: m.AnalyticsDashboard })), 'AnalyticsDashboard')
 const AnalyticsQueryBuilder = lazyRetry(() => import('../components/ui/AnalyticsQueryBuilder').then(m => ({ default: m.AnalyticsQueryBuilder })), 'AnalyticsQueryBuilder')
+const AuditLogPanel = lazyRetry(() => import('@/components/admin/panels/AuditLogPanel'), 'AuditLogPanel')
+const UserRolePanel = lazyRetry(() => import('@/components/admin/panels/UserRolePanel'), 'UserRolePanel')
+const TechnicianWorkloadPanel = lazyRetry(() => import('@/components/admin/panels/TechnicianWorkloadPanel'), 'TechnicianWorkloadPanel')
+const UsedMachinesAdminPanel = lazyRetry(() => import('@/components/admin/panels/UsedMachinesAdminPanel'), 'UsedMachinesAdminPanel')
+const MachinesAdminPanel = lazyRetry(() => import('@/components/admin/panels/MachinesAdminPanel'), 'MachinesAdminPanel')
+const ServiceContractsAdminPanel = lazyRetry(() => import('@/components/admin/panels/ServiceContractsAdminPanel'), 'ServiceContractsAdminPanel')
+const AdminSettingsPanel = lazyRetry(() => import('@/components/admin/panels/AdminSettingsPanel'), 'AdminSettingsPanel')
+const ServicePackagesPanel = lazyRetry(() => import('@/components/admin/panels/ServicePackagesPanel'), 'ServicePackagesPanel')
 
 type Notification = { id: string; title: string; message: string; created_at: string }
-
-type NavItem = {
-  id: string
-  label: string
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
-}
 
 const AdminDashboard: React.FC = () => {
   const { user, signOut } = useAuth()
   const { toast } = useToast()
-  const [activeTab, setActiveTab] = useState<string>('overview')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedTab = searchParams.get('tab')
+  const activeTab = adminNavigationItems.some(item => item.id === requestedTab) ? requestedTab! : 'overview'
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const pendingFocus = useRef(false)
+  const accountSelection = useRef(false)
+  const selectTab = (id: string) => {
+    pendingFocus.current = sidebarOpen
+    setSearchParams(previous => {
+      const next = new URLSearchParams(previous)
+      next.set('tab', id)
+      return next
+    })
+    setSidebarOpen(false)
+    if (!sidebarOpen) requestAnimationFrame(() => {
+      headingRef.current?.focus()
+    })
+  }
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -88,20 +97,12 @@ const AdminDashboard: React.FC = () => {
     lowStockItems: 0,
   })
 
-  const navigationItems: NavItem[] = useMemo(() => ([
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'analytics', label: 'Business Analytics', icon: BarChart3 },
-    { id: 'ydt-performance', label: 'YDT Performance', icon: Zap },
-    { id: 'products', label: 'Products', icon: Package },
-    { id: 'orders', label: 'Orders', icon: ShoppingCart },
-    { id: 'customers', label: 'Customers', icon: Users },
-  { id: 'inventory', label: 'Inventory', icon: Boxes },
-  { id: 'spare-parts', label: 'Spare Parts', icon: Wrench },
-    { id: 'support', label: 'Support Tickets', icon: HelpCircle },
-    { id: 'finance', label: 'Finance', icon: DollarSign },
-    { id: 'reports', label: 'Reports', icon: FileText },
-    { id: 'settings', label: 'Settings', icon: Settings },
-  ]), [])
+  const navigationItems = adminNavigationItems
+
+  useEffect(() => {
+    document.body.classList.add('almona-admin-theme')
+    return () => document.body.classList.remove('almona-admin-theme')
+  }, [])
 
   useEffect(() => {
     fetchDashboardData()
@@ -140,8 +141,8 @@ const AdminDashboard: React.FC = () => {
         .select('total_amount,status')
         .eq('status', 'delivered' as any)
 
-  const rows = (revenueData ?? []) as Array<{ total_amount: number | null }>
-  const totalRevenue = rows.reduce((sum: number, r) => sum + (r.total_amount ?? 0), 0)
+      const rows = (revenueData ?? []) as Array<{ total_amount: number | null }>
+      const totalRevenue = rows.reduce((sum: number, r) => sum + (r.total_amount ?? 0), 0)
 
       const { count: totalCustomers } = await supabase.from('profiles').select('*', { count: 'exact' })
       const { count: totalProducts } = await supabase.from('products').select('*', { count: 'exact' })
@@ -236,7 +237,7 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <React.Suspense fallback={<div className="h-56 flex items-center justify-center text-sm text-muted-foreground">Loading chart...</div>}>
+              <React.Suspense fallback={<div role="status" className="h-56 flex items-center justify-center text-sm text-muted-foreground">Loading chart...</div>}>
                 <SalesChart />
               </React.Suspense>
               <TopProducts />
@@ -263,61 +264,109 @@ const AdminDashboard: React.FC = () => {
         )
       case 'support':
         return <AdminTicketDashboard currentUserId={user?.id || ''} userRole="admin" />
+      case 'technicians':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading technicians…</div>}>
+            <TechnicianWorkloadPanel />
+          </React.Suspense>
+        )
+      case 'users':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading users…</div>}>
+            <UserRolePanel currentUserId={user?.id || ''} />
+          </React.Suspense>
+        )
+      case 'audit-log':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading audit log…</div>}>
+            <AuditLogPanel />
+          </React.Suspense>
+        )
       case 'spare-parts':
         return <SparePartsImportPanel />
+      case 'used-machines':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading used machines…</div>}>
+            <UsedMachinesAdminPanel />
+          </React.Suspense>
+        )
+      case 'machines':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading machine catalog…</div>}>
+            <MachinesAdminPanel />
+          </React.Suspense>
+        )
+      case 'service-contracts':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service contracts…</div>}>
+            <ServiceContractsAdminPanel />
+          </React.Suspense>
+        )
+      case 'service-packages':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service packages…</div>}>
+            <ServicePackagesPanel />
+          </React.Suspense>
+        )
       case 'products':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading products…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading products…</div>}>
             <ProductsPanel />
           </React.Suspense>
         )
       case 'orders':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading orders…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading orders…</div>}>
             <OrdersPanel />
           </React.Suspense>
         )
       case 'customers':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading customers…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading customers…</div>}>
             <CustomersPanel />
           </React.Suspense>
         )
       case 'inventory':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading inventory…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading inventory…</div>}>
             <InventoryPanel />
           </React.Suspense>
         )
       case 'finance':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading finance…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading finance…</div>}>
             <FinancePanel />
           </React.Suspense>
         )
       case 'reports':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading reports…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading reports…</div>}>
             <ReportsPanel />
+          </React.Suspense>
+        )
+      case 'configuration':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading configuration…</div>}>
+            <AdminSettingsPanel />
           </React.Suspense>
         )
       case 'analytics':
         return (
           <div className="space-y-6">
-            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading analytics dashboard…</div>}>
+            <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading analytics dashboard…</div>}>
               <AnalyticsDashboard />
             </React.Suspense>
-            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading query builder…</div>}>
+            <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading query builder…</div>}>
               <AnalyticsQueryBuilder />
             </React.Suspense>
-            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading business KPIs…</div>}>
+            <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading business KPIs…</div>}>
               <BusinessKPIDashboard />
             </React.Suspense>
           </div>
         )
       case 'settings':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading settings…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading settings…</div>}>
             <SettingsPanel />
           </React.Suspense>
         )
@@ -341,87 +390,92 @@ const AdminDashboard: React.FC = () => {
     return <Navigate to="/" replace />
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {sidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+  const navigation = (
+    <nav aria-label="Admin sections" className="space-y-1 p-3">
+      {navigationItems.map(({ id, label, icon: Icon }) => (
+        <Button
+          key={id}
+          variant="ghost"
+          aria-current={activeTab === id ? 'page' : undefined}
+          onClick={() => selectTab(id)}
+          className={cn('min-h-11 w-full justify-start gap-3', activeTab === id && 'border border-amber-500/30 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25')}
+        >
+          <Icon aria-hidden="true" className="h-5 w-5 shrink-0" />
+          {label}
+        </Button>
+      ))}
+    </nav>
+  )
 
-      {/* Sidebar */}
-      <div
-        className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-r border-white/20 shadow-sm transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        )}
-      >
-        <div className="flex items-center justify-between h-16 px-4 border-b">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-almona-orange rounded-lg flex items-center justify-center">
-              <Shield className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-semibold">Almona Admin</span>
+  return (
+    <div className="almona-admin-theme almona-admin-shell min-h-screen bg-background text-foreground">
+      <a href="#admin-main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-background focus:p-3 focus:text-foreground focus:ring-2 focus:ring-ring">
+        Skip to admin content
+      </a>
+      <aside aria-label="Administration" className="admin-desktop-sidebar fixed bottom-0 left-0 z-40 hidden w-64 flex-col border-r border-amber-500/15 bg-slate-950 lg:flex">
+        <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <Shield aria-hidden="true" className="h-6 w-6 text-amber-400" />
+          <span className="text-xl font-semibold">Almona Admin</span>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto">{navigation}</div>
+        <div className="flex shrink-0 items-center gap-3 border-t p-4">
+          <Avatar aria-hidden="true">
+            <AvatarImage src={user?.avatar_url || undefined} alt="" />
+            <AvatarFallback>{(user?.email || 'A').charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium">{user?.full_name || user?.email}</p>
+            <p className="text-sm text-muted-foreground">Administrator</p>
           </div>
-          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(false)}>
-            <X className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sign out">
+            <LogOut aria-hidden="true" className="h-4 w-4" />
           </Button>
         </div>
-
-        <div className="h-full overflow-y-auto py-4">
-          <nav className="space-y-1 px-2">
-            {navigationItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={cn(
-                    'w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                    activeTab === item.id ? 'bg-almona-orange text-white' : 'text-gray-700 hover:bg-gray-100'
-                  )}
-                >
-                  <Icon className="mr-3 h-5 w-5" />
-                  {item.label}
-                </button>
-              )
-            })}
-          </nav>
-        </div>
-
-        <div className="absolute bottom-0 w-full p-4 border-t">
-          <div className="flex items-center space-x-3">
-            <Avatar>
-              <AvatarImage src={user?.avatar_url || undefined} />
-              <AvatarFallback>{(user?.email || 'A').charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">{user?.full_name || user?.email}</p>
-              <p className="text-sm text-gray-500 truncate">Administrator</p>
-            </div>
-            <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
+      </aside>
 
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Header */}
-  <header className="bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-white/20">
-          <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center">
-              <Button variant="ghost" size="icon" className="lg:hidden mr-2" onClick={() => setSidebarOpen(true)}>
-                <Menu className="h-5 w-5" />
-              </Button>
-              <div className="relative w-64">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                <Input type="search" placeholder="Search..." className="w-full pl-8" />
-              </div>
+        <header className="sticky z-30 border-b border-amber-500/15 bg-slate-950/95 backdrop-blur">
+          <div className="flex min-h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 items-center gap-2">
+              <Dialog.Root open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                <Dialog.Trigger asChild>
+                  <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open admin navigation">
+                    <Menu aria-hidden="true" className="h-5 w-5" />
+                  </Button>
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 z-[1090] bg-black/60" />
+                  <Dialog.Content
+                    className="fixed inset-y-0 left-0 z-[1100] flex w-72 max-w-[90vw] flex-col bg-background text-foreground shadow-xl"
+                    onCloseAutoFocus={event => {
+                      if (pendingFocus.current) {
+                        event.preventDefault()
+                        headingRef.current?.focus()
+                        pendingFocus.current = false
+                      }
+                    }}
+                  >
+                    <div className="flex min-h-16 items-center justify-between border-b px-4">
+                      <Dialog.Title className="text-lg font-semibold">Admin navigation</Dialog.Title>
+                      <Dialog.Close asChild>
+                        <Button variant="ghost" size="icon" aria-label="Close admin navigation">×</Button>
+                      </Dialog.Close>
+                    </div>
+                    <Dialog.Description className="sr-only">Choose an administration section.</Dialog.Description>
+                    <div className="min-h-0 flex-1 overflow-y-auto">{navigation}</div>
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+              <span className="truncate font-semibold">Almona Administration</span>
             </div>
 
             <div className="flex items-center space-x-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" className="relative" aria-label={`Notifications (${notifications.length})`}>
+                    <Bell aria-hidden="true" className="h-5 w-5" />
                     {notifications.length > 0 && (
                       <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">
                         {notifications.length}
@@ -429,7 +483,7 @@ const AdminDashboard: React.FC = () => {
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuContent align="end" className="w-80 max-w-[calc(100vw-2rem)]">
                   <DropdownMenuLabel>Notifications</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {notifications.length === 0 ? (
@@ -455,22 +509,24 @@ const AdminDashboard: React.FC = () => {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full" aria-label="Account menu">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user?.avatar_url || undefined} />
+                      <AvatarImage src={user?.avatar_url || undefined} alt="" />
                       <AvatarFallback>{(user?.email || 'A').charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" onCloseAutoFocus={event => {
+                  if (accountSelection.current) {
+                    event.preventDefault()
+                    accountSelection.current = false
+                    headingRef.current?.focus()
+                  }
+                }}>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onSelect={() => { accountSelection.current = true; selectTab('settings') }}>
+                    <Settings aria-hidden="true" className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -484,9 +540,9 @@ const AdminDashboard: React.FC = () => {
           </div>
         </header>
 
-        <main className="p-6">
+        <main id="admin-main" tabIndex={-1} aria-labelledby="admin-heading" className="min-w-0 p-4 sm:p-6">
           <div className="mb-6">
-            <h1 className="typography-h1 text-gray-900">{navigationItems.find((i) => i.id === activeTab)?.label || 'Dashboard'}</h1>
+            <h1 id="admin-heading" ref={headingRef} tabIndex={-1} className="typography-h1 break-words focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring">{navigationItems.find((i) => i.id === activeTab)?.label || 'Dashboard'}</h1>
             <p className="text-muted-foreground">Manage your industrial e-commerce platform</p>
           </div>
           {renderTabContent()}

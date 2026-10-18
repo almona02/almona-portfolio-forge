@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/ui/alert-dialog'
 import { Button as Btn } from '@/components/ui/button'
 import { CheckCircle2, XCircle, ArrowUpDown } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { supabase } from '@/lib/supabase'
 import { table } from '@/lib/data/clientCore'
 import type { Database, ProductCategory } from '@/types/database'
@@ -186,13 +186,13 @@ export const InventoryPanel: React.FC = () => {
         </div>
         <div className="flex flex-wrap gap-3 items-end">
           <div className="w-56">
-            <label className="typography-label text-xs text-muted-foreground">Search SKU/Name</label>
-            <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. ALM-123 or Saw" />
+            <label htmlFor="admin-inventory-field-1" className="typography-label text-xs text-muted-foreground">Search SKU/Name</label>
+            <Input id="admin-inventory-field-1" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. ALM-123 or Saw" />
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Category</label>
+            <label htmlFor="admin-inventory-field-2" className="typography-label text-xs text-muted-foreground">Category</label>
             <Select value={category} onValueChange={(v: string) => { setCategory(v as ProductCategory | 'all'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-inventory-field-2">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -206,9 +206,9 @@ export const InventoryPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Stock</label>
+            <label htmlFor="admin-inventory-field-3" className="typography-label text-xs text-muted-foreground">Stock</label>
             <Select value={stockStatus} onValueChange={(v: string) => { setStockStatus(v as 'all' | 'ok' | 'low' | 'out'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-inventory-field-3">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -220,9 +220,9 @@ export const InventoryPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Active</label>
+            <label htmlFor="admin-inventory-field-4" className="typography-label text-xs text-muted-foreground">Active</label>
             <Select value={active} onValueChange={(v: string) => { setActive(v as 'all' | 'active' | 'inactive'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-inventory-field-4">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -273,8 +273,8 @@ export const InventoryPanel: React.FC = () => {
           </AlertDialogHeader>
           {pendingAction?.type === 'stock' && (
             <div className="mt-2">
-              <label className="typography-label text-xs text-muted-foreground">Delta (can be negative)</label>
-              <Input
+              <label htmlFor="admin-inventory-field-5" className="typography-label text-xs text-muted-foreground">Delta (can be negative)</label>
+              <Input id="admin-inventory-field-5"
                 type="number"
                 step="1"
                 value={pendingAction.delta === '' ? '' : String(pendingAction.delta)}
