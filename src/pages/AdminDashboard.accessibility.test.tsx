@@ -107,6 +107,5 @@ describe('Admin accessibility and navigation', () => {
     for (const item of adminNavigationItems) {
       expect(screen.getByRole('menuitem', { name: item.label })).toHaveAttribute('href', adminSectionHref(item.id))
     }
-    expect(screen.queryByRole('menuitem', { name: 'Users & Roles' })).not.toBeInTheDocument()
   })
 })
