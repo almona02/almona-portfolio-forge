@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useQuote } from "@/context/QuoteContext";
 import { inventory } from "@/data/inventory";
 import { useToast } from "@/hooks/useToast";
+import { useLiveProductPrices } from "@/hooks/useLiveProductPrices";
 
 import {
   Grid,
@@ -159,7 +160,7 @@ interface ProductGridProps {
   toast: (options: { title: string; description: string; variant?: "default" | "destructive" }) => void;
   comparisonList: Machine[];
   handleToggleCompare: (product: Machine) => void;
-  formatPrice: (price?: number) => string;
+  formatPrice: (name?: string) => string;
   setFilters: (filters: ShopFilters) => void;
 }
 
@@ -226,10 +227,7 @@ const ProductGrid = ({
               title={product.name}
               description={product.description || ""}
               imageUrl={'imageUrl' in product ? product.imageUrl : ''}
-              price={formatPrice(
-                'pricing' in product ? product.pricing?.basePrice : 
-                'price' in product ? product.price : undefined
-              )}
+              price={formatPrice(product.name)}
               features={isMachine(product) ? product.specifications.slice(0, 3).map(s => s.value ? `${s.key}: ${s.value}` : s.key) : []}
               badges={[
                 ...('tags' in product ? product.tags : []),
@@ -347,8 +345,12 @@ const Shop = () => {
   const uniqueProductsArray = useMemo(() => uniqueProducts, []);
   const allParts = useMemo(() => yilmazParts, []);
 
-  // Public prices are confirmed in a written quotation.
-  const formatPrice = useCallback((_price?: number) => "Contact for Quote", []);
+  // Live prices from the admin-editable products table, keyed by model (SKU).
+  const livePrices = useLiveProductPrices();
+  const formatPrice = useCallback((name?: string) => {
+    const price = name ? livePrices.get(name) : undefined;
+    return price != null ? `${price.toLocaleString()} EGP` : "Contact for Quote";
+  }, [livePrices]);
 
   // Map smart category to legacy category for filtering
   const getLegacyCategoryFilter = useCallback((smartCategory: string) => {
@@ -732,7 +734,7 @@ const Shop = () => {
         {quickViewProduct && (
           <ProductQuickView 
             product={toTypesMachine(quickViewProduct)}
-            priceLabel={formatPrice(quickViewProduct.pricing?.basePrice)}
+            priceLabel={formatPrice(quickViewProduct.name)}
             stock={quickViewProduct.stock}
             onAddToQuote={() => addToQuote(quickViewProduct)}
             isOpen={!!quickViewProduct}
