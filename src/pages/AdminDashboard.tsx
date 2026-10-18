@@ -60,6 +60,7 @@ const TechnicianWorkloadPanel = lazyRetry(() => import('@/components/admin/panel
 const UsedMachinesAdminPanel = lazyRetry(() => import('@/components/admin/panels/UsedMachinesAdminPanel'), 'UsedMachinesAdminPanel')
 const ServiceContractsAdminPanel = lazyRetry(() => import('@/components/admin/panels/ServiceContractsAdminPanel'), 'ServiceContractsAdminPanel')
 const AdminSettingsPanel = lazyRetry(() => import('@/components/admin/panels/AdminSettingsPanel'), 'AdminSettingsPanel')
+const ServicePackagesPanel = lazyRetry(() => import('@/components/admin/panels/ServicePackagesPanel'), 'ServicePackagesPanel')
 
 type Notification = { id: string; title: string; message: string; created_at: string }
 
@@ -292,6 +293,12 @@ const AdminDashboard: React.FC = () => {
         return (
           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service contracts…</div>}>
             <ServiceContractsAdminPanel />
+          </React.Suspense>
+        )
+      case 'service-packages':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service packages…</div>}>
+            <ServicePackagesPanel />
           </React.Suspense>
         )
       case 'products':
