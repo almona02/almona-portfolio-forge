@@ -24,6 +24,7 @@ import {
   Boxes,
   DollarSign,
   FileText,
+  HardHat,
   HelpCircle,
   LogOut,
   Menu,
@@ -31,8 +32,10 @@ import {
   Search,
   Settings,
   Shield,
+  ShieldCheck,
   ShoppingCart,
   User as UserIcon,
+  UserCog,
   Users,
   Wrench,
   X,
@@ -64,6 +67,9 @@ const BusinessKPIDashboard = lazyRetry(() => import('../components/analytics/Bus
 // Phase 4: Analytics components
 const AnalyticsDashboard = lazyRetry(() => import('../components/ui/AnalyticsDashboard').then(m => ({ default: m.AnalyticsDashboard })), 'AnalyticsDashboard')
 const AnalyticsQueryBuilder = lazyRetry(() => import('../components/ui/AnalyticsQueryBuilder').then(m => ({ default: m.AnalyticsQueryBuilder })), 'AnalyticsQueryBuilder')
+import { AuditLogPanel } from '@/components/admin/panels/AuditLogPanel'
+import { UserRolePanel } from '@/components/admin/panels/UserRolePanel'
+import { TechnicianWorkloadPanel } from '@/components/admin/panels/TechnicianWorkloadPanel'
 
 type Notification = { id: string; title: string; message: string; created_at: string }
 
@@ -98,6 +104,9 @@ const AdminDashboard: React.FC = () => {
   { id: 'inventory', label: 'Inventory', icon: Boxes },
   { id: 'spare-parts', label: 'Spare Parts', icon: Wrench },
     { id: 'support', label: 'Support Tickets', icon: HelpCircle },
+    { id: 'technicians', label: 'Technicians', icon: HardHat },
+    { id: 'users', label: 'Users & Roles', icon: UserCog },
+    { id: 'audit-log', label: 'Audit Log', icon: ShieldCheck },
     { id: 'finance', label: 'Finance', icon: DollarSign },
     { id: 'reports', label: 'Reports', icon: FileText },
     { id: 'settings', label: 'Settings', icon: Settings },
@@ -263,6 +272,24 @@ const AdminDashboard: React.FC = () => {
         )
       case 'support':
         return <AdminTicketDashboard currentUserId={user?.id || ''} userRole="admin" />
+      case 'technicians':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading technicians…</div>}>
+            <TechnicianWorkloadPanel />
+          </React.Suspense>
+        )
+      case 'users':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading users…</div>}>
+            <UserRolePanel currentUserId={user?.id || ''} />
+          </React.Suspense>
+        )
+      case 'audit-log':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading audit log…</div>}>
+            <AuditLogPanel />
+          </React.Suspense>
+        )
       case 'spare-parts':
         return <SparePartsImportPanel />
       case 'products':
