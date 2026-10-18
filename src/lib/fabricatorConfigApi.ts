@@ -98,4 +98,54 @@ export const fabricatorConfigApi = {
     const { error } = await db.from('profile_accessory_compatibility').delete().eq('profile_id', profileId).eq('accessory_id', accessoryId)
     if (error) throw error
   },
+
+  async listRules(): Promise<ManufacturingRule[]> {
+    const { data, error } = await supabase.from('manufacturing_rules').select('*').order('created_at', { ascending: false })
+    if (error) throw error
+    return (data ?? []) as ManufacturingRule[]
+  },
+
+  async createRule(input: { name: string; rule_type: string; description?: string | null; applies_to?: string | null; details?: Record<string, unknown> }): Promise<void> {
+    const { error } = await db.from('manufacturing_rules').insert(input)
+    if (error) throw error
+  },
+
+  async setRuleStatus(id: string, status: 'approved' | 'rejected'): Promise<void> {
+    const { error } = await db.from('manufacturing_rules').update({ status, approved_at: new Date().toISOString() }).eq('id', id)
+    if (error) throw error
+  },
+
+  async deleteRule(id: string): Promise<void> {
+    const { error } = await db.from('manufacturing_rules').delete().eq('id', id)
+    if (error) throw error
+  },
+
+  async listTuning(): Promise<TuningParam[]> {
+    const { data, error } = await supabase.from('fabricator_tuning').select('*').order('key')
+    if (error) throw error
+    return (data ?? []) as TuningParam[]
+  },
+
+  async saveTuning(key: string, value: number, unit = ''): Promise<void> {
+    const { error } = await db.from('fabricator_tuning').upsert({ key, value, unit }, { onConflict: 'owner_id,key' })
+    if (error) throw error
+  },
+}
+
+export interface ManufacturingRule {
+  id: string
+  name: string
+  rule_type: string
+  description: string | null
+  applies_to: string | null
+  status: 'draft' | 'approved' | 'rejected'
+  created_at: string
+}
+
+export interface TuningParam {
+  id: string
+  key: string
+  value: number
+  unit: string
+  description: string | null
 }

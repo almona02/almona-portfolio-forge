@@ -7,10 +7,10 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { useToast } from '@/hooks/use-toast'
-import { fabricatorConfigApi, ACCESSORY_TYPES, MATERIALS, type FabricatorProfile, type FabricatorAccessory } from '@/lib/fabricatorConfigApi'
-import { Loader2, RefreshCw, Plus, Trash2, Layers, Package, Link2 } from 'lucide-react'
+import { fabricatorConfigApi, ACCESSORY_TYPES, MATERIALS, type FabricatorProfile, type FabricatorAccessory, type ManufacturingRule, type TuningParam } from '@/lib/fabricatorConfigApi'
+import { Loader2, RefreshCw, Plus, Trash2, Layers, Package, Link2, CheckCircle2, XCircle, Settings2 } from 'lucide-react'
 
-type Tab = 'profiles' | 'accessories' | 'kits'
+type Tab = 'profiles' | 'accessories' | 'kits' | 'rules' | 'tuning'
 
 export const FabricatorConfigurator: React.FC = () => {
   const { toast } = useToast()
@@ -22,14 +22,37 @@ export const FabricatorConfigurator: React.FC = () => {
   const [accessoryDialog, setAccessoryDialog] = useState(false)
   const [kitProfile, setKitProfile] = useState<FabricatorProfile | null>(null)
   const [kitAccessories, setKitAccessories] = useState<FabricatorAccessory[]>([])
+  const [rules, setRules] = useState<ManufacturingRule[]>([])
+  const [tuning, setTuning] = useState<TuningParam[]>([])
+  const [ruleName, setRuleName] = useState('')
+  const [ruleType, setRuleType] = useState('machining')
+  const [ruleAppliesTo, setRuleAppliesTo] = useState('')
 
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const [p, a] = await Promise.all([fabricatorConfigApi.listProfiles(), fabricatorConfigApi.listAccessories()])
-      setProfiles(p); setAccessories(a)
+      const [p, a, r, t] = await Promise.all([fabricatorConfigApi.listProfiles(), fabricatorConfigApi.listAccessories(), fabricatorConfigApi.listRules(), fabricatorConfigApi.listTuning()])
+      setProfiles(p); setAccessories(a); setRules(r); setTuning(t)
     } catch (e) { console.error(e) } finally { setLoading(false) }
   }, [])
+
+  const addRule = async () => {
+    if (!ruleName.trim()) { toast({ title: 'Enter a rule name', variant: 'destructive' }); return }
+    try {
+      await fabricatorConfigApi.createRule({ name: ruleName.trim(), rule_type: ruleType, applies_to: ruleAppliesTo.trim() || null })
+      setRuleName(''); setRuleAppliesTo(''); await refresh(); toast({ title: 'Rule added' })
+    } catch (e) { toast({ title: 'Add failed', variant: 'destructive' }) }
+  }
+
+  const setRuleStatus = async (id: string, status: 'approved' | 'rejected') => {
+    try { await fabricatorConfigApi.setRuleStatus(id, status); await refresh(); toast({ title: `Rule ${status}` }) }
+    catch (e) { toast({ title: 'Update failed', variant: 'destructive' }) }
+  }
+
+  const saveTuning = async (key: string, value: number) => {
+    try { await fabricatorConfigApi.saveTuning(key, value); await refresh(); toast({ title: 'Tuning saved' }) }
+    catch (e) { toast({ title: 'Save failed', variant: 'destructive' }) }
+  }
 
   useEffect(() => { void refresh() }, [refresh])
 
@@ -56,6 +79,8 @@ export const FabricatorConfigurator: React.FC = () => {
     { id: 'profiles', label: 'Profiles', icon: Layers },
     { id: 'accessories', label: 'Accessories', icon: Package },
     { id: 'kits', label: 'Set Kits', icon: Link2 },
+    { id: 'rules', label: 'Rules', icon: CheckCircle2 },
+    { id: 'tuning', label: 'Tuning', icon: Settings2 },
   ]
 
   return (
@@ -137,6 +162,40 @@ export const FabricatorConfigurator: React.FC = () => {
                 </div>
               </div>
             ) : <p className="text-sm text-muted-foreground">Select a profile to manage its set kit.</p>}
+          </div>
+        )}
+
+        {tab === 'rules' && (
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2 items-end">
+              <div className="w-56"><Label>Rule name</Label><Input value={ruleName} onChange={(e) => setRuleName(e.target.value)} placeholder="e.g. Frame end-mill" /></div>
+              <div><Label>Type</Label><Select value={ruleType} onValueChange={setRuleType}><SelectTrigger className="w-40 capitalize"><SelectValue /></SelectTrigger><SelectContent>{['machining', 'assembly', 'cutting', 'quality'].map((r) => <SelectItem key={r} value={r} className="capitalize">{r}</SelectItem>)}</SelectContent></Select></div>
+              <div className="w-56"><Label>Applies to</Label><Input value={ruleAppliesTo} onChange={(e) => setRuleAppliesTo(e.target.value)} placeholder="Profile role / brand" /></div>
+              <Button size="sm" onClick={() => void addRule()}><Plus className="mr-2 h-4 w-4" /> Add rule</Button>
+            </div>
+            {rules.length === 0 ? <p className="text-sm text-muted-foreground">No rules yet.</p> : (
+              <div className="space-y-2">
+                {rules.map((r) => (
+                  <div key={r.id} className="flex flex-wrap items-center gap-3 rounded-md border p-2">
+                    <div className="flex-1 min-w-[160px]"><div className="text-sm font-medium">{r.name}</div><div className="text-xs text-muted-foreground capitalize">{r.rule_type}{r.applies_to ? ` · ${r.applies_to}` : ''}</div></div>
+                    <Badge variant={r.status === 'approved' ? 'default' : r.status === 'rejected' ? 'destructive' : 'secondary'}>{r.status}</Badge>
+                    {r.status !== 'approved' && <Button size="sm" variant="outline" onClick={() => void setRuleStatus(r.id, 'approved')}><CheckCircle2 className="mr-1 h-4 w-4" /> Approve</Button>}
+                    {r.status !== 'rejected' && <Button size="sm" variant="ghost" onClick={() => void setRuleStatus(r.id, 'rejected')}><XCircle className="mr-1 h-4 w-4" /> Reject</Button>}
+                    <Button size="sm" variant="ghost" onClick={() => void fabricatorConfigApi.deleteRule(r.id).then(refresh)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === 'tuning' && (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">Optimization and cut-list parameters, applied workshop-wide.</p>
+            <TuningRow label="Saw kerf (mm)" k="saw_kerf_mm" tuning={tuning} onSave={saveTuning} />
+            <TuningRow label="Bar end trim (mm)" k="bar_end_trim_mm" tuning={tuning} onSave={saveTuning} />
+            <TuningRow label="Min remnant length (mm)" k="min_remnant_mm" tuning={tuning} onSave={saveTuning} />
+            <TuningRow label="Yield margin (%)" k="yield_margin_pct" tuning={tuning} onSave={saveTuning} />
           </div>
         )}
       </CardContent>
@@ -226,3 +285,16 @@ const AccessoryDialog: React.FC<{ open: boolean; onClose: () => void; onSaved: (
 }
 
 export default FabricatorConfigurator
+
+const TuningRow: React.FC<{ label: string; k: string; tuning: TuningParam[]; onSave: (key: string, value: number) => Promise<void> }> = ({ label, k, tuning, onSave }) => {
+  const current = tuning.find((t) => t.key === k)
+  const [val, setVal] = useState(current ? String(current.value) : '')
+  return (
+    <div className="flex items-center gap-3">
+      <span className="w-52 text-sm">{label}</span>
+      <Input type="number" value={val} onChange={(e) => setVal(e.target.value)} className="w-32" />
+      <Button size="sm" variant="outline" onClick={() => void onSave(k, Number(val) || 0)}>Save</Button>
+      {current && <span className="text-xs text-muted-foreground">current: {current.value} {current.unit}</span>}
+    </div>
+  )
+}
