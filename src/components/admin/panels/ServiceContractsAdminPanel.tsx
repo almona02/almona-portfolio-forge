@@ -66,7 +66,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
     setSelected(c)
     setVisitsLoading(true)
     try { setVisits(await serviceContractApi.listVisits(c.id)) }
-    catch (e) { toast({ title: 'Unable to load visits', variant: 'destructive' }) }
+    catch { toast({ title: 'Unable to load visits', variant: 'destructive' }) }
     finally { setVisitsLoading(false) }
   }
 
