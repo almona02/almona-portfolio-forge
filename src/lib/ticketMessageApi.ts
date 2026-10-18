@@ -57,6 +57,24 @@ export const ticketMessageApi = {
     if (error) throw error
   },
 
+  async sendSparePartsRequest(input: {
+    ticketId: string
+    authorId: string
+    note?: string
+    parts: Array<{ sku: string; name: string; quantity: number; urgency: string }>
+  }): Promise<void> {
+    const { error } = await db.from('ticket_messages').insert({
+      ticket_id: input.ticketId,
+      author_id: input.authorId,
+      message: input.note || 'Spare parts request',
+      message_type: 'spare_parts_request',
+      is_internal_note: false,
+      attachments: [],
+      spare_parts_details: { parts: input.parts },
+    })
+    if (error) throw error
+  },
+
   async createShare(ticketId: string, expiresInDays = 14): Promise<{ token: string; url: string }> {
     const token = crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '')
     const expiresAt = new Date(Date.now() + expiresInDays * 86400000).toISOString()
