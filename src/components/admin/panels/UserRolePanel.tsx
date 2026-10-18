@@ -8,6 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/ui/alert-dialog'
 import { toast } from 'sonner'
 
+const ROLE_COLORS: Record<AdminUserRole, string> = {
+  admin: 'border-red-500/40 bg-red-500/15 text-red-300',
+  customer: 'border-sky-500/40 bg-sky-500/15 text-sky-300',
+  sales_rep: 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300',
+  technician: 'border-amber-500/40 bg-amber-500/15 text-amber-300',
+  support: 'border-violet-500/40 bg-violet-500/15 text-violet-300',
+}
+
 export const UserRolePanel: React.FC<{ currentUserId: string }> = ({ currentUserId }) => {
   const [users, setUsers] = useState<AdminUserRow[]>([])
   const [q, setQ] = useState('')
@@ -75,12 +83,15 @@ export const UserRolePanel: React.FC<{ currentUserId: string }> = ({ currentUser
                   <td className="p-2 font-medium">{user.full_name || '—'}</td>
                   <td className="p-2">{user.username || '—'}</td><td className="p-2">{user.company_name || '—'}</td>
                   <td className="p-2">
-                    <Select value={user.role} disabled={saving || user.id === currentUserId} onValueChange={value => {
-                      if (value !== user.role) setPending({ user, role: value as AdminUserRole })
-                    }}>
-                      <SelectTrigger aria-label={`Role for ${user.full_name || user.username || user.id}`}><SelectValue /></SelectTrigger>
-                      <SelectContent>{ADMIN_USER_ROLES.map(role => <SelectItem key={role} value={role}>{role.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
-                    </Select>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant="outline" className={`capitalize ${ROLE_COLORS[user.role]}`}>{user.role.replace(/_/g, ' ')}</Badge>
+                      <Select value={user.role} disabled={saving || user.id === currentUserId} onValueChange={value => {
+                        if (value !== user.role) setPending({ user, role: value as AdminUserRole })
+                      }}>
+                        <SelectTrigger aria-label={`Role for ${user.full_name || user.username || user.id}`} className="w-36"><SelectValue /></SelectTrigger>
+                        <SelectContent>{ADMIN_USER_ROLES.map(role => <SelectItem key={role} value={role}>{role.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
                     {user.id === currentUserId && <Badge variant="outline" className="mt-1">You</Badge>}
                   </td>
                 </tr>
