@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TicketStatusBadge } from '@/components/support/TicketStatusBadge'
-import { ArrowLeft, Clock, MapPin, Phone, Mail, Cpu, Loader2, AlertCircle } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { useToast } from '@/hooks/use-toast'
+import { ticketMessageApi, type TicketAttachment } from '@/lib/ticketMessageApi'
+import { ArrowLeft, Clock, MapPin, Phone, Mail, Cpu, Loader2, AlertCircle, Send, ImagePlus, Share2, User, Headset } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface TicketRow {
   id: string
+  user_id: string | null
   ticket_number: string
   title: string
   description: string
@@ -33,6 +37,7 @@ interface MessageRow {
   author_id: string | null
   message: string
   message_type: string | null
+  attachments: TicketAttachment[]
   created_at: string
 }
 
@@ -47,28 +52,84 @@ const priorityColor: Record<string, string> = {
 const TicketDetailPage = () => {
   const { ticketId } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const shareToken = searchParams.get('share')
+  const { user } = useAuth()
+  const { toast } = useToast()
+
   const [ticket, setTicket] = useState<TicketRow | null>(null)
   const [messages, setMessages] = useState<MessageRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const [reply, setReply] = useState('')
+  const [files, setFiles] = useState<FileList | null>(null)
+  const [sending, setSending] = useState(false)
+  const [sharing, setSharing] = useState(false)
+  const endRef = useRef<HTMLDivElement>(null)
+
+  const isSharedView = !!shareToken
+
+  const loadAuthenticated = async () => {
+    if (!ticketId) return
+    const { data, error: err } = await supabase.from('service_tickets').select('*').eq('id', ticketId).maybeSingle()
+    if (err || !data) { setError('Ticket not found or unavailable.'); setLoading(false); return }
+    setTicket(data as TicketRow)
+    const { data: msgs } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticketId).order('created_at', { ascending: true })
+    setMessages((msgs ?? []) as MessageRow[])
+    setLoading(false)
+  }
+
   useEffect(() => {
     if (!ticketId) return
-    let mounted = true
     setLoading(true)
     setError(null)
-    void (async () => {
-      const { data, error: err } = await supabase.from('service_tickets').select('*').eq('id', ticketId).maybeSingle()
-      if (err || !data) {
-        if (mounted) { setError('Ticket not found or unavailable.'); setLoading(false) }
-        return
+    if (shareToken) {
+      void ticketMessageApi.getSharedTicket(shareToken)
+        .then((data) => {
+          setTicket(data.ticket as TicketRow)
+          setMessages(data.messages as MessageRow[])
+          setLoading(false)
+        })
+        .catch(() => { setError('Invalid or expired share link.'); setLoading(false) })
+    } else {
+      void loadAuthenticated()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketId, shareToken])
+
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages.length])
+
+  const send = async () => {
+    if (!reply.trim() || !user || !ticket || sending) return
+    setSending(true)
+    try {
+      const attachments: TicketAttachment[] = []
+      if (files) {
+        for (const f of Array.from(files).slice(0, 6)) attachments.push(await ticketMessageApi.uploadAttachment(f))
       }
-      if (mounted) setTicket(data as TicketRow)
-      const { data: msgs } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticketId).order('created_at', { ascending: true })
-      if (mounted) { setMessages((msgs ?? []) as MessageRow[]); setLoading(false) }
-    })()
-    return () => { mounted = false }
-  }, [ticketId])
+      await ticketMessageApi.sendMessage({ ticketId: ticket.id, authorId: user.id, message: reply.trim(), attachments })
+      setReply('')
+      setFiles(null)
+      const { data: msgs } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticket.id).order('created_at', { ascending: true })
+      setMessages((msgs ?? []) as MessageRow[])
+      toast({ title: 'Message sent' })
+    } catch (e) {
+      toast({ title: 'Send failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' })
+    } finally { setSending(false) }
+  }
+
+  const share = async () => {
+    if (!ticket || sharing) return
+    setSharing(true)
+    try {
+      const { url } = await ticketMessageApi.createShare(ticket.id)
+      await navigator.clipboard.writeText(url).catch(() => {})
+      toast({ title: 'Share link copied for the YILMAZ support team' })
+    } catch (e) {
+      toast({ title: 'Share failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' })
+    } finally { setSharing(false) }
+  }
 
   if (loading) {
     return <div className="container mx-auto py-16 flex items-center justify-center gap-2 text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /> Loading ticket…</div>
@@ -86,7 +147,14 @@ const TicketDetailPage = () => {
 
   return (
     <div className="container mx-auto py-6 px-4 space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate(-1)}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+        {!isSharedView && (
+          <Button variant="outline" size="sm" onClick={() => void share()} disabled={sharing}>
+            <Share2 className="mr-2 h-4 w-4" /> {sharing ? 'Generating…' : 'Share with YILMAZ'}
+          </Button>
+        )}
+      </div>
 
       {/* Header */}
       <Card>
@@ -96,6 +164,7 @@ const TicketDetailPage = () => {
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="font-mono">{ticket.ticket_number}</span>
                 {ticket.maintenance_type && <Badge variant="outline" className="capitalize">{ticket.maintenance_type}</Badge>}
+                {isSharedView && <Badge variant="secondary">Shared view</Badge>}
               </div>
               <CardTitle className="text-xl md:text-2xl">{ticket.title}</CardTitle>
             </div>
@@ -119,24 +188,67 @@ const TicketDetailPage = () => {
             </Card>
           )}
 
+          {/* Conversation */}
           <Card>
             <CardHeader><CardTitle className="text-base">Conversation</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {messages.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No messages yet.</p>
               ) : (
-                messages.map((m) => (
-                  <div key={m.id} className="rounded-lg border p-3">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {format(new Date(m.created_at), 'MMM dd, yyyy HH:mm')}
-                      {m.message_type && <Badge variant="secondary" className="capitalize text-[10px]">{m.message_type}</Badge>}
+                messages.map((m) => {
+                  const isCustomer = ticket.user_id != null && m.author_id === ticket.user_id
+                  return (
+                    <div key={m.id} className={`flex gap-3 ${isCustomer ? 'flex-row-reverse' : ''}`}>
+                      <div className="w-9 h-9 shrink-0 rounded-full border flex items-center justify-center bg-muted">
+                        {isCustomer ? <User className="h-4 w-4" /> : <Headset className="h-4 w-4" />}
+                      </div>
+                      <div className={`max-w-[80%] ${isCustomer ? 'text-right' : ''}`}>
+                        <div className={`rounded-lg border p-3 text-sm whitespace-pre-wrap ${isCustomer ? 'bg-primary/10 border-primary/20' : 'bg-muted/40 border-border'}`}>
+                          {m.message}
+                          {m.attachments?.length > 0 && (
+                            <div className="mt-2 grid grid-cols-3 gap-2">
+                              {m.attachments.map((a, i) => (
+                                <a key={i} href={a.url} target="_blank" rel="noopener noreferrer">
+                                  <img src={a.url} alt={a.filename} className="w-full h-20 object-cover rounded border" />
+                                </a>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div className={`mt-1 text-[10px] text-muted-foreground flex items-center gap-1 ${isCustomer ? 'justify-end' : ''}`}>
+                          <Clock className="h-3 w-3" />
+                          {format(new Date(m.created_at), 'MMM dd, HH:mm')}
+                        </div>
+                      </div>
                     </div>
-                    <p className="mt-2 text-sm whitespace-pre-wrap">{m.message}</p>
-                  </div>
-                ))
+                  )
+                })
               )}
+              <div ref={endRef} />
             </CardContent>
+
+            {/* Composer (authenticated only) */}
+            {!isSharedView && user && (
+              <div className="border-t p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <ImagePlus className="h-4 w-4 text-muted-foreground" />
+                  <input type="file" accept="image/*" multiple onChange={(e) => setFiles(e.target.files)} />
+                  {files && files.length > 0 && <span className="text-xs text-muted-foreground">{files.length} photo(s) attached</span>}
+                </div>
+                <div className="flex gap-2">
+                  <textarea
+                    value={reply}
+                    onChange={(e) => setReply(e.target.value)}
+                    placeholder="Reply to this ticket…"
+                    className="flex-1 min-h-[60px] rounded-md border bg-background px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <Button size="sm" onClick={() => void send()} disabled={!reply.trim() || sending}>
+                    {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    <span className="sr-only">Send</span>
+                  </Button>
+                </div>
+              </div>
+            )}
           </Card>
         </div>
 
