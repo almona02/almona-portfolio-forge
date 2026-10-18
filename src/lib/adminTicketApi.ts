@@ -13,8 +13,21 @@ import {
 } from '@/types/tickets';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 type ServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'];
+// Scope the legacy schema to this table and restore SDK relationship metadata.
+type AdminTicketDatabase = {
+  public: {
+    Tables: {
+      service_tickets: Database['public']['Tables']['service_tickets'] & { Relationships: [] };
+    };
+    Views: Record<never, never>;
+    Functions: Record<never, never>;
+  };
+};
+const ticketDb = supabase as unknown as SupabaseClient<AdminTicketDatabase>;
+
 type ProfileRow = Pick<Database['public']['Tables']['profiles']['Row'], 'id' | 'full_name' | 'company_name' | 'phone' | 'role'>;
 
 // Helper: map raw ticket row to ServiceTicket/TicketWithDetails
@@ -123,7 +136,7 @@ export const assignTicket = async (
   assigneeId: string,
   assignedBy: string
 ): Promise<ServiceTicket> => {
-  const { data: current } = await supabase.from('service_tickets').select('status').eq('id', ticketId).single();
+  const { data: current } = await ticketDb.from('service_tickets').select('status').eq('id', ticketId).single<Pick<ServiceTicketRow, 'status'>>();
   const currentStatus = current?.status ?? 'open';
 
   const statusPatch =
@@ -144,7 +157,7 @@ export const assignTicket = async (
     assigned_at: new Date().toISOString(),
   };
 
-  const { data, error } = await supabase.from('service_tickets').update(patch).eq('id', ticketId).select().single();
+  const { data, error } = await ticketDb.from('service_tickets').update(patch).eq('id', ticketId).select().single<ServiceTicketRow>();
   if (error) throw new Error(error.message);
 
   await recordServiceEvent({
@@ -162,11 +175,11 @@ export const updateTicketStatusAndPriority = async (
   updates: { status?: TicketStatus; priority?: TicketPriority; resolution_summary?: string },
   actorId: string = 'admin',
 ): Promise<ServiceTicket> => {
-  const { data: currentRow, error: fetchErr } = await supabase
+  const { data: currentRow, error: fetchErr } = await ticketDb
     .from('service_tickets')
     .select('*')
     .eq('id', ticketId)
-    .single();
+    .single<ServiceTicketRow>();
   if (fetchErr || !currentRow) throw new Error(fetchErr?.message ?? 'Ticket not found');
 
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -187,7 +200,7 @@ export const updateTicketStatusAndPriority = async (
 
   if (updates.priority) patch['priority'] = updates.priority;
 
-  const { data, error } = await supabase.from('service_tickets').update(patch).eq('id', ticketId).select().single();
+  const { data, error } = await ticketDb.from('service_tickets').update(patch).eq('id', ticketId).select().single<ServiceTicketRow>();
   if (error) throw new Error(error.message);
 
   if (updates.status) {
@@ -212,12 +225,12 @@ export const updateTicketStatusAndPriority = async (
     escalated: mapped.escalated ?? false,
   });
   if (escalation.escalated && escalation.patch) {
-    const { data: escalatedRow } = await supabase
+    const { data: escalatedRow } = await ticketDb
       .from('service_tickets')
       .update(escalation.patch)
       .eq('id', ticketId)
       .select()
-      .single();
+      .single<ServiceTicketRow>();
     if (escalatedRow) {
       await recordServiceEvent({
         eventType: 'FAULT',
@@ -282,7 +295,7 @@ export const getTicketMetrics = async (): Promise<{
   byStatus: Record<string, number>
   byType: Record<string, number>
 }> => {
-  const { data, error } = await supabase
+  const { data, error } = await ticketDb
     .from('service_tickets')
     .select('id,status,priority,type,created_at,first_response_at,resolved_at,sla_resolution_due,sla_breached');
   if (error) throw new Error(error.message);
@@ -303,11 +316,11 @@ export const getTicketMetrics = async (): Promise<{
   const inProgressTickets = tickets.filter(t => t.status === 'in_progress').length
   const resolvedTickets = tickets.filter(t => t.status === 'resolved').length
   const overdueTickets = tickets.filter(t => t.sla_resolution_due && new Date(t.sla_resolution_due) < now && !['resolved','closed'].includes(t.status)).length
-  const ticketsWithResponse = tickets.filter(t => t.first_response_at)
+  const ticketsWithResponse = tickets.filter((t): t is typeof t & { first_response_at: string } => Boolean(t.first_response_at))
   const avgResponseTime = ticketsWithResponse.length
     ? ticketsWithResponse.reduce((acc, t) => acc + ((new Date(t.first_response_at).getTime() - new Date(t.created_at).getTime()) / 36e5), 0) / ticketsWithResponse.length
     : 0
-  const resolvedList = tickets.filter(t => t.resolved_at)
+  const resolvedList = tickets.filter((t): t is typeof t & { resolved_at: string } => Boolean(t.resolved_at))
   const avgResolutionTime = resolvedList.length
     ? resolvedList.reduce((acc, t) => acc + ((new Date(t.resolved_at).getTime() - new Date(t.created_at).getTime()) / 36e5), 0) / resolvedList.length
     : 0
@@ -366,7 +379,7 @@ export const subscribeToTicketUpdates = (callback: (payload: {
 export const bulkAssignTickets = async (ticketIds: string[], assigneeId: string, assignedBy: string): Promise<ServiceTicket[]> => {
   const now = new Date().toISOString()
   const patch = { assigned_to: assigneeId, assigned_by: assignedBy, assigned_at: now, updated_at: now }
-  const { data, error } = await supabase
+  const { data, error } = await ticketDb
     .from('service_tickets')
     .update(patch)
     .in('id', ticketIds)

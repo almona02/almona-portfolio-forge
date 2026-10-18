@@ -8,7 +8,7 @@ Cover the entire project in bounded batches, starting with the ESLint-supported 
 
 Keep ESLint errors at zero, reduce warnings, and preserve runtime behavior. Do not disable rules, blanket-cast to `any`, weaken validation, regenerate the type baseline to conceal regressions, or claim lint cleanup alone improves runtime throughput. Runtime changes need focused verification.
 
-This PR is stacked on `codex/admin-accessibility` so its diff contains lint work rather than the admin feature series. Keep it draft/open; do not merge or deploy. Retarget to main after its parent lands and verify the resulting diff and checks again.
+PR #97 has merged. Current main was integrated into `codex/lints`; LINTS now targets main. Keep it draft/open for subsequent verified batches; do not merge or deploy.
 
 ## First parallel batches
 
@@ -62,3 +62,9 @@ Highest remaining warning concentrations:
 | `src/components/fabricator/drafting/utils/inputValidator.ts` | 221 |
 
 Final integration checks: both accessibility suites passed all 14 tests; the secret scan and diff checks passed. The full type-regression gate passed with 1,675 existing application errors against the 1,791-error baseline, zero new signatures and zero occurrence increases. Node-project types are clean. The baseline was not changed; this is not a type-clean result. A merge-tree check against the updated parent branch also completed without conflicts.
+
+## API boundary batch — 2026-10-19
+
+Five API modules reduced from **108 warnings to zero**, with zero errors and no weakened lint rules. Two new boundary test files are also warning-free. The combined API, ticket governance and accessibility regression run passed 52 tests. See the [before/after comparison and remaining contract issues](../audits/LINTS_API_BATCH_2026-10-19.md). Counts from the earlier snapshot are historical, not a same-checkout project-wide comparison.
+
+Latest full snapshot (2026-10-19): **2,356 files, 0 ESLint errors, 16,076 warnings**. Type regression gate passed with 1,665 existing app errors; no baseline changes.
