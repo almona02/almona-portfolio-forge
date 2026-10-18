@@ -60,3 +60,5 @@ Highest remaining warning concentrations:
 | `src/components/shop/ProductQuickView.tsx` | 231 |
 | `src/lib/reports/comparisonPdf.ts` | 227 |
 | `src/components/fabricator/drafting/utils/inputValidator.ts` | 221 |
+
+Final integration checks: both accessibility suites passed all 14 tests; the secret scan and diff checks passed. The full type-regression gate passed with 1,675 existing application errors against the 1,791-error baseline, zero new signatures and zero occurrence increases. Node-project types are clean. The baseline was not changed; this is not a type-clean result. A merge-tree check against the updated parent branch also completed without conflicts.
