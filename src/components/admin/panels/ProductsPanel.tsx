@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import ProductEditDialog, { ProductEditValues } from '@/components/admin/dialogs/ProductEditDialog'
 import { useToast } from '@/hooks/use-toast'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { supabase } from '@/lib/supabase'
 import { table } from '@/lib/data/clientCore'
 import type { Database, ProductCategory } from '@/types/database'
@@ -224,7 +224,7 @@ export const ProductsPanel: React.FC = () => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <Button variant="ghost" size="icon" className="h-8 w-8 p-0" aria-label={`Actions for product ${item.id}`}>
                 <MoreHorizontal className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -267,13 +267,13 @@ export const ProductsPanel: React.FC = () => {
         </div>
         <div className="flex flex-wrap gap-3 items-end">
           <div className="w-56">
-            <label className="typography-label text-xs text-muted-foreground">Search SKU</label>
-            <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. ALM-123" />
+            <label htmlFor="admin-products-field-1" className="typography-label text-xs text-muted-foreground">Search SKU</label>
+            <Input id="admin-products-field-1" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. ALM-123" />
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Category</label>
+            <label htmlFor="admin-products-field-2" className="typography-label text-xs text-muted-foreground">Category</label>
             <Select value={category} onValueChange={(v: string) => { setCategory(v as ProductCategory | 'all'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-products-field-2">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -287,9 +287,9 @@ export const ProductsPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Stock</label>
+            <label htmlFor="admin-products-field-3" className="typography-label text-xs text-muted-foreground">Stock</label>
             <Select value={stock} onValueChange={(v: string) => { setStock(v as 'all' | 'low' | 'out' | 'in'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-products-field-3">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -301,9 +301,9 @@ export const ProductsPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="typography-label text-xs text-muted-foreground">Active</label>
+            <label htmlFor="admin-products-field-4" className="typography-label text-xs text-muted-foreground">Active</label>
             <Select value={active} onValueChange={(v: string) => { setActive(v as 'all' | 'active' | 'inactive'); setPage(1) }}>
-              <SelectTrigger>
+              <SelectTrigger id="admin-products-field-4">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
@@ -357,8 +357,8 @@ export const ProductsPanel: React.FC = () => {
           </AlertDialogHeader>
           {pendingAction?.type === 'stock' && (
             <div className="mt-2">
-              <label className="typography-label text-xs text-muted-foreground">Delta (can be negative)</label>
-              <Input
+              <label htmlFor="admin-products-field-5" className="typography-label text-xs text-muted-foreground">Delta (can be negative)</label>
+              <Input id="admin-products-field-5"
                 type="number"
                 step="1"
                 value={pendingAction.delta === '' ? '' : String(pendingAction.delta)}
