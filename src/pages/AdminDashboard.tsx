@@ -104,27 +104,27 @@ const AdminDashboard: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    fetchDashboardData()
-    fetchNotifications()
+    void fetchDashboardData()
+    void fetchNotifications()
 
     // realtime subscriptions
     const ordersSub = supabase
       .channel('orders-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
-        fetchDashboardData()
+        void fetchDashboardData()
       })
       .subscribe()
 
     const productsSub = supabase
       .channel('products-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
-        fetchDashboardData()
+        void fetchDashboardData()
       })
       .subscribe()
 
     return () => {
-      ordersSub.unsubscribe()
-      productsSub.unsubscribe()
+      void ordersSub.unsubscribe().catch((error: unknown) => console.error('Error unsubscribing from orders:', error))
+      void productsSub.unsubscribe().catch((error: unknown) => console.error('Error unsubscribing from products:', error))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -138,7 +138,7 @@ const AdminDashboard: React.FC = () => {
       const { data: revenueData } = await supabase
         .from('orders')
         .select('total_amount,status')
-        .eq('status', 'delivered' as any)
+        .eq('status', 'delivered')
 
       const rows = (revenueData ?? []) as Array<{ total_amount: number | null }>
       const totalRevenue = rows.reduce((sum: number, r) => sum + (r.total_amount ?? 0), 0)
@@ -149,7 +149,7 @@ const AdminDashboard: React.FC = () => {
       const { count: pendingOrders } = await supabase
         .from('orders')
         .select('*', { count: 'exact' })
-        .in('status', ['pending', 'confirmed', 'processing'] as any[])
+        .in('status', ['pending', 'confirmed', 'processing'])
 
       const { count: lowStockItems } = await supabase
         .from('products')
@@ -420,7 +420,7 @@ const AdminDashboard: React.FC = () => {
             <p className="truncate text-sm font-medium">{user?.full_name || user?.email}</p>
             <p className="text-sm text-muted-foreground">Administrator</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sign out">
+          <Button variant="ghost" size="icon" onClick={() => void signOut().catch((error: unknown) => console.error('Error signing out:', error))} aria-label="Sign out">
             <LogOut aria-hidden="true" className="h-4 w-4" />
           </Button>
         </div>
@@ -523,7 +523,7 @@ const AdminDashboard: React.FC = () => {
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut}>
+                  <DropdownMenuItem onClick={() => void signOut().catch((error: unknown) => console.error('Error signing out:', error))}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
