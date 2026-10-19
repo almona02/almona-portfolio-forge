@@ -52,7 +52,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
 
       {/* WhatsApp Contact */}
       <WhatsAppContact 
-        phoneNumber="+201234567890"
+        phoneNumber="+201000355135"
         businessHours="8AM - 6PM (GMT+2)"
         position="bottom-right"
       />

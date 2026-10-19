@@ -93,6 +93,17 @@ const SEO = ({
           "description": "Official authorized dealer of Yilmaz industrial machinery in Egypt",
           "url": "https://www.almona02.com",
           "telephone": "+201003097177",
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "telephone": "+201000355135",
+              "contactType": "sales",
+              "contactOption": "TollFree",
+              "areaServed": "EG",
+              "availableLanguage": ["ar", "en"],
+              "url": "https://wa.me/201000355135"
+            }
+          ],
           "hasMap": googleBusinessProfile,
           "sameAs": [
             googleBusinessProfile,
