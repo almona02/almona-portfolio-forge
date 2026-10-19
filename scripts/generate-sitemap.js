@@ -26,10 +26,14 @@ loadEnv();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const BASE_URL = process.env.VITE_APP_URL || 'https://almona.eg';
+const BASE_URL = process.env.VITE_APP_URL || 'https://www.almona02.com';
 
 const staticRoutes = [
   '',
+  '/dealer-verification',
+  '/dealer-verification-en',
+  '/yilmaz-machines-egypt',
+  '/yilmaz-machines-egypt-en',
   '/about',
   '/contact',
   '/services',
@@ -38,9 +42,8 @@ const staticRoutes = [
   '/products/machines',
   '/products/3d-gallery',
   '/used-machines',
-  '/fabricator-workflow',
-  '/login',
-  '/register'
+  '/fabricator-pro-software',
+  '/fabricator-pro-software-en'
 ];
 
 function extractProductRoutes() {
