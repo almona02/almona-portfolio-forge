@@ -18,9 +18,18 @@ class PrestigeV2Contract(unittest.TestCase):
         app.include_router(prestige.router, prefix="/api/v2")
         self.client = TestClient(app)
 
-    def test_all_six_operations_exist(self):
+    def test_all_prestige_operations_exist(self):
         paths = self.client.get("/openapi.json").json()["paths"]
-        for suffix in ("chat", "diagnose", "gcode/validate", "learn/modules", "knowledge/stats", "machine/capabilities"):
+        for suffix in (
+            "chat",
+            "diagnose",
+            "gcode/explain",
+            "gcode/validate",
+            "gcode/sample",
+            "learn/modules",
+            "knowledge/stats",
+            "machine/capabilities",
+        ):
             self.assertIn("/api/v2/prestige/" + suffix, paths)
 
     def test_chat_returns_engine_result_without_shared_session_history(self):
@@ -40,8 +49,12 @@ class PrestigeV2Contract(unittest.TestCase):
     def test_gcode_never_returns_mock_validation_success(self):
         result = self.client.post("/api/v2/prestige/gcode/validate", json={
             "gcode_program": "G999", "operation_type": "milling"})
-        self.assertEqual(result.status_code, 501)
+        self.assertEqual(result.status_code, 200)
+        body = result.json()
+        self.assertTrue(body["data"]["advisory_only"])
+        # Never a mock "valid":true success — the unknown command is reported.
         self.assertNotIn('"valid":true', result.text)
+        self.assertIn("G999", result.text)
 
     def test_packaged_knowledge_loads_for_metadata(self):
         prestige.get_engine.cache_clear()

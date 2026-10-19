@@ -24,6 +24,15 @@ const getApiBaseUrl = () => {
 const API_BASE_URL = getApiBaseUrl();
 const API_PREFIX = '/api/v2/prestige';
 
+// The UI uses camelCase persona ids; the API expects kebab-case.
+const PERSONA_TO_API: Record<string, string> = {
+  professor: 'professor',
+  doctor: 'doctor',
+  tourGuide: 'tour-guide',
+  codeMaster: 'code-master',
+  nervousSystem: 'nervous-system',
+};
+
 async function readAgentResponse<T>(response: Response): Promise<T> {
   const data = await response.json();
   if (!response.ok) {
@@ -113,6 +122,7 @@ interface DiagnosisResponse {
 
 export const usePrestigeAgent = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'unchecked' | 'checking' | 'connected' | 'unavailable'>('unchecked');
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
   const abortControllerRef = useRef<AbortController | null>(null);
   useEffect(() => () => abortControllerRef.current?.abort(), []);
@@ -144,10 +154,10 @@ export const usePrestigeAgent = () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        signal: controller.signal,
+        signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30000)]),
         body: JSON.stringify({
           message,
-          persona,
+          persona: PERSONA_TO_API[persona] ?? persona,
           language,
           session_id: sessionId,
           context: {
@@ -172,7 +182,8 @@ export const usePrestigeAgent = () => {
 
       const data = await response.json();
       
-      if (data.success) {
+      if (data.success && typeof data.data?.response === 'string' && data.data.response.trim()) {
+        setConnectionStatus('connected');
         return {
           success: true,
           data: data.data,
@@ -186,7 +197,8 @@ export const usePrestigeAgent = () => {
         return { success: false, aborted: true };
       }
       
-      // Don't show toast for network errors - let component handle it
+      setConnectionStatus('unavailable');
+      // Let the component present the connection failure
       console.debug('Chat error:', error);
       return { 
         success: false, 
@@ -271,7 +283,9 @@ export const usePrestigeAgent = () => {
   }, []);
 
   const getKnowledgeStats = useCallback(async () => {
+    setConnectionStatus('checking');
     if (!API_BASE_URL) {
+      setConnectionStatus('unavailable');
       return { success: false, error: 'Prestige Agent backend is not configured.' };
     }
     try {
@@ -279,12 +293,16 @@ export const usePrestigeAgent = () => {
         signal: AbortSignal.timeout(5000) // 5 second timeout
       });
       if (!response.ok) {
+        setConnectionStatus('unavailable');
         return { success: false, error: `HTTP ${response.status}` };
       }
       const data = await response.json();
-      return data;
+      const available = data.success === true && data.data?.knowledge_loaded === true;
+      setConnectionStatus(available ? 'connected' : 'unavailable');
+      return { ...data, success: available };
     } catch (error: any) {
-      // Silently fail - backend may not be available in development
+      setConnectionStatus('unavailable');
+      // Backend may not be available in development
       if (error.name !== 'AbortError') {
         // Only log if it's not a timeout/abort
         console.debug('Knowledge stats unavailable:', error.message);
@@ -325,6 +343,7 @@ export const usePrestigeAgent = () => {
 
   return {
     sendMessage,
+    connectionStatus,
     validateGCode,
     getLearningModules,
     diagnoseMachine,

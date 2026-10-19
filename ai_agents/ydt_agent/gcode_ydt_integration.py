@@ -1,278 +1,373 @@
+"""AIM-7510 G/M-code knowledge layer for the YDT engine.
+
+Loads the machine-specific, multi-language G/M-code reference extracted from
+the AIM-7510 operator manual (sections "13. G code functions" and "14. M code
+functions"), plus the extracted specifications.
+
+Design rules (see the YDT production review, 2026-10-19):
+  * Nothing here validates or authorizes real machine execution. Every result
+    is advisory.
+  * Only limits actually present in specifications_gold_tier.json are treated
+    as known. The previous version invented 7500 mm travel / 6000 mm/min feed /
+    24000 RPM spindle — none of those are in the extracted spec, so they are
+    removed.
+  * The AIM-7510 uses G70/G71 for units (inch/mm) and G21 for Y-axis mirroring;
+    it has no generic G81 drilling cycle and no generic M6 tool change. This
+    layer follows the machine's real command set rather than generic CNC lore.
 """
-G-Code Generator Integration with YDT Agent
-Connects Fabricator Pro G-code generator with YDT knowledge base
-"""
+
+from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-import logging
+from typing import Any, Dict, List, Optional
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+FALLBACK_LANGUAGE = "en"
+LANGUAGES = ("en", "tr", "ru")
+
+# Specification keys we trust as real, extracted machine limits (label: meaning).
+TRUSTED_LIMIT_KEYS: Dict[str, str] = {
+    "working_x1": "X-axis working range",
+    "working_y1": "Y-axis working range",
+    "working_z1": "Z-axis working range",
+    "rotary_a": "A-axis range",
+    "rotary_c": "C-axis range",
+    "spindle_speed": "Spindle max speed",
+    "spindle_power": "Spindle power (S6)",
+    "tool_collet": "Spindle taper",
+    "saw_diameter": "Saw blade diameter",
+    "saw_bore": "Saw bore",
+    "saw_speed": "Saw speed",
+    "saw_motor_power": "Saw motor power",
+    "saw_thickness": "Saw thickness",
+    "feed_x": "X-axis speed",
+    "feed_y": "Y-axis speed",
+    "feed_z": "Z-axis speed",
+    "servo_motors": "Servo motor power",
+    "tool_magazine_capacity": "Tool magazine capacity",
+    "max_tool_diameter": "Max tool diameter",
+    "max_tool_length": "Max tool length",
+    "max_tool_weight": "Max tool weight",
+    "clamp_vises": "Workpiece vises",
+    "power_voltage": "Voltage",
+    "power_frequency": "Frequency",
+    "power_phase": "Phases",
+    "power_consumption": "Total power",
+    "air_pressure": "Air pressure",
+    "air_consumption": "Air consumption",
+    "weight_net": "Net weight",
+    "weight_gross": "Gross weight",
+    "dimension_length": "Overall length (net)",
+    "dimension_width": "Overall width (net)",
+    "dimension_height": "Overall height (net)",
+    "dimension_packing": "Packing dimensions",
+    "cnc_axes": "CNC axes",
+}
+
+# Specification keys the extraction still could not fill and which this layer
+# must NOT invent. Reported to the user as "not extracted — see manual".
+UNVERIFIED_LIMIT_KEYS: Dict[str, str] = {
+    "power_amperage": "Power amperage",
+    "working_x2": "X-axis working range (second value)",
+    "working_y2": "Y-axis working range (second value)",
+    "working_z2": "Z-axis working range (second value)",
+    "clamping_width_max": "Clamping width max",
+    "clamping_width_min": "Clamping width min",
+    "clamping_height_max": "Clamping height max",
+    "clamping_height_min": "Clamping height min",
+    "clamping_length_max": "Clamping length max",
+    "clamping_length_min": "Clamping length min",
+}
 
 
-class YDTGCodeEnhancer:
-    """Enhances G-code generation with YDT knowledge"""
-    
-    def __init__(self, knowledge_base_path: Path):
-        self.knowledge_base = knowledge_base_path
-        self.machine_id = "aim-7510"
-        self._load_machine_knowledge()
-    
-    def _load_machine_knowledge(self):
-        """Load machine knowledge from YDT"""
-        processed_dir = self.knowledge_base / "processed" / self.machine_id
-        
-        # Load specifications
-        specs_file = processed_dir / "specifications_gold_tier.json"
-        if specs_file.exists():
-            with open(specs_file, 'r', encoding='utf-8') as f:
-                self.specs = json.load(f)
-        else:
-            self.specs = {}
-        
-        # Load capabilities
-        capabilities_file = processed_dir / "new_knowledge_nodes.json"
-        if capabilities_file.exists():
-            with open(capabilities_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                self.capabilities = data.get("summary", {})
-        else:
-            self.capabilities = {}
-        
-        logger.info("[G-CODE YDT] Machine knowledge loaded")
-    
-    def get_machine_specs_for_gcode(self) -> Dict[str, Any]:
-        """Get machine specifications for G-code generation"""
-        return {
-            "max_length": 7500,  # mm
-            "max_width": 500,    # mm
-            "max_height": 250,   # mm
-            "max_feed_rate": 6000,  # mm/min
-            "max_spindle_speed": 24000,  # RPM
-            "tool_magazine_capacity": 16,
-            "supported_angles": [0, 15, 22.5, 30, 45, 60, 67.5, 75, 90, 105, 112.5, 120, 135, 150, 165, 180],
-            "supported_operations": self.capabilities.get("operations", []),
-            "precision": 0.05  # mm
+class GCodeKnowledge:
+    """Machine-specific G/M-code reference + honest capability limits."""
+
+    def __init__(self, processed_dir: Path):
+        self.processed_dir = Path(processed_dir)
+        self.machine_id = self.processed_dir.name
+        self.reference = self._load("gcode_reference.json", {})
+        self.commands: Dict[str, Dict[str, Any]] = {
+            c["code"]: c for c in self.reference.get("commands", [])
         }
-    
-    def validate_gcode_parameters(self, params: Dict[str, Any]) -> Dict[str, Any]:
-        """Validate G-code parameters against machine capabilities"""
-        specs = self.get_machine_specs_for_gcode()
-        violations = []
-        suggestions = []
-        
-        # Check feed rate
-        if params.get("feed_rate", 0) > specs["max_feed_rate"]:
-            violations.append({
-                "parameter": "feed_rate",
-                "value": params["feed_rate"],
-                "max_allowed": specs["max_feed_rate"],
-                "message": f"Feed rate {params['feed_rate']} exceeds maximum {specs['max_feed_rate']} mm/min"
-            })
-            suggestions.append(f"Use feed rate ≤ {specs['max_feed_rate']} mm/min")
-        
-        # Check spindle speed
-        if params.get("spindle_speed", 0) > specs["max_spindle_speed"]:
-            violations.append({
-                "parameter": "spindle_speed",
-                "value": params["spindle_speed"],
-                "max_allowed": specs["max_spindle_speed"],
-                "message": f"Spindle speed {params['spindle_speed']} exceeds maximum {specs['max_spindle_speed']} RPM"
-            })
-            suggestions.append(f"Use spindle speed ≤ {specs['max_spindle_speed']} RPM")
-        
-        # Check length
-        if params.get("length", 0) > specs["max_length"]:
-            violations.append({
-                "parameter": "length",
-                "value": params["length"],
-                "max_allowed": specs["max_length"],
-                "message": f"Length {params['length']}mm exceeds maximum {specs['max_length']}mm"
-            })
-            suggestions.append(f"Reduce length to ≤ {specs['max_length']}mm or use multiple operations")
-        
-        # Check angle
-        if "angle" in params:
-            angle = params["angle"]
-            if angle not in specs["supported_angles"]:
-                violations.append({
-                    "parameter": "angle",
-                    "value": angle,
-                    "supported": specs["supported_angles"],
-                    "message": f"Angle {angle}° not supported. Supported angles: {specs['supported_angles']}"
-                })
-                # Find closest supported angle
-                closest = min(specs["supported_angles"], key=lambda x: abs(x - angle))
-                suggestions.append(f"Use closest supported angle: {closest}°")
-        
-        return {
-            "valid": len(violations) == 0,
-            "violations": violations,
-            "suggestions": suggestions,
-            "specs": specs
-        }
-    
-    def suggest_optimal_parameters(self, operation: str, material: str = "aluminum") -> Dict[str, Any]:
-        """Suggest optimal G-code parameters based on YDT knowledge"""
-        # Default optimal parameters for AIM 7510
-        suggestions = {
-            "cutting": {
-                "feed_rate": 3000,  # mm/min (safe, efficient)
-                "spindle_speed": 12000,  # RPM (optimal for aluminum)
-                "depth_of_cut": 0.5,  # mm
-                "safety_clearance": 5  # mm
-            },
-            "drilling": {
-                "feed_rate": 500,  # mm/min
-                "spindle_speed": 8000,  # RPM
-                "peck_depth": 2,  # mm
-                "retract_height": 5  # mm
-            },
-            "milling": {
-                "feed_rate": 2000,  # mm/min
-                "spindle_speed": 15000,  # RPM
-                "step_over": 0.5,  # mm
-                "safety_clearance": 5  # mm
-            },
-            "tapping": {
-                "feed_rate": 200,  # mm/min
-                "spindle_speed": 1000,  # RPM
-                "depth": 10,  # mm
-                "retract_height": 5  # mm
+        self.specs = self._load("specifications_gold_tier.json", {})
+        self.known_limits = self._known_limits()
+        self.unverified_limits = self._unverified_limits()
+
+    # ------------------------------------------------------------------ io
+    def _load(self, filename: str, default: Any) -> Any:
+        path = self.processed_dir / filename
+        if not path.exists():
+            return default
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001 - a broken reference must not crash chat
+            return default
+
+    def _known_limits(self) -> Dict[str, Dict[str, Any]]:
+        out: Dict[str, Dict[str, Any]] = {}
+        for key, label in TRUSTED_LIMIT_KEYS.items():
+            value = self.specs.get(key)
+            if value is not None:
+                out[key] = {"label": label, "value": value}
+        return out
+
+    def _unverified_limits(self) -> List[Dict[str, str]]:
+        return [{"key": k, "label": v} for k, v in UNVERIFIED_LIMIT_KEYS.items()]
+
+    # ----------------------------------------------------- numeric limits
+    _NUM_RE = re.compile(r"([+-]?\d+(?:\.\d+)?)")
+
+    def _first_number(self, value: Any) -> Optional[float]:
+        if value is None:
+            return None
+        m = self._NUM_RE.search(str(value))
+        return float(m.group(1)) if m else None
+
+    def spindle_rpm_limit(self) -> Optional[float]:
+        return self._first_number(self.specs.get("spindle_speed"))
+
+    def feed_mm_min_limits(self) -> Dict[str, Optional[float]]:
+        """Per-axis speed limits in mm/min (source values are m/min)."""
+        out: Dict[str, Optional[float]] = {}
+        for axis in ("x", "y", "z"):
+            raw = self._first_number(self.specs.get(f"feed_{axis}"))
+            out[axis] = raw * 1000 if raw is not None else None
+        return out
+
+    # ------------------------------------------------------- localization
+    def _localize(self, entry: Dict[str, Any], language: str) -> str:
+        for lang in (language, FALLBACK_LANGUAGE, "en"):
+            value = entry.get(lang)
+            if value:
+                return value
+        return ""
+
+    # ------------------------------------------------------ command lookup
+    def explain_command(self, code: str, language: str = FALLBACK_LANGUAGE) -> Dict[str, Any]:
+        code = code.strip().upper()
+        entry = self.commands.get(code)
+        if not entry:
+            return {
+                "code": code,
+                "known": False,
+                "description": (
+                    f"{code} is not listed in the AIM-7510 manual G/M-code tables. "
+                    "It may be controller-specific; verify against the machine's "
+                    "controller manual."
+                ),
+                "source_document": self.reference.get("source_document"),
             }
+        return {
+            "code": entry["code"],
+            "known": True,
+            "description": self._localize(entry, language),
+            "translations": {lang: entry[lang] for lang in LANGUAGES if entry.get(lang)},
+            "category": "G-code" if entry["code"].startswith("G") else "M-code",
+            "source_section": (
+                "13. G code functions" if entry["code"].startswith("G") else "14. M code functions"
+            ),
+            "source_document": self.reference.get("source_document"),
         }
-        
-        return suggestions.get(operation, {
-            "feed_rate": 2000,
-            "spindle_speed": 10000,
-            "safety_clearance": 5
-        })
-    
-    def explain_gcode_command(self, command: str) -> Dict[str, Any]:
-        """Explain a G-code or M-code command"""
-        gcode_explanations = {
-            "G00": {
-                "name": "Rapid Positioning",
-                "description": "Move tool rapidly to specified position without cutting",
-                "usage": "G00 X100 Y50 Z10",
-                "example": "Move to position (100, 50, 10) at maximum speed"
-            },
-            "G01": {
-                "name": "Linear Interpolation",
-                "description": "Move tool in straight line at specified feed rate",
-                "usage": "G01 X100 Y50 F3000",
-                "example": "Cut to position (100, 50) at 3000 mm/min feed rate"
-            },
-            "G21": {
-                "name": "Metric Units",
-                "description": "Set coordinate system to metric (millimeters)",
-                "usage": "G21",
-                "example": "All coordinates will be in millimeters"
-            },
-            "G90": {
-                "name": "Absolute Positioning",
-                "description": "Use absolute coordinates (relative to machine zero)",
-                "usage": "G90",
-                "example": "X100 means 100mm from machine zero, not relative to current position"
-            },
-            "G81": {
-                "name": "Drilling Cycle",
-                "description": "Drill hole at specified position",
-                "usage": "G81 X50 Y50 Z-10 R5 F500",
-                "example": "Drill to depth -10mm at (50, 50), retract to 5mm above"
-            },
-            "M03": {
-                "name": "Spindle On Clockwise",
-                "description": "Start spindle rotation clockwise",
-                "usage": "M03 S12000",
-                "example": "Start spindle at 12000 RPM clockwise"
-            },
-            "M05": {
-                "name": "Spindle Stop",
-                "description": "Stop spindle rotation",
-                "usage": "M05",
-                "example": "Stop the spindle"
-            },
-            "M06": {
-                "name": "Tool Change",
-                "description": "Change to specified tool",
-                "usage": "T1 M06",
-                "example": "Change to tool number 1"
-            },
-            "M30": {
-                "name": "Program End",
-                "description": "End program and rewind",
-                "usage": "M30",
-                "example": "End program and return to start"
-            }
+
+    # ------------------------------------------------------ program parsing
+    _TOKEN_RE = re.compile(r"\b([GM]\d+(?:\.\d+)?[A-Za-z]?)\b")
+
+    def _parse_lines(self, gcode: str) -> List[Dict[str, Any]]:
+        parsed: List[Dict[str, Any]] = []
+        for number, raw in enumerate(gcode.splitlines(), 1):
+            line = raw.strip()
+            if not line or line.startswith(("(", ";", "%", "#")):
+                continue
+            body = line.split("(")[0].split(";")[0]
+            tokens = self._TOKEN_RE.findall(body.upper())
+            parsed.append({"line": number, "raw": line, "tokens": tokens})
+        return parsed
+
+    def explain_program(self, gcode: str, language: str = FALLBACK_LANGUAGE) -> Dict[str, Any]:
+        lines: List[Dict[str, Any]] = []
+        unknown: List[str] = []
+        for item in self._parse_lines(gcode):
+            explained = [self.explain_command(tok, language) for tok in item["tokens"]]
+            lines.append({"line": item["line"], "raw": item["raw"], "commands": explained})
+            for exp in explained:
+                if not exp["known"]:
+                    unknown.append(exp["code"])
+        return {
+            "machine_id": self.machine_id,
+            "language": language,
+            "lines": lines,
+            "unknown_commands": sorted(set(unknown)),
+            "source_document": self.reference.get("source_document"),
+            "advisory_only": True,
         }
-        
-        return gcode_explanations.get(command.upper(), {
-            "name": "Unknown Command",
-            "description": "Command not found in knowledge base",
-            "usage": "Check manual for usage",
-            "example": "Refer to AIM 7510 manual"
-        })
+
+    # ---------------------------------------------------- advisory checks
+    def validate_program(self, gcode: str) -> Dict[str, Any]:
+        """Advisory syntax/consistency checks. NOT real machine validation."""
+        parsed = self._parse_lines(gcode)
+        findings: List[Dict[str, Any]] = []
+        seen: set = set()
+        for item in parsed:
+            for token in item["tokens"]:
+                seen.add(token)
+                if token not in self.commands:
+                    findings.append({
+                        "severity": "warning",
+                        "line": item["line"],
+                        "message": (
+                            f"{token} is not in the AIM-7510 manual G/M-code tables "
+                            "— verify against the controller manual."
+                        ),
+                    })
+
+        if "G70" not in seen and "G71" not in seen:
+            findings.append({
+                "severity": "info",
+                "line": None,
+                "message": "No units command detected — add G71 for millimetre programming (G70 is inch).",
+            })
+        if "G90" not in seen and "G91" not in seen:
+            findings.append({
+                "severity": "info",
+                "line": None,
+                "message": "No positioning mode detected — declare G90 (absolute) or G91 (relative).",
+            })
+        has_g01 = "G01" in seen
+        has_feed = any(re.search(r"\bF\d", item["raw"].upper()) for item in parsed)
+        if has_g01 and not has_feed:
+            findings.append({
+                "severity": "warning",
+                "line": None,
+                "message": "G01 cutting moves present but no F (feed) value detected.",
+            })
+        if not ({"M30", "M99", "M02"} & seen):
+            findings.append({
+                "severity": "info",
+                "line": None,
+                "message": "No program end command (M30) detected.",
+            })
+        if "M3" in seen and "M5" not in seen:
+            findings.append({
+                "severity": "info",
+                "line": None,
+                "message": "Spindle start (M3) present without a spindle stop (M5).",
+            })
+
+        # Spindle (S) and feed (F) against the real AIM-7510 limits.
+        spindle_limit = self.spindle_rpm_limit()
+        feed_limits = self.feed_mm_min_limits()
+        global_feed_limit = max((v for v in feed_limits.values() if v is not None), default=None)
+
+        for item in parsed:
+            upper = item["raw"].upper()
+            if spindle_limit is not None:
+                for raw_s in re.findall(r"\bS\s?(\d+(?:\.\d+)?)\b", upper):
+                    s_val = float(raw_s)
+                    if s_val > spindle_limit:
+                        findings.append({
+                            "severity": "error",
+                            "line": item["line"],
+                            "message": (
+                                f"Spindle speed S{raw_s} exceeds the AIM-7510 max of "
+                                f"{spindle_limit:g} RPM."
+                            ),
+                        })
+            if global_feed_limit is not None:
+                for raw_f in re.findall(r"\bF\s?(\d+(?:\.\d+)?)\b", upper):
+                    f_val = float(raw_f)
+                    if f_val > global_feed_limit:
+                        findings.append({
+                            "severity": "error",
+                            "line": item["line"],
+                            "message": (
+                                f"Feed F{raw_f} mm/min exceeds the axis-speed ceiling "
+                                f"of {global_feed_limit:g} mm/min (X-axis)."
+                            ),
+                        })
+
+        return {
+            "machine_id": self.machine_id,
+            "findings": findings,
+            "known_limits": self.known_limits,
+            "unverified_limits": self.unverified_limits,
+            "limits_note": (
+                "Spindle (S) is checked against the 20,000 RPM max and feed (F) "
+                "against the axis-speed ceiling (X 71 m/min). These are machine axis "
+                "limits, not recommended cutting values — confirm feeds/speeds with "
+                "your tooling and the operator manual before use."
+            ),
+            "advisory_only": True,
+            "source_document": self.reference.get("source_document"),
+        }
+
+    # ------------------------------------------------------- sample program
+    def sample_program(self, operation: str = "drill", material: str = "aluminum") -> Dict[str, Any]:
+        header = [
+            "(AIM-7510 ADVISORY SAMPLE — NOT FOR MACHINE EXECUTION)",
+            "(Feeds/speeds are examples within the manual's limits; verify with tooling.)",
+            "(Verify every value against the operator manual before use.)",
+        ]
+        common_start = [
+            "G71        (units in millimetres)",
+            "G90        (absolute coordinates)",
+            "G54        (zero point offset 1)",
+            "M3 S12000  (spindle forward — 12000 RPM, within 20000 max)",
+            "M8         (cutting cooling on)",
+            "G00 X0 Y0 Z10    (rapid to safe clearance)",
+        ]
+        common_end = [
+            "G00 Z10         (retract)",
+            "M5         (spindle stop)",
+            "M9         (cutting cooling off)",
+            "M30        (program end)",
+        ]
+
+        if operation == "drill":
+            moves = [
+                "G00 X40 Y0       (position drill point)",
+                "G01 Z-8 F150     (drill — EXAMPLE feed, verify)",
+            ]
+        elif operation == "mill":
+            moves = [
+                "G01 Z-2 F300     (engage — EXAMPLE feed, verify)",
+                "G01 X80 F600     (milling pass — EXAMPLE feed, verify)",
+                "G01 Y40 F600     (milling pass)",
+                "G01 X0 F600      (milling pass)",
+            ]
+        else:  # cut — profile end cut example
+            moves = [
+                "G01 X-10 F400    (approach profile — EXAMPLE feed, verify)",
+                "G01 X80 F600     (profile cut — EXAMPLE feed, verify)",
+            ]
+
+        program = "\n".join(header) + "\n" + "\n".join(common_start + moves + common_end)
+        return {
+            "machine_id": self.machine_id,
+            "operation": operation,
+            "material": material,
+            "program": program,
+            "notes": [
+                "This machine uses G70 (inch) / G71 (mm) for units — G21 is Y-axis mirroring.",
+                "The manual lists no generic G81 drilling cycle and no generic M6 tool change; magazine motion uses M106/M107.",
+                "Spindle max 20,000 RPM; axis speeds X 71 / Y 60 / Z 18 m/min. The example S/F values stay within these limits — confirm with your tooling.",
+            ],
+            "advisory_only": True,
+            "source_document": self.reference.get("source_document"),
+        }
+
+
+# Backward-compatible names kept in case other modules import the old classes.
+class YDTGCodeEnhancer(GCodeKnowledge):
+    """Deprecated alias — use GCodeKnowledge."""
 
 
 class GCodeYDTValidator:
-    """Validates G-code against YDT knowledge"""
-    
-    def __init__(self, enhancer: YDTGCodeEnhancer):
-        self.enhancer = enhancer
-    
-    def validate_gcode_program(self, gcode: str) -> Dict[str, Any]:
-        """Validate complete G-code program"""
-        lines = gcode.split('\n')
-        violations = []
-        warnings = []
-        
-        for i, line in enumerate(lines, 1):
-            line = line.strip()
-            if not line or line.startswith('('):  # Comment or empty
-                continue
-            
-            # Check for unsupported commands
-            if line.startswith('G') or line.startswith('M'):
-                command = line.split()[0] if line.split() else ""
-                # Basic validation - could be enhanced
-                if command and not self._is_command_supported(command):
-                    warnings.append({
-                        "line": i,
-                        "command": command,
-                        "message": f"Command {command} may not be supported. Verify in manual."
-                    })
-        
-        return {
-            "valid": len(violations) == 0,
-            "violations": violations,
-            "warnings": warnings,
-            "suggestions": self._generate_suggestions(gcode)
-        }
-    
-    def _is_command_supported(self, command: str) -> bool:
-        """Check if command is supported (basic check)"""
-        supported = ['G00', 'G01', 'G02', 'G03', 'G17', 'G21', 'G90', 'G91', 
-                     'G81', 'G82', 'G83', 'M03', 'M05', 'M06', 'M30']
-        return command.upper() in supported
-    
-    def _generate_suggestions(self, gcode: str) -> List[str]:
-        """Generate optimization suggestions"""
-        suggestions = []
-        
-        # Check for safety clearance
-        if 'G00' in gcode and 'Z' in gcode:
-            suggestions.append("Ensure Z-axis safety clearance (5mm minimum) before cutting")
-        
-        # Check for tool changes
-        if 'M06' not in gcode and 'T' in gcode:
-            suggestions.append("Use M06 after T command for proper tool change")
-        
-        # Check for feed rates
-        if 'G01' in gcode and 'F' not in gcode:
-            suggestions.append("Specify feed rate (F) for G01 commands")
-        
-        return suggestions
+    """Deprecated alias — wraps GCodeKnowledge.validate_program."""
 
+    def __init__(self, knowledge: GCodeKnowledge):
+        self.knowledge = knowledge
+
+    def validate_gcode_program(self, gcode: str) -> Dict[str, Any]:
+        return self.knowledge.validate_program(gcode)
