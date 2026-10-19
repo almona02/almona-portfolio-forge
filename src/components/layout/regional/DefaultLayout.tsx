@@ -5,9 +5,7 @@
 
 import { WhatsAppContact } from '@/components/contact/WhatsAppContact';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
-import { isRTL } from '@/lib/i18n';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
@@ -22,19 +20,13 @@ interface DefaultLayoutProps {
 export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   children,
   config: _config,
-  onRegionChange,
+  onRegionChange: _onRegionChange,
   enableRegionSwitching: _enableRegionSwitching
 }) => {
-  const { i18n } = useTranslation();
   const location = useLocation();
   const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
   const isBatchCutListDemo = location.pathname === '/demo/batch-cut-list' || location.pathname === '/batch-cut-list-demo';
   const isAdminRoute = location.pathname === '/admin';
-  const _rtl = isRTL(i18n.language);
-  
-  const _handleRegionChange = (region: RegionCode) => {
-    onRegionChange(region);
-  };
 
   return (
     <div className="min-h-screen bg-almona-dark text-white">
