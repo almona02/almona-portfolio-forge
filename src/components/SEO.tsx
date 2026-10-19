@@ -21,30 +21,21 @@ interface SEOProps {
   productData?: ProductData;
 }
 
-const configuredSiteUrl = import.meta.env.VITE_APP_URL;
-const siteUrl = typeof configuredSiteUrl === 'string' && configuredSiteUrl
-  ? configuredSiteUrl
-  : 'https://www.almona02.com';
-
 const SEO = ({
-  title = 'ALMONA | Aluminium & UPVC Fabrication Software',
-  description = 'Plan aluminium and UPVC fabrication with Fabricator Pro: measurement, design, BOM, cutting optimization, quotes and production documents. Machinery and service in Egypt.',
+  title = 'Almona — Precision at the Heart of Industry',
+  description = 'Smart fabrication. Egyptian excellence. Official authorized YILMAZ dealer in Egypt since 1991: CNC machining centres, aluminium & UPVC fabrication machines, and Fabricator Pro Industry 4.0 automation.',
   keywords = 'Yilmaz Egypt, Yilmaz authorized dealer, Yilmaz machines Egypt, Yilmaz CNC, industrial machinery Egypt, aluminium fabrication Egypt, smart manufacturing Egypt, Industry 4.0 Egypt',
   image = '/logo.svg',
-  url = siteUrl,
+  url = import.meta.env.VITE_APP_URL || 'https://www.almona02.com',
   type = 'website',
   productData
 }: SEOProps) => {
   const siteTitle = 'Almona';
-  const fullTitle = title.toLowerCase().includes('almona') ? title : `${title} | ${siteTitle}`;
+  const fullTitle = title.includes('Almona') ? title : `${title} | ${siteTitle}`;
 
   // Prioritize specific product image for social sharing, fallback to provided image or default logo
-  let socialImage = 'https://www.almona02.com/logo.svg';
-  try {
-    socialImage = new URL(productData?.image || image, siteUrl).href;
-  } catch {
-    // Keep a usable fallback if an external image or deployment URL is malformed.
-  }
+  const siteOrigin = import.meta.env.VITE_APP_URL || 'https://www.almona02.com';
+  const socialImage = new URL(productData?.image || image, siteOrigin).href;
 
   // Google Business Profile Link
   const googleBusinessProfile = 'https://share.google/Pah6FoMlL3e5MuGnq';
@@ -127,6 +118,11 @@ const SEO = ({
             "@type": "Brand",
             "name": "Yilmaz Makina"
           },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 29.9870,
+            "longitude": 31.2118
+          },
           "knowsAbout": [
             "Yilmaz CNC Machines",
             "Yilmaz Copy Routers",
@@ -142,6 +138,7 @@ const SEO = ({
           "@context": "https://schema.org",
           "@type": "Organization",
           "name": "ALMONA Co.",
+          "slogan": "Precision at the Heart of Industry",
           "description": description,
           "url": url,
           "logo": image,
