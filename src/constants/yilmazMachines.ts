@@ -2668,8 +2668,8 @@ export const yilmazMachines: Machine[] = [
   },
   {
     "id": "ym-035",
-    "name": "MK 420 / MK 420 PS / MK 450",
-    "description": "Manual Up-Cutting Saw Machine - Manual upward saw stroke for wide and flat profiles",
+    "name": "MK 420",
+    "description": "Manual Up-Cutting Saw Machine (17\") - Manual upward saw stroke for wide and flat profiles",
     "imageUrl": "/images/machines/MK-420.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
     "youtubeUrl": "https://www.youtube.com/watch?v=H6jls_GuVBc",
@@ -2723,22 +2723,16 @@ export const yilmazMachines: Machine[] = [
     ],
     "standardAccessories": [
       "Equipped with saw blade Ø420 mm",
-      "Equipped with saw blade Ø 450 mm (MK 450)",
       "Miter stop",
       "Profile length stop",
-      "Pneumatically working spray saw blade lubrication system (MK 420 PS)",
-      "Electrically working spray saw blade lubrication system (MK 420- MK 450)",
-      "2x mechanic top clamps (MK 420)",
-      "2x pneumatic top clamps (MK 420 PS)",
-      "Safety guard for lateral cutting operations (MK 420 PS)"
+      "Electrically working spray saw blade lubrication system",
+      "2x mechanic top clamps"
     ],
     "optionalAccessories": [
-      "Safety guard for longitudinal cutting operations (MK 420 PS)",
       "2 x vertical clamps",
       "MKN 300 length stop (3m)",
       "Connection kit for MKN and DKN length stops",
-      "Spare saw blade, Ø420 mm",
-      "Spare saw blade, Ø450 mm (MK 450)"
+      "Spare saw blade, Ø420 mm"
     ],
     "certifications": [
       "CE",
@@ -2748,6 +2742,94 @@ export const yilmazMachines: Machine[] = [
       "TwoHandOperation",
       "EmergencyStop"
     ],
+    "material": "aluminium"
+  },
+  {
+    "id": "ym-094",
+    "name": "MK 450",
+    "description": "Manual Up-Cutting Saw Machine (18\") - Manual upward saw stroke for wide and flat profiles",
+    "imageUrl": "/images/machines/MK-450.jpg",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
+    "category": "cutting-machines",
+    "featured": false,
+    "releaseDate": "2021-01-01",
+    "type": "Manual Up-Cutting Saw",
+    "powerSpec": { "voltage": "230V AC", "frequency": "50-60Hz", "phase": "1", "consumption": "2.2 kW" },
+    "airSpec": { "consumption": "7 L/min", "pressure": "6-8 bar" },
+    "dimensions": { "width": "725mm", "length": "865mm", "height": "1350mm" },
+    "weight": { "net": "115 kg", "gross": "142 kg" },
+    "sawBlade": { "diameter": "Ø450 mm", "bore": "Ø30/32 mm", "speed": "2,900 RPM", "motorPower": "2.2 kW" },
+    "angularCapacity": { "presetAngles": "60°, 45°, 30°, 22.5°, 15°, 0° (both left and right)", "pivotingRange": "60° to the right and 60° to the left" },
+    "tags": ["Up-Cutting", "Manual", "Wide Angle", "Portable"],
+    "specifications": [
+      "Manual upward saw stroke",
+      "The back fence is adjustable to allow the most effective use of the saw blade capacity for wide and flat profiles",
+      "Location points at 60°, 45°, 30°, 22.5°, 15°, 0° for both left and right",
+      "Wide angle cutting range up to 60° to the right and 60° to the left",
+      "Adjustable machine working direction by means of rotatable (360°) platform via foot pedal",
+      "Easy saw blade change",
+      "It has the ability of lateral and longitudinal cutting operations"
+    ],
+    "standardAccessories": [
+      "Equipped with saw blade Ø450 mm",
+      "Miter stop",
+      "Profile length stop",
+      "Electrically working spray saw blade lubrication system",
+      "2x mechanic top clamps"
+    ],
+    "optionalAccessories": [
+      "2 x vertical clamps",
+      "MKN 300 length stop (3m)",
+      "Connection kit for MKN and DKN length stops",
+      "Spare saw blade, Ø450 mm"
+    ],
+    "certifications": ["CE", "ISO9001"],
+    "safetyFeatures": ["TwoHandOperation", "EmergencyStop"],
+    "material": "aluminium"
+  },
+  {
+    "id": "ym-095",
+    "name": "MK 450 PS",
+    "description": "Pneumatic Up-Cutting Saw Machine (18\") - Fully pneumatic upward saw stroke for wide and flat profiles",
+    "imageUrl": "/images/machines/MK-450.jpg",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
+    "category": "cutting-machines",
+    "featured": false,
+    "releaseDate": "2021-01-01",
+    "type": "Pneumatic Up-Cutting Saw",
+    "powerSpec": { "voltage": "230V AC", "frequency": "50-60Hz", "phase": "1", "consumption": "2.2 kW" },
+    "airSpec": { "consumption": "7 L/min", "pressure": "6-8 bar" },
+    "dimensions": { "width": "725mm", "length": "865mm", "height": "1350mm" },
+    "weight": { "net": "115 kg", "gross": "142 kg" },
+    "sawBlade": { "diameter": "Ø450 mm", "bore": "Ø30/32 mm", "speed": "2,900 RPM", "motorPower": "2.2 kW" },
+    "angularCapacity": { "presetAngles": "60°, 45°, 30°, 22.5°, 15°, 0° (both left and right)", "pivotingRange": "60° to the right and 60° to the left" },
+    "tags": ["Up-Cutting", "Pneumatic", "Wide Angle", "Portable"],
+    "specifications": [
+      "Pneumatic upward saw stroke",
+      "The back fence is adjustable to allow the most effective use of the saw blade capacity for wide and flat profiles",
+      "Location points at 60°, 45°, 30°, 22.5°, 15°, 0° for both left and right",
+      "Wide angle cutting range up to 60° to the right and 60° to the left",
+      "Adjustable machine working direction by means of rotatable (360°) platform via foot pedal",
+      "Easy saw blade change",
+      "It has the ability of lateral and longitudinal cutting operations"
+    ],
+    "standardAccessories": [
+      "Equipped with saw blade Ø450 mm",
+      "Miter stop",
+      "Profile length stop",
+      "Pneumatically working spray saw blade lubrication system",
+      "2x pneumatic top clamps",
+      "Safety guard for lateral cutting operations"
+    ],
+    "optionalAccessories": [
+      "Safety guard for longitudinal cutting operations",
+      "2 x vertical clamps",
+      "MKN 300 length stop (3m)",
+      "Connection kit for MKN and DKN length stops",
+      "Spare saw blade, Ø450 mm"
+    ],
+    "certifications": ["CE", "ISO9001"],
+    "safetyFeatures": ["TwoHandOperation", "EmergencyStop"],
     "material": "aluminium"
   },
   {
