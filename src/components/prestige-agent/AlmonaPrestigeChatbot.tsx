@@ -22,6 +22,9 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { PrestigeMicroInteractions } from './PrestigeMicroInteractions';
 import './prestige-animations.css';
+import { TutorialSlides } from './TutorialSlides';
+import { readGuidedContent, type GuidedContent } from './guidedContent';
+import { FaultIntake } from './FaultIntake';
 
 type PersonaType = 'professor' | 'doctor' | 'tourGuide' | 'codeMaster' | 'nervousSystem';
 type LanguageType = 'tr' | 'en' | 'ru' | 'ar';
@@ -39,6 +42,7 @@ interface Message {
     hasExamples?: boolean;
     hasDiagrams?: boolean;
     responseTime?: number;
+    guide?: GuidedContent;
   };
 }
 
@@ -124,6 +128,17 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
   const [machineSpecs, setMachineSpecs] = useState<Record<string, unknown> | null>(null);
 
   const [typing, setTyping] = useState(false);
+  const [activeGuide, setActiveGuide] = useState<{ id: string; guide: GuidedContent; persona: PersonaType } | null>(null);
+  const [showFaultIntake, setShowFaultIntake] = useState(false);
+  const guideRegion = useRef<HTMLDivElement>(null);
+  const composer = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (activeGuide || showFaultIntake) {
+      guideRegion.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+      guideRegion.current?.focus({ preventScroll: true });
+    }
+  }, [activeGuide, showFaultIntake]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const microInteractions = useRef(new PrestigeMicroInteractions());
 
@@ -184,6 +199,15 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
 
   // Removed auto-scroll - user controls scrolling manually
 
+  const handleRecheck = async () => {
+    await fetchKnowledgeStats();
+    const caps = await fetchMachineCapabilities();
+    if (caps?.success) {
+      const specs = caps?.data?.specifications;
+      if (specs) setMachineSpecs(specs as Record<string, unknown>);
+    }
+  };
+
   const handleSend = async (messageText = input, persona = agentPersona) => {
     if (!messageText.trim() || typing || backendLoading) return;
 
@@ -220,11 +244,18 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
             confidence: response.data.confidence,
             references: response.data.knowledge_sources || [],
             teachingPoints: [],
-            responseTime: response.data.response_time
+            responseTime: response.data.response_time,
+            guide: readGuidedContent(response.data.visual_elements?.guided_content)
           }
         };
 
         setMessages(prev => [...prev, assistantMessage]);
+        if (assistantMessage.extras?.guide) {
+          setShowFaultIntake(false);
+          setActiveGuide({ id: assistantMessage.id, guide: assistantMessage.extras.guide, persona });
+        } else {
+          setActiveGuide(null);
+        }
 
       } else {
         // Handle error
@@ -260,6 +291,11 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
   const handleQuickAction = async (action: typeof quickActions[0]) => {
     setAgentPersona(action.persona);
     microInteractions.current.showPersonaTransition(personas[action.persona], copy);
+    if (action.persona === 'doctor') {
+      setShowFaultIntake(true);
+      return;
+    }
+    setShowFaultIntake(false);
     await handleSend(copy(action.text), action.persona);
   };
 
@@ -380,6 +416,17 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
           })}
         </div>
 
+        <div ref={guideRegion} tabIndex={-1} className="scroll-mt-24 outline-none mb-6">
+          {showFaultIntake ? (
+            <FaultIntake onCancel={() => setShowFaultIntake(false)} onSubmit={symptom => { setShowFaultIntake(false); void handleSend(symptom, 'doctor'); }} />
+          ) : activeGuide && (
+            <TutorialSlides key={activeGuide.id} modules={activeGuide.guide.modules} personaTitle={activeGuide.guide.title}
+              notice={activeGuide.guide.notice} language={activeGuide.guide.language} symptom={activeGuide.guide.symptom}
+              onClose={() => setActiveGuide(null)}
+              onAsk={topic => { setAgentPersona(activeGuide.persona); setInput(`${copy('Explain')}: ${topic}`); composer.current?.scrollIntoView?.({ behavior: 'smooth', block: 'center' }); composer.current?.focus({ preventScroll: true }); }} />
+          )}
+        </div>
+
         {/* Main Chat Container */}
         <div className="industry-panel rounded-3xl overflow-hidden industry-scan">
           {/* Chat Header */}
@@ -398,7 +445,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                 <div className="inline-flex items-center px-4 py-2 bg-slate-800 border border-slate-700 rounded-md">
                   <div className={`w-2 h-2 rounded-full mr-2 ${connectionStatus === 'connected' ? 'bg-cyan-400' : connectionStatus === 'unavailable' ? 'bg-red-400' : 'bg-slate-500'}`}></div>
                   <span role="status" className="text-sm text-slate-300 industry-mono">{copy(connectionStatus === 'connected' ? 'YDT service responded' : connectionStatus === 'checking' ? 'Checking YDT service' : connectionStatus === 'unavailable' ? 'YDT service unavailable' : 'Connection not checked')}</span>
-                  <button type="button" onClick={() => void fetchKnowledgeStats()} disabled={connectionStatus === 'checking' || typing || backendLoading} className="ml-3 text-sm text-cyan-300 underline disabled:opacity-50">{copy('Recheck')}</button>
+                  <button type="button" onClick={() => void handleRecheck()} disabled={connectionStatus === 'checking' || typing || backendLoading} className="ml-3 text-sm text-cyan-300 underline disabled:opacity-50">{copy('Recheck')}</button>
                 </div>
               </div>
             </div>
@@ -428,12 +475,14 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                         <span className="text-sm font-medium">{copy(personas[message.persona].title)}</span>
                       </div>
                     )}
-                    <p
-                      className={`text-sm leading-relaxed whitespace-pre-wrap ${isCodeMessage(message.text) ? 'font-mono text-[13px]' : ''}`}
-                      dir="auto"
-                    >
-                      {message.text}
-                    </p>
+                    {message.type === 'assistant' && message.extras?.guide ? (
+                      <div>
+                        <p className="text-sm">{message.extras.guide.title}</p>
+                        <button type="button" onClick={() => { setShowFaultIntake(false); setActiveGuide({ id: message.id, guide: message.extras!.guide!, persona: message.persona || 'professor' }); }} className="mt-2 text-sm text-cyan-300 underline">{copy('Open guide')}</button>
+                      </div>
+                    ) : (
+                      <p className={`text-sm leading-relaxed whitespace-pre-wrap ${isCodeMessage(message.text) ? 'font-mono text-[13px]' : ''}`} dir="auto">{message.text}</p>
+                    )}
                     {message.type === 'assistant' && message.extras?.references && message.extras.references.length > 0 && (
                       <div className="mt-2 pt-2 border-t border-slate-700 flex flex-wrap items-center gap-1.5">
                         <span className="text-[10px] uppercase tracking-wider text-slate-500">{copy('Sources')}</span>
@@ -474,6 +523,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               <div className="flex-1 min-w-0">
                 <div className="relative">
                   <textarea
+                    ref={composer}
                     rows={2}
                     aria-label={copy('Message to the assistant')}
                     dir="auto"

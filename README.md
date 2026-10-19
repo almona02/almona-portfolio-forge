@@ -1,6 +1,8 @@
 # ALMONA Portfolio Forge
 
-ALMONA is an industrial web platform for aluminium and UPVC window and door workshops in Egypt and the Middle East. It combines Almona Co.'s machinery catalogue, spare-parts and service workflows with Fabricator Pro, a workspace for measuring openings, designing positions, generating bills of materials, optimizing stock, preparing quotes, and producing workshop documents.
+Aluminium and UPVC fabrication software for window and door workshops: position design, bills of materials (BOM), cutting optimization, quoting and production control, alongside machinery sales and service operations.
+
+ALMONA is a web platform for aluminium and UPVC workshops in Egypt and the Middle East. It combines Almona Co.'s machinery catalogue, spare-parts and service workflows with Fabricator Pro, a workspace for measuring openings, designing positions, generating bills of materials, optimizing stock, preparing quotes, and producing workshop documents.
 
 - Website: [www.almona02.com](https://www.almona02.com/)
 - Repository: [github.com/almona02/almona-portfolio-forge](https://github.com/almona02/almona-portfolio-forge)
@@ -8,7 +10,7 @@ ALMONA is an industrial web platform for aluminium and UPVC window and door work
 
 ## Project status — verified 19 October 2026
 
-ALMONA is an implemented industrial web platform undergoing production hardening and workshop acceptance. Its engineering work spans fabrication calculations, manufacturing evidence, commercial controls, machinery services and operational administration. Progress is tracked by capability and validation evidence, with separate deployment and workshop acceptance status.
+ALMONA is an implemented industrial web platform undergoing production hardening and workshop acceptance. Its engineering work spans fabrication calculations, manufacturing evidence, commercial controls, machinery services and operational administration. A single prototype label or an arbitrary four-phase score does not describe these separate areas accurately.
 
 **Scope of this snapshot:** main at `b71d4c60`; quality improvements in [LINTS #99](https://github.com/almona02/almona-portfolio-forge/pull/99) are identified separately while that PR remains open. Implementation, automated verification, deployment and workshop acceptance are distinct evidence levels.
 
@@ -18,7 +20,6 @@ ALMONA is an implemented industrial web platform undergoing production hardening
 | --- | --- | --- |
 | Fabricator Pro | Project/position workflow: Measure → Design → Drafting/BOM → Optimization → Commercial → Production; identity-scoped hydration, stock-demand reconciliation and workshop documents | [Workflow state](src/store/workflowStore.ts), [workflow routes](src/lib/fabricator/routes.ts), [BOM and inventory](src/lib/fabricator/) |
 | Manufacturing controls | Approved-context qualification, physical-cut/ledger reconciliation, revision-aware state and server-side QC approval calls | [BOM qualification](src/lib/fabricator/bom/bomQualification.ts), [physical-cut contract](src/lib/fabricator/optimization/physicalCutContract.ts), [QC client](src/lib/fabricator/qualityApproval.ts) |
-| Evidence and traceability | Revision-bound release contracts, event-ledger recording and chain-verification components; production integration and authority remain separately validated | [Position release](src/lib/fabricator/positionRelease.ts), [event ledger](realityos_core/event_ledger.py), [chain verifier](realityos_core/chain_verifier.py) |
 | Engineering tools | Engineering Bay, system packs, drafting, 3D previews, cutting/nesting algorithms, BOM and DXF browser workers | [Engineering Bay](src/components/fabricator/EngineeringBay.tsx), [system packs](src/data/systemPacks.ts), [algorithms](src/algorithms/), [workers](src/workers/) |
 | Commercial operations | Quotes, workshop-customer invoices, manual receipts, currency checks and portal ownership contracts | [Commercial modules](src/modules/commercial/), [recorded October 16 rollout](docs/audits/COMMERCIAL_PRODUCTION_ROLLOUT_2026-10-16.md) |
 | Machinery and after-sales | Machine catalogue, used machines, support tickets, assignments, service contracts, preventive visits and evidence/share workflows | [Machine catalogue administration](src/components/admin/panels/MachinesAdminPanel.tsx), [service API](src/lib/serviceContractApi.ts), [ticket API](src/lib/adminTicketApi.ts), [ticket evidence API](src/lib/ticketMessageApi.ts) |
@@ -32,7 +33,6 @@ These entries establish code and recorded engineering work. Individual features 
 
 - **Public availability, checked 19 October:** the website and Railway `/health` endpoint returned HTTP 200. The backend reported overall `degraded`: database and Redis checks were healthy, while the `railway_services` check was unhealthy. Reachability does not establish full dependency health or authenticated workflow acceptance.
 - **Recent merged work:** PRs [#97](https://github.com/almona02/almona-portfolio-forge/pull/97), [#100](https://github.com/almona02/almona-portfolio-forge/pull/100) and [#101](https://github.com/almona02/almona-portfolio-forge/pull/101) cover the admin/service/configuration series and pricing/RLS follow-ups. Merged code is not independent proof that every role and price-edit path has passed live user acceptance.
-- **Fresh main-based regression checks, 19 October:** two focused runs passed **62 tests across 16 files**: `npm run test:batch1` passed 41 workflow/isolation/QC/readiness tests, and five cutting-engine/BOM-ledger/release-contract files passed 21 tests. These are scoped local regressions, not a full-suite or live workshop result.
 - **Open quality work, LINTS #99:** two parallel batches removed **190 ESLint warnings across 16 source files**. Its latest full scan reports **2,356 files, zero ESLint errors and 16,076 remaining warnings**; **52 focused tests passed**. The type-regression gate passed with **1,665 existing application errors** against the unchanged 1,791-error baseline. These are results on the PR branch, not a claim that main is type-clean or that the full test suite passed.
 - **Earlier manufacturing evidence:** the October 6 reports recorded 84-test and 22-test focused runs. They are historical evidence, not the current total number of application tests. Later reviews and releases must be read at their own revision and environment.
 
@@ -42,13 +42,13 @@ See the [current evidence and assessment reconciliation](docs/PROJECT_STATUS.md)
 
 The October 6 disposable-fixture run was blocked by missing approved manufacturing authority and dimensional tolerance. Later staging records describe additional successful and negative-path checks. This status review does not establish that a complete current production job has passed approved system rules, stock consumption, release, QC and delivery end to end.
 
-Production output requires approved profile-system data, dimensional tolerances, operator review and traceable release evidence. No formal industrial/ISO certification, universal machine-export compatibility, measured factory capacity or guaranteed accuracy percentage is claimed.
+Production output requires approved profile-system data, dimensional tolerances, operator review and traceable release evidence. No formal industrial/ISO certification, universal machine-export compatibility, measured factory capacity or guaranteed accuracy percentage is claimed. The phrase **“Phase 2.5 of 4” is not a repository-defined or independently validated maturity rating**.
 
 ## Manufacturing boundaries
 
 Manufacturing-critical paths are designed to be deterministic and auditable. Identical validated inputs should produce identical protected-path outputs. Support responses and reference search results must not silently become manufacturing truth.
 
-The platform does not claim structural engineering authority. Profile-system rules, tolerances, formulas, and workshop output require approved source data and human sign-off. Any numerical accuracy guarantee requires representative, independently reviewed production evidence; the focused software checks described here do not establish one.
+The platform does not claim structural engineering authority. Profile-system rules, tolerances, formulas, and workshop output require approved source data and human sign-off. Accuracy percentages are not published as guarantees until they are supported by representative, independently reviewed production evidence.
 
 See [Institutional Overview](docs/INSTITUTIONAL_OVERVIEW.md) and [Fabricator V2 Constitutional Migration Runbook](docs/FABRICATOR_V2_CONSTITUTIONAL_MIGRATION_RUNBOOK.md).
 
@@ -77,11 +77,11 @@ flowchart TD
     Web --> Services[Machinery / service / technical support]
     Flow --> Workers[Browser workers: BOM and DXF]
     Web --> Data[Data and identity services]
-    Services --> API[FastAPI services]
+    Services --> API[FastAPI: verify deployed app target]
     API --> Jobs[Redis / Celery background jobs]
 ```
 
-The supplied GitDiagram captures the product areas but omits position identity, BOM workers, production/QC, persistence and job infrastructure. Its `app.py` box does not identify the backend entry point: the repository contains `api.prestige_endpoints:app`, `apis.main:app` and `apis.v2.app:app`. The October 16 infrastructure review identified Railway’s configured `Dockerfile.realistic` target as `apis.main:app`; the development command below uses the separate Prestige app. Current deployed-image identity still needs deployment metadata, not only a health response. Diagram edges summarize responsibilities, not guaranteed transactional or deployment boundaries.
+The supplied GitDiagram captures the product areas but omits position identity, BOM workers, production/QC, persistence and job infrastructure. Its `app.py` box does not identify the deployed backend: the repository contains `api.prestige_endpoints:app`, `apis.main:app` and `apis.v2.app:app`. Diagram edges summarize responsibilities, not guaranteed transactional or deployment boundaries.
 
 ### Heavy-duty scalability review — 2026-10-18
 
@@ -95,7 +95,7 @@ See the [architecture comparison and prioritized performance review](docs/audits
 
 ### Prerequisites
 
-- Node.js 22 with current patches (the package engine range is `>=20.19 <23`)
+- Node.js `20.19` or newer, below Node 23
 - npm
 - Python 3.11
 
@@ -170,7 +170,7 @@ The highest-priority work is tracked openly:
 
 1. Complete authenticated live acceptance of the full Fabricator flow, including hard reloads and a second-account isolation run.
 2. Reconcile the backend health response so optional or legacy dependency checks do not contradict authoritative database and Redis checks.
-3. Maintain a reviewed migration manifest and verify effective RLS and privileged-function ownership across customers; apply reviewed changes through staged migration checks.
+3. Apply and record every production Supabase migration, then finish the RLS and privileged-function cross-customer audit.
 4. Close open dependency alerts, beginning with critical and high severity findings.
 5. Rotate legacy production credentials through a controlled deployment and verify every consumer afterward.
 6. Validate profile-system formulas, tolerances, piece reconciliation, and production documents against representative workshop jobs before making accuracy claims.
