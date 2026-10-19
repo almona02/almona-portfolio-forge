@@ -1,0 +1,1063 @@
+{
+  "machine_id": "aim-7510",
+  "description": "Multi-language G/M-code reference extracted from the AIM-7510 operator manual (MKK.028_1ET089000-0122_AIM_7510, REV.07, 2020-07-20). Sections: 13. G code functions, 14. M code functions.",
+  "languages": [
+    "en",
+    "tr",
+    "ru"
+  ],
+  "source_document": "MKK.028_1ET089000-0122_AIM_7510_(20.07.2020)_REV.07.pdf",
+  "command_count": 150,
+  "commands": [
+    {
+      "code": "G320.7",
+      "en": "Protected Block Deactivation",
+      "tr": "Korunan Blok Deaktivasyonu",
+      "ru": "Отключение защиты блока",
+      "sources": []
+    },
+    {
+      "code": "G320.8",
+      "en": "Protected Half-Space Definition",
+      "tr": "Korunan Yarı-Alan Tanımı",
+      "ru": "Определение защищенного полупространства",
+      "sources": []
+    },
+    {
+      "code": "G320.9",
+      "en": "Protected Half-Space Activation",
+      "tr": "Korunan Yarı-Alan Aktivasyonu",
+      "ru": "Включение защищенного полупространства",
+      "sources": []
+    },
+    {
+      "code": "G321",
+      "en": "Protected Half-Space Deactivation",
+      "tr": "Korunan Yarı-Alan Deaktivasyonu",
+      "ru": "Отключение защищенного полупространства",
+      "sources": []
+    },
+    {
+      "code": "G395",
+      "en": "TCP frame",
+      "tr": "TCP çerçevesi",
+      "ru": "TCP-сегмент",
+      "sources": []
+    },
+    {
+      "code": "G396",
+      "en": "TCP axes orientation by frame on",
+      "tr": "Çerçeve açarak TCP eksenleri oryantasyonu",
+      "ru": "Включение направления осей TCP-сегмента",
+      "sources": []
+    },
+    {
+      "code": "G397",
+      "en": "TCP axes orientation by frame off",
+      "tr": "Çerçeve açarak TCP eksenleri oryantasyonu",
+      "ru": "Отключение направления осей TCP-сегмента",
+      "sources": []
+    },
+    {
+      "code": "G398",
+      "en": "Calculation method of TCP axes orientation closer to actual TCP orientation",
+      "tr": "Gerçek TCP yönlendirmesine daha yakın TCP eksen yönlendirmesinin hesaplama yöntemi",
+      "ru": "Метод расчета ориентации осей TCP ближе к фактической ориентации TCP",
+      "sources": []
+    },
+    {
+      "code": "G399",
+      "en": "Calculation method of TCP axes orientation closer to programmed TCP orientation",
+      "tr": "Programlanmış TCP yönlendirmesine daha yakın TCP eksen yönlendirmesinin hesaplama yöntemi",
+      "ru": "Метод расчета направления осей TCP ближе к запрограммированной ориентации TCP",
+      "sources": []
+    },
+    {
+      "code": "G701",
+      "en": "Resume MP logging",
+      "tr": "MP log kaydına devam et",
+      "ru": "Резюме протоколирование MP",
+      "sources": []
+    },
+    {
+      "code": "G702",
+      "en": "Pause MP logging",
+      "tr": "MP log kaydını durdur",
+      "ru": "Пауза протоколирования MP",
+      "sources": []
+    },
+    {
+      "code": "G801",
+      "en": "Start of a C2 Spline",
+      "tr": "C2 yivinin başlangıcı",
+      "ru": "Начало сплайна C2",
+      "sources": []
+    },
+    {
+      "code": "G802",
+      "en": "End of a C2 Spline",
+      "tr": "C2 yivinin sonu",
+      "ru": "Конец C2 сплайна",
+      "sources": []
+    },
+    {
+      "code": "G00",
+      "en": "Rapid interpolation",
+      "tr": "Hızlı enterpolasyon",
+      "ru": "Быстрая интерполяция",
+      "sources": []
+    },
+    {
+      "code": "G01",
+      "en": "Linear interpolation",
+      "tr": "Doğrusal enterpolasyon",
+      "ru": "Линейная интерполяция",
+      "sources": []
+    },
+    {
+      "code": "G02",
+      "en": "Circular interpolation - clockwise",
+      "tr": "Döngüsel enterpolasyon – saat yönü",
+      "ru": "Круговая интерполяция - по часовой стрелке",
+      "sources": []
+    },
+    {
+      "code": "G03",
+      "en": "Circular interpolation - counter clockwise",
+      "tr": "Döngüsel enterpolasyon – saat yönü tersi",
+      "ru": "Круговая интерполяция - против часовой стрелки",
+      "sources": []
+    },
+    {
+      "code": "G04",
+      "en": "Dwell time in seconds",
+      "tr": "Saniyedeki oturuş sayısı",
+      "ru": "Время задержки в секундах",
+      "sources": []
+    },
+    {
+      "code": "G05",
+      "en": "Direct programming of the polar axes in the clockwise direction",
+      "tr": "Saat yönündeki kutup eksenlerinin doğrudan programlanması",
+      "ru": "Прямое программирование полярных осей в направлении по часовой стрелке",
+      "sources": []
+    },
+    {
+      "code": "G06",
+      "en": "Direct programming of the polar axes in the counter-clockwise direction",
+      "tr": "Saat tersi yönündeki kutup eksenlerinin doğrudan programlanması",
+      "ru": "Прямое программирование полярных осей в направлении против часовой стрелки",
+      "sources": []
+    },
+    {
+      "code": "G10",
+      "en": "Programmed path speed on the tool center point",
+      "tr": "Ekipman merkez noktası üstündeki programlanmış yol hızı",
+      "ru": "Программируемая скорость движения по траектории относительно центра инструмента",
+      "sources": []
+    },
+    {
+      "code": "G11",
+      "en": "Programmed path speed on the workpiece contour",
+      "tr": "İşlenen parça konturu üstündeki programlanmış yol hızı",
+      "ru": "Программируемая скорость движения по траектории на обрабатываемой детали контура",
+      "sources": []
+    },
+    {
+      "code": "G12",
+      "en": "Path speed at transition arcs",
+      "tr": "Geçiş yaylarındaki yol hızı.",
+      "ru": "Скорость движения по траектории при переходе дуги",
+      "sources": []
+    },
+    {
+      "code": "G16",
+      "en": "Orientation of the tool axis (starting with V0.270)",
+      "tr": "Ekipman eksenlerinin yönlendirilmesi (V0.270’den başlayarak)",
+      "ru": "Ориентация оси инструмента (начиная с V0.270)",
+      "sources": []
+    },
+    {
+      "code": "G17",
+      "en": "XY plane selection",
+      "tr": "XY düzlem seçimi CAM wrapping",
+      "ru": "Выбор плоскости XY",
+      "sources": []
+    },
+    {
+      "code": "G18",
+      "en": "ZX plane selection",
+      "tr": "ZX düzlem seçimi CAM wrapping",
+      "ru": "Выбор плоскости ZX",
+      "sources": []
+    },
+    {
+      "code": "G19",
+      "en": "YZ plane selection",
+      "tr": "YZ düzlem seçimi CAM wrapping",
+      "ru": "Выбор плоскости YZ",
+      "sources": []
+    },
+    {
+      "code": "G17Q",
+      "en": "CAM wrapping",
+      "tr": null,
+      "ru": "Кулачковая намотка",
+      "sources": []
+    },
+    {
+      "code": "G18Q",
+      "en": "CAM wrapping",
+      "tr": null,
+      "ru": "Кулачковая намотка",
+      "sources": []
+    },
+    {
+      "code": "G19Q",
+      "en": "CAM wrapping",
+      "tr": null,
+      "ru": "Кулачковая намотка",
+      "sources": []
+    },
+    {
+      "code": "G20",
+      "en": "Deactivate mirroring",
+      "tr": "Yansıtmayı deaktive et",
+      "ru": "Деактивирование зеркального отображения",
+      "sources": []
+    },
+    {
+      "code": "G21",
+      "en": "Y axis mirroring",
+      "tr": "Y ekseni yansıtması",
+      "ru": "Зеркалирование относительно оси Y",
+      "sources": []
+    },
+    {
+      "code": "G22",
+      "en": "X axis mirroring",
+      "tr": "X ekseni yansıtması",
+      "ru": "Зеркалирование относительно оси X",
+      "sources": []
+    },
+    {
+      "code": "G23",
+      "en": "X and Y axis mirroring",
+      "tr": "X ve Y ekseni yansıtması",
+      "ru": "Зеркалирование относительно осей X и Y",
+      "sources": []
+    },
+    {
+      "code": "G25",
+      "en": "Tangential transition arcs",
+      "tr": "Teğet geçiş yayları",
+      "ru": "Переход касательных дуг",
+      "sources": []
+    },
+    {
+      "code": "G36",
+      "en": "CDC: Replace arc with straight line – DEACTIVATE",
+      "tr": "CDC: Yayı düz hat ile değiştir – DEAKTİVE ET",
+      "ru": "CDC: Замена дуги прямой линией - ДЕАКТИВАЦИЯ",
+      "sources": []
+    },
+    {
+      "code": "G37",
+      "en": "CDC: Replace arc with straight line – ACTIVATE",
+      "tr": "CDC: Yayı düz hat ile değiştir – AKTİVE ET",
+      "ru": "CDC: Замена дуги прямой линией - АКТИВАЦИЯ",
+      "sources": []
+    },
+    {
+      "code": "G38",
+      "en": "CDC: Allow contour violations at small path sections - DEACTIVATE",
+      "tr": "CDC: Küçük yol kısımlarında kontur ihlallerine izin ver - DEAKTİVE ET",
+      "ru": "CDC: Допуск нарушения траектории контура на небольших участках - ДЕАКТИВАЦИЯ",
+      "sources": []
+    },
+    {
+      "code": "G39",
+      "en": "CDC: Allow contour violations at small path sections – ACTIVATE",
+      "tr": "CDC: Küçük yol kısımlarında kontur ihlallerine izin ver – AKTİVE ET",
+      "ru": "CDC: Допуск нарушения траектории контура на небольших участках - АКТИВАЦИЯ",
+      "sources": []
+    },
+    {
+      "code": "G40",
+      "en": "Deactivate the CDC",
+      "tr": "CDC’yi deaktive et.",
+      "ru": "Деактивация CDC",
+      "sources": []
+    },
+    {
+      "code": "G41",
+      "en": "CDC left",
+      "tr": "CDC sol",
+      "ru": "CDC влево",
+      "sources": []
+    },
+    {
+      "code": "G42",
+      "en": "CDC right",
+      "tr": "CDC sağ",
+      "ru": "CDC вправо",
+      "sources": []
+    },
+    {
+      "code": "G53",
+      "en": "Deactivate the zero point offset",
+      "tr": "Sıfır noktası dengelemeyi deaktive et.",
+      "ru": "Деактивация смещения нулевой точки",
+      "sources": []
+    },
+    {
+      "code": "G54",
+      "en": "Zero point offset 1",
+      "tr": "Sıfır noktası dengelemesi 1",
+      "ru": "Смещение нулевой точки 1",
+      "sources": []
+    },
+    {
+      "code": "G55",
+      "en": "Zero point offset 2",
+      "tr": "Sıfır noktası dengelemesi 2",
+      "ru": "Смещение нулевой точки 2",
+      "sources": []
+    },
+    {
+      "code": "G56",
+      "en": "Zero point offset 3",
+      "tr": "Sıfır noktası dengelemesi 3",
+      "ru": "Смещение нулевой точки 3",
+      "sources": []
+    },
+    {
+      "code": "G57",
+      "en": "Zero point offset 4",
+      "tr": "Sıfır noktası dengelemesi 4",
+      "ru": "Смещение нулевой точки 4",
+      "sources": []
+    },
+    {
+      "code": "G58",
+      "en": "Zero point offset 5",
+      "tr": "Sıfır noktası dengelemesi 5",
+      "ru": "Смещение нулевой точки 5",
+      "sources": []
+    },
+    {
+      "code": "G70",
+      "en": "Units switch (Programming in Inch)",
+      "tr": "Birimler açma-kapama düğmesi (İnç olarak programlanmaktadır)",
+      "ru": "Блок коммутации (Программирование в дюймах)",
+      "sources": []
+    },
+    {
+      "code": "G71",
+      "en": "Units switch (Programming in mm)",
+      "tr": "Birimler açma-kapama düğmesi (mm olarak programlanmaktadır)",
+      "ru": "Блок коммутации (Программирование в мм)",
+      "sources": []
+    },
+    {
+      "code": "G90",
+      "en": "Absolute position coordinates",
+      "tr": "Mutlak pozisyon koordinatları",
+      "ru": "Абсолютное положение координаты",
+      "sources": []
+    },
+    {
+      "code": "G91",
+      "en": "Relative position coordinates",
+      "tr": "Göreceli pozisyon koordinatları",
+      "ru": "Относительное положение координат",
+      "sources": []
+    },
+    {
+      "code": "G92",
+      "en": "Programmed zero point offset with coordinate system rotation",
+      "tr": "Koordinat sistemi dönüşü ile programlanmış sıfır noktası dengelemesi",
+      "ru": "Смещение запрограммированной нулевой точки при помощи вращения системы координат",
+      "sources": []
+    },
+    {
+      "code": "G93",
+      "en": "Feed Rate Definition (inverse time feed rate definition)",
+      "tr": "Besleme Oranı Tanımı (ters zaman besleme oranı tanımı)",
+      "ru": "Определение скорости подачи (определение скорости подачи в инверсном режиме)",
+      "sources": []
+    },
+    {
+      "code": "G94",
+      "en": "Feed Rate Definition (feed per minute)",
+      "tr": "Besleme Oranı Tanımı (dakika başına besleme)",
+      "ru": "Определение скорости подачи (подача в минуту)",
+      "sources": []
+    },
+    {
+      "code": "G100",
+      "en": "Full transformation",
+      "tr": "Tam dönüşüm",
+      "ru": "Полное преобразование",
+      "sources": []
+    },
+    {
+      "code": "G101",
+      "en": "Full transformation",
+      "tr": "Tam dönüşüm",
+      "ru": "Полное преобразование",
+      "sources": []
+    },
+    {
+      "code": "G102",
+      "en": "Circle Interpolation in General Orientation",
+      "tr": "Genel yönlendirmede daire enterpolasyonu",
+      "ru": "Круговая интерполяция в общей ориентации",
+      "sources": []
+    },
+    {
+      "code": "G103",
+      "en": "CDC: Radius-dependent feed adjustment at convex path sections (starting with V0.201)",
+      "tr": "CDC: Dışbükey yol kısımlarında yarıçapa bağlı besleme (V0.201’den başlayarak)",
+      "ru": "CDC: Радиус - зависимый путь регулировки подачи на выпуклых участках (начиная с V0.201)",
+      "sources": []
+    },
+    {
+      "code": "G104",
+      "en": "CDC: Radius-dependent feed adjustment at concave path sections (starting with V0.201)",
+      "tr": "CDC: İçbükey yol kısımlarında yarıçapa bağlı besleme (V0.201’den başlayarak)",
+      "ru": "CDC: Радиус - зависимый путь регулировки подачи на вогнутых участках (начиная с V0.201)",
+      "sources": []
+    },
+    {
+      "code": "G105",
+      "en": "Setting the \"v_jump\" Parameter (starting with V0.198)",
+      "tr": "\"v_jump\" parametresinin ayarlanması (V0.198’den başlayarak)",
+      "ru": "Установка параметра \"v_jump\" (начиная с V0.198)",
+      "sources": []
+    },
+    {
+      "code": "G106",
+      "en": "Setting the \"a_jump\" Parameter (starting with V0.198)",
+      "tr": "\"a_jump\" parametresinin ayarlanamsı (V0.198’den başlayarak)",
+      "ru": "Установка параметра \"a_jump\" (начиная с V0.198)",
+      "sources": []
+    },
+    {
+      "code": "G107",
+      "en": "Axis limit switch (starting with V0.190)",
+      "tr": "Eksen sınırı açma-kapaması (V0.190’dan başlayarak)",
+      "ru": "Концевой выключатель оси (начиная с V0.190)",
+      "sources": []
+    },
+    {
+      "code": "G108",
+      "en": "Set Path Acceleration",
+      "tr": "Yol Hızlanmasını ayarla",
+      "ru": "Настройка пути ускорения",
+      "sources": []
+    },
+    {
+      "code": "G109",
+      "en": "Set Path Deceleration",
+      "tr": "Yol Yavaşlamasını ayarla",
+      "ru": "Настройка пути торможением",
+      "sources": []
+    },
+    {
+      "code": "G110",
+      "en": "Set Path Acceleration and Path Deceleration",
+      "tr": "Yol Hızlanmasını ve Yol Yavaşlamasını ayarla",
+      "ru": "Настройка пути ускорения и торможения",
+      "sources": []
+    },
+    {
+      "code": "G111",
+      "en": "Block transition with speed dip (starting with V0.240)",
+      "tr": "Hız düşmesi ile geçişi bloke et (V0.240’dan başlayarak)",
+      "ru": "Блочное перемещение с низкой скоростью (начиная с V0.240)",
+      "sources": []
+    },
+    {
+      "code": "G112",
+      "en": "Block transition without speed dip (starting with V0.240)",
+      "tr": "Hız düşmesi olmadan geçişi bloke et (V0.240’dan başlayarak)",
+      "ru": "Блочное перемещение без использования низкой скорости (начиная с V0.240)",
+      "sources": []
+    },
+    {
+      "code": "G113",
+      "en": "Reduction of path speed at tangential path section transitions",
+      "tr": "Teğet yol kısmı geçişlerinde yol hızının azaltılması",
+      "ru": "Снижение скорости пути в разделе переходов по касательной траектории",
+      "sources": []
+    },
+    {
+      "code": "G114",
+      "en": "Optimized circular acceleration ratio",
+      "tr": "Optimize edilmiş döngüsel hızlanma oranı",
+      "ru": "Оптимальное соотношение кругового ускорения",
+      "sources": []
+    },
+    {
+      "code": "G115",
+      "en": "Standard acceleration ratio",
+      "tr": "Standart hızlanma oranı",
+      "ru": "Стандартный коэффициент ускорения",
+      "sources": []
+    },
+    {
+      "code": "G126",
+      "en": "Rounding edges",
+      "tr": "Yuvarlama uçları",
+      "ru": "Округление края",
+      "sources": []
+    },
+    {
+      "code": "G130",
+      "en": "Compensation in the direction of the machine coordinate system",
+      "tr": "Makine koordinat sistemi yönünde giderim",
+      "ru": "Возврат направления системы координат машины",
+      "sources": []
+    },
+    {
+      "code": "G132",
+      "en": "CDC with linear transitions (starting with V0.200)",
+      "tr": "Doğrusal geçişler ile CDC (V0.200’dan başlayarak)",
+      "ru": "CDC с линейными переходами (начиная с V0.200)",
+      "sources": []
+    },
+    {
+      "code": "G133",
+      "en": "CDC with linear transitions (starting with V0.200)",
+      "tr": "Doğrusal geçişler ile CDC (V0.200’dan başlayarak)",
+      "ru": "CDC с линейными переходами (начиная с V0.200)",
+      "sources": []
+    },
+    {
+      "code": "G134",
+      "en": "Intersection path calculation - DEACTIVATE (starting with V0.194)",
+      "tr": "Kesişim yolu hesaplaması – DEAKTİVE ET (V0.194’den başlayarak)",
+      "ru": "Расчет пути пересечения - ДЕАКТИВАЦИЯ (начиная с V0.194)",
+      "sources": []
+    },
+    {
+      "code": "G135",
+      "en": "Intersection path calculation - ACTIVATE (starting with V0.194)",
+      "tr": "Kesişim yolu hesaplaması – AKTİVE ET (V0.194’den başlayarak)",
+      "ru": "Расчет пути пересечения - АКТИВАЦИЯ (начиная с V0.194)",
+      "sources": []
+    },
+    {
+      "code": "G137",
+      "en": "Activate/deactivate CDC indirectly with transition block",
+      "tr": "CDC’yi geçiş bloku ile dolaylı olarak aktive/deaktive et",
+      "ru": "Включение/отключение CDC посредством переходного блока",
+      "sources": []
+    },
+    {
+      "code": "G138",
+      "en": "Activate/deactivate CDC directly",
+      "tr": "CDC’yi doğrudan aktive/deaktive et",
+      "ru": "Прямое включение / выключение CDC",
+      "sources": []
+    },
+    {
+      "code": "G139",
+      "en": "Activate/deactivate CDC indirectly",
+      "tr": "CDC’yi dolaylı olarak aktive/deaktive et",
+      "ru": "Косвенное включение / отключение CDC",
+      "sources": []
+    },
+    {
+      "code": "G140",
+      "en": "Deactivate tangential axis automatically (starting with V0.130)",
+      "tr": "Teğet eksenleri otomatik olarak deaktive et (V0.130’dan başlayarak)",
+      "ru": "Автоматическое отключение тангенциальной оси (начиная с V0.130)",
+      "sources": []
+    },
+    {
+      "code": "G153",
+      "en": "Position coordinates in the machine coordinate system",
+      "tr": "Makine koordinat sistemindeki pozisyon koordinatları",
+      "ru": "Координаты расположения в системе координат машины",
+      "sources": []
+    },
+    {
+      "code": "G159",
+      "en": "(0-159) Expanded zero point ofset",
+      "tr": "(0-159) Genişletilmiş sıfır noktası dengelemesi",
+      "ru": "Смещение нулевой точки в диапазоне (0-159)",
+      "sources": []
+    },
+    {
+      "code": "G161",
+      "en": "Absolute coordinates for center of circle",
+      "tr": "Dairenin merkezi için mutlak koordinatlar",
+      "ru": "Абсолютные координаты центра окружности",
+      "sources": []
+    },
+    {
+      "code": "G162",
+      "en": "Relative coordinates for center of circle",
+      "tr": "Dairenin merkezi için göreceli koordinatlar",
+      "ru": "Относительные координаты центра окружности",
+      "sources": []
+    },
+    {
+      "code": "G170",
+      "en": "Decoder synchronization",
+      "tr": "Kod çözücü senkronizasyonu",
+      "ru": "Синхронизация декодера",
+      "sources": []
+    },
+    {
+      "code": "G171",
+      "en": "Immediate processing of NC blocks",
+      "tr": "NC bloklarının acil işlenilmesi",
+      "ru": "Немедленная обработка блоков ЧПУ",
+      "sources": []
+    },
+    {
+      "code": "G172",
+      "en": "Decoder/Path Synchronization",
+      "tr": "Kod çözücü/Yol Senkronizasyonu",
+      "ru": "Синхронизация декодера / пути",
+      "sources": []
+    },
+    {
+      "code": "G180",
+      "en": "Connecting path elements",
+      "tr": "Yol elemanlarının bağlanması",
+      "ru": "Подключение элементов пути",
+      "sources": []
+    },
+    {
+      "code": "G192",
+      "en": "Rotate/Shift Coordinate System (Mounting correction)",
+      "tr": "Koordinat sistemlerini döndür/değiştir (Kurulum düzeltmesi)",
+      "ru": "Поворот/Сдвиг системы координат (Монтажная коррекция)",
+      "sources": []
+    },
+    {
+      "code": "G193",
+      "en": "Activate mode \"Linear Feed Characteristic\"",
+      "tr": "“Doğrusal Besleme Karakteristiği” modunu aktive et",
+      "ru": "Активировать режим \"Линейные характеристики подачи\"",
+      "sources": []
+    },
+    {
+      "code": "G194",
+      "en": "Deactivate mode \"Linear Feed Characteristic\"",
+      "tr": "“Doğrusal Besleme Karakteristiği” modunu deaktive et",
+      "ru": "Деактивировать режим \"Линейные характеристики подачи\"",
+      "sources": []
+    },
+    {
+      "code": "G195",
+      "en": "Switch On RTCP",
+      "tr": "RTCP’yi aç",
+      "ru": "Включить RTCP",
+      "sources": []
+    },
+    {
+      "code": "G196",
+      "en": "Switch Off RTCP",
+      "tr": "RTCP’yi kapat",
+      "ru": "Отключить RTCP",
+      "sources": []
+    },
+    {
+      "code": "G200",
+      "en": "Position latch",
+      "tr": "Pozisyon mandalı",
+      "ru": "Положение фиксатора (защелки)",
+      "sources": []
+    },
+    {
+      "code": "G201",
+      "en": "Position latch with following halt",
+      "tr": "Sonraki durma ile pozisyon mandalı",
+      "ru": "Позиция фиксатора с последующей остановкой",
+      "sources": []
+    },
+    {
+      "code": "G211",
+      "en": "Activate \"blended move mode\"",
+      "tr": "“Karıştırılmış hareket et modu”nu aktive et.",
+      "ru": "Активировать \"Режим смешанного перемещения\"",
+      "sources": []
+    },
+    {
+      "code": "G212",
+      "en": "Activate \"path speed mode 1\"",
+      "tr": "“Yol hızı mod 1”i aktive et",
+      "ru": "Активировать \"Режим управления скоростью траектории 1\"",
+      "sources": []
+    },
+    {
+      "code": "G217",
+      "en": "Mapping",
+      "tr": "Haritalama",
+      "ru": "Отображение",
+      "sources": []
+    },
+    {
+      "code": "G218",
+      "en": "Mapping",
+      "tr": "Haritalama",
+      "ru": "Отображение",
+      "sources": []
+    },
+    {
+      "code": "G219",
+      "en": "Mapping",
+      "tr": "Haritalama",
+      "ru": "Отображение",
+      "sources": []
+    },
+    {
+      "code": "G220",
+      "en": "Output signal before the end of the path section",
+      "tr": "Yol kısmının sonundan önce çıkış sinyali",
+      "ru": "Выходной сигнал до конца отрезка пути",
+      "sources": []
+    },
+    {
+      "code": "G221",
+      "en": "Activate prediction for G220",
+      "tr": "G220 için tahmini aktive et",
+      "ru": "Активировать прогноз для G220",
+      "sources": []
+    },
+    {
+      "code": "G222",
+      "en": "Signal function with specification of the remaining path distance",
+      "tr": "Geriye kalan yol mesafesinin özellikleri ile sinyal fonksiyonu",
+      "ru": "Функция сигнала с указанием оставшегося расстояния пути",
+      "sources": []
+    },
+    {
+      "code": "G234",
+      "en": "Activation Change without transition lines",
+      "tr": "Geçiş hatları olmadan aktivasyon değişimi",
+      "ru": "Активация изменения без линий переходов",
+      "sources": []
+    },
+    {
+      "code": "G235",
+      "en": "Activation Change with transition lines",
+      "tr": "Geçiş hatları ile aktivasyon değişimi",
+      "ru": "Активация изменения с линиями переходов",
+      "sources": []
+    },
+    {
+      "code": "G240",
+      "en": "Non-periodic tangential axis (starting with V0.151)",
+      "tr": "Periyodik olmayan teğet eksen (V0.151’en başlayarak)",
+      "ru": "Непериодическая тангенциальная ось (начиная с V0.151)",
+      "sources": []
+    },
+    {
+      "code": "G241",
+      "en": "Periodic tangential axis (starting with V0.151)",
+      "tr": "Periyodik teğet eksen (V0.151’en başlayarak)",
+      "ru": "Периодическая тангенциальная ось (начиная с V0.151)",
+      "sources": []
+    },
+    {
+      "code": "G292",
+      "en": "Rotate/Shift Coordinate System",
+      "tr": "Koordinat sistemini dönüştür/değiştir",
+      "ru": "Поворот/сдвиг координатной системы",
+      "sources": []
+    },
+    {
+      "code": "G300",
+      "en": "Chord Error Monitoring: Variations for polar coordinate motor",
+      "tr": "Kiriş Hatası İzlenmesi: Kutup koordinat motoru için varyasyonlar",
+      "ru": "Мониторинг погрешности: вариации для полярных координат двигателя",
+      "sources": []
+    },
+    {
+      "code": "G320",
+      "en": "Workspace Boundaries Definition and Monitoring Activation",
+      "tr": "Çalışma Alanı Sınırları Tanımı ve İzleme Aktivasyonu",
+      "ru": "Активация определения и мониторинга границ рабочей области",
+      "sources": []
+    },
+    {
+      "code": "G320.1",
+      "en": "Workspace Boundaries Monitoring Deactivation",
+      "tr": "Çalışma Alanı sınırları İzleme Deaktivasyonu",
+      "ru": "Отключение мониторинга границ рабочей области",
+      "sources": []
+    },
+    {
+      "code": "G320.2",
+      "en": "Switch on workspace monitoring and self-collision detection",
+      "tr": "Çalışma alanı izlenmesini ve kendi kendine çarpışma tespitini aç",
+      "ru": "Включение мониторинга рабочего пространства и обнаружение собственного столкновения",
+      "sources": []
+    },
+    {
+      "code": "G320.3",
+      "en": "Switch off workspace monitoring and self-collision detection",
+      "tr": "Çalışma alanı izlenmesini ve kendi kendine çarpışma tespitini kapat",
+      "ru": "Выключение мониторинга рабочего пространства и обнаружение собственного столкновения",
+      "sources": []
+    },
+    {
+      "code": "G320.4",
+      "en": "Diameter of the Robot Arms",
+      "tr": "Robot kolların çapları",
+      "ru": "Диаметр манипулятора робота",
+      "sources": []
+    },
+    {
+      "code": "G320.5",
+      "en": "Protected Block Definition",
+      "tr": "Korunan Blok Tanımı",
+      "ru": "Определение защиты блока",
+      "sources": []
+    },
+    {
+      "code": "G320.6",
+      "en": "Protected Block Activation",
+      "tr": "Korunan Blok Aktivasyonu",
+      "ru": "Включение защиты блока",
+      "sources": []
+    },
+    {
+      "code": "G59",
+      "en": "Zero point offset 6",
+      "tr": "Sıfır noktası dengelemesi 6",
+      "ru": null,
+      "sources": []
+    },
+    {
+      "code": "G60",
+      "en": "Accuracy hold",
+      "tr": "Doğruluk tutuşu",
+      "ru": null,
+      "sources": []
+    },
+    {
+      "code": "G141",
+      "en": "Activate tangential axis automatically (starting with V0.130)",
+      "tr": "Teğet eksenleri otomatik olarak aktive et (V0.130’dan başlayarak)",
+      "ru": null,
+      "sources": []
+    },
+    {
+      "code": "G144",
+      "en": "Continuous alignment of automatic tangential axes",
+      "tr": "Otomatik teğet eksenlerin sürekli hizalanması",
+      "ru": null,
+      "sources": []
+    },
+    {
+      "code": "G145",
+      "en": "Standard alignment of automatic tangential axes",
+      "tr": "Otomatik teğet eksenlerin standart hizalanması",
+      "ru": null,
+      "sources": []
+    },
+    {
+      "code": "M0",
+      "en": "Optional stop",
+      "tr": "Opsiyonel durdurma",
+      "ru": "Опциональная остановка",
+      "sources": []
+    },
+    {
+      "code": "M3",
+      "en": "Spindle forward",
+      "tr": "Spindle ileri",
+      "ru": "Шпиндель вперед",
+      "sources": []
+    },
+    {
+      "code": "M4",
+      "en": "Spindle reverse",
+      "tr": "Spindle geri",
+      "ru": "Шпиндель назад",
+      "sources": []
+    },
+    {
+      "code": "M5",
+      "en": "Spindle stop",
+      "tr": "Spindle dur",
+      "ru": "Остановка шпинделя",
+      "sources": []
+    },
+    {
+      "code": "M8",
+      "en": "Cutting cooling",
+      "tr": "Kesme soğutma",
+      "ru": "Резка охлаждение",
+      "sources": []
+    },
+    {
+      "code": "M9",
+      "en": "Cutting cooling stop",
+      "tr": "Kesme soğutma stop",
+      "ru": "Остановка резки охлаждения",
+      "sources": []
+    },
+    {
+      "code": "M30",
+      "en": "Program end",
+      "tr": "Program sonu",
+      "ru": "Конец программы",
+      "sources": []
+    },
+    {
+      "code": "M35",
+      "en": "Clamp scanning start",
+      "tr": "Mengene tarama start",
+      "ru": "Начало сканирования тисков",
+      "sources": []
+    },
+    {
+      "code": "M71",
+      "en": "Area 1 selection",
+      "tr": "Bölge 1 seçim",
+      "ru": "Выбор 1-й области",
+      "sources": []
+    },
+    {
+      "code": "M72",
+      "en": "Area 2 selection",
+      "tr": "Bölge 2 seçim",
+      "ru": "Выбор 2-й области",
+      "sources": []
+    },
+    {
+      "code": "M73",
+      "en": "All area selection",
+      "tr": "Tüm bölge seçim",
+      "ru": "Выбор всей области",
+      "sources": []
+    },
+    {
+      "code": "M99",
+      "en": "Return to main program",
+      "tr": "Program tekrar",
+      "ru": "Повтор программы",
+      "sources": []
+    },
+    {
+      "code": "M100",
+      "en": "Tool holder valve open",
+      "tr": "Takım tutma valfi aç",
+      "ru": "Открыть клапан, удерживающий инструмент",
+      "sources": []
+    },
+    {
+      "code": "M101",
+      "en": "Tool holder valve close",
+      "tr": "Takım tutma valfi kapat",
+      "ru": "Закрыть инструмент, удерживающий клапан",
+      "sources": []
+    },
+    {
+      "code": "M102",
+      "en": "C axes brake active",
+      "tr": "C eksen fren aktif",
+      "ru": "Тормоз оси C активен",
+      "sources": []
+    },
+    {
+      "code": "M103",
+      "en": "C axes brake passive",
+      "tr": "C eksen fren pasif",
+      "ru": "Тормоз оси C пасивен",
+      "sources": []
+    },
+    {
+      "code": "M104",
+      "en": "A axes brake active",
+      "tr": "A eksen fren aktif",
+      "ru": "Тормоз оси А активен",
+      "sources": []
+    },
+    {
+      "code": "M105",
+      "en": "A axes brake passive",
+      "tr": "A eksen fren pasif",
+      "ru": "Тормоз оси А пасивен",
+      "sources": []
+    },
+    {
+      "code": "M106",
+      "en": "Magazine forward",
+      "tr": "Magazin ileri",
+      "ru": "Магазин вперед",
+      "sources": []
+    },
+    {
+      "code": "M107",
+      "en": "Magazine back",
+      "tr": "Magazin geri",
+      "ru": "Магазин назад",
+      "sources": []
+    },
+    {
+      "code": "M108",
+      "en": "T13 piston forward",
+      "tr": "T13 piston ileri",
+      "ru": "Поршень Т13 вперед",
+      "sources": []
+    },
+    {
+      "code": "M109",
+      "en": "T13 piston back",
+      "tr": "T13 piston geri",
+      "ru": "Поршень Т13 назад",
+      "sources": []
+    },
+    {
+      "code": "M110",
+      "en": "T14 piston forward",
+      "tr": "T14 piston ileri",
+      "ru": "Поршень Т14 вперед",
+      "sources": []
+    },
+    {
+      "code": "M111",
+      "en": "T14 piston back",
+      "tr": "T14 piston geri",
+      "ru": "Поршень Т14 назад",
+      "sources": []
+    },
+    {
+      "code": "M114",
+      "en": "Clamp piston active",
+      "tr": "Mengene Pistonu aktif",
+      "ru": "Поршни тисков активны",
+      "sources": []
+    },
+    {
+      "code": "M115",
+      "en": "Clamp piston passive",
+      "tr": "Mengene Pistonu pasif",
+      "ru": "Поршни тисков пассивны",
+      "sources": []
+    },
+    {
+      "code": "M117",
+      "en": "Magazine pin active",
+      "tr": "Magazin pimi aktif",
+      "ru": "Штифт магазина активен",
+      "sources": []
+    },
+    {
+      "code": "M118",
+      "en": "Magazine pin passive",
+      "tr": "Magazin pimi pasif",
+      "ru": "Штифт магазина пасивен",
+      "sources": []
+    }
+  ]
+}
