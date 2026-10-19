@@ -135,7 +135,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
 
   useEffect(() => {
     if (activeGuide || showFaultIntake) {
-      guideRegion.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      guideRegion.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
       guideRegion.current?.focus({ preventScroll: true });
     }
   }, [activeGuide, showFaultIntake]);
@@ -423,7 +423,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
             <TutorialSlides key={activeGuide.id} modules={activeGuide.guide.modules} personaTitle={activeGuide.guide.title}
               notice={activeGuide.guide.notice} language={activeGuide.guide.language} symptom={activeGuide.guide.symptom}
               onClose={() => setActiveGuide(null)}
-              onAsk={topic => { setAgentPersona(activeGuide.persona); setInput(`${copy('Explain')}: ${topic}`); composer.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); composer.current?.focus({ preventScroll: true }); }} />
+              onAsk={topic => { setAgentPersona(activeGuide.persona); setInput(`${copy('Explain')}: ${topic}`); composer.current?.scrollIntoView?.({ behavior: 'smooth', block: 'center' }); composer.current?.focus({ preventScroll: true }); }} />
           )}
         </div>
 
