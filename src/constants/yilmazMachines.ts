@@ -1800,50 +1800,6 @@ export const yilmazMachines: Machine[] = [
     "material": "pvc"
   },
   {
-    "id": "ym-019",
-    "name": "MK 450",
-    "description": "Single Head Cutting Machine with versatile angle options",
-    "imageUrl": "/images/machines/MK-450.jpg",
-    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=H6jls_GuVBc",
-    "category": "cutting-machines",
-    "featured": true,
-    "releaseDate": "2021-01-01",
-    "type": "Cutting Machine",
-    "powerSpec": {
-      "voltage": "230V",
-      "frequency": "50Hz",
-      "phase": "1",
-      "consumption": "2.2 kW"
-    },
-    "airSpec": {
-      "consumption": "160 L/min",
-      "pressure": "4 bar"
-    },
-    "dimensions": {
-      "length": "1500mm",
-      "width": "800mm",
-      "height": "1200mm"
-    },
-    "tags": [
-      "Versatile",
-      "Precision"
-    ],
-    "specifications": [
-      "Location points at 60°, 45°, 30°, 22.5°, 15°, 0°",
-      "Pivoting range from 45° left to 45° right",
-      "Aluminium construction body",
-      "Strong spring system and protective shield"
-    ],
-    "certifications": [
-      "CE"
-    ],
-    "safetyFeatures": [
-      "EmergencyStop"
-    ],
-    "material": "aluminium"
-  },
-  {
     "id": "ym-020",
     "name": "RYK-420-W",
     "description": "Radial Saw Machine with ergonomic design",
@@ -2747,11 +2703,12 @@ export const yilmazMachines: Machine[] = [
   {
     "id": "ym-094",
     "name": "MK 450",
-    "description": "Manual Up-Cutting Saw Machine (18\") - Manual upward saw stroke for wide and flat profiles",
+    "description": "Manual Single Head Cutting Machine (18\") - منشار طبلية 18 بوصة",
     "imageUrl": "/images/machines/MK-450.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=H6jls_GuVBc",
     "category": "cutting-machines",
-    "featured": false,
+    "featured": true,
     "releaseDate": "2021-01-01",
     "type": "Manual Up-Cutting Saw",
     "powerSpec": { "voltage": "230V AC", "frequency": "50-60Hz", "phase": "1", "consumption": "2.2 kW" },

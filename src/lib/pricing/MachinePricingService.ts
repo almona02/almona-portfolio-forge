@@ -32,7 +32,6 @@ const MACHINE_PRICES: Record<string, { price: number; currency: string }> = {
   'ym-016': { price: 625000, currency: 'EGP' }, // CRM-250-S - 3 Spindle Copy Router Machine
   'ym-017': { price: 235000, currency: 'EGP' }, // ST 264 - Automatic PVC Water Slot Machine
   'ym-018': { price: 155000, currency: 'EGP' }, // SDT 275 - Reinforcement Steel Cutting Saw
-  'ym-019': { price: 110000, currency: 'EGP' }, // MK 450 - Single Head Cutting Machine
   'ym-020': { price: 356000, currency: 'EGP' }, // RYK-420-W - Radial Saw Machine
   'ym-021': { price: 680000, currency: 'EGP' }, // SCM 420 L4/L7 - Servo Controlled Serial Cutting Machine
   'ym-022': { price: 185000, currency: 'EGP' }, // CK 412 - PVC Glazing Bead Saw
@@ -49,7 +48,7 @@ const MACHINE_PRICES: Record<string, { price: number; currency: string }> = {
   'ym-081': { price: 0, currency: 'EGP' }, // KD 400 M - Single Head Mitre Saw (manual) — price TBD
   'ym-093': { price: 0, currency: 'EGP' }, // KD 400 PS - Single Head Mitre Saw (pneumatic) — price TBD
   'ym-035': { price: 100000, currency: 'EGP' }, // MK 420 - Manual Up-Cutting Saw (17")
-  'ym-094': { price: 0, currency: 'EGP' }, // MK 450 - Manual Up-Cutting Saw (18") — price TBD
+  'ym-094': { price: 110000, currency: 'EGP' }, // MK 450 - Manual Single Head Cutting Machine (18")
   'ym-095': { price: 0, currency: 'EGP' }, // MK 450 PS - Pneumatic Up-Cutting Saw (full pneumatic) — price TBD
   'ym-036': { price: 210000, currency: 'EGP' }, // TK 503 - Single Corner PVC Welding Machine
   'ym-037': { price: 0, currency: 'EGP' }, // VK 420 - V-Notch and Arrow Cutting Machine
