@@ -1,0 +1,127 @@
+{
+  "machine_id": "aim-7510",
+  "version": "1.0",
+  "description": "Representative operator question set grading source support and factual correctness (not model confidence). Each question lists expected_facts (substrings a correct answer must contain, lowercased) and forbidden_facts (substrings that indicate wrong advice).",
+  "questions": [
+    {
+      "id": "gcode-en-g71",
+      "language": "en",
+      "persona": "code_master",
+      "question": "What is G71?",
+      "expected_facts": ["units", "mm"],
+      "forbidden_facts": [],
+      "expect_source": true,
+      "note": "Units command must be G71=mm (AIM-7510 specific; not G21)."
+    },
+    {
+      "id": "gcode-en-g21-trap",
+      "language": "en",
+      "persona": "code_master",
+      "question": "What does G21 do?",
+      "expected_facts": ["mirroring"],
+      "forbidden_facts": ["metric", "units"],
+      "expect_source": true,
+      "note": "Trap: generic CNC lore says G21=metric, but on AIM-7510 G21 is Y-axis mirroring."
+    },
+    {
+      "id": "gcode-en-program-explain",
+      "language": "en",
+      "persona": "code_master",
+      "question": "G71\nG90\nM3\nG01 X50 F500\nM5\nM30",
+      "expected_facts": ["linear interpolation", "spindle"],
+      "forbidden_facts": [],
+      "expect_source": true,
+      "note": "Pasted program must be explained line by line with the manual's real command meanings."
+    },
+    {
+      "id": "gcode-en-validate-spindle",
+      "language": "en",
+      "persona": "code_master",
+      "question": "Validate: G71 G90 M3 S25000 G01 X10 F500 M5 M30",
+      "expected_facts": ["20000", "exceeds"],
+      "forbidden_facts": [],
+      "expect_source": true,
+      "note": "S25000 exceeds the 20,000 RPM spindle max; validator must flag it."
+    },
+    {
+      "id": "gcode-en-validate-feed",
+      "language": "en",
+      "persona": "code_master",
+      "question": "Validate: G71 G90 M3 S12000 G01 X10 F80000 M5 M30",
+      "expected_facts": ["71000", "exceeds"],
+      "forbidden_facts": [],
+      "expect_source": true,
+      "note": "F80000 exceeds the X-axis 71 m/min ceiling; validator must flag it."
+    },
+    {
+      "id": "gcode-en-unknown",
+      "language": "en",
+      "persona": "code_master",
+      "question": "What is G81?",
+      "expected_facts": ["not listed", "aim-7510"],
+      "forbidden_facts": ["drilling cycle"],
+      "expect_source": true,
+      "note": "G81 is not in the AIM-7510 manual tables; must be answered honestly, not as a generic drilling cycle."
+    },
+    {
+      "id": "gcode-ar-g71",
+      "language": "ar",
+      "persona": "code_master",
+      "question": "ما هو G71؟",
+      "expected_facts": ["mm"],
+      "forbidden_facts": [],
+      "expect_source": true,
+      "note": "Arabic asks for G71; answer may fall back to English but must stay correct."
+    },
+    {
+      "id": "gcode-tr-g71",
+      "language": "tr",
+      "persona": "code_master",
+      "question": "G71 nedir?",
+      "expected_facts": ["mm"],
+      "forbidden_facts": [],
+      "expect_source": true,
+      "note": "Turkish asks for G71; answer should use the Turkish manual wording."
+    },
+    {
+      "id": "fault-en-alarm",
+      "language": "en",
+      "persona": "doctor",
+      "question": "What does alarm 0xA00C mean?",
+      "expected_facts": ["feed rate"],
+      "forbidden_facts": [],
+      "expect_source": true,
+      "note": "0xA00C = 'Feed Rate Is Not Defined' (manual ch.18 alarm list). Currently likely unindexed."
+    },
+    {
+      "id": "fault-en-symptom",
+      "language": "en",
+      "persona": "doctor",
+      "question": "The spindle is not rotating",
+      "expected_facts": ["spindle"],
+      "forbidden_facts": [],
+      "expect_source": true,
+      "note": "Symptom phrased without the word 'fault/error' must still route to diagnosis."
+    },
+    {
+      "id": "fault-ar-alarm",
+      "language": "ar",
+      "persona": "doctor",
+      "question": "ماذا يعني خطأ 0xA00C؟",
+      "expected_facts": ["feed rate"],
+      "forbidden_facts": [],
+      "expect_source": true,
+      "note": "Arabic alarm-code lookup; likely generic/unavailable today."
+    },
+    {
+      "id": "op-ar-powerup",
+      "language": "ar",
+      "persona": "professor",
+      "question": "كيف أشغل الآلة؟",
+      "expected_facts": ["400"],
+      "forbidden_facts": ["380"],
+      "expect_source": true,
+      "note": "Operation tutorial must state the real 400V 3P supply, not the hardcoded 380V."
+    }
+  ]
+}

@@ -1,0 +1,2843 @@
+{
+  "machine_id": "aim-7510",
+  "description": "AIM-7510 alarm list (manual section 18: NC300 control unit, PLC, G-code, macro and HMI alarms) extracted in EN/TR/RU.",
+  "languages": [
+    "en",
+    "tr",
+    "ru"
+  ],
+  "source_document": "MKK.028_1ET089000-0122_AIM_7510_(20.07.2020)_REV.07.pdf",
+  "source_section": "18. Alarm List",
+  "alarm_count": 122,
+  "alarms": [
+    {
+      "code": "0x0610",
+      "en": {
+        "title": "Invalid Macro Variable Form",
+        "detail": [
+          "1. Invalid macro variable form.",
+          "2. Check the macro and revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz Makro Değişken Formu",
+        "detail": [
+          "1. Geçersiz makro değişken formu.",
+          "2. Makroyu kontrol edin ve programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Неверная форма макропеременной",
+        "detail": [
+          "1. Неправильная форма макропеременной.",
+          "2. Проверьте макрос и пересмотрите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0611",
+      "en": {
+        "title": "Macro Command Not Found",
+        "detail": [
+          "1. Macro command not found.",
+          "2. Check the macro and revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Makro Komutu Bulunamadı",
+        "detail": [
+          "1. Makro komutu bulunamadı.",
+          "2. Makroyu kontrol edin ve programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Макрокоманда не найдена",
+        "detail": [
+          "1. Макрокоманда не найдена.",
+          "2. Проверьте макрос и пересмотрите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0612",
+      "en": {
+        "title": "Invalid Macro Command Line Number",
+        "detail": [
+          "1. Target line number of GO TO command could not be found.",
+          "2. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz Makro Komutu Satır Numarası",
+        "detail": [
+          "1. GO TO komutunun hedef satırı numarası bulunamadı.",
+          "2. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Неверный номер командной строки макроса",
+        "detail": [
+          "1. Номер строки назначения команды GO TO не найден.",
+          "2. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0613",
+      "en": {
+        "title": "Macro Bit Setup Error",
+        "detail": [
+          "1. Macro bit setup error.",
+          "2. Check the macro and revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Makroda Bit Kurulum Hatası",
+        "detail": [
+          "1. Makroda bit kurulum hatası.",
+          "2. Makroyu kontrol edin ve programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка установки бита в макросе",
+        "detail": [
+          "1. Ошибка установки бита в макросе.",
+          "2. Проверьте макрос и пересмотрите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0614",
+      "en": {
+        "title": "Division By Zero Error In Macro",
+        "detail": [
+          "1. Division by zero error in macro.",
+          "2. Check the macro and revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Makroda Sıfıra Bölünme Hatası",
+        "detail": [
+          "1. Makroda sıfıra bölünme hatası.",
+          "2. Makroyu kontrol edin ve programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка обнуления в макросе",
+        "detail": [
+          "1. Нулевая ошибка в макросе.",
+          "2. Проверьте макрос и пересмотрите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0615",
+      "en": {
+        "title": "Macro command too long",
+        "detail": [
+          "1. Macro command is too long.",
+          "2. Check the macro and revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Makro komutu çok uzun",
+        "detail": [
+          "1. Makro komutu çok uzun.",
+          "2. Makroyu kontrol edin ve programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Макро команда слишком длинная",
+        "detail": [
+          "1. Макрокоманда слишком длинная.",
+          "2. Проверьте макрос и пересмотрите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0616",
+      "en": {
+        "title": "Macro Command Operation Not Found",
+        "detail": [
+          "1. Macro command operation could not be found.",
+          "2. Check the macro and revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Makro Komut İşletimi Bulunamadı",
+        "detail": [
+          "1. Makro komut işletimi bulunamadı.",
+          "2. Makroyu kontrol edin ve programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Операция макрокоманды не найдена",
+        "detail": [
+          "1. Операция макрокоманды не найдена.",
+          "2. Проверьте макрос и пересмотрите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0617",
+      "en": {
+        "title": "Macro Command Error",
+        "detail": [
+          "1. Macro command error.",
+          "2. Check the macro and revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Makro Komutu Hatası",
+        "detail": [
+          "1. Makro komutu hatası.",
+          "2. Makroyu kontrol edin ve programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка макрокоманды",
+        "detail": [
+          "1. Ошибка макрокоманды.",
+          "2. Проверьте макрос и пересмотрите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0619",
+      "en": {
+        "title": "Macro Processed Syntax Error",
+        "detail": [
+          "1. Macro processed syntax error.",
+          "2. Check the macro and revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Makro İşlenen Sözdizimi Hatası",
+        "detail": [
+          "1. Makro işlenen sözdizimi hatası.",
+          "2. Makroyu kontrol edin ve programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Синтаксическая ошибка в макросе",
+        "detail": [
+          "1. Синтаксическая ошибка при обработке макроса.",
+          "2. Проверьте макрос и пересмотрите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x061A",
+      "en": {
+        "title": "Invalid Macro Command",
+        "detail": [
+          "1. Invalid macro command.",
+          "2. Check the macro and revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz Makro Komutu",
+        "detail": [
+          "1. Geçersiz makro komutu.",
+          "2. Makroyu kontrol edin ve programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Недопустимая макрос-команда",
+        "detail": [
+          "1. Недопустимая макрокоманда.",
+          "2. Проверьте макрос и пересмотрите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0630",
+      "en": {
+        "title": "FOLLOW_ERR_ALRM Extreme Position Deviation",
+        "detail": [
+          "1. Check the servo connection."
+        ]
+      },
+      "tr": {
+        "title": "FOLLOW_ERR_ALRM Aşırı Pozisyon Sapması",
+        "detail": [
+          "1. Servo bağlantısını kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "FOLLOW_ERR_ALRM Отклонение от превышения позиции",
+        "detail": [
+          "1. Проверьте подключение сервопривода."
+        ]
+      }
+    },
+    {
+      "code": "0x0631",
+      "en": {
+        "title": "HW_LIMIT_ERR Hardware Limit Error",
+        "detail": [
+          "1. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "HW_LIMIT_ERR Donanım Limiti Hatası",
+        "detail": [
+          "1. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "HW_LIMIT_ERR Ошибка аппаратного ограничения",
+        "detail": [
+          "1. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0632",
+      "en": {
+        "title": "SW_LIMIT_ERR Software limit error",
+        "detail": [
+          "1. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "SW_LIMIT_ERR Yazılım Limiti Hatası",
+        "detail": [
+          "1. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "SW_LIMIT_ERR Ошибка программного ограничения",
+        "detail": [
+          "1. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0633",
+      "en": {
+        "title": "SW_LIMIT_CLR First Software Limit Approval",
+        "detail": [
+          "1. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "SW_LIMIT_CLR İlk Yazılım Limiti Onayı",
+        "detail": [
+          "1. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "SW_LIMIT_CLR Первоначальное утверждение лимита программного обеспечения",
+        "detail": [
+          "1. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0x0634",
+      "en": {
+        "title": "SW_LIMIT_EXT_ERR Second Software Limit Error",
+        "detail": [
+          "1. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "SW_LIMIT_EXT_ERR İkinci Yazılım Limiti Hatası",
+        "detail": [
+          "1. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "SW_LIMIT_EXT_ERR Вторая ошибка программного ограничения",
+        "detail": [
+          "1. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0x1200",
+      "en": {
+        "title": "Memory Access Error",
+        "detail": [
+          "1. An error occurs while accessing MLC and NC memories.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Bellek Erişim Hatası",
+        "detail": [
+          "1. MLC ile NC belleğine erişilirken hata oluşur.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка доступа к памяти",
+        "detail": [
+          "1. Ошибка при доступе к памяти NC с помощью MLC.",
+          "2. Перезагрузите систему или отправьте систему обратно в техническую службу."
+        ]
+      }
+    },
+    {
+      "code": "0x1201",
+      "en": {
+        "title": "System not ready",
+        "detail": [
+          "1. NC starting procedure is not completed successfully.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Sistem Hazır Değil",
+        "detail": [
+          "1. NC başlatma prosedürü başarıyla tamamlanmadı.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Система не готова",
+        "detail": [
+          "1. Процедура запуска nc не была успешно завершена.",
+          "2. Перезагрузите систему или отправьте систему обратно в службу."
+        ]
+      }
+    },
+    {
+      "code": "0x1202",
+      "en": {
+        "title": "Buffer Error",
+        "detail": [
+          "1. NC buffer error or not ready.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Arabellek Hatası",
+        "detail": [
+          "1. NC arabellek hatası veya hazır değil.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка буфера",
+        "detail": [
+          "1. Ошибка буфера ЧПУ или не готова.",
+          "2. Перезагрузите систему или отправьте систему обратно в службу."
+        ]
+      }
+    },
+    {
+      "code": "0x1203",
+      "en": {
+        "title": "Output Port not Found",
+        "detail": [
+          "1. NC output port could not be found.",
+          "2. Check the axis parameter settings."
+        ]
+      },
+      "tr": {
+        "title": "Çıkış Portu Bulunamadı",
+        "detail": [
+          "1. NC çıkış portu bulunamadı.",
+          "2. Eksen parametre ayarlarını kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "выходной порт не найден",
+        "detail": [
+          "1. Выходной порт NC не найден.",
+          "2. Проверьте настройки параметров оси."
+        ]
+      }
+    },
+    {
+      "code": "0x1204",
+      "en": {
+        "title": "MLC Code Check Error",
+        "detail": [
+          "1. MLC program code confirmation failed.",
+          "2. Send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "MLC Kodu Onay Hatası",
+        "detail": [
+          "1. MLC program kodu onayı başarısız.",
+          "2. Sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка проверки кода MLC",
+        "detail": [
+          "1. Не удалось подтвердить код программы MLC.",
+          "2. Отправьте систему обратно в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x1205",
+      "en": {
+        "title": "MLC Flash Memory Error",
+        "detail": [
+          "1. MLC program code writing failed.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "MLC Flaş Bellek Hatası",
+        "detail": [
+          "1. MLC program kodu yazımı başarısız.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка флэш-памяти MLC",
+        "detail": [
+          "1. Не удается записать программный код MLC.",
+          "2. Перезагрузите систему или отправьте систему обратно в службу."
+        ]
+      }
+    },
+    {
+      "code": "0x1206",
+      "en": {
+        "title": "SRAM Error",
+        "detail": [
+          "1. SRAM typing error.",
+          "2. Send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "SRAM Hatası",
+        "detail": [
+          "1. SRAM yazım hatası.",
+          "2. Sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка SRAM",
+        "detail": [
+          "1. Ошибка записи SRAM.",
+          "2. Отправьте систему обратно в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x1207",
+      "en": {
+        "title": "Server I/O Channel Error",
+        "detail": [
+          "1. Server I/O access error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Sunucu I/O Kanalı Hatası",
+        "detail": [
+          "1. Sunucu I/O erişim hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка канала ввода-вывода сервера",
+        "detail": [
+          "1. Ошибка доступа к серверу.",
+          "2. Перезагрузите систему или верните систему в сервис"
+        ]
+      }
+    },
+    {
+      "code": "0x1208",
+      "en": {
+        "title": "Remote I/O Channel Error",
+        "detail": [
+          "1. Remote I/O access error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Uzaktan I/O Kanalı Hatası",
+        "detail": [
+          "1. Uzaktan I/O erişimi hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка канала удаленного ввода-вывода",
+        "detail": [
+          "1. Ошибка доступа к удаленному вводу / выводу.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x1209",
+      "en": {
+        "title": "Remote I/O Channel Error",
+        "detail": [
+          "1. Remote I/O access error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Uzaktan I/O Kanalı Hatası",
+        "detail": [
+          "1. Uzaktan I/O erişimi hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка канала удаленного ввода-вывода",
+        "detail": [
+          "1. Ошибка доступа к удаленному вводу / выводу.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x120A",
+      "en": {
+        "title": "Balancing Parameter Error",
+        "detail": [
+          "1. NC parameter setup failed or could not be initialized.",
+          "2. Restart parameters.",
+          "1. Balancing parameter typing error.",
+          "2. Retype the balancing parameters."
+        ]
+      },
+      "tr": {
+        "title": "NC Parametre Hatası",
+        "detail": [
+          "1. NC parametresi kurulumu yapılamadı veya başlatılamadı.",
+          "2. Parametreleri yeniden başlatın."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка параметра ЧПУ",
+        "detail": [
+          "1. Настройка параметров ЧПУ не удалась или не удалось запустить.",
+          "2. Перезапустите параметры."
+        ]
+      }
+    },
+    {
+      "code": "0x120B",
+      "en": {
+        "title": null,
+        "detail": []
+      },
+      "tr": {
+        "title": "Dengeleme Parametresi Hatası",
+        "detail": [
+          "1. Dengeleme parametresi yazım hatası.",
+          "2. Dengeleme parametrelerini yeniden yazın."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка параметра балансировки",
+        "detail": [
+          "1. Ошибка ввода параметра смещения.",
+          "2. Перепишите параметры балансировки."
+        ]
+      }
+    },
+    {
+      "code": "0x120C",
+      "en": {
+        "title": "Balancing Parameter Check Error",
+        "detail": [
+          "1. Balancing parameter memory check error.",
+          "2. Retype the balancing parameters."
+        ]
+      },
+      "tr": {
+        "title": "Dengeleme Parametresi Temizleme Hatası",
+        "detail": [
+          "1. Dengeleme parametresi temizlenirken meydana gelen hata.",
+          "2. Dengeleme parametrelerini yeniden yazın."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка очистки параметра балансировки",
+        "detail": [
+          "1. Ошибка при очистке параметра компенсации.",
+          "2. Перепишите параметры балансировки."
+        ]
+      }
+    },
+    {
+      "code": "0x120D",
+      "en": {
+        "title": "Balancing parameter typing error",
+        "detail": [
+          "1. Balancing parameter memory typing error.",
+          "2. Retype the balancing parameters."
+        ]
+      },
+      "tr": {
+        "title": "Dengeleme Parametre Yazım Hatası",
+        "detail": [
+          "1. Dengeleme parametresi bellek yazım hatası.",
+          "2. Dengeleme parametrelerini yeniden yazın."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка параметра балансировки",
+        "detail": [
+          "1. Ошибка балансировки параметров памяти.",
+          "2. Перепишите параметры балансировки."
+        ]
+      }
+    },
+    {
+      "code": "0x120E",
+      "en": {
+        "title": "Parameter Initialization Error",
+        "detail": [
+          "1. Parameter initialization error.",
+          "2. Restart parameters."
+        ]
+      },
+      "tr": {
+        "title": "Parametre Başlatma Hatası",
+        "detail": [
+          "1. Parametre başlatma hatası.",
+          "2. Parametreleri yeniden başlatın."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка инициализации параметра",
+        "detail": [
+          "1. Ошибка инициализации параметра.",
+          "2. Перезапустите параметры."
+        ]
+      }
+    },
+    {
+      "code": "0x120F",
+      "en": {
+        "title": "Memory Check Error",
+        "detail": [
+          "1. Memory check error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Bellek Temizleme Hatası",
+        "detail": [
+          "1. Bellek temizleme hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка очистки памяти",
+        "detail": [
+          "1. Ошибка очистки памяти.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x1210",
+      "en": {
+        "title": "Memory typing error",
+        "detail": [
+          "1. Memory check error or initialization error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Bellek Yazım Hatası",
+        "detail": [
+          "1. Bellek onay hatası veya başlatma hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка записи в память",
+        "detail": [
+          "1. Ошибка проверки памяти или ошибка инициализации.",
+          "2. Перезагрузите систему или верните систему в эксплуатацию."
+        ]
+      }
+    },
+    {
+      "code": "0x1211",
+      "en": {
+        "title": "Servo Axis Not Found",
+        "detail": [
+          "1. Parameter setup error.",
+          "2. Check parameter settings."
+        ]
+      },
+      "tr": {
+        "title": "Servo Eksen Bulunamadı",
+        "detail": [
+          "1. Parametre kurulum hatası.",
+          "2. Parametre ayarlarını kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Ось серво не найдена",
+        "detail": [
+          "1. Ошибка установки параметра.",
+          "2. Проверьте настройки параметров."
+        ]
+      }
+    },
+    {
+      "code": "0x1212",
+      "en": {
+        "title": "Servo Axis Parameter Format Error",
+        "detail": [
+          "1. Parameter setup error.",
+          "2. Check parameter settings."
+        ]
+      },
+      "tr": {
+        "title": "Servo Eksen Parametre Format Hatası",
+        "detail": [
+          "1. Parametre kurulum hatası.",
+          "2. Parametre ayarlarını kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка формата параметра серво-оси",
+        "detail": [
+          "1. Ошибка установки параметра.",
+          "2. Проверьте настройки параметров."
+        ]
+      }
+    },
+    {
+      "code": "0x1213",
+      "en": {
+        "title": "DMCNET Initialization Error",
+        "detail": [
+          "1. DMCNET initialization error.",
+          "2. Make sure that DMCNET is connected properly."
+        ]
+      },
+      "tr": {
+        "title": "DMCNET Başlatma Hatası",
+        "detail": [
+          "1. DMCNET başlatma hatası.",
+          "2. DMCNET’nin düzgün şekilde bağlı olduğundan emin olun."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка запуска DMCNET",
+        "detail": [
+          "1. Ошибка инициализации DMCNET.",
+          "2. Убедитесь, что DMCNET правильно подключен."
+        ]
+      }
+    },
+    {
+      "code": "0x1214",
+      "en": {
+        "title": "Power Outage Support Memory Error",
+        "detail": [
+          "1. Power outage support memory error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Kalıcı Hafıza Hatası",
+        "detail": [
+          "1. Kalıcı hafıza okunurken ve yazılırken meydana gelen hata.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Постоянная ошибка памяти",
+        "detail": [
+          "1. Ошибка при чтении и записи постоянной памяти.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x1300",
+      "en": {
+        "title": "Network Communication Error",
+        "detail": [
+          "1. Check the network cable connections.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Ağ İletişim Hatası",
+        "detail": [
+          "1. Ağ kablo bağlantılarını kontrol edin.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка сетевой связи",
+        "detail": [
+          "1. Проверьте подключение сетевого кабеля.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x1E00",
+      "en": {
+        "title": "Servo Error",
+        "detail": [
+          "1. Servo error.",
+          "2. Check the status of serve or change the servo."
+        ]
+      },
+      "tr": {
+        "title": "Servo Hatası",
+        "detail": [
+          "1. Servo hatası.",
+          "2. Serve durumunu kontrol edin veya servoyu değiştirin."
+        ]
+      },
+      "ru": {
+        "title": "Servo ошибка",
+        "detail": [
+          "1. Серво ошибка.",
+          "2. Проверьте статус обслуживания или замените сервопривод."
+        ]
+      }
+    },
+    {
+      "code": "0x1F00",
+      "en": {
+        "title": "Remote I/O Error",
+        "detail": [
+          "1. Remote I/O error.",
+          "2. Check the connection of I/O remotely or change I/O card remotely.",
+          "NC Alarm code"
+        ]
+      },
+      "tr": {
+        "title": "Uzaktan I/O Hatası",
+        "detail": [
+          "1. Uzaktan I/O hatası.",
+          "2. Uzaktan I/O bağlantısını kontrol edin veya uzaktan I/O kartını değiştirin.",
+          "NC Alarm Kodu"
+        ]
+      },
+      "ru": {
+        "title": "Ошибка удаленного ввода-вывода",
+        "detail": [
+          "1. Ошибка удаленного ввода-вывода.",
+          "2. Проверьте подключение удаленного ввода / вывода или замените плату удаленного ввода /",
+          "вывода."
+        ]
+      }
+    },
+    {
+      "code": "0x3010",
+      "en": {
+        "title": "HMI Communication Interface Creation Error",
+        "detail": [
+          "1. HMI communications interface creation error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "HMI İletişim Arayüzü Oluşturma Hatası",
+        "detail": [
+          "1. HMI iletişim arayüzü oluşturma hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка создания интерфейса связи HMI",
+        "detail": [
+          "1. Ошибка при создании интерфейса связи HMI.",
+          "2. Перезагрузите систему или верните систему в сервис"
+        ]
+      }
+    },
+    {
+      "code": "0x3011",
+      "en": {
+        "title": "HMI Communication Memory Area Creation Error",
+        "detail": [
+          "1. HMI communication memory area creation error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "HMI İletişim Belleği Alanı Oluşturma Hatası",
+        "detail": [
+          "1. HMI iletişim belleği alanı oluşturma hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка области памяти связи HMI",
+        "detail": [
+          "1. Ошибка при создании поля памяти связи HMI.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x3012",
+      "en": {
+        "title": "HMI Interface Command Field Creation Error",
+        "detail": [
+          "1. HMI interface command field creation error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "HMI Arayüzü Komut Alanı Oluşturma Hatası",
+        "detail": [
+          "1. HMI arayüzü komut alanı oluşturma hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка создания поля команды интерфейса HMI",
+        "detail": [
+          "1. Ошибка при создании поля команд интерфейса HMI.",
+          "2. Перезагрузите систему или верните систему в эсервис."
+        ]
+      }
+    },
+    {
+      "code": "0x3013",
+      "en": {
+        "title": "HMI Interface Memory Space Error",
+        "detail": [
+          "1. HMI interface memory space error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "HMI Arayüz Bellek Alanı Hatası",
+        "detail": [
+          "1. HMI arayüz bellek alanı hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка пространства памяти интерфейса HMI",
+        "detail": [
+          "1. Ошибка пространства памяти интерфейса HMI.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x3014",
+      "en": {
+        "title": "HMI Interface Communication Port Error",
+        "detail": [
+          "1. HMI interface communication port error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "HMI Arayüz İletişim Portu Hatası",
+        "detail": [
+          "1. HMI arayüz iletişim portu hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка порта связи интерфейса HMI",
+        "detail": [
+          "1. Ошибка порта связи интерфейса HMI.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x3015",
+      "en": {
+        "title": "MLC Interface Memory Space Error",
+        "detail": [
+          "1. MLC interface memory space error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "MLC Arayüz Bellek Alanı Hatası",
+        "detail": [
+          "1. MLC arayüz bellek alanı hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка области памяти интерфейса MLC",
+        "detail": [
+          "1. Ошибка пространства памяти интерфейса MLC.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x3016",
+      "en": {
+        "title": "HMI File Transmission Error",
+        "detail": [
+          "1. HMI file transmission error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "HMI Dosya İletim Hatası",
+        "detail": [
+          "1. HMI dosya iletim hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка передачи файла HMI",
+        "detail": [
+          "1. Ошибка передачи файла HMI.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x3017",
+      "en": {
+        "title": "HMI Data Transmission Error",
+        "detail": [
+          "1. HMI data transmission error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "HMI Veri İletim Hatası",
+        "detail": [
+          "1. HMI veri iletim hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3100",
+      "en": {
+        "title": "Invalid File Name",
+        "detail": [
+          "1. Invalid file name.",
+          "2. Change the file name."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz Dosya Adı",
+        "detail": [
+          "1. Geçersiz dosya adı.",
+          "2. Dosya adını değiştirin."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3101",
+      "en": {
+        "title": "Too Many Subprogram Placing",
+        "detail": [
+          "1. Reduce the number of subprogram calling nests."
+        ]
+      },
+      "tr": {
+        "title": "Çok Fazla Sayıda Altprogram Yerleştirme",
+        "detail": [
+          "1. Altprogram çağırma yuvalarının sayısını azaltın."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3102",
+      "en": {
+        "title": "Non G Code Character Error",
+        "detail": [
+          "1. Non G code character error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "G Olmayan Kod Karakteri Hatası",
+        "detail": [
+          "1. G Olmayan Kod Karakteri Hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3103",
+      "en": {
+        "title": "MEM_CHECKSUM_ERR Memory Error",
+        "detail": [
+          "1. HMI interface error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "MEM_CHECKSUM_ERR Bellek Hatası",
+        "detail": [
+          "1. HMI arayüzü hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3200",
+      "en": {
+        "title": "PAR_CRC_ERR Internal Parameter Error",
+        "detail": [
+          "Invalid system parameter memory space. Correct by running system save function or send the system",
+          "back to the service."
+        ]
+      },
+      "tr": {
+        "title": "PAR_CRC_ERR Dahili Parametre Hatası",
+        "detail": [
+          "Geçersiz sistem dahili parametre bellek alanı. Sistem kurtarma fonksiyonunu çalıştırarak düzeltin veya",
+          "sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3201",
+      "en": {
+        "title": "MLC_CRC_ERR MLC Program Error",
+        "detail": [
+          "Invalid system MLC program memory space. Please re-download the MLC program or send the system",
+          "back to service."
+        ]
+      },
+      "tr": {
+        "title": "MLC_CRC_ERR MLC Program Hatası",
+        "detail": [
+          "Geçersiz sistem MLC program bellek alanı. Lütfen yeniden MLC programını indirin veya sistemi servise",
+          "geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3202",
+      "en": {
+        "title": "CF_READ_ERR CF Card Read Failed",
+        "detail": [
+          "CF card is not inserted or invalid CF card is inserted."
+        ]
+      },
+      "tr": {
+        "title": "CF_READ_ERR CF Kart Okuma Başarısız",
+        "detail": [
+          "CF kartı takılı değil veya geçersiz CF kartı takılı."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3203",
+      "en": {
+        "title": "PAR_BK_FILE_ERR Parameter Backup Failed",
+        "detail": [
+          "Make sure that the CF card is installed properly and there is sufficient empty space."
+        ]
+      },
+      "tr": {
+        "title": "PAR_BK_FILE_ERR Parametre Yedeklemesi Başarısız",
+        "detail": [
+          "CF kartının düzgün şekilde takılı olduğunu ve yeterince boş alan olduğunu kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3204",
+      "en": {
+        "title": "MLC_BK_FILE_ERR MLC Backup Failed",
+        "detail": [
+          "Make sure that the CF card is installed properly and there is sufficient empty space."
+        ]
+      },
+      "tr": {
+        "title": "MLC_BK_FILE_ERR MLC Yedekleme Başarısız",
+        "detail": [
+          "CF kartının düzgün şekilde takılı olduğunu ve yeterince boş alan olduğunu kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x3205",
+      "en": {
+        "title": "MACHINE_LOCK Machine Locked",
+        "detail": [
+          "Check whether the validity date of machine is expired. Call the supplier to cancel or change the",
+          "machine's validity."
+        ]
+      },
+      "tr": {
+        "title": "MACHINE_LOCK Makine Kilitli",
+        "detail": [
+          "Makinenin geçerlilik süresinin sona erip ermediğini kontrol edin. Makine geçerliliğini iptal etmek veya",
+          "uzatmak için tedarikçiyi arayın."
+        ]
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0x4200",
+      "en": {
+        "title": "Returning to the initial state not ready",
+        "detail": [
+          "1. Return to the initial state.",
+          "2. Check the cable connection or parameter settings."
+        ]
+      },
+      "tr": {
+        "title": "Başlangıç Durumuna Dönme Hazır Değil",
+        "detail": [
+          "1. Başlangıç durumuna dönme işlemini yapın.",
+          "2. Kablo bağlantısını veya parametre ayarlarını kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Инициализация не готова",
+        "detail": [
+          "1. Выполните инициализацию.",
+          "2. Проверьте проводку или настройки параметров."
+        ]
+      }
+    },
+    {
+      "code": "0x4300",
+      "en": {
+        "title": "MLC Not Ready",
+        "detail": [
+          "1. MLC not ready or memory access error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "MLC’nin NC Datalarına Erişim Hatası",
+        "detail": [
+          "1. MLC hazır değil veya bellek erişim hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка доступа к данным ЧПУ MLC",
+        "detail": [
+          "1. MLC не готов или ошибка доступа к памяти.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x4301",
+      "en": {
+        "title": "MLC Not Ready",
+        "detail": [
+          "1. MLC is not ready.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "MLC Hazır Değil",
+        "detail": [
+          "1. MLC hazır değil.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "MLC не готов",
+        "detail": [
+          "1. MLC не готов.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x4302",
+      "en": {
+        "title": "I/O Module Program Confirmation Failed",
+        "detail": [
+          "1. I/O module program confirmation failed",
+          "2. Install the program again."
+        ]
+      },
+      "tr": {
+        "title": "I/O Modülü Program Temizleme Başarısız",
+        "detail": [
+          "1. I/O modülü program temizleme başarısız.",
+          "2. Programı yeniden kurun."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка очистки программы модуля ввода / вывода",
+        "detail": [
+          "1. Ошибка очистки программы модуля ввода / вывода.",
+          "2. Переустановите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x4303",
+      "en": {
+        "title": "I/O Module Program Writing Failed",
+        "detail": [
+          "1. I/O module program writing failed.",
+          "2. Install the program again."
+        ]
+      },
+      "tr": {
+        "title": "I/O Modülü Program Yazımı Başarısız",
+        "detail": [
+          "1. I/O modülü program yazımı başarısız.",
+          "2. Programı yeniden kurun."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка записи программы модуля ввода / вывода",
+        "detail": [
+          "1. Ошибка записи программы модуля ввода / вывода.",
+          "2. Переустановите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x4304",
+      "en": {
+        "title": "NC System Program Confirmation Failed",
+        "detail": [
+          "1. NC system program confirmation failed",
+          "2. Install the program again."
+        ]
+      },
+      "tr": {
+        "title": "NC Sistem Program Temizleme Başarısız",
+        "detail": [
+          "1. NC sistem program temizleme başarısız",
+          "2. Programı yeniden kurun."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка очистки системной программы ЧПУ",
+        "detail": [
+          "1. Ошибка очистки программы системы ЧПУ",
+          "2. Переустановите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x4305",
+      "en": {
+        "title": "NC System Program Installation Failed",
+        "detail": [
+          "1. NC system program installation failed.",
+          "2. Install the program again."
+        ]
+      },
+      "tr": {
+        "title": "NC Sistem Program Kurulumu Başarısız",
+        "detail": [
+          "1. NC sistem program kurulumu başarısız.",
+          "2. Programı yeniden kurun."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка установки системной программы ЧПУ",
+        "detail": [
+          "1. Ошибка установки программы системы ЧПУ.",
+          "2. Переустановите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x4306",
+      "en": {
+        "title": "Macro Confirmation Failed",
+        "detail": [
+          "1. Macro program confirmation failed.",
+          "2. Install the program again."
+        ]
+      },
+      "tr": {
+        "title": "Makro Temizleme Başarısız",
+        "detail": [
+          "1. Makro program temizleme başarısız.",
+          "2. Programı yeniden kurun."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка удаления макроса",
+        "detail": [
+          "1. Ошибка очистки макропрограммы.",
+          "2. Переустановите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x4307",
+      "en": {
+        "title": "Macro Installation Failed",
+        "detail": [
+          "1. Macro program installation failed.",
+          "2. Install the program again."
+        ]
+      },
+      "tr": {
+        "title": "Makro Kurulumu Başarısız",
+        "detail": [
+          "1. Makro program kurulumu başarısız.",
+          "2. Programı yeniden kurun."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка установки макроса",
+        "detail": [
+          "1. Ошибка установки макропрограммы.",
+          "2. Переустановите программу."
+        ]
+      }
+    },
+    {
+      "code": "0x4308",
+      "en": {
+        "title": "G Code Installation Error",
+        "detail": [
+          "1. G code installation error.",
+          "2. Check the machine processing program."
+        ]
+      },
+      "tr": {
+        "title": "G Kod Yüklüme Hatası",
+        "detail": [
+          "1. G kod yükleme hatası.",
+          "2. Makine ile işleme programını kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка загрузки кода G",
+        "detail": [
+          "1. Ошибка загрузки G-кода.",
+          "2. Проверьте программу обработки."
+        ]
+      }
+    },
+    {
+      "code": "0x4309",
+      "en": {
+        "title": "Illegal_Program_Addr",
+        "detail": [
+          "Invalid program address"
+        ]
+      },
+      "tr": {
+        "title": "Illegal_Program_Addr",
+        "detail": [
+          "Geçersiz program adresi"
+        ]
+      },
+      "ru": {
+        "title": "Illegal_Program_Addr",
+        "detail": [
+          "Неверный адрес программы"
+        ]
+      }
+    },
+    {
+      "code": "0x430A",
+      "en": {
+        "title": "Exceed_Max_Rdcmd_Range",
+        "detail": [
+          "Read memory area above the upper limit"
+        ]
+      },
+      "tr": {
+        "title": "Exceed_Max_Rdcmd_Range",
+        "detail": [
+          "Okuma belleği alanı üst limitinin üzerinde"
+        ]
+      },
+      "ru": {
+        "title": "Exceed_Max_Rdcmd_Range",
+        "detail": [
+          "Чтение области памяти выше верхнего предела"
+        ]
+      }
+    },
+    {
+      "code": "0x430B",
+      "en": {
+        "title": "Exceed_Max_Wrcmd_Range",
+        "detail": [
+          "Writing memory area above the upper limit"
+        ]
+      },
+      "tr": {
+        "title": "Exceed_Max_Wrcmd_Range",
+        "detail": [
+          "Yazım belleği alanı üst limitinin üzerinde"
+        ]
+      },
+      "ru": {
+        "title": "Exceed_Max_Wrcmd_Range",
+        "detail": [
+          "Область памяти записи выше верхнего предела"
+        ]
+      }
+    },
+    {
+      "code": "0x4310",
+      "en": {
+        "title": "I/O Module Program could not be Started",
+        "detail": [
+          "1. I/O module program could not be started.",
+          "2. Install the program again."
+        ]
+      },
+      "tr": {
+        "title": "I/O Modülü Programı Başlatılmadı",
+        "detail": [
+          "1. I/O modülü programı başlatılamadı.",
+          "2. I/O modülü programını yeniden kurun."
+        ]
+      },
+      "ru": {
+        "title": "Программа модуля ввода-вывода не запущена",
+        "detail": [
+          "1. Модуль ввода / вывода не смог запустить программу.",
+          "2. Переустановите программу модуля ввода / вывода."
+        ]
+      }
+    },
+    {
+      "code": "0x4311",
+      "en": {
+        "title": "I/O Module Memory Error",
+        "detail": [
+          "1. I/O module memory error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "I/O Modülü Bellek Hatası",
+        "detail": [
+          "1. I/O modülü bellek hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка памяти модуля ввода / вывода",
+        "detail": [
+          "1. Ошибка памяти модуля ввода / вывода.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x4312",
+      "en": {
+        "title": "I/O Module Memory Error",
+        "detail": [
+          "1. I/O module memory error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "I/O Modülü Bellek Hatası",
+        "detail": [
+          "1. I/O modülü bellek hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка памяти модуля ввода / вывода",
+        "detail": [
+          "1. Ошибка памяти модуля ввода / вывода.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x4313",
+      "en": {
+        "title": "I/O Module State Error",
+        "detail": [
+          "1. I/O module state error.",
+          "2. Make sure that the I/O card is installed properly."
+        ]
+      },
+      "tr": {
+        "title": "I/O Modül Durumu Hatası",
+        "detail": [
+          "1. I/O modül durumu hatası.",
+          "2. I/O kartının düzgün şekilde takılı olduğunu kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка состояния модуля ввода / вывода",
+        "detail": [
+          "1. Ошибка состояния модуля ввода / вывода.",
+          "2. Проверьте, правильно ли установлена плата ввода / вывода."
+        ]
+      }
+    },
+    {
+      "code": "0x4314",
+      "en": {
+        "title": "I/O Module Program Planning Error",
+        "detail": [
+          "1. I/O module program planning error.",
+          "2. Make sure that the I/O card is installed properly."
+        ]
+      },
+      "tr": {
+        "title": "I/O Modülü Program Planlama Hatası",
+        "detail": [
+          "1. I/O modülü program planlama hatası.",
+          "2. I/O kartının düzgün şekilde takılı olduğunu kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка планирования программы модуля ввода / вывода",
+        "detail": [
+          "1. Ошибка планирования программы модуля ввода / вывода.",
+          "2. Проверьте, правильно ли установлена плата ввода / вывода."
+        ]
+      }
+    },
+    {
+      "code": "0x4315",
+      "en": {
+        "title": "I/O Card Hardware Interface Error",
+        "detail": [
+          "1. I/O card hardware interface error.",
+          "2. Make sure that the I/O card is installed properly."
+        ]
+      },
+      "tr": {
+        "title": "I/O Kart Donanımı Arayüzü Hatası",
+        "detail": [
+          "1. I/O kart donanımı arayüzü hatası.",
+          "2. I/O kartının düzgün şekilde takılı olduğunu kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка аппаратного интерфейса платы ввода-вывода",
+        "detail": [
+          "1. Ошибка аппаратного интерфейса платы ввода / вывода.",
+          "2. Проверьте, правильно ли установлена плата ввода / вывода."
+        ]
+      }
+    },
+    {
+      "code": "0x4316",
+      "en": {
+        "title": "I/O Card Hardware Interface Error",
+        "detail": [
+          "1. I/O card hardware interface reading error.",
+          "2. Send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "I/O Kart Donanımı Arayüzü Hatası",
+        "detail": [
+          "1. I/O kart donanımı arayüzü okumu hatası.",
+          "2. Sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка аппаратного интерфейса платы ввода-вывода",
+        "detail": [
+          "1. Ошибка чтения аппаратного интерфейса платы ввода / вывода.",
+          "2. Верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x4317",
+      "en": {
+        "title": "NC System Command Error",
+        "detail": [
+          "1. NC system command error.",
+          "2. Send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "NC Sistem Komut Hatası",
+        "detail": [
+          "1. NC sistem komuta hatası.",
+          "2. Sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка системной команды ЧПУ",
+        "detail": [
+          "1. Ошибка команды системы ЧПУ.",
+          "2. Верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x4318",
+      "en": {
+        "title": "NC Parameter Error",
+        "detail": [
+          "1. NC parameter error or MLC is not ready.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "NC Parametre Hatası",
+        "detail": [
+          "1. NC parametre hatası veya MLC hazır değil.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка параметра ЧПУ",
+        "detail": [
+          "1. Ошибка параметра ЧПУ или MLC не готов.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x4319",
+      "en": {
+        "title": "NC Parameter Error",
+        "detail": [
+          "1. NC parameter error or MLC is not ready.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "NC Parametre Hatası",
+        "detail": [
+          "1. NC parametre hatası veya MLC hazır değil.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка параметра ЧПУ",
+        "detail": [
+          "1. Ошибка параметра ЧПУ или MLC не готов.",
+          "2. Перезагрузите систему или верните систему в сервис."
+        ]
+      }
+    },
+    {
+      "code": "0x431A",
+      "en": {
+        "title": "Tool Tank Axis Error",
+        "detail": [
+          "1. Tool tank axis is undefined or duplicated.",
+          "2. Check parameter settings.",
+          "Invalid G Code Line Channel Alarm Code Comments and Error Messages"
+        ]
+      },
+      "tr": {
+        "title": "Takım Haznesi Eksen Hatası",
+        "detail": [
+          "1. Takım Haznesi ekseni tanımlanmamış veya mükerrer tanımlı.",
+          "2. Parametre ayarlarını kontrol edin.",
+          "Geçersiz G Kodu Satırı Kanal Alarm Kodu Açıklamaları ve Hata Mesajları"
+        ]
+      },
+      "ru": {
+        "title": "Ошибка оси резервуара инструмента",
+        "detail": [
+          "1. Ось резервуара инструмента не определена или дублирована.",
+          "2. Проверьте настройки параметров.",
+          "Недопустимые описания кода ошибки и сообщения об ошибках на линии кода G"
+        ]
+      }
+    },
+    {
+      "code": "0xA000",
+      "en": {
+        "title": "Invalid G Code Line Number",
+        "detail": [
+          "1. Invalid G code line number.",
+          "2. Check the machine processing program."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz G Kodu Satırı Numarası",
+        "detail": [
+          "1. Geçersiz G kod satırı numarası.",
+          "2. Makine ile işleme programını kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Неверный номер строки кода G",
+        "detail": [
+          "1. Неверный номер строки кода G.",
+          "2. Проверьте программу обработки и станок."
+        ]
+      }
+    },
+    {
+      "code": "0xA001",
+      "en": {
+        "title": "Invalid Length of G Code",
+        "detail": [
+          "1. Invalid G code length.",
+          "2. Check the machine processing program."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz G Kodu Uzunluğu",
+        "detail": [
+          "1. Geçersiz G kodu uzunluğu.",
+          "2. Makine ile işleme programını kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Неверная длина кода G",
+        "detail": [
+          "1. Неверная длина G-кода.",
+          "2. Проверьте программу обработки."
+        ]
+      }
+    },
+    {
+      "code": "0xA002",
+      "en": {
+        "title": "G Code File Not Found",
+        "detail": [
+          "1. G code file could not be found.",
+          "2. Check the file contents."
+        ]
+      },
+      "tr": {
+        "title": "G Kodu Dosyası Bulunamadı",
+        "detail": [
+          "1. G kodu dosyası bulunamadı.",
+          "2. Dosya içeriğini kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Файл кода G не найден",
+        "detail": [
+          "1. Файл G-кода не найден.",
+          "2. Проверьте содержимое файла."
+        ]
+      }
+    },
+    {
+      "code": "0xA003",
+      "en": {
+        "title": "Invalid file name",
+        "detail": [
+          "1. Invalid file name is installed.",
+          "2. Reinstall the program file."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz Yüklü Dosya İsmi",
+        "detail": [
+          "1. Geçersiz yüklü dosya ismi.",
+          "2. Program dosyasını yeniden yükleyin."
+        ]
+      },
+      "ru": {
+        "title": "Неверное имя загруженного файла",
+        "detail": [
+          "1. Неверное имя установленного файла.",
+          "2. Переустановите файл программы."
+        ]
+      }
+    },
+    {
+      "code": "0xA004",
+      "en": {
+        "title": "Work Coordinates Calculation Error",
+        "detail": [
+          "1. Work coordinates calculation error.",
+          "2. Reset the coordinates."
+        ]
+      },
+      "tr": {
+        "title": null,
+        "detail": []
+      },
+      "ru": {
+        "title": null,
+        "detail": []
+      }
+    },
+    {
+      "code": "0xA005",
+      "en": {
+        "title": "Work Coordinates Calculation Error",
+        "detail": [
+          "1. Work coordinates calculation error.",
+          "2. Reset the coordinates."
+        ]
+      },
+      "tr": {
+        "title": "İş Koordinatları Temizleme Hatası",
+        "detail": [
+          "1. İş koordinatları temizleme hatası。",
+          "2. İş koordinatlarını sıfırlayın."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка очистки координат задания",
+        "detail": [
+          "1. Ошибка очистки задания координат.",
+          "2. Сбросить координаты задания."
+        ]
+      }
+    },
+    {
+      "code": "0xA006",
+      "en": {
+        "title": null,
+        "detail": []
+      },
+      "tr": {
+        "title": "İş Koordinatları Hesaplama Hatası",
+        "detail": [
+          "1. İş koordinatları hesaplama hatası。",
+          "2. İş koordinatlarını sıfırlayın."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка вычисления рабочих координат",
+        "detail": [
+          "1. Ошибка в расчете рабочих координат 。",
+          "2. Сбросить координаты задания."
+        ]
+      }
+    },
+    {
+      "code": "0xA007",
+      "en": {
+        "title": "Conflicting Servo Port Settings",
+        "detail": [
+          "1. Conflicting servo port settings.",
+          "2. Check parameter settings."
+        ]
+      },
+      "tr": {
+        "title": "Çelişen Servo Port Ayarları",
+        "detail": [
+          "1. Çelişen servo port ayarları.",
+          "2. Parametre ayarlarını kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Конфликт настроек сервопорта",
+        "detail": [
+          "1. Конфликт настроек сервопорта.",
+          "2. Проверьте настройки параметров."
+        ]
+      }
+    },
+    {
+      "code": "0xA009",
+      "en": {
+        "title": "G Code Buffer Zone Error",
+        "detail": [
+          "1. G code buffer zone error.",
+          "2. Reinstall the machine processing program."
+        ]
+      },
+      "tr": {
+        "title": "G Kodu Tampon Bölge Hatası",
+        "detail": [
+          "1. G kodu tampon bölge hatası.",
+          "2. Makine ile işleme programını yeniden yükleyin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка зоны буфера кода G",
+        "detail": [
+          "1. Ошибка зоны буфера G-кода.",
+          "2. Переустановите программу обработки."
+        ]
+      }
+    },
+    {
+      "code": "0xA00A",
+      "en": {
+        "title": "Invalid Interpolator Command Index",
+        "detail": []
+      },
+      "tr": {
+        "title": "Geçersiz İnterpolatör Komuta İndisi",
+        "detail": []
+      },
+      "ru": {
+        "title": "Указатель недопустимой команды интерполятора",
+        "detail": []
+      }
+    },
+    {
+      "code": "0xA00B",
+      "en": {
+        "title": "Interpolator Command Buffer Zone Access Error",
+        "detail": []
+      },
+      "tr": {
+        "title": "İnterpolatör Komuta Tampon Bölgesi Erişim Hatası",
+        "detail": []
+      },
+      "ru": {
+        "title": "Ошибка доступа к зоне буфера команд интерполятора",
+        "detail": []
+      }
+    },
+    {
+      "code": "0xA00C",
+      "en": {
+        "title": "Feed Rate Is Not Defined",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Besleme Hızı Tanımlı Değil",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözden geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Подача не определена",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA00D",
+      "en": {
+        "title": "Invalid Arc Diameter",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz Kavis Çapı",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözden geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Неверный диаметр кривой",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA00E",
+      "en": {
+        "title": "Invalid Device ID Description",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz Alet ID Tanımı",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözden geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Неверное определение идентификатора инструмента",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA00F",
+      "en": {
+        "title": "Number of Servo Axis does not correspond with the parameter settings",
+        "detail": [
+          "1. Check the settings."
+        ]
+      },
+      "tr": {
+        "title": "Servo Eksen Sayısı Parametre Ayarları ile Uyuşmuyor",
+        "detail": [
+          "1. Ayarları kontrol edin."
+        ]
+      },
+      "ru": {
+        "title": "Число сервоосей не соответствует настройкам параметров",
+        "detail": [
+          "1. Проверьте настройки."
+        ]
+      }
+    },
+    {
+      "code": "0xA010",
+      "en": {
+        "title": "Cutting (Pause) Point Sub-program Not Found",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Kesme (Duraksatma) Noktası Altprogramı Bulunamadı",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Подпрограмма точки останова не найдена",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA011",
+      "en": {
+        "title": "System_Reset",
+        "detail": [
+          "System reset."
+        ]
+      },
+      "tr": {
+        "title": "System_Reset",
+        "detail": [
+          "Sistemi sıfırlama."
+        ]
+      },
+      "ru": {
+        "title": "System_Reset",
+        "detail": [
+          "Перезагрузите систему."
+        ]
+      }
+    },
+    {
+      "code": "0xA012",
+      "en": {
+        "title": "INVALID_COMP_PLANE Invalid Tool Length Compensation",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "INVALID_COMP_PLANE Geçersiz Alet Uzunluğu Dengelemesi",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "INVALID_COMP_PLANE Неверная балансировка длины инструмента",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA013",
+      "en": {
+        "title": "INVALID_COMMAND Invalid Commands",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "INVALID_COMMAND Geçersiz Komutlar",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "INVALID_COMMAND Неверные команды",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA014",
+      "en": {
+        "title": "R_COMP_CONFLICT Invalid Chisel Adjustment",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "R_COMP_CONFLICT Geçersiz Keski Dengelemesi",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "R_COMP_CONFLICT Неправильная балансировка долота",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA015",
+      "en": {
+        "title": "EMG_STOP_MSG Emergency Stop",
+        "detail": [
+          "1. Release EMG."
+        ]
+      },
+      "tr": {
+        "title": "EMG_STOP_MSG Acil Durma",
+        "detail": [
+          "1. EMG’yi serbest bırakın."
+        ]
+      },
+      "ru": {
+        "title": "EMG_STOP_MSG аварийный останов",
+        "detail": [
+          "1. Отпустите ЭМГ."
+        ]
+      }
+    },
+    {
+      "code": "0xA100",
+      "en": {
+        "title": "Chisel Interface",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Keski Arayüzü",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Интерфейс зубила",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. 2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA101",
+      "en": {
+        "title": "Curve Diameter Compensation Cancel",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Kavisteki Çap Dengelemesi İptal Et",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Отменить балансировку диаметра в кривой",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA102",
+      "en": {
+        "title": "Curve Diameter Compensation Active",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Kavisteki Çap Dengelemesini Etkinleştir",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Включить балансировку диаметра в кривой",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA103",
+      "en": {
+        "title": "ARC_INTERF Wrong Chisel Radius",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "ARC_INTERF Yanlış Keski Yarıçapı",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "ARC_INTERF Радиус ложного зубила",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA104",
+      "en": {
+        "title": "SHORT_COMP_LEN Tool Balancing Quantity Too Small",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "SHORT_COMP_LEN Alet Dengelemesi Miktarı Çok Küçük",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "SHORT_COMP_LEN Количество балансировки инструмента слишком мало",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA600",
+      "en": {
+        "title": "Invalid G code ID",
+        "detail": [
+          "1. G code error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz G Kodu ID’si",
+        "detail": [
+          "1. G kodu hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Неверный идентификатор кода G",
+        "detail": [
+          "1. Ошибка кода G.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA601",
+      "en": {
+        "title": "Too Many Sub-program Slots",
+        "detail": [
+          "1. Subprogram calls too many programs.",
+          "2. Revise the program to reduce the layers of placing."
+        ]
+      },
+      "tr": {
+        "title": "Çok Fazla Altprogram Yuvası",
+        "detail": [
+          "1. Altprogram çok fazla sayıda program çağırır.",
+          "2. Yerleştirme katmanlarını azaltmak için programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Слишком много слотов для подпрограмм",
+        "detail": [
+          "1. Подпрограмма вызывает слишком много программ.",
+          "2. Пересмотреть программу, чтобы уменьшить размещение слоев."
+        ]
+      }
+    },
+    {
+      "code": "0xA603",
+      "en": {
+        "title": "Invalid Variable Icon",
+        "detail": [
+          "1. Invalid variable icon.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz Değişken Simge",
+        "detail": [
+          "1. Geçersiz değişken simge.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Значок неверной переменной",
+        "detail": [
+          "1. Неверный значок переменной.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA604",
+      "en": {
+        "title": "Invalid G Code Icon",
+        "detail": [
+          "1. Invalid G code icon.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz G Kodu Simgesi",
+        "detail": [
+          "1. Geçersiz G kodu simgesi.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Неверный значок кода G",
+        "detail": [
+          "1. Неверный значок G кода.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA605",
+      "en": {
+        "title": "No G Code Icon",
+        "detail": [
+          "1. No G code icon.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "G Kodu Simgesi Yok",
+        "detail": [
+          "1. G kodu simgesi yok.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "Нет значка кода G",
+        "detail": [
+          "1. Там нет значка G кода.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA606",
+      "en": {
+        "title": "Subprogram Invocation Error",
+        "detail": [
+          "1. Subprogram invocation error.",
+          "2. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Altprogram Çağırma Hatası",
+        "detail": [
+          "1. Altprogram çağırma hatası.",
+          "2. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка вызова подпрограммы",
+        "detail": [
+          "1. Ошибка вызова подпрограммы.",
+          "2. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA607",
+      "en": {
+        "title": "Subprogram File Name Error",
+        "detail": [
+          "1. Subprogram file name error.",
+          "2. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Altprogram Dosya İsmi Hatası",
+        "detail": [
+          "1. Altprogram dosya ismi hatası.",
+          "2. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка имени файла подпрограммы",
+        "detail": [
+          "1. Ошибка имени файла подпрограммы.",
+          "2. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA608",
+      "en": {
+        "title": "Subprogram Placing Error",
+        "detail": [
+          "1. Subprogram placing error.",
+          "2. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Altprogram Yerleştirme Hatası",
+        "detail": [
+          "1. Altprogram yerleştirme hatası.",
+          "2. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Ошибка размещения подпрограммы",
+        "detail": [
+          "1. Ошибка размещения подпрограммы.",
+          "2. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA609",
+      "en": {
+        "title": "G Code Performed before Returning to the Initial State",
+        "detail": [
+          "1. G code performed before returning to the initial state.",
+          "2. Return to the initial state for each axis."
+        ]
+      },
+      "tr": {
+        "title": "Başlangıç Durumuna Dönme Öncesinde G Kodu Yürütüldü",
+        "detail": [
+          "1. Başlangıç durumuna dönme öncesinde kodu yürütüldü.",
+          "2. Her bir eksen için başlangıç durumuna döndürme işlemini yapın."
+        ]
+      },
+      "ru": {
+        "title": "Код G был выполнен до инициализации",
+        "detail": [
+          "1. Код был выполнен до возврата в исходное состояние.",
+          "2. Выполните инициализацию для каждой оси."
+        ]
+      }
+    },
+    {
+      "code": "0xA60A",
+      "en": {
+        "title": "G04 Typing (Syntax) Error",
+        "detail": [
+          "1. G04 typing error.",
+          "2. Check the G code and correct the program after reviewing."
+        ]
+      },
+      "tr": {
+        "title": "G04 Yazım (Sözdizimi) Hatası",
+        "detail": [
+          "1. G04 yazım hatası.",
+          "2. G kodunu kontrol edin ve programı gözen geçirip düzeltin."
+        ]
+      },
+      "ru": {
+        "title": "G04 Ошибка записис (синтаксис)",
+        "detail": [
+          "1. Ошибка записи G04.",
+          "2. Проверьте код G, просмотрите и исправьте программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA60B",
+      "en": {
+        "title": "Invalid Work Offset Amount",
+        "detail": [
+          "1. Work offset amount calculation error.",
+          "2. Restart the system or send the system back to the service."
+        ]
+      },
+      "tr": {
+        "title": "Geçersiz İş Ofset Miktarı",
+        "detail": [
+          "1. İş ofset miktarı hesaplama hatası.",
+          "2. Sistemi yeniden başlatın veya sistemi servise geri gönderin."
+        ]
+      },
+      "ru": {
+        "title": "Неверный объем рабочего офсета",
+        "detail": [
+          "1. Ошибка расчета величины смещения работы.",
+          "2. Перезагрузите систему или верните систему в эксплуатацию."
+        ]
+      }
+    },
+    {
+      "code": "0xA60D",
+      "en": {
+        "title": "Invalid Instant Point for returning to the initial state",
+        "detail": [
+          "1. Invalid instant point for returning to the initial state.",
+          "2. Revise the program.",
+          "Macro Form Configuration Error Message Description"
+        ]
+      },
+      "tr": {
+        "title": "Başlangıç Durumuna Dönme için Geçersiz Anlık Nokta",
+        "detail": [
+          "1. Başlangıç durumuna dönme için geçersiz anlık nokta.",
+          "2. Programı revize edin.",
+          "Makro Form Konfigürasyon Hata Mesajı Açıklaması"
+        ]
+      },
+      "ru": {
+        "title": "Неверный снимок для инициализации",
+        "detail": [
+          "1. Неверный снимок для инициализации.",
+          "2. Пересмотреть программу.",
+          "Описание Сообщения об ошибке конфигурации формы макроса"
+        ]
+      }
+    },
+    {
+      "code": "0xA61B",
+      "en": {
+        "title": "Go Tag Not Found",
+        "detail": [
+          "1. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Git Etiketi Bulunamadı",
+        "detail": [
+          "1. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Go Tag не найден",
+        "detail": [
+          "1. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA61C",
+      "en": {
+        "title": "Line Number Given By Go Tag Not Found",
+        "detail": [
+          "1. Revise the program."
+        ]
+      },
+      "tr": {
+        "title": "Git Etiketi Tarafından Verilen Satır Numarası Bulunamadı",
+        "detail": [
+          "1. Programı revize edin."
+        ]
+      },
+      "ru": {
+        "title": "Номер строки, указанный тегом Go Tag не найден",
+        "detail": [
+          "1. Пересмотреть программу."
+        ]
+      }
+    },
+    {
+      "code": "0xA635",
+      "en": {
+        "title": "SW_LIMIT_EXT_CLR Second Software Limit Approval",
+        "detail": [
+          "1. Revise the program.",
+          "HMI System Alarm Definition of HMI Interface Opening Error Messages"
+        ]
+      },
+      "tr": {
+        "title": "SW_LIMIT_EXT_CLR İkinci Yazılım Limiti Onayı",
+        "detail": [
+          "1. Programı revize edin.",
+          "HMI Arayüzü Açma Hatası Mesajlarının HMI Sistem Alarmı Tanımı"
+        ]
+      },
+      "ru": {
+        "title": "SW_LIMIT_EXT_CLR Утверждение второго программного ограничения",
+        "detail": [
+          "1. Пересмотреть программу.",
+          "Системная тревога HMI Описание сообщений об ошибках отключения интерфейса HMI"
+        ]
+      }
+    }
+  ]
+}
