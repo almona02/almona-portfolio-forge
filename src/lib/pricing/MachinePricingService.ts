@@ -45,7 +45,7 @@ const MACHINE_PRICES: Record<string, { price: number; currency: string }> = {
   'ym-029': { price: 67000, currency: 'EGP' }, // FR-223-S - Portable Template Copy Router with spray
   'ym-030': { price: 36000, currency: 'EGP' }, // FR 222 - Economical Portable Template Copy Router
   'ym-031': { price: 85000, currency: 'EGP' }, // KM-211-S - Manual End Milling Machine
-  'ym-034': { price: 110000, currency: 'EGP' }, // KD 400 D - Single Head Mitre Saw Machine
+  'ym-034': { price: 0, currency: 'EGP' }, // KD 400 D - Single Head Mitre Saw — price TBD (was combined D/PS)
   'ym-081': { price: 0, currency: 'EGP' }, // KD 400 M - Single Head Mitre Saw (manual) — price TBD
   'ym-093': { price: 0, currency: 'EGP' }, // KD 400 PS - Single Head Mitre Saw (pneumatic) — price TBD
   'ym-035': { price: 100000, currency: 'EGP' }, // MK 420/420 PS/450 - Manual Up-Cutting Saw Machine
