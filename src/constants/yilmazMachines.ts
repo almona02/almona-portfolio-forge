@@ -2249,7 +2249,7 @@ export const yilmazMachines: Machine[] = [
     "id": "ym-026",
     "name": "KD-350-PS",
     "description": "Mitre Saw Machine with pneumatic system",
-    "imageUrl": "/images/machines/KD-350-PS.jpg",
+    "imageUrl": "/images/machines/KD-400-D.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24143522/KD-350-D-350-PS.pdf",
     "youtubeUrl": "https://www.youtube.com/watch?v=rXQjfMppzE4",
     "category": "cutting-machines",
@@ -2515,7 +2515,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     "id": "ym-034",
-    "name": "KD 400 D / KD 400 PS",
+    "name": "KD 400 D",
     "description": "Single Head Mitre Saw Machine - Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
     "imageUrl": "/images/machines/KD-400-D.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24150554/KD-400-D-PS.pdf",
@@ -2569,19 +2569,92 @@ export const yilmazMachines: Machine[] = [
     "standardAccessories": [
       "Ø400 mm saw blade",
       "Machine stand",
-      "2x manual horizontal clamps (KD 400 D)",
-      "2x pneumatic horizontal clamps (KD 400 PS)",
-      "Air gun (KD 400 PS)",
-      "Spray saw blade lubrication system (KD 400 PS)"
+      "2x manual horizontal clamps"
     ],
     "optionalAccessories": [
-      "2 x pneumatic vertical clamps (KD 400 PS)",
+      "MKN 300 length stop-right (3m)",
+      "MKN 300 length stop-left (3m)",
+      "DKN 302 length stop (3m)",
+      "DKN 602 length stop (6m)",
+      "Spare saw blade, Ø 400 mm"
+    ],
+    "certifications": [
+      "CE",
+      "ISO9001"
+    ],
+    "safetyFeatures": [
+      "TwoHandOperation",
+      "EmergencyStop"
+    ],
+    "material": "aluminium"
+  },
+  {
+    "id": "ym-093",
+    "name": "KD 400 PS",
+    "description": "Single Head Mitre Saw Machine (pneumatic clamping) - Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
+    "imageUrl": "/images/machines/KD-400-D.jpg",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24150554/KD-400-D-PS.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=XpgCgbeIA2E",
+    "category": "cutting-machines",
+    "featured": false,
+    "releaseDate": "2020-01-01",
+    "type": "Single Head Mitre Saw (Pneumatic)",
+    "powerSpec": {
+      "voltage": "400V AC",
+      "frequency": "50-60Hz",
+      "phase": "3",
+      "consumption": "2.2 kW"
+    },
+    "airSpec": {
+      "consumption": "24 L/min",
+      "pressure": "6-8 bar"
+    },
+    "dimensions": {
+      "width": "860mm",
+      "length": "760mm",
+      "height": "1600mm"
+    },
+    "weight": {
+      "net": "110 kg",
+      "gross": "137 kg"
+    },
+    "sawBlade": {
+      "diameter": "Ø400 mm",
+      "bore": "Ø30/32 mm",
+      "speed": "2,900 RPM",
+      "motorPower": "2.2 kW"
+    },
+    "angularCapacity": {
+      "presetAngles": "45°, 30°, 22.5°, 15°, 0° (both left and right)",
+      "pivotingRange": "45° left to 45° right infinitely adjustable"
+    },
+    "tags": [
+      "Single Head",
+      "Mitre Saw",
+      "Pneumatic"
+    ],
+    "specifications": [
+      "Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
+      "Pivoting range from 45° left to 45° right infinitely adjustable",
+      "Aluminium construction of the body and machine stand made of steel sheet",
+      "Robust mechanical construction enables the ease of adjustment for the requested cutting angles",
+      "Strong spring system and protective shield"
+    ],
+    "standardAccessories": [
+      "Ø400 mm saw blade",
+      "Machine stand",
+      "2x pneumatic horizontal clamps",
+      "Air gun",
+      "Spray saw blade lubrication system"
+    ],
+    "optionalAccessories": [
+      "2 x pneumatic vertical clamps",
       "MKN 300 length stop-right (3m)",
       "MKN 300 length stop-left (3m)",
       "DKN 302 length stop (3m)",
       "DKN 602 length stop (6m)",
       "Spare saw blade, Ø 400 mm",
-      "Brake unit working with motor stop button (KD 400 PS)"
+      "Brake unit working with motor stop button"
     ],
     "certifications": [
       "CE",
@@ -4506,7 +4579,7 @@ export const yilmazMachines: Machine[] = [
     "id": "ym-081",
     "name": "KD 400 M",
     "description": "Cutting Machine for aluminium profile fabrication. (YILMAZ model KD 400 M — specifications on request.)",
-    "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115555/TCAT01000002251.jpg",
+    "imageUrl": "/images/machines/KD-350-M.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24151432/KD-400-M-1.pdf",
     "category": "cutting",
     "material": "aluminium",
@@ -4543,7 +4616,7 @@ export const yilmazMachines: Machine[] = [
     "id": "ym-082",
     "name": "KD 350 D",
     "description": "Cutting Machine for PVC profile fabrication. (YILMAZ model KD 350 D — specifications on request.)",
-    "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115431/0063226062025144112IMG.png",
+    "imageUrl": "/images/machines/KD-400-D.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24143522/KD-350-D-350-PS.pdf",
     "category": "cutting",
     "material": "pvc",
