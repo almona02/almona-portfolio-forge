@@ -346,11 +346,11 @@ const Shop = () => {
   const allParts = useMemo(() => yilmazParts, []);
 
   // Live prices from the admin-editable products table, keyed by model (SKU).
-  const livePrices = useLiveProductPrices();
+  const getPrice = useLiveProductPrices();
   const formatPrice = useCallback((name?: string) => {
-    const price = name ? livePrices.get(name) : undefined;
+    const price = name ? getPrice(name) : undefined;
     return price != null ? `${price.toLocaleString()} EGP` : "Contact for Quote";
-  }, [livePrices]);
+  }, [getPrice]);
 
   // Map smart category to legacy category for filtering
   const getLegacyCategoryFilter = useCallback((smartCategory: string) => {

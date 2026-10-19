@@ -1,6 +1,7 @@
 -- Fix admin RLS: the "JWT-optimized" policies checked auth.jwt()->>'role', which is
 -- always 'authenticated' (never 'admin'). Replace them with DB-role checks via
 -- admin_private helpers (SECURITY DEFINER, so no profiles RLS recursion).
+-- Idempotent: safe to re-run.
 BEGIN;
 SET LOCAL lock_timeout = '5s';
 
@@ -12,7 +13,7 @@ $$;
 REVOKE ALL ON FUNCTION admin_private.has_any_role(text[]) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION admin_private.has_any_role(text[]) TO authenticated;
 
--- Drop the broken JWT policies.
+-- Drop broken JWT policies.
 DROP POLICY IF EXISTS "admins_manage_products_jwt" ON public.products;
 DROP POLICY IF EXISTS "admins_manage_quotes_jwt" ON public.quotes;
 DROP POLICY IF EXISTS "admins_manage_orders_jwt" ON public.orders;
@@ -29,6 +30,24 @@ DROP POLICY IF EXISTS "users_manage_addresses_jwt" ON public.user_addresses;
 DROP POLICY IF EXISTS "users_view_workshops_jwt" ON public.workshops;
 DROP POLICY IF EXISTS "admins_view_audit_signatures_jwt" ON public.audit_signatures;
 DROP POLICY IF EXISTS "users_view_transaction_logs_jwt" ON public.erp_transaction_log;
+
+-- Drop the corrected policies too (so a partial/repeated run never collides).
+DROP POLICY IF EXISTS "admins_manage_products" ON public.products;
+DROP POLICY IF EXISTS "admins_manage_quotes" ON public.quotes;
+DROP POLICY IF EXISTS "admins_manage_orders" ON public.orders;
+DROP POLICY IF EXISTS "admins_view_inventory_logs" ON public.inventory_logs;
+DROP POLICY IF EXISTS "admins_manage_reservations" ON public.inventory_reservations;
+DROP POLICY IF EXISTS "admins_view_security_events" ON public.security_events;
+DROP POLICY IF EXISTS "admins_view_safety_logs" ON public.cnc_safety_logs;
+DROP POLICY IF EXISTS "staff_view_maintenance_logs" ON public.predictive_maintenance_logs;
+DROP POLICY IF EXISTS "users_view_price_history" ON public.price_history;
+DROP POLICY IF EXISTS "admins_view_optimizer_leads" ON public.optimizer_leads;
+DROP POLICY IF EXISTS "admins_manage_spare_parts" ON public.spare_parts;
+DROP POLICY IF EXISTS "admins_manage_used_machines" ON public.used_machines;
+DROP POLICY IF EXISTS "users_manage_addresses" ON public.user_addresses;
+DROP POLICY IF EXISTS "users_view_workshops" ON public.workshops;
+DROP POLICY IF EXISTS "admins_view_audit_signatures" ON public.audit_signatures;
+DROP POLICY IF EXISTS "users_view_transaction_logs" ON public.erp_transaction_log;
 
 -- Recreate correct DB-role-based policies.
 CREATE POLICY "admins_manage_products" ON public.products FOR ALL TO authenticated
