@@ -25,6 +25,7 @@ interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly PROD: boolean;
   readonly MODE: string;
+  readonly VITE_APP_URL?: string;
   [key: string]: string | boolean | undefined;
 }
 
