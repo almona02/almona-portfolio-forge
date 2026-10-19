@@ -1,25 +1,9 @@
 import { supabase } from '@/lib/supabase';
+import type { Database } from '@/types/database';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Public listing shape returned by the API (snake_case, matching the DB row).
-export interface UsedMachineListing {
-  id: string;
-  title: string;
-  price: number;
-  currency: string;
-  location: string;
-  condition: string;
-  category: string;
-  year: number | null;
-  hours: number | null;
-  description: string;
-  contact_name: string;
-  contact_phone: string;
-  contact_whatsapp: string | null;
-  images: string[];
-  status: string;
-  views: number;
-  created_at: string;
-}
+export type UsedMachineListing = Database['public']['Tables']['used_machine_listings']['Row'];
 
 export interface CreateListingInput {
   title: string;
@@ -51,31 +35,38 @@ export function whatsappLink(phone: string): string {
   return `https://wa.me/${intl}`;
 }
 
-// The manually-maintained Database type occasionally disagrees with supabase-js generic
-// inference; a narrow `any` alias keeps the write calls (insert/update) unblocked.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as any;
+type ListingDatabase = {
+  public: {
+    Tables: Pick<Database['public']['Tables'], 'used_machine_listings'>;
+    Views: Record<never, never>;
+    Functions: Record<never, never>;
+  };
+};
+
+// The full legacy schema is incompatible with the SDK's generic constraints.
+// This table has complete metadata; scope inference to its existing contracts.
+const db = supabase as unknown as SupabaseClient<ListingDatabase>;
 
 export const UsedMachineService = {
   async listActiveListings(limit = 100): Promise<UsedMachineListing[]> {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('used_machine_listings')
       .select('*')
       .eq('status', 'active')
       .order('created_at', { ascending: false })
       .limit(limit);
     if (error) throw error;
-    return (data ?? []) as UsedMachineListing[];
+    return data ?? [];
   },
 
   async getListing(id: string): Promise<UsedMachineListing | null> {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('used_machine_listings')
       .select('*')
       .eq('id', id)
       .maybeSingle();
     if (error) throw error;
-    return (data as UsedMachineListing | null) ?? null;
+    return data ?? null;
   },
 
   async uploadImage(file: File): Promise<string> {
@@ -119,7 +110,7 @@ export const UsedMachineService = {
       .select()
       .single();
     if (error) throw error;
-    return data as UsedMachineListing;
+    return data;
   },
 
   async reportListing(id: string): Promise<void> {
@@ -141,13 +132,13 @@ export const UsedMachineService = {
   // Admin-only: list every status (active, sold, flagged, removed). Relies on
   // the admin read policy granting admins full SELECT.
   async listAllListings(limit = 500): Promise<UsedMachineListing[]> {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('used_machine_listings')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(limit);
     if (error) throw error;
-    return (data ?? []) as UsedMachineListing[];
+    return data ?? [];
   },
 
   // Admin-only: hard delete a listing (reported/flagged or sold). Relies on the
@@ -158,13 +149,13 @@ export const UsedMachineService = {
   },
 
   async incrementViews(id: string): Promise<void> {
-    const { data } = await supabase
+    const { data } = await db
       .from('used_machine_listings')
       .select('views')
       .eq('id', id)
       .maybeSingle();
     if (data) {
-      const views = (data as { views?: number }).views ?? 0;
+      const views = data.views ?? 0;
       await db
         .from('used_machine_listings')
         .update({ views: views + 1 })
