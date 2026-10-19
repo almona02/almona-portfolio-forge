@@ -21,79 +21,35 @@ interface SEOProps {
   productData?: ProductData;
 }
 
+const configuredSiteUrl = import.meta.env.VITE_APP_URL;
+const siteUrl = typeof configuredSiteUrl === 'string' && configuredSiteUrl
+  ? configuredSiteUrl
+  : 'https://www.almona02.com';
+
 const SEO = ({
-  title = 'Almona — Precision at the Heart of Industry',
-  description = 'Smart fabrication. Egyptian excellence. YILMAZ machinery, Fabricator Pro automation, Industry 4.0.',
+  title = 'ALMONA | Aluminium & UPVC Fabrication Software',
+  description = 'Plan aluminium and UPVC fabrication with Fabricator Pro: measurement, design, BOM, cutting optimization, quotes and production documents. Machinery and service in Egypt.',
   keywords = 'Yilmaz Egypt, Yilmaz authorized dealer, Yilmaz machines Egypt, Yilmaz CNC, industrial machinery Egypt, aluminium fabrication Egypt, smart manufacturing Egypt, Industry 4.0 Egypt',
   image = '/logo.svg',
-  url = import.meta.env.VITE_APP_URL || 'https://www.almona02.com',
+  url = siteUrl,
   type = 'website',
   productData
 }: SEOProps) => {
   const siteTitle = 'Almona';
-  const fullTitle = title.includes('Almona') ? title : `${title} | ${siteTitle}`;
+  const fullTitle = title.toLowerCase().includes('almona') ? title : `${title} | ${siteTitle}`;
 
   // Prioritize specific product image for social sharing, fallback to provided image or default logo
-  const socialImage = productData?.image || image;
+  let socialImage = 'https://www.almona02.com/logo.svg';
+  try {
+    socialImage = new URL(productData?.image || image, siteUrl).href;
+  } catch {
+    // Keep a usable fallback if an external image or deployment URL is malformed.
+  }
 
   // Google Business Profile Link
   const googleBusinessProfile = 'https://share.google/Pah6FoMlL3e5MuGnq';
 
-  // Dealer specific keywords
-  const dealerKeywords = [
-    // Primary dealer terms
-    'Yilmaz authorized dealer Egypt',
-    'Yilmaz official distributor Egypt',
-    'Yilmaz machines Cairo',
-    'Yilmaz CNC Egypt',
-    'Yilmaz copy router Egypt',
-
-    // Service terms
-    'Yilmaz machine service Egypt',
-    'Yilmaz spare parts Egypt',
-    'Yilmaz training Egypt',
-    'Yilmaz installation Egypt',
-
-    // Industry-specific
-    'aluminium machine Egypt',
-    'UPVC machine Egypt',
-    'window fabrication machine',
-    'door manufacturing equipment',
-
-    // Location specific
-    'industrial machines Cairo',
-    'factory equipment Egypt',
-    'Egypt machinery supplier'
-  ].join(', ');
-
-  // Industry 4.0 comprehensive keywords
-  const industry40Keywords = [
-    'Industry 4.0', 'Smart Manufacturing', 'Digital Transformation', 'Industrial IoT', 'Cyber-Physical Systems',
-    'software-assisted Manufacturing', 'Machine Learning Optimization', 'Predictive Maintenance', 'Digital Twin',
-    'Real-Time Analytics', 'Automated Quality Control', 'Intelligent Production Planning', 'CNC Integration',
-    'Smart Factory', 'Connected Manufacturing', 'Data-Driven Production', 'Automated Workflows',
-    'Self-Learning Systems', 'Adaptive Manufacturing', 'Remnant Marketplace', 'Calibration automation',
-    'Constraint Programming', 'Genetic Algorithm Optimization', 'ML-Based Algorithm Selection',
-    'Production Analytics', 'OEE Tracking', 'Workshop Performance Analytics', 'Material Optimization',
-    'Waste Reduction automation', 'Cross-Project Optimization', 'Multi-Brand CNC Export', 'Machine Health Monitoring',
-    'Sensor Data Analysis', 'Automated Workflow Generation', 'Computer Vision Quality Control',
-    'Natural Language Processing', 'Equipment Recommendation automation', 'Consumption Forecasting',
-    'Job Complexity Prediction', 'Workshop Intelligence', 'Production Intelligence',
-    'Fabrication Intelligence System', 'No-DXF Tuning', 'Material Waste Reduction', 'Workshop Efficiency',
-    'University-Grade Precision', '99.8% Accuracy', 'Remnant-First Optimization', 'Factory Intelligence'
-  ].join(', ');
-
-  // Digital Egypt & National Strategy keywords
-  const digitalEgyptKeywords = [
-    'Digital Egypt', 'Egypt Vision 2030', 'smart manufacturing Egypt', 'industrial digital transformation Egypt',
-    'MCIT', 'ITIDA', 'G5 collaborative regulation', 'sustainable manufacturing', 'CO2 reduction',
-    'SME productivity Egypt', 'national pilot project', 'Industry 4.0 Egypt', 'Egyptian manufacturing',
-    'national industrial modernization', 'evidence-based industrial policy', 'Egypt automation strategy',
-    'manufacturing productivity Egypt', 'circular economy Egypt', 'youth upskilling Egypt',
-    'digital fabricator certification', 'national remnant marketplace'
-  ].join(', ');
-
-  const finalKeywords = `${keywords}, ${dealerKeywords}, ${industry40Keywords}, ${digitalEgyptKeywords}`;
+  const finalKeywords = keywords;
 
   return (
     <Helmet>
@@ -245,38 +201,18 @@ const SEO = ({
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
-            "name": "Fabricator Pro - University-Grade Fabrication Intelligence System",
-            "description": "Fabrication Intelligence System for Aluminum & UPVC Factories. Removes decisions, eliminates waste, prevents errors. University-grade precision (99.6-99.8% accuracy) meets practical business value: 15-20% material waste reduction, 93% time savings, 300-400% ROI. No-DXF tuning for 88% of parameters.",
-            "applicationCategory": "Manufacturing Software",
+            "name": "Fabricator Pro",
+            "description": "Web workspace for aluminium and UPVC fabrication: measurement, position design, bills of materials, stock optimization, quoting and production documents.",
+            "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web Browser",
-            "offers": {
-              "@type": "Offer",
-              "priceCurrency": "EGP",
-              "availability": "https://schema.org/InStock"
-            },
             "featureList": [
-              "No-DXF Tuning Studio (88% of parameters without CAD)",
-              "99.6-99.8% end-to-end accuracy (University-grade precision)",
-              "15-20% material waste reduction",
-              "93% workflow time reduction (3.5h → 15min)",
-              "300-400% ROI within first year",
-              "software-assisted Algorithm Predictor (94% accuracy)",
-              "Remnant-First Genetic Optimizer (15-30% waste reduction)",
-              "SmartScan for shop drawings (85-92% accuracy)",
-              "Multi-Brand CNC Integration (Yilmaz, Elumatec, FOMM, Emmegi, Biesse)",
-              "3D/BIM Simulation and AR Installation Preview",
-              "Egyptian Building Code Compliance",
-              "Real-Time Production Monitoring with OEE Tracking",
-              "Workshop Performance Analytics with Industry Benchmarking"
-            ],
-            "softwareVersion": "5.1",
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.9",
-              "bestRating": "5",
-              "worstRating": "1",
-              "ratingCount": "150"
-            }
+              "Project and position management",
+              "Measurement, design and drafting",
+              "Bills of materials and stock optimization",
+              "Quotes and workshop reports",
+              "Production and quality-control workflows",
+              "Arabic and English interfaces"
+            ]
           })}
         </script>
       )}
