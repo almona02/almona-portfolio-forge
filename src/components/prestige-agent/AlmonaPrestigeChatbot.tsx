@@ -184,6 +184,15 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
 
   // Removed auto-scroll - user controls scrolling manually
 
+  const handleRecheck = async () => {
+    await fetchKnowledgeStats();
+    const caps = await fetchMachineCapabilities();
+    if (caps?.success) {
+      const specs = caps?.data?.specifications;
+      if (specs) setMachineSpecs(specs as Record<string, unknown>);
+    }
+  };
+
   const handleSend = async (messageText = input, persona = agentPersona) => {
     if (!messageText.trim() || typing || backendLoading) return;
 
@@ -398,7 +407,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                 <div className="inline-flex items-center px-4 py-2 bg-slate-800 border border-slate-700 rounded-md">
                   <div className={`w-2 h-2 rounded-full mr-2 ${connectionStatus === 'connected' ? 'bg-cyan-400' : connectionStatus === 'unavailable' ? 'bg-red-400' : 'bg-slate-500'}`}></div>
                   <span role="status" className="text-sm text-slate-300 industry-mono">{copy(connectionStatus === 'connected' ? 'YDT service responded' : connectionStatus === 'checking' ? 'Checking YDT service' : connectionStatus === 'unavailable' ? 'YDT service unavailable' : 'Connection not checked')}</span>
-                  <button type="button" onClick={() => void fetchKnowledgeStats()} disabled={connectionStatus === 'checking' || typing || backendLoading} className="ml-3 text-sm text-cyan-300 underline disabled:opacity-50">{copy('Recheck')}</button>
+                  <button type="button" onClick={() => void handleRecheck()} disabled={connectionStatus === 'checking' || typing || backendLoading} className="ml-3 text-sm text-cyan-300 underline disabled:opacity-50">{copy('Recheck')}</button>
                 </div>
               </div>
             </div>

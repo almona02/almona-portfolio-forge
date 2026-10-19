@@ -274,7 +274,7 @@ class YDTChatbotEngine:
         # Arabic detection
         if language == Language.ARABIC or detect_arabic(query):
             arabic_patterns = {
-                "teaching": ["علم", "تعلم", "كيف", "شرح", "دليل"],
+                "teaching": ["علم", "علّم", "علّمني", "تعلم", "كيف", "شرح", "دليل", "تشغيل", "شغّل", "تعليم"],
                 "diagnosis": ["خطأ", "مشكلة", "عطل", "تشخيص", "لا يعمل", "لا يدور", "توقف", "معطل", "إنذار"],
                 "location": ["أين", "موقع", "مكان"],
                 "information": ["ما هو", "معلومات", "مواصفات"],
