@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from enum import Enum
 import logging
 
+from .guided_content import build_guide, guide_as_text
+
 # Import new modules
 try:
     from .arabic_support import (
@@ -67,6 +69,60 @@ class Language(Enum):
     ENGLISH = "en"
     RUSSIAN = "ru"
     ARABIC = "ar"  # NEW: Arabic support
+
+
+_TUTORIALS = {'en': {'title': 'AIM 7510 OPERATION TUTORIAL',
+        'modules': [{'title': 'Safety First',
+                     'steps': [{'title': 'Personal Protective Equipment', 'points': []},
+                               {'title': 'Work Area & Emergency Stop', 'points': []}]},
+                    {'title': 'Machine Startup',
+                     'steps': [{'title': 'Power On', 'points': []},
+                               {'title': 'System Initialization', 'points': []}]},
+                    {'title': 'Tool Setup',
+                     'steps': [{'title': 'Load Tools', 'points': []},
+                               {'title': 'Set Offsets', 'points': []}]},
+                    {'title': 'Cutting Operation',
+                     'steps': [{'title': 'Load Program', 'points': []},
+                               {'title': 'Run Cutting', 'points': []}]}]},
+ 'ar': {'title': 'دليل تشغيل AIM 7510',
+        'modules': [{'title': 'السلامة أولاً',
+                     'steps': [{'title': 'معدات الحماية الشخصية', 'points': []},
+                               {'title': 'منطقة العمل والتوقف الطارئ', 'points': []}]},
+                    {'title': 'تشغيل الماكينة',
+                     'steps': [{'title': 'تشغيل الطاقة', 'points': []},
+                               {'title': 'تهيئة النظام', 'points': []}]},
+                    {'title': 'إعداد الأدوات',
+                     'steps': [{'title': 'تحميل الأدوات', 'points': []},
+                               {'title': 'ضبط الإزاحات', 'points': []}]},
+                    {'title': 'التشغيل والقطع',
+                     'steps': [{'title': 'تحميل البرنامج', 'points': []},
+                               {'title': 'تنفيذ القطع', 'points': []}]}]},
+ 'tr': {'title': 'AIM 7510 İŞLETME EĞİTİMİ',
+        'modules': [{'title': 'Önce Güvenlik',
+                     'steps': [{'title': 'Kişisel Koruyucu Donanım', 'points': []},
+                               {'title': 'Çalışma Alanı ve Acil Durdurma', 'points': []}]},
+                    {'title': 'Makine Başlatma',
+                     'steps': [{'title': 'Güç Açma', 'points': []},
+                               {'title': 'Sistem Başlatma', 'points': []}]},
+                    {'title': 'Takım Kurulumu',
+                     'steps': [{'title': 'Takımları Yükle', 'points': []},
+                               {'title': 'Ofsetleri Ayarla', 'points': []}]},
+                    {'title': 'Kesim İşlemi',
+                     'steps': [{'title': 'Programı Yükle', 'points': []},
+                               {'title': 'Kesimi Çalıştır', 'points': []}]}]},
+ 'ru': {'title': 'ОБУЧЕНИЕ ПО РАБОТЕ С AIM 7510',
+        'modules': [{'title': 'Безопасность прежде всего',
+                     'steps': [{'title': 'Средства индивидуальной защиты', 'points': []},
+                               {'title': 'Рабочая зона и аварийная остановка', 'points': []}]},
+                    {'title': 'Запуск станка',
+                     'steps': [{'title': 'Включение питания', 'points': []},
+                               {'title': 'Инициализация системы', 'points': []}]},
+                    {'title': 'Настройка инструмента',
+                     'steps': [{'title': 'Загрузка инструментов', 'points': []},
+                               {'title': 'Установка смещений', 'points': []}]},
+                    {'title': 'Операция резки',
+                     'steps': [{'title': 'Загрузка программы', 'points': []},
+                               {'title': 'Выполнение резки', 'points': []}]}]}}
 
 
 @dataclass
@@ -270,6 +326,15 @@ class YDTChatbotEngine:
     def _detect_intent(self, query: str, language: Language) -> str:
         """Detect user intent from query"""
         query_lower = query.lower()
+        if any(term in query_lower for term in (
+            "explore applications", "application", "uygulama", "применени", "تطبيقات", "استخدامات"
+        )):
+            return "applications"
+        if any(term in query_lower for term in ("diagnos", "teşhis", "диагност", "تشخيص")):
+            return "diagnosis"
+        if any(term in query_lower for term in ("обучи", "işletim", "kullanmayı")):
+            return "teaching"
+
 
         # Arabic detection
         if language == Language.ARABIC or detect_arabic(query):
@@ -374,19 +439,8 @@ class YDTChatbotEngine:
         self, query: str, intent: str, context: ChatContext
     ) -> ChatResponse:
         """Professor persona - Teaching mode"""
-        if intent == "teaching":
-            # Generate step-by-step tutorial
-            response = self._generate_tutorial(query, context)
-            return ChatResponse(
-                content=response,
-                confidence=0.95,
-                sources=["user_manual", "chapters"],
-                suggested_actions=[
-                    "Continue tutorial",
-                    "Ask question",
-                    "Switch to practice mode",
-                ],
-            )
+        if intent == "teaching" or query.casefold().startswith(("explain:", "اشرح:", "açıkla:", "объясните:")):
+            return self._guided_response("operation", context, topic=query)
         else:
             return self._general_response(query, intent, context)
 
@@ -397,21 +451,7 @@ class YDTChatbotEngine:
         code = self._extract_alarm_code(query)
         if code:
             return self._alarm_response(code, context)
-        if intent == "diagnosis":
-            # Generate diagnosis
-            response = self._generate_diagnosis(query, context)
-            return ChatResponse(
-                content=response,
-                confidence=0.85,
-                sources=["wiring_diagram", "component_graph", "manual"],
-                suggested_actions=[
-                    "Check component",
-                    "View wiring diagram",
-                    "Order spare part",
-                ],
-            )
-        else:
-            return self._general_response(query, intent, context)
+        return self._guided_response("diagnosis", context, symptom=query.strip())
 
     @staticmethod
     def _extract_alarm_code(query: str) -> Optional[str]:
@@ -485,6 +525,8 @@ class YDTChatbotEngine:
         self, query: str, intent: str, context: ChatContext
     ) -> ChatResponse:
         """Tour Guide persona - Navigation mode"""
+        if intent == "applications" or query.casefold().startswith(("explain:", "اشرح:", "açıkla:", "объясните:")):
+            return self._guided_response("applications", context, topic=query)
         if intent == "location":
             # Find component location
             response = self._find_component_location(query, context)
@@ -875,142 +917,28 @@ class YDTChatbotEngine:
                 ],
             )
 
+    def _guided_response(self, kind: str, context: ChatContext, symptom=None, topic=None) -> ChatResponse:
+        lang = context.language.value if isinstance(context.language, Language) else str(context.language)
+        guide = build_guide(kind, lang, _TUTORIALS, symptom)
+        if topic:
+            focused = []
+            for module in guide["modules"]:
+                steps = [step for step in module["steps"] if step["title"].casefold() in topic.casefold()]
+                if steps:
+                    focused.append({"title": module["title"], "steps": steps})
+            if focused:
+                guide["modules"] = focused
+        return ChatResponse(
+            content=guide_as_text(guide), confidence=0.0,
+            sources=["editorial_learning_outline", "AIM_7510_manual_reading_references"],
+            suggested_actions=[], visual_aids={"guided_content": guide},
+        )
+
     def _generate_tutorial(self, query: str, context: ChatContext) -> str:
-        """Generate step-by-step tutorial using knowledge base"""
-        # Search knowledge base for relevant content
-        query_lower = query.lower()
-
-        # Try to find relevant chapters from manual
-        relevant_content = []
-        if hasattr(self, "manual_data") and self.manual_data:
-            chapters = self.manual_data.get("chapters", [])
-            for chapter in chapters:
-                title = chapter.get("title", "").lower()
-                content = chapter.get("content", "").lower()
-                if any(
-                    word in title or word in content for word in query_lower.split()
-                ):
-                    relevant_content.append(chapter)
-
-        # If we found relevant content, use it
-        if relevant_content:
-            first_chapter = relevant_content[0]
-            chapter_title = first_chapter.get("title", "Operation Guide")
-            chapter_content = first_chapter.get("content", "")
-
-            if context.language == Language.ENGLISH:
-                return f"""📚 AIM 7510 OPERATION TUTORIAL
-
-{chapter_title}
-{'=' * len(chapter_title)}
-
-{chapter_content[:1000]}{'...' if len(chapter_content) > 1000 else ''}
-
-For complete details, refer to the AIM 7510 user manual."""
-
-        # Fallback to structured tutorial if no specific content found
-        if context.language == Language.ENGLISH:
-            return """📚 AIM 7510 OPERATION TUTORIAL
-
-MODULE 1: Machine Startup
-==========================
-
-Step 1: Power On
-- Check main power supply (400V, 3-phase)
-- Verify air pressure (6 bar minimum)
-- Press main power button
-
-Step 2: System Initialization
-- Wait for CNC controller to boot
-- Check for error messages on screen
-- Verify all axes are at home position
-
-Step 3: Tool Setup
-- Load tools into magazine (12+1 capacity)
-- Set tool offsets
-- Verify tool cooling system
-
-For detailed procedures, refer to the AIM 7510 user manual.
-"""
-        elif context.language == Language.TURKISH:
-            return """📚 AIM 7510 İŞLETME EĞİTİMİ
-
-MODÜL 1: Makine Başlatma
-==========================
-
-Adım 1: Güç Açma
-- Ana güç kaynağını kontrol edin (400V, 3 fazlı)
-- Hava basıncını doğrulayın (minimum 6 bar)
-- Ana güç düğmesine basın
-
-Adım 2: Sistem Başlatma
-- CNC kontrolcüsünün açılmasını bekleyin
-- Ekranda hata mesajlarını kontrol edin
-- Tüm eksenlerin sıfır konumunda olduğunu doğrulayın
-
-Adım 3: Takım Kurulumu
-- Takımları dergiye yükleyin (12+1 kapasite)
-- Takım ofsetlerini ayarlayın
-- Takım soğutma sistemini doğrulayın
-
-Detaylı prosedürler için AIM 7510 kullanım kılavuzuna bakın.
-"""
-        elif context.language == Language.RUSSIAN:
-            return """📚 ОБУЧЕНИЕ ПО РАБОТЕ С AIM 7510
-
-МОДУЛЬ 1: Запуск станка
-==========================
-
-Шаг 1: Включение питания
-- Проверьте основное питание (400В, 3-фазное)
-- Проверьте давление воздуха (минимум 6 бар)
-- Нажмите кнопку основного питания
-
-Шаг 2: Инициализация системы
-- Дождитесь загрузки ЧПУ контроллера
-- Проверьте наличие сообщений об ошибках на экране
-- Убедитесь, что все оси находятся в исходном положении
-
-Шаг 3: Настройка инструмента
-- Загрузите инструменты в магазин (емкость 12+1)
-- Установите смещения инструмента
-- Проверьте систему охлаждения инструмента
-
-Для подробных процедур см. руководство пользователя AIM 7510.
-"""
-        else:  # Arabic
-            return """📚 دليل تشغيل AIM 7510
-
-الوحدة 1: تشغيل الماكينة
-==========================
-
-الخطوة 1: تشغيل الطاقة
-- تحقق من مصدر الطاقة الرئيسي (400 فولت، 3 مراحل)
-- تحقق من ضغط الهواء (6 بار كحد أدنى)
-- اضغط زر الطاقة الرئيسي
-
-الخطوة 2: تهيئة النظام
-- انتظر تحميل وحدة التحكم CNC
-- تحقق من رسائل الخطأ على الشاشة
-- تأكد من أن جميع المحاور في موضع الصفر
-
-الخطوة 3: إعداد الأدوات
-- قم بتحميل الأدوات في المجلة (سعة 12+1)
-- اضبط إزاحة الأدوات
-- تحقق من نظام تبريد الأدوات
-
-للإجراءات التفصيلية، راجع دليل المستخدم AIM 7510.
-"""
+        return self._guided_response("operation", context).content
 
     def _generate_diagnosis(self, query: str, context: ChatContext) -> str:
-        """Honest symptom guidance — points to the troubleshooting guide."""
-        return (
-            f"Symptom reported: {query.strip()}\n"
-            "Consult the troubleshooting guide (manual sec. 17) for the matching "
-            "trouble / cause / remedy, and check the electrical connections and "
-            "component status against the wiring diagram. Contact YILMAZ service "
-            "if the problem persists."
-        )
+        return self._guided_response("diagnosis", context, symptom=query.strip()).content
 
     def _find_component_location(self, query: str, context: ChatContext) -> str:
         """Find component location in machine"""
