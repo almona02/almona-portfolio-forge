@@ -2703,7 +2703,7 @@ export const yilmazMachines: Machine[] = [
   {
     "id": "ym-094",
     "name": "MK 450",
-    "description": "Manual Single Head Cutting Machine (18\") - منشار طبلية 18 بوصة",
+    "description": "Manual Single Head Cutting Machine (18\")",
     "imageUrl": "/images/machines/MK-450.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
     "youtubeUrl": "https://www.youtube.com/watch?v=H6jls_GuVBc",
