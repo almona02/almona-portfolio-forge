@@ -24,7 +24,7 @@ interface SEOProps {
 const SEO = ({
   title = 'Almona — Precision at the Heart of Industry',
   description = 'Smart fabrication. Egyptian excellence. Official authorized YILMAZ dealer in Egypt since 1991: CNC machining centres, aluminium & UPVC fabrication machines, and Fabricator Pro Industry 4.0 automation.',
-  keywords = 'Yilmaz Egypt, Yilmaz authorized dealer, Yilmaz machines Egypt, Yilmaz CNC, industrial machinery Egypt, aluminium fabrication Egypt, smart manufacturing Egypt, Industry 4.0 Egypt, منشار, منشار طبلية, منشار طبليه, فريزة موبينه, فريزة موتور, فريزة, ماكينة سقاس, ماكينة لحام, لحام بي في سي, لحام upvc, لحام pvc, يلمز, يلماز, ديسك رأسي, ديسك يلمز, ديسك المز',
+  keywords = 'Yilmaz Egypt, Yilmaz authorized dealer, Yilmaz machines Egypt, Yilmaz CNC, industrial machinery Egypt, aluminium fabrication Egypt, smart manufacturing Egypt, Industry 4.0 Egypt, منشار, منشار طبلية, منشار طبليه, فريزة موبينه, فريزة موتور, فريزة, ماكينة سقاس, ماكينة لحام, لحام بي في سي, لحام upvc, لحام pvc, يلمز, يلماز, ديسك رأسي, ديسك يلمز, ديسك المز, مصنع الومنيوم, مكن الوميتال, مكن الومنيوم, خط انتاج, مصنع بي في سي, مكن بي في سي',
   image = '/logo.svg',
   url = import.meta.env.VITE_APP_URL || 'https://www.almona02.com',
   type = 'website',
