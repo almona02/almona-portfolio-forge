@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { sanitizeMarketplaceEvent } from '../src/lib/marketplace/eventSchema';
+import { sanitizeMarketplaceEvent } from '../src/lib/marketplace/eventSchema.js';
 
 let bucketStart = Date.now();
 let accepted = 0;

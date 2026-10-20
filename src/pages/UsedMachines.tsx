@@ -39,7 +39,11 @@ const UsedMachines = () => {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    // Open the marketplace at the top of the page on every visit.
+    window.scrollTo(0, 0);
+    load();
+  }, []);
 
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
@@ -120,7 +124,18 @@ const UsedMachines = () => {
               </div>
 
               {loading ? (
-                <div className="text-center py-16 text-gray-400">{copy('Loading listings…')}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-busy="true" aria-label={copy('Loading listings…')}>
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="bg-almona-darker border border-almona-light/20 rounded-lg overflow-hidden animate-pulse">
+                      <div className="h-48 bg-almona-dark" />
+                      <div className="p-4 space-y-3">
+                        <div className="h-4 bg-almona-light/20 rounded w-3/4" />
+                        <div className="h-5 bg-almona-light/20 rounded w-1/3" />
+                        <div className="h-3 bg-almona-light/20 rounded w-1/2" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : loadError ? (
                 <div role="alert" className="text-center py-16">
                   <p className="text-xl text-gray-300 mb-2">{copy('We could not load the machines right now.')}</p>
