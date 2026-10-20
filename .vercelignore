@@ -116,6 +116,7 @@ docs/
 # Allow build-control script to run on Vercel
 scripts/
 !scripts/should-build.mjs
+!scripts/retain-release-assets.mjs
 *.sh
 *.bat
 
