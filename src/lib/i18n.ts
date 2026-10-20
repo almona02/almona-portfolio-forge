@@ -901,12 +901,29 @@ Object.assign(trTranslations, {
 
   const resources = baseResources;
 
+  // Arabic is the default; an explicit ?lng= or a persisted choice takes precedence.
+  const initialLng = (() => {
+    if (typeof window === 'undefined') return 'ar';
+    try {
+      const queryLng = new URLSearchParams(window.location.search).get('lng');
+      if (queryLng) return queryLng;
+      const storedLng = window.localStorage.getItem('i18nextLng');
+      if (storedLng) return storedLng;
+    } catch {
+      // Storage or URL parsing blocked: fall through to the Arabic default.
+    }
+    return 'ar';
+  })();
+
   i18n
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
+      lng: initialLng,
       resources,
       fallbackLng: 'ar',
+      supportedLngs: ['ar', 'en'],
+      nonExplicitSupportedLngs: true,
       debug: false,
       interpolation: {
         escapeValue: false // React already escapes

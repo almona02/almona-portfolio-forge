@@ -13,7 +13,8 @@ export async function prepareMarketplaceReload(): Promise<void> {
     const registration = await bounded(navigator.serviceWorker.getRegistration());
     if (!registration) return;
     await bounded(registration.update());
-    if (registration.installing) await waitForWorker(registration.installing, 'installed');
+    const installing = registration.installing;
+    if (installing) await waitForWorker(installing, 'installed');
     const waiting = registration.waiting;
     if (!waiting) return;
     if (!(await canActivateWorker(waiting))) return;

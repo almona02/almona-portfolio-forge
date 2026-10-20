@@ -39,7 +39,7 @@ test('anonymous mobile visitor retries inventory and opens a machine detail', as
   const app = await serveBuiltApp();
   try {
     await mockMarketplace(context, app.origin, true);
-    await page.goto(`${app.origin}/used-machines`);
+    await page.goto(`${app.origin}/used-machines?lng=en`);
     await expect(page.getByText('We could not load the machines right now.')).toBeVisible();
     await expect(page.getByText('No listings yet — be the first to post.')).not.toBeVisible();
     await page.getByRole('button', { name: 'Retry loading machines' }).click();
@@ -55,7 +55,7 @@ test('seller restores a draft, explicitly remembers contact details, and can dis
   const app = await serveBuiltApp();
   try {
     await mockMarketplace(context, app.origin);
-    await page.goto(`${app.origin}/used-machines?tab=sell`);
+    await page.goto(`${app.origin}/used-machines?tab=sell&lng=en`);
     await page.getByLabel('Machine title *', { exact: true }).fill('My draft cutting machine');
     await page.getByLabel('Your name *', { exact: true }).fill('Private seller');
     await page.reload();
@@ -76,7 +76,7 @@ test('seller can publish once even when the insert response is lost', async ({ c
   const app = await serveBuiltApp();
   try {
     const state = await mockMarketplace(context, app.origin, false, true);
-    await page.goto(`${app.origin}/used-machines?tab=sell`);
+    await page.goto(`${app.origin}/used-machines?tab=sell&lng=en`);
     await page.getByLabel('Machine title *', { exact: true }).fill('Lost-response test machine');
     for (const [label, option] of [['Category *', 'Saw'], ['Condition *', 'Good'], ['Location *', 'Cairo']]) {
       await page.getByRole('combobox', { name: label, exact: true }).click();
@@ -101,7 +101,7 @@ test('anonymous marketplace works with browser storage blocked', async ({ contex
     await context.addInitScript(() => {
       for (const key of ['localStorage', 'sessionStorage']) Object.defineProperty(window, key, { get() { throw new DOMException('Storage blocked', 'SecurityError'); } });
     });
-    await page.goto(`${app.origin}/used-machines?tab=sell`);
+    await page.goto(`${app.origin}/used-machines?tab=sell&lng=en`);
     await expect(page.getByLabel('Machine title *', { exact: true })).toBeVisible();
     await expect(page.getByText('Draft saving is unavailable on this browser. Keep this page open until publishing finishes.')).toBeVisible();
   } finally { await app.close(); }
@@ -111,7 +111,7 @@ test('entry bundle failure shows a usable retry before React can load', async ({
   try {
     await mockMarketplace(context, app.origin);
     await page.route('**/assets/index-*.js', route => route.abort('failed'));
-    await page.goto(`${app.origin}/used-machines`);
+    await page.goto(`${app.origin}/used-machines?lng=en`);
     await expect(page.getByRole('alert')).toContainText('The page could not load.');
     await expect(page.getByRole('button', { name: 'Try again', exact: true })).toBeVisible();
   } finally { await app.close(); }

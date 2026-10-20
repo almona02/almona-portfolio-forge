@@ -104,8 +104,8 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
 
       <div className="text-sm text-gray-300 space-y-2" role="status">
         <p>{copy(draftSaved ? (restored ? 'Your saved machine details have been restored. Please add the photos again.' : 'Machine details are saved on this device for 7 days. Photos must be added again after reopening.') : 'Draft saving is unavailable on this browser. Keep this page open until publishing finishes.')}</p>
-        <label className="flex gap-2 items-center">
-          <input type="checkbox" checked={rememberContact} onChange={event => setRememberContact(event.target.checked)} />
+        <label htmlFor="seller-remember-contact" className="flex gap-2 items-center">
+          <input id="seller-remember-contact" type="checkbox" checked={rememberContact} onChange={event => setRememberContact(event.target.checked)} />
           {copy('Also remember my contact details on this device for 7 days')}
         </label>
         <Button type="button" variant="outline" disabled={submitting} onClick={() => { clearSellerDraft(); setRestored(false); setDraft({ ...emptySellerDraft }); setRememberContact(false); setFiles([]); }}>{copy('Discard saved draft')}</Button>

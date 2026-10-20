@@ -111,6 +111,11 @@ export async function retainReleaseAssets({ directory = 'dist', origin, fetcher 
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const origin = process.env.RELEASE_ASSET_ORIGIN || (process.env.VERCEL ? 'https://www.almona02.com' : undefined);
-  const result = await retainReleaseAssets({ origin });
-  console.log(`Release assets: ${result.releases} releases, ${result.downloaded} retained files, ${Math.ceil(result.bytes / 1024 / 1024)} MiB`);
+  try {
+    const result = await retainReleaseAssets({ origin });
+    console.log(`Release assets: ${result.releases} releases, ${result.downloaded} retained files, ${Math.ceil(result.bytes / 1024 / 1024)} MiB`);
+  } catch (error) {
+    // Retention is best-effort: a failed fetch must never block the deployment.
+    console.warn(`Release asset retention skipped: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
