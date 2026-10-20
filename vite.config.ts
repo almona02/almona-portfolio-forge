@@ -1,3 +1,4 @@
+import { marketplaceNavigationPattern, marketplaceNavigationRule } from './src/lib/marketplaceCachePolicy';
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
@@ -183,6 +184,8 @@ export default defineConfig(({ mode }) => {
           navigateFallback: 'index.html',
         },
         workbox: {
+          // Marketplace visits must not boot an old offline app shell.
+          navigateFallbackDenylist: [marketplaceNavigationPattern],
           // Cache the app shell first; lazy routes enter the runtime cache when visited.
           manifestTransforms: [async (entries) => ({
             manifest: entries.filter((entry) => !entry.url.endsWith('.js') || eagerJavascript.has(entry.url.replace(/^\//, ''))),
@@ -203,6 +206,7 @@ export default defineConfig(({ mode }) => {
           maximumFileSizeToCacheInBytes: 12 * 1024 * 1024, // 12MB limit to handle large JS bundles
           // PHASE 6: Optimized cache strategy for better performance
           runtimeCaching: [
+            marketplaceNavigationRule,
             // Cache fonts with long expiration (fonts rarely change)
             {
               urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,

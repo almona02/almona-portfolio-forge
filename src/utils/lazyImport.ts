@@ -1,3 +1,4 @@
+import { prepareMarketplaceReload } from '../lib/marketplaceRecovery';
 import { ComponentType, lazy } from 'react';
 
 /** Browser messages hide HTTP status codes for failed module downloads. */
@@ -41,6 +42,7 @@ export async function loadLazyModule<T>(
     }
     if (!canReload) throw error;
 
+    await prepareMarketplaceReload();
     window.location.reload();
     return new Promise<T>(() => {});
   }
