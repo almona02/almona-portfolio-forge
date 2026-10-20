@@ -1,5 +1,5 @@
 import { reportMarketplaceEvent } from '@/lib/marketplace/monitoring';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { Button } from '@/shared/ui/ui/button';
@@ -49,11 +49,17 @@ const UsedMachines = () => {
     setSearchParams(params, { replace: true });
   };
 
-  useEffect(() => {
-    // Open the marketplace at the top of the page on every visit.
+  useLayoutEffect(() => {
+    // Open at the very top on every visit, before paint, overriding any
+    // browser scroll restoration from a previous page.
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
-    load();
+    return () => {
+      if ('scrollRestoration' in history) history.scrollRestoration = 'auto';
+    };
   }, []);
+
+  useEffect(() => { load(); }, []);
 
   // Follow the URL when the header "Post a machine" link changes ?tab=.
   useEffect(() => {
@@ -166,7 +172,7 @@ const UsedMachines = () => {
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 marketplace-fade-in">
                   {filtered.map((m) => <MachineCard key={m.id} machine={m} />)}
                 </div>
               )}
