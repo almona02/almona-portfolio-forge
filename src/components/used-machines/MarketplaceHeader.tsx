@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Plus, Wrench } from 'lucide-react';
@@ -13,6 +13,20 @@ const MarketplaceHeader: React.FC = () => {
   const copy = usePublicCopy();
   const { i18n } = useTranslation();
   const isArabic = (i18n.language || '').toLowerCase().startsWith('ar');
+
+  useEffect(() => {
+    // The marketplace is Arabic-first: default to Arabic unless the visitor
+    // already chose a language (?lng= or a persisted choice).
+    try {
+      const explicit = new URLSearchParams(window.location.search).has('lng')
+        || !!window.localStorage.getItem('i18nextLng');
+      if (!explicit && !(i18n.language || '').toLowerCase().startsWith('ar')) {
+        void i18n.changeLanguage('ar');
+      }
+    } catch {
+      // Storage blocked: keep the detected language.
+    }
+  }, [i18n]);
 
   return (
     <header className="fixed top-0 inset-x-0 z-40 h-14 bg-almona-dark border-b border-almona-light/20">
