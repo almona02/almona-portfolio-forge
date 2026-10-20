@@ -113,8 +113,8 @@ docs/
 !README.md
 
 # Scripts
-# Allow build-control script to run on Vercel
-scripts/
+# Allow build-control and asset-retention scripts to run on Vercel
+scripts/*
 !scripts/should-build.mjs
 !scripts/retain-release-assets.mjs
 *.sh
