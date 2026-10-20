@@ -1,13 +1,16 @@
 /** Wait at most three seconds for each recovery step; never block a reload forever. */
 async function bounded<T>(operation: Promise<T>): Promise<T | undefined> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
+  let cancelTimeout = () => {};
   try {
     return await Promise.race([
       operation,
-      new Promise<undefined>(resolve => { timer = setTimeout(resolve, 3000); }),
+      new Promise<undefined>(resolve => {
+        const timer = setTimeout(resolve, 3000);
+        cancelTimeout = () => clearTimeout(timer);
+      }),
     ]);
   } finally {
-    clearTimeout(timer);
+    cancelTimeout();
   }
 }
 
