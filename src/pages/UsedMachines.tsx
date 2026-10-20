@@ -19,7 +19,7 @@ const GOVERNORATES = ['Cairo', 'Giza', 'Alexandria', 'Dakahlia', 'Sharqia', 'Qal
 
 const UsedMachines = () => {
   const copy = usePublicCopy();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [machines, setMachines] = useState<UsedMachine[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -39,11 +39,26 @@ const UsedMachines = () => {
       .finally(() => setLoading(false));
   };
 
+  const handleTabChange = (value: string) => {
+    setTab(value);
+    // Keep the URL in sync so the header "Post a machine" link and the tab
+    // selection stay consistent (and the tab survives a reload).
+    const params = new URLSearchParams(searchParams);
+    if (value === 'sell') params.set('tab', 'sell');
+    else params.delete('tab');
+    setSearchParams(params, { replace: true });
+  };
+
   useEffect(() => {
     // Open the marketplace at the top of the page on every visit.
     window.scrollTo(0, 0);
     load();
   }, []);
+
+  // Follow the URL when the header "Post a machine" link changes ?tab=.
+  useEffect(() => {
+    setTab(searchParams.get('tab') === 'sell' ? 'sell' : 'browse');
+  }, [searchParams]);
 
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
@@ -73,12 +88,12 @@ const UsedMachines = () => {
             <h1 className="typography-h1 md:text-5xl mb-3 text-white">{copy('Used Machines Marketplace')}</h1>
             <p className="text-xl text-amber-100 mb-2">{copy('Simple & fast — buy and sell used machinery, free.')}</p>
             <p className="text-sm text-amber-200/80 mb-6">{copy('Post in 2 minutes. No account needed. Buyers contact you directly.')}</p>
-            <Button size="lg" className="bg-white text-amber-700 hover:bg-amber-100" onClick={() => setTab('sell')}>
+            <Button size="lg" className="bg-white text-amber-700 hover:bg-amber-100" onClick={() => handleTabChange('sell')}>
               <Plus className="w-5 h-5 mr-2" /> {copy('Post your machine — free')}
             </Button>
           </div>
 
-          <Tabs value={tab} onValueChange={setTab}>
+          <Tabs value={tab} onValueChange={handleTabChange}>
             <TabsList className="grid w-full grid-cols-2 max-w-xl mx-auto mb-8">
               <TabsTrigger value="browse">{copy('Browse Machines')}</TabsTrigger>
               <TabsTrigger value="sell">{copy('Sell a Machine')}</TabsTrigger>
@@ -146,7 +161,7 @@ const UsedMachines = () => {
                 <div className="text-center py-16">
                   <p className="text-xl text-gray-300 mb-2">{copy('No listings yet — be the first to post.')}</p>
                   <p className="text-sm text-gray-500 mb-6">{copy('Free, no account needed.')}</p>
-                  <Button className="btn-primary" onClick={() => setTab('sell')}>
+                  <Button className="btn-primary" onClick={() => handleTabChange('sell')}>
                     <Plus className="w-4 h-4 mr-2" /> {copy('Post a machine')}
                   </Button>
                 </div>
