@@ -87,8 +87,8 @@ const UsedMachines = () => {
   return (
     <>
       <MachineSEO machines={machines} isListingPage={true} />
-      <main className="flex-grow pt-20">
-        <div className="container mx-auto px-4 py-8">
+      <main className="flex-grow pt-16">
+        <div className="container mx-auto px-4 py-6">
           {/* Hero — simple & fast */}
           <div className="mb-8 text-center bg-gradient-to-r from-amber-900 to-amber-700 py-10 px-4 rounded-xl">
             <h1 className="typography-h1 md:text-5xl mb-3 text-white">{copy('Used Machines Marketplace')}</h1>
