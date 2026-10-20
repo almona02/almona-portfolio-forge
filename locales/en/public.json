@@ -1623,7 +1623,7 @@
   "YDT service unavailable": "YDT service unavailable",
   "Connection not checked": "Connection not checked",
   "Recheck": "Recheck",
-"Guided review": "Guided review",
+  "Guided review": "Guided review",
   "Return to chat": "Return to chat",
   "Review with an authorized operator and the installed machine manual.": "Review with an authorized operator and the installed machine manual.",
   "Guide topics": "Guide topics",
@@ -1654,5 +1654,17 @@
   "Cancel": "Cancel",
   "Open guide": "Open guide",
   "Explain": "Explain",
-  "Previous": "Previous"
+  "Previous": "Previous",
+  "Like new, minimal wear": "Like new, minimal wear",
+  "Well maintained, good working order": "Well maintained, good working order",
+  "Shows wear, functions properly": "Shows wear, functions properly",
+  "Requires maintenance or repair": "Requires maintenance or repair",
+  "Sold in current condition": "Sold in current condition",
+  "Machines Market": "Machines Market",
+  "This marketplace connects buyers and sellers directly. The platform does not participate in transactions, does not guarantee listings, and takes no responsibility for sales or disputes.": "This marketplace connects buyers and sellers directly. The platform does not participate in transactions, does not guarantee listings, and takes no responsibility for sales or disputes.",
+  "All brands welcome — free to post and browse.": "All brands welcome — free to post and browse.",
+  "Report an issue": "Report an issue",
+  "Language": "Language",
+  "Arabic": "Arabic",
+  "The first photo is the main cover photo.": "The first photo is the main cover photo."
 }

@@ -1,34 +1,4 @@
-/** Wait at most three seconds for each recovery step; never block a reload forever. */
-async function bounded<T>(operation: Promise<T>): Promise<T | undefined> {
-  let cancelTimeout = () => {};
-  try {
-    return await Promise.race([
-      operation,
-      new Promise<undefined>(resolve => {
-        const timer = setTimeout(resolve, 3000);
-        cancelTimeout = () => clearTimeout(timer);
-      }),
-    ]);
-  } finally {
-    cancelTimeout();
-  }
-}
-
-async function waitForWorker(worker: ServiceWorker, state: ServiceWorkerState) {
-  if (worker.state === state || worker.state === 'redundant') return;
-  let onState: (() => void) | undefined;
-  try {
-    await bounded(new Promise<void>(resolve => {
-      onState = () => {
-        if (worker.state === state || worker.state === 'redundant') resolve();
-      };
-      worker.addEventListener('statechange', onState);
-      onState();
-    }));
-  } finally {
-    if (onState) worker.removeEventListener('statechange', onState);
-  }
-}
+import { bounded, waitForWorker, canActivateWorker } from './serviceWorkerLifecycle';
 
 /**
  * A plain refresh can replay the same stale shell under an old worker.
@@ -46,6 +16,7 @@ export async function prepareMarketplaceReload(): Promise<void> {
     if (registration.installing) await waitForWorker(registration.installing, 'installed');
     const waiting = registration.waiting;
     if (!waiting) return;
+    if (!(await canActivateWorker(waiting))) return;
     waiting.postMessage({ type: 'SKIP_WAITING' });
     await waitForWorker(waiting, 'activated');
   } catch {

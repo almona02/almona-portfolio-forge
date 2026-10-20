@@ -1,3 +1,4 @@
+import { reportMarketplaceEvent } from '@/lib/marketplace/monitoring';
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { usePublicCopy } from '@/hooks/usePublicCopy';
@@ -33,8 +34,8 @@ const UsedMachines = () => {
     setLoading(true);
     setLoadError(false);
     UsedMachineService.listActiveListings()
-      .then((rows) => setMachines(rows.map(mapListingToMachine)))
-      .catch(() => setLoadError(true))
+      .then((rows) => { setMachines(rows.map(mapListingToMachine)); reportMarketplaceEvent('inventory_success'); })
+      .catch(() => { setLoadError(true); reportMarketplaceEvent('inventory_failure', 'request'); })
       .finally(() => setLoading(false));
   };
 

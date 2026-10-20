@@ -1,3 +1,5 @@
+import { marketplaceRead } from '@/lib/marketplace/readRequest';
+import { submissionIdentity } from '@/lib/marketplace/submissionIdentity';
 import { supabase } from '@/lib/supabase';
 
 // Public listing shape returned by the API (snake_case, matching the DB row).
@@ -58,12 +60,9 @@ const db = supabase as any;
 
 export const UsedMachineService = {
   async listActiveListings(limit = 100): Promise<UsedMachineListing[]> {
-    const { data, error } = await supabase
-      .from('used_machine_listings')
-      .select('*')
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(limit);
+    const { data, error } = await marketplaceRead(signal => supabase
+      .from('used_machine_listings').select('*').eq('status', 'active')
+      .order('created_at', { ascending: false }).limit(limit).abortSignal(signal));
     if (error) throw error;
     return (data ?? []) as UsedMachineListing[];
   },
@@ -93,35 +92,45 @@ export const UsedMachineService = {
     if (!input.files.length || input.files.length > MAX_IMAGES) {
       throw new Error(`Please add between 1 and ${MAX_IMAGES} photos.`);
     }
-    const imageUrls: string[] = [];
-    for (const file of input.files.slice(0, MAX_IMAGES)) {
-      imageUrls.push(await this.uploadImage(file));
+    for (const file of input.files) {
+      if (!file.type.startsWith('image/')) throw new Error('Only image files are allowed.');
+      if (file.size > MAX_IMAGE_BYTES) throw new Error('Each image must be under 5MB.');
     }
-
-    const whatsapp = input.contactWhatsapp ? sanitizePhone(input.contactWhatsapp) : null;
-    const { data, error } = await db
-      .from('used_machine_listings')
-      .insert({
-        title: input.title.trim(),
-        price: input.price,
-        currency: input.currency,
-        location: input.location.trim(),
-        condition: input.condition,
-        category: input.category.trim(),
-        year: input.year ?? null,
-        hours: input.hours ?? null,
-        description: input.description.trim(),
-        contact_name: input.contactName.trim(),
-        contact_phone: sanitizePhone(input.contactPhone),
-        contact_whatsapp: whatsapp,
-        images: imageUrls,
-      })
-      .select()
-      .single();
-    if (error) throw error;
+    const fields = {
+      title: input.title.trim(), price: input.price, currency: input.currency,
+      location: input.location.trim(), condition: input.condition, category: input.category.trim(),
+      year: input.year ?? null, hours: input.hours ?? null, description: input.description.trim(),
+      contact_name: input.contactName.trim(), contact_phone: sanitizePhone(input.contactPhone),
+      contact_whatsapp: input.contactWhatsapp ? sanitizePhone(input.contactWhatsapp) : null,
+    };
+    // Stable across lost responses and reloads. The existing primary key enforces
+    // uniqueness on the server; never retry an uncertain write with a fresh id.
+    const { id, imageHashes } = await submissionIdentity(fields, input.files);
+    const existing = await this.getListing(id);
+    if (existing) return existing;
+    const imageUrls: string[] = [];
+    for (let index = 0; index < input.files.length; index++) {
+      const file = input.files[index];
+      const path = `${id}/${imageHashes[index]}`;
+      const { error } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: false });
+      // Content-addressed immutable paths make a retried upload safe. Never
+      // overwrite another object or treat a general storage failure as success.
+      const status = error && 'statusCode' in error ? String(error.statusCode) : '';
+      if (error && status !== '409') throw error;
+      const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+      imageUrls.push(data.publicUrl);
+    }
+    const { data, error } = await db.from('used_machine_listings')
+      .insert({ id, ...fields, images: imageUrls }).select().single();
+    if (error) {
+      // A concurrent retry can lose the insert race or the original response.
+      // Read the same id; never overwrite, upsert, or return an unrelated row.
+      const recovered = await this.getListing(id);
+      if (recovered) return recovered;
+      throw error;
+    }
     return data as UsedMachineListing;
   },
-
   async reportListing(id: string): Promise<void> {
     const { error } = await db
       .from('used_machine_listings')

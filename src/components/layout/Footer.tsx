@@ -77,11 +77,11 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Phone className="h-5 w-5 text-almona-orange me-2" />
-                <a className="text-gray-400 hover:text-almona-orange" href="tel:+201003097177">+20 100 309 7177</a>
+                <a className="text-gray-400 hover:text-almona-orange" href="tel:+201003097177" dir="ltr">+20 100 309 7177</a>
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-almona-orange me-2" />
-                <a className="text-gray-400 hover:text-almona-orange" href="mailto:almona02@yahoo.com">almona02@yahoo.com</a>
+                <a className="text-gray-400 hover:text-almona-orange" href="mailto:almona02@yahoo.com" dir="ltr">almona02@yahoo.com</a>
               </li>
             </ul>
           </div>
@@ -90,7 +90,7 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 text-sm mb-4 md:mb-0">
-            © {currentYear} ALMONA Co. {copy('All rights reserved.')}
+            <span dir="ltr">© {currentYear} ALMONA Co.</span> {copy('All rights reserved.')}
           </p>
           <div className="flex flex-wrap gap-4 text-sm text-gray-500">
             <Link to="/terms" className="hover:text-almona-orange transition-colors">{copy("Terms & Conditions")}</Link>

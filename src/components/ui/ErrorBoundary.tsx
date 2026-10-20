@@ -1,3 +1,4 @@
+import { reportMarketplaceEvent } from '@/lib/marketplace/monitoring';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
@@ -22,6 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    reportMarketplaceEvent('page_failure', 'render');
     console.error('ErrorBoundary caught an error:', error, errorInfo);
 
     this.setState({

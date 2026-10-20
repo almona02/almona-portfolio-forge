@@ -1,3 +1,4 @@
+import { reportMarketplaceEvent } from '../lib/marketplace/monitoring';
 import { prepareMarketplaceReload } from '../lib/marketplaceRecovery';
 import { ComponentType, lazy } from 'react';
 
@@ -42,6 +43,7 @@ export async function loadLazyModule<T>(
     }
     if (!canReload) throw error;
 
+    reportMarketplaceEvent('recovery_attempt', 'download');
     await prepareMarketplaceReload();
     window.location.reload();
     return new Promise<T>(() => {});

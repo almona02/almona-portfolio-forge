@@ -79,7 +79,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build --mode production",
+    "build": "vite build --mode production && node scripts/retain-release-assets.mjs",
     "security:gate1": "node scripts/security/gate1-secret-scan.mjs",
     "verify:shipability": "npm run security:gate1 && npm run type-check && npm run build",
     "build:analyze": "cross-env ANALYZE=true vite build --mode production",
@@ -122,7 +122,7 @@
     "upgrade:cutting": "tsx scripts/benchmark-almona-cut.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "build:ci": "vite build --mode production",
+    "build:ci": "vite build --mode production && node scripts/retain-release-assets.mjs",
     "analyze": "cross-env ANALYZE=true vite build --mode production",
     "debug:forms": "node scripts/debug-utils-forms.cjs",
     "analyze:bundle": "npm run build && node scripts/analyze-bundle.js",
@@ -177,7 +177,9 @@
     "test:bench": "vitest bench",
     "test:e2e": "playwright test",
     "test:ticketing-boundary": "cross-env SUPABASE_INTEGRATION_TESTS=true SUPABASE_INTEGRATION_REQUIRED=true vitest run src/tests/integration/ticketing/ServiceTicketingSupabaseBoundary.test.ts",
-    "verify:ticketing-boundary": "node scripts/verify-ticketing-boundary.mjs"
+    "verify:ticketing-boundary": "node scripts/verify-ticketing-boundary.mjs",
+    "test:marketplace": "vitest run src/lib/marketplace src/lib/usedMachines/UsedMachineService.reliability.test.ts src/lib/marketplaceRecovery.test.ts src/lib/serviceWorkerLifecycle.test.ts src/utils/lazyImport.test.ts src/pages/UsedMachines.loading.test.tsx src/lib/pwaUpdate.test.ts tests/marketplace-events.test.ts && node --test scripts/retain-release-assets.test.mjs && node scripts/verify-marketplace-submission-db.mjs && tsc --noEmit --skipLibCheck --module ESNext --moduleResolution Bundler --target ES2022 --types node api/marketplace-events.ts",
+    "test:marketplace:browser": "playwright test --config playwright.marketplace.config.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -291,6 +293,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "5.3.1",
+    "@electric-sql/pglite": "0.5.10",
     "@eslint/js": "^9.9.0",
     "@gltf-transform/cli": "^3.10.0",
     "@gltf-transform/extensions": "^3.10.0",

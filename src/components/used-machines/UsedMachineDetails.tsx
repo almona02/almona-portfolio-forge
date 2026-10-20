@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import ConditionBadge from './ConditionBadge';
 import { MapPin, Calendar, Gauge, Phone, MessageCircle, Flag, ChevronLeft } from 'lucide-react';
 import { UsedMachine } from '@/data/usedMachines';
 import { UsedMachineService } from '@/lib/usedMachines/UsedMachineService';
@@ -67,7 +67,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
               <Gauge className="w-5 h-5 text-amber-500" /> {copy('Hours')}: {machine.hours != null ? machine.hours.toLocaleString() : '—'}
             </li>
             <li className="flex items-center gap-2">
-              <Badge className="bg-green-600 capitalize">{machine.condition.replace(/-/g, ' ')}</Badge>
+              <ConditionBadge condition={machine.condition} />
               <span className="text-gray-500 text-xs">{machine.views} {copy('views')}</span>
             </li>
           </ul>

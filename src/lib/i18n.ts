@@ -906,14 +906,14 @@ Object.assign(trTranslations, {
     .use(initReactI18next)
     .init({
       resources,
-      fallbackLng: 'en',
+      fallbackLng: 'ar',
       debug: false,
       interpolation: {
         escapeValue: false // React already escapes
       },
       detection: {
         // default options from i18next-browser-languagedetector
-        order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+        order: ['querystring', 'cookie', 'localStorage', 'htmlTag', 'path', 'subdomain'],
         caches: ['localStorage', 'cookie']
       },
       defaultNS: 'translation',

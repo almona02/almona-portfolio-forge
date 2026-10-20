@@ -1,6 +1,9 @@
+import { canActivateWorker } from './serviceWorkerLifecycle';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { marketplaceNavigationPattern, marketplaceNavigationRule } from './marketplaceCachePolicy';
 import { prepareMarketplaceReload } from './marketplaceRecovery';
+
+vi.mock('./serviceWorkerLifecycle', async importOriginal => ({ ...(await importOriginal<typeof import('./serviceWorkerLifecycle')>()), canActivateWorker: vi.fn().mockResolvedValue(true) }));
 
 const route = marketplaceNavigationRule.urlPattern as (input: object) => boolean;
 
@@ -43,6 +46,12 @@ describe('marketplace failed-download recovery', () => {
     expect(registration.update).toHaveBeenCalledOnce();
     expect(worker.postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
     expect(worker.state).toBe('activated');
+  });
+  it('leaves the worker waiting when another tab may contain unsaved work', async () => {
+    const { worker } = setup();
+    vi.mocked(canActivateWorker).mockResolvedValueOnce(false);
+    await prepareMarketplaceReload();
+    expect(worker.postMessage).not.toHaveBeenCalled();
   });
   it('does not activate updates in the fabrication workspace', async () => {
     const { getRegistration } = setup('/fabricator/studio');
