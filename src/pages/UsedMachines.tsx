@@ -160,4 +160,3 @@ const UsedMachines = () => {
 };
 
 export default withErrorBoundary(UsedMachines);
-
