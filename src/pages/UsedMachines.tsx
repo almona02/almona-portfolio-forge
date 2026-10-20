@@ -21,6 +21,7 @@ const UsedMachines = () => {
   const [searchParams] = useSearchParams();
   const [machines, setMachines] = useState<UsedMachine[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [tab, setTab] = useState(searchParams.get('tab') === 'sell' ? 'sell' : 'browse');
   const [q, setQ] = useState('');
   const [location, setLocation] = useState('all');
@@ -29,9 +30,11 @@ const UsedMachines = () => {
   const [within, setWithin] = useState<'all' | '24h' | '7d' | '30d'>('all');
 
   const load = () => {
+    setLoading(true);
+    setLoadError(false);
     UsedMachineService.listActiveListings()
       .then((rows) => setMachines(rows.map(mapListingToMachine)))
-      .catch(() => setMachines([]))
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
   };
 
@@ -117,6 +120,12 @@ const UsedMachines = () => {
 
               {loading ? (
                 <div className="text-center py-16 text-gray-400">{copy('Loading listings…')}</div>
+              ) : loadError ? (
+                <div role="alert" className="text-center py-16">
+                  <p className="text-xl text-gray-300 mb-2">{copy('We could not load the machines right now.')}</p>
+                  <p className="text-sm text-gray-400 mb-6">{copy('Please check your connection and try again. You can still post your machine using the Sell tab.')}</p>
+                  <Button onClick={load}>{copy('Retry loading machines')}</Button>
+                </div>
               ) : filtered.length === 0 ? (
                 <div className="text-center py-16">
                   <p className="text-xl text-gray-300 mb-2">{copy('No listings yet — be the first to post.')}</p>
@@ -151,3 +160,4 @@ const UsedMachines = () => {
 };
 
 export default withErrorBoundary(UsedMachines);
+
