@@ -1468,7 +1468,7 @@ const translations: Record<string, Record<Language, string>> = {
   },
   'services.see_how_almona_transformed': {
     en: 'See how ALMONA\'s service packages have transformed businesses across Egypt. From small workshops to large factories, our customers achieve remarkable results.',
-    ar: 'شاهد كيف حولت باقات خدمة ألمونا الأعمال في جميع أنحاء مصر. من الورش الصغيرة إلى المصانع الكبيرة، يحقق عملاؤنا نتائج رائعة.'
+    ar: 'شاهد كيف حولت باقات خدمة المُنى الأعمال في جميع أنحاء مصر. من الورش الصغيرة إلى المصانع الكبيرة، يحقق عملاؤنا نتائج رائعة.'
   },
 
   // Customer Stories
@@ -1494,7 +1494,7 @@ const translations: Record<string, Record<Language, string>> = {
   },
   'services.almona_professional_care_transformed': {
     en: 'Almona\'s Professional Care package transformed our operations. We went from 3 days of downtime per month to just 4 hours. The predictive maintenance caught issues before they became problems.',
-    ar: 'حولت باقة الرعاية المهنية من ألمونا عملياتنا. انتقلنا من 3 أيام توقف شهرياً إلى 4 ساعات فقط. الصيانة التنبؤية اكتشفت المشاكل قبل أن تصبح مشاكل.'
+    ar: 'حولت باقة الرعاية المهنية من المُنى عملياتنا. انتقلنا من 3 أيام توقف شهرياً إلى 4 ساعات فقط. الصيانة التنبؤية اكتشفت المشاكل قبل أن تصبح مشاكل.'
   },
   'services.results_achieved': {
     en: 'Results Achieved',
@@ -1572,7 +1572,7 @@ const translations: Record<string, Record<Language, string>> = {
   },
   'services.join_hundreds_satisfied_customers': {
     en: 'Join hundreds of satisfied customers who have transformed their businesses with ALMONA\'s service packages.',
-    ar: 'انضم إلى مئات العملاء الراضين الذين حولوا أعمالهم بباقات خدمة ألمونا.'
+    ar: 'انضم إلى مئات العملاء الراضين الذين حولوا أعمالهم بباقات خدمة المُنى.'
   },
   'services.get_free_consultation': {
     en: 'Get Your Free Consultation',
@@ -1712,7 +1712,7 @@ const translations: Record<string, Record<Language, string>> = {
   },
   'services.join_hundreds_satisfied_fabricators': {
     en: 'Join hundreds of satisfied aluminum and UPVC fabricators who trust ALMONA for their machine care.',
-    ar: 'انضم إلى مئات مصنعي الألمنيوم والـ UPVC الراضين الذين يثقون في ألمونا لرعاية ماكيناتهم.'
+    ar: 'انضم إلى مئات مصنعي الألمنيوم والـ UPVC الراضين الذين يثقون في المُنى لرعاية ماكيناتهم.'
   },
   'services.get_free_consultation_cta': {
     en: 'Get Free Consultation',
