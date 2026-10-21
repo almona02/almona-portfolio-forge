@@ -43,10 +43,17 @@ jobs:
         shell: bash
         run: |
           npm run preview -- --port 4173 --strictPort > /tmp/visibility-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          ready=0
           for attempt in $(seq 1 60); do
-            if curl -fsS http://localhost:4173/ > /dev/null; then break; fi
+            if curl -fsS http://localhost:4173/ > /dev/null 2>&1; then ready=1; break; fi
             sleep 1
           done
+          if [ "$ready" -ne 1 ]; then
+            cat /tmp/visibility-preview.log
+            exit 2
+          fi
           npm run visibility:check -- --base http://localhost:4173
       - name: Audit production
         if: github.event_name != 'pull_request'
