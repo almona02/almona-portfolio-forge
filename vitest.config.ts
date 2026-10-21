@@ -42,6 +42,8 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       'tests/e2e/**',
+      // Browser-backed HTTP fixtures have their own Node configuration.
+      'scripts/visibility/**',
       'fabricator-mobile/**',
       '.tmp-pr-assess/**',
       '**/.tmp-pr-assess/**',
