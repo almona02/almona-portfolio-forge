@@ -1,0 +1,73 @@
+name: Technical Visibility
+
+on:
+  pull_request:
+    paths: ['src/**', 'public/**', 'index.html', 'vercel.json', 'vite.config.ts', 'scripts/visibility/**', 'package*.json', '.github/workflows/visibility.yml']
+  schedule:
+    - cron: '15 2 * * *'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Vercel Deploy']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: visibility-${{ github.event.pull_request.number || github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run visibility:type-check
+      - run: npm run visibility:test
+      - name: Build PR preview
+        if: github.event_name == 'pull_request'
+        run: npm run build
+      - name: Audit PR preview
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          npm run preview -- --port 4173 --strictPort > /tmp/visibility-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://localhost:4173/ > /dev/null 2>&1; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            cat /tmp/visibility-preview.log
+            exit 2
+          fi
+          npm run visibility:check -- --base http://localhost:4173
+      - name: Audit production
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          baseline_args=()
+          if [ -f docs/ci/visibility-baseline.json ]; then
+            baseline_args=(--baseline docs/ci/visibility-baseline.json)
+          fi
+          npm run visibility:check -- --base https://www.almona02.com --performance "${baseline_args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visibility-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/visibility/
+          retention-days: 30
+          if-no-files-found: warn

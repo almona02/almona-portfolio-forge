@@ -179,7 +179,12 @@
     "test:ticketing-boundary": "cross-env SUPABASE_INTEGRATION_TESTS=true SUPABASE_INTEGRATION_REQUIRED=true vitest run src/tests/integration/ticketing/ServiceTicketingSupabaseBoundary.test.ts",
     "verify:ticketing-boundary": "node scripts/verify-ticketing-boundary.mjs",
     "test:marketplace": "vitest run src/lib/marketplace src/lib/usedMachines/UsedMachineService.reliability.test.ts src/lib/marketplaceRecovery.test.ts src/lib/serviceWorkerLifecycle.test.ts src/utils/lazyImport.test.ts src/pages/UsedMachines.loading.test.tsx src/lib/pwaUpdate.test.ts tests/marketplace-events.test.ts && node --test scripts/retain-release-assets.test.mjs && node scripts/verify-marketplace-submission-db.mjs && tsc --noEmit --skipLibCheck --module ESNext --moduleResolution Bundler --target ES2022 --types node api/marketplace-events.ts",
-    "test:marketplace:browser": "playwright test --config playwright.marketplace.config.ts"
+    "test:marketplace:browser": "playwright test --config playwright.marketplace.config.ts",
+    "visibility:check": "tsx scripts/visibility/run.ts",
+    "visibility:compare": "tsx scripts/visibility/compare.ts",
+    "visibility:test": "vitest run --config scripts/visibility/vitest.config.ts",
+    "visibility:type-check": "tsc -p scripts/visibility/tsconfig.json",
+    "test:signup-default": "node scripts/verify-signup-default-db.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -347,6 +352,8 @@
     "vite-plugin-gltf": "^4.0.0",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "4.1.11",
-    "ws": "^8.21.3"
+    "ws": "^8.21.3",
+    "@types/jsdom": "21.1.7",
+    "lighthouse": "12.8.2"
   }
 }
