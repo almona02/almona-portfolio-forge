@@ -43,7 +43,7 @@
     { "source": "/egyptian-project-wizard", "destination": "/index" },
     { "source": "/used-machines", "destination": "/index" },
     { "source": "/used-machines/:path*", "destination": "/index" },
-    { "source": "/((?!assets(?:/|$)|models(?:/|$)|images(?:/|$)|documents(?:/|$)|textures(?:/|$)|draco(?:/|$)|.*\\.(?:js|css|glb|gltf|jpg|jpeg|png|svg|webp|gif|ico|woff2?|pdf|bin|wasm|map)$).*)", "destination": "/index" }
+    { "source": "/((?!api(?:/|$)|assets(?:/|$)|models(?:/|$)|images(?:/|$)|documents(?:/|$)|textures(?:/|$)|draco(?:/|$)|.*\\.(?:js|css|glb|gltf|jpg|jpeg|png|svg|webp|gif|ico|woff2?|pdf|bin|wasm|map)$).*)", "destination": "/index" }
   ],
   "headers": [
     {

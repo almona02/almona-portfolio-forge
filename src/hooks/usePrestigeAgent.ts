@@ -290,7 +290,7 @@ export const usePrestigeAgent = () => {
     }
     try {
       const response = await fetch(`${API_BASE_URL}${API_PREFIX}/knowledge/stats`, {
-        signal: AbortSignal.timeout(5000) // 5 second timeout
+        signal: AbortSignal.timeout(20000) // 20s — engine cold start can exceed 5s
       });
       if (!response.ok) {
         setConnectionStatus('unavailable');
@@ -317,7 +317,7 @@ export const usePrestigeAgent = () => {
     }
     try {
       const response = await fetch(`${API_BASE_URL}${API_PREFIX}/machine/capabilities`, {
-        signal: AbortSignal.timeout(5000) // 5 second timeout
+        signal: AbortSignal.timeout(20000) // 20s — engine cold start can exceed 5s
       });
       if (!response.ok) {
         return { success: false, error: `HTTP ${response.status}` };

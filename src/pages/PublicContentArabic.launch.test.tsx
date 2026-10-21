@@ -58,16 +58,20 @@ describe('Remaining public Arabic content', () => {
     }
   });
 
-  it('sends the translated quick prompt with the selected persona and language', async () => {
+  it('collects the fault symptom and sends it with the selected persona and language', async () => {
     const instance = await setup(<AlmonaPrestigeChatbot />);
     expect(await screen.findByText(/أهلاً وسهلاً/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'شخّص عطلاً' }));
-    await waitFor(() => expect(backend.send).toHaveBeenCalledWith('شخّص عطلاً', 'doctor', 'ar'));
-    expect(await screen.findByText('تعذّر على المساعد الرد. حاول مرة أخرى أو تواصل مع ألمونا.')).toBeInTheDocument();
+    expect(backend.send).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'مراجعة العطل' })).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('العَرَض'), { target: { value: 'اهتزاز المغزل' } });
+    fireEvent.click(screen.getByRole('button', { name: 'مراجعة العطل' }));
+    await waitFor(() => expect(backend.send).toHaveBeenCalledWith('العَرَض: اهتزاز المغزل', 'doctor', 'ar'));
+    expect(await screen.findByText('تعذّر على المساعد الرد. حاول مرة أخرى أو تواصل مع المُنى.')).toBeInTheDocument();
     await act(() => instance.changeLanguage('en'));
     expect(screen.getByRole('button', { name: 'Diagnose a fault' })).toBeInTheDocument();
     expect(screen.getByText(/Welcome! I'm your YDT Agent/)).toBeInTheDocument();
-    expect(screen.getByText('شخّص عطلاً')).toBeInTheDocument();
+    expect(screen.getByText('العَرَض: اهتزاز المغزل')).toBeInTheDocument();
   });
 
   it('finds machines using Arabic descriptions, including diacritics, and keeps model searches', () => {

@@ -133,3 +133,11 @@ batch1-release*/
 !ai_agents/ydt_agent/knowledge/processed/aim-7510/wiring_diagram_analysis.json
 !ai_agents/ydt_agent/knowledge/processed/aim-7510/gcode_reference.json
 !ai_agents/ydt_agent/knowledge/processed/aim-7510/alarm_codes.json
+
+# Exception: crawlable public SEO pages (operator references + fabricator content)
+!public/gcode-reference.html
+!public/alarm-codes.html
+!public/production-line.html
+!public/cost-roi.html
+!public/machine-comparison.html
+!public/products/machines/*.html
