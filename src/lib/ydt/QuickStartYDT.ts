@@ -98,13 +98,6 @@ export class QuickStartYDT {
    * Explain any UI element in Fabricator Pro
    */
   async explainFabricatorUI(elementId: string): Promise<UIExplanation> {
-    // Search for UI element in knowledge base
-    const query: KnowledgeQuery = {
-      type: 'component',
-      keyword: elementId,
-    };
-
-    const _result = this.knowledgeGraph.query(query);
     const component = this.knowledgeGraph.getComponent(elementId);
 
     // Build explanation
@@ -328,7 +321,7 @@ export class QuickStartYDT {
     return 'I can help you with questions about Fabricator Pro workflows, algorithms, components, and Egyptian market intelligence. Please ask a specific question.';
   }
 
-  private async suggestNextSteps(question: string, category: KnowledgeQuery['type']): Promise<string[]> {
+  private async suggestNextSteps(_question: string, category: KnowledgeQuery['type']): Promise<string[]> {
     const nextSteps: string[] = [];
 
     if (category === 'workflow') {
@@ -345,7 +338,7 @@ export class QuickStartYDT {
     return nextSteps;
   }
 
-  private async getExpertTip(question: string, category: KnowledgeQuery['type']): Promise<string | undefined> {
+  private async getExpertTip(_question: string, category: KnowledgeQuery['type']): Promise<string | undefined> {
     if (category === 'workflow') {
       return 'Pro tip: Use Quick Order Mode for faster workflow if you\'re an expert fabricator.';
     }

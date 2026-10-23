@@ -133,8 +133,6 @@ export class YDTEnforcementService {
    * Call YDT Core Service
    */
   private async callYDT(operation: string, inputs: any): Promise<any> {
-    const _ydtCore = YDTCoreService.getInstance();
-
     // Map operation to YDT method
     switch (operation) {
       case 'service_ticket_assignment':
