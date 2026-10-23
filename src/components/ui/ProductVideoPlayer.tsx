@@ -166,7 +166,7 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
               exit={{ opacity: 0, scale: 0.8 }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              onClick={(e) => {
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
                 onClose();
               }}
@@ -191,7 +191,7 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
                 animate={{ opacity: 1 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
                   setIsMuted(!isMuted);
                 }}
@@ -207,7 +207,7 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
                 animate={{ opacity: 1 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
                   toggleFullscreen();
                 }}
@@ -235,7 +235,7 @@ export const VideoTrigger: React.FC<VideoTriggerProps> = ({ onClick, isPlaying =
     <LazyMotionButton
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      onClick={(e) => {
+      onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         onClick();
       }}
