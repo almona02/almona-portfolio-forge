@@ -181,7 +181,7 @@ export async function waitForOptimizationJobRealtime(
           table: 'jobs',
           filter: `job_id=eq.${jobId}`,
         },
-        (payload) => {
+        (payload: any) => {
           const job = payload.new;
 
           if (job.status === 'completed' && job.result_data) {

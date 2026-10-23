@@ -42,7 +42,7 @@ export function useJobStatus(jobId: string | null) {
           table: 'jobs',
           filter: `job_id=eq.${jobId}`,
         },
-        (payload) => {
+        (payload: any) => {
           if (!isMounted) return;
 
           const newStatus = payload.new;

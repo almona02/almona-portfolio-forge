@@ -204,7 +204,7 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
               <SmartDrawTool
                 project={null}
                 profiles={profiles}
-                onApplyLayout={(payload) => {
+                onApplyLayout={(payload: any) => {
                   if (payload.components && payload.components.length > 0) {
                     handleSmartDrawApply({ components: payload.components });
                   }

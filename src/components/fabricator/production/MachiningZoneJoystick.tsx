@@ -313,7 +313,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                           width: `${canvas.width}px`,
                           height: `${canvas.height}px`,
                         }}
-                        onPointerDown={(e) => handlePointerDown(e, zone, 'position')}
+                        onPointerDown={(e: React.PointerEvent<HTMLDivElement>) => handlePointerDown(e, zone, 'position')}
                         onClick={() => {
                           setSelectedZone(zone);
                           setEditingZone(zone);

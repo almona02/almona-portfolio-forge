@@ -400,7 +400,7 @@ const TuneStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId: _us
       profileData: studioType === 'profile' ? { ...data.profileData, role } : data.profileData,
       systemPackData: studioType === 'system-pack' ? { 
         ...data.systemPackData, 
-        profiles: profiles.map(p => p.id === id ? { ...p, role } : p)
+        profiles: profiles.map((p: any) => p.id === id ? { ...p, role } : p)
       } : data.systemPackData
     });
   };
@@ -477,7 +477,7 @@ const CalibrateStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId
   );
 
   const profiles = data.dxfData?.profiles || [];
-  const selectedProfile = profiles.find(p => p.id === data.dxfData?.selectedProfileId) || profiles[0];
+  const selectedProfile = profiles.find((p: any) => p.id === data.dxfData?.selectedProfileId) || profiles[0];
   const linkedHardware = data.systemPackData?.hardware || [];
 
   if (!selectedProfile) {

@@ -277,7 +277,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
     }
 
     const spacing = spanAndSpacing.spacingMm;
-    const nearestTypical = activePackPreset.typicalPanelWidthsMm.reduce((best, v) => {
+    const nearestTypical = activePackPreset.typicalPanelWidthsMm.reduce((best: number, v: number) => {
       const bestDiff = Math.abs(best - spacing);
       const diff = Math.abs(v - spacing);
       return diff < bestDiff ? v : best;
@@ -314,7 +314,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       let best: number | null = null;
       let bestScore = Number.POSITIVE_INFINITY;
 
-      candidates.forEach((c) => {
+      candidates.forEach((c: number) => {
         if (c < 2) return;
         const segments = c - 1;
         if (segments <= 0) return;
@@ -680,7 +680,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
                   system: project?.systemPackId?.toUpperCase() || '',
                   min: activePackPreset.minPanelWidthMm.toFixed(0),
                   max: activePackPreset.maxPanelWidthMm.toFixed(0),
-                  typical: activePackPreset.typicalPanelWidthsMm.map((v) => v.toFixed(0)).join(', ')
+                  typical: activePackPreset.typicalPanelWidthsMm.map((v: number) => v.toFixed(0)).join(', ')
                 })}
               </p>
             ) : (
