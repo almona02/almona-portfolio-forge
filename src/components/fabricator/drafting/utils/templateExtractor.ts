@@ -7,7 +7,6 @@
  * @since Template Editor - Gold Tier Implementation
  */
 
-import { EgyptianJobPatternRecognizer } from '@/lib/intelligence/EgyptianJobPatternRecognizer';
 import type { GridCell, WindowGrid, WindowUnit } from '@/types/fabricator';
 import type { EgyptianTemplate } from '../types/drafting';
 
@@ -66,11 +65,6 @@ export interface TemplateExtractionOptions {
  * Analyzes WindowUnit designs and extracts reusable template patterns.
  */
 export class TemplateExtractionEngine {
-  private patternRecognizer: EgyptianJobPatternRecognizer;
-
-  constructor() {
-    this.patternRecognizer = new EgyptianJobPatternRecognizer();
-  }
 
   /**
    * Extract templates from a single WindowUnit
