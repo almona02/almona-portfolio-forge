@@ -124,7 +124,7 @@ export class BiesseCNC extends CNCController {
           parameters: {
             X: endX.toFixed(3),
             Y: endY.toFixed(3),
-            Z: -plan.profile.thickness || -10,
+            Z: -(plan.profile.thickness ?? 0) || -10,
           },
           lineNumber: lineNumber++,
         });

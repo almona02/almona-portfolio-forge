@@ -70,7 +70,7 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
                       'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                      accessToken: response.authResponse.accessToken,
+                      accessToken: response.authResponse?.accessToken,
                       userInfo: userInfo
                     })
                   });

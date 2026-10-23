@@ -804,7 +804,7 @@ export const SmartScanUploader: React.FC = () => {
                                   Profile Name
                                 </Badge>
                                 <span className="text-xs text-zinc-500">
-                                  Confidence: {(job.result.technical_data.confidence * 100).toFixed(0)}%
+                                  Confidence: {((job.result.technical_data.confidence ?? 0) * 100).toFixed(0)}%
                                 </span>
                               </div>
                               <p className="text-sm font-medium text-white truncate">
@@ -813,10 +813,10 @@ export const SmartScanUploader: React.FC = () => {
                             </div>
                           )}
 
-                          {job.result.technical_data.material_hints?.length > 0 && (
+                          {(job.result.technical_data.material_hints ?? []).length > 0 && (
                             <div className="flex flex-wrap gap-1">
                               <span className="text-xs text-zinc-500">Materials:</span>
-                              {job.result.technical_data.material_hints.map((material, idx) => (
+                              {(job.result.technical_data.material_hints ?? []).map((material, idx) => (
                                 <Badge key={idx} variant="secondary" className="text-xs capitalize">
                                   {material}
                                 </Badge>
@@ -977,11 +977,11 @@ export const SmartScanUploader: React.FC = () => {
                           </div>
                         )}
 
-                        {job.result.quality?.verification_notes?.length > 0 && (
+                        {(job.result.quality?.verification_notes ?? []).length > 0 && (
                           <div className="space-y-1">
                             <h5 className="text-xs font-medium text-zinc-400">Verification Notes</h5>
                             <div className="space-y-1">
-                              {job.result.quality.verification_notes.map((note: string, idx: number) => (
+                              {(job.result.quality?.verification_notes ?? []).map((note: string, idx: number) => (
                                 <div key={idx} className="flex items-start gap-2">
                                   <AlertTriangle className="w-3 h-3 text-yellow-500 mt-0.5 flex-shrink-0" />
                                   <span className="text-xs text-yellow-400">{note}</span>

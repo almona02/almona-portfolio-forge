@@ -102,7 +102,7 @@ export const SystemPackSelector: React.FC<SystemPackSelectorProps> = ({
               <div className="font-semibold mb-2">{pack.name}</div>
               <div className="text-sm text-gray-400 mb-2">{pack.brand}</div>
               <div className="text-xs text-gray-500">
-                {pack.compatibleProfiles.length} profiles • {pack.compatibleAccessories.length} accessories
+                {pack.compatibleProfiles?.length ?? 0} profiles • {pack.compatibleAccessories?.length ?? 0} accessories
               </div>
             </CardContent>
           </Card>

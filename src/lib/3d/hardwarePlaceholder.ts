@@ -62,34 +62,6 @@ export const HARDWARE_COLORS = {
 };
 
 /**
- * Calculate absolute position from expression
- * 
- * @param expr Expression like 'sash_right_edge-0.03' or 'sash_height/2'
- * @param context Context object with values like sashWidth, sashHeight, etc.
- */
-function _evaluatePosition(expr: string | number, context: Record<string, number>): number {
-  if (typeof expr === 'number') return expr;
-  
-  // Replace context variables
-  let result = expr;
-  for (const [key, value] of Object.entries(context)) {
-    result = result.replace(new RegExp(key, 'g'), value.toString());
-  }
-  
-  // Evaluate simple arithmetic (safe eval)
-  try {
-    // Only allow basic arithmetic operations
-    if (/^[0-9+\-*/().\s]+$/.test(result)) {
-      return Function(`"use strict"; return (${result})`)();
-    }
-  } catch (e) {
-    console.warn(`Failed to evaluate position expression: ${expr}`, e);
-  }
-  
-  return 0;
-}
-
-/**
  * Generate hardware placeholders for a window unit
  * 
  * @param windowUnit The window unit to generate hardware for
@@ -109,18 +81,18 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
   windowUnit.grid.cells.forEach((cell, _index) => {
     if (cell.type === 'empty') return;
     
-    const _isSash = cell.type === 'sash' || (cell as any).type === 'sliding';
     const isSliding = cell.type === 'sliding' || (cell as any).type === 'sliding';
     const isCasement = cell.type === 'sash' && !isSliding;
     
     // Calculate cell dimensions using proportional grid (colWidths/rowHeights)
-    const cols = windowUnit.grid.cols || 1;
-    const rows = windowUnit.grid.rows || 1;
-    const colWidths = windowUnit.grid.colWidths && windowUnit.grid.colWidths.length === cols
-      ? windowUnit.grid.colWidths
+    const grid = windowUnit.grid;
+    const cols = grid?.cols || 1;
+    const rows = grid?.rows || 1;
+    const colWidths = grid?.colWidths && grid.colWidths.length === cols
+      ? grid.colWidths
       : Array(cols).fill(1);
-    const rowHeights = windowUnit.grid.rowHeights && windowUnit.grid.rowHeights.length === rows
-      ? windowUnit.grid.rowHeights
+    const rowHeights = grid?.rowHeights && grid.rowHeights.length === rows
+      ? grid.rowHeights
       : Array(rows).fill(1);
     
     // Calculate proportional sizes
