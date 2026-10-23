@@ -235,7 +235,7 @@ export class ProductionUtils {
    * @returns Array of machining zones
    */
   static generateMullionMachiningZones(
-    mullion: any,
+    _mullion: any,
     windowUnit: WindowUnit
   ): FabricationData['profiles'][0]['machiningZones'] {
     const zones: FabricationData['profiles'][0]['machiningZones'] = [];
@@ -278,7 +278,7 @@ export class ProductionUtils {
    * @returns Array of machining zones
    */
   static generateTransomMachiningZones(
-    transom: any,
+    _transom: any,
     windowUnit: WindowUnit
   ): FabricationData['profiles'][0]['machiningZones'] {
     const zones: FabricationData['profiles'][0]['machiningZones'] = [];
@@ -379,7 +379,7 @@ export class ProductionUtils {
    */
   static calculateHardwareQuantity(
     accessory: any,
-    windowUnit: WindowUnit,
+    _windowUnit: WindowUnit,
     pattern: EgyptianPattern
   ): number {
     // Default: quantity from pattern

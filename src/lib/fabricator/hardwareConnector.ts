@@ -35,9 +35,6 @@ export function connectHardwareForWindowType(
   const hasSashes = components.some(c => c.type === 'sash');
   const sashCount = components.filter(c => c.type === 'sash').length;
   
-  // Get hardware definitions from system pack if available
-  const _systemHardware = systemPack?.windowSystemSpec?.accessories_list || [];
-  
   // Connect based on window type
   if (windowType.includes('sliding') || windowType.includes('sliding_door')) {
     // Sliding windows need rollers and handles

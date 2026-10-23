@@ -8,7 +8,6 @@
 import type { Profile, OptimizationResult } from '@/types/fabricator';
 import { MACHINE_PROFILES, getMachineProfile } from './machineProfiles';
 import { DXFExportGenerator } from './DXFExportGenerator';
-import { CSVExportGenerator } from './CSVExportGenerator';
 import type { DXFExportOptions } from './types';
 
 export interface MachiningMacro {

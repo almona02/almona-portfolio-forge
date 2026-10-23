@@ -221,7 +221,7 @@ export class SupplierPackService {
    */
   private matchesConstraints(
     profile: SupplierPack['profiles'][0],
-    windowUnit: WindowUnit,
+    _windowUnit: WindowUnit,
     systemPack: SystemPack | null
   ): boolean {
     // Check material compatibility

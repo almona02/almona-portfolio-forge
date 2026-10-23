@@ -833,12 +833,10 @@ export class UnitProfileGatherer {
    * Generate accessory cuts
    */
   private generateAccessoryCuts(
-    profile: Profile,
-    unit: WindowUnit,
+    _profile: Profile,
+    _unit: WindowUnit,
     role: NonNullable<Profile['profileRole']>
   ): RequiredCut[] {
-    // Accessories vary by type - implement specific logic for each
-    const _formula = getRoleCuttingFormula(role, this.config.systemType);
 
     // For now, return empty array - accessories may need custom logic
     // This can be extended based on specific accessory requirements

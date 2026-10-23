@@ -355,7 +355,7 @@ export class HardenedCuttingListGenerator {
    */
   private calculateAccuracy(
     primary: CalculationResult,
-    secondary: CalculationResult,
+    _secondary: CalculationResult,
     verification: { match: boolean; difference: number }
   ): number {
     // Base accuracy from primary calculation
