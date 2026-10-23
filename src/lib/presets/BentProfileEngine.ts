@@ -186,7 +186,7 @@ export class BentProfileEngine {
   /**
    * Calculate number of segments for segmented bend
    */
-  private calculateSegments(radius: number, angle: number): number {
+  private calculateSegments(_radius: number, angle: number): number {
     // One segment per 15 degrees (typical for segmented bends)
     return Math.ceil(angle / 15);
   }
@@ -197,7 +197,7 @@ export class BentProfileEngine {
   private generateProfilePreparation(
     radius: number,
     angle: number,
-    profileWidth: number,
+    _profileWidth: number,
     profileDepth: number,
     method: 'continuous' | 'segmented'
   ): BentProfileDesign['profilePreparation'] {

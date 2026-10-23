@@ -163,7 +163,6 @@ export class EgyptianDialectDetector {
   private calculateConfidence(question: string, userType: UserType): number {
     const lowerQuestion = question.toLowerCase();
     const matchingPatterns = this.patterns[userType].filter((regex: RegExp) => regex.test(lowerQuestion)).length;
-    const _totalPatterns = this.patterns[userType].length;
 
     if (matchingPatterns === 0) return 0.3; // Low confidence
     if (matchingPatterns === 1) return 0.6; // Medium confidence

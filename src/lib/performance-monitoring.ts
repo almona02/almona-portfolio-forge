@@ -74,7 +74,6 @@ class PerformanceMonitoringService {
   private metrics: Map<string, PerformanceMetric[]> = new Map();
   private featureUsage: FeatureUsageMetric[] = [];
   private observer: PerformanceObserver | null = null;
-  private _isMonitoring = false;
   // Track if tables exist to avoid repeated 404 errors
   private featureUsageTableExists: boolean | null = null;
   private satisfactionTableExists: boolean | null = null;

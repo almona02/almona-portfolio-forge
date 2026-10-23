@@ -39,7 +39,7 @@ export class DeterministicReplayVerifier {
    * Serialize object with sorted keys for deterministic hashing
    */
   private serializeDeterministically(obj: any): string {
-    return JSON.stringify(obj, (key, value) => {
+    return JSON.stringify(obj, (_key, value) => {
       if (value && typeof value === 'object' && !Array.isArray(value)) {
         return Object.keys(value)
           .sort()

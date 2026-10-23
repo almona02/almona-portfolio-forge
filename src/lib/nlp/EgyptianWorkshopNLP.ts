@@ -144,8 +144,6 @@ export class EgyptianWorkshopNLP {
     dialect: EgyptianDialect,
     userType: UserType
   ): Promise<WorkshopResponse> {
-    const _template = this.dialectPatterns[dialect];
-
     return {
       // TECHNICAL answer (accurate)
       technical: answer,
@@ -344,7 +342,6 @@ export class EgyptianWorkshopNLP {
     dialect: EgyptianDialect
   ): Promise<string> {
     const template = this.dialectPatterns[dialect];
-    const _phrases = template.phrases;
 
     // Add dialect-specific phrases
     if (dialect === 'cairo_shobra') {

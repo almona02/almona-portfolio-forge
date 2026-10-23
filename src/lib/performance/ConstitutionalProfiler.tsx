@@ -57,10 +57,6 @@ export const ConstitutionalProfiler: React.FC<ConstitutionalProfilerProps> = ({
         startTime: number,
         commitTime: number
     ) => {
-        // Record in global performance monitor
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const metrics = performanceMonitor.getMetrics();
-
         // Log constitutional context
         const perfData: ConstitutionalPerformanceData = {
             component: id,
