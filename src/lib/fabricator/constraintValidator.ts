@@ -97,7 +97,6 @@ export class ConstraintValidator {
     });
     
     // Calculate validation score
-    const _totalTests = VALIDATION_CALCULATION.TOTAL_VALIDATION_CATEGORIES;
     const errorPenalty = errorCount * VALIDATION_THRESHOLDS.ERROR_PENALTY;
     const warningPenalty = warningCount * VALIDATION_THRESHOLDS.WARNING_PENALTY;
     const baseScore = VALIDATION_CALCULATION.BASE_SCORE;
@@ -515,7 +514,7 @@ export class ConstraintValidator {
   }
   
   private static requiresStructuralMullions(
-    pattern: EgyptianPattern,
+    _pattern: EgyptianPattern,
     windowUnit: WindowUnit
   ): boolean {
     // Simple heuristic: window area > threshold or width/height > thresholds

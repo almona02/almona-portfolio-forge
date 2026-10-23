@@ -192,9 +192,6 @@ export class ExportService {
       }
     }
 
-    // Group projects if needed
-    const _groupedProjects = this.groupProjects(projects, groupBy);
-
     // Apply template if provided
     const finalOptions = templateId 
       ? await this.applyTemplate(templateId, options)
@@ -692,7 +689,7 @@ export class ExportService {
     format: ExportFormat,
     options: ExportOptions,
     index: number,
-    total: number,
+    _total: number,
     batchId: string,
     memoryLimit: number,
     qualityCheck: boolean,

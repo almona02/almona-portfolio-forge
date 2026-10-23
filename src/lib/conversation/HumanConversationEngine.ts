@@ -287,7 +287,7 @@ export class HumanConversationEngine {
   private getConversationStyle(
     userType: UserType,
     _traits: PersonalityTraits,
-    location: string
+    _location: string
   ): ConversationStyle {
     const styles: Partial<Record<UserType, ConversationStyle>> & { general: ConversationStyle } = {
       workshop_owner: {

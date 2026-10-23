@@ -97,7 +97,6 @@ export class MachineExportManager {
     optimization?: OptimizationResult
   ): Promise<ExportResult> {
     const dxfGenerator = new DXFExportGenerator();
-    const _csvGenerator = new CSVExportGenerator();
 
     // Generate DXF with Elumatec-specific layers
     const dxfOptions: DXFExportOptions = {
@@ -142,7 +141,7 @@ export class MachineExportManager {
   private async generateFommExport(
     profile: Profile,
     machineProfile: typeof MACHINE_PROFILES[0],
-    operations: MachiningMacro[],
+    _operations: MachiningMacro[],
     optimization?: OptimizationResult
   ): Promise<ExportResult> {
     const dxfGenerator = new DXFExportGenerator();
@@ -187,7 +186,6 @@ export class MachineExportManager {
     optimization?: OptimizationResult
   ): Promise<ExportResult> {
     const dxfGenerator = new DXFExportGenerator();
-    const _csvGenerator = new CSVExportGenerator();
 
     const dxfOptions: DXFExportOptions = {
       machineProfileId: 'emmegi_quasar',
@@ -229,7 +227,7 @@ export class MachineExportManager {
   private async generateGenericExport(
     profile: Profile,
     machineProfile: typeof MACHINE_PROFILES[0],
-    operations: MachiningMacro[],
+    _operations: MachiningMacro[],
     optimization?: OptimizationResult
   ): Promise<ExportResult> {
     const dxfGenerator = new DXFExportGenerator();
@@ -272,7 +270,6 @@ export class MachineExportManager {
     machineProfile: typeof MACHINE_PROFILES[0]
   ): string {
     const config = machineProfile.configuration || {};
-    const _maxSpindleSpeed = config.maxSpindleSpeed || 18000;
     const toolChanger = config.toolChanger || false;
 
     let gcode = '; Elumatec SBZ 151 G-code\n';

@@ -318,7 +318,6 @@ export class DXFExportGenerator {
     // Draw waste segments (different color/layer)
     // This is a simplified version - full implementation would track waste precisely
     if (plan.waste > 0) {
-      const _wasteLayer = `${layerName}_WASTE`;
       // Waste visualization would go here
     }
   }
