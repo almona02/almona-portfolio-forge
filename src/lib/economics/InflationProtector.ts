@@ -113,7 +113,7 @@ export class InflationProtector {
    * Generate maalem-style warning
    */
   private generateMaalemWarning(
-    validity: string,
+    _validity: string,
     volatility: 'high' | 'medium' | 'low'
   ): { english: string; arabic: string } {
     if (volatility === 'high') {

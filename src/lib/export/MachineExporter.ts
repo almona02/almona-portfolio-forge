@@ -238,7 +238,7 @@ export class MachineExporter {
    * Generate assembly sequence
    */
   private generateAssemblySequence(
-    bom: any,
+    _bom: any,
     placement: any
   ): MachineExport['assemblySequence'] {
     const sequence: MachineExport['assemblySequence'] = [];

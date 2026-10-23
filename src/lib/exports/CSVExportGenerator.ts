@@ -175,7 +175,7 @@ export class CSVExportGenerator {
   /**
    * Build header row with localization
    */
-  private buildHeaderRow(delimiter: string, locale: Locale = 'en'): string[] {
+  private buildHeaderRow(_delimiter: string, locale: Locale = 'en'): string[] {
     const labels = {
       en: ['Plan', 'Sequence', 'Length (mm)', 'Angle (deg)', 'Component ID', 'Position (mm)', 'Waste (mm)', 'Utilization (%)'],
       tr: ['Plan', 'Sıra', 'Uzunluk (mm)', 'Açı (derece)', 'Bileşen Kimliği', 'Pozisyon (mm)', 'Atık (mm)', 'Kullanım (%)'],
@@ -202,7 +202,7 @@ export class CSVExportGenerator {
    */
   private buildSummaryRow(
     summary: any,
-    delimiter: string,
+    _delimiter: string,
     decimalSeparator: string,
     locale: Locale = 'en'
   ): string[] {
@@ -235,7 +235,7 @@ export class CSVExportGenerator {
   private buildCutRow(
     cut: any,
     sequence: number,
-    delimiter: string,
+    _delimiter: string,
     decimalSeparator: string,
     locale: Locale = 'en'
   ): string[] {
@@ -256,7 +256,7 @@ export class CSVExportGenerator {
    */
   private buildPlanSummaryRow(
     plan: any,
-    delimiter: string,
+    _delimiter: string,
     decimalSeparator: string,
     locale: Locale = 'en'
   ): string[] {
@@ -293,7 +293,7 @@ export class CSVExportGenerator {
   /**
    * Format number with specified decimal separator
    */
-  private formatNumberValue(value: number, decimalSeparator: string, locale: Locale = 'en'): string {
+  private formatNumberValue(value: number, _decimalSeparator: string, locale: Locale = 'en'): string {
     return formatNumber(value, locale, 2);
   }
 }

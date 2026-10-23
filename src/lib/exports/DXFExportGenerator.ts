@@ -90,7 +90,7 @@ export class DXFExportGenerator {
   /**
    * Add QR code data as annotation
    */
-  private addQRCodeData(dxf: any, project: WindowUnit, options: DXFExportOptions, overrideLayer?: string): void {
+  private addQRCodeData(dxf: any, project: WindowUnit, _options: DXFExportOptions, overrideLayer?: string): void {
     const qrLayer = overrideLayer || 'QR_CODE';
     const qrData: QRCodeData = {
       projectId: project.id,
@@ -132,7 +132,7 @@ export class DXFExportGenerator {
   /**
    * Add barcode data for components
    */
-  private addBarcodeData(dxf: any, reportData: any, options: DXFExportOptions, overrideLayer?: string): void {
+  private addBarcodeData(dxf: any, reportData: any, _options: DXFExportOptions, overrideLayer?: string): void {
     const barcodeLayer = overrideLayer || 'BARCODES';
     let yOffset = -130;
 

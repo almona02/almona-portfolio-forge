@@ -286,17 +286,9 @@ export class HumanConversationEngine {
    */
   private getConversationStyle(
     userType: UserType,
-    traits: PersonalityTraits,
+    _traits: PersonalityTraits,
     location: string
   ): ConversationStyle {
-    // Detect dialect from location
-    let _dialect: EgyptianDialect = 'cairo_shobra';
-    if (location.toLowerCase().includes('alexandria')) {
-      _dialect = 'alexandria';
-    } else if (location.toLowerCase().includes('upper')) {
-      _dialect = 'upper_egypt';
-    }
-
     const styles: Partial<Record<UserType, ConversationStyle>> & { general: ConversationStyle } = {
       workshop_owner: {
         greeting: 'يا ريس',
@@ -346,7 +338,7 @@ export class HumanConversationEngine {
     userMessage: string,
     memory: ConversationMemory,
     style: ConversationStyle,
-    userType: UserType,
+    _userType: UserType,
     location: string
   ): Promise<string> {
     let response = technicalAnswer;
@@ -430,7 +422,7 @@ export class HumanConversationEngine {
   /**
    * Add contextual details
    */
-  private addContextualDetails(message: string, location: string): string {
+  private addContextualDetails(_message: string, location: string): string {
     if (location.toLowerCase().includes('cairo')) {
       return 'في القاهرة، المنافسة عالية فخلي السعر تنافسي.';
     } else if (location.toLowerCase().includes('alexandria')) {

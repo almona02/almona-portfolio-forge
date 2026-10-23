@@ -278,8 +278,8 @@ export class CNCIntegration {
    */
   async sendCuttingPlanToMachine(
     machineId: string,
-    cuttingPlan: CuttingPlan,
-    projectId: string
+    _cuttingPlan: CuttingPlan,
+    _projectId: string
   ): Promise<{
     success: boolean;
     jobId?: string;
