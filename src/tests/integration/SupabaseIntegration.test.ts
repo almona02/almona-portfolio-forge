@@ -29,12 +29,10 @@ const isAcceptableResult = (error: { code?: string; message?: string } | null) =
 };
 
 describe('Supabase Integration - Quality Control', () => {
-  let testUserId: string;
   let testWindowUnitId: string;
 
   beforeAll(async () => {
     // Setup test data
-    testUserId = 'test-user-' + Date.now();
     testWindowUnitId = 'test-unit-' + Date.now();
   });
 
@@ -91,11 +89,6 @@ describe('Supabase Integration - Quality Control', () => {
 });
 
 describe('Supabase Integration - Delivery Tracking', () => {
-  let testDeliveryId: string;
-
-  beforeAll(async () => {
-    testDeliveryId = 'test-delivery-' + Date.now();
-  });
 
   describe('Delivery Records Storage', () => {
     it('should store delivery tracking data', async () => {

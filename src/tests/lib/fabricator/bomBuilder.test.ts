@@ -6,55 +6,12 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ProductionBOMBuilder } from '@/components/fabricator/drafting/utils/bomBuilder';
-import type { WindowUnit } from '@/types/fabricator';
-import type { EgyptianTemplate } from '@/components/fabricator/drafting/types/drafting';
 
 describe('ProductionBOMBuilder', () => {
   let builder: ProductionBOMBuilder;
 
   beforeEach(() => {
     builder = new ProductionBOMBuilder();
-
-    mockWindowUnit = {
-      id: 'test-window-1',
-      orderNumber: 'ORD-001',
-      posNumber: 'POS-001',
-      type: 'casement',
-      overallWidth: 1200,
-      overallHeight: 1500,
-      grid: {
-        rows: 2,
-        cols: 1,
-        cells: [
-          { id: 'cell-0', row: 0, col: 0, type: 'casement' },
-          { id: 'cell-1', row: 1, col: 0, type: 'casement' }
-        ]
-      },
-      systemPackId: 'test-pack',
-      components: [],
-      color: 'white',
-      glazing: {},
-      hardware: [],
-      status: 'design',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    mockTemplate = {
-      id: 'test-template',
-      name: 'Test Template',
-      rows: 2,
-      cols: 1,
-      cellTypes: [['casement'], ['casement']],
-      constraints: {
-        minWidth: 800,
-        maxWidth: 2000,
-        minHeight: 1000,
-        maxHeight: 2500,
-        cellMinWidth: 400,
-        cellMinHeight: 500
-      }
-    };
   });
 
   describe('buildWindowBOM', () => {
