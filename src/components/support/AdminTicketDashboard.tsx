@@ -148,7 +148,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'user_profile',
       header: 'Customer',
       cell: ({ row }) => {
-        const profile = row.getValue('user_profile')
+        const profile = row.getValue('user_profile') as { full_name?: string; company_name?: string; role?: string } | undefined
         return (
           <div className="text-sm">
             <div className="font-medium">{profile?.full_name || 'Unknown'}</div>
@@ -201,7 +201,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'assigned_user',
       header: 'Assigned To',
       cell: ({ row }) => {
-        const assignedUser = row.getValue('assigned_user')
+        const assignedUser = row.getValue('assigned_user') as { full_name?: string; role?: string } | undefined
         return assignedUser ? (
           <div className="text-sm">
             <div className="font-medium">{assignedUser.full_name}</div>
