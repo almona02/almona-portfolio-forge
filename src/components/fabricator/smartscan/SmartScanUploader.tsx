@@ -40,7 +40,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -72,7 +72,6 @@ export const SmartScanUploader: React.FC = () => {
   const [useEnhancedScan, setUseEnhancedScan] = useState(false);
   const [enableOCR, setEnableOCR] = useState(true);
   const [requireValidation, setRequireValidation] = useState(true);
-  const _fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const tuningStore = useProfileTuningStore();
   const [importWizardData, setImportWizardData] = useState<{

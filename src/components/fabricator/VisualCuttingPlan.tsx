@@ -127,7 +127,6 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
                 {Object.entries(barGroups)
                     .sort(([a], [b]) => parseInt(a, 10) - parseInt(b, 10))
                     .map(([barNum, cuts]) => {
-                        const _barNumber = parseInt(barNum, 10);
                         const packSettings = { sawKerfMm, trimCutMm };
                         const totalUsed = barConsumedLengthMm(
                             cuts.map((c) => c.cutLengthMm),

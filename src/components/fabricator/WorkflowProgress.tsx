@@ -102,7 +102,6 @@ const WorkflowProgressComponent: React.FC<WorkflowProgressProps> = ({
       {legacyStatusFlow.map((status, index) => {
         const isCompleted = index < currentIndex;
         const isCurrent = index === currentIndex;
-        const _isUpcoming = index > currentIndex;
 
         return (
           <div key={status} className="flex items-center">
