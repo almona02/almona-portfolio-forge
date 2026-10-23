@@ -377,7 +377,7 @@ export class ApexEngineV2 {
       glazing: {
         width: glazingWidth,
         height: glazingHeight,
-        thickness: glazingThickness * 1000, // Convert mm to microns
+        thickness: Number(glazingThickness) * 1000, // Convert mm to microns
       },
       materialAdjustments,
     };
@@ -745,8 +745,9 @@ export class ApexEngineV2 {
 
     // Extract glazing BOM
     const glazingArea = (params.glazing.width / 1000000) * (params.glazing.height / 1000000); // Convert to m²
+    const glazingTypeValue = this.unit.glazing?.type;
     bom.glazing = [{
-      type: this.unit.glazing?.type || 'double',
+      type: typeof glazingTypeValue === 'string' ? glazingTypeValue : 'double',
       width: params.glazing.width / 1000, // Convert to mm
       height: params.glazing.height / 1000,
       thickness: params.glazing.thickness / 1000,

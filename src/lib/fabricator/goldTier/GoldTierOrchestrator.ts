@@ -65,7 +65,6 @@ export interface ValidationDiscrepancy {
  * GoldTierOrchestrator - Smart Routing Engine
  */
 export class GoldTierOrchestrator {
-  private static readonly FEATURE_FLAG = 'GOLD_TIER_ENABLED' as const;
   private static readonly VALIDATION_TOLERANCE = {
     profileLength: 0.1, // 0.1mm tolerance
     quantity: 0, // Exact match required
@@ -123,7 +122,7 @@ export class GoldTierOrchestrator {
           startTime
         );
 
-        if (!validation.passed && validation.discrepancies?.some(d => d.severity === 'error')) {
+        if (validation && !validation.passed && validation.discrepancies?.some(d => d.severity === 'error')) {
           // Critical discrepancy, fallback to legacy
           void logFabricatorAudit({
             action: 'VALIDATE',
@@ -522,11 +521,12 @@ export class GoldTierOrchestrator {
     // Generate sashes from grid
     const sashes: ApexFrameGeometry['sashes'] = [];
     if (windowUnit.grid) {
-      windowUnit.grid.cells.forEach((cell, index) => {
+      const grid = windowUnit.grid;
+      grid.cells.forEach((cell, index) => {
         if (cell.type !== 'fixed') {
           // Calculate sash position based on grid
-          const sashWidth = overallWidth / windowUnit.grid.cols;
-          const sashHeight = overallHeight / windowUnit.grid.rows;
+          const sashWidth = overallWidth / grid.cols;
+          const sashHeight = overallHeight / grid.rows;
           const x = (cell.col * sashWidth);
           const y = (cell.row * sashHeight);
 
@@ -564,7 +564,7 @@ export class GoldTierOrchestrator {
         { x: g.dimensions.width, y: g.dimensions.height },
         { x: 0, y: g.dimensions.height },
       ],
-      thickness: g.dimensions.thickness,
+      thickness: g.dimensions.thickness ?? 0,
     }));
 
     return {
