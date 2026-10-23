@@ -66,8 +66,8 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
         const heightPx = Math.max(36, Math.round((h / maxH) * box));
         const active = pose.id === activeId;
         const grid = pose.grid;
-        const cols = Number(grid?.cols) > 0 ? Number(grid.cols) : 1;
-        const rows = Number(grid?.rows) > 0 ? Number(grid.rows) : 1;
+        const cols = Number(grid?.cols) > 0 ? Number(grid?.cols) : 1;
+        const rows = Number(grid?.rows) > 0 ? Number(grid?.rows) : 1;
         const colWeights = Array.isArray(grid?.colWidths) && grid.colWidths.length === cols
           ? grid.colWidths
           : Array.from({ length: cols }, () => 1);

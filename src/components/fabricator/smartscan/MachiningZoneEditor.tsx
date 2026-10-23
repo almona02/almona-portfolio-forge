@@ -125,7 +125,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
           id: `auto_${hw.id}`,
           name: `${hw.name} Zone`,
           type: hw.category === 'lock' ? 'pocket' : hw.category === 'hinge' ? 'slot' : 'hole',
-          position: { x: selectedProfile.widthMm * 0.3, y: selectedProfile.heightMm * 0.5 },
+          position: { x: (selectedProfile.widthMm ?? 0) * 0.3, y: (selectedProfile.heightMm ?? 0) * 0.5 },
           dimensions: macro.defaultDimensions,
           hardwareId: hw.id,
           macro: hw.machiningMacro,

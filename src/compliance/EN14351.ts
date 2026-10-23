@@ -195,7 +195,7 @@ export class EN14351Compliance {
 
       case 'durability_1':
         // Check profile quality
-        const weatherResistant = profile.material === 'aluminum' || profile.thickness >= 3.0;
+        const weatherResistant = profile.material === 'aluminum' || (profile.thickness ?? 0) >= 3.0;
         return {
           passed: weatherResistant,
           notes: weatherResistant
@@ -235,8 +235,9 @@ export class EN14351Compliance {
    */
   private estimateAcousticPerformance(window: WindowUnit): number {
     const baseRw = 25; // dB
-    const glazingBonus = window.glazing.type === 'double' ? 5 : 0;
-    const thicknessBonus = window.glazing.thickness >= 24 ? 3 : 0;
+    const glazing = window.glazing as unknown as { type?: string; thickness?: number };
+    const glazingBonus = glazing.type === 'double' ? 5 : 0;
+    const thicknessBonus = (glazing.thickness ?? 0) >= 24 ? 3 : 0;
     return baseRw + glazingBonus + thicknessBonus;
   }
 
