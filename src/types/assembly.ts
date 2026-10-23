@@ -40,7 +40,7 @@ export interface AssemblyResponse {
   system: AssemblySystem;
   components: AssemblyComponent[];
   connections: AssemblyConnection[];
-  validation_results: Record<string, unknown>;
+  validation_results: { issues?: string[]; warnings?: string[] };
   missing_components: string[];
   confidence: number;
   requires_user_review: boolean;
