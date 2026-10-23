@@ -1,5 +1,5 @@
 import { usePublicCopy } from '@/hooks/usePublicCopy';
-import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 // PHASE 4: Use lazyRetry for better reliability and chunk loading
 import { lazyRetry } from '@/utils/lazyImport';
 // Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)

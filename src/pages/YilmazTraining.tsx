@@ -1,4 +1,3 @@
-import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { GraduationCap, Users, FileText, Video } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';

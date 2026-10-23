@@ -1,5 +1,5 @@
 import { usePublicCopy } from '@/hooks/usePublicCopy';
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CompanyTimeline } from "@/components/about/CompanyTimeline";
 import { TeamProfiles } from "@/components/about/TeamProfiles";
