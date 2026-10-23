@@ -337,6 +337,30 @@ export class AIQualityPredictor {
     return Math.min(0.95, 0.5 + dataPoints / 20);
   }
 
+  private calculateRiskScore(
+    _cut: Cut,
+    _profile: Profile,
+    defectProbability: number,
+    riskFactors: string[]
+  ): number {
+    // Base risk from defect probability plus a penalty per identified risk factor
+    const baseRisk = Math.min(100, defectProbability * 10);
+    return Math.min(100, baseRisk + riskFactors.length * 5);
+  }
+
+  private generateWarnings(
+    _cut: Cut,
+    _profile: Profile,
+    defectProbability: number,
+    riskFactors: string[]
+  ): string[] {
+    const warnings: string[] = [...riskFactors];
+    if (defectProbability > 0.5) {
+      warnings.push('High defect probability detected');
+    }
+    return warnings;
+  }
+
   /**
    * Check blade wear
    */
