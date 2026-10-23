@@ -72,9 +72,9 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
         let totalAccessories = 0;
 
         for (const component of components) {
-          const profile = profiles.find((p) => p.id === component.profileId);
+          const profile = profiles.find((p) => p.id === component.profile.id);
           if (profile) {
-            const lengthM = (component.cuttingLength || component.length) / 1000;
+            const lengthM = component.cuttingLengths.reduce((a, b) => a + b, 0) / 1000;
             const cost = (profile.cost_per_meter || 0) * lengthM * (component.quantity || 1);
             totalAluminum += cost;
           }
@@ -92,7 +92,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
 
         // Calculate waste estimate (simplified - would use ML predictor)
         const totalLength = components.reduce(
-          (sum, c) => sum + (c.cuttingLength || c.length) * (c.quantity || 1),
+          (sum, c) => sum + c.cuttingLengths.reduce((a, b) => a + b, 0) * (c.quantity || 1),
           0
         );
         const estimatedWaste = totalLength * 0.12; // 12% waste estimate
@@ -125,7 +125,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
                   [
                     {
                       id: component.id,
-                      length: component.cuttingLength || component.length,
+                      length: component.cuttingLengths.reduce((a, b) => a + b, 0),
                       quantity: component.quantity || 1,
                     },
                   ],
