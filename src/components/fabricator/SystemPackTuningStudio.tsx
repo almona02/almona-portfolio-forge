@@ -157,7 +157,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         }));
 
         return {
-          id: raw.id || packMeta.id || systemPackId!,
+          id: raw.id || packMeta.id || systemPackId,
           name: raw.name || packMeta.name || 'Unknown System',
           manufacturer: raw.manufacturer || packMeta.brands?.[0] || 'Unknown',
           region: raw.region || packMeta.regions?.[0] || 'global',

@@ -721,7 +721,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       systemPackId: selectedSystemPackId,
       systemProfileSelections,
       // Rule 18: Include wall tolerance data for InterferenceEngine
-      measurementMode: measurements.measurementMode as 'hole' | 'manufacturing',
+      measurementMode: measurements.measurementMode,
       wallDeduction: measurements.wallDeduction,
       manufacturingWidth,
       manufacturingHeight,
@@ -1329,7 +1329,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     height={measurements.height}
                     windowType={measurements.windowType}
                     systemPackId={selectedSystemPackId}
-                    measurementMode={measurements.measurementMode as 'hole' | 'manufacturing'}
+                    measurementMode={measurements.measurementMode}
                     wallDeduction={measurements.wallDeduction}
                     onWidthChange={(value) => handleInputChange('width', value)}
                     onHeightChange={(value) => handleInputChange('height', value)}

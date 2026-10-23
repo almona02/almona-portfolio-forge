@@ -435,7 +435,7 @@ export const ProfileStudioLite: React.FC = () => {
         return {
           id: data.id,
           name: data.name,
-          material: material as Profile['material'],
+          material: material,
           width: data.width as number,
           height: data.height as number,
           thickness: data.thickness,
