@@ -12,7 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { FabricatorSectionProvider } from '@/contexts/FabricatorSectionContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { CURRENCY_INFO, getExchangeRate, type ExchangeRate } from '@/lib/currencyExchange';
+import { getExchangeRate, type ExchangeRate } from '@/lib/currencyExchange';
 import { formatCurrency } from '@/lib/i18n/formatters';
 import { supabase } from '@/lib/supabase';
 import { QuotingEngine } from '@/modules/commercial/QuotingEngine';
@@ -744,17 +744,6 @@ const CommercialPageComponent: React.FC = () => {
 
     return amount * rate.rate;
   }, [displayCurrency, exchangeRates]);
-
-  // Get currency info for display
-  const _getCurrencyInfo = useCallback((currency: string) => {
-    return CURRENCY_INFO[currency] || {
-      code: currency,
-      name: currency,
-      symbol: currency,
-      flag: '',
-      region: 'DEFAULT' as any,
-    };
-  }, []);
 
   // Handle PDF download for quotes
   const handleDownloadQuotePDF = useCallback(async (quote: DraftQuote) => {

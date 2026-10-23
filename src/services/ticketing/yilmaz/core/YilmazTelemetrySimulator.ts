@@ -240,7 +240,7 @@ export class YilmazTelemetrySimulator {
     return Math.round(baselinePressure + variation);
   }
 
-  private simulateSpindleTemp(machine: SimulatedMachine, isSummer: boolean, isBusinessHours: boolean, forceOverheating?: boolean): number {
+  private simulateSpindleTemp(_machine: SimulatedMachine, isSummer: boolean, isBusinessHours: boolean, forceOverheating?: boolean): number {
     // Normal: <70°C
     // Summer: Higher due to ambient
     // Business hours: Higher due to operation

@@ -142,7 +142,7 @@ export class YilmazExportPipeline {
    * Validate project data against machine constraints before export.
    * Returns detailed issues with bilingual messages.
    */
-  preFlight(project: WindowUnit, optimization: OptimizationResult): PreFlightResult {
+  preFlight(_project: WindowUnit, optimization: OptimizationResult): PreFlightResult {
     const specs = MACHINE_SPECS[this.config.machineModel];
     const issues: ValidationIssue[] = [];
     const cuttingPlans = optimization.cuttingPlan;

@@ -30,13 +30,6 @@ export class NaturalLanguageProcessor {
     'القاهرة', 'الجيزة', 'الإسكندرية', 'الدقهلية', 'الشرقية'
   ];
 
-  // Price indicators in Arabic and English
-  private static priceIndicators = {
-    under: ['under', 'below', 'less than', 'maximum', 'max', 'اقل من', 'تحت', 'اكتر من'],
-    over: ['over', 'above', 'more than', 'minimum', 'min', 'اكتر من', 'فوق', 'اعلى من'],
-    around: ['around', 'approximately', 'about', 'near', 'حوالي', 'تقريبا']
-  };
-
   // Urgency indicators
   private static urgencyIndicators = {
     high: ['urgent', 'immediately', 'asap', 'quick', 'fast', 'now', 'عاجل', 'سريع', 'فوري'],
