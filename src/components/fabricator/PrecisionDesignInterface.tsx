@@ -2,7 +2,6 @@ import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
 import { EGYPTIAN_PATTERNS, getPatternsForSystem } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { SimplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngine';
-import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { cn } from '@/lib/utils';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
@@ -273,7 +272,6 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
         totalMaterial += totalBarLength;
 
         // Calculate price
-        const _pricingEngine = new PricingEngine({ region: 'egypt', currency: 'EGP' });
         const lengthM = totalBarLength / CALCULATION_MULTIPLIERS.MM_TO_M;
         const price = profile.costPerMeter ? lengthM * profile.costPerMeter : 0;
         totalPrice += price;

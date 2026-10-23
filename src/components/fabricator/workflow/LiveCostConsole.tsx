@@ -17,7 +17,6 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import type { WindowComponent, Profile } from '@/types/fabricator';
-import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { RemnantManager } from '@/lib/inventory/RemnantManager';
 
 interface LiveCostConsoleProps {
@@ -67,11 +66,6 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
 
       setLoading(true);
       try {
-        const _pricingEngine = new PricingEngine({
-          region: 'egypt',
-          currency: currency as any,
-        });
-
         // Calculate material costs
         let totalAluminum = 0;
         let totalGlass = 0;
