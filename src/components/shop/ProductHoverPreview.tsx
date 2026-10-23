@@ -52,7 +52,6 @@ export const ProductHoverPreview: React.FC<ProductHoverPreviewProps> = ({
 
     const rect = triggerRef.current.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
-    const _viewportHeight = window.innerHeight;
 
     // Determine best position based on available space
     if (rect.right + 320 > viewportWidth) {

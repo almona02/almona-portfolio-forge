@@ -51,14 +51,6 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
       p.profileRole === 'frame' || p.specifications?.role === 'frame'
     ) || systemPack.profiles[0];
     
-    const _sashProfile = systemPack.profiles.find(p => 
-      p.profileRole === 'sash' || p.specifications?.role === 'sash'
-    ) || systemPack.profiles[1] || frameProfile;
-
-    // Determine system category
-    const _isUPVC = systemPack.meta.regions.some(r => r.includes('upvc')) || 
-                   systemPack.windowSystemSpec?.category === 'upvc';
-
     return {
       sashProfile: frameProfile as Profile, // Use frame as sash for simplicity
       frameProfile: frameProfile as Profile,

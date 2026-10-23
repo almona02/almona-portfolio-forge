@@ -58,12 +58,6 @@ export function YDTSuggestionsPanel({
   loading = false,
   ticketId: _ticketId
 }: YDTSuggestionsPanelProps) {
-  const _getConfidenceColor = (conf: number) => {
-    if (conf >= 0.8) return 'text-green-400';
-    if (conf >= 0.6) return 'text-yellow-400';
-    return 'text-amber-400';
-  };
-
   const getConfidenceBadge = (conf: number) => {
     if (conf >= 0.8) return 'default';
     if (conf >= 0.6) return 'secondary';

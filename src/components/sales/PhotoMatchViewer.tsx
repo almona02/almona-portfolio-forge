@@ -131,37 +131,6 @@ function detectWindowEdges(imageData: ImageData): { x: number; y: number; width:
   return windows;
 }
 
-// Perspective correction algorithm
-function _calculatePerspectiveMatrix(correction: PerspectiveCorrection, width: number, height: number): THREE.Matrix4 {
-  const src = [
-    correction.topLeft.x, correction.topLeft.y,
-    correction.topRight.x, correction.topRight.y,
-    correction.bottomRight.x, correction.bottomRight.y,
-    correction.bottomLeft.x, correction.bottomLeft.y,
-  ];
-
-  const dst = [0, 0, width, 0, width, height, 0, height];
-
-  // Calculate homography matrix
-  const A: number[][] = [];
-  for (let i = 0; i < 4; i++) {
-    const x = src[i * 2];
-    const y = src[i * 2 + 1];
-    const u = dst[i * 2];
-    const v = dst[i * 2 + 1];
-    
-    A.push([x, y, 1, 0, 0, 0, -u * x, -u * y, -u]);
-    A.push([0, 0, 0, x, y, 1, -v * x, -v * y, -v]);
-  }
-
-  // Solve for homography (simplified - use proper matrix solver in production)
-  const matrix = new THREE.Matrix4();
-  // In production, use a proper homography solver
-  matrix.identity();
-  
-  return matrix;
-}
-
 // 3D Scene Component
 function PhotoMatchScene({
   windowUnit,
