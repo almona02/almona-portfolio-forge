@@ -382,17 +382,11 @@ async def get_health_status() -> Dict[str, Any]:
 
 
 async def get_liveness_status() -> Dict[str, Any]:
-    """Get liveness probe status (critical checks only)."""
-    try:
-        return await health_manager.run_quick_check()
-    except Exception as e:
-        # If health checks fail, return basic status (don't fail startup)
-        logger.warning(f"Health check error (non-blocking): {e}")
-        return {
-            "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
-            "note": "Basic health check passed (detailed checks may be unavailable)"
-        }
+    """Get liveness probe status (process liveness only)."""
+    return {
+        "status": "ok",
+        "timestamp": datetime.utcnow().isoformat(),
+    }
 
 
 async def get_readiness_status() -> Dict[str, Any]:
