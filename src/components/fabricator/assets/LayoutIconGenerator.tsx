@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useMemo, useRef, Suspense } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useRef, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, Center } from '@react-three/drei';
 import * as THREE from 'three';

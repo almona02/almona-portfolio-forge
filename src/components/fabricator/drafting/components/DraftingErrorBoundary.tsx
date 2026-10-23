@@ -1,6 +1,6 @@
 // src/components/fabricator/drafting/components/DraftingErrorBoundary.tsx
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
 import { AlertTriangle, RefreshCw, XCircle } from 'lucide-react';
