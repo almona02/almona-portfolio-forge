@@ -25,7 +25,10 @@ export {
   MeshLambertMaterial,
   TextureLoader,
   LoadingManager,
-  Color
+  Color,
+  AmbientLight,
+  DirectionalLight,
+  PointLight
 } from 'three';
 
 // Remove heavy exporters unless specifically needed

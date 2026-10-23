@@ -90,7 +90,7 @@ const OptimizedModel = ({
         setIsARSession(false)
       } else {
         /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- WebXR requestSession; three.js types may not align with browser XRSession */
-        const session: XRSession = await renderer.xr.requestSession('immersive-ar', {
+        const session: XRSession = await (navigator as any).xr.requestSession('immersive-ar', {
           requiredFeatures: ['local'],
         })
         await renderer.xr.setSession(session)
