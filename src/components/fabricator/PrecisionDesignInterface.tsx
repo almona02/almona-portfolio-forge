@@ -340,7 +340,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
   // Get system max width constraint
   const maxSashWidth = useMemo(() => {
     if (!systemPack?.smartDrawPreset) return CELL_CONSTRAINTS.DEFAULT_MAX_SASH_WIDTH_MM; // Default
-    return systemPack.smartDrawPreset.maxPanelWidthMm || CELL_CONSTRAINTS.DEFAULT_MAX_SASH_WIDTH_MM;
+    return (systemPack.smartDrawPreset as { maxPanelWidthMm?: number }).maxPanelWidthMm || CELL_CONSTRAINTS.DEFAULT_MAX_SASH_WIDTH_MM;
   }, [systemPack]);
 
   // Check constraints for each cell
