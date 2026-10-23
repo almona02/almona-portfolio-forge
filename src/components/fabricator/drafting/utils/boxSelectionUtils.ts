@@ -125,7 +125,7 @@ export function arcIntersectsBox(
   arc: Arc,
   box: SelectionBox
 ): boolean {
-  if (!arc || !arc.center || !box) return false;
+  if (!arc || !box) return false;
   
   const boxMinX = Math.min(box.start.x, box.end.x);
   const boxMaxX = Math.max(box.start.x, box.end.x);
@@ -133,16 +133,16 @@ export function arcIntersectsBox(
   const boxMaxY = Math.max(box.start.y, box.end.y);
   
   // Check if arc center is in box
-  if (arc.center.x >= boxMinX && arc.center.x <= boxMaxX &&
-      arc.center.y >= boxMinY && arc.center.y <= boxMaxY) {
+  if (arc.cx >= boxMinX && arc.cx <= boxMaxX &&
+      arc.cy >= boxMinY && arc.cy <= boxMaxY) {
     return true;
   }
   
   // Check if arc bounding box overlaps with selection box
-  const arcMinX = arc.center.x - arc.r;
-  const arcMaxX = arc.center.x + arc.r;
-  const arcMinY = arc.center.y - arc.r;
-  const arcMaxY = arc.center.y + arc.r;
+  const arcMinX = arc.cx - arc.r;
+  const arcMaxX = arc.cx + arc.r;
+  const arcMinY = arc.cy - arc.r;
+  const arcMaxY = arc.cy + arc.r;
   
   return !(
     arcMaxX < boxMinX ||
