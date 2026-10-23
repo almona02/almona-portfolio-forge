@@ -100,13 +100,9 @@ describe('ApexEngineV6', () => {
   it('should use caching for sub-1ms repeats', () => {
     const engine = new ApexEngineV6(mockSystem, mockUnit);
     
-    const _t0 = performance.now();
     engine.generate();
-    const _t1 = performance.now();
     
-    const _t2 = performance.now();
     const result2 = engine.generate();
-    const _t3 = performance.now();
     
     expect(result2.performance.cached).toBe(true);
     // Ideally t3-t2 is very small, likely < 1ms or close to it

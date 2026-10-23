@@ -9,7 +9,6 @@
 
 import type { SystemPack } from '@/data/systemPacks';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { calculateWindLoad } from '@/lib/codex/FormulaRegistry';
 
 /**
  * Engineering constraints

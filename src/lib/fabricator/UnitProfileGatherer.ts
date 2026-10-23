@@ -835,7 +835,7 @@ export class UnitProfileGatherer {
   private generateAccessoryCuts(
     _profile: Profile,
     _unit: WindowUnit,
-    role: NonNullable<Profile['profileRole']>
+    _role: NonNullable<Profile['profileRole']>
   ): RequiredCut[] {
 
     // For now, return empty array - accessories may need custom logic
