@@ -70,6 +70,8 @@ export interface MaterialSpec {
   material: MaterialType;
   systemPackId: string;
   profileDepth: number;
+  frameWidth?: number;
+  frameDepth?: number;
   glazingPocket: {
     depth: number;
     width: number;
