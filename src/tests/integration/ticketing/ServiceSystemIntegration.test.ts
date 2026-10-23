@@ -8,7 +8,6 @@ const mockTechnicians = [{ id: 'TECH-1', name: 'John Doe', skills: ['repair'] }]
 const mockTicket = { id: 'T-101', description: 'Test ticket', type: 'technical', priority: 'high' };
 
 describe('Service System Integration', () => {
-  let _lifecycleEngine: TicketLifecycleEngine;
   let assignmentExecutor: AssignmentExecutor;
   let routingAdvisor: RoutingAdvisor;
   

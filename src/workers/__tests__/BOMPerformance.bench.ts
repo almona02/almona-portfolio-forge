@@ -51,18 +51,12 @@ const mockWindowUnit: WindowUnit = {
 // Initialize calculators
 const profileCalc = new ProfileBOMCalculator();
 const glassCalc = new GlassBOMCalculator();
-const pricingEngine = new EgyptianPricingEngine();
-const _costCalc = new CostCalculator(pricingEngine);
 
 describe('BOM Calculation Performance', () => {
   
   const calculateFullBOM = async () => {
     const profiles = await profileCalc.calculateProfileBOM(mockWindowUnit, mockPattern, mockSystemPack);
     const glazing = await glassCalc.calculateGlassBOM(mockWindowUnit, mockPattern);
-    const _hardware = []; // Simplified
-    
-    // Simulate cost calculation
-    const _basicProfiles = profiles.map(p => ({...p, cost: p.length * 0.1})); 
     
     // We are benchmarking the core logic, not the worker overhead here, 
     // as Vitest benchmark runs on the main thread mostly. 

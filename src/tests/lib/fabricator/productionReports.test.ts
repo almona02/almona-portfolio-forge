@@ -4,7 +4,7 @@
  * Tests for the ProductionReportsGenerator utility
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ProductionReportsGenerator } from '@/components/fabricator/drafting/utils/productionReports';
 import type { WindowUnit } from '@/types/fabricator';
 

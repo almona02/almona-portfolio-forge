@@ -11,8 +11,6 @@ import type { EgyptianTemplate } from '@/components/fabricator/drafting/types/dr
 
 describe('ProductionBOMBuilder', () => {
   let builder: ProductionBOMBuilder;
-  let mockWindowUnit: WindowUnit;
-  let mockTemplate: EgyptianTemplate;
 
   beforeEach(() => {
     builder = new ProductionBOMBuilder();

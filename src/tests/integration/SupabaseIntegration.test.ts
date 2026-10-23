@@ -45,18 +45,6 @@ describe('Supabase Integration - Quality Control', () => {
 
   describe('Quality Verification Storage', () => {
     it('should store quality verification results', async () => {
-      const _qualityResult = {
-        user_id: testUserId,
-        window_unit_id: testWindowUnitId,
-        overall_status: 'pass',
-        dimensional_accuracy: 99.5,
-        material_quality: 'excellent',
-        verified_by: 'operator_001',
-        photo_hash: 'a3f5e8d9c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5',
-        qr_code: 'ALMONA_UNIT_001_QC_123',
-        verified_at: new Date().toISOString(),
-      };
-
       // This would normally use a stored procedure or RPC call
       // For now, we'll test the connection
       const { data: _data, error } = await supabase
@@ -81,17 +69,6 @@ describe('Supabase Integration - Quality Control', () => {
 
   describe('RealityOS Event Persistence', () => {
     it('should store QualityPassed events', async () => {
-      const _event = {
-        event_type: 'QualityPassed',
-        entity_id: `quality_${testWindowUnitId}`,
-        user_id: testUserId,
-        verified_by: 'operator_001',
-        proof_timestamp: new Date().toISOString(),
-        proof_photo_hashes: ['a3f5e8d9c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5'],
-        proof_qr_data: 'ALMONA_UNIT_001_QC_123',
-        event_hash: 'b4e6f9d0c3a2b1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6',
-      };
-
       const { data: _data, error } = await supabase
         .from('realityos_events')
         .select('*')
@@ -122,19 +99,6 @@ describe('Supabase Integration - Delivery Tracking', () => {
 
   describe('Delivery Records Storage', () => {
     it('should store delivery tracking data', async () => {
-      const _deliveryRecord = {
-        delivery_id: testDeliveryId,
-        window_unit_id: 'test-unit-001',
-        operator_id: 'operator_001',
-        gps_latitude: 30.0444,
-        gps_longitude: 31.2357,
-        gps_accuracy: 10,
-        photo_hash: 'a3f5e8d9c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5',
-        qr_code: 'ALMONA_UNIT_001_DELIVERY_123',
-        signature_hash: 'b4e6f9d0c3a2b1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6',
-        delivered_at: new Date().toISOString(),
-      };
-
       const { data: _data, error } = await supabase
         .from('deliveries')
         .select('*')
@@ -154,14 +118,6 @@ describe('Supabase Integration - Delivery Tracking', () => {
     });
 
     it('should store ProductDelivered events', async () => {
-      const _event = {
-        event_type: 'ProductDelivered',
-        entity_id: `delivery_${testDeliveryId}`,
-        proof_gps_latitude: 30.0444,
-        proof_gps_longitude: 31.2357,
-        proof_gps_accuracy: 10,
-      };
-
       const { data: _data, error } = await supabase
         .from('realityos_events')
         .select('*')
@@ -182,17 +138,6 @@ describe('Supabase Integration - Remnant Management', () => {
 
   describe('Remnant Storage - Append-Only Lifecycle', () => {
     it('should create remnant with initial status', async () => {
-      const _remnant = {
-        remnant_id: testRemnantId,
-        user_id: 'test-user-001',
-        profile_id: 'profile-001',
-        length: 1500,
-        status: 'available',
-        source_project_id: 'project-001',
-        source_cut_id: 'cut-001',
-        created_at: new Date().toISOString(),
-      };
-
       const { data: _data, error } = await supabase
         .from('material_remnants')
         .select('*')
@@ -225,17 +170,6 @@ describe('Supabase Integration - Remnant Management', () => {
     });
 
     it('should store RemnantCreated events', async () => {
-      const _event = {
-        event_type: 'RemnantCreated',
-        entity_id: `remnant_${testRemnantId}`,
-        proof_photo_hashes: ['a3f5e8d9c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5'],
-        proof_metadata: {
-          sourceProjectId: 'project-001',
-          sourceCutId: 'cut-001',
-          sourceBOMHash: 'b4e6f9d0c3a2b1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6',
-        },
-      };
-
       const { data: _data, error } = await supabase
         .from('realityos_events')
         .select('*')
