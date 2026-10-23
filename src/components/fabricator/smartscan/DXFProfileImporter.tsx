@@ -210,7 +210,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
           // Check if we should extract multiple profiles
           // Auto-detect if backend returned multiple profiles OR if filename suggests system pack
           const isMultiProfileFile = prof.metadata?.isMultiProfile || 
-                                    prof.metadata?.totalProfiles > 1 ||
+                                    (prof.metadata?.totalProfiles ?? 0) > 1 ||
                                     extractMultipleProfiles || 
                                     file.name.toLowerCase().includes('system') || 
                                     file.name.toLowerCase().includes('pack') ||
