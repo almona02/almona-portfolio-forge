@@ -264,7 +264,7 @@ function createTiltTurnPivots(
  * Shows rotation capability with arrow indicators.
  */
 function createTiltTurnIndicators(
-  width: number,
+  _width: number,
   height: number
 ): BufferGeometry[] {
   // Simple arrow geometry to indicate rotation

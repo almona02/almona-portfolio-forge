@@ -254,7 +254,7 @@ export class CNCIntegration {
    * Based on material properties, profile dimensions, and cut requirements
    */
   private calculateDeterministicParameters(
-    cut: Cut,
+    _cut: Cut,
     profile: Profile
   ): OptimalCuttingParameters {
     const baseSpeed = profile.material === 'aluminum' ? 3000 : 2500; // RPM
@@ -292,9 +292,6 @@ export class CNCIntegration {
         error: 'Machine not found',
       };
     }
-
-    // Generate QR code cut list
-    const _qrCutList = await this.generateQRCodeCutList(cuttingPlan, projectId, machineId);
 
     // TODO: Implement actual CNC controller communication
     // This would send the cutting plan via the machine's API/protocol

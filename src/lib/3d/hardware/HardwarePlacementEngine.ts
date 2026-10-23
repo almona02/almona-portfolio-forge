@@ -131,7 +131,7 @@ export class HardwarePlacementEngine {
    */
   validateEgyptianCode2020(
     placement: HardwarePlacement,
-    windowWidth: number,
+    _windowWidth: number,
     windowHeight: number
   ): boolean {
     // Check all validation flags

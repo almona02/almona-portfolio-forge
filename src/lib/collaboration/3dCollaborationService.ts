@@ -47,7 +47,6 @@ export interface CollaborationState {
 
 class Collaboration3DService {
   private channel: RealtimeChannel | null = null
-  private sessionId: string | null = null
   private userId: string | null = null
 
   async createSession(modelPath: string, userId: string): Promise<CollaborationSession> {

@@ -8,13 +8,11 @@
 
 import { BaseCNCAdapter, GCodeValidationResult, GCodeSimulationResult, CNCAdapterConfig } from './BaseCNCAdapter';
 import type { Cut, OptimizationResult } from '@/types/fabricator';
-import { SecurityGateway } from '@/lib/security/SecurityGateway';
 
 /**
  * ElumatecAdapter - Elumatec CNC machine adapter
  */
 export class ElumatecAdapter extends BaseCNCAdapter {
-  private securityGateway: SecurityGateway;
 
   constructor(config: Partial<CNCAdapterConfig> = {}) {
     const defaultConfig: CNCAdapterConfig = {
@@ -31,7 +29,6 @@ export class ElumatecAdapter extends BaseCNCAdapter {
     };
 
     super(defaultConfig);
-    this.securityGateway = SecurityGateway.getInstance();
   }
 
   /**
@@ -39,7 +36,7 @@ export class ElumatecAdapter extends BaseCNCAdapter {
    */
   async generateGCode(
     cuts: Cut[],
-    optimization: OptimizationResult,
+    _optimization: OptimizationResult,
     options?: Record<string, any>
   ): Promise<string> {
     const lines: string[] = [];

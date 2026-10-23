@@ -17,7 +17,7 @@ export class ProceduralTextures {
   /**
    * Generate normal map for material type
    */
-  generateNormalMap(type: MaterialType, size: number = 256): DataTexture | null {
+  generateNormalMap(_type: MaterialType, size: number = 256): DataTexture | null {
     const data = new Float32Array(size * size * 4);
 
     // Generate simple normal map based on material type

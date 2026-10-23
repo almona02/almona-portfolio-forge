@@ -93,7 +93,7 @@ export class JobComplexityPredictor {
    * Recommend algorithm based on complexity
    */
   private recommendAlgorithm(
-    complexityScore: number,
+    _complexityScore: number,
     totalCuts: number
   ): 'greedy' | 'linear' | 'genetic' {
     // Use thresholds similar to AdaptiveSolver

@@ -51,7 +51,6 @@ class AlertSystem {
   private rules: AlertRule[] = [];
   private thresholds: PerformanceThreshold[] = [];
   private subscribers: ((alert: Alert) => void)[] = [];
-  private isMonitoring: boolean = false;
 
   constructor() {
     this.initializeRules();
@@ -198,8 +197,6 @@ class AlertSystem {
   }
 
   private startMonitoring(): void {
-    this.isMonitoring = true;
-    
     // Monitor performance metrics every 30 seconds
     setInterval(() => {
       this.checkPerformanceMetrics();

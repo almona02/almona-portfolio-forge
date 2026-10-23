@@ -16,7 +16,6 @@ const loadTensorFlow = async () => {
 
 // Module-level cache
 let modelCache: any = null; // tf.LayersModel | null, but using any to avoid type issues
-const _modelVersion = 'v1';
 
 // Pre-trained model for machine fault detection
 export const loadFaultDetectionModel = async () => {
