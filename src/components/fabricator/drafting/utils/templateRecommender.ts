@@ -123,7 +123,7 @@ export function recommendTemplate(
     // 5. Cell type compatibility (10 points)
     if (constraints.preferredCellTypes && constraints.preferredCellTypes.length > 0) {
       const templateCellTypes = template.cellTypes.flat();
-      const hasMatchingTypes = constraints.preferredCellTypes.some((type) =>
+      const hasMatchingTypes = constraints.preferredCellTypes.some((type: string) =>
         templateCellTypes.includes(type)
       );
 

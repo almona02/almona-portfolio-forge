@@ -126,7 +126,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
       name: systemPack.meta.name,
       category: 'aluminum_windows' as const,
       brand: systemPack.meta.brands[0] || 'Unknown',
-      compatibleProfiles: systemPack.profiles?.map(p => p.id) || [],
+      compatibleProfiles: systemPack.profiles?.map((p: any) => p.id) || [],
       compatibleAccessories: [],
       description: systemPack.meta.name,
       technicalData: systemPack.windowSystemSpec || {},

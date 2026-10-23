@@ -86,12 +86,12 @@ export async function loadOwnedWorkshopInventory(
   profiles = applyOwnedPackMetadata(profiles, ownedPacks);
 
   if (systemPackId && systemPackId.trim()) {
-    const filtered = profiles.filter((p) => matchesSystemFilter(p, systemPackId.trim()));
+    const filtered = profiles.filter((p: any) => matchesSystemFilter(p, systemPackId.trim()));
     // Explicit filter with zero matches must not fall back to full catalog substitution.
     profiles = filtered;
   }
 
-  const totalValue = profiles.reduce((sum, p) => sum + profileInventoryValue(p), 0);
+  const totalValue = profiles.reduce((sum: number, p: any) => sum + profileInventoryValue(p), 0);
 
   return {
     ok: true,

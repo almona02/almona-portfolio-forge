@@ -72,10 +72,10 @@ interface TicketInsert {
 
 export const api = {
   // Auth endpoints
-  login: async (credentials) => {
+  login: async (credentials: { email: string; password: string }) => {
     return supabase.auth.signInWithPassword(credentials);
   },
-  register: async (userData) => {
+  register: async (userData: { email: string; password: string; [key: string]: any }) => {
     const { data: { user }, error } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
