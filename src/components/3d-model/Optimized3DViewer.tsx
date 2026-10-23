@@ -281,13 +281,13 @@ export function Optimized3DViewer(props: Optimized3DViewerProps) {
         const lightingProps = threeJS.getOptimizedLightingProps();
         const controlsProps = threeJS.getOptimizedControlsProps();
 
-        const { Canvas, AmbientLight, DirectionalLight, PointLight, OrbitControls } = threeJS;
+        const { Canvas, OrbitControls } = threeJS;
 
         return (
           <Canvas {...canvasProps}>
-            <AmbientLight {...lightingProps.ambientLight} />
-            <DirectionalLight {...lightingProps.directionalLight} />
-            <PointLight {...lightingProps.pointLight} />
+            <ambientLight {...lightingProps.ambientLight} />
+            <directionalLight {...lightingProps.directionalLight} />
+            <pointLight {...lightingProps.pointLight} />
             <Suspense fallback={<ModelLoadingFallback />}>
               <Initializer />
               <OptimizedModel {...props} threeJS={threeJS} />
