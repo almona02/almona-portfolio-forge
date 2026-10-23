@@ -30,9 +30,9 @@ const ElectricBorder = ({
 }: ElectricBorderProps) => {
   const rawId = useId().replace(/[:]/g, "");
   const filterId = `turbulent-displace-${rawId}`;
-  const svgRef = useRef(null);
-  const rootRef = useRef(null);
-  const strokeRef = useRef(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const strokeRef = useRef<HTMLDivElement>(null);
 
   const updateAnim = () => {
     const svg = svgRef.current;
