@@ -197,12 +197,8 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
       }
     }
 
-    // Update project dimensions to pattern's typical dimensions if needed
-    if (project && pattern.typicalWidthMm && pattern.typicalHeightMm) {
-      const _midWidth = Math.round((pattern.typicalWidthMm[0] + pattern.typicalWidthMm[1]) / 2);
-      const _midHeight = Math.round((pattern.typicalHeightMm[0] + pattern.typicalHeightMm[1]) / 2);
-      // Note: We can't directly update project here, but the grid change will trigger re-render
-    }
+    // (dead mid-width/height block removed)
+
 
     onGridChange(newGrid);
   }, [onGridChange, project]);
@@ -529,7 +525,6 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     if (!svgRef.current || dragState.type === null) return;
     const rect = svgRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const _y = e.clientY - rect.top;
 
     if (dragState.type === 'mullion-vertical' && dragState.startX !== undefined) {
       const deltaX = x - dragState.startX;
