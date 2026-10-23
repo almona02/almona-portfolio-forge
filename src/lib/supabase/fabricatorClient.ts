@@ -802,31 +802,33 @@ export class FabricatorClient {
 
   private mapProfileFromDB(data: Record<string, unknown>): Profile {
     const specs = (data.specifications as Record<string, unknown>) || {};
+    const num = (v: unknown): number => Number(v ?? 0);
+    const str = (v: unknown): string => String(v ?? '');
 
     return {
-      id: data.id,
-      name: data.name,
-      material: data.material,
-      width: parseFloat(data.width),
-      height: data.height ? parseFloat(data.height) : undefined,
-      thickness: data.thickness ? parseFloat(data.thickness) : undefined,
-      color: data.color || '#C0C0C0',
-      costPerMeter: parseFloat(data.cost_per_meter || 0),
-      cuttingAllowance: parseFloat(data.cutting_allowance || 3.0),
-      stockQuantity: parseFloat(data.stock_quantity || 0),
-      minStockLevel: parseFloat(data.min_stock_level || 0),
-      maxStockLevel: data.max_stock_level ? parseFloat(data.max_stock_level) : undefined,
-      supplier: data.supplier,
-      systemBrand: data.system_brand,
+      id: str(data.id),
+      name: str(data.name),
+      material: data.material as Profile['material'],
+      width: num(data.width),
+      height: data.height != null ? num(data.height) : undefined,
+      thickness: data.thickness != null ? num(data.thickness) : undefined,
+      color: str(data.color) || '#C0C0C0',
+      costPerMeter: num(data.cost_per_meter),
+      cuttingAllowance: num(data.cutting_allowance ?? 3.0),
+      stockQuantity: num(data.stock_quantity),
+      minStockLevel: num(data.min_stock_level),
+      maxStockLevel: data.max_stock_level != null ? num(data.max_stock_level) : undefined,
+      supplier: str(data.supplier),
+      systemBrand: data.system_brand as string | undefined,
       weightPerMeter:
         typeof specs.weightPerMeterKg === 'number'
           ? specs.weightPerMeterKg
           : undefined,
       specifications: specs,
-      grainDirection: data.grain_direction || null,
-      userId: data.user_id,
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at),
+      grainDirection: (data.grain_direction as Profile['grainDirection']) || null,
+      userId: data.user_id as string | undefined,
+      createdAt: new Date(str(data.created_at)),
+      updatedAt: new Date(str(data.updated_at)),
     };
   }
 
@@ -853,24 +855,27 @@ export class FabricatorClient {
   }
 
   private mapAccessoryFromDB(data: Record<string, unknown>): FabricatorAccessory {
+    const num = (v: unknown): number => Number(v ?? 0);
+    const str = (v: unknown): string => String(v ?? '');
+
     return {
-      id: data.id,
-      name: data.name,
-      type: data.type,
-      category: data.category,
-      unitPrice: parseFloat(data.unit_price || 0),
-      baseCost: parseFloat(data.base_cost || 0),
-      markupPercentage: parseFloat(data.markup_percentage || 30.0),
-      supplier: data.supplier,
-      sku: data.sku,
-      description: data.description,
-      compatibleMaterials: data.compatible_materials || [],
-      region: data.region || ['global'],
-      imageUrl: data.image_url,
-      specifications: data.specifications || {},
-      userId: data.user_id,
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at),
+      id: str(data.id),
+      name: str(data.name),
+      type: data.type as FabricatorAccessory['type'],
+      category: str(data.category),
+      unitPrice: num(data.unit_price),
+      baseCost: num(data.base_cost),
+      markupPercentage: num(data.markup_percentage ?? 30.0),
+      supplier: data.supplier as string | undefined,
+      sku: data.sku as string | undefined,
+      description: data.description as string | undefined,
+      compatibleMaterials: (data.compatible_materials as string[]) || [],
+      region: (data.region as string[]) || ['global'],
+      imageUrl: data.image_url as string | undefined,
+      specifications: (data.specifications as Record<string, unknown>) || {},
+      userId: data.user_id as string | undefined,
+      createdAt: new Date(str(data.created_at)),
+      updatedAt: new Date(str(data.updated_at)),
     };
   }
 
