@@ -155,7 +155,7 @@ export class PriceValidationService {
    */
   private validateAluminumPrice(
     pricing: SystemPricingState,
-    alerts: PriceValidationAlert[],
+    _alerts: PriceValidationAlert[],
     warnings: PriceValidationAlert[]
   ): void {
     if (pricing.aluminumPricePerKg <= 0) {
@@ -419,7 +419,7 @@ export class PriceValidationService {
    */
   private generateRecommendations(
     pricing: SystemPricingState,
-    alerts: PriceValidationAlert[],
+    _alerts: PriceValidationAlert[],
     recommendations: string[]
   ): void {
     const profileCount = Object.keys(pricing.profilePrices || {}).length;

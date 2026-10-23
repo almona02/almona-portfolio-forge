@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import { globalPerformanceMonitor as performanceMonitor } from './PerformanceMonitor';
 
 export type ConstitutionalTier = 'Tier 0' | 'Tier 3' | 'Mixed';
 

@@ -461,7 +461,7 @@ export class PricingEngine {
   /**
    * Get quantity break discount
    */
-  private getQuantityBreak(profileId: string, quantity: number): QuantityBreak | null {
+  private getQuantityBreak(_profileId: string, quantity: number): QuantityBreak | null {
     // This would typically fetch from database
     // For now, return a simple tiered structure
     if (quantity >= 25) return { min: 25, discount: 15 };

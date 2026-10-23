@@ -64,7 +64,6 @@ export interface SegmentedWindowDesign {
  * TallWindowSegmenter - Automatic segmentation engine
  */
 export class TallWindowSegmenter {
-  private readonly EGYPTIAN_HANDLE_HEIGHT = 1100; // mm (standard handle position)
   private reinforcementCalculator: SegmentReinforcementCalculator;
 
   constructor() {
@@ -216,7 +215,7 @@ export class TallWindowSegmenter {
    */
   private positionHandleForSegment(
     segmentIndex: number,
-    totalSegments: number,
+    _totalSegments: number,
     segmentHeight: number
   ): number {
     // For bottom segment: 1100mm from bottom
