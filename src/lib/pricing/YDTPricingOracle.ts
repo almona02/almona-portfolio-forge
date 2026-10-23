@@ -235,7 +235,7 @@ export class YDTPricingOracle {
   /**
    * Calculate overhead costs
    */
-  private calculateOverhead(workshop: Workshop, materialCost: number): number {
+  private calculateOverhead(_workshop: Workshop, materialCost: number): number {
     // Overhead is typically 10-15% of material cost
     return materialCost * 0.12; // 12% overhead
   }
@@ -245,7 +245,7 @@ export class YDTPricingOracle {
    */
   private calculateFinalPrice(
     marketPricing: YDTPricing,
-    egyptianIntel: any,
+    _egyptianIntel: any,
     overhead: number
   ): number {
     const subtotal = marketPricing.materialCost + marketPricing.laborCost + overhead;
@@ -256,7 +256,7 @@ export class YDTPricingOracle {
    * Get pricing recommendations
    */
   private getPricingRecommendations(
-    project: Project,
+    _project: Project,
     marketPricing: YDTPricing,
     competitiveAnalysis: any
   ): string[] {

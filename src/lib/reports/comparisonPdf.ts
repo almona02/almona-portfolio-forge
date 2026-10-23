@@ -218,7 +218,6 @@ export async function generateComparisonPDF(
     const innerWidth = pageWidth - margin * 2 - 40;
     const leftWidth = innerWidth * 0.6;
     const rightX = innerX + leftWidth + 15;
-    const _rightWidth = innerWidth - leftWidth - 15;
 
     // Company details (left column)
     const companyX = Math.max(logoX, innerX);

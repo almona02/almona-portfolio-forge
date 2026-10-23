@@ -5,7 +5,7 @@ import { MACHINE_SPECS } from './pricing';
 export async function generatePDFReport(
   costs: FabricationCosts,
   machineModel: string,
-  material: 'aluminum' | 'upvc',
+  _material: 'aluminum' | 'upvc',
   isArabic: boolean = false
 ): Promise<Uint8Array> {
   if (!PDFDocument) {
