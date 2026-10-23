@@ -338,28 +338,6 @@ export function detectSelfIntersections(
     _area -= points[j].x * points[i].y;
   }
   
-  // Check if any edges intersect
-  for (let i = 0; i < points.length; i++) {
-      const _line1: Line = {
-        start: points[i],
-        end: points[(i + 1) % points.length],
-        type: 'solid'
-      };
-
-      for (let j = i + 2; j < points.length; j++) {
-        if (j === points.length - 1 && i === 0) continue; // Skip adjacent edges
-
-        const _line2: Line = {
-          start: points[j],
-          end: points[(j + 1) % points.length],
-          type: 'solid'
-        };
-      
-      // Simple intersection check (would need full line-line intersection)
-      // For now, return false (no detection)
-    }
-  }
-  
   return false;
 }
 
