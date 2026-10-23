@@ -90,29 +90,6 @@ export function EnhancedModel3DDialog({
   const viewerRef = useRef<{ resetCamera?: () => void } | null>(null);
   const { toast } = useToast();
 
-  // Simulate realistic loading progress
-  const _simulateLoadingProgress = useCallback(() => {
-    const stages = [
-      { stage: 'initializing' as const, progress: 10, message: 'Initializing 3D viewer...' },
-      { stage: 'downloading' as const, progress: 30, message: 'Downloading model data...' },
-      { stage: 'parsing' as const, progress: 60, message: 'Parsing 3D geometry...' },
-      { stage: 'rendering' as const, progress: 85, message: 'Rendering model...' },
-      { stage: 'complete' as const, progress: 100, message: 'Model loaded successfully!' }
-    ];
-
-    let currentStage = 0;
-    const interval = setInterval(() => {
-      if (currentStage < stages.length) {
-        setLoadingProgress(stages[currentStage]);
-        currentStage++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 800);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const handleLoad = useCallback(() => {
     setLoadingProgress({
       stage: 'complete',

@@ -69,40 +69,6 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
     return () => window.removeEventListener('resize', updateCanvasSize);
   }, []);
 
-  // Convert zone coordinates to canvas coordinates
-  const _zoneToCanvas = useCallback((zone: MachiningZone) => {
-    const centerX = canvasSize.width / 2;
-    const centerY = canvasSize.height / 2;
-
-    // Calculate position based on reference corner
-    let x = 0, y = 0;
-    switch (zone.referenceCorner) {
-      case 'top_left':
-        x = zone.xOffset;
-        y = zone.yOffset;
-        break;
-      case 'top_right':
-        x = profileWidth - zone.xOffset - zone.width;
-        y = zone.yOffset;
-        break;
-      case 'bottom_left':
-        x = zone.xOffset;
-        y = profileHeight - zone.yOffset - zone.height;
-        break;
-      case 'bottom_right':
-        x = profileWidth - zone.xOffset - zone.width;
-        y = profileHeight - zone.yOffset - zone.height;
-        break;
-    }
-
-    return {
-      x: centerX + (x - profileWidth / 2) * scale,
-      y: centerY + (y - profileHeight / 2) * scale,
-      width: zone.width * scale,
-      height: zone.height * scale,
-    };
-  }, [canvasSize, profileWidth, profileHeight, scale]);
-
   // Handle mouse/touch start
   const handlePointerDown = (e: React.PointerEvent, zone: MachiningZone, type: 'position' | 'resize') => {
     e.preventDefault();
