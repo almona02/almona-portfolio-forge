@@ -27,6 +27,10 @@ export interface ImportedProfile {
     source?: string;
     units?: string;
     hasSvgPreview?: boolean;
+    isMultiProfile?: boolean;
+    totalProfiles?: number;
+    apiResponse?: any;
+    detectedRole?: string;
   };
 }
 
