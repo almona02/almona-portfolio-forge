@@ -56,7 +56,8 @@ const GOVERNORATES: { name: string; windZone: WindZone }[] = [
   { name: 'Delta', windZone: 'inland' },
 ];
 
-const _defaultSystems = ['panda-50', 'rock60'];
+// (unused default systems removed)
+
 
 export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
   open,

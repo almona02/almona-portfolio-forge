@@ -28,7 +28,6 @@ export function getMaterialSpec(systemPackId: string): MaterialSpec | null {
   const profileDepth = frameProfile?.width || 60; // Default 60mm
 
   // Get glazing pocket from system pack specs
-  const _windowSystemSpec = systemPack.windowSystemSpec || {};
   const glassAllowances = systemPack.glassAllowances;
   
   const glazingPocket = {

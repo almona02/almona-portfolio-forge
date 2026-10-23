@@ -163,7 +163,6 @@ export function throttle<T extends (...args: any[]) => any>(
  * Calculate viewport from SVG element
  */
 export function getSVGViewport(svg: SVGSVGElement): Viewport {
-  const _viewBox = svg.viewBox.baseVal;
   const ctm = svg.getScreenCTM();
   
   if (!ctm) {
