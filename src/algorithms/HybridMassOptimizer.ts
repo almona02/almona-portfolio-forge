@@ -124,12 +124,12 @@ export class HybridMassOptimizer {
    */
   private async matchRemnantsToCuts(
     cutsByProfile: Map<string, { profile: Profile; cuts: Cut[] }>,
-    availableRemnants: Map<string, Remnant[]>,
+    _availableRemnants: Map<string, Remnant[]>,
     _request: MassProductionOptimizationRequest
   ): Promise<RemnantMatch[]> {
     const matches: RemnantMatch[] = [];
 
-    for (const [profileId, { profile, cuts }] of cutsByProfile.entries()) {
+    for (const [, { profile, cuts }] of cutsByProfile.entries()) {
 
       // Find matches for this profile
       const profileMatches = await remnantManager.findRemnantMatches(
