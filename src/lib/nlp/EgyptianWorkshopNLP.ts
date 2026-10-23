@@ -65,37 +65,6 @@ export class EgyptianWorkshopNLP {
     rejection: ['مش قادر', 'غالي اوي', 'مش هينفع', 'في حاجة تانية'],
   };
 
-  // Dialect Patterns
-  private dialectPatterns: Record<EgyptianDialect, {
-    speed: 'fast' | 'medium' | 'slow';
-    phrases: string[];
-    formal?: boolean;
-    slang?: boolean;
-  }> = {
-    cairo_shobra: {
-      speed: 'fast',
-      phrases: ['يعني ايه؟', 'تمام يا معلم', 'كده تمام'],
-    },
-    alexandria: {
-      speed: 'medium',
-      phrases: ['باشا', 'كده تمام', 'طيب'],
-    },
-    upper_egypt: {
-      speed: 'slow',
-      phrases: ['يا ريس', 'ربنا يوفقك', 'الله يكرمك'],
-    },
-    technical_office: {
-      speed: 'medium',
-      formal: true,
-      phrases: ['اللحام الحراري', 'البروفايل المزدوج'],
-    },
-    small_workshop: {
-      speed: 'fast',
-      slang: true,
-      phrases: ['البتاعة دي', 'الشغلانة'],
-    },
-  };
-
   /**
    * Understand ANY Egyptian workshop query
    */

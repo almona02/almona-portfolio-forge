@@ -201,7 +201,7 @@ export class YDTEnforcementService {
   /**
    * Suggest spare parts with YDT
    */
-  private async suggestSparePartsWithYDT(inputs: any): Promise<any> {
+  private async suggestSparePartsWithYDT(_inputs: any): Promise<any> {
     
     // Use YDT's 281 parts catalog + market intelligence
     
