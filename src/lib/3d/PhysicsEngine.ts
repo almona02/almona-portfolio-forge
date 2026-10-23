@@ -66,7 +66,7 @@ export interface PhysicsConstraint {
   constraint: unknown; // Ammo.btTypedConstraint
 }
 
-let ammoInstance: unknown = null;
+let ammoInstance: any = null;
 let isAmmoInitialized = false;
 let initPromise: Promise<boolean> | null = null;
 
@@ -142,10 +142,10 @@ export async function initPhysics(): Promise<boolean> {
  * Handles the simulation loop and body management
  */
 export class PhysicsWorld {
-  private world: unknown; // Ammo.btDiscreteDynamicsWorld
+  private world: any; // Ammo.btDiscreteDynamicsWorld
   private bodies: Map<string, PhysicsBody> = new Map();
   private constraints: Map<string, PhysicsConstraint> = new Map();
-  private tempTransform: unknown;
+  private tempTransform: any;
   private config: PhysicsConfig;
   private isRunning: boolean = false;
   private lastTime: number = 0;
