@@ -169,7 +169,7 @@ export class AIQualityPredictor {
    * Rule-based parameter suggestion
    */
   private ruleBasedSuggestParameters(
-    cut: Cut,
+    _cut: Cut,
     profile: Profile
   ): OptimalCuttingParameters {
     const baseSpeed = profile.material === 'aluminum' ? 3000 : 2500; // RPM

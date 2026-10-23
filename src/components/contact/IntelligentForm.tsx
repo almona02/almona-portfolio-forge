@@ -40,7 +40,6 @@ export const IntelligentForm = ({
   const [serialValidating, setSerialValidating] = useState(false);
   const [serialValid, setSerialValid] = useState<boolean | null>(null);
 
-  const _inquiryType = watch('inquiryType');
   const machineSerial = watch('machineSerial');
 
   // Validate machine serial number

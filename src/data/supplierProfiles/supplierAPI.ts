@@ -278,9 +278,9 @@ export class SupplierAPI {
    * Call supplier API (simulated - replace with actual HTTP client)
    */
   private static async callSupplierAPI(
-    endpoint: string,
-    path: string,
-    apiKey: string,
+    _endpoint: string,
+    _path: string,
+    _apiKey: string,
     data?: any,
     _method: string = 'GET'
   ): Promise<any> {

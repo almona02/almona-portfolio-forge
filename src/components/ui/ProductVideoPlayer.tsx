@@ -32,7 +32,6 @@ const getYouTubeVideoId = (url: string): string | null => {
 
 export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
   youtubeUrl,
-  _thumbnailUrl,
   productName,
   isOpen,
   onClose,

@@ -180,8 +180,6 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
   });
 
   const market = watch("market");
-  const _serviceType = watch("serviceType");
-  const _frequency = watch("frequency");
 
   useEffect(() => {
     if (selectedContract && market) {

@@ -188,7 +188,6 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
           <div className={cn('space-y-6', compact && 'space-y-4')}>
             {activities.map((activity, index) => {
               const label = getActivityLabel(activity.eventType);
-              const _colorClass = getActivityColor(activity.eventType);
               const timeAgo = formatDistanceToNow(activity.timestamp, { addSuffix: true });
               
               return (
