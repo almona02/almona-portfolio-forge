@@ -94,6 +94,8 @@ export interface HardwareItemMinimal {
   quantity?: number;
   supplierCode?: string;
   category?: string;
+  length?: number;
+  position?: string;
 }
 
 export interface WindowUnit {
