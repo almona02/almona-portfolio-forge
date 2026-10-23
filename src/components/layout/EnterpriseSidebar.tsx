@@ -147,16 +147,6 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Workflow stages
-  const _workflowStages = [
-    { id: 'measuring', name: t('fabricator:workflow.steps.measuring.name', 'Smart Measuring'), icon: Ruler, status: 'active' },
-    { id: 'design', name: t('fabricator:workflow.steps.design.name', 'Technical Design'), icon: Settings, status: 'pending' },
-    { id: 'optimization', name: t('fabricator:workflow.steps.optimization.name', 'Stock Optimization'), icon: Sparkles, status: 'pending' },
-    { id: 'inventory', name: t('fabricator:workflow.steps.inventory.name', 'Inventory Check'), icon: Package, status: 'pending' },
-    { id: 'production', name: t('fabricator:workflow.steps.production.name', 'Production'), icon: Factory, status: 'pending' },
-    { id: 'quality', name: t('fabricator:workflow.steps.quality.name', 'Quality Control'), icon: Zap, status: 'pending' }
-  ];
-
   // Fabrication modules - Gold Tier Enhanced
   const fabricationModules = [
     {
