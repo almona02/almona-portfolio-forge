@@ -130,7 +130,6 @@ export class HybridMassOptimizer {
     const matches: RemnantMatch[] = [];
 
     for (const [profileId, { profile, cuts }] of cutsByProfile.entries()) {
-      const _remnants = availableRemnants.get(profileId) || [];
 
       // Find matches for this profile
       const profileMatches = await remnantManager.findRemnantMatches(

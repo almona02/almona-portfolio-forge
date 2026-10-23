@@ -216,7 +216,6 @@ export class EN14351Compliance {
    * Calculate wind load resistance
    */
   private calculateWindLoad(window: WindowUnit): number {
-    const _area = (window.overallWidth * window.overallHeight) / 1000000; // m²
     const baseResistance = 1000; // Pa
     const profileFactor = window.components.length > 4 ? 1.2 : 1.0;
     return baseResistance * profileFactor;

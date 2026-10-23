@@ -38,7 +38,6 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
 
   // Calculate FPS and render time
   const measurePerformance = useCallback(() => {
-    const _frameStart = performance.now();
     const now = performance.now();
     const delta = now - lastTimeRef.current;
     
