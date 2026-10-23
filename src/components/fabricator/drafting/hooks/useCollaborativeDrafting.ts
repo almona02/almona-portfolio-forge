@@ -99,7 +99,7 @@ export function useCollaborativeDrafting({
 
     try {
       // In production, use actual WebSocket server URL
-      const wsUrl = import.meta.env.VITE_WS_URL || `ws://localhost:8080/drafting/${roomId}`;
+      const wsUrl = String(import.meta.env.VITE_WS_URL || `ws://localhost:8080/drafting/${roomId}`);
 
       // Validate URL format (basic check)
       if (!wsUrl.startsWith('ws://') && !wsUrl.startsWith('wss://')) {
