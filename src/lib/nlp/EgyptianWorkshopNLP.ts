@@ -341,8 +341,6 @@ export class EgyptianWorkshopNLP {
     answer: string,
     dialect: EgyptianDialect
   ): Promise<string> {
-    const template = this.dialectPatterns[dialect];
-
     // Add dialect-specific phrases
     if (dialect === 'cairo_shobra') {
       return `يعني ${answer}. تمام يا معلم؟`;

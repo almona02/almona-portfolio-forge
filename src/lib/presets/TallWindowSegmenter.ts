@@ -64,7 +64,6 @@ export interface SegmentedWindowDesign {
  * TallWindowSegmenter - Automatic segmentation engine
  */
 export class TallWindowSegmenter {
-  private readonly MAX_SEGMENT_HEIGHT = 2400; // mm (Egyptian standard)
   private readonly EGYPTIAN_HANDLE_HEIGHT = 1100; // mm (standard handle position)
   private reinforcementCalculator: SegmentReinforcementCalculator;
 

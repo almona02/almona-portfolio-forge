@@ -123,11 +123,6 @@ export class EgyptianOralTraditionMemory {
    * Create proverb from fact
    */
   private async createProverb(fact: ValidatedFact): Promise<string> {
-    const _proverbTemplates: Record<string, string> = {
-      material_trick: '${action} على ${tool}، و${result}',
-      supplier_advice: 'خذ من ${supplier} ${material}، ومتاخدش ${warning}',
-      timing_advice: '${action} في ${time}، ${result}',
-    };
 
     // Extract key words from claim
     const lowerClaim = fact.claim.toLowerCase();

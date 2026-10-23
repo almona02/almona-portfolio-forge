@@ -198,7 +198,7 @@ export class BentProfileEngine {
     radius: number,
     angle: number,
     _profileWidth: number,
-    profileDepth: number,
+    _profileDepth: number,
     method: 'continuous' | 'segmented'
   ): BentProfileDesign['profilePreparation'] {
     if (method === 'segmented') {
@@ -235,7 +235,7 @@ export class BentProfileEngine {
    */
   private generateGlassIntegration(
     radius: number,
-    angle: number,
+    _angle: number,
     chordLength: number
   ): BentProfileDesign['glassIntegration'] {
     // Segment glass for curves (one panel per 600mm)
