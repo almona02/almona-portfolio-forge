@@ -44,7 +44,7 @@ export function detectOpeningMechanism(
     const systemPack = SYSTEM_PACKS.find(p => p.meta.id === packId);
     
     if (systemPack?.windowSystemSpec?.aluminum_profiles) {
-      const frameProfile = systemPack.windowSystemSpec.aluminum_profiles.find(
+      const frameProfile = (systemPack.windowSystemSpec.aluminum_profiles as any[]).find(
         (p: any) => p.role === 'frame'
       );
       if (frameProfile?.system_type) {

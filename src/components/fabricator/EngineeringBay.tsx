@@ -187,7 +187,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         let representativeProfile: any = pack?.profiles?.find((p) => p.physics);
 
         if (!representativeProfile) {
-            const cuttingList = pack?.windowSystemSpec?.profiles_cutting_list || [];
+            const cuttingList = (pack?.windowSystemSpec?.profiles_cutting_list || []) as any[];
             representativeProfile = cuttingList.find((p: any) => p.physics);
         }
 
