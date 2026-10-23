@@ -206,7 +206,6 @@ export class RemnantTracker {
     }
 
     // Calculate overall metrics
-    const _totalOriginalWaste = cuttingPlans.reduce((sum, plan) => sum + plan.totalWaste, 0);
     const remnantUtilization = usedRemnants.length > 0
       ? usedRemnants.reduce((sum, match) => sum + match.utilization, 0) / usedRemnants.length
       : 0;

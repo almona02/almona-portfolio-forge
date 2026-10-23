@@ -31,7 +31,6 @@ export interface USBDeviceInfo {
 
 export class YilmazUSBBridge {
   private devices: Map<string, USBDeviceInfo> = new Map();
-  private transferQueue: Array<{ file: File | Buffer; destination: string; options: USBTransferOptions }> = [];
 
   /**
    * Detect USB devices
@@ -220,7 +219,7 @@ export class YilmazUSBBridge {
   /**
    * List files on USB device
    */
-  async listFiles(deviceId: string, _path: string = '/'): Promise<USBFileInfo[]> {
+  async listFiles(_deviceId: string, _path: string = '/'): Promise<USBFileInfo[]> {
     // This would require file system access
     // In browser, limited by security restrictions
     // In Node.js, would use fs.readdir

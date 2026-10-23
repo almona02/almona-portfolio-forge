@@ -721,7 +721,7 @@ function optimizeGlassCutting(specifications: GlassSpecification[]): {
   });
 
   const totalWaste = sheets.reduce((sum, s) => sum + s.waste, 0);
-  const totalArea = sheets.reduce((sum, s) => (s.width * s.height) / 1_000_000, 0);
+  const totalArea = sheets.reduce((_sum, s) => (s.width * s.height) / 1_000_000, 0);
   const wastePercentage = totalArea > 0 ? (totalWaste / totalArea) * 100 : 0;
   const utilization = totalSheetArea > 0 ? (totalUsedArea / totalSheetArea) * 100 : 0;
 
