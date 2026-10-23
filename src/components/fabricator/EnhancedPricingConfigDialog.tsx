@@ -320,7 +320,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
           settings: { quantityBreaks: updated }
         } as any)
         .eq('user_id', userId)
-        .catch((error) => console.error('Failed to save quantity breaks:', error));
+        .catch((error: unknown) => console.error('Failed to save quantity breaks:', error));
     }
   };
 
@@ -338,7 +338,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
           settings: { quantityBreaks: updated }
         } as any)
         .eq('user_id', userId)
-        .catch((error) => console.error('Failed to save quantity breaks:', error));
+        .catch((error: unknown) => console.error('Failed to save quantity breaks:', error));
     }
   };
 
