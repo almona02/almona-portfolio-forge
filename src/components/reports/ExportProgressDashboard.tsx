@@ -96,22 +96,6 @@ export const ExportProgressDashboard: React.FC<ExportProgressDashboardProps> = (
     }
   };
 
-  const _formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
-  };
-
-  const _formatDuration = (ms: number): string => {
-    if (ms < 1000) return `${ms}ms`;
-    if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    return `${minutes}m ${seconds}s`;
-  };
-
   const getStatusBadge = (status: ExportQueueItem['status']) => {
     const variants: Record<ExportQueueItem['status'], { variant: 'default' | 'secondary' | 'destructive' | 'outline', label: string }> = {
       pending: { variant: 'secondary', label: 'Pending' },

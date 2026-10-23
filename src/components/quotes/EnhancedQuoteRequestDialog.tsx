@@ -144,24 +144,8 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
     }
   };
 
-  const _addProduct = (product: Product) => {
-    if (product.stock <= 0) {
-      toast({
-        title: 'غير متوفر',
-        description: 'هذا المنتج غير متوفر في المخزون',
-        variant: 'destructive',
-      });
-      return;
-    }
-    setSelectedProducts(prev => [...prev, product]);
-  };
-
   const removeProduct = (productId: string) => {
     setSelectedProducts(prev => prev.filter(p => p.id !== productId));
-  };
-
-  const _addService = (service: Service) => {
-    setSelectedServices(prev => [...prev, service]);
   };
 
   const removeService = (serviceId: string) => {

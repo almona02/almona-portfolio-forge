@@ -357,15 +357,6 @@ const QRScanner: React.FC<QRScannerProps> = ({
     setState(prev => ({ ...prev, isScanning: true }));
   }, [scanFrame]);
 
-  // Stop scanning
-  const _stopScanning = useCallback(() => {
-    if (scanIntervalRef.current) {
-      clearInterval(scanIntervalRef.current);
-      scanIntervalRef.current = null;
-    }
-    setState(prev => ({ ...prev, isScanning: false }));
-  }, []);
-
   // Handle close
   const handleClose = useCallback(() => {
     stopCamera();
