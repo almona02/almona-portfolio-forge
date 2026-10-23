@@ -394,7 +394,6 @@ export class YilmazGCodeGenerator {
   } {
     const angleRad = (cut.angle * Math.PI) / 180;
     const length = cut.length;
-    const _profileWidth = profile.width || 50;
     const profileHeight = profile.height || 50;
 
     // Start at current position or origin

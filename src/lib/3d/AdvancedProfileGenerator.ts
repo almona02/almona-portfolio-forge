@@ -211,7 +211,6 @@ export class AdvancedProfileGenerator {
     const hw = width / 2;
     const hd = depth / 2;
     const t = wallThickness;
-    const _channelDepth = 0.005; // 5mm
     const channelWidth = 0.008; // 8mm
 
     // Vertical reinforcement channels (left and right)

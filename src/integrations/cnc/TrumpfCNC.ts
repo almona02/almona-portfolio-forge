@@ -341,11 +341,6 @@ export class TrumpfCNC extends CNCController {
     return feedRates[material.toLowerCase()] || 5000;
   }
 
-  private calculateSpindleSpeed(_material: string): number {
-    // Laser doesn't use spindle speed
-    return 0;
-  }
-
   private sortCutsForOptimalPath(
     cuts: Cut[],
     options?: OptimizationOptions

@@ -192,7 +192,7 @@ export class AIQualityPredictor {
    * Predict maintenance needs
    */
   async predictMaintenance(
-    machineId: string,
+    _machineId: string,
     usageHours: number,
     recentDefects: DefectHistory[]
   ): Promise<MaintenanceAlert[]> {
@@ -300,7 +300,7 @@ export class AIQualityPredictor {
    */
   private generateRecommendations(
     cut: Cut,
-    profile: Profile,
+    _profile: Profile,
     defectProbability: number,
     riskFactors: string[]
   ): string[] {

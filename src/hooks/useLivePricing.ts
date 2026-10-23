@@ -3,7 +3,6 @@
  * Reactive pricing hook that updates in real-time as components change
  */
 
-import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import type { Profile, WindowComponent } from '@/types/fabricator';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -67,11 +66,6 @@ export function useLivePricing({
     setPricingData((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
-      const _pricingEngine = new PricingEngine({
-        region,
-        currency: currency as any,
-      });
-
       let totalAluminum = 0;
       let totalGlass = 0;
       let totalAccessories = 0;

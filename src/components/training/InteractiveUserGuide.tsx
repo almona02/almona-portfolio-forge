@@ -242,7 +242,6 @@ export const InteractiveUserGuide: React.FC<{
   const [_isPlaying, _setIsPlaying] = useState(false);
   const [_userProgress, _setUserProgress] = useState<Map<string, UserProgress>>(new Map());
 
-  const _highlightRef = useRef<HTMLElement | null>(null);
   const spotlightRef = useRef<HTMLDivElement | null>(null);
 
   // Initialize with module if provided
@@ -268,19 +267,6 @@ export const InteractiveUserGuide: React.FC<{
   }, [selectedModule]);
 
   // Spotlight effect for guided tutorials
-  const _createSpotlight = (element: HTMLElement) => {
-    if (spotlightRef.current) {
-      const rect = element.getBoundingClientRect();
-      const spotlight = spotlightRef.current;
-
-      spotlight.style.display = 'block';
-      spotlight.style.left = `${rect.left - 10}px`;
-      spotlight.style.top = `${rect.top - 10}px`;
-      spotlight.style.width = `${rect.width + 20}px`;
-      spotlight.style.height = `${rect.height + 20}px`;
-    }
-  };
-
   // Clear spotlight
   const clearSpotlight = () => {
     if (spotlightRef.current) {
