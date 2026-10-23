@@ -205,7 +205,7 @@ export class FabricatorClient {
   // ============================================================================
 
   private async withRetry<T>(
-    operation: string,
+    _operation: string,
     fn: () => Promise<T>,
     attempts = this.config.retryAttempts
   ): Promise<T> {
@@ -370,7 +370,7 @@ export class FabricatorClient {
         action: 'UPDATE',
         table_name: 'fabricator_profiles',
         record_id: id,
-        old_values: oldProfile as Record<string, unknown>,
+        old_values: oldProfile as unknown as Record<string, unknown>,
         new_values: data,
       });
 
@@ -400,7 +400,7 @@ export class FabricatorClient {
         action: 'DELETE',
         table_name: 'fabricator_profiles',
         record_id: id,
-        old_values: oldProfile,
+        old_values: oldProfile as unknown as Record<string, unknown>,
       });
     });
   }
@@ -541,7 +541,7 @@ export class FabricatorClient {
         action: 'UPDATE',
         table_name: 'fabricator_accessories',
         record_id: id,
-        old_values: oldAccessory as Record<string, unknown>,
+        old_values: oldAccessory as unknown as Record<string, unknown>,
         new_values: data,
       });
 
@@ -570,7 +570,7 @@ export class FabricatorClient {
         action: 'DELETE',
         table_name: 'fabricator_accessories',
         record_id: id,
-        old_values: oldAccessory,
+        old_values: oldAccessory as unknown as Record<string, unknown>,
       });
     });
   }
