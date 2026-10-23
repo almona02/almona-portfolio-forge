@@ -114,11 +114,11 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
     if (!systemId) return null;
     const pack = SYSTEM_PACKS.find((p) => p.meta.id === systemId);
     return (pack?.smartDrawPreset as {
-      minPanelWidthMm?: number;
-      maxPanelWidthMm?: number;
-      typicalPanelWidthsMm?: number[];
-      recommendedMullionCounts?: number[];
-      defaultMullionSpacingMm?: number;
+      minPanelWidthMm: number;
+      maxPanelWidthMm: number;
+      typicalPanelWidthsMm: number[];
+      recommendedMullionCounts: number[];
+      defaultMullionSpacingMm: number;
     } | undefined) ?? null;
   }, [project?.systemPackId]);
 
