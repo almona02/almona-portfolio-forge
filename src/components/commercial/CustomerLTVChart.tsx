@@ -224,7 +224,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
               fill="url(#revenueGradient)"
               radius={[8, 8, 0, 0]}
             >
-              {chartData.map((entry, index) => (
+              {chartData.map((_entry, index) => (
                 <Cell key={`cell-${index}`} fill={`rgba(245, 158, 11, ${0.7 + (index % 3) * 0.1})`} />
               ))}
             </Bar>

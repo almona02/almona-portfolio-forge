@@ -171,7 +171,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
     return calculateTaxBreakdown(invoice.amount || 0, vatRate);
   }, [invoice.amount, invoice.currency]);
 
-  const handleStateTransition = (from: string, to: string) => {
+  const handleStateTransition = (_from: string, to: string) => {
     // Update invoice status
     const updatedInvoice: DraftInvoice = {
       ...invoice,

@@ -486,7 +486,6 @@ export function Interactive3DViewer({
     onPartSelected?.(part);
 
     if (enablePricing) {
-      const _taxAmount = utils.calculateTax(part.price);
       const totalWithTax = utils.calculateTotalWithTax(part.price);
       
       toast({

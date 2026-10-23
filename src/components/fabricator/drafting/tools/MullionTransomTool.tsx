@@ -22,8 +22,7 @@ interface MullionTransomToolProps {
 
 export const MullionTransomTool: React.FC<MullionTransomToolProps> = ({
   structuralType,
-  material,
-  _onPlace
+  material
 }) => {
   const drafting = useDraftingContext();
   // TODO: Implement preview functionality
