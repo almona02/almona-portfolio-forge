@@ -257,12 +257,5 @@ export class EgyptianTrustScoring {
     return 5;
   }
 
-  /**
-   * Get skepticism level
-   */
-  private getSkepticismLevel(profile: UserProfile): number {
-    const score = this.calculateNumericalScore(profile);
-    return Math.max(0.0, 1.0 - score);
-  }
 }
 

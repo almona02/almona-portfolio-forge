@@ -8,7 +8,7 @@
  * - Practical workshop wisdom
  */
 
-import { EgyptianWorkshopNLP, type UserType } from '@/lib/nlp/EgyptianWorkshopNLP';
+import type { UserType } from '@/lib/nlp/EgyptianWorkshopNLP';
 import { DocumentationKnowledgeGraph } from '@/lib/ydt/DocumentationKnowledgeGraph';
 
 export interface MaalemReasoning {
@@ -38,11 +38,9 @@ export interface ReasoningContext {
  */
 export class MaalemReasoningEngine {
   private knowledgeGraph: DocumentationKnowledgeGraph;
-  private workshopNLP: EgyptianWorkshopNLP;
 
   constructor() {
     this.knowledgeGraph = new DocumentationKnowledgeGraph();
-    this.workshopNLP = new EgyptianWorkshopNLP();
   }
 
   /**

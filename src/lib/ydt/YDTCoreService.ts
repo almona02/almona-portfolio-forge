@@ -14,7 +14,6 @@
 import { EgyptianFabricationIntelligence } from '../intelligence/EgyptianFabricationIntelligence';
 import { DocumentationKnowledgeGraph } from './DocumentationKnowledgeGraph';
 import { FabricatorExpert } from './FabricatorExpert';
-import { QuickStartYDT } from './QuickStartYDT';
 import type {
     MarketIntelligence,
     OptimizationContext,
@@ -47,14 +46,12 @@ export interface YDTIntelligenceResponse<T> {
 export class YDTCoreService {
   private static instance: YDTCoreService | null = null;
   private knowledgeGraph: DocumentationKnowledgeGraph;
-  private quickStartYDT: QuickStartYDT;
   private fabricatorExpert: FabricatorExpert;
   private knowledgeBaseLoaded: boolean = false;
 
   private constructor() {
     // Private constructor for singleton
     this.knowledgeGraph = new DocumentationKnowledgeGraph();
-    this.quickStartYDT = new QuickStartYDT(this.knowledgeGraph);
     this.fabricatorExpert = new FabricatorExpert(this.knowledgeGraph);
     
     // Ensure knowledge base is loaded

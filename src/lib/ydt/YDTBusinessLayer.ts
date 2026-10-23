@@ -238,22 +238,5 @@ export class YDTBusinessLayer {
     };
   }
 
-  private async validateMarketPosition(project: Project): Promise<{
-    feasible: boolean;
-    challenges: string[];
-    recommendations: string[];
-    confidence: number;
-  }> {
-    // Get competitive analysis
-    const competition = await this.ydt.analyzeCompetition(project.location, project.type);
-
-    return {
-      feasible: true,
-      challenges: [],
-      recommendations: competition.recommendations,
-      confidence: 0.88,
-    };
-  }
-
 }
 
