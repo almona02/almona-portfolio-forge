@@ -164,8 +164,8 @@ export async function materializeOwnedProfilesFromPack(
 
     nextProfiles.push({
       ...profile,
-      id: ownedId!,
-      systemPackIds: specs.systemPackIds as string[],
+      id: ownedId,
+      systemPackIds: specs.systemPackIds,
       specifications: specs,
     });
   }
