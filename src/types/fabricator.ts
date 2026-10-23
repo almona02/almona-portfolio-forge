@@ -330,6 +330,8 @@ export interface CuttingCalibration {
 export interface Profile {
   id: string;
   name: string;
+  /** Optional profile code (e.g. "CAL-FR-001") for display/legacy data */
+  code?: string;
   material: 'aluminum' | 'upvc' | 'wood';
   width: number;
   height?: number;
