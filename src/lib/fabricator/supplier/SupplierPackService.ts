@@ -226,7 +226,7 @@ export class SupplierPackService {
   ): boolean {
     // Check material compatibility
     if (systemPack) {
-      const systemMaterial = systemPack.category.includes('upvc') ? 'upvc' : 'aluminum';
+      const systemMaterial = (systemPack.category ?? '').includes('upvc') ? 'upvc' : 'aluminum';
       if (profile.material !== systemMaterial) {
         return false;
       }

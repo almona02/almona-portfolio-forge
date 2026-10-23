@@ -459,7 +459,7 @@ const Shop = () => {
 
     // Price range filter
     filtered = filtered.filter(p => {
-      const price = ('pricing' in p && p.pricing?.basePrice) || ('price' in p ? p.price : 0);
+      const price = (('pricing' in p && p.pricing?.basePrice) || ('price' in p ? p.price : 0)) ?? 0;
       return price >= filters.priceRange[0] && price <= filters.priceRange[1];
     });
 

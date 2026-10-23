@@ -146,14 +146,14 @@ const MachineDetail: React.FC = () => {
           <div className="space-y-2">
             <div><strong>{copy("Type:")}</strong> {copy(machine.type)}</div>
             <div><strong>{copy("Power:")}</strong> {machine.powerSpec.consumption} ({machine.powerSpec.voltage})</div>
-            <div><strong>{copy("Dimensions:")}</strong> {`${machine.dimensions.length} × ${machine.dimensions.width} × ${machine.dimensions.height}`}</div>
+            <div><strong>{copy("Dimensions:")}</strong> {`${machine.dimensions?.length} × ${machine.dimensions?.width} × ${machine.dimensions?.height}`}</div>
           </div>
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg">
           <h3 className="typography-h3 text-lg mb-2">{copy("Specifications")}</h3>
           <ul className="list-disc list-inside space-y-1">
-            {machine.specifications.map((spec, index) => (
+            {(machine.specifications ?? []).map((spec, index) => (
               <li key={index}>{copy(spec)}</li>
             ))}
           </ul>

@@ -75,7 +75,7 @@ describe('materializeOwnedProfilesFromPack (UP-07)', () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.materializedCount).toBe(1);
-    expect(result.pack.profiles[0].id).toBe('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
-    expect(result.pack.profiles[0].specifications?.originalCatalogCode).toBe('YIL-FRAME-01');
+    expect(result.pack.profiles?.[0].id).toBe('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
+    expect(result.pack.profiles?.[0].specifications?.originalCatalogCode).toBe('YIL-FRAME-01');
   });
 });

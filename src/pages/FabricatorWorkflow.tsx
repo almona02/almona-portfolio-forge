@@ -686,7 +686,7 @@ export const FabricatorWorkflow: React.FC = () => {
       } finally {
         setIsLoadingInventory(false);
         // End inventory load tracking
-        inventoryTracker.end();
+        inventoryTracker?.end();
       }
     };
 
@@ -823,13 +823,13 @@ export const FabricatorWorkflow: React.FC = () => {
         setIsGeneratingCuttingPlan(false);
         workspaceDispatch({ type: 'SET_OPTIMIZATION_RESULT', payload: result });
         // End optimization tracking
-        optimizationTracker.end();
+        optimizationTracker?.end();
         return result;
       } catch (error) {
         setIsGeneratingCuttingPlan(false);
         console.error('Error generating cutting plan:', error);
         // End tracking even on error
-        optimizationTracker.end();
+        optimizationTracker?.end();
         throw error;
       }
     },
