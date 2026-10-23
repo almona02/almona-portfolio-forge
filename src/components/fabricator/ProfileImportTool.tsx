@@ -181,7 +181,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
   // K-factor learning state
   const [kFactorLearningEnabled, setKFactorLearningEnabled] = useState(true);
-  const [learnedKFactors, setLearnedKFactors] = useState<KFactorLearningData[]>([]);
+  const [learnedKFactors] = useState<KFactorLearningData[]>([]);
   const [_isLearning, _setIsLearning] = useState(false);
   const [autoOptimizeAll, setAutoOptimizeAll] = useState(false);
 
@@ -842,46 +842,6 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
   useEffect(() => {
     processFilesRef.current = processFiles;
   }, [processFiles]);
-
-  const _learnFromMeasurement = async (
-    profileId: string,
-    measuredKFactor: number
-  ) => {
-    const profile = extractedProfiles.find((p) => p.id === profileId);
-    if (!profile || !profile.kFactorSuggestion) return;
-
-    const learningData: KFactorLearningData = {
-      profileId,
-      measuredKFactor,
-      theoreticalKFactor: profile.kFactorSuggestion.miter45,
-      deviation: measuredKFactor - profile.kFactorSuggestion.miter45,
-      materialType: profile.material || 'aluminum',
-      timestamp: new Date(),
-      isVerified: true,
-    };
-
-    setLearnedKFactors((prev) => [...prev, learningData]);
-
-    // Send to backend for collective learning
-    try {
-      await fetch('/api/v2/calibration/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profile_id: profileId,
-          k_factor_value: measuredKFactor,
-          adjustment_type: 'manual',
-          feedback_status: Math.abs(learningData.deviation) < 0.01 ? 'perfect' : 'adjust_needed',
-          notes: `Learned from ${profile.sourceFile}`,
-          confidence_score: profile.confidence,
-        }),
-      });
-
-      toast.success('K-factor measurement recorded for automation learning');
-    } catch (error) {
-      console.error('Failed to save learning data:', error);
-    }
-  };
 
   // ============================================================================
   // Profile Import

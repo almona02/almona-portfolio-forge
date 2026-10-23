@@ -49,9 +49,6 @@ export function recommendTemplate(
 
   // Analyze cell structure
   const cellCount = geometry.rectangles.length;
-  const _cellTypes = geometry.rectangles
-    .map((r) => r.type || 'fixed')
-    .filter((t) => t);
 
   // Calculate grid structure (approximate)
   const cols = Math.round(Math.sqrt(cellCount));
