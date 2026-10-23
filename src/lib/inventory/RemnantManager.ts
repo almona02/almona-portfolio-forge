@@ -108,7 +108,6 @@ export class RemnantManager {
    * Use fromManufacturingSettings() for reference system-parity (500 mm).
    */
   private minRemnantLength: number;
-  private defaultExpirationDays: number = 90; // Default expiration period
 
   constructor(
     minRemnantLengthMm: number = PLATFORM_MANUFACTURING_DEFAULTS.minimumReusableLengthMm

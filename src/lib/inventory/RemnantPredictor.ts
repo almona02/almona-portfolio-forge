@@ -20,7 +20,6 @@ export interface RemnantPrediction {
 
 export class RemnantPredictor {
   private minRemnantLength: number = 200; // Minimum usable remnant length in mm
-  private maxRemnantAge: number = 90; // Days before remnant is considered old
   private profileUsageCache: Map<string, number> = new Map(); // Cache for profile usage counts
 
   /**

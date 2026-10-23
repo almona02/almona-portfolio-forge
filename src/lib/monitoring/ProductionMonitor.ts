@@ -11,7 +11,6 @@ import { MemoryMonitor, MemoryStats } from '@/lib/3d/MemoryMonitor';
 import { AccuracyTracker } from '@/lib/fabricator/AccuracyTracker';
 import { feedbackCollector } from '@/lib/fabricator/FeedbackCollector';
 import { BaselineTracker, PerformanceBaseline } from '@/lib/performance/BaselineTracker';
-import { WorkflowProfiler } from '@/lib/performance/WorkflowProfiler';
 import { SecurityGateway } from '@/lib/security/SecurityGateway';
 
 export interface ProductionMetrics {
@@ -90,7 +89,6 @@ export type AlertListener = (alert: Alert) => void;
  */
 export class ProductionMonitor {
   private static instance: ProductionMonitor;
-  private workflowProfiler: WorkflowProfiler;
   private baselineTracker: BaselineTracker;
   private accuracyTracker: AccuracyTracker;
   private memoryMonitor: MemoryMonitor;
@@ -105,7 +103,6 @@ export class ProductionMonitor {
   private workflowDurations: number[] = [];
 
   private constructor() {
-    this.workflowProfiler = new WorkflowProfiler();
     this.baselineTracker = new BaselineTracker();
     this.accuracyTracker = new AccuracyTracker();
     this.memoryMonitor = MemoryMonitor.getInstance();

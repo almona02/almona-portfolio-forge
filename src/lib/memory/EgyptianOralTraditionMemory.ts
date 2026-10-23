@@ -70,7 +70,6 @@ export class EgyptianOralTraditionMemory {
   private stories: Map<string, WorkshopStory> = new Map();
   private tricks: Map<string, WorkshopTrick> = new Map();
   private warnings: Map<string, WorkshopWarning> = new Map();
-  private names: Map<string, PersonRecord> = new Map();
 
   /**
    * Encode fact as Egyptian memory

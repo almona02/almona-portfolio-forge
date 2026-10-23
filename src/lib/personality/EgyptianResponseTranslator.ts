@@ -4,7 +4,7 @@
  * Translates technical answers to Egyptian workshop language
  */
 
-import { EgyptianDialectDetector, type UserType } from '@/lib/nlp/EgyptianDialectDetector';
+import type { UserType } from '@/lib/nlp/EgyptianDialectDetector';
 import type { YDTAnswer } from '@/lib/ydt/types';
 
 export interface UserContext {
@@ -24,11 +24,6 @@ export interface TranslatedAnswer {
  * Egyptian Response Translator
  */
 export class EgyptianResponseTranslator {
-  private dialectDetector: EgyptianDialectDetector;
-
-  constructor() {
-    this.dialectDetector = new EgyptianDialectDetector();
-  }
 
   /**
    * Translate answer to user's dialect

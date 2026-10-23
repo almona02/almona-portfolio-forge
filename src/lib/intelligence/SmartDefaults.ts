@@ -11,7 +11,6 @@
  */
 
 import { UnifiedCognitionEngine } from '../cognition/UnifiedCognitionEngine';
-import { EgyptianContextAnalyzer } from './EgyptianContextAnalyzer';
 import type { WindowUnit } from '@/types/fabricator';
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
 
@@ -30,11 +29,9 @@ export interface SmartDefaultsResult {
  */
 export class SmartDefaults {
   private cognitionEngine: UnifiedCognitionEngine;
-  private contextAnalyzer: EgyptianContextAnalyzer;
 
   constructor() {
     this.cognitionEngine = new UnifiedCognitionEngine();
-    this.contextAnalyzer = new EgyptianContextAnalyzer();
   }
 
   /**

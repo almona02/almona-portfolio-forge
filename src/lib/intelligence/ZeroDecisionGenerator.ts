@@ -10,7 +10,6 @@
 import { ComplexShapeGenerator, type ComplexShapeDesign } from './ComplexShapeGenerator';
 import type { InferredShape } from './ShapeInferenceEngine';
 import { MaterialStrategyCalculator } from './MaterialStrategyCalculator';
-import { HardwareSpecifier } from './HardwareSpecifier';
 
 export interface WorkshopContext {
   workshopId?: string;
@@ -71,12 +70,10 @@ export interface MagicModeResult {
 export class ZeroDecisionGenerator {
   private complexShapeGenerator: ComplexShapeGenerator;
   private materialStrategyCalculator: MaterialStrategyCalculator;
-  private hardwareSpecifier: HardwareSpecifier;
   
   constructor() {
     this.complexShapeGenerator = new ComplexShapeGenerator();
     this.materialStrategyCalculator = new MaterialStrategyCalculator();
-    this.hardwareSpecifier = new HardwareSpecifier();
   }
   
   /**
@@ -196,28 +193,5 @@ export class ZeroDecisionGenerator {
     };
   }
   
-  /**
-   * Generate irregular cutting pattern for complex shape
-   * Note: This is handled by ComplexShapeGenerator.generateOptimalDesign()
-   * This method is kept for potential future custom logic
-   */
-  private generateIrregularCuttingPattern(_shape: InferredShape): ComplexShapeDesign['production']['cuttingPattern'] {
-    // This is handled by ComplexShapeGenerator, but we can add custom logic here if needed
-    // For now, delegate to the generator
-    return {
-      stockLengths: [],
-      totalWaste: 0,
-      wastePercentage: 0
-    };
-  }
-  
-  /**
-   * Calculate complex shape assembly time
-   * Note: This is handled by ComplexShapeGenerator.generateOptimalDesign()
-   * This method is kept for potential future custom logic
-   */
-  private calculateComplexShapeTime(shape: InferredShape): number {
-    return shape.materialStrategy.estimatedAssemblyTime;
-  }
 }
 
