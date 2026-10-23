@@ -109,8 +109,6 @@ export class KnowledgeValidator {
    * Check against physics (immutable truth)
    */
   private async checkPhysics(claim: string): Promise<PhysicsCheck> {
-    const _lowerClaim = claim.toLowerCase();
-
     // Physics violations
     const violations = [
       {
@@ -218,8 +216,6 @@ export class KnowledgeValidator {
     claim: string,
     _context: ClaimContext
   ): Promise<SubjectiveCheck> {
-    const _lowerClaim = claim.toLowerCase();
-
     // Classify claim type
     let classification: ValidationResult['classification'] = 'fact';
     let plausible = true;

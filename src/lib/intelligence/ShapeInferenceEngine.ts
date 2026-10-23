@@ -659,7 +659,7 @@ export class ShapeInferenceEngine {
    * Find best match from workshop patterns
    */
   findBestMatch(
-    dimensions: NonNullable<UserInput['dimensions']>,
+    _dimensions: NonNullable<UserInput['dimensions']>,
     patterns: ShapePattern[]
   ): { pattern: ShapePattern; confidence: number } | null {
     if (patterns.length === 0) return null;

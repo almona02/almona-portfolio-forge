@@ -146,7 +146,6 @@ export class ComplexShapeGenerator {
     // Machine capability check
     if (workshopContext?.machineCapabilities) {
       const hasWelding = workshopContext.machineCapabilities.includes('welding');
-      const _hasBending = workshopContext.machineCapabilities.includes('bending');
       
       // Complex shapes may require welding
       if (shape.shapeType === 'l_shape' || shape.shapeType === 'u_shape') {

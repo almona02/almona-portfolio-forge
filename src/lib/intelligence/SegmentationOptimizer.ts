@@ -318,7 +318,7 @@ export class SegmentationOptimizer {
    * Define quality checkpoints
    */
   private defineQualityCheckpoints(
-    segmentation: SegmentationPlan,
+    _segmentation: SegmentationPlan,
     pattern: ShapePattern | null
   ): OptimizedSegmentation['qualityCheckpoints'] {
     const checkpoints: OptimizedSegmentation['qualityCheckpoints'] = [];

@@ -262,7 +262,7 @@ class KFactorRegressionModel {
    * Calculate prediction confidence
    */
   private calculateConfidence(
-    originalFeatures: Map<string, number>,
+    _originalFeatures: Map<string, number>,
     normalizedFeatures: Map<string, number>
   ): number {
     // Base confidence on sample count

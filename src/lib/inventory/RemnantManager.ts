@@ -237,7 +237,7 @@ export class RemnantManager {
   async findRemnantMatches(
     cuts: Cut[],
     profile: Profile,
-    material: string,
+    _material: string,
     options: {
       useRemnantsFirst?: boolean;
       minUtilization?: number;

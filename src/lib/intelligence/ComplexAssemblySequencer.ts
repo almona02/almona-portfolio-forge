@@ -74,8 +74,6 @@ export class ComplexAssemblySequencer {
     segmentation: SegmentationPlan,
     pattern: ShapePattern | null
   ): AssemblySequence['steps'] {
-    const _steps: AssemblySequence['steps'] = [];
-    
     if (shapeType === 'l_shape' && pattern?.type === 'l_shape') {
       return this.generateLShapeSteps(pattern, segmentation);
     }
@@ -291,7 +289,7 @@ export class ComplexAssemblySequencer {
    * Generate steps for multi-segment
    */
   private generateMultiSegmentSteps(
-    pattern: ShapePattern & { type: 'multi_segment' },
+    _pattern: ShapePattern & { type: 'multi_segment' },
     segmentation: SegmentationPlan
   ): AssemblySequence['steps'] {
     const steps: AssemblySequence['steps'] = [];
