@@ -7,14 +7,14 @@
 ALMONA Portfolio Forge is an industrial computing platform for aluminum & UPVC fabrication. It consists of:
 
 - **Frontend**: React 18 + TypeScript + Vite (port 3000) — the main web application
-- **Backend**: Python FastAPI (port 8000) — YDT Prestige Agent API for CNC machine assistance
+- **Backend**: Python FastAPI (port 8000) — the main Industrial API (`apis.main:app`); a standalone YDT Prestige Agent API (`api.prestige_endpoints:app`) also exists for CNC machine assistance
 
 ### Running services
 
 | Service | Command | Port | Notes |
 |---------|---------|------|-------|
 | Frontend dev server | `npm run dev` (from repo root) | 3000 | Vite HMR; proxies `/api` to backend on 8000 |
-| Backend dev server | `python3 -m uvicorn api.prestige_endpoints:app --host 0.0.0.0 --port 8000` (from `python_backend/`) | 8000 | Requires `PATH` to include `/home/ubuntu/.local/bin` for pip-installed binaries |
+| Backend dev server | `python3 -m uvicorn apis.main:app --host 0.0.0.0 --port 8000` (from `python_backend/`) | 8000 | Canonical entry (`apis.main:app`, same as prod). Standalone Prestige Agent: `api.prestige_endpoints:app`. Requires `PATH` to include `/home/ubuntu/.local/bin` for pip-installed binaries |
 
 ### Lint / Test / Build
 

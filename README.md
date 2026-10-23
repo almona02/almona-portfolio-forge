@@ -117,7 +117,7 @@ python -m venv .venv
 # Activate .venv using your shell, then:
 pip install -r requirements-dev.txt
 cp .env.example .env
-python -m uvicorn api.prestige_endpoints:app --host 0.0.0.0 --port 8000
+python -m uvicorn apis.main:app --host 0.0.0.0 --port 8000
 ```
 
 Environment files contain credentials and must stay outside commits. Use separate development credentials; never reuse production service keys locally.

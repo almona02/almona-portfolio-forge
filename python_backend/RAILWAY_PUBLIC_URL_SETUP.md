@@ -42,7 +42,7 @@ When Railway asks for port:
 Your Dockerfile should use the `PORT` environment variable (which it does):
 
 ```dockerfile
-CMD sh -c "uvicorn api.prestige_endpoints:app --host 0.0.0.0 --port ${PORT:-8000} --workers ${API_WORKERS:-4}"
+CMD sh -c "uvicorn apis.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers ${API_WORKERS:-4}"
 ```
 
 This means:

@@ -95,7 +95,7 @@ Create `railway.json` at **project root** (not in python_backend):
     "dockerfilePath": "python_backend/Dockerfile"
   },
   "deploy": {
-    "startCommand": "uvicorn api.prestige_endpoints:app --host 0.0.0.0 --port $PORT --workers ${API_WORKERS:-4}",
+    "startCommand": "uvicorn apis.main:app --host 0.0.0.0 --port $PORT --workers ${API_WORKERS:-4}",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
