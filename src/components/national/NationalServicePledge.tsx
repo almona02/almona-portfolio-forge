@@ -1,4 +1,3 @@
-import React from 'react';
 import { Shield, Globe, Users, TrendingUp, FileCheck, Server, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 

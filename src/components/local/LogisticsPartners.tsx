@@ -1,5 +1,3 @@
-import React from 'react';
-
 const LogisticsPartners = () => {
   return (
     <section className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md mt-8">
