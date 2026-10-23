@@ -852,7 +852,7 @@ export class UnitProfileGatherer {
     systemPack: SystemPack,
     role: NonNullable<Profile['profileRole']>
   ): Profile | undefined {
-    return systemPack.profiles?.find(p => p.profileRole === role);
+    return systemPack.profiles?.find((p: any) => p.profileRole === role);
   }
 
   /**

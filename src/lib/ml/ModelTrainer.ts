@@ -200,7 +200,7 @@ export class ModelTrainer {
       validationSplit: effectiveConfig.validationSplit,
       shuffle: true,
       callbacks: {
-        onEpochEnd: (epoch, logs) => {
+        onEpochEnd: (epoch: number, logs: any) => {
           console.log(
             `Epoch ${epoch + 1}/${effectiveConfig.epochs} - loss: ${logs?.loss?.toFixed(4)}, acc: ${logs?.acc?.toFixed(4)}`
           );

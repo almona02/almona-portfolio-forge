@@ -37,7 +37,7 @@ export class ProfileImporter {
           const rows = lines.slice(1).map((line) => {
             const values = line.split(',').map((v) => v.trim());
             const obj: ParsedRow = {};
-            headers.forEach((header, idx) => {
+            headers.forEach((header: string, idx: number) => {
               obj[header] = values[idx] || '';
             });
             return obj;
@@ -62,8 +62,8 @@ export class ProfileImporter {
           const headerRow = worksheet.getRow(1);
           const headers = headerRow.values
             .slice(1)
-            .map((v) => String(v || '').trim())
-            .filter((h) => h);
+            .map((v: any) => String(v || '').trim())
+            .filter((h: string) => h);
 
           if (headers.length === 0) {
             reject(new Error('No headers found in file'));
@@ -75,7 +75,7 @@ export class ProfileImporter {
             if (rowNumber === 1) return; // Skip header
 
             const obj: ParsedRow = {};
-            headers.forEach((header, idx) => {
+            headers.forEach((header: string, idx: number) => {
               const cell = row.getCell(idx + 2); // +2 because ExcelJS is 1-indexed and first column is empty
               obj[header] = cell.value !== null && cell.value !== undefined ? String(cell.value) : '';
             });

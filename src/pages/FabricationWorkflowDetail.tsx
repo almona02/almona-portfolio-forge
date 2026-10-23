@@ -280,7 +280,7 @@ const FabricationWorkflowDetail = () => {
     }
   };
 
-  const filteredSteps = workflowData[activeTab].steps.filter(step =>
+  const filteredSteps = workflowData[activeTab].steps.filter((step: any) =>
     step.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     step.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -369,7 +369,7 @@ const FabricationWorkflowDetail = () => {
             </motion.div>
 
             <motion.div className="space-y-4" variants={itemVariants}>
-              {filteredSteps.map((step, index) => (
+              {filteredSteps.map((step: any, index: number) => (
                 <Card 
                   key={index} 
                   className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl overflow-hidden"
@@ -408,7 +408,7 @@ const FabricationWorkflowDetail = () => {
                                   Professional Tips
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
-                                  {step.tips.map((tip, i) => (
+                                  {step.tips.map((tip: any, i: number) => (
                                     <li key={i} className="flex items-start"><span className="mr-2 text-almona-orange">•</span>{tip}</li>
                                   ))}
                                 </ul>
@@ -430,7 +430,7 @@ const FabricationWorkflowDetail = () => {
                                   Common Challenges
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
-                                  {step.commonIssues.map((issue, i) => (
+                                  {step.commonIssues.map((issue: any, i: number) => (
                                     <li key={i} className="flex items-start"><span className="mr-2 text-red-500">•</span>{issue}</li>
                                   ))}
                                 </ul>
@@ -442,7 +442,7 @@ const FabricationWorkflowDetail = () => {
                                   Recommended Solutions
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
-                                  {step.solutions.map((solution, i) => (
+                                  {step.solutions.map((solution: any, i: number) => (
                                     <li key={i} className="flex items-start"><span className="mr-2  status-valid">•</span>{solution}</li>
                                   ))}
                                 </ul>
