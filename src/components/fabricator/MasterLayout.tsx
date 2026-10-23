@@ -130,26 +130,6 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
   onPhaseChange,
   projectName = '',
   clientName = '',
-  _projectStats = {
-    totalUnits: 24,
-    openings: 6,
-    area: '3.84m²',
-    value: '€2.4K'
-  },
-  _systemPack = {
-    name: 'Caluminium PS v3',
-    code: 'PS',
-    description: 'Premium Series 60mm',
-    thermal: 'U=1.2'
-  },
-  _profiles = [
-    { role: 'Frame', code: 'CAL-FR-001', color: 'blue' },
-    { role: 'Sash', code: 'CAL-SA-002', color: 'amber' },
-    { role: 'Mullion', code: 'CAL-MU-003', color: 'emerald' },
-    { role: 'Transom', code: 'CAL-TR-004', color: 'amber' }
-  ],
-  _show3DPreview = true,
-  _onToggle3DPreview,
   validationItems = [
     { label: 'Grid dimensions', status: 'valid' },
     { label: 'Profile assignments', status: 'valid' },
