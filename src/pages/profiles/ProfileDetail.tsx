@@ -71,7 +71,7 @@ const ProfileDetail: React.FC = () => {
       <div className="mb-4">
         <strong>Applications:</strong>
         <ul className="list-disc list-inside">
-          {profile.applications.map((app, index) => (
+          {profile.applications.map((app: any, index: number) => (
             <li key={index}>{app}</li>
           ))}
         </ul>

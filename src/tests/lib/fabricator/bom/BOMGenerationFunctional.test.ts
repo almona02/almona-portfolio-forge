@@ -72,7 +72,7 @@ describe('BOM Generation Functional Tests', () => {
       name: dataSystemPack.meta.name,
       category: 'aluminum_windows',
       brand: dataSystemPack.meta.brands[0] || 'Unknown',
-      compatibleProfiles: dataSystemPack.profiles?.map(p => p.id) || [],
+      compatibleProfiles: dataSystemPack.profiles?.map((p: any) => p.id) || [],
       compatibleAccessories: [],
       description: dataSystemPack.meta.name,
       technicalData: dataSystemPack.windowSystemSpec || {},

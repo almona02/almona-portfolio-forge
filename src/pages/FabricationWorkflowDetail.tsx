@@ -533,7 +533,7 @@ const FabricationWorkflowDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3 text-gray-300">
-                    {workflowData[activeTab].challenges.map((challenge, i) => (
+                    {workflowData[activeTab].challenges.map((challenge: any, i: number) => (
                       <li key={i} className="flex items-start">
                         <Icons.warning className="h-5 w-5 text-amber-500 mr-3 mt-0.5 flex-shrink-0" />
                         <span>{challenge}</span>
