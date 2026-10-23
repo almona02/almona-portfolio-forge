@@ -85,7 +85,6 @@ function detectWindowEdges(imageData: ImageData): { x: number; y: number; width:
 
   for (let y = 1; y < imageData.height - 1; y++) {
     for (let x = 1; x < imageData.width - 1; x++) {
-      const _idx = y * imageData.width + x;
       const gx = 
         -grayData[(y - 1) * imageData.width + (x - 1)] +
         grayData[(y - 1) * imageData.width + (x + 1)] +
@@ -234,7 +233,6 @@ function PhotoMatchScene({
     if (!perspectiveCorrection) return;
 
     // Adjust camera to match perspective
-    const _fov = camera instanceof THREE.PerspectiveCamera ? camera.fov : 50;
     // In production, calculate proper camera parameters from perspective correction
   }, [perspectiveCorrection, camera]);
 

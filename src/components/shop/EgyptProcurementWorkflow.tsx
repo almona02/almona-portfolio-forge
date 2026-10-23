@@ -1,5 +1,3 @@
-import React from "react";
-
 const EgyptProcurementWorkflow = () => (
   <div className="bg-egyptian-blue-light p-4 rounded-lg text-white">
     <h3 className="typography-h3 mb-3 text-lg">إجراءات التوريد الصناعي</h3>

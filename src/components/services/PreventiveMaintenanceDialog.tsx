@@ -197,10 +197,6 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
       // Simulate API call with market-specific processing
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Generate market-specific contract ID
-      const contractPrefix = market === "egypt" ? "EG-PM" : "TR-PM";
-      const _contractId = `${contractPrefix}-${Date.now().toString().slice(-8)}`;
-
       setStep("confirm");
 
       // Reset after 3 seconds

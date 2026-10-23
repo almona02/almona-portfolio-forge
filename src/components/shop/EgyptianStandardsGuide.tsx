@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/ui/card";
 import { Badge } from "@/shared/ui/ui/badge";

@@ -157,7 +157,6 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       const previous = queryClient.getQueryData(cacheKey);
       queryClient.setQueryData(cacheKey, (old: unknown[] | undefined) => [optimisticMachine, ...(old || [])]);
 
-      const _hadExistingQuery = !!previous;
       try {
         const saved = await api.registerMachine({
           name: derivedName,
