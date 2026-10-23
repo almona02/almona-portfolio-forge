@@ -3,6 +3,9 @@ import type { PilotSystemId } from '@/data/pilot-systems';
 export interface MaalemDashboardState {
   system: PilotSystemId;
   pattern: string;
+  description?: string;
+  roomType?: string;
+  location?: string;
   width: number;
   height: number;
   count: number;
