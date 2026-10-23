@@ -70,10 +70,6 @@ const IndustrialCategoryFilter: React.FC<IndustrialCategoryFilterProps> = ({
     setIsOpen(false);
   }, [onCategoryChange]);
 
-  const _clearFilter = useCallback(() => {
-    onCategoryChange('all');
-  }, [onCategoryChange]);
-
   const handleMaterialTypeChange = useCallback((materialType: 'aluminum' | 'upvc' | 'all') => {
     setSelectedMaterialType(materialType);
     // Reset to all categories when changing material type

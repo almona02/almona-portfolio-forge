@@ -65,7 +65,7 @@ export class PrestigeResponseEngine {
 
   formatResponse(
     persona: PersonaType,
-    query: string,
+    _query: string,
     responseData: any,
     language: LanguageType = 'en'
   ): any {
