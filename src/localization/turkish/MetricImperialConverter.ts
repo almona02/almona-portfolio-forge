@@ -18,10 +18,7 @@ export class MetricImperialConverter {
   // Conversion factors
   private static readonly MM_TO_INCH = 0.0393701;
   private static readonly INCH_TO_MM = 25.4;
-  private static readonly CM_TO_INCH = 0.393701;
   private static readonly INCH_TO_CM = 2.54;
-  private static readonly M_TO_FT = 3.28084;
-  private static readonly FT_TO_M = 0.3048;
   private static readonly FT_TO_INCH = 12;
   private static readonly YD_TO_FT = 3;
 

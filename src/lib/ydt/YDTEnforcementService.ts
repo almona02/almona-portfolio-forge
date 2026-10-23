@@ -8,7 +8,6 @@
  * Part of "Actually Realistic 2026 Plan"
  */
 
-import { YDTCoreService } from './YDTCoreService';
 import { YDTPerformanceMonitor } from './YDTPerformanceMonitor';
 
 export interface YDTMandatoryConfig {
@@ -33,7 +32,6 @@ export class YDTEnforcementService {
   private cache: Map<string, { response: any; timestamp: number; confidence: number }> = new Map();
   private config: YDTMandatoryConfig;
   private failureCount: number = 0;
-  private lastFailureTime: number = 0;
   private readonly maxFailures = 5;
   private readonly resetTimeout = 60000; // 1 minute
   private performanceMonitor = YDTPerformanceMonitor.getInstance();
@@ -159,7 +157,6 @@ export class YDTEnforcementService {
    * Analyze ticket with YDT
    */
   private async analyzeTicketWithYDT(inputs: any): Promise<any> {
-    const _ydtCore = YDTCoreService.getInstance();
     
     // Use YDT's market intelligence for ticket routing
     // This is a simplified version - in production would use full YDT capabilities
@@ -181,11 +178,8 @@ export class YDTEnforcementService {
   /**
    * Predict resolution with YDT
    */
-  private async predictResolutionWithYDT(inputs: any): Promise<any> {
-    const _ydtCore = YDTCoreService.getInstance();
-    
+  private async predictResolutionWithYDT(_inputs: any): Promise<any> {
     // Use YDT knowledge base (164 chapters, 878 components)
-    const _context = inputs.context || inputs;
     
     // Simulate YDT resolution prediction (Week 1)
     return {
@@ -208,10 +202,8 @@ export class YDTEnforcementService {
    * Suggest spare parts with YDT
    */
   private async suggestSparePartsWithYDT(inputs: any): Promise<any> {
-    const _ydtCore = YDTCoreService.getInstance();
     
     // Use YDT's 281 parts catalog + market intelligence
-    const _context = inputs.context || inputs;
     
     // Simulate spare parts suggestion (Week 1)
     return {
@@ -227,7 +219,6 @@ export class YDTEnforcementService {
    * Generic YDT query
    */
   private async genericYDTQuery(_operation: string, _inputs: any): Promise<any> {
-    const _ydtCore = YDTCoreService.getInstance();
     
     // Generic fallback - use YDT core service
     return {
@@ -324,7 +315,6 @@ export class YDTEnforcementService {
    */
   private handleFailure(): void {
     this.failureCount++;
-    this.lastFailureTime = Date.now();
 
     if (this.failureCount >= this.maxFailures) {
       this.state = 'open';
