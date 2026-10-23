@@ -1,4 +1,3 @@
-import { Hardener } from '@/lib/error/Hardener';
 import { cn } from '@/lib/utils';
 import { AlertCircle, Camera, CheckCircle, Flashlight, RotateCcw, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -69,8 +68,6 @@ const QRScanner: React.FC<QRScannerProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const scanIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const _hardener = React.useMemo(() => new Hardener(), []);
 
   const [state, setState] = useState<ScannerState>({
     isActive: false,
