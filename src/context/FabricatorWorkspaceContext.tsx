@@ -16,6 +16,7 @@ import type {
   DraftQuote,
   MeasurementData,
   Profile,
+  WindowGrid,
   WindowUnit,
 } from '@/types/fabricator';
 

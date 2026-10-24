@@ -10,7 +10,7 @@
 import { loadDraft } from '@/lib/api/drafts';
 import { generateDigitalTwinCode } from '@/lib/confirmation';
 import { trackError } from '@/lib/performance-monitoring';
-import type { Profile, WindowUnit } from '@/types/fabricator';
+import type { OptimizationResult, Profile, WindowUnit } from '@/types/fabricator';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import type { Arc, Circle, Dimension, DraftingContextType, DraftingOutput, Geometry2D, Line, Polygon, Rectangle, Spline } from '../types/drafting';

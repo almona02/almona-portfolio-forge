@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AssignmentExecutor } from '../../../services/ticketing/AssignmentExecutor';
-import { TicketLifecycleEngine } from '../../../services/ticketing/TicketLifecycleEngine';
 import { RoutingAdvisor } from '../../../services/ticketing/advisory/RoutingAdvisor';
 
 // Mock data
