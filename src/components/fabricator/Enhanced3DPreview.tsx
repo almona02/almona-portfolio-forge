@@ -135,41 +135,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
   const [sendStatus, setSendStatus] = useState<TransferStatus | null>(null);
   const lastExportedFile = useRef<Blob | null>(null);
 
-  // ========== ONE-CLICK EXPORT ==========
-  const handleExportProductionFile = useCallback(async () => {
-    if (!machineDriver || !windowUnit) return;
-    setExportStatus('exporting');
-    try {
-      const blob = await machineDriver.generateProductionFile(windowUnit);
-      lastExportedFile.current = blob;
-
-      // Trigger browser download
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const ext = blob.type.includes('csv') ? 'csv' : 'mdb';
-      a.download = `almona_${machineDriver.getModel()}_${Date.now()}.${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      setExportStatus('done');
-      playSuccessTone();
-      // Reset after 3s
-      setTimeout(() => setExportStatus('idle'), 3000);
-    } catch (err) {
-      console.error('Export failed:', err);
-      setExportStatus('error');
-      playErrorTone();
-      setTimeout(() => setExportStatus('idle'), 3000);
-    }
-  }, [machineDriver, windowUnit, playSuccessTone, playErrorTone]);
-
   // ========== WORKSHOP AUDIO FEEDBACK ==========
-  // In a loud workshop, visual-only feedback gets missed.
-  // A short confirmation tone tells the operator "the machine got the file"
-  // without requiring them to stare at the screen.
   const playSuccessTone = useCallback(() => {
     try {
       const ctx = new AudioContext();
@@ -212,6 +178,37 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       // AudioContext not available — skip silently
     }
   }, []);
+
+  // ========== ONE-CLICK EXPORT ==========
+  const handleExportProductionFile = useCallback(async () => {
+    if (!machineDriver || !windowUnit) return;
+    setExportStatus('exporting');
+    try {
+      const blob = await machineDriver.generateProductionFile(windowUnit);
+      lastExportedFile.current = blob;
+
+      // Trigger browser download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const ext = blob.type.includes('csv') ? 'csv' : 'mdb';
+      a.download = `almona_${machineDriver.getModel()}_${Date.now()}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setExportStatus('done');
+      playSuccessTone();
+      // Reset after 3s
+      setTimeout(() => setExportStatus('idle'), 3000);
+    } catch (err) {
+      console.error('Export failed:', err);
+      setExportStatus('error');
+      playErrorTone();
+      setTimeout(() => setExportStatus('idle'), 3000);
+    }
+  }, [machineDriver, windowUnit, playSuccessTone, playErrorTone]);
 
   // ========== SEND TO MACHINE ==========
   const [sendInProgress, setSendInProgress] = useState(false);

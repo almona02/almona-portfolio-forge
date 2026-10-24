@@ -63,10 +63,6 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadActivities();
-  }, [entityType, entityId, limit, loadActivities]);
-
   const loadActivities = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -81,6 +77,10 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
       setLoading(false);
     }
   }, [entityType, entityId, limit, setLoading, setError, setActivities]);
+
+  useEffect(() => {
+    loadActivities();
+  }, [entityType, entityId, limit, loadActivities]);
 
   const renderIcon = (eventType: string) => {
     const iconName = getActivityIcon(eventType);
