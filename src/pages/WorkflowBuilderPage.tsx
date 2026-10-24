@@ -75,7 +75,7 @@ const WorkflowBuilderPage: React.FC = () => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => navigate('/workflows')}
+                            onClick={() => void navigate('/workflows')}
                             className="text-slate-400 hover:text-slate-200"
                         >
                             <ArrowLeft className="h-5 w-5" />

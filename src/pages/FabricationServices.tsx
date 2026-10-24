@@ -914,7 +914,7 @@ const FabricationServices = () => {
                     </div>
                     <h3 className="typography-h3 mb-2">{item.title}</h3>
                     <p className="text-gray-300 mb-4">{item.description}</p>
-                    <Button onClick={() => navigate(`/contact?subject=${encodeURIComponent(item.title)}`)} variant="outline" className="border-almona-light text-almona-light hover:bg-almona-light/10">
+                    <Button onClick={() => void navigate(`/contact?subject=${encodeURIComponent(item.title)}`)} variant="outline" className="border-almona-light text-almona-light hover:bg-almona-light/10">
                       <Download className="mr-2 h-4 w-4" /> Request Resource
                     </Button>
                   </CardContent>
@@ -1031,7 +1031,7 @@ const FabricationServices = () => {
               {consultationReceipt && <p role="status">Request received. Reference: {consultationReceipt}</p>}
               {consultationError && <p role="alert">{consultationError} <a href="/contact?subject=Fabrication%20consultation" className="underline">Contact us directly</a>.</p>}
               
-              <form className="space-y-4" onSubmit={handleConsultationSubmit}>
+              <form className="space-y-4" onSubmit={(e) => void handleConsultationSubmit(e)}>
                 <div className="space-y-2">
                   <Label htmlFor="name" className="typography-label">Full Name</Label>
                   <Input id="name" name="name" required minLength={2} maxLength={120} placeholder="Your name" className="bg-almona-dark/80 border-almona-light/30" />

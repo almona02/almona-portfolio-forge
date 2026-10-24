@@ -325,7 +325,7 @@ export const CustomerTagsManager: React.FC<CustomerTagsManagerProps> = ({
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handleRemoveTag(tag)}
+                                                    onClick={() => void handleRemoveTag(tag)}
                                                     aria-label={`Remove ${tag.name} tag`}
                                                 >
                                                     <X className="h-4 w-4" />
@@ -334,7 +334,7 @@ export const CustomerTagsManager: React.FC<CustomerTagsManagerProps> = ({
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handleAssignTag(tag)}
+                                                    onClick={() => void handleAssignTag(tag)}
                                                     aria-label={`Assign ${tag.name} tag`}
                                                 >
                                                     <Plus className="h-4 w-4" />
@@ -419,7 +419,7 @@ export const CustomerTagsManager: React.FC<CustomerTagsManagerProps> = ({
                         >
                             Cancel
                         </Button>
-                        <Button onClick={handleSave} disabled={isSaving || !tagName.trim()}>
+                        <Button onClick={() => void handleSave()} disabled={isSaving || !tagName.trim()}>
                             {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {editingTag ? 'Update' : 'Create'}
                         </Button>

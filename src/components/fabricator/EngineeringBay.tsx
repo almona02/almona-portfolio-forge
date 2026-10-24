@@ -546,7 +546,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <div className="hidden lg:flex items-center gap-2">
                                     <Button
                                         variant="outline"
-                                        onClick={() => switchMode('drafting')}
+                                        onClick={() => void switchMode('drafting')}
                                         disabled={isSwitching}
                                         className="border-blue-400 text-blue-200 hover:bg-blue-900/30 disabled:opacity-50"
                                         title="Switch to ALMONA Drafting Workbench"

@@ -127,7 +127,7 @@ const Login = () => {
                   </Alert>
                 </motion.div>
               )}
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
                 <motion.div variants={SLIDE_UP} custom={1}>
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-amber-100/80 font-medium">{t('auth.email', 'Email')}</Label>

@@ -353,7 +353,7 @@ export const NoDXFTuningStudio: React.FC = () => {
       >
         <h1 className="text-xl font-semibold text-amber-200 mb-2">Select a system pack to tune</h1>
         <p className="text-sm text-slate-400 mb-6">Choose a pack for No-DXF tuning, or open the system library.</p>
-        <Button variant="outline" className="mb-6 border-slate-600 text-slate-200" onClick={() => navigate(fabricatorRoutes.studioData())}>
+        <Button variant="outline" className="mb-6 border-slate-600 text-slate-200" onClick={() => void navigate(fabricatorRoutes.studioData())}>
           Open system library
         </Button>
         <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl">

@@ -211,7 +211,7 @@ const NotFound = () => {
               {suggestedPages.map((page) => (
                 <button
                   key={page.path}
-                  onClick={() => navigate(page.path)}
+                  onClick={() => void navigate(page.path)}
                   className="text-sm bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 text-primary hover:text-primary/80 px-3 py-2 rounded-lg transition-all duration-200 border border-white shadow-sm hover:shadow-md"
                 >
                   {page.name}

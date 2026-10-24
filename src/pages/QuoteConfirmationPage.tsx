@@ -47,10 +47,10 @@ const QuoteConfirmationPage: React.FC = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={() => navigate("/")}>
+              <Button onClick={() => void navigate("/")}>
                 Back to Home
               </Button>
-              <Button variant="outline" onClick={() => navigate("/contact")}>
+              <Button variant="outline" onClick={() => void navigate("/contact")}>
                 Contact Support
               </Button>
             </div>

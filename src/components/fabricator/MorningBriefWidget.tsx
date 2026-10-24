@@ -139,7 +139,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-          <Button onClick={fetchBrief} className="mt-4" variant="outline" size="sm">
+          <Button onClick={() => void fetchBrief()} className="mt-4" variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Retry
           </Button>

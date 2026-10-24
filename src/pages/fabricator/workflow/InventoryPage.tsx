@@ -78,7 +78,7 @@ export const InventoryPage: React.FC = () => {
                         Please complete the design and optimization steps before checking inventory.
                     </p>
                     <button
-                        onClick={() => navigate('/fabricator/workflow/design')}
+                        onClick={() => void navigate('/fabricator/workflow/design')}
                         className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-200 transform hover:scale-105"
                     >
                         Go to Design

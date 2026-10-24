@@ -319,7 +319,7 @@ const InventoryPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 className="btn-primary"
-                onClick={() => navigate('/fabricator/profiles')}
+                onClick={() => void navigate('/fabricator/profiles')}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {t('inventory.add_profile', 'Add Profile')}
@@ -458,7 +458,7 @@ const InventoryPage: React.FC = () => {
                   variant="outline"
                   size="sm"
                   className="btn-secondary"
-                  onClick={() => refetch()}
+                  onClick={() => void refetch()}
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Refresh

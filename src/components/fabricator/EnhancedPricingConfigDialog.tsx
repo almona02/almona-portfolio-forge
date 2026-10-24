@@ -662,7 +662,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleRollbackPrice(entry)}
+                            onClick={() => void handleRollbackPrice(entry)}
                             className="ml-4 border-amber-500/30 text-amber-300 hover:bg-amber-500/10"
                           >
                             <ArrowLeft className="h-3 w-3 mr-1" />

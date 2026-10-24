@@ -170,7 +170,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
               <Button
                 size="lg"
                 className="btn-primary"
-                onClick={() => navigate('/fabricator/production')}
+                onClick={() => void navigate('/fabricator/production')}
               >
                 {t('workflow_pro.go_to_production', 'Go to Production Command')}
                 <ArrowRight className="ml-2 h-4 w-4" />

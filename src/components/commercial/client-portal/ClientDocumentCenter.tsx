@@ -274,7 +274,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleDownload(doc)}
+                        onClick={() => void handleDownload(doc)}
                         className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
                       >
                         <Download className="w-4 h-4 mr-2" />

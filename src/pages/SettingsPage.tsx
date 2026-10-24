@@ -295,7 +295,7 @@ export const SettingsPage: React.FC = () => {
                                     <div className="font-medium text-slate-200">Sign Out</div>
                                     <div className="text-sm text-slate-400">Log out of your account on all devices</div>
                                 </div>
-                                <Button variant="destructive" onClick={() => signOut()}>
+                                <Button variant="destructive" onClick={() => void signOut()}>
                                     Sign Out
                                 </Button>
                             </CardContent>

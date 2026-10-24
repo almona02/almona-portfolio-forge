@@ -418,7 +418,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                               size="sm"
                               variant="ghost"
                               className="h-6 text-xs text-amber-400 hover:text-amber-300"
-                              onClick={() => navigate(fabricatorRoutes.poseDesign(projectId, pos.id))}
+                              onClick={() => void navigate(fabricatorRoutes.poseDesign(projectId, pos.id))}
                             >
                               <ArrowRight size={12} />
                             </Button>

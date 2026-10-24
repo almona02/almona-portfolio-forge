@@ -574,7 +574,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      onClick={() => handleCommentSubmit(activity.id)}
+                      onClick={() => void handleCommentSubmit(activity.id)}
                       disabled={isSubmittingComment === activity.id}
                       className="bg-amber-600 text-white hover:bg-amber-700"
                     >

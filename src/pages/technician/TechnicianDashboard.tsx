@@ -85,7 +85,7 @@ const TechnicianDashboard: React.FC = () => {
           {tickets.map((t) => (
             <Card key={t.id}>
               <CardContent className="flex flex-wrap items-center gap-3 py-3">
-                <button className="flex-1 min-w-[240px] text-left" onClick={() => navigate(`/support/tickets/${t.id}`)}>
+                <button className="flex-1 min-w-[240px] text-left" onClick={() => void navigate(`/support/tickets/${t.id}`)}>
                   <div className="font-mono text-xs text-muted-foreground">{t.ticket_number}</div>
                   <div className="font-medium">{t.title}</div>
                   <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">

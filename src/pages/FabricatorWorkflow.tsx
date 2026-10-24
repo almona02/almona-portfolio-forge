@@ -1484,7 +1484,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     size="sm"
                     variant="outline"
                     className="btn-primary"
-                    onClick={() => navigate('/fabricator-workflow/pro')}
+                    onClick={() => void navigate('/fabricator-workflow/pro')}
                   >
                     <Factory className="h-3 w-3 mr-1" />
                     {t('fabricator:workflow.mass_production_cta', 'Mass Production')}
@@ -2098,7 +2098,7 @@ export const FabricatorWorkflow: React.FC = () => {
                           size="sm"
                           variant="outline"
                           className="btn-primary"
-                          onClick={() => navigate('/fabricator-workflow/pro')}
+                          onClick={() => void navigate('/fabricator-workflow/pro')}
                         >
                           <Factory className="h-3 w-3 mr-1" />
                           {t('cutting_optimization.mass_production', 'Mass Production')}

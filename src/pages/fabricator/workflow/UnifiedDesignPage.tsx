@@ -256,7 +256,7 @@ export const UnifiedDesignPage: React.FC = () => {
                             {/* Mode switcher */}
                             <div className="flex rounded-lg border border-slate-300 p-1 bg-slate-100">
                                 <button
-                                    onClick={() => handleModeSwitch('wizard')}
+                                    onClick={() => void handleModeSwitch('wizard')}
                                     disabled={isConverting}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${designMode === 'wizard'
                                         ? 'bg-white text-slate-900 shadow-sm border border-slate-300'
@@ -270,7 +270,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                 </button>
 
                                 <button
-                                    onClick={() => handleModeSwitch('drafting')}
+                                    onClick={() => void handleModeSwitch('drafting')}
                                     disabled={isConverting}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${designMode === 'drafting'
                                         ? 'bg-amber-100 text-amber-900 shadow-sm border border-amber-300'
@@ -289,14 +289,14 @@ export const UnifiedDesignPage: React.FC = () => {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate('/fabricator/studio/projects')}
+                                    onClick={() => void navigate('/fabricator/studio/projects')}
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate('/fabricator/workflow/preview3d')}
+                                    onClick={() => void navigate('/fabricator/workflow/preview3d')}
                                     disabled={!canonicalModel}
                                 >
                                     <Eye className="w-4 h-4 mr-2" />
@@ -397,7 +397,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => handleModeSwitch(designMode === 'wizard' ? 'drafting' : 'wizard')}
+                                            onClick={() => void handleModeSwitch(designMode === 'wizard' ? 'drafting' : 'wizard')}
                                             className="w-full"
                                         >
                                             <RefreshCw className="w-4 h-4 mr-2" />
@@ -482,7 +482,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                             <div className="h-full">
                                                 <DraftingWorkbench
                                                     onDesignValidated={handleDraftingComplete}
-                                                    onExit={() => navigate('/fabricator/studio/projects')}
+                                                    onExit={() => void navigate('/fabricator/studio/projects')}
                                                 />
                                             </div>
                                         )}

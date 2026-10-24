@@ -237,7 +237,7 @@ export function ProductionDashboard() {
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span>Live</span>
           </Badge>
-          <Button onClick={loadDashboardData} variant="outline" size="sm">
+          <Button onClick={() => void loadDashboardData()} variant="outline" size="sm">
             Refresh
           </Button>
         </div>

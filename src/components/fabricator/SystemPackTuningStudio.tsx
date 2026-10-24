@@ -614,7 +614,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         <Button
           variant="outline"
           className="mb-6 border-slate-600 text-slate-200"
-          onClick={() => navigate(fabricatorRoutes.studioData())}
+          onClick={() => void navigate(fabricatorRoutes.studioData())}
         >
           Open system library
         </Button>

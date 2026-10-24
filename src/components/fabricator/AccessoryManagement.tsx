@@ -757,7 +757,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                   className="hidden"
                 />
               </Label>
-              <Button variant="outline" size="sm" onClick={loadAccessories}>
+              <Button variant="outline" size="sm" onClick={() => void loadAccessories()}>
                 <RefreshCw className="h-4 w-4 mr-2" />
                 {t('accessory_management.refresh', 'Refresh')}
               </Button>
@@ -1066,7 +1066,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleToggleCompatibility(selectedProfileForCompatibility, accessory.id)}
+                            onClick={() => void handleToggleCompatibility(selectedProfileForCompatibility, accessory.id)}
                           >
                             <Link2 className="h-4 w-4 mr-2" />
                             Toggle Compatibility
@@ -1085,7 +1085,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDeleteAccessory(accessory.id)}
+                        onClick={() => void handleDeleteAccessory(accessory.id)}
                         className="text-red-400 hover:text-red-300"
                       >
                         <Trash2 className="h-4 w-4" />

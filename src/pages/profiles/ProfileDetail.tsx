@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Profile } from "../../constants/productsData";
 import { ReviewForm } from "@/components/shop/ReviewForm";
@@ -85,7 +85,7 @@ const ProfileDetail: React.FC = () => {
           {t("reviews.section_title")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <ReviewForm productId={profile.id} onSubmit={handleAddReview} />
+          <ReviewForm productId={profile.id} onSubmit={(a, b, c) => void handleAddReview(a, b, c)} />
           <ReviewList reviews={reviews} />
         </div>
       </div>

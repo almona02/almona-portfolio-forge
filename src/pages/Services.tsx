@@ -617,7 +617,7 @@ const Services = () => {
                           t('services.quality_control_automation')
                         ]}
                         actionText={t('services.launch_fabricator')}
-                        onActionClick={() => navigate('/fabricator-workflow')}
+                        onActionClick={() => void navigate('/fabricator-workflow')}
                         highlight={true}
                       />
                     </div>

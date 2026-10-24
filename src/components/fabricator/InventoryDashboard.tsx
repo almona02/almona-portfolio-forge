@@ -1610,7 +1610,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleGenerateBarcode(remnant.id)}
+                              onClick={() => void handleGenerateBarcode(remnant.id)}
                             >
                               <QrCode className="h-4 w-4" />
                             </Button>
@@ -2082,7 +2082,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleResolveAlert(alert.id)}
+                          onClick={() => void handleResolveAlert(alert.id)}
                         >
                           <X className="h-4 w-4" />
                         </Button>

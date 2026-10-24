@@ -531,7 +531,7 @@ export const SalesAcceleration: React.FC = () => {
             />
           </div>
 
-          <Button onClick={askAI} disabled={!aiQuery.trim()}>
+          <Button onClick={() => void askAI()} disabled={!aiQuery.trim()}>
             <Send className="h-4 w-4 mr-2" />
             Ask automation
           </Button>

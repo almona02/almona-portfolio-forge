@@ -817,11 +817,11 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
 
             <TabsContent value="export" className="space-y-4">
               <div className="space-y-2">
-                <Button onClick={exportPresentation} className="w-full">
+                <Button onClick={() => void exportPresentation()} className="w-full">
                   <Download className="h-4 w-4 mr-2" />
                   Export Presentation
                 </Button>
-                <Button onClick={sharePresentation} variant="outline" className="w-full">
+                <Button onClick={() => void sharePresentation()} variant="outline" className="w-full">
                   <Share2 className="h-4 w-4 mr-2" />
                   Share Presentation
                 </Button>

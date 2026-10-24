@@ -614,7 +614,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                <Button variant="outline" onClick={() => setBulkEditOpen(false)} className="border-amber-600/30 text-amber-200 hover:bg-amber-900/20">
                  Cancel
                </Button>
-               <Button onClick={handleBulkUpdate} className="bg-amber-500 hover:bg-amber-600 text-black">
+               <Button onClick={() => void handleBulkUpdate()} className="bg-amber-500 hover:bg-amber-600 text-black">
                  Apply to {selectedJobIds.size} Items
                </Button>
             </DialogFooter>

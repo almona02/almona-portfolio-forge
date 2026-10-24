@@ -341,7 +341,7 @@ const CustomerPortal = () => {
                   </div>
                   <Button 
                     className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
-                    onClick={() => navigate('/portal/register-machine')}
+                    onClick={() => void navigate('/portal/register-machine')}
                   >
                     <Plus className="h-4 w-4 mr-2" /> {t('portal.register_new_machine')}
                   </Button>
@@ -389,14 +389,14 @@ const CustomerPortal = () => {
                                 variant="outline" 
                                 size="sm" 
                                 className="flex-1 border-almona-light/30 text-almona-light hover:bg-almona-light/10"
-                                onClick={() => navigate(`/machines/${machine.id}`)}
+                                onClick={() => void navigate(`/machines/${machine.id}`)}
                               >
                                 <Wrench className="h-4 w-4 mr-2" /> Details
                               </Button>
                               <Button 
                                 size="sm" 
                                 className="flex-1 bg-almona-orange/20 text-almona-orange hover:bg-almona-orange/30 border-almona-orange/30"
-                                onClick={() => navigate('/support/tickets/new', { state: { machineId: machine.id } })}
+                                onClick={() => void navigate('/support/tickets/new', { state: { machineId: machine.id } })}
                               >
                                 <FileText className="h-4 w-4 mr-2" /> Support
                               </Button>
@@ -416,7 +416,7 @@ const CustomerPortal = () => {
                     <p className="text-gray-500 mb-6">{t('portal.register_first_machine')}</p>
                     <Button 
                       className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
-                      onClick={() => navigate('/portal/register-machine')}
+                      onClick={() => void navigate('/portal/register-machine')}
                     >
                       <Plus className="h-4 w-4 mr-2" /> {t('portal.register_machine')}
                     </Button>
@@ -539,7 +539,7 @@ const CustomerPortal = () => {
                               <Button
                                 size="sm"
                                 className="bg-almona-orange/20 text-almona-orange hover:bg-almona-orange/30 border-almona-orange/30"
-                                onClick={() => handlePrintQuote(quote)}
+                                onClick={() => void handlePrintQuote(quote)}
                               >
                                 <FileText className="h-4 w-4 mr-2" /> {t('portal.print_po')}
                               </Button>
@@ -547,7 +547,7 @@ const CustomerPortal = () => {
                                 variant="outline"
                                 size="sm"
                                 className="border-almona-light/30 text-almona-light hover:bg-almona-light/10"
-                                onClick={() => navigate(`/portal/quotes/${quote.id}`)}
+                                onClick={() => void navigate(`/portal/quotes/${quote.id}`)}
                               >
                                 View Details
                               </Button>

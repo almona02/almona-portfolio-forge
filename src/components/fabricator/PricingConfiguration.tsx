@@ -697,7 +697,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                     <SelectItem value="90">Last 90 days</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" onClick={loadPriceHistory}>
+                <Button variant="outline" onClick={() => void loadPriceHistory()}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh
                 </Button>
@@ -758,7 +758,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                 {bulkImportFile && (
                   <div className="mt-4">
                     <div className="text-sm text-gray-400">{bulkImportFile.name}</div>
-                    <Button onClick={handleBulkImport} className="mt-2">
+                    <Button onClick={() => void handleBulkImport()} className="mt-2">
                       <Upload className="h-4 w-4 mr-2" />
                       Import Prices
                     </Button>

@@ -1335,7 +1335,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                         className="hidden"
                       />
                     </Label>
-                    <Button variant="outline" size="sm" onClick={loadProfiles}>
+                    <Button variant="outline" size="sm" onClick={() => void loadProfiles()}>
                       <RefreshCw className="h-4 w-4 mr-2" />
                       {t('profileManagement.refreshProfiles', 'Refresh Profiles')}
                     </Button>

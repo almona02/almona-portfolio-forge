@@ -185,7 +185,7 @@ const YilmazExportPage: React.FC = () => {
       {/* Header */}
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="sm" onClick={() => void navigate(-1)}>
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back
           </Button>
@@ -684,7 +684,7 @@ const YilmazExportPage: React.FC = () => {
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  onClick={() => navigate('/yilmaz-maintenance')}
+                  onClick={() => void navigate('/yilmaz-maintenance')}
                 >
                   <Gauge className="w-4 h-4 mr-2" />
                   Machine Dashboard
@@ -692,7 +692,7 @@ const YilmazExportPage: React.FC = () => {
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  onClick={() => navigate('/yilmaz-analytics')}
+                  onClick={() => void navigate('/yilmaz-analytics')}
                 >
                   <FileText className="w-4 h-4 mr-2" />
                   Analytics

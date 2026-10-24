@@ -325,7 +325,7 @@ const ProjectsPage: React.FC = () => {
                     </CardDescription>
                   </div>
                   <Button
-                    onClick={() => navigate(fabricatorRoutes.newProjectWizard())}
+                    onClick={() => void navigate(fabricatorRoutes.newProjectWizard())}
                     size="default"
                     className="btn-bronze text-sm px-6"
                   >
@@ -355,7 +355,7 @@ const ProjectsPage: React.FC = () => {
                       </p>
                     </div>
                     <Button
-                      onClick={() => navigate(fabricatorRoutes.newProjectWizard())}
+                      onClick={() => void navigate(fabricatorRoutes.newProjectWizard())}
                       size="default"
                       className="btn-bronze text-sm px-8 py-6 h-auto"
                     >

@@ -146,7 +146,7 @@ const SellUsedMachine = () => {
                     </Button>
                     <Button 
                       type="button" 
-                      onClick={() => navigate('/used-machines')}
+                      onClick={() => void navigate('/used-machines')}
                       className="bg-almona-light/20 hover:bg-almona-light/30 text-white border border-almona-light/30"
                     >
                       Cancel

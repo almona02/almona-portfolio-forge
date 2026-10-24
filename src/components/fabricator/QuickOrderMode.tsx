@@ -431,7 +431,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                       <div
                         key={template.id}
                         className="flex items-center justify-between p-2 bg-gray-800/50 rounded hover:bg-gray-800 cursor-pointer"
-                        onClick={() => handleLoadTemplate(template.id)}
+                        onClick={() => void handleLoadTemplate(template.id)}
                       >
                         <div className="flex-1">
                           <p className="text-white text-sm font-medium">{template.name}</p>

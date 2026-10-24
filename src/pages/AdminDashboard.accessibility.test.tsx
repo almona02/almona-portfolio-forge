@@ -34,7 +34,7 @@ afterEach(cleanup)
 function HistoryControls() {
   const location = useLocation()
   const navigate = useNavigate()
-  return <><output aria-label="Current URL">{location.search}</output><button onClick={() => navigate(-1)}>Back</button></>
+  return <><output aria-label="Current URL">{location.search}</output><button onClick={() => void navigate(-1)}>Back</button></>
 }
 function setup(url = '/admin') {
   return render(<MemoryRouter initialEntries={[url]}><AdminDashboard /><HistoryControls /></MemoryRouter>)

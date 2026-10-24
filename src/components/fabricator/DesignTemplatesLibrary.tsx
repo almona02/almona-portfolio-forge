@@ -398,7 +398,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                       {template.name}
                     </h3>
                     <button
-                      onClick={() => handleToggleFavorite(template.id)}
+                      onClick={() => void handleToggleFavorite(template.id)}
                       className="transition-colors"
                     >
                       <Star
@@ -444,7 +444,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                 <div className="flex gap-2 pt-2 border-t border-slate-700/50">
                   <Button
                     size="sm"
-                    onClick={() => handleLoadTemplate(template)}
+                    onClick={() => void handleLoadTemplate(template)}
                     className="flex-1 btn-primary-gradient font-semibold text-xs h-8"
                   >
                     Load
@@ -452,7 +452,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => handleDuplicateTemplate(template)}
+                    onClick={() => void handleDuplicateTemplate(template)}
                     className="h-8 w-8 p-0 border-slate-700/50 text-slate-300 hover:bg-slate-800 /50 hover:text-amber-400 card-dark"
                     title="Duplicate"
                   >
@@ -461,7 +461,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => handleDeleteTemplate(template.id)}
+                    onClick={() => void handleDeleteTemplate(template.id)}
                     className="h-8 w-8 p-0 border-slate-700/50 text-red-400 hover:text-red-300 hover:bg-red-500/10"
                     title="Delete"
                   >

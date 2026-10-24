@@ -96,7 +96,7 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
   const inputCls = 'bg-almona-dark border-almona-light text-white';
 
   return (
-    <form onSubmit={handleSubmit} className="bg-almona-darker rounded-xl p-6 space-y-6 text-left">
+    <form onSubmit={(e) => void handleSubmit(e)} className="bg-almona-darker rounded-xl p-6 space-y-6 text-left">
       <div className="text-center mb-2">
         <h2 className="typography-h2">{copy('Post your machine â€” free, in 2 minutes')}</h2>
         <p className="text-gray-400 text-sm mt-1">{copy('No account needed. Buyers will contact you directly by phone or WhatsApp.')}</p>

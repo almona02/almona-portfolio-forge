@@ -446,7 +446,7 @@ export const SystemPacksPage: React.FC = () => {
                           size="sm"
                           variant="ghost"
                           className="w-full text-amber-200/90 hover:text-amber-100 hover:bg-amber-500/10"
-                          onClick={() => navigate(fabricatorRoutes.studioDataAccessories(system.meta.id))}
+                          onClick={() => void navigate(fabricatorRoutes.studioDataAccessories(system.meta.id))}
                         >
                           <Package className="h-4 w-4 mr-2" />
                           Accessories kits

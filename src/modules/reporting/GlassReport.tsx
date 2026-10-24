@@ -325,7 +325,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
               <Button
                 variant="default"
                 size="sm"
-                onClick={() => handleExport('pdf')}
+                onClick={() => void handleExport('pdf')}
                 disabled={isExporting}
                 className="text-xs sm:text-sm"
               >
@@ -339,7 +339,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleExport('csv')}
+                onClick={() => void handleExport('csv')}
                 disabled={isExporting}
                 className="text-xs sm:text-sm"
               >
@@ -353,7 +353,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleExport('dxf')}
+                onClick={() => void handleExport('dxf')}
                 disabled={isExporting}
                 className="text-xs sm:text-sm"
               >

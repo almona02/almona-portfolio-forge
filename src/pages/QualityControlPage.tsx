@@ -645,7 +645,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     />
                   )}
                   <Button
-                    onClick={() => handlePhotoCapture('product')}
+                    onClick={() => void handlePhotoCapture('product')}
                     variant="outline"
                     className="flex items-center gap-2"
                   >
@@ -678,7 +678,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                       ))}
                     </div>
                     <Button
-                      onClick={() => handlePhotoCapture('defect')}
+                      onClick={() => void handlePhotoCapture('defect')}
                       variant="outline"
                       className="flex items-center gap-2"
                       disabled={defectPhotoHashes.length >= 2}

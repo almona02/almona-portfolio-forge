@@ -86,7 +86,7 @@ export const BOMReviewPage: React.FC = () => {
       <div className="flex flex-col items-center justify-center h-full p-12 text-center text-slate-400">
         <Layers className="h-16 w-16 mb-4 opacity-50" />
         <p>No project data. Complete design first.</p>
-        <Button variant="outline" className="mt-4" onClick={() => navigate(fabricatorRoutes.studioProjects())}>
+        <Button variant="outline" className="mt-4" onClick={() => void navigate(fabricatorRoutes.studioProjects())}>
           Back to Projects
         </Button>
       </div>

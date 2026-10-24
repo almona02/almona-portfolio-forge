@@ -111,7 +111,7 @@ export const WorkspaceTopNav: React.FC = () => {
                 {idx > 0 && <ChevronRight className="h-3 w-3 text-slate-600" />}
                 {crumb.path ? (
                   <button
-                    onClick={() => navigate(crumb.path!)}
+                    onClick={() => void navigate(crumb.path!)}
                     className="hover:text-amber-400 transition-colors"
                   >
                     {crumb.label}

@@ -617,7 +617,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
             <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 1}>
               {t('calibration_wizard.actions.previous', 'Previous')}
             </Button>
-            <Button onClick={saveCalibration} className="btn-primary">
+            <Button onClick={() => void saveCalibration()} className="btn-primary">
               {t('calibration_wizard.actions.save', 'Save Calibration')}
             </Button>
           </div>

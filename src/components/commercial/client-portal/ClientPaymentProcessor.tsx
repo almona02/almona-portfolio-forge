@@ -210,7 +210,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
                     <TableCell>
                       <Button
                         size="sm"
-                        onClick={() => handleGeneratePaymentLink(invoice)}
+                        onClick={() => void handleGeneratePaymentLink(invoice)}
                         className="bg-amber-600 hover:bg-amber-700 text-white"
                       >
                         <CreditCard className="w-4 h-4 mr-2" />

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @tier Tier 1 Presentation (Advisory Dashboard)
  * @gold_tier Market-leader inspired UI (Zendesk/ServiceNow/Jira)
  * @performance 60 FPS, Virtual scrolling, Real-time updates
@@ -215,7 +215,7 @@ export const AdvisoryDashboard: React.FC = () => {
                         Advisory Intelligence Dashboard
                     </h1>
                     <p className="dashboard-subtitle">
-                        software-assisted suggestions requiring human validation â€¢ AICS-001 Tier 2 Compliant
+                        software-assisted suggestions requiring human validation Ã¢â‚¬Â¢ AICS-001 Tier 2 Compliant
                     </p>
                 </div>
 
@@ -487,7 +487,7 @@ export const AdvisoryDashboard: React.FC = () => {
                         <span className="badge human">Human Validation Required</span>
                     </div>
                     <p className="disclaimer">
-                        âš–ï¸ All advisory outputs are suggestions only. No autonomous decisions are made.
+                        Ã¢Å¡â€“Ã¯Â¸Â All advisory outputs are suggestions only. No autonomous decisions are made.
                         Human validation is required before any execution. Audit trails are immutable.
                     </p>
                 </div>

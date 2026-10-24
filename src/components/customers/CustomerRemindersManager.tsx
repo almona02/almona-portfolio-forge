@@ -316,7 +316,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
                                             <div className="flex items-start gap-4">
                                                 <Checkbox
                                                     checked={reminder.is_completed}
-                                                    onCheckedChange={() => handleToggleComplete(reminder)}
+                                                    onCheckedChange={() => void handleToggleComplete(reminder)}
                                                     aria-label={`Mark "${reminder.title}" as ${reminder.is_completed ? 'incomplete' : 'complete'}`}
                                                 />
                                                 <div className="flex-1 min-w-0 space-y-2">
@@ -387,7 +387,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
                                             <div className="flex items-start gap-4">
                                                 <Checkbox
                                                     checked={reminder.is_completed}
-                                                    onCheckedChange={() => handleToggleComplete(reminder)}
+                                                    onCheckedChange={() => void handleToggleComplete(reminder)}
                                                     aria-label={`Mark "${reminder.title}" as incomplete`}
                                                 />
                                                 <div className="flex-1 min-w-0 space-y-2">

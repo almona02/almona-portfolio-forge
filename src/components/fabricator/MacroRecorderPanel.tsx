@@ -162,7 +162,7 @@ export const MacroRecorderPanel: React.FC<MacroRecorderPanelProps> = ({
               {!isPlaying ? (
                 <Button
                   size="sm"
-                  onClick={() => handlePlay()}
+                  onClick={() => void handlePlay()}
                   disabled={isRecording}
                   className="flex-1"
                 >

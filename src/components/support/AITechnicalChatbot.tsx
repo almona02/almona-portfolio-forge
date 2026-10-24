@@ -386,7 +386,7 @@ export const AITechnicalChatbot: React.FC = () => {
                         className={`text-xs border-almona-light/30 hover:bg-almona-orange/20 ${
                           response.severity === 'critical' ? 'border-red-500/50 text-red-400' : ''
                         }`}
-                        onClick={() => handleQuickResponse(response)}
+                        onClick={() => void handleQuickResponse(response)}
                       >
                         {response.label}
                       </Button>
@@ -488,7 +488,7 @@ export const AITechnicalChatbot: React.FC = () => {
                     ðŸ“·
                   </Button>
                   <Button
-                    onClick={() => sendMessage()}
+                    onClick={() => void sendMessage()}
                     disabled={!inputMessage.trim() || isLoading}
                     className="bg-almona-orange/20 text-almona-orange hover:bg-almona-orange/30 border-almona-orange/30"
                   >

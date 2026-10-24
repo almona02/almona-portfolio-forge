@@ -112,7 +112,7 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
     return (
       <div className="p-6 text-center">
         <p className="text-gray-400">Failed to load analytics data</p>
-        <Button onClick={fetchAnalyticsData} className="mt-4">
+        <Button onClick={() => void fetchAnalyticsData()} className="mt-4">
           Retry
         </Button>
       </div>

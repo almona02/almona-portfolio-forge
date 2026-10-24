@@ -37,7 +37,7 @@ export const Preview3DPage: React.FC = () => {
                 <div className="flex justify-between">
                     <Button
                         variant="outline"
-                        onClick={() => navigate(projectId ? `/fabricator/workflow/design/${projectId}` : '/fabricator/workflow/design')}
+                        onClick={() => void navigate(projectId ? `/fabricator/workflow/design/${projectId}` : '/fabricator/workflow/design')}
                     >
                         â† Back to Design
                     </Button>

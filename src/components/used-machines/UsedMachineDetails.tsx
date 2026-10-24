@@ -90,7 +90,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
             </div>
           </div>
 
-          <button onClick={handleReport} className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-400">
+          <button onClick={() => void handleReport()} className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-400">
             <Flag className="w-3 h-3" /> {copy('Report this listing')}
           </button>
         </div>
