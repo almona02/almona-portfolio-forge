@@ -289,7 +289,7 @@ describe('Wave 2 Advisory Integration Tests', () => {
       const advisory = await maintenanceAdvisor.suggestMaintenance(mockMachineData, []);
       
       // 2. Verify constitutional compliance
-      const hardeningResult = AdvisoryHardener.harden(advisory);
+      const hardeningResult = AdvisoryHardener.harden(advisory as any);
       expect(hardeningResult.valid).toBe(true);
       
       // 3. Simulate human validation

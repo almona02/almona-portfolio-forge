@@ -76,13 +76,13 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
             // For string components like 'div', 'section', etc.
             const motionElement = motion[component as keyof typeof motion];
             if (motionElement) {
-              setMotionComponent(() => motionElement);
+              setMotionComponent(() => motionElement as any);
             } else {
               setMotionComponent(() => ((props: Record<string, unknown>) => React.createElement(component, props)) as ComponentType<unknown>);
             }
           } else if (motion && component) {
             // For component references
-            setMotionComponent(() => motion(component));
+            setMotionComponent(() => motion(component) as any);
           } else {
             if (typeof component === 'string') {
               setMotionComponent(() => ((props: Record<string, unknown>) => React.createElement(component, props)) as ComponentType<unknown>);
@@ -187,11 +187,11 @@ export const LazyAnimatePresence: React.FC<{ children: ReactNode; [key: string]:
 
   useEffect(() => {
     loadFramerMotion().then((module) => {
-      setAnimatePresenceComponent(() => module.AnimatePresence || (({ children }: { children: ReactNode }) => React.createElement(React.Fragment, null, children)));
+      setAnimatePresenceComponent(() => (module.AnimatePresence || (({ children }: { children: ReactNode }) => React.createElement(React.Fragment, null, children))) as any);
       setIsLoading(false);
     }).catch(() => {
       // Fallback to Fragment if AnimatePresence fails to load
-      setAnimatePresenceComponent(() => ({ children }: { children: ReactNode }) => React.createElement(React.Fragment, null, children));
+      setAnimatePresenceComponent(() => (({ children }: { children: ReactNode }) => React.createElement(React.Fragment, null, children)) as any);
       setIsLoading(false);
     });
   }, []);

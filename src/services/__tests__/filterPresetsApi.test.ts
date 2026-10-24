@@ -190,7 +190,7 @@ describe('filterPresetsApi', () => {
 
       (fetch as any).mockResolvedValue(createFetchResponse(mockResponse, true));
 
-      const result = await createFilterPreset(mockRequest);
+      const result = await createFilterPreset(mockRequest as any);
 
       expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/v2/filter-presets'),
@@ -221,7 +221,7 @@ describe('filterPresetsApi', () => {
           Promise.resolve({ detail: 'Preset name already exists' }),
       });
 
-      await expect(createFilterPreset(mockRequest)).rejects.toThrow(
+      await expect(createFilterPreset(mockRequest as any)).rejects.toThrow(
         'Preset name already exists'
       );
     });
@@ -246,7 +246,7 @@ describe('filterPresetsApi', () => {
 
       (fetch as any).mockResolvedValue(createFetchResponse(mockResponse));
 
-      const result = await updateFilterPreset('preset-1', mockRequest);
+      const result = await updateFilterPreset('preset-1', mockRequest as any);
 
       expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/v2/filter-presets/preset-1'),

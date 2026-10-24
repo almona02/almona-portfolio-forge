@@ -272,7 +272,7 @@ describe('ApexEngineV2', () => {
         },
       };
 
-      const engine = new ApexEngineV2(system, multiColUnit);
+      const engine = new ApexEngineV2(system, multiColUnit as WindowUnit);
       const result = engine.generateAssembly();
 
       expect(result.visualGeometry.frame.mullions).toBeDefined();
@@ -292,7 +292,7 @@ describe('ApexEngineV2', () => {
         },
       };
 
-      const engine = new ApexEngineV2(system, multiRowUnit);
+      const engine = new ApexEngineV2(system, multiRowUnit as WindowUnit);
       const result = engine.generateAssembly();
 
       expect(result.visualGeometry.frame.transoms).toBeDefined();
@@ -319,7 +319,7 @@ describe('ApexEngineV2', () => {
         glazing: undefined,
       };
 
-      const engine = new ApexEngineV2(system, unitWithoutGlazing);
+      const engine = new ApexEngineV2(system, unitWithoutGlazing as WindowUnit);
       const result = engine.generateAssembly();
 
       // Should use default glazing thickness
