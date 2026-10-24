@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   Menu, 
@@ -675,7 +675,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                         <span className="text-sm sm:text-base">My Portal</span>
                       </Link>
                       <button
-                        onClick={async () => {
+                        onClick={() => {
+                          void (async () => {
                           try {
                             if (onLogout) {
                               onLogout();
@@ -685,6 +686,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                           } finally {
                             closeAllDropdowns();
                           }
+                          })();
                         }}
                         className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 text-left"
                         aria-label="Logout"
