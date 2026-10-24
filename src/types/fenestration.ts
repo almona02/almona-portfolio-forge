@@ -127,11 +127,11 @@ export interface FenestrationSystem {
     /** Sash profile */
     sash: ProfileSpec;
     /** Mullion profile */
-    mullion: ProfileSpec;
+    mullion?: ProfileSpec;
     /** Transom profile */
-    transom: ProfileSpec;
+    transom?: ProfileSpec;
     /** Glazing bead profile */
-    glazingBead: ProfileSpec;
+    glazingBead?: ProfileSpec;
     /** Reinforcement profile (UPVC crucial) */
     reinforcement?: ProfileSpec;
     /** Thermal break profile (GCC crucial) */
