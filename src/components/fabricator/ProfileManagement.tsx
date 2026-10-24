@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProfileManagement - Complete profile management system with Supabase integration
  * 
  * Features:
@@ -788,7 +788,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       toast.success(t('profileManagement.profileSavedSuccess', 'Profile saved successfully'));
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      const detailedError = (err as any)?.message || (err as any)?.details || (err as any)?.error_description || 'Unknown error';
+      const detailedError = (err as { message?: string; details?: string; error_description?: string })?.message || (err as { message?: string; details?: string; error_description?: string })?.details || (err as { message?: string; details?: string; error_description?: string })?.error_description || 'Unknown error';
       trackError('ProfileManagement', 'add_profile', detailedError);
       setError(detailedError);
       toast.error(`Error saving profile: ${detailedError}`);
