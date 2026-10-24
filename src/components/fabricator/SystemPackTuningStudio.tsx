@@ -1113,7 +1113,8 @@ export const SystemPackTuningStudio: React.FC = () => {
           profile={tuningProfile}
           userId={userId}
           onClose={() => void handleTuningClose()}
-          onProfileUpdated={async () => {
+          onProfileUpdated={() => {
+            void (async () => {
             // When profile is updated in tuning studio, fetch updated data from database
             if (systemPack && tuningProfile && userId) {
               try {
@@ -1226,6 +1227,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                 console.error('Error updating system pack after profile save:', err);
               }
             }
+            })();
           }}
         />
       )}
