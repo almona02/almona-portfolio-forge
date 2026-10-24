@@ -12,7 +12,6 @@ describe('Service System Integration', () => {
   let routingAdvisor: RoutingAdvisor;
   
   beforeEach(() => {
-    _lifecycleEngine = new TicketLifecycleEngine();
     // Initialize with rules including default
     assignmentExecutor = new AssignmentExecutor([
         {

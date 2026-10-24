@@ -1,4 +1,6 @@
 import { useEngineeringEngine } from '@/hooks/fabricator/useEngineeringEngine';
+import { CutListViewer } from '@/components/fabricator/CutListViewer';
+import { generateOptimizedCutList } from '@/lib/fabricator/UPVCCuttingEngine';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Progress } from '@/shared/ui/ui/progress';

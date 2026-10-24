@@ -308,7 +308,6 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
-                    setPage(1);
                   }}
                 />
               </div>
