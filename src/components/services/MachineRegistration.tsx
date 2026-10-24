@@ -1,4 +1,4 @@
-﻿import { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -402,7 +402,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                               variant="ghost"
                               size="sm"
                               className="h-8 w-8 p-0"
-                              onClick={() => twinClipboard.copyToClipboard(machine.digitalTwinId!, 'digital twin code')}
+                              onClick={() => void twinClipboard.copyToClipboard(machine.digitalTwinId!, 'digital twin code')}
                             >
                               {twinClipboard.copiedText === machine.digitalTwinId ? (
                                 <Check className="h-4 w-4  status-valid" />

@@ -137,7 +137,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                 </DialogDescription>
               </DialogHeader>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-6">
+              <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6 mt-6">
                 {/* Emergency Type Selection */}
                 <div>
                   <Label className="typography-label text-lg font-semibold mb-4 block">Select Emergency Type</Label>

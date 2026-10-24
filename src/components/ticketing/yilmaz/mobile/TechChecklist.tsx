@@ -229,7 +229,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
 
       {/* Form */}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={(e) => { void form.handleSubmit(handleSubmit)(e); }} className="space-y-4">
           {/* Machine Information */}
           <Card>
             <CardHeader>

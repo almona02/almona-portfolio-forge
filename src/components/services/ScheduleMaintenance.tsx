@@ -664,7 +664,7 @@ ${data.notes}
                 </DialogDescription>
               </DialogHeader>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-6">
+              <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6 mt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="companyName" className="typography-label">اسم الشركة * | Company Name *</Label>
@@ -1010,7 +1010,7 @@ ${data.notes}
                     رجوع | Back
                   </Button>
                   <Button
-                    onClick={handleSubmit(onSubmit)}
+                    onClick={(e) => { void handleSubmit(onSubmit)(e); }}
                     disabled={!selectedSlot || isSubmitting}
                     className="bg-gradient-to-r from-green-500 to-blue-500"
                   >

@@ -469,7 +469,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
           </div>
         </DialogHeader>
 
-        <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="flex-1 px-6 py-6 space-y-8">
+        <form ref={formRef} onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="flex-1 px-6 py-6 space-y-8">
           {/* Hidden registered inputs to ensure react-hook-form tracks these programmatic selections */}
           <input type="hidden" {...register('type')} />
           <input type="hidden" {...register('priority')} />

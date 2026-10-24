@@ -173,7 +173,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                         variant="ghost"
                         size="sm"
                         className="h-7 w-7 p-0"
-                        onClick={() => twinClipboard.copyToClipboard(result.digital_twin_code!, 'digital twin code')}
+                        onClick={() => void twinClipboard.copyToClipboard(result.digital_twin_code!, 'digital twin code')}
                       >
                         {twinClipboard.copiedText === result.digital_twin_code ? (
                           <Check className="h-4 w-4 status-valid" />

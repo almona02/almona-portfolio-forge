@@ -82,7 +82,7 @@ const SellUsedMachine = () => {
                 <CardTitle className="text-almona-orange">Machine Details</CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6">
                   <div>
                     <label className="typography-label block text-sm font-medium mb-2">Machine Name</label>
                     <Input 

@@ -85,7 +85,7 @@ const Contact = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit(onSubmit)} onChange={() => void setEmailDraft(null)} className="space-y-6" noValidate>
+              <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} onChange={() => void setEmailDraft(null)} className="space-y-6" noValidate>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="name" className="typography-label">{copy("Full Name")}</Label>

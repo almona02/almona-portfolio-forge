@@ -168,7 +168,7 @@ export const Register = () => {
             {renderStepIndicator()}
 
             <CardContent className="p-8 pt-0">
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6">
                 <AnimatePresence mode="wait">
                   {currentStep === 1 && (
                     <motion.div
