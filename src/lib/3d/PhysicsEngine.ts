@@ -209,7 +209,7 @@ export class PhysicsWorld {
     bbox.getSize(size);
     
     // Create collision shape
-    let collisionShape: unknown;
+    let collisionShape: any;
     switch (shape) {
       case 'sphere':
         collisionShape = new Ammo.btSphereShape(Math.max(size.x, size.y, size.z) / 2);
