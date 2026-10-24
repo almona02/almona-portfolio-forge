@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 
 interface EgyptianIndustrialHeroProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 /**

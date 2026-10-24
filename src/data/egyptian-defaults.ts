@@ -270,13 +270,13 @@ export function getDefaultWindLoad(region?: string): typeof EGYPTIAN_WIND_LOAD_D
   
   const regionLower = region.toLowerCase();
   if (regionLower.includes('alexandria')) {
-    return EGYPTIAN_WIND_LOAD_DEFAULTS.alexandria;
+    return EGYPTIAN_WIND_LOAD_DEFAULTS.alexandria as any;
   }
   if (regionLower.includes('north coast')) {
-    return EGYPTIAN_WIND_LOAD_DEFAULTS.northCoast;
+    return EGYPTIAN_WIND_LOAD_DEFAULTS.northCoast as any;
   }
   if (regionLower.includes('delta') || regionLower.includes('mansoura') || regionLower.includes('tanta')) {
-    return EGYPTIAN_WIND_LOAD_DEFAULTS.delta;
+    return EGYPTIAN_WIND_LOAD_DEFAULTS.delta as any;
   }
   
   return EGYPTIAN_WIND_LOAD_DEFAULTS.cairo; // Default
@@ -291,7 +291,7 @@ export function getDefaultMarketTier(projectType?: string, budget?: 'low' | 'med
   }
   
   if (projectType === 'hotel' || projectType === 'hospital' || projectType === 'luxury') {
-    return EGYPTIAN_MARKET_SEGMENTATION.high;
+    return EGYPTIAN_MARKET_SEGMENTATION.high as any;
   }
   
   if (projectType === 'budget' || projectType === 'low-end') {
