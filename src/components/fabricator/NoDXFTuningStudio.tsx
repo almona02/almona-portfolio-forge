@@ -71,7 +71,7 @@ export const NoDXFTuningStudio: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const [systemPack, setSystemPack] = useState<any | null>(null);
+  const [systemPack, setSystemPack] = useState<any>(null);
   const [profiles, setProfiles] = useState<ProfileConfig[]>([]);
 
   // Load system pack

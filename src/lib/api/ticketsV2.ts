@@ -1,4 +1,4 @@
-/* Unified Tickets V2 API client
+﻿/* Unified Tickets V2 API client
  * Bridges frontend to FastAPI /api/v2/tickets endpoints.
  */
 import { TicketPriority, TicketStatus } from '@/types/tickets'

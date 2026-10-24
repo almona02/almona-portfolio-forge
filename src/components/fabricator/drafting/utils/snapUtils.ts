@@ -1,4 +1,4 @@
-// src/components/fabricator/drafting/utils/snapUtils.ts
+﻿// src/components/fabricator/drafting/utils/snapUtils.ts
 import type { Rectangle, Point } from '../types/drafting';
 import { normalizeCoordinate, roundToPrecision } from './precisionUtils';
 

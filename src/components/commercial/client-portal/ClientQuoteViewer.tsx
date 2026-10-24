@@ -49,7 +49,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
   const requestId = useRef(0);
   const [loadedFor, setLoadedFor] = useState(customerId);
   const [loadError, setLoadError] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState<any | null>(null);
+  const [selectedQuote, setSelectedQuote] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadQuotes = async () => {

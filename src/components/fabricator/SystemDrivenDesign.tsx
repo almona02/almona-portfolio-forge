@@ -1,4 +1,4 @@
-/**
+﻿/**
  * System-Driven Design Mode - Fast & Accurate
  * For standard jobs: select system pack, enter dimensions, auto-generate window
  */

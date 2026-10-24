@@ -49,7 +49,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
   const requestId = useRef(0);
   const [loadedFor, setLoadedFor] = useState(customerId);
   const [loadError, setLoadError] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadInvoices = async () => {

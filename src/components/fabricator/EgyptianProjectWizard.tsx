@@ -72,7 +72,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
   );
   const [showTuningStudio, setShowTuningStudio] = useState(false);
   const [customSystems, setCustomSystems] = useState<any[]>([]);
-  const [tuningInitialSystem, setTuningInitialSystem] = useState<any | null>(null);
+  const [tuningInitialSystem, setTuningInitialSystem] = useState<any>(null);
   const [showTuningPrompt, setShowTuningPrompt] = useState(false);
 
   // Load custom systems and tuned systems from localStorage

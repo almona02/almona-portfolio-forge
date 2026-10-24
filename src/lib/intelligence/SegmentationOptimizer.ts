@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SegmentationOptimizer - Optimizes Segmentation for Complex Shapes
  * 
  * Calculates optimal segmentation for complex shapes with:

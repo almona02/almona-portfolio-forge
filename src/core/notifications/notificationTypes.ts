@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Notification Types
  * 
  * Type definitions and constants for the notification system.

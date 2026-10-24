@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Comprehensive Pricing Engine
  * Handles multi-currency pricing, regional variations, material markups,
  * labor costs, and integration with QuotingEngine
@@ -579,7 +579,7 @@ export class PricingEngine {
   async loadSystemPricing(
     profileId: string,
     _systemName?: string
-  ): Promise<any | null> {
+  ): Promise<any> {
     if (!this.supabaseClient) {
       console.warn('Supabase client not available for system pricing lookup');
       return null;

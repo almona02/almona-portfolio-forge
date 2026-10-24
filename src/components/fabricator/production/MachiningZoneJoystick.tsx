@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Machining Zone Joystick Calibration
  * Interactive joystick-style interface for adjusting machining zone positions and sizes
  * Inspired by joystick calibration with visual feedback and real-time adjustments

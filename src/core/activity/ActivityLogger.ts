@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Activity Logger Service
  * 
  * Centralized service for logging all user activities across the application.

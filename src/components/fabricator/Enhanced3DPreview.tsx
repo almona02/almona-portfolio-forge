@@ -65,7 +65,7 @@ interface State {
   status: 'idle' | 'loading' | 'success' | 'error' | 'fallback';
   geometry: FrameGeometry | null;
   fabrication: FabricationData | null;
-  existingCutList: any | null;
+  existingCutList: any;
   validation: ValidationResult | null;
   discrepancies: Array<{
     type: string;
@@ -841,7 +841,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
 // ========== SUPPORTING COMPONENTS ==========
 
 interface CutListComparisonProps {
-  existing: any | null;
+  existing: any;
   enhanced: FabricationData['profiles'] | null;
   discrepancies: any[];
 }
@@ -1066,7 +1066,7 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
 // Helper functions
 async function validateAgainstExisting(
   fabrication: FabricationData | null,
-  existingCutList: any | null
+  existingCutList: any
 ): Promise<any[]> {
   if (!fabrication || !existingCutList) return [];
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ZeroDecisionGenerator - Magic Mode for Zero-Decision Generation
  * 
  * Generates optimal window designs without user choices, based on inferred intent.

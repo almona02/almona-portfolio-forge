@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gold Tier Hardware Connector
  * 
  * Auto-connects hardware components based on window type and system pack specifications.

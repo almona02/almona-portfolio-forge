@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Quote-to-Cut Workflow - Unified 4-Step Workflow
  * Orchestrates the complete flow from project setup to quote generation
  */

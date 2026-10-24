@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Resolve Profile[] from a system pack catalog.
  * FP-028: uses only pack / template catalog fields — never invents codes or weights.
  */

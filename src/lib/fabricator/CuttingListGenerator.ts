@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cutting List Generator - Phase 2: University-Grade Precision
  * 
  * Generates cutting lists from window dimensions and system packs.

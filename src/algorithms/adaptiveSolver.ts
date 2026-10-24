@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Adaptive Solver
  * Orchestrates algorithm selection based on job complexity and time constraints.
  *

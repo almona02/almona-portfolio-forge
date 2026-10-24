@@ -25,7 +25,7 @@ export interface UsePoseSyncOptions {
 
 export interface UsePoseSyncReturn {
   saveState: (state?: any) => Promise<void>;
-  restoreState: () => Promise<any | null>;
+  restoreState: () => Promise<any>;
   clearState: () => Promise<void>;
   hasUnsavedChanges: boolean;
   isSyncing: boolean;
