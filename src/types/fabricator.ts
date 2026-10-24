@@ -257,7 +257,7 @@ export interface GridCell {
   col: number;
   rowSpan?: number;
   colSpan?: number;
-  type: 'fixed' | 'sash' | 'panel' | 'empty' | 'sliding' | 'casement' | 'sash_sliding';
+  type: 'fixed' | 'sash' | 'panel' | 'empty' | 'sliding';
   componentId?: string; // Links to a specific component definition if needed
   openingDirection?: 'left' | 'right' | 'top' | 'bottom';
 }
