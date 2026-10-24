@@ -165,7 +165,7 @@ describe('EngineeringBay AICS-001 Constitutional Compliance', () => {
           decision: result.isValid ? 'Design validated' : 'Design validation failed',
           why: 'Compliance test',
           mode: 'certified',
-          validationEnvelopeResult: result.envelopeResult,
+          validationEnvelopeResult: result.envelopeResult as ValidationEnvelopeResult,
           designContext: { width: 1200, height: 1500, grid: testWindowGrid },
         });
       }).not.toThrow();

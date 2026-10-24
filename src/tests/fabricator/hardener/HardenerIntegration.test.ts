@@ -406,7 +406,7 @@ describe('Hardener Integration Tests', () => {
       const systemPack: SystemPack = {
         id: 'caluminium_ps_v3',
         name: 'Caluminium PS v3',
-        category: 'aluminum',
+        category: 'aluminum' as any,
         profiles: [],
         hardware: [],
       };

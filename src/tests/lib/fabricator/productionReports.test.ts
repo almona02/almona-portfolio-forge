@@ -28,8 +28,8 @@ describe('ProductionReportsGenerator', () => {
           rows: 2,
           cols: 1,
           cells: [
-            { id: 'cell-0', row: 0, col: 0, type: 'casement' },
-            { id: 'cell-1', row: 1, col: 0, type: 'casement' }
+            { id: 'cell-0', row: 0, col: 0, type: 'casement' as any },
+            { id: 'cell-1', row: 1, col: 0, type: 'casement' as any }
           ]
         },
         systemPackId: 'test-pack',

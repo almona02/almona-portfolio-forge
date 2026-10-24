@@ -52,7 +52,7 @@ function createSimpleWindowGrid(rows: number = 1, cols: number = 1): WindowGrid 
   return {
     rows,
     cols,
-    cells,
+    cells: cells as GridCell[],
   };
 }
 
