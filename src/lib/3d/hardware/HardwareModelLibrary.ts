@@ -19,6 +19,17 @@ export interface HardwareModel {
   position: Vector3;
 }
 
+export interface HardwarePlacement {
+  hardware: HardwareModel[];
+  totalCount: number;
+  validation: {
+    egyptianCode2020: boolean;
+    ergonomic: boolean;
+    structural: boolean;
+    warnings?: string[];
+  };
+}
+
 /**
  * Hardware Model Library
  * Manages loading and caching of hardware 3D models
@@ -105,15 +116,7 @@ export class HardwareModelLibrary {
   generateHardwareModels(
     windowUnit: import('@/types/fabricator').WindowUnit,
     windowType: string
-  ): {
-    hardware: HardwareModel[];
-    totalCount: number;
-    validation: {
-      egyptianCode2020: boolean;
-      ergonomic: boolean;
-      structural: boolean;
-    };
-  } {
+  ): HardwarePlacement {
     const hardware: HardwareModel[] = [];
     const height = windowUnit.overallHeight / 1000; // Convert mm to meters
     const width = windowUnit.overallWidth / 1000;

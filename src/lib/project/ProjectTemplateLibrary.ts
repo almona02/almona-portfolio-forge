@@ -1,4 +1,9 @@
-import { Position } from '../../types/fabricator';
+interface Position {
+  id?: string;
+  name: string;
+  quantity: number;
+  description?: string;
+}
 
 export interface ProjectTemplate {
   id: string;
