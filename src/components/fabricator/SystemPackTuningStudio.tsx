@@ -1305,7 +1305,8 @@ export const SystemPackTuningStudio: React.FC = () => {
                 profile={convertToProfile(calibrationProfile)}
                 systemPackId={systemPack.id}
                 userId={userId || undefined}
-                onCalibrationComplete={async (calibration) => {
+                onCalibrationComplete={(calibration) => {
+                  void (async (calibration) => {
                   // Update profile immediately with calibration data
                   try {
                     // Update the profile in the system pack
@@ -1358,6 +1359,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                     console.error('Error saving calibration:', error);
                     toast.error('Failed to save calibration');
                   }
+                })(calibration);
                 }}
               />
             </div>
