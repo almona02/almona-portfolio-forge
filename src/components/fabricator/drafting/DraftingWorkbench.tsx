@@ -324,7 +324,7 @@ export const DraftingWorkbench: React.FC<{
               actions={actions}
               draftingEngine={draftingEngine}
               profiles={profiles}
-              collaboration={collaboration}
+              collaboration={collaboration as any}
               onMoveToNext={onMoveToNext}
               onOpenPoseQuickEdit={onOpenPoseQuickEdit}
               handlers={{

@@ -284,7 +284,7 @@ export function Optimized3DViewer(props: Optimized3DViewerProps) {
         const { Canvas, OrbitControls } = threeJS;
 
         return (
-          <Canvas {...canvasProps}>
+          <Canvas {...(canvasProps as any)}>
             <ambientLight {...lightingProps.ambientLight} />
             <directionalLight {...lightingProps.directionalLight} />
             <pointLight {...lightingProps.pointLight} />

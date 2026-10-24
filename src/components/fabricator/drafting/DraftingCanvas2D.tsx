@@ -553,7 +553,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
     getSVGPoint,
     handleHardwarePlacement,
     handleStructuralPlacement,
-    logToolOperation,
+    logToolOperation: logToolOperation as any,
     svgRef: containerRef,
     onMousePositionChange: _onMousePositionChange
   });

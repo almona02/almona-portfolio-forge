@@ -182,7 +182,7 @@ export function OptimizedGLBViewer(props: OptimizedGLBViewerProps) {
         const { Canvas, OrbitControls } = threeJS
 
         return (
-          <Canvas {...canvasProps}>
+          <Canvas {...(canvasProps as any)}>
             <ambientLight {...lightingProps.ambientLight} />
             <directionalLight {...lightingProps.directionalLight} />
             <pointLight {...lightingProps.pointLight} />

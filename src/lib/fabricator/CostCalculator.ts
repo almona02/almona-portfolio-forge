@@ -245,8 +245,8 @@ export const getCostDetails = (
           existing.quantity += quantity;
         } else {
           hardwareMap.set(key, {
-            hardwareId: hw.id,
-            hardwareName: hw.name,
+            hardwareId: hw.id ?? '',
+            hardwareName: hw.name ?? '',
             costPerUnit: hw.costPerUnit,
             quantity
           });
