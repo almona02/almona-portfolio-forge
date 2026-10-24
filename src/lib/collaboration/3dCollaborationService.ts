@@ -148,7 +148,7 @@ class Collaboration3DService {
         callbacks.onAnnotationRemove?.(payload.annotation_id)
       })
       .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
+        if ((status as string) === 'SUBSCRIBED') {
           // Track user presence
           await this.channel?.track({
             user_id: userId,

@@ -189,7 +189,7 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
         console.log('User left:', key, leftPresences);
       })
       .subscribe((status) => {
-        setIsConnected(status === 'SUBSCRIBED');
+        setIsConnected((status as string) === 'SUBSCRIBED');
       });
 
     // Track own presence

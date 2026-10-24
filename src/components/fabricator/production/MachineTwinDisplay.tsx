@@ -167,7 +167,7 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
         }
       )
       .subscribe((status) => {
-        setIsConnected(status === 'SUBSCRIBED');
+        setIsConnected((status as string) === 'SUBSCRIBED');
       });
     
     return () => {
