@@ -13,7 +13,6 @@
 
 import { supabase } from '../supabase';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
 import type {
   Profile,
   FabricatorAccessory,
@@ -70,7 +69,7 @@ export interface PerformanceMetrics {
 // ============================================================================
 
 export class FabricatorClient {
-  private client: SupabaseClient<Database>;
+  private client: SupabaseClient<any>;
   private config: Required<FabricatorClientConfig>;
   private realtimeChannels: Map<string, RealtimeChannel> = new Map();
   private performanceMetrics: PerformanceMetrics[] = [];
@@ -595,7 +594,7 @@ export class FabricatorClient {
 
       // Filter by user_id (RLS should handle this, but double-check)
       const accessories = (data || [])
-        .map((item: { fabricator_accessories?: { user_id?: string } }) => item.fabricator_accessories)
+        .map((item: any) => item.fabricator_accessories)
         .filter((acc): acc is NonNullable<typeof acc> => acc != null && acc.user_id === userId)
         .map((acc) => this.mapAccessoryFromDB(acc as Record<string, unknown>));
 

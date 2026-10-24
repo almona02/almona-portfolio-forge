@@ -86,7 +86,7 @@ export const fabricatorConfigApi = {
       .select('accessory:fabricator_accessories(*)')
       .eq('profile_id', profileId)
     if (error) throw error
-    return (data ?? []) as ProfileAccessory[]
+    return (data ?? []) as unknown as ProfileAccessory[]
   },
 
   async linkAccessory(profileId: string, accessoryId: string): Promise<void> {

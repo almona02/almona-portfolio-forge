@@ -62,7 +62,7 @@ async function stableSha256Hex(input: unknown): Promise<string> {
 }
 
 export class DualWriteConsistencyMonitor {
-  private client: ReturnType<typeof createClient<Database>>;
+  private client: ReturnType<typeof createClient<any>>;
   private cfg: Required<ConsistencyMonitorConfig>;
 
   constructor(config: ConsistencyMonitorConfig) {

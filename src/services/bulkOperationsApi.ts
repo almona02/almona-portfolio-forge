@@ -129,7 +129,7 @@ function convertBulkOperationToBackend(operation: BulkOperation): Record<string,
       },
     };
   }
-  throw new Error(`Unsupported operation type: ${'op' in operation ? operation.op : 'unknown'}`);
+  throw new Error(`Unsupported operation type: ${'op' in (operation as any) ? (operation as any).op : 'unknown'}`);
 }
 
 /**

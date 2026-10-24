@@ -18,12 +18,12 @@ describe('measuring step finalization', () => {
   it('preserves glazing through Glass and Confirm and normalizes a legacy window type', async () => {
     const complete = vi.fn();
     render(<SmartMeasuringInterface systemPackId="caluminium-ps" initialData={{ width: '1200', height: '1400', windowType: 'window', glazingType: 'single', measurementMode: 'manufacturing' }} onMeasurementComplete={complete} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Glass', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: 'Glass', exact: true } as any));
     await waitFor(() => expect(screen.getByRole('combobox', { name: 'Glazing Type' }).textContent).toContain('Single'));
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm', exact: true } as any));
     const checkbox = await screen.findByRole('checkbox', { name: 'I checked the cut size against the opening / drawing.' });
     fireEvent.click(checkbox);
-    fireEvent.click(screen.getByRole('button', { name: 'Save Pose & Design', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Pose & Design', exact: true } as any));
     await waitFor(() => expect(complete).toHaveBeenCalledTimes(1));
     expect(complete.mock.calls[0][0]).toMatchObject({ glazingType: 'single', windowType: 'sliding_window_2sash', manufacturingWidth: 1200, manufacturingHeight: 1400 });
   });

@@ -69,7 +69,7 @@ class Collaboration3DService {
     const { data, error } = await supabase
       .from('collaboration_sessions')
       .update({
-        participants: supabase.sql`array_append(participants, ${userId})`,
+        participants: (supabase as any).sql`array_append(participants, ${userId})`,
         updated_at: new Date().toISOString()
       })
       .eq('id', sessionId)
@@ -84,7 +84,7 @@ class Collaboration3DService {
     const { error } = await supabase
       .from('collaboration_sessions')
       .update({
-        participants: supabase.sql`array_remove(participants, ${userId})`,
+        participants: (supabase as any).sql`array_remove(participants, ${userId})`,
         updated_at: new Date().toISOString()
       })
       .eq('id', sessionId)

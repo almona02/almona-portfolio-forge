@@ -94,7 +94,7 @@ export function OptimizationCheck({ wizardData, profiles = [] }: OptimizationChe
     let totalLengthMm = 0;
     // Iterate over all categories
     Object.values(bomData.aggregatedByCategory).forEach(categoryGroup => {
-        Object.values(categoryGroup).forEach((item: any) => {
+        Object.values(categoryGroup as any).forEach((item: any) => {
              // Only count aluminum/upvc profiles, not accessories if possible
              // Assuming profiles have 'bar' nature if they have cutting list
              if (item.profile?.type === 'profile' || item.profile?.type === 'frame' || item.profile?.type === 'sash' || item.role) {

@@ -634,7 +634,7 @@ function optimizeGlassCutting(specifications: GlassSpecification[]): {
     const areaB = b.width * b.height * b.paneCount;
     return areaB - areaA;
   });
-  let currentSheet: CuttingSheet | null = null;
+  let currentSheet: CuttingSheet | null = null as CuttingSheet | null;
 
   remainingPanes.forEach((spec) => {
     for (let pane = 0; pane < spec.paneCount; pane++) {

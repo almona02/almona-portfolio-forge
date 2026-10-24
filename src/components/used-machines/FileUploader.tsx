@@ -11,7 +11,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onNext, onBack }) => {
   const [error, setError] = useState('');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files);
+    const selectedFiles = Array.from(e.target.files ?? []);
     const validFiles = selectedFiles.filter(file => file.type.startsWith('image/'));
 
     if (validFiles.length !== selectedFiles.length) {

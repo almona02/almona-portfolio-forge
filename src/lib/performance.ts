@@ -394,7 +394,7 @@ class PerformanceMonitor {
 
     // Custom analytics endpoint (if configured)
     if (import.meta.env.VITE_ANALYTICS_ENDPOINT) {
-      fetch(import.meta.env.VITE_ANALYTICS_ENDPOINT, {
+      fetch(import.meta.env.VITE_ANALYTICS_ENDPOINT as string, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(metric),

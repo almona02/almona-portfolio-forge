@@ -248,7 +248,7 @@ export function getDefaultProfileColor(region?: string): typeof EGYPTIAN_PROFILE
 /**
  * Get default glazing for external windows
  */
-export function getDefaultGlazing(region?: string, isExternal: boolean = true): typeof EGYPTIAN_GLAZING_DEFAULTS[keyof typeof EGYPTIAN_GLAZING_DEFAULTS] {
+export function getDefaultGlazing(region?: string, isExternal: boolean = true): any {
   if (!isExternal) {
     return EGYPTIAN_GLAZING_DEFAULTS.lowCost as any; // Internal partitions
   }

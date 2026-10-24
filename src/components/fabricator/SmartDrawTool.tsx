@@ -483,7 +483,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
         }
       });
 
-      return closest?.target ?? null;
+      return (closest as any)?.target ?? null;
     },
     [overallWidth, mullionsMm],
   );

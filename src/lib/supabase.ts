@@ -86,7 +86,7 @@ const supabaseOptions = {
 }
 
 // Create Supabase client with proper typing and fallback values
-export const supabase = createClient<Database>(
+export const supabase = createClient<any>(
   supabaseUrl || fallbackUrl, 
   supabaseKey || fallbackKey, 
   supabaseOptions

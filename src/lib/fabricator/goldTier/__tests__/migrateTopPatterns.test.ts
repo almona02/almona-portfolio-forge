@@ -65,7 +65,7 @@ describe('Top Patterns Migration', () => {
     vi.clearAllMocks();
     
     // Mock successful migration
-    vi.mocked(PatternMigrationService).migrate.mockImplementation((pattern: { id: string; name: string }) => {
+    vi.mocked(PatternMigrationService).migrate.mockImplementation(((pattern: any) => {
       return {
         success: true,
         system: {
@@ -86,7 +86,7 @@ describe('Top Patterns Migration', () => {
           migrationTimeMs: 25,
         },
       };
-    });
+    }) as any);
     
     // Mock successful validation
     vi.mocked(FenestrationSystemValidator).validate.mockReturnValue({

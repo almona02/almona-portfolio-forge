@@ -247,7 +247,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
                 borderRadius: '8px',
                 color: '#e2e8f0',
               }}
-              formatter={(value: unknown, name: string, props: { payload?: { currency?: string } }) => {
+              formatter={((value: unknown, name: string, props: { payload?: { currency?: string } }) => {
                 const currency = props.payload?.currency ?? 'EGP';
                 if (name === 'revenue' || name === 'costs' || name === 'profit') {
                   try {
@@ -260,7 +260,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
                   return [`${Number(value ?? 0).toFixed(1)}%`, 'Margin'];
                 }
                 return [value, name];
-              }}
+              }) as any}
               labelFormatter={(label) => `Project: ${label}`}
             />
             <Legend
