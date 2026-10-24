@@ -5,7 +5,7 @@ import { showAppUpdate, watchServiceWorkerUpdates } from './pwaUpdate';
 vi.mock('sonner', () => ({ toast: { info: vi.fn(), error: vi.fn() } }));
 
 function chooseReload() {
-  const options = vi.mocked(toast.info).mock.calls[0][1] as {action: {onClick: () => void}};
+  const options = vi.mocked(toast.info).mock.calls[0][1] as unknown as {action: {onClick: () => void}};
   options.action.onClick();
 }
 

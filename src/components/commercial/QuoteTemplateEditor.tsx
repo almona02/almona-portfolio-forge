@@ -134,7 +134,7 @@ export const QuoteTemplateEditor: React.FC<QuoteTemplateEditorProps> = ({
                 setIsDefault(template.is_default);
                 
                 if (template.template_config && typeof template.template_config === 'object') {
-                    setConfig(template.template_config as QuoteTemplateConfig);
+                    setConfig(template.template_config as unknown as QuoteTemplateConfig);
                 }
             } catch (error) {
                 toast.error(

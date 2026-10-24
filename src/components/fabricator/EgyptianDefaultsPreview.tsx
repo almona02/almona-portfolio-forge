@@ -61,9 +61,9 @@ export const EgyptianDefaultsPreview: React.FC<EgyptianDefaultsPreviewProps> = (
           <div className="flex items-center gap-2">
             <Droplet className="h-3 w-3 text-blue-400" />
             <span className="text-xs text-gray-300">
-              {defaults.glazing.type === 'double' && (defaults.glazing as GlazingSpecFlat).color === 'blue_reflective'
+              {defaults.glazing.type === 'double' && (defaults.glazing as unknown as GlazingSpecFlat).color === 'blue_reflective'
                 ? 'Blue Reflective'
-                : defaults.glazing.type === 'double' && (defaults.glazing as GlazingSpecFlat).color === 'brown_reflective'
+                : defaults.glazing.type === 'double' && (defaults.glazing as unknown as GlazingSpecFlat).color === 'brown_reflective'
                 ? 'Brown Reflective'
                 : `${defaults.glazing.type} (${defaults.glazing.thickness}mm)`}
             </span>

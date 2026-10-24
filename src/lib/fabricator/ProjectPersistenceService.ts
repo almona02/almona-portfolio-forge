@@ -583,7 +583,7 @@ export class ProjectPersistenceService {
             quantity: r.quantity,
             positionMeta: r.position_meta ?? {},
             optimization: r.optimization,
-          }) as WindowUnit,
+          }) as unknown as WindowUnit,
       grid: r.grid ?? {},
       systemPackId: r.system_pack_id ?? null,
       selectedPreset: r.selected_preset ?? null,

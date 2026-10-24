@@ -102,7 +102,7 @@ export class HardenerRuleEngine {
   private validateInputs(context: HardenerSelectionContext): { isValid: boolean; reason?: string } {
     // Check for forbidden supplier data dependencies
     const forbiddenFields = ['supplierId', 'supplierPrice', 'supplierAvailability', 'supplierPackId'];
-    const contextRecord = context as Record<string, unknown>;
+    const contextRecord = context as unknown as Record<string, unknown>;
 
     for (const field of forbiddenFields) {
       if (field in contextRecord && contextRecord[field] !== undefined) {
