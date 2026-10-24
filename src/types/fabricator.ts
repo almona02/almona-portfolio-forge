@@ -355,6 +355,8 @@ export interface Profile {
   system?: string;
   systemBrand?: string; // 'Yilmaz', 'Local Brand', etc.
   weightPerMeter?: number;
+  default_k_factor_45?: number;
+  default_k_factor_90?: number;
   unitWeight?: number; // Alternative naming for weightPerMeter
   barLength?: number; // Standard bar length for this profile
   grainDirection?: 'horizontal' | 'vertical' | null;
@@ -636,6 +638,10 @@ export interface OptimizationResult {
     glazingCost: number;
     totalCost: number;
   };
+  optimizedAt?: Date;
+  algorithm?: string;
+  score?: number;
+  improvements?: string[];
 }
 
 /**
