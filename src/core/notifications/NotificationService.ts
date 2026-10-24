@@ -50,7 +50,7 @@ export class NotificationService {
    */
   static async notify(
     userId: string,
-    type: NotificationType | string,
+    type: string,
     data: NotificationData = {},
     channels: NotificationChannel[] = ['in_app'],
     priority: NotificationPriority = 'medium'
@@ -88,7 +88,7 @@ export class NotificationService {
   private static async sendNotification(
     userId: string,
     channel: NotificationChannel,
-    type: NotificationType | string,
+    type: string,
     title: string,
     message: string,
     data: NotificationData,
@@ -115,7 +115,7 @@ export class NotificationService {
    */
   private static async sendInAppNotification(
     userId: string,
-    type: NotificationType | string,
+    type: string,
     title: string,
     message: string,
     data: NotificationData,
@@ -142,7 +142,7 @@ export class NotificationService {
    */
   private static async sendEmailNotification(
     userId: string,
-    type: NotificationType | string,
+    type: string,
     title: string,
     message: string,
     data: NotificationData
@@ -167,7 +167,7 @@ export class NotificationService {
    */
   private static async sendPushNotification(
     userId: string,
-    type: NotificationType | string,
+    type: string,
     title: string,
     message: string,
     data: NotificationData
@@ -192,7 +192,7 @@ export class NotificationService {
    */
   private static async sendSmsNotification(
     userId: string,
-    type: NotificationType | string,
+    type: string,
     title: string,
     message: string,
     data: NotificationData
@@ -215,7 +215,7 @@ export class NotificationService {
   /**
    * Get notification template by type
    */
-  private static async getTemplate(type: NotificationType | string): Promise<NotificationTemplate> {
+  private static async getTemplate(type: string): Promise<NotificationTemplate> {
     // Default templates
     const templates: Record<string, NotificationTemplate> = {
       payment_received: {

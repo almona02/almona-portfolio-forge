@@ -35,7 +35,7 @@ interface ActivityStore {
   // Actions
   /** Load timeline for an entity */
   loadTimeline: (
-    entityType: ActivityEntityType | string,
+    entityType: string,
     entityId: string,
     limit?: number,
     forceRefresh?: boolean
@@ -45,33 +45,33 @@ interface ActivityStore {
   addActivity: (activity: ActivityLogEntry) => void;
   
   /** Clear timeline cache for an entity */
-  clearTimeline: (entityType: ActivityEntityType | string, entityId: string) => void;
+  clearTimeline: (entityType: string, entityId: string) => void;
   
   /** Clear all caches */
   clearAll: () => void;
   
   /** Refresh timeline (force reload) */
   refreshTimeline: (
-    entityType: ActivityEntityType | string,
+    entityType: string,
     entityId: string,
     limit?: number
   ) => Promise<void>;
   
   /** Get activities for an entity (from cache) */
   getActivities: (
-    entityType: ActivityEntityType | string,
+    entityType: string,
     entityId: string
   ) => ActivityLogEntry[];
   
   /** Check if timeline is loading */
   isLoading: (
-    entityType: ActivityEntityType | string,
+    entityType: string,
     entityId: string
   ) => boolean;
   
   /** Check if cache is stale */
   isStale: (
-    entityType: ActivityEntityType | string,
+    entityType: string,
     entityId: string
   ) => boolean;
 }
@@ -232,7 +232,7 @@ export const useActivityStore = create<ActivityStore>((set, get) => ({
  * ```
  */
 export const useActivityTimeline = (
-  entityType: ActivityEntityType | string,
+  entityType: string,
   entityId: string,
   limit: number = 50,
   autoLoad: boolean = true

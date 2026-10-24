@@ -17,7 +17,7 @@ export const SNAP_SPACING_OPTIONS = [
   10,  // 10mm - coarse precision
 ] as const;
 
-export type SnapSpacingOption = typeof SNAP_SPACING_OPTIONS[number] | number; // Allow custom spacing
+export type SnapSpacingOption = number; // Allow custom spacing
 
 /**
  * Snap a rectangle to the grid with configurable spacing

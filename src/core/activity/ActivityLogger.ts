@@ -21,7 +21,7 @@ import type { ActivityEntityType, ActivityEventType } from './activityTypes';
 export interface ActivityEvent {
   entityType: ActivityEntityType;
   entityId: string;
-  eventType: ActivityEventType | string;
+  eventType: string;
   userId?: string;
   metadata?: Record<string, any>;
   ipAddress?: string;
@@ -111,7 +111,7 @@ export class ActivityLogger {
    * ```
    */
   static async getTimeline(
-    entityType: ActivityEntityType | string,
+    entityType: string,
     entityId: string,
     limit: number = 50
   ): Promise<ActivityLogEntry[]> {

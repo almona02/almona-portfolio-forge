@@ -75,7 +75,7 @@ export interface V2TicketResponse {
   id: string
   ticket_number: string
   category: string
-  status: TicketStatus | string
+  status: string
   priority: TicketPriority
   title: string
   description?: string | null
