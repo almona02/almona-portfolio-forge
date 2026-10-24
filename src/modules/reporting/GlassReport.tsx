@@ -156,12 +156,12 @@ export const GlassReport: React.FC<GlassReportProps> = ({
       
       // Glass thickness: 5mm for single glazing, 4mm per pane for double/triple
       const defaultThickness = glazingType === 'single' ? 5 : 4; // 5mm for single glazing bead system
-      const glassThickness = project.glazing?.thickness || defaultThickness;
+      const glassThickness = (project.glazing as any)?.thickness || defaultThickness;
       
       // Spacer information
-      const spacerThickness = project.glazing?.spacer || 12;
-      const spacerMaterial = project.glazing?.spacerMaterial || 'warm_edge';
-      const gasFill = project.glazing?.gasFill || 'argon';
+      const spacerThickness = (project.glazing as any)?.spacer || 12;
+      const spacerMaterial = (project.glazing as any)?.spacerMaterial || 'warm_edge';
+      const gasFill = (project.glazing as any)?.gasFill || 'argon';
       
       // Calculate weight (glass density ~2.5 kg/m² per mm thickness)
       const weight = totalComponentArea * Number(glassThickness) * 2.5;

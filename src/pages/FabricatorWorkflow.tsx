@@ -901,7 +901,7 @@ export const FabricatorWorkflow: React.FC = () => {
             type: data.glazingType || 'double',
             color: data.glassColor || 'clear',
             thickness: 24,
-            spacer: 12,
+            spacer: 12 as any,
             gasFill: 'argon'
           },
           hardware: sampleHardware,
@@ -1989,9 +1989,9 @@ export const FabricatorWorkflow: React.FC = () => {
                                     type: currentProject.glazing.type ?? 'double',
                                     thickness: currentProject.glazing.thickness || 24,
                                     segments: []
-                                  } : undefined}
+                                  } as any : undefined}
                                   egyptianFactors={{
-                                    location: projectMeta?.region as 'egypt' | 'uae' | 'saudi' | 'gcc' | undefined,
+                                    location: projectMeta?.region as any,
                                     installationComplexity: 'simple'
                                   }}
                                   workshopContext={{
@@ -2405,7 +2405,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     project={currentProject}
                     profiles={inventory}
                     accessories={[]}
-                    region={(projectMeta?.region ?? 'global') as string}
+                    region={(projectMeta?.region ?? 'global') as any}
                   />
                 )}
               </Suspense>
@@ -2499,7 +2499,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   color: '#FFFFFF',
                   glazing: { type: 'clear', thickness: 24 },
                   hardware: [],
-                  status: 'draft',
+                  status: 'design',
                   createdAt: new Date(),
                   updatedAt: new Date(),
                   customer: meta.clientName,
@@ -2512,7 +2512,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     governorate: meta.governorate,
                     windZone: meta.windZone,
                     exposure: meta.exposure,
-                    floorLevel: meta.floorLevel,
+                    floorLevel: meta.floorLevel !== undefined ? String(meta.floorLevel) : undefined,
                     usageType: meta.usageType,
                     baseShape: meta.baseShape,
                     openingType: meta.openingType,
