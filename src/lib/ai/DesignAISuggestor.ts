@@ -119,7 +119,7 @@ export class DesignAISuggestor {
     }
 
     if (analysis.spanLength && profile.specifications?.maxSpanMm) {
-      if (analysis.spanLength <= profile.specifications.maxSpanMm) {
+      if (analysis.spanLength <= (profile.specifications.maxSpanMm as number)) {
         reasons.push(`Supports span up to ${profile.specifications.maxSpanMm}mm`);
       }
     }

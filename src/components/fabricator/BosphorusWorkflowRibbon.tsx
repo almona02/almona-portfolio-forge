@@ -7,7 +7,7 @@ import { ChevronDown, Home } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-interface WorkflowStep {
+export interface WorkflowStep {
   id: string;
   name: string;
   description: string;

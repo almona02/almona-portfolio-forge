@@ -14,7 +14,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FenestrationSystemValidator } from '../FenestrationSystemValidator';
 import type { FenestrationSystem } from '@/types/fenestration';
-import { createValidSystem, createInvalidSystem } from './testFixtures';
 
 // Mock audit logging
 vi.mock('@/lib/audit/fabricatorAudit', () => ({
