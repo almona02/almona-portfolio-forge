@@ -169,7 +169,7 @@ const Products = function ProductsPage() {
 
   // Debounced URL sync for the search param only — filtering itself is instant.
   const debouncedSyncSearchUrl = useMemo(
-    () => debounce((value: string) => {
+    () => debounce(((value: string) => {
       const newParams = new URLSearchParams(searchParams);
       if (value.trim()) {
         newParams.set('search', value.trim());
@@ -177,7 +177,7 @@ const Products = function ProductsPage() {
         newParams.delete('search');
       }
       setSearchParams(newParams, { replace: true });
-    }, 500),
+    }) as any, 500),
     [searchParams, setSearchParams]
   );
 

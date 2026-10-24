@@ -1148,7 +1148,7 @@ export const FabricatorWorkflow: React.FC = () => {
 
     // Use the first pose of the project to reconstruct the project header,
     // then start a fresh measuring session for a new pose.
-    setProjectMeta(deriveProjectMetaFromJob(baseJob));
+    setProjectMeta(deriveProjectMetaFromJob(baseJob) as any);
     workspaceDispatch({
       type: 'SET_CURRENT_PROJECT',
       payload: null,
@@ -1750,7 +1750,7 @@ export const FabricatorWorkflow: React.FC = () => {
                                 if (!job) return;
 
                                 // Ensure header meta is present for this project
-                                setProjectMeta(deriveProjectMetaFromJob(job));
+                                setProjectMeta(deriveProjectMetaFromJob(job) as any);
 
                                 workspaceDispatch({
                                   type: 'SET_CURRENT_PROJECT',

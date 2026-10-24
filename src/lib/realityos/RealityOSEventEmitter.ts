@@ -429,7 +429,7 @@ export class RealityOSEventEmitter {
       photoHashes: [],
     };
 
-    return this.emitEvent('FabricationIntentCreated', windowUnit, proof);
+    return this.emitEvent('FabricationIntentCreated', windowUnit as unknown as Record<string, unknown>, proof);
   }
 
   /**

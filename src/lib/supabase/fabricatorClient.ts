@@ -247,7 +247,7 @@ export class FabricatorClient {
       // Apply filters
       if (options.filters) {
         Object.entries(options.filters).forEach(([key, value]) => {
-          query = query.eq(key, value);
+          query = query.eq(key, value as any);
         });
       }
 
@@ -420,7 +420,7 @@ export class FabricatorClient {
 
       if (options.filters) {
         Object.entries(options.filters).forEach(([key, value]) => {
-          query = query.eq(key, value);
+          query = query.eq(key, value as any);
         });
       }
 
