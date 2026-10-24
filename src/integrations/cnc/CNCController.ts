@@ -193,11 +193,11 @@ export abstract class CNCController {
   /**
    * Calculate estimated production time
    */
-  abstract estimateProductionTime(cuttingPlan: CuttingPlan[]): number; // in minutes
+  abstract estimateProductionTime(cuttingPlan: CuttingPlan[]): number | Promise<number>; // in minutes
 
   /**
    * Calculate energy consumption
    */
-  abstract estimateEnergyConsumption(cuttingPlan: CuttingPlan[]): number; // in kWh
+  abstract estimateEnergyConsumption(cuttingPlan: CuttingPlan[]): number | Promise<number>; // in kWh
 }
 
