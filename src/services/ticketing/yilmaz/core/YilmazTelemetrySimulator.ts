@@ -274,7 +274,7 @@ export class YilmazTelemetrySimulator {
     
     // Coastal areas (Alexandria, Port Said) slightly more stable
     if (location === 'alexandria' || location === 'port_said') {
-      voltage = Math.min(voltage + 5, EGYPT_ENV_CONSTANTS.VOLTAGE_MAX);
+      voltage = Math.min(voltage + 5, EGYPT_ENV_CONSTANTS.VOLTAGE_MAX) as 220;
     }
     
     return Math.round(voltage);

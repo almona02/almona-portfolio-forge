@@ -158,21 +158,21 @@ export const LazyMotion: React.FC<LazyMotionProps> = ({
  * Lazy Motion Div - Convenience component for motion.div
  */
 export const LazyMotionDiv: React.FC<Omit<LazyMotionProps, 'component'>> = ({ children, ...props }) => {
-  return <LazyMotion component="div" {...props}>{children}</LazyMotion>;
+  return <LazyMotion component="div" {...props}>{children as any}</LazyMotion>;
 };
 
 /**
  * Lazy Motion Section - Convenience component for motion.section
  */
 export const LazyMotionSection: React.FC<Omit<LazyMotionProps, 'component'>> = ({ children, ...props }) => {
-  return <LazyMotion component="section" {...props}>{children}</LazyMotion>;
+  return <LazyMotion component="section" {...props}>{children as any}</LazyMotion>;
 };
 
 /**
  * Lazy Motion Button - Convenience component for motion.button
  */
 export const LazyMotionButton: React.FC<Omit<LazyMotionProps, 'component'>> = ({ children, ...props }) => {
-  return <LazyMotion component="button" {...props}>{children}</LazyMotion>;
+  return <LazyMotion component="button" {...props}>{children as any}</LazyMotion>;
 };
 
 /**
