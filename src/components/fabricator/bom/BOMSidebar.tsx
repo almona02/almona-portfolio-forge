@@ -62,7 +62,7 @@ export interface BOMData {
     weight: number;
   };
   aggregatedByCategory: Record<string, Record<string, any>>;
-  systemPack?: SystemPackType | null;
+  systemPack?: SystemPackType;
   verifyProfileSpecs?: any;
 }
 

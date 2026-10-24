@@ -30,8 +30,8 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
   userId,
 }) => {
   const [currentStep, setCurrentStep] = useState<WorkflowStep>(1);
-  const [projectType, setProjectType] = useState<ProjectType | undefined>();
-  const [projectMeta, setProjectMeta] = useState<ProjectHeaderMeta | null>(null);
+  const [projectType, setProjectType] = useState<ProjectType>();
+  const [projectMeta, setProjectMeta] = useState<ProjectHeaderMeta>(null);
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>('');
   const [designMode, setDesignMode] = useState<'system' | 'freeform'>('system');
   const [components, setComponents] = useState<WindowComponent[]>([]);

@@ -107,7 +107,7 @@ function resolveRock60CatalogProfiles(pack: SystemPack): Profile[] {
 /**
  * Prefer explicit pack.profiles; otherwise derive from known catalog templates (ROCK 60).
  */
-export function resolveSystemPackProfiles(pack: SystemPack | null | undefined): Profile[] {
+export function resolveSystemPackProfiles(pack: SystemPack | null): Profile[] {
   if (!pack) return [];
   if (pack.profiles && pack.profiles.length > 0) {
     return pack.profiles.map((p) => ({

@@ -28,7 +28,7 @@ import React, { useEffect, useState } from 'react';
 export const WorkshopPortal: React.FC = () => {
   const [availableSystems, setAvailableSystems] = useState<SystemPack[]>([]);
   const [selectedSystemId, setSelectedSystemId] = useState<string>('panda-50');
-  const [selectedSystem, setSelectedSystem] = useState<SystemPack | null>(null);
+  const [selectedSystem, setSelectedSystem] = useState<SystemPack>(null);
   const [width, setWidth] = useState<number>(1200);
   const [height, setHeight] = useState<number>(1500);
   const [includeTransom, setIncludeTransom] = useState<boolean>(false);

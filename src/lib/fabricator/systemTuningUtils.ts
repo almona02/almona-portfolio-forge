@@ -24,7 +24,7 @@ type TuningSystemPack = (SystemPack | UPVCSystemPack) & {
 /**
  * Check if a system pack is tuned (has tuning parameters configured)
  */
-export function isSystemPackTuned(systemPack: SystemPack | UPVCSystemPack | null): boolean {
+export function isSystemPackTuned(systemPack: SystemPack | UPVCSystemPack): boolean {
   if (!systemPack) return false;
   
   // Check if system pack has profiles with tuning status
@@ -107,7 +107,7 @@ export function isSystemPackTuned(systemPack: SystemPack | UPVCSystemPack | null
 /**
  * Get system pack tuning status
  */
-export function getSystemPackTuningStatus(systemPack: SystemPack | UPVCSystemPack | null): {
+export function getSystemPackTuningStatus(systemPack: SystemPack | UPVCSystemPack): {
   isTuned: boolean;
   needsTuning: boolean;
   hasProfiles: boolean;

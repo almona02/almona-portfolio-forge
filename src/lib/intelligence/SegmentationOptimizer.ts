@@ -49,7 +49,7 @@ export class SegmentationOptimizer {
    */
   optimize(
     segmentation: SegmentationPlan,
-    pattern: ShapePattern | null,
+    pattern: ShapePattern,
     stockLengths: number[] = [5800, 6000, 6500] // Common Egyptian stock lengths
   ): OptimizedSegmentation {
     // Calculate material optimization
