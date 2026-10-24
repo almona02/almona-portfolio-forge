@@ -65,7 +65,7 @@ export class ProductionBOMBuilder {
     return {
       windowUnitId: windowUnit.id,
       templateId: template.id,
-      systemPackId: systemPack.id,
+      systemPackId: systemPack.id ?? '',
       items,
       totalCost: completeBOM.cost.totalCost,
       generatedAt: new Date().toISOString(),

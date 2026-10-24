@@ -83,7 +83,7 @@ export function draftingToWindowUnit(drafting: DraftingStateSnapshot): WindowUni
     color: '#ffffff',
     glazing: glazingByCell ?? {},
     hardware: [],
-    status: 'draft',
+    status: 'design',
     optimization: null,
     createdAt: now,
     updatedAt: now,

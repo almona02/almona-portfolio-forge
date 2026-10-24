@@ -303,7 +303,7 @@ export function createRectangularArray(
       ? 'pass'
       : spacingErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
         ? 'warning'
-        : 'fail'),
+        : 'fail') as 'pass' | 'warning' | 'fail',
     issues: validation.issues
   };
 
@@ -461,7 +461,7 @@ export function createCircularArray(
       ? 'pass'
       : angleErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
         ? 'warning'
-        : 'fail'),
+        : 'fail') as 'pass' | 'warning' | 'fail',
     issues: validation.issues
   };
 
@@ -584,7 +584,7 @@ export function createLinearArray(
       ? 'pass'
       : stepErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
         ? 'warning'
-        : 'fail'),
+        : 'fail') as 'pass' | 'warning' | 'fail',
     issues: validation.issues
   };
 
@@ -687,7 +687,7 @@ export function createOffsetPattern(
       ? 'pass'
       : distanceErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
         ? 'warning'
-        : 'fail'),
+        : 'fail') as 'pass' | 'warning' | 'fail',
     issues: validation.issues
   };
 
