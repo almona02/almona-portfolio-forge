@@ -226,7 +226,7 @@ export class AuditTrailIntegrityChecker {
       await new Promise<void>((resolve, reject) => {
         const req = store.add(entry);
         req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
+        req.onerror = () => reject(req.error ?? new Error('IndexedDB request failed'));
       });
     } catch (error) {
       console.warn('Failed to persist audit entry to IndexedDB', error);
