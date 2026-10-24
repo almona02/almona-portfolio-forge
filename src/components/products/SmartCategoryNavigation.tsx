@@ -349,7 +349,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                             >
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                                <p className="text-xs text-gray-400 truncate">{copy(machine.description)}</p>
+                                <p className="text-xs text-gray-400 truncate">{copy(machine.description ?? '')}</p>
                               </div>
                               {getMaterialBadge(machine)}
                             </div>
@@ -419,7 +419,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         >
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                            <p className="text-xs text-gray-400 truncate">{copy(machine.description)}</p>
+                            <p className="text-xs text-gray-400 truncate">{copy(machine.description ?? '')}</p>
                           </div>
                           {getMaterialBadge(machine)}
                         </div>
@@ -486,7 +486,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                      <p className="text-xs text-gray-400 truncate">{copy(machine.description)}</p>
+                      <p className="text-xs text-gray-400 truncate">{copy(machine.description ?? '')}</p>
                     </div>
                     {getMaterialBadge(machine)}
                   </div>
@@ -589,7 +589,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                  <p className="text-xs text-gray-400 truncate">{copy(machine.description)}</p>
+                  <p className="text-xs text-gray-400 truncate">{copy(machine.description ?? '')}</p>
                 </div>
                 {getMaterialBadge(machine)}
               </div>

@@ -122,7 +122,7 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
             ${compact ? 'py-2 px-3' : 'py-3 px-4'}
           `}
           style={{ marginLeft: level * 16 }}
-          onClick={() => handleCategoryClick(category.id, hasChildren)}
+          onClick={() => handleCategoryClick(category.id, hasChildren ?? false)}
           onMouseEnter={() => setHoveredCategory(category.id)}
           onMouseLeave={() => setHoveredCategory(null)}
           whileHover={{ scale: 1.02 }}
