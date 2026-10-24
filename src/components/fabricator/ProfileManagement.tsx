@@ -931,7 +931,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       profileRole: profile.profileRole || (specs.profileRole as Profile['profileRole']) || 'frame',
       compatibleAccessories: profile.compatibleAccessories || (specs.compatibleAccessories as string[]) || [],
       machiningMacros: profile.machiningMacros || (specs.machiningMacros as MachiningMacro[]) || [],
-      technicalDrawings: profile.technicalDrawings || (specs.technicalDrawings as any) || [],
+      technicalDrawings: profile.technicalDrawings || specs.technicalDrawings || [],
       systemPackIds: packIds,
       specifications: specs,
     });
@@ -1424,7 +1424,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 </Select>
 
                 {/* Tuning Status Filter */}
-                <Select value={tuningFilter} onValueChange={(v) => setTuningFilter(v as any)}>
+                <Select value={tuningFilter} onValueChange={(v) => setTuningFilter(v as 'all' | 'tuned' | 'in_progress' | 'untuned')}>
                   <SelectTrigger>
                     <SelectValue placeholder="Tuning Status" />
                   </SelectTrigger>
