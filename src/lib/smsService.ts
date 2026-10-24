@@ -16,7 +16,7 @@ export const sendSms = async ({ to, message }: SmsPayload): Promise<boolean> => 
 
   try {
     const response = await axios.post(
-      SMS_API_URL,
+      SMS_API_URL as string,
       {
         to,
         message,
