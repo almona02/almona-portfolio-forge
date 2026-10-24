@@ -459,7 +459,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
           const pos = editValues.position as { x: number; y: number } | undefined;
           const struct: StructuralElement = {
             ...selection.element,
-            position: (pos && typeof pos.x === 'number' && typeof pos.y === 'number') ? pos : (selection.element.position as { x: number; y: number }),
+            position: ((pos && typeof pos.x === 'number' && typeof pos.y === 'number') ? pos : selection.element.position) as any,
             dimensions: {
               width: parseFloat(toNumStr(editValues.width)) || selection.element.dimensions.width,
               depth: parseFloat(toNumStr(editValues.depth)) || selection.element.dimensions.depth,
