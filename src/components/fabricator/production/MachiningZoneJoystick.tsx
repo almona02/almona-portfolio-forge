@@ -22,6 +22,7 @@ interface MachiningZone {
   width: number;
   height: number;
   depth?: number;
+  isReusable?: boolean;
   referenceCorner: 'top_left' | 'top_right' | 'bottom_left' | 'bottom_right';
 }
 
