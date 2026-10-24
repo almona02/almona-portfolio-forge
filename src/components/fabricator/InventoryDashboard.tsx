@@ -487,7 +487,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const text = String(e.target?.result || '');
+        const text = (e.target?.result || '' as string);
         const preview = buildCsvIntakePreview(text, resolveCsvProfile);
         setCsvPreviewRows(preview.rows);
         setCsvPreviewValid(preview.validRows);

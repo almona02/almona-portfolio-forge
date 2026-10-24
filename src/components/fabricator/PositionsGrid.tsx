@@ -433,7 +433,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                         <TableCell className="w-24 px-2 py-1">
                           <div className="flex flex-col gap-0">
                             <span className="text-[9px] text-amber-200 leading-tight truncate">
-                              {String(job.glazing?.type || '--')}
+                              {(job.glazing?.type || '--' as string)}
                             </span>
                             <span className="text-[8px] text-amber-600/70 leading-tight truncate">
                               {job.flyScreenType || 'none'}

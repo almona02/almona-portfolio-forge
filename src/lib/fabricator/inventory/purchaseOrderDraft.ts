@@ -1,4 +1,4 @@
-﻿import type { CompleteBOM } from '../PresetAwareBOMGenerator';
+import type { CompleteBOM } from '../PresetAwareBOMGenerator';
 import type { WindowUnit } from '@/types/fabricator';
 import { optimizeLinearCuts } from '@/lib/algorithms/LinearOptimizer';
 export interface PurchaseOrderLine {
@@ -34,7 +34,7 @@ export function purchaseOrderCsv(lines: PurchaseOrderLine[], supplier: string, r
     if (!supplier.trim() || !reference.trim())
         throw new Error('Supplier and order reference are required.');
     if (!lines.length) throw new Error('Add at least one reviewed order item.');
-    const cell = (v: unknown) => '"' + String(v ?? '').replace(/^(?=[\t\r\n ]*[=+@-])/, "'").replace(/"/g, '""') + '"';
+    const cell = (v: unknown) => '"' + ((v as string) ?? '').replace(/^(?=[\t\r\n ]*[=+@-])/, "'").replace(/"/g, '""') + '"';
     const rows: unknown[][] = [['Order', reference], ['Supplier', supplier], ['Status', 'Draft — verify catalogue mappings, stock length, units and prices before ordering'], [], ['Code', 'Name', 'Category', 'Quantity', 'Unit', 'Stock mm', 'Unit price EGP', 'Total EGP']];
     for (const l of lines) {
         if (!l.code?.trim() || !l.name?.trim() || /^unknown$/i.test(l.code.trim()) || /^hardware item$/i.test(l.name.trim())) throw new Error('Replace unknown item names and supplier codes before exporting.');

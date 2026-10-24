@@ -23,10 +23,10 @@ const payments = () => supabase.from('payments') as any;
 
 function mapPaymentRow(p: Record<string, unknown>): Payment {
   return {
-    id: String(p.id || ''),
+    id: (p.id || '' as string),
     invoiceId: (p.invoice_id as string) || null,
-    amount: parseFloat(String(p.amount || 0)),
-    currency: String(p.currency || 'USD'),
+    amount: parseFloat((p.amount || 0 as string)),
+    currency: (p.currency || 'USD' as string),
     method: (p.method || 'cash') as Payment['method'],
     status: (p.status || 'pending') as Payment['status'],
     transactionId: (p.transaction_id as string) || null,

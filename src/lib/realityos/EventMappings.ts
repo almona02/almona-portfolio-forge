@@ -23,7 +23,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'FabricatorMigrationInitiated',
     realityOSEventType: 'ON',
-    entityId: (payload: Record<string, unknown>) => `fabricator_migration_${String(payload.migrationId ?? payload.id ?? 'unknown')}`,
+    entityId: (payload: Record<string, unknown>) => `fabricator_migration_${((payload.migrationId as string) ?? payload.id ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -36,8 +36,8 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
     almonaEvent: 'FabricatorMigrationCompleted',
     realityOSEventType: 'ON',
     entityId: (payload: Record<string, unknown>) => {
-      const head = String(payload.chainHeadHash ?? payload.migrationChainHead ?? '').slice(0, 16);
-      return `fabricator_migration_complete_${head || String(payload.migrationId ?? 'unknown')}`;
+      const head = ((payload.chainHeadHash as string) ?? payload.migrationChainHead ?? '').slice(0, 16);
+      return `fabricator_migration_complete_${head || ((payload.migrationId as string) ?? 'unknown')}`;
     },
     humanVerificationRequired: true,
     proofRequirements: {
@@ -50,7 +50,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'FabricatorRollbackInitiated',
     realityOSEventType: 'ON',
-    entityId: (payload: Record<string, unknown>) => `fabricator_migration_rollback_${String(payload.migrationId ?? payload.id ?? 'unknown')}`,
+    entityId: (payload: Record<string, unknown>) => `fabricator_migration_rollback_${((payload.migrationId as string) ?? payload.id ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -62,7 +62,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'FabricatorRollbackCompleted',
     realityOSEventType: 'ON',
-    entityId: (payload: Record<string, unknown>) => `fabricator_migration_rollback_complete_${String(payload.migrationId ?? payload.id ?? 'unknown')}`,
+    entityId: (payload: Record<string, unknown>) => `fabricator_migration_rollback_complete_${((payload.migrationId as string) ?? payload.id ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -86,7 +86,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'FabricatorCutoverExecuted',
     realityOSEventType: 'ON',
-    entityId: (payload: Record<string, unknown>) => `fabricator_cutover_${String(payload.cutoverId ?? payload.timestamp ?? 'unknown')}`,
+    entityId: (payload: Record<string, unknown>) => `fabricator_cutover_${((payload.cutoverId as string) ?? payload.timestamp ?? 'unknown')}`,
     humanVerificationRequired: false,
     proofRequirements: {
       timestamp: true,
@@ -98,7 +98,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'FabricatorRollbackExecuted',
     realityOSEventType: 'ON',
-    entityId: (payload: Record<string, unknown>) => `fabricator_rollback_${String(payload.rollbackId ?? payload.timestamp ?? 'unknown')}`,
+    entityId: (payload: Record<string, unknown>) => `fabricator_rollback_${((payload.rollbackId as string) ?? payload.timestamp ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -122,7 +122,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'CutListAuthorized',
     realityOSEventType: 'VERIFICATION',
-    entityId: (entity: Record<string, unknown>) => `cutlist_${String(entity.id ?? entity.cutListId ?? 'unknown')}`,
+    entityId: (entity: Record<string, unknown>) => `cutlist_${((entity.id as string) ?? entity.cutListId ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -134,7 +134,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'CNCFileReleased',
     realityOSEventType: 'VERIFICATION',
-    entityId: (entity: Record<string, unknown>) => `cnc_file_${String(entity.id ?? entity.fileId ?? 'unknown')}`,
+    entityId: (entity: Record<string, unknown>) => `cnc_file_${((entity.id as string) ?? entity.fileId ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -146,7 +146,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'ProductionStarted',
     realityOSEventType: 'ON',
-    entityId: (entity: Record<string, unknown>) => `production_${String(entity.id ?? entity.productionId ?? 'unknown')}`,
+    entityId: (entity: Record<string, unknown>) => `production_${((entity.id as string) ?? entity.productionId ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -158,7 +158,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'ProductionCompleted',
     realityOSEventType: 'VERIFICATION',
-    entityId: (entity: Record<string, unknown>) => `production_${String(entity.id ?? entity.productionId ?? 'unknown')}`,
+    entityId: (entity: Record<string, unknown>) => `production_${((entity.id as string) ?? entity.productionId ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -170,7 +170,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'QualityPassed',
     realityOSEventType: 'VERIFICATION',
-    entityId: (entity: Record<string, unknown>) => `quality_${String(entity.id ?? entity.unitId ?? 'unknown')}`,
+    entityId: (entity: Record<string, unknown>) => `quality_${((entity.id as string) ?? entity.unitId ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -182,7 +182,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'QualityFailed',
     realityOSEventType: 'FAULT',
-    entityId: (entity: Record<string, unknown>) => `quality_${String(entity.id ?? entity.unitId ?? 'unknown')}`,
+    entityId: (entity: Record<string, unknown>) => `quality_${((entity.id as string) ?? entity.unitId ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -194,7 +194,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'ProductDelivered',
     realityOSEventType: 'OFF',
-    entityId: (entity: Record<string, unknown>) => `delivery_${String(entity.id ?? entity.unitId ?? 'unknown')}`,
+    entityId: (entity: Record<string, unknown>) => `delivery_${((entity.id as string) ?? entity.unitId ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,
@@ -206,7 +206,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'RemnantCreated',
     realityOSEventType: 'ON',
-    entityId: (entity: Record<string, unknown>) => `remnant_${String(entity.id ?? entity.remnantId ?? 'unknown')}`,
+    entityId: (entity: Record<string, unknown>) => `remnant_${((entity.id as string) ?? entity.remnantId ?? 'unknown')}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,

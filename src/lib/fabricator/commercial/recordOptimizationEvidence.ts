@@ -239,5 +239,5 @@ export async function recordOptimizationEvidence(
     return { ok: false, error: error.message || 'Failed to record optimization evidence.' };
   }
 
-  return { ok: true, positionId: String(data ?? input.positionId) };
+  return { ok: true, positionId: (data ?? input.positionId as string) };
 }

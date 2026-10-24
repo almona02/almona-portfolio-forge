@@ -56,7 +56,7 @@ export class RealityOSEventEmitter {
           const faultEvent: FaultEvent = {
             faultType: 'MISSED_EVENT',
             originalEventType: eventType,
-            entityId: String(entity.id ?? entity.unitId ?? 'unknown'),
+            entityId: (entity.id ?? entity.unitId ?? 'unknown' as string),
             detectedAt: new Date(),
             reason: retroactiveCheck.reason,
             requiresHumanInvestigation: true,
@@ -79,7 +79,7 @@ export class RealityOSEventEmitter {
         const faultEvent: FaultEvent = {
           faultType: 'PROOF_INVALID',
           originalEventType: eventType,
-          entityId: String(entity.id ?? 'unknown'),
+          entityId: (entity.id ?? 'unknown' as string),
           detectedAt: new Date(),
           reason: `Proof validation failed: ${validation.errors.join(', ')}`,
           requiresHumanInvestigation: true,

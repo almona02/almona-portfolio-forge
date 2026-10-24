@@ -112,7 +112,7 @@ export async function materializeOwnedProfilesFromPack(
 
       if (byName?.id && isFabricatorUuid(String(byName.id))) {
         const existingSpecs = (byName.specifications || {}) as Record<string, unknown>;
-        const existingCode = String(existingSpecs.originalCatalogCode ?? existingSpecs.partNumber ?? '');
+        const existingCode = (existingSpecs.originalCatalogCode ?? existingSpecs.partNumber ?? '' as string);
         if (!existingCode || existingCode === originalCode) {
           ownedId = String(byName.id);
           await db
