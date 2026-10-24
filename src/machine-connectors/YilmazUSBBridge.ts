@@ -165,7 +165,7 @@ export class YilmazUSBBridge {
   ): Promise<boolean> {
     // This would use Node.js fs module in a server environment
     // For browser, we convert to File first
-    const blob = new Blob([buffer]);
+    const blob = new Blob([buffer as BlobPart]);
     const file = new File([blob], destination);
     return this.transferFileBrowser(file, destination, options);
   }

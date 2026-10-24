@@ -213,7 +213,7 @@ export const ProfileConfigurator: React.FC<ProfileConfiguratorProps> = ({
               <Label>Material *</Label>
               <Select
                 value={formData.material}
-                onValueChange={(value) => setFormData({ ...formData, material: value })}
+                onValueChange={(value) => setFormData({ ...formData, material: value as "aluminum" | "upvc" | "wood" })}
               >
                 <SelectTrigger>
                   <SelectValue />

@@ -843,7 +843,7 @@ export class RemnantManager {
             minStockLevel: data.fabricator_profiles.min_stock_level || 0,
             supplier: data.fabricator_profiles.supplier,
             userId: data.fabricator_profiles.user_id,
-          }
+          } as Profile
         : undefined,
       locationId: data.location_id,
       locationName: data.inventory_locations?.name,

@@ -7,7 +7,7 @@ const normalizeArabic = (text: string) => text.toLowerCase()
 
 /** Search translated catalogue text without changing canonical machine records. */
 export function searchPublicMachines(query: string, machines: Machine[], copy: (text: string) => string): Machine[] {
-  if (!/[\u0600-\u06ff]/.test(query)) return intelligentSearch(query, machines);
+  if (!/[\u0600-\u06ff]/.test(query)) return intelligentSearch(query, machines as any);
   const words = normalizeArabic(query).trim().split(/\s+/);
   return machines.filter(machine => {
     const fields = [machine.name, machine.description, machine.type, machine.category, ...(machine.tags || [])];

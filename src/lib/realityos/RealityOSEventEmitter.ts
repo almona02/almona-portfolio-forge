@@ -482,7 +482,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: workshopGPS || null,
+      location: workshopGPS || undefined,
       photoHashes: [],
       qrData: machineQR,
     };
@@ -503,7 +503,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: workshopGPS || null,
+      location: workshopGPS || undefined,
       photoHashes: [productPhotoHash],
       qrData: productQR,
     };
