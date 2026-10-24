@@ -67,11 +67,16 @@ export interface GlazingSpecFlat {
   type?: string;
   thickness?: number;
   spacer?: string;
+  spacerMaterial?: string;
   gasFill?: string;
   color?: string;
   uValue?: number;
   safetyRating?: 'annealed' | 'tempered' | 'laminated';
   glassCode?: string;
+  tinted?: boolean;
+  laminated?: boolean;
+  tempered?: boolean;
+  lowE?: boolean;
 }
 
 /** Per-cell glazing from drafting (frameId -> cellId -> spec) */
@@ -585,6 +590,8 @@ export interface SystemPackMeta {
   brands: string[];
   /** Regions where this pack is most relevant (egypt, turkey, mena, gulf, global, etc.) */
   regions: string[];
+  /** Optional category (e.g. "aluminum_windows", "upvc_doors") */
+  category?: string;
   /** Default stock bar length in mm for this system, if known */
   defaultStockLengthMm?: number;
 }

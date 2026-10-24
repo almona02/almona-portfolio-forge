@@ -48,6 +48,7 @@ export interface CollaborationState {
 class Collaboration3DService {
   private channel: RealtimeChannel | null = null
   private userId: string | null = null
+  private sessionId: string | null = null
 
   async createSession(modelPath: string, userId: string): Promise<CollaborationSession> {
     const { data, error } = await supabase

@@ -78,7 +78,7 @@ export class UnifiedProfileCatalog {
 
         // Helper for ROCK60 style (from cutting config)
         if (packSpec.rock60_45_degree_config) {
-          const config = packSpec.rock60_45_degree_config;
+          const config = packSpec.rock60_45_degree_config as any;
           
           // Frames
           Object.values(config.frame_profiles || {}).forEach((fp: any) => {

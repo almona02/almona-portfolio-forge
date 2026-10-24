@@ -128,7 +128,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
 
     // Resolve system pack glass allowances (if available)
     const systemPack =
-      project.systemPackId && SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId);
+      project.systemPackId ? SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId) : undefined;
     const glassAllowances = systemPack?.glassAllowances;
 
     // Process each component
