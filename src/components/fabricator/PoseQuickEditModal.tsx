@@ -133,7 +133,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-xs text-amber-300">Status</Label>
-              <Select value={status} onValueChange={setStatus}>
+              <Select value={status} onValueChange={(value) => setStatus(value as WindowUnitStatus)}>
                 <SelectTrigger className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>

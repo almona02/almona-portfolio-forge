@@ -147,11 +147,11 @@ function offsetElements<T extends { x?: number; y?: number; cx?: number; cy?: nu
  */
 export function preparePasteGeometry(clipboardData: ClipboardData, offsetX: number = 20, offsetY: number = 20): Partial<Geometry2D> {
   return {
-    rectangles: offsetElements(generateNewIds(clipboardData.rectangles), offsetX, offsetY),
-    circles: offsetElements(generateNewIds(clipboardData.circles), offsetX, offsetY),
-    lines: generateNewIds(clipboardData.lines), // Lines need special offset handling
-    arcs: offsetElements(generateNewIds(clipboardData.arcs), offsetX, offsetY),
-    polygons: generateNewIds(clipboardData.polygons), // Polygons need special offset handling
+    rectangles: offsetElements(generateNewIds(clipboardData.rectangles), offsetX, offsetY) as Rectangle[],
+    circles: offsetElements(generateNewIds(clipboardData.circles), offsetX, offsetY) as Circle[],
+    lines: generateNewIds(clipboardData.lines) as Line[],
+    arcs: offsetElements(generateNewIds(clipboardData.arcs), offsetX, offsetY) as Arc[],
+    polygons: generateNewIds(clipboardData.polygons) as Polygon[],
   };
 }
 

@@ -598,7 +598,7 @@ export function useDraftingWorkbenchHandlers({
       actions.setOptimizationResult({
         windowUnit: optimizedWindowUnit,
         totalCost: 0, // Would be calculated by optimization engine
-        materialUsage: {},
+        materialUsage: 0,
         cuttingInstructions: [],
         timestamp: Date.now(),
       });

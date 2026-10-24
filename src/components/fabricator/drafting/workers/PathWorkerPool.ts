@@ -38,7 +38,7 @@ class WorkerWrapper {
     }
     this.busy = true;
     return new Promise((resolve, reject) => {
-      this.activeRequest = { resolve, reject };
+      this.activeRequest = { resolve: resolve as (val: unknown) => void, reject: reject as (err: unknown) => void };
       this.worker.postMessage(request);
     });
   }
