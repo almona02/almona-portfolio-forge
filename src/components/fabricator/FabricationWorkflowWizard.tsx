@@ -528,7 +528,7 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
             mode="standard"
             showQRCodes={true}
             showCostBreakdown={true}
-            t={t}
+            t={t as any}
           />
         );
 
