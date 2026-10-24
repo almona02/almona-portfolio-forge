@@ -498,8 +498,8 @@ export function updateMaterialLights(
   scene.traverse((object) => {
     if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
       const u = object.material.uniforms as Record<string, { value: THREE.Vector3 | THREE.Color | number }>;
-      if (u.lightPosition?.value && 'copy' in u.lightPosition.value) (u.lightPosition.value as THREE.Vector3).copy(lightPosition);
-      if (u.lightColor?.value && 'copy' in u.lightColor.value) (u.lightColor.value as THREE.Color).copy(lightColor);
+      if (u.lightPosition?.value && 'copy' in (u.lightPosition.value as object)) (u.lightPosition.value as THREE.Vector3).copy(lightPosition);
+      if (u.lightColor?.value && 'copy' in (u.lightColor.value as object)) (u.lightColor.value as THREE.Color).copy(lightColor);
       if (u.lightIntensity?.value !== undefined) u.lightIntensity.value = lightIntensity;
     }
   });

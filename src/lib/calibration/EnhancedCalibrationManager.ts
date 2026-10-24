@@ -308,7 +308,7 @@ export class EnhancedCalibrationManager {
         (cal) => cal.profileId === profileId && cal.systemPackId === systemPackId
       );
 
-      return calibration?.testResults || [];
+      return (calibration?.testResults as CalibrationTestResult[]) || [];
     } catch (error) {
       console.error('Error getting test results:', error);
       return [];

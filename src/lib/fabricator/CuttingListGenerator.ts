@@ -87,13 +87,13 @@ function generateCuttingListComprehensive(
     overallWidth: width,
     overallHeight: height,
     color: 'Silver',
-    glazing: options?.includeBeads !== false 
+    glazing: (options?.includeBeads !== false 
       ? { 
           type: 'double', 
           totalThickness: DEFAULT_GLAZING_SPECS.DEFAULT_TOTAL_THICKNESS_MM, 
           weightPerSqm: DEFAULT_GLAZING_SPECS.DEFAULT_WEIGHT_PER_SQM_KG 
         } 
-      : { type: 'none' },
+      : { type: 'none' }) as GlazingSpec,
     hardware: [],
     status: 'design',
     optimization: null,

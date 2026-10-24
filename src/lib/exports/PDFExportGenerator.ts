@@ -115,7 +115,7 @@ export class PDFExportGenerator {
 
       // Save modified PDF
       const modifiedPdfBytes = await pdfDoc.save();
-      return new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+      return new Blob([modifiedPdfBytes as BlobPart], { type: 'application/pdf' });
     } catch (error) {
       console.warn('Failed to add QR code to PDF, returning original:', error);
       return pdfBlob;

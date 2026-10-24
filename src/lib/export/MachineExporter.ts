@@ -110,7 +110,7 @@ export class MachineExporter {
       windowId: windowUnit.id,
       machineType,
       gcode,
-      drillPoints,
+      drillPoints: drillPoints as any,
       materialList,
       assemblySequence
     };

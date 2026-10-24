@@ -818,7 +818,7 @@ export class ExportService {
   private async applyTemplate(templateId: string, baseOptions: ExportOptions): Promise<ExportOptions> {
     const result = templateManager.applyTemplate(templateId, baseOptions);
     if (result.success) {
-      return result.appliedOptions;
+      return result.appliedOptions as ExportOptions;
     }
     // Fallback to base options if template application fails
     return baseOptions;
