@@ -16,7 +16,8 @@ import {
   Award,
   ArrowRight,
   ArrowLeft,
-  X
+  X,
+  Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { performanceMonitor } from '@/lib/performance-monitoring';

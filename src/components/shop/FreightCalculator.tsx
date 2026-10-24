@@ -19,7 +19,9 @@ import {
   Globe,
   Phone,
   Mail,
-  Download
+  Download,
+  MessageSquare,
+  Shield
 } from 'lucide-react';
 import { MachineSpec } from '@/types/shop';
 

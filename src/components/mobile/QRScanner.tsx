@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { AlertCircle, Camera, CheckCircle, Flashlight, RotateCcw, X } from 'lucide-react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // QR Scanner configuration
 export interface QRScannerConfig {

@@ -19,7 +19,8 @@ import {
   X,
   MessageSquare,
   Wifi,
-  WifiOff
+  WifiOff,
+  Send
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
