@@ -233,7 +233,7 @@ export class SupplierPackService {
     }
 
     // Check system pack compatibility
-    if (systemPack && !profile.compatibleSystemPacks.includes(systemPack.id)) {
+    if (systemPack && !profile.compatibleSystemPacks.includes(systemPack.id ?? '')) {
       return false;
     }
 

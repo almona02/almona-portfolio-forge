@@ -124,7 +124,7 @@ class PerformanceMonitoringService {
     // Cumulative Layout Shift (CLS)
     this.observePerformanceEntry('layout-shift', (entry) => {
       if (!entry.hadRecentInput) {
-        this.recordMetric('CLS', entry.value, 'score', 'render');
+        this.recordMetric('CLS', entry.value ?? 0, 'score', 'render');
       }
     });
   }

@@ -56,7 +56,7 @@ export class SupplierPackCache {
     // LRU eviction
     if (this.suggestionsCache.size >= this.MAX_CACHE_SIZE) {
       const firstKey = this.suggestionsCache.keys().next().value;
-      this.suggestionsCache.delete(firstKey);
+      this.suggestionsCache.delete(firstKey as string);
     }
     
     this.suggestionsCache.set(key, suggestions);
@@ -88,7 +88,7 @@ export class SupplierPackCache {
     // LRU eviction
     if (this.validationCache.size >= this.MAX_CACHE_SIZE) {
       const firstKey = this.validationCache.keys().next().value;
-      this.validationCache.delete(firstKey);
+      this.validationCache.delete(firstKey as string);
     }
     
     this.validationCache.set(key, validation);

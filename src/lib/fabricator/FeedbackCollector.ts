@@ -111,7 +111,7 @@ export class FeedbackCollector {
 
     // Log security event for tracking
     this.securityGateway.logSecurityEventPublic(
-      'user_override',
+      'user_override' as any,
       'info',
       { workflowId, stage, reason }
     );
