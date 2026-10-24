@@ -295,7 +295,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         // focus first invalid field
         const firstErrorName = Object.keys(errors)[0];
         if (firstErrorName) {
-          const el = document.querySelector(`[name="${firstErrorName}"]`);
+          const el = document.querySelector<HTMLElement>(`[name="${firstErrorName}"]`);
           el?.focus();
         }
         return;

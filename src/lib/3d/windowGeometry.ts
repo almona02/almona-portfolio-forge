@@ -979,7 +979,7 @@ export function calculateGlassBounds(
   
   // Check for transoms and adjust glass bounds
   if (windowUnit.presetData?.transoms && Array.isArray(windowUnit.presetData.transoms)) {
-    const transoms = windowUnit.presetData.transoms;
+    const transoms = windowUnit.presetData.transoms as Array<{ position?: number; height?: number }>;
     
     // Transom ABOVE (at position row - 1)
     const transomAbove = transoms.find((t: { position?: number; height?: number }) => t.position === cell.row - 1);
