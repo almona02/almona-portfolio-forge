@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Service lifecycle events via RealityOS RPC.
  *
  * CONSISTENCY MODEL: Option C — best effort (non-atomic with ticket mutations).
@@ -40,7 +40,7 @@ export async function recordServiceEvent(input: ServiceEventInput): Promise<Even
   };
   const payload = {
     ...input.payload,
-    correlationId: input.correlationId ?? `${input.entityId as string}-${input.payload.kind ?? 'event'}-${timestamp as string}`,
+    correlationId: input.correlationId ?? `${input.entityId as string}-${(input.payload.kind as string) ?? 'event'}-${timestamp as string}`,
   };
 
   try {
