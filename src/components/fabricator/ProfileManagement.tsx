@@ -2312,7 +2312,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                   <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => handleUploadPreviewImage(e, profile)}
+                                    onChange={(e) => void handleUploadPreviewImage(e, profile)}
                                     className="hidden"
                                   />
                                 </Label>

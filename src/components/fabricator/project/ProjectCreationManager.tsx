@@ -181,7 +181,7 @@ export const ProjectCreationManager: React.FC = () => {
                     open={showProjectWizard}
                     onOpenChange={setShowProjectWizard}
                     initialMeta={projectMeta || undefined}
-                    onSubmit={(meta) => handleProjectCreate({ ...meta })} // Adapt to compatible type
+                    onSubmit={(meta) => void handleProjectCreate({ ...meta })} // Adapt to compatible type
                 />
             )}
         </>

@@ -451,7 +451,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
           type="file"
           accept=".dxf,.dwg"
           multiple
-          onChange={(e) => handleFiles(e.target.files)}
+          onChange={(e) => void handleFiles(e.target.files)}
           className="bg-gray-800 border-gray-700"
         />
         <Button

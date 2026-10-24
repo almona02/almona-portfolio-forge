@@ -450,7 +450,7 @@ const CustomerPortal = () => {
                 <motion.div variants={itemVariants} className="mt-4">
                   <h3 className="typography-h3 text-lg mb-2 text-almona-orange">{t('portal.find_your_quotes')}</h3>
                   <p className="text-sm text-gray-400 mb-3">{t('portal.quote_search_description')}</p>
-                  <QuoteTwinSearchPanel onSelect={(quoteId) => navigate(`/portal/quotes/${quoteId}`)} />
+                  <QuoteTwinSearchPanel onSelect={(quoteId) => void navigate(`/portal/quotes/${quoteId}`)} />
                 </motion.div>
 
                 {tickets && tickets.length > 0 ? (
@@ -465,7 +465,7 @@ const CustomerPortal = () => {
                       >
                         <TicketCard
                           ticket={ticket}
-                          onOpen={(id) => navigate(`/support/tickets/${id}`)}
+                          onOpen={(id) => void navigate(`/support/tickets/${id}`)}
                           reducedMotion={reducedMotion}
                         />
                       </motion.div>
@@ -500,7 +500,7 @@ const CustomerPortal = () => {
                 <motion.div variants={itemVariants}>
                   <h3 className="typography-h3 text-lg mb-2 text-almona-orange">{t('portal.my_quotes')}</h3>
                   <p className="text-sm text-gray-400 mb-4">{t('portal.quote_requests_description')}</p>
-                  <QuoteTwinSearchPanel onSelect={(quoteId) => navigate(`/portal/quotes/${quoteId}`)} />
+                  <QuoteTwinSearchPanel onSelect={(quoteId) => void navigate(`/portal/quotes/${quoteId}`)} />
                 </motion.div>
                 {quotes && quotes.length > 0 ? (
                   <div className="space-y-4">
