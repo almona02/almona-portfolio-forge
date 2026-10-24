@@ -76,6 +76,57 @@ export const PERSONA_CONFIGS = Object.freeze({
       ar: 'المفتش - وصول للقراءة فقط لتدقيق الجودة والتحقق من الامتثال',
     }),
   }),
+  fabricator: Object.freeze({
+    persona: 'fabricator',
+    visibleTabs: Object.freeze(['measuring', 'design', 'optimization', 'production', 'quality']),
+    permissions: Object.freeze({
+      canEditDesign: true,
+      canViewFinancials: false,
+      canOverride: false,
+      canApprove: false,
+      canViewAnalytics: false,
+      canManageWorkshops: false,
+      canAudit: false,
+    }),
+    description: Object.freeze({
+      en: 'Fabricator - production specialist focused on fabrication workflows',
+      ar: 'المصنع - متخصص إنتاج يركز على سير عمل التصنيع',
+    }),
+  }),
+  accountant: Object.freeze({
+    persona: 'accountant',
+    visibleTabs: Object.freeze(['inventory', 'production', 'quality']),
+    permissions: Object.freeze({
+      canEditDesign: false,
+      canViewFinancials: true,
+      canOverride: false,
+      canApprove: false,
+      canViewAnalytics: true,
+      canManageWorkshops: false,
+      canAudit: true,
+    }),
+    description: Object.freeze({
+      en: 'Accountant - financial and analytics access',
+      ar: 'المحاسب - وصول مالي وتحليلي',
+    }),
+  }),
+  owner: Object.freeze({
+    persona: 'owner',
+    visibleTabs: Object.freeze(['measuring', 'design', 'preview3d', 'optimization', 'inventory', 'production', 'quality']),
+    permissions: Object.freeze({
+      canEditDesign: true,
+      canViewFinancials: true,
+      canOverride: true,
+      canApprove: true,
+      canViewAnalytics: true,
+      canManageWorkshops: true,
+      canAudit: true,
+    }),
+    description: Object.freeze({
+      en: 'Owner - full unrestricted access',
+      ar: 'المالك - وصول كامل غير مقيد',
+    }),
+  }),
 });
 
 /**
