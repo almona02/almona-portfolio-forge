@@ -156,7 +156,7 @@ export const ConversionChart: React.FC<ConversionChartProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => ReportingService.exportToCSV([metrics], 'conversion-metrics')}
+            onClick={() => ReportingService.exportToCSV([metrics as any], 'conversion-metrics')}
             className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
           >
             <Download className="w-4 h-4" />

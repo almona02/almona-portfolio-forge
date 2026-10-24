@@ -428,7 +428,7 @@ export function Interactive3DViewer({
     annotations.push({
       id: 'glass',
       name: 'Glass Panel',
-      description: windowUnit.glazing?.type || 'Single glazing',
+      description: (windowUnit.glazing?.type as string) || 'Single glazing',
       price: 0,
       componentType: 'glass',
       position: [0, 0, 0]
@@ -748,7 +748,7 @@ export function Interactive3DViewer({
           
           {!isXRSession && (
             <OrbitControls 
-              ref={controlsRef} 
+              ref={controlsRef as any} 
               makeDefault 
               enableDamping 
               dampingFactor={0.08} 

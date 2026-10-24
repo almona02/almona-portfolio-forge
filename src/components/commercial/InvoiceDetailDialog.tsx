@@ -344,7 +344,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
                 </CardHeader>
                 <CardContent>
                   <StateTransition
-                    machine={stateMachine}
+                    machine={stateMachine as any}
                     currentState={(invoice.status || 'draft') as any}
                     entityType="invoice"
                     entityId={invoice.id}

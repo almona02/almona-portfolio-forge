@@ -6,7 +6,7 @@ const LazyAreaChart = lazy(() => import('recharts').then(module => ({
   default: module.AreaChart
 })));
 const LazyArea = lazy(() => import('recharts').then(module => ({
-  default: module.Area
+  default: module.Area as any
 })));
 const LazyCartesianGrid = lazy(() => import('recharts').then(module => ({
   default: module.CartesianGrid

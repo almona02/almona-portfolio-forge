@@ -165,7 +165,7 @@ export const QuoteTemplateEditor: React.FC<QuoteTemplateEditorProps> = ({
                 name: name.trim(),
                 description: description.trim() || undefined,
                 category,
-                template_config: config,
+                template_config: config as unknown as Record<string, unknown>,
                 is_public: isPublic,
                 is_default: isDefault,
             };

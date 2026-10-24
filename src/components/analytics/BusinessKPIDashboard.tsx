@@ -25,9 +25,9 @@ const CartesianGrid = lazy(() => import('recharts').then(module => ({ default: m
 const Tooltip = lazy(() => import('recharts').then(module => ({ default: module.Tooltip })));
 const ResponsiveContainer = lazy(() => import('recharts').then(module => ({ default: module.ResponsiveContainer })));
 const BarChart = lazy(() => import('recharts').then(module => ({ default: module.BarChart })));
-const Bar = lazy(() => import('recharts').then(module => ({ default: module.Bar })));
+const Bar = lazy(() => import('recharts').then(module => ({ default: module.Bar as any })));
 const RechartsPieChart = lazy(() => import('recharts').then(module => ({ default: module.PieChart })));
-const Pie = lazy(() => import('recharts').then(module => ({ default: module.Pie })));
+const Pie = lazy(() => import('recharts').then(module => ({ default: module.Pie as any })));
 const Cell = lazy(() => import('recharts').then(module => ({ default: module.Cell })));
 
 // Business KPI Types
