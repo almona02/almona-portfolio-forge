@@ -404,14 +404,14 @@ function createInvalidSystem(type: string): FenestrationSystem {
     case 'multipleErrors':
       return {
         ...valid,
-        id: undefined,
-        region: 'INVALID',
+        id: undefined as any,
+        region: 'INVALID' as any,
       };
     case 'typeErrors':
       return {
         ...valid,
-        id: 123, // Invalid type
-        name: 456, // Invalid type
+        id: 123 as any, // Invalid type
+        name: 456 as any, // Invalid type
       };
     default:
       return valid;

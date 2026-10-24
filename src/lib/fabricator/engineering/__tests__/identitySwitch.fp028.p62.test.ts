@@ -26,7 +26,7 @@ const GRID_B: WindowGrid = {
   rows: 1,
   cols: 2,
   cells: [
-    { id: 'cell-case', row: 0, col: 0, type: 'casement', openingDirection: 'left' },
+    { id: 'cell-case', row: 0, col: 0, type: 'casement' as any, openingDirection: 'left' },
     { id: 'cell-fixed', row: 0, col: 1, type: 'fixed' },
   ],
   colWidths: [900, 600],

@@ -1,6 +1,6 @@
 import { useThree } from '@react-three/fiber';
 import { XR } from '@react-three/xr';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { getEquipmentRecommendation } from '@/lib/ai/gemini';
 
 // Default Egyptian workshop dimensions (10m x 15m)
@@ -56,15 +56,15 @@ export const WorkshopARView = ({ machine }: { machine: MachineRequirements }) =>
     setWarnings(analysisResults);
   };
 
-  return (
-    <XR onSessionStart={analyzeSpace as any}>
-      {warnings.length > 0 && (
-        <div className="ar-warnings">
-          {warnings.map((warning, i) => (
-            <div key={i} className="warning-item">⚠️ {warning}</div>
-          ))}
-        </div>
-      )}
-    </XR>
+  return React.createElement(
+    XR as any,
+    { onSessionStart: analyzeSpace },
+    warnings.length > 0 && (
+      <div className="ar-warnings">
+        {warnings.map((warning, i) => (
+          <div key={i} className="warning-item">⚠️ {warning}</div>
+        ))}
+      </div>
+    )
   );
 };

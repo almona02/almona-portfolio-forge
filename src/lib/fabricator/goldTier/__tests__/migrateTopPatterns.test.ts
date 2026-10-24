@@ -111,7 +111,7 @@ describe('Top Patterns Migration', () => {
         success: false,
         errors: ['Migration failed'],
         warnings: [],
-        rollbackData: null,
+        rollbackData: null as any,
         performance: { migrationTimeMs: 10 },
       }));
 
