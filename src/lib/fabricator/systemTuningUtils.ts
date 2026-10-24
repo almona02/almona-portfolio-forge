@@ -1,4 +1,4 @@
-﻿/**
+/**
  * System Tuning Utilities
  * Helper functions to check tuning status and manage system pack tuning
  */
@@ -61,7 +61,7 @@ export function isSystemPackTuned(systemPack: SystemPack | UPVCSystemPack): bool
         
         // If both are explicitly tuned, return true
         // Otherwise, if profiles exist with roles, consider it ready for tuning
-        return frameTuned && sashTuned;
+        return frameTuned === true && sashTuned === true;
       }
       
       // If profiles exist but not tuned, return false (needs tuning)

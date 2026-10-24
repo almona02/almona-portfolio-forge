@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Gold Tier Hardware Connector
  * 
  * Auto-connects hardware components based on window type and system pack specifications.
@@ -114,7 +114,7 @@ export function connectHardwareForWindowType(
   components.forEach(comp => {
     if (comp.type === 'sash') {
       const sashArea = (comp.width * comp.height) / 1_000_000; // m²
-      const maxSashArea = systemPack?.windowSystemSpec?.constraints?.maxSashAreaM2 || 2.0;
+      const maxSashArea = (systemPack?.windowSystemSpec?.constraints as { maxSashAreaM2?: number } | undefined)?.maxSashAreaM2 || 2.0;
       
       if (sashArea > maxSashArea) {
         // Large sash needs reinforcement
@@ -127,7 +127,7 @@ export function connectHardwareForWindowType(
             quantity: 1,
             length: Math.max(comp.width, comp.height),
             profileId: frameProfile.profile.id,
-            profileCode: frameProfile.profile.code,
+            profileCode: (frameProfile.profile as { code?: string }).code,
             position: 'sash_center'
           });
         }
