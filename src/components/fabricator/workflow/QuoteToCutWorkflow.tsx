@@ -11,10 +11,10 @@ import type { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
 import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { LiveCostConsole } from './LiveCostConsole';
-import { NewProjectWizard, type ProjectHeaderMeta } from './NewProjectWizard';
-import { ProjectCockpit, getProjectTypeConfig, type ProjectType } from './ProjectCockpit';
-import { SmartDrawTool } from './SmartDrawTool';
-import { SystemDrivenDesign } from './SystemDrivenDesign';
+import { NewProjectWizard, type ProjectHeaderMeta } from '../NewProjectWizard';
+import { ProjectCockpit, getProjectTypeConfig, type ProjectType } from '../ProjectCockpit';
+import { SmartDrawTool } from '../SmartDrawTool';
+import { SystemDrivenDesign } from '../SystemDrivenDesign';
 
 type WorkflowStep = 1 | 2 | 3 | 4;
 
