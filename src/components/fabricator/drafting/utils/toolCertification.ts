@@ -50,7 +50,7 @@ export interface ToolCertification {
  * Tool Certification Registry
  * All drafting tools are constitutionally certified
  */
-export const TOOL_CERTIFICATIONS: Record<DraftingTool, ToolCertification> = {
+export const TOOL_CERTIFICATIONS: Partial<Record<DraftingTool, ToolCertification>> = {
   // Basic Tools
   'select': {
     toolId: 'select',
