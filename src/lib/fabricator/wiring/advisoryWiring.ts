@@ -20,7 +20,7 @@ export const ADVISORY_WIRING = {
 
   /** automation Suggestions Panel - Alternative design approaches */
   AISuggestionPanel: AdvisoryGate.tier2({
-    component: () => import('@/future/advisory-panels/AISuggestionPanel').then(m => ({ default: m.AISuggestionPanel || m.default })),
+    component: () => import('@/components/fabricator/panels/AISuggestionPanel').then(m => ({ default: m.AISuggestionPanel || m.default })),
     purpose: 'Suggest alternative design approaches based on historical patterns',
     minConfidence: 0.7,
     requiresHumanReview: true
@@ -28,7 +28,7 @@ export const ADVISORY_WIRING = {
 
   /** Design Mode Comparison - Compare drafting vs grid approaches */
   DesignModeComparison: AdvisoryGate.tier2({
-    component: () => import('@/future/advisory-panels/DesignModeComparison').then(m => ({ default: m.DesignModeComparison || m.default })),
+    component: () => import('@/components/fabricator/panels/DesignModeComparison').then(m => ({ default: m.DesignModeComparison || m.default })),
     purpose: 'Compare efficiency of different design methodologies',
     minConfidence: 0.6,
     requiresHumanReview: false
@@ -36,14 +36,14 @@ export const ADVISORY_WIRING = {
 
   /** Optimization Job Monitor - Track optimization progress */
   OptimizationJobMonitor: AdvisoryGate.tier2Limited({
-    component: () => import('@/future/advisory-panels/OptimizationJobMonitor').then(m => ({ default: m.OptimizationJobMonitor || m.default })),
+    component: () => import('@/components/fabricator/panels/OptimizationJobMonitor').then(m => ({ default: m.OptimizationJobMonitor || m.default })),
     purpose: 'Monitor and suggest improvements to optimization processes',
     minConfidence: 0.65,
   }),
 
   /** Job Risk Indicator - Risk assessment */
   JobRiskIndicator: AdvisoryGate.tier2({
-    component: () => import('@/future/advisory-panels/JobRiskIndicator').then(m => ({ default: m.JobRiskIndicator || m.default })),
+    component: () => import('@/components/fabricator/panels/JobRiskIndicator').then(m => ({ default: m.JobRiskIndicator || m.default })),
     purpose: 'Assess manufacturing risk based on design complexity',
     minConfidence: 0.68,
     requiresHumanReview: true
@@ -51,7 +51,7 @@ export const ADVISORY_WIRING = {
 
   /** Constitutional Health Dashboard - Governance health */
   ConstitutionalHealthDashboard: AdvisoryGate.tier2({
-    component: () => import('@/future/advisory-panels/ConstitutionalHealthDashboard').then(m => ({ default: m.ConstitutionalHealthDashboard || m.default })),
+    component: () => import('@/components/fabricator/panels/ConstitutionalHealthDashboard').then(m => ({ default: m.ConstitutionalHealthDashboard || m.default })),
     purpose: 'Monitor constitutional compliance and governance health',
     minConfidence: 0.9,
     requiresHumanReview: false
@@ -61,7 +61,7 @@ export const ADVISORY_WIRING = {
 
   /** Design Mode Selector - Mode switching suggestions */
   DesignModeSelector: AdvisoryGate.tier2Limited({
-    component: () => import('@/future/advisory-panels/DesignModeSelector').then(m => ({ default: m.DesignModeSelector || m.default })),
+    component: () => import('@/components/fabricator/panels/DesignModeSelector').then(m => ({ default: m.DesignModeSelector || m.default })),
     purpose: 'Suggest optimal design mode based on project type',
     minConfidence: 0.6,
   }),
