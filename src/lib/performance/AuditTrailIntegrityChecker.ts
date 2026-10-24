@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CONSTITUTIONAL PERFORMANCE MONITORING
  * Audit Trail Integrity Checker
  * 
@@ -223,7 +223,11 @@ export class AuditTrailIntegrityChecker {
       const transaction = db.transaction(['auditLog'], 'readwrite');
       const store = transaction.objectStore('auditLog');
       
-      await store.add(entry);
+      await new Promise<void>((resolve, reject) => {
+        const req = store.add(entry);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
     } catch (error) {
       console.warn('Failed to persist audit entry to IndexedDB', error);
     }

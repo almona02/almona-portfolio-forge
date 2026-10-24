@@ -1,4 +1,4 @@
-﻿/**
+/**
  * System Packs Page - Premium Ultimate Cards Design
  * 
  * Displays all system packs in a beautiful card gallery inspired by FC26 ultimate cards.
@@ -503,7 +503,7 @@ export const SystemPacksPage: React.FC = () => {
         onComplete={async (_data) => {
           // Refresh system packs list
           if (userId) {
-            const updated = await loadCustomSystems();
+            const updated = loadCustomSystems();
             setCustomSystems(updated);
           }
           setShowUnifiedWizard(false);
