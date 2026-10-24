@@ -161,7 +161,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
         }
         setActiveUnitId(newUnit.id);
         setWorkflowStage('design');
-    }, [project.units, useV2, upsertPose]);
+    }, [project.units, project.reference, project.id, project.clientName, useV2, upsertPose]);
 
     const handleDuplicateUnit = useCallback((unitId: string) => {
         const unit = project.units.find(u => u.id === unitId);
