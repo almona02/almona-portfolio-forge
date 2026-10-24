@@ -409,7 +409,7 @@ describe('withTouchGestures HOC', () => {
       },
       {
         onSwipe: vi.fn(),
-      }
+      } as any
     );
 
     render(

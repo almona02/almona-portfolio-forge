@@ -25,7 +25,7 @@ describe('TouchGestureManager Performance', () => {
             onPan: vi.fn(),
             onPinch: vi.fn(),
             onTap: vi.fn()
-        });
+        } as any);
 
         // Simulate touch start
         manager.handlePointerDown(new MockPointerEvent('pointerdown', { pointerId: 1, clientX: 100, clientY: 100 }) as any);
@@ -54,7 +54,7 @@ describe('TouchGestureManager Performance', () => {
              onPan: vi.fn(),
              onPinch: onPinch,
              onTap: vi.fn()
-        });
+        } as any);
 
         // Pointer 1 Down
         manager.handlePointerDown(new MockPointerEvent('pointerdown', { pointerId: 1, clientX: 100, clientY: 100 }) as any);
