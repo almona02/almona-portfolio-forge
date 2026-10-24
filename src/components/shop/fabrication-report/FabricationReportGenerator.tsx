@@ -53,7 +53,7 @@ export default function FabricationReportGenerator() {
     });
 
     // Save PDF
-    const blob = new Blob([report.pdfBytes], { type: 'application/pdf' });
+    const blob = new Blob([report.pdfBytes as BlobPart], { type: 'application/pdf' });
     if (!saveAsFn) {
       const mod = await import('file-saver');
       saveAsFn = mod.saveAs;

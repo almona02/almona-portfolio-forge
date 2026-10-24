@@ -98,7 +98,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
           <Label className="typography-label text-gray-300">
             {t('turkish.taxCalculator.kdvRate', 'KDV Oranı')}
           </Label>
-          <Select value={kdvRate} onValueChange={(value: KdvRate) => setKdvRate(value)}>
+          <Select value={kdvRate} onValueChange={(value) => setKdvRate(value as KdvRate)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>

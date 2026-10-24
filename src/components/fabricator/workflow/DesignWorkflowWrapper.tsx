@@ -131,7 +131,7 @@ export const DesignWorkflowWrapper: React.FC = () => {
           if (currentProject) {
             dispatch({
               type: 'UPDATE_PROJECT_GRID',
-              payload: grid
+              payload: grid as unknown as Record<string, unknown>
             });
           }
         }}

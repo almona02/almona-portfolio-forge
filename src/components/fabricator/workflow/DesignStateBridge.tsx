@@ -212,7 +212,7 @@ export const DesignStateBridge: React.FC<DesignStateBridgeProps> = ({
           // Update global project state
           dispatch({
             type: 'UPDATE_PROJECT_GRID',
-            payload: smartDrawGrid
+            payload: smartDrawGrid as unknown as Record<string, unknown>
           });
         } else if (mode === 'drafting' && draftingGeometry) {
           // Convert Drafting geometry to SmartDraw grid

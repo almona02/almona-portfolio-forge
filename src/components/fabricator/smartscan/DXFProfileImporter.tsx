@@ -341,8 +341,8 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
         max_stock_level: 1000,
         supplier: 'Imported from DXF',
         system_brand: defaultSystemPack || 'Custom',
-        profileRole: defaultRole,
-        systemType: defaultWindowType,
+        profileRole: defaultRole as any,
+        systemType: defaultWindowType as any,
         specifications: {
           importSource: 'dxf',
           dxfFileName: profile.fileName,

@@ -171,7 +171,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
                 }}
                 selectedProfileId={selectedProfileId}
                 onSelectProfile={(id) => setSelectedProfileId(id)}
-                userId={userId}
+                userId={userId ?? undefined}
                 onProfileSaved={(profileId) => {
                   // Optionally reload or update UI after save
                   console.log('Profile saved:', profileId);
