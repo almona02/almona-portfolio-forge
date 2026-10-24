@@ -938,7 +938,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
           onAddSash={drafting.addSashToFrame ? (t) => { if (t?.id) drafting.addSashToFrame?.(t.id); } : undefined}
           onQuickAddTwoSashes={drafting.quickAddTwoSashes ? (t) => { if (t?.id) drafting.quickAddTwoSashes?.(t.id); } : undefined}
           getAddSashWarning={getAddSashWarning}
-          onAddMullion={drafting.addMullionToFrame ? handleAddMullionClick : undefined}
+          onAddMullion={handleAddMullionClick}
           onAssignGlazing={handleAssignGlazingClick}
           onGlassColor={handleAssignGlazingClick}
           onGlassType={handleAssignGlazingClick}

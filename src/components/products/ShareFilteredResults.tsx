@@ -167,7 +167,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
           <MessageCircle className="mr-2 h-4 w-4  status-valid" />
           <span>{copy("Share via WhatsApp")}</span>
         </DropdownMenuItem>
-        {navigator.share && (
+        {typeof navigator.share === 'function' && (
           <DropdownMenuItem
             onClick={handleNativeShare}
             className="cursor-pointer hover:bg-gray-800"

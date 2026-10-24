@@ -102,7 +102,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     const handleLoadTurkishProfile = (e: any) => {
       // Load specific profile into project
       const profile = e.detail;
-      if (project && onGridChange) {
+      if (project) {
         // Update project with Turkish profile
         // This would need to be handled by parent component
         console.log('Load Turkish profile:', profile);
