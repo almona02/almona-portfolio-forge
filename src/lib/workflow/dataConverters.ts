@@ -1,4 +1,4 @@
-﻿// src/lib/workflow/dataConverters.ts
+// src/lib/workflow/dataConverters.ts
 /**
  * Data Converters - Translation Layer Between Entry Modalities
  * 
@@ -169,7 +169,7 @@ export function cadToCanonical(drafting: DraftingOutput): CanonicalEngineeringMo
         draftingData: {
           shapes: [],
           canvas: {},
-          templates: drafting.template ? [(drafting.template as string)] : [],
+          templates: drafting.template ? [drafting.template.id] : [],
         },
       },
     },

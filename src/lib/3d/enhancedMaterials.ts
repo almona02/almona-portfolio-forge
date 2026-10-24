@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Enhanced Material Rendering
  * 
  * Provides photorealistic PBR materials with textures and environment maps.
@@ -226,7 +226,7 @@ export class EnhancedMaterialGenerator {
           undefined,
           (error) => {
             clearTimeout(timeout);
-            reject(new Error((error as string)));
+            reject(new Error(error.message));
           }
         );
       });

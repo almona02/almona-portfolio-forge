@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Yilmaz Network Protocol
  * Ethernet/TCP-IP communication for Yilmaz machines
  * Supports real-time machine control and status monitoring
@@ -80,7 +80,7 @@ export class YilmazNetworkProtocol {
 
         ws.onerror = (error) => {
           this.isConnected = false;
-          reject(new Error(`Connection failed: ${error as string}`));
+          reject(new Error(`Connection failed: ${error.type}`));
         };
 
         ws.onclose = () => {

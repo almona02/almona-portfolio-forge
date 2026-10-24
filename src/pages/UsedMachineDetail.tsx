@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import UsedMachineDetails from '../components/used-machines/UsedMachineDetails';
 import MachineSEO from '../components/used-machines/MachineSEO';
@@ -36,7 +36,7 @@ const UsedMachineDetailPage = () => {
     <>
       <MachineSEO machine={machine} />
       <div className="min-h-screen bg-almona-dark pt-16 pb-8">
-        <UsedMachineDetails machine={() => void machine()} onBack={() => void navigate('/used-machines')} />
+        <UsedMachineDetails machine={machine} onBack={() => void navigate('/used-machines')} />
       </div>
     </>
   );

@@ -128,7 +128,7 @@ export async function generateWorkshopLayoutPDF(
     const py = oy + it.y * s;
     const pw = it.w * s;
     const ph = it.h * s;
-    page.drawRectangle({ x: px, y: py, width: pw, height: ph, color: rgb(c.r, c.g, c.b, 0.15), borderColor: rgb(c.r, c.g, c.b), borderWidth: 1 });
+    page.drawRectangle({ x: px, y: py, width: pw, height: ph, color: rgb(c.r, c.g, c.b), borderColor: rgb(c.r, c.g, c.b), borderWidth: 1, opacity: 0.15 });
     if (pw > 10 && ph > 8) {
       // label (centered, sized to fit)
       const ls = Math.max(3.5, Math.min(7, pw / 9));

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PDFExportService - Handles PDF generation and branding
  * Creates branded PDF reports for projects and cutting lists
  */
@@ -334,7 +334,7 @@ export class PDFExportService {
     await this.addFooter();
 
     const pdfBytes = await this.pdfDoc.save();
-    return new Blob([pdfBytes], { type: 'application/pdf' });
+    return new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
   }
 
   /**
@@ -438,7 +438,7 @@ export class PDFExportService {
     await this.addFooter();
 
     const pdfBytes = await this.pdfDoc.save();
-    return new Blob([pdfBytes], { type: 'application/pdf' });
+    return new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
   }
 
   /**
@@ -508,7 +508,7 @@ export class PDFExportService {
     await this.addFooter();
 
     const pdfBytes = await this.pdfDoc.save();
-    return new Blob([pdfBytes], { type: 'application/pdf' });
+    return new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
   }
 
   private async addHeader() {

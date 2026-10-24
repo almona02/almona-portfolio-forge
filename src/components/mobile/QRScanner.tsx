@@ -1,4 +1,4 @@
-﻿import { Hardener } from '@/lib/error/Hardener';
+import { Hardener } from '@/lib/error/Hardener';
 import { cn } from '@/lib/utils';
 import { AlertCircle, Camera, CheckCircle, Flashlight, RotateCcw, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -226,7 +226,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
       navigator.geolocation.getCurrentPosition(
         (position) => resolve(position.coords),
-        (error) => reject(new Error((error as string))),
+        (error) => reject(new Error(error.message)),
         {
           enableHighAccuracy: true,
           timeout: 10000,

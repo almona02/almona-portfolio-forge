@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProductionDXFParser - Hardened DXF Parser for Production Use
  * 
  * Week 3 Task 3.1: ProductionDXFParser Implementation
@@ -203,7 +203,7 @@ export class ProductionDXFParser {
       worker.onerror = (error) => {
         clearTimeout(timeout);
         this.releaseWorker(worker);
-        reject(new Error((error as string)));
+        reject(new Error(error.message));
       };
 
       worker.postMessage({

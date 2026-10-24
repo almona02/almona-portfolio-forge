@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Performance Optimizer - Performance Utilities for Dual-Output System
  * 
  * Provides:
@@ -122,7 +122,7 @@ export class PerformanceOptimizer {
           };
           
           worker.onerror = (error) => {
-            reject(new Error((error as string)));
+            reject(new Error(error.message));
             worker.terminate();
           };
           
