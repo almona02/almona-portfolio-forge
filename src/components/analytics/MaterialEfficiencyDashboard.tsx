@@ -39,7 +39,7 @@ export const MaterialEfficiencyDashboard: React.FC<MaterialEfficiencyDashboardPr
       setLoading(false);
     };
 
-    if (profiles.length > 0) {
+    if (profiles && profiles.length > 0) {
       loadForecasts();
     }
   }, [profiles, userId]);

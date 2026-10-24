@@ -862,7 +862,7 @@ export class ApexEngineV2 {
     if (profiles.sash.code === code) return 'sash';
     if (profiles.mullion?.code === code) return 'mullion';
     if (profiles.transom?.code === code) return 'transom';
-    if (profiles.glazingBead.code === code) return 'glazingBead';
+    if (profiles.glazingBead?.code === code) return 'glazingBead';
     return 'unknown';
   }
 }
