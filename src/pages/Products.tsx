@@ -71,7 +71,6 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => {
     safetyFeatures: (m.safetyFeatures || []).filter((s): s is 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop' =>
       ['TwoHandOperation','AutomaticGuards','EmergencyStop'].includes(s as 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop')
     ),
-    price: undefined,
   };
 };
 

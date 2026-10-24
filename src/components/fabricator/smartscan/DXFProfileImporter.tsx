@@ -31,6 +31,9 @@ export interface ImportedProfile {
     totalProfiles?: number;
     apiResponse?: any;
     detectedRole?: string;
+    profileIndex?: number;
+    center?: unknown;
+    boundingBox?: unknown;
   };
 }
 

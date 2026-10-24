@@ -4,6 +4,7 @@ export type WindowUnitStatus =
   | 'optimized'
   | 'production'
   | 'quality'
+  | 'completed'
   | 'delivered';
 
 // --- FACADE TYPES (Phase 2) ---
