@@ -7,7 +7,7 @@
 import { EGYPTIAN_CONFIG, TURKISH_CONFIG } from '@/config/regionalConfig';
 import { convertCurrency, formatCurrency, getExchangeRate, type ExchangeRate } from '@/lib/currencyExchange';
 import { QuotingEngine, type PricingConfig, type Quote } from '@/modules/commercial/QuotingEngine';
-import { FabricatorAccessory, Profile } from '@/types/fabricator';
+import { FabricatorAccessory, Profile, WindowUnit, OptimizationResult } from '@/types/fabricator';
 
 export type Currency = 'TRY' | 'EGP' | 'USD' | 'EUR';
 export type Region = 'turkey' | 'egypt' | 'global';
@@ -400,8 +400,8 @@ export class PricingEngine {
    * Generate quote with multi-currency support
    */
   async generateQuote(
-    project: any, // WindowUnit
-    optimization: any, // OptimizationResult
+    project: WindowUnit,
+    optimization: OptimizationResult,
     targetCurrency?: Currency,
     customerId?: string,
     customerName?: string
