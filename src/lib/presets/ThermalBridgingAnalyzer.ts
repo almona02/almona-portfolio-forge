@@ -44,7 +44,7 @@ export class ThermalBridgingAnalyzer {
     if (mullionType === 'thermal_break') {
       // Thermal break mullion has minimal impact
       uValueImpact = 0.1; // W/m²K
-    } else if (material === 'aluminum' && mullionType !== 'thermal_break') {
+    } else if (material === 'aluminum') {
       // Aluminum mullion without thermal break creates significant thermal bridge
       const thermalBridgeArea = mullionWidth * height; // m²
       const windowArea = windowUnit.overallWidth * height / 1_000_000; // m²

@@ -15,7 +15,7 @@ export interface ParsedQuery {
   condition?: string;
   brand?: string;
   year?: {min?: number, max?: number};
-  intent: 'buy' | 'sell' | 'research' | 'compare';
+  intent: 'buy' | 'sell' | 'research' | 'compare' | 'commercial';
   urgency: 'low' | 'medium' | 'high';
   expandedTerms: string[];
 }
