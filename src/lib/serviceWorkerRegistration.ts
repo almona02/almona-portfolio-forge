@@ -72,7 +72,7 @@ export const clearAllCaches = async () => {
       return { success: false, error: 'CacheStorage error (ignored)' };
     }
     console.error('[SW] Error clearing caches:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: (error as Error).message };
   }
 };
 

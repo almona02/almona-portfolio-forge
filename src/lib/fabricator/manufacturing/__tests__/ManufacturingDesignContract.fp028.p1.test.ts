@@ -91,7 +91,7 @@ const captureContractError = (input: ManufacturingDesignContractInput): Manufact
 describe('FP-028 / Phase 1 manufacturing contract boundary', () => {
   it('creates an immutable, normalized contract', () => {
     const input = validInput();
-    input.identity = { ...input.identity, ownerId: ' owner-fp028 ' };
+    (input as any).identity = { ...input.identity, ownerId: ' owner-fp028 ' };
 
     const contract = createManufacturingDesignContract(input);
 
@@ -132,7 +132,7 @@ describe('FP-028 / Phase 1 manufacturing contract boundary', () => {
     ['source', { source: '' }],
   ] as const)('rejects missing identity field %s', (field, identityPatch) => {
     const input = validInput();
-    input.identity = { ...input.identity, ...identityPatch };
+    (input as any).identity = { ...input.identity, ...identityPatch };
 
     expect(captureContractError(input)).toMatchObject({
       code: 'INVALID_IDENTITY',
@@ -145,7 +145,7 @@ describe('FP-028 / Phase 1 manufacturing contract boundary', () => {
     'rejects invalid revision %s',
     (revision) => {
       const input = validInput();
-      input.identity = { ...input.identity, revision };
+      (input as any).identity = { ...input.identity, revision };
       expect(captureContractError(input)).toMatchObject({
         code: 'INVALID_REVISION',
         field: 'identity.revision',

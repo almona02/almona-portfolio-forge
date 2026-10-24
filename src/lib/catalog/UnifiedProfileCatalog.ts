@@ -234,7 +234,7 @@ export class UnifiedProfileCatalog {
                systems.push(system);
             }
 
-            for (const p of items) {
+            for (const p of items as any[]) {
               const specs = p.specifications || {};
               const code = specs.supplierCode || specs.profileCode || specs.internalCode || p.name;
               

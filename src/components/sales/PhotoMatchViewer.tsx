@@ -152,8 +152,8 @@ function PhotoMatchScene({
   onModelReady?: (model: THREE.Group) => void;
 }) {
   const { scene, camera } = useThree();
-  const modelRef = useRef<THREE.Group>(null);
-  const backgroundRef = useRef<THREE.Mesh>(null);
+  const modelRef = useRef<THREE.Group | null>(null);
+  const backgroundRef = useRef<THREE.Mesh | null>(null);
   const [isAnimating] = useState(false);
   const [animationProgress] = useState(0);
 
@@ -293,7 +293,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
   const [isMobile, setIsMobile] = useState(false);
   
   const canvasContainerRef = useRef<HTMLDivElement>(null);
-  const threeCanvasRef = useRef<HTMLCanvasElement>(null);
+  const threeCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 

@@ -1,5 +1,5 @@
 // src/components/fabricator/drafting/utils/templateRecommender.ts
-import type { DesignConstraints, EgyptianTemplate, Geometry2D } from '../types/drafting';
+import type { EgyptianTemplate, Geometry2D } from '../types/drafting';
 
 export interface TemplateRecommendation {
   templateId: string;

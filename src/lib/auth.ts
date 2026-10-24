@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { User } from '@/types';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  company: string;
+  phone: string;
+  machines: string[];
+}
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
