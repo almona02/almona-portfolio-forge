@@ -42,15 +42,15 @@ export interface PDFOptions {
 }
 
 export class PDFExportService {
-  private pdfDoc: PDFDocumentInstance;
+  private pdfDoc!: PDFDocumentInstance;
   private branding: CompanyBranding;
   private pageWidth: number;
   private pageHeight: number;
   private margin: number;
   private currentY: number;
-  private currentPage: PDFPage;
-  private font: PDFFont;
-  private boldFont: PDFFont;
+  private currentPage!: PDFPage;
+  private font!: PDFFont;
+  private boldFont!: PDFFont;
   private pageNumber: number = 1;
 
   constructor(branding: CompanyBranding) {

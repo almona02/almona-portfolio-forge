@@ -1,4 +1,4 @@
-/**
+﻿/**
  * K-Factor Calculator Component
  * Interactive tool for calculating and visualizing K-factors (cutting deductions)
  * HIGHEST UI/UX PRIORITY - Visual feedback loop is critical
@@ -49,9 +49,9 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
   const getWallThickness = (profile?: Profile): number => {
     if (profile?.specifications) {
       // Try different possible field names for wall thickness
-      const wallThickness = (profile.specifications as any).wallThicknessMm ||
-                           (profile.specifications as any).thicknessMm ||
-                           (profile.specifications as any).materialThicknessMm;
+      const wallThickness = (profile.specifications).wallThicknessMm ||
+                           (profile.specifications).thicknessMm ||
+                           (profile.specifications).materialThicknessMm;
       if (wallThickness && typeof wallThickness === 'number') {
         return wallThickness;
       }
@@ -189,8 +189,8 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gray-700">
-              <SelectItem value="miter_45">{t('calibration_wizard.k_factor.miter45', '45° Miter Joint (Frame corners)')}</SelectItem>
-              <SelectItem value="butt_90">{t('calibration_wizard.k_factor.butt', '90° Butt Joint (Mullion connections)')}</SelectItem>
+              <SelectItem value="miter_45">{t('calibration_wizard.k_factor.miter45', '45Â° Miter Joint (Frame corners)')}</SelectItem>
+              <SelectItem value="butt_90">{t('calibration_wizard.k_factor.butt', '90Â° Butt Joint (Mullion connections)')}</SelectItem>
               <SelectItem value="t_joint">{t('calibration_wizard.k_factor.t_joint', 'T-Joint (Mullion to frame)')}</SelectItem>
               <SelectItem value="l_joint">{t('calibration_wizard.k_factor.l_joint', 'L-Joint (Corner reinforcements)')}</SelectItem>
               <SelectItem value="custom">{t('calibration_wizard.k_factor.custom', 'Custom Angle')}</SelectItem>
@@ -236,12 +236,12 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
             )}
           </div>
           <div className="text-3xl font-bold text-blue-400 mb-2">
-            {calculatedKFactor !== null ? `${calculatedKFactor.toFixed(2)} mm` : '—'}
+            {calculatedKFactor !== null ? `${calculatedKFactor.toFixed(2)} mm` : 'â€”'}
           </div>
           {/* Show info message for positive K-factors in sliding frames (not a warning) */}
           {calculatedKFactor !== null && calculatedKFactor > 0 && (jointType === 'miter_45' || jointType === 'l_joint') && !validation?.warning && (
             <div className="mt-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-300">
-              ✓ Positive K-factor is correct for sliding frames with corner joints. You cut MORE than the final dimension to account for miter joint geometry.
+              âœ“ Positive K-factor is correct for sliding frames with corner joints. You cut MORE than the final dimension to account for miter joint geometry.
             </div>
           )}
           {validation?.warning && (
@@ -293,7 +293,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
                 {t('calibration_wizard.k_factor.cut_length', 'Cut Length (mm)')}
               </Label>
               <div className="mt-1 p-2 bg-gray-800 border border-gray-600 rounded text-white font-semibold">
-                {testCutLength !== null ? `${testCutLength.toFixed(2)} mm` : '—'}
+                {testCutLength !== null ? `${testCutLength.toFixed(2)} mm` : 'â€”'}
               </div>
             </div>
           </div>

@@ -455,6 +455,16 @@ export interface Profile {
     glazingMaxMm?: number;
     borderExtraAllowanceMm?: number;
     technicalDrawings?: TechnicalDrawing[];
+    wallThicknessMm?: number;
+    thicknessMm?: number;
+    materialThicknessMm?: number;
+    constraints?: {
+      minWidthMm?: number;
+      maxWidthMm?: number;
+      minHeightMm?: number;
+      maxHeightMm?: number;
+      maxAreaM2?: number;
+    };
     [key: string]: unknown; // ... other specifications
   };
   /** Optional calibrations for this profile */

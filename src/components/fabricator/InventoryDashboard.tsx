@@ -94,23 +94,23 @@ const PACK_COLOR_OPTIONS: Record<
   { value: string; label: string; swatch: string }[]
 > = {
   rock60: [
-    { value: 'RAL 9016', label: 'RAL 9016 – White', swatch: '#FFFFFF' },
-    { value: 'RAL 9005', label: 'RAL 9005 – Black', swatch: '#000000' },
-    { value: 'RAL 7016', label: 'RAL 7016 – Anthracite Grey', swatch: '#383E42' },
-    { value: 'RAL 9006', label: 'RAL 9006 – Silver', swatch: '#A5A5A5' },
+    { value: 'RAL 9016', label: 'RAL 9016 â€“ White', swatch: '#FFFFFF' },
+    { value: 'RAL 9005', label: 'RAL 9005 â€“ Black', swatch: '#000000' },
+    { value: 'RAL 7016', label: 'RAL 7016 â€“ Anthracite Grey', swatch: '#383E42' },
+    { value: 'RAL 9006', label: 'RAL 9006 â€“ Silver', swatch: '#A5A5A5' },
   ],
   jumbo100: [
-    { value: 'JUMBO-WHITE', label: 'JUMBO – White', swatch: '#FFFFFF' },
-    { value: 'JUMBO-BLACK', label: 'JUMBO – Black', swatch: '#000000' },
-    { value: 'JUMBO-BRONZE', label: 'JUMBO – Bronze', swatch: '#8B4513' },
-    { value: 'JUMBO-SILVER', label: 'JUMBO – Silver', swatch: '#A5A5A5' },
+    { value: 'JUMBO-WHITE', label: 'JUMBO â€“ White', swatch: '#FFFFFF' },
+    { value: 'JUMBO-BLACK', label: 'JUMBO â€“ Black', swatch: '#000000' },
+    { value: 'JUMBO-BRONZE', label: 'JUMBO â€“ Bronze', swatch: '#8B4513' },
+    { value: 'JUMBO-SILVER', label: 'JUMBO â€“ Silver', swatch: '#A5A5A5' },
   ],
   default: [
-    { value: 'RAL 9016', label: 'RAL 9016 – White', swatch: '#FFFFFF' },
-    { value: 'RAL 9005', label: 'RAL 9005 – Black', swatch: '#000000' },
-    { value: 'RAL 7016', label: 'RAL 7016 – Anthracite Grey', swatch: '#383E42' },
-    { value: 'RAL 8017', label: 'RAL 8017 – Chocolate Brown', swatch: '#4B3621' },
-    { value: 'RAL 9006', label: 'RAL 9006 – Silver', swatch: '#A5A5A5' },
+    { value: 'RAL 9016', label: 'RAL 9016 â€“ White', swatch: '#FFFFFF' },
+    { value: 'RAL 9005', label: 'RAL 9005 â€“ Black', swatch: '#000000' },
+    { value: 'RAL 7016', label: 'RAL 7016 â€“ Anthracite Grey', swatch: '#383E42' },
+    { value: 'RAL 8017', label: 'RAL 8017 â€“ Chocolate Brown', swatch: '#4B3621' },
+    { value: 'RAL 9006', label: 'RAL 9006 â€“ Silver', swatch: '#A5A5A5' },
   ],
 };
 
@@ -128,7 +128,7 @@ const getPackWeightPerMeter = (profile: Profile | null, role: string): number | 
   const system = systemLabel.toLowerCase();
   const roleLower = (role || specs.profileRole || '').toString().toLowerCase();
 
-  // ROCK 60 – use canonical 45° config weights
+  // ROCK 60 â€“ use canonical 45Â° config weights
   if (system.includes('rock 60') || system.includes('rock60')) {
     const cfg: any = ROCK60_WINDOW_SYSTEM_TEMPLATE.rock60_45_degree_config;
     if (!cfg) return undefined;
@@ -147,7 +147,7 @@ const getPackWeightPerMeter = (profile: Profile | null, role: string): number | 
     }
   }
 
-  // JUMBO 100 – look up by profile code in aluminum/small profiles
+  // JUMBO 100 â€“ look up by profile code in aluminum/small profiles
   if (system.includes('jumbo100') || system.includes('jumbo 100') || system.includes('jumbo')) {
     const jumbo: any = JUMBO100_WINDOW_SYSTEM_SPEC;
     const allProfiles: any[] = [
@@ -241,7 +241,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     : 'Not recorded';
   const catalogueCurrencyNote =
     inventoryCurrency === 'EGP'
-      ? 'Workshop stock value is EGP. Catalogue/system pricing may use a different currency — convert explicitly before comparing.'
+      ? 'Workshop stock value is EGP. Catalogue/system pricing may use a different currency â€” convert explicitly before comparing.'
       : `Workshop stock value is shown in ${inventoryCurrency}. Confirm catalogue pricing currency before comparing.`;
   const { t } = useTranslation('fabricator');
   const queryClient = useQueryClient();
@@ -468,8 +468,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     if (!matches.length) return null;
     const profile = matches[0];
     const defaultBarLengthM =
-      typeof (profile.specifications as any)?.stockLengthMm === 'number'
-        ? ((profile.specifications as any).stockLengthMm as number) / 1000
+      typeof (profile.specifications)?.stockLengthMm === 'number'
+        ? ((profile.specifications).stockLengthMm as number) / 1000
         : 6;
     return { id: profile.id, name: profile.name, defaultBarLengthM };
   }, [inventory]);
@@ -525,14 +525,14 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         const metaParts: string[] = [];
         if (row.invoiceNo) metaParts.push(`Invoice ${row.invoiceNo}`);
         if (row.supplier) metaParts.push(row.supplier);
-        metaParts.push(`[CSV import • code=${row.profileCode}]`);
+        metaParts.push(`[CSV import â€¢ code=${row.profileCode}]`);
         if (totalLengthM > 0) metaParts.push(`len=${totalLengthM.toFixed(2)}m`);
         return {
           profileId: row.profileId,
           inputUnit: row.inputUnit as 'meters' | 'pieces',
           quantity: row.quantity as number,
           barLengthM: row.barLengthM ?? undefined,
-          notes: metaParts.join(' – '),
+          notes: metaParts.join(' â€“ '),
           invoice: row.invoiceNo || null,
           supplier: row.supplier || null,
           lotMetadata: { source: 'csv', profile_code: row.profileCode },
@@ -569,8 +569,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         invoiceUnit === 'bar'
           ? (Number(invoiceBarLengthM) > 0
               ? Number(invoiceBarLengthM)
-              : typeof (invoiceSelectedProfile.specifications as any)?.stockLengthMm === 'number'
-                ? ((invoiceSelectedProfile.specifications as any).stockLengthMm as number) / 1000
+              : typeof (invoiceSelectedProfile.specifications)?.stockLengthMm === 'number'
+                ? ((invoiceSelectedProfile.specifications).stockLengthMm as number) / 1000
                 : 6)
           : undefined;
 
@@ -584,7 +584,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       if (invoiceSupplier) metaParts.push(invoiceSupplier);
       if (invoiceProfileCode) {
         metaParts.push(
-          `[${invoiceProfileSystemPack} • ${invoiceProfileCode} • role=${invoiceProfileRole}]`,
+          `[${invoiceProfileSystemPack} â€¢ ${invoiceProfileCode} â€¢ role=${invoiceProfileRole}]`,
         );
       }
       if (invoiceIsPainted) {
@@ -596,7 +596,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       if (lengthM > 0) metaParts.push(`len=${lengthM.toFixed(2)}m`);
       if (totalInvoiceWeightKg > 0) metaParts.push(`wt=${totalInvoiceWeightKg.toFixed(2)}kg`);
 
-      const notes = metaParts.length ? metaParts.join(' – ') : null;
+      const notes = metaParts.length ? metaParts.join(' â€“ ') : null;
       const lines: StockIntakeLine[] = [
         {
           profileId: invoiceProfileId,
@@ -791,10 +791,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         const supplier = profile.supplier?.toLowerCase() || '';
         const systemBrand = profile.systemBrand?.toLowerCase() || '';
         const material = profile.material?.toLowerCase() || '';
-        const code = (profile.specifications as any)?.supplierCode?.toLowerCase() || 
-                     (profile.specifications as any)?.internalCode?.toLowerCase() || '';
-        const role = (profile.specifications as any)?.profileRole?.toLowerCase() || '';
-        const profileNumber = ((profile.specifications as any)?.profileNumber || (profile.specifications as any)?.supplierCode || '').toLowerCase();
+        const code = (profile.specifications)?.supplierCode?.toLowerCase() || 
+                     (profile.specifications)?.internalCode?.toLowerCase() || '';
+        const role = (profile.specifications)?.profileRole?.toLowerCase() || '';
+        const profileNumber = ((profile.specifications)?.profileNumber || (profile.specifications)?.supplierCode || '').toLowerCase();
 
         if (!(
           name.includes(query) ||
@@ -876,22 +876,22 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
   const invoiceProfileSystemPack =
     (invoiceSelectedProfile?.systemBrand) ||
-    ((invoiceSelectedProfile?.specifications as any)?.window_system as string | undefined) ||
+    ((invoiceSelectedProfile?.specifications)?.window_system as string | undefined) ||
     'Standard';
 
   const invoiceProfileCode =
-    ((invoiceSelectedProfile?.specifications as any)?.supplierCode as string | undefined) ||
-    ((invoiceSelectedProfile?.specifications as any)?.internalCode as string | undefined) ||
+    ((invoiceSelectedProfile?.specifications)?.supplierCode as string | undefined) ||
+    ((invoiceSelectedProfile?.specifications)?.internalCode as string | undefined) ||
     invoiceSelectedProfile?.name ||
     '';
 
   const invoiceProfileRole =
-    ((invoiceSelectedProfile?.specifications as any)?.profileRole as string | undefined) ||
+    ((invoiceSelectedProfile?.specifications)?.profileRole as string | undefined) ||
     'frame';
 
   const invoiceDefaultBarLengthM =
-    typeof (invoiceSelectedProfile?.specifications as any)?.stockLengthMm === 'number'
-      ? ((invoiceSelectedProfile?.specifications as any).stockLengthMm as number) / 1000
+    typeof (invoiceSelectedProfile?.specifications)?.stockLengthMm === 'number'
+      ? ((invoiceSelectedProfile?.specifications)?.stockLengthMm as number) / 1000
       : 6;
 
   const packWeightPerMeter = getPackWeightPerMeter(invoiceSelectedProfile, invoiceProfileRole);
@@ -899,8 +899,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const invoiceWeightPerMeter =
     typeof invoiceSelectedProfile?.weightPerMeter === 'number'
       ? (invoiceSelectedProfile.weightPerMeter)
-      : typeof (invoiceSelectedProfile?.specifications as any)?.weightPerMeterKg === 'number'
-        ? ((invoiceSelectedProfile?.specifications as any).weightPerMeterKg as number)
+      : typeof (invoiceSelectedProfile?.specifications)?.weightPerMeterKg === 'number'
+        ? ((invoiceSelectedProfile?.specifications)?.weightPerMeterKg as number)
         : typeof packWeightPerMeter === 'number'
           ? packWeightPerMeter
           : undefined;
@@ -1021,7 +1021,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="typography-h2">{t('inventory_dashboard.title', 'Inventory Dashboard')}</h2>
-          <p className="text-gray-400">{t('inventory_dashboard.description', 'Workshop stock balances, remnant tracking, and ledger history. Analytics use recorded movements only — no demand forecasts.')}</p>
+          <p className="text-gray-400">{t('inventory_dashboard.description', 'Workshop stock balances, remnant tracking, and ledger history. Analytics use recorded movements only â€” no demand forecasts.')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -1129,7 +1129,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 <p className="text-2xl font-bold text-amber-400">
                   {money(totalValue)}
                 </p>
-                <p className="text-[10px] text-slate-400 mt-1">{inventoryCurrency} · excludes TEST STOCK</p>
+                <p className="text-[10px] text-slate-400 mt-1">{inventoryCurrency} Â· excludes TEST STOCK</p>
               </div>
               <DollarSign className="h-8 w-8 text-amber-400 opacity-50" />
             </div>
@@ -1345,7 +1345,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <CardContent className="flex-1 flex flex-col min-h-0 overflow-hidden">
-                      {/* ✅ PERFORMANCE: Virtualized list for large inventory lists */}
+                      {/* âœ… PERFORMANCE: Virtualized list for large inventory lists */}
                       <VirtualizedInventoryList
                         profiles={filteredInventory}
                         containerHeight={1400}
@@ -1372,7 +1372,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                                     </Badge>
                                   </div>
                                   <p className="text-sm text-gray-400">
-                                    {profile.material} • {profile.width}mm • {profile.color}
+                                    {profile.material} â€¢ {profile.width}mm â€¢ {profile.color}
                                   </p>
                                 </div>
                                 {profile.userId && locations.length > 0 && (
@@ -1394,8 +1394,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                                   <span>Supplier: {profile.supplier || 'N/A'}</span>
                                 </div>
                                 {((profile.systemBrand && SYSTEM_PACKS.some(p => p.meta.name === profile.systemBrand)) ||
-                                  (profile.specifications && (profile.specifications as any).window_system) ||
-                                  (profile.specifications && (profile.specifications as any).systemPackId)) && (
+                                  (profile.specifications && (profile.specifications).window_system) ||
+                                  (profile.specifications && (profile.specifications).systemPackId)) && (
                                   <div className="mt-2">
                                     <Button
                                       size="sm"
@@ -1459,7 +1459,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                             <div className="flex-1 min-w-0">
                               <p className="truncate">{profile.name}</p>
                               <p className="text-[10px] text-gray-400">
-                                Stock {profile.stockQuantity}m • Min {profile.minStockLevel}m
+                                Stock {profile.stockQuantity}m â€¢ Min {profile.minStockLevel}m
                               </p>
                             </div>
                             <Badge
@@ -1472,7 +1472,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                                 ? 'Low'
                                 : status === 'high'
                                 ? 'OK'
-                                : '—'}
+                                : 'â€”'}
                             </Badge>
                           </div>
                         ))}
@@ -1593,8 +1593,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                             </Badge>
                           </div>
                           <p className="text-sm text-gray-400">
-                            {remnant.profile?.material} • Length: {(remnant.length / 1000).toFixed(2)}m
-                            {remnant.locationName && ` • Location: ${remnant.locationName}`}
+                            {remnant.profile?.material} â€¢ Length: {(remnant.length / 1000).toFixed(2)}m
+                            {remnant.locationName && ` â€¢ Location: ${remnant.locationName}`}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -1732,7 +1732,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                           (specs.window_system as string | undefined) ||
                           'Standard';
                         const roleLabel: string =
-                          (specs.profileRole as string | undefined) || '—';
+                          (specs.profileRole as string | undefined) || 'â€”';
                         const codeLabel: string =
                           (specs.supplierCode as string | undefined) ||
                           (specs.internalCode as string | undefined) ||
@@ -1743,10 +1743,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                             <div className="flex flex-col gap-0.5">
                               <span className="font-medium text-gray-100">{p.name}</span>
                               <span className="text-[10px] text-gray-500">
-                                {packLabel} • role {roleLabel} • code {codeLabel}
+                                {packLabel} â€¢ role {roleLabel} â€¢ code {codeLabel}
                               </span>
                               <span className="text-[10px] text-gray-500">
-                                {p.material} • {p.width}mm • stock {p.stockQuantity}m
+                                {p.material} â€¢ {p.width}mm â€¢ stock {p.stockQuantity}m
                               </span>
                             </div>
                           </SelectItem>
@@ -1852,7 +1852,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       onCheckedChange={(v) => setInvoiceIsPainted(!!v)}
                     />
                     <span className="text-[11px] text-gray-400">
-                      {invoiceIsPainted ? 'Yes – specify color' : 'No (mill finish)'}
+                      {invoiceIsPainted ? 'Yes â€“ specify color' : 'No (mill finish)'}
                     </span>
                   </div>
                   {invoiceIsPainted && (
@@ -1945,7 +1945,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     }
                     onClick={handleInvoiceStockIntake}
                   >
-                    {isSavingInvoice ? 'Saving…' : 'Record Purchase & Update Stock'}
+                    {isSavingInvoice ? 'Savingâ€¦' : 'Record Purchase & Update Stock'}
                   </Button>
                 </div>
               </div>
@@ -1954,7 +1954,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 <div className="mt-4 rounded border border-amber-700/40 bg-black/30 p-3 space-y-2">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-sm text-amber-100">
-                      CSV preview · {csvPreviewValid.length} valid / {csvPreviewRows.length} total
+                      CSV preview Â· {csvPreviewValid.length} valid / {csvPreviewRows.length} total
                     </p>
                     <div className="flex gap-2">
                       <Button
@@ -1999,10 +1999,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                             className={row.errors.length ? 'text-red-300' : 'text-emerald-200'}
                           >
                             <td className="py-1 pr-2">{row.rowNumber}</td>
-                            <td className="py-1 pr-2">{row.profileCode || '—'}</td>
-                            <td className="py-1 pr-2">{row.quantity ?? '—'}</td>
-                            <td className="py-1 pr-2">{row.inputUnit || row.unitRaw || '—'}</td>
-                            <td className="py-1 pr-2">{row.barLengthM ?? '—'}</td>
+                            <td className="py-1 pr-2">{row.profileCode || 'â€”'}</td>
+                            <td className="py-1 pr-2">{row.quantity ?? 'â€”'}</td>
+                            <td className="py-1 pr-2">{row.inputUnit || row.unitRaw || 'â€”'}</td>
+                            <td className="py-1 pr-2">{row.barLengthM ?? 'â€”'}</td>
                             <td className="py-1 pr-2">
                               {row.errors.length ? row.errors.join('; ') : row.profileName || 'OK'}
                             </td>
@@ -2035,7 +2035,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{m.profileName}</div>
                     <div className="text-[10px] text-gray-400 truncate">
-                      {m.movementType} • {m.quantity} {m.unit} •{' '}
+                      {m.movementType} â€¢ {m.quantity} {m.unit} â€¢{' '}
                       {m.createdAt.toLocaleDateString()}
                     </div>
                     {m.notes && (
@@ -2091,11 +2091,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         <div className="space-y-2">
                           <p>
                             <strong>Type:</strong> {alert.alertType.replace('_', ' ')}
-                            {' • '}
+                            {' â€¢ '}
                             <strong>Severity:</strong> {alert.severity}
                           </p>
                           <p>
-                            Current: {alert.currentValue}m • Threshold: {alert.thresholdValue}m
+                            Current: {alert.currentValue}m â€¢ Threshold: {alert.thresholdValue}m
                           </p>
                           {alert.reorderQuantity && (
                             <div className="mt-2 p-2 bg-gray-800 rounded">
@@ -2174,7 +2174,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       {inventory.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
                           {p.name}
-                          {(p.specifications as any)?.testStock ? ' (TEST STOCK)' : ''}
+                          {(p.specifications)?.testStock ? ' (TEST STOCK)' : ''}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -2187,7 +2187,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     className="h-8 bg-gray-800 border-gray-600"
                     value={historyInvoiceQuery}
                     onChange={(e) => setHistoryInvoiceQuery(e.target.value)}
-                    placeholder="INV-…"
+                    placeholder="INV-â€¦"
                   />
                 </div>
                 <div>
@@ -2219,7 +2219,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             </CardHeader>
             <CardContent>
               {historyLoading ? (
-                <div className="py-8 text-center text-gray-400 text-sm">Loading movement history…</div>
+                <div className="py-8 text-center text-gray-400 text-sm">Loading movement historyâ€¦</div>
               ) : historyError ? (
                 <Alert variant="destructive">
                   <AlertDescription>{historyError}</AlertDescription>
@@ -2240,14 +2240,14 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         <div className="min-w-0">
                           <p className="font-semibold truncate">{movement.profileName}</p>
                           <p className="text-sm text-gray-400">
-                            {movement.movementType} • {movement.quantity} {movement.unit}
+                            {movement.movementType} â€¢ {movement.quantity} {movement.unit}
                             {movement.canonicalMetres != null
-                              ? ` · ${movement.canonicalMetres} m canonical`
+                              ? ` Â· ${movement.canonicalMetres} m canonical`
                               : ''}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
-                            Balance {movement.stockBefore ?? '—'} → {movement.stockAfter ?? '—'}
-                            {movement.referenceNumber ? ` · ${movement.referenceNumber}` : ''}
+                            Balance {movement.stockBefore ?? 'â€”'} â†’ {movement.stockAfter ?? 'â€”'}
+                            {movement.referenceNumber ? ` Â· ${movement.referenceNumber}` : ''}
                           </p>
                           {movement.notes && (
                             <p className="text-xs text-gray-500 mt-1 truncate">{movement.notes}</p>
@@ -2291,7 +2291,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           </Card>
         </TabsContent>
 
-        {/* Analytics Tab — ledger-backed only (PR3) */}
+        {/* Analytics Tab â€” ledger-backed only (PR3) */}
         <TabsContent value="analytics" className="space-y-4">
           <Alert className="border-slate-600/40 bg-slate-900/40">
             <BarChart3 className="h-4 w-4" />
@@ -2307,7 +2307,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               <CardContent className="p-4">
                 <p className="text-sm text-gray-400">On-hand (production)</p>
                 <p className="text-2xl font-bold text-cyan-400">{stockAnalytics.totalMetresOnHand.toFixed(2)}m</p>
-                <p className="text-[11px] text-slate-400">{money(stockAnalytics.totalInventoryValue)} · {inventoryCurrency}</p>
+                <p className="text-[11px] text-slate-400">{money(stockAnalytics.totalInventoryValue)} Â· {inventoryCurrency}</p>
               </CardContent>
             </Card>
             <Card className="bg-gray-700/50 border-gray-600">
@@ -2321,7 +2321,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               <CardContent className="p-4">
                 <p className="text-sm text-gray-400">Reorder coverage</p>
                 <p className="text-2xl font-bold text-red-400">{stockAnalytics.reorderCoverageMetres.toFixed(2)}m</p>
-                <p className="text-[11px] text-slate-400">Metres below min — not a forecast</p>
+                <p className="text-[11px] text-slate-400">Metres below min â€” not a forecast</p>
               </CardContent>
             </Card>
             <Card className="bg-gray-700/50 border-gray-600">
@@ -2329,10 +2329,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 <p className="text-sm text-gray-400">Remnant reuse rate</p>
                 <p className="text-2xl font-bold text-green-400">
                   {stockAnalytics.remnantReuseRate == null
-                    ? '—'
+                    ? 'â€”'
                     : `${(stockAnalytics.remnantReuseRate * 100).toFixed(0)}%`}
                 </p>
-                <p className="text-[11px] text-slate-400">Available ÷ total remnants</p>
+                <p className="text-[11px] text-slate-400">Available Ã· total remnants</p>
               </CardContent>
             </Card>
           </div>
@@ -2346,7 +2346,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <div className="flex justify-between"><span>Active ≤30d</span><span>{stockAnalytics.activeProfiles30d}</span></div>
+                <div className="flex justify-between"><span>Active â‰¤30d</span><span>{stockAnalytics.activeProfiles30d}</span></div>
                 <div className="flex justify-between"><span>Last touch &gt;90d</span><span>{stockAnalytics.ageingOver90d}</span></div>
                 <div className="flex justify-between"><span>No movement in sample</span><span>{stockAnalytics.ageingUnknown}</span></div>
                 <div className="flex justify-between"><span>TEST STOCK excluded</span><span>{stockAnalytics.testStockExcluded}</span></div>

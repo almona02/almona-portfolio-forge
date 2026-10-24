@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BOMSidebar Component
  * 
  * Extracted BOM rendering component from EngineeringBay with summary view support.
@@ -144,7 +144,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
       try {
         // Check if any profile in the system pack has system_pricing configured
         const systemPackProfiles = profiles.filter((profile) => {
-          const specs = profile.specifications as any;
+          const specs = profile.specifications;
           const systemName = specs?.window_system || profile.systemBrand || specs?.systemPackId;
           return systemName === liveProject.systemPackId;
         });
@@ -251,7 +251,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                   <GoldTierButton
                     onClick={() => {
                       const systemPackProfile = profiles.find((p) => {
-                        const specs = p.specifications as any;
+                        const specs = p.specifications;
                         const systemName = specs?.window_system || p.systemBrand || specs?.systemPackId;
                         return systemName === liveProject.systemPackId;
                       });
@@ -271,7 +271,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
           {collapsed && showSummary && summary && (
             <div className="mt-2 p-2 bg-amber-900/20 border border-amber-600/30 rounded">
               <div className="text-sm text-amber-200 font-semibold">
-                {summary.itemCount} {t('engineering_bay.items', 'items')} • {formatCost(summary.totalCost)}
+                {summary.itemCount} {t('engineering_bay.items', 'items')} â€¢ {formatCost(summary.totalCost)}
               </div>
             </div>
           )}
@@ -348,13 +348,13 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                             </div>
                             <div className="text-[10px] sm:text-xs text-amber-600/70 mt-0.5 break-words space-x-1">
                               <span className="inline-block">{item.type}</span>
-                              {item.role && <span className="inline-block"> • {item.role}</span>}
-                              {item.specs?.material && <span className="inline-block"> • {item.specs.material}</span>}
-                              {item.specs?.width && <span className="inline-block"> • {item.specs.width}{t('engineering_bay.units.mm', 'mm')}</span>}
-                              {item.specs?.height && <span className="inline-block"> × {item.specs.height}{t('engineering_bay.units.mm', 'mm')}</span>}
-                              {item.totalLength > 0 && <span className="inline-block"> • {Math.round(item.totalLength)}{t('engineering_bay.units.mm', 'mm')}</span>}
-                              {item.totalWeight > 0 && <span className="inline-block"> • {item.totalWeight.toFixed(2)}{t('engineering_bay.units.kg', 'kg')}</span>}
-                              {item.totalCost > 0 && <span className="inline-block"> • {item.totalCost.toFixed(2)} {t('engineering_bay.currency', 'EGP')}</span>}
+                              {item.role && <span className="inline-block"> â€¢ {item.role}</span>}
+                              {item.specs?.material && <span className="inline-block"> â€¢ {item.specs.material}</span>}
+                              {item.specs?.width && <span className="inline-block"> â€¢ {item.specs.width}{t('engineering_bay.units.mm', 'mm')}</span>}
+                              {item.specs?.height && <span className="inline-block"> Ã— {item.specs.height}{t('engineering_bay.units.mm', 'mm')}</span>}
+                              {item.totalLength > 0 && <span className="inline-block"> â€¢ {Math.round(item.totalLength)}{t('engineering_bay.units.mm', 'mm')}</span>}
+                              {item.totalWeight > 0 && <span className="inline-block"> â€¢ {item.totalWeight.toFixed(2)}{t('engineering_bay.units.kg', 'kg')}</span>}
+                              {item.totalCost > 0 && <span className="inline-block"> â€¢ {item.totalCost.toFixed(2)} {t('engineering_bay.currency', 'EGP')}</span>}
                             </div>
                             {/* Show missing specs warning */}
                             {hasMissing && (
@@ -396,8 +396,8 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                           {t('engineering_bay.glass_sash', 'Sash')} {glass.sashIndex} - {glass.type} {glassDetails.glassThickness}mm
                         </div>
                         <div className="text-xs text-amber-600/70 mt-0.5">
-                          {Math.round(glass.width)}{t('engineering_bay.units.mm', 'mm')} × {Math.round(glass.height)}{t('engineering_bay.units.mm', 'mm')}
-                          {` • ${glass.area.toFixed(2)}${t('engineering_bay.units.m2', 'm²')}`}
+                          {Math.round(glass.width)}{t('engineering_bay.units.mm', 'mm')} Ã— {Math.round(glass.height)}{t('engineering_bay.units.mm', 'mm')}
+                          {` â€¢ ${glass.area.toFixed(2)}${t('engineering_bay.units.m2', 'mÂ²')}`}
                         </div>
                       </div>
                     </div>
@@ -405,7 +405,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                   <div className="p-2 card-dark rounded text-xs">
                     <div className="flex justify-between text-amber-200">
                       <span className="font-semibold">{t('engineering_bay.total_glass_area', 'Total Glass Area')}:</span>
-                      <span className="font-mono font-bold text-amber-400 text-shadow-glow-strong">{glassDetails.totalGlassArea.toFixed(2)}{t('engineering_bay.units.m2', 'm²')}</span>
+                      <span className="font-mono font-bold text-amber-400 text-shadow-glow-strong">{glassDetails.totalGlassArea.toFixed(2)}{t('engineering_bay.units.m2', 'mÂ²')}</span>
                     </div>
                     <div className="flex justify-between text-amber-200 mt-1">
                       <span className="font-semibold">{t('engineering_bay.total_glass_weight', 'Total Glass Weight')}:</span>
@@ -432,8 +432,8 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                         <div className="font-semibold text-amber-200 text-xs sm:text-sm truncate">{hw.name}</div>
                         <div className="text-[10px] sm:text-xs text-amber-600/70 mt-0.5 break-words">
                           <span className="inline-block">{hw.type}</span>
-                          {hw.length && <span className="inline-block"> • {Math.round(hw.length)}{t('engineering_bay.units.mm', 'mm')}</span>}
-                          {hw.position && <span className="inline-block"> • {hw.position}</span>}
+                          {hw.length && <span className="inline-block"> â€¢ {Math.round(hw.length)}{t('engineering_bay.units.mm', 'mm')}</span>}
+                          {hw.position && <span className="inline-block"> â€¢ {hw.position}</span>}
                         </div>
                       </div>
                       <span className="font-mono text-amber-300 font-bold sm:ml-4 text-xs sm:text-sm flex-shrink-0">
@@ -490,7 +490,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                   <div>
                     <span className="text-amber-500/80 font-semibold">{t('engineering_bay.unit_dimensions', 'Dimensions')}:</span>
                     <div className="font-mono text-amber-200 font-bold mt-0.5 text-shadow-glow-subtle">
-                      {Math.round(liveProject?.overallWidth || 0)}{t('engineering_bay.units.mm', 'mm')} × {Math.round(liveProject?.overallHeight || 0)}{t('engineering_bay.units.mm', 'mm')}
+                      {Math.round(liveProject?.overallWidth || 0)}{t('engineering_bay.units.mm', 'mm')} Ã— {Math.round(liveProject?.overallHeight || 0)}{t('engineering_bay.units.mm', 'mm')}
                     </div>
                   </div>
                   <div>

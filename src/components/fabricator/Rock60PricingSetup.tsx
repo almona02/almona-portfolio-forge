@@ -1,4 +1,4 @@
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+﻿import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useRegionalConfig } from '@/hooks/useRegionDetection';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
@@ -80,7 +80,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   onProfileChange,
   onOpenStudio 
 }) => {
-  // Get regional config for currency — inventory overview is EGP; convert when comparing.
+  // Get regional config for currency â€” inventory overview is EGP; convert when comparing.
   const { config: regionalConfig } = useRegionalConfig();
   const currency = regionalConfig.currency.code || 'EGP'; // Default to EGP for Egypt
   const inventoryCurrencyNote =
@@ -95,7 +95,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   // AND create virtual profiles from system pack data for profiles not yet in inventory
   const systemProfiles = useMemo(() => {
     const inventoryProfiles = profiles.filter((p) => {
-      const specs = p.specifications as any;
+      const specs = p.specifications;
       const hasSystem = 
         p.systemBrand || 
         specs?.window_system || 
@@ -211,7 +211,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
     };
     
     systemProfiles.forEach((profile) => {
-      const specs = profile.specifications as any;
+      const specs = profile.specifications;
       const rawSystemName = 
         specs?.window_system || 
         profile.systemBrand || 
@@ -275,14 +275,14 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   // Get system name from profile
   const systemName = useMemo(() => {
     if (!selectedProfile) return null;
-    const specs = selectedProfile.specifications as any;
+    const specs = selectedProfile.specifications;
     return specs?.window_system || selectedProfile.systemBrand || specs?.systemPackId || 'Unknown';
   }, [selectedProfile]);
 
   // Use generic key: system_pricing (with fallback to rock60_pricing for backward compatibility)
   const existingPricing = useMemo(() => {
     if (!selectedProfile) return undefined;
-    const specs = selectedProfile.specifications as any;
+    const specs = selectedProfile.specifications;
     return (specs?.system_pricing || specs?.rock60_pricing) as
       | (Rock60PricingState & { initialized?: boolean })
       | undefined;
@@ -291,7 +291,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   // Get system pack profiles from specifications - includes ALL profiles from system pack data
   const systemPackProfiles = useMemo(() => {
     if (!selectedProfile) return [];
-    const specs = selectedProfile.specifications as any;
+    const specs = selectedProfile.specifications;
     const systemLabel = systemName || '';
     
     // Get profiles from system pack data
@@ -366,7 +366,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   // Default glazing types
   const defaultGlazingTypes: GlazingType[] = useMemo(() => [
     { id: 'single', name: 'Single Glass', description: 'Single pane glass (typically 4-6mm)', pricePerSquareMeter: 0 },
-    { id: 'double', name: 'Double Glass', description: 'Double pane glass 24mm – dimensions per job: (L - 167) × (H - 167)', pricePerSquareMeter: 0 },
+    { id: 'double', name: 'Double Glass', description: 'Double pane glass 24mm â€“ dimensions per job: (L - 167) Ã— (H - 167)', pricePerSquareMeter: 0 },
     { id: 'triple', name: 'Triple Glass', description: 'Triple pane glass (typically 44mm)', pricePerSquareMeter: 0 },
     { id: 'georgian', name: 'Georgian Glass', description: 'Georgian divided lite glass', pricePerSquareMeter: 0 },
     { id: 'low-e', name: 'Low-E Glass', description: 'Low-emissivity coated glass', pricePerSquareMeter: 0 },
@@ -423,7 +423,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   // Update state when profile changes
   useEffect(() => {
     if (selectedProfile) {
-      const specs = selectedProfile.specifications as any;
+      const specs = selectedProfile.specifications;
       const pricing = (specs?.system_pricing || specs?.rock60_pricing) as
         | (Rock60PricingState & { initialized?: boolean })
         | undefined;
@@ -653,7 +653,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
         {profilesBySystem[systemName || ''] && profilesBySystem[systemName || ''].length > 0 && (
           <div className="space-y-2">
             <Label className="typography-label text-xs text-gray-400">
-              Select Profile • <span className="font-semibold text-gray-300">{systemName}</span> ({profilesBySystem[systemName || '']?.length} available)
+              Select Profile â€¢ <span className="font-semibold text-gray-300">{systemName}</span> ({profilesBySystem[systemName || '']?.length} available)
             </Label>
             <Select value={currentProfileId} onValueChange={handleProfileChange}>
               <SelectTrigger className="h-8 text-xs">
@@ -661,7 +661,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
                 {profilesBySystem[systemName || '']?.map((profile) => {
-                  const specs = profile.specifications as any;
+                  const specs = profile.specifications;
                   const code = specs?.supplierCode || specs?.internalCode || profile.name.replace('Profile ', '');
                   const role = specs?.profileRole || 'other';
                   const isVirtual = profile.id.startsWith('virtual-');
@@ -673,7 +673,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                       {displayName}
                       <div className="flex flex-col gap-0.5 w-full mt-0.5">
                         <span className="text-[10px] text-gray-400">
-                          Profile: {code} • Role: {role}
+                          Profile: {code} â€¢ Role: {role}
                         </span>
                       </div>
                     </SelectItem>
@@ -738,7 +738,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
           <div className="flex items-center justify-between">
             <div className="font-semibold text-gray-200">Profiles (per meter)</div>
             <span className="text-[10px] text-gray-400">
-              {systemPackProfiles.length} profiles • Frame/Sash auto-calc • Accessories manual
+              {systemPackProfiles.length} profiles â€¢ Frame/Sash auto-calc â€¢ Accessories manual
             </span>
           </div>
           <div className="border border-gray-700 rounded-md overflow-hidden">
@@ -813,7 +813,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                               {calculatedPrice.toFixed(2)}
                             </span>
                           ) : (
-                            <span className="text-gray-500">—</span>
+                            <span className="text-gray-500">â€”</span>
                           )}
                         </td>
                       </tr>
@@ -830,8 +830,8 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
           </div>
           {state.aluminumPricePerKg > 0 && (
             <p className="text-[10px] text-gray-500 mt-1">
-              💡 Frame/Sash/Other prices: <span className="font-mono">{state.aluminumPricePerKg.toFixed(2)} {currency}/kg</span> × weight
-              {' • '}
+              ðŸ’¡ Frame/Sash/Other prices: <span className="font-mono">{state.aluminumPricePerKg.toFixed(2)} {currency}/kg</span> Ã— weight
+              {' â€¢ '}
               <span className="text-yellow-400">Accessories require manual pricing</span>
             </p>
           )}
@@ -876,8 +876,8 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                         <span className="font-medium">{type.name}</span>
                         <span className="text-gray-400 ml-2 font-mono text-[10px]">
                           {type.pricePerSquareMeter > 0 
-                            ? `${type.pricePerSquareMeter.toFixed(2)} ${currency}/m²`
-                            : '—'}
+                            ? `${type.pricePerSquareMeter.toFixed(2)} ${currency}/mÂ²`
+                            : 'â€”'}
                         </span>
                       </div>
                     </SelectItem>
@@ -899,7 +899,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                     />
                   </div>
                   <div className="col-span-4">
-                    <Label className="typography-label text-[10px] text-gray-400 mb-1 block">Price / m²</Label>
+                    <Label className="typography-label text-[10px] text-gray-400 mb-1 block">Price / mÂ²</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -961,7 +961,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                       <span className="text-gray-400 ml-2 text-[10px]">
                         {state.hardware[hw.code] > 0 
                           ? `${state.hardware[hw.code].toFixed(2)} ${currency}`
-                          : '—'}
+                          : 'â€”'}
                       </span>
                     </div>
                   </SelectItem>
@@ -1011,7 +1011,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                       <span className="text-gray-400 ml-2 text-[10px]">
                         {state.gaskets[g.code] > 0 
                           ? `${state.gaskets[g.code].toFixed(2)} ${currency}/m`
-                          : '—'}
+                          : 'â€”'}
                       </span>
                     </div>
                   </SelectItem>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Pricing Tuning Studio
  * ----------------------------------------------------------------------------
  * Gold-tier comprehensive pricing management workspace:
@@ -213,7 +213,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
   const systemPacks = useMemo(() => {
     const packs = new Set<string>();
     profiles.forEach((profile) => {
-      const specs = profile.specifications as any;
+      const specs = profile.specifications;
       const systemName =
         specs?.window_system || profile.systemBrand || specs?.systemPackId;
       if (systemName) {
@@ -227,7 +227,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
   const systemPackProfiles = useMemo(() => {
     if (!selectedSystemPackId) return [];
     return profiles.filter((profile) => {
-      const specs = profile.specifications as any;
+      const specs = profile.specifications;
       const systemName =
         specs?.window_system || profile.systemBrand || specs?.systemPackId;
       return systemName === selectedSystemPackId;
@@ -739,7 +739,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
 
       // Find profile for source system pack
       const sourceProfiles = profiles.filter((p) => {
-        const specs = p.specifications as any;
+        const specs = p.specifications;
         const systemName = specs?.window_system || p.systemBrand || specs?.systemPackId;
         return systemName === copyFromSystemPack;
       });
@@ -910,7 +910,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                         <SelectContent className="bg-gray-900 border-gray-700">
                           {systemPacks.map((packId) => {
                             const packProfiles = profiles.filter((p) => {
-                              const specs = p.specifications as any;
+                              const specs = p.specifications;
                               const systemName =
                                 specs?.window_system || p.systemBrand || specs?.systemPackId;
                               return systemName === packId;
@@ -999,7 +999,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                           <span className="font-semibold text-gray-200">
                             {t('pricing_tuning_studio.overview.system_pack', 'System Pack')}:
                           </span>{' '}
-                          <span className="text-amber-300">{selectedSystemPackId || '—'}</span>
+                          <span className="text-amber-300">{selectedSystemPackId || 'â€”'}</span>
                         </p>
                         <p>
                           <span className="font-semibold text-gray-200">
@@ -1015,10 +1015,10 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                             }
                           >
                             {configurationStatus === 'configured'
-                              ? '✓ Configured'
+                              ? 'âœ“ Configured'
                               : configurationStatus === 'needs_review'
-                              ? '⚠ Needs Review'
-                              : '⚠ Required'}
+                              ? 'âš  Needs Review'
+                              : 'âš  Required'}
                           </span>
                         </p>
                         {pricingState && (
@@ -2277,7 +2277,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                               {/* Per Square Meter */}
                               <div className="space-y-2">
                                 <Label htmlFor="installation-per-m2" className="text-xs text-gray-300">
-                                  {t('pricing_tuning_studio.installation.per_m2', 'Per m²')}
+                                  {t('pricing_tuning_studio.installation.per_m2', 'Per mÂ²')}
                                 </Label>
                                 <div className="flex items-center gap-2">
                                   <span className="text-xs text-gray-400">{pricingState?.currency || 'EGP'}</span>
@@ -3560,7 +3560,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                                       .filter((packId) => packId !== selectedSystemPackId)
                                       .map((packId) => {
                                         const packProfiles = profiles.filter((p) => {
-                                          const specs = p.specifications as any;
+                                          const specs = p.specifications;
                                           const systemName =
                                             specs?.window_system || p.systemBrand || specs?.systemPackId;
                                           return systemName === packId;

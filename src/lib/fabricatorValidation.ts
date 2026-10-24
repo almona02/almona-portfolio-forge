@@ -1,4 +1,4 @@
-import { MeasurementData, WindowComponent, Profile, WindowUnit } from '@/types/fabricator';
+﻿import { MeasurementData, WindowComponent, Profile, WindowUnit } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateEgyptianStandards } from './validation/egyptianValidator';
 import { enhanceValidationWithConsequences, type ValidationErrorWithConsequences } from '@/lib/authority/consequenceMapper';
@@ -17,7 +17,7 @@ export interface ValidationResult {
 /**
  * Optional system-level constraints that can be attached to profile
  * specifications (typically coming from a system pack such as ROCK 60
- * or JUMBO100). Values are in mm / m².
+ * or JUMBO100). Values are in mm / mÂ².
  */
 export interface SystemConstraints {
   minWidthMm?: number;
@@ -128,7 +128,7 @@ export function validateMeasurements(
         field: 'area',
         message: `Area (${areaM2.toFixed(
           2,
-        )} m²) exceeds maximum allowed for this system (${effectiveConstraints.maxAreaM2} m²)`,
+        )} mÂ²) exceeds maximum allowed for this system (${effectiveConstraints.maxAreaM2} mÂ²)`,
       });
     }
   }
@@ -288,7 +288,7 @@ export function validateProject(
 export function deriveSystemConstraintsFromProfiles(profiles: Profile[]): SystemConstraints | null {
   // 1) Prefer explicit constraints from profile.specifications (existing behaviour)
   for (const profile of profiles) {
-    const specs = profile.specifications as any;
+    const specs = profile.specifications;
     if (specs && typeof specs.constraints === 'object') {
       const c = specs.constraints;
       return {
@@ -372,7 +372,7 @@ export function validateProjectWithConstraints(
   if (constraints.maxAreaM2 !== undefined && areaM2 > constraints.maxAreaM2) {
     errors.push({
       field: 'area',
-      message: `Area (${areaM2.toFixed(2)} m²) exceeds maximum allowed for this system (${constraints.maxAreaM2} m²)`,
+      message: `Area (${areaM2.toFixed(2)} mÂ²) exceeds maximum allowed for this system (${constraints.maxAreaM2} mÂ²)`,
     });
   }
 
