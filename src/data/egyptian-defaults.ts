@@ -250,7 +250,7 @@ export function getDefaultProfileColor(region?: string): typeof EGYPTIAN_PROFILE
  */
 export function getDefaultGlazing(region?: string, isExternal: boolean = true): typeof EGYPTIAN_GLAZING_DEFAULTS.standard {
   if (!isExternal) {
-    return EGYPTIAN_GLAZING_DEFAULTS.lowCost; // Internal partitions
+    return EGYPTIAN_GLAZING_DEFAULTS.lowCost as any; // Internal partitions
   }
   
   // External windows default to reflective glass

@@ -21,6 +21,9 @@ interface TabRedirectBannerProps {
 
 const PERSONA_LABELS: Record<StrategicPersona, { en: string; ar: string }> = {
   operator: { en: 'Operator', ar: 'مشغل' },
+  fabricator: { en: 'Fabricator', ar: 'مصنع' },
+  accountant: { en: 'Accountant', ar: 'محاسب' },
+  owner: { en: 'Owner', ar: 'مالك' },
   supervisor: { en: 'Supervisor', ar: 'مشرف' },
   manager: { en: 'Manager', ar: 'مدير' },
   inspector: { en: 'Inspector', ar: 'مفتش' },
