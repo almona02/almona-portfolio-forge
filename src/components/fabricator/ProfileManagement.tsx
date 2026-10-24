@@ -587,7 +587,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       compatibleAccessories: [],
       description: `System pack for ${pack.meta.name}`,
       technicalData: {},
-    }));
+    })) as unknown as SystemPack[];
     return mappedPacks.filter((pack) => pack.category === category);
   };
 

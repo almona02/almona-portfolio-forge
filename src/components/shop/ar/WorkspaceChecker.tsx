@@ -57,7 +57,7 @@ export const WorkshopARView = ({ machine }: { machine: MachineRequirements }) =>
   };
 
   return (
-    <XR onSessionStart={analyzeSpace}>
+    <XR onSessionStart={analyzeSpace as any}>
       {warnings.length > 0 && (
         <div className="ar-warnings">
           {warnings.map((warning, i) => (

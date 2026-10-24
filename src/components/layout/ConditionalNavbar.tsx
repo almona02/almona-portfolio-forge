@@ -37,7 +37,7 @@ const ConditionalNavbar: React.FC<ConditionalNavbarProps> = (props) => {
   }
 
   // For non-fabricator, non-marketplace routes, use StandardNavbar
-  return <StandardNavbar {...props} />;
+  return <StandardNavbar {...(props as any)} />;
 };
 
 export default ConditionalNavbar;

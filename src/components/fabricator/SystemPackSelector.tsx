@@ -42,7 +42,7 @@ export const SystemPackSelector: React.FC<SystemPackSelectorProps> = ({
           certifications: [],
         },
       };
-    });
+    }) as unknown as UISystemPack[];
 
     setSystemPacks(mappedPacks);
   }, []);
