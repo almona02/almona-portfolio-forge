@@ -149,7 +149,7 @@ export const MeasuringPage: React.FC = () => {
             setMeasurementData(data);
             completeStep('measuring');
             toast.success(`Pose ${posNumber} saved: ${data.width} Ã— ${data.height} mm`);
-            if (closeAfterSave) { void publishActiveProject(null); navigate(fabricatorRoutes.studioProjects()); }
+            if (closeAfterSave) { void publishActiveProject(null); void navigate(fabricatorRoutes.studioProjects()); }
             else void navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
         } catch (err) {
             toast.error(`Failed to save pose: ${persistenceErrorMessage(err)}`);

@@ -127,7 +127,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
         savingDesign.current = false;
       }
     }
-    if (payload.closeAfterSave) { void publishActiveProject(null); navigate(fabricatorRoutes.studioProjects()); return; }
+    if (payload.closeAfterSave) { void publishActiveProject(null); void navigate(fabricatorRoutes.studioProjects()); return; }
     completeStep('design');
 
     const projKey = resolvedProjectId ?? projectId ?? 'default';

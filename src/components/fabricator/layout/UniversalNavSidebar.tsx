@@ -355,7 +355,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
               </p>
               <button type="button" className="mt-2 text-xs text-amber-300 underline" onClick={async () => {
                 if (draftDirty) { toast.error('Save the current position before changing user.'); return; }
-                try { await signOut(); void publishActiveProject(null); useWorkflowStore.getState().clearWorkflow(); navigate('/login', { replace: true }); }
+                try { await signOut(); void publishActiveProject(null); useWorkflowStore.getState().clearWorkflow(); void navigate('/login', { replace: true }); }
                 catch { toast.error('Unable to sign out. Please retry.'); }
               }}>Change user</button>
             </div>
