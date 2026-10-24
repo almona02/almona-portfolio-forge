@@ -199,7 +199,7 @@ export async function exportCutListToPDF(
   projectInfo: CutListPDFProjectInfo
 ): Promise<Blob> {
   const [{ default: jsPDF }] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
-  type JsPDFWithAutoTable = typeof jsPDF & { autoTable: (opts: unknown) => JsPDFWithAutoTable };
+  type JsPDFWithAutoTable = InstanceType<typeof jsPDF> & { autoTable: (opts: unknown) => JsPDFWithAutoTable };
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' }) as unknown as JsPDFWithAutoTable;
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();

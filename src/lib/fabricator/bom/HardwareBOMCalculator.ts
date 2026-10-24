@@ -152,7 +152,7 @@ export class HardwareBOMCalculator {
 
     // Get hardware from pattern.accessories
     if (patternWithAccessories.accessories && Array.isArray(patternWithAccessories.accessories)) {
-      for (const [index, accessory] of patternWithAccessories.accessories.entries()) {
+      for (const [index, accessory] of (patternWithAccessories.accessories as any[]).entries()) {
         const quantity = ProductionUtils.calculateHardwareQuantity(accessory, windowUnit, pattern);
 
         const cat = String(accessory.category ?? accessory.type ?? '');

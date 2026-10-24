@@ -97,6 +97,7 @@ export interface HardwareItemMinimal {
   category?: string;
   length?: number;
   position?: string;
+  costPerUnit?: number;
 }
 
 export interface WindowUnit {
