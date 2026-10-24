@@ -69,6 +69,13 @@ function createTestSystemPack(): SystemPack {
   return {
     id: 'test-system-pack',
     name: 'Test System Pack',
+    meta: {
+      id: 'test-system-pack',
+      name: 'Test System Pack',
+      brands: ['Test Brand'],
+      regions: ['global'],
+    },
+    windowSystemSpec: {},
     category: 'aluminum_windows',
     brand: 'Test Brand',
     compatibleProfiles: [],

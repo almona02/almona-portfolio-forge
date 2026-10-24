@@ -52,9 +52,9 @@ export interface ReportTemplateResponse {
   description?: string;
   category: ReportTemplateCategory;
   template_schema: Record<string, any>;
-  version: string;
+  version?: string;
   is_public: boolean;
-  usage_count: number;
+  usage_count?: number;
   user_id: string;
   created_at: string;
   updated_at: string;
