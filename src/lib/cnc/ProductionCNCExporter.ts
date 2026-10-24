@@ -125,7 +125,7 @@ export class ProductionCNCExporter {
           locale,
           { errors: preValidation.errors.join(', ') }
         );
-        throw new Error(locale === 'ar' ? errorMessage.messageAr : errorMessage.message_en);
+        throw new Error(locale === 'ar' ? errorMessage.messageAr : errorMessage.message);
       }
     }
 
@@ -139,7 +139,7 @@ export class ProductionCNCExporter {
         locale,
         { errors: result.validation.errors.join(', ') }
       );
-      throw new Error(locale === 'ar' ? errorMessage.messageAr : errorMessage.message_en);
+      throw new Error(locale === 'ar' ? errorMessage.messageAr : errorMessage.message);
     }
 
     // Simulation check if enabled

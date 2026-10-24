@@ -75,7 +75,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
           const profile = profiles.find((p) => p.id === component.profile.id);
           if (profile) {
             const lengthM = component.cuttingLengths.reduce((a, b) => a + b, 0) / 1000;
-            const cost = (profile.cost_per_meter || 0) * lengthM * (component.quantity || 1);
+            const cost = (profile.costPerMeter || 0) * lengthM * (component.quantity || 1);
             totalAluminum += cost;
           }
         }
@@ -119,7 +119,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
           try {
             const remnantManager = new RemnantManager();
             for (const component of components) {
-              const profile = profiles.find((p) => p.id === component.profileId);
+              const profile = profiles.find((p) => p.id === component.profile.id);
               if (profile) {
                 const matches = await remnantManager.findRemnantMatches(
                   [
@@ -137,7 +137,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
                 for (const match of matches.slice(0, 1)) {
                   // Calculate savings
                   const remnantLength = match.remnant.length;
-                  const costPerMeter = profile.cost_per_meter || 0;
+                  const costPerMeter = profile.costPerMeter || 0;
                   const savings = (remnantLength / 1000) * costPerMeter * 0.8; // 80% of cost saved
 
                   remnantSuggestions.push({

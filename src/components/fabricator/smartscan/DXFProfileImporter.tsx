@@ -401,7 +401,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
       }
       
       // Use authenticated user ID to satisfy RLS policy
-      profileData.user_id = authenticatedUserId;
+      (profileData as any).user_id = authenticatedUserId;
 
       const specs = {
         ...(typeof profileData.specifications === 'object' && profileData.specifications ? profileData.specifications : {}),

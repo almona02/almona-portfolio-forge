@@ -91,12 +91,12 @@ export class DesignAISuggestor {
    * Find system pack for profile
    */
   private findSystemPackForProfile(profile: Profile): string | undefined {
-    if (!profile.system_brand) return undefined;
+    if (!profile.systemBrand) return undefined;
 
     const pack = SYSTEM_PACKS.find((p) => {
       return (
-        p.meta.name === profile.system_brand ||
-        p.meta.brands.some((brand) => brand.toLowerCase() === profile.system_brand?.toLowerCase())
+        p.meta.name === profile.systemBrand ||
+        p.meta.brands.some((brand) => brand.toLowerCase() === profile.systemBrand?.toLowerCase())
       );
     });
 
@@ -124,8 +124,8 @@ export class DesignAISuggestor {
       }
     }
 
-    if (profile.system_brand) {
-      reasons.push(`From ${profile.system_brand} system`);
+    if (profile.systemBrand) {
+      reasons.push(`From ${profile.systemBrand} system`);
     }
 
     return reasons.length > 0 ? reasons.join('. ') : 'Compatible profile';

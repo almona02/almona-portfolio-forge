@@ -102,8 +102,6 @@ class PerformanceMonitoringService {
 
     // Network performance monitoring
     this.initializeNetworkMonitoring();
-
-    this._isMonitoring = true;
   }
 
   private initializeCoreWebVitals() {
@@ -584,7 +582,6 @@ class PerformanceMonitoringService {
 
   // Cleanup
   public stopMonitoring() {
-    this._isMonitoring = false;
     if (this.observer) {
       this.observer.disconnect();
     }
