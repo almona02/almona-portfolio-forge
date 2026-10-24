@@ -180,7 +180,7 @@ export async function getTemplate(templateId: string): Promise<TemplateResponse>
     throw new Error(errorData.detail ?? "Failed to get template");
   }
 
-  return (await response.json()) as TemplateResponse;
+  return (await response.json()) as any;
 }
 
 /**
@@ -208,7 +208,7 @@ export async function createTemplate(
     throw new Error(errorData.detail ?? "Failed to create template");
   }
 
-  return (await response.json()) as TemplateResponse;
+  return (await response.json()) as any;
 }
 
 /**
@@ -237,7 +237,7 @@ export async function updateTemplate(
     throw new Error(errorData.detail ?? "Failed to update template");
   }
 
-  return (await response.json()) as TemplateResponse;
+  return (await response.json()) as any;
 }
 
 /**
@@ -320,7 +320,7 @@ export async function uploadTemplateThumbnail(
     throw new Error(errorData.detail ?? "Failed to upload thumbnail");
   }
 
-  return (await response.json()) as TemplateResponse;
+  return (await response.json()) as any;
 }
 
 /**

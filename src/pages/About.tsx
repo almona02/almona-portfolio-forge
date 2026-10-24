@@ -242,11 +242,14 @@ const About = () => {
         </div>
       </div>
 
-      <div className="fade-in-up mb-6 sm:mb-8 md:mb-10"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
+      <div
+        {...({
+          className: "fade-in-up mb-6 sm:mb-8 md:mb-10",
+          initial: { opacity: 0 },
+          whileInView: { opacity: 1 },
+          viewport: { once: true },
+          transition: { duration: 0.7 }
+        } as any)}
       >
         <TeamProfiles />
       </div>

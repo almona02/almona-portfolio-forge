@@ -464,7 +464,7 @@ const CustomerPortal = () => {
                         transition={{ delay: index * 0.1 }}
                       >
                         <TicketCard
-                          ticket={ticket}
+                          ticket={ticket as any}
                           onOpen={(id) => navigate(`/support/tickets/${id}`)}
                           reducedMotion={reducedMotion}
                         />

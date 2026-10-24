@@ -151,7 +151,7 @@ export class ProjectPersistenceService {
           const result = await constitutionalSavePose(
             project,
             { verifiedBy: user.id, timestamp: new Date().toISOString(), ...metadata },
-            { grid, selectedPreset, localBackup: false, emitRealityOS: true }
+            { grid, selectedPreset, localBackup: false, emitRealityOS: true } as any
           );
           const v2Snapshot: ProjectSnapshot = {
             id: result.poseId,
@@ -584,7 +584,7 @@ export class ProjectPersistenceService {
             positionMeta: r.position_meta ?? {},
             optimization: r.optimization,
           }) as unknown as WindowUnit,
-      grid: r.grid ?? {},
+      grid: (r.grid ?? {}) as Record<string, unknown> | WindowGrid,
       systemPackId: r.system_pack_id ?? null,
       selectedPreset: r.selected_preset ?? null,
       timestamp: new Date(r.updated_at ?? r.created_at ?? Date.now()),
@@ -621,7 +621,7 @@ export class ProjectPersistenceService {
           customer: r.customer,
         },
       } as WindowUnit,
-      grid: r.grid ?? {},
+      grid: (r.grid ?? {}) as Record<string, unknown> | WindowGrid,
       systemPackId: r.system_pack_id ?? null,
       selectedPreset: r.selected_preset ?? null,
       timestamp: new Date(r.updated_at ?? r.created_at ?? Date.now()),
