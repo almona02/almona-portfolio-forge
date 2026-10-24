@@ -132,7 +132,7 @@ const TicketDetailPage = () => {
   }
 
   if (loading) {
-    return <div className="container mx-auto py-16 flex items-center justify-center gap-2 text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /> Loading ticketâ€¦</div>
+    return <div className="container mx-auto py-16 flex items-center justify-center gap-2 text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /> Loading ticket…</div>
   }
 
   if (error || !ticket) {
@@ -151,7 +151,7 @@ const TicketDetailPage = () => {
         <Button variant="ghost" size="sm" onClick={() => void navigate(-1)}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
         {!isSharedView && (
           <Button variant="outline" size="sm" onClick={() => void share()} disabled={sharing}>
-            <Share2 className="mr-2 h-4 w-4" /> {sharing ? 'Generatingâ€¦' : 'Share with YILMAZ'}
+            <Share2 className="mr-2 h-4 w-4" /> {sharing ? 'Generating…' : 'Share with YILMAZ'}
           </Button>
         )}
       </div>
@@ -178,7 +178,7 @@ const TicketDetailPage = () => {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader><CardTitle className="text-base">Description</CardTitle></CardHeader>
-            <CardContent><p className="text-sm whitespace-pre-wrap text-foreground/90">{ticket.description || 'â€”'}</p></CardContent>
+            <CardContent><p className="text-sm whitespace-pre-wrap text-foreground/90">{ticket.description || '—'}</p></CardContent>
           </Card>
 
           {ticket.resolution_summary && (
@@ -239,7 +239,7 @@ const TicketDetailPage = () => {
                   <textarea
                     value={reply}
                     onChange={(e) => setReply(e.target.value)}
-                    placeholder="Reply to this ticketâ€¦"
+                    placeholder="Reply to this ticket…"
                     className="flex-1 min-h-[60px] rounded-md border bg-background px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                   <Button size="sm" onClick={() => void send()} disabled={!reply.trim() || sending}>

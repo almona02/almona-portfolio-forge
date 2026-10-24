@@ -295,7 +295,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                 description: errorMessage,
             });
 
-            // Simulated GPS is demo-only â€” operational path requires real coordinates.
+            // Simulated GPS is demo-only — operational path requires real coordinates.
             if (demo) {
                 const simulatedLocation: GPSLocation = {
                     latitude: 30.0444 + Math.random() * 0.01,
@@ -305,7 +305,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                 };
                 setGpsLocation(simulatedLocation);
                 toast.warning('Using simulated GPS', {
-                    description: 'Demo preview only â€” not an operational delivery record.',
+                    description: 'Demo preview only — not an operational delivery record.',
                 });
             }
         } finally {
@@ -516,7 +516,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
     }, [gpsLocation, deliveryPhotoHash, productQR, customerSignatureHash]);
 
     /**
-     * Complete delivery â€” demo toast only, or UP-20 server ack.
+     * Complete delivery — demo toast only, or UP-20 server ack.
      */
     const handleCompleteDelivery = useCallback(async () => {
         if (demo) {
@@ -562,7 +562,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
             }
             setOperationalComplete(true);
             toast.success('Delivery acknowledged', {
-                description: `Ack ${ack.acknowledgementId.slice(0, 8)}â€¦`,
+                description: `Ack ${ack.acknowledgementId.slice(0, 8)}…`,
             });
         } catch (reason) {
             toast.error(reason instanceof Error ? reason.message : 'Delivery acknowledgement failed.');
@@ -591,7 +591,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
     if (!demo && contextLoading) {
         return (
             <div className="p-6 flex items-center gap-2 text-amber-200/80">
-                <Loader2 className="h-4 w-4 animate-spin" /> Loading delivery contextâ€¦
+                <Loader2 className="h-4 w-4 animate-spin" /> Loading delivery context…
             </div>
         );
     }
@@ -654,9 +654,9 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                         </h3>
                         <p className="text-emerald-300 mb-4">
                             {demo
-                                ? 'Demo preview only â€” no delivery record was created.'
+                                ? 'Demo preview only — no delivery record was created.'
                                 : deliveryAcknowledgement
-                                  ? `Server ack ${deliveryAcknowledgement.acknowledgementId.slice(0, 8)}â€¦ Â· R${deliveryAcknowledgement.revision}`
+                                  ? `Server ack ${deliveryAcknowledgement.acknowledgementId.slice(0, 8)}… · R${deliveryAcknowledgement.revision}`
                                   : 'Server acknowledgement recorded.'}
                         </p>
                         <div className="space-y-2 text-sm text-emerald-400/80">
@@ -706,7 +706,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
             ) : (
                 <Alert>
                     <AlertDescription>
-                        Operational delivery â€” GPS must be real; photo is file-hashed; QR must match{' '}
+                        Operational delivery — GPS must be real; photo is file-hashed; QR must match{' '}
                         <span className="font-mono text-xs">{expectedQr}</span>.
                     </AlertDescription>
                 </Alert>

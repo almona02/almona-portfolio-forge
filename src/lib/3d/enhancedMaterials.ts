@@ -23,7 +23,7 @@ export interface EnhancedMaterialConfig {
 /**
  * Enhanced material generator with photorealistic quality
  * 
- * âœ… HARDENED: Added error handling, memory management, and performance optimizations
+ * ✅ HARDENED: Added error handling, memory management, and performance optimizations
  */
 export class EnhancedMaterialGenerator {
   private textureLoader: TextureLoader;
@@ -31,7 +31,7 @@ export class EnhancedMaterialGenerator {
   private rgbeLoader: RGBELoader;
   private textureCache: Map<string, any> = new Map();
   private envMapCache: any = null;
-  private readonly MAX_TEXTURE_CACHE_SIZE = 20; // âœ… PERFORMANCE: Limit cache size
+  private readonly MAX_TEXTURE_CACHE_SIZE = 20; // ✅ PERFORMANCE: Limit cache size
   private textureCacheTimestamps: Map<string, number> = new Map();
   private readonly TEXTURE_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
@@ -49,15 +49,15 @@ export class EnhancedMaterialGenerator {
   /**
    * Create photorealistic aluminum material
    * 
-   * âœ… HARDENED: Added validation and error handling
+   * ✅ HARDENED: Added validation and error handling
    */
   async createAluminumMaterial(config: Partial<EnhancedMaterialConfig> = {}): Promise<MeshPhysicalMaterial> {
-    // âœ… HARDENED: Validate config
+    // ✅ HARDENED: Validate config
     if (config.type && config.type !== 'aluminum') {
       console.warn('[EnhancedMaterials] Type mismatch in createAluminumMaterial');
     }
     
-    // âœ… PERFORMANCE: Clamp values to valid ranges
+    // ✅ PERFORMANCE: Clamp values to valid ranges
     const metalness = Math.max(0, Math.min(1, config.metalness ?? 0.95));
     const roughness = Math.max(0, Math.min(1, config.roughness ?? 0.15));
     const envMapIntensity = Math.max(0, Math.min(10, config.envMapIntensity ?? 2.0));
@@ -173,16 +173,16 @@ export class EnhancedMaterialGenerator {
   /**
    * Load texture with caching
    * 
-   * âœ… HARDENED: Added validation, TTL, and cache management
+   * ✅ HARDENED: Added validation, TTL, and cache management
    */
   private async loadTexture(url: string, repeat: boolean = false): Promise<any> {
-    // âœ… HARDENED: Validate URL
+    // ✅ HARDENED: Validate URL
     if (!url || typeof url !== 'string') {
       console.warn('[EnhancedMaterials] Invalid texture URL:', url);
       return null;
     }
     
-    // âœ… PERFORMANCE: Check cache with TTL
+    // ✅ PERFORMANCE: Check cache with TTL
     if (this.textureCache.has(url)) {
       const timestamp = this.textureCacheTimestamps.get(url) || 0;
       const age = Date.now() - timestamp;
@@ -200,14 +200,14 @@ export class EnhancedMaterialGenerator {
       }
     }
     
-    // âœ… PERFORMANCE: Clean cache if needed
+    // ✅ PERFORMANCE: Clean cache if needed
     if (this.textureCache.size >= this.MAX_TEXTURE_CACHE_SIZE) {
       this.cleanTextureCache();
     }
 
     try {
       const texture = await new Promise<any>((resolve, reject) => {
-        // âœ… PERFORMANCE: Add timeout
+        // ✅ PERFORMANCE: Add timeout
         const timeout = setTimeout(() => {
           reject(new Error(`Texture load timeout: ${url}`));
         }, 10000); // 10 second timeout
@@ -241,7 +241,7 @@ export class EnhancedMaterialGenerator {
   }
   
   /**
-   * âœ… PERFORMANCE: Clean texture cache (LRU eviction)
+   * ✅ PERFORMANCE: Clean texture cache (LRU eviction)
    */
   private cleanTextureCache(): void {
     const entries = Array.from(this.textureCacheTimestamps.entries())
@@ -259,7 +259,7 @@ export class EnhancedMaterialGenerator {
   }
   
   /**
-   * âœ… MEMORY: Dispose all cached resources
+   * ✅ MEMORY: Dispose all cached resources
    */
   dispose(): void {
     this.textureCache.forEach((texture) => {

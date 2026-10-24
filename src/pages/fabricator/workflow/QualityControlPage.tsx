@@ -238,7 +238,7 @@ export const QualityControlPage: React.FC = () => {
 
         {isLoading ? (
           <div className="mb-6 flex items-center gap-2 text-amber-200/80">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading QC contextâ€¦
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading QC context…
           </div>
         ) : null}
 
@@ -246,7 +246,7 @@ export const QualityControlPage: React.FC = () => {
           <div className="mb-6 rounded-lg border border-emerald-600/40 bg-emerald-500/10 p-6 space-y-3">
             <h3 className="text-lg font-semibold text-emerald-200">Already approved for this revision</h3>
             <p className="text-sm text-emerald-100/80">
-              Approval {existingAck.approvalId.slice(0, 8)}â€¦ Â· R{existingAck.revision} Â·{' '}
+              Approval {existingAck.approvalId.slice(0, 8)}… · R{existingAck.revision} ·{' '}
               {new Date(existingAck.approvedAt).toLocaleString()}
             </p>
             <p className="text-xs text-emerald-200/70">
@@ -316,7 +316,7 @@ export const QualityControlPage: React.FC = () => {
                 />
               </label>
               <label className="text-sm text-slate-300">
-                Approved tolerance Â± mm
+                Approved tolerance ± mm
                 <input
                   aria-label="Approved tolerance (mm)"
                   value={authority?.toleranceMm ?? ''}
@@ -361,7 +361,7 @@ export const QualityControlPage: React.FC = () => {
               <div>
                 <span className="text-slate-500">Target:</span>
                 <span className="ml-2 text-slate-300">
-                  {currentProject.overallWidth} Ã— {currentProject.overallHeight} mm
+                  {currentProject.overallWidth} × {currentProject.overallHeight} mm
                 </span>
               </div>
               <div>
@@ -386,7 +386,7 @@ export const QualityControlPage: React.FC = () => {
               );
             }}
           >
-            â† Back to Production
+            ← Back to Production
           </Button>
           <div className="flex flex-wrap gap-3">
             <Button variant="outline" onClick={handleStartNew}>
@@ -403,10 +403,10 @@ export const QualityControlPage: React.FC = () => {
                 {isApproving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Approvingâ€¦
+                    Approving…
                   </>
                 ) : (
-                  'Approve & Complete âœ“'
+                  'Approve & Complete ✓'
                 )}
               </Button>
             ) : null}

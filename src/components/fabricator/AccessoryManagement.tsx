@@ -925,7 +925,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                   base: formData.baseCost || 0,
                   markup: formData.markupPercentage || 30,
                   price: formData.unitPrice?.toFixed(2) || '0.00',
-                  defaultValue: `Calculated: $${formData.baseCost || 0} Ã— (1 + ${formData.markupPercentage || 30}%) = $${formData.unitPrice?.toFixed(2) || '0.00'}`
+                  defaultValue: `Calculated: $${formData.baseCost || 0} × (1 + ${formData.markupPercentage || 30}%) = $${formData.unitPrice?.toFixed(2) || '0.00'}`
                 })}
               </p>
             </div>

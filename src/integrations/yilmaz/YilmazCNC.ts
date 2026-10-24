@@ -29,7 +29,7 @@ export class YilmazCNC extends CNCController {
       maxLength: specs.maxLength,
       maxWidth: specs.maxWidth,
       maxHeight: specs.maxHeight,
-      supportedMaterials: ['aluminum', 'alÃ¼minyum', 'upvc', 'pvc', 'wood', 'ahÅŸap'],
+      supportedMaterials: ['aluminum', 'alüminyum', 'upvc', 'pvc', 'wood', 'ahşap'],
       supportedAngles: specs.supportedAngles,
       minCutLength: specs.minCutLength,
       maxCutLength: specs.maxCutLength,

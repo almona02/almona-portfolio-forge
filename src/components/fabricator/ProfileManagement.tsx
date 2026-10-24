@@ -130,7 +130,7 @@ interface ProfileManagementProps {
   initialTuningProfileId?: string;
 }
 
-// Ã¢Å“â€¦ TYPE SAFETY: Filter state interface
+// ✅ TYPE SAFETY: Filter state interface
 interface ProfileFilterState {
   material: string;
   region: string;
@@ -158,7 +158,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [success, setSuccess] = useState(false);
   const { state: workspaceState, dispatch } = useFabricatorWorkspace();
   const searchTerm = workspaceState.globalSearchQuery || '';
-  // Ã¢Å“â€¦ TYPE SAFETY: Filter state with explicit types
+  // ✅ TYPE SAFETY: Filter state with explicit types
   const [materialFilter, setMaterialFilter] = useState<ProfileFilterState['material']>('all');
   const [regionFilter, setRegionFilter] = useState<ProfileFilterState['region']>('all');
   const [categoryFilter, setCategoryFilter] = useState<ProfileFilterState['category']>('all');
@@ -310,7 +310,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
   // Load profiles from Supabase
   const loadProfiles = useCallback(async () => {
-    // If we don't have a user yet, don't hit Supabase Ã¢â‚¬â€œ just clear state and stop loading
+    // If we don't have a user yet, don't hit Supabase – just clear state and stop loading
     if (!userId) {
       setLoading(false);
       setProfiles([]);
@@ -745,7 +745,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         systemPackIds: formData.systemPackIds || [],
       };
 
-      // Derive cost per meter for aluminum from kg, otherwise use entered perÃ¢â‚¬â€˜meter price
+      // Derive cost per meter for aluminum from kg, otherwise use entered per‑meter price
       let effectiveCostPerMeter = formData.costPerMeter || 0;
       if (
         formData.material === 'aluminum' &&
@@ -1131,7 +1131,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         err instanceof Error ? err.message : 'Failed to import profiles';
       toast.error(message);
     } finally {
-      // Allow reÃ¢â‚¬â€˜selecting the same file
+      // Allow re‑selecting the same file
       event.target.value = '';
     }
   };
@@ -1245,7 +1245,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </div>
               <div>
                 <p className="text-xs uppercase tracking-wide text-gray-400">
-                  Fabricator Pro Ã‚Â· Profile Readiness
+                  Fabricator Pro · Profile Readiness
                 </p>
                 <p className="text-sm text-gray-200">
                   {tuningStats.tuned}/{tuningStats.total} profiles tuned for production
@@ -1659,7 +1659,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       </div>
                     )}
                     <div>
-                      <Label>{t('profileManagement.weightPerMeter', 'Weight Per Meter')} (kg/m) Ã¢â‚¬â€œ Aluminum</Label>
+                      <Label>{t('profileManagement.weightPerMeter', 'Weight Per Meter')} (kg/m) – Aluminum</Label>
                       <Input
                         type="number"
                         step="0.001"
@@ -1870,7 +1870,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="none">{t('profileManagement.none', 'Ã¢â‚¬â€')}</SelectItem>
+                            <SelectItem value="none">{t('profileManagement.none', '—')}</SelectItem>
                             <SelectItem value="horizontal">Horizontal</SelectItem>
                             <SelectItem value="vertical">Vertical</SelectItem>
                           </SelectContent>
@@ -2146,7 +2146,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 </div>
               ) : (
                 <>
-                  {/* Ã¢Å“â€¦ PERFORMANCE: Render detail view separately (outside virtualization) */}
+                  {/* ✅ PERFORMANCE: Render detail view separately (outside virtualization) */}
                   {selectedProfileForDetail && (
                     <div className="mb-4">
                       <ProfileDetailCard
@@ -2168,7 +2168,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     </div>
                   )}
 
-                  {/* Ã¢Å“â€¦ PERFORMANCE: Virtualized list for large profile lists */}
+                  {/* ✅ PERFORMANCE: Virtualized list for large profile lists */}
                   <VirtualizedProfileList
                     profiles={filteredProfiles.filter(p => p.id !== selectedProfileForDetail?.id)}
                     containerHeight={600}
@@ -2230,26 +2230,26 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                               </div>
                               <div className="grid grid-cols-4 gap-4 text-sm text-gray-400">
                                 <div>
-                                  {t('profileManagement.dimensions', 'Dimensions')}: {profile.width}mm Ãƒâ€” {profile.height || 'N/A'}mm
+                                  {t('profileManagement.dimensions', 'Dimensions')}: {profile.width}mm × {profile.height || 'N/A'}mm
                                 </div>
                                 <div>{t('profileManagement.cost', 'Cost')}: ${(profile.costPerMeter ?? 0).toFixed(2)}/m</div>
                                 <div>{t('profileManagement.stock', 'Stock')}: {profile.stockQuantity}m</div>
-                                <div>{t('profileManagement.supplier', 'Supplier')}: {profile.supplier || t('profileManagement.none', 'Ã¢â‚¬â€')}</div>
+                                <div>{t('profileManagement.supplier', 'Supplier')}: {profile.supplier || t('profileManagement.none', '—')}</div>
                               </div>
                               <div className="grid grid-cols-4 gap-4 text-xs text-gray-400 mt-2">
                                 <div>
                                   {t('profileManagement.twinCode', 'Twin Code')}:
                                   <span className="ml-1 font-mono">
                                     {(specs.internalCode as string) || profile.id.slice(0, 8)}/
-                                    {(specs.supplierCode as string) || t('profileManagement.none', 'Ã¢â‚¬â€')}
+                                    {(specs.supplierCode as string) || t('profileManagement.none', '—')}
                                   </span>
                                 </div>
-                                <div>{t('profileManagement.series', 'Series')}: {(specs.series as string) || t('profileManagement.none', 'Ã¢â‚¬â€')}</div>
-                                <div>{t('profileManagement.year', 'Year')}: {(specs.year as string) || t('profileManagement.none', 'Ã¢â‚¬â€')}</div>
+                                <div>{t('profileManagement.series', 'Series')}: {(specs.series as string) || t('profileManagement.none', '—')}</div>
+                                <div>{t('profileManagement.year', 'Year')}: {(specs.year as string) || t('profileManagement.none', '—')}</div>
                                 <div>
                                   {t('profileManagement.dxf', 'DXF')}:
                                   <span className="ml-1">
-                                    {specs.dxfImported ? t('profileManagement.imported', 'Imported') : t('profileManagement.none', 'Ã¢â‚¬â€')}
+                                    {specs.dxfImported ? t('profileManagement.imported', 'Imported') : t('profileManagement.none', '—')}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -2425,7 +2425,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     <div className="flex items-center gap-2">
                       <Ruler className="h-3 w-3" />
                       <span>
-                        {profileToDelete.width}mm Ãƒâ€” {profileToDelete.height || 'N/A'}mm
+                        {profileToDelete.width}mm × {profileToDelete.height || 'N/A'}mm
                       </span>
                     </div>
                     {profileToDelete.systemBrand && (
@@ -2453,10 +2453,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       {t('profileManagement.deleteWarning', 'What will be deleted:')}
                     </p>
                     <ul className="space-y-1 text-amber-300/80">
-                      <li>Ã¢â‚¬Â¢ {t('profileManagement.deleteWarningProfile', 'Profile configuration and specifications')}</li>
-                      <li>Ã¢â‚¬Â¢ {t('profileManagement.deleteWarningTuning', 'All tuning data and calibrations')}</li>
-                      <li>Ã¢â‚¬Â¢ {t('profileManagement.deleteWarningThumbnail', 'Profile thumbnail and preview images')}</li>
-                      <li>Ã¢â‚¬Â¢ {t('profileManagement.deleteWarningMachining', 'Machining zones and macros')}</li>
+                      <li>• {t('profileManagement.deleteWarningProfile', 'Profile configuration and specifications')}</li>
+                      <li>• {t('profileManagement.deleteWarningTuning', 'All tuning data and calibrations')}</li>
+                      <li>• {t('profileManagement.deleteWarningThumbnail', 'Profile thumbnail and preview images')}</li>
+                      <li>• {t('profileManagement.deleteWarningMachining', 'Machining zones and macros')}</li>
                     </ul>
                   </div>
                 </div>

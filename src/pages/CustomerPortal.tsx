@@ -520,7 +520,7 @@ const CustomerPortal = () => {
                                   {quote.quote_number || `#${quote.id.slice(-8).toUpperCase()}`}
                                 </h3>
                                 <p className="text-gray-400 text-sm">
-                                  {quote.digital_twin_code || quote.portal_reference || 'â€”'}
+                                  {quote.digital_twin_code || quote.portal_reference || '—'}
                                 </p>
                               </div>
                               <Badge variant="secondary" className="capitalize bg-almona-orange/20 text-almona-orange border-almona-orange/30">
@@ -531,7 +531,7 @@ const CustomerPortal = () => {
                               <span>
                                 {quote.total_amount != null
                                   ? new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP' }).format(quote.total_amount)
-                                  : 'â€”'}
+                                  : '—'}
                               </span>
                               <span>{new Date(quote.created_at).toLocaleDateString()}</span>
                             </div>
@@ -647,7 +647,7 @@ const CustomerPortal = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{machines?.length || 0}</p>
-                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø§ÙƒÙŠÙ†Ø§Øª ÙÙŠ Ø­Ø³Ø§Ø¨Ùƒ' : 'Total machines in your account'}</p>
+                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'إجمالي الماكينات في حسابك' : 'Total machines in your account'}</p>
               </CardContent>
             </Card>
 
@@ -659,7 +659,7 @@ const CustomerPortal = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{tickets?.filter(t => t.status !== 'resolved' && t.status !== 'closed').length || 0}</p>
-                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'Ø·Ù„Ø¨Ø§Øª Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„Ù…ÙØªÙˆØ­Ø©' : 'Open support requests'}</p>
+                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'طلبات الدعم المفتوحة' : 'Open support requests'}</p>
               </CardContent>
             </Card>
 
@@ -671,7 +671,7 @@ const CustomerPortal = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{documents?.length || 0}</p>
-                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'Ø§Ù„Ø¯Ù„Ø§Ø¦Ù„ ÙˆØ§Ù„Ù…ÙˆØ§Ø±Ø¯ Ø§Ù„Ù…ØªØ§Ø­Ø©' : 'Available manuals & resources'}</p>
+                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'الدلائل والموارد المتاحة' : 'Available manuals & resources'}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -707,7 +707,7 @@ const CustomerPortal = () => {
           if (user) {
             void queryClient.invalidateQueries({ queryKey: ['tickets', user.id] });
           }
-          toast.success(`ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø·Ù„Ø¨: ${ticketId}`);
+          toast.success(`تم إنشاء الطلب: ${ticketId}`);
         }}
       />
       

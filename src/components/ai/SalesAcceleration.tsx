@@ -157,7 +157,7 @@ const mockAIInsights: AIInsight[] = [
     priority: 'high',
     title: 'German Market Expansion Opportunity',
     description: 'Increased activity from German manufacturers in precision equipment category',
-    impact: '+â‚¬450K potential revenue in Q2',
+    impact: '+€450K potential revenue in Q2',
     confidence: 89,
     recommendation: 'Increase German-language content and target precision manufacturing companies',
     timestamp: '2024-03-10T09:00:00Z'
@@ -167,7 +167,7 @@ const mockAIInsights: AIInsight[] = [
     priority: 'high',
     title: 'Follow-up Required: High-Value Leads',
     description: '3 qualified leads haven\'t been contacted in 48+ hours',
-    impact: 'Risk of losing â‚¬280K in potential deals',
+    impact: 'Risk of losing €280K in potential deals',
     confidence: 95,
     recommendation: 'Immediate personalized follow-up required for Berlin Precision, Lyon Industries, and Rotterdam Steel',
     timestamp: '2024-03-10T08:30:00Z'
@@ -324,7 +324,7 @@ export const SalesAcceleration: React.FC = () => {
               <DollarSign className="h-8 w-8 text-green-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Pipeline Value</p>
-                <p className="text-2xl font-bold">â‚¬{leads.reduce((sum, l) => sum + l.predictedValue, 0).toLocaleString()}</p>
+                <p className="text-2xl font-bold">€{leads.reduce((sum, l) => sum + l.predictedValue, 0).toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -355,7 +355,7 @@ export const SalesAcceleration: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="typography-h3">{lead.companyName}</h3>
-                    <p className="text-sm text-muted-foreground">{lead.contactPerson} â€¢ {lead.industry}</p>
+                    <p className="text-sm text-muted-foreground">{lead.contactPerson} • {lead.industry}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="outline">{lead.region}</Badge>
                       <Badge 
@@ -373,7 +373,7 @@ export const SalesAcceleration: React.FC = () => {
                     <span className="font-bold text-lg">{lead.aiScore}</span>
                     <span className="text-sm text-muted-foreground">automation Score</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">â‚¬{lead.predictedValue.toLocaleString()} â€¢ {lead.probability}%</p>
+                  <p className="text-sm text-muted-foreground">€{lead.predictedValue.toLocaleString()} • {lead.probability}%</p>
                   <p className="text-xs text-muted-foreground mt-1">{lead.nextBestAction}</p>
                 </div>
               </div>

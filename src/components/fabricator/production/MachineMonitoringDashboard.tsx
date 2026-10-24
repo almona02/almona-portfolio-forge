@@ -218,7 +218,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                   </Badge>
                 </div>
                 <div className="text-sm text-gray-400 mt-1">
-                  {machine.model} â€¢ {connected ? 'Connected' : 'Disconnected'}
+                  {machine.model} • {connected ? 'Connected' : 'Disconnected'}
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -261,7 +261,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                     <div className="flex items-center gap-2">
                       <Thermometer className="h-4 w-4 text-red-400" />
                       <span className="text-gray-400">Temp:</span>
-                      <span className="font-medium">{status.temperature}Â°C</span>
+                      <span className="font-medium">{status.temperature}°C</span>
                     </div>
                   )}
                   {status.toolNumber !== undefined && (

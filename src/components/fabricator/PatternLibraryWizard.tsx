@@ -98,7 +98,7 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
                 <Input
                   value={patternSearch}
                   onChange={(e) => setPatternSearch(e.target.value)}
-                  placeholder="Search patterns by name, categoryâ€¦"
+                  placeholder="Search patterns by name, category…"
                   aria-label="Search patterns"
                   className="max-w-md bg-gray-950 border-gray-700 text-gray-100"
                 />
@@ -165,7 +165,7 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Dimensions:</span>
-                          <span className="font-semibold">{width}mm Ã— {height}mm</span>
+                          <span className="font-semibold">{width}mm × {height}mm</span>
                         </div>
                         {Object.entries(parameters).map(([key, value]) => (
                           <div key={key} className="flex justify-between">

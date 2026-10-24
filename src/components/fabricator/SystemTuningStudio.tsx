@@ -25,7 +25,7 @@ interface SystemTuningStudioProps {
   onClose: () => void;
   onSave?: (systemPack: any) => void;
   initialSystem?: any;
-  /** Workshop starter pack (no DXF). Only for System Packs create flow â€” not project wizards. */
+  /** Workshop starter pack (no DXF). Only for System Packs create flow — not project wizards. */
   allowStarterPack?: boolean;
 }
 
@@ -77,7 +77,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
     }, ASYNC_DELAYS.SAVE_DELAY_MS);
   };
 
-  /** Create pack with catalog-style frame/sash starters â€” no DXF required. */
+  /** Create pack with catalog-style frame/sash starters — no DXF required. */
   const handleCreateStarterPack = () => {
     setIsSaving(true);
     const pack = buildStarterSystemPack(packName.trim() || 'Custom Workshop Pack');
@@ -96,7 +96,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
               <Badge variant="outline" className="btn-primary">
                 System Tuning Studio
               </Badge>
-              <span className="text-sm text-gray-400">Import â†’ Tag â†’ Hardware â†’ Machining â†’ Review</span>
+              <span className="text-sm text-gray-400">Import → Tag → Hardware → Machining → Review</span>
             </DialogTitle>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose} className="text-gray-400 hover:text-white">
@@ -123,11 +123,11 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
               onClick={handleCreateStarterPack}
               className="border-amber-500/50 text-amber-100"
             >
-              {isSaving ? 'Savingâ€¦' : 'Create with frame + sash'}
+              {isSaving ? 'Saving…' : 'Create with frame + sash'}
             </Button>
           )}
           <Button disabled={!readyToSave || isSaving} onClick={handleSave} className="bg-green-600 hover:bg-green-500">
-            {isSaving ? 'Savingâ€¦' : 'Save from DXF'}
+            {isSaving ? 'Saving…' : 'Save from DXF'}
             <Save className={`${UI_DIMENSIONS.ICON_MEDIUM} ml-2`} />
           </Button>
         </div>
@@ -161,7 +161,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
           <Card className="bg-gray-900/60 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-base">DXF Import</CardTitle>
-              <CardDescription>Upload supplier DXF/DWG. Weâ€™ll extract basic dims and preview.</CardDescription>
+              <CardDescription>Upload supplier DXF/DWG. We’ll extract basic dims and preview.</CardDescription>
             </CardHeader>
             <CardContent>
               <DXFProfileImporter
@@ -250,7 +250,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
                   <div>
                     <div className="font-semibold text-white">{p.name || p.fileName}</div>
                     <div className="text-xs text-gray-400">
-                      {p.widthMm} Ã— {p.heightMm} mm Â· {p.fileName}
+                      {p.widthMm} × {p.heightMm} mm · {p.fileName}
                     </div>
                   </div>
                   <Badge variant="outline" className="border-blue-500 text-blue-200">

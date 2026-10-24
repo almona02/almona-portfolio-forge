@@ -323,7 +323,7 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
           >
             {isProcessing ? (
               <>
-                <span className="animate-spin mr-2">â³</span>
+                <span className="animate-spin mr-2">⏳</span>
                 Processing...
               </>
             ) : (

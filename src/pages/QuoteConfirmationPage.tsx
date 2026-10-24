@@ -28,19 +28,19 @@ const QuoteConfirmationPage: React.FC = () => {
               <h2 className="typography-h2 text-lg font-semibold mb-4">What happens next?</h2>
               <ul className="space-y-3 text-gray-400">
                 <li className="flex items-start">
-                  <span className="text-amber-500 mr-2">âœ“</span>
+                  <span className="text-amber-500 mr-2">✓</span>
                   <span>Our sales team will review your request within 24 hours</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-amber-500 mr-2">âœ“</span>
+                  <span className="text-amber-500 mr-2">✓</span>
                   <span>You&apos;ll receive a confirmation email with your quote details</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-amber-500 mr-2">âœ“</span>
+                  <span className="text-amber-500 mr-2">✓</span>
                   <span>A technical specialist may contact you for additional details</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-amber-500 mr-2">âœ“</span>
+                  <span className="text-amber-500 mr-2">✓</span>
                   <span>Your final quote will be delivered via email and WhatsApp</span>
                 </li>
               </ul>

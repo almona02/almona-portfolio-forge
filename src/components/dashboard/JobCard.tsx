@@ -30,7 +30,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
       </div>
 
       <p className="text-xs text-gray-400 mb-1">
-        {job.overallWidth} Ã— {job.overallHeight} mm
+        {job.overallWidth} × {job.overallHeight} mm
       </p>
       {job.customer && (
         <p className="text-[11px] text-gray-300 mb-2 truncate">

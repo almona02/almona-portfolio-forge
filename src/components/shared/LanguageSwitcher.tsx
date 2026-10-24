@@ -23,9 +23,9 @@ interface Language {
 }
 
 const languages: Language[] = [
-  { code: 'ar', name: 'Arabic', nativeName: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©', flag: 'ðŸ‡ªðŸ‡¬' },
-  { code: 'tr', name: 'Turkish', nativeName: 'TÃ¼rkÃ§e', flag: 'ðŸ‡¹ðŸ‡·' },
-  { code: 'en', name: 'English', nativeName: 'English', flag: 'ðŸ‡¬ðŸ‡§' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇪🇬' },
+  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
+  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
 ];
 
 export const LanguageSwitcher: React.FC<{
@@ -131,7 +131,7 @@ export const LanguageSwitcher: React.FC<{
               <span className="flex-1 font-medium text-sm">{lang.nativeName}</span>
               {isActive && (
                 <span className="ml-auto text-amber-400 font-bold text-sm flex-shrink-0">
-                  âœ“
+                  ✓
                 </span>
               )}
             </DropdownMenuItem>

@@ -119,7 +119,7 @@ export const OptimizationPage: React.FC = () => {
 
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
 
-            // Server-stamped evidence only â€” client JSON on positions_v2.optimization is not convert-eligible.
+            // Server-stamped evidence only — client JSON on positions_v2.optimization is not convert-eligible.
             const revision =
                 workflowIdentity?.revision ??
                 (Number.isInteger(runProject.revision) ? Number(runProject.revision) : 0);
@@ -199,7 +199,7 @@ export const OptimizationPage: React.FC = () => {
 
     return (
         <div className="flex flex-col h-full bg-[#0a0a0a]">
-            <p className="px-3 py-2 text-xs text-slate-400">Cut plan per window Â· pose quantity {currentProject?.quantity ?? 1}. Use project optimization to pool repeated windows; verify inventory before production.</p>
+            <p className="px-3 py-2 text-xs text-slate-400">Cut plan per window · pose quantity {currentProject?.quantity ?? 1}. Use project optimization to pool repeated windows; verify inventory before production.</p>
             <Suspense fallback={LoadingFallback}>
                 <OptimizationCockpit result={optimizationResult} requiredProfiles={bom?.profiles} stockProfiles={profiles} algorithmLabel={null} authority={null}>
                     <OptimizationEqualizer
@@ -240,7 +240,7 @@ export const OptimizationPage: React.FC = () => {
                                     setOptimizationError(error instanceof Error ? error.message : 'Cut-list PDF export failed.');
                                 } finally { setIsExporting(false); }
                             }}>
-                            {isExporting ? 'Generating PDFâ€¦' : 'Download cut-list PDF'}
+                            {isExporting ? 'Generating PDF…' : 'Download cut-list PDF'}
                         </button>
                         <button
                             type="button"

@@ -165,7 +165,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
               Maalem's Morning Brief
             </CardTitle>
             <CardDescription>
-              {brief.summary || `ØµØ¨Ø§Ø­ Ø§Ù„Ø®ÙŠØ± ÙŠØ§ Ø±ÙŠØ³! ${brief.totalArticles || 0} Ø®Ø¨Ø± Ø¬Ø¯ÙŠØ¯ Ø§Ù„ÙŠÙˆÙ…`}
+              {brief.summary || `صباح الخير يا ريس! ${brief.totalArticles || 0} خبر جديد اليوم`}
             </CardDescription>
           </div>
           <Button
@@ -204,7 +204,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       onClick={async () => {
                         await handleFeedback(`alert_${idx}`, 'useful');
                       }}
-                      title="Ù…ÙÙŠØ¯"
+                      title="مفيد"
                       data-feedback-id={`alert_${idx}`}
                     >
                       <ThumbsUp className="h-3 w-3  status-valid" />
@@ -216,7 +216,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       onClick={async () => {
                         await handleFeedback(`alert_${idx}`, 'not_useful');
                       }}
-                      title="Ù…Ø´ Ù…ÙÙŠØ¯"
+                      title="مش مفيد"
                       data-feedback-id={`alert_${idx}`}
                     >
                       <ThumbsDown className="h-3 w-3 text-red-500" />
@@ -254,7 +254,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       onClick={async () => {
                         await handleFeedback(`high_alert_${idx}`, 'useful');
                       }}
-                      title="Ù…ÙÙŠØ¯"
+                      title="مفيد"
                       data-feedback-id={`high_alert_${idx}`}
                       disabled={feedbackSubmitting.has(`high_alert_${idx}`)}
                     >
@@ -267,7 +267,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       onClick={async () => {
                         await handleFeedback(`high_alert_${idx}`, 'not_useful');
                       }}
-                      title="Ù…Ø´ Ù…ÙÙŠØ¯"
+                      title="مش مفيد"
                       data-feedback-id={`high_alert_${idx}`}
                       disabled={feedbackSubmitting.has(`high_alert_${idx}`)}
                     >

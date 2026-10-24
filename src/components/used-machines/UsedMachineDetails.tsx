@@ -61,10 +61,10 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
               <MapPin className="w-5 h-5 text-amber-500" /> {copy(machine.location)}
             </li>
             <li className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-amber-500" /> {copy('Year')}: {machine.year ?? 'â€”'}
+              <Calendar className="w-5 h-5 text-amber-500" /> {copy('Year')}: {machine.year ?? '—'}
             </li>
             <li className="flex items-center gap-2">
-              <Gauge className="w-5 h-5 text-amber-500" /> {copy('Hours')}: {machine.hours != null ? machine.hours.toLocaleString() : 'â€”'}
+              <Gauge className="w-5 h-5 text-amber-500" /> {copy('Hours')}: {machine.hours != null ? machine.hours.toLocaleString() : '—'}
             </li>
             <li className="flex items-center gap-2">
               <ConditionBadge condition={machine.condition} />

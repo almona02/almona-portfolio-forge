@@ -296,7 +296,7 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                       <div className="bg-gray-800/50 p-3 rounded space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span className="text-gray-400">U-Value Impact:</span>
-                          <span className="text-white">+{validation.thermal.uValueImpact.toFixed(2)} W/mÂ²K</span>
+                          <span className="text-white">+{validation.thermal.uValueImpact.toFixed(2)} W/m²K</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Thermal Bridge Length:</span>
@@ -351,7 +351,7 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                         <div className="flex justify-between">
                           <span className="text-gray-400">Dimensions:</span>
                           <span className="text-white">
-                            {validation.requiredProfile.width} Ã— {validation.requiredProfile.depth} mm
+                            {validation.requiredProfile.width} × {validation.requiredProfile.depth} mm
                           </span>
                         </div>
                         <div className="flex justify-between">

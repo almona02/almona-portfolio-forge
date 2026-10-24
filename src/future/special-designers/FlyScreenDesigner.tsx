@@ -223,13 +223,13 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
                       <div>
                         <p className="text-sm text-gray-400">Frame Dimensions</p>
                         <p className="text-lg font-semibold text-white">
-                          {windowUnit.overallWidth} Ã— {windowUnit.overallHeight} mm
+                          {windowUnit.overallWidth} × {windowUnit.overallHeight} mm
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-400">Mesh Area</p>
                         <p className="text-lg font-semibold text-white">
-                          {design.mesh.area.toFixed(2)} mÂ²
+                          {design.mesh.area.toFixed(2)} m²
                         </p>
                       </div>
                       <div>
@@ -310,11 +310,11 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
                             {design.mesh.type} ({design.mesh.meshSize}mm)
                           </span>
                           <span className="text-gray-400 text-sm">
-                            {design.mesh.area.toFixed(2)} mÂ²
+                            {design.mesh.area.toFixed(2)} m²
                           </span>
                         </div>
                         <p className="text-xs text-gray-500 mt-1">
-                          Supplier: {design.mesh.supplier} â€¢ {design.mesh.totalCost.toFixed(2)} EGP
+                          Supplier: {design.mesh.supplier} • {design.mesh.totalCost.toFixed(2)} EGP
                         </p>
                       </div>
                     </div>
@@ -339,7 +339,7 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
                           <div className="flex-1">
                             <p className="text-white text-sm font-medium">{step.operation}</p>
                             <p className="text-gray-400 text-xs mt-1">
-                              {step.estimatedTime} min â€¢ {step.toolsRequired.join(', ')}
+                              {step.estimatedTime} min • {step.toolsRequired.join(', ')}
                             </p>
                           </div>
                         </div>

@@ -383,7 +383,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                   {/* Istanbul Skyline SVG merged here */}
                   <div className="mt-4 rounded-lg border-t border-slate-800 pt-4">
                     <div className="flex items-center justify-between text-[11px] text-slate-400 mb-2">
-                      <span>Istanbul Skyline â€“ lights react as you progress from Measuring to Quality.</span>
+                      <span>Istanbul Skyline – lights react as you progress from Measuring to Quality.</span>
                       <span className="font-medium text-amber-300">
                         {Math.round(clamped * 100)}% journey complete
                       </span>

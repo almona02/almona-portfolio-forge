@@ -999,7 +999,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                           <span className="font-semibold text-gray-200">
                             {t('pricing_tuning_studio.overview.system_pack', 'System Pack')}:
                           </span>{' '}
-                          <span className="text-amber-300">{selectedSystemPackId || 'â€”'}</span>
+                          <span className="text-amber-300">{selectedSystemPackId || '—'}</span>
                         </p>
                         <p>
                           <span className="font-semibold text-gray-200">
@@ -1015,10 +1015,10 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                             }
                           >
                             {configurationStatus === 'configured'
-                              ? 'âœ“ Configured'
+                              ? '✓ Configured'
                               : configurationStatus === 'needs_review'
-                              ? 'âš  Needs Review'
-                              : 'âš  Required'}
+                              ? '⚠ Needs Review'
+                              : '⚠ Required'}
                           </span>
                         </p>
                         {pricingState && (
@@ -2277,7 +2277,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                               {/* Per Square Meter */}
                               <div className="space-y-2">
                                 <Label htmlFor="installation-per-m2" className="text-xs text-gray-300">
-                                  {t('pricing_tuning_studio.installation.per_m2', 'Per mÂ²')}
+                                  {t('pricing_tuning_studio.installation.per_m2', 'Per m²')}
                                 </Label>
                                 <div className="flex items-center gap-2">
                                   <span className="text-xs text-gray-400">{pricingState?.currency || 'EGP'}</span>

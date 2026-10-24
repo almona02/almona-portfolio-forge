@@ -301,9 +301,9 @@ export const BOMReviewPanel: React.FC = () => {
               </ul>
               <p className="pt-1">
                 <a className="text-amber-300 underline" href="/fabricator/studio/approvals">Admin Approvals</a>
-                {' Â· '}
+                {' · '}
                 <a className="text-amber-300 underline" href="/fabricator/studio/data/tuning">Pack qualification</a>
-                {' Â· '}
+                {' · '}
                 <a className="text-amber-300 underline" href="/fabricator/studio/data/stock">Stock</a>
               </p>
             </div>
@@ -438,11 +438,11 @@ export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles']; poseQu
             {profiles.map((p, i) => (
               <tr key={i} className="border-b border-slate-800/50 hover:bg-amber-500/5">
                 <td className="py-2 px-3 text-amber-300 font-medium">{p.role}</td>
-                <td className="py-2 px-3 text-slate-400">{p.profileCode || 'â€”'}</td>
-                <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.length ? groupProfileCuts(p).map((cut, cutIndex) => <div key={cutIndex}>{cut.length.toFixed(1)} Ã— {cut.count * unitQuantityOf(poseQuantity)}</div>) : p.length?.toFixed(1) ?? 'â€”'}</td>
+                <td className="py-2 px-3 text-slate-400">{p.profileCode || '—'}</td>
+                <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.length ? groupProfileCuts(p).map((cut, cutIndex) => <div key={cutIndex}>{cut.length.toFixed(1)} × {cut.count * unitQuantityOf(poseQuantity)}</div>) : p.length?.toFixed(1) ?? '—'}</td>
                 <td className="py-2 px-3 text-right text-slate-300">{((p.cuttingLengths?.length ?? 0) || p.quantity) * unitQuantityOf(poseQuantity)}</td>
-                <td className="py-2 px-3 text-right text-slate-400">{p.angles?.length ? p.angles.map((angle, cutIndex) => <div key={cutIndex}>{angle}Â°</div>) : '90Â°'}</td>
-                <td className="py-2 px-3 text-right text-amber-200">{p.cost?.toFixed(2) ?? 'â€”'}</td>
+                <td className="py-2 px-3 text-right text-slate-400">{p.angles?.length ? p.angles.map((angle, cutIndex) => <div key={cutIndex}>{angle}°</div>) : '90°'}</td>
+                <td className="py-2 px-3 text-right text-amber-200">{p.cost?.toFixed(2) ?? '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -487,8 +487,8 @@ const HardwareTable: React.FC<{ hardware: CompleteBOM['hardware'] }> = ({ hardwa
                 <td className="py-2 px-3 text-amber-300 font-medium">{h.category}</td>
                 <td className="py-2 px-3 text-slate-400">{h.name}</td>
                 <td className="py-2 px-3 text-right text-slate-300">{h.quantity}</td>
-                <td className="py-2 px-3 text-slate-400 font-mono text-xs">{h.supplierCode || 'â€”'}</td>
-                <td className="py-2 px-3 text-right text-slate-400">{h.estimatedTime ?? 'â€”'}</td>
+                <td className="py-2 px-3 text-slate-400 font-mono text-xs">{h.supplierCode || '—'}</td>
+                <td className="py-2 px-3 text-right text-slate-400">{h.estimatedTime ?? '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -511,7 +511,7 @@ const GlazingTable: React.FC<{ glazing: CompleteBOM['glazing'] }> = ({ glazing }
               <th className="text-left py-2 px-3">Type</th>
               <th className="text-right py-2 px-3">Width (mm)</th>
               <th className="text-right py-2 px-3">Height (mm)</th>
-              <th className="text-right py-2 px-3">Area (mÂ²)</th>
+              <th className="text-right py-2 px-3">Area (m²)</th>
               <th className="text-right py-2 px-3">U-Value</th>
               <th className="text-right py-2 px-3">Weight (kg)</th>
             </tr>
@@ -523,13 +523,13 @@ const GlazingTable: React.FC<{ glazing: CompleteBOM['glazing'] }> = ({ glazing }
               return (
                 <tr key={i} className="border-b border-slate-800/50 hover:bg-amber-500/5">
                   <td className="py-2 px-3 text-amber-300 font-medium">{g.type || 'Standard'}</td>
-                  <td className="py-2 px-3 text-right text-slate-300">{w?.toFixed(0) ?? 'â€”'}</td>
-                  <td className="py-2 px-3 text-right text-slate-300">{h?.toFixed(0) ?? 'â€”'}</td>
+                  <td className="py-2 px-3 text-right text-slate-300">{w?.toFixed(0) ?? '—'}</td>
+                  <td className="py-2 px-3 text-right text-slate-300">{h?.toFixed(0) ?? '—'}</td>
                   <td className="py-2 px-3 text-right text-slate-400">
-                    {w && h ? ((w * h) / 1_000_000).toFixed(2) : 'â€”'}
+                    {w && h ? ((w * h) / 1_000_000).toFixed(2) : '—'}
                   </td>
-                  <td className="py-2 px-3 text-right text-slate-400">{g.uValue?.toFixed(2) ?? 'â€”'}</td>
-                  <td className="py-2 px-3 text-right text-amber-200">{g.weight?.toFixed(1) ?? 'â€”'}</td>
+                  <td className="py-2 px-3 text-right text-slate-400">{g.uValue?.toFixed(2) ?? '—'}</td>
+                  <td className="py-2 px-3 text-right text-amber-200">{g.weight?.toFixed(1) ?? '—'}</td>
                 </tr>
               );
             })}

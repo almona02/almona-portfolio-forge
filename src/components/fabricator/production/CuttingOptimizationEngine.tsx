@@ -507,7 +507,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
                     {plan.cuts.map((cut, cutIndex) => (
                       <div key={cutIndex} className="p-2 bg-slate-800 rounded text-center">
                         <div className="font-medium">{cut.length}mm</div>
-                        <div className="text-slate-400">{cut.angle}Â°</div>
+                        <div className="text-slate-400">{cut.angle}°</div>
                       </div>
                     ))}
                   </div>
@@ -792,7 +792,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
         <CardContent className="space-y-4">
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
             <p className="text-sm text-blue-300">
-              <strong>ðŸ‡¹ðŸ‡· Turkish Pilot Program:</strong> Download MDB file for YÄ±lmaz ALM 6510 machine.
+              <strong>🇹🇷 Turkish Pilot Program:</strong> Download MDB file for Yılmaz ALM 6510 machine.
               The file is 100% aligned with the machine's software requirements.
             </p>
           </div>

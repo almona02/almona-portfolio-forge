@@ -109,7 +109,7 @@ export const MeasuringPage: React.FC = () => {
     const siblings = useProjectPositions(projectId);
     const upsertPose = useUpsertPose();
     const deletePose = useDeletePose();
-    /** Pose layout strip Ã¢â‚¬â€ closed by default so small screens keep measuring form in view */
+    /** Pose layout strip — closed by default so small screens keep measuring form in view */
     const [poseLayoutOpen, setPoseLayoutOpen] = useState(false);
     const layoutPoses = useMemo(() => {
         if (!pose) return siblings;
@@ -121,9 +121,9 @@ export const MeasuringPage: React.FC = () => {
         const w = pose?.overallWidth;
         const h = pose?.overallHeight;
         const dims = Number(w) > 0 && Number(h) > 0
-            ? `${Math.round(Number(w))} Ãƒâ€” ${Math.round(Number(h))} mm`
+            ? `${Math.round(Number(w))} × ${Math.round(Number(h))} mm`
             : 'Not measured';
-        return `Pose ${pose?.posNumber || '1'} Ã‚Â· ${dims} Ã‚Â· ${layoutPoses.length} pose${layoutPoses.length === 1 ? '' : 's'}`;
+        return `Pose ${pose?.posNumber || '1'} · ${dims} · ${layoutPoses.length} pose${layoutPoses.length === 1 ? '' : 's'}`;
     }, [pose, layoutPoses.length]);
 
     const persistPose = useCallback(async (data: MeasurementData, targetPoseId: string, posNumber: string) => {
@@ -148,7 +148,7 @@ export const MeasuringPage: React.FC = () => {
             const result = await persistPose(data, poseId, posNumber);
             setMeasurementData(data);
             completeStep('measuring');
-            toast.success(`Pose ${posNumber} saved: ${data.width} Ãƒâ€” ${data.height} mm`);
+            toast.success(`Pose ${posNumber} saved: ${data.width} × ${data.height} mm`);
             if (closeAfterSave) { void publishActiveProject(null); void navigate(fabricatorRoutes.studioProjects()); }
             else void navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
         } catch (err) {

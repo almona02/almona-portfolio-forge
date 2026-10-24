@@ -141,7 +141,7 @@ export const MachineHealthTrends: React.FC<MachineHealthTrendsProps> = ({ machin
                   <XAxis dataKey="ts" tick={{ fill: '#9ca3af', fontSize: 12 }} hide />
                   <YAxis tick={{ fill: '#9ca3af', fontSize: 12 }} />
                   <Tooltip contentStyle={{ background: '#111', border: '1px solid #333', color: '#fff' }} />
-                  <Line type="monotone" dataKey="temperature" stroke="#60a5fa" name="Â°C" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="temperature" stroke="#60a5fa" name="°C" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </TabsContent>

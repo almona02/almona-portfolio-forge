@@ -16,17 +16,17 @@
 
 // Development-only debug logging
 if (import.meta.env.DEV) {
-    console.debug('[Animation] ðŸ“¦ Window3DGenerator.tsx FILE LOADED');
+    console.debug('[Animation] 📦 Window3DGenerator.tsx FILE LOADED');
 }
 
-// âœ… ENHANCED: Extract debounce config to constants with documentation
+// ✅ ENHANCED: Extract debounce config to constants with documentation
 const DEBOUNCE_CONFIG = {
     // 300ms: Balances responsiveness vs regeneration cost
     // - Too low (<200ms): Excessive regeneration during rapid changes
     // - Too high (>500ms): Feels unresponsive
     GEOMETRY_GENERATION_MS: 300,
 
-    // âœ… PERFORMANCE FIX: Reduced from 2000ms to 500ms for better perceived performance
+    // ✅ PERFORMANCE FIX: Reduced from 2000ms to 500ms for better perceived performance
     // - Ensures regeneration even during continuous changes without excessive delay
     MAX_WAIT_MS: 500,
 } as const;
@@ -315,7 +315,7 @@ function ErrorHighlighter({ validation }: { validation: ValidationResult }) {
 // THE CORE 3D MODEL COMPONENT
 // ============================================================================
 
-// âœ… CRITICAL PERFORMANCE FIX: Wrap in React.memo to prevent re-renders when only camera moves
+// ✅ CRITICAL PERFORMANCE FIX: Wrap in React.memo to prevent re-renders when only camera moves
 // Custom comparison ensures re-render only on actual prop changes
 const Window3DModelComponent = (props: {
     windowUnit: WindowUnit;
@@ -502,7 +502,7 @@ const Window3DModelComponent = (props: {
     // Development-only debug logging
     useEffect(() => {
         if (import.meta.env.DEV) {
-            console.debug('[Animation] ðŸŽ¬ Window3DModel component mounted/updated', {
+            console.debug('[Animation] 🎬 Window3DModel component mounted/updated', {
                 isAnimating,
                 animationProgress,
                 hasWindowUnit: !!windowUnit,
@@ -531,12 +531,12 @@ const Window3DModelComponent = (props: {
     // Performance & feature flags
     // const _isHighQuality = windowUnit.overallWidth * windowUnit.overallHeight <= 7_000_000; // Unused
 
-    // âœ… ENHANCED: Graceful physics degradation with error handling
+    // ✅ ENHANCED: Graceful physics degradation with error handling
     const physicsStatus = usePhysicsStatus();
     const physicsEnabled = physicsStatus.enabled;
 
     if (physicsStatus.error && import.meta.env.DEV) {
-        console.debug('[Animation] ðŸ”§ Physics status:', physicsStatus.error);
+        console.debug('[Animation] 🔧 Physics status:', physicsStatus.error);
     }
 
     const {
@@ -602,7 +602,7 @@ const Window3DModelComponent = (props: {
             if (!windowUnit) return;
             // FP-028 / P5.4: capture identity at schedule execution; reject if stale
             const requestKey = buildPreviewRequestKey(windowUnit, windowUnit.grid);
-            // âœ… FIX: Skip generation if using facade model
+            // ✅ FIX: Skip generation if using facade model
             if (windowUnit.facadeModel) {
                 if (isPreviewCommitCurrent(previewRequestKeyRef.current, requestKey)) {
                     setModelData(null);
@@ -631,7 +631,7 @@ const Window3DModelComponent = (props: {
                     : null;
 
                 const geometrySpec = generateModelGeometries(windowUnit, pattern || undefined);
-                // FP-028 / P5.4: late preview reject after Aâ†’B identity switch
+                // FP-028 / P5.4: late preview reject after A→B identity switch
                 if (!isPreviewCommitCurrent(previewRequestKeyRef.current, requestKey)) {
                     return;
                 }
@@ -761,7 +761,7 @@ const Window3DModelComponent = (props: {
     // Debug: Log when useFrame hook is set up
     useEffect(() => {
         if (import.meta.env.DEV) {
-            console.debug('[Animation] ðŸ”§ useFrame hook initialized', {
+            console.debug('[Animation] 🔧 useFrame hook initialized', {
                 hasGroup: !!groupRef.current,
                 hasModelData: !!modelData,
                 isAnimating,
@@ -770,7 +770,7 @@ const Window3DModelComponent = (props: {
         }
     }, [modelData, isAnimating, physicsEnabled]);
 
-    // âœ… CRITICAL PERFORMANCE FIX: Memoize exploded transforms to avoid recalculating EVERY FRAME
+    // ✅ CRITICAL PERFORMANCE FIX: Memoize exploded transforms to avoid recalculating EVERY FRAME
     // This saves 20-50ms per frame by calculating only when dependencies change
     const explodedTransforms = useMemo(() => {
         if (!explodedView || !modelData) return null;
@@ -806,9 +806,9 @@ const Window3DModelComponent = (props: {
             return;
         }
 
-        // âœ… PERFORMANCE FIX: Apply pre-calculated exploded transforms (no recalculation in render loop)
+        // ✅ PERFORMANCE FIX: Apply pre-calculated exploded transforms (no recalculation in render loop)
         if (explodedTransforms && groupRef.current) {
-            // âœ… PERFORMANCE: Limit traversal depth and use early exit
+            // ✅ PERFORMANCE: Limit traversal depth and use early exit
             let transformCount = 0;
             const MAX_TRANSFORMS_PER_FRAME = 100; // Performance guard
 
@@ -828,7 +828,7 @@ const Window3DModelComponent = (props: {
                         };
                         const interpolated = interpolateExplodedTransform(baseTransform, transform, 1.0);
 
-                        // âœ… HARDENED: Validate before applying
+                        // ✅ HARDENED: Validate before applying
                         if (interpolated && interpolated.position && interpolated.rotation && interpolated.scale) {
                             child.position.copy(interpolated.position);
                             child.rotation.copy(interpolated.rotation);
@@ -857,7 +857,7 @@ const Window3DModelComponent = (props: {
 
         // Animation progress: 0 = closed, 1 = fully open
         const rawProgress = isAnimating ? animationProgress : 0;
-        // âœ… ENHANCED: Apply easing for smooth animations
+        // ✅ ENHANCED: Apply easing for smooth animations
         const progress = easeInOutCubic(rawProgress);
 
         // FIXED: Check if there are any sashes - if not, skip animation (fixed frame)
@@ -869,7 +869,7 @@ const Window3DModelComponent = (props: {
 
         // Development-only debug logging (first few frames)
         if (import.meta.env.DEV && isAnimating && progress > 0 && progress < 0.05) {
-            console.debug('[Animation] ðŸŽ¯ useFrame is running!', {
+            console.debug('[Animation] 🎯 useFrame is running!', {
                 progress: progress.toFixed(3),
                 animationProgress: animationProgress.toFixed(3),
                 delta: delta.toFixed(4),
@@ -903,7 +903,7 @@ const Window3DModelComponent = (props: {
 
                 // Development-only debug logging (first sash on first frame)
                 if (import.meta.env.DEV && sashIndex === 0 && isAnimating && progress > 0 && progress < 0.01) {
-                    console.debug('[Animation] ðŸªŸ Sash 0 details:', {
+                    console.debug('[Animation] 🪟 Sash 0 details:', {
                         hasOpeningPath: !!openingPath,
                         restPosition: restPosition.toArray(),
                         restRotation: restRotation.toArray(),
@@ -928,7 +928,7 @@ const Window3DModelComponent = (props: {
                     return;
                 }
 
-                // âœ… ENHANCED: Single function for mechanism detection with clear priority
+                // ✅ ENHANCED: Single function for mechanism detection with clear priority
                 const pattern = windowUnit.presetId ? getPatternById(windowUnit.presetId) : null;
                 const mechanism = detectOpeningMechanism(
                     windowUnit,
@@ -946,7 +946,7 @@ const Window3DModelComponent = (props: {
 
                 // Development-only debug logging (first sash only, first frame)
                 if (import.meta.env.DEV && sashIndex === 0 && isAnimating && progress > 0 && progress < 0.01) {
-                    console.debug('[Animation] ðŸ” Mechanism detection:', {
+                    console.debug('[Animation] 🔍 Mechanism detection:', {
                         mechanism,
                         patternId: windowUnit.presetId || 'none',
                         patternName: pattern?.name || 'none',
@@ -961,7 +961,7 @@ const Window3DModelComponent = (props: {
                 }
 
                 if (isSliding) {
-                    // âœ… PERFORMANCE: Clamp progress to avoid over-animation
+                    // ✅ PERFORMANCE: Clamp progress to avoid over-animation
                     const clampedProgress = Math.max(0, Math.min(1, progress));
 
                     // Sliding windows: translate horizontally
@@ -973,7 +973,7 @@ const Window3DModelComponent = (props: {
                         const newY = restPosition.y;
                         const newZ = restPosition.z;
 
-                        // âœ… HARDENED: Validate calculated position
+                        // ✅ HARDENED: Validate calculated position
                         if (isFinite(newX) && isFinite(newY) && isFinite(newZ)) {
                             child.position.set(newX, newY, newZ);
                         } else {
@@ -1005,7 +1005,7 @@ const Window3DModelComponent = (props: {
                     const cellX = restPosition.x; // Sash center X
                     const cellY = restPosition.y; // Sash center Y
 
-                    // âœ… ENHANCED: Extract hinge matching to utility function
+                    // ✅ ENHANCED: Extract hinge matching to utility function
                     // Normalize openingDirection to 'left' | 'right' for findSashHinges
                     const normalizedDirection: 'left' | 'right' =
                         openingDirection === 'left' || openingDirection === 'inward' ? 'left' :
@@ -1038,7 +1038,7 @@ const Window3DModelComponent = (props: {
                             restPosition.z // Same Z as sash
                         );
 
-                        // âœ… PERFORMANCE: Clamp progress
+                        // ✅ PERFORMANCE: Clamp progress
                         const clampedProgress = Math.max(0, Math.min(1, progress));
 
                         // Calculate rotation angle
@@ -1051,7 +1051,7 @@ const Window3DModelComponent = (props: {
                             // 1. Translate to pivot point
                             const relativePos = restPosition.clone().sub(pivotPoint);
 
-                            // âœ… HARDENED: Validate relative position
+                            // ✅ HARDENED: Validate relative position
                             if (!isFinite(relativePos.x) || !isFinite(relativePos.y) || !isFinite(relativePos.z)) {
                                 if (import.meta.env.DEV) {
                                     console.warn('[Window3D] Invalid relative position for casement rotation');
@@ -1068,7 +1068,7 @@ const Window3DModelComponent = (props: {
                             const rotatedX = relativePos.x * cos - relativePos.z * sin;
                             const rotatedZ = relativePos.x * sin + relativePos.z * cos;
 
-                            // âœ… HARDENED: Validate rotated position
+                            // ✅ HARDENED: Validate rotated position
                             if (!isFinite(rotatedX) || !isFinite(rotatedZ)) {
                                 if (import.meta.env.DEV) {
                                     console.warn('[Window3D] Invalid rotated position');
@@ -1084,7 +1084,7 @@ const Window3DModelComponent = (props: {
                             const finalY = restPosition.y; // Y stays the same (vertical rotation)
                             const finalZ = pivotPoint.z + rotatedZ;
 
-                            // âœ… HARDENED: Final validation
+                            // ✅ HARDENED: Final validation
                             if (isFinite(finalX) && isFinite(finalY) && isFinite(finalZ) && isFinite(newRotY)) {
                                 child.position.set(finalX, finalY, finalZ);
                                 child.rotation.set(restRotation.x, newRotY, restRotation.z);
@@ -1103,8 +1103,8 @@ const Window3DModelComponent = (props: {
                             child.rotation.copy(restRotation);
                         }
 
-                        // âœ… ENHANCED: Animate hinges (hardware) with sash rotation
-                        // âœ… PERFORMANCE: Limit hardware traversal
+                        // ✅ ENHANCED: Animate hinges (hardware) with sash rotation
+                        // ✅ PERFORMANCE: Limit hardware traversal
                         let hardwareTraverseCount = 0;
                         groupRef.current.traverse((hardwareChild) => {
                             if (hardwareTraverseCount++ > 50) return; // Limit hardware searches
@@ -1129,15 +1129,15 @@ const Window3DModelComponent = (props: {
 
                         // Development-only debug logging (first sash)
                         if (import.meta.env.DEV && sashIndex === 0 && isAnimating && progress > 0.49 && progress < 0.51) {
-                            console.debug('[Animation] ðŸ”© Casement pivot animation:', {
+                            console.debug('[Animation] 🔩 Casement pivot animation:', {
                                 pivotPoint: pivotPoint.toArray().map(v => v.toFixed(3)),
                                 hingesFound: sashHinges.length,
                                 openingDirection,
-                                newRotY: (newRotY * 180 / Math.PI).toFixed(1) + 'Â°'
+                                newRotY: (newRotY * 180 / Math.PI).toFixed(1) + '°'
                             });
                         }
                     } else {
-                        // âœ… PERFORMANCE: Clamp progress
+                        // ✅ PERFORMANCE: Clamp progress
                         const clampedProgress = Math.max(0, Math.min(1, progress));
 
                         // Fallback: no hinges found, use sash center as pivot
@@ -1153,7 +1153,7 @@ const Window3DModelComponent = (props: {
                             const offsetX = Math.sin(newRotY) * pivotOffset * clampedProgress;
                             const offsetZ = (Math.cos(newRotY) * pivotOffset * clampedProgress) - (pivotOffset * clampedProgress);
 
-                            // âœ… HARDENED: Validate calculated position
+                            // ✅ HARDENED: Validate calculated position
                             if (isFinite(offsetX) && isFinite(offsetZ) && isFinite(newRotY)) {
                                 child.position.set(
                                     restPosition.x + offsetX,
@@ -1186,7 +1186,7 @@ const Window3DModelComponent = (props: {
 
         // Development-only debug logging (no sashes found)
         if (import.meta.env.DEV && isAnimating && animatedCount === 0 && progress > 0.1) {
-            console.warn('[Animation] âš ï¸ No animatable sashes found!', {
+            console.warn('[Animation] ⚠️ No animatable sashes found!', {
                 sashesInModel: modelData.sashes.length,
                 groupChildren: groupRef.current.children.length,
                 allUserData: Array.from(groupRef.current.children).map(c => ({
@@ -1203,14 +1203,14 @@ const Window3DModelComponent = (props: {
         return generateHardwarePlaceholders(windowUnit);
     }, [windowUnit]);
 
-    // âœ… ENHANCED: Load detailed hardware models
-    // âœ… PERFORMANCE: Memoize hardware models state
+    // ✅ ENHANCED: Load detailed hardware models
+    // ✅ PERFORMANCE: Memoize hardware models state
     const [hardwareModels, setHardwareModels] = useState<Map<string, Group>>(new Map());
     const hardwareModelsLoadingRef = useRef<Set<string>>(new Set());
 
     useEffect(() => {
         const loadHardwareModels = async () => {
-            // âœ… PERFORMANCE: Skip if already loading or no placeholders
+            // ✅ PERFORMANCE: Skip if already loading or no placeholders
             if (hardwarePlaceholders.length === 0) {
                 return;
             }
@@ -1218,18 +1218,18 @@ const Window3DModelComponent = (props: {
             const models = new Map<string, Group>();
             const types = new Set(hardwarePlaceholders.map(hw => hw.type));
 
-            // âœ… PERFORMANCE: Load models in parallel with concurrency limit
+            // ✅ PERFORMANCE: Load models in parallel with concurrency limit
             const loadPromises: Promise<void>[] = [];
             const MAX_CONCURRENT_LOADS = 3;
             let activeLoads = 0;
 
             for (const type of types) {
-                // âœ… PERFORMANCE: Skip if already loaded
+                // ✅ PERFORMANCE: Skip if already loaded
                 if (hardwareModels.has(type) || hardwareModelsLoadingRef.current.has(type)) {
                     continue;
                 }
 
-                // âœ… PERFORMANCE: Limit concurrent loads
+                // ✅ PERFORMANCE: Limit concurrent loads
                 if (activeLoads >= MAX_CONCURRENT_LOADS) {
                     await Promise.race(loadPromises);
                 }
@@ -1258,7 +1258,7 @@ const Window3DModelComponent = (props: {
 
             await Promise.all(loadPromises);
 
-            // âœ… PERFORMANCE: Only update state if models changed
+            // ✅ PERFORMANCE: Only update state if models changed
             if (models.size > 0) {
                 setHardwareModels(prev => {
                     const merged = new Map(prev);
@@ -1270,7 +1270,7 @@ const Window3DModelComponent = (props: {
 
         void loadHardwareModels();
 
-        // âœ… MEMORY: Cleanup on unmount - capture ref value at effect time
+        // ✅ MEMORY: Cleanup on unmount - capture ref value at effect time
         const loadingRefAtEffectTime = hardwareModelsLoadingRef.current;
         return () => {
             if (loadingRefAtEffectTime) {
@@ -1286,9 +1286,9 @@ const Window3DModelComponent = (props: {
         types.forEach(type => {
             materials[type] = new MeshStandardMaterial({
                 color: getHardwareColor(type),
-                metalness: 0.85, // âœ… ENHANCED: More metallic
-                roughness: 0.2, // âœ… ENHANCED: More polished
-                envMapIntensity: 1.5, // âœ… ENHANCED: Better reflections
+                metalness: 0.85, // ✅ ENHANCED: More metallic
+                roughness: 0.2, // ✅ ENHANCED: More polished
+                envMapIntensity: 1.5, // ✅ ENHANCED: Better reflections
             });
         });
         return materials;
@@ -1540,7 +1540,7 @@ const Window3DModelComponent = (props: {
     );
 };
 
-// âœ… PERFORMANCE FIX: Export memoized version with custom comparison
+// ✅ PERFORMANCE FIX: Export memoized version with custom comparison
 export const Window3DModel = React.memo(Window3DModelComponent, (prevProps, nextProps) => {
     // Only re-render if these specific props change (ignore camera movements)
     return (
@@ -1633,7 +1633,7 @@ function WindowControls({
                                             variant={isAnimating ? 'destructive' : 'default'}
                                             onClick={() => {
                                                 if (import.meta.env.DEV) {
-                                                    console.debug('[Animation] ðŸŽ® Play button clicked!', {
+                                                    console.debug('[Animation] 🎮 Play button clicked!', {
                                                         currentState: isAnimating,
                                                         willSetTo: !isAnimating
                                                     });
@@ -1641,7 +1641,7 @@ function WindowControls({
                                                 setIsAnimating(!isAnimating);
                                                 if (!isAnimating) {
                                                     if (import.meta.env.DEV) {
-                                                        console.debug('[Animation] ðŸ”„ Resetting progress to 0');
+                                                        console.debug('[Animation] 🔄 Resetting progress to 0');
                                                     }
                                                     setAnimationProgress(0);
                                                 }
@@ -1999,7 +1999,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     // Development-only debug logging
     useEffect(() => {
         if (import.meta.env.DEV) {
-            console.debug('[Animation] ðŸš€ Window3DGenerator MAIN COMPONENT MOUNTED');
+            console.debug('[Animation] 🚀 Window3DGenerator MAIN COMPONENT MOUNTED');
         }
     }, []);
     const [showMeasurements, setShowMeasurements] = useState(false);
@@ -2091,13 +2091,13 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     useEffect(() => {
         if (!isAnimating) {
             if (import.meta.env.DEV) {
-                console.debug('[Animation] â¸ï¸ Animation stopped or not started');
+                console.debug('[Animation] ⏸️ Animation stopped or not started');
             }
             return;
         }
 
         if (import.meta.env.DEV) {
-            console.debug('[Animation] â–¶ï¸ Animation STARTED!', {
+            console.debug('[Animation] ▶️ Animation STARTED!', {
                 isAnimating,
                 animationProgress,
                 timestamp: Date.now()
@@ -2115,14 +2115,14 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
             // Development-only debug logging (progress every 10%)
             if (import.meta.env.DEV && Math.floor(progress * 10) !== Math.floor((progress - 0.01) * 10)) {
-                console.debug('[Animation] ðŸ“Š Progress:', (progress * 100).toFixed(0) + '%');
+                console.debug('[Animation] 📊 Progress:', (progress * 100).toFixed(0) + '%');
             }
 
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
                 if (import.meta.env.DEV) {
-                    console.debug('[Animation] âœ… Animation COMPLETE!');
+                    console.debug('[Animation] ✅ Animation COMPLETE!');
                 }
                 setIsAnimating(false);
             }
@@ -2131,7 +2131,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
         const animationFrame = requestAnimationFrame(animate);
         return () => {
             if (import.meta.env.DEV) {
-                console.debug('[Animation] ðŸ›‘ Animation cleanup');
+                console.debug('[Animation] 🛑 Animation cleanup');
             }
             cancelAnimationFrame(animationFrame);
         };
@@ -2436,7 +2436,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
 Window3DGenerator.displayName = 'Window3DGenerator';
 
-// âœ… HARDENING: Wrapper component with error boundary for production
+// ✅ HARDENING: Wrapper component with error boundary for production
 // Properly forwards ref while wrapping with ErrorBoundary
 const Window3DGeneratorWithErrorBoundary = forwardRef<Window3DGeneratorRef, Window3DGeneratorProps>((props, ref) => (
     <ErrorBoundary level="component">

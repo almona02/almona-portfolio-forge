@@ -198,13 +198,13 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
         icon: "Factory",
         items: user ? [
           { 
-            name: 'ðŸ‡ªðŸ‡¬ Egypt Pilot', 
+            name: '🇪🇬 Egypt Pilot', 
             path: "/fabricator-workflow", 
             description: "Panda 50 system validation",
             icon: "Factory"
           },
           { 
-            name: 'ðŸ‡¹ðŸ‡· Turkish Pilot', 
+            name: '🇹🇷 Turkish Pilot', 
             path: "/fabricator/profile-studio", 
             description: "Custom profile import & tuning",
             icon: "Factory"
@@ -308,7 +308,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
     return location.pathname.startsWith(path);
   }, [location.pathname]);
 
-  // Badge styling â€“ harmonized colors and tighter font
+  // Badge styling – harmonized colors and tighter font
   const getBadgeStyles = useCallback((badge: NavItem["badge"]) => {
     const baseStyles = "text-[10px] px-2 py-0.5 rounded-full font-semibold tracking-tight shadow-sm";
     switch (badge) {

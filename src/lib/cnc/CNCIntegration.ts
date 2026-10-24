@@ -114,7 +114,7 @@ export class CNCIntegration {
       status: machine.status,
       metrics: {
         vibration: 0.2, // mm/s
-        temperature: 45, // Â°C
+        temperature: 45, // °C
         spindleSpeed: 3000, // RPM
         feedRate: 2000, // mm/min
         coolantFlow: 2.0, // L/min
@@ -326,7 +326,7 @@ export class CNCIntegration {
     cuts.forEach((cut, index) => {
       lines.push(
         `${index + 1}. Length: ${cut.length.toFixed(1)}mm, ` +
-        `Angle: ${cut.angle}Â°, ` +
+        `Angle: ${cut.angle}°, ` +
         `Speed: ${cut.parameters.sawSpeed}RPM, ` +
         `Feed: ${cut.parameters.feedRate}mm/min`
       );

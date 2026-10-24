@@ -371,7 +371,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder={t('customers.filters.search_placeholder', 'Name, contact, email, phoneâ€¦')}
+                  placeholder={t('customers.filters.search_placeholder', 'Name, contact, email, phone…')}
                   className="h-8 text-xs bg-[#0f0f0f]/60 border-amber-600/30"
                 />
               </div>
@@ -805,7 +805,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                   onClick={() => setCurrentStep(2)}
                 >
                   Next
-                  <span className="ml-1">â†’</span>
+                  <span className="ml-1">→</span>
                 </Button>
               ) : (
                 <Button

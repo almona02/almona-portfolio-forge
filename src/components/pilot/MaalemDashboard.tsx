@@ -57,19 +57,19 @@ export const MaalemDashboard: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-12 h-12 rounded-full bg-[#FFD700] flex items-center justify-center border-4 border-white shadow-lg">
-              <span className="text-2xl font-bold text-[#003366]">Ù…</span>
+              <span className="text-2xl font-bold text-[#003366]">م</span>
             </div>
             <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
           <div>
-            <h1 className="typography-h1 text-2xl font-cairo">ÙˆØ§Ø¬Ù‡Ø© Ø§Ù„Ù…Ø¹Ù„Ù… Ø§Ù„Ø°Ù‡Ø¨ÙŠØ©</h1>
-            <p className="text-xs text-yellow-100 font-cairo">Ø¯Ù‚Ø© Ø¥Ù†ØªØ§Ø¬ÙŠØ© Ù©Ù©.Ù¨Ùª - Ù…Ø¹ØªÙ…Ø¯Ø©</p>
+            <h1 className="typography-h1 text-2xl font-cairo">واجهة المعلم الذهبية</h1>
+            <p className="text-xs text-yellow-100 font-cairo">دقة إنتاجية ٩٩.٨٪ - معتمدة</p>
           </div>
         </div>
         <div className="hidden md:flex items-center gap-4 text-sm">
           <div className="bg-black/30 px-3 py-1 rounded-full flex items-center gap-2">
-            <span className="text-yellow-300">ðŸ“ˆ</span>
-            <span className="font-mono">Ø³Ø¹Ø± Ø§Ù„Ø£Ù„ÙˆÙ…Ù†ÙŠÙˆÙ…: {getLiveAluminumPrice().toLocaleString('ar-EG')} Ø¬.Ù…</span>
+            <span className="text-yellow-300">📈</span>
+            <span className="font-mono">سعر الألومنيوم: {getLiveAluminumPrice().toLocaleString('ar-EG')} ج.م</span>
           </div>
         </div>
       </div>
@@ -85,24 +85,24 @@ export const MaalemDashboard: React.FC = () => {
           <div className="mb-6 space-y-2">
             {filteredSystems.map(sys => (
               <div key={sys.id} onClick={() => setInputs({...inputs, system: sys.id as any})} className={`p-3 rounded border-2 cursor-pointer transition-all ${inputs.system === sys.id ? 'border-[#003366] bg-blue-50' : 'border-gray-200'}`}>
-                <div className="flex justify-between font-bold text-[#003366]"><span>{sys.nameArabic}</span>{inputs.system === sys.id && <span>âœ“</span>}</div>
+                <div className="flex justify-between font-bold text-[#003366]"><span>{sys.nameArabic}</span>{inputs.system === sys.id && <span>✓</span>}</div>
                 <p className="text-xs text-gray-500 mt-1">{sys.description}</p>
               </div>
             ))}
           </div>
           <div className="mb-6">
-            <label className="typography-label block font-bold text-gray-700 mb-2">Ø§Ù„Ù…Ù‚Ø§Ø³Ø§Øª (Ù…Ù…)</label>
+            <label className="typography-label block font-bold text-gray-700 mb-2">المقاسات (مم)</label>
             <div className="grid grid-cols-2 gap-3 mb-3">
-              <input type="number" value={inputs.width} onChange={(e) => setInputs({...inputs, width: +e.target.value})} className="w-full p-2 text-xl font-mono text-center border rounded focus:border-[#003366]" placeholder="Ø§Ù„Ø¹Ø±Ø¶"/>
-              <input type="number" value={inputs.height} onChange={(e) => setInputs({...inputs, height: +e.target.value})} className="w-full p-2 text-xl font-mono text-center border rounded focus:border-[#003366]" placeholder="Ø§Ù„Ø§Ø±ØªÙØ§Ø¹"/>
+              <input type="number" value={inputs.width} onChange={(e) => setInputs({...inputs, width: +e.target.value})} className="w-full p-2 text-xl font-mono text-center border rounded focus:border-[#003366]" placeholder="العرض"/>
+              <input type="number" value={inputs.height} onChange={(e) => setInputs({...inputs, height: +e.target.value})} className="w-full p-2 text-xl font-mono text-center border rounded focus:border-[#003366]" placeholder="الارتفاع"/>
             </div>
             <div className="bg-yellow-50 border border-yellow-200 p-3 rounded flex justify-between items-center">
-              <div><span className="text-sm font-bold text-gray-800">Ø®ØµÙ… Ø§Ù„Ø®Ù„ÙˆØµ ({inputs.wallDeduction}mm)</span><div className="text-xs text-gray-500 mt-1">Ø§Ù„ØµØ§ÙÙŠ: {manufacturingDims.width} Ã— {manufacturingDims.height}</div></div>
+              <div><span className="text-sm font-bold text-gray-800">خصم الخلوص ({inputs.wallDeduction}mm)</span><div className="text-xs text-gray-500 mt-1">الصافي: {manufacturingDims.width} × {manufacturingDims.height}</div></div>
               <input type="checkbox" checked={inputs.measurementMode === 'hole'} onChange={(e) => setInputs({...inputs, measurementMode: e.target.checked ? 'hole' : 'manufacturing'})} className="w-5 h-5 accent-[#003366]" />
             </div>
           </div>
           <div className="mb-6">
-            <label className="typography-label block font-bold text-gray-700 mb-2">Ø§Ù„Ø¹Ø¯Ø¯</label>
+            <label className="typography-label block font-bold text-gray-700 mb-2">العدد</label>
             <div className="flex items-center gap-4">
               <button onClick={() => setInputs(p => ({...p, count: Math.max(1, p.count-1)}))} className="w-10 h-10 bg-gray-200 rounded font-bold">-</button>
               <span className="text-2xl font-mono font-bold">{inputs.count}</span>
@@ -125,16 +125,16 @@ export const MaalemDashboard: React.FC = () => {
 
         {/* LEFT: RESULTS */}
         <div className="w-72 bg-gradient-to-b from-white to-blue-50 border-r border-[#FFD700]/30 p-6 flex flex-col z-20 shadow-xl">
-          <h2 className="typography-h2 text-lg text-[#003366] mb-4">Ù…Ù„Ø®Øµ Ø§Ù„ØªÙƒÙ„ÙØ© ðŸ’°</h2>
+          <h2 className="typography-h2 text-lg text-[#003366] mb-4">ملخص التكلفة 💰</h2>
           <div className="space-y-3 text-sm flex-1">
             <div className="bg-white p-3 rounded-lg border border-blue-100">
-              <div className="flex justify-between font-medium"><span>Ø§Ù„Ø®Ø§Ù…Ø§Øª</span><span className="font-mono font-bold">{costs.material.toLocaleString('ar-EG')}</span></div>
+              <div className="flex justify-between font-medium"><span>الخامات</span><span className="font-mono font-bold">{costs.material.toLocaleString('ar-EG')}</span></div>
             </div>
             <div className="bg-white p-3 rounded-lg border border-blue-100">
-              <div className="flex justify-between font-medium"><span>Ø§Ù„Ù…ØµÙ†Ø¹ÙŠØ©</span><span className="font-mono font-bold">{costs.labor.toLocaleString('ar-EG')}</span></div>
+              <div className="flex justify-between font-medium"><span>المصنعية</span><span className="font-mono font-bold">{costs.labor.toLocaleString('ar-EG')}</span></div>
             </div>
             <div className="mt-4 pt-3 border-t border-dashed border-[#003366]/30">
-              <div className="flex justify-between items-center text-lg font-bold text-[#003366]"><span>Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ</span><span className="font-mono">{costs.total.toLocaleString('ar-EG')}</span></div>
+              <div className="flex justify-between items-center text-lg font-bold text-[#003366]"><span>الإجمالي</span><span className="font-mono">{costs.total.toLocaleString('ar-EG')}</span></div>
             </div>
           </div>
           <button onClick={async () => {
@@ -142,7 +142,7 @@ export const MaalemDashboard: React.FC = () => {
               await generateManualCuttingPacket(inputs, optimization, { ...costs, profiles: costs.material * 0.6, glass: costs.material * 0.3, accessories: costs.material * 0.1 });
             }
           }} disabled={validation.status === 'error' || !optimization} className="mt-4 w-full py-4 bg-[#003366] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-3">
-            <span className="text-xl">ðŸ–¨ï¸</span><div><div className="font-bold">Ø·Ø¨Ø§Ø¹Ø© Ø£Ù…Ø± Ø§Ù„Ø´ØºÙ„</div><div className="text-xs font-normal opacity-80">Ø¯Ù‚Ø© Ù©Ù©.Ù¨Ùª</div></div>
+            <span className="text-xl">🖨️</span><div><div className="font-bold">طباعة أمر الشغل</div><div className="text-xs font-normal opacity-80">دقة ٩٩.٨٪</div></div>
           </button>
         </div>
       </div>

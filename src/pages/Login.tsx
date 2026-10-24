@@ -149,7 +149,7 @@ const Login = () => {
                     <Label htmlFor="password" className="text-amber-100/80 font-medium">{t('auth.password', 'Password')}</Label>
                     <PasswordInput
                       id="password"
-                      placeholder={t('auth.password_placeholder', 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢')}
+                      placeholder={t('auth.password_placeholder', '••••••••')}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required

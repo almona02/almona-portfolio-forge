@@ -169,7 +169,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
                       </Badge>
                     </div>
                     <div className="text-xs text-gray-400">
-                      {listing.length.toFixed(0)}mm Â· {listing.price.toFixed(2)} {listing.currency}
+                      {listing.length.toFixed(0)}mm · {listing.price.toFixed(2)} {listing.currency}
                     </div>
                   </div>
                   <Button

@@ -343,7 +343,7 @@ export const SensorDataDashboard: React.FC<{
                   <div>
                     <div className="font-medium">Connected to IoT Platform</div>
                     <div className="text-sm text-gray-400">
-                      Real-time data streaming â€¢ {sensorData.length} readings received
+                      Real-time data streaming • {sensorData.length} readings received
                     </div>
                   </div>
                 </>
@@ -353,7 +353,7 @@ export const SensorDataDashboard: React.FC<{
                   <div>
                     <div className="font-medium">IoT Connection Lost</div>
                     <div className="text-sm text-gray-400">
-                      Showing cached data â€¢ Attempting reconnection...
+                      Showing cached data • Attempting reconnection...
                     </div>
                   </div>
                 </>

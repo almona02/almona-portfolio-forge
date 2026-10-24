@@ -95,7 +95,7 @@ export const MaterialEfficiencyDashboard: React.FC<MaterialEfficiencyDashboardPr
                         <p className="text-xs text-gray-400 mb-1">Recommendations:</p>
                         <ul className="text-xs text-gray-300 space-y-1">
                           {forecast.recommendations.map((rec: string, idx: number) => (
-                            <li key={idx}>â€¢ {rec}</li>
+                            <li key={idx}>• {rec}</li>
                           ))}
                         </ul>
                       </div>

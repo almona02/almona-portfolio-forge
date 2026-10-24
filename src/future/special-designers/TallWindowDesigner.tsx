@@ -117,7 +117,7 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
           <Alert className="bg-yellow-900/20 border-yellow-800">
             <AlertTriangle className="h-4 w-4 text-yellow-500" />
             <AlertDescription className="text-yellow-300">
-              Window height ({totalHeight}mm) is â‰¤ 2400mm. Segmentation is not required.
+              Window height ({totalHeight}mm) is ≤ 2400mm. Segmentation is not required.
               Tall window segmentation is only needed for windows taller than 2.4m.
             </AlertDescription>
           </Alert>
@@ -369,7 +369,7 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                               <p className="text-white">{step.operation}</p>
                               <p className="text-gray-400 text-xs">
                                 {step.estimatedTime} min
-                                {step.segment && ` â€¢ Segment ${step.segment}`}
+                                {step.segment && ` • Segment ${step.segment}`}
                               </p>
                             </div>
                           </div>

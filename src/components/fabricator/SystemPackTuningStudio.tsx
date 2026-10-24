@@ -739,7 +739,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                 <div>
                   <h3 className="typography-h3 text-white mb-1">{systemPack.name}</h3>
                   {systemPackId?.startsWith('custom-pack-')&&<Button variant="outline" onClick={()=>void saveProfileNames()}>Save profile changes</Button>}
-                  <p className="text-slate-400 text-sm">{systemPack.manufacturer} â€¢ {systemPack.region.toUpperCase()}</p>
+                  <p className="text-slate-400 text-sm">{systemPack.manufacturer} • {systemPack.region.toUpperCase()}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Badge className={allProfilesTuned ? 'bg-green-500/20 text-green-300 border-green-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40'}>
@@ -842,7 +842,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                                   <Input aria-label={'Profile name '+profile.id} value={profile.name} disabled={!systemPackId?.startsWith('custom-pack-')} onChange={event=>{setSystemPack(previous=>previous?{...previous,profiles:previous.profiles.map(p=>p.id===profile.id?{...p,name:event.target.value}:p)}:previous);setHasUnsavedChanges(true);}} />
                                 </CardTitle>
                                 <CardDescription className="text-xs text-slate-400">
-                                  {profile.type} â€¢ {profile.material}
+                                  {profile.type} • {profile.material}
                                 </CardDescription>
                               </div>
                             </div>
@@ -857,7 +857,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                         <CardContent className="space-y-3">
                           <div className="text-xs text-slate-400 space-y-1">
                             {profile.width && profile.height && (
-                              <div>Dimensions: {profile.width} Ã— {profile.height} mm</div>
+                              <div>Dimensions: {profile.width} × {profile.height} mm</div>
                             )}
                             {profile.unitWeight && (
                               <div>Weight: {profile.unitWeight} kg/m</div>
@@ -960,8 +960,8 @@ export const SystemPackTuningStudio: React.FC = () => {
                                 {profile.type} Profile: {profile.name}
                               </CardTitle>
                               <CardDescription className="text-slate-400 mt-1">
-                                {profile.material} â€¢ {profile.unitWeight ? `${profile.unitWeight} kg/m` : 'Weight not set'}
-                                {profile.width && profile.height && ` â€¢ ${profile.width} Ã— ${profile.height} mm`}
+                                {profile.material} • {profile.unitWeight ? `${profile.unitWeight} kg/m` : 'Weight not set'}
+                                {profile.width && profile.height && ` • ${profile.width} × ${profile.height} mm`}
                               </CardDescription>
                             </div>
                             {tunedProfiles.has(profile.id) ? (
@@ -994,15 +994,15 @@ export const SystemPackTuningStudio: React.FC = () => {
                                 </p>
                                 <ul className="text-sm text-slate-300 space-y-2 mb-4">
                                   <li className="flex items-center gap-2">
-                                    <span className="text-amber-400">â€¢</span>
+                                    <span className="text-amber-400">•</span>
                                     <span>Cutting rules (kerf: {profile.micronConfig?.sawKerf || 4.5}mm, bar length: {profile.barLength || 6500}mm)</span>
                                   </li>
                                   <li className="flex items-center gap-2">
-                                    <span className="text-amber-400">â€¢</span>
+                                    <span className="text-amber-400">•</span>
                                     <span>Machining zones (slots, holes, milling operations)</span>
                                   </li>
                                   <li className="flex items-center gap-2">
-                                    <span className="text-amber-400">â€¢</span>
+                                    <span className="text-amber-400">•</span>
                                     <span>Calibration data (cut tolerances, assembly tolerances)</span>
                                   </li>
                                 </ul>
@@ -1117,7 +1117,7 @@ export const SystemPackTuningStudio: React.FC = () => {
               try {
                 // The tuningProfile.id may have been updated to a UUID in ProfileTuningStudio
                 const profileIdToFetch = tuningProfile.id;
-                console.log('ðŸ”„ Fetching updated profile data for ID:', profileIdToFetch);
+                console.log('🔄 Fetching updated profile data for ID:', profileIdToFetch);
 
                 // Fetch the updated profile from database
                 const { data, error } = await supabase
@@ -1140,10 +1140,10 @@ export const SystemPackTuningStudio: React.FC = () => {
                 let updatedProfileData: ProfileData = data;
 
                 if (error) {
-                  console.error('âŒ Error fetching updated profile:', error, { profileId: profileIdToFetch, tuningProfileId: tuningProfile.id });
+                  console.error('❌ Error fetching updated profile:', error, { profileId: profileIdToFetch, tuningProfileId: tuningProfile.id });
                   // If the profile ID changed, try to find it by name
                   if (error.code === 'PGRST116') { // Not found
-                    console.log('ðŸ” Profile not found by ID, trying to find by name...');
+                    console.log('🔍 Profile not found by ID, trying to find by name...');
                     const { data: profilesByName, error: nameError } = await supabase
                       .from('fabricator_profiles')
                       .select('*')
@@ -1153,15 +1153,15 @@ export const SystemPackTuningStudio: React.FC = () => {
                       .limit(1);
 
                     if (nameError) {
-                      console.error('âŒ Error fetching by name:', nameError);
+                      console.error('❌ Error fetching by name:', nameError);
                       return;
                     }
 
                     if (profilesByName && (profilesByName as any[]).length > 0 && (profilesByName as any[])[0] && (profilesByName as any[])[0].id) {
                       updatedProfileData = (profilesByName as any[])[0];
-                      console.log('âœ… Found profile by name:', (updatedProfileData as any).id);
+                      console.log('✅ Found profile by name:', (updatedProfileData as any).id);
                     } else {
-                      console.error('âŒ Profile not found by name either');
+                      console.error('❌ Profile not found by name either');
                       return;
                     }
                   } else {
@@ -1171,7 +1171,7 @@ export const SystemPackTuningStudio: React.FC = () => {
 
                 // Ensure we have valid profile data before updating
                 if (!updatedProfileData) {
-                  console.error('âŒ No profile data available to update system pack');
+                  console.error('❌ No profile data available to update system pack');
                   return;
                 }
 
@@ -1183,7 +1183,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                 const updatedProfiles = systemPack.profiles.map(p => {
                   // Match by the original tuningProfile ID or by name if ID changed
                   if (p.id === tuningProfile.id || (p.name === tuningProfile.name && p.id !== profileData?.id)) {
-                    console.log('ðŸ”„ Updating system pack profile:', { oldId: p.id, newId: profileData?.id, name: p.name });
+                    console.log('🔄 Updating system pack profile:', { oldId: p.id, newId: profileData?.id, name: p.name });
                     return {
                       ...p,
                       // Update the ID to the database UUID
@@ -1219,7 +1219,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                 });
                 setTunedProfiles(tuned);
 
-                console.log('âœ… System pack updated with database changes');
+                console.log('✅ System pack updated with database changes');
               } catch (err) {
                 console.error('Error updating system pack after profile save:', err);
               }

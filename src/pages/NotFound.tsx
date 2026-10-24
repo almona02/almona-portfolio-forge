@@ -222,7 +222,7 @@ const NotFound = () => {
 
           {/* Easter egg for developers */}
           <div className="mt-6 text-xs text-gray-400">
-            <p>PS: Check the console for technical details ðŸ› ï¸</p>
+            <p>PS: Check the console for technical details 🛠️</p>
           </div>
         </div>
       </div>

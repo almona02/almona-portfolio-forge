@@ -461,7 +461,7 @@ export function AdvancedModelViewer() {
                     <div className="bg-gray-800 p-3 rounded-lg">
                       <div className="text-sm text-gray-400 mb-1">Dimensions</div>
                       <div className="text-white text-sm">
-                        {selectedModel.dimensions.length} Ã— {selectedModel.dimensions.width} Ã— {selectedModel.dimensions.height}
+                        {selectedModel.dimensions.length} × {selectedModel.dimensions.width} × {selectedModel.dimensions.height}
                       </div>
                     </div>
                   )}

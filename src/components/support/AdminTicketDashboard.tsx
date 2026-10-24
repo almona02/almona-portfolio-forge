@@ -460,7 +460,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {loadingTickets ? <p role="status">Loading ticketsâ€¦</p> : !ticketsError && <DataTable
+          {loadingTickets ? <p role="status">Loading tickets…</p> : !ticketsError && <DataTable
             columns={columns}
             data={filteredTickets}
             searchKey="title"

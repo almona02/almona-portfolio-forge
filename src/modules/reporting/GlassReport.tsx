@@ -51,7 +51,7 @@ interface GlassSpecification {
   allowRotation90: boolean;
   glazingType: 'single' | 'double' | 'triple';
   paneCount: number;
-  totalArea: number; // mÂ²
+  totalArea: number; // m²
   glassThickness: number; // mm
   spacerThickness?: number; // mm
   spacerMaterial?: string;
@@ -71,7 +71,7 @@ interface GlassReportData {
   summary: {
     totalComponents: number;
     totalPanes: number;
-    totalArea: number; // mÂ²
+    totalArea: number; // m²
     totalWeight: number; // kg
     glazingTypes: {
       single: number;
@@ -151,7 +151,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
         glassHeight = component.height - 20;
       }
 
-      const area = (glassWidth * glassHeight) / 1_000_000; // Convert to mÂ²
+      const area = (glassWidth * glassHeight) / 1_000_000; // Convert to m²
       const totalComponentArea = area * paneCount;
       
       // Glass thickness: 5mm for single glazing, 4mm per pane for double/triple
@@ -163,7 +163,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
       const spacerMaterial = project.glazing?.spacerMaterial || 'warm_edge';
       const gasFill = project.glazing?.gasFill || 'argon';
       
-      // Calculate weight (glass density ~2.5 kg/mÂ² per mm thickness)
+      // Calculate weight (glass density ~2.5 kg/m² per mm thickness)
       const weight = totalComponentArea * glassThickness * 2.5;
       
       // Special requirements
@@ -196,7 +196,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
         cuttingDimensions: {
           width: glassWidth,
           height: glassHeight,
-          tolerance: 2, // Â±2mm tolerance
+          tolerance: 2, // ±2mm tolerance
         },
         weight,
       });
@@ -410,7 +410,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>{t('glass.totalArea', 'Total Area')}</CardDescription>
-            <CardTitle className="text-2xl">{reportData.summary.totalArea.toFixed(2)} mÂ²</CardTitle>
+            <CardTitle className="text-2xl">{reportData.summary.totalArea.toFixed(2)} m²</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -462,7 +462,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
                   </CardDescription>
                 </div>
                 <Badge variant="outline">
-                  {spec.totalArea.toFixed(2)} mÂ²
+                  {spec.totalArea.toFixed(2)} m²
                 </Badge>
               </div>
             </CardHeader>
@@ -524,11 +524,11 @@ export const GlassReport: React.FC<GlassReportProps> = ({
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
                     <span className="text-muted-foreground">{t('glass.width', 'Width')}: </span>
-                    {spec.cuttingDimensions.width} mm (Â±{spec.cuttingDimensions.tolerance} mm)
+                    {spec.cuttingDimensions.width} mm (±{spec.cuttingDimensions.tolerance} mm)
                   </div>
                   <div>
                     <span className="text-muted-foreground">{t('glass.height', 'Height')}: </span>
-                    {spec.cuttingDimensions.height} mm (Â±{spec.cuttingDimensions.tolerance} mm)
+                    {spec.cuttingDimensions.height} mm (±{spec.cuttingDimensions.tolerance} mm)
                   </div>
                   <div>
                     <span className="text-muted-foreground">{t('glass.weight', 'Weight')}: </span>
@@ -564,11 +564,11 @@ export const GlassReport: React.FC<GlassReportProps> = ({
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground mb-2">
-                    {sheet.width} Ã— {sheet.height} mm
+                    {sheet.width} × {sheet.height} mm
                   </div>
                   <div className="text-sm">
                     {t('glass.panesOnSheet', 'Panes on sheet')}: {sheet.panes.length} |{' '}
-                    {t('glass.waste', 'Waste')}: {sheet.waste.toFixed(2)} mÂ²
+                    {t('glass.waste', 'Waste')}: {sheet.waste.toFixed(2)} m²
                   </div>
                 </div>
               ))}
@@ -716,7 +716,7 @@ function optimizeGlassCutting(specifications: GlassSpecification[]): {
   sheets.forEach((sheet) => {
     const usedArea = calculateUsedArea(sheet);
     const sheetArea = sheet.width * sheet.height;
-    sheet.waste = (sheetArea - usedArea) / 1_000_000; // Convert to mÂ²
+    sheet.waste = (sheetArea - usedArea) / 1_000_000; // Convert to m²
     sheet.utilization = (usedArea / sheetArea) * 100;
   });
 

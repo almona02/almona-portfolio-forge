@@ -72,7 +72,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     }
   }, [useV2, effectivePoseId, currentProject, jobs, dispatch, setSelectedJob, setCurrentProject, setDesignData]);
 
-  // UP-06: resolve catalog profiles for the active pack only Ã¢â‚¬â€ never substitute ROCK60/first pack.
+  // UP-06: resolve catalog profiles for the active pack only — never substitute ROCK60/first pack.
   const profiles = useMemo<Profile[]>(
     () => catalogProfilesOrEmpty(currentProject?.systemPackId),
     [currentProject?.systemPackId],
@@ -159,7 +159,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     }
   }, [useV2, resolvedProjectId, jobs, navigate, dispatch, setSelectedJob]);
 
-  // Bare /studio/design (no ids) Ã¢â€ â€™ project/pose picker, not a dead-end alert
+  // Bare /studio/design (no ids) → project/pose picker, not a dead-end alert
   if (!projectId || !poseId) {
     const recent = jobs.slice(0, 12);
     return (
@@ -192,7 +192,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
                     className="block px-3 py-2 rounded border border-amber-900/40 hover:border-amber-600/60 text-sm truncate"
                     title={job.id}
                   >
-                    {job.projectCode || projKey} Ã‚Â·{' '}
+                    {job.projectCode || projKey} ·{' '}
                     {job.positionMeta?.posNumber || job.positionMeta?.roomOrZone || job.id.slice(0, 8)}
                   </Link>
                 </li>

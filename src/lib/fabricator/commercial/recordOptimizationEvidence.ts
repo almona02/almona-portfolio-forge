@@ -41,7 +41,7 @@ function countCuts(result: OptimizationResult): number {
   return (result.cuttingPlan ?? []).reduce((sum, plan) => sum + (plan.cuts?.length ?? 0), 0);
 }
 
-/** BOM → requiredCuts using physicalCutForOccurrence identity (`id:index`). */
+/** BOM ? requiredCuts using physicalCutForOccurrence identity (`id:index`). */
 export function requiredCutsFromBom(bom: CompleteBOM | null): EvidenceCutSpec[] {
   if (!bom?.profiles?.length) return [];
   return bom.profiles.flatMap((profile) => {

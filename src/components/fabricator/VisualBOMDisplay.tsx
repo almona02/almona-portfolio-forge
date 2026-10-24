@@ -4,7 +4,7 @@
  * Production-friendly BOM display with visual representation, cost breakdown,
  * workshop floor view, QR codes, and constitutional transparency.
  * 
- * Part of Journey 1 Polish: Measurement â†’ Design â†’ BOM
+ * Part of Journey 1 Polish: Measurement → Design → BOM
  * Week 1, Day 5: BOMGenerator Polish
  */
 
@@ -428,10 +428,10 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                                 <span>{Math.round(item.totalLength)}{t('engineering_bay.units.mm', 'mm')}</span>
                               )}
                               {item.totalWeight > 0 && (
-                                <span>â€¢ {item.totalWeight.toFixed(2)}{t('engineering_bay.units.kg', 'kg')}</span>
+                                <span>• {item.totalWeight.toFixed(2)}{t('engineering_bay.units.kg', 'kg')}</span>
                               )}
                               {item.totalCost > 0 && (
-                                <span>â€¢ {item.totalCost.toFixed(2)} {t('engineering_bay.currency', 'EGP')}</span>
+                                <span>• {item.totalCost.toFixed(2)} {t('engineering_bay.currency', 'EGP')}</span>
                               )}
                             </div>
                           </div>
@@ -488,9 +488,9 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                         {t('engineering_bay.glass_sash', 'Sash')} {glass.sashIndex}
                       </span>
                       <div className={cn('mt-1', isWorkshopMode ? 'text-base' : 'text-xs text-amber-600/70')}>
-                        {Math.round(glass.width)}Ã—{Math.round(glass.height)}mm
-                        {' â€¢ '}
-                        {glass.area.toFixed(2)}mÂ²
+                        {Math.round(glass.width)}×{Math.round(glass.height)}mm
+                        {' • '}
+                        {glass.area.toFixed(2)}m²
                       </div>
                     </div>
                     <Badge variant="outline" className="bg-amber-950/30 border-amber-500/40 text-amber-300">
@@ -510,7 +510,7 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                     {t('engineering_bay.total_glass_area', 'Total Glass Area')}:
                   </span>
                   <span className={cn('font-bold font-mono', isWorkshopMode ? 'text-xl' : 'text-sm text-amber-400')}>
-                    {glassDetails.totalGlassArea.toFixed(2)}mÂ²
+                    {glassDetails.totalGlassArea.toFixed(2)}m²
                   </span>
                 </div>
               </div>
@@ -534,7 +534,7 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                 {t('engineering_bay.unit_dimensions', 'Dimensions')}
               </div>
               <div className={cn('font-mono font-bold text-amber-200', isWorkshopMode ? 'text-xl' : 'text-sm')}>
-                {Math.round(windowUnit.overallWidth)}Ã—{Math.round(windowUnit.overallHeight)}mm
+                {Math.round(windowUnit.overallWidth)}×{Math.round(windowUnit.overallHeight)}mm
               </div>
             </div>
             <div>

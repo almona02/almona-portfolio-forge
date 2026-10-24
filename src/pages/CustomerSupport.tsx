@@ -233,16 +233,16 @@ const CustomerSupport: React.FC = () => {
           {(filters.status || filters.type || filters.priority || searchTerm) && (
             <div className="flex flex-wrap gap-2 pt-2">
               {filters.status?.map(s => (
-                <Badge key={s} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('status', s)}>{s} âœ•</Badge>
+                <Badge key={s} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('status', s)}>{s} ✕</Badge>
               ))}
               {filters.type?.map(t => (
-                <Badge key={t} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('type', t)}>{t.replace('_',' ')} âœ•</Badge>
+                <Badge key={t} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('type', t)}>{t.replace('_',' ')} ✕</Badge>
               ))}
               {filters.priority?.map(p => (
-                <Badge key={p} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('priority', p)}>{p} âœ•</Badge>
+                <Badge key={p} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('priority', p)}>{p} ✕</Badge>
               ))}
               {searchTerm && (
-                <Badge variant="outline" className="cursor-pointer" onClick={() => setSearchTerm('')}>Search: {searchTerm} âœ•</Badge>
+                <Badge variant="outline" className="cursor-pointer" onClick={() => setSearchTerm('')}>Search: {searchTerm} ✕</Badge>
               )}
             </div>
           )}

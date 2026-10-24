@@ -26,10 +26,10 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
   const [showAccessoriesReport, setShowAccessoriesReport] = useState(false);
   const [showGlassReport, setShowGlassReport] = useState(false);
   
-  // âœ… PERFORMANCE: Memoize pricing engine instance
+  // ✅ PERFORMANCE: Memoize pricing engine instance
   const pricingEngine = useMemo(() => new PricingEngine(), []);
 
-  // âœ… PERFORMANCE: Memoize handlers to prevent unnecessary re-renders
+  // ✅ PERFORMANCE: Memoize handlers to prevent unnecessary re-renders
   const handleGenerateCuttingList = useCallback(async () => {
     if (!project || !optimization || generatingReport) return;
 
@@ -281,7 +281,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
         {project && optimization && (
           <div className="pt-2 border-t border-gray-700">
             <p className="text-[11px] text-gray-400 text-center">
-              Optimization ready â€“ job can be sent to production.
+              Optimization ready – job can be sent to production.
             </p>
           </div>
         )}
@@ -344,10 +344,10 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
 
 QuickReportsPanelComponent.displayName = 'QuickReportsPanel';
 
-// âœ… HARDENING: Memoize component for performance
+// ✅ HARDENING: Memoize component for performance
 const QuickReportsPanelMemo = memo(QuickReportsPanelComponent);
 
-// âœ… HARDENING: Export with error boundary for production
+// ✅ HARDENING: Export with error boundary for production
 export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = (props) => (
   <ErrorBoundary level="component">
     <QuickReportsPanelMemo {...props} />

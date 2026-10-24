@@ -570,19 +570,19 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                             )}
                             {product.cuttingCapacity.at90deg && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
-                                <span className="text-gray-400">{copy("At 90Â°")}</span>
+                                <span className="text-gray-400">{copy("At 90°")}</span>
                                 <span className="text-white font-mono">{product.cuttingCapacity.at90deg}</span>
                               </div>
                             )}
                             {product.cuttingCapacity.at45degInward && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
-                                <span className="text-gray-400">{copy("At 45Â° In")}</span>
+                                <span className="text-gray-400">{copy("At 45° In")}</span>
                                 <span className="text-white font-mono">{product.cuttingCapacity.at45degInward}</span>
                               </div>
                             )}
                             {product.cuttingCapacity.at45degOutward && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
-                                <span className="text-gray-400">{copy("At 45Â° Out")}</span>
+                                <span className="text-gray-400">{copy("At 45° Out")}</span>
                                 <span className="text-white font-mono">{product.cuttingCapacity.at45degOutward}</span>
                               </div>
                             )}

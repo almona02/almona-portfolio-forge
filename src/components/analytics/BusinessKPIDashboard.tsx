@@ -411,7 +411,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  🇪🇬 Egypt Market
+                  ???? Egypt Market
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -437,7 +437,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  🇹🇷 Turkey Market
+                  ???? Turkey Market
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -463,7 +463,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  🇪🇺 EU Market
+                  ???? EU Market
                 </CardTitle>
               </CardHeader>
               <CardContent>

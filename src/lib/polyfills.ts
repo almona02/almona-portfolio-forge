@@ -201,6 +201,6 @@ export function initializePolyfills() {
       // Long package might not be needed immediately, that's okay
     });
     // Only run in browser environment
-    console.log('🔧 Browser polyfills initialized for Node.js modules');
+    console.log('?? Browser polyfills initialized for Node.js modules');
   }
 }

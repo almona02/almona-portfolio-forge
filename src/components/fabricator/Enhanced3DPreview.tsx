@@ -104,7 +104,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
   const [visualizationMode, setVisualizationMode] = useState<'customer' | 'production'>('customer');
 
   // ========== MACHINE COMPATIBILITY CHECK ==========
-  // Runs synchronously on every windowUnit change â€” no async needed.
+  // Runs synchronously on every windowUnit change — no async needed.
   // This is the "Nano Banana" logic: machine-aware constraint checking.
   const machineCheck = useMemo(() => {
     if (!windowUnit || windowUnit.overallWidth <= 0 || windowUnit.overallHeight <= 0) {
@@ -115,7 +115,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
 
   // ========== YILMAZ MACHINE DRIVER ==========
   // Create a driver for the best-matching machine.
-  // The driver provides: validate â†’ generateProductionFile â†’ sendToMachine
+  // The driver provides: validate → generateProductionFile → sendToMachine
   const machineDriver = useMemo(() => {
     if (!machineCheck?.bestMachine) return null;
     // Map model name back to YilmazMachineModel format
@@ -178,7 +178,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       osc.connect(gain);
       gain.connect(ctx.destination);
 
-      // Two-tone "ding" â€” C5 then E5 (major third = success)
+      // Two-tone "ding" — C5 then E5 (major third = success)
       osc.type = 'sine';
       osc.frequency.setValueAtTime(523.25, ctx.currentTime);        // C5
       osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.15); // E5
@@ -188,7 +188,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.4);
     } catch {
-      // AudioContext not available (e.g. SSR, blocked by browser) â€” skip silently
+      // AudioContext not available (e.g. SSR, blocked by browser) — skip silently
     }
   }, []);
 
@@ -200,7 +200,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       osc.connect(gain);
       gain.connect(ctx.destination);
 
-      // Low buzz â€” signals "something went wrong"
+      // Low buzz — signals "something went wrong"
       osc.type = 'square';
       osc.frequency.setValueAtTime(220, ctx.currentTime); // A3
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
@@ -209,7 +209,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.5);
     } catch {
-      // AudioContext not available â€” skip silently
+      // AudioContext not available — skip silently
     }
   }, []);
 
@@ -270,7 +270,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
 
       if (cached) {
         result = cached;
-        // console.log('3D Preview Cache Hit âš¡');
+        // console.log('3D Preview Cache Hit ⚡');
       } else {
         // 1. Generate dual output
         const generationStart = performance.now();
@@ -453,7 +453,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
                   <div>
                     <span className="font-medium">{v.constraint}</span>
                     {v.suggestion && (
-                      <span className="text-gray-600 ml-1">â€” {v.suggestion}</span>
+                      <span className="text-gray-600 ml-1">— {v.suggestion}</span>
                     )}
                   </div>
                 </div>
@@ -696,7 +696,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
           </div>
         </div>
 
-        {/* Action Buttons â€” Machine-aware in Operator View */}
+        {/* Action Buttons — Machine-aware in Operator View */}
         {visualizationMode === 'production' && machineDriver ? (
           <div className="space-y-3 mt-4">
             {/* Primary: One-Click Export */}
@@ -734,7 +734,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               </Button>
             </div>
 
-            {/* Transfer status feedback â€” BIG for workshop visibility */}
+            {/* Transfer status feedback — BIG for workshop visibility */}
             {sendStatus && (
               sendStatus.success ? (
                 <div className="p-6 rounded-xl border-2 border-green-400 bg-green-100 text-center animate-in fade-in duration-300">
@@ -895,7 +895,7 @@ const CutListComparison: React.FC<CutListComparisonProps> = ({
                 <td className="py-2">{profile.length.toFixed(1)}mm</td>
                 <td className="py-2">{profile.quantity}</td>
                 <td className="py-2">
-                  {profile.angles?.join('Â°, ') || '90Â°'}
+                  {profile.angles?.join('°, ') || '90°'}
                 </td>
                 <td className="py-2">
                   <Badge variant="outline" className="bg-green-50 text-green-700">
@@ -937,7 +937,7 @@ const HardwareBOM: React.FC<HardwareBOMProps> = ({ hardware, pattern: _pattern }
                 <div className="text-xs text-gray-500 mt-1">{item.positionSpec}</div>
               </div>
               <div className="text-right">
-                <div className="font-bold text-lg">Ã—{item.quantity}</div>
+                <div className="font-bold text-lg">×{item.quantity}</div>
                 <div className="text-xs text-gray-500">
                   {item.estimatedTime ? `${item.estimatedTime}min each` : ''}
                 </div>

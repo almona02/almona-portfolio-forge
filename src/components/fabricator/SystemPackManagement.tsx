@@ -214,8 +214,8 @@ export const SystemPackManagement: React.FC = () => {
                       </CardTitle>
                       <CardDescription className="text-xs mt-1">
                         {system.meta.brands?.join(', ') || 'Custom System'}
-                        {isUPVC && <span className="ml-2 text-green-400">â€¢ UPVC</span>}
-                        {!isUPVC && <span className="ml-2 text-blue-400">â€¢ Aluminum</span>}
+                        {isUPVC && <span className="ml-2 text-green-400">• UPVC</span>}
+                        {!isUPVC && <span className="ml-2 text-blue-400">• Aluminum</span>}
                       </CardDescription>
                     </div>
                   </div>

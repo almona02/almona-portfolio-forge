@@ -256,7 +256,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
                           {message.status_change && (
                             <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded border">
                               <p className="text-sm">
-                                <span className="font-medium">Status changed:</span> {message.status_change.from} â†’ {message.status_change.to}
+                                <span className="font-medium">Status changed:</span> {message.status_change.from} → {message.status_change.to}
                               </p>
                               {message.status_change.reason && (
                                 <p className="text-sm text-muted-foreground mt-1">

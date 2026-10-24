@@ -239,7 +239,7 @@ export const EventEmissionPanel: React.FC<EventEmissionPanelProps> = ({
                 <div className="max-w-xs text-xs">
                   <p>
                     Events are emitted in real-time only. Retroactive emission is forbidden.
-                    If an event is missed, a FAULT event is emitted instead (AICS-001 Â§7.4, RealityOS Principle 2).
+                    If an event is missed, a FAULT event is emitted instead (AICS-001 §7.4, RealityOS Principle 2).
                   </p>
                 </div>
               </TooltipContent>

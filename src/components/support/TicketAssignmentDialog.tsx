@@ -62,7 +62,7 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
       void queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
       if (whatsappHref) {
         window.open(whatsappHref, '_blank', 'noopener,noreferrer')
-        toast.success(`Ticket assigned â€” WhatsApp opened for ${selected?.full_name || 'technician'}`)
+        toast.success(`Ticket assigned — WhatsApp opened for ${selected?.full_name || 'technician'}`)
       } else {
         toast.success('Ticket assigned successfully')
       }

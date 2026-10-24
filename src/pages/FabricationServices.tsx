@@ -45,7 +45,7 @@ const systemsData = {
         title: "Thermal Insulation",
         description: "UPVC provides excellent thermal insulation, reducing energy costs by up to 40% compared to aluminum",
         icon: Thermometer,
-        stats: "U-value as low as 0.8 W/mÂ²K",
+        stats: "U-value as low as 0.8 W/m²K",
         benefits: ["Reduced energy bills", "Consistent indoor temperature", "Eco-friendly solution"]
       },
       {
@@ -108,7 +108,7 @@ const systemsData = {
         title: "Thermal Break Technology",
         description: "Advanced thermal break systems eliminate thermal bridging for improved efficiency",
         icon: Thermometer,
-        stats: "U-value as low as 1.2 W/mÂ²K",
+        stats: "U-value as low as 1.2 W/m²K",
         benefits: ["Energy efficient", "Condensation prevention", "Comfort in all seasons"]
       },
       {
@@ -236,7 +236,7 @@ const FabricationServices = () => {
       return;
     }
     
-    const area = (width * height) / 10000; // Convert from cmÂ² to mÂ²
+    const area = (width * height) / 10000; // Convert from cm² to m²
     const systemConfig = systemsData[calculatorValues.systemType].calculatorConfig;
     
     const selectedProfile = systemConfig.profileTypes.find(p => p.id === calculatorValues.profileType);
@@ -568,14 +568,14 @@ const FabricationServices = () => {
                       <div className="pt-4 border-t border-almona-light/20">
                         <div className="flex justify-between items-center mb-2">
                           <p className="text-gray-400">Area per unit</p>
-                          <p className="font-semibold">{calculatorResults.area} mÂ²</p>
+                          <p className="font-semibold">{calculatorResults.area} m²</p>
                         </div>
                         <div className="flex justify-between items-center mb-2">
                           <p className="text-gray-400">Total area ({calculatorValues.quantity} units)</p>
-                          <p className="font-semibold">{calculatorResults.totalArea} mÂ²</p>
+                          <p className="font-semibold">{calculatorResults.totalArea} m²</p>
                         </div>
                         <div className="flex justify-between items-center mb-2">
-                          <p className="text-gray-400">Price per mÂ²</p>
+                          <p className="text-gray-400">Price per m²</p>
                           <p className="font-semibold">EGP {calculatorResults.pricePerSqm.toLocaleString()}</p>
                         </div>
                       </div>
@@ -1075,7 +1075,7 @@ const FabricationServices = () => {
                     Cancel
                   </Button>
                   <Button type="submit" disabled={isSubmitting || Boolean(consultationReceipt)} className="flex-1 bg-gradient-orange hover:bg-almona-orange-dark text-white">
-                    {isSubmitting ? "Submittingâ€¦" : "Submit Request"}
+                    {isSubmitting ? "Submitting…" : "Submit Request"}
                   </Button>
                 </div>
               </form>

@@ -127,8 +127,8 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
 
   const getRateSourceText = (source: string) => {
     switch (source) {
-      case 'api': return t('currency.source.live', 'CanlÄ±');
-      case 'cached': return t('currency.source.cached', 'Ã–nbellek');
+      case 'api': return t('currency.source.live', 'Canlı');
+      case 'cached': return t('currency.source.cached', 'Önbellek');
       case 'fallback': return t('currency.source.fallback', 'Yedek');
       default: return source;
     }
@@ -139,8 +139,8 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
       <CardHeader>
         <CardTitle className="text-white flex items-center justify-between">
           <span className="flex items-center space-x-2">
-            <span>ðŸ’±</span>
-            <span>{t('currency.converter.title', 'DÃ¶viz Ã‡evirici')}</span>
+            <span>💱</span>
+            <span>{t('currency.converter.title', 'Döviz Çevirici')}</span>
           </span>
           {currentRate && (
             <Badge 
@@ -256,7 +256,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
             <Separator className="bg-gray-700" />
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-300">
-                {t('currency.converter.exchangeRate', 'DÃ¶viz Kuru')}:
+                {t('currency.converter.exchangeRate', 'Döviz Kuru')}:
               </span>
               <span className="text-white font-medium">
                 1 {fromCurrency} = {currentRate.rate.toFixed(4)} {toCurrency}
@@ -266,7 +266,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
             {lastUpdated && (
               <div className="flex justify-between items-center text-xs text-gray-400">
                 <span>
-                  {t('currency.converter.lastUpdated', 'Son GÃ¼ncelleme')}:
+                  {t('currency.converter.lastUpdated', 'Son Güncelleme')}:
                 </span>
                 <span>
                   {lastUpdated.toLocaleTimeString('tr-TR')}
@@ -296,7 +296,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
             {loading ? (
               <div className="flex items-center space-x-2">
                 <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
-                <span>{t('currency.converter.updating', 'GÃ¼ncelleniyor')}</span>
+                <span>{t('currency.converter.updating', 'Güncelleniyor')}</span>
               </div>
             ) : (
               <div className="flex items-center space-x-2">
@@ -313,8 +313,8 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
         {autoDetectRegion && regionState.region && (
           <div className="mt-4 p-2 bg-blue-900/20 border border-blue-700/30 rounded text-xs text-blue-300">
             <p>
-              {t('currency.converter.regionDetected', 'BÃ¶lge algÄ±landÄ±')}: {regionState.region} - 
-              {t('currency.converter.autoSelected', 'Otomatik seÃ§ildi')}: {getCurrencyForRegion(regionState.region)}
+              {t('currency.converter.regionDetected', 'Bölge algılandı')}: {regionState.region} - 
+              {t('currency.converter.autoSelected', 'Otomatik seçildi')}: {getCurrencyForRegion(regionState.region)}
             </p>
           </div>
         )}

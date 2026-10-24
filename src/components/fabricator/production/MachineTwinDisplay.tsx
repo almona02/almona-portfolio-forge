@@ -65,7 +65,7 @@ const TelemetryCard: React.FC<{
           trend === 'up' ? 'text-green-400' : 
           trend === 'down' ? 'text-red-400' : 'text-gray-400'
         }`}>
-          {trend === 'up' ? 'â†‘' : trend === 'down' ? 'â†“' : 'â€“'}
+          {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '–'}
         </span>
       )}
     </div>
@@ -295,7 +295,7 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
           <TelemetryCard
             icon={<Thermometer className="w-4 h-4 text-amber-400" />}
             label="Spindle Temp"
-            value={machine.telemetry.spindleTemp ? `${machine.telemetry.spindleTemp}Â°C` : '--'}
+            value={machine.telemetry.spindleTemp ? `${machine.telemetry.spindleTemp}°C` : '--'}
             warning={machine.telemetry.spindleTemp ? machine.telemetry.spindleTemp > 50 : false}
           />
           <TelemetryCard

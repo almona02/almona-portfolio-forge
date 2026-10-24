@@ -431,7 +431,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                 <p>Inspector: {inspector}</p>
                 <p>Date: {new Date().toLocaleDateString()}</p>
                 <p className="text-xs text-amber-600/60">
-                  Unit ID: {windowUnit.id} | Dimensions: {windowUnit.overallWidth}mm Ã—{' '}
+                  Unit ID: {windowUnit.id} | Dimensions: {windowUnit.overallWidth}mm ×{' '}
                   {windowUnit.overallHeight}mm
                 </p>
               </div>
@@ -654,7 +654,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                   </Button>
                   {productPhotoHash && (
                     <span className="text-xs text-green-400">
-                      âœ“ Hash: {productPhotoHash.substring(0, 16)}...
+                      ✓ Hash: {productPhotoHash.substring(0, 16)}...
                     </span>
                   )}
                 </div>
@@ -713,7 +713,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     )}
                   </Button>
                   {productQR && (
-                    <span className="text-xs text-green-400 font-mono">âœ“ {productQR}</span>
+                    <span className="text-xs text-green-400 font-mono">✓ {productQR}</span>
                   )}
                 </div>
               </div>
@@ -725,7 +725,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
             <Alert className="bg-emerald-500/10 border-emerald-500/30">
               <CheckCircle2 className="h-5 w-5 status-valid" />
               <AlertDescription className="text-emerald-300 font-semibold">
-                âœ… APPROVED FOR DELIVERY - All quality checks passed (
+                ✅ APPROVED FOR DELIVERY - All quality checks passed (
                 {verificationResult.accuracy.toFixed(1)}% accuracy)
               </AlertDescription>
             </Alert>
@@ -733,7 +733,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
             <Alert className="bg-red-500/10 border-red-500/30">
               <XCircle className="h-5 w-5 text-red-400" />
               <AlertDescription className="text-red-300 font-semibold">
-                âŒ QUALITY ISSUES DETECTED - {verificationResult.failCount} check(s) failed,{' '}
+                ❌ QUALITY ISSUES DETECTED - {verificationResult.failCount} check(s) failed,{' '}
                 {verificationResult.criticalFailures.length} critical
               </AlertDescription>
             </Alert>
@@ -741,7 +741,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
             <Alert className="bg-amber-500/10 border-amber-500/30">
               <AlertCircle className="h-5 w-5 text-amber-400" />
               <AlertDescription className="text-amber-300 font-semibold">
-                â³ PENDING INSPECTION - {verificationResult.pendingCount} check(s) require manual
+                ⏳ PENDING INSPECTION - {verificationResult.pendingCount} check(s) require manual
                 verification
               </AlertDescription>
             </Alert>

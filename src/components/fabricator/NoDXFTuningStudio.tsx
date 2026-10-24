@@ -109,7 +109,7 @@ export const NoDXFTuningStudio: React.FC = () => {
     if (existingProfiles.length > 0) {
       // Use existing profiles
       const profileConfigs: ProfileConfig[] = existingProfiles.map((p: Profile) => {
-        // âœ… Smart role detection: Use existing role, or detect from name, or fallback to type
+        // ✅ Smart role detection: Use existing role, or detect from name, or fallback to type
         const role = p.profileRole || detectRoleFromName(p.name, p.type) || (p.type === 'frame' ? 'frame' : 'sash');
         
         return {
@@ -701,7 +701,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                       <div>
                         <span className="text-gray-400">Dimensions:</span>
-                        <div className="text-white">{profile.width} Ã— {profile.height} Ã— {profile.thickness}mm</div>
+                        <div className="text-white">{profile.width} × {profile.height} × {profile.thickness}mm</div>
                       </div>
                       <div>
                         <span className="text-gray-400">Saw Kerf:</span>

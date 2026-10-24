@@ -55,7 +55,7 @@ export const UnifiedDesignPage: React.FC = () => {
 
     // Handle wizard completion (Gold-Tier with proper type conversion)
     const handleWizardComplete = useCallback((wizardData: MeasurementData) => {
-        console.log('ðŸŽ¯ Wizard completion with precision:', {
+        console.log('🎯 Wizard completion with precision:', {
             width: wizardData.width,
             height: wizardData.height,
             windowType: wizardData.windowType,
@@ -151,13 +151,13 @@ export const UnifiedDesignPage: React.FC = () => {
             if (canonicalModel) {
                 // We have existing data, convert between modes
                 if (newMode === 'drafting' && designMode === 'wizard') {
-                    // Wizard â†’ CAD conversion
+                    // Wizard → CAD conversion
                     const cadData = canonicalToCAD(canonicalModel);
-                    console.log('Converted wizard â†’ CAD:', cadData);
+                    console.log('Converted wizard → CAD:', cadData);
                 } else if (newMode === 'wizard' && designMode === 'drafting') {
-                    // CAD â†’ Wizard conversion
+                    // CAD → Wizard conversion
                     const wizardData = canonicalToWizard(canonicalModel);
-                    console.log('Converted CAD â†’ wizard:', wizardData);
+                    console.log('Converted CAD → wizard:', wizardData);
                 }
             }
 
@@ -354,30 +354,30 @@ export const UnifiedDesignPage: React.FC = () => {
                                                 {designMode === 'wizard' ? (
                                                     <>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">âœ“</span>
+                                                            <span className="text-green-500 mr-2">✓</span>
                                                             Quick window designs
                                                         </li>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">âœ“</span>
+                                                            <span className="text-green-500 mr-2">✓</span>
                                                             Standard window types
                                                         </li>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">âœ“</span>
+                                                            <span className="text-green-500 mr-2">✓</span>
                                                             Measurement-first approach
                                                         </li>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">âœ“</span>
+                                                            <span className="text-green-500 mr-2">✓</span>
                                                             Complex custom designs
                                                         </li>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">âœ“</span>
+                                                            <span className="text-green-500 mr-2">✓</span>
                                                             Professional CAD users
                                                         </li>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">âœ“</span>
+                                                            <span className="text-green-500 mr-2">✓</span>
                                                             50+ Egyptian templates
                                                         </li>
                                                     </>
@@ -425,7 +425,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                                             <div className="w-2 h-2 rounded-full bg-green-500" />
                                                             <span className="text-sm text-slate-600">{standard.name}</span>
                                                         </div>
-                                                        <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">âœ“</span>
+                                                        <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">✓</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -452,13 +452,13 @@ export const UnifiedDesignPage: React.FC = () => {
                                             <div className="flex justify-between text-sm">
                                                 <span>Window Structure</span>
                                                 <span className={canonicalModel?.geometry ? 'text-green-600' : 'text-slate-400'}>
-                                                    {canonicalModel?.geometry ? 'âœ“ Complete' : 'Pending'}
+                                                    {canonicalModel?.geometry ? '✓ Complete' : 'Pending'}
                                                 </span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span>Materials</span>
                                                 <span className={canonicalModel?.materials ? 'text-green-600' : 'text-slate-400'}>
-                                                    {canonicalModel?.materials ? 'âœ“ Complete' : 'Pending'}
+                                                    {canonicalModel?.materials ? '✓ Complete' : 'Pending'}
                                                 </span>
                                             </div>
                                         </div>

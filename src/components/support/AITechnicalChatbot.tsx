@@ -63,7 +63,7 @@ const QUICK_RESPONSES = [
   },
   {
     id: 'emergency_shutdown',
-    label: 'ðŸš¨ Emergency shutdown',
+    label: '🚨 Emergency shutdown',
     category: 'emergency',
     severity: 'critical' as const,
     prompt: 'EMERGENCY: My machine needs immediate shutdown. Please provide emergency procedures.'
@@ -115,7 +115,7 @@ export const AITechnicalChatbot: React.FC = () => {
       const welcomeMessage: ChatMessage = {
         id: 'welcome',
         type: 'bot',
-        content: `Ù…Ø±Ø­Ø¨Ø§Ù‹ ${user?.full_name || 'Ø¨Ùƒ'}! Ø£Ù†Ø§ Ù…Ø³Ø§Ø¹Ø¯ Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„ÙÙ†ÙŠ Ø§Ù„Ø°ÙƒÙŠ Ù„Ø¢Ù„Ø§Øª ÙŠÙ„Ù…Ø§Ø².\n\nÙŠÙ…ÙƒÙ†Ù†ÙŠ Ù…Ø³Ø§Ø¹Ø¯ØªÙƒ ÙÙŠ:\nâ€¢ ØªØ´Ø®ÙŠØµ Ø§Ù„Ù…Ø´Ø§ÙƒÙ„ Ø§Ù„ÙÙ†ÙŠØ©\nâ€¢ ØªØ­Ø¯ÙŠØ¯ Ù‚Ø·Ø¹ Ø§Ù„ØºÙŠØ§Ø±\nâ€¢ Ø¬Ø¯ÙˆÙ„Ø© Ø§Ù„ØµÙŠØ§Ù†Ø©\nâ€¢ Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª Ø§Ù„Ø·ÙˆØ§Ø±Ø¦\nâ€¢ ØªÙˆØµÙŠØ§Øª Ø§Ù„Ø£Ø¯Ø§Ø¡\n\nÙ…Ø§ Ù‡ÙŠ Ø§Ù„Ù…Ø´ÙƒÙ„Ø© Ø§Ù„ØªÙŠ ØªÙˆØ§Ø¬Ù‡Ù‡Ø§ Ø§Ù„ÙŠÙˆÙ…ØŸ`,
+        content: `مرحباً ${user?.full_name || 'بك'}! أنا مساعد الدعم الفني الذكي لآلات يلماز.\n\nيمكنني مساعدتك في:\n• تشخيص المشاكل الفنية\n• تحديد قطع الغيار\n• جدولة الصيانة\n• إجراءات الطوارئ\n• توصيات الأداء\n\nما هي المشكلة التي تواجهها اليوم؟`,
         timestamp: new Date(),
         category: 'general'
       };
@@ -179,7 +179,7 @@ export const AITechnicalChatbot: React.FC = () => {
       return response;
     } catch (error) {
       console.error('automation Response Error:', error);
-      return 'Ø¹Ø°Ø±Ø§Ù‹ØŒ Ø­Ø¯Ø« Ø®Ø·Ø£ ÙÙŠ Ø§Ù„Ù†Ø¸Ø§Ù…. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰ Ø£Ùˆ Ø§Ù„ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„ÙÙ†ÙŠ Ù…Ø¨Ø§Ø´Ø±Ø© Ø¹Ù„Ù‰: +20 xxx xxx xxxx';
+      return 'عذراً، حدث خطأ في النظام. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني مباشرة على: +20 xxx xxx xxxx';
     }
   };
 
@@ -268,16 +268,16 @@ export const AITechnicalChatbot: React.FC = () => {
   const extractSuggestedActions = (response: string): string[] => {
     const actions: string[] = [];
 
-    if (response.includes('technician') || response.includes('ÙÙ†ÙŠ')) {
+    if (response.includes('technician') || response.includes('فني')) {
       actions.push('Contact Technician');
     }
-    if (response.includes('maintenance') || response.includes('ØµÙŠØ§Ù†Ø©')) {
+    if (response.includes('maintenance') || response.includes('صيانة')) {
       actions.push('Schedule Maintenance');
     }
-    if (response.includes('part') || response.includes('Ù‚Ø·Ø¹Ø©')) {
+    if (response.includes('part') || response.includes('قطعة')) {
       actions.push('Order Parts');
     }
-    if (response.includes('emergency') || response.includes('Ø·ÙˆØ§Ø±Ø¦')) {
+    if (response.includes('emergency') || response.includes('طوارئ')) {
       actions.push('Emergency Support');
     }
 
@@ -310,7 +310,7 @@ export const AITechnicalChatbot: React.FC = () => {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
-      void sendMessage('ØªØ­Ø¯ÙŠØ¯ Ù‚Ø·Ø¹Ø© Ø§Ù„ØºÙŠØ§Ø± Ù…Ù† Ø§Ù„ØµÙˆØ±Ø©', 'parts', 'low', files);
+      void sendMessage('تحديد قطعة الغيار من الصورة', 'parts', 'low', files);
     }
   };
 
@@ -370,7 +370,7 @@ export const AITechnicalChatbot: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1 text-xs text-green-400">
                   <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                  Ù…Ø³Ø§Ø¹Ø¯ Ø°ÙƒÙŠ Ù…ØªØ§Ø­ 24/7
+                  مساعد ذكي متاح 24/7
                 </div>
               </CardHeader>
 
@@ -457,7 +457,7 @@ export const AITechnicalChatbot: React.FC = () => {
                         <div className="bg-almona-dark/40 border border-almona-light/20 rounded-lg p-3">
                           <div className="flex items-center gap-2">
                             <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />
-                            <span className="text-sm text-gray-400">automation ÙŠÙ‚ÙˆÙ… Ø¨Ø§Ù„ØªØ­Ù„ÙŠÙ„...</span>
+                            <span className="text-sm text-gray-400">automation يقوم بالتحليل...</span>
                           </div>
                         </div>
                       </LazyMotionDiv>
@@ -473,7 +473,7 @@ export const AITechnicalChatbot: React.FC = () => {
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Ø§ÙƒØªØ¨ Ù…Ø´ÙƒÙ„ØªÙƒ Ø§Ù„ØªÙ‚Ù†ÙŠØ©..."
+                    placeholder="اكتب مشكلتك التقنية..."
                     className="flex-1 bg-almona-dark/60 border-almona-light/30"
                     onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
                     disabled={isLoading}
@@ -485,7 +485,7 @@ export const AITechnicalChatbot: React.FC = () => {
                     className="border-almona-light/30 hover:bg-almona-light/10"
                     disabled={isLoading}
                   >
-                    ðŸ“·
+                    📷
                   </Button>
                   <Button
                     onClick={() => void sendMessage()}

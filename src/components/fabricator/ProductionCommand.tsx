@@ -68,7 +68,7 @@ function generateLabelSheetHTML(labels: BarcodeLabel[], orderNumber: string): st
     const rows = labels.map((l) => `
         <div class="label">
             <div class="barcode">${l.barcode}</div>
-            <div class="meta">${l.profileName} | ${l.cutLength}mm @ ${l.angle}Â°</div>
+            <div class="meta">${l.profileName} | ${l.cutLength}mm @ ${l.angle}°</div>
             <div class="order">${l.orderNumber} ${l.position || ''}</div>
         </div>`).join('');
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Labels ${orderNumber}</title>
@@ -243,7 +243,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     const [isAssemblyExpanded, setIsAssemblyExpanded] = useState(true);
     const [isLabelsExpanded, setIsLabelsExpanded] = useState(false);
 
-    // âœ… HARDENING: Memoize static array to prevent recreation on every render
+    // ✅ HARDENING: Memoize static array to prevent recreation on every render
     const availableMachines = useMemo<YilmazMachineModel[]>(() => [
         'AIM-3410',
         'AIM-7510',
@@ -259,7 +259,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
         if (optimization && optimization.cuttingPlan.length > 0 && project) {
             try {
                 // Collect all required cuts from components
-                // âœ… HARDENING: Properly type cuts to match Cut interface
+                // ✅ HARDENING: Properly type cuts to match Cut interface
                 const requiredCuts: Cut[] = project.components.flatMap((comp) => {
                     const cuts: Cut[] = [];
                     const cutLength = comp.cuttingLengths[0] || comp.height; // Fallback if cuttingLengths empty
@@ -302,7 +302,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     }, [optimization?.cuttingPlan, project?.orderNumber, labelOptions]);
 
     // --- Internal Handlers ---
-    // âœ… HARDENING: Memoize all handlers to prevent unnecessary re-renders
+    // ✅ HARDENING: Memoize all handlers to prevent unnecessary re-renders
 
     const handleGenerateGCode = useCallback(async () => {
         if (!optimization || !project) return;
@@ -461,7 +461,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
         }
     }, [pendingAction, handleGenerateGCode, handleExportCuttingReport, handleSendToMachine, handleDownloadALM6510MDB, project, optimization, installationBreakdown, selectedMachine, t]);
 
-    // âœ… HARDENING: Memoize inline export handlers for performance
+    // ✅ HARDENING: Memoize inline export handlers for performance
     const handleQuickExportPDF = useCallback(async () => {
         if (project && optimization) {
             try {
@@ -514,7 +514,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
         }
     }, [project, optimization, installationBreakdown]);
 
-    // âœ… HARDENING: Memoize machine selection handler
+    // ✅ HARDENING: Memoize machine selection handler
     const handleMachineChange = useCallback((val: string) => {
         setSelectedMachine(val as YilmazMachineModel);
     }, []);
@@ -649,7 +649,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                                 Bar {bar.barIndex}: {bar.profileName}
                                             </span>
                                             <span className="text-xs text-gray-400">
-                                                {bar.stockLength}mm stock â€¢ {bar.utilizationPercent.toFixed(1)}% util
+                                                {bar.stockLength}mm stock • {bar.utilizationPercent.toFixed(1)}% util
                                             </span>
                                         </div>
                                         <div className="grid grid-cols-5 gap-2 text-xs font-mono">
@@ -662,7 +662,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                                 <React.Fragment key={c.sequence}>
                                                     <div>{c.sequence}</div>
                                                     <div>{c.lengthMm}mm</div>
-                                                    <div>{c.angleDeg}Â°</div>
+                                                    <div>{c.angleDeg}°</div>
                                                     <div>{c.positionMm}mm</div>
                                                     <div className="truncate" title={c.componentId}>{c.componentId}</div>
                                                 </React.Fragment>
@@ -744,11 +744,11 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                     >
                                         <div className="font-semibold text-amber-400 truncate">{label.barcode}</div>
                                         <div className="text-gray-400 mt-1">{label.profileName}</div>
-                                        <div>{label.cutLength}mm @ {label.angle}Â°</div>
+                                        <div>{label.cutLength}mm @ {label.angle}°</div>
                                         {label.position && <div className="text-gray-500">{label.position}</div>}
                                         {label.qrCode && (
                                             <div className="mt-1 text-[10px] text-gray-600 truncate" title={label.qrCode}>
-                                                QR: {label.qrCode.slice(0, 30)}â€¦
+                                                QR: {label.qrCode.slice(0, 30)}…
                                             </div>
                                         )}
                                     </div>
@@ -792,11 +792,11 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                             <div className="font-medium text-gray-200">{step.operation}</div>
                                             <div className="flex flex-wrap gap-2 mt-1 text-xs text-gray-400">
                                                 <span>{step.station}</span>
-                                                <span>â€¢</span>
+                                                <span>•</span>
                                                 <span>{step.estimatedTime} min</span>
                                                 {step.toolsRequired?.length > 0 && (
                                                     <>
-                                                        <span>â€¢</span>
+                                                        <span>•</span>
                                                         <span>{step.toolsRequired.join(', ')}</span>
                                                     </>
                                                 )}
@@ -878,7 +878,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                         </Button>
                     </div>
                     <div className="text-xs text-gray-400 text-center pt-2">
-                        All exports include Frame + Sash cuts separately â€¢ Ready for production
+                        All exports include Frame + Sash cuts separately • Ready for production
                     </div>
                 </CardContent>
             </Card>
@@ -1006,10 +1006,10 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
 
 ProductionCommandComponent.displayName = 'ProductionCommand';
 
-// âœ… HARDENING: Memoize component for performance
+// ✅ HARDENING: Memoize component for performance
 const ProductionCommandMemo = memo(ProductionCommandComponent);
 
-// âœ… HARDENING: Export with error boundary for production
+// ✅ HARDENING: Export with error boundary for production
 export const ProductionCommand: React.FC<ProductionCommandProps> = (props) => (
   <ErrorBoundary level="component">
     <ProductionCommandMemo {...props} />

@@ -741,7 +741,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
                   max={360}
                   step={1}
                 />
-                <div className="text-xs text-gray-400 mt-1">{lighting.direction}Â°</div>
+                <div className="text-xs text-gray-400 mt-1">{lighting.direction}°</div>
               </div>
 
               <div>

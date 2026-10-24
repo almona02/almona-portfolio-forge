@@ -313,7 +313,7 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
                   {collisionCheck.collisions
                     .filter((c) => c.severity === 'critical')
                     .map((collision) => (
-                      <li key={collision.id}>â€¢ {collision.message}</li>
+                      <li key={collision.id}>• {collision.message}</li>
                     ))}
                 </ul>
                 <p className="text-sm text-red-300 mt-2">
@@ -331,7 +331,7 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
                 <p className="font-semibold text-orange-400 mb-2">Out of Bounds Cuts</p>
                 <ul className="text-sm text-orange-300 space-y-1">
                   {collisionCheck.outOfBounds.map((outOfBound) => (
-                    <li key={outOfBound.id}>â€¢ {outOfBound.message}</li>
+                    <li key={outOfBound.id}>• {outOfBound.message}</li>
                   ))}
                 </ul>
               </AlertDescription>

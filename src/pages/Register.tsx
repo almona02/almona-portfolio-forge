@@ -126,7 +126,7 @@ export const Register = () => {
                 ? 'bg-green-500 text-white' 
                 : 'bg-gray-600 text-gray-300'
           }`}>
-            {index + 1 < currentStep ? 'âœ“' : index + 1}
+            {index + 1 < currentStep ? '✓' : index + 1}
           </div>
           {index < totalSteps - 1 && (
             <div className={`w-16 h-1 mx-2 ${index + 1 < currentStep ? 'bg-green-500' : 'bg-gray-600'}`} />
@@ -280,7 +280,7 @@ export const Register = () => {
                               id="password" 
                               type="password" 
                               {...register('password')} 
-                              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" 
+                              placeholder="••••••••" 
                               className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12" 
                             />
                           </div>
@@ -302,7 +302,7 @@ export const Register = () => {
                               id="confirmPassword" 
                               type="password" 
                               {...register('confirmPassword')} 
-                              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" 
+                              placeholder="••••••••" 
                               className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12" 
                             />
                           </div>
@@ -426,7 +426,7 @@ export const Register = () => {
                                     transition={{ delay: 0.2 }}
                                     className="text-white text-xs font-bold"
                                   >
-                                    âœ“
+                                    ✓
                                   </motion.span>
                                 </motion.div>
                               </motion.div>
@@ -442,7 +442,7 @@ export const Register = () => {
                                 animate={{ scale: [1, 1.2, 1] }}
                                 transition={{ duration: 0.5, repeat: 2 }}
                               >
-                                âœ¨
+                                ✨
                               </motion.div>
                               <span className="ml-1">Location selected: {selectedLocation}</span>
                             </motion.div>

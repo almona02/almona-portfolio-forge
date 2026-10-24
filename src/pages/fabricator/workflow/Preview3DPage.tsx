@@ -39,13 +39,13 @@ export const Preview3DPage: React.FC = () => {
                         variant="outline"
                         onClick={() => void navigate(projectId ? `/fabricator/workflow/design/${projectId}` : '/fabricator/workflow/design')}
                     >
-                        â† Back to Design
+                        ← Back to Design
                     </Button>
                     <Button
                         onClick={handleContinue}
                         className="bg-amber-500 hover:bg-amber-600"
                     >
-                        Review BOM â†’
+                        Review BOM →
                     </Button>
                 </div>
             </div>

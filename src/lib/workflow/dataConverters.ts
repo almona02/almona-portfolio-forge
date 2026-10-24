@@ -6,9 +6,9 @@
  * and the canonical engineering model.
  * 
  * Conversion Philosophy:
- * - Wizard → Canonical: Nearly 1:1 (wizard already speaks canonical)
- * - CAD → Canonical: Complex (must infer grid from shapes)
- * - Canonical → CAD: Preserve fidelity via originSnapshot
+ * - Wizard ? Canonical: Nearly 1:1 (wizard already speaks canonical)
+ * - CAD ? Canonical: Complex (must infer grid from shapes)
+ * - Canonical ? CAD: Preserve fidelity via originSnapshot
  */
 
 import type { DraftingOutput } from '@/components/fabricator/drafting/types/drafting';

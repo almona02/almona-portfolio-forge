@@ -10,7 +10,7 @@ import type { StateMachine } from './StateMachine';
 /**
  * Commercial Quote/Invoice State Machine
  * 
- * Enforces explicit lifecycle: draft → submitted → approved → locked → executed
+ * Enforces explicit lifecycle: draft ? submitted ? approved ? locked ? executed
  * Also supports cancellation from draft/submitted states.
  */
 export type CommercialState = 'draft' | 'submitted' | 'approved' | 'locked' | 'executed' | 'cancelled';
@@ -19,7 +19,7 @@ export const COMMERCIAL_STATE_MACHINE: StateMachine<CommercialState> = {
   states: ['draft', 'submitted', 'approved', 'locked', 'executed', 'cancelled'],
   initialState: 'draft',
   transitions: [
-    // Draft → Submitted (send to customer/manager)
+    // Draft ? Submitted (send to customer/manager)
     {
       from: 'draft',
       to: 'submitted',
@@ -28,7 +28,7 @@ export const COMMERCIAL_STATE_MACHINE: StateMachine<CommercialState> = {
         return true; // Add validation logic as needed
       }
     },
-    // Submitted → Approved (manager approval)
+    // Submitted ? Approved (manager approval)
     {
       from: 'submitted',
       to: 'approved',
@@ -38,7 +38,7 @@ export const COMMERCIAL_STATE_MACHINE: StateMachine<CommercialState> = {
         return true;
       }
     },
-    // Approved → Locked (ready for execution, no more changes)
+    // Approved ? Locked (ready for execution, no more changes)
     {
       from: 'approved',
       to: 'locked',
@@ -47,7 +47,7 @@ export const COMMERCIAL_STATE_MACHINE: StateMachine<CommercialState> = {
         return true;
       }
     },
-    // Locked → Executed (payment received, order placed, etc.)
+    // Locked ? Executed (payment received, order placed, etc.)
     {
       from: 'locked',
       to: 'executed',
@@ -57,7 +57,7 @@ export const COMMERCIAL_STATE_MACHINE: StateMachine<CommercialState> = {
                context.metadata?.orderPlaced === true;
       }
     },
-    // Draft/Submitted → Cancelled
+    // Draft/Submitted ? Cancelled
     {
       from: ['draft', 'submitted'],
       to: 'cancelled',
@@ -69,17 +69,17 @@ export const COMMERCIAL_STATE_MACHINE: StateMachine<CommercialState> = {
   ],
   onTransition: async (from, to, context) => {
     // Machine-level callback for all transitions
-    console.log(`Commercial state transition: ${from} → ${to}`, context);
+    console.log(`Commercial state transition: ${from} ? ${to}`, context);
   },
   onInvalidTransition: async (from, to, context) => {
-    console.warn(`Invalid commercial transition attempted: ${from} → ${to}`, context);
+    console.warn(`Invalid commercial transition attempted: ${from} ? ${to}`, context);
   }
 };
 
 /**
  * Workflow Step State Machine
  * 
- * Manages workflow step progression: pending → in_progress → completed
+ * Manages workflow step progression: pending ? in_progress ? completed
  * Supports blocking and unblocking.
  */
 export type WorkflowState = 'pending' | 'in_progress' | 'blocked' | 'completed' | 'cancelled';
@@ -88,12 +88,12 @@ export const WORKFLOW_STATE_MACHINE: StateMachine<WorkflowState> = {
   states: ['pending', 'in_progress', 'blocked', 'completed', 'cancelled'],
   initialState: 'pending',
   transitions: [
-    // Pending → In Progress
+    // Pending ? In Progress
     {
       from: 'pending',
       to: 'in_progress'
     },
-    // In Progress → Blocked (waiting on dependency)
+    // In Progress ? Blocked (waiting on dependency)
     {
       from: 'in_progress',
       to: 'blocked',
@@ -102,7 +102,7 @@ export const WORKFLOW_STATE_MACHINE: StateMachine<WorkflowState> = {
         return context.metadata?.hasDependency === true;
       }
     },
-    // In Progress → Completed
+    // In Progress ? Completed
     {
       from: 'in_progress',
       to: 'completed',
@@ -111,7 +111,7 @@ export const WORKFLOW_STATE_MACHINE: StateMachine<WorkflowState> = {
         return context.metadata?.requirementsMet === true;
       }
     },
-    // Blocked → In Progress (dependency resolved)
+    // Blocked ? In Progress (dependency resolved)
     {
       from: 'blocked',
       to: 'in_progress',
@@ -120,7 +120,7 @@ export const WORKFLOW_STATE_MACHINE: StateMachine<WorkflowState> = {
         return context.metadata?.dependencyResolved === true;
       }
     },
-    // Any state → Cancelled (except completed)
+    // Any state ? Cancelled (except completed)
     {
       from: ['pending', 'in_progress', 'blocked'],
       to: 'cancelled'
@@ -131,7 +131,7 @@ export const WORKFLOW_STATE_MACHINE: StateMachine<WorkflowState> = {
 /**
  * Production Order State Machine
  * 
- * Manages production lifecycle: planned → scheduled → in_production → completed
+ * Manages production lifecycle: planned ? scheduled ? in_production ? completed
  */
 export type ProductionState = 'planned' | 'scheduled' | 'in_production' | 'paused' | 'completed' | 'cancelled';
 
@@ -139,7 +139,7 @@ export const PRODUCTION_STATE_MACHINE: StateMachine<ProductionState> = {
   states: ['planned', 'scheduled', 'in_production', 'paused', 'completed', 'cancelled'],
   initialState: 'planned',
   transitions: [
-    // Planned → Scheduled
+    // Planned ? Scheduled
     {
       from: 'planned',
       to: 'scheduled',
@@ -148,12 +148,12 @@ export const PRODUCTION_STATE_MACHINE: StateMachine<ProductionState> = {
         return context.metadata?.resourcesAvailable === true;
       }
     },
-    // Scheduled → In Production
+    // Scheduled ? In Production
     {
       from: 'scheduled',
       to: 'in_production'
     },
-    // In Production → Paused
+    // In Production ? Paused
     {
       from: 'in_production',
       to: 'paused',
@@ -162,12 +162,12 @@ export const PRODUCTION_STATE_MACHINE: StateMachine<ProductionState> = {
         return !!context.reason;
       }
     },
-    // Paused → In Production
+    // Paused ? In Production
     {
       from: 'paused',
       to: 'in_production'
     },
-    // In Production → Completed
+    // In Production ? Completed
     {
       from: 'in_production',
       to: 'completed',
@@ -176,7 +176,7 @@ export const PRODUCTION_STATE_MACHINE: StateMachine<ProductionState> = {
         return context.metadata?.qcPassed === true;
       }
     },
-    // Planned/Scheduled → Cancelled
+    // Planned/Scheduled ? Cancelled
     {
       from: ['planned', 'scheduled'],
       to: 'cancelled'
@@ -187,7 +187,7 @@ export const PRODUCTION_STATE_MACHINE: StateMachine<ProductionState> = {
 /**
  * Payment State Machine
  * 
- * Manages payment lifecycle: pending → processing → completed/failed
+ * Manages payment lifecycle: pending ? processing ? completed/failed
  */
 export type PaymentState = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' | 'cancelled';
 
@@ -195,12 +195,12 @@ export const PAYMENT_STATE_MACHINE: StateMachine<PaymentState> = {
   states: ['pending', 'processing', 'completed', 'failed', 'refunded', 'cancelled'],
   initialState: 'pending',
   transitions: [
-    // Pending → Processing
+    // Pending ? Processing
     {
       from: 'pending',
       to: 'processing'
     },
-    // Processing → Completed
+    // Processing ? Completed
     {
       from: 'processing',
       to: 'completed',
@@ -209,7 +209,7 @@ export const PAYMENT_STATE_MACHINE: StateMachine<PaymentState> = {
         return context.metadata?.paymentConfirmed === true;
       }
     },
-    // Processing → Failed
+    // Processing ? Failed
     {
       from: 'processing',
       to: 'failed',
@@ -218,7 +218,7 @@ export const PAYMENT_STATE_MACHINE: StateMachine<PaymentState> = {
         return context.metadata?.paymentFailed === true;
       }
     },
-    // Completed → Refunded
+    // Completed ? Refunded
     {
       from: 'completed',
       to: 'refunded',
@@ -227,7 +227,7 @@ export const PAYMENT_STATE_MACHINE: StateMachine<PaymentState> = {
         return context.metadata?.refundProcessed === true;
       }
     },
-    // Pending/Processing → Cancelled
+    // Pending/Processing ? Cancelled
     {
       from: ['pending', 'processing'],
       to: 'cancelled'

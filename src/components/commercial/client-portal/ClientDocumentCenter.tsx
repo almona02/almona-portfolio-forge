@@ -267,7 +267,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
                           }).format(doc.amount)}
                         </span>
                       ) : (
-                        <span className="text-amber-600/50">â€”</span>
+                        <span className="text-amber-600/50">—</span>
                       )}
                     </TableCell>
                     <TableCell>

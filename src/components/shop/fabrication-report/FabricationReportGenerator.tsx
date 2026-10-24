@@ -227,7 +227,7 @@ export default function FabricationReportGenerator() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="en">English</SelectItem>
-            <SelectItem value="ar">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</SelectItem>
+            <SelectItem value="ar">العربية</SelectItem>
           </SelectContent>
         </Select>
       </div>

@@ -1,6 +1,6 @@
 ﻿/**
  * @tier Tier 1 Presentation (Mobile-Optimized Technician Interface)
- * @constitutional_compliance AICS-001 Â§7 (Presentation layer, no execution)
+ * @constitutional_compliance AICS-001 §7 (Presentation layer, no execution)
  * @authority None - Data collection only, triggers Tier 2 advisory
  * @region Egypt-specific YILMAZ technician workflow
  *
@@ -160,11 +160,11 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
   const t = (en: string, ar: string) => (selectedLanguage === 'ar' ? ar : en);
 
   const dustLevelMarks: Record<number, string> = {
-    1: t('Clean', 'Ù†Ø¸ÙŠÙ'),
-    2: t('Light', 'Ø®ÙÙŠÙ'),
-    3: t('âš ï¸ Moderate', 'âš ï¸ Ù…ØªÙˆØ³Ø·'),
-    4: t('âš ï¸ Heavy', 'âš ï¸ Ø«Ù‚ÙŠÙ„'),
-    5: t('ðŸš¨ Severe', 'ðŸš¨ Ø´Ø¯ÙŠØ¯'),
+    1: t('Clean', 'نظيف'),
+    2: t('Light', 'خفيف'),
+    3: t('⚠️ Moderate', '⚠️ متوسط'),
+    4: t('⚠️ Heavy', '⚠️ ثقيل'),
+    5: t('🚨 Severe', '🚨 شديد'),
   };
 
   const renderUrgencyBadge = (urgency: string) => {
@@ -187,18 +187,18 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
             <div className="flex items-center gap-2">
               <Wrench className="w-6 h-6" />
               <h3 className="text-lg font-semibold">
-                {t('YILMAZ Tech Checklist', 'Ù‚Ø§Ø¦Ù…Ø© ÙØ­Øµ ÙÙ†ÙŠ YILMAZ')}
+                {t('YILMAZ Tech Checklist', 'قائمة فحص فني YILMAZ')}
               </h3>
             </div>
             <p className="text-white/90 text-sm">
-              {t('Human-as-a-Sensor Data Collection', 'Ø¬Ù…Ø¹ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ù…Ù† Ø§Ù„Ø¥Ù†Ø³Ø§Ù† ÙƒÙ…Ø³ØªØ´Ø¹Ø±')}
+              {t('Human-as-a-Sensor Data Collection', 'جمع البيانات من الإنسان كمستشعر')}
             </p>
             <div className="flex items-center gap-2 text-xs text-white/90">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
               </span>
-              {t('Tier 1 Presentation â†’ Tier 2 Advisory', 'Ø§Ù„Ø·Ø¨Ù‚Ø© 1 Ø¹Ø±Ø¶ â† Ø§Ù„Ø·Ø¨Ù‚Ø© 2 Ø§Ø³ØªØ´Ø§Ø±Ø©')}
+              {t('Tier 1 Presentation → Tier 2 Advisory', 'الطبقة 1 عرض ← الطبقة 2 استشارة')}
             </div>
           </div>
         </CardContent>
@@ -208,7 +208,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
       <Card className="mb-4">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <Label className="font-medium">{t('Language / Ø§Ù„Ù„ØºØ©:', 'Language / Ø§Ù„Ù„ØºØ©:')}</Label>
+            <Label className="font-medium">{t('Language / اللغة:', 'Language / اللغة:')}</Label>
             <RadioGroup
               value={selectedLanguage}
               onValueChange={(v) => setSelectedLanguage(v as 'en' | 'ar')}
@@ -220,7 +220,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="ar" id="lang-ar" />
-                <Label htmlFor="lang-ar" className="cursor-pointer">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</Label>
+                <Label htmlFor="lang-ar" className="cursor-pointer">العربية</Label>
               </div>
             </RadioGroup>
           </div>
@@ -235,21 +235,21 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <FlaskConical className="w-4 h-4" />
-                {t('Machine Information', 'Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø¢Ù„Ø©')}
+                {t('Machine Information', 'معلومات الآلة')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
                 control={form.control}
                 name="machineModel"
-                rules={{ required: t('Please select machine model', 'ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø·Ø±Ø§Ø² Ø§Ù„Ø¢Ù„Ø©') }}
+                rules={{ required: t('Please select machine model', 'يرجى اختيار طراز الآلة') }}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('Machine Model', 'Ø·Ø±Ø§Ø² Ø§Ù„Ø¢Ù„Ø©')}</FormLabel>
+                    <FormLabel>{t('Machine Model', 'طراز الآلة')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t('Select Model', 'Ø§Ø®ØªØ± Ø§Ù„Ø·Ø±Ø§Ø²')} />
+                          <SelectValue placeholder={t('Select Model', 'اختر الطراز')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -265,12 +265,12 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
               <FormField
                 control={form.control}
                 name="machineSerial"
-                rules={{ required: t('Please enter serial number', 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ù„Ø±Ù‚Ù… Ø§Ù„ØªØ³Ù„Ø³Ù„ÙŠ') }}
+                rules={{ required: t('Please enter serial number', 'يرجى إدخال الرقم التسلسلي') }}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('Serial Number', 'Ø§Ù„Ø±Ù‚Ù… Ø§Ù„ØªØ³Ù„Ø³Ù„ÙŠ')}</FormLabel>
+                    <FormLabel>{t('Serial Number', 'الرقم التسلسلي')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('e.g., YIL-2024-12345', 'Ù…Ø«Ø§Ù„: YIL-2024-12345')} {...field} />
+                      <Input placeholder={t('e.g., YIL-2024-12345', 'مثال: YIL-2024-12345')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -282,7 +282,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                   name="installationYear"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('Installation Year', 'Ø³Ù†Ø© Ø§Ù„ØªØ±ÙƒÙŠØ¨')}</FormLabel>
+                      <FormLabel>{t('Installation Year', 'سنة التركيب')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -301,7 +301,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                   name="operatingHours"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('Operating Hours', 'Ø³Ø§Ø¹Ø§Øª Ø§Ù„ØªØ´ØºÙŠÙ„')}</FormLabel>
+                      <FormLabel>{t('Operating Hours', 'ساعات التشغيل')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -322,20 +322,20 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                 rules={{ required: true }}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('Location', 'Ø§Ù„Ù…ÙˆÙ‚Ø¹')}</FormLabel>
+                    <FormLabel>{t('Location', 'الموقع')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t('Select Location', 'Ø§Ø®ØªØ± Ø§Ù„Ù…ÙˆÙ‚Ø¹')} />
+                          <SelectValue placeholder={t('Select Location', 'اختر الموقع')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="cairo">{t('Cairo', 'Ø§Ù„Ù‚Ø§Ù‡Ø±Ø©')}</SelectItem>
-                        <SelectItem value="giza">{t('Giza', 'Ø§Ù„Ø¬ÙŠØ²Ø©')}</SelectItem>
-                        <SelectItem value="alexandria">{t('Alexandria', 'Ø§Ù„Ø¥Ø³ÙƒÙ†Ø¯Ø±ÙŠØ©')}</SelectItem>
-                        <SelectItem value="suez">{t('Suez', 'Ø§Ù„Ø³ÙˆÙŠØ³')}</SelectItem>
-                        <SelectItem value="port_said">{t('Port Said', 'Ø¨ÙˆØ±Ø³Ø¹ÙŠØ¯')}</SelectItem>
-                        <SelectItem value="other">{t('Other', 'Ø¢Ø®Ø±')}</SelectItem>
+                        <SelectItem value="cairo">{t('Cairo', 'القاهرة')}</SelectItem>
+                        <SelectItem value="giza">{t('Giza', 'الجيزة')}</SelectItem>
+                        <SelectItem value="alexandria">{t('Alexandria', 'الإسكندرية')}</SelectItem>
+                        <SelectItem value="suez">{t('Suez', 'السويس')}</SelectItem>
+                        <SelectItem value="port_said">{t('Port Said', 'بورسعيد')}</SelectItem>
+                        <SelectItem value="other">{t('Other', 'آخر')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -350,13 +350,13 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Zap className="w-4 h-4" />
-                {t('Manual Sensor Readings', 'Ù‚Ø±Ø§Ø¡Ø§Øª Ø§Ù„Ù…Ø³ØªØ´Ø¹Ø±Ø§Øª Ø§Ù„ÙŠØ¯ÙˆÙŠØ©')}
+                {t('Manual Sensor Readings', 'قراءات المستشعرات اليدوية')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <Alert variant="destructive" className="border-amber-500 bg-amber-500/10">
                 <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>{t('Take readings with machine STOPPED and SAFE', 'Ø®Ø° Ø§Ù„Ù‚Ø±Ø§Ø¡Ø§Øª Ù…Ø¹ Ø§Ù„Ø¢Ù„Ø© Ù…ØªÙˆÙ‚ÙØ© ÙˆØ¢Ù…Ù†Ø©')}</AlertTitle>
+                <AlertTitle>{t('Take readings with machine STOPPED and SAFE', 'خذ القراءات مع الآلة متوقفة وآمنة')}</AlertTitle>
               </Alert>
               <FormField
                 control={form.control}
@@ -364,8 +364,8 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
-                      {t('Hydraulic Pressure (bar)', 'Ø§Ù„Ø¶ØºØ· Ø§Ù„Ù‡ÙŠØ¯Ø±ÙˆÙ„ÙŠÙƒÙŠ (Ø¨Ø§Ø±)')}
-                      <Badge variant="secondary">{t('Normal: 140-160', 'Ø¹Ø§Ø¯ÙŠ: 140-160')}</Badge>
+                      {t('Hydraulic Pressure (bar)', 'الضغط الهيدروليكي (بار)')}
+                      <Badge variant="secondary">{t('Normal: 140-160', 'عادي: 140-160')}</Badge>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -389,8 +389,8 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Flame className="w-4 h-4" />
-                      {t('Spindle Temperature (Â°C)', 'Ø¯Ø±Ø¬Ø© Ø­Ø±Ø§Ø±Ø© Ø§Ù„Ù…Ø­ÙˆØ± (Â°Ù…)')}
-                      <Badge variant="secondary">{t('Normal: <70', 'Ø¹Ø§Ø¯ÙŠ: <70')}</Badge>
+                      {t('Spindle Temperature (°C)', 'درجة حرارة المحور (°م)')}
+                      <Badge variant="secondary">{t('Normal: <70', 'عادي: <70')}</Badge>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -413,8 +413,8 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Zap className="w-4 h-4" />
-                      {t('Input Voltage (V)', 'Ø¬Ù‡Ø¯ Ø§Ù„Ø¯Ø®Ù„ (ÙÙˆÙ„Øª)')}
-                      <Badge variant="secondary">{t('Normal: 220Â±10', 'Ø¹Ø§Ø¯ÙŠ: 220Â±10')}</Badge>
+                      {t('Input Voltage (V)', 'جهد الدخل (فولت)')}
+                      <Badge variant="secondary">{t('Normal: 220±10', 'عادي: 220±10')}</Badge>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -435,7 +435,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                 name="ambientTempCelsius"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('Ambient Temperature (Â°C)', 'Ø¯Ø±Ø¬Ø© Ø§Ù„Ø­Ø±Ø§Ø±Ø© Ø§Ù„Ù…Ø­ÙŠØ·Ø© (Â°Ù…)')}</FormLabel>
+                    <FormLabel>{t('Ambient Temperature (°C)', 'درجة الحرارة المحيطة (°م)')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -457,7 +457,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4" />
-                      {t('Dust Level (Visual Assessment)', 'Ù…Ø³ØªÙˆÙ‰ Ø§Ù„ØºØ¨Ø§Ø± (ØªÙ‚ÙŠÙŠÙ… Ø¨ØµØ±ÙŠ)')}
+                      {t('Dust Level (Visual Assessment)', 'مستوى الغبار (تقييم بصري)')}
                     </FormLabel>
                     <FormControl>
                       <Slider
@@ -480,7 +480,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <AlertTriangle className="w-4 h-4" />
-                {t('Observed Symptoms', 'Ø§Ù„Ø£Ø¹Ø±Ø§Ø¶ Ø§Ù„Ù…Ù„Ø­ÙˆØ¸Ø©')}
+                {t('Observed Symptoms', 'الأعراض الملحوظة')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -489,13 +489,13 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                 name="symptoms"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('Symptoms (comma-separated)', 'Ø§Ù„Ø£Ø¹Ø±Ø§Ø¶ (Ù…ÙØµÙˆÙ„Ø© Ø¨ÙÙˆØ§ØµÙ„)')}</FormLabel>
+                    <FormLabel>{t('Symptoms (comma-separated)', 'الأعراض (مفصولة بفواصل)')}</FormLabel>
                     <FormControl>
                       <Textarea
                         rows={4}
                         placeholder={t(
                           'vibration increase, thermal shutdown, positioning error',
-                          'Ø²ÙŠØ§Ø¯Ø© Ø§Ù„Ø§Ù‡ØªØ²Ø§Ø²ØŒ Ø¥ÙŠÙ‚Ø§Ù Ø­Ø±Ø§Ø±ÙŠØŒ Ø®Ø·Ø£ ÙÙŠ Ø§Ù„Ù…ÙˆØ¶Ø¹'
+                          'زيادة الاهتزاز، إيقاف حراري، خطأ في الموضع'
                         )}
                         {...field}
                       />
@@ -503,7 +503,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                     <FormDescription>
                       {t(
                         'e.g., vibration increase, thermal shutdown, positioning error',
-                        'Ù…Ø«Ø§Ù„: Ø²ÙŠØ§Ø¯Ø© Ø§Ù„Ø§Ù‡ØªØ²Ø§Ø²ØŒ Ø¥ÙŠÙ‚Ø§Ù Ø­Ø±Ø§Ø±ÙŠØŒ Ø®Ø·Ø£ ÙÙŠ Ø§Ù„Ù…ÙˆØ¶Ø¹'
+                        'مثال: زيادة الاهتزاز، إيقاف حراري، خطأ في الموضع'
                       )}
                     </FormDescription>
                   </FormItem>
@@ -517,14 +517,14 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Camera className="w-4 h-4" />
-                {t('Evidence Collection', 'Ø¬Ù…Ø¹ Ø§Ù„Ø£Ø¯Ù„Ø©')}
+                {t('Evidence Collection', 'جمع الأدلة')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormItem>
-                <FormLabel>{t('Photo Evidence', 'Ø£Ø¯Ù„Ø© Ø§Ù„ØµÙˆØ±')}</FormLabel>
+                <FormLabel>{t('Photo Evidence', 'أدلة الصور')}</FormLabel>
                 <p className="text-sm text-muted-foreground">
-                  {t('Upload photos of the issue. Saved locally first.', 'Ø­Ù…Ù„ ØµÙˆØ± Ù„Ù„Ù…Ø´ÙƒÙ„Ø©. ØªØ­ÙØ¸ Ù…Ø­Ù„ÙŠØ§ Ø£ÙˆÙ„Ø§.')}
+                  {t('Upload photos of the issue. Saved locally first.', 'حمل صور للمشكلة. تحفظ محليا أولا.')}
                 </p>
                 <div
                   {...getRootProps()}
@@ -536,16 +536,16 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                   <Camera className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
                   <p className="text-sm">
                     {fileList.length < 3
-                      ? t('Drag & drop or click to upload (max 3)', 'Ø§Ø³Ø­Ø¨ ÙˆØ£ÙÙ„Øª Ø£Ùˆ Ø§Ù†Ù‚Ø± Ù„Ù„ØªØ­Ù…ÙŠÙ„ (Ø­Ø¯ Ø£Ù‚ØµÙ‰ 3)')
-                      : `${fileList.length} ${t('files', 'Ù…Ù„ÙØ§Øª')}`}
+                      ? t('Drag & drop or click to upload (max 3)', 'اسحب وأفلت أو انقر للتحميل (حد أقصى 3)')
+                      : `${fileList.length} ${t('files', 'ملفات')}`}
                   </p>
                 </div>
               </FormItem>
               <Separator />
               <FormItem>
-                <FormLabel>{t('Voice Note', 'Ù…Ù„Ø§Ø­Ø¸Ø© ØµÙˆØªÙŠØ©')}</FormLabel>
+                <FormLabel>{t('Voice Note', 'ملاحظة صوتية')}</FormLabel>
                 <p className="text-sm text-muted-foreground">
-                  {t('Record a brief description of the noise or issue.', 'Ø³Ø¬Ù„ ÙˆØµÙØ§ Ù…ÙˆØ¬Ø²Ø§ Ù„Ù„Ø¶ÙˆØ¶Ø§Ø¡ Ø£Ùˆ Ø§Ù„Ù…Ø´ÙƒÙ„Ø©.')}
+                  {t('Record a brief description of the noise or issue.', 'سجل وصفا موجزا للضوضاء أو المشكلة.')}
                 </p>
                 <Button
                   type="button"
@@ -553,15 +553,15 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                   onClick={() => {
                     if (isRecording) {
                       setIsRecording(false);
-                      toast.success(t('Voice note saved locally', 'ØªÙ… Ø­ÙØ¸ Ø§Ù„Ù…Ù„Ø§Ø­Ø¸Ø© Ø§Ù„ØµÙˆØªÙŠØ© Ù…Ø­Ù„ÙŠØ§'));
+                      toast.success(t('Voice note saved locally', 'تم حفظ الملاحظة الصوتية محليا'));
                     } else {
                       setIsRecording(true);
-                      toast.info(t('Recording... Click to stop', 'Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ³Ø¬ÙŠÙ„... Ø§Ù†Ù‚Ø± Ù„Ù„Ø¥ÙŠÙ‚Ø§Ù'));
+                      toast.info(t('Recording... Click to stop', 'جاري التسجيل... انقر للإيقاف'));
                     }
                   }}
                 >
                   <Mic className="w-4 h-4 mr-2" />
-                  {isRecording ? t('Stop Recording', 'Ø¥ÙŠÙ‚Ø§Ù Ø§Ù„ØªØ³Ø¬ÙŠÙ„') : t('Record Voice Note', 'ØªØ³Ø¬ÙŠÙ„ Ù…Ù„Ø§Ø­Ø¸Ø© ØµÙˆØªÙŠØ©')}
+                  {isRecording ? t('Stop Recording', 'إيقاف التسجيل') : t('Record Voice Note', 'تسجيل ملاحظة صوتية')}
                 </Button>
               </FormItem>
             </CardContent>
@@ -570,7 +570,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
           {/* Submit */}
           <Button type="submit" size="lg" className="w-full h-14" disabled={loading}>
             <CheckCircle className="w-5 h-5 mr-2" />
-            {loading ? t('Generating...', 'Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªÙˆÙ„ÙŠØ¯...') : t('Generate Advisory (Tier 2 Validation)', 'ØªÙˆÙ„ÙŠØ¯ Ø§Ø³ØªØ´Ø§Ø±Ø© (Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„Ø·Ø¨Ù‚Ø© 2)')}
+            {loading ? t('Generating...', 'جاري التوليد...') : t('Generate Advisory (Tier 2 Validation)', 'توليد استشارة (التحقق من الطبقة 2)')}
           </Button>
         </form>
       </Form>
@@ -578,7 +578,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
       {/* Error */}
       {error && (
         <Alert variant="destructive" className="mt-4">
-          <AlertTitle>{t('Error', 'Ø®Ø·Ø£')}</AlertTitle>
+          <AlertTitle>{t('Error', 'خطأ')}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -589,26 +589,26 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-base">
               <CheckCircle className="w-5 h-5 text-green-600" />
-              {t('Advisory Generated', 'ØªÙ… ØªÙˆÙ„ÙŠØ¯ Ø§Ù„Ø§Ø³ØªØ´Ø§Ø±Ø©')}
+              {t('Advisory Generated', 'تم توليد الاستشارة')}
             </CardTitle>
             {renderUrgencyBadge(advisory.urgency)}
           </CardHeader>
           <CardContent className="space-y-4">
             <Alert>
-              <AlertTitle>{t('AICS-001 Advisory Disclaimer', 'Ø¥Ø®Ù„Ø§Ø¡ Ù…Ø³Ø¤ÙˆÙ„ÙŠØ© AICS-001')}</AlertTitle>
+              <AlertTitle>{t('AICS-001 Advisory Disclaimer', 'إخلاء مسؤولية AICS-001')}</AlertTitle>
               <AlertDescription className="text-xs">{advisory.constitutionalDisclaimer}</AlertDescription>
             </Alert>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="font-medium">{t('Confidence:', 'Ø§Ù„Ø«Ù‚Ø©:')}</span> {(advisory.confidence * 100).toFixed(0)}%
+                <span className="font-medium">{t('Confidence:', 'الثقة:')}</span> {(advisory.confidence * 100).toFixed(0)}%
               </div>
               <div>
-                <span className="font-medium">{t('Downtime:', 'ÙˆÙ‚Øª Ø§Ù„ØªÙˆÙ‚Ù:')}</span> {advisory.estimatedDowntimeHours}h
+                <span className="font-medium">{t('Downtime:', 'وقت التوقف:')}</span> {advisory.estimatedDowntimeHours}h
               </div>
             </div>
             <Separator />
             <div>
-              <h4 className="font-medium mb-2">{t('Suggestion', 'Ø§Ù„Ø§Ù‚ØªØ±Ø§Ø­')}</h4>
+              <h4 className="font-medium mb-2">{t('Suggestion', 'الاقتراح')}</h4>
               <p
                 className="text-sm whitespace-pre-wrap"
                 style={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
@@ -620,7 +620,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
               <>
                 <Separator />
                 <div>
-                  <h4 className="font-medium mb-2">{t('Preventive Actions', 'Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª Ø§Ù„ÙˆÙ‚Ø§Ø¦ÙŠØ©')}</h4>
+                  <h4 className="font-medium mb-2">{t('Preventive Actions', 'الإجراءات الوقائية')}</h4>
                   <ul className="list-disc pl-6 space-y-1" style={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}>
                     {(selectedLanguage === 'ar' ? advisory.preventiveActionsAr : advisory.preventiveActionsEn).map(
                       (action, index) => (
@@ -635,7 +635,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
               <>
                 <Separator />
                 <div>
-                  <h4 className="font-medium mb-2">{t('Required Parts', 'Ø§Ù„Ù‚Ø·Ø¹ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©')}</h4>
+                  <h4 className="font-medium mb-2">{t('Required Parts', 'القطع المطلوبة')}</h4>
                   <div className="space-y-2">
                     {advisory.recommendedParts.map((part, index) => (
                       <Card key={index} className="bg-muted/50">
@@ -646,15 +646,15 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                                 {selectedLanguage === 'ar' ? part.nameAr : part.nameEn}
                               </p>
                               <p className="text-xs text-muted-foreground">{part.partNumber}</p>
-                              {part.critical && <Badge variant="destructive" className="mt-1">{t('CRITICAL', 'Ø­Ø±Ø¬')}</Badge>}
+                              {part.critical && <Badge variant="destructive" className="mt-1">{t('CRITICAL', 'حرج')}</Badge>}
                             </div>
                             <div className="text-right">
                               <p className="font-semibold">
-                                {part.priceEGP.toLocaleString(selectedLanguage === 'ar' ? 'ar-EG' : 'en-EG')} {t('EGP', 'Ø¬Ù†ÙŠÙ‡')}
+                                {part.priceEGP.toLocaleString(selectedLanguage === 'ar' ? 'ar-EG' : 'en-EG')} {t('EGP', 'جنيه')}
                               </p>
                               <p className="text-xs text-muted-foreground flex items-center justify-end gap-1">
                                 <Clock className="w-3 h-3" />
-                                {part.leadTimeDays} {t('days', 'Ø£ÙŠØ§Ù…')}
+                                {part.leadTimeDays} {t('days', 'أيام')}
                               </p>
                             </div>
                           </div>
@@ -663,9 +663,9 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                     ))}
                     <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200">
                       <CardContent className="pt-4 flex justify-between">
-                        <span className="font-medium">{t('Total Cost:', 'Ø§Ù„ØªÙƒÙ„ÙØ© Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠØ©:')}</span>
+                        <span className="font-medium">{t('Total Cost:', 'التكلفة الإجمالية:')}</span>
                         <span className="font-bold text-blue-600">
-                          {advisory.totalCostEGP.toLocaleString(selectedLanguage === 'ar' ? 'ar-EG' : 'en-EG')} {t('EGP', 'Ø¬Ù†ÙŠÙ‡')}
+                          {advisory.totalCostEGP.toLocaleString(selectedLanguage === 'ar' ? 'ar-EG' : 'en-EG')} {t('EGP', 'جنيه')}
                         </span>
                       </CardContent>
                     </Card>
@@ -676,7 +676,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
             {advisory.seasonalWarningEn && (
               <Alert className="border-amber-500 bg-amber-500/10">
                 <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>{t('Seasonal Alert', 'ØªÙ†Ø¨ÙŠÙ‡ Ù…ÙˆØ³Ù…ÙŠ')}</AlertTitle>
+                <AlertTitle>{t('Seasonal Alert', 'تنبيه موسمي')}</AlertTitle>
                 <AlertDescription>
                   {selectedLanguage === 'ar' ? advisory.seasonalWarningAr : advisory.seasonalWarningEn}
                 </AlertDescription>
@@ -685,21 +685,21 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
             <Separator />
             <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
               <div>
-                <p>{t('Advisory ID:', 'Ù…Ø¹Ø±Ù Ø§Ù„Ø§Ø³ØªØ´Ø§Ø±Ø©:')}</p>
+                <p>{t('Advisory ID:', 'معرف الاستشارة:')}</p>
                 <code className="text-xs">{advisory.advisoryId}</code>
               </div>
               <div>
-                <p>{t('Timestamp:', 'Ø§Ù„Ø·Ø§Ø¨Ø¹ Ø§Ù„Ø²Ù…Ù†ÙŠ:')}</p>
+                <p>{t('Timestamp:', 'الطابع الزمني:')}</p>
                 <code className="text-xs">{new Date(advisory.advisoryTimestamp).toLocaleString()}</code>
               </div>
             </div>
             <Separator />
             <Alert>
-              <AlertTitle>{t('Next Steps', 'Ø§Ù„Ø®Ø·ÙˆØ§Øª Ø§Ù„ØªØ§Ù„ÙŠØ©')}</AlertTitle>
+              <AlertTitle>{t('Next Steps', 'الخطوات التالية')}</AlertTitle>
               <AlertDescription>
                 {t(
                   'This advisory requires human validation. A YILMAZ-certified technician must review and approve before creating a service ticket or ordering parts.',
-                  'ØªØªØ·Ù„Ø¨ Ù‡Ø°Ù‡ Ø§Ù„Ø§Ø³ØªØ´Ø§Ø±Ø© Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† ØµØ­Ø© Ø§Ù„Ø¥Ù†Ø³Ø§Ù†. ÙŠØ¬Ø¨ Ø¹Ù„Ù‰ ÙÙ†ÙŠ Ù…Ø¹ØªÙ…Ø¯ Ù…Ù† YILMAZ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø© ÙˆØ§Ù„Ù…ÙˆØ§ÙÙ‚Ø© Ù‚Ø¨Ù„ Ø¥Ù†Ø´Ø§Ø¡ ØªØ°ÙƒØ±Ø© Ø®Ø¯Ù…Ø© Ø£Ùˆ Ø·Ù„Ø¨ Ù‚Ø·Ø¹.'
+                  'تتطلب هذه الاستشارة التحقق من صحة الإنسان. يجب على فني معتمد من YILMAZ المراجعة والموافقة قبل إنشاء تذكرة خدمة أو طلب قطع.'
                 )}
               </AlertDescription>
             </Alert>

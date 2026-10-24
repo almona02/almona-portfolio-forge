@@ -1,11 +1,11 @@
 ﻿/**
- * YilmazExportPage â€” Gold-Tier CNC Export Interface
+ * YilmazExportPage — Gold-Tier CNC Export Interface
  *
  * @tier Tier 2 (Advisory Presentation)
- * @constitutional_compliance AICS-001 Â§7 (Presentation layer)
+ * @constitutional_compliance AICS-001 §7 (Presentation layer)
  *
  * Professional production export workflow inspired by LogiKal/Klaes export UX:
- *   1. Machine Selection â†’ 2. Pre-Flight Validation â†’ 3. Export & Download
+ *   1. Machine Selection → 2. Pre-Flight Validation → 3. Export & Download
  *
  * Features:
  * - Machine model selector with specs preview
@@ -51,7 +51,7 @@ import type { YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenera
 import type { ExportFormat, ValidationIssue } from '@/services/export/YilmazExportPipeline';
 import type { ExportFile } from '@/services/export/YilmazFileFormats';
 
-// â”€â”€â”€ Sub-Components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-Components ──────────────────────────────────────────────────────────
 
 /** Severity icon for validation issues */
 const SeverityIcon: React.FC<{ severity: ValidationIssue['severity'] }> = ({ severity }) => {
@@ -81,7 +81,7 @@ const FileCard: React.FC<{
         <div>
           <p className="text-sm font-medium">{label}</p>
           <p className="text-xs text-muted-foreground">
-            {file.filename} Â· {YilmazFileFormats.formatFileSize(file.size)}
+            {file.filename} · {YilmazFileFormats.formatFileSize(file.size)}
           </p>
         </div>
       </div>
@@ -93,7 +93,7 @@ const FileCard: React.FC<{
   );
 };
 
-// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main Page ───────────────────────────────────────────────────────────────
 
 const YilmazExportPage: React.FC = () => {
   const navigate = useNavigate();
@@ -125,7 +125,7 @@ const YilmazExportPage: React.FC = () => {
     reset();
   }, [machineModel, reset]);
 
-  // â”€â”€â”€ Handlers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Handlers ──────────────────────────────────────────────────────────
 
   const handleValidate = useCallback(() => {
     const result = runPreFlight();
@@ -161,7 +161,7 @@ const YilmazExportPage: React.FC = () => {
 
   const handleDownloadAll = useCallback(() => {
     downloadAll();
-    toast.success('Downloading all filesâ€¦');
+    toast.success('Downloading all files…');
   }, [downloadAll]);
 
   const handleDownloadFile = useCallback(
@@ -172,13 +172,13 @@ const YilmazExportPage: React.FC = () => {
     [downloadFile]
   );
 
-  // â”€â”€â”€ Derived State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Derived State ─────────────────────────────────────────────────────
 
   const selectedSpecs = availableModels.find((m) => m.model === machineModel)?.specs;
   const errorCount = preFlight?.issues.filter((i) => i.severity === 'error').length ?? 0;
   const warningCount = preFlight?.issues.filter((i) => i.severity === 'warning').length ?? 0;
 
-  // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Render ────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-muted/30 p-4 md:p-6 lg:p-8">
@@ -196,7 +196,7 @@ const YilmazExportPage: React.FC = () => {
               Yilmaz CNC Export
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Design â†’ BOM â†’ Optimization â†’ Machine-Ready Files
+              Design → BOM → Optimization → Machine-Ready Files
             </p>
           </div>
           <Badge variant="outline" className="gap-1.5 px-3 py-1">
@@ -275,7 +275,7 @@ const YilmazExportPage: React.FC = () => {
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{model}</span>
                               <span className="text-xs text-muted-foreground">
-                                {specs.axes}-axis Â· {specs.maxCutLength}mm
+                                {specs.axes}-axis · {specs.maxCutLength}mm
                               </span>
                             </div>
                           </SelectItem>
@@ -299,7 +299,7 @@ const YilmazExportPage: React.FC = () => {
                       </div>
                       <div className="p-3 rounded-lg bg-muted/50 text-center">
                         <Cpu className="w-4 h-4 mx-auto mb-1 text-muted-foreground" />
-                        <p className="text-lg font-semibold">Â±{selectedSpecs.precision}mm</p>
+                        <p className="text-lg font-semibold">±{selectedSpecs.precision}mm</p>
                         <p className="text-xs text-muted-foreground">Precision</p>
                       </div>
                       <div className="p-3 rounded-lg bg-muted/50 text-center">
@@ -348,7 +348,7 @@ const YilmazExportPage: React.FC = () => {
                       <div className="flex flex-wrap gap-1.5">
                         {selectedSpecs.supportedAngles.map((angle) => (
                           <Badge key={angle} variant="secondary" className="text-xs">
-                            {angle}Â°
+                            {angle}°
                           </Badge>
                         ))}
                       </div>
@@ -474,7 +474,7 @@ const YilmazExportPage: React.FC = () => {
                         ) : (
                           <Download className="w-4 h-4 mr-2" />
                         )}
-                        {isExporting ? 'Exportingâ€¦' : 'Export to Yilmaz'}
+                        {isExporting ? 'Exporting…' : 'Export to Yilmaz'}
                       </Button>
                     </div>
                   </div>
@@ -667,7 +667,7 @@ const YilmazExportPage: React.FC = () => {
                     Accuracy framework: <strong>99.8%</strong>
                   </p>
                   <p className="font-arabic" dir="rtl">
-                    Ø¬Ù…ÙŠØ¹ Ø§Ù„ØµØ§Ø¯Ø±Ø§Øª ØªØ®Ø¶Ø¹ Ù„Ù„Ø­ØªÙ…ÙŠØ© Ø§Ù„Ù…Ø­Ù…ÙŠØ© Ù…Ù† Ø§Ù„Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø«Ø§Ù„Ø«. ÙƒÙ„ Ø¨Ø±Ù†Ø§Ù…Ø¬ G-code ÙŠØªÙ… Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù†Ù‡ ÙˆØªØªØ¨Ø¹Ù‡.
+                    جميع الصادرات تخضع للحتمية المحمية من المستوى الثالث. كل برنامج G-code يتم التحقق منه وتتبعه.
                   </p>
                 </div>
               </CardContent>

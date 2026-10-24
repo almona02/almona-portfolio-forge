@@ -39,8 +39,8 @@ import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'reac
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-// NOTE: Heavy Fabricator Pro modules are lazyâ€‘loaded per tab to keep
-// initial bundle size and TTI low for heavyâ€‘duty usage.
+// NOTE: Heavy Fabricator Pro modules are lazy‑loaded per tab to keep
+// initial bundle size and TTI low for heavy‑duty usage.
 // PHASE 4: Using lazyRetry for better reliability
 import { lazyRetry } from '@/utils/lazyImport';
 
@@ -353,7 +353,7 @@ export const FabricatorWorkflow: React.FC = () => {
     }
   }, [currentProject]);
 
-  // Group loaded jobs by project (projectCode or orderNumber) for projectâ€‘level selection
+  // Group loaded jobs by project (projectCode or orderNumber) for project‑level selection
   const existingProjectGroups = React.useMemo(
     () => {
       const map = new Map<
@@ -370,7 +370,7 @@ export const FabricatorWorkflow: React.FC = () => {
         const labelBase = job.projectCode || job.orderNumber || 'Project';
         const label =
           job.customer && job.customer.trim().length > 0
-            ? `${labelBase} Â· ${job.customer}`
+            ? `${labelBase} · ${job.customer}`
             : labelBase;
 
         if (!map.has(key)) {
@@ -642,7 +642,7 @@ export const FabricatorWorkflow: React.FC = () => {
         const profiles = [...legacyData.profiles];
 
         // Ensure at least one ROCK 60 template profile is available locally so that
-        // the ROCK 60 45Â° template button in the design flow always works, even
+        // the ROCK 60 45° template button in the design flow always works, even
         // before Supabase-backed profile seeding is wired here.
         const hasRock60Template = profiles.some(
           (p) =>
@@ -701,7 +701,7 @@ export const FabricatorWorkflow: React.FC = () => {
       const optimizationTracker = trackOptimization();
 
       // Global hard safety limit for profile stock length in mm.
-      // Many regional suppliers use 6â€“7.5m bars; we cap all cutting
+      // Many regional suppliers use 6–7.5m bars; we cap all cutting
       // calculations at 8000mm to prevent impossible cuts from being generated.
       const MAX_STOCK_LENGTH_MM = 8000;
 
@@ -752,7 +752,7 @@ export const FabricatorWorkflow: React.FC = () => {
           maxSolvingTime: 60, // 60 seconds max
           complexityThresholds: {
             simple: 50, // Use greedy for <50 cuts
-            medium: 500, // Use LP for 50â€“499; Tier-3 greedy for 500+ (genetic is advisory-only)
+            medium: 500, // Use LP for 50–499; Tier-3 greedy for 500+ (genetic is advisory-only)
           },
           timeConstraint: 'fast', // Default to fast, can be made configurable
           optimalityTarget: 'balanced',
@@ -762,7 +762,7 @@ export const FabricatorWorkflow: React.FC = () => {
           enableProgressiveOptimization: true, // Enable progressive optimization
         };
 
-        // EnhancedAdaptiveSolver â€” Tier-3 manufacturing truth only (greedy | linear)
+        // EnhancedAdaptiveSolver — Tier-3 manufacturing truth only (greedy | linear)
         const adaptiveSolver = new EnhancedAdaptiveSolver(solverConfig);
         const startTime = performance.now();
 
@@ -1058,7 +1058,7 @@ export const FabricatorWorkflow: React.FC = () => {
         if (issues.length > 0) {
           setProjectError(
             `Optimisation/check mismatch detected:\n${issues
-              .map((s) => `â€¢ ${s}`)
+              .map((s) => `• ${s}`)
               .join('\n')}\nPlease review components or stock lengths before sending to production.`,
           );
         }
@@ -1172,7 +1172,7 @@ export const FabricatorWorkflow: React.FC = () => {
     try {
       setProjectError(null);
 
-      // ðŸ”’ CONSTITUTIONAL CHECKPOINT: Tier 3 Validation
+      // 🔒 CONSTITUTIONAL CHECKPOINT: Tier 3 Validation
       const constitutionalValidation = validateConstitutionalCompliance(
         currentProject,
         inventory,
@@ -1193,7 +1193,7 @@ export const FabricatorWorkflow: React.FC = () => {
             const consequences = e.consequences && e.consequences.length > 0
               ? `\n  Consequences: ${e.consequences.map((c): string => c.title?.en ?? c.type ?? '').join(', ')}`
               : '';
-            return `â€¢ ${e.message}${consequences}`;
+            return `• ${e.message}${consequences}`;
           })
           .join('\n');
 
@@ -1240,12 +1240,12 @@ export const FabricatorWorkflow: React.FC = () => {
         if (shortages.length > 0) {
           throw new Error(
             `Insufficient stock for this order:\n` +
-              shortages.map((s) => `â€¢ ${s}`).join('\n'),
+              shortages.map((s) => `• ${s}`).join('\n'),
           );
         }
       }
 
-      // ðŸ”’ Add Constitutional Metadata to Output
+      // 🔒 Add Constitutional Metadata to Output
       const constitutionalMetadata = generateConstitutionalMetadata(
         currentProject,
         mode,
@@ -1550,7 +1550,7 @@ export const FabricatorWorkflow: React.FC = () => {
                         </Badge>
                       </div>
                       <div className="text-[11px] text-gray-400">
-                        {projectMeta?.projectName || 'Untitled Project'} Â·{' '}
+                        {projectMeta?.projectName || 'Untitled Project'} ·{' '}
                         {projectMeta?.clientName || 'Unnamed Client'}
                       </div>
                     </div>
@@ -1568,7 +1568,7 @@ export const FabricatorWorkflow: React.FC = () => {
             </div>
           </LazyMotionDiv>
 
-          {/* Anatolian Fabricator Cockpit â€“ market intelligence + KPI badges */}
+          {/* Anatolian Fabricator Cockpit – market intelligence + KPI badges */}
           <AnatolianCockpit
             inventory={inventory}
             currentProject={currentProject}
@@ -1584,7 +1584,7 @@ export const FabricatorWorkflow: React.FC = () => {
             }}
           />
 
-          {/* Advanced Bosphorus Workflow Ribbon â€“ prestige step navigation */}
+          {/* Advanced Bosphorus Workflow Ribbon – prestige step navigation */}
           <BosphorusWorkflowRibbon
             steps={workflowSteps.map((s) => ({
               id: s.id,
@@ -1708,7 +1708,7 @@ export const FabricatorWorkflow: React.FC = () => {
                               setSelectedExistingPoseId('');
                             }}
                           >
-                            <option value="">Selectâ€¦</option>
+                            <option value="">Select…</option>
                             {existingProjectGroups.map((group) => (
                               <option key={group.key} value={group.key}>
                                 {group.label} ({group.jobs.length} poses)
@@ -1727,12 +1727,12 @@ export const FabricatorWorkflow: React.FC = () => {
                               value={selectedExistingPoseId}
                               onChange={(e) => setSelectedExistingPoseId(e.target.value)}
                             >
-                              <option value="">Select poseâ€¦</option>
+                              <option value="">Select pose…</option>
                               {existingProjectGroups
                                 .find((g) => g.key === selectedExistingProjectKey)
                                 ?.jobs.map((unit) => (
                                   <option key={unit.id} value={unit.id}>
-                                    {unit.posNumber} Â· {unit.overallWidth.toFixed(0)} Ã—{' '}
+                                    {unit.posNumber} · {unit.overallWidth.toFixed(0)} ×{' '}
                                     {unit.overallHeight.toFixed(0)} mm
                                   </option>
                                 ))}
@@ -1867,7 +1867,7 @@ export const FabricatorWorkflow: React.FC = () => {
                             >
                               {relatedPositions.map((unit) => (
                                 <option key={unit.id} value={unit.id}>
-                                  {unit.posNumber} Â· {unit.overallWidth.toFixed(0)} Ã—{' '}
+                                  {unit.posNumber} · {unit.overallWidth.toFixed(0)} ×{' '}
                                   {unit.overallHeight.toFixed(0)} mm
                                 </option>
                               ))}
@@ -2243,7 +2243,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     </Suspense>
                   </ErrorBoundary>
 
-                  {/* Smart Profile Import Tool â€“ Multi-format with K-factor learning */}
+                  {/* Smart Profile Import Tool – Multi-format with K-factor learning */}
                   <div className="mt-4">
                     <Suspense
                       fallback={
@@ -2261,7 +2261,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     </Suspense>
                   </div>
 
-                  {/* ROCK 60 â€“ 2D cutting list summary for 45Â° configuration */}
+                  {/* ROCK 60 – 2D cutting list summary for 45° configuration */}
                   {inventory.length > 0 && (
                     <div className="mt-4">
                       <Suspense
@@ -2466,7 +2466,7 @@ export const FabricatorWorkflow: React.FC = () => {
             <FeedbackButton jobId={currentProject?.id} />
           </Suspense>
 
-          {/* New Project Wizard â€“ Egyptian-first flow with fallback and edit shortcut */}
+          {/* New Project Wizard – Egyptian-first flow with fallback and edit shortcut */}
           {useEgyptWizard ? (
             <EgyptianProjectWizard
               open={showProjectWizard}

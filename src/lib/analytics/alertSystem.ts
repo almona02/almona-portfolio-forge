@@ -578,11 +578,11 @@ export const getSeverityColor = (severity: Alert['severity']): string => {
 
 export const getSeverityIcon = (severity: Alert['severity']): string => {
   switch (severity) {
-    case 'low': return 'â„¹ï¸';
-    case 'medium': return 'âš ï¸';
-    case 'high': return 'ðŸš¨';
-    case 'critical': return 'ðŸ”¥';
-    default: return 'ðŸ“‹';
+    case 'low': return 'ℹ️';
+    case 'medium': return '⚠️';
+    case 'high': return '🚨';
+    case 'critical': return '🔥';
+    default: return '📋';
   }
 };
 

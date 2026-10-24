@@ -56,7 +56,7 @@ const getApiBase = (): string => {
   }
   // Production fallback - but this should not happen if VITE_API_URL is set
   console.error(
-    "âš ï¸ VITE_API_URL not set in production! DXF import will fail. " +
+    "⚠️ VITE_API_URL not set in production! DXF import will fail. " +
     "Please set VITE_API_URL in your deployment environment variables."
   );
   return typeof window !== 'undefined' ? window.location.origin : '';
@@ -291,7 +291,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
     }
     return (
       <div className="mt-2 text-[11px] text-gray-400">
-        No preview available. Dimensions: {p.widthMm || '?'} Ã— {p.heightMm || '?'} mm
+        No preview available. Dimensions: {p.widthMm || '?'} × {p.heightMm || '?'} mm
       </div>
     );
   };
@@ -465,7 +465,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
 
       {isParsing && (
         <Alert className="bg-gray-900/60 border-gray-800 text-xs card-dark">
-          <AlertDescription>Parsing DXFâ€¦</AlertDescription>
+          <AlertDescription>Parsing DXF…</AlertDescription>
         </Alert>
       )}
 
@@ -495,11 +495,11 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
               </div>
               <div className="mt-1 flex items-center gap-2">
                 <Badge variant="outline" className="border-blue-500 text-blue-200">
-                  {p.widthMm} Ã— {p.heightMm} mm
+                  {p.widthMm} × {p.heightMm} mm
                 </Badge>
                 {p.areaMm2 && (
                   <Badge variant="outline" className="border-teal-500 text-teal-200">
-                    Area {p.areaMm2.toFixed(1)} mmÂ²
+                    Area {p.areaMm2.toFixed(1)} mm²
                   </Badge>
                 )}
                 {p.metadata?.hasSvgPreview && (
@@ -526,7 +526,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
               <div>
                 <div className="font-semibold text-white">{selected.name}</div>
                 <div className="text-xs text-gray-400">
-                  {selected.widthMm} Ã— {selected.heightMm} mm
+                  {selected.widthMm} × {selected.heightMm} mm
                 </div>
               </div>
             </div>
@@ -565,7 +565,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
             {selected.areaMm2 && (
               <div>
                 <span className="text-gray-500">Area:</span>{' '}
-                <span className="text-gray-300">{selected.areaMm2.toFixed(1)} mmÂ²</span>
+                <span className="text-gray-300">{selected.areaMm2.toFixed(1)} mm²</span>
               </div>
             )}
             {selected.perimeterMm && (
@@ -590,7 +590,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
             )}
             {selected.metadata?.hasSvgPreview && (
               <div>
-                <span className="text-green-400">âœ“ SVG Preview Available</span>
+                <span className="text-green-400">✓ SVG Preview Available</span>
               </div>
             )}
           </div>

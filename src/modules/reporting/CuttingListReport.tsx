@@ -508,8 +508,8 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
                                 <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.length, language, 2)}</td>
                                 <td className={`p-2 ${getTextAlign(language, 'left')}`}>
                                   {cut.angle === 45
-                                    ? `${formatNumber(cut.angle, language, 1)}Â° miter`
-                                    : `${formatNumber(cut.angle, language, 1)}Â°`}
+                                    ? `${formatNumber(cut.angle, language, 1)}° miter`
+                                    : `${formatNumber(cut.angle, language, 1)}°`}
                                 </td>
                                 <td className={`p-2 ${getTextAlign(language, 'left')}`}>
                                   {cut.componentId}
@@ -552,8 +552,8 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
                                 <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.length, language, 2)}</td>
                                 <td className={`p-2 ${getTextAlign(language, 'left')}`}>
                                   {cut.angle === 45
-                                    ? `${formatNumber(cut.angle, language, 1)}Â° miter`
-                                    : `${formatNumber(cut.angle, language, 1)}Â°`}
+                                    ? `${formatNumber(cut.angle, language, 1)}° miter`
+                                    : `${formatNumber(cut.angle, language, 1)}°`}
                                 </td>
                                 <td className={`p-2 ${getTextAlign(language, 'left')}`}>
                                   {cut.componentId}
@@ -596,8 +596,8 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
                                 <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.length, language, 2)}</td>
                                 <td className={`p-2 ${getTextAlign(language, 'left')}`}>
                                   {cut.angle === 45
-                                    ? `${formatNumber(cut.angle, language, 1)}Â° miter`
-                                    : `${formatNumber(cut.angle, language, 1)}Â°`}
+                                    ? `${formatNumber(cut.angle, language, 1)}° miter`
+                                    : `${formatNumber(cut.angle, language, 1)}°`}
                                 </td>
                                 <td className={`p-2 ${getTextAlign(language, 'left')}`}>
                                   {cut.componentId}

@@ -58,7 +58,7 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
                 </div>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-xs text-gray-400">
-                    {r.digital_twin_code || 'No twin'} â€¢ {r.portal_reference || 'No ref'}
+                    {r.digital_twin_code || 'No twin'} • {r.portal_reference || 'No ref'}
                   </p>
                   {r.digital_twin_code && (
                     <Button

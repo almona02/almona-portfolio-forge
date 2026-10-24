@@ -229,7 +229,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
                           {format(new Date(invoice.due_date), 'MMM d, yyyy')}
                         </span>
                       ) : (
-                        <span className="text-amber-600/50">â€”</span>
+                        <span className="text-amber-600/50">—</span>
                       )}
                     </TableCell>
                     <TableCell className="text-amber-200">

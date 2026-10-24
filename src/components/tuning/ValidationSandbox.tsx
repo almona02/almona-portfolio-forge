@@ -64,7 +64,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
       frameProfile: frameProfile as Profile,
       glazing: {
         totalThickness: 24, // Default double glazing
-        weightPerSqm: 20, // kg/mÂ²
+        weightPerSqm: 20, // kg/m²
         type: 'double',
       },
       sashWidth: width,
@@ -193,7 +193,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
     }
 
     if (recommendations.length === 0) {
-      recommendations.push('âœ… System passes all validation tests - ready for publishing');
+      recommendations.push('✅ System passes all validation tests - ready for publishing');
     }
 
     return recommendations;
@@ -247,7 +247,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
           </div>
         ) : (
           <div className="flex items-center justify-center gap-2">
-            <span>ðŸ§ª</span>
+            <span>🧪</span>
             <span>Run 100 Test Cases</span>
           </div>
         )}
@@ -283,9 +283,9 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
                   ? 'bg-yellow-600 text-white'
                   : 'bg-red-600 text-white'
               }`}>
-                {currentReport.status === 'passed' ? 'âœ… PASSED' : 
-                 currentReport.status === 'needs_adjustment' ? 'âš ï¸ NEEDS ADJUSTMENT' : 
-                 'âŒ FAILED'}
+                {currentReport.status === 'passed' ? '✅ PASSED' : 
+                 currentReport.status === 'needs_adjustment' ? '⚠️ NEEDS ADJUSTMENT' : 
+                 '❌ FAILED'}
               </div>
             </div>
             
@@ -323,7 +323,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
               <h4 className="typography-h4 text-blue-900 text-sm mb-2">Recommendations</h4>
               <ul className="space-y-1 text-xs text-blue-800">
                 {currentReport.recommendations.map((rec, i) => (
-                  <li key={i}>â€¢ {rec}</li>
+                  <li key={i}>• {rec}</li>
                 ))}
               </ul>
             </div>
@@ -339,7 +339,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
                 {currentReport.failures.slice(0, 10).map((failure, i) => (
                   <div key={i} className="bg-white rounded p-2 border border-red-200">
                     <div className="font-mono font-bold">
-                      {failure.dimensions.width} Ã— {failure.dimensions.height} mm
+                      {failure.dimensions.width} × {failure.dimensions.height} mm
                     </div>
                     <div className="text-red-700 mt-1">
                       {failure.errors?.map(err => err.message).join(', ')}
@@ -364,7 +364,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
               <div className="space-y-1 text-xs">
                 {currentReport.edgeCases.slice(0, 5).map((edge, i) => (
                   <div key={i} className="font-mono">
-                    {edge.dimensions.width} Ã— {edge.dimensions.height} mm
+                    {edge.dimensions.width} × {edge.dimensions.height} mm
                     {edge.warnings && edge.warnings.length > 0 && (
                       <span className="text-yellow-700 ml-2">
                         ({edge.warnings.map(w => w.message).join(', ')})

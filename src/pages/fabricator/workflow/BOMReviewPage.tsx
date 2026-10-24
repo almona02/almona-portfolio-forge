@@ -115,7 +115,7 @@ export const BOMReviewPage: React.FC = () => {
               Bill of Materials
             </CardTitle>
             <p className="text-slate-400 text-sm mt-1">
-              {currentProject.orderNumber || currentProject.id} Â· {currentProject.posNumber}
+              {currentProject.orderNumber || currentProject.id} · {currentProject.posNumber}
             </p>
           </div>
           <div className="flex gap-2">
@@ -138,16 +138,16 @@ export const BOMReviewPage: React.FC = () => {
             <>
               {bom?.qualification?.status !== 'qualified' && (
                 <div className="border border-amber-600/40 bg-amber-500/10 rounded-lg p-4 text-sm text-amber-200" data-testid="bom-gate-actions">
-                  <p className="font-semibold">Estimate only â€” manufacturing release blocked</p>
+                  <p className="font-semibold">Estimate only — manufacturing release blocked</p>
                   <ul className="mt-2 list-disc list-inside text-amber-100/80">
                     {(bom?.qualification?.reasons ?? ['Manufacturing qualification evidence is missing'])
                       .map(reason => <li key={reason}>{reason}</li>)}
                   </ul>
                   <p className="mt-2 text-amber-100/90">
                     <a className="underline" href="/fabricator/studio/approvals">Admin Approvals</a>
-                    {' Â· '}
+                    {' · '}
                     <a className="underline" href="/fabricator/studio/data/tuning">Pack qualification</a>
-                    {' Â· '}
+                    {' · '}
                     <a className="underline" href="/fabricator/studio/data/stock">Stock</a>
                   </p>
                 </div>
@@ -183,7 +183,7 @@ export const BOMReviewPage: React.FC = () => {
                   <span className="font-mono text-amber-300">
                     {bom.cost.totalCost != null
                       ? bom.cost.totalCost.toLocaleString('en-EG', { style: 'currency', currency: 'EGP' })
-                      : 'â€”'}
+                      : '—'}
                   </span>
                 </div>
               )}

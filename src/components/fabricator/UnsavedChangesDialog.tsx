@@ -98,10 +98,10 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
                   {t('unsavedChanges.warning', 'What will happen:')}
                 </p>
                 <ul className="space-y-1 text-amber-300/80">
-                  <li>â€¢ {t('unsavedChanges.warningLost', 'All unsaved changes will be permanently lost')}</li>
-                  <li>â€¢ {t('unsavedChanges.warningNoRecovery', 'Changes cannot be recovered after leaving')}</li>
+                  <li>• {t('unsavedChanges.warningLost', 'All unsaved changes will be permanently lost')}</li>
+                  <li>• {t('unsavedChanges.warningNoRecovery', 'Changes cannot be recovered after leaving')}</li>
                   {showSaveOption && (
-                    <li>â€¢ {t('unsavedChanges.warningSaveFirst', 'You can save your changes before leaving')}</li>
+                    <li>• {t('unsavedChanges.warningSaveFirst', 'You can save your changes before leaving')}</li>
                   )}
                 </ul>
               </div>

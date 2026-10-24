@@ -339,8 +339,8 @@ const ProjectsPage: React.FC = () => {
                   <Input
                     value={projectSearch}
                     onChange={(e) => setProjectSearch(e.target.value)}
-                    placeholder={t('projects.projects_tab.search', 'Search projects, codes, customersâ€¦')}
-                    aria-label={t('projects.projects_tab.search', 'Search projects, codes, customersâ€¦')}
+                    placeholder={t('projects.projects_tab.search', 'Search projects, codes, customers…')}
+                    aria-label={t('projects.projects_tab.search', 'Search projects, codes, customers…')}
                     className="max-w-md bg-[#0a0a0a] border-amber-600/30 text-amber-100"
                   />
                 ) : null}

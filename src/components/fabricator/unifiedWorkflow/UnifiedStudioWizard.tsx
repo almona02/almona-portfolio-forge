@@ -254,7 +254,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
                         ${active ? 'bg-amber-600 text-white' : complete ? 'bg-amber-700/70 text-white' : 'bg-slate-800 text-slate-400'}
                       `}
                     >
-                      {complete ? 'âœ“' : <Icon className="h-3 w-3" />}
+                      {complete ? '✓' : <Icon className="h-3 w-3" />}
                     </span>
                     <span className="whitespace-nowrap select-none">
                       {step.title}

@@ -48,7 +48,7 @@ const LocalizationTest: React.FC = () => {
               i18n.language === 'tr' ? 'bg-blue-500 text-white' : 'bg-gray-200'
             }`}
           >
-            TÃ¼rkÃ§e
+            Türkçe
           </button>
           <button
             onClick={() => handleLanguageChange('ar')}
@@ -56,7 +56,7 @@ const LocalizationTest: React.FC = () => {
               i18n.language === 'ar' ? 'bg-blue-500 text-white' : 'bg-gray-200'
             }`}
           >
-            Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©
+            العربية
           </button>
         </div>
       </div>
@@ -71,7 +71,7 @@ const LocalizationTest: React.FC = () => {
               regionState.region === 'DEFAULT' ? 'bg-green-500 text-white' : 'bg-gray-200'
             }`}
           >
-            ðŸŒ International
+            🌍 International
           </button>
           <button
             onClick={() => handleRegionChange('TR')}
@@ -79,7 +79,7 @@ const LocalizationTest: React.FC = () => {
               regionState.region === 'TR' ? 'bg-green-500 text-white' : 'bg-gray-200'
             }`}
           >
-            ðŸ‡¹ðŸ‡· Turkey
+            🇹🇷 Turkey
           </button>
           <button
             onClick={() => handleRegionChange('EG')}
@@ -87,7 +87,7 @@ const LocalizationTest: React.FC = () => {
               regionState.region === 'EG' ? 'bg-green-500 text-white' : 'bg-gray-200'
             }`}
           >
-            ðŸ‡ªðŸ‡¬ Egypt
+            🇪🇬 Egypt
           </button>
         </div>
       </div>

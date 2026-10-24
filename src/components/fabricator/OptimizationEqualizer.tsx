@@ -121,7 +121,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
     void loadSavedPreferences();
   }, [loadSavedPreferences]);
 
-  // âœ… HARDENING: Memoize handlers to prevent unnecessary re-renders
+  // ✅ HARDENING: Memoize handlers to prevent unnecessary re-renders
   const handlePresetChange = useCallback((presetName: string) => {
     setSelectedPreset(presetName);
     const preset = OptimizationPresets.getPreset(presetName);
@@ -129,7 +129,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
     onStrategyChange?.(preset);
   }, [onStrategyChange]);
 
-  // âœ… HARDENING: Memoize weight change handler
+  // ✅ HARDENING: Memoize weight change handler
   const handleWeightChange = useCallback((field: keyof OptimizationStrategy, value: number[]) => {
     setStrategy(prevStrategy => {
       const newStrategy = {
@@ -149,11 +149,11 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
     return OptimizationPresets.estimateImpact(strategy);
   }, [strategy]);
 
-  // âœ… HARDENING: Memoize save strategy handler
+  // ✅ HARDENING: Memoize save strategy handler
   const handleSaveStrategy = useCallback(async () => {
     setIsSaving(true);
     try {
-      // âœ… HARDENING: Type assertion needed for Supabase strict typing
+      // ✅ HARDENING: Type assertion needed for Supabase strict typing
       const { error } = await supabase
         .from('optimization_equalizer_preferences')
         .insert({
@@ -177,17 +177,17 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
     }
   }, [userId, strategy, loadSavedPreferences]);
 
-  // âœ… HARDENING: Memoize set as default handler
+  // ✅ HARDENING: Memoize set as default handler
   const handleSetAsDefault = useCallback(async () => {
     setIsSaving(true);
     try {
-      // âœ… HARDENING: Remove default flag from all existing preferences
+      // ✅ HARDENING: Remove default flag from all existing preferences
       await supabase
         .from('optimization_equalizer_preferences')
         .update({ is_default: false } as never)
         .eq('user_id', userId);
 
-      // âœ… HARDENING: Set this as default with proper typing
+      // ✅ HARDENING: Set this as default with proper typing
       const { error } = await supabase
         .from('optimization_equalizer_preferences')
         .insert({
@@ -450,10 +450,10 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
 
 OptimizationEqualizerComponent.displayName = 'OptimizationEqualizer';
 
-// âœ… HARDENING: Memoize and wrap with error boundary
+// ✅ HARDENING: Memoize and wrap with error boundary
 const OptimizationEqualizerMemo = React.memo(OptimizationEqualizerComponent);
 
-// âœ… HARDENING: Export with error boundary for production
+// ✅ HARDENING: Export with error boundary for production
 export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = (props) => (
   <ErrorBoundary level="component">
     <OptimizationEqualizerMemo {...props} />

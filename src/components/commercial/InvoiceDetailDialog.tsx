@@ -283,11 +283,11 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-xs text-amber-600/70">Customer</Label>
-                      <p className="text-sm text-amber-200 mt-1">{invoice.customerName || 'â€”'}</p>
+                      <p className="text-sm text-amber-200 mt-1">{invoice.customerName || '—'}</p>
                     </div>
                     <div>
                       <Label className="text-xs text-amber-600/70">Invoice Number</Label>
-                      <p className="text-sm text-amber-200 mt-1">{invoice.invoiceNumber || 'â€”'}</p>
+                      <p className="text-sm text-amber-200 mt-1">{invoice.invoiceNumber || '—'}</p>
                     </div>
                     <div>
                       <Label className="text-xs text-amber-600/70">Subtotal</Label>
@@ -310,13 +310,13 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
                     <div>
                       <Label className="text-xs text-amber-600/70">Due Date</Label>
                       <p className="text-sm text-amber-200 mt-1">
-                        {invoice.dueDate ? format(invoice.dueDate, 'MMM d, yyyy') : 'â€”'}
+                        {invoice.dueDate ? format(invoice.dueDate, 'MMM d, yyyy') : '—'}
                       </p>
                     </div>
                     <div>
                       <Label className="text-xs text-amber-600/70">Created</Label>
                       <p className="text-sm text-amber-200 mt-1">
-                        {invoice.createdAt ? format(invoice.createdAt, 'MMM d, yyyy') : 'â€”'}
+                        {invoice.createdAt ? format(invoice.createdAt, 'MMM d, yyyy') : '—'}
                       </p>
                     </div>
                     <div>

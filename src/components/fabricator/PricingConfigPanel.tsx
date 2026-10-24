@@ -148,7 +148,7 @@ export const PricingConfigPanel: React.FC<PricingConfigPanelProps> = ({
             {/* Glass Price */}
             <div>
               <Label className="text-amber-200 text-xs mb-2 block">
-                Glass Price ({localConfig.currency || 'EGP'} per mÂ²)
+                Glass Price ({localConfig.currency || 'EGP'} per m²)
               </Label>
               <Input
                 type="number"

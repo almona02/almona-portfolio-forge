@@ -127,7 +127,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
               </div>
               <div>
                 <p className="text-sm text-gray-400">Temperature</p>
-                <p className="text-white font-semibold">{climate.averageTemperature}Â°C</p>
+                <p className="text-white font-semibold">{climate.averageTemperature}°C</p>
               </div>
               <div>
                 <p className="text-sm text-gray-400">Humidity</p>
@@ -225,7 +225,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
                       {sandDustSpec.screenMesh && (
                         <div>
                           <p className="text-sm text-gray-400">Fine Mesh</p>
-                          <p className="text-white font-semibold">{sandDustSpec.screenMesh.area.toFixed(2)} mÂ²</p>
+                          <p className="text-white font-semibold">{sandDustSpec.screenMesh.area.toFixed(2)} m²</p>
                         </div>
                       )}
                     </div>
@@ -294,7 +294,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
                       </div>
                       <div>
                         <p className="text-sm text-gray-400">U-Value Improvement</p>
-                        <p className="text-green-400 font-semibold">-{thermalBreakSpec.uValueImprovement.toFixed(1)} W/mÂ²K</p>
+                        <p className="text-green-400 font-semibold">-{thermalBreakSpec.uValueImprovement.toFixed(1)} W/m²K</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-400">Total Cost</p>

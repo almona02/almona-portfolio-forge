@@ -43,7 +43,7 @@ const MarketplaceHeader: React.FC = () => {
             className="text-sm text-gray-300 hover:text-almona-orange px-2 py-1 transition-colors"
             aria-label={copy('Language')}
           >
-            {isArabic ? 'English' : 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©'}
+            {isArabic ? 'English' : 'العربية'}
           </button>
           <Link
             to="/used-machines?tab=sell"

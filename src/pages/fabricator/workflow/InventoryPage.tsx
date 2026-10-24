@@ -29,7 +29,7 @@ export const InventoryPage: React.FC = () => {
     const { user } = useAuth();
     const { currentProject, completeStep } = useWorkflowStore();
 
-    // âœ… GOLD-TIER: Resolve inventory from system pack
+    // ✅ GOLD-TIER: Resolve inventory from system pack
     const inventory = useMemo(() => {
         if (!currentProject?.systemPackId) return [];
 
@@ -40,10 +40,10 @@ export const InventoryPage: React.FC = () => {
         return systemPack?.profiles || [];
     }, [currentProject?.systemPackId]);
 
-    // âœ… GOLD-TIER: Error handling
+    // ✅ GOLD-TIER: Error handling
     const hasRequiredData = currentProject !== null;
 
-    // âœ… GOLD-TIER: Navigation handler
+    // ✅ GOLD-TIER: Navigation handler
     const handleInventoryComplete = () => {
         completeStep('inventory');
 
@@ -57,7 +57,7 @@ export const InventoryPage: React.FC = () => {
         }, 100);
     };
 
-    // âœ… GOLD-TIER: Premium loading state
+    // ✅ GOLD-TIER: Premium loading state
     const LoadingFallback = (
         <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
             <div className="text-center space-y-4">
@@ -67,7 +67,7 @@ export const InventoryPage: React.FC = () => {
         </div>
     );
 
-    // âœ… GOLD-TIER: Error state
+    // ✅ GOLD-TIER: Error state
     if (!hasRequiredData) {
         return (
             <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
@@ -98,7 +98,7 @@ export const InventoryPage: React.FC = () => {
                     currency="EGP"
                 />
 
-                {/* âœ… GOLD-TIER: Continue button with premium styling */}
+                {/* ✅ GOLD-TIER: Continue button with premium styling */}
                 <div className="fixed bottom-8 right-8 z-50">
                     <button
                         onClick={handleInventoryComplete}

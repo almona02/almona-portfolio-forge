@@ -68,7 +68,7 @@ export const ProductionPage: React.FC = () => {
     const [isReleasing, setIsReleasing] = useState(false);
     const [releaseError, setReleaseError] = useState<string | null>(null);
 
-    // UP-06: catalog profiles for the active pack only â€” no ROCK60/[0] substitute.
+    // UP-06: catalog profiles for the active pack only — no ROCK60/[0] substitute.
     const profiles = useMemo(
         () => catalogProfilesOrEmpty(currentProject?.systemPackId),
         [currentProject?.systemPackId],
@@ -102,7 +102,7 @@ export const ProductionPage: React.FC = () => {
                 throw new Error('Workflow completion guard rejected production.');
             }
             toast.success('Position released for QC', {
-                description: `Release ${release.releaseId.slice(0, 8)}â€¦ Â· R${release.revision}`,
+                description: `Release ${release.releaseId.slice(0, 8)}… · R${release.revision}`,
             });
             const qcProjectId = workflowIdentity.projectId;
             const qcPoseId = workflowIdentity.positionId;
@@ -185,7 +185,7 @@ export const ProductionPage: React.FC = () => {
                         </p>
                     ) : (
                         <p className="text-xs text-slate-500 max-w-lg text-right">
-                            Manual production recording â€” freezes BOM, stock, and optimization for this
+                            Manual production recording — freezes BOM, stock, and optimization for this
                             revision before QC. Does not claim CNC completion.
                         </p>
                     )}
@@ -200,7 +200,7 @@ export const ProductionPage: React.FC = () => {
                         {isReleasing ? (
                             <>
                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                Freezing releaseâ€¦
+                                Freezing release…
                             </>
                         ) : (
                             'Release & Continue to QC'

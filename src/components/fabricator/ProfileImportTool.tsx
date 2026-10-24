@@ -480,8 +480,8 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
       // Extract dimensions (width x height, W x H, etc.)
       const dimensionPatterns = [
-        /(?:width|w)[\s:]*([\d.]+)[\s]*(?:x|Ã—|mm)[\s]*(?:height|h)[\s:]*([\d.]+)/i,
-        /([\d.]+)[\s]*(?:x|Ã—)[\s]*([\d.]+)[\s]*(?:mm)?/i,
+        /(?:width|w)[\s:]*([\d.]+)[\s]*(?:x|×|mm)[\s]*(?:height|h)[\s:]*([\d.]+)/i,
+        /([\d.]+)[\s]*(?:x|×)[\s]*([\d.]+)[\s]*(?:mm)?/i,
       ];
       const dimensions: { width?: number; height?: number } = {};
       for (const pattern of dimensionPatterns) {
@@ -1230,8 +1230,8 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                                   </span>
                                 </div>
                                 <div className="grid grid-cols-3 gap-2 text-gray-300">
-                                  <span>45Â°: {profile.kFactorSuggestion.miter45.toFixed(3)}</span>
-                                  <span>90Â°: {profile.kFactorSuggestion.miter90.toFixed(3)}</span>
+                                  <span>45°: {profile.kFactorSuggestion.miter45.toFixed(3)}</span>
+                                  <span>90°: {profile.kFactorSuggestion.miter90.toFixed(3)}</span>
                                   <span>Butt: {profile.kFactorSuggestion.butt.toFixed(3)}</span>
                                 </div>
                                 <p className="text-gray-500 mt-1 text-[10px]">

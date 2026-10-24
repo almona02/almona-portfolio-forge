@@ -62,7 +62,7 @@ export const DesignWorkflowWrapper: React.FC = () => {
     }
     : undefined;
 
-  // Handle design completion (drafting / legacy path â€” preserve existing grid/system when present)
+  // Handle design completion (drafting / legacy path — preserve existing grid/system when present)
   const handleDesignComplete = (components: any[]) => {
     if (!currentProject) return;
 
@@ -102,7 +102,7 @@ export const DesignWorkflowWrapper: React.FC = () => {
               onClick={() => handleModeChange('smartdraw')}
               className="btn-secondary flex items-center gap-2 px-3 py-1.5 rounded border border-amber-600/30 text-amber-400 hover:bg-amber-500/10"
             >
-              â† Back to SmartDraw
+              ← Back to SmartDraw
             </button>
             <span className="text-sm text-amber-400 font-semibold">
               ALMONA Drafting Mode - Tier 0 Visual Drafting

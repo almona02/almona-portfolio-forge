@@ -65,7 +65,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
 
   const StarIcon = ({ filled }: { filled: boolean }) => (
     <span className={`text-2xl ${filled ? 'text-yellow-400' : 'text-gray-300'}`}>
-      â˜…
+      ★
     </span>
   );
 

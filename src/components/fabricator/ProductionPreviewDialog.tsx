@@ -335,7 +335,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
                 <p className="font-semibold text-red-400 mb-1">Critical Issues Detected</p>
                 <ul className="text-sm text-red-300 space-y-1">
                   {validation.errors.map((error, idx) => (
-                    <li key={idx}>â€¢ {error}</li>
+                    <li key={idx}>• {error}</li>
                   ))}
                 </ul>
                 <p className="text-sm text-red-300 mt-2">
@@ -353,7 +353,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
                 <p className="font-semibold text-yellow-400 mb-1">Warnings</p>
                 <ul className="text-sm text-yellow-300 space-y-1">
                   {validation.warnings.map((warning, idx) => (
-                    <li key={idx}>â€¢ {warning}</li>
+                    <li key={idx}>• {warning}</li>
                   ))}
                 </ul>
               </AlertDescription>

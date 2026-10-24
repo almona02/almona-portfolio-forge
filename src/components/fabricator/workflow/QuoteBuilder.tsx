@@ -83,7 +83,7 @@ export const QuoteBuilder: React.FC = () => {
       const { projId, posId, revision } = resolveIdentity();
 
       if (!user?.id || !projId || !posId || !revision) {
-        toast.success('Quote saved locally â€” open a saved position revision to persist to server.');
+        toast.success('Quote saved locally — open a saved position revision to persist to server.');
         return;
       }
 
@@ -150,8 +150,8 @@ export const QuoteBuilder: React.FC = () => {
 
       toast.success(
         result.reused
-          ? `Order already exists for this revision (${result.orderId.slice(0, 8)}â€¦).`
-          : `Order created (${result.orderId.slice(0, 8)}â€¦).`,
+          ? `Order already exists for this revision (${result.orderId.slice(0, 8)}…).`
+          : `Order created (${result.orderId.slice(0, 8)}…).`,
       );
       void navigate(fabricatorRoutes.studioOrders());
     } finally {
@@ -284,9 +284,9 @@ export const QuoteBuilder: React.FC = () => {
             {isEstimateOnly ? 'Estimate Quotation' : 'Quotation'}
           </CardTitle>
           <p className="text-slate-400 text-sm">
-            {currentProject.orderNumber || currentProject.id} Â· {currentProject.type}
+            {currentProject.orderNumber || currentProject.id} · {currentProject.type}
             {isEstimateOnly
-              ? ' Â· Estimate only â€” Convert to Order blocked until optimization is approved'
+              ? ' · Estimate only — Convert to Order blocked until optimization is approved'
               : ''}
           </p>
         </CardHeader>

@@ -320,7 +320,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
               </div>
             </div>
             <p className="text-[11px] text-amber-300/90 font-medium">
-              ðŸ’¡ Tip: Use the real measured width/height. Scale is recomputed from the SVG viewBox.
+              💡 Tip: Use the real measured width/height. Scale is recomputed from the SVG viewBox.
             </p>
           </div>
         </div>

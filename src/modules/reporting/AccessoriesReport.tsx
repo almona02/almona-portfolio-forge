@@ -310,17 +310,17 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
   const getCategoryIcon = (type: FabricatorAccessory['type']) => {
     switch (type) {
       case 'lock':
-        return 'ðŸ”’';
+        return '🔒';
       case 'hinge':
-        return 'ðŸ”—';
+        return '🔗';
       case 'handle':
-        return 'ðŸšª';
+        return '🚪';
       case 'seal':
-        return 'ðŸ”§';
+        return '🔧';
       case 'corner':
-        return 'ðŸ“';
+        return '📐';
       default:
-        return 'ðŸ“¦';
+        return '📦';
     }
   };
 

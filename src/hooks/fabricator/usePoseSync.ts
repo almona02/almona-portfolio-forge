@@ -5,7 +5,7 @@
  * for React components.
  * 
  * @tier Tier 3 Protected
- * @constitutional_compliance AICS-001 Â§9.3
+ * @constitutional_compliance AICS-001 §9.3
  */
 
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
@@ -111,7 +111,7 @@ export function usePoseSync(options: UsePoseSyncOptions): UsePoseSyncReturn {
           operation: 'STATE_SYNC',
           hash: result.hash,
           tier: 'Tier 3',
-          compliance: 'AICS-001 Â§9.3'
+          compliance: 'AICS-001 §9.3'
         }
       });
       
@@ -230,7 +230,7 @@ export function useModeSwitch(options: UseModeSwitchOptions): UseModeSwitchRetur
     try {
       isSwitching.current = true;
       
-      // Preserve current mode state (Â§9.3.I)
+      // Preserve current mode state (§9.3.I)
       const preservation = positionStateSync.preserveBeforeModeSwitch(
         poseId,
         currentMode,

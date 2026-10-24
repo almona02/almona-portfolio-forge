@@ -101,10 +101,10 @@ class OfflineSyncService {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(stored));
       
       // Show offline confirmation
-      toast.info('ØªÙ… Ø­ÙØ¸ Ø§Ù„Ø·Ù„Ø¨ Ù…Ø­Ù„ÙŠØ§Ù‹ - Ø³ÙŠØªÙ… Ø¥Ø±Ø³Ø§Ù„Ù‡ Ø¹Ù†Ø¯ ØªÙˆÙØ± Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª', {
+      toast.info('تم حفظ الطلب محلياً - سيتم إرساله عند توفر الإنترنت', {
         duration: 5000,
         action: {
-          label: 'Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø­ÙÙˆØ¸Ø©',
+          label: 'عرض المحفوظة',
           onClick: () => this.showOfflineTickets()
         }
       });
@@ -112,7 +112,7 @@ class OfflineSyncService {
       return offlineTicket.id;
     } catch (error) {
       console.error('Failed to store offline ticket:', error);
-      throw new Error('ÙØ´Ù„ ÙÙŠ Ø­ÙØ¸ Ø§Ù„Ø·Ù„Ø¨ Ù…Ø­Ù„ÙŠØ§Ù‹');
+      throw new Error('فشل في حفظ الطلب محلياً');
     }
   }
 
@@ -194,7 +194,7 @@ class OfflineSyncService {
       
     } catch (error) {
       console.error('Sync failed for some tickets:', error);
-      toast.error('ÙØ´Ù„ ÙÙŠ Ù…Ø²Ø§Ù…Ù†Ø© Ø¨Ø¹Ø¶ Ø§Ù„Ø·Ù„Ø¨Ø§Øª - Ø³ÙŠØªÙ… Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰');
+      toast.error('فشل في مزامنة بعض الطلبات - سيتم المحاولة مرة أخرى');
     }
   }
 
@@ -207,26 +207,26 @@ class OfflineSyncService {
 
   // Handle connection restored
   private handleConnectionRestored() {
-    toast.success('ØªÙ… Ø§Ø³ØªØ¹Ø§Ø¯Ø© Ø§Ù„Ø§ØªØµØ§Ù„ Ø¨Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª');
+    toast.success('تم استعادة الاتصال بالإنترنت');
     void this.syncOfflineTickets();
   }
 
   // Show offline notification
   private showOfflineNotification() {
-    toast.warning('Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø§ØªØµØ§Ù„ Ø¨Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª - Ø³ÙŠØªÙ… Ø­ÙØ¸ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ù…Ø­Ù„ÙŠØ§Ù‹', {
+    toast.warning('لا يوجد اتصال بالإنترنت - سيتم حفظ البيانات محلياً', {
       duration: 5000
     });
   }
 
   // Show sync success notification
   private showSyncSuccessNotification(count: number) {
-    toast.success(`ØªÙ… Ù…Ø²Ø§Ù…Ù†Ø© ${count} Ø·Ù„Ø¨ Ø¨Ù†Ø¬Ø§Ø­ âœ…`);
+    toast.success(`تم مزامنة ${count} طلب بنجاح ✅`);
   }
 
   // Show offline tickets count
   private showOfflineTickets() {
     const count = this.getStoredTickets().length;
-    toast.info(`Ø¹Ø¯Ø¯ Ø§Ù„Ø·Ù„Ø¨Ø§Øª Ø§Ù„Ù…Ø­ÙÙˆØ¸Ø© Ù…Ø­Ù„ÙŠØ§Ù‹: ${count}`);
+    toast.info(`عدد الطلبات المحفوظة محلياً: ${count}`);
   }
 
   // Start sync interval
@@ -291,12 +291,12 @@ class OfflineSyncService {
           actions: [
             {
               action: 'view',
-              title: 'Ø¹Ø±Ø¶',
+              title: 'عرض',
               icon: '/icons/view-icon.png'
             },
             {
               action: 'dismiss',
-              title: 'Ø¥ØºÙ„Ø§Ù‚',
+              title: 'إغلاق',
               icon: '/icons/dismiss-icon.png'
             }
           ]
@@ -326,7 +326,7 @@ class OfflineSyncService {
   // Clear all offline data (use with caution)
   public clearOfflineData(): void {
     localStorage.removeItem(this.STORAGE_KEY);
-    toast.info('ØªÙ… Ù…Ø³Ø­ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ø­ÙÙˆØ¸Ø© Ù…Ø­Ù„ÙŠØ§Ù‹');
+    toast.info('تم مسح البيانات المحفوظة محلياً');
   }
 }
 

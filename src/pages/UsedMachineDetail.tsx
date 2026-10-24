@@ -20,7 +20,7 @@ const UsedMachineDetailPage = () => {
   }, [id]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-white bg-almona-dark">Loadingâ€¦</div>;
+    return <div className="min-h-screen flex items-center justify-center text-white bg-almona-dark">Loading…</div>;
   }
 
   if (!machine) {

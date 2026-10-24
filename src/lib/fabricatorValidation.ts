@@ -17,7 +17,7 @@ export interface ValidationResult {
 /**
  * Optional system-level constraints that can be attached to profile
  * specifications (typically coming from a system pack such as ROCK 60
- * or JUMBO100). Values are in mm / mÂ².
+ * or JUMBO100). Values are in mm / m².
  */
 export interface SystemConstraints {
   minWidthMm?: number;
@@ -128,7 +128,7 @@ export function validateMeasurements(
         field: 'area',
         message: `Area (${areaM2.toFixed(
           2,
-        )} mÂ²) exceeds maximum allowed for this system (${effectiveConstraints.maxAreaM2} mÂ²)`,
+        )} m²) exceeds maximum allowed for this system (${effectiveConstraints.maxAreaM2} m²)`,
       });
     }
   }
@@ -372,7 +372,7 @@ export function validateProjectWithConstraints(
   if (constraints.maxAreaM2 !== undefined && areaM2 > constraints.maxAreaM2) {
     errors.push({
       field: 'area',
-      message: `Area (${areaM2.toFixed(2)} mÂ²) exceeds maximum allowed for this system (${constraints.maxAreaM2} mÂ²)`,
+      message: `Area (${areaM2.toFixed(2)} m²) exceeds maximum allowed for this system (${constraints.maxAreaM2} m²)`,
     });
   }
 

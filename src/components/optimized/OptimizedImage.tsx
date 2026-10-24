@@ -133,7 +133,7 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
       {hasError && (
         <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
           <div className="text-gray-500 text-sm text-center">
-            <div className="mb-2">âš ï¸</div>
+            <div className="mb-2">⚠️</div>
             <div>Image unavailable</div>
           </div>
         </div>

@@ -4,7 +4,7 @@
  * Displays governance health, constitutional compliance, and RealityOS health metrics.
  * Market leader-inspired UI with high precision.
  * 
- * Constitutional Compliance: AICS-001 Â§7.4 (Audit Trail Doctrine)
+ * Constitutional Compliance: AICS-001 §7.4 (Audit Trail Doctrine)
  * 
  * @since Phase 4: Precision Upgrade Plan (January 2026)
  */
@@ -268,7 +268,7 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
       target: 100,
       unit: '%',
       status: metrics.constitutionalCompliance.tier3Purity === 100 ? 'healthy' : 'critical',
-      description: 'Percentage of operations with no automation (AICS-001 Â§3.1)',
+      description: 'Percentage of operations with no automation (AICS-001 §3.1)',
     },
     {
       title: 'Human Validation Rate',
@@ -276,13 +276,13 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
       target: 100,
       unit: '%',
       status: metrics.constitutionalCompliance.humanValidationRate >= 95 ? 'healthy' : 'warning',
-      description: 'Percentage of outputs human-validated (AICS-001 Â§2.8)',
+      description: 'Percentage of outputs human-validated (AICS-001 §2.8)',
     },
     {
       title: 'System Stops',
       value: metrics.constitutionalCompliance.systemStopCount,
       status: 'info',
-      description: 'System stops are correct behavior (AICS-001 Â§2.8)',
+      description: 'System stops are correct behavior (AICS-001 §2.8)',
     },
     {
       title: 'Audit Trail Completeness',
@@ -290,7 +290,7 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
       target: 100,
       unit: '%',
       status: metrics.constitutionalCompliance.auditTrailCompleteness >= 95 ? 'healthy' : 'warning',
-      description: 'Percentage of decisions with full audit trail (AICS-001 Â§7.4)',
+      description: 'Percentage of decisions with full audit trail (AICS-001 §7.4)',
     },
   ];
 

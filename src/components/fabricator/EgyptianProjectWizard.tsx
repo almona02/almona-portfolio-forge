@@ -663,7 +663,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                             <span className="ml-2 text-[10px] text-yellow-500">Needs Tuning</span>
                           )}
                           {packTuningStatus.isTuned && (
-                            <span className="ml-2 text-[10px] status-valid">âœ“ Tuned</span>
+                            <span className="ml-2 text-[10px] status-valid">✓ Tuned</span>
                           )}
                           {pack.meta.id.startsWith('custom') && (
                             <span className="ml-2 text-[10px] text-amber-500">Custom</span>

@@ -453,8 +453,8 @@ export function useWindSimulation(
     const currentWindSpeed = baseWindSpeed * gustFactor;
     
     // F = 0.5 * rho * v^2 * A * Cd
-    // Simplified: assume area ~1mÂ² and Cd ~1.2 for flat surface
-    const airDensity = 1.225; // kg/mÂ³
+    // Simplified: assume area ~1m² and Cd ~1.2 for flat surface
+    const airDensity = 1.225; // kg/m³
     const dragCoeff = 1.2;
     const area = 1.0;
     const forceMagnitude = 0.5 * airDensity * currentWindSpeed * currentWindSpeed * area * dragCoeff;

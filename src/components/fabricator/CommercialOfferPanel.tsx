@@ -695,10 +695,10 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
 
 CommercialOfferPanelComponent.displayName = 'CommercialOfferPanel';
 
-// âœ… HARDENING: Memoize component for performance
+// ✅ HARDENING: Memoize component for performance
 const CommercialOfferPanelMemo = memo(CommercialOfferPanelComponent);
 
-// âœ… HARDENING: Export with error boundary for production
+// ✅ HARDENING: Export with error boundary for production
 export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = (props) => (
   <ErrorBoundary level="component">
     <CommercialOfferPanelMemo {...props} />

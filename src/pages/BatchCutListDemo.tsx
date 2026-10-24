@@ -1,7 +1,7 @@
 ﻿/**
- * Batch Cut List Demo â€“ test with single window
+ * Batch Cut List Demo – test with single window
  *
- * Test: 1 Ã— window 1000Ã—1000 mm aluminium casement (frame + sash).
+ * Test: 1 × window 1000×1000 mm aluminium casement (frame + sash).
  * - Generates optimized cut list for frame and sash
  * - Visualizes with ALMONA Cut List Viewer
  * - Print ALMONA style (HTML) and Download PDF
@@ -25,7 +25,7 @@ import type { Profile } from '@/types/fabricator';
 import { FileDown, Scissors } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-// Single window 1000Ã—1000 mm â€” aluminium casement (frame + sash) for testing
+// Single window 1000×1000 mm — aluminium casement (frame + sash) for testing
 const BATCH_SPECS: BatchWindowSpec[] = [
   { overallWidth: 1000, overallHeight: 1000, quantity: 1 },
 ];
@@ -76,14 +76,14 @@ export default function BatchCutListDemo() {
         SAMPLE_PROFILES,
         WELDING,
         BAR_LENGTH_MM,
-        10 // saw kerf mm â€” matches header "Saw Cut Deduction: 10 mm"
+        10 // saw kerf mm — matches header "Saw Cut Deduction: 10 mm"
       ),
     []
   );
 
   const projectInfo: AlmonaCutPrintProjectInfo = useMemo(
     () => ({
-      name: '1Ã—1000Ã—1000 mm aluminium casement',
+      name: '1×1000×1000 mm aluminium casement',
       jobNumber: 'BATCH-DEMO-001',
       personInCharge: 'Demo User',
       directory: 'Demo / Batch Cut List',
@@ -129,10 +129,10 @@ export default function BatchCutListDemo() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Scissors className="h-6 w-6" />
-            Cut List Demo â€“ 1Ã—1000Ã—1000 mm aluminium casement
+            Cut List Demo – 1×1000×1000 mm aluminium casement
           </CardTitle>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Single window 1000Ã—1000 mm, Alumil M9660 aluminium casement (frame + sash). Verify cut lengths and bar layout below.
+            Single window 1000×1000 mm, Alumil M9660 aluminium casement (frame + sash). Verify cut lengths and bar layout below.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -168,7 +168,7 @@ export default function BatchCutListDemo() {
             disabled={pdfLoading}
           >
             <FileDown className="h-4 w-4 mr-2" />
-            {pdfLoading ? 'Generatingâ€¦' : 'Download cut list PDF'}
+            {pdfLoading ? 'Generating…' : 'Download cut list PDF'}
           </Button>
         </CardContent>
       </Card>

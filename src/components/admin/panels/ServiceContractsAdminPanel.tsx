@@ -134,7 +134,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
       <CardContent className="space-y-4">
         {error ? <p className="text-sm text-red-500" role="alert">{error}</p> : null}
         {loading ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loadingâ€¦</div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading…</div>
         ) : contracts.length === 0 ? (
           <p className="text-sm text-muted-foreground">No service contracts yet.</p>
         ) : (
@@ -150,7 +150,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
                     <td className="p-2 font-medium">{c.factory_name}</td>
                     <td className="p-2">{c.machine_name}</td>
                     <td className="p-2 capitalize">{freqLabel(c.visit_frequency)}</td>
-                    <td className="p-2">{c.start_date}{c.end_date ? ` â†’ ${c.end_date}` : ''}</td>
+                    <td className="p-2">{c.start_date}{c.end_date ? ` → ${c.end_date}` : ''}</td>
                     <td className="p-2"><Badge variant={c.status === 'active' ? 'default' : 'secondary'}>{c.status}</Badge></td>
                     <td className="p-2">
                       <div className="flex flex-wrap gap-1">
@@ -181,17 +181,17 @@ export const ServiceContractsAdminPanel: React.FC = () => {
         {selected && (
           <div className="rounded-lg border p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-medium">{selected.factory_name} â€” {selected.machine_name} visits</div>
+              <div className="text-sm font-medium">{selected.factory_name} — {selected.machine_name} visits</div>
               <Button size="sm" variant="ghost" onClick={() => setSelected(null)}>Close</Button>
             </div>
-            {visitsLoading ? <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loadingâ€¦</div>
+            {visitsLoading ? <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading…</div>
               : visits.length === 0 ? <p className="text-sm text-muted-foreground">No visits scheduled.</p>
               : (
                 <div className="space-y-2">
                   {visits.map((v) => (
                     <div key={v.id} className="flex items-center gap-3 rounded-md border p-2">
                       <div className="flex-1">
-                        <div className="text-sm font-medium">{v.scheduled_at} Â· {v.type}</div>
+                        <div className="text-sm font-medium">{v.scheduled_at} · {v.type}</div>
                         {v.technician && <div className="text-xs text-muted-foreground">Technician: {v.technician}</div>}
                         {v.summary && <div className="text-xs text-muted-foreground">{v.summary}</div>}
                       </div>
@@ -216,12 +216,12 @@ export const ServiceContractsAdminPanel: React.FC = () => {
           <div className="space-y-3">
             <div className="relative">
               <Label>Customer</Label>
-              <Input value={owner ? (owner.full_name || owner.username || owner.id) : customerQuery} onChange={(e) => { setCustomerQuery(e.target.value); setOwner(null) }} placeholder="Search customer by name/companyâ€¦" />
+              <Input value={owner ? (owner.full_name || owner.username || owner.id) : customerQuery} onChange={(e) => { setCustomerQuery(e.target.value); setOwner(null) }} placeholder="Search customer by name/company…" />
               {!owner && customerResults.length > 0 && (
                 <div className="absolute z-10 mt-1 w-full border rounded-md bg-popover text-popover-foreground max-h-48 overflow-y-auto shadow-md">
                   {customerResults.map((u) => (
                     <button key={u.id} type="button" onClick={() => { setOwner(u); setCustomerQuery(''); setCustomerResults([]) }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted">
-                      {u.full_name || u.username || u.id} {u.company_name ? `Â· ${u.company_name}` : ''}
+                      {u.full_name || u.username || u.id} {u.company_name ? `· ${u.company_name}` : ''}
                     </button>
                   ))}
                 </div>
@@ -244,8 +244,8 @@ export const ServiceContractsAdminPanel: React.FC = () => {
               <div><Label>Start date</Label><Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></div>
               <div><Label>End date</Label><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} /></div>
             </div>
-            <div><Label>Terms</Label><Textarea value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="Contract termsâ€¦" /></div>
-            <Button disabled={saving} onClick={() => void createContract()}>{saving ? 'Creatingâ€¦' : 'Create contract'}</Button>
+            <div><Label>Terms</Label><Textarea value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="Contract terms…" /></div>
+            <Button disabled={saving} onClick={() => void createContract()}>{saving ? 'Creating…' : 'Create contract'}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -262,7 +262,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete contract?</AlertDialogTitle>
-            <AlertDialogDescription>Deleting {confirmDelete?.factory_name} â€” {confirmDelete?.machine_name} also removes its visit tickets. This cannot be undone.</AlertDialogDescription>
+            <AlertDialogDescription>Deleting {confirmDelete?.factory_name} — {confirmDelete?.machine_name} also removes its visit tickets. This cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -318,13 +318,13 @@ const VisitTicketDialog: React.FC<{
     <Dialog open={true} onOpenChange={(o) => { if (!o) onClose() }}>
       <DialogContent className="sm:max-w-[520px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5" /> Visit ticket â€” {ticket.visit.scheduled_at}</DialogTitle>
-          <DialogDescription>{ticket.contract.factory_name} Â· {ticket.contract.machine_name}</DialogDescription>
+          <DialogTitle className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5" /> Visit ticket — {ticket.visit.scheduled_at}</DialogTitle>
+          <DialogDescription>{ticket.contract.factory_name} · {ticket.contract.machine_name}</DialogDescription>
         </DialogHeader>
         {!saved ? (
           <div className="space-y-3">
             <div><Label>Technician</Label><Input value={technician} onChange={(e) => setTechnician(e.target.value)} placeholder="Technician name" /></div>
-            <div><Label>Visit summary</Label><Textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="What was doneâ€¦" /></div>
+            <div><Label>Visit summary</Label><Textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="What was done…" /></div>
             <div><Label>Photo evidence</Label>
               <div className="flex items-center gap-2">
                 <Camera className="h-4 w-4 text-muted-foreground" />
@@ -332,7 +332,7 @@ const VisitTicketDialog: React.FC<{
               </div>
               <p className="text-xs text-muted-foreground mt-1">Attach up to 6 photos as visit proof.</p>
             </div>
-            <Button disabled={saving} onClick={() => void complete()}>{saving ? 'Savingâ€¦' : 'Complete visit'}</Button>
+            <Button disabled={saving} onClick={() => void complete()}>{saving ? 'Saving…' : 'Complete visit'}</Button>
           </div>
         ) : (
           <div className="space-y-3">

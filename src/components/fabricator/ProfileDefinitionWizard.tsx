@@ -588,11 +588,11 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   <span className="text-gray-500">System:</span> {formData.systemName}
                 </p>
                 <p>
-                  <span className="text-gray-500">Dimensions:</span> {formData.width}mm Ãƒâ€” {formData.height}mm
+                  <span className="text-gray-500">Dimensions:</span> {formData.width}mm × {formData.height}mm
                 </p>
                 {formData.defaultKFactor45 !== undefined && (
                   <p>
-                    <span className="text-gray-500">K-Factor (45Ã‚Â°):</span>{' '}
+                    <span className="text-gray-500">K-Factor (45°):</span>{' '}
                     <span className="text-green-400 font-semibold">{formData.defaultKFactor45.toFixed(2)}mm</span>
                   </p>
                 )}

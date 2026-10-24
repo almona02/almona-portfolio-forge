@@ -501,7 +501,7 @@ export const SmartScanUploader: React.FC = () => {
                 <h3 className="typography-h3 text-lg font-medium text-zinc-200">
                   {isDragActive ? "Drop files here" : "Drag & drop catalog pages"}
                 </h3>
-                <p className="text-sm text-zinc-500">Or click to browse Â· Max 50MB per file</p>
+                <p className="text-sm text-zinc-500">Or click to browse · Max 50MB per file</p>
               </div>
             </div>
           </div>
@@ -873,11 +873,11 @@ export const SmartScanUploader: React.FC = () => {
                                   <AlertCircle className="w-4 h-4 text-red-500" />
                                 )}
                                 <span className="font-medium text-sm">
-                                  {job.result.quality.accuracy_tier === "production" && "âœ… Production Ready"}
+                                  {job.result.quality.accuracy_tier === "production" && "✅ Production Ready"}
                                   {job.result.quality.accuracy_tier === "verified_required" &&
-                                    "âš ï¸ Verification Recommended"}
+                                    "⚠️ Verification Recommended"}
                                   {job.result.quality.accuracy_tier === "review_required" &&
-                                    "ðŸ” Manual Review Required"}
+                                    "🔍 Manual Review Required"}
                                 </span>
                               </div>
                               <Badge

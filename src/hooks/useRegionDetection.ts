@@ -473,7 +473,7 @@ export function useTurkishTaxUtils() {
         maximumFractionDigits: 2
       });
       
-      const symbol = options?.showSymbol !== false ? 'â‚º' : '';
+      const symbol = options?.showSymbol !== false ? '₺' : '';
       return `${formattedAmount}${symbol}`;
     }
   };

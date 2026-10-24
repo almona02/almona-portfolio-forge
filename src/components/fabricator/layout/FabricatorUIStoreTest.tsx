@@ -117,7 +117,7 @@ export const FabricatorUIStoreTest: React.FC = () => {
       const afterState = newPanelState[panel === 'left' ? 'leftCollapsed' : 'rightCollapsed'];
 
       if (beforeState !== afterState) {
-        const newResult = { test: `Toggle ${panel} Panel (${sectionId})`, passed: true, message: `Panel toggled: ${beforeState} → ${afterState}` };
+        const newResult = { test: `Toggle ${panel} Panel (${sectionId})`, passed: true, message: `Panel toggled: ${beforeState} ? ${afterState}` };
         setTestResults(prev => [...prev.filter(r => !r.test.includes(`Toggle ${panel} Panel`)), newResult]);
       } else {
         const newResult = { test: `Toggle ${panel} Panel (${sectionId})`, passed: false, message: `Panel did not toggle (still ${beforeState})` };
@@ -136,7 +136,7 @@ export const FabricatorUIStoreTest: React.FC = () => {
       const newResult = { 
         test: 'Theme Toggle', 
         passed: currentTheme === newTheme, 
-        message: `Theme changed: ${theme} → ${currentTheme}` 
+        message: `Theme changed: ${theme} ? ${currentTheme}` 
       };
       setTestResults(prev => [...prev.filter(r => r.test !== 'Theme Toggle'), newResult]);
     }, 100);
@@ -208,7 +208,7 @@ export const FabricatorUIStoreTest: React.FC = () => {
             Test Toggle Right Panel
           </Button>
           <Button onClick={handleTestThemeToggle} variant="outline" size="sm">
-            Test Toggle Theme ({theme === 'dark' ? '→ Light' : '→ Dark'})
+            Test Toggle Theme ({theme === 'dark' ? '? Light' : '? Dark'})
           </Button>
         </div>
 

@@ -408,7 +408,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     return (
       <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] border ${config.bg} ${config.border} ${config.color} backdrop-blur-sm`}>
         <div className={`w-1.5 h-1.5 rounded-full ${config.dot} animate-pulse`} />
-        {status === 'verified' && <span className="text-[8px]">ðŸ†</span>}
+        {status === 'verified' && <span className="text-[8px]">🏆</span>}
         {efficiency ? `${efficiency}` : status}
       </div>
     );
@@ -616,13 +616,13 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         >
           <div className="flex items-center justify-between text-[10px]">
             <div className="flex items-center gap-1.5 text-amber-300">
-              <span className="text-amber-400">âš¡</span>
+              <span className="text-amber-400">⚡</span>
               <span>LME Aluminum</span>
             </div>
             <div className="flex items-center gap-1 font-mono">
               <span className="text-amber-200 font-bold">{getLiveAluminumPrice().toLocaleString()}</span>
               <span className="text-amber-400">EGP</span>
-              <span className="text-green-400">â–²</span>
+              <span className="text-green-400">▲</span>
             </div>
           </div>
         </motion.div>
@@ -1243,7 +1243,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center text-[#0a0a0a] font-bold shadow-lg shadow-amber-900/40">
-                    â“˜
+                    ⓘ
                   </div>
                   <div>
                     <h3 className="typography-h3 text-lg text-white">

@@ -103,7 +103,7 @@ export const WorkspaceTopNav: React.FC = () => {
             </TabsList>
           </Tabs>
         </div>
-        {/* â”€â”€â”€ Breadcrumbs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ─── Breadcrumbs ─────────────────────────────────────── */}
         {breadcrumbs.length > 0 && (
           <div className="flex items-center gap-1 px-1 pb-2 text-[11px] text-slate-400">
             {breadcrumbs.map((crumb, idx) => (

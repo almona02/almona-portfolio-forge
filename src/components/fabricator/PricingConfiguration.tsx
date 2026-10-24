@@ -444,7 +444,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     {Object.entries(exchangeRates).map(([pair, rate]) => (
                       <div key={pair} className="flex justify-between">
-                        <span className="text-gray-400">{pair.replace('_', ' â†’ ')}</span>
+                        <span className="text-gray-400">{pair.replace('_', ' → ')}</span>
                         <span className="text-white font-mono">{rate.toFixed(4)}</span>
                       </div>
                     ))}
@@ -711,7 +711,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                       <div>
                         <div className="font-medium">{entry.entityName || entry.entityType}</div>
                         <div className="text-sm text-gray-400">
-                          {entry.oldPrice && `${formatCurrency(entry.oldPrice, entry.currency)} â†’ `}
+                          {entry.oldPrice && `${formatCurrency(entry.oldPrice, entry.currency)} → `}
                           {formatCurrency(entry.newPrice, entry.currency)}
                           {entry.priceChangePercentage && (
                             <Badge variant={entry.priceChangePercentage > 0 ? 'default' : 'secondary'} className="ml-2">

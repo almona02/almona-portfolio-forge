@@ -395,16 +395,16 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
                     </TableCell>
                     <TableCell className="text-center">
                       {email.openCount > 0 ? (
-                        <span className="text-emerald-400">âœ“ {email.openCount}</span>
+                        <span className="text-emerald-400">✓ {email.openCount}</span>
                       ) : (
-                        <span className="text-amber-600/50">â€”</span>
+                        <span className="text-amber-600/50">—</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
                       {email.clickCount > 0 ? (
-                        <span className="text-cyan-400">âœ“ {email.clickCount}</span>
+                        <span className="text-cyan-400">✓ {email.clickCount}</span>
                       ) : (
-                        <span className="text-amber-600/50">â€”</span>
+                        <span className="text-amber-600/50">—</span>
                       )}
                     </TableCell>
                     <TableCell className="text-amber-200 capitalize">{email.status}</TableCell>

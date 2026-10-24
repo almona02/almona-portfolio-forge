@@ -77,7 +77,7 @@ const TechnicianDashboard: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loadingâ€¦</div>
+        <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading…</div>
       ) : tickets.length === 0 ? (
         <Card><CardContent className="py-10 text-center text-muted-foreground">No tickets assigned to you yet.</CardContent></Card>
       ) : (
@@ -179,8 +179,8 @@ const SparePartsDialog: React.FC<{ ticket: TicketRow | null; authorId: string; o
               </Select>
             </div>
           </div>
-          <div><Label>Note</Label><Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional noteâ€¦" /></div>
-          <Button disabled={saving} onClick={() => void submit()}>{saving ? 'Sendingâ€¦' : 'Send request'}</Button>
+          <div><Label>Note</Label><Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional note…" /></div>
+          <Button disabled={saving} onClick={() => void submit()}>{saving ? 'Sending…' : 'Send request'}</Button>
         </div>
       </DialogContent>
     </Dialog>

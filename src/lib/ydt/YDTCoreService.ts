@@ -74,10 +74,10 @@ export class YDTCoreService {
       // Give it a moment to load asynchronously
       setTimeout(() => {
         this.knowledgeBaseLoaded = true;
-        console.log('âœ… YDT Core Service initialized with knowledge base');
+        console.log('✅ YDT Core Service initialized with knowledge base');
       }, 100);
     } catch (error) {
-      console.warn('âš ï¸ Knowledge base not yet loaded, will retry:', error);
+      console.warn('⚠️ Knowledge base not yet loaded, will retry:', error);
     }
   }
 

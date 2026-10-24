@@ -37,7 +37,7 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
         {/* Tier Badge */}
         {system.tier === 'gold' && (
           <div className="absolute top-4 right-4 bg-[#FFD700] px-2 py-1 rounded text-xs font-bold text-[#003366] border border-[#FFD700]">
-            ðŸ† Gold
+            🏆 Gold
           </div>
         )}
 
@@ -54,7 +54,7 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
         <div className="grid grid-cols-2 gap-px bg-gray-200 border border-gray-200 rounded mb-4 overflow-hidden text-xs">
           <div className="bg-blue-50/50 p-2">
             <span className="block text-gray-500 text-[10px]">U-VALUE</span>
-            <span className="font-mono font-bold text-[#003366]">{system.specs.uValue} W/mÂ²K</span>
+            <span className="font-mono font-bold text-[#003366]">{system.specs.uValue} W/m²K</span>
           </div>
           <div className="bg-blue-50/50 p-2">
             <span className="block text-gray-500 text-[10px]">WIND LOAD</span>
@@ -62,7 +62,7 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
           </div>
           <div className="bg-white p-2">
             <span className="block text-gray-500 text-[10px]">PRICE RANGE</span>
-            <span className="font-mono font-bold">{system.priceRange.min}-{system.priceRange.max} {system.priceRange.currency}/mÂ²</span>
+            <span className="font-mono font-bold">{system.priceRange.min}-{system.priceRange.max} {system.priceRange.currency}/m²</span>
           </div>
           <div className="bg-white p-2">
             <span className="block text-gray-500 text-[10px]">DEPTH</span>
@@ -99,19 +99,19 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
           {system.availability === 'stock' && (
             <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs rounded border border-green-200">
               <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              Ù…ØªÙˆÙØ± ÙÙŠ Ø§Ù„Ù…Ø®Ø²Ù†
+              متوفر في المخزن
             </span>
           )}
           {system.availability === 'order' && (
             <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-50 text-yellow-700 text-xs rounded border border-yellow-200">
               <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-              Ø·Ù„Ø¨ Ø®Ø§Øµ
+              طلب خاص
             </span>
           )}
           {system.availability === 'import' && (
             <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 text-xs rounded border border-amber-200">
               <span className="btn-primary"></span>
-              Ø§Ø³ØªÙŠØ±Ø§Ø¯
+              استيراد
             </span>
           )}
         </div>
@@ -123,12 +123,12 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
               onClick={handleUseInPilot}
               className="flex-1 bg-[#003366] hover:bg-[#004488] text-white py-2 rounded-lg font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2"
             >
-              <span>ðŸ› ï¸</span>
-              <span>Ø§Ø³ØªØ®Ø¯Ù… ÙÙŠ Ø§Ù„ÙˆØ±Ø´Ø©</span>
+              <span>🛠️</span>
+              <span>استخدم في الورشة</span>
             </button>
           ) : (
             <button disabled className="flex-1 bg-gray-100 text-gray-400 py-2 rounded-lg font-bold text-sm cursor-not-allowed">
-              ØºÙŠØ± Ù…ØªØ§Ø­ Ù„Ù„ÙˆØ±Ø´Ø©
+              غير متاح للورشة
             </button>
           )}
 
@@ -137,11 +137,11 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
             className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors"
             title="Tune System Parameters"
           >
-            âš™ï¸
+            ⚙️
           </button>
 
           <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors">
-            ðŸ“„
+            📄
           </button>
         </div>
 

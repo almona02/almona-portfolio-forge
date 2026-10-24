@@ -2,7 +2,7 @@
  * KioskModeDashboard - Touch-First Production Interface for Operators
  * 
  * Designed for tablet-mounted interfaces near CNC machines.
- * Operator workflow: SCAN â†’ EXECUTE â†’ QC â†’ NEXT
+ * Operator workflow: SCAN → EXECUTE → QC → NEXT
  * 
  * Features:
  * - Massive touch-optimized buttons (min 80px height)
@@ -77,10 +77,10 @@ export function KioskModeDashboard({
   const [executionProgress, setExecutionProgress] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const [qcChecks, setQcChecks] = useState<QCCheckItem[]>([
-    { id: 'length', labelAr: 'Ø§Ù„Ø·ÙˆÙ„ ØµØ­', labelEn: 'Length OK', passed: false },
-    { id: 'angles', labelAr: 'Ø§Ù„Ø²ÙˆØ§ÙŠØ§ ØµØ­', labelEn: 'Angles OK', passed: false },
-    { id: 'surface', labelAr: 'Ø§Ù„Ø³Ø·Ø­ Ù†Ø¸ÙŠÙ', labelEn: 'Surface Clean', passed: false },
-    { id: 'profile', labelAr: 'Ø§Ù„Ø¨Ø±ÙˆÙØ§ÙŠÙ„ Ø³Ù„ÙŠÙ…', labelEn: 'Profile Intact', passed: false },
+    { id: 'length', labelAr: 'الطول صح', labelEn: 'Length OK', passed: false },
+    { id: 'angles', labelAr: 'الزوايا صح', labelEn: 'Angles OK', passed: false },
+    { id: 'surface', labelAr: 'السطح نظيف', labelEn: 'Surface Clean', passed: false },
+    { id: 'profile', labelAr: 'البروفايل سليم', labelEn: 'Profile Intact', passed: false },
   ]);
 
   // Auto-save function (called on every state change)
@@ -116,24 +116,24 @@ export function KioskModeDashboard({
     const piece: ProductionPiece = {
       id: `piece_${Date.now()}`,
       barcode,
-      name: 'Ø¥Ø·Ø§Ø± ÙŠÙ…ÙŠÙ†', // Frame Right
+      name: 'إطار يمين', // Frame Right
       length: 180,
       profile: 'PANDA-50',
-      angles: '45Â° / 45Â°',
+      angles: '45° / 45°',
     };
 
     setCurrentPiece(piece);
     setWorkflowState('confirming');
 
     // Show toast
-    toast.success(locale === 'ar' ? 'âœ… ØªÙ… Ø§Ù„Ù…Ø³Ø­ Ø¨Ù†Ø¬Ø§Ø­' : 'âœ… Scan successful', {
+    toast.success(locale === 'ar' ? '✅ تم المسح بنجاح' : '✅ Scan successful', {
       duration: 2000,
     });
   }, [autoSave, locale]);
 
   const handleScanError = useCallback((error: string) => {
     console.error('[SCAN ERROR]', error);
-    toast.error(locale === 'ar' ? 'âŒ Ø®Ø·Ø£ ÙÙŠ Ø§Ù„Ù…Ø³Ø­' : 'âŒ Scan error', {
+    toast.error(locale === 'ar' ? '❌ خطأ في المسح' : '❌ Scan error', {
       description: error,
       duration: 3000,
     });
@@ -179,13 +179,13 @@ export function KioskModeDashboard({
     setCurrentPiece(null);
     setWorkflowState('idle');
     
-    toast.info(locale === 'ar' ? 'ØªÙ… Ø§Ù„ØªØ®Ø·ÙŠ' : 'Skipped');
+    toast.info(locale === 'ar' ? 'تم التخطي' : 'Skipped');
   }, [currentPiece, autoSave, locale]);
 
   // Handle pause
   const handlePause = useCallback(async () => {
     await autoSave({ type: 'cutting_paused', data: { pieceId: currentPiece?.id, progress: executionProgress } });
-    toast.warning(locale === 'ar' ? 'â¸ï¸ ØªÙ… Ø§Ù„Ø¥ÙŠÙ‚Ø§Ù Ø§Ù„Ù…Ø¤Ù‚Øª' : 'â¸ï¸ Paused');
+    toast.warning(locale === 'ar' ? '⏸️ تم الإيقاف المؤقت' : '⏸️ Paused');
   }, [currentPiece, executionProgress, autoSave, locale]);
 
   // Handle emergency stop
@@ -194,7 +194,7 @@ export function KioskModeDashboard({
     setWorkflowState('idle');
     setCurrentPiece(null);
     
-    toast.error(locale === 'ar' ? 'ðŸ›‘ ØªÙˆÙ‚Ù Ø·Ø§Ø±Ø¦' : 'ðŸ›‘ Emergency Stop', {
+    toast.error(locale === 'ar' ? '🛑 توقف طارئ' : '🛑 Emergency Stop', {
       duration: 5000,
     });
   }, [currentPiece, executionProgress, autoSave, locale]);
@@ -224,7 +224,7 @@ export function KioskModeDashboard({
     });
 
     if (allPassed) {
-      toast.success(locale === 'ar' ? 'âœ… ÙƒÙ„ Ø­Ø§Ø¬Ø© ØªÙ…Ø§Ù…' : 'âœ… All checks passed');
+      toast.success(locale === 'ar' ? '✅ كل حاجة تمام' : '✅ All checks passed');
       setLastPiece(currentPiece);
       setCurrentPiece(null);
       setWorkflowState('idle');
@@ -232,7 +232,7 @@ export function KioskModeDashboard({
       // Reset QC checks
       setQcChecks((prev) => prev.map((check) => ({ ...check, passed: false })));
     } else {
-      toast.error(locale === 'ar' ? 'âš ï¸ ÙÙŠÙ‡ Ù…Ø´ÙƒÙ„Ø©' : 'âš ï¸ Issues detected');
+      toast.error(locale === 'ar' ? '⚠️ فيه مشكلة' : '⚠️ Issues detected');
     }
   }, [currentPiece, qcChecks, autoSave, locale]);
 
@@ -248,7 +248,7 @@ export function KioskModeDashboard({
       },
     });
 
-    toast.warning(locale === 'ar' ? 'âš ï¸ Ø¹ÙŠØ¯ Ø§Ù„Ù‚Ø·Ø¹' : 'âš ï¸ Rework required');
+    toast.warning(locale === 'ar' ? '⚠️ عيد القطع' : '⚠️ Rework required');
     setCurrentPiece(null);
     setWorkflowState('idle');
     setQcChecks((prev) => prev.map((check) => ({ ...check, passed: false })));
@@ -263,7 +263,7 @@ export function KioskModeDashboard({
           className="font-bold text-primary"
           style={{ fontSize: KIOSK_TOKENS.FONT_HUGE }}
         >
-          {locale === 'ar' ? 'Ø§Ù…Ø³Ø­ Ø§Ù„Ø¨Ø§Ø±ÙƒÙˆØ¯' : 'Scan Barcode'}
+          {locale === 'ar' ? 'امسح الباركود' : 'Scan Barcode'}
         </h2>
         {buffer && (
           <div className="text-muted-foreground" style={{ fontSize: KIOSK_TOKENS.FONT_BODY }}>
@@ -272,7 +272,7 @@ export function KioskModeDashboard({
         )}
         {isScanning && (
           <Badge variant="default" className="text-2xl px-6 py-3">
-            {locale === 'ar' ? 'Ø¬Ø§Ø± Ø§Ù„Ù…Ø³Ø­...' : 'Scanning...'}
+            {locale === 'ar' ? 'جار المسح...' : 'Scanning...'}
           </Badge>
         )}
       </div>
@@ -280,7 +280,7 @@ export function KioskModeDashboard({
       {lastPiece && (
         <div className="text-center p-6 bg-green-50 dark:bg-green-950 rounded-lg">
           <div className="text-green-700 dark:text-green-300" style={{ fontSize: KIOSK_TOKENS.FONT_BODY }}>
-            {locale === 'ar' ? 'Ø¢Ø®Ø± Ù‚Ø·Ø¹Ø©' : 'Last Piece'}: {lastPiece.barcode} - âœ“ {locale === 'ar' ? 'Ù†Ø¬Ø­Øª' : 'Success'}
+            {locale === 'ar' ? 'آخر قطعة' : 'Last Piece'}: {lastPiece.barcode} - ✓ {locale === 'ar' ? 'نجحت' : 'Success'}
           </div>
         </div>
       )}
@@ -292,7 +292,7 @@ export function KioskModeDashboard({
         style={{ minHeight: KIOSK_TOKENS.BUTTON_MIN_HEIGHT }}
         className="text-xl"
       >
-        ðŸ§ª {locale === 'ar' ? 'Ù…Ø­Ø§ÙƒØ§Ø© Ù…Ø³Ø­ (Ø§Ø®ØªØ¨Ø§Ø±)' : 'Simulate Scan (Test)'}
+        🧪 {locale === 'ar' ? 'محاكاة مسح (اختبار)' : 'Simulate Scan (Test)'}
       </Button>
     </div>
   );
@@ -302,21 +302,21 @@ export function KioskModeDashboard({
       <Card className="w-full max-w-4xl">
         <CardHeader>
           <CardTitle style={{ fontSize: KIOSK_TOKENS.FONT_HEADER }} className="text-center">
-            âœ… {locale === 'ar' ? `Ù‚Ø·Ø¹Ø© #${currentPiece?.barcode}` : `Piece #${currentPiece?.barcode}`}
+            ✅ {locale === 'ar' ? `قطعة #${currentPiece?.barcode}` : `Piece #${currentPiece?.barcode}`}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-2 gap-4" style={{ fontSize: KIOSK_TOKENS.FONT_BODY }}>
             <div>
-              <p className="text-muted-foreground">{locale === 'ar' ? 'Ø§Ù„Ø·ÙˆÙ„' : 'Length'}:</p>
-              <p className="font-bold">{currentPiece?.length} Ø³Ù…</p>
+              <p className="text-muted-foreground">{locale === 'ar' ? 'الطول' : 'Length'}:</p>
+              <p className="font-bold">{currentPiece?.length} سم</p>
             </div>
             <div>
-              <p className="text-muted-foreground">{locale === 'ar' ? 'Ø§Ù„Ø¨Ø±ÙˆÙØ§ÙŠÙ„' : 'Profile'}:</p>
+              <p className="text-muted-foreground">{locale === 'ar' ? 'البروفايل' : 'Profile'}:</p>
               <p className="font-bold">{currentPiece?.profile}</p>
             </div>
             <div className="col-span-2">
-              <p className="text-muted-foreground">{locale === 'ar' ? 'Ø§Ù„Ø²ÙˆØ§ÙŠØ§' : 'Angles'}:</p>
+              <p className="text-muted-foreground">{locale === 'ar' ? 'الزوايا' : 'Angles'}:</p>
               <p className="font-bold">{currentPiece?.angles}</p>
             </div>
           </div>
@@ -330,7 +330,7 @@ export function KioskModeDashboard({
               className="text-3xl font-bold"
             >
               <Play className="mr-3 h-12 w-12" />
-              {locale === 'ar' ? 'Ø§Ø¨Ø¯Ø£' : 'START'}
+              {locale === 'ar' ? 'ابدأ' : 'START'}
             </Button>
             <Button
               onClick={() => void handleSkip()}
@@ -340,7 +340,7 @@ export function KioskModeDashboard({
               className="text-3xl"
             >
               <SkipForward className="mr-3 h-12 w-12" />
-              {locale === 'ar' ? 'ØªØ®Ø·ÙŠ' : 'SKIP'}
+              {locale === 'ar' ? 'تخطي' : 'SKIP'}
             </Button>
           </div>
         </CardContent>
@@ -353,7 +353,7 @@ export function KioskModeDashboard({
       <Card className="w-full max-w-4xl">
         <CardHeader>
           <CardTitle style={{ fontSize: KIOSK_TOKENS.FONT_HEADER }} className="text-center flex items-center justify-center gap-4">
-            âš™ï¸ {locale === 'ar' ? 'Ø¨ÙŠÙ‚Ø·Ø¹...' : 'Cutting...'}
+            ⚙️ {locale === 'ar' ? 'بيقطع...' : 'Cutting...'}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-8">
@@ -365,7 +365,7 @@ export function KioskModeDashboard({
           </div>
 
           <div className="text-center text-muted-foreground" style={{ fontSize: KIOSK_TOKENS.FONT_BODY }}>
-            {locale === 'ar' ? 'Ø§Ù„ÙˆÙ‚Øª Ø§Ù„Ù…ØªØ¨Ù‚ÙŠ' : 'Time remaining'}: {remainingTime.toFixed(0)} {locale === 'ar' ? 'Ø«Ø§Ù†ÙŠØ©' : 'seconds'}
+            {locale === 'ar' ? 'الوقت المتبقي' : 'Time remaining'}: {remainingTime.toFixed(0)} {locale === 'ar' ? 'ثانية' : 'seconds'}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -377,7 +377,7 @@ export function KioskModeDashboard({
               className="text-3xl"
             >
               <Pause className="mr-3 h-12 w-12" />
-              {locale === 'ar' ? 'Ø¥ÙŠÙ‚Ø§Ù Ù…Ø¤Ù‚Øª' : 'PAUSE'}
+              {locale === 'ar' ? 'إيقاف مؤقت' : 'PAUSE'}
             </Button>
             <Button
               onClick={() => void handleStop()}
@@ -387,7 +387,7 @@ export function KioskModeDashboard({
               className="text-3xl"
             >
               <StopCircle className="mr-3 h-12 w-12" />
-              {locale === 'ar' ? 'ØªÙˆÙ‚Ù' : 'STOP'}
+              {locale === 'ar' ? 'توقف' : 'STOP'}
             </Button>
           </div>
         </CardContent>
@@ -400,10 +400,10 @@ export function KioskModeDashboard({
       <Card className="w-full max-w-4xl">
         <CardHeader>
           <CardTitle style={{ fontSize: KIOSK_TOKENS.FONT_HEADER }} className="text-center">
-            ðŸ” {locale === 'ar' ? 'ÙØ­Øµ Ø§Ù„Ø¬ÙˆØ¯Ø©' : 'Quality Check'}
+            🔍 {locale === 'ar' ? 'فحص الجودة' : 'Quality Check'}
           </CardTitle>
           <div className="text-center text-muted-foreground" style={{ fontSize: KIOSK_TOKENS.FONT_BODY }}>
-            {locale === 'ar' ? `Ù‚Ø·Ø¹Ø© #${currentPiece?.barcode} - ${currentPiece?.name}` : `Piece #${currentPiece?.barcode} - ${currentPiece?.name}`}
+            {locale === 'ar' ? `قطعة #${currentPiece?.barcode} - ${currentPiece?.name}` : `Piece #${currentPiece?.barcode} - ${currentPiece?.name}`}
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -437,7 +437,7 @@ export function KioskModeDashboard({
               className="text-3xl font-bold"
             >
               <CheckCircle className="mr-3 h-12 w-12" />
-              {locale === 'ar' ? 'ØªØ£ÙƒÙŠØ¯ - ÙƒÙ„ Ø­Ø§Ø¬Ø© ØªÙ…Ø§Ù…' : 'Confirm - All OK'}
+              {locale === 'ar' ? 'تأكيد - كل حاجة تمام' : 'Confirm - All OK'}
             </Button>
             <Button
               onClick={() => void handleQCReject()}
@@ -447,7 +447,7 @@ export function KioskModeDashboard({
               className="text-2xl"
             >
               <AlertCircle className="mr-3 h-10 w-10" />
-              {locale === 'ar' ? 'Ù…Ø´ÙƒÙ„Ø© - Ø¹ÙŠØ¯ Ø§Ù„Ù‚Ø·Ø¹' : 'Issue - Rework'}
+              {locale === 'ar' ? 'مشكلة - عيد القطع' : 'Issue - Rework'}
             </Button>
           </div>
         </CardContent>
@@ -457,21 +457,21 @@ export function KioskModeDashboard({
 
   return (
     <div className="kiosk-container min-h-screen bg-background p-6">
-      <p role="status" className="mb-4 rounded border border-amber-500 p-4">Demo â€” simulated scans, cuts and QC. No machine commands or production records are created.</p>
+      <p role="status" className="mb-4 rounded border border-amber-500 p-4">Demo — simulated scans, cuts and QC. No machine commands or production records are created.</p>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 style={{ fontSize: KIOSK_TOKENS.FONT_HEADER }} className="font-bold">
-            ðŸ¤– {locale === 'ar' ? `Ø¢Ù„Ø© CNC Ø±Ù‚Ù… ${machineId}` : `CNC Machine #${machineId}`}
+            🤖 {locale === 'ar' ? `آلة CNC رقم ${machineId}` : `CNC Machine #${machineId}`}
           </h1>
           <div style={{ fontSize: KIOSK_TOKENS.FONT_BODY }} className="text-muted-foreground">
-            ðŸ“Š {locale === 'ar' ? 'Ø§Ù„Ø­Ø§Ù„Ø©' : 'Status'}:{' '}
+            📊 {locale === 'ar' ? 'الحالة' : 'Status'}:{' '}
             <Badge variant={workflowState === 'idle' ? 'default' : 'secondary'} className="text-xl px-4 py-1">
-              {workflowState === 'idle' && (locale === 'ar' ? 'Ø¬Ø§Ù‡Ø²Ø© âœ“' : 'Ready âœ“')}
-              {workflowState === 'scanning' && (locale === 'ar' ? 'Ù…Ø³Ø­...' : 'Scanning...')}
-              {workflowState === 'confirming' && (locale === 'ar' ? 'ØªØ£ÙƒÙŠØ¯' : 'Confirming')}
-              {workflowState === 'executing' && (locale === 'ar' ? 'ØªØ´ØºÙŠÙ„' : 'Executing')}
-              {workflowState === 'qc' && (locale === 'ar' ? 'ÙØ­Øµ Ø§Ù„Ø¬ÙˆØ¯Ø©' : 'QC')}
+              {workflowState === 'idle' && (locale === 'ar' ? 'جاهزة ✓' : 'Ready ✓')}
+              {workflowState === 'scanning' && (locale === 'ar' ? 'مسح...' : 'Scanning...')}
+              {workflowState === 'confirming' && (locale === 'ar' ? 'تأكيد' : 'Confirming')}
+              {workflowState === 'executing' && (locale === 'ar' ? 'تشغيل' : 'Executing')}
+              {workflowState === 'qc' && (locale === 'ar' ? 'فحص الجودة' : 'QC')}
             </Badge>
           </div>
         </div>
