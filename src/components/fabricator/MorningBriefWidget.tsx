@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Morning Brief Widget - "Maalem's Morning Brief"
  * 
  * Displays daily industry intelligence for workshop owners:
@@ -201,8 +201,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-6 w-6 p-0"
-                      onClick={async () => {
-                        await handleFeedback(`alert_${idx}`, 'useful');
+                      onClick={() => {
+                        void handleFeedback(`alert_${idx}`, 'useful');
                       }}
                       title="مفيد"
                       data-feedback-id={`alert_${idx}`}
@@ -213,8 +213,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-6 w-6 p-0"
-                      onClick={async () => {
-                        await handleFeedback(`alert_${idx}`, 'not_useful');
+                      onClick={() => {
+                        void handleFeedback(`alert_${idx}`, 'not_useful');
                       }}
                       title="مش مفيد"
                       data-feedback-id={`alert_${idx}`}
@@ -251,8 +251,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-5 w-5 p-0"
-                      onClick={async () => {
-                        await handleFeedback(`high_alert_${idx}`, 'useful');
+                      onClick={() => {
+                        void handleFeedback(`high_alert_${idx}`, 'useful');
                       }}
                       title="مفيد"
                       data-feedback-id={`high_alert_${idx}`}
@@ -264,8 +264,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-5 w-5 p-0"
-                      onClick={async () => {
-                        await handleFeedback(`high_alert_${idx}`, 'not_useful');
+                      onClick={() => {
+                        void handleFeedback(`high_alert_${idx}`, 'not_useful');
                       }}
                       title="مش مفيد"
                       data-feedback-id={`high_alert_${idx}`}
