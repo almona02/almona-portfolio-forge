@@ -53,7 +53,7 @@ export type ConstraintType = 'hinge' | 'slider' | 'tilt_turn' | 'fixed';
 export interface PhysicsBody {
   id: string;
   mesh: THREE.Object3D;
-  rigidBody: unknown; // Ammo.btRigidBody
+  rigidBody: any; // Ammo.btRigidBody
   mass: number;
   type: 'static' | 'dynamic' | 'kinematic';
 }
@@ -63,7 +63,7 @@ export interface PhysicsConstraint {
   type: ConstraintType;
   bodyA: string;
   bodyB: string;
-  constraint: unknown; // Ammo.btTypedConstraint
+  constraint: any; // Ammo.btTypedConstraint
 }
 
 let ammoInstance: any = null;
