@@ -469,7 +469,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     const profile = matches[0];
     const defaultBarLengthM =
       typeof (profile.specifications)?.stockLengthMm === 'number'
-        ? ((profile.specifications).stockLengthMm as number) / 1000
+        ? (profile.specifications).stockLengthMm / 1000
         : 6;
     return { id: profile.id, name: profile.name, defaultBarLengthM };
   }, [inventory]);
@@ -570,7 +570,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           ? (Number(invoiceBarLengthM) > 0
               ? Number(invoiceBarLengthM)
               : typeof (invoiceSelectedProfile.specifications)?.stockLengthMm === 'number'
-                ? ((invoiceSelectedProfile.specifications).stockLengthMm as number) / 1000
+                ? (invoiceSelectedProfile.specifications).stockLengthMm / 1000
                 : 6)
           : undefined;
 
@@ -876,17 +876,17 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
   const invoiceProfileSystemPack =
     (invoiceSelectedProfile?.systemBrand) ||
-    ((invoiceSelectedProfile?.specifications)?.window_system as string | undefined) ||
+    (invoiceSelectedProfile?.specifications)?.window_system ||
     'Standard';
 
   const invoiceProfileCode =
-    ((invoiceSelectedProfile?.specifications)?.supplierCode as string | undefined) ||
-    ((invoiceSelectedProfile?.specifications)?.internalCode as string | undefined) ||
+    (invoiceSelectedProfile?.specifications)?.supplierCode ||
+    (invoiceSelectedProfile?.specifications)?.internalCode ||
     invoiceSelectedProfile?.name ||
     '';
 
   const invoiceProfileRole =
-    ((invoiceSelectedProfile?.specifications)?.profileRole as string | undefined) ||
+    (invoiceSelectedProfile?.specifications)?.profileRole ||
     'frame';
 
   const invoiceDefaultBarLengthM =

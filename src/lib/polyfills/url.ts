@@ -1,4 +1,4 @@
-﻿// URL polyfill for browser compatibility
+// URL polyfill for browser compatibility
 const urlModule = {
   parse: (urlString: string) => {
     try {
@@ -27,7 +27,7 @@ const urlModule = {
     const search = urlObject.search || '';
     const hash = urlObject.hash || '';
     
-    return `${protocol as string}//${hostname as string}${port as string}${pathname as string}${search as string}${hash as string}`;
+    return `${protocol as string}//${hostname as string}${port}${pathname as string}${search as string}${hash as string}`;
   },
   resolve: (from: string, to: string) => {
     try {

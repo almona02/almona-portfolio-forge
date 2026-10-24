@@ -1,4 +1,4 @@
-﻿// pages/FabricatorWorkflow.tsx
+// pages/FabricatorWorkflow.tsx
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { ConsequenceAlert } from '@/components/authority/ConsequenceAlert';
 import { OperationModeBadge } from '@/components/authority/OperationModeBadge';
@@ -728,7 +728,7 @@ export const FabricatorWorkflow: React.FC = () => {
             specs.egyptBorderIncluded === 'with';
 
           const borderExtraAllowance = isBorderFrame
-            ? (specs.borderExtraAllowanceMm as number | undefined) ?? 5
+            ? specs.borderExtraAllowanceMm ?? 5
             : 0;
           const allowance = profile.cuttingAllowance + borderExtraAllowance;
 

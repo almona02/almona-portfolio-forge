@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProfileManagement - Complete profile management system with Supabase integration
  * 
  * Features:
@@ -2289,7 +2289,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                   onError={(e) => {
                                     // Fallback to previewImageUrl if thumbnail fails
                                     if (profile.thumbnailUrl && specs.previewImageUrl) {
-                                      (e.target as HTMLImageElement).src = specs.previewImageUrl as string;
+                                      (e.target as HTMLImageElement).src = specs.previewImageUrl;
                                     } else {
                                       (e.target as HTMLImageElement).style.display = 'none';
                                     }
