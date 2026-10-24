@@ -54,7 +54,7 @@ export function ProductionDashboard() {
 
   useEffect(() => {
     void loadDashboardData();
-    const interval = setInterval(loadDashboardData, 30000); // Refresh every 30 seconds
+    const interval = setInterval(() => void loadDashboardData(), 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
   }, []);
 

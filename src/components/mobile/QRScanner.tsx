@@ -353,7 +353,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
       clearInterval(scanIntervalRef.current);
     }
 
-    scanIntervalRef.current = setInterval(scanFrame, 200); // Scan every 200ms
+    scanIntervalRef.current = setInterval(() => void scanFrame(), 200); // Scan every 200ms
     setState(prev => ({ ...prev, isScanning: true }));
   }, [scanFrame]);
 

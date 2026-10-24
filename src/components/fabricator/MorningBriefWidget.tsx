@@ -103,7 +103,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
   useEffect(() => {
     void fetchBrief();
     // Refresh every 5 minutes
-    const interval = setInterval(fetchBrief, 5 * 60 * 1000);
+    const interval = setInterval(() => void fetchBrief(), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [workshopId]);
 

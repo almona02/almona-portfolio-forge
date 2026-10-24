@@ -73,7 +73,7 @@ export const IntelligentForm = ({
       }
     };
 
-    const debounceTimer = setTimeout(validateSerial, 500);
+    const debounceTimer = setTimeout(() => void validateSerial(), 500);
     return () => clearTimeout(debounceTimer);
   }, [machineSerial]);
 

@@ -407,7 +407,7 @@ export const SalesAcceleration: React.FC = () => {
                   </div>
 
                   <div className="flex gap-2 mt-4">
-                    <Button size="sm" onClick={() => generateAIProposal(lead.id)} disabled={generatingProposal}>
+                    <Button size="sm" onClick={() => void generateAIProposal(lead.id)} disabled={generatingProposal}>
                       {generatingProposal ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
