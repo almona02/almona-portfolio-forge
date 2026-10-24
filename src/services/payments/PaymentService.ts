@@ -148,7 +148,7 @@ export class PaymentService {
 
       if (error) {
         console.error('Failed to create manual payment:', error);
-        throw new Error(String(error));
+        throw error instanceof Error ? error : new Error(JSON.stringify(error));
       }
       if (typeof paymentId !== 'string') throw new Error('Failed to create payment record');
       const paymentData = { id: paymentId };
