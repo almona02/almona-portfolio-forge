@@ -1,4 +1,4 @@
-﻿import { ManufacturingApprovalPanel } from './workflow/ManufacturingApprovalPanel';
+import { ManufacturingApprovalPanel } from './workflow/ManufacturingApprovalPanel';
 /**
  * Almona Fabricator Pro: EngineeringBay (v2.0)
  *
@@ -325,7 +325,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             grid: result.windowGrid,
             recommendedSystem: result.recommendedSystem
         });
-    }, [project, actions, activeSystemPackId]);
+    }, [project, actions, activeSystemPackId, systemPacks]);
 
     // --- Event Handlers ---
     const handleSystemPackSelect = useCallback((systemPackId: string) => {
