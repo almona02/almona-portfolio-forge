@@ -90,7 +90,7 @@ export class EgyptianResponseTranslator {
       standard: 'يا ريس',
     };
 
-    const greeting = greetings[location] || greetings.standard;
+    const greeting = greetings[location as keyof typeof greetings] || greetings.standard;
 
     if (userType === 'workshop_owner' || userType === 'maalem') {
       return `${greeting}، ${answer} ربنا يبارك.`;

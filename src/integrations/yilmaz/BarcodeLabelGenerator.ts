@@ -234,7 +234,7 @@ export class BarcodeLabelGenerator {
       medium: { width: 300, height: 150 },
       large: { width: 400, height: 200 }
     };
-    const dim = dimensions[size];
+    const dim = dimensions[size as keyof typeof dimensions];
     zpl += `^PW${dim.width}`;
     zpl += `^LL${dim.height}`;
 
