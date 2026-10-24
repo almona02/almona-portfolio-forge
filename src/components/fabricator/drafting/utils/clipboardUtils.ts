@@ -116,7 +116,7 @@ export function hasClipboardData(): boolean {
 /**
  * Generate new IDs for pasted elements
  */
-function generateNewIds<T extends { id: string }>(elements: T[]): T[] {
+function generateNewIds(elements: any[]): any[] {
   return elements.map((el, idx) => ({
     ...el,
     id: `${el.id}_copy_${Date.now()}_${idx}`,
@@ -126,11 +126,11 @@ function generateNewIds<T extends { id: string }>(elements: T[]): T[] {
 /**
  * Offset pasted elements by a small amount
  */
-function offsetElements<T extends { x?: number; y?: number; cx?: number; cy?: number }>(
-  elements: T[],
+function offsetElements(
+  elements: any[],
   offsetX: number = 20,
   offsetY: number = 20
-): T[] {
+): any[] {
   return elements.map(el => {
     if ('x' in el && 'y' in el) {
       return { ...el, x: (el.x || 0) + offsetX, y: (el.y || 0) + offsetY };
