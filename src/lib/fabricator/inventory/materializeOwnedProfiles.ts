@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Batch 2 UP-07 — Materialize catalog-style pack profiles into owned fabricator_profiles UUIDs.
  *
  * Preserves original catalog codes in specifications.originalCatalogCode.
@@ -112,7 +112,7 @@ export async function materializeOwnedProfilesFromPack(
 
       if (byName?.id && isFabricatorUuid(String(byName.id))) {
         const existingSpecs = (byName.specifications || {}) as Record<string, unknown>;
-        const existingCode = (existingSpecs.originalCatalogCode ?? existingSpecs.partNumber ?? '' as string);
+        const existingCode = ((existingSpecs.originalCatalogCode as string) ?? existingSpecs.partNumber ?? '');
         if (!existingCode || existingCode === originalCode) {
           ownedId = String(byName.id);
           await db

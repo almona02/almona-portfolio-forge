@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Persist server-stamped optimization evidence.
  * schemaVersion 2+: server derives design ledger; client must supply BOM (no placement fallback).
  * Kerf/trim/stock bound to approved authority manufacturingSettings.
@@ -239,5 +239,5 @@ export async function recordOptimizationEvidence(
     return { ok: false, error: error.message || 'Failed to record optimization evidence.' };
   }
 
-  return { ok: true, positionId: (data ?? input.positionId as string) };
+  return { ok: true, positionId: ((data as string) ?? input.positionId) };
 }

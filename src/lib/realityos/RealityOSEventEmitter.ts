@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RealityOS Event Emitter
  * 
  * Emits events to RealityOS Event Ledger with constitutional guarantees.
@@ -56,7 +56,7 @@ export class RealityOSEventEmitter {
           const faultEvent: FaultEvent = {
             faultType: 'MISSED_EVENT',
             originalEventType: eventType,
-            entityId: (entity.id ?? entity.unitId ?? 'unknown' as string),
+            entityId: ((entity.id as string) ?? entity.unitId ?? 'unknown'),
             detectedAt: new Date(),
             reason: retroactiveCheck.reason,
             requiresHumanInvestigation: true,
@@ -79,7 +79,7 @@ export class RealityOSEventEmitter {
         const faultEvent: FaultEvent = {
           faultType: 'PROOF_INVALID',
           originalEventType: eventType,
-          entityId: (entity.id ?? 'unknown' as string),
+          entityId: ((entity.id as string) ?? 'unknown'),
           detectedAt: new Date(),
           reason: `Proof validation failed: ${validation.errors.join(', ')}`,
           requiresHumanInvestigation: true,

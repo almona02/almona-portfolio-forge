@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Payment Service (browser-safe)
  *
  * Client may read payment history and record manual payments via Supabase.
@@ -23,10 +23,10 @@ const payments = () => supabase.from('payments') as any;
 
 function mapPaymentRow(p: Record<string, unknown>): Payment {
   return {
-    id: (p.id || '' as string),
+    id: (p.id as string) || '',
     invoiceId: (p.invoice_id as string) || null,
-    amount: parseFloat((p.amount || 0 as string)),
-    currency: (p.currency || 'USD' as string),
+    amount: parseFloat((p.amount ?? 0) as string),
+    currency: (p.currency as string) || 'USD',
     method: (p.method || 'cash') as Payment['method'],
     status: (p.status || 'pending') as Payment['status'],
     transactionId: (p.transaction_id as string) || null,
