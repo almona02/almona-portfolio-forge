@@ -885,11 +885,12 @@ export class DualOutputGenerator {
         const cellWidth = (windowUnit.overallWidth / grid.cols) - edgeClearance * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER;
         const cellHeight = (windowUnit.overallHeight / grid.rows) - edgeClearance * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER;
         // Default thickness: based on glazing type
-        const glazingType = (windowUnit.glazing as any)?.type || 'double';
+        const glazingSpec = windowUnit.glazing as { type?: string; thickness?: number; uValue?: number; safetyRating?: "annealed" | "tempered" | "laminated"; glassCode?: string } | undefined;
+        const glazingType = glazingSpec?.type || 'double';
         const defaultThickness = glazingType === 'single' 
           ? GLAZING_CONSTANTS.DEFAULT_SINGLE_GLAZING_THICKNESS_MM 
           : GLAZING_CONSTANTS.DEFAULT_MULTI_GLAZING_THICKNESS_MM;
-        const glassThickness = (windowUnit.glazing as any)?.thickness || defaultThickness;
+        const glassThickness = glazingSpec?.thickness || defaultThickness;
         
         glazing.push({
           paneId: `pane-${index}-${cell.type}`,
@@ -901,9 +902,9 @@ export class DualOutputGenerator {
           },
           edgeClearance,
           weight: ProductionUtils.calculateGlassWeight(cellWidth, cellHeight, glassThickness),
-          uValue: (windowUnit.glazing as any)?.uValue,
-          safetyRating: (windowUnit.glazing as any)?.safetyRating || 'annealed',
-          glassCode: (windowUnit.glazing as any)?.glassCode
+          uValue: glazingSpec?.uValue,
+          safetyRating: glazingSpec?.safetyRating || 'annealed',
+          glassCode: glazingSpec?.glassCode
         });
       }
     });
