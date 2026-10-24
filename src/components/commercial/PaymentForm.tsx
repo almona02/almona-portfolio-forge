@@ -88,7 +88,7 @@ const getStripePromise = () => {
     console.warn('Stripe publishable key not configured');
     return null;
   }
-  return loadStripe(publishableKey);
+  return loadStripe(publishableKey as string);
 };
 
 /**

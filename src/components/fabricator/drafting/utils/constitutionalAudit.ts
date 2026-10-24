@@ -101,7 +101,8 @@ export type DraftingAction =
   | 'assign_glazing_to_sash'
   | 'duplicate_rectangle'
   | 'duplicate_material_aware_frame'
-  | 'add_mullion_to_frame';
+  | 'add_mullion_to_frame'
+  | 'tool_operation';
 
 /**
  * Log a drafting action with full constitutional context

@@ -76,7 +76,7 @@ export const SystemPackSelector: React.FC<SystemPackSelectorProps> = ({
     .filter((pack) => pack.category === category)
     .filter((pack) =>
       allowedSystemPackIds && allowedSystemPackIds.length
-        ? allowedSystemPackIds.includes(pack.id)
+        ? allowedSystemPackIds.includes(pack.id ?? '')
         : true
     );
 

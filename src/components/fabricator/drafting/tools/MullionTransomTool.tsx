@@ -70,7 +70,7 @@ export const MullionTransomTool: React.FC<MullionTransomToolProps> = ({
     Math.min(min, r.x), Infinity
   );
   
-  const recommendedSpacing = calculateMullionSpacing(totalWidth, material);
+  const recommendedSpacing = calculateMullionSpacing(totalWidth, material as "aluminum" | "upvc");
 
   return (
     <div className="flex flex-col gap-2 p-3 bg-green-50 rounded border border-green-200">
