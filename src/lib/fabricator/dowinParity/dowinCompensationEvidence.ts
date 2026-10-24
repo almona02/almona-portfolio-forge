@@ -673,7 +673,7 @@ export interface BarResidualAttribution {
 
 function sumOrNull(values: Array<number | null | undefined>): number | null {
   if (values.some((v) => v == null)) return null;
-  return round1(values.reduce((s, n) => s + (n as number), 0));
+  return round1(values.reduce((s: number, n) => s + (n as number), 0));
 }
 
 export function attributeBarResidual(

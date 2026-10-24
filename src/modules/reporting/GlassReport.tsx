@@ -164,7 +164,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
       const gasFill = project.glazing?.gasFill || 'argon';
       
       // Calculate weight (glass density ~2.5 kg/m² per mm thickness)
-      const weight = totalComponentArea * glassThickness * 2.5;
+      const weight = totalComponentArea * Number(glassThickness) * 2.5;
       
       // Special requirements
       const specialReqs: string[] = [];

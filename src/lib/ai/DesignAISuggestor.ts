@@ -78,7 +78,7 @@ export class DesignAISuggestor {
 
     // Span compatibility
     if (analysis.spanLength && profile.specifications) {
-      const maxSpan = profile.specifications.maxSpanMm || Infinity;
+      const maxSpan = (profile.specifications.maxSpanMm as number) || Infinity;
       if (analysis.spanLength <= maxSpan) {
         score += 0.3;
       }

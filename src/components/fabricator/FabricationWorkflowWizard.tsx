@@ -367,7 +367,7 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
 
       // Glass details (simplified)
       const glazingType = updatedUnit.glazing?.type || 'double';
-      const glassThickness = updatedUnit.glazing?.thickness || (glazingType === 'single' ? 5 : 24);
+      const glassThickness = Number(updatedUnit.glazing?.thickness || (glazingType === 'single' ? 5 : 24));
       const sashComponents = components.filter(c => 
         c.profile?.profileRole?.startsWith('sash') || c.type === 'sash'
       );

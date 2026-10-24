@@ -54,7 +54,7 @@ export class UnifiedProfileCatalog {
         // Helper to extract from JUMBO100 style
         const packSpec = pack.windowSystemSpec;
         if (packSpec.aluminum_profiles) {
-          for (const p of packSpec.aluminum_profiles) {
+          for (const p of packSpec.aluminum_profiles as any[]) {
             // Check if user has this profile in database with a defined role
             const dbRole = undefined;
             

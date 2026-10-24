@@ -351,7 +351,7 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Expected Delivery:</span>
               <span className="font-mono font-semibold">
-                {journey.nodes[journey.nodes.length - 1].estimatedArrival.toLocaleDateString()}
+                {journey.nodes[journey.nodes.length - 1]?.estimatedArrival.toLocaleDateString()}
               </span>
             </div>
           )}
