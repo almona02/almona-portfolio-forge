@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Calibration Wizard Component
  * Visual calibration dashboard with real-time simulation and side-by-side comparison
  */
@@ -285,7 +285,8 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
 
               <KFactorCalculator
                 profile={profile}
-                onKFactorCalculated={async (kFactor, jointType) => {
+                onKFactorCalculated={(kFactor, jointType) => {
+                  void (async (kFactor, jointType) => {
                   // Save K-factor to profile calibration
                   try {
                     const userId = profile.userId || '';
@@ -319,6 +320,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   } catch (error) {
                     console.error('Error saving K-factor:', error);
                   }
+                })(kFactor, jointType);
                 }}
                 initialKFactor={(profile as any).default_k_factor_45}
                 initialJointType="miter_45"
