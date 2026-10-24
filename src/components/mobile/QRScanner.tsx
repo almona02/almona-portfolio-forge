@@ -226,7 +226,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
       navigator.geolocation.getCurrentPosition(
         (position) => resolve(position.coords),
-        (error) => reject(error),
+        (error) => reject(new Error(String(error))),
         {
           enableHighAccuracy: true,
           timeout: 10000,

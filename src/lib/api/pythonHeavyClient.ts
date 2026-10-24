@@ -1,4 +1,4 @@
-import { toast } from '@/hooks/use-toast';
+﻿import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 
@@ -211,7 +211,7 @@ export async function waitForOptimizationJobRealtime(
     }).catch(err => {
       clearTimeout(timeout);
       subscription.unsubscribe();
-      reject(err);
+      reject(new Error(String(err)));
     });
   });
 }

@@ -134,7 +134,7 @@ export class PDFExportService {
               }
             }, 'image/png');
           } catch (error) {
-            reject(error);
+            reject(new Error(String(error)));
           }
         };
         img.onerror = () => reject(new Error('Failed to load SVG image'));

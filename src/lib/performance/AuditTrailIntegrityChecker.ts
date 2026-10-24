@@ -236,7 +236,7 @@ export class AuditTrailIntegrityChecker {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('ConstitutionalAuditLog', 1);
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(new Error(String(request.error)));
       request.onsuccess = () => resolve(request.result);
 
       request.onupgradeneeded = (event) => {

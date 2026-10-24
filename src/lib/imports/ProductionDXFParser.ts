@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ProductionDXFParser - Hardened DXF Parser for Production Use
  * 
  * Week 3 Task 3.1: ProductionDXFParser Implementation
@@ -84,7 +84,7 @@ export class ProductionDXFParser {
             'circuit_breaker_triggered',
             language,
             'Circuit breaker is open - too many malformed files',
-            'قاطع الدائرة مفتوح - عدد كبير من الملفات التالفة'
+            'Ù‚Ø§Ø·Ø¹ Ø§Ù„Ø¯Ø§Ø¦Ø±Ø© Ù…ÙØªÙˆØ­ - Ø¹Ø¯Ø¯ ÙƒØ¨ÙŠØ± Ù…Ù† Ø§Ù„Ù…Ù„ÙØ§Øª Ø§Ù„ØªØ§Ù„ÙØ©'
           );
         } else {
           // Reset circuit breaker
@@ -104,7 +104,7 @@ export class ProductionDXFParser {
           'invalid_file',
           language,
           'Invalid file name or extension',
-          'اسم الملف أو الامتداد غير صالح',
+          'Ø§Ø³Ù… Ø§Ù„Ù…Ù„Ù Ø£Ùˆ Ø§Ù„Ø§Ù…ØªØ¯Ø§Ø¯ ØºÙŠØ± ØµØ§Ù„Ø­',
           { error: validation.error }
         );
       }
@@ -137,7 +137,7 @@ export class ProductionDXFParser {
           'tolerance_exceeded',
           language,
           'Geometry tolerance exceeded 0.01mm',
-          'تجاوز التسامح الهندسي 0.01 مم'
+          'ØªØ¬Ø§ÙˆØ² Ø§Ù„ØªØ³Ø§Ù…Ø­ Ø§Ù„Ù‡Ù†Ø¯Ø³ÙŠ 0.01 Ù…Ù…'
         );
       }
 
@@ -148,7 +148,7 @@ export class ProductionDXFParser {
           'accuracy_below_threshold',
           language,
           `Accuracy ${apiResult.accuracy}% below ${minAccuracy}% threshold`,
-          `الدقة ${apiResult.accuracy}% أقل من عتبة ${minAccuracy}%`
+          `Ø§Ù„Ø¯Ù‚Ø© ${apiResult.accuracy}% Ø£Ù‚Ù„ Ù…Ù† Ø¹ØªØ¨Ø© ${minAccuracy}%`
         );
       }
 
@@ -172,7 +172,7 @@ export class ProductionDXFParser {
         'parse_error',
         language,
         error instanceof Error ? error.message : 'Unknown error',
-        'خطأ في التحليل',
+        'Ø®Ø·Ø£ ÙÙŠ Ø§Ù„ØªØ­Ù„ÙŠÙ„',
         { error: error instanceof Error ? error.stack : String(error) }
       );
     }
@@ -203,7 +203,7 @@ export class ProductionDXFParser {
       worker.onerror = (error) => {
         clearTimeout(timeout);
         this.releaseWorker(worker);
-        reject(error);
+        reject(new Error(String(error)));
       };
 
       worker.postMessage({
@@ -240,7 +240,7 @@ export class ProductionDXFParser {
           'api_error',
           language,
           errorData.message || `API error: ${response.status}`,
-          errorData.message_ar || `خطأ في API: ${response.status}`
+          errorData.message_ar || `Ø®Ø·Ø£ ÙÙŠ API: ${response.status}`
         );
       }
 
@@ -260,7 +260,7 @@ export class ProductionDXFParser {
         'network_error',
         language,
         error instanceof Error ? error.message : 'Network error',
-        'خطأ في الشبكة'
+        'Ø®Ø·Ø£ ÙÙŠ Ø§Ù„Ø´Ø¨ÙƒØ©'
       );
     }
   }

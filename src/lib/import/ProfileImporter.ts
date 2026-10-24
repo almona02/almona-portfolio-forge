@@ -85,7 +85,7 @@ export class ProfileImporter {
           resolve({ headers, rows });
         }
       } catch (error) {
-        reject(error);
+        reject(new Error(String(error)));
       }
     });
   }

@@ -464,7 +464,7 @@ class IoTSensorService {
         this.websocket.send(JSON.stringify(message));
         resolve(true);
       } catch (error) {
-        reject(error);
+        reject(new Error(String(error)));
       }
     });
   }

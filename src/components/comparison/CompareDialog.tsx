@@ -49,7 +49,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
           logoDataUrl = await new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result as string);
-            reader.onerror = () => reject(reader.error);
+            reader.onerror = () => reject(new Error(String(reader.error)));
             reader.readAsDataURL(blob);
           });
         } catch {
@@ -59,7 +59,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
           logoDataUrl = await new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result as string);
-            reader.onerror = () => reject(reader.error);
+            reader.onerror = () => reject(new Error(String(reader.error)));
             reader.readAsDataURL(blob);
           });
         }

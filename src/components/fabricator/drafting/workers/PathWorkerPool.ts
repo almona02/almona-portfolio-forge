@@ -1,4 +1,4 @@
-import type { EgyptianPathRequest, EgyptianPathResponse } from '@/workers/egyptian-path-generator.worker';
+﻿import type { EgyptianPathRequest, EgyptianPathResponse } from '@/workers/egyptian-path-generator.worker';
 
 // Worker Wrapper Class
 class WorkerWrapper {
