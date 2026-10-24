@@ -61,7 +61,7 @@ export default function FabricationReportGenerator() {
     saveAsFn!(blob, `fabrication-report-${new Date().toISOString().slice(0,10)}.pdf`);
 
     // Set comparison data
-    setComparisonData(compareMachines(report.comparisons));
+    setComparisonData(compareMachines(report.comparisons) as any);
   }, [materialType, machineModel, profileLength, customPrices, isArabic]);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {

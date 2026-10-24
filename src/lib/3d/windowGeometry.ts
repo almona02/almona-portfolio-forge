@@ -534,7 +534,7 @@ export function generateProfileCrossSection(profile: Profile): ProfileCrossSecti
     const profileRole = (profile.profileRole ?? 'frame') as 'frame' | 'sash' | 'mullion' | 'transom';
     const profileMaterial = (profile.material === 'upvc' || profile.material === 'aluminum' || profile.material === 'wood') ? profile.material : 'aluminum';
     
-    const goldTierResult = createGoldTierProfileShape(width, depth, thickness, profileRole, profileMaterial, true);
+    const goldTierResult = createGoldTierProfileShape(width, depth, thickness, profileRole, profileMaterial as "aluminum" | "upvc" | "steel", true);
     
     return {
         shape: goldTierResult.shape,

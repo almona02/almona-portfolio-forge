@@ -90,7 +90,7 @@ const ElectricBorder = ({
     }
 
     requestAnimationFrame(() => {
-      [...dyAnims, ...dxAnims].forEach((a: SVGAnimateElement) => {
+      ([...dyAnims, ...dxAnims] as SVGAnimateElement[]).forEach((a) => {
         if (typeof a.beginElement === "function") {
           try {
             a.beginElement();
