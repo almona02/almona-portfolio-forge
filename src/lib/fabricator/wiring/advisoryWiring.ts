@@ -80,7 +80,7 @@ export const ADVISORY_WIRING = {
 
   /** Theme Toggle - Presentation only */
   ThemeToggle: AdvisoryGate.presentation(
-    () => import('@/future/ui-experiments/ThemeToggle').then(m => ({ default: m.ThemeToggle || m.default }))
+    () => import('@/components/fabricator/ui/ThemeToggle').then(m => ({ default: m.ThemeToggle || m.default }))
   ),
 
   /** Cost Calculator - Presentation only */

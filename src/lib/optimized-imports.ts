@@ -19,7 +19,4 @@ export const lazyPDFJS = () => import('pdfjs-dist');
 
 // Component lazy loading wrappers
 export const lazy3DViewer = () => import('@/components/3d-model/EnhancedGLBViewer');
-export const lazyAIAdvisor = () => import('@/components/ai/AiEquipmentAdvisor');
-export const lazyPDFExport = () => import('@/components/exports/PDFExportDialog');
-export const lazyExcelExport = () => import('@/components/exports/ExcelExportDialog');
 
