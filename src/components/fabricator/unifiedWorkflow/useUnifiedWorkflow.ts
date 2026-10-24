@@ -73,7 +73,7 @@ export function useUnifiedWorkflow(
   }, [location.hash, initialTab]);
 
   const [currentStageId, setCurrentStageId] = useState<UnifiedStageId>(getInitialStage);
-  const [legacyTab, setLegacyTab] = useState<string | undefined>(initialTab);
+  const [legacyTab, setLegacyTabState] = useState<string | undefined>(initialTab);
 
   // Update stage when URL hash changes
   useEffect(() => {
@@ -82,10 +82,10 @@ export function useUnifiedWorkflow(
       const stageId = mapLegacyTabToUnifiedStage(hash);
       if (stageId && stageId !== currentStageId) {
         setCurrentStageId(stageId);
-        setLegacyTab(hash);
+        setLegacyTabState(hash);
       }
     }
-  }, [location.hash, unifiedMode, currentStageId, setLegacyTab]);
+  }, [location.hash, unifiedMode, currentStageId, setLegacyTabState]);
 
   const currentStageIndex = useMemo(() => {
     return UNIFIED_STAGES.findIndex(s => s.id === currentStageId);
@@ -115,14 +115,14 @@ export function useUnifiedWorkflow(
   }, [currentStageIndex, setStage]);
 
   const setLegacyTab = useCallback((tabId: string) => {
-    setLegacyTab(tabId);
+    setLegacyTabState(tabId);
     if (unifiedMode) {
       const stageId = mapLegacyTabToUnifiedStage(tabId);
       if (stageId) {
         setCurrentStageId(stageId);
       }
     }
-  }, [unifiedMode, setLegacyTab, setCurrentStageId]);
+  }, [unifiedMode, setLegacyTabState, setCurrentStageId]);
 
   const getStage = useCallback((stageId: UnifiedStageId) => {
     return getUnifiedStage(stageId);

@@ -198,7 +198,7 @@ const workspaceReducer = (
           ...state,
           currentProject: {
             ...state.currentProject,
-            grid: action.payload as WindowGrid,
+            grid: action.payload as unknown as WindowGrid,
             updatedAt: new Date(),
           },
         }

@@ -220,12 +220,6 @@ export class EgyptianOralTraditionMemory {
   }
 }
 
-interface PersonRecord {
-  name: string;
-  type: 'supplier' | 'maalem' | 'workshop';
-  reputation: 'high' | 'medium' | 'low';
-  location: string;
-}
 
 
 

@@ -15,7 +15,7 @@ import type { HardenerSelectionContext, HardenerSelectionResult } from '@/lib/fa
 import { HardenerRuleEngine, hardenerSelector } from '@/lib/fabricator/hardener';
 import { describe, expect, it } from 'vitest';
 
-import type { SystemPack, WindowUnit } from '@/types/fabricator';
+import type { SystemPack } from '@/types/fabricator';
 
 describe('Hardener Integration Tests', () => {
   describe('Real Egyptian Standards Validation', () => {
