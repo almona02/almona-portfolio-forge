@@ -601,7 +601,7 @@ export function ProfileScannerUploader({
 
         {file && !uploading && !result && (
           <div className="flex justify-center">
-            <Button onClick={handleScan} disabled={uploading} size="lg" className="min-w-[200px]">
+            <Button onClick={() => void handleScan()} disabled={uploading} size="lg" className="min-w-[200px]">
               <ScanSearch className="w-4 h-4 mr-2" />
               {autoDetectScale ? t('profile_scanner_uploader.actions.scan_ai', 'Scan with automation Detection') : t('profile_scanner_uploader.actions.scan_manual', 'Scan with Manual Scale')}
             </Button>

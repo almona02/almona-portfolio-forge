@@ -36,7 +36,7 @@ const UsedMachineDetailPage = () => {
     <>
       <MachineSEO machine={machine} />
       <div className="min-h-screen bg-almona-dark pt-16 pb-8">
-        <UsedMachineDetails machine={() => void machine()} onBack={() => navigate('/used-machines')} />
+        <UsedMachineDetails machine={() => void machine()} onBack={() => void navigate('/used-machines')} />
       </div>
     </>
   );

@@ -444,7 +444,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                   <Button className="flex-1 border border-gray-300" onClick={() => window.open('/shop?tab=reports', '_blank')}>
                     Generate Report
                   </Button>
-                  <Button className="flex-1 bg-gradient-to-r from-green-500 to-blue-500" onClick={completeRegistration} disabled={isSaving}>
+                  <Button className="flex-1 bg-gradient-to-r from-green-500 to-blue-500" onClick={() => void completeRegistration()} disabled={isSaving}>
                     {isSaving ? 'Saving...' : 'Complete Registration'}
                   </Button>
                   <Button className="flex-1 border border-gray-300" onClick={() => setShowTrainingDialog(true)}>

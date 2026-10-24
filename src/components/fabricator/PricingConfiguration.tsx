@@ -354,7 +354,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
+          <Button onClick={() => void handleSave()} disabled={saving}>
             {saving ? (
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
             ) : (

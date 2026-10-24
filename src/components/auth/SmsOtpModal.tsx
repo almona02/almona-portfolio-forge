@@ -117,7 +117,7 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
                   />
                 </div>
               </div>
-              <Button onClick={handleSendOtp} disabled={loading} className="w-full mt-6 bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600">
+              <Button onClick={() => void handleSendOtp()} disabled={loading} className="w-full mt-6 bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600">
                 {loading ? 'Sending OTP...' : 'Send OTP'}
               </Button>
             </LazyMotionDiv>
@@ -137,7 +137,7 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
                   />
                 </div>
               </div>
-              <Button onClick={handleVerifyOtp} disabled={loading} className="w-full mt-6 bg-gradient-to-r from-blue-500 to-amber-500 text-white hover:from-blue-600 hover:to-amber-600">
+              <Button onClick={() => void handleVerifyOtp()} disabled={loading} className="w-full mt-6 bg-gradient-to-r from-blue-500 to-amber-500 text-white hover:from-blue-600 hover:to-amber-600">
                 {loading ? 'Verifying OTP...' : 'Verify OTP'}
               </Button>
               <Button variant="link" onClick={() => setStep('request')} className="w-full mt-2 text-almona-light">

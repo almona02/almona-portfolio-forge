@@ -276,7 +276,7 @@ export const SettingsPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
-                                    <Button onClick={handleSaveProfile} disabled={isLoading} className="bg-amber-600 hover:bg-amber-700 text-white">
+                                    <Button onClick={() => void handleSaveProfile()} disabled={isLoading} className="bg-amber-600 hover:bg-amber-700 text-white">
                                         {isLoading ? 'Saving...' : 'Save Changes'}
                                     </Button>
                                 </div>
