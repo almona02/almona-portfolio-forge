@@ -139,7 +139,7 @@ export class GlobalPerformanceOptimizer {
       } else if (this.supportsFormat('webp')) {
         optimalFormat = 'webp';
       }
-    } else if (format !== 'auto') {
+    } else {
       optimalFormat = format;
     }
 

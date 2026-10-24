@@ -56,7 +56,7 @@ export function validateConstraints(
         .filter((id): id is string => id !== undefined);
 
       issues.push({
-        severity: constraint.type === 'code' ? 'error' : 'warning',
+        severity: 'warning',
         message: constraint.message,
         affectedElements: affectedIds,
         constraint,

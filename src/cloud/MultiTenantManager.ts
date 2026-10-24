@@ -9,7 +9,7 @@ export interface Tenant {
   domain?: string;
   subdomain: string;
   status: 'active' | 'suspended' | 'trial' | 'expired';
-  plan: 'free' | 'basic' | 'professional' | 'enterprise';
+  plan: 'free' | 'basic' | 'professional' | 'enterprise' | 'trial';
   createdAt: Date;
   expiresAt?: Date;
   settings: TenantSettings;
