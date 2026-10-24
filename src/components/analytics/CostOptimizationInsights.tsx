@@ -12,8 +12,8 @@ import type { OptimizationResult, Profile } from '@/types/fabricator';
 import { TrendingDown, AlertCircle, CheckCircle, Info } from 'lucide-react';
 
 interface CostOptimizationInsightsProps {
-  optimizationResult: OptimizationResult;
-  profiles: Profile[];
+  optimizationResult?: OptimizationResult;
+  profiles?: Profile[];
   userId?: string;
 }
 
@@ -27,6 +27,11 @@ export const CostOptimizationInsights: React.FC<CostOptimizationInsightsProps> =
 
   useEffect(() => {
     const analyze = async () => {
+      if (!optimizationResult || !profiles) {
+        setAnalysis(null);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       const result = await costOptimizer.analyzeCostOptimization(
         optimizationResult,

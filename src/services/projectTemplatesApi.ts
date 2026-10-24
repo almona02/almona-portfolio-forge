@@ -289,7 +289,7 @@ export async function cloneTemplate(
     throw new Error(errorData.detail ?? "Failed to clone template");
   }
 
-  return (await response.json()) as TemplateResponse;
+  return (await response.json()) as TemplateCloneResponse;
 }
 
 /**
