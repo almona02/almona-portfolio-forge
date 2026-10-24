@@ -300,7 +300,7 @@ class OfflineSyncService {
               icon: '/icons/dismiss-icon.png'
             }
           ]
-        });
+        } as any);
       } else {
         // Fallback to basic notification
         new Notification(payload.title, {

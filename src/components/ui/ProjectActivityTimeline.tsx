@@ -107,6 +107,7 @@ export interface Activity {
   details?: ActivityDetails;
   metadata?: Record<string, any>;
   canRevert?: boolean;
+  revertData?: unknown;
   comments?: Comment[];
 }
 
