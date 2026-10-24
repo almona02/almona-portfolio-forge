@@ -88,7 +88,20 @@ export type DraftingAction =
   | 'polygon_offset'
   | 'offset_failed'
   | 'spline_added'
-  | 'spline_add_failed';
+  | 'spline_add_failed'
+  | 'error_boundary_triggered'
+  | 'error_caught'
+  | 'error_recovery_attempt'
+  | 'collaborative_connected'
+  | 'collaborative_geometry_change'
+  | 'convert_rectangle_to_material_aware'
+  | 'resize_frame'
+  | 'add_sash_to_frame'
+  | 'quick_add_two_sashes'
+  | 'assign_glazing_to_sash'
+  | 'duplicate_rectangle'
+  | 'duplicate_material_aware_frame'
+  | 'add_mullion_to_frame';
 
 /**
  * Log a drafting action with full constitutional context
