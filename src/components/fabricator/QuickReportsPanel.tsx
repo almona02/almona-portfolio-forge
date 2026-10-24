@@ -1,4 +1,4 @@
-import ErrorBoundary from '@/components/ErrorBoundary';
+﻿import ErrorBoundary from '@/components/ErrorBoundary';
 import { track } from '@/lib/analytics';
 import { ExportService } from '@/lib/exports';
 import { trackError } from '@/lib/performance-monitoring';
@@ -26,10 +26,10 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
   const [showAccessoriesReport, setShowAccessoriesReport] = useState(false);
   const [showGlassReport, setShowGlassReport] = useState(false);
   
-  // ✅ PERFORMANCE: Memoize pricing engine instance
+  // âœ… PERFORMANCE: Memoize pricing engine instance
   const pricingEngine = useMemo(() => new PricingEngine(), []);
 
-  // ✅ PERFORMANCE: Memoize handlers to prevent unnecessary re-renders
+  // âœ… PERFORMANCE: Memoize handlers to prevent unnecessary re-renders
   const handleGenerateCuttingList = useCallback(async () => {
     if (!project || !optimization || generatingReport) return;
 
@@ -189,7 +189,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateCuttingList}
+          onClick={() => void handleGenerateCuttingList()}
           disabled={!optimization || generatingReport !== null}
         >
           {generatingReport === 'cutting' ? (
@@ -210,7 +210,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateMachineCsv}
+          onClick={() => void handleGenerateMachineCsv()}
           disabled={!optimization || generatingReport !== null}
         >
           {generatingReport === 'machine_csv' ? (
@@ -228,7 +228,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateMachineDxf}
+          onClick={() => void handleGenerateMachineDxf()}
           disabled={!optimization || generatingReport !== null}
         >
           {generatingReport === 'machine_dxf' ? (
@@ -246,7 +246,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateGlassReport}
+          onClick={() => void handleGenerateGlassReport()}
           disabled={!project || generatingReport !== null}
         >
           {generatingReport === 'glass' ? (
@@ -264,7 +264,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateAccessoriesList}
+          onClick={() => void handleGenerateAccessoriesList()}
           disabled={!project || generatingReport !== null}
         >
           {generatingReport === 'accessories' ? (
@@ -281,7 +281,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
         {project && optimization && (
           <div className="pt-2 border-t border-gray-700">
             <p className="text-[11px] text-gray-400 text-center">
-              Optimization ready – job can be sent to production.
+              Optimization ready â€“ job can be sent to production.
             </p>
           </div>
         )}
@@ -344,10 +344,10 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
 
 QuickReportsPanelComponent.displayName = 'QuickReportsPanel';
 
-// ✅ HARDENING: Memoize component for performance
+// âœ… HARDENING: Memoize component for performance
 const QuickReportsPanelMemo = memo(QuickReportsPanelComponent);
 
-// ✅ HARDENING: Export with error boundary for production
+// âœ… HARDENING: Export with error boundary for production
 export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = (props) => (
   <ErrorBoundary level="component">
     <QuickReportsPanelMemo {...props} />

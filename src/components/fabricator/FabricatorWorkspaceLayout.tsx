@@ -1,4 +1,4 @@
-import { LiveAnnouncerProvider } from '@/components/a11y/LiveAnnouncer';
+﻿import { LiveAnnouncerProvider } from '@/components/a11y/LiveAnnouncer';
 import { AutoSaveIndicator } from '@/components/fabricator/AutoSaveIndicator';
 import { WorkspaceSnapshotManager } from '@/components/fabricator/WorkspaceSnapshotManager';
 import { WorkspaceTopNav } from '@/components/fabricator/WorkspaceTopNav';
@@ -90,7 +90,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
                     {t('workspace.title_prefix', 'Your Company Name')} {t('workspace.title', 'Industrial Operations Workspace')}
                   </h1>
                   <p className={`text-amber-600/80 text-xs md:text-sm mt-4 ${isRTLMode ? 'text-right' : 'text-left'}`}>
-                    {t('workspace.subtitle', 'Enterprise-grade Almona cockpit for projects, customers, inventory, and commercial flows — stateful, auditable, and optimized for heavy fabrication workloads.')}
+                    {t('workspace.subtitle', 'Enterprise-grade Almona cockpit for projects, customers, inventory, and commercial flows â€” stateful, auditable, and optimized for heavy fabrication workloads.')}
                   </p>
                 </div>
 
@@ -99,7 +99,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
                     isSaving={isSaving}
                     lastSaved={lastSaved}
                     hasUnsavedChanges={hasUnsavedChanges}
-                    onManualSave={manualSave}
+                    onManualSave={() => void manualSave()}
                     className="text-xs"
                   />
                   <div className="mt-1">
@@ -134,11 +134,11 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
           >
             {isCompactMode ? (
               <>
-                <span className="mb-0.5">▼</span>
+                <span className="mb-0.5">â–¼</span>
               </>
             ) : (
               <>
-                <span className="mb-0.5">▲</span>
+                <span className="mb-0.5">â–²</span>
               </>
             )}
           </button>
@@ -158,7 +158,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
           <div className="mx-auto w-full px-4 md:px-6 py-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-amber-600/80 text-sm font-medium">
-                © {new Date().getFullYear()} ALMONA Co. All rights reserved.
+                Â© {new Date().getFullYear()} ALMONA Co. All rights reserved.
               </p>
               <div className="flex flex-wrap gap-4 text-sm text-amber-600/70">
                 <Link to="/terms" className="hover:text-amber-400 transition-colors font-semibold">

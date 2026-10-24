@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Machine } from "@/types/index";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/shared/ui/ui/dialog";
 import { Button } from "@/shared/ui/ui/button";
@@ -147,7 +147,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={handleExportPDF}
+                  onClick={() => void handleExportPDF()}
                   disabled={isGeneratingPDF}
                 >
                   {isGeneratingPDF ? (

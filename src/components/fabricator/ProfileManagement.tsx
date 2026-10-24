@@ -1331,7 +1331,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       <input
                         type="file"
                         accept=".json"
-                        onChange={handleImportJSON}
+                        onChange={(e) => void handleImportJSON(e)}
                         className="hidden"
                       />
                     </Label>
@@ -1505,7 +1505,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       <input
                         type="file"
                         accept=".dxf"
-                        onChange={handleImportDXF}
+                        onChange={(e) => void handleImportDXF(e)}
                         className="hidden"
                       />
                     </Label>
@@ -2067,7 +2067,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     {editingId ? (
                       <>
                         <Button
-                          onClick={handleUpdateProfile}
+                          onClick={() => void handleUpdateProfile()}
                           disabled={saving}
                           className="btn-primary"
                         >
@@ -2081,7 +2081,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     ) : (
                       <div className="flex gap-2">
                         <Button
-                          onClick={handleAddProfile}
+                          onClick={() => void handleAddProfile()}
                           disabled={saving}
                           className="btn-primary"
                         >
@@ -2472,7 +2472,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               {t('profileManagement.cancel', 'Cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmDeleteProfile}
+              onClick={() => void confirmDeleteProfile()}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-500"
             >
@@ -2513,7 +2513,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           profile={tuningProfile}
           userId={userId}
           onClose={() => setTuningProfile(null)}
-          onProfileUpdated={loadProfiles}
+          onProfileUpdated={() => void loadProfiles()}
         />
       )}
 

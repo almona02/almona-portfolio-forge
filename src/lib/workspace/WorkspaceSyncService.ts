@@ -1,4 +1,4 @@
-import type { FabricatorWorkspaceState } from '@/context/FabricatorWorkspaceContext';
+﻿import type { FabricatorWorkspaceState } from '@/context/FabricatorWorkspaceContext';
 import { quickPerformanceWins } from '@/lib/quickPerformance';
 import { supabase } from '@/lib/supabase';
 
@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase';
  *
  * Persists workspace UI state to Supabase (workspace_snapshots) with a robust
  * localStorage fallback. Enhanced with debounced saving, conflict detection,
- * and recovery. Never throws to callers – returns structured status objects.
+ * and recovery. Never throws to callers â€“ returns structured status objects.
  */
 export class WorkspaceSyncService {
   private static readonly WORKSPACE_TABLE = 'workspace_snapshots';
@@ -182,7 +182,7 @@ export class WorkspaceSyncService {
   async saveWorkspaceSnapshot(
     workspaceState: FabricatorWorkspaceState,
   ): Promise<{ success: boolean; usedFallback: boolean }> {
-    // Non‑browser environments cannot use localStorage; make a best‑effort Supabase write.
+    // Nonâ€‘browser environments cannot use localStorage; make a bestâ€‘effort Supabase write.
     if (!this.hasWindow()) {
       try {
         const {
@@ -213,7 +213,7 @@ export class WorkspaceSyncService {
                                   message.includes('RLS');
           if (!isExpectedError && process.env.NODE_ENV === 'development') {
              
-            console.warn('Supabase sync failed in non‑browser environment:', supabaseError);
+            console.warn('Supabase sync failed in nonâ€‘browser environment:', supabaseError);
           }
           return { success: false, usedFallback: false };
         }
@@ -221,7 +221,7 @@ export class WorkspaceSyncService {
         return { success: true, usedFallback: false };
       } catch (error) {
          
-        console.error('Workspace save failed in non‑browser environment:', error);
+        console.error('Workspace save failed in nonâ€‘browser environment:', error);
         return { success: false, usedFallback: false };
       }
     }

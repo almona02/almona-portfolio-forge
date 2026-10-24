@@ -1,4 +1,4 @@
-import { scanProfileImage } from "@/services/scanApi";
+﻿import { scanProfileImage } from "@/services/scanApi";
 import {
     Accordion,
     AccordionContent,
@@ -520,7 +520,7 @@ export function ProfileScannerUploader({
           <Alert variant="destructive" className="relative">
             <AlertTitle>{t('profile_scanner_uploader.errors.scan_error', 'Scan Error')}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
-            <Button variant="ghost" size="sm" className="absolute right-2 top-2" onClick={() => setError(null)}>×</Button>
+            <Button variant="ghost" size="sm" className="absolute right-2 top-2" onClick={() => setError(null)}>Ã—</Button>
           </Alert>
         )}
 

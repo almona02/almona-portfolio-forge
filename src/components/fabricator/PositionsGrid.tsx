@@ -261,7 +261,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                 size="sm" 
                 variant="destructive"
                 className="h-7"
-                onClick={handleBulkDelete}
+                onClick={() => void handleBulkDelete()}
                 disabled={isBulkDeleting}
                >
                  <Trash2 className="h-3 w-3 mr-1.5" />
@@ -647,7 +647,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
               </AlertDialogCancel>
               <AlertDialogAction
                 className="bg-red-600 hover:bg-red-700 text-white"
-                onClick={handleConfirmDelete}
+                onClick={() => void handleConfirmDelete()}
               >
                 Delete
               </AlertDialogAction>

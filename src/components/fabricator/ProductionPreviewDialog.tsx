@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Production Preview Dialog
  * MANDATORY SAFETY CHECK - Blocks progression until user confirms
  * This is a gatekeeper modal, not an optional preview
@@ -335,7 +335,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
                 <p className="font-semibold text-red-400 mb-1">Critical Issues Detected</p>
                 <ul className="text-sm text-red-300 space-y-1">
                   {validation.errors.map((error, idx) => (
-                    <li key={idx}>• {error}</li>
+                    <li key={idx}>â€¢ {error}</li>
                   ))}
                 </ul>
                 <p className="text-sm text-red-300 mt-2">
@@ -353,7 +353,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
                 <p className="font-semibold text-yellow-400 mb-1">Warnings</p>
                 <ul className="text-sm text-yellow-300 space-y-1">
                   {validation.warnings.map((warning, idx) => (
-                    <li key={idx}>• {warning}</li>
+                    <li key={idx}>â€¢ {warning}</li>
                   ))}
                 </ul>
               </AlertDescription>
@@ -403,7 +403,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
               </Button>
             )}
             <Button
-              onClick={handleConfirm}
+              onClick={() => void handleConfirm()}
               disabled={!canProceed || isProcessing}
               className="bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed min-w-[160px]"
             >

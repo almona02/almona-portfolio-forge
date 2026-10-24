@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
+﻿import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   Menu, 
@@ -198,13 +198,13 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
         icon: "Factory",
         items: user ? [
           { 
-            name: '🇪🇬 Egypt Pilot', 
+            name: 'ðŸ‡ªðŸ‡¬ Egypt Pilot', 
             path: "/fabricator-workflow", 
             description: "Panda 50 system validation",
             icon: "Factory"
           },
           { 
-            name: '🇹🇷 Turkish Pilot', 
+            name: 'ðŸ‡¹ðŸ‡· Turkish Pilot', 
             path: "/fabricator/profile-studio", 
             description: "Custom profile import & tuning",
             icon: "Factory"
@@ -308,7 +308,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
     return location.pathname.startsWith(path);
   }, [location.pathname]);
 
-  // Badge styling – harmonized colors and tighter font
+  // Badge styling â€“ harmonized colors and tighter font
   const getBadgeStyles = useCallback((badge: NavItem["badge"]) => {
     const baseStyles = "text-[10px] px-2 py-0.5 rounded-full font-semibold tracking-tight shadow-sm";
     switch (badge) {
@@ -517,7 +517,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                             <div className="text-sm text-white font-semibold">Confirm logout?</div>
                             <div className="flex gap-2">
                               <button
-                                onClick={handleLogout}
+                                onClick={() => void handleLogout()}
                                 disabled={isLoggingOut}
                                 className="flex-1 px-3 py-2 text-sm font-semibold text-white rounded-lg bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                               >

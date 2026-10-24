@@ -1,16 +1,16 @@
-/**
+﻿/**
  * ALMONA Constitutional State Sync Service
  * 
  * @tier Tier 3 Protected (Execution Path)
- * @constitutional_compliance AICS-001 §9.3
+ * @constitutional_compliance AICS-001 Â§9.3
  * @deterministic true
  * @version 1.0.0
  * 
  * Ensures position state synchronization with constitutional guarantees:
- * - §9.3.I: Mode Transition Integrity (no data loss)
- * - §9.3.II: Unified Persistence (hash consistency)
- * - §9.3.III: Audit Trail Completeness
- * - §9.3.IV: Deterministic Recovery
+ * - Â§9.3.I: Mode Transition Integrity (no data loss)
+ * - Â§9.3.II: Unified Persistence (hash consistency)
+ * - Â§9.3.III: Audit Trail Completeness
+ * - Â§9.3.IV: Deterministic Recovery
  */
 
 // ============================================================================
@@ -221,13 +221,13 @@ export class PositionStateSyncService {
                 entityId: poseId,
                 severity: 'MEDIUM',
                 tier: 'Tier 3',
-                compliance: 'AICS-001 §9.3.V',
+                compliance: 'AICS-001 Â§9.3.V',
                 timestamp: new Date().toISOString()
             });
 
             throw new ConstitutionalViolationError(
                 'Rate limit exceeded. Please slow down requests.',
-                'AICS-001 §9.3.V', // Added section for resource usage
+                'AICS-001 Â§9.3.V', // Added section for resource usage
                 'MEDIUM'
             );
         }
@@ -236,13 +236,13 @@ export class PositionStateSyncService {
         const sanitizedState = this.validateAndSanitizeState(state);
 
         try {
-          // Step 1: Compute cryptographic hash (§9.3.II requirement) - P0: Using cached version
+          // Step 1: Compute cryptographic hash (Â§9.3.II requirement) - P0: Using cached version
           const preSyncHash = await this.computeStateHashCached(sanitizedState);
           
           // Step 2: Create constitutional metadata
           const constitutionalMetadata: ConstitutionalMetadata = {
             tier: 'Tier 3',
-            compliance: 'AICS-001 §9.3',
+            compliance: 'AICS-001 Â§9.3',
             deterministic: true,
             hash: preSyncHash,
             timestamp: new Date().toISOString(),
@@ -250,7 +250,7 @@ export class PositionStateSyncService {
             requiresHumanValidation: false,
           };
           
-          // Step 3: Emit RealityOS event (§9.3.III requirement)
+          // Step 3: Emit RealityOS event (Â§9.3.III requirement)
           await this.emitRealityOSEvent({
             type: 'POSITION_STATE_CHANGE',
             entityId: poseId,
@@ -269,12 +269,12 @@ export class PositionStateSyncService {
             metadata: constitutionalMetadata,
           });
           
-          // Step 5: Verify hash consistency (§9.3.II verification) - P0: Using cached version
+          // Step 5: Verify hash consistency (Â§9.3.II verification) - P0: Using cached version
           const postSyncHash = await this.computeStateHashCached(saved.state);
           if (preSyncHash !== postSyncHash) {
             throw new ConstitutionalViolationError(
               `Hash mismatch in persistence layer: expected ${preSyncHash}, got ${postSyncHash}`,
-              'AICS-001 §9.3.II'
+              'AICS-001 Â§9.3.II'
             );
           }
           
@@ -317,7 +317,7 @@ export class PositionStateSyncService {
     if (sizeBytes > 1024 * 1024) {
       throw new ConstitutionalViolationError(
         `State size exceeds 1MB limit: ${sizeMB.toFixed(2)}MB`,
-        'AICS-001 §9.3.II',
+        'AICS-001 Â§9.3.II',
         'HIGH'
       );
     }
@@ -327,7 +327,7 @@ export class PositionStateSyncService {
       if (depth > 10) {
         throw new ConstitutionalViolationError(
           'State object exceeds maximum nesting depth of 10 levels',
-          'AICS-001 §9.3.II',
+          'AICS-001 Â§9.3.II',
           'HIGH'
         );
       }
@@ -347,7 +347,7 @@ export class PositionStateSyncService {
     if (/<script|javascript:|on\w+=/i.test(stateStr)) {
       throw new ConstitutionalViolationError(
         'Potential script injection detected in state',
-        'AICS-001 §9.3.II',
+        'AICS-001 Â§9.3.II',
         'CRITICAL'
       );
     }
@@ -464,7 +464,7 @@ export class PositionStateSyncService {
    * Restore state from unified store with hash verification
    * 
    * Guarantees enforced:
-   * - §9.3.IV: Deterministic recovery
+   * - Â§9.3.IV: Deterministic recovery
    */
   async restoreStateWithVerification<T = any>(
     poseId: string,
@@ -487,7 +487,7 @@ export class PositionStateSyncService {
           type: 'CONSTITUTIONAL_VIOLATION',
           entityId: poseId,
           violation: 'Hash mismatch on state recovery',
-          section: 'AICS-001 §9.3.IV',
+          section: 'AICS-001 Â§9.3.IV',
           severity: 'CRITICAL',
           expectedHash: stored.metadata.hash,
           computedHash,
@@ -496,7 +496,7 @@ export class PositionStateSyncService {
         
         throw new ConstitutionalViolationError(
           `State recovery hash mismatch for pose ${poseId}. Data integrity compromised.`,
-          'AICS-001 §9.3.IV'
+          'AICS-001 Â§9.3.IV'
         );
       }
       
@@ -518,7 +518,7 @@ export class PositionStateSyncService {
   }
   
   /**
-   * Preserve state before mode switch (§9.3.I guarantee)
+   * Preserve state before mode switch (Â§9.3.I guarantee)
    */
   async preserveBeforeModeSwitch(
     poseId: string,
@@ -931,7 +931,7 @@ export class PositionStateSyncService {
       entityId: event.entityId,
       hash: event.metadata?.hash || event.preservedHash || '',
       deterministic: true,
-      compliance: 'AICS-001 §9.3',
+      compliance: 'AICS-001 Â§9.3',
       ...event,
     };
     
@@ -1119,7 +1119,7 @@ export class PositionStateSyncService {
             timestamp: new Date().toISOString(),
             metadata: {
                 tier: 'Tier 3',
-                compliance: 'AICS-001 §9.3.II',
+                compliance: 'AICS-001 Â§9.3.II',
                 deterministic: true,
                 hash: '',
                 timestamp: new Date().toISOString(),

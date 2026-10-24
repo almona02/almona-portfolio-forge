@@ -690,7 +690,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={loadExchangeRates}
+                      onClick={() => void loadExchangeRates()}
                       disabled={loadingRates}
                       className="border-amber-500/30 text-amber-300"
                     >
@@ -806,7 +806,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                       <div className="mt-4">
                         <div className="text-sm text-slate-400">{bulkImportFile.name}</div>
                         <Button
-                          onClick={handleBulkImport}
+                          onClick={() => void handleBulkImport()}
                           className="mt-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30"
                         >
                           <Upload className="h-4 w-4 mr-2" />

@@ -546,7 +546,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
           </div>
           <div className="mt-4">
             <Button
-              onClick={handleVerify}
+              onClick={() => void handleVerify()}
               disabled={isVerifying}
               className="w-full bg-amber-700/30 hover:bg-amber-700/40 border-amber-600/50 text-amber-200"
             >
@@ -695,7 +695,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                 <Label className="text-amber-200 text-xs mb-2 block">Product QR Code</Label>
                 <div className="flex items-center gap-4">
                   <Button
-                    onClick={handleQRScan}
+                    onClick={() => void handleQRScan()}
                     disabled={isScanning}
                     variant="outline"
                     className="flex items-center gap-2"
@@ -766,7 +766,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
 
             {verificationResult.overallStatus === 'pass' && (
               <Button
-                onClick={handleApprove}
+                onClick={() => void handleApprove()}
                 disabled={!productPhotoHash || !productQR || isEmittingEvent}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2"
               >
@@ -786,7 +786,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
 
             {verificationResult.overallStatus === 'fail' && (
               <Button
-                onClick={handleReject}
+                onClick={() => void handleReject()}
                 disabled={defectPhotoHashes.length === 0 || !productQR || isEmittingEvent}
                 className="bg-red-600 hover:bg-red-700 text-white flex items-center gap-2"
               >

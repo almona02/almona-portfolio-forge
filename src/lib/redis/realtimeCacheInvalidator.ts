@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+﻿import { supabase } from '@/lib/supabase';
 import 'dotenv/config'; // Load .env file
 import { AfterSalesCache } from './caches/afterSalesCache';
 import { EcommerceCache } from './caches/ecommerceCache';
@@ -39,7 +39,7 @@ export class RealtimeCacheInvalidator {
     this.subscribeToEcommerce();
 
     this.isInitialized = true;
-    console.log('[RealtimeCacheInvalidator] ✅ All subscriptions active');
+    console.log('[RealtimeCacheInvalidator] âœ… All subscriptions active');
   }
 
   // ============================================================================
@@ -362,7 +362,7 @@ export class RealtimeCacheInvalidator {
     this.channels.clear();
     this.isInitialized = false;
     
-    console.log('[RealtimeCacheInvalidator] ✅ Cleanup complete');
+    console.log('[RealtimeCacheInvalidator] âœ… Cleanup complete');
   }
 
   /**

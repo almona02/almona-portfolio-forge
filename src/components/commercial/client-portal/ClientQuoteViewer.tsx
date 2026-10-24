@@ -167,7 +167,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
               />
             </div>
             <Button
-              onClick={loadQuotes}
+              onClick={() => void loadQuotes()}
               variant="outline"
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >

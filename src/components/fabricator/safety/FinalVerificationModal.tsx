@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Final Verification Modal - Screen 3 of 3-Step Safety Verification
  * 
  * Gold Tier Implementation:
@@ -324,7 +324,7 @@ export const FinalVerificationModal: React.FC<FinalVerificationModalProps> = ({
             Cancel
           </Button>
           <Button
-            onClick={handleConfirm}
+            onClick={() => void handleConfirm()}
             disabled={!canProceed}
             className="bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed min-w-[220px] font-semibold"
           >

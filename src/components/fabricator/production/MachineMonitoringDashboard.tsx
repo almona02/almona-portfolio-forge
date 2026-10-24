@@ -183,7 +183,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
           <p className="text-gray-400">Real-time status of all Yilmaz CNC machines</p>
         </div>
         <Button
-          onClick={handleRefresh}
+          onClick={() => void handleRefresh()}
           disabled={isRefreshing}
           variant="outline"
           size="sm"

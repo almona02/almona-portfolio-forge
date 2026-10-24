@@ -260,7 +260,7 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
           )}
 
           <Button
-            onClick={loadSuggestions}
+            onClick={() => void loadSuggestions()}
             disabled={loading}
             className="w-full h-9 text-xs bg-amber-700/30 hover:bg-amber-700/40 border-amber-600/50 text-amber-200"
           >

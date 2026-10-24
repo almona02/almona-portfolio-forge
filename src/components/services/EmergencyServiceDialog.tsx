@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -84,7 +84,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       // Send SMS notification
-      const smsMessage = `🚨 EMERGENCY: ${data.emergencyType} at ${data.location}. Contact: ${data.contactName} - ${data.phone}`;
+      const smsMessage = `ðŸš¨ EMERGENCY: ${data.emergencyType} at ${data.location}. Contact: ${data.contactName} - ${data.phone}`;
       await sendSms({ to: data.phone, message: smsMessage });
 
       setSubmitted(true);
@@ -292,13 +292,13 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="critical">
-                              <span className="text-red-500">🔴 Critical - Production Stopped</span>
+                              <span className="text-red-500">ðŸ”´ Critical - Production Stopped</span>
                             </SelectItem>
                             <SelectItem value="high">
-                              <span className="text-amber-500">🟠 High - Major Impact</span>
+                              <span className="text-amber-500">ðŸŸ  High - Major Impact</span>
                             </SelectItem>
                             <SelectItem value="medium">
-                              <span className="text-yellow-500">🟡 Medium - Minor Impact</span>
+                              <span className="text-yellow-500">ðŸŸ¡ Medium - Minor Impact</span>
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -329,7 +329,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                       animate={{ x: isSubmitting ? "100%" : "-100%" }}
                       transition={{ duration: 1, repeat: isSubmitting ? Infinity : 0 }}
                     />
-                    {isSubmitting ? "Processing..." : "🚨 Request Emergency Service"}
+                    {isSubmitting ? "Processing..." : "ðŸš¨ Request Emergency Service"}
                   </LazyMotionButton>
                 </DialogFooter>
               </form>

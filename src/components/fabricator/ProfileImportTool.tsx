@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { AluminumPricingCalculator } from '@/lib/pricing/AluminumPricingCalculator';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -480,8 +480,8 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
       // Extract dimensions (width x height, W x H, etc.)
       const dimensionPatterns = [
-        /(?:width|w)[\s:]*([\d.]+)[\s]*(?:x|×|mm)[\s]*(?:height|h)[\s:]*([\d.]+)/i,
-        /([\d.]+)[\s]*(?:x|×)[\s]*([\d.]+)[\s]*(?:mm)?/i,
+        /(?:width|w)[\s:]*([\d.]+)[\s]*(?:x|Ã—|mm)[\s]*(?:height|h)[\s:]*([\d.]+)/i,
+        /([\d.]+)[\s]*(?:x|Ã—)[\s]*([\d.]+)[\s]*(?:mm)?/i,
       ];
       const dimensions: { width?: number; height?: number } = {};
       for (const pattern of dimensionPatterns) {
@@ -1115,7 +1115,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                   type="file"
                   multiple
                   accept=".dxf,.dwg,.svg,.pdf,.png,.jpg,.jpeg"
-                  onChange={handleFileSelect}
+                  onChange={(e) => void handleFileSelect(e)}
                   className="hidden"
                 />
               </div>
@@ -1230,8 +1230,8 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                                   </span>
                                 </div>
                                 <div className="grid grid-cols-3 gap-2 text-gray-300">
-                                  <span>45°: {profile.kFactorSuggestion.miter45.toFixed(3)}</span>
-                                  <span>90°: {profile.kFactorSuggestion.miter90.toFixed(3)}</span>
+                                  <span>45Â°: {profile.kFactorSuggestion.miter45.toFixed(3)}</span>
+                                  <span>90Â°: {profile.kFactorSuggestion.miter90.toFixed(3)}</span>
                                   <span>Butt: {profile.kFactorSuggestion.butt.toFixed(3)}</span>
                                 </div>
                                 <p className="text-gray-500 mt-1 text-[10px]">
@@ -1261,7 +1261,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
                 <div className="flex gap-2">
                   <Button
-                    onClick={handleImportProfiles}
+                    onClick={() => void handleImportProfiles()}
                     className="bg-green-600 hover:bg-green-700 flex-1"
                     disabled={selectedProfiles.size === 0 && extractedProfiles.length === 0}
                   >

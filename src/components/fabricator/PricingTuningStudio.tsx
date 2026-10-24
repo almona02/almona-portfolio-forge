@@ -965,7 +965,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                 <div className="flex items-center">
                   <Button
                     size="sm"
-                    onClick={handleSave}
+                    onClick={() => void handleSave()}
                     disabled={saving || !selectedProfileId || !pricingState}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white"
                     aria-label={t('pricing_tuning_studio.actions.save', 'Save Pricing')}
@@ -3411,7 +3411,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                                   {importFile && (
                                     <Button
                                       size="sm"
-                                      onClick={handleImportPricing}
+                                      onClick={() => void handleImportPricing()}
                                       disabled={importProgress > 0 && importProgress < 100}
                                       className="text-xs"
                                     >
@@ -4459,7 +4459,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                 {t('pricing_tuning_studio.rollback.cancel', 'Cancel')}
               </Button>
               <Button
-                onClick={handleRollback}
+                onClick={() => void handleRollback()}
                 disabled={saving}
                 className="bg-amber-600 hover:bg-amber-700 text-white"
               >

@@ -1805,7 +1805,7 @@ const CommercialPageComponent: React.FC = () => {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmBulkAction}
+              onClick={() => void confirmBulkAction()}
               className="bg-amber-500 hover:bg-amber-600 text-white"
             >
               Confirm

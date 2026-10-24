@@ -875,7 +875,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
             </AlertDialogCancel>
             <AlertDialogAction
               className="bg-red-600 hover:bg-red-700 text-white"
-              onClick={handleDelete}
+              onClick={() => void handleDelete()}
               disabled={deleting}
             >
               {deleting ? 'Deleting...' : 'Delete Customer'}

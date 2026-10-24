@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -136,7 +136,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
           {!result && (
             <QuoteRequestStepper
               initialData={initialData}
-              onSubmit={handleSubmit}
+              onSubmit={(e) => void handleSubmit(e)}
               onCancel={() => onOpenChange(false)}
               submitting={submitting}
               relatedServiceTicketId={relatedServiceTicketId}

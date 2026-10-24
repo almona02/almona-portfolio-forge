@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+﻿import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -227,14 +227,14 @@ export default function FabricationReportGenerator() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="en">English</SelectItem>
-            <SelectItem value="ar">العربية</SelectItem>
+            <SelectItem value="ar">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <Button 
         className="w-full md:w-auto mb-8"
-        onClick={handleGenerateReport}
+        onClick={() => void handleGenerateReport()}
       >
         Generate PDF Report
       </Button>

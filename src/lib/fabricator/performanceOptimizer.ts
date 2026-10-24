@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Performance Optimizer - Performance Utilities for Dual-Output System
  * 
  * Provides:

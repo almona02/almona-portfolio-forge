@@ -1025,7 +1025,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <Button
-            onClick={loadDashboardData}
+            onClick={() => void loadDashboardData()}
             disabled={isLoading}
             variant="outline"
             size="sm"
@@ -1943,7 +1943,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       isSavingInvoice ||
                       !invoiceSelectedProfile
                     }
-                    onClick={handleInvoiceStockIntake}
+                    onClick={() => void handleInvoiceStockIntake()}
                   >
                     {isSavingInvoice ? 'SavingÃ¢â‚¬Â¦' : 'Record Purchase & Update Stock'}
                   </Button>

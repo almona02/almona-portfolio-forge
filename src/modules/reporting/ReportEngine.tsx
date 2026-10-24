@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ReportEngine - Main reporting component
  * Orchestrates PDF generation with branding
  */
@@ -326,7 +326,7 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
 
           {/* Generate Button */}
           <Button
-            onClick={handleGenerateReport}
+            onClick={() => void handleGenerateReport()}
             disabled={isGenerating || !project}
             className="btn-primary"
           >

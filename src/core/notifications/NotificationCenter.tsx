@@ -226,8 +226,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           <NotificationList
             notifications={filteredNotifications}
             loading={loading}
-            onMarkAsRead={handleMarkAsRead}
-            onMarkAllAsRead={handleMarkAllAsRead}
+            onMarkAsRead={(e) => void handleMarkAsRead(e)}
+            onMarkAllAsRead={() => void handleMarkAllAsRead()}
             unreadCount={unreadCount}
             filter={filter}
             channelFilter={channelFilter}
@@ -259,7 +259,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleMarkAllAsRead}
+              onClick={() => void handleMarkAllAsRead()}
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10 text-xs"
             >
               <CheckCheck className="w-3 h-3 mr-1" />
@@ -272,8 +272,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         <NotificationList
           notifications={filteredNotifications}
           loading={loading}
-          onMarkAsRead={handleMarkAsRead}
-          onMarkAllAsRead={handleMarkAllAsRead}
+          onMarkAsRead={(e) => void handleMarkAsRead(e)}
+          onMarkAllAsRead={() => void handleMarkAllAsRead()}
           unreadCount={unreadCount}
           filter={filter}
           channelFilter={channelFilter}

@@ -899,7 +899,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
               Cancel
             </Button>
             <Button
-              onClick={handleEditSave}
+              onClick={() => void handleEditSave()}
               disabled={isSaving}
               className="bg-amber-600 text-white hover:bg-amber-700"
             >
@@ -936,7 +936,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmDelete}
+              onClick={() => void confirmDelete()}
               disabled={isDeleting !== null}
               className="bg-red-600 text-white hover:bg-red-700"
             >

@@ -458,7 +458,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
           {state.torchSupported && (
             <button
               type="button"
-              onClick={toggleTorch}
+              onClick={() => void toggleTorch()}
               className={cn(
                 "p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/20",
                 "hover:bg-black/70 transition-colors",
@@ -478,7 +478,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
           {/* Switch camera button */}
           <button
             type="button"
-            onClick={switchCamera}
+            onClick={() => void switchCamera()}
             className="p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 transition-colors"
             aria-label="Switch camera"
           >
@@ -518,7 +518,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
             </p>
             <button
               type="button"
-              onClick={initializeCamera}
+              onClick={() => void initializeCamera()}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Try Again

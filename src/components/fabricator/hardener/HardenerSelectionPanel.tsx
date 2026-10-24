@@ -302,7 +302,7 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={selectHardener}
+              onClick={() => void selectHardener()}
               className="mt-2 border-amber-600/40 text-amber-200/80 hover:bg-amber-950/40 hover:border-amber-500/60 hover:text-amber-200 transition-all duration-200"
             >
               Select Hardener Code

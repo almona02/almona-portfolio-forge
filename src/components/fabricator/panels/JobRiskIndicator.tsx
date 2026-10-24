@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Job Risk Indicator
  * Displays risk score and warnings for job complexity
  */

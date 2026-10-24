@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   HeavyCutInput,
@@ -318,21 +318,21 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
     if (totalCuts < 50) {
       return {
         algorithm: 'Greedy',
-        rule: 'Rule 1.1: <50 cuts detected → Greedy algorithm selected',
+        rule: 'Rule 1.1: <50 cuts detected â†’ Greedy algorithm selected',
         waste: '15-20%',
         duration: '<100ms'
       };
     } else if (totalCuts < 200) {
       return {
         algorithm: 'Best-Fit Decreasing',
-        rule: 'Rule 1.2: 50-200 cuts → Best-Fit Decreasing selected',
+        rule: 'Rule 1.2: 50-200 cuts â†’ Best-Fit Decreasing selected',
         waste: '12-18%',
         duration: '<500ms'
       };
     } else {
       return {
         algorithm: 'Genetic Algorithm',
-        rule: 'Rule 1.3: >200 cuts → Genetic algorithm selected',
+        rule: 'Rule 1.3: >200 cuts â†’ Genetic algorithm selected',
         waste: '10-15%',
         duration: '<2s'
       };
@@ -379,7 +379,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
 
             <div className="flex items-center gap-2 text-xs text-slate-500">
               <Sparkles className="w-3 h-3" />
-              <span>{t('cutting_optimization.deterministic', 'Deterministic • Auditable • Constitutional')}</span>
+              <span>{t('cutting_optimization.deterministic', 'Deterministic â€¢ Auditable â€¢ Constitutional')}</span>
             </div>
 
             <div className="flex items-center gap-2 pt-2 border-t border-slate-700/50">
@@ -560,7 +560,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
             </div>
             
             <Button
-              onClick={runOptimization}
+              onClick={() => void runOptimization()}
               disabled={isOptimizing || cutPieces.length === 0}
               className="w-full btn-primary-gradient font-semibold"
             >

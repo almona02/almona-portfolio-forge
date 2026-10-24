@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Event Emission Panel Component
  * 
  * Displays event emission status and allows manual event emission.
@@ -202,7 +202,7 @@ export const EventEmissionPanel: React.FC<EventEmissionPanelProps> = ({
 
           <div className="space-y-2">
             <Button
-              onClick={emitFabricationIntent}
+              onClick={() => void emitFabricationIntent()}
               disabled={!windowUnit || !operatorId || emissionStatus.loading}
               className="w-full h-9 text-xs bg-amber-700/30 hover:bg-amber-700/40 border-amber-600/50 text-amber-200"
             >
@@ -239,7 +239,7 @@ export const EventEmissionPanel: React.FC<EventEmissionPanelProps> = ({
                 <div className="max-w-xs text-xs">
                   <p>
                     Events are emitted in real-time only. Retroactive emission is forbidden.
-                    If an event is missed, a FAULT event is emitted instead (AICS-001 §7.4, RealityOS Principle 2).
+                    If an event is missed, a FAULT event is emitted instead (AICS-001 Â§7.4, RealityOS Principle 2).
                   </p>
                 </div>
               </TooltipContent>

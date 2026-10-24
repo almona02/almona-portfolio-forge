@@ -215,7 +215,7 @@ export const AdvisoryDashboard: React.FC = () => {
                         Advisory Intelligence Dashboard
                     </h1>
                     <p className="dashboard-subtitle">
-                        software-assisted suggestions requiring human validation • AICS-001 Tier 2 Compliant
+                        software-assisted suggestions requiring human validation â€¢ AICS-001 Tier 2 Compliant
                     </p>
                 </div>
 
@@ -226,7 +226,7 @@ export const AdvisoryDashboard: React.FC = () => {
                     </div>
                     <button
                         className="refresh-btn"
-                        onClick={loadAdvisories}
+                        onClick={() => void loadAdvisories()}
                         disabled={isRefreshing}
                         aria-label="Refresh advisories"
                     >
@@ -341,7 +341,7 @@ export const AdvisoryDashboard: React.FC = () => {
                                 <AdvisoryCard
                                     key={advisory.id}
                                     advisory={advisory}
-                                    onValidate={handleValidation}
+                                    onValidate={(a, b, c) => void handleValidation(a, b, c)}
                                     activeTab={activeTab}
                                 />
                             ))
@@ -487,7 +487,7 @@ export const AdvisoryDashboard: React.FC = () => {
                         <span className="badge human">Human Validation Required</span>
                     </div>
                     <p className="disclaimer">
-                        ⚖️ All advisory outputs are suggestions only. No autonomous decisions are made.
+                        âš–ï¸ All advisory outputs are suggestions only. No autonomous decisions are made.
                         Human validation is required before any execution. Audit trails are immutable.
                     </p>
                 </div>

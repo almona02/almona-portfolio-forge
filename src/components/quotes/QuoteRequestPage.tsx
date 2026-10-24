@@ -93,7 +93,7 @@ export const QuoteRequestPage: React.FC = () => {
             
             <QuoteRequestStepper
               initialData={initialData}
-              onSubmit={handleSubmit}
+              onSubmit={(e) => void handleSubmit(e)}
               onCancel={() => navigate("/")}
             />
           </div>

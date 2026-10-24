@@ -646,7 +646,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
           <Button
             size="sm"
             className="btn-primary"
-            onClick={handleGenerateOfferPdf}
+            onClick={() => void handleGenerateOfferPdf()}
             disabled={!quote || exportingPdf || thumbnailGenerating}
           >
             {exportingPdf ? (

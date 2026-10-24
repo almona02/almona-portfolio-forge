@@ -174,7 +174,7 @@ export const ProjectCreationManager: React.FC = () => {
                         // Keep the wizard open to switch views
                         setShowProjectWizard(true);
                     }}
-                    onSubmit={handleProjectCreate}
+                    onSubmit={(e) => void handleProjectCreate(e)}
                 />
             ) : (
                 <NewProjectWizard

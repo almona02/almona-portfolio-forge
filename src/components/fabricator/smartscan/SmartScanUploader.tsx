@@ -578,7 +578,7 @@ export const SmartScanUploader: React.FC = () => {
 
           <div className="flex gap-2">
             <Button
-              onClick={processQueue}
+              onClick={() => void processQueue()}
               disabled={isProcessing || pendingJobs.length === 0}
               className="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-medium shadow-lg shadow-amber-500/20"
             >

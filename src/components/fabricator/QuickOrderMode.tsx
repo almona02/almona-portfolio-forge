@@ -390,7 +390,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
 
                 {/* Create Button */}
                 <Button
-                  onClick={handleCreateOrder}
+                  onClick={() => void handleCreateOrder()}
                   disabled={isCreating || !params.dimensions.width || !params.dimensions.height}
                   className="btn-primary"
                 >
@@ -465,7 +465,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  onClick={handleSaveAsTemplate}
+                  onClick={() => void handleSaveAsTemplate()}
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save as Template (Ctrl+Shift+S)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import UsedMachineDetails from '../components/used-machines/UsedMachineDetails';
 import MachineSEO from '../components/used-machines/MachineSEO';
@@ -20,7 +20,7 @@ const UsedMachineDetailPage = () => {
   }, [id]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-white bg-almona-dark">Loading…</div>;
+    return <div className="min-h-screen flex items-center justify-center text-white bg-almona-dark">Loadingâ€¦</div>;
   }
 
   if (!machine) {

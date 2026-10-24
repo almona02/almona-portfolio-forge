@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Standalone Optimizer Tool
  * Public-facing optimizer for lead generation
  */
@@ -172,7 +172,7 @@ export const StandaloneOptimizer: React.FC = () => {
             </div>
 
             <Button
-              onClick={handleOptimize}
+              onClick={() => void handleOptimize()}
               disabled={optimizing || cuts.some((c) => c.length <= 0)}
               className="btn-primary"
             >
@@ -219,7 +219,7 @@ export const StandaloneOptimizer: React.FC = () => {
                     />
                   </div>
                   <Button
-                    onClick={handleEmailSubmit}
+                    onClick={() => void handleEmailSubmit()}
                     disabled={!email || !email.includes('@')}
                     className="btn-primary"
                   >

@@ -190,7 +190,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
                     <CardTitle className="text-lg text-amber-200">Recurring Invoices</CardTitle>
                     <Button
                       size="sm"
-                      onClick={loadData}
+                      onClick={() => void loadData()}
                       variant="outline"
                       className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
                     >

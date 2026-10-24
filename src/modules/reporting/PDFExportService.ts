@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PDFExportService - Handles PDF generation and branding
  * Creates branded PDF reports for projects and cutting lists
  */
@@ -598,7 +598,7 @@ export class PDFExportService {
       ['Order Number:', project.orderNumber],
       ['Position Number:', project.posNumber],
       ['Window Type:', project.type],
-      ['Dimensions:', `${project.overallWidth}mm × ${project.overallHeight}mm`],
+      ['Dimensions:', `${project.overallWidth}mm Ã— ${project.overallHeight}mm`],
       ['Color:', project.color],
       ['Status:', project.status],
     ];
@@ -951,7 +951,7 @@ export class PDFExportService {
         this.currentY = this.margin;
         this.pageNumber++;
       }
-      const text = line.startsWith('-') ? line : `• ${line}`;
+      const text = line.startsWith('-') ? line : `â€¢ ${line}`;
       this.currentPage.drawText(text, {
         x: this.margin,
         y: this.pageHeight - this.currentY,
@@ -1036,7 +1036,7 @@ export class PDFExportService {
         this.currentY += 18;
       }
       const isMiter45 = cut.angle === 45;
-      const angleLabel = isMiter45 ? `${cut.angle}° miter` : `${cut.angle}°`;
+      const angleLabel = isMiter45 ? `${cut.angle}Â° miter` : `${cut.angle}Â°`;
 
       this.currentPage.drawText(
         `  ${cutIndex + 1}. Length: ${cut.length}mm, Angle: ${angleLabel}`,
@@ -1220,7 +1220,7 @@ export class PDFExportService {
         this.pageNumber++;
       }
 
-      this.currentPage.drawText(`• ${item.name} (${item.type}) - Qty: ${item.quantity}`, {
+      this.currentPage.drawText(`â€¢ ${item.name} (${item.type}) - Qty: ${item.quantity}`, {
         x: this.margin,
         y: this.pageHeight - this.currentY,
         size: 10,
@@ -1259,11 +1259,11 @@ export class PDFExportService {
   private async addAssemblyGuide(_project: WindowUnit) {
     const steps = [
       '1. Prepare all components according to cutting list',
-      '2. For ROCK 60 / 45° systems:',
-      '   • Cut all frame profiles at 45° – add 60mm for miter overlap (RC 6111-8).',
-      '   • Cut all sash profiles at 45° – deduct 44mm for frame fit (RC 6122).',
-      '   • Cut glazing beads at 45° – L - 167mm / H - 205mm (RC 6166).',
-      '   • Use corner connectors 1130 (pressure plates) and 1110 (cleats) for all 45° corners.',
+      '2. For ROCK 60 / 45Â° systems:',
+      '   â€¢ Cut all frame profiles at 45Â° â€“ add 60mm for miter overlap (RC 6111-8).',
+      '   â€¢ Cut all sash profiles at 45Â° â€“ deduct 44mm for frame fit (RC 6122).',
+      '   â€¢ Cut glazing beads at 45Â° â€“ L - 167mm / H - 205mm (RC 6166).',
+      '   â€¢ Use corner connectors 1130 (pressure plates) and 1110 (cleats) for all 45Â° corners.',
       '3. Assemble frame components with proper corner connections',
       '4. Install hardware (hinges 0253, locks, handles 0707, KIT 10451)',
       '5. Insert glazing unit and install weather seals (GT 0122 / GT 0118 / GT 0137 / GT 0146 / GT 0152)',

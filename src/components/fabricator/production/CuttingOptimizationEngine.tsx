@@ -1,4 +1,4 @@
-
+﻿
 import { ConsequenceAlert } from '@/components/authority/ConsequenceAlert';
 import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
 import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
@@ -453,7 +453,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
               profiles={profiles}
               projectName={project?.orderNumber}
               orderNumber={project?.orderNumber}
-              onExportPDF={handleExportCuttingReport}
+              onExportPDF={() => void handleExportCuttingReport()}
               onExportDXF={() => {
                 // TODO: Implement DXF export for bar drawings
                 console.log('Exporting bar drawings to DXF...');
@@ -507,7 +507,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
                     {plan.cuts.map((cut, cutIndex) => (
                       <div key={cutIndex} className="p-2 bg-slate-800 rounded text-center">
                         <div className="font-medium">{cut.length}mm</div>
-                        <div className="text-slate-400">{cut.angle}°</div>
+                        <div className="text-slate-400">{cut.angle}Â°</div>
                       </div>
                     ))}
                   </div>
@@ -727,7 +727,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
                   </Button>
 
                   <Button
-                    onClick={handleSendToMachine}
+                    onClick={() => void handleSendToMachine()}
                     disabled={isSendingToMachine}
                     variant="outline"
                     className="flex-1 border-green-500 text-green-400 hover:bg-green-500/10"
@@ -792,7 +792,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
         <CardContent className="space-y-4">
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
             <p className="text-sm text-blue-300">
-              <strong>🇹🇷 Turkish Pilot Program:</strong> Download MDB file for Yılmaz ALM 6510 machine.
+              <strong>ðŸ‡¹ðŸ‡· Turkish Pilot Program:</strong> Download MDB file for YÄ±lmaz ALM 6510 machine.
               The file is 100% aligned with the machine's software requirements.
             </p>
           </div>
@@ -809,7 +809,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
             </div>
 
             <Button
-              onClick={handleDownloadALM6510MDB}
+              onClick={() => void handleDownloadALM6510MDB()}
               disabled={isGeneratingALM6510 || !project || !optimization}
               className="btn-primary-gradient"
             >

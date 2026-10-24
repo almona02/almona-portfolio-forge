@@ -1,4 +1,4 @@
-import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
+﻿import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -20,8 +20,8 @@ const MassProductionDashboard = React.lazy(() =>
 /**
  * FabricatorWorkflowPro
  * ----------------------------------------------------------------------------
- * Operator‑level cockpit that exposes MassProductionDashboard on top of the
- * existing single‑job Fabricator workflow.
+ * Operatorâ€‘level cockpit that exposes MassProductionDashboard on top of the
+ * existing singleâ€‘job Fabricator workflow.
  *
  * It reads optimized jobs from the shared jobs store and passes them into the
  * MassProductionOptimizer UI so factories can batch optimise cutting across
@@ -93,7 +93,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
                     {t('workflow_pro.mass_production_cockpit', 'Mass Production Cockpit')}
                   </CardTitle>
                   <CardDescription className="text-xs md:text-sm text-amber-600/80 mt-1">
-                    {t('workflow_pro.description', 'Cross‑project optimisation using GA + remnant‑aware cutting, built for high‑volume workshops.')}
+                    {t('workflow_pro.description', 'Crossâ€‘project optimisation using GA + remnantâ€‘aware cutting, built for highâ€‘volume workshops.')}
                   </CardDescription>
                 </div>
               </div>
@@ -111,7 +111,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
                   <p className="text-[11px] text-amber-600/70">
                     {t('workflow_pro.user', 'User')}:{' '}
                     <span className="font-mono text-amber-300">
-                      {userId.slice(0, 4)}…{userId.slice(-4)}
+                      {userId.slice(0, 4)}â€¦{userId.slice(-4)}
                     </span>
                   </p>
                 )}
@@ -124,7 +124,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
           <Alert variant="destructive" className="bg-red-900/25 border-red-500">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription className="text-sm">
-              {userError} {t('workflow_pro.user_error', 'Mass production mode requires a logged‑in Supabase user so remnant usage can be tracked correctly.')}
+              {userError} {t('workflow_pro.user_error', 'Mass production mode requires a loggedâ€‘in Supabase user so remnant usage can be tracked correctly.')}
             </AlertDescription>
           </Alert>
         )}
@@ -132,7 +132,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
         {!isLoadingUser && !userId && !userError && (
           <Alert className="bg-yellow-900/20 border-yellow-500">
             <AlertDescription className="text-sm">
-              {t('workflow_pro.no_auth', 'No authenticated user detected. Please sign in to enable remnant‑aware mass optimisation.')}
+              {t('workflow_pro.no_auth', 'No authenticated user detected. Please sign in to enable remnantâ€‘aware mass optimisation.')}
             </AlertDescription>
           </Alert>
         )}
@@ -140,7 +140,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
         <Suspense
           fallback={
             <FabricatorLoader 
-              stage={t('workflow_pro.loading_dashboard', 'Loading Mass Production Dashboard…')} 
+              stage={t('workflow_pro.loading_dashboard', 'Loading Mass Production Dashboardâ€¦')} 
               progress={0}
               message={t('workflow_pro.initializing_workspace', 'Initializing workspace...')}
             />
@@ -150,7 +150,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3 p-4 bg-[#0f0f0f]/60 border border-amber-600/30 rounded-lg card-dark">
             <Button
               size="lg"
-              onClick={handleOptimize}
+              onClick={() => void handleOptimize()}
               disabled={optStatus === 'running'}
               className={`relative overflow-hidden transition-all ${
                 optStatus === 'complete'

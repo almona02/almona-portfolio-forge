@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Yilmaz CNC Controller
  * Complete implementation of CNCController for Yilmaz machines
  * Integrates G-code generation, network protocol, and machine validation
@@ -29,7 +29,7 @@ export class YilmazCNC extends CNCController {
       maxLength: specs.maxLength,
       maxWidth: specs.maxWidth,
       maxHeight: specs.maxHeight,
-      supportedMaterials: ['aluminum', 'alüminyum', 'upvc', 'pvc', 'wood', 'ahşap'],
+      supportedMaterials: ['aluminum', 'alÃ¼minyum', 'upvc', 'pvc', 'wood', 'ahÅŸap'],
       supportedAngles: specs.supportedAngles,
       minCutLength: specs.minCutLength,
       maxCutLength: specs.maxCutLength,

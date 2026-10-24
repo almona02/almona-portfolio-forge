@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Database } from '@/types/database';
@@ -56,33 +56,33 @@ const getConfigurationCategories = (productCategory: string): ConfigurationCateg
     baseCategories.push(
       {
         id: 'automation',
-        name_ar: 'مستوى الأتمتة',
+        name_ar: 'Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø£ØªÙ…ØªØ©',
         name_en: 'Automation Level',
-        description_ar: 'اختر مستوى الأتمتة المناسب لاحتياجاتك',
+        description_ar: 'Ø§Ø®ØªØ± Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø£ØªÙ…ØªØ© Ø§Ù„Ù…Ù†Ø§Ø³Ø¨ Ù„Ø§Ø­ØªÙŠØ§Ø¬Ø§ØªÙƒ',
         description_en: 'Choose the automation level that suits your needs',
         required: true,
         options: [
           {
             id: 'manual',
-            label_ar: 'يدوي',
+            label_ar: 'ÙŠØ¯ÙˆÙŠ',
             label_en: 'Manual',
-            description_ar: 'تشغيل يدوي بالكامل',
+            description_ar: 'ØªØ´ØºÙŠÙ„ ÙŠØ¯ÙˆÙŠ Ø¨Ø§Ù„ÙƒØ§Ù…Ù„',
             description_en: 'Fully manual operation',
             price: 0,
           },
           {
             id: 'semi_auto',
-            label_ar: 'شبه أوتوماتيكي',
+            label_ar: 'Ø´Ø¨Ù‡ Ø£ÙˆØªÙˆÙ…Ø§ØªÙŠÙƒÙŠ',
             label_en: 'Semi-Automatic',
-            description_ar: 'تشغيل شبه أوتوماتيكي مع تدخل محدود',
+            description_ar: 'ØªØ´ØºÙŠÙ„ Ø´Ø¨Ù‡ Ø£ÙˆØªÙˆÙ…Ø§ØªÙŠÙƒÙŠ Ù…Ø¹ ØªØ¯Ø®Ù„ Ù…Ø­Ø¯ÙˆØ¯',
             description_en: 'Semi-automatic operation with limited intervention',
             price: 25000,
           },
           {
             id: 'full_auto',
-            label_ar: 'أوتوماتيكي بالكامل',
+            label_ar: 'Ø£ÙˆØªÙˆÙ…Ø§ØªÙŠÙƒÙŠ Ø¨Ø§Ù„ÙƒØ§Ù…Ù„',
             label_en: 'Fully Automatic',
-            description_ar: 'تشغيل أوتوماتيكي بالكامل مع نظام تحكم متقدم',
+            description_ar: 'ØªØ´ØºÙŠÙ„ Ø£ÙˆØªÙˆÙ…Ø§ØªÙŠÙƒÙŠ Ø¨Ø§Ù„ÙƒØ§Ù…Ù„ Ù…Ø¹ Ù†Ø¸Ø§Ù… ØªØ­ÙƒÙ… Ù…ØªÙ‚Ø¯Ù…',
             description_en: 'Fully automatic operation with advanced control system',
             price: 75000,
           },
@@ -90,33 +90,33 @@ const getConfigurationCategories = (productCategory: string): ConfigurationCateg
       },
       {
         id: 'tooling',
-        name_ar: 'نظام الأدوات',
+        name_ar: 'Ù†Ø¸Ø§Ù… Ø§Ù„Ø£Ø¯ÙˆØ§Øª',
         name_en: 'Tooling System',
-        description_ar: 'اختر نظام الأدوات المناسب',
+        description_ar: 'Ø§Ø®ØªØ± Ù†Ø¸Ø§Ù… Ø§Ù„Ø£Ø¯ÙˆØ§Øª Ø§Ù„Ù…Ù†Ø§Ø³Ø¨',
         description_en: 'Choose the appropriate tooling system',
         required: true,
         options: [
           {
             id: 'basic',
-            label_ar: 'أساسي (10 أدوات)',
+            label_ar: 'Ø£Ø³Ø§Ø³ÙŠ (10 Ø£Ø¯ÙˆØ§Øª)',
             label_en: 'Basic (10 Tools)',
-            description_ar: 'نظام أدوات أساسي يتسع لـ 10 أدوات',
+            description_ar: 'Ù†Ø¸Ø§Ù… Ø£Ø¯ÙˆØ§Øª Ø£Ø³Ø§Ø³ÙŠ ÙŠØªØ³Ø¹ Ù„Ù€ 10 Ø£Ø¯ÙˆØ§Øª',
             description_en: 'Basic tooling system for 10 tools',
             price: 0,
           },
           {
             id: 'standard',
-            label_ar: 'قياسي (20 أداة)',
+            label_ar: 'Ù‚ÙŠØ§Ø³ÙŠ (20 Ø£Ø¯Ø§Ø©)',
             label_en: 'Standard (20 Tools)',
-            description_ar: 'نظام أدوات قياسي يتسع لـ 20 أداة',
+            description_ar: 'Ù†Ø¸Ø§Ù… Ø£Ø¯ÙˆØ§Øª Ù‚ÙŠØ§Ø³ÙŠ ÙŠØªØ³Ø¹ Ù„Ù€ 20 Ø£Ø¯Ø§Ø©',
             description_en: 'Standard tooling system for 20 tools',
             price: 15000,
           },
           {
             id: 'advanced',
-            label_ar: 'متقدم (40 أداة)',
+            label_ar: 'Ù…ØªÙ‚Ø¯Ù… (40 Ø£Ø¯Ø§Ø©)',
             label_en: 'Advanced (40 Tools)',
-            description_ar: 'نظام أدوات متقدم يتسع لـ 40 أداة',
+            description_ar: 'Ù†Ø¸Ø§Ù… Ø£Ø¯ÙˆØ§Øª Ù…ØªÙ‚Ø¯Ù… ÙŠØªØ³Ø¹ Ù„Ù€ 40 Ø£Ø¯Ø§Ø©',
             description_en: 'Advanced tooling system for 40 tools',
             price: 35000,
           },
@@ -124,33 +124,33 @@ const getConfigurationCategories = (productCategory: string): ConfigurationCateg
       },
       {
         id: 'cooling',
-        name_ar: 'نظام التبريد',
+        name_ar: 'Ù†Ø¸Ø§Ù… Ø§Ù„ØªØ¨Ø±ÙŠØ¯',
         name_en: 'Cooling System',
-        description_ar: 'اختر نظام التبريد المناسب',
+        description_ar: 'Ø§Ø®ØªØ± Ù†Ø¸Ø§Ù… Ø§Ù„ØªØ¨Ø±ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨',
         description_en: 'Choose the appropriate cooling system',
         required: false,
         options: [
           {
             id: 'air',
-            label_ar: 'تبريد هوائي',
+            label_ar: 'ØªØ¨Ø±ÙŠØ¯ Ù‡ÙˆØ§Ø¦ÙŠ',
             label_en: 'Air Cooling',
-            description_ar: 'نظام تبريد هوائي اقتصادي',
+            description_ar: 'Ù†Ø¸Ø§Ù… ØªØ¨Ø±ÙŠØ¯ Ù‡ÙˆØ§Ø¦ÙŠ Ø§Ù‚ØªØµØ§Ø¯ÙŠ',
             description_en: 'Economical air cooling system',
             price: 0,
           },
           {
             id: 'liquid',
-            label_ar: 'تبريد سائل',
+            label_ar: 'ØªØ¨Ø±ÙŠØ¯ Ø³Ø§Ø¦Ù„',
             label_en: 'Liquid Cooling',
-            description_ar: 'نظام تبريد سائل عالي الكفاءة',
+            description_ar: 'Ù†Ø¸Ø§Ù… ØªØ¨Ø±ÙŠØ¯ Ø³Ø§Ø¦Ù„ Ø¹Ø§Ù„ÙŠ Ø§Ù„ÙƒÙØ§Ø¡Ø©',
             description_en: 'High-efficiency liquid cooling system',
             price: 8000,
           },
           {
             id: 'mist',
-            label_ar: 'تبريد ضبابي',
+            label_ar: 'ØªØ¨Ø±ÙŠØ¯ Ø¶Ø¨Ø§Ø¨ÙŠ',
             label_en: 'Mist Cooling',
-            description_ar: 'نظام تبريد ضبابي متقدم',
+            description_ar: 'Ù†Ø¸Ø§Ù… ØªØ¨Ø±ÙŠØ¯ Ø¶Ø¨Ø§Ø¨ÙŠ Ù…ØªÙ‚Ø¯Ù…',
             description_en: 'Advanced mist cooling system',
             price: 12000,
           },
@@ -158,33 +158,33 @@ const getConfigurationCategories = (productCategory: string): ConfigurationCateg
       },
       {
         id: 'warranty',
-        name_ar: 'فترة الضمان',
+        name_ar: 'ÙØªØ±Ø© Ø§Ù„Ø¶Ù…Ø§Ù†',
         name_en: 'Warranty Period',
-        description_ar: 'اختر فترة الضمان المناسبة',
+        description_ar: 'Ø§Ø®ØªØ± ÙØªØ±Ø© Ø§Ù„Ø¶Ù…Ø§Ù† Ø§Ù„Ù…Ù†Ø§Ø³Ø¨Ø©',
         description_en: 'Choose the appropriate warranty period',
         required: false,
         options: [
           {
             id: 'standard',
-            label_ar: 'ضمان قياسي (سنة واحدة)',
+            label_ar: 'Ø¶Ù…Ø§Ù† Ù‚ÙŠØ§Ø³ÙŠ (Ø³Ù†Ø© ÙˆØ§Ø­Ø¯Ø©)',
             label_en: 'Standard Warranty (1 Year)',
-            description_ar: 'ضمان قياسي لمدة سنة واحدة',
+            description_ar: 'Ø¶Ù…Ø§Ù† Ù‚ÙŠØ§Ø³ÙŠ Ù„Ù…Ø¯Ø© Ø³Ù†Ø© ÙˆØ§Ø­Ø¯Ø©',
             description_en: 'Standard warranty for one year',
             price: 0,
           },
           {
             id: 'extended',
-            label_ar: 'ضمان ممتد (سنتان)',
+            label_ar: 'Ø¶Ù…Ø§Ù† Ù…Ù…ØªØ¯ (Ø³Ù†ØªØ§Ù†)',
             label_en: 'Extended Warranty (2 Years)',
-            description_ar: 'ضمان ممتد لمدة سنتين',
+            description_ar: 'Ø¶Ù…Ø§Ù† Ù…Ù…ØªØ¯ Ù„Ù…Ø¯Ø© Ø³Ù†ØªÙŠÙ†',
             description_en: 'Extended warranty for two years',
             price: 5000,
           },
           {
             id: 'premium',
-            label_ar: 'ضمان شامل (3 سنوات)',
+            label_ar: 'Ø¶Ù…Ø§Ù† Ø´Ø§Ù…Ù„ (3 Ø³Ù†ÙˆØ§Øª)',
             label_en: 'Premium Warranty (3 Years)',
-            description_ar: 'ضمان شامل لمدة 3 سنوات مع صيانة دورية',
+            description_ar: 'Ø¶Ù…Ø§Ù† Ø´Ø§Ù…Ù„ Ù„Ù…Ø¯Ø© 3 Ø³Ù†ÙˆØ§Øª Ù…Ø¹ ØµÙŠØ§Ù†Ø© Ø¯ÙˆØ±ÙŠØ©',
             description_en: 'Premium warranty for 3 years with periodic maintenance',
             price: 12000,
           },
@@ -417,7 +417,7 @@ export const ProductConfigurator: React.FC<ProductConfiguratorProps> = ({
           {/* Add to Quote Button */}
           {showAddToQuote && (
             <Button
-              onClick={handleAddToQuote}
+              onClick={() => void handleAddToQuote()}
               disabled={!isConfigurationComplete}
               className="w-full"
               size="lg"

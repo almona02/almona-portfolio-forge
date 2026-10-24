@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Plus, Wrench } from 'lucide-react';
@@ -43,7 +43,7 @@ const MarketplaceHeader: React.FC = () => {
             className="text-sm text-gray-300 hover:text-almona-orange px-2 py-1 transition-colors"
             aria-label={copy('Language')}
           >
-            {isArabic ? 'English' : 'العربية'}
+            {isArabic ? 'English' : 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©'}
           </button>
           <Link
             to="/used-machines?tab=sell"

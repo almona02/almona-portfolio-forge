@@ -288,7 +288,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
         {/* Action Buttons */}
         <div className="flex space-x-2">
           <Button
-            onClick={handleRefreshRates}
+            onClick={() => void handleRefreshRates()}
             disabled={loading}
             variant="outline"
             className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"

@@ -397,7 +397,7 @@ export const QuoteBuilder: React.FC = () => {
             </Button>
             <Button
               variant="outline"
-              onClick={handleExportPDF}
+              onClick={() => void handleExportPDF()}
               disabled={isExporting}
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >

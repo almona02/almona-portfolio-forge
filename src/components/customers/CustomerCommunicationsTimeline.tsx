@@ -332,7 +332,7 @@ export const CustomerCommunicationsTimeline: React.FC<CustomerCommunicationsTime
                             Cancel
                         </Button>
                         <Button
-                            onClick={handleCreate}
+                            onClick={() => void handleCreate()}
                             disabled={isSaving || (!subject.trim() && !message.trim())}
                         >
                             {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}

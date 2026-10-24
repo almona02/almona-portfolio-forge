@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -77,8 +77,8 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
   const handleSubmit = async () => {
     if (!user) {
       toast({
-        title: 'خطأ في المصادقة',
-        description: 'يجب تسجيل الدخول لطلب عرض سعر',
+        title: 'Ø®Ø·Ø£ ÙÙŠ Ø§Ù„Ù…ØµØ§Ø¯Ù‚Ø©',
+        description: 'ÙŠØ¬Ø¨ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ø·Ù„Ø¨ Ø¹Ø±Ø¶ Ø³Ø¹Ø±',
         variant: 'destructive',
       });
       return;
@@ -129,14 +129,14 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
       });
 
       toast({
-        title: 'تم إنشاء عرض السعر بنجاح',
-        description: data.digital_twin_code ? `كود التتبع: ${data.digital_twin_code}` : 'تم إنشاء عرض السعر',
+        title: 'ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø¹Ø±Ø¶ Ø§Ù„Ø³Ø¹Ø± Ø¨Ù†Ø¬Ø§Ø­',
+        description: data.digital_twin_code ? `ÙƒÙˆØ¯ Ø§Ù„ØªØªØ¨Ø¹: ${data.digital_twin_code}` : 'ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø¹Ø±Ø¶ Ø§Ù„Ø³Ø¹Ø±',
       });
     } catch (error) {
       console.error('Error creating quote:', error);
       toast({
-        title: 'خطأ',
-        description: 'فشل في إنشاء عرض السعر',
+        title: 'Ø®Ø·Ø£',
+        description: 'ÙØ´Ù„ ÙÙŠ Ø¥Ù†Ø´Ø§Ø¡ Ø¹Ø±Ø¶ Ø§Ù„Ø³Ø¹Ø±',
         variant: 'destructive',
       });
     } finally {
@@ -147,8 +147,8 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
   const _addProduct = (product: Product) => {
     if (product.stock <= 0) {
       toast({
-        title: 'غير متوفر',
-        description: 'هذا المنتج غير متوفر في المخزون',
+        title: 'ØºÙŠØ± Ù…ØªÙˆÙØ±',
+        description: 'Ù‡Ø°Ø§ Ø§Ù„Ù…Ù†ØªØ¬ ØºÙŠØ± Ù…ØªÙˆÙØ± ÙÙŠ Ø§Ù„Ù…Ø®Ø²ÙˆÙ†',
         variant: 'destructive',
       });
       return;
@@ -179,7 +179,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-green-600">تم إنشاء عرض السعر بنجاح</DialogTitle>
+            <DialogTitle className="text-2xl text-green-600">ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø¹Ø±Ø¶ Ø§Ù„Ø³Ø¹Ø± Ø¨Ù†Ø¬Ø§Ø­</DialogTitle>
           </DialogHeader>
           
           <LazyMotionDiv
@@ -189,25 +189,25 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
           >
             <Card>
               <CardHeader>
-                <CardTitle>تفاصيل عرض السعر</CardTitle>
+                <CardTitle>ØªÙØ§ØµÙŠÙ„ Ø¹Ø±Ø¶ Ø§Ù„Ø³Ø¹Ø±</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="typography-label text-sm font-medium">رقم عرض السعر</Label>
+                    <Label className="typography-label text-sm font-medium">Ø±Ù‚Ù… Ø¹Ø±Ø¶ Ø§Ù„Ø³Ø¹Ø±</Label>
                     <p className="text-lg font-mono">{result.quote_number}</p>
                   </div>
                   <div>
-                    <Label className="typography-label text-sm font-medium">كود التتبع</Label>
+                    <Label className="typography-label text-sm font-medium">ÙƒÙˆØ¯ Ø§Ù„ØªØªØ¨Ø¹</Label>
                     <p className="text-lg font-mono text-amber-600">
-                      {result.digital_twin_code || 'قيد التعيين'}
+                      {result.digital_twin_code || 'Ù‚ÙŠØ¯ Ø§Ù„ØªØ¹ÙŠÙŠÙ†'}
                     </p>
                   </div>
                 </div>
                 
                 {result.portal_reference && (
                   <div>
-                    <Label className="typography-label text-sm font-medium">مرجع البوابة</Label>
+                    <Label className="typography-label text-sm font-medium">Ù…Ø±Ø¬Ø¹ Ø§Ù„Ø¨ÙˆØ§Ø¨Ø©</Label>
                     <p className="text-sm text-gray-600">{result.portal_reference}</p>
                   </div>
                 )}
@@ -220,13 +220,13 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                     }}
                     className="btn-primary"
                   >
-                    تتبع في البوابة
+                    ØªØªØ¨Ø¹ ÙÙŠ Ø§Ù„Ø¨ÙˆØ§Ø¨Ø©
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => setResult(null)}
                   >
-                    إنشاء عرض سعر جديد
+                    Ø¥Ù†Ø´Ø§Ø¡ Ø¹Ø±Ø¶ Ø³Ø¹Ø± Ø¬Ø¯ÙŠØ¯
                   </Button>
                 </div>
               </CardContent>
@@ -242,10 +242,10 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl text-gradient-orange">
-            طلب عرض سعر إلكتروني
+            Ø·Ù„Ø¨ Ø¹Ø±Ø¶ Ø³Ø¹Ø± Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ
           </DialogTitle>
           <DialogDescription>
-            احصل على عرض سعر مخصص لمنتجاتك وخدماتك المختارة
+            Ø§Ø­ØµÙ„ Ø¹Ù„Ù‰ Ø¹Ø±Ø¶ Ø³Ø¹Ø± Ù…Ø®ØµØµ Ù„Ù…Ù†ØªØ¬Ø§ØªÙƒ ÙˆØ®Ø¯Ù…Ø§ØªÙƒ Ø§Ù„Ù…Ø®ØªØ§Ø±Ø©
           </DialogDescription>
         </DialogHeader>
 
@@ -253,11 +253,11 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
           {/* Contact Information */}
           <Card>
             <CardHeader>
-              <CardTitle>معلومات الاتصال</CardTitle>
+              <CardTitle>Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø§ØªØµØ§Ù„</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="name" className="typography-label">الاسم *</Label>
+                <Label htmlFor="name" className="typography-label">Ø§Ù„Ø§Ø³Ù… *</Label>
                 <Input
                   id="name"
                   value={contactInfo.name}
@@ -266,7 +266,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 />
               </div>
               <div>
-                <Label htmlFor="email" className="typography-label">البريد الإلكتروني *</Label>
+                <Label htmlFor="email" className="typography-label">Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -276,7 +276,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 />
               </div>
               <div>
-                <Label htmlFor="phone" className="typography-label">رقم الهاتف</Label>
+                <Label htmlFor="phone" className="typography-label">Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ</Label>
                 <Input
                   id="phone"
                   value={contactInfo.phone}
@@ -284,7 +284,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 />
               </div>
               <div>
-                <Label htmlFor="company" className="typography-label">الشركة</Label>
+                <Label htmlFor="company" className="typography-label">Ø§Ù„Ø´Ø±ÙƒØ©</Label>
                 <Input
                   id="company"
                   value={contactInfo.company}
@@ -297,22 +297,22 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
           {/* Project Details */}
           <Card>
             <CardHeader>
-              <CardTitle>تفاصيل المشروع</CardTitle>
+              <CardTitle>ØªÙØ§ØµÙŠÙ„ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="description" className="typography-label">وصف المشروع *</Label>
+                <Label htmlFor="description" className="typography-label">ÙˆØµÙ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹ *</Label>
                 <Textarea
                   id="description"
                   value={projectDetails.description}
                   onChange={(e) => setProjectDetails(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="اشرح متطلباتك بالتفصيل..."
+                  placeholder="Ø§Ø´Ø±Ø­ Ù…ØªØ·Ù„Ø¨Ø§ØªÙƒ Ø¨Ø§Ù„ØªÙØµÙŠÙ„..."
                   required
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="urgency" className="typography-label">الأولوية</Label>
+                  <Label htmlFor="urgency" className="typography-label">Ø§Ù„Ø£ÙˆÙ„ÙˆÙŠØ©</Label>
                   <Select
                     value={projectDetails.urgency}
                     onValueChange={(value) => setProjectDetails(prev => ({ ...prev, urgency: value }))}
@@ -321,30 +321,30 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="low">منخفضة</SelectItem>
-                      <SelectItem value="normal">عادية</SelectItem>
-                      <SelectItem value="high">عالية</SelectItem>
-                      <SelectItem value="urgent">عاجلة</SelectItem>
+                      <SelectItem value="low">Ù…Ù†Ø®ÙØ¶Ø©</SelectItem>
+                      <SelectItem value="normal">Ø¹Ø§Ø¯ÙŠØ©</SelectItem>
+                      <SelectItem value="high">Ø¹Ø§Ù„ÙŠØ©</SelectItem>
+                      <SelectItem value="urgent">Ø¹Ø§Ø¬Ù„Ø©</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="deliveryLocation" className="typography-label">موقع التسليم</Label>
+                  <Label htmlFor="deliveryLocation" className="typography-label">Ù…ÙˆÙ‚Ø¹ Ø§Ù„ØªØ³Ù„ÙŠÙ…</Label>
                   <Input
                     id="deliveryLocation"
                     value={projectDetails.deliveryLocation}
                     onChange={(e) => setProjectDetails(prev => ({ ...prev, deliveryLocation: e.target.value }))}
-                    placeholder="المدينة، المحافظة"
+                    placeholder="Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©ØŒ Ø§Ù„Ù…Ø­Ø§ÙØ¸Ø©"
                   />
                 </div>
               </div>
               <div>
-                <Label htmlFor="specialRequirements" className="typography-label">متطلبات خاصة</Label>
+                <Label htmlFor="specialRequirements" className="typography-label">Ù…ØªØ·Ù„Ø¨Ø§Øª Ø®Ø§ØµØ©</Label>
                 <Textarea
                   id="specialRequirements"
                   value={projectDetails.specialRequirements}
                   onChange={(e) => setProjectDetails(prev => ({ ...prev, specialRequirements: e.target.value }))}
-                  placeholder="أي متطلبات خاصة أو ملاحظات إضافية..."
+                  placeholder="Ø£ÙŠ Ù…ØªØ·Ù„Ø¨Ø§Øª Ø®Ø§ØµØ© Ø£Ùˆ Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø¥Ø¶Ø§ÙÙŠØ©..."
                 />
               </div>
             </CardContent>
@@ -354,7 +354,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
           {(selectedProducts.length > 0 || selectedServices.length > 0) && (
             <Card>
               <CardHeader>
-                <CardTitle>المنتجات والخدمات المختارة</CardTitle>
+                <CardTitle>Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª ÙˆØ§Ù„Ø®Ø¯Ù…Ø§Øª Ø§Ù„Ù…Ø®ØªØ§Ø±Ø©</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -365,13 +365,13 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                         <p className="text-sm text-gray-600">{product.category}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{product.price} جنيه</span>
+                        <span className="font-medium">{product.price} Ø¬Ù†ÙŠÙ‡</span>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => removeProduct(product.id)}
                         >
-                          إزالة
+                          Ø¥Ø²Ø§Ù„Ø©
                         </Button>
                       </div>
                     </div>
@@ -384,13 +384,13 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                         <p className="text-sm text-gray-600">{service.description}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{service.price} جنيه</span>
+                        <span className="font-medium">{service.price} Ø¬Ù†ÙŠÙ‡</span>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => removeService(service.id)}
                         >
-                          إزالة
+                          Ø¥Ø²Ø§Ù„Ø©
                         </Button>
                       </div>
                     </div>
@@ -398,9 +398,9 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                   
                   <div className="border-t pt-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold">المجموع المقدر:</span>
+                      <span className="text-lg font-semibold">Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹ Ø§Ù„Ù…Ù‚Ø¯Ø±:</span>
                       <span className="text-xl font-bold text-amber-600">
-                        {calculateTotal()} جنيه
+                        {calculateTotal()} Ø¬Ù†ÙŠÙ‡
                       </span>
                     </div>
                   </div>
@@ -415,14 +415,14 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              إلغاء
+              Ø¥Ù„ØºØ§Ø¡
             </Button>
             <Button
-              onClick={handleSubmit}
+              onClick={() => void handleSubmit()}
               disabled={submitting || !contactInfo.name || !contactInfo.email || !projectDetails.description}
               className="btn-primary"
             >
-              {submitting ? 'جاري الإرسال...' : 'إرسال طلب عرض السعر'}
+              {submitting ? 'Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø¥Ø±Ø³Ø§Ù„...' : 'Ø¥Ø±Ø³Ø§Ù„ Ø·Ù„Ø¨ Ø¹Ø±Ø¶ Ø§Ù„Ø³Ø¹Ø±'}
             </Button>
           </div>
         </div>

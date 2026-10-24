@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Regional Features Demo Page
  * Showcases all implemented regional features including:
  * - Dynamic region detection
@@ -66,7 +66,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={refreshRegion}
+                  onClick={() => void refreshRegion()}
                   className="border-gray-600 text-gray-300 hover:bg-gray-700"
                 >
                   {t('demo.regionStatus.refresh', 'Refresh')}
@@ -78,7 +78,7 @@ const RegionalFeaturesDemo: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="text-2xl mb-2">
-                  {regionState.region === 'TR' ? '🇹🇷' : regionState.region === 'EG' ? '🇪🇬' : '🌍'}
+                  {regionState.region === 'TR' ? 'ðŸ‡¹ðŸ‡·' : regionState.region === 'EG' ? 'ðŸ‡ªðŸ‡¬' : 'ðŸŒ'}
                 </div>
                 <h3 className="typography-h3 text-white">
                   {regionState.region === 'TR' ? 'Turkey' : 
@@ -90,7 +90,7 @@ const RegionalFeaturesDemo: React.FC = () => {
               </div>
               
               <div className="text-center">
-                <div className="text-2xl mb-2">💱</div>
+                <div className="text-2xl mb-2">ðŸ’±</div>
                 <h3 className="typography-h3 text-white">
                   {_config.currency.symbol} {_config.currency.code}
                 </h3>
@@ -100,7 +100,7 @@ const RegionalFeaturesDemo: React.FC = () => {
               </div>
               
               <div className="text-center">
-                <div className="text-2xl mb-2">📊</div>
+                <div className="text-2xl mb-2">ðŸ“Š</div>
                 <h3 className="typography-h3 text-white">
                   {_config.tax.vatRate * 100}% {_config.tax.vatName}
                 </h3>
@@ -118,21 +118,21 @@ const RegionalFeaturesDemo: React.FC = () => {
                 variant={regionState.region === 'TR' ? 'default' : 'outline'}
                 className={regionState.region === 'TR' ? 'bg-amber-500 hover:bg-amber-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
               >
-                🇹🇷 Turkey
+                ðŸ‡¹ðŸ‡· Turkey
               </Button>
               <Button
                 onClick={() => handleRegionChange('EG')}
                 variant={regionState.region === 'EG' ? 'default' : 'outline'}
                 className={regionState.region === 'EG' ? 'bg-amber-500 hover:bg-amber-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
               >
-                🇪🇬 Egypt
+                ðŸ‡ªðŸ‡¬ Egypt
               </Button>
               <Button
                 onClick={() => handleRegionChange('DEFAULT')}
                 variant={regionState.region === 'DEFAULT' ? 'default' : 'outline'}
                 className={regionState.region === 'DEFAULT' ? 'bg-amber-500 hover:bg-amber-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
               >
-                🌍 International
+                ðŸŒ International
               </Button>
             </div>
           </CardContent>
@@ -185,7 +185,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                           variant={enabled ? 'default' : 'secondary'}
                           className={enabled ? 'bg-green-500' : 'bg-gray-600'}
                         >
-                          {feature}: {enabled ? '✓' : '✗'}
+                          {feature}: {enabled ? 'âœ“' : 'âœ—'}
                         </Badge>
                       ))}
                     </div>
@@ -322,7 +322,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                       <ul className="text-white space-y-1">
                         {_config.compliance.documentation.required.map(doc => (
                           <li key={doc} className="flex items-center space-x-2">
-                            <span className="text-green-400">✓</span>
+                            <span className="text-green-400">âœ“</span>
                             <span>{doc}</span>
                           </li>
                         ))}

@@ -440,7 +440,7 @@ export const CustomerTagsManager: React.FC<CustomerTagsManagerProps> = ({
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isSaving}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleDelete}
+                            onClick={() => void handleDelete()}
                             disabled={isSaving}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >

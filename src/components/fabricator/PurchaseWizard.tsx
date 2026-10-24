@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -377,7 +377,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              {catalogLoading && <p role="status">Loading material catalogue…</p>}
+              {catalogLoading && <p role="status">Loading material catalogueâ€¦</p>}
               {catalogError && <div role="alert" className="text-red-300"><p>{catalogError}</p><Button variant="outline" onClick={() => setCatalogAttempt(value => value + 1)}>Retry catalogue</Button></div>}
               {!catalogLoading && !catalogError && filteredSystems.length === 0 && <p className="text-gray-400">No systems match your search.</p>}
               
@@ -426,7 +426,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         </Badge>
                         {isEmptyPack ? (
                           <p className="text-[11px] text-amber-300/90 mt-2 max-w-[220px]">
-                            Empty catalogue pack — disabled until profiles are configured.
+                            Empty catalogue pack â€” disabled until profiles are configured.
                           </p>
                         ) : null}
                       </div>
@@ -451,7 +451,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                 </Button>
               </div>
 
-              <Input aria-label="Search profiles" placeholder="Search profile name or code…" value={profileQuery} onChange={event => setProfileQuery(event.target.value)} />
+              <Input aria-label="Search profiles" placeholder="Search profile name or codeâ€¦" value={profileQuery} onChange={event => setProfileQuery(event.target.value)} />
               <Tabs value={activeRoleTab} onValueChange={setActiveRoleTab} className="w-full">
                 <TabsList className="flex w-full justify-start bg-gray-800 p-1 mb-4 overflow-x-auto">
                   <TabsTrigger value="frame">Frames</TabsTrigger>
@@ -525,7 +525,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                                   <div className="text-xs text-gray-400 flex flex-wrap gap-2">
                                     <span>Code: {profile.profileCode}</span>
                                     {profile.weightPerMeter && (
-                                      <span>• {profile.weightPerMeter} kg/m</span>
+                                      <span>â€¢ {profile.weightPerMeter} kg/m</span>
                                     )}
                                   </div>
                                 </div>
@@ -624,7 +624,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                     <div className="flex-1">
                       <div className="font-medium">{item.profile.name}</div>
                       <div className="text-xs text-gray-400">
-                        {item.profile.systemName} • {item.profile.role}
+                        {item.profile.systemName} â€¢ {item.profile.role}
                       </div>
                     </div>
                     
@@ -694,7 +694,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
               {cart.length > 0 && (
                 <span>
                   Total Bars: <span className="text-gray-200">{totalBars}</span>
-                 · {totalMetres.toLocaleString(undefined, { maximumFractionDigits: 2 })} m
+                 Â· {totalMetres.toLocaleString(undefined, { maximumFractionDigits: 2 })} m
                 </span>
               )}
             </div>
@@ -719,7 +719,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                 <Button 
                   className="bg-green-600 hover:bg-green-700"
                   disabled={loading || !!validationError || !userId}
-                  onClick={handlePurchase}
+                  onClick={() => void handlePurchase()}
                 >
                   {loading ? 'Recording...' : 'Record stock intake'}
                   <Check className="ml-2 h-4 w-4" />

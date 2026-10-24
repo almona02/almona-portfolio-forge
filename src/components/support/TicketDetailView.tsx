@@ -294,7 +294,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
                     Attach File
                   </Button>
                   <Button 
-                    onClick={handleSendMessage}
+                    onClick={() => void handleSendMessage()}
                     disabled={!newMessage.trim() || isSubmitting}
                   >
                     <Send className="h-4 w-4 mr-2" />

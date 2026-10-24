@@ -1,11 +1,11 @@
-/**
- * PoseQuickEditModal — Inline metadata editing for a single pose.
+﻿/**
+ * PoseQuickEditModal â€” Inline metadata editing for a single pose.
  *
  * Allows rapid editing of position metadata (flat, floor, zone, remarks)
  * plus core properties (status, quantity, color, system pack) without
  * leaving the current view.
  *
- * @since Phase 3 — UX Enhancements (2026-02-08)
+ * @since Phase 3 â€” UX Enhancements (2026-02-08)
  */
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
@@ -49,7 +49,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
 }) => {
   const upsertPose = useUpsertPose();
 
-  // ─── Local form state ──────────────────────────────────────────
+  // â”€â”€â”€ Local form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [status, setStatus] = useState(pose?.status ?? 'design');
   const [quantity, setQuantity] = useState(pose?.quantity ?? 1);
   const [color, setColor] = useState(pose?.color ?? '');
@@ -255,7 +255,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
             Cancel
           </Button>
           <Button
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={upsertPose.isPending}
             className="bg-amber-500 hover:bg-amber-600 text-black"
           >

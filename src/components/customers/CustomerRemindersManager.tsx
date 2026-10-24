@@ -491,7 +491,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
                             Cancel
                         </Button>
                         <Button
-                            onClick={handleSave}
+                            onClick={() => void handleSave()}
                             disabled={isSaving || !reminderTitle.trim() || !reminderDate}
                         >
                             {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
@@ -514,7 +514,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isSaving}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleDelete}
+                            onClick={() => void handleDelete()}
                             disabled={isSaving}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >

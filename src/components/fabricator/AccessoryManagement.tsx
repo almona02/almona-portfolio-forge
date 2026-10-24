@@ -753,7 +753,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 <input
                   type="file"
                   accept=".json"
-                  onChange={handleImportJSON}
+                  onChange={(e) => void handleImportJSON(e)}
                   className="hidden"
                 />
               </Label>
@@ -995,7 +995,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
             {editingId ? (
               <>
                 <Button
-                  onClick={handleUpdateAccessory}
+                  onClick={() => void handleUpdateAccessory()}
                   disabled={saving}
                   className="btn-primary"
                 >
@@ -1008,7 +1008,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
               </>
             ) : (
               <Button
-                onClick={handleAddAccessory}
+                onClick={() => void handleAddAccessory()}
                 disabled={saving}
                 className="btn-primary"
               >

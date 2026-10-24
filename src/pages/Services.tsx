@@ -1,4 +1,4 @@
-import SEO from "@/components/SEO";
+﻿import SEO from "@/components/SEO";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { ServiceViewToggle } from "@/components/services/ServiceViewToggle";
@@ -191,7 +191,7 @@ const Services = () => {
         operationalHours: 2840,
         sensorReadings: [
           { type: 'vibration', value: 4.2, unit: 'mm/s', status: 'warning', trend: 'increasing' },
-          { type: 'temperature', value: 68, unit: 'Â°C', status: 'normal', trend: 'stable' },
+          { type: 'temperature', value: 68, unit: 'Ã‚Â°C', status: 'normal', trend: 'stable' },
           { type: 'current', value: 42, unit: 'A', status: 'warning', trend: 'increasing' }
         ]
       },
@@ -206,7 +206,7 @@ const Services = () => {
         operationalHours: 1560,
         sensorReadings: [
           { type: 'vibration', value: 1.8, unit: 'mm/s', status: 'normal', trend: 'stable' },
-          { type: 'temperature', value: 55, unit: 'Â°C', status: 'normal', trend: 'stable' },
+          { type: 'temperature', value: 55, unit: 'Ã‚Â°C', status: 'normal', trend: 'stable' },
           { type: 'acoustic', value: 72, unit: 'dB', status: 'normal', trend: 'stable' }
         ]
       }
@@ -554,7 +554,7 @@ const Services = () => {
                                   onClick={() => launchMaintenanceTicket('preventive')}
                                   className="ml-4"
                                 >
-                                  {language === 'ar' ? 'Ø¬Ø¯ÙˆÙ„Ø©' : 'Schedule'}
+                                  {language === 'ar' ? 'Ã˜Â¬Ã˜Â¯Ã™Ë†Ã™â€žÃ˜Â©' : 'Schedule'}
                                 </Button>
                               </div>
                             </div>
@@ -627,7 +627,7 @@ const Services = () => {
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <CircuitBoard className="h-5 w-5 text-amber-400" />
-                          {language === 'ar' ? 'ØµØ­Ø© Ø§Ù„Ù…Ø§ÙƒÙŠÙ†Ø§Øª ÙÙŠ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„ÙØ¹Ù„ÙŠ' : 'Real-Time Machine Health'}
+                          {language === 'ar' ? 'Ã˜ÂµÃ˜Â­Ã˜Â© Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â§Ã™Æ’Ã™Å Ã™â€ Ã˜Â§Ã˜Âª Ã™ÂÃ™Å  Ã˜Â§Ã™â€žÃ™Ë†Ã™â€šÃ˜Âª Ã˜Â§Ã™â€žÃ™ÂÃ˜Â¹Ã™â€žÃ™Å ' : 'Real-Time Machine Health'}
                         </CardTitle>
                       </CardHeader>
                       <CardContent>

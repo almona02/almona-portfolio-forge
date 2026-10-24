@@ -139,7 +139,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
               Cancel
             </Button>
             <Button
-              onClick={handleOneClickListing}
+              onClick={() => void handleOneClickListing()}
               disabled={!listingPrice || isCreatingListing}
               className="btn-primary"
             >

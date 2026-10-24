@@ -1082,7 +1082,7 @@ export const SystemPackTuningStudio: React.FC = () => {
               Mark All as Tuned
             </Button>
             <Button
-              onClick={handleSaveAndReturn}
+              onClick={() => void handleSaveAndReturn()}
               disabled={!allProfilesTuned}
               size="lg"
               className="h-12 px-8 text-base bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1110,7 +1110,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         <ProfileTuningStudio
           profile={tuningProfile}
           userId={userId}
-          onClose={handleTuningClose}
+          onClose={() => void handleTuningClose()}
           onProfileUpdated={async () => {
             // When profile is updated in tuning studio, fetch updated data from database
             if (systemPack && tuningProfile && userId) {

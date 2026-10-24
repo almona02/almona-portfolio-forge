@@ -560,7 +560,7 @@ const ProjectsPage: React.FC = () => {
               </AlertDialogCancel>
               <AlertDialogAction
                 className="bg-red-600 hover:bg-red-700 text-white"
-                onClick={handleDeleteProject}
+                onClick={() => void handleDeleteProject()}
                 disabled={deleting}
               >
                 {deleting ? 'Deleting...' : 'Delete Project'}

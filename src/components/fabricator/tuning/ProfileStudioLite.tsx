@@ -622,7 +622,7 @@ export const ProfileStudioLite: React.FC = () => {
                 <Input
                   type="file"
                   accept=".dxf,.dwg"
-                  onChange={handleDXFUpload}
+                  onChange={(e) => void handleDXFUpload(e)}
                   ref={fileInputRef}
                   className="btn-primary"
                   disabled={isUploading}
@@ -1084,7 +1084,7 @@ export const ProfileStudioLite: React.FC = () => {
               </LazyAnimatePresence>
             </div>
             <Button
-              onClick={addImportedProfile}
+              onClick={() => void addImportedProfile()}
               disabled={!isFormValid || isSaving}
               size="lg"
               className="btn-primary-gradient"

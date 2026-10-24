@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MachineTestExporter - Export Test Windows for Machine Validation
  * 
  * UI component for generating and exporting test windows
@@ -123,7 +123,7 @@ export const MachineTestExporter: React.FC = () => {
             </div>
 
             <Button
-              onClick={handleExport}
+              onClick={() => void handleExport()}
               className="w-full bg-blue-600 hover:bg-blue-700"
               disabled={exported}
             >
@@ -151,11 +151,11 @@ export const MachineTestExporter: React.FC = () => {
             <div className="bg-gray-800 p-4 rounded-lg">
               <h3 className="typography-h3 mb-2">Physical Validation Checklist</h3>
               <ul className="text-sm text-gray-400 space-y-1">
-                <li>✓ Hinge Positions: 150mm from top/bottom (±0.5mm)</li>
-                <li>✓ Handle Height: 1100mm from bottom (±10mm)</li>
-                <li>✓ Glass Fit: 25mm pocket (±2mm)</li>
-                <li>✓ Assembly Time: &lt;30 minutes</li>
-                <li>✓ Material Waste: &lt;15%</li>
+                <li>âœ“ Hinge Positions: 150mm from top/bottom (Â±0.5mm)</li>
+                <li>âœ“ Handle Height: 1100mm from bottom (Â±10mm)</li>
+                <li>âœ“ Glass Fit: 25mm pocket (Â±2mm)</li>
+                <li>âœ“ Assembly Time: &lt;30 minutes</li>
+                <li>âœ“ Material Waste: &lt;15%</li>
               </ul>
             </div>
           </CardContent>

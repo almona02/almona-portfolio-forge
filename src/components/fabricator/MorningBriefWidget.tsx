@@ -169,7 +169,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
             </CardDescription>
           </div>
           <Button
-            onClick={fetchBrief}
+            onClick={() => void fetchBrief()}
             variant="ghost"
             size="sm"
             disabled={loading}

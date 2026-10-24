@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Constitutional Health Dashboard
  * Real-time monitoring of AICS-001 compliance
  */
@@ -38,7 +38,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
             target: 100,
             status: 'healthy',
             description: 'Overall wiring compliance score',
-            reference: '§4.4 Constraint Enforcement'
+            reference: 'Â§4.4 Constraint Enforcement'
         },
         {
             id: 'tier3',
@@ -47,7 +47,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
             target: 100,
             status: 'healthy',
             description: 'No automation in execution paths',
-            reference: '§5.10.2 Protected Determinism'
+            reference: 'Â§5.10.2 Protected Determinism'
         },
         {
             id: 'truth',
@@ -56,7 +56,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
             target: 100,
             status: 'healthy',
             description: 'Explicit authority assignment',
-            reference: '§6.4 Truth Representation'
+            reference: 'Â§6.4 Truth Representation'
         },
         {
             id: 'advisory',
@@ -65,7 +65,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
             target: 100,
             status: 'healthy',
             description: 'Tier 2 properly gated',
-            reference: '§5.5 Intelligence Zones'
+            reference: 'Â§5.5 Intelligence Zones'
         }
     ]);
 
@@ -190,12 +190,12 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <span className="px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-full text-sm font-semibold">
-                        ✅ SYSTEM COMPLIANT
+                        âœ… SYSTEM COMPLIANT
                     </span>
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={loadData}
+                        onClick={() => void loadData()}
                         className="border-slate-600 text-slate-300"
                     >
                         <RefreshCw className="w-4 h-4 mr-2" />
@@ -206,7 +206,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
 
             {/* Metrics Grid */}
             <section className="mb-8">
-                <h2 className="text-lg font-semibold text-amber-300 mb-4">📊 Constitutional Metrics</h2>
+                <h2 className="text-lg font-semibold text-amber-300 mb-4">ðŸ“Š Constitutional Metrics</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {metrics.map((metric) => (
                         <div
@@ -240,7 +240,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
 
             {/* Migration Health */}
             <section className="mb-8">
-                <h2 className="text-lg font-semibold text-amber-300 mb-4">🔗 Fabricator Migration Health</h2>
+                <h2 className="text-lg font-semibold text-amber-300 mb-4">ðŸ”— Fabricator Migration Health</h2>
                 <div className="bg-slate-800/50 rounded-lg p-5 border border-amber-600/20">
                     {migrationMode ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -291,7 +291,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
 
             {/* Advisory Stats */}
             <section className="mb-8">
-                <h2 className="text-lg font-semibold text-amber-300 mb-4">🧠 Advisory Intelligence</h2>
+                <h2 className="text-lg font-semibold text-amber-300 mb-4">ðŸ§  Advisory Intelligence</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-slate-800/50 rounded-lg p-5 text-center">
                         <div className="text-3xl font-bold text-white">{advisoryStats.total}</div>
@@ -315,7 +315,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
             {/* Violations */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="bg-slate-800/50 rounded-lg p-5">
-                    <h3 className="font-semibold text-emerald-400 mb-4">✅ Active Violations (0)</h3>
+                    <h3 className="font-semibold text-emerald-400 mb-4">âœ… Active Violations (0)</h3>
                     <div className="text-center py-8">
                         <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3 opacity-50" />
                         <p className="text-slate-400">No active constitutional violations</p>
@@ -323,7 +323,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
                 </div>
 
                 <div className="bg-slate-800/50 rounded-lg p-5">
-                    <h3 className="font-semibold text-slate-300 mb-4">📜 Resolved Violations ({resolvedViolations.length})</h3>
+                    <h3 className="font-semibold text-slate-300 mb-4">ðŸ“œ Resolved Violations ({resolvedViolations.length})</h3>
                     <div className="space-y-3 max-h-48 overflow-y-auto">
                         {resolvedViolations.map((v, i) => (
                             <div
@@ -335,7 +335,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
                                     <span className="text-xs text-slate-500">{v.resolvedAt}</span>
                                 </div>
                                 <div className="text-sm text-slate-300">{v.component}</div>
-                                <div className="text-xs text-emerald-400 mt-1">✓ {v.remediation}</div>
+                                <div className="text-xs text-emerald-400 mt-1">âœ“ {v.remediation}</div>
                             </div>
                         ))}
                     </div>
@@ -349,7 +349,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-amber-500" />
-                    <span>Institutional System • CI-Enforced • AICS-001</span>
+                    <span>Institutional System â€¢ CI-Enforced â€¢ AICS-001</span>
                 </div>
             </footer>
         </div>

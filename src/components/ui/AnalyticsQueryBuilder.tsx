@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AnalyticsQueryBuilder Component
  * 
  * Phase 4 Implementation - Analytics Query Builder UI
@@ -352,7 +352,7 @@ export const AnalyticsQueryBuilder: React.FC<AnalyticsQueryBuilderProps> = ({
 
                     {/* Execute Button */}
                     <Button
-                        onClick={handleExecute}
+                        onClick={() => void handleExecute()}
                         disabled={isExecuting}
                         className="w-full"
                     >

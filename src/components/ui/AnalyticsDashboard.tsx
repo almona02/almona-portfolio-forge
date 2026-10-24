@@ -131,7 +131,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                     <Button
                         variant="outline"
                         size="icon"
-                        onClick={loadMetrics}
+                        onClick={() => void loadMetrics()}
                         disabled={isLoading}
                     >
                         <RefreshCw

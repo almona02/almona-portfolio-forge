@@ -1,4 +1,4 @@
-import { reportMarketplaceEvent } from '@/lib/marketplace/monitoring';
+﻿import { reportMarketplaceEvent } from '@/lib/marketplace/monitoring';
 import { clearSellerDraft, emptySellerDraft, readSellerDraft, saveSellerDraft, type SellerDraft } from '@/lib/marketplace/sellerDraft';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -98,7 +98,7 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
   return (
     <form onSubmit={handleSubmit} className="bg-almona-darker rounded-xl p-6 space-y-6 text-left">
       <div className="text-center mb-2">
-        <h2 className="typography-h2">{copy('Post your machine — free, in 2 minutes')}</h2>
+        <h2 className="typography-h2">{copy('Post your machine â€” free, in 2 minutes')}</h2>
         <p className="text-gray-400 text-sm mt-1">{copy('No account needed. Buyers will contact you directly by phone or WhatsApp.')}</p>
       </div>
 
@@ -178,7 +178,7 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
         </div>
 
         <div className="md:col-span-2">
-          <Label className="text-gray-300">{copy('Photos * (1–8)')}</Label>
+          <Label className="text-gray-300">{copy('Photos * (1â€“8)')}</Label>
           <p className="text-xs text-gray-500 mb-2">{copy('The first photo is the main cover photo.')}</p>
           <div className="grid grid-cols-2 gap-2">
             <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-almona-light/40 rounded-lg p-5 cursor-pointer hover:border-amber-500/60">
@@ -197,7 +197,7 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
               {files.map((_, i) => (
                 <div key={i} className="relative">
                   <img src={previewUrls[i]} alt="" className="w-20 h-20 object-cover rounded border border-almona-light/40" />
-                  <button type="button" onClick={() => setFiles((prev) => prev.filter((_, idx) => idx !== i))} className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs leading-none flex items-center justify-center">×</button>
+                  <button type="button" onClick={() => setFiles((prev) => prev.filter((_, idx) => idx !== i))} className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs leading-none flex items-center justify-center">Ã—</button>
                 </div>
               ))}
             </div>
@@ -221,7 +221,7 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
       </fieldset>
 
       <Button type="submit" disabled={submitting} className="w-full bg-amber-500 hover:bg-amber-600 text-white h-12 text-base">
-        {submitting ? <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> {copy('Publishing…')}</> : copy('Publish listing — free')}
+        {submitting ? <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> {copy('Publishingâ€¦')}</> : copy('Publish listing â€” free')}
       </Button>
     </form>
   );

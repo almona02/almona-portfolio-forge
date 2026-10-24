@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Safety Warning Modal - Screen 1 of 3-Step Safety Verification
  * 
  * Gold Tier Implementation:
@@ -317,13 +317,13 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
             Cancel
           </Button>
           <Button
-            onClick={handleProceed}
+            onClick={() => void handleProceed()}
             disabled={!canProceed || isProcessing}
             className="bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50 disabled:cursor-not-allowed min-w-[180px] font-semibold"
           >
             {isProcessing ? (
               <>
-                <span className="animate-spin mr-2">⏳</span>
+                <span className="animate-spin mr-2">â³</span>
                 Processing...
               </>
             ) : (

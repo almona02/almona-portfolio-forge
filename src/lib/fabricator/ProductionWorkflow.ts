@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ProductionWorkflow - Production Workflow with Checkpoint System
  * 
  * Provides a production-grade workflow system with automatic checkpointing,

@@ -741,7 +741,7 @@ export const NoDXFTuningStudio: React.FC = () => {
             )}
           </div>
           <Button
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={isSaving || !frameProfile || !sashProfile}
             className="bg-green-600 hover:bg-green-500"
           >

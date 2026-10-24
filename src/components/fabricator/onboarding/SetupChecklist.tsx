@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Setup Checklist Widget
  * Shows onboarding progress and guides users through initial setup
  */
@@ -155,7 +155,7 @@ export const SetupChecklist: React.FC<SetupChecklistProps> = ({ userId }) => {
         {completedCount === items.length && (
           <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
             <p className="text-sm text-green-400 font-medium">
-              🎉 Setup complete! You're ready to start using Fabricator Pro.
+              ðŸŽ‰ Setup complete! You're ready to start using Fabricator Pro.
             </p>
           </div>
         )}

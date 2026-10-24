@@ -257,7 +257,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                   </div>
                   <div className="flex gap-2 pt-4">
                     <Button
-                      onClick={handleSaveTemplate}
+                      onClick={() => void handleSaveTemplate()}
                       className="btn-primary"
                     >
                       Save Template

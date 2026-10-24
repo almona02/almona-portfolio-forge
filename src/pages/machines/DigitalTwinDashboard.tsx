@@ -1,4 +1,4 @@
-import { ServiceTimeline, TimelineEvent } from '@/components/services/ServiceTimeline';
+﻿import { ServiceTimeline, TimelineEvent } from '@/components/services/ServiceTimeline';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -321,7 +321,7 @@ export const DigitalTwinDashboard = () => {
                                         <div key={entry.id} className="border-b border-gray-800 pb-2">
                                             <p className="text-xs text-gray-500">{new Date(entry.created_at).toLocaleDateString()}</p>
                                             {entry.parts.map((part) => (
-                                                <p key={`${entry.id}-${part.sku}`} className="text-sm">{part.name} ({part.sku}) × {part.quantity}</p>
+                                                <p key={`${entry.id}-${part.sku}`} className="text-sm">{part.name} ({part.sku}) Ã— {part.quantity}</p>
                                             ))}
                                         </div>
                                     ))}

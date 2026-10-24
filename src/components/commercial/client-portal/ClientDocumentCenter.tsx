@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Client Document Center
  * 
  * Gold-tier component for clients to download documents (quotes, invoices, etc.).
@@ -204,7 +204,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
               />
             </div>
             <Button
-              onClick={loadDocuments}
+              onClick={() => void loadDocuments()}
               variant="outline"
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >
@@ -267,7 +267,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
                           }).format(doc.amount)}
                         </span>
                       ) : (
-                        <span className="text-amber-600/50">—</span>
+                        <span className="text-amber-600/50">â€”</span>
                       )}
                     </TableCell>
                     <TableCell>

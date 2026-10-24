@@ -1,4 +1,4 @@
-import { publishActiveProject } from '@/lib/fabricator/activeProjectBridge';
+﻿import { publishActiveProject } from '@/lib/fabricator/activeProjectBridge';
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useAuth } from '@/context/AuthContext';
 import { useDeletePose, useProjectPositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
@@ -109,7 +109,7 @@ export const MeasuringPage: React.FC = () => {
     const siblings = useProjectPositions(projectId);
     const upsertPose = useUpsertPose();
     const deletePose = useDeletePose();
-    /** Pose layout strip â€” closed by default so small screens keep measuring form in view */
+    /** Pose layout strip Ã¢â‚¬â€ closed by default so small screens keep measuring form in view */
     const [poseLayoutOpen, setPoseLayoutOpen] = useState(false);
     const layoutPoses = useMemo(() => {
         if (!pose) return siblings;
@@ -121,9 +121,9 @@ export const MeasuringPage: React.FC = () => {
         const w = pose?.overallWidth;
         const h = pose?.overallHeight;
         const dims = Number(w) > 0 && Number(h) > 0
-            ? `${Math.round(Number(w))} Ã— ${Math.round(Number(h))} mm`
+            ? `${Math.round(Number(w))} Ãƒâ€” ${Math.round(Number(h))} mm`
             : 'Not measured';
-        return `Pose ${pose?.posNumber || '1'} Â· ${dims} Â· ${layoutPoses.length} pose${layoutPoses.length === 1 ? '' : 's'}`;
+        return `Pose ${pose?.posNumber || '1'} Ã‚Â· ${dims} Ã‚Â· ${layoutPoses.length} pose${layoutPoses.length === 1 ? '' : 's'}`;
     }, [pose, layoutPoses.length]);
 
     const persistPose = useCallback(async (data: MeasurementData, targetPoseId: string, posNumber: string) => {
@@ -148,7 +148,7 @@ export const MeasuringPage: React.FC = () => {
             const result = await persistPose(data, poseId, posNumber);
             setMeasurementData(data);
             completeStep('measuring');
-            toast.success(`Pose ${posNumber} saved: ${data.width} Ã— ${data.height} mm`);
+            toast.success(`Pose ${posNumber} saved: ${data.width} Ãƒâ€” ${data.height} mm`);
             if (closeAfterSave) { void publishActiveProject(null); void navigate(fabricatorRoutes.studioProjects()); }
             else void navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
         } catch (err) {
@@ -336,9 +336,9 @@ export const MeasuringPage: React.FC = () => {
                 }>
                     <SmartMeasuringInterface
                         key={poseId ?? 'new'}
-                        onMeasurementComplete={handleMeasurementComplete}
+                        onMeasurementComplete={(e) => void handleMeasurementComplete(e)}
                         onSaveAndClose={(data: MeasurementData) => { void handleMeasurementComplete(data, true); }}
-                        onSaveAndNextPose={handleSaveAndNext}
+                        onSaveAndNextPose={(e) => void handleSaveAndNext(e)}
                         initialData={initialData}
                         systemPackId={pose?.systemPackId}
                         poseLabel={`Pose ${pose?.posNumber || '1'}`}

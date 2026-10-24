@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -64,17 +64,17 @@ const egyptGovernorates = [
 
 const turkishCities = [
   "Istanbul", "Ankara", "Izmir", "Bursa", "Adana", "Gaziantep", "Konya",
-  "Antalya", "Kayseri", "Mersin", "Eskişehir", "Diyarbakır", "Samsun",
-  "Denizli", "Şanlıurfa", "Malatya", "Kahramanmaraş", "Erzurum", "Van",
-  "Batman", "Elazığ", "İzmit", "Manisa", "Sivas", "Gebze", "Balıkesir"
+  "Antalya", "Kayseri", "Mersin", "EskiÅŸehir", "DiyarbakÄ±r", "Samsun",
+  "Denizli", "ÅžanlÄ±urfa", "Malatya", "KahramanmaraÅŸ", "Erzurum", "Van",
+  "Batman", "ElazÄ±ÄŸ", "Ä°zmit", "Manisa", "Sivas", "Gebze", "BalÄ±kesir"
 ];
 
 const aluminumMachineTypes = [
-  { id: "cutting", label: "Cutting Machine", icon: "✂️" },
-  { id: "welding", label: "Welding Machine", icon: "🔧" },
-  { id: "cnc", label: "CNC Machine", icon: "⚙️" },
-  { id: "bending", label: "Bending Machine", icon: "🔄" },
-  { id: "other", label: "Other Aluminum Machinery", icon: "🏭" }
+  { id: "cutting", label: "Cutting Machine", icon: "âœ‚ï¸" },
+  { id: "welding", label: "Welding Machine", icon: "ðŸ”§" },
+  { id: "cnc", label: "CNC Machine", icon: "âš™ï¸" },
+  { id: "bending", label: "Bending Machine", icon: "ðŸ”„" },
+  { id: "other", label: "Other Aluminum Machinery", icon: "ðŸ­" }
 ];
 
 const popularBrands = {
@@ -85,7 +85,7 @@ const popularBrands = {
 const serviceContracts: ServiceContract[] = [
   {
     id: "basic",
-    type: "Temel Bakım Planı (Basic)",
+    type: "Temel BakÄ±m PlanÄ± (Basic)",
     priceEGP: 4500,
     priceTRY: 15000,
     machines: 1,
@@ -94,16 +94,16 @@ const serviceContracts: ServiceContract[] = [
     warrantyExtension: false,
     localTechnicians: true,
     features: [
-      "Temel makine kontrolü (Basic machine inspection)",
-      "Yağ değişimi ve filtre temizliği (Oil change & filter cleaning)",
+      "Temel makine kontrolÃ¼ (Basic machine inspection)",
+      "YaÄŸ deÄŸiÅŸimi ve filtre temizliÄŸi (Oil change & filter cleaning)",
       "Temel elektrik kontrolleri (Basic electrical checks)",
-      "Yerel teknisyen desteği (Local technician support)",
-      "Acil servis hattı (Emergency service line)"
+      "Yerel teknisyen desteÄŸi (Local technician support)",
+      "Acil servis hattÄ± (Emergency service line)"
     ]
   },
   {
     id: "standard",
-    type: "Standart Bakım Paketi (Standard)",
+    type: "Standart BakÄ±m Paketi (Standard)",
     priceEGP: 8000,
     priceTRY: 25000,
     machines: 1,
@@ -112,12 +112,12 @@ const serviceContracts: ServiceContract[] = [
     warrantyExtension: true,
     localTechnicians: true,
     features: [
-      "Kapsamlı makine analizi (Comprehensive machine analysis)",
-      "Alüminyum özel bakım prosedürleri (Aluminum-specific procedures)",
-      "Yedek parça değişimi (Spare parts replacement)",
-      "1 yıl garanti uzatması (1-year warranty extension)",
+      "KapsamlÄ± makine analizi (Comprehensive machine analysis)",
+      "AlÃ¼minyum Ã¶zel bakÄ±m prosedÃ¼rleri (Aluminum-specific procedures)",
+      "Yedek parÃ§a deÄŸiÅŸimi (Spare parts replacement)",
+      "1 yÄ±l garanti uzatmasÄ± (1-year warranty extension)",
       "Performans optimizasyonu (Performance optimization)",
-      "Türkçe/Arapça teknik rapor (Turkish/Arabic technical report)"
+      "TÃ¼rkÃ§e/ArapÃ§a teknik rapor (Turkish/Arabic technical report)"
     ]
   },
   {
@@ -132,17 +132,17 @@ const serviceContracts: ServiceContract[] = [
     localTechnicians: true,
     features: [
       "7/24 uzaktan izleme (24/7 remote monitoring)",
-      "Önleyici bakım tahminleri (Predictive maintenance)",
-      "Öncelikli acil servis (Priority emergency service)",
-      "2 yıl garanti uzatması (2-year warranty extension)",
-      "Operatör eğitim desteği (Operator training support)",
-      "Yedek parça %20 indirim (20% spare parts discount)",
-      "Aylık performans raporu (Monthly performance report)"
+      "Ã–nleyici bakÄ±m tahminleri (Predictive maintenance)",
+      "Ã–ncelikli acil servis (Priority emergency service)",
+      "2 yÄ±l garanti uzatmasÄ± (2-year warranty extension)",
+      "OperatÃ¶r eÄŸitim desteÄŸi (Operator training support)",
+      "Yedek parÃ§a %20 indirim (20% spare parts discount)",
+      "AylÄ±k performans raporu (Monthly performance report)"
     ]
   },
   {
     id: "platinum",
-    type: "Platinüm Fabrika Paketi (Platinum)",
+    type: "PlatinÃ¼m Fabrika Paketi (Platinum)",
     priceEGP: 20000,
     priceTRY: 65000,
     machines: 3,
@@ -151,14 +151,14 @@ const serviceContracts: ServiceContract[] = [
     warrantyExtension: true,
     localTechnicians: true,
     features: [
-      "Özel fabrika teknisyenleri (Dedicated factory technicians)",
-      "automation destekli bakım tahmini (software-assisted maintenance prediction)",
-      "7/24 Türkçe/Arapça destek (24/7 Turkish/Arabic support)",
-      "3 yıl garanti uzatması (3-year warranty extension)",
-      "Ücretsiz yedek parça stoğu (Free spare parts inventory)",
-      "Özel operatör eğitim programı (Custom operator training)",
-      "Aylık verimlilik raporları (Monthly efficiency reports)",
-      "Acil müdahale ekibi (Emergency response team)"
+      "Ã–zel fabrika teknisyenleri (Dedicated factory technicians)",
+      "automation destekli bakÄ±m tahmini (software-assisted maintenance prediction)",
+      "7/24 TÃ¼rkÃ§e/ArapÃ§a destek (24/7 Turkish/Arabic support)",
+      "3 yÄ±l garanti uzatmasÄ± (3-year warranty extension)",
+      "Ãœcretsiz yedek parÃ§a stoÄŸu (Free spare parts inventory)",
+      "Ã–zel operatÃ¶r eÄŸitim programÄ± (Custom operator training)",
+      "AylÄ±k verimlilik raporlarÄ± (Monthly efficiency reports)",
+      "Acil mÃ¼dahale ekibi (Emergency response team)"
     ]
   }
 ];
@@ -278,7 +278,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   }`}
                   onClick={() => handleMarketSelect("egypt")}
                 >
-                  <div className="text-4xl mb-4">🇪🇬</div>
+                  <div className="text-4xl mb-4">ðŸ‡ªðŸ‡¬</div>
                   <h3 className="typography-h3 mb-2">Egypt Market</h3>
                   <p className="text-gray-400 text-sm mb-4">
                     Specialized maintenance for aluminum machinery in Egyptian industrial zones
@@ -309,7 +309,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   }`}
                   onClick={() => handleMarketSelect("turkey")}
                 >
-                  <div className="text-4xl mb-4">🇹🇷</div>
+                  <div className="text-4xl mb-4">ðŸ‡¹ðŸ‡·</div>
                   <h3 className="typography-h3 mb-2">Turkey Market</h3>
                   <p className="text-gray-400 text-sm mb-4">
                     Premium maintenance services for Turkish aluminum machinery industry
@@ -388,7 +388,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                           </ul>
                           {contract.warrantyExtension && (
                             <Badge className="mt-2 bg-green-500/20 text-green-300">
-                              ✓ Warranty Extension
+                              âœ“ Warranty Extension
                             </Badge>
                           )}
                         </div>
@@ -457,13 +457,13 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="companyName" className="typography-label">
-                      {selectedMarket === "egypt" ? "Company Name (الشركة)" : "Company Name (Şirket Adı)"} *
+                      {selectedMarket === "egypt" ? "Company Name (Ø§Ù„Ø´Ø±ÙƒØ©)" : "Company Name (Åžirket AdÄ±)"} *
                     </Label>
                     <Input
                       id="companyName"
                       {...register("companyName", { required: "Company name is required" })}
                       className="bg-almona-darker/50 border-almona-light/20"
-                      placeholder={selectedMarket === "egypt" ? "اسم الشركة" : "Şirket Adı"}
+                      placeholder={selectedMarket === "egypt" ? "Ø§Ø³Ù… Ø§Ù„Ø´Ø±ÙƒØ©" : "Åžirket AdÄ±"}
                     />
                     {errors.companyName && (
                       <p className="text-red-500 text-sm">{errors.companyName.message}</p>
@@ -472,13 +472,13 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
                   <div>
                     <Label htmlFor="contactName" className="typography-label">
-                      {selectedMarket === "egypt" ? "Contact Name (اسم المسؤول)" : "Contact Name (Yetkili Adı)"} *
+                      {selectedMarket === "egypt" ? "Contact Name (Ø§Ø³Ù… Ø§Ù„Ù…Ø³Ø¤ÙˆÙ„)" : "Contact Name (Yetkili AdÄ±)"} *
                     </Label>
                     <Input
                       id="contactName"
                       {...register("contactName", { required: "Contact name is required" })}
                       className="bg-almona-darker/50 border-almona-light/20"
-                      placeholder={selectedMarket === "egypt" ? "اسم المسؤول" : "Yetkili Adı"}
+                      placeholder={selectedMarket === "egypt" ? "Ø§Ø³Ù… Ø§Ù„Ù…Ø³Ø¤ÙˆÙ„" : "Yetkili AdÄ±"}
                     />
                     {errors.contactName && (
                       <p className="text-red-500 text-sm">{errors.contactName.message}</p>
@@ -500,7 +500,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
                   <div>
                     <Label htmlFor="phone" className="typography-label">
-                      {selectedMarket === "egypt" ? "Phone (هاتف)" : "Phone (Telefon)"} *
+                      {selectedMarket === "egypt" ? "Phone (Ù‡Ø§ØªÙ)" : "Phone (Telefon)"} *
                     </Label>
                     <Input
                       id="phone"
@@ -517,7 +517,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   {/* Location Fields */}
                   <div>
                     <Label htmlFor="governorate" className="typography-label">
-                      {selectedMarket === "egypt" ? "Governorate (المحافظة)" : "City (Şehir)"} *
+                      {selectedMarket === "egypt" ? "Governorate (Ø§Ù„Ù…Ø­Ø§ÙØ¸Ø©)" : "City (Åžehir)"} *
                     </Label>
                     <Select
                       onValueChange={(value) => setValue("governorate", value)}
@@ -541,13 +541,13 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
                   <div>
                     <Label htmlFor="city" className="typography-label">
-                      {selectedMarket === "egypt" ? "City/Area (المدينة/المنطقة)" : "District (İlçe)"} *
+                      {selectedMarket === "egypt" ? "City/Area (Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©/Ø§Ù„Ù…Ù†Ø·Ù‚Ø©)" : "District (Ä°lÃ§e)"} *
                     </Label>
                     <Input
                       id="city"
                       {...register("city", { required: "City/District is required" })}
                       className="bg-almona-darker/50 border-almona-light/20"
-                      placeholder={selectedMarket === "egypt" ? "المدينة أو المنطقة" : "İlçe"}
+                      placeholder={selectedMarket === "egypt" ? "Ø§Ù„Ù…Ø¯ÙŠÙ†Ø© Ø£Ùˆ Ø§Ù„Ù…Ù†Ø·Ù‚Ø©" : "Ä°lÃ§e"}
                     />
                     {errors.city && (
                       <p className="text-red-500 text-sm">{errors.city.message}</p>
@@ -622,8 +622,8 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                         <SelectValue placeholder="Select language" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="ar">العربية (Arabic)</SelectItem>
-                        <SelectItem value="tr">Türkçe (Turkish)</SelectItem>
+                        <SelectItem value="ar">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© (Arabic)</SelectItem>
+                        <SelectItem value="tr">TÃ¼rkÃ§e (Turkish)</SelectItem>
                         <SelectItem value="en">English</SelectItem>
                       </SelectContent>
                     </Select>
@@ -656,15 +656,15 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
                 <div>
                   <Label htmlFor="notes" className="typography-label">
-                    {selectedMarket === "egypt" ? "Special Requirements (متطلبات خاصة)" : "Special Requirements (Özel İstekler)"}
+                    {selectedMarket === "egypt" ? "Special Requirements (Ù…ØªØ·Ù„Ø¨Ø§Øª Ø®Ø§ØµØ©)" : "Special Requirements (Ã–zel Ä°stekler)"}
                   </Label>
                   <Textarea
                     id="notes"
                     rows={3}
                     placeholder={
                       selectedMarket === "egypt" 
-                        ? "أي متطلبات خاصة أو ملاحظات للصيانة..." 
-                        : "Özel bakım istekleri veya notlar..."
+                        ? "Ø£ÙŠ Ù…ØªØ·Ù„Ø¨Ø§Øª Ø®Ø§ØµØ© Ø£Ùˆ Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ù„Ù„ØµÙŠØ§Ù†Ø©..." 
+                        : "Ã–zel bakÄ±m istekleri veya notlar..."
                     }
                     {...register("notes")}
                     className="bg-almona-darker/50 border-almona-light/20"
@@ -680,7 +680,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span>Market:</span>
-                        <span className="font-bold">{selectedMarket === "egypt" ? "Egypt 🇪🇬" : "Turkey 🇹🇷"}</span>
+                        <span className="font-bold">{selectedMarket === "egypt" ? "Egypt ðŸ‡ªðŸ‡¬" : "Turkey ðŸ‡¹ðŸ‡·"}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Service Plan:</span>
@@ -746,22 +746,22 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                 </div>
               </LazyMotionDiv>
               <h3 className="typography-h3 mb-2">
-                {selectedMarket === "egypt" ? "الصيانة المجدولة! (Maintenance Scheduled!)" : "Bakım Planlandı! (Maintenance Scheduled!)"}
+                {selectedMarket === "egypt" ? "Ø§Ù„ØµÙŠØ§Ù†Ø© Ø§Ù„Ù…Ø¬Ø¯ÙˆÙ„Ø©! (Maintenance Scheduled!)" : "BakÄ±m PlanlandÄ±! (Maintenance Scheduled!)"}
               </h3>
               <p className="text-gray-400 mb-4">
                 {selectedMarket === "egypt" 
-                  ? "تم جدولة خدمة الصيانة الوقائية الخاصة بك بنجاح لآلات الألومنيوم."
-                  : "Alüminyum makineleriniz için önleyici bakım hizmeti başarıyla planlandı."
+                  ? "ØªÙ… Ø¬Ø¯ÙˆÙ„Ø© Ø®Ø¯Ù…Ø© Ø§Ù„ØµÙŠØ§Ù†Ø© Ø§Ù„ÙˆÙ‚Ø§Ø¦ÙŠØ© Ø§Ù„Ø®Ø§ØµØ© Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­ Ù„Ø¢Ù„Ø§Øª Ø§Ù„Ø£Ù„ÙˆÙ…Ù†ÙŠÙˆÙ…."
+                  : "AlÃ¼minyum makineleriniz iÃ§in Ã¶nleyici bakÄ±m hizmeti baÅŸarÄ±yla planlandÄ±."
                 }
               </p>
               <Badge className="bg-green-500/20 text-green-300">
                 Contract ID: {selectedMarket === "egypt" ? "EG" : "TR"}-PM-{Date.now().toString().slice(-8)}
               </Badge>
               <div className="mt-6 space-y-2 text-sm text-gray-400">
-                <p>✓ {selectedMarket === "egypt" ? "عقد الخدمة تم إنشاؤه" : "Servis sözleşmesi oluşturuldu"}</p>
-                <p>✓ {selectedMarket === "egypt" ? "الجداول الزمنية automation مفعلة" : "automation zamanlamaları etkinleştirildi"}</p>
-                <p>✓ {selectedMarket === "egypt" ? "وصول إلى البوابة الإلكترونية" : "Müşteri portalı erişimi verildi"}</p>
-                <p>✓ {selectedMarket === "egypt" ? "دعم محلي باللغة العربية/التركية" : "Yerel Türkçe/Arapça destek"}</p>
+                <p>âœ“ {selectedMarket === "egypt" ? "Ø¹Ù‚Ø¯ Ø§Ù„Ø®Ø¯Ù…Ø© ØªÙ… Ø¥Ù†Ø´Ø§Ø¤Ù‡" : "Servis sÃ¶zleÅŸmesi oluÅŸturuldu"}</p>
+                <p>âœ“ {selectedMarket === "egypt" ? "Ø§Ù„Ø¬Ø¯Ø§ÙˆÙ„ Ø§Ù„Ø²Ù…Ù†ÙŠØ© automation Ù…ÙØ¹Ù„Ø©" : "automation zamanlamalarÄ± etkinleÅŸtirildi"}</p>
+                <p>âœ“ {selectedMarket === "egypt" ? "ÙˆØµÙˆÙ„ Ø¥Ù„Ù‰ Ø§Ù„Ø¨ÙˆØ§Ø¨Ø© Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠØ©" : "MÃ¼ÅŸteri portalÄ± eriÅŸimi verildi"}</p>
+                <p>âœ“ {selectedMarket === "egypt" ? "Ø¯Ø¹Ù… Ù…Ø­Ù„ÙŠ Ø¨Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©/Ø§Ù„ØªØ±ÙƒÙŠØ©" : "Yerel TÃ¼rkÃ§e/ArapÃ§a destek"}</p>
               </div>
             </LazyMotionDiv>
           )}

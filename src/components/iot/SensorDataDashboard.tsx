@@ -362,7 +362,7 @@ export const SensorDataDashboard: React.FC<{
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleRefresh}
+              onClick={() => void handleRefresh()}
               disabled={refreshing}
             >
               <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />

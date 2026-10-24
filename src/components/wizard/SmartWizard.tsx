@@ -204,7 +204,7 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
                 {step === 1 ? 'Cancel' : 'Back'}
               </Button>
               <Button
-                onClick={handleNext}
+                onClick={() => void handleNext()}
                 disabled={loading || (step === 3 && (!width || !height))}
                 className="bg-blue-600 hover:bg-blue-700"
               >

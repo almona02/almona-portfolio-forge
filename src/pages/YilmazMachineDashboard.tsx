@@ -1,6 +1,6 @@
-/**
+﻿/**
  * @tier Tier 2 (Advisory Presentation)
- * @constitutional_compliance AICS-001 §7 (Presentation layer)
+ * @constitutional_compliance AICS-001 Â§7 (Presentation layer)
  * @region Egypt-specific YILMAZ machine dashboard
  *
  * GOVERNANCE:
@@ -99,7 +99,7 @@ export const YilmazMachineDashboard: React.FC = () => {
             YILMAZ Predictive Monitor
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
-            Egypt Region • Real-time Telemetry Simulation
+            Egypt Region â€¢ Real-time Telemetry Simulation
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -138,7 +138,7 @@ export const YilmazMachineDashboard: React.FC = () => {
           <Flame className="h-4 w-4" />
           <AlertTitle>Summer Heat Alert</AlertTitle>
           <AlertDescription>
-            Ambient temperatures &gt; 40°C. Monitor spindle cooling systems and
+            Ambient temperatures &gt; 40Â°C. Monitor spindle cooling systems and
             servo drive thermal status.
           </AlertDescription>
         </Alert>
@@ -177,7 +177,7 @@ export const YilmazMachineDashboard: React.FC = () => {
                   <p className="text-xs text-muted-foreground">Hydraulic</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">{machine.spindleTempCelsius} °C</p>
+                  <p className="text-sm font-medium">{machine.spindleTempCelsius} Â°C</p>
                   <p className="text-xs text-muted-foreground">Spindle</p>
                 </div>
               </div>

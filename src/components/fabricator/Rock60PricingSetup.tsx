@@ -1043,7 +1043,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
         <div className="flex justify-end">
           <Button
             size="sm"
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={saving || !userId}
             className="btn-primary"
           >

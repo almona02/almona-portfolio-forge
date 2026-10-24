@@ -172,7 +172,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={handleSendMessage}
+                onClick={() => void handleSendMessage()}
                 className="bg-amber-600 hover:bg-amber-700 text-white"
               >
                 <Send className="w-4 h-4 mr-2" />

@@ -1,4 +1,4 @@
-
+﻿
 import { Button } from '@/components/ui/button-gold-tier';
 import { CardContent, CardHeader, GoldTierCard } from '@/components/ui/card-gold-tier';
 import { useYDT } from '@/context/YDT_Context';
@@ -106,7 +106,7 @@ export function YDTAssistantFloating() {
                  />
                  <button 
                     aria-label="Send message"
-                    onClick={handleSend}
+                    onClick={() => void handleSend()}
                     disabled={!inputValue.trim() || isThinking}
                     className="absolute right-1 top-1 p-1.5 bg-amber-500 text-slate-900 rounded-full disabled:opacity-50 hover:bg-amber-400 transition-colors"
                  >

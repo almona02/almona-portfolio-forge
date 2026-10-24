@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
@@ -21,14 +21,14 @@ const FabricationWorkflowDetail = () => {
 
   const workflowData = {
     upvc: {
-      title: "UPVC Fabrication Workflow (سير العمل)",
-      description: "Optimized for Egypt's climate and market demands (متوافق مع مناخ مصر)",
+      title: "UPVC Fabrication Workflow (Ø³ÙŠØ± Ø§Ù„Ø¹Ù…Ù„)",
+      description: "Optimized for Egypt's climate and market demands (Ù…ØªÙˆØ§ÙÙ‚ Ù…Ø¹ Ù…Ù†Ø§Ø® Ù…ØµØ±)",
       steps: [
         {
-          title: "Material Inspection (فحص الخامات)",
-          description: "Checking for thermal stability and UV resistance (التحقق من مقاومة الحرارة والأشعة فوق البنفسجية)",
+          title: "Material Inspection (ÙØ­Øµ Ø§Ù„Ø®Ø§Ù…Ø§Øª)",
+          description: "Checking for thermal stability and UV resistance (Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ù…Ù‚Ø§ÙˆÙ…Ø© Ø§Ù„Ø­Ø±Ø§Ø±Ø© ÙˆØ§Ù„Ø£Ø´Ø¹Ø© ÙÙˆÙ‚ Ø§Ù„Ø¨Ù†ÙØ³Ø¬ÙŠØ©)",
           tips: ["Look for SGS certification", "Test sample for color fastness", "Verify lead content <0.1%"],
-          egyptTip: "Verify humidity resistance ≥85% RH - critical for coastal areas like Alexandria (هام للمناطق الساحلية كالإسكندرية)",
+          egyptTip: "Verify humidity resistance â‰¥85% RH - critical for coastal areas like Alexandria (Ù‡Ø§Ù… Ù„Ù„Ù…Ù†Ø§Ø·Ù‚ Ø§Ù„Ø³Ø§Ø­Ù„ÙŠØ© ÙƒØ§Ù„Ø¥Ø³ÙƒÙ†Ø¯Ø±ÙŠØ©)",
           commonIssues: [
             "Substandard recycled materials in local market",
             "Inconsistent UV stabilizer levels"
@@ -39,10 +39,10 @@ const FabricationWorkflowDetail = () => {
           ]
         },
         {
-          title: "Precision Cutting (القطع الدقيق)",
-          description: "Angular cutting for Egyptian window designs (القطع الزاوي لتصاميم النوافذ المصرية)",
+          title: "Precision Cutting (Ø§Ù„Ù‚Ø·Ø¹ Ø§Ù„Ø¯Ù‚ÙŠÙ‚)",
+          description: "Angular cutting for Egyptian window designs (Ø§Ù„Ù‚Ø·Ø¹ Ø§Ù„Ø²Ø§ÙˆÙŠ Ù„ØªØµØ§Ù…ÙŠÙ… Ø§Ù„Ù†ÙˆØ§ÙØ° Ø§Ù„Ù…ØµØ±ÙŠØ©)",
           tips: ["Maintain 0.1mm tolerance", "Use diamond-tipped blades", "Clean blades after every 50 cuts"],
-          egyptTip: "Add 0.5mm extra for thermal expansion during summer (up to 45°C) (أضف 0.5 مم للتوسع الحراري في الصيف حتى 45 درجة مئوية)",
+          egyptTip: "Add 0.5mm extra for thermal expansion during summer (up to 45Â°C) (Ø£Ø¶Ù 0.5 Ù…Ù… Ù„Ù„ØªÙˆØ³Ø¹ Ø§Ù„Ø­Ø±Ø§Ø±ÙŠ ÙÙŠ Ø§Ù„ØµÙŠÙ Ø­ØªÙ‰ 45 Ø¯Ø±Ø¬Ø© Ù…Ø¦ÙˆÙŠØ©)",
           commonIssues: [
             "Dust accumulation affecting precision",
             "Power fluctuations damaging motors"
@@ -53,10 +53,10 @@ const FabricationWorkflowDetail = () => {
           ]
         },
         {
-          title: "Notching & Routing (الشق والتوجيه)",
-          description: "Preparing for hardware installation (التحضير لتركيب الأجهزة)",
+          title: "Notching & Routing (Ø§Ù„Ø´Ù‚ ÙˆØ§Ù„ØªÙˆØ¬ÙŠÙ‡)",
+          description: "Preparing for hardware installation (Ø§Ù„ØªØ­Ø¶ÙŠØ± Ù„ØªØ±ÙƒÙŠØ¨ Ø§Ù„Ø£Ø¬Ù‡Ø²Ø©)",
           tips: ["Clean routing bits every 50 cuts", "Check depth settings", "Use vacuum for chip removal"],
-          egyptTip: "Adjust for common Egyptian hardware sizes (e.g., Maco, Giesse) (تعديل لأحجام الأجهزة الشائعة في مصر مثل ماكو وجيسي)",
+          egyptTip: "Adjust for common Egyptian hardware sizes (e.g., Maco, Giesse) (ØªØ¹Ø¯ÙŠÙ„ Ù„Ø£Ø­Ø¬Ø§Ù… Ø§Ù„Ø£Ø¬Ù‡Ø²Ø© Ø§Ù„Ø´Ø§Ø¦Ø¹Ø© ÙÙŠ Ù…ØµØ± Ù…Ø«Ù„ Ù…Ø§ÙƒÙˆ ÙˆØ¬ÙŠØ³ÙŠ)",
           commonIssues: [
             "Hardware compatibility issues with European profiles",
             "Vibration affecting precision in older buildings"
@@ -67,10 +67,10 @@ const FabricationWorkflowDetail = () => {
           ]
         },
         {
-          title: "Welding & Assembly (اللحام والتجميع)",
-          description: "Joining profiles with heat welding (ربط الملفات باللحام الحراري)",
-          tips: ["Maintain 240-260°C temperature", "Check pressure consistency", "Allow 15 min cooling time"],
-          egyptTip: "Increase cooling time by 20% during summer months (زيادة وقت التبريد بنسبة 20٪ خلال أشهر الصيف)",
+          title: "Welding & Assembly (Ø§Ù„Ù„Ø­Ø§Ù… ÙˆØ§Ù„ØªØ¬Ù…ÙŠØ¹)",
+          description: "Joining profiles with heat welding (Ø±Ø¨Ø· Ø§Ù„Ù…Ù„ÙØ§Øª Ø¨Ø§Ù„Ù„Ø­Ø§Ù… Ø§Ù„Ø­Ø±Ø§Ø±ÙŠ)",
+          tips: ["Maintain 240-260Â°C temperature", "Check pressure consistency", "Allow 15 min cooling time"],
+          egyptTip: "Increase cooling time by 20% during summer months (Ø²ÙŠØ§Ø¯Ø© ÙˆÙ‚Øª Ø§Ù„ØªØ¨Ø±ÙŠØ¯ Ø¨Ù†Ø³Ø¨Ø© 20Ùª Ø®Ù„Ø§Ù„ Ø£Ø´Ù‡Ø± Ø§Ù„ØµÙŠÙ)",
           commonIssues: [
             "Inconsistent power affecting weld quality",
             "High ambient temperature affecting cooling"
@@ -81,10 +81,10 @@ const FabricationWorkflowDetail = () => {
           ]
         },
         {
-          title: "Hardware Installation (تركيب الأجهزة)",
-          description: "Fitting locks, handles, and hinges (تركيب الأقفال والمقابض والمفصلات)",
+          title: "Hardware Installation (ØªØ±ÙƒÙŠØ¨ Ø§Ù„Ø£Ø¬Ù‡Ø²Ø©)",
+          description: "Fitting locks, handles, and hinges (ØªØ±ÙƒÙŠØ¨ Ø§Ù„Ø£Ù‚ÙØ§Ù„ ÙˆØ§Ù„Ù…Ù‚Ø§Ø¨Ø¶ ÙˆØ§Ù„Ù…ÙØµÙ„Ø§Øª)",
           tips: ["Use torque-controlled screwdrivers", "Apply silicone lubricant", "Check alignment with laser level"],
-          egyptTip: "Use stainless steel hardware to combat high humidity in Delta region (استخدم أجهزة من الفولاذ المقاوم للصدأ لمقاومة الرطوبة العالية في دلتا النيل)",
+          egyptTip: "Use stainless steel hardware to combat high humidity in Delta region (Ø§Ø³ØªØ®Ø¯Ù… Ø£Ø¬Ù‡Ø²Ø© Ù…Ù† Ø§Ù„ÙÙˆÙ„Ø§Ø° Ø§Ù„Ù…Ù‚Ø§ÙˆÙ… Ù„Ù„ØµØ¯Ø£ Ù„Ù…Ù‚Ø§ÙˆÙ…Ø© Ø§Ù„Ø±Ø·ÙˆØ¨Ø© Ø§Ù„Ø¹Ø§Ù„ÙŠØ© ÙÙŠ Ø¯Ù„ØªØ§ Ø§Ù„Ù†ÙŠÙ„)",
           commonIssues: [
             "Screw stripping in dense UPVC",
             "Misalignment causing operational issues"
@@ -114,7 +114,7 @@ const FabricationWorkflowDetail = () => {
           title: "Alloy Verification",
           description: "Ensuring corrosion resistance",
           tips: ["Test for 6063-T5 alloy", "Check mill certificates", "Verify tensile strength"],
-          egyptTip: "Require salt spray test ≥2000 hours for coastal projects",
+          egyptTip: "Require salt spray test â‰¥2000 hours for coastal projects",
           commonIssues: [
             "Substandard alloys in local market",
             "Inconsistent tempering quality"
@@ -167,8 +167,8 @@ const FabricationWorkflowDetail = () => {
           ]
         },
         {
-          title: "Glazing & Sealing (التزجيج والختم)",
-          description: "Installing glass with proper sealing (تركيب الزجاج مع الختم المناسب)",
+          title: "Glazing & Sealing (Ø§Ù„ØªØ²Ø¬ÙŠØ¬ ÙˆØ§Ù„Ø®ØªÙ…)",
+          description: "Installing glass with proper sealing (ØªØ±ÙƒÙŠØ¨ Ø§Ù„Ø²Ø¬Ø§Ø¬ Ù…Ø¹ Ø§Ù„Ø®ØªÙ… Ø§Ù„Ù…Ù†Ø§Ø³Ø¨)",
           tips: ["Use butyl tape for primary seal", "Apply structural silicone", "Check for uniform compression"],
           egyptTip: "Use solar-control glass with low-E coatings for Egyptian sun exposure",
           commonIssues: [
@@ -221,7 +221,7 @@ const FabricationWorkflowDetail = () => {
           ],
           solutions: [
             "Use diamond-coated cutting wheels",
-            "Maintain workshop temperature at 22±2°C"
+            "Maintain workshop temperature at 22Â±2Â°C"
           ]
         }
       ],
@@ -326,7 +326,7 @@ const FabricationWorkflowDetail = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
         >
           <Badge variant="secondary" className="mb-4 text-lg py-2 px-4 bg-almona-orange/10 text-almona-orange border-almona-orange/30">
-            مصر - Egypt
+            Ù…ØµØ± - Egypt
           </Badge>
           <h1 className="typography-h1 text-gradient-orange mb-4">Egyptian Fabrication Workflows</h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -409,7 +409,7 @@ const FabricationWorkflowDetail = () => {
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
                                   {step.tips.map((tip, i) => (
-                                    <li key={i} className="flex items-start"><span className="mr-2 text-almona-orange">•</span>{tip}</li>
+                                    <li key={i} className="flex items-start"><span className="mr-2 text-almona-orange">â€¢</span>{tip}</li>
                                   ))}
                                 </ul>
                               </div>
@@ -431,7 +431,7 @@ const FabricationWorkflowDetail = () => {
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
                                   {step.commonIssues.map((issue, i) => (
-                                    <li key={i} className="flex items-start"><span className="mr-2 text-red-500">•</span>{issue}</li>
+                                    <li key={i} className="flex items-start"><span className="mr-2 text-red-500">â€¢</span>{issue}</li>
                                   ))}
                                 </ul>
                               </div>
@@ -443,7 +443,7 @@ const FabricationWorkflowDetail = () => {
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
                                   {step.solutions.map((solution, i) => (
-                                    <li key={i} className="flex items-start"><span className="mr-2  status-valid">•</span>{solution}</li>
+                                    <li key={i} className="flex items-start"><span className="mr-2  status-valid">â€¢</span>{solution}</li>
                                   ))}
                                 </ul>
                               </div>
@@ -503,9 +503,9 @@ const FabricationWorkflowDetail = () => {
                   <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
                     <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.training className="h-4 w-4" />Training Centers</h3>
                     <ul className="text-sm text-gray-400 space-y-1">
-                      <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Cairo:</strong> 10th of Ramadan City, Thursdays</li>
-                      <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Alexandria:</strong> Borg El Arab, Tuesdays</li>
-                      <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Upper Egypt:</strong> Assiut, Monthly workshops</li>
+                      <li className="flex items-start"><span className="mr-2 text-almona-orange">â€¢</span><strong>Cairo:</strong> 10th of Ramadan City, Thursdays</li>
+                      <li className="flex items-start"><span className="mr-2 text-almona-orange">â€¢</span><strong>Alexandria:</strong> Borg El Arab, Tuesdays</li>
+                      <li className="flex items-start"><span className="mr-2 text-almona-orange">â€¢</span><strong>Upper Egypt:</strong> Assiut, Monthly workshops</li>
                     </ul>
                   </div>
                   

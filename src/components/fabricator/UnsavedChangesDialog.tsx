@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Prestige Unsaved Changes Confirmation Dialog
  * 
  * A polished, reusable confirmation dialog for unsaved changes
@@ -98,10 +98,10 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
                   {t('unsavedChanges.warning', 'What will happen:')}
                 </p>
                 <ul className="space-y-1 text-amber-300/80">
-                  <li>• {t('unsavedChanges.warningLost', 'All unsaved changes will be permanently lost')}</li>
-                  <li>• {t('unsavedChanges.warningNoRecovery', 'Changes cannot be recovered after leaving')}</li>
+                  <li>â€¢ {t('unsavedChanges.warningLost', 'All unsaved changes will be permanently lost')}</li>
+                  <li>â€¢ {t('unsavedChanges.warningNoRecovery', 'Changes cannot be recovered after leaving')}</li>
                   {showSaveOption && (
-                    <li>• {t('unsavedChanges.warningSaveFirst', 'You can save your changes before leaving')}</li>
+                    <li>â€¢ {t('unsavedChanges.warningSaveFirst', 'You can save your changes before leaving')}</li>
                   )}
                 </ul>
               </div>
@@ -124,7 +124,7 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
 
             {showSaveOption && onSave && (
               <Button
-                onClick={handleSave}
+                onClick={() => void handleSave()}
                 disabled={isSaving}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >

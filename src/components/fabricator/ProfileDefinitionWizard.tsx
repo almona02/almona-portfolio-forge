@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Profile Definition Wizard
  * Multi-step wizard for creating profiles from technical data sheets
  * v1: Manual input with visual reference (de-risked approach)
@@ -588,11 +588,11 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   <span className="text-gray-500">System:</span> {formData.systemName}
                 </p>
                 <p>
-                  <span className="text-gray-500">Dimensions:</span> {formData.width}mm Ã— {formData.height}mm
+                  <span className="text-gray-500">Dimensions:</span> {formData.width}mm Ãƒâ€” {formData.height}mm
                 </p>
                 {formData.defaultKFactor45 !== undefined && (
                   <p>
-                    <span className="text-gray-500">K-Factor (45Â°):</span>{' '}
+                    <span className="text-gray-500">K-Factor (45Ã‚Â°):</span>{' '}
                     <span className="text-green-400 font-semibold">{formData.defaultKFactor45.toFixed(2)}mm</span>
                   </p>
                 )}
@@ -613,7 +613,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
           </Button>
           {step < totalSteps ? (
             <Button
-              onClick={handleNext}
+              onClick={() => void handleNext()}
               className="bg-blue-500 hover:bg-blue-600 text-white"
             >
               Next
@@ -621,7 +621,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
             </Button>
           ) : (
             <Button
-              onClick={handleCreateProfile}
+              onClick={() => void handleCreateProfile()}
               disabled={isCreating}
               className="bg-green-500 hover:bg-green-600 text-white"
             >

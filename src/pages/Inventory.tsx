@@ -263,7 +263,7 @@ const InventoryPage: React.FC = () => {
               </div>
               <div className="flex gap-2">
                 <Button
-                  onClick={handleSaveAllEdits}
+                  onClick={() => void handleSaveAllEdits()}
                   className="btn-primary"
                 >
                   Save All

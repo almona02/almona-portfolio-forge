@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EgyptianSpecialsDesigner - UI Component for Egyptian Special Presets
  * 
  * Provides interface for:
@@ -127,7 +127,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
               </div>
               <div>
                 <p className="text-sm text-gray-400">Temperature</p>
-                <p className="text-white font-semibold">{climate.averageTemperature}°C</p>
+                <p className="text-white font-semibold">{climate.averageTemperature}Â°C</p>
               </div>
               <div>
                 <p className="text-sm text-gray-400">Humidity</p>
@@ -190,7 +190,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button
-                  onClick={handleGenerateSandDust}
+                  onClick={() => void handleGenerateSandDust()}
                   disabled={isGenerating}
                   className="btn-primary"
                 >
@@ -225,7 +225,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
                       {sandDustSpec.screenMesh && (
                         <div>
                           <p className="text-sm text-gray-400">Fine Mesh</p>
-                          <p className="text-white font-semibold">{sandDustSpec.screenMesh.area.toFixed(2)} m²</p>
+                          <p className="text-white font-semibold">{sandDustSpec.screenMesh.area.toFixed(2)} mÂ²</p>
                         </div>
                       )}
                     </div>
@@ -266,7 +266,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button
-                  onClick={handleOptimizeThermalBreak}
+                  onClick={() => void handleOptimizeThermalBreak()}
                   disabled={isGenerating}
                   className="btn-primary"
                 >
@@ -294,7 +294,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
                       </div>
                       <div>
                         <p className="text-sm text-gray-400">U-Value Improvement</p>
-                        <p className="text-green-400 font-semibold">-{thermalBreakSpec.uValueImprovement.toFixed(1)} W/m²K</p>
+                        <p className="text-green-400 font-semibold">-{thermalBreakSpec.uValueImprovement.toFixed(1)} W/mÂ²K</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-400">Total Cost</p>

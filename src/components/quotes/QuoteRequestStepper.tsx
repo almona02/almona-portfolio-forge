@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
@@ -144,7 +144,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
                       ${active ? 'bg-amber-600 text-white' : complete ? 'bg-amber-700/70 text-white' : 'bg-almona-darker text-gray-400'}
                     `}
                   >
-                    {complete ? '✓' : index + 1}
+                    {complete ? 'âœ“' : index + 1}
                   </span>
                   <span className="whitespace-nowrap select-none">
                     {step}
@@ -158,7 +158,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         <div className="flex items-center gap-3 self-start md:self-auto">
           {relatedServiceTicketId && (
             <Badge variant="outline" className="border-blue-500 text-blue-400" title="Linked Service Ticket">
-              Ticket {relatedServiceTicketId.slice(0,8)}…
+              Ticket {relatedServiceTicketId.slice(0,8)}â€¦
             </Badge>
           )}
           <Badge variant="outline" className="border-amber-500 text-amber-500">
@@ -301,7 +301,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
           ) : (
             <Button type="submit" disabled={submitting} aria-disabled={submitting} className="min-w-[200px]">
               {submitting ? (
-                <span className="flex items-center justify-center"><Loader2 className="w-4 h-4 mr-2 animate-spin" />Submitting…</span>
+                <span className="flex items-center justify-center"><Loader2 className="w-4 h-4 mr-2 animate-spin" />Submittingâ€¦</span>
               ) : (
                 'Submit Quote Request'
               )}

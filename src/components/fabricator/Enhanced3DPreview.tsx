@@ -703,7 +703,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
             <div className="grid grid-cols-2 gap-2">
               <Button
                 className="flex items-center justify-center"
-                onClick={handleExportProductionFile}
+                onClick={() => void handleExportProductionFile()}
                 disabled={exportStatus === 'exporting' || !machineCheck?.anyCompatible}
               >
                 {exportStatus === 'exporting' ? (
@@ -722,7 +722,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               <Button
                 variant="outline"
                 className="flex items-center justify-center"
-                onClick={handleSendToMachine}
+                onClick={() => void handleSendToMachine()}
                 disabled={!machineCheck?.anyCompatible || sendInProgress}
               >
                 {sendInProgress ? (
