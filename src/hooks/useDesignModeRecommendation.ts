@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { useJobsStore } from '@/store/jobsStore';
 import { useMemo } from 'react';
-import type { DesignMode } from '@/components/fabricator/DesignModeSelector';
+import type { DesignMode } from '@/components/fabricator/panels/DesignModeSelector';
 
 interface Recommendation {
   mode: DesignMode;

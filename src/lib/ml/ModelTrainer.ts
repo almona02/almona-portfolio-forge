@@ -15,7 +15,7 @@ const loadTensorFlow = async () => {
   return tf;
 };
 
-import type { RemnantFeatures } from './RemnantUsagePredictor';
+import type { RemnantFeatures } from '@/future/advisory/RemnantUsagePredictor';
 import { supabase } from '../supabase';
 
 export interface TrainingData {

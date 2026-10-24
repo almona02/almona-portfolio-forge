@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Plus, Trash2, Info, Move, Maximize2, Grid, Target } from 'lucide-react';
 import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
-import type { MachiningZone } from './MachiningZoneEditor';
+import type { MachiningZone } from '../smartscan/MachiningZoneEditor';
 
 interface MachiningZoneJoystickProps {
   zones: MachiningZone[];

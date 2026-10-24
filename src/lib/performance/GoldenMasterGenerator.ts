@@ -6,7 +6,7 @@
  */
 
 import crypto from 'crypto';
-import type { GoldenMaster } from '../AccuracyBaselineTracker';
+import type { GoldenMaster } from './AccuracyBaselineTracker';
 
 export interface BOMInput {
   width: number;

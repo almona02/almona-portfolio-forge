@@ -1,5 +1,5 @@
 
-import MachineTwinDisplay from '@/components/fabricator/MachineTwinDisplay';
+import MachineTwinDisplay from '@/components/fabricator/production/MachineTwinDisplay';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button-gold-tier';
 import { CardContent, CardHeader, CardTitle, GoldTierCard } from '@/components/ui/card-gold-tier';
