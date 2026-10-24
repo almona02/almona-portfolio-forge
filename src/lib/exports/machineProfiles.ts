@@ -153,7 +153,7 @@ export const MACHINE_PROFILES: MachineExportProfile[] = [
     label: 'Yılmaz AIM 3410',
     description: 'AIM 3410 4-axis CNC aluminium profile machining center with ISO G-code, AIMCAM programming, and macro support. Complete G-code and programmable macros configuration.',
     target: 'machining_center',
-    format: 'gcode' as ExportFormat,
+    format: 'gcode' as any,
     manufacturer: 'Yılmaz',
     capabilities: ['cutting', 'drilling', 'milling', 'saw_cutting', 'slotting', 'notching', 'macro_programming'],
     configuration: {

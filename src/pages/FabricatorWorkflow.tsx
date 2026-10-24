@@ -2500,6 +2500,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   glazing: { type: 'clear', thickness: 24 },
                   hardware: [],
                   status: 'design',
+                  optimization: null,
                   createdAt: new Date(),
                   updatedAt: new Date(),
                   customer: meta.clientName,

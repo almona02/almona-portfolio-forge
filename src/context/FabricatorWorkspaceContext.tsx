@@ -177,7 +177,7 @@ const workspaceReducer = (
           ...state,
           currentProject: {
             ...state.currentProject,
-            optimization: action.payload as OptimizationResult | null,
+            optimization: action.payload as any,
           },
         }
         : state;

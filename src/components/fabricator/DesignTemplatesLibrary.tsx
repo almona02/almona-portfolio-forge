@@ -108,7 +108,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
       const template = await manager.saveAsTemplate(
         saveFormData.name,
         saveFormData.description,
-        currentDesign.grid as WindowGrid,
+        currentDesign.grid as any,
         currentDesign.systemPackId || 'generic',
         saveFormData.category,
         thumbnail,

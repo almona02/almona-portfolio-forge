@@ -93,7 +93,7 @@ function generateCuttingListComprehensive(
           totalThickness: DEFAULT_GLAZING_SPECS.DEFAULT_TOTAL_THICKNESS_MM, 
           weightPerSqm: DEFAULT_GLAZING_SPECS.DEFAULT_WEIGHT_PER_SQM_KG 
         } 
-      : { type: 'none' }) as GlazingSpec,
+      : { type: 'none' }) as any,
     hardware: [],
     status: 'design',
     optimization: null,

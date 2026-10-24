@@ -327,20 +327,20 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
     try {
       // Base profile data
       const baseProfileData: Partial<Profile> = {
-        user_id: userId,
+        userId: userId,
         name: profile.name || profile.fileName.replace(/\.(dxf|dwg)$/i, ''),
         material: 'aluminum' as const,
         width: profile.widthMm || 50,
         height: profile.heightMm || 50,
         thickness: 1.5, // Will be refined by auto-config
         color: '#C0C0C0',
-        cost_per_meter: 0,
-        cutting_allowance: 3,
-        stock_quantity: 0,
-        min_stock_level: 0,
-        max_stock_level: 1000,
+        costPerMeter: 0,
+        cuttingAllowance: 3,
+        stockQuantity: 0,
+        minStockLevel: 0,
+        maxStockLevel: 1000,
         supplier: 'Imported from DXF',
-        system_brand: defaultSystemPack || 'Custom',
+        systemBrand: defaultSystemPack || 'Custom',
         profileRole: defaultRole as any,
         systemType: defaultWindowType as any,
         specifications: {

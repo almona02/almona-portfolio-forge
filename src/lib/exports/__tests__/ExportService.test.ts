@@ -86,7 +86,7 @@ describe('ExportService', () => {
         mockProject,
         mockOptimization,
         'csv',
-        options as ExportOptions
+        options as any
       );
 
       expect(result.success).toBe(true);
@@ -105,7 +105,7 @@ describe('ExportService', () => {
         mockProject,
         mockOptimization,
         'dxf',
-        options as ExportOptions
+        options as any
       );
 
       expect(result.success).toBe(true);

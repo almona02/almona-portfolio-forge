@@ -11,11 +11,16 @@ interface PageLoadingProps {
   variant?: 'default' | 'minimal' | 'fullscreen';
 }
 
-const variantStyles: Record<'default' | 'fullscreen', { container: string; icon: string; text: string }> = {
+const variantStyles: Record<'default' | 'minimal' | 'fullscreen', { container: string; icon: string; text: string }> = {
   default: {
     container: 'bg-[#0f0f0f]/80 border border-amber-600/20 rounded-lg',
     icon: 'text-amber-500',
     text: 'text-zinc-300',
+  },
+  minimal: {
+    container: '',
+    icon: '',
+    text: '',
   },
   fullscreen: {
     container: '',

@@ -141,7 +141,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
       let glassHeight = component.height;
 
       if (glassAllowances) {
-        const derived = deriveGlassSize(component.width, component.height, glassAllowances as GlassAllowanceSpec);
+        const derived = deriveGlassSize(component.width, component.height, glassAllowances as any);
         glassWidth = derived.size.widthMm;
         glassHeight = derived.size.heightMm;
         // If invalid, we still proceed but this could be surfaced in UI later via derived.errors

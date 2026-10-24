@@ -408,8 +408,7 @@ describe('Hardener Integration Tests', () => {
         name: 'Caluminium PS v3',
         category: 'aluminum' as any,
         profiles: [],
-        hardware: [],
-      };
+      } as any;
 
       const result = hardenerSelector.selectHardenerForWindowUnit(windowUnit, systemPack);
 

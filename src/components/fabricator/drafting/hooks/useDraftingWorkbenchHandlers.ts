@@ -601,7 +601,7 @@ export function useDraftingWorkbenchHandlers({
         materialUsage: 0,
         cuttingInstructions: [],
         timestamp: Date.now(),
-      });
+      } as any);
 
       // Trigger optimization request callback
       if (onOptimizeRequest) {

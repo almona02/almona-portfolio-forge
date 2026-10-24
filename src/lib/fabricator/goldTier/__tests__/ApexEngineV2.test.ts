@@ -319,7 +319,7 @@ describe('ApexEngineV2', () => {
         glazing: undefined,
       };
 
-      const engine = new ApexEngineV2(system, unitWithoutGlazing as WindowUnit);
+      const engine = new ApexEngineV2(system, unitWithoutGlazing as any);
       const result = engine.generateAssembly();
 
       // Should use default glazing thickness

@@ -38,6 +38,7 @@ describe('ProductionReportsGenerator', () => {
         glazing: {},
         hardware: [],
         status: 'design',
+        optimization: null,
         createdAt: new Date(),
         updatedAt: new Date()
       }
