@@ -11,7 +11,7 @@
  * - Optimization consumes this exclusively
  */
 
-import type { WindowUnit } from './fabricator';
+import type { WindowComponent, WindowGrid, WindowUnit } from './fabricator';
 
 export interface CanonicalEngineeringModel {
   // Unique identifier

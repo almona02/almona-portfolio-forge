@@ -26,7 +26,7 @@ import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { formatDistanceToNow } from 'date-fns';
 import * as Icons from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityLogEntry, ActivityLogger } from './ActivityLogger';
 import { getActivityColor, getActivityIcon, getActivityLabel } from './activityTypes';
 

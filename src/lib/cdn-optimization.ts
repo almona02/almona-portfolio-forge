@@ -1,7 +1,7 @@
 // Advanced CDN and Global Performance Optimization
 // Handles dynamic content delivery, image optimization, and regional caching
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { performanceMonitor } from './performance-monitoring';
 
 // CDN Configuration for Global Delivery
