@@ -71,8 +71,8 @@ describe('Phase 1: Material Awareness', () => {
                  x: 0, y: 0, width: 1000, height: 800, scale: 1
              });
              // Access private/protected property via type assertion for testing
-             expect((manager as { activeSystemId?: string }).activeSystemId).toBeDefined();
-             expect((manager as { activeSystemId?: string }).activeSystemId).toBe('alumil_m9660');
+             expect((manager as unknown as { activeSystemId?: string }).activeSystemId).toBeDefined();
+             expect((manager as unknown as { activeSystemId?: string }).activeSystemId).toBe('alumil_m9660');
         });
     });
 });

@@ -362,7 +362,7 @@ function createInvalidSystem(type: string): FenestrationSystem {
   
   switch (type) {
     case 'missingId':
-      return { ...valid, id: undefined } as FenestrationSystem;
+      return { ...valid, id: undefined } as unknown as FenestrationSystem;
     case 'invalidRegion':
       return { ...valid, region: 'INVALID' as FenestrationSystem['region'] };
     case 'upvcNoWelding':

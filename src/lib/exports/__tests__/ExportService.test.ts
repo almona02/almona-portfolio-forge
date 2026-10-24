@@ -36,7 +36,7 @@ describe('ExportService', () => {
       overallWidth: 1000,
       overallHeight: 1500,
       status: 'active',
-    } as WindowUnit;
+    } as unknown as WindowUnit;
 
     mockOptimization = {
       materialUsage: 5000,
