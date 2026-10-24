@@ -184,7 +184,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
         componentType: component.type,
         width: glassWidth,
         height: glassHeight,
-        allowRotation90: glassAllowances?.allowRotation90 ?? true,
+        allowRotation90: (glassAllowances as any)?.allowRotation90 ?? true,
         glazingType,
         paneCount,
         totalArea: totalComponentArea,

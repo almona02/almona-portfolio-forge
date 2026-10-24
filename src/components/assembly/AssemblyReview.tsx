@@ -237,10 +237,10 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
                 </div>
               )}
 
-              {component.metadata?.hardware_type && (
+              {(component.metadata as any)?.hardware_type && (
                 <div className="text-sm text-gray-600">
                   Hardware type:{" "}
-                  <span className="font-medium">{component.metadata.hardware_type}</span>
+                  <span className="font-medium">{(component.metadata as any).hardware_type}</span>
                 </div>
               )}
             </CardContent>
