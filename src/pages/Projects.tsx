@@ -92,7 +92,7 @@ const ProjectsPage: React.FC = () => {
       });
       toast.success('Project updated');
     } catch (err) {
-      toast.error(`Update failed: ${err}`);
+      toast.error(`Update failed: ${err as string}`);
     }
     setEditingProjectKey(null);
   }, [editName, editClient, updateProjectMutation]);

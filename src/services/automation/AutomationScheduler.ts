@@ -115,7 +115,7 @@ export class AutomationScheduler {
         break;
 
       default:
-        console.warn(`Unknown schedule type: ${scheduleConfig.schedule_type}`);
+        console.warn(`Unknown schedule type: ${scheduleConfig.schedule_type as string}`);
     }
   }
 

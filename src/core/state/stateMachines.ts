@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Predefined State Machines
  * 
  * Enterprise-grade state machine definitions for common workflows.
@@ -259,7 +259,7 @@ export function getStateMachine(type: 'commercial' | 'workflow' | 'production' |
     case 'payment':
       return PAYMENT_STATE_MACHINE;
     default:
-      throw new Error(`Unknown state machine type: ${type}`);
+      throw new Error(`Unknown state machine type: ${type as string}`);
   }
 }
 

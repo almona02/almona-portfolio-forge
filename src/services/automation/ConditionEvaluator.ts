@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Condition Evaluator
  * 
  * Priority 3: Workflow Builder - Automation Engine
@@ -140,7 +140,7 @@ export class ConditionEvaluator {
           return fieldValue !== null && fieldValue !== undefined;
 
         default:
-          console.warn(`Unknown operator: ${operator}`);
+          console.warn(`Unknown operator: ${operator as string}`);
           return false;
       }
     } catch (error) {

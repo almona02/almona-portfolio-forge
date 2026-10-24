@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Metric Imperial Converter
  * Egyptian market requirements - handles both metric and imperial units
  * Converts between mm, cm, m, inches, feet for cutting lists
@@ -50,7 +50,7 @@ export class MetricImperialConverter {
         result = ((baseValue * this.MM_TO_INCH) / this.FT_TO_INCH) / this.YD_TO_FT;
         break;
       default:
-        throw new Error(`Unsupported imperial unit: ${toUnit}`);
+        throw new Error(`Unsupported imperial unit: ${toUnit as string}`);
     }
 
     return {
@@ -86,7 +86,7 @@ export class MetricImperialConverter {
         result = (baseValue * this.INCH_TO_MM) / 1000;
         break;
       default:
-        throw new Error(`Unsupported metric unit: ${toUnit}`);
+        throw new Error(`Unsupported metric unit: ${toUnit as string}`);
     }
 
     return {
@@ -109,7 +109,7 @@ export class MetricImperialConverter {
       case 'm':
         return value * 1000;
       default:
-        throw new Error(`Unsupported metric unit: ${unit}`);
+        throw new Error(`Unsupported metric unit: ${unit as string}`);
     }
   }
 
@@ -125,7 +125,7 @@ export class MetricImperialConverter {
       case 'yd':
         return value * this.YD_TO_FT * this.FT_TO_INCH;
       default:
-        throw new Error(`Unsupported imperial unit: ${unit}`);
+        throw new Error(`Unsupported imperial unit: ${unit as string}`);
     }
   }
 
@@ -208,7 +208,7 @@ export class MetricImperialConverter {
       case 'm':
         return value / 1000;
       default:
-        throw new Error(`Unsupported metric unit: ${toUnit}`);
+        throw new Error(`Unsupported metric unit: ${toUnit as string}`);
     }
   }
 
@@ -224,7 +224,7 @@ export class MetricImperialConverter {
       case 'yd':
         return value / (this.FT_TO_INCH * this.YD_TO_FT);
       default:
-        throw new Error(`Unsupported imperial unit: ${toUnit}`);
+        throw new Error(`Unsupported imperial unit: ${toUnit as string}`);
     }
   }
 

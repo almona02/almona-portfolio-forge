@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Supplier API Integration
  * Handles real-time inventory, pricing, and order management with suppliers
  */
@@ -341,7 +341,7 @@ export class SupplierAPI {
           }
           imported++;
         } catch (error) {
-          errors.push(`Failed to import profile ${profileData.id}: ${error}`);
+          errors.push(`Failed to import profile ${profileData.id as string}: ${error as string}`);
         }
       }
     }

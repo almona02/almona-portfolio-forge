@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Component Hardening Utilities
  * 
  * Gold-tier utilities for hardening UI components with error handling,
@@ -342,7 +342,7 @@ export function validateStringProp(
   }
   
   if (typeof value !== 'string') {
-    console.warn(`Invalid ${propName} for ${componentName}: ${value}, using default ${defaultValue}`);
+    console.warn(`Invalid ${propName as string} for ${componentName as string}: ${value as string}, using default ${defaultValue as string}`);
     return defaultValue;
   }
   

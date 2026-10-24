@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CONSTITUTIONAL PERFORMANCE MONITORING
  * Accuracy Baseline Tracker
  * 
@@ -171,7 +171,7 @@ export class AccuracyBaselineTracker {
           expectedOutputHash: master.expectedOutputHash,
           duration: 0,
           timestamp: Date.now(),
-          errorDetails: `Execution error: ${error}`
+          errorDetails: `Execution error: ${error as string}`
         });
       }
     }

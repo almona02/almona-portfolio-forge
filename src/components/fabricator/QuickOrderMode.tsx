@@ -366,7 +366,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                   <Alert className="bg-blue-900/20 border-blue-800">
                     <AlertDescription className="text-blue-300 text-sm">
                       Quick defaults applied: {Object.entries(quickDefaults).map(([key, value]) => 
-                        `${key}: ${value}`
+                        `${key as string}: ${value as string}`
                       ).join(', ')}
                     </AlertDescription>
                   </Alert>

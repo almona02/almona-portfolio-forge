@@ -80,7 +80,7 @@ export class YilmazNetworkProtocol {
 
         ws.onerror = (error) => {
           this.isConnected = false;
-          reject(new Error(`Connection failed: ${error}`));
+          reject(new Error(`Connection failed: ${error as string}`));
         };
 
         ws.onclose = () => {

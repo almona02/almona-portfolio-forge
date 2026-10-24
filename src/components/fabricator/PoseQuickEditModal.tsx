@@ -106,7 +106,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
       onSaved?.(updated);
       onOpenChange(false);
     } catch (err) {
-      toast.error(`Failed to save: ${err}`);
+      toast.error(`Failed to save: ${err as string}`);
     }
   }, [
     pose, status, quantity, color, systemPackId,

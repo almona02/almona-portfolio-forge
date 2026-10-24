@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -65,7 +65,7 @@ export const FabricatorUIStoreTest: React.FC = () => {
       if (theme === 'dark' || theme === 'light') {
         results.push({ test: 'Theme State', passed: true, message: `Theme is valid: ${theme}` });
       } else {
-        results.push({ test: 'Theme State', passed: false, message: `Theme is invalid: ${theme}` });
+        results.push({ test: 'Theme State', passed: false, message: `Theme is invalid: ${theme as string}` });
       }
     } catch (error) {
       results.push({ test: 'Theme State', passed: false, message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` });

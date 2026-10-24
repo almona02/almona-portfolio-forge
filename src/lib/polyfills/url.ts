@@ -1,4 +1,4 @@
-// URL polyfill for browser compatibility
+﻿// URL polyfill for browser compatibility
 const urlModule = {
   parse: (urlString: string) => {
     try {
@@ -22,12 +22,12 @@ const urlModule = {
     
     const protocol = urlObject.protocol || 'http:';
     const hostname = urlObject.hostname || urlObject.host || 'localhost';
-    const port = urlObject.port ? `:${urlObject.port}` : '';
+    const port = urlObject.port ? `:${urlObject.port as string}` : '';
     const pathname = urlObject.pathname || '/';
     const search = urlObject.search || '';
     const hash = urlObject.hash || '';
     
-    return `${protocol}//${hostname}${port}${pathname}${search}${hash}`;
+    return `${protocol as string}//${hostname as string}${port as string}${pathname as string}${search as string}${hash as string}`;
   },
   resolve: (from: string, to: string) => {
     try {
