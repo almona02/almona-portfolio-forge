@@ -386,7 +386,8 @@ export function transformGeometry(
     lines: [],
     circles: [],
     arcs: [],
-    polygons: []
+    polygons: [],
+    splines: []
   };
 
   // Transform rectangles

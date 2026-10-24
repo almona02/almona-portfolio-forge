@@ -420,7 +420,8 @@ export function validateGeometry(geometry: unknown): Geometry2D {
     lines: [],
     circles: [],
     arcs: [],
-    polygons: []
+    polygons: [],
+    splines: []
   };
 
   // Validate rectangles

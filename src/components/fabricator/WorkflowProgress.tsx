@@ -32,6 +32,7 @@ function mapStatusToUnifiedStage(status: WindowUnitStatus): UnifiedStageId | nul
     'optimized': 'review-optimize',
     'production': 'production',
     'quality': 'quality-delivery',
+    'completed': 'quality-delivery',
     'delivered': 'quality-delivery',
   };
   return statusMap[status] || null;

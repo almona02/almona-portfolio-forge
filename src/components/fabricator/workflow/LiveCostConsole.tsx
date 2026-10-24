@@ -127,6 +127,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
                       length: component.cuttingLengths.reduce((a, b) => a + b, 0),
                       angle: 0,
                       componentId: component.id,
+                      waste: 0,
                     },
                   ],
                   profile,

@@ -184,6 +184,10 @@ export class BlockManager {
       polygons: geometry.polygons.map(p => ({
         ...p,
         points: p.points.map(translate)
+      })),
+      splines: geometry.splines.map(s => ({
+        ...s,
+        controlPoints: s.controlPoints.map(translate)
       }))
     };
   }
@@ -254,6 +258,10 @@ export class BlockManager {
       polygons: block.geometry.polygons.map(p => ({
         ...p,
         points: p.points.map(transformPoint)
+      })),
+      splines: block.geometry.splines.map(s => ({
+        ...s,
+        controlPoints: s.controlPoints.map(transformPoint)
       }))
     };
   }

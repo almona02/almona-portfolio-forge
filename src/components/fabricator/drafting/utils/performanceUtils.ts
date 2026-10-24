@@ -115,7 +115,8 @@ export function cullGeometry(geometry: Geometry2D, viewport: Viewport): Geometry
       point.x <= viewport.x + viewport.width &&
       point.y >= viewport.y &&
       point.y <= viewport.y + viewport.height
-    )
+    ),
+    splines: geometry.splines
   };
 }
 
