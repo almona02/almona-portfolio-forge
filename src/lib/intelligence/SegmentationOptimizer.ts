@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SegmentationOptimizer - Optimizes Segmentation for Complex Shapes
  * 
  * Calculates optimal segmentation for complex shapes with:
@@ -10,7 +10,8 @@
  * @since Egyptian Fabrication Intelligence Enhancement
  */
 
-import type { SegmentationPlan, ShapePattern } from './ShapeInferenceEngine';
+import type { SegmentationPlan } from './ShapeInferenceEngine';
+import type { ShapePattern } from './ShapePatterns';
 
 export interface OptimizedSegmentation extends SegmentationPlan {
   materialOptimization: {
