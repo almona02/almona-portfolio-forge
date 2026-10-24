@@ -221,7 +221,7 @@ export const OperatorTrainingSection = () => {
             <TrainingLevelCard 
               key={level.level}
               {...level}
-              onClick={() => setSelectedLevel(level.level)}
+              onClick={() => _setSelectedLevel(level.level)}
             />
           ))}
         </div>

@@ -22,7 +22,8 @@ interface RoleManagerProps {
 function convertImportedToProfile(
   imported: ImportedProfile,
   role?: ProfileRole,
-  systemCategory: 'aluminum' | 'upvc' = 'aluminum'
+  systemCategory: 'aluminum' | 'upvc' = 'aluminum',
+  system?: MutableSystemPack
 ): Profile {
   return {
     id: imported.id,
@@ -39,8 +40,8 @@ function convertImportedToProfile(
     minStockLevel: 0,
     supplier: 'Imported',
     profileRole: role,
-    systemBrand: system.meta.brands[0] || 'Custom',
-    systemPackIds: [system.meta.id],
+    systemBrand: system?.meta.brands[0] || 'Custom',
+    systemPackIds: system ? [system.meta.id] : undefined,
     specifications: {
       importSource: imported.fileName,
       areaMm2: imported.areaMm2,
@@ -106,7 +107,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
       const imported = importedProfiles.find(ip => ip.id === profileId);
       if (imported) {
         const systemCategory = system.windowSystemSpec?.category === 'upvc' ? 'upvc' : 'aluminum';
-        const newProfile = convertImportedToProfile(imported, role, systemCategory);
+        const newProfile = convertImportedToProfile(imported, role, systemCategory, system);
         const updatedProfiles = [...system.profiles, { ...newProfile, roleAssigned: true }];
         onSystemUpdate({
           ...system,
