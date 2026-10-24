@@ -1,10 +1,25 @@
-/**
+﻿/**
  * System Tuning Utilities
  * Helper functions to check tuning status and manage system pack tuning
  */
 
 import type { SystemPack } from '@/data/systemPacks';
 import type { UPVCSystemPack } from '@/data/upvc-systems';
+
+type TuningProfile = {
+  profileRole?: string;
+  type?: string;
+  role?: string;
+  tuningStatus?: string;
+  specifications?: { tuningStatus?: string };
+  cutting_allowance?: unknown;
+};
+
+type TuningSystemPack = (SystemPack | UPVCSystemPack) & {
+  profiles?: TuningProfile[];
+  upvcSpec?: unknown;
+  meta?: { id?: string };
+};
 
 /**
  * Check if a system pack is tuned (has tuning parameters configured)
@@ -13,28 +28,28 @@ export function isSystemPackTuned(systemPack: SystemPack | UPVCSystemPack | null
   if (!systemPack) return false;
   
   // Check if system pack has profiles with tuning status
-  const profiles = (systemPack as any).profiles || [];
+  const profiles = (systemPack as TuningSystemPack).profiles || [];
   
   // For UPVC systems, check if profiles exist and have roles
-  if ((systemPack as any).upvcSpec) {
+  if ((systemPack as TuningSystemPack).upvcSpec) {
     const upvcPack = systemPack as UPVCSystemPack;
-    const upvcProfiles = (upvcPack as any).profiles || [];
+    const upvcProfiles = (upvcPack as TuningSystemPack).profiles || [];
     if (upvcProfiles.length > 0) {
       // Check if frame and sash profiles exist with roles
-      const hasFrame = upvcProfiles.some((p: any) => 
+      const hasFrame = upvcProfiles.some((p: TuningProfile) => 
         p.profileRole === 'frame' || p.type === 'frame'
       );
-      const hasSash = upvcProfiles.some((p: any) => 
+      const hasSash = upvcProfiles.some((p: TuningProfile) => 
         p.profileRole === 'sash' || p.type === 'sash'
       );
       
       // System is considered tuned if it has both frame and sash profiles
       if (hasFrame && hasSash) {
         // Check if profiles have tuning parameters
-        const frameProfile = upvcProfiles.find((p: any) => 
+        const frameProfile = upvcProfiles.find((p: TuningProfile) => 
           p.profileRole === 'frame' || p.type === 'frame'
         );
-        const sashProfile = upvcProfiles.find((p: any) => 
+        const sashProfile = upvcProfiles.find((p: TuningProfile) => 
           p.profileRole === 'sash' || p.type === 'sash'
         );
         
@@ -56,29 +71,29 @@ export function isSystemPackTuned(systemPack: SystemPack | UPVCSystemPack | null
   
   // For aluminum systems, check windowSystemSpec
   const windowSpec = (systemPack as SystemPack).windowSystemSpec;
-  if (windowSpec && (windowSpec as any).aluminum_profiles) {
-    const aluminumProfiles = (windowSpec as any).aluminum_profiles || [];
-    const hasFrame = aluminumProfiles.some((p: any) => p.role === 'frame');
-    const hasSash = aluminumProfiles.some((p: any) => p.role === 'sash');
+  if (windowSpec && (windowSpec as { aluminum_profiles?: TuningProfile[] }).aluminum_profiles) {
+    const aluminumProfiles = (windowSpec as { aluminum_profiles?: TuningProfile[] }).aluminum_profiles || [];
+    const hasFrame = aluminumProfiles.some((p: TuningProfile) => p.role === 'frame');
+    const hasSash = aluminumProfiles.some((p: TuningProfile) => p.role === 'sash');
     
     if (hasFrame && hasSash) {
       // Check if profiles have cutting_allowance (indicates tuning)
-      const frameProfile = aluminumProfiles.find((p: any) => p.role === 'frame');
-      const sashProfile = aluminumProfiles.find((p: any) => p.role === 'sash');
+      const frameProfile = aluminumProfiles.find((p: TuningProfile) => p.role === 'frame');
+      const sashProfile = aluminumProfiles.find((p: TuningProfile) => p.role === 'sash');
       
       return !!(frameProfile?.cutting_allowance && sashProfile?.cutting_allowance);
     }
   }
   
   // Check custom systems in localStorage
-  const customSystemId = (systemPack as any).meta?.id;
+  const customSystemId = (systemPack as TuningSystemPack).meta?.id;
   if (customSystemId) {
     try {
       const stored = localStorage.getItem(`custom-profile-${customSystemId}`);
       if (stored) {
         const customPack = JSON.parse(stored);
         return customPack.tuningStatus === 'tuned' || 
-               (customPack.profiles?.every((p: any) => p.tuningStatus === 'tuned'));
+               (customPack.profiles?.every((p: TuningProfile) => p.tuningStatus === 'tuned'));
       }
     } catch {
       // Ignore errors
@@ -109,25 +124,25 @@ export function getSystemPackTuningStatus(systemPack: SystemPack | UPVCSystemPac
     };
   }
   
-  const profiles = (systemPack as any).profiles || [];
-  const isUPVC = !!(systemPack as any).upvcSpec;
+  const profiles = (systemPack as TuningSystemPack).profiles || [];
+  const isUPVC = !!(systemPack as TuningSystemPack).upvcSpec;
   
   let hasFrame = false;
   let hasSash = false;
   
   if (isUPVC && profiles.length > 0) {
-    hasFrame = profiles.some((p: any) => 
+    hasFrame = profiles.some((p: TuningProfile) => 
       p.profileRole === 'frame' || p.type === 'frame'
     );
-    hasSash = profiles.some((p: any) => 
+    hasSash = profiles.some((p: TuningProfile) => 
       p.profileRole === 'sash' || p.type === 'sash'
     );
   } else {
     const windowSpec = (systemPack as SystemPack).windowSystemSpec;
     if (windowSpec) {
-      const aluminumProfiles = (windowSpec as any).aluminum_profiles || [];
-      hasFrame = aluminumProfiles.some((p: any) => p.role === 'frame');
-      hasSash = aluminumProfiles.some((p: any) => p.role === 'sash');
+      const aluminumProfiles = (windowSpec as { aluminum_profiles?: TuningProfile[] }).aluminum_profiles || [];
+      hasFrame = aluminumProfiles.some((p: TuningProfile) => p.role === 'frame');
+      hasSash = aluminumProfiles.some((p: TuningProfile) => p.role === 'sash');
     }
   }
   
