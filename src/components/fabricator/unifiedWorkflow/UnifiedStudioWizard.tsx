@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Unified Studio Wizard Component
  * 
  * Consolidates Profile Studio, System Pack Studio, and Tuning Studio
@@ -44,7 +44,7 @@ interface UnifiedStudioWizardProps {
   /** Callback when wizard closes */
   onOpenChange: (open: boolean) => void;
   /** Callback when wizard completes */
-  onComplete?: (data: StudioWizardData) => void;
+  onComplete?: (data: StudioWizardData) => Promise<void> | void;
   /** Initial data (for editing existing items) */
   initialData?: Partial<StudioWizardData>;
 }

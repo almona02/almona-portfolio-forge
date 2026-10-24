@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Safety Warning Modal - Screen 1 of 3-Step Safety Verification
  * 
  * Gold Tier Implementation:
@@ -38,7 +38,7 @@ export interface SafetyWarningModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   warnings: SafetyWarning[];
-  onProceed: () => void;
+  onProceed: () => Promise<void> | void;
   jobId?: string;
   machineType?: string;
 }

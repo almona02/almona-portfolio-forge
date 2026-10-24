@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Toolpath Preview Modal - Screen 2 of 3-Step Safety Verification
  * 
  * Gold Tier Implementation:
@@ -57,7 +57,7 @@ export interface ToolpathPreviewModalProps {
   components: WindowComponent[];
   profiles: Profile[];
   optimizationResult?: OptimizationResult;
-  onProceed: (collisionCheck: CollisionCheckResult) => void;
+  onProceed: (collisionCheck: CollisionCheckResult) => Promise<void> | void;
   jobId?: string;
   machineType?: string;
 }

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Production Preview Dialog
  * MANDATORY SAFETY CHECK - Blocks progression until user confirms
  * This is a gatekeeper modal, not an optional preview
@@ -26,7 +26,7 @@ interface ProductionPreviewDialogProps {
   components: WindowComponent[];
   profiles: Profile[];
   optimizationResult?: OptimizationResult;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void> | void;
   onAdjustCalibration?: () => void;
 }
 
