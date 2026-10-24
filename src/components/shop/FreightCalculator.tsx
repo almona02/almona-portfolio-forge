@@ -223,7 +223,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
     const selectedOption = shippingOptions.find(opt => opt.id === shippingMethod);
     if (!selectedOption) return;
 
-    const distance = portDistances[fromPort as keyof typeof portDistances]?.[toDestination] || 300;
+    const distance = (portDistances as Record<string, Record<string, number>>)[fromPort]?.[toDestination] || 300;
     const volume = (dimensions.length * dimensions.width * dimensions.height) / 1000000; // Convert to cubic meters
     const volumetricWeight = volume * 200; // 200 kg per cubic meter
     const chargeableWeight = Math.max(weight, volumetricWeight);

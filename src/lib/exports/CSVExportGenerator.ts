@@ -182,7 +182,7 @@ export class CSVExportGenerator {
       ar: ['الخطة', 'التسلسل', 'الطول (مم)', 'الزاوية (درجة)', 'معرف المكون', 'الموضع (مم)', 'الهدر (مم)', 'الاستخدام (%)'],
     };
     
-    return labels[locale] || labels.en;
+    return labels[locale as keyof typeof labels] || labels.en;
   }
 
   /**

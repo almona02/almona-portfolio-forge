@@ -280,7 +280,7 @@ const FabricationWorkflowDetail = () => {
     }
   };
 
-  const filteredSteps = workflowData[activeTab].steps.filter((step: any) =>
+  const filteredSteps = workflowData[activeTab as keyof typeof workflowData].steps.filter((step: any) =>
     step.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     step.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -355,8 +355,8 @@ const FabricationWorkflowDetail = () => {
               variants={itemVariants}
             >
               <div>
-                <h2 className="typography-h2 text-white">{workflowData[activeTab].title}</h2>
-                <p className="text-gray-400">{workflowData[activeTab].description}</p>
+                <h2 className="typography-h2 text-white">{workflowData[activeTab as keyof typeof workflowData].title}</h2>
+                <p className="text-gray-400">{workflowData[activeTab as keyof typeof workflowData].description}</p>
               </div>
               <div className="w-full md:w-64">
                 <Input
@@ -472,7 +472,7 @@ const FabricationWorkflowDetail = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <LocalStandardsTable standards={workflowData[activeTab].standards} region="Egypt" />
+                  <LocalStandardsTable standards={workflowData[activeTab as keyof typeof workflowData].standards} region="Egypt" />
                   <p className="mt-4 text-sm text-gray-400 flex items-start">
                     <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-almona-light" />
                     Available at Egyptian Organization for Standardization (EOS) offices
@@ -533,7 +533,7 @@ const FabricationWorkflowDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3 text-gray-300">
-                    {workflowData[activeTab].challenges.map((challenge: any, i: number) => (
+                    {workflowData[activeTab as keyof typeof workflowData].challenges.map((challenge: any, i: number) => (
                       <li key={i} className="flex items-start">
                         <Icons.warning className="h-5 w-5 text-amber-500 mr-3 mt-0.5 flex-shrink-0" />
                         <span>{challenge}</span>

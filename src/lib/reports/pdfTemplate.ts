@@ -33,7 +33,7 @@ export async function generatePDFReport(
   });
   
   // Draw machine specs
-  const machine = MACHINE_SPECS[machineModel];
+  const machine = MACHINE_SPECS[machineModel as keyof typeof MACHINE_SPECS];
   page.drawText(`${machineTitle}: ${machineModel}`, {
     x: 50,
     y: height - 100,
