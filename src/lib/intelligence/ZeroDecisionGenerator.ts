@@ -9,7 +9,7 @@
 
 import { ComplexShapeGenerator, type ComplexShapeDesign } from './ComplexShapeGenerator';
 import type { InferredShape } from './ShapeInferenceEngine';
-import { MaterialStrategyCalculator } from './MaterialStrategyCalculator';
+import { MaterialStrategyCalculator, type MachineCapabilities } from './MaterialStrategyCalculator';
 
 export interface WorkshopContext {
   workshopId?: string;
@@ -182,7 +182,7 @@ export class ZeroDecisionGenerator {
    */
   private mapMachineCapabilities(
     capabilities?: string[]
-  ): MaterialStrategyCalculator['MachineCapabilities'] | undefined {
+  ): MachineCapabilities | undefined {
     if (!capabilities) return undefined;
     
     return {

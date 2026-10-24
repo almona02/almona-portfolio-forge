@@ -131,7 +131,7 @@ const CommercialPageComponent: React.FC = () => {
 
     const newQuote: DraftQuote = {
       id: `quote_${Date.now()}`,
-      customerName: (state.currentCustomer)?.name || project?.customer || 'New Customer',
+      customerName: (state.currentCustomer as any)?.name || project?.customer || 'New Customer',
       projectTitle: project?.projectCode || project?.orderNumber || 'New Project',
       amount: Number(amount.toFixed(2)),
       currency,

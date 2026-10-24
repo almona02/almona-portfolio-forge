@@ -95,7 +95,7 @@ export const SystemPacksPage: React.FC = () => {
     if (filterType !== 'all') {
       filtered = filtered.filter(system => {
         const status = getSystemPackTuningStatus(system);
-        const isUPVC = !!(system).upvcSpec;
+        const isUPVC = !!(system as any).upvcSpec;
         
         if (filterType === 'tuned') return status.isTuned;
         if (filterType === 'untuned') return status.needsTuning;
@@ -126,7 +126,7 @@ export const SystemPacksPage: React.FC = () => {
   };
 
   const getCardGradient = (system: any, isHovered: boolean) => {
-    const isUPVC = !!(system).upvcSpec;
+    const isUPVC = !!(system as any).upvcSpec;
     const tuningStatus = getSystemPackTuningStatus(system);
     
     if (tuningStatus.isTuned) {
@@ -258,7 +258,7 @@ export const SystemPacksPage: React.FC = () => {
                       : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
                   }`}
                 >
-                  UPVC ({allSystems.filter(s => !!(s).upvcSpec).length})
+                  UPVC ({allSystems.filter(s => !!(s as any).upvcSpec).length})
                 </Button>
                 <Button
                   variant={filterType === 'aluminum' ? 'default' : 'outline'}
@@ -270,7 +270,7 @@ export const SystemPacksPage: React.FC = () => {
                       : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
                   }`}
                 >
-                  Aluminum ({allSystems.filter(s => !(s).upvcSpec).length})
+                  Aluminum ({allSystems.filter(s => !(s as any).upvcSpec).length})
                 </Button>
               </div>
             </div>
@@ -288,7 +288,7 @@ export const SystemPacksPage: React.FC = () => {
           >
             {filteredSystems.map((system, index) => {
               const tuningStatus = getSystemPackTuningStatus(system);
-              const isUPVC = !!(system).upvcSpec;
+              const isUPVC = !!(system as any).upvcSpec;
               const profiles = Array.isArray((system as { profiles?: unknown[] }).profiles) && (system as { profiles?: unknown[] }).profiles!.length
                 ? (system as { profiles: Array<{ profileRole?: string; type?: string }> }).profiles
                 : ((system as { windowSystemSpec?: { profiles_cutting_list?: Array<{ profileRole?: string; type?: string; role?: string }> } }).windowSystemSpec?.profiles_cutting_list || []).map((profile) => ({

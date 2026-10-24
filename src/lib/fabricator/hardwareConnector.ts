@@ -111,7 +111,7 @@ export function connectHardwareForWindowType(
   components.forEach(comp => {
     if (comp.type === 'sash') {
       const sashArea = (comp.width * comp.height) / 1_000_000; // m²
-      const maxSashArea = systemPack?.windowSystemSpec?.constraints?.maxSashAreaM2 || 2.0;
+      const maxSashArea = (systemPack?.windowSystemSpec?.constraints as any)?.maxSashAreaM2 || 2.0;
       
       if (sashArea > maxSashArea) {
         // Large sash needs reinforcement

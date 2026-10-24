@@ -63,11 +63,11 @@ export class RealtimeCacheInvalidator {
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
             const ticket = payload.new as any;
             await AfterSalesCache.invalidateTicket(ticket.id);
-            await AfterSalesCache.invalidateTicketsByStatus(ticket.status);
+            await (AfterSalesCache as any).invalidateTicketsByStatus(ticket.status);
           } else if (payload.eventType === 'DELETE') {
             const ticket = payload.old as any;
             await AfterSalesCache.invalidateTicket(ticket.id);
-            await AfterSalesCache.invalidateTicketsByStatus(ticket.status);
+            await (AfterSalesCache as any).invalidateTicketsByStatus(ticket.status);
           }
         }
       )
@@ -87,7 +87,7 @@ export class RealtimeCacheInvalidator {
         },
         async () => {
           console.log('[Cache Invalidation] Machine catalog changed');
-          await AfterSalesCache.invalidateMachineCatalog();
+          await (AfterSalesCache as any).invalidateMachineCatalog();
         }
       )
       .subscribe();

@@ -574,7 +574,7 @@ export class YilmazEgyptRulesEngine {
             priceEGP: partInfo.priceEGP,
             stockLevel: partInfo.stockLevel,
             leadTimeDays: partInfo.leadTimeDays,
-            critical: partInfo.critical as boolean | undefined
+            critical: (partInfo as any).critical as boolean | undefined
           };
         });
 

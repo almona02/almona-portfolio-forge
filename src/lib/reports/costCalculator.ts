@@ -31,7 +31,7 @@ export function calculateFabricationCost(
   const accessoryCost = 
     (accessories.locks || MATERIAL_PRICES[materialType].accessories.locks) +
     (accessories.handles || MATERIAL_PRICES[materialType].accessories.handles) +
-    (accessories.espanglites || MATERIAL_PRICES[materialType].accessories.espanglites) +
+    ((accessories as any).espanglites || MATERIAL_PRICES[materialType].accessories.espanglites) +
     (accessories.rails || (materialType === 'aluminum' ? MATERIAL_PRICES.aluminum.accessories.rails : 0));
 
   // Calculate operational costs

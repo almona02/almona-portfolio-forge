@@ -123,7 +123,7 @@ export function generateSplitPOText(
     const glassColor = project.glazing?.color || 'clear';
     
     glassLines.push(
-      `${idx + 1}. ${comp.name || comp.id || `Component ${idx + 1}`}`,
+      `${idx + 1}. ${(comp as any).name || comp.id || `Component ${idx + 1}`}`,
       `   Dimensions: ${w.toFixed(0)} × ${h.toFixed(0)} mm`,
       `   Quantity: ${comp.quantity || 1}`,
       `   Type: ${glazingType} (${glassThickness}mm)`,

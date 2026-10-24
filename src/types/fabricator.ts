@@ -371,6 +371,7 @@ export interface Profile {
   weightPerMeter?: number;
   default_k_factor_45?: number;
   default_k_factor_90?: number;
+  transomMillingDepth?: number;
   unitWeight?: number; // Alternative naming for weightPerMeter
   barLength?: number; // Standard bar length for this profile
   grainDirection?: 'horizontal' | 'vertical' | null;
