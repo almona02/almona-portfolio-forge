@@ -315,7 +315,7 @@ export function useDraftingWorkbenchHandlers({
 
       // Load template if available
       if (draftState.activeTemplate) {
-        draftingEngine.setTemplate(draftState.activeTemplate);
+        draftingEngine.setTemplate(draftState.activeTemplate as any);
       }
 
       actions.setStatusMessages(prev => [...prev, {
@@ -537,7 +537,7 @@ export function useDraftingWorkbenchHandlers({
         return;
       }
 
-      const grid = convertDraftingToWindowGrid(geometry, template);
+      const grid = convertDraftingToWindowGrid(geometry, template as any);
 
       const rects = geometry.rectangles;
       const minX = Math.min(...rects.map(r => r.x));
@@ -614,7 +614,7 @@ export function useDraftingWorkbenchHandlers({
         message: 'Optimization complete!',
         progress: 100
       };
-      actions.setOperationStatus(successStatus);
+      actions.setOperationStatus(successStatus as any);
       actions.setOperationProgress(100);
       actions.setStatusMessages(prev => [...prev, {
         id: `opt-success-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -679,7 +679,7 @@ export function useDraftingWorkbenchHandlers({
         message: statusMessage,
         timestamp: Date.now(),
         dismissible: true
-      }].slice(-10));
+      } as any].slice(-10));
 
       if (status === 'error') {
         toast.error(statusMessage);

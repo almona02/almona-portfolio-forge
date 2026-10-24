@@ -277,7 +277,7 @@ export const MobileTicketCreator: React.FC<{
         onTicketCreated?.(data.id);
       } else {
         // Offline - use enhanced offline sync service
-        const offlineId = await offlineSyncService.storeOfflineTicket(submission);
+        const offlineId = await offlineSyncService.storeOfflineTicket(submission as any);
         onTicketCreated?.(offlineId);
       }
 

@@ -177,7 +177,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
 
     // Debounce search
     const timeoutId = setTimeout(() => {
-      const results = searchPublicMachines(query, machines, copy);
+      const results = searchPublicMachines(query, machines as any, copy);
       setSearchResults(results);
       setIsSearching(false);
       onSearchResults?.(results);
