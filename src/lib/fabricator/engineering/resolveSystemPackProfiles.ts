@@ -3,7 +3,7 @@
  * FP-028: uses only pack / template catalog fields — never invents codes or weights.
  */
 
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import type { Profile } from '@/types/fabricator';
 
 type CatalogRole = NonNullable<Profile['profileRole']>;

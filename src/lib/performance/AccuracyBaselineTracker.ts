@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CONSTITUTIONAL PERFORMANCE MONITORING
  * Accuracy Baseline Tracker
  * 
@@ -154,7 +154,7 @@ export class AccuracyBaselineTracker {
    * Run all Golden Master tests
    */
   async runAllGoldenMasterTests(
-    executionFunction: (inputs: any) => Promise<any> | any
+    executionFunction: (inputs: any) => any
   ): Promise<AccuracyReport> {
     const results: AccuracyTestResult[] = [];
 

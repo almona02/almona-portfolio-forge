@@ -8,7 +8,7 @@
  * @version 2.0.0
  */
 
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import type { WindowUnit } from '@/types/fabricator';
 import { micronEngine } from './MicronEngine';

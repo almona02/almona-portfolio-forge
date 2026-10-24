@@ -3,7 +3,7 @@
  * Helper functions to check tuning status and manage system pack tuning
  */
 
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import type { UPVCSystemPack } from '@/data/upvc-systems';
 
 type TuningProfile = {

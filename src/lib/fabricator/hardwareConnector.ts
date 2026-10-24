@@ -6,7 +6,7 @@
  */
 
 import { WindowUnit, WindowComponent } from '@/types/fabricator';
-import { SystemPack } from '@/data/systemPacks';
+import { SystemPack } from '@/types/fabricator';
 
 export interface HardwareSpec {
   id: string;
