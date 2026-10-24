@@ -229,7 +229,7 @@ export const DesignStateBridge: React.FC<DesignStateBridgeProps> = ({
             // Update global project state
             dispatch({
               type: 'UPDATE_PROJECT_GRID',
-              payload: convertedGrid
+              payload: convertedGrid as unknown as Record<string, unknown>
             });
           }
         }

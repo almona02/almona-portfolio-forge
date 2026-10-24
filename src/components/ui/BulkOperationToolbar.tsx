@@ -534,7 +534,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                   id="edit-value"
                   placeholder="Enter value"
                   className="bg-slate-800 border-slate-700 text-slate-200"
-                  value={Object.values(editFields)[0] || ''}
+                  value={(Object.values(editFields)[0] as string | number) || ''}
                   onChange={(e) => {
                     const fieldName = Object.keys(editFields)[0];
                     setEditFields({ [fieldName]: e.target.value });

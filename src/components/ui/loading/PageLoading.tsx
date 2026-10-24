@@ -8,7 +8,7 @@ interface PageLoadingProps {
   message?: string;
   showProgress?: boolean;
   progress?: number;
-  variant?: 'default' | 'fullscreen';
+  variant?: 'default' | 'minimal' | 'fullscreen';
 }
 
 const variantStyles: Record<'default' | 'fullscreen', { container: string; icon: string; text: string }> = {
