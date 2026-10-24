@@ -227,8 +227,8 @@ export class UnifiedProfileCatalog {
                system = {
                  id: `user-${sysName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
                  name: sysName,
-                 brand: (items[0] as any).system_brand || 'Custom',
-                 category: (items[0] as any).category || 'window',
+                 brand: (items as any[])[0]?.system_brand || 'Custom',
+                 category: (items as any[])[0]?.category || 'window',
                  profiles: [],
                };
                systems.push(system);

@@ -166,7 +166,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'priority',
       header: 'Priority',
       cell: ({ row }) => {
-        const priority = row.getValue('priority')
+        const priority = row.getValue('priority') as string
         return (
           <Badge 
             variant="outline" 
@@ -189,7 +189,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'type',
       header: 'Type',
       cell: ({ row }) => {
-        const type = row.getValue('type')
+        const type = row.getValue('type') as string
         return (
           <Badge variant="secondary">
             {type.replace('_', ' ').charAt(0).toUpperCase() + type.replace('_', ' ').slice(1)}
