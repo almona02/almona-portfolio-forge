@@ -258,7 +258,7 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
         if (error) throw error;
       } else {
         type DynamicFrom = { from: (t: string) => { upsert: (d: unknown, o?: { onConflict?: string }) => Promise<{ error: Error | null }> } };
-        const { error } = await (supabase as DynamicFrom)
+        const { error } = await (supabase as unknown as DynamicFrom)
           .from('spare_parts')
           .upsert({
             part_number: payload.part_number,

@@ -126,7 +126,7 @@ export class ResponseDraftGenerator {
         throw new Error(`Advisory hardening failed: ${hardened.violations.join(', ')}`);
       }
 
-      return hardened.hardenedAdvisory as ResponseAdvisory;
+      return hardened.hardenedAdvisory as unknown as ResponseAdvisory;
 
     } catch (_error) {
       const responseTime = performance.now() - startTime;

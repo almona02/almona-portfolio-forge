@@ -494,7 +494,7 @@ export const fabricatorClientV2 = {
       optimization,
       grid: resolvedGrid,
       components,
-      hardware: (windowUnit.hardware ?? {}) as Record<string, unknown>,
+      hardware: (windowUnit.hardware ?? {}) as unknown as Record<string, unknown>,
       selected_preset: selectedPreset,
       window_unit: {
         ...windowUnit,

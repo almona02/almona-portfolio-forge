@@ -1259,7 +1259,7 @@ export const FabricatorWorkflow: React.FC = () => {
         updatedAt: new Date(),
         // Add constitutional metadata (if WindowUnit type supports it)
         ...(constitutionalMetadata && {
-          constitutionalMetadata: constitutionalMetadata as Record<string, unknown>
+          constitutionalMetadata: constitutionalMetadata as unknown as Record<string, unknown>
         }),
       };
 
