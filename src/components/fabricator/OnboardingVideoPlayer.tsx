@@ -1,4 +1,4 @@
-﻿/**
+/**
  * OnboardingVideoPlayer Component
  * ---------------------------------------------------------------------------
  * Video player for onboarding tutorial steps
@@ -144,7 +144,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
 
     const playPromise = video.play();
     if (playPromise) {
-      playPromise.then(() => {
+      void playPromise.then(() => {
         setIsPlaying(true);
         onPlay?.();
       }).catch(() => {

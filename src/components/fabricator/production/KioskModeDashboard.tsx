@@ -1,4 +1,4 @@
-﻿/**
+/**
  * KioskModeDashboard - Touch-First Production Interface for Operators
  * 
  * Designed for tablet-mounted interfaces near CNC machines.
@@ -142,7 +142,7 @@ export function KioskModeDashboard({
   // Barcode scanner hook
   const { isScanning, simulateScan, buffer } = useBarcodeScanner({
     enabled: workflowState === 'idle',
-    onScan: handleScan,
+    onScan: (barcode) => void handleScan(barcode),
     onError: handleScanError,
   });
 

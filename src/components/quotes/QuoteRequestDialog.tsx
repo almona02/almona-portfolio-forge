@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -154,7 +154,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-7 w-7 p-0"
-                      onClick={() => quoteClipboard.copyToClipboard(result.quote_number, 'quote number')}
+                      onClick={() => void quoteClipboard.copyToClipboard(result.quote_number, 'quote number')}
                     >
                       {quoteClipboard.copiedText === result.quote_number ? (
                         <Check className="h-4 w-4 status-valid" />
