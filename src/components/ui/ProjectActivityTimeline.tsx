@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ProjectActivityTimeline Component
  * 
  * Phase 3 Implementation - Enterprise Activity Tracking
@@ -269,7 +269,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
       }
     };
 
-    fetchActivities();
+    void fetchActivities();
   }, [projectId, propActivities, filters.type, filters.userId, filters.dateFrom, filters.dateTo]);
 
   /**

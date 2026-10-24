@@ -72,7 +72,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     }
   }, [useV2, effectivePoseId, currentProject, jobs, dispatch, setSelectedJob, setCurrentProject, setDesignData]);
 
-  // UP-06: resolve catalog profiles for the active pack only — never substitute ROCK60/first pack.
+  // UP-06: resolve catalog profiles for the active pack only â€” never substitute ROCK60/first pack.
   const profiles = useMemo<Profile[]>(
     () => catalogProfilesOrEmpty(currentProject?.systemPackId),
     [currentProject?.systemPackId],
@@ -127,19 +127,19 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
         savingDesign.current = false;
       }
     }
-    if (payload.closeAfterSave) { publishActiveProject(null); navigate(fabricatorRoutes.studioProjects()); return; }
+    if (payload.closeAfterSave) { void publishActiveProject(null); navigate(fabricatorRoutes.studioProjects()); return; }
     completeStep('design');
 
     const projKey = resolvedProjectId ?? projectId ?? 'default';
     const poseKey = effectivePoseId ?? currentProject.id;
-    navigate(fabricatorRoutes.poseBOM(projKey, poseKey));
+    void navigate(fabricatorRoutes.poseBOM(projKey, poseKey));
   };
 
   const handleBackToMeasuring = () => {
     if (projectId && poseId) {
-      navigate(fabricatorRoutes.poseMeasuring(projectId, poseId));
+      void navigate(fabricatorRoutes.poseMeasuring(projectId, poseId));
     } else {
-      navigate(fabricatorRoutes.newProjectWizard());
+      void navigate(fabricatorRoutes.newProjectWizard());
     }
   };
 
@@ -147,19 +147,19 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     if (useV2) {
       // V2: navigate directly; usePoseV2 will load it from Supabase
       const projKey = resolvedProjectId ?? 'default';
-      navigate(fabricatorRoutes.poseDesign(projKey, id));
+      void navigate(fabricatorRoutes.poseDesign(projKey, id));
     } else {
       const foundJob = jobs.find((job) => job.id === id);
       if (foundJob) {
         dispatch({ type: 'SET_CURRENT_PROJECT', payload: foundJob });
         setSelectedJob(id);
         const projectKey = (foundJob as WindowUnit & { projectId?: string }).projectId ?? foundJob.projectCode ?? foundJob.orderNumber;
-        navigate(fabricatorRoutes.poseDesign(projectKey, id));
+        void navigate(fabricatorRoutes.poseDesign(projectKey, id));
       }
     }
   }, [useV2, resolvedProjectId, jobs, navigate, dispatch, setSelectedJob]);
 
-  // Bare /studio/design (no ids) → project/pose picker, not a dead-end alert
+  // Bare /studio/design (no ids) â†’ project/pose picker, not a dead-end alert
   if (!projectId || !poseId) {
     const recent = jobs.slice(0, 12);
     return (
@@ -192,7 +192,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
                     className="block px-3 py-2 rounded border border-amber-900/40 hover:border-amber-600/60 text-sm truncate"
                     title={job.id}
                   >
-                    {job.projectCode || projKey} ·{' '}
+                    {job.projectCode || projKey} Â·{' '}
                     {job.positionMeta?.posNumber || job.positionMeta?.roomOrZone || job.id.slice(0, 8)}
                   </Link>
                 </li>

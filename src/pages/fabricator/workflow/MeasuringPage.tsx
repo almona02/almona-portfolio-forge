@@ -109,7 +109,7 @@ export const MeasuringPage: React.FC = () => {
     const siblings = useProjectPositions(projectId);
     const upsertPose = useUpsertPose();
     const deletePose = useDeletePose();
-    /** Pose layout strip — closed by default so small screens keep measuring form in view */
+    /** Pose layout strip â€” closed by default so small screens keep measuring form in view */
     const [poseLayoutOpen, setPoseLayoutOpen] = useState(false);
     const layoutPoses = useMemo(() => {
         if (!pose) return siblings;
@@ -121,9 +121,9 @@ export const MeasuringPage: React.FC = () => {
         const w = pose?.overallWidth;
         const h = pose?.overallHeight;
         const dims = Number(w) > 0 && Number(h) > 0
-            ? `${Math.round(Number(w))} × ${Math.round(Number(h))} mm`
+            ? `${Math.round(Number(w))} Ã— ${Math.round(Number(h))} mm`
             : 'Not measured';
-        return `Pose ${pose?.posNumber || '1'} · ${dims} · ${layoutPoses.length} pose${layoutPoses.length === 1 ? '' : 's'}`;
+        return `Pose ${pose?.posNumber || '1'} Â· ${dims} Â· ${layoutPoses.length} pose${layoutPoses.length === 1 ? '' : 's'}`;
     }, [pose, layoutPoses.length]);
 
     const persistPose = useCallback(async (data: MeasurementData, targetPoseId: string, posNumber: string) => {
@@ -140,7 +140,7 @@ export const MeasuringPage: React.FC = () => {
         if (!projectId || !poseId) {
             setMeasurementData(data);
             completeStep('measuring');
-            navigate('/fabricator/workflow/design');
+            void navigate('/fabricator/workflow/design');
             return;
         }
         try {
@@ -148,9 +148,9 @@ export const MeasuringPage: React.FC = () => {
             const result = await persistPose(data, poseId, posNumber);
             setMeasurementData(data);
             completeStep('measuring');
-            toast.success(`Pose ${posNumber} saved: ${data.width} × ${data.height} mm`);
-            if (closeAfterSave) { publishActiveProject(null); navigate(fabricatorRoutes.studioProjects()); }
-            else navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
+            toast.success(`Pose ${posNumber} saved: ${data.width} Ã— ${data.height} mm`);
+            if (closeAfterSave) { void publishActiveProject(null); navigate(fabricatorRoutes.studioProjects()); }
+            else void navigate(fabricatorRoutes.poseDesign(result.projectId, result.poseId));
         } catch (err) {
             toast.error(`Failed to save pose: ${persistenceErrorMessage(err)}`);
         }
@@ -178,7 +178,7 @@ export const MeasuringPage: React.FC = () => {
                 selectedPreset: draft.presetId,
             });
             toast.success(`Pose ${posNumber} saved. Pose ${newPositionNumber} is ready to measure.`);
-            navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
+            void navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
         } catch (err) {
             toast.error(`Failed to add next pose: ${persistenceErrorMessage(err)}`);
         }
@@ -206,7 +206,7 @@ export const MeasuringPage: React.FC = () => {
                 selectedPreset: source.presetId,
             });
             toast.success(`Pose ${posNumber} duplicated`);
-            navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
+            void navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
             setPoseLayoutOpen(false);
         } catch (err) {
             toast.error(`Duplicate failed: ${persistenceErrorMessage(err)}`);
@@ -228,9 +228,9 @@ export const MeasuringPage: React.FC = () => {
             if (id === poseId) {
                 const fallback = layoutPoses.find((candidate) => candidate.id !== id);
                 if (fallback) {
-                    navigate(fabricatorRoutes.poseMeasuring(projectId, fallback.id));
+                    void navigate(fabricatorRoutes.poseMeasuring(projectId, fallback.id));
                 } else {
-                    navigate(fabricatorRoutes.studioProject(projectId));
+                    void navigate(fabricatorRoutes.studioProject(projectId));
                 }
             }
             setPoseLayoutOpen(false);
@@ -313,11 +313,11 @@ export const MeasuringPage: React.FC = () => {
                                 activeId={poseId}
                                 compact
                                 onSelect={(id) => {
-                                    if (projectId) navigate(fabricatorRoutes.poseMeasuring(projectId, id));
+                                    if (projectId) void navigate(fabricatorRoutes.poseMeasuring(projectId, id));
                                     setPoseLayoutOpen(false);
                                 }}
                                 onEdit={(id) => {
-                                    if (projectId) navigate(fabricatorRoutes.poseMeasuring(projectId, id));
+                                    if (projectId) void navigate(fabricatorRoutes.poseMeasuring(projectId, id));
                                     setPoseLayoutOpen(false);
                                 }}
                                 onDuplicate={(id) => { void handleDuplicatePose(id); }}

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CustomerCommunicationsTimeline Component
  * 
  * Priority 4: Customers Page Upgrade - Communication History Timeline
@@ -146,7 +146,7 @@ export const CustomerCommunicationsTimeline: React.FC<CustomerCommunicationsTime
      * Initial load
      */
     useEffect(() => {
-        loadCommunications();
+        void loadCommunications();
     }, [loadCommunications]);
 
     /**

@@ -1,4 +1,4 @@
-import { ProtectedComponent } from '@/components/auth/ProtectedComponent';
+﻿import { ProtectedComponent } from '@/components/auth/ProtectedComponent';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/useToast';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -102,7 +102,7 @@ const Portal = () => {
           status: 'open',
           priority: 'high',
           created_at: '2024-12-01T10:00:00Z',
-          title: 'طلب صيانة دورية'
+          title: 'Ø·Ù„Ø¨ ØµÙŠØ§Ù†Ø© Ø¯ÙˆØ±ÙŠØ©'
         },
         {
           id: '2',
@@ -111,38 +111,38 @@ const Portal = () => {
           status: 'in_progress',
           priority: 'medium',
           created_at: '2024-11-30T16:45:00Z',
-          title: 'طلب قطع غيار'
+          title: 'Ø·Ù„Ø¨ Ù‚Ø·Ø¹ ØºÙŠØ§Ø±'
         }
       ]);
 
       setLoading(false);
     };
 
-    fetchData();
+    void fetchData();
   }, []);
 
   const getStatusBadge = (status: string, type: 'quote' | 'order' | 'ticket') => {
     const statusMap: Record<string, Record<string, { label: string; color: string }>> = {
       quote: {
-        pending: { label: 'قيد المراجعة', color: 'yellow' },
-        sent: { label: 'تم الإرسال', color: 'blue' },
-        accepted: { label: 'مقبول', color: 'green' },
-        rejected: { label: 'مرفوض', color: 'red' },
-        expired: { label: 'منتهي الصلاحية', color: 'gray' }
+        pending: { label: 'Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø©', color: 'yellow' },
+        sent: { label: 'ØªÙ… Ø§Ù„Ø¥Ø±Ø³Ø§Ù„', color: 'blue' },
+        accepted: { label: 'Ù…Ù‚Ø¨ÙˆÙ„', color: 'green' },
+        rejected: { label: 'Ù…Ø±ÙÙˆØ¶', color: 'red' },
+        expired: { label: 'Ù…Ù†ØªÙ‡ÙŠ Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©', color: 'gray' }
       },
       order: {
-        pending: { label: 'قيد المراجعة', color: 'yellow' },
-        confirmed: { label: 'مؤكد', color: 'blue' },
-        processing: { label: 'قيد المعالجة', color: 'orange' },
-        shipped: { label: 'تم الشحن', color: 'blue' },
-        delivered: { label: 'تم التسليم', color: 'green' },
-        cancelled: { label: 'ملغي', color: 'red' }
+        pending: { label: 'Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø©', color: 'yellow' },
+        confirmed: { label: 'Ù…Ø¤ÙƒØ¯', color: 'blue' },
+        processing: { label: 'Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø¹Ø§Ù„Ø¬Ø©', color: 'orange' },
+        shipped: { label: 'ØªÙ… Ø§Ù„Ø´Ø­Ù†', color: 'blue' },
+        delivered: { label: 'ØªÙ… Ø§Ù„ØªØ³Ù„ÙŠÙ…', color: 'green' },
+        cancelled: { label: 'Ù…Ù„ØºÙŠ', color: 'red' }
       },
       ticket: {
-        open: { label: 'مفتوح', color: 'yellow' },
-        in_progress: { label: 'قيد العمل', color: 'blue' },
-        resolved: { label: 'تم الحل', color: 'green' },
-        closed: { label: 'مغلق', color: 'gray' }
+        open: { label: 'Ù…ÙØªÙˆØ­', color: 'yellow' },
+        in_progress: { label: 'Ù‚ÙŠØ¯ Ø§Ù„Ø¹Ù…Ù„', color: 'blue' },
+        resolved: { label: 'ØªÙ… Ø§Ù„Ø­Ù„', color: 'green' },
+        closed: { label: 'Ù…ØºÙ„Ù‚', color: 'gray' }
       }
     };
 
@@ -167,10 +167,10 @@ const Portal = () => {
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
+    void navigator.clipboard.writeText(text).then(() => {
       toast({
-        title: 'تم النسخ',
-        description: 'تم نسخ النص إلى الحافظة',
+        title: 'ØªÙ… Ø§Ù„Ù†Ø³Ø®',
+        description: 'ØªÙ… Ù†Ø³Ø® Ø§Ù„Ù†Øµ Ø¥Ù„Ù‰ Ø§Ù„Ø­Ø§ÙØ¸Ø©',
       });
     });
   };
@@ -206,7 +206,7 @@ const Portal = () => {
 
   return (
     <ProtectedComponent 
-      message="يجب تسجيل الدخول للوصول إلى البوابة"
+      message="ÙŠØ¬Ø¨ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ù„Ù„ÙˆØµÙˆÙ„ Ø¥Ù„Ù‰ Ø§Ù„Ø¨ÙˆØ§Ø¨Ø©"
     >
       <main className="flex-grow pt-20">
       <div className="container mx-auto px-4 py-12">
@@ -217,10 +217,10 @@ const Portal = () => {
           className="text-center mb-12"
         >
           <h1 className="typography-h1 mb-4">
-            <span className="text-gradient-orange">بوابة العميل</span>
+            <span className="text-gradient-orange">Ø¨ÙˆØ§Ø¨Ø© Ø§Ù„Ø¹Ù…ÙŠÙ„</span>
           </h1>
           <p className="text-xl text-gray-600">
-            مرحباً {user?.full_name}، يمكنك هنا تتبع جميع طلباتك وخدماتك
+            Ù…Ø±Ø­Ø¨Ø§Ù‹ {user?.full_name}ØŒ ÙŠÙ…ÙƒÙ†Ùƒ Ù‡Ù†Ø§ ØªØªØ¨Ø¹ Ø¬Ù…ÙŠØ¹ Ø·Ù„Ø¨Ø§ØªÙƒ ÙˆØ®Ø¯Ù…Ø§ØªÙƒ
           </p>
         </motion.div>
 
@@ -234,7 +234,7 @@ const Portal = () => {
           <div className="relative max-w-md mx-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="ابحث برقم الطلب أو كود التتبع..."
+              placeholder="Ø§Ø¨Ø­Ø« Ø¨Ø±Ù‚Ù… Ø§Ù„Ø·Ù„Ø¨ Ø£Ùˆ ÙƒÙˆØ¯ Ø§Ù„ØªØªØ¨Ø¹..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -252,15 +252,15 @@ const Portal = () => {
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="quotes" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                عروض الأسعار ({quotes.length})
+                Ø¹Ø±ÙˆØ¶ Ø§Ù„Ø£Ø³Ø¹Ø§Ø± ({quotes.length})
               </TabsTrigger>
               <TabsTrigger value="orders" className="flex items-center gap-2">
                 <ShoppingCart className="h-4 w-4" />
-                الطلبات ({orders.length})
+                Ø§Ù„Ø·Ù„Ø¨Ø§Øª ({orders.length})
               </TabsTrigger>
               <TabsTrigger value="tickets" className="flex items-center gap-2">
                 <Wrench className="h-4 w-4" />
-                تذاكر الخدمة ({tickets.length})
+                ØªØ°Ø§ÙƒØ± Ø§Ù„Ø®Ø¯Ù…Ø© ({tickets.length})
               </TabsTrigger>
             </TabsList>
 
@@ -286,15 +286,15 @@ const Portal = () => {
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                          <p className="text-sm text-gray-600">المبلغ الإجمالي</p>
+                          <p className="text-sm text-gray-600">Ø§Ù„Ù…Ø¨Ù„Øº Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ</p>
                           <p className="text-lg font-semibold">{formatCurrency(quote.total_amount)}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">عدد العناصر</p>
+                          <p className="text-sm text-gray-600">Ø¹Ø¯Ø¯ Ø§Ù„Ø¹Ù†Ø§ØµØ±</p>
                           <p className="text-lg font-semibold">{quote.items_count}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">تاريخ الإنشاء</p>
+                          <p className="text-sm text-gray-600">ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡</p>
                           <p className="text-lg font-semibold">{formatDate(quote.created_at)}</p>
                         </div>
                       </div>
@@ -302,7 +302,7 @@ const Portal = () => {
                         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm text-gray-600">كود التتبع الرقمي</p>
+                              <p className="text-sm text-gray-600">ÙƒÙˆØ¯ Ø§Ù„ØªØªØ¨Ø¹ Ø§Ù„Ø±Ù‚Ù…ÙŠ</p>
                               <p className="font-mono text-sm">{quote.digital_twin_code}</p>
                             </div>
                             <Button
@@ -343,15 +343,15 @@ const Portal = () => {
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                          <p className="text-sm text-gray-600">المبلغ الإجمالي</p>
+                          <p className="text-sm text-gray-600">Ø§Ù„Ù…Ø¨Ù„Øº Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ</p>
                           <p className="text-lg font-semibold">{formatCurrency(order.total_amount)}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">عدد العناصر</p>
+                          <p className="text-sm text-gray-600">Ø¹Ø¯Ø¯ Ø§Ù„Ø¹Ù†Ø§ØµØ±</p>
                           <p className="text-lg font-semibold">{order.items_count}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">تاريخ الطلب</p>
+                          <p className="text-sm text-gray-600">ØªØ§Ø±ÙŠØ® Ø§Ù„Ø·Ù„Ø¨</p>
                           <p className="text-lg font-semibold">{formatDate(order.created_at)}</p>
                         </div>
                       </div>
@@ -387,8 +387,8 @@ const Portal = () => {
                               'border-green-500 text-green-500'
                             }
                           >
-                            {ticket.priority === 'high' ? 'عاجل' :
-                             ticket.priority === 'medium' ? 'متوسط' : 'منخفض'}
+                            {ticket.priority === 'high' ? 'Ø¹Ø§Ø¬Ù„' :
+                             ticket.priority === 'medium' ? 'Ù…ØªÙˆØ³Ø·' : 'Ù…Ù†Ø®ÙØ¶'}
                           </Badge>
                         </div>
                       </div>
@@ -396,19 +396,19 @@ const Portal = () => {
                     <CardContent>
                       <div className="space-y-4">
                         <div>
-                          <p className="text-sm text-gray-600">عنوان الطلب</p>
+                          <p className="text-sm text-gray-600">Ø¹Ù†ÙˆØ§Ù† Ø§Ù„Ø·Ù„Ø¨</p>
                           <p className="text-lg font-semibold">{ticket.title}</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <p className="text-sm text-gray-600">تاريخ الإنشاء</p>
+                            <p className="text-sm text-gray-600">ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡</p>
                             <p className="text-lg font-semibold">{formatDate(ticket.created_at)}</p>
                           </div>
                           <div>
-                            <p className="text-sm text-gray-600">الأولوية</p>
+                            <p className="text-sm text-gray-600">Ø§Ù„Ø£ÙˆÙ„ÙˆÙŠØ©</p>
                             <p className="text-lg font-semibold">
-                              {ticket.priority === 'high' ? 'عاجل' :
-                               ticket.priority === 'medium' ? 'متوسط' : 'منخفض'}
+                              {ticket.priority === 'high' ? 'Ø¹Ø§Ø¬Ù„' :
+                               ticket.priority === 'medium' ? 'Ù…ØªÙˆØ³Ø·' : 'Ù…Ù†Ø®ÙØ¶'}
                             </p>
                           </div>
                         </div>
@@ -416,7 +416,7 @@ const Portal = () => {
                           <div className="p-3 bg-gray-50 rounded-lg">
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="text-sm text-gray-600">كود التتبع الرقمي</p>
+                                <p className="text-sm text-gray-600">ÙƒÙˆØ¯ Ø§Ù„ØªØªØ¨Ø¹ Ø§Ù„Ø±Ù‚Ù…ÙŠ</p>
                                 <p className="font-mono text-sm">{ticket.digital_twin_code}</p>
                               </div>
                               <Button

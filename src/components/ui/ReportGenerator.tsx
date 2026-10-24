@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ReportGenerator Component
  * 
  * Phase 4 Implementation - Report Generation UI
@@ -93,7 +93,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
             }
         };
 
-        loadTemplates();
+        void loadTemplates();
     }, [initialTemplateId]);
 
     /**

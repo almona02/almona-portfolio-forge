@@ -1,4 +1,4 @@
-
+﻿
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button-gold-tier';
@@ -36,7 +36,7 @@ const Login = () => {
       requestAnimationFrame(() => {
         toast.success('Logged in successfully!');
         startTransition(() => {
-          navigate(postLoginPath, { replace: true });
+          void navigate(postLoginPath, { replace: true });
         });
       });
     }
@@ -69,7 +69,7 @@ const Login = () => {
       } catch {
         // ignore storage issues
       }
-      navigate(postLoginPath, { replace: true });
+      void navigate(postLoginPath, { replace: true });
     } catch (error: any) {
       const errorMessage = error?.message || error?.error?.message || 'We were unable to complete your login request. Please verify your credentials and try again.';
       setError(errorMessage);
@@ -149,7 +149,7 @@ const Login = () => {
                     <Label htmlFor="password" className="text-amber-100/80 font-medium">{t('auth.password', 'Password')}</Label>
                     <PasswordInput
                       id="password"
-                      placeholder={t('auth.password_placeholder', '••••••••')}
+                      placeholder={t('auth.password_placeholder', 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢')}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required

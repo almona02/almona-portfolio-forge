@@ -1,4 +1,4 @@
-import { usePublicCopy } from '@/hooks/usePublicCopy';
+﻿import { usePublicCopy } from '@/hooks/usePublicCopy';
 /**
  * YDT Prestige Agent: Interactive Chatbot with Almona Style
  * University-grade interface with animations and professional design
@@ -103,14 +103,14 @@ const quickActions = [
 const isCodeMessage = (text: string): boolean => /\b[GM]\d+(?:\.\d+)?\b/.test(text);
 
 // Read a spec value safely for the technical-data readout.
-const specValue = (value: unknown): string => (typeof value === 'string' && value ? value : '—');
+const specValue = (value: unknown): string => (typeof value === 'string' && value ? value : 'â€”');
 
   const getWelcomeMessage = (lang: LanguageType): string => {
     const welcomes = {
       en: "Welcome! I'm your YDT Agent. I can help you learn, diagnose, explore, and program AIM 7510. How can I assist you today?",
-      tr: "Hoş geldiniz! YDT Agent'ınızım. AIM 7510'u öğrenmenize, teşhis etmenize, keşfetmenize ve programlamanıza yardımcı olabilirim. Bugün size nasıl yardımcı olabilirim?",
-      ru: "Добро пожаловать! Я ваш YDT Agent. Я могу помочь вам изучать, диагностировать, исследовать и программировать AIM 7510. Чем я могу помочь вам сегодня?",
-      ar: "أهلاً وسهلاً! أنا YDT المساعد. يمكنني مساعدتك في تعلم وتشخيص واستكشاف وبرمجة AIM 7510. كيف يمكنني مساعدتك اليوم؟"
+      tr: "HoÅŸ geldiniz! YDT Agent'Ä±nÄ±zÄ±m. AIM 7510'u Ã¶ÄŸrenmenize, teÅŸhis etmenize, keÅŸfetmenize ve programlamanÄ±za yardÄ±mcÄ± olabilirim. BugÃ¼n size nasÄ±l yardÄ±mcÄ± olabilirim?",
+      ru: "Ð”Ð¾Ð±Ñ€Ð¾ Ð¿Ð¾Ð¶Ð°Ð»Ð¾Ð²Ð°Ñ‚ÑŒ! Ð¯ Ð²Ð°Ñˆ YDT Agent. Ð¯ Ð¼Ð¾Ð³Ñƒ Ð¿Ð¾Ð¼Ð¾Ñ‡ÑŒ Ð²Ð°Ð¼ Ð¸Ð·ÑƒÑ‡Ð°Ñ‚ÑŒ, Ð´Ð¸Ð°Ð³Ð½Ð¾ÑÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ, Ð¸ÑÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÑŒ Ð¸ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ AIM 7510. Ð§ÐµÐ¼ Ñ Ð¼Ð¾Ð³Ñƒ Ð¿Ð¾Ð¼Ð¾Ñ‡ÑŒ Ð²Ð°Ð¼ ÑÐµÐ³Ð¾Ð´Ð½Ñ?",
+      ar: "Ø£Ù‡Ù„Ø§Ù‹ ÙˆØ³Ù‡Ù„Ø§Ù‹! Ø£Ù†Ø§ YDT Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯. ÙŠÙ…ÙƒÙ†Ù†ÙŠ Ù…Ø³Ø§Ø¹Ø¯ØªÙƒ ÙÙŠ ØªØ¹Ù„Ù… ÙˆØªØ´Ø®ÙŠØµ ÙˆØ§Ø³ØªÙƒØ´Ø§Ù ÙˆØ¨Ø±Ù…Ø¬Ø© AIM 7510. ÙƒÙŠÙ ÙŠÙ…ÙƒÙ†Ù†ÙŠ Ù…Ø³Ø§Ø¹Ø¯ØªÙƒ Ø§Ù„ÙŠÙˆÙ…ØŸ"
     };
     return welcomes[lang];
   };
@@ -193,7 +193,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
       }
     };
 
-    loadInitialData();
+    void loadInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -536,10 +536,10 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
 
                 </div>
                 <div className="flex flex-wrap gap-2 justify-between items-center mt-2 px-2">
-                  <span className="text-xs text-slate-400">{copy("Press Enter to send • Shift+Enter for new line")}</span>
+                  <span className="text-xs text-slate-400">{copy("Press Enter to send â€¢ Shift+Enter for new line")}</span>
                   <div className="flex items-center space-x-1">
                     <Shield className="w-3 h-3 text-slate-400" />
-                    <span className="text-xs text-slate-400">{copy("YDT assistance — verify guidance before use")}</span>
+                    <span className="text-xs text-slate-400">{copy("YDT assistance â€” verify guidance before use")}</span>
                   </div>
                 </div>
               </div>
@@ -579,8 +579,8 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
         {/* Technical data readout (advisory, from manual sec. 4) */}
         <div className="mt-8">
           <div className="flex flex-wrap items-baseline gap-2 mb-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-cyan-300/90">{copy('AIM 7510 — Technical data')}</h3>
-            <span className="text-[11px] text-slate-500">{copy('from manual sec. 4 · advisory')}</span>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-cyan-300/90">{copy('AIM 7510 â€” Technical data')}</h3>
+            <span className="text-[11px] text-slate-500">{copy('from manual sec. 4 Â· advisory')}</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {machineSpecs ? ([
@@ -590,7 +590,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               ['Axes', specValue(machineSpecs.cnc_axes), specValue(machineSpecs.tool_magazine_capacity)],
               ['Power', `${specValue(machineSpecs.power_voltage)} ${specValue(machineSpecs.power_phase)}`, specValue(machineSpecs.power_consumption)],
               ['Air', specValue(machineSpecs.air_pressure), specValue(machineSpecs.air_consumption)],
-              ['Tool (Ø / length)', specValue(machineSpecs.max_tool_diameter), specValue(machineSpecs.max_tool_length)],
+              ['Tool (Ã˜ / length)', specValue(machineSpecs.max_tool_diameter), specValue(machineSpecs.max_tool_length)],
               ['Weight (net/gross)', specValue(machineSpecs.weight_net), specValue(machineSpecs.weight_gross)],
             ] as [string, string, string][]).map(([label, value, sub]) => (
               <div key={label} className="bg-slate-900/80 rounded-xl p-3 border border-slate-700/60">
@@ -599,7 +599,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                 {sub ? <div className="text-[11px] text-slate-400 font-mono">{sub}</div> : null}
               </div>
             )) : (
-              <div className="col-span-2 md:col-span-4 text-sm text-gray-400">{copy('Technical data unavailable — backend not reachable.')}</div>
+              <div className="col-span-2 md:col-span-4 text-sm text-gray-400">{copy('Technical data unavailable â€” backend not reachable.')}</div>
             )}
           </div>
         </div>

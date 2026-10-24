@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MacroRecorderPanel Component
  * 
  * UI component for macro recording and playback in EngineeringBay.
@@ -267,7 +267,7 @@ export const MacroRecorderPanel: React.FC<MacroRecorderPanelProps> = ({
                       variant="ghost"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handlePlay(macro);
+                        void handlePlay(macro);
                       }}
                       disabled={isRecording || isPlaying}
                       className="h-6 w-6 p-0"

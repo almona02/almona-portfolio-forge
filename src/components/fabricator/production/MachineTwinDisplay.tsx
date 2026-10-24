@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -65,7 +65,7 @@ const TelemetryCard: React.FC<{
           trend === 'up' ? 'text-green-400' : 
           trend === 'down' ? 'text-red-400' : 'text-gray-400'
         }`}>
-          {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '–'}
+          {trend === 'up' ? 'â†‘' : trend === 'down' ? 'â†“' : 'â€“'}
         </span>
       )}
     </div>
@@ -140,7 +140,7 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
       }
     };
     
-    fetchMachine();
+    void fetchMachine();
     
     // Subscribe to real-time updates
     const channel = supabase
@@ -171,7 +171,7 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
       });
     
     return () => {
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
   }, [machineId]);
   
@@ -295,7 +295,7 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
           <TelemetryCard
             icon={<Thermometer className="w-4 h-4 text-amber-400" />}
             label="Spindle Temp"
-            value={machine.telemetry.spindleTemp ? `${machine.telemetry.spindleTemp}°C` : '--'}
+            value={machine.telemetry.spindleTemp ? `${machine.telemetry.spindleTemp}Â°C` : '--'}
             warning={machine.telemetry.spindleTemp ? machine.telemetry.spindleTemp > 50 : false}
           />
           <TelemetryCard

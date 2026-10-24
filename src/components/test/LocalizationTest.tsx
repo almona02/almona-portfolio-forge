@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRegionDetection } from '../../hooks/useRegionDetection';
 import { useRegionalConfig } from '../../hooks/useRegionDetection';
@@ -9,7 +9,7 @@ const LocalizationTest: React.FC = () => {
   const { config } = useRegionalConfig();
 
   const handleLanguageChange = (language: string) => {
-    i18n.changeLanguage(language);
+    void i18n.changeLanguage(language);
   };
 
   const handleRegionChange = (region: 'TR' | 'EG' | 'DEFAULT') => {
@@ -48,7 +48,7 @@ const LocalizationTest: React.FC = () => {
               i18n.language === 'tr' ? 'bg-blue-500 text-white' : 'bg-gray-200'
             }`}
           >
-            Türkçe
+            TÃ¼rkÃ§e
           </button>
           <button
             onClick={() => handleLanguageChange('ar')}
@@ -56,7 +56,7 @@ const LocalizationTest: React.FC = () => {
               i18n.language === 'ar' ? 'bg-blue-500 text-white' : 'bg-gray-200'
             }`}
           >
-            العربية
+            Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©
           </button>
         </div>
       </div>
@@ -71,7 +71,7 @@ const LocalizationTest: React.FC = () => {
               regionState.region === 'DEFAULT' ? 'bg-green-500 text-white' : 'bg-gray-200'
             }`}
           >
-            🌍 International
+            ðŸŒ International
           </button>
           <button
             onClick={() => handleRegionChange('TR')}
@@ -79,7 +79,7 @@ const LocalizationTest: React.FC = () => {
               regionState.region === 'TR' ? 'bg-green-500 text-white' : 'bg-gray-200'
             }`}
           >
-            🇹🇷 Turkey
+            ðŸ‡¹ðŸ‡· Turkey
           </button>
           <button
             onClick={() => handleRegionChange('EG')}
@@ -87,7 +87,7 @@ const LocalizationTest: React.FC = () => {
               regionState.region === 'EG' ? 'bg-green-500 text-white' : 'bg-gray-200'
             }`}
           >
-            🇪🇬 Egypt
+            ðŸ‡ªðŸ‡¬ Egypt
           </button>
         </div>
       </div>

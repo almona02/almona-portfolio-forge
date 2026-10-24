@@ -42,7 +42,7 @@ interface MicronConfig {
 
   // Batch Calibration (Extrusion Tolerance)
   barBatchCalibration: number; // e.g., 6005mm actual vs 6000mm nominal
-  extrusionTolerance: number; // ±0.5mm per meter
+  extrusionTolerance: number; // Â±0.5mm per meter
 
   // Profile-Specific Milling
   transomMillingDepth: number; // Profile-specific: ROCK 60 = 2.5mm, Panda = 2.5mm, JUMBO 100 = 3.0mm
@@ -52,7 +52,7 @@ interface MicronConfig {
 
   // UPVC Welding Parameters
   upvcWeldingLoss: number; // 3mm per corner (standard), 5mm for thick profiles
-  upvcWeldingTemperature: number; // 240°C winter, 260°C summer
+  upvcWeldingTemperature: number; // 240Â°C winter, 260Â°C summer
   upvcWeldingPressure: number; // 3-5 bar
   upvcWeldingTime: number; // 20-30 seconds per corner
   upvcCoolingTime: number; // 180-300 seconds (3-5 minutes)
@@ -68,7 +68,7 @@ interface MaterialScienceConfig {
 
   // Aluminum Grades
   aluminumGrade: '6063-T5' | '6063-T6';
-  aluminumTolerance: number; // ±0.5mm per meter (standard), ±0.8mm (Egyptian reality)
+  aluminumTolerance: number; // Â±0.5mm per meter (standard), Â±0.8mm (Egyptian reality)
 
   // UPVC Formulations
   upvcMix: 'Calcium-Zinc' | 'Lead-Stabilized';
@@ -76,7 +76,7 @@ interface MaterialScienceConfig {
 
   // Steel Reinforcement
   steelCoating: 'Galvanized' | 'Powder-Coated';
-  steelCoatingThickness: number; // μm (min 12μm, typical 8μm in Egypt)
+  steelCoatingThickness: number; // Î¼m (min 12Î¼m, typical 8Î¼m in Egypt)
 }
 
 export const TheFoundry: React.FC = () => {
@@ -117,7 +117,7 @@ export const TheFoundry: React.FC = () => {
       const access = await GuildSystem.canAccessFoundry(userId);
       setHasAccess(access);
     };
-    checkAccess();
+    void checkAccess();
   }, []);
 
   const handleDxfUpload = useCallback(async (file: File) => {
@@ -212,7 +212,7 @@ export const TheFoundry: React.FC = () => {
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file) handleDxfUpload(file);
+                      if (file) void handleDxfUpload(file);
                     }}
                   />
                   <p className="text-sm text-muted-foreground mt-2">
@@ -292,7 +292,7 @@ export const TheFoundry: React.FC = () => {
                       })}
                     />
                     <p className="text-xs text-muted-foreground">
-                      ±0.5mm per meter (standard aluminum extrusion)
+                      Â±0.5mm per meter (standard aluminum extrusion)
                     </p>
                   </div>
 
@@ -431,7 +431,7 @@ export const TheFoundry: React.FC = () => {
                       })}
                     />
                     <p className="text-xs text-muted-foreground">
-                      ±0.5mm (standard), ±0.8mm (Egyptian reality)
+                      Â±0.5mm (standard), Â±0.8mm (Egyptian reality)
                     </p>
                   </div>
 

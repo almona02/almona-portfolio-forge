@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Invoice Management Dashboard
  * 
  * Gold-tier comprehensive invoice management dashboard with all enhancements:
@@ -57,7 +57,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, [loadData]);
 
   // Memoized computed values for performance

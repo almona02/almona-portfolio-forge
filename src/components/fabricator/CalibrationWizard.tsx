@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Calibration Wizard Component
  * Visual calibration dashboard with real-time simulation and side-by-side comparison
  */
@@ -94,13 +94,13 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
 
   // Load existing calibration if available
   useEffect(() => {
-    loadExistingCalibration();
+    void loadExistingCalibration();
   }, [loadExistingCalibration]);
 
   // Load quick insight for this profile
   useEffect(() => {
     if (userId) {
-      loadQuickInsight();
+      void loadQuickInsight();
     }
   }, [loadQuickInsight, userId]);
 
@@ -156,7 +156,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
       adjustments.push(`Basic cutting: +${calibration.allowances.basicCutting}mm`);
     }
     if (angle === 45 && calibration.allowances?.miter45Extra) {
-      adjustments.push(`Miter 45° extra: +${calibration.allowances.miter45Extra}mm`);
+      adjustments.push(`Miter 45Â° extra: +${calibration.allowances.miter45Extra}mm`);
     }
 
     setSimulationResult({
@@ -178,7 +178,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
     setTestResults((prev) => [...prev, newResult]);
 
     // Learn from adjustment
-    enhancedCalibrationManager.learnFromUserAdjustments(
+    void enhancedCalibrationManager.learnFromUserAdjustments(
       expectedLength,
       actualLength,
       calibration as CuttingCalibration
@@ -363,7 +363,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="miter45Extra" className="typography-label">{t('calibration_wizard.allowances.miter45', 'Miter 45° Extra (mm)')}</Label>
+                  <Label htmlFor="miter45Extra" className="typography-label">{t('calibration_wizard.allowances.miter45', 'Miter 45Â° Extra (mm)')}</Label>
                   <Input
                     id="miter45Extra"
                     type="number"
@@ -433,7 +433,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
             <TabsContent value="variations" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="temperatureExpansion" className="typography-label">{t('calibration_wizard.variations.temperature', 'Temperature Expansion (mm/°C)')}</Label>
+                  <Label htmlFor="temperatureExpansion" className="typography-label">{t('calibration_wizard.variations.temperature', 'Temperature Expansion (mm/Â°C)')}</Label>
                   <Input
                     id="temperatureExpansion"
                     type="number"
@@ -486,7 +486,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="simAngle" className="typography-label">{t('calibration_wizard.simulation.angle', 'Angle (°)')}</Label>
+                  <Label htmlFor="simAngle" className="typography-label">{t('calibration_wizard.simulation.angle', 'Angle (Â°)')}</Label>
                   <Select
                     onValueChange={(value) => {
                       const length = parseFloat(
@@ -499,13 +499,13 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                       <SelectValue placeholder="90" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="90">90°</SelectItem>
-                      <SelectItem value="45">45°</SelectItem>
+                      <SelectItem value="90">90Â°</SelectItem>
+                      <SelectItem value="45">45Â°</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="simTemperature" className="typography-label">{t('calibration_wizard.simulation.temperature', 'Temperature (°C)')}</Label>
+                  <Label htmlFor="simTemperature" className="typography-label">{t('calibration_wizard.simulation.temperature', 'Temperature (Â°C)')}</Label>
                   <Input
                     id="simTemperature"
                     type="number"
@@ -578,7 +578,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                         (document.getElementById('testActual') as HTMLInputElement)?.value || '0'
                       );
                       if (expected && actual) {
-                        addTestResult(expected, actual);
+                        void addTestResult(expected, actual);
                         (document.getElementById('testExpected') as HTMLInputElement).value = '';
                         (document.getElementById('testActual') as HTMLInputElement).value = '';
                       }
@@ -596,7 +596,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                     {testResults.map((result, idx) => (
                       <div key={idx} className="flex justify-between items-center p-2 bg-gray-900 rounded">
                         <span className="text-sm">
-                          {t('calibration_wizard.test_results.expected_label', 'Expected')}: {result.expectedLength.toFixed(2)}mm → {t('calibration_wizard.test_results.actual_label', 'Actual')}: {result.actualLength.toFixed(2)}mm
+                          {t('calibration_wizard.test_results.expected_label', 'Expected')}: {result.expectedLength.toFixed(2)}mm â†’ {t('calibration_wizard.test_results.actual_label', 'Actual')}: {result.actualLength.toFixed(2)}mm
                         </span>
                         <span
                           className={`text-sm font-semibold ${Math.abs(result.difference) < 0.5 ? 'text-green-400' : 'text-yellow-400'

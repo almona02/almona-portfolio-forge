@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthContext';
+﻿import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -170,7 +170,7 @@ const InventoryPage: React.FC = () => {
       for (const [profileId, edits] of entries) {
         const base = inventory.find((p) => p.id === profileId);
         if (!base) {
-          // Profile no longer exists locally – treat as conflict and skip.
+          // Profile no longer exists locally â€“ treat as conflict and skip.
           continue;
         }
 
@@ -293,7 +293,7 @@ const InventoryPage: React.FC = () => {
                 <li key={p.id}>
                   <span className="font-semibold">{p.name}</span>{' '}
                   <span className="text-red-300">
-                    (updated by another user or process – review before retrying)
+                    (updated by another user or process â€“ review before retrying)
                   </span>
                 </li>
               ))}
@@ -346,13 +346,13 @@ const InventoryPage: React.FC = () => {
                   variant="outline"
                   className="btn-secondary"
                 >
-                  {user.email || `${user.id.slice(0, 4)}…${user.id.slice(-4)}`}
+                  {user.email || `${user.id.slice(0, 4)}â€¦${user.id.slice(-4)}`}
                 </Badge>
               </div>
               <div className="flex items-center gap-2 text-sm text-amber-600/70">
                 <span>Last Sync:</span>
                 <span className="text-amber-300 font-mono">
-                  {isLoading ? 'Syncing…' : 'Just now'}
+                  {isLoading ? 'Syncingâ€¦' : 'Just now'}
                 </span>
               </div>
             </div>
@@ -362,7 +362,7 @@ const InventoryPage: React.FC = () => {
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                 <span>Live Data</span>
               </div>
-              <div className="text-amber-600/70">Supabase • Real-time</div>
+              <div className="text-amber-600/70">Supabase â€¢ Real-time</div>
             </div>
           </div>
 
@@ -489,7 +489,7 @@ const InventoryPage: React.FC = () => {
                 className="btn-primary"
                 onClick={() => {
                   dispatch({ type: 'SET_GLOBAL_SEARCH', payload: '' });
-                  navigate('/fabricator/profiles');
+                  void navigate('/fabricator/profiles');
                 }}
               >
                 Review Items
@@ -541,7 +541,7 @@ const InventoryPage: React.FC = () => {
                 <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>{t('inventory.analytics.coming_soon', 'Ledger analytics are available on the Studio Stock dashboard.')}</p>
                 <p className="text-sm">
-                  {t('inventory.analytics.features', 'Consumption, ageing, reorder coverage and remnant reuse from recorded movements — no predictive stocking claims.')}
+                  {t('inventory.analytics.features', 'Consumption, ageing, reorder coverage and remnant reuse from recorded movements â€” no predictive stocking claims.')}
                 </p>
               </div>
             </CardContent>
@@ -554,9 +554,9 @@ const InventoryPage: React.FC = () => {
         <CardContent className="p-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 text-xs text-amber-600/70">
             <div className="flex items-center gap-6">
-              <span>• Real-time synchronization</span>
-              <span>• Turkish &amp; Egyptian market optimized</span>
-              <span>• Machine-ready export formats</span>
+              <span>â€¢ Real-time synchronization</span>
+              <span>â€¢ Turkish &amp; Egyptian market optimized</span>
+              <span>â€¢ Machine-ready export formats</span>
             </div>
             <div className="flex items-center gap-4">
               <span>Fabricator Pro v4.0</span>

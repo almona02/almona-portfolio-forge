@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Audit Trail Dashboard Component
  * 
  * Gold-tier audit trail visualization with timeline, summary cards, and export functionality.
@@ -56,7 +56,7 @@ export const AuditTrailDashboard: React.FC<AuditTrailDashboardProps> = ({ classN
   const [selectedAnchor, setSelectedAnchor] = useState<AuditAnchor | null>(null);
 
   useEffect(() => {
-    loadAuditTrail();
+    void loadAuditTrail();
   }, []);
 
   const loadAuditTrail = async () => {

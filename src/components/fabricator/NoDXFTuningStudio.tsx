@@ -1,4 +1,4 @@
-/**
+﻿/**
  * No-DXF Tuning Studio
  * 
  * Allows users to tune system packs without DXF import:
@@ -85,7 +85,7 @@ export const NoDXFTuningStudio: React.FC = () => {
     
     if (!pack) {
       if (systemPackId.startsWith('custom-pack-')) return;
-      navigate(fabricatorRoutes.studioData());
+      void navigate(fabricatorRoutes.studioData());
       return;
     }
 
@@ -109,7 +109,7 @@ export const NoDXFTuningStudio: React.FC = () => {
     if (existingProfiles.length > 0) {
       // Use existing profiles
       const profileConfigs: ProfileConfig[] = existingProfiles.map((p: Profile) => {
-        // ✅ Smart role detection: Use existing role, or detect from name, or fallback to type
+        // âœ… Smart role detection: Use existing role, or detect from name, or fallback to type
         const role = p.profileRole || detectRoleFromName(p.name, p.type) || (p.type === 'frame' ? 'frame' : 'sash');
         
         return {
@@ -312,7 +312,7 @@ export const NoDXFTuningStudio: React.FC = () => {
         const returnUrl = getReturnUrl();
         if (returnUrl) {
           // Pass tuned system info in state
-          navigate(returnUrl.url, { 
+          void navigate(returnUrl.url, { 
             state: { 
               systemPackId: tunedPack.meta.id,
               systemTuned: true,
@@ -321,7 +321,7 @@ export const NoDXFTuningStudio: React.FC = () => {
             } 
           });
         } else {
-          navigate(fabricatorRoutes.studioData(), {
+          void navigate(fabricatorRoutes.studioData(), {
             state: {
               systemPackId: tunedPack.meta.id,
               systemTuned: true,
@@ -412,9 +412,9 @@ export const NoDXFTuningStudio: React.FC = () => {
             onClick={() => {
               const returnUrl = getReturnUrl();
               if (returnUrl) {
-                navigate(returnUrl.url, { state: returnUrl.params });
+                void navigate(returnUrl.url, { state: returnUrl.params });
               } else {
-                navigate(fabricatorRoutes.studioData());
+                void navigate(fabricatorRoutes.studioData());
               }
             }}
           >
@@ -701,7 +701,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                       <div>
                         <span className="text-gray-400">Dimensions:</span>
-                        <div className="text-white">{profile.width} × {profile.height} × {profile.thickness}mm</div>
+                        <div className="text-white">{profile.width} Ã— {profile.height} Ã— {profile.thickness}mm</div>
                       </div>
                       <div>
                         <span className="text-gray-400">Saw Kerf:</span>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 import { getTicketById, getTicketMessages, createMessage, updateTicketStatus } from '@/lib/ticketApi'
@@ -54,7 +54,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
     mutationFn: (messageData: CreateMessageData & { author_id: string }) => createMessage(messageData),
     onSuccess: () => {
       setNewMessage('')
-      refetchMessages()
+      void refetchMessages()
       toast({
         title: 'Success',
         description: 'Your message has been sent.',
@@ -75,7 +75,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
     mutationFn: ({ status, resolution }: { status: string; resolution?: string }) => 
       updateTicketStatus(ticketId, status as 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'pending_approval' | 'resolved' | 'closed' | 'cancelled', resolution),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] })
+      void queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] })
       toast({
         title: 'Success',
         description: 'Ticket status updated.',
@@ -114,7 +114,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-      handleSendMessage()
+      void handleSendMessage()
     }
   }
 
@@ -256,7 +256,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
                           {message.status_change && (
                             <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded border">
                               <p className="text-sm">
-                                <span className="font-medium">Status changed:</span> {message.status_change.from} → {message.status_change.to}
+                                <span className="font-medium">Status changed:</span> {message.status_change.from} â†’ {message.status_change.to}
                               </p>
                               {message.status_change.reason && (
                                 <p className="text-sm text-muted-foreground mt-1">

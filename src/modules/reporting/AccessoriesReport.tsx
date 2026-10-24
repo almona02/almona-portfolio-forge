@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AccessoriesReport - Comprehensive accessories and hardware report
  * Phase 2: Professional Report Generation System
  * 
@@ -233,7 +233,7 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
     };
 
     if (project.hardware && project.hardware.length > 0) {
-      calculatePrices();
+      void calculatePrices();
     }
   }, [project.hardware, accessories, pricing]);
 
@@ -310,17 +310,17 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
   const getCategoryIcon = (type: FabricatorAccessory['type']) => {
     switch (type) {
       case 'lock':
-        return '🔒';
+        return 'ðŸ”’';
       case 'hinge':
-        return '🔗';
+        return 'ðŸ”—';
       case 'handle':
-        return '🚪';
+        return 'ðŸšª';
       case 'seal':
-        return '🔧';
+        return 'ðŸ”§';
       case 'corner':
-        return '📐';
+        return 'ðŸ“';
       default:
-        return '📦';
+        return 'ðŸ“¦';
     }
   };
 

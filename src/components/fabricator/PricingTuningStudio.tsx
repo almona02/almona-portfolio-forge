@@ -205,7 +205,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
         }
       };
 
-      loadProfiles();
+      void loadProfiles();
     }
   }, [externalProfiles, userId]);
 
@@ -322,7 +322,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
       }
     };
 
-    loadPricing();
+    void loadPricing();
   }, [selectedProfileId, selectedSystemPackId]);
 
   // Handle back button
@@ -431,7 +431,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
 
   // Load history when profile/system pack changes
   useEffect(() => {
-    loadPriceHistory();
+    void loadPriceHistory();
   }, [loadPriceHistory]);
 
   // Keyboard shortcuts for accessibility (Ctrl+S to save, Esc to close)
@@ -3640,9 +3640,9 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                               size="sm"
                               onClick={() => {
                                 if (bulkOperationType === 'percentage') {
-                                  handleConfirmBulkPercentage();
+                                  void handleConfirmBulkPercentage();
                                 } else if (bulkOperationType === 'copy') {
-                                  handleConfirmCopyPricing();
+                                  void handleConfirmCopyPricing();
                                 }
                               }}
                               className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs"

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Region Detection Hook
  * Integrates with existing i18n structure and provides region-aware functionality
  */
@@ -225,7 +225,7 @@ export function useRegionDetection(options: RegionDetectionOptions = {}): {
       const targetLanguage = config.language;
       
       if (i18n.language !== targetLanguage) {
-        i18n.changeLanguage(targetLanguage);
+        void i18n.changeLanguage(targetLanguage);
       }
     }
   }, [opts.syncWithI18n, i18n]);
@@ -319,7 +319,7 @@ export function useRegionDetection(options: RegionDetectionOptions = {}): {
   useEffect(() => {
     // Only refresh if we don't have a valid region yet
     if (regionState.region === opts.fallbackRegion && !regionState.lastUpdated) {
-      refreshRegion();
+      void refreshRegion();
     }
   }, [refreshRegion, regionState.region, regionState.lastUpdated, opts.fallbackRegion]);
 
@@ -473,7 +473,7 @@ export function useTurkishTaxUtils() {
         maximumFractionDigits: 2
       });
       
-      const symbol = options?.showSymbol !== false ? '₺' : '';
+      const symbol = options?.showSymbol !== false ? 'â‚º' : '';
       return `${formattedAmount}${symbol}`;
     }
   };

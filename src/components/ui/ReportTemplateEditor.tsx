@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ReportTemplateEditor Component
  * 
  * Phase 4 Implementation - Report Template Creation/Editing
@@ -95,7 +95,7 @@ export const ReportTemplateEditor: React.FC<ReportTemplateEditorProps> = ({
             }
         };
 
-        loadTemplate();
+        void loadTemplate();
     }, [templateId]);
 
     /**

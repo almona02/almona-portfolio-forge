@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Notification Center Component
  * 
  * Gold-tier notification center UI component for displaying and managing notifications.
@@ -98,8 +98,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   }, [userId]);
 
   useEffect(() => {
-    loadNotifications();
-    loadUnreadCount();
+    void loadNotifications();
+    void loadUnreadCount();
     
     // Set up real-time subscription
     const channel = supabase
@@ -113,8 +113,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           filter: `user_id=eq.${userId}`,
         },
         () => {
-          loadNotifications();
-          loadUnreadCount();
+          void loadNotifications();
+          void loadUnreadCount();
         }
       )
       .on(
@@ -126,20 +126,20 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           filter: `user_id=eq.${userId}`,
         },
         () => {
-          loadNotifications();
-          loadUnreadCount();
+          void loadNotifications();
+          void loadUnreadCount();
         }
       )
       .subscribe();
 
     // Poll for updates every 30 seconds as fallback
     const interval = setInterval(() => {
-      loadNotifications();
-      loadUnreadCount();
+      void loadNotifications();
+      void loadUnreadCount();
     }, 30000);
 
     return () => {
-      channel.unsubscribe();
+      void channel.unsubscribe();
       clearInterval(interval);
     };
   }, [userId, loadNotifications, loadUnreadCount]);

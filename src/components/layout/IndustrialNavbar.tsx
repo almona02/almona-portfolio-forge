@@ -1,4 +1,4 @@
-import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
+﻿import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { AlmonaNavbarLogo } from '@/components/ui/AlmonaNavbarLogo';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -118,7 +118,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
 
   // Business navigation: customers, projects, inventory, etc.
   const businessNav = [
-    // Prefer fabricator‑scoped aliases so operators stay inside the cockpit
+    // Prefer fabricatorâ€‘scoped aliases so operators stay inside the cockpit
     { name: t('fabricator:navbar.business_nav.customers', 'Customers'), path: "/fabricator/customers", icon: <Users className="h-4 w-4" /> },
     { name: t('fabricator:navbar.business_nav.projects', 'Projects'), path: "/fabricator/studio/projects", icon: <Factory className="h-4 w-4" /> },
     { name: t('fabricator:navbar.business_nav.inventory', 'Inventory'), path: "/fabricator/inventory", icon: <Package className="h-4 w-4" /> },
@@ -140,7 +140,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     { name: t('fabricator:navbar.quick_actions.quality_reports', 'Quality Reports'), action: () => navigate('/quality-reports'), icon: Brain }
   ];
 
-  // Global fabricator nav model – used by the search overlay
+  // Global fabricator nav model â€“ used by the search overlay
   type NavItem = {
     id: string;
     label: string;
@@ -156,7 +156,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       id: 'workflow',
       label: 'automation Workflow',
       icon: Factory,
-      description: 'End‑to‑end fabrication pipeline',
+      description: 'Endâ€‘toâ€‘end fabrication pipeline',
       children: [
         { id: 'measuring', label: 'Smart Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: "PRO" },
         { id: 'design', label: 'Technical Design', icon: Settings, path: '/fabricator-workflow#design', badge: 'PRO' },
@@ -278,7 +278,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     return (
       <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs border ${config.bg} ${config.border} ${config.color}`}>
         <div className={`w-1.5 h-1.5 rounded-full ${config.bg} ${config.color} animate-pulse`} />
-        {efficiency ? `${statusLabel} • ${efficiency}` : statusLabel}
+        {efficiency ? `${statusLabel} â€¢ ${efficiency}` : statusLabel}
       </div>
     );
   };
@@ -337,7 +337,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       {/* Main Navbar Container */}
       <div className="container mx-auto px-4 xl:px-6">
         <div className="flex items-center justify-between h-16 gap-4">
-          {/* Left Section – Brand + workflow access */}
+          {/* Left Section â€“ Brand + workflow access */}
           <div className="flex items-center gap-4 flex-shrink-0">
             <Link to="/" className="flex items-center gap-3 group">
               <AlmonaNavbarLogo size={36} />
@@ -351,7 +351,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
               </div>
             </Link>
 
-            {/* Workflow dropdown – easier to reach on wide screens */}
+            {/* Workflow dropdown â€“ easier to reach on wide screens */}
             <motion.div className="relative hidden md:block">
               <IndustrialButton
                 variant="secondary"
@@ -406,7 +406,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
             </motion.div>
           </div>
 
-          {/* Center Section – status strip (visible on large screens) */}
+          {/* Center Section â€“ status strip (visible on large screens) */}
           <div className="hidden lg:flex items-center justify-center flex-1">
             <div className="inline-flex items-center gap-4 rounded-full bg-slate-950/70 px-3 py-1.5 border border-slate-700/80 text-[11px]">
               <div className="flex items-center gap-1.5">
@@ -429,7 +429,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
             </div>
           </div>
 
-          {/* Right Section – search, menus, user */}
+          {/* Right Section â€“ search, menus, user */}
           <div className="flex items-center gap-2 flex-shrink-0">
             {/* Search Bar with global fabricator search overlay - Hidden on fabricator routes */}
             {!location.pathname.startsWith('/fabricator') && (
@@ -597,7 +597,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                         <button
                           key={action.name}
                           onClick={() => {
-                            action.action();
+                            void action.action();
                             setActiveMenu(null);
                           }}
                           className="btn-primary"
@@ -641,7 +641,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                       <button
                         className="btn-primary"
                         onClick={() => {
-                          navigate('/fabricator/settings/branding');
+                          void navigate('/fabricator/settings/branding');
                           setActiveMenu(null);
                         }}
                       >
@@ -706,7 +706,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                   <button
                     key={action.name}
                     onClick={() => {
-                      action.action();
+                      void action.action();
                       setMobileOpen(false);
                     }}
                     className="flex items-center gap-2 p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:text-white hover:border-amber-500/30 transition-all"
@@ -815,7 +815,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                         onClick={() => {
                           if (item.path) {
                             setSearchQuery('');
-                            navigate(item.path);
+                            void navigate(item.path);
                           }
                         }}
                         className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors flex items-center gap-3"
@@ -848,7 +848,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                               onClick={() => {
                                 if (child.path) {
                                   setSearchQuery('');
-                                  navigate(child.path);
+                                  void navigate(child.path);
                                 }
                               }}
                               className="w-full text-left pl-12 pr-4 py-2 hover:bg-white/5 transition-colors flex items-center gap-3 text-xs"

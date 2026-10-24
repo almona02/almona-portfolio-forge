@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Activity Store (Zustand)
  * 
  * Global state management for activity events with caching and optimization.
@@ -243,7 +243,7 @@ export const useActivityTimeline = (
   // Auto-load on mount if enabled
   React.useEffect(() => {
     if (autoLoad && entityId) {
-      store.loadTimeline(entityType, entityId, limit);
+      void store.loadTimeline(entityType, entityId, limit);
     }
   }, [entityType, entityId, limit, autoLoad, store]);
   

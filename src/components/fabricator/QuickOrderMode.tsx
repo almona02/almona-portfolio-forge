@@ -1,4 +1,4 @@
-/**
+﻿/**
  * QuickOrderMode - Expert Workflow Interface
  * 
  * Streamlined interface for expert fabricators to create projects in 2-3 minutes:
@@ -154,7 +154,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
 
   // Load templates on mount
   useEffect(() => {
-    loadTemplates();
+    void loadTemplates();
   }, [loadTemplates]);
 
   // Setup keyboard shortcuts
@@ -263,7 +263,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                     value={selectedTemplate || ''}
                     onValueChange={(value) => {
                       if (value) {
-                        handleLoadTemplate(value);
+                        void handleLoadTemplate(value);
                       } else {
                         setSelectedTemplate(null);
                       }
@@ -436,7 +436,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                         <div className="flex-1">
                           <p className="text-white text-sm font-medium">{template.name}</p>
                           <p className="text-gray-400 text-xs">
-                            {template.category} • Used {template.usageCount || 0}x
+                            {template.category} â€¢ Used {template.usageCount || 0}x
                           </p>
                         </div>
                         <Button
@@ -444,7 +444,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleLoadTemplate(template.id);
+                            void handleLoadTemplate(template.id);
                           }}
                         >
                           <FolderOpen className="h-4 w-4" />

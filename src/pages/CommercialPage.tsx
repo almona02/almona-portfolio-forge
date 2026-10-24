@@ -1,4 +1,4 @@
-import { InvoiceDetailDialog } from '@/components/commercial/InvoiceDetailDialog';
+﻿import { InvoiceDetailDialog } from '@/components/commercial/InvoiceDetailDialog';
 import { InvoiceManagementDashboard } from '@/components/commercial/InvoiceManagementDashboard';
 import { PaymentReconciliation } from '@/components/commercial/PaymentReconciliation';
 import { QuoteInvoiceTemplateLibrary } from '@/components/commercial/QuoteInvoiceTemplateLibrary';
@@ -728,7 +728,7 @@ const CommercialPageComponent: React.FC = () => {
       }
     };
 
-    loadExchangeRates();
+    void loadExchangeRates();
   }, [displayCurrency, availableCurrencies]);
 
   // Convert amount to display currency
@@ -878,7 +878,7 @@ const CommercialPageComponent: React.FC = () => {
                   <p className="text-amber-200 font-semibold">Generate Quote from BOM</p>
                   <p className="text-amber-500/70 text-sm mt-1">
                     BOM total: {formatCurrency(bom?.cost?.totalCost || optimizationResult?.costBreakdown?.totalCost || 0, 'en', 'EGP')}
-                    {' — '}Click to create a draft quote with 25% markup + 14% VAT.
+                    {' â€” '}Click to create a draft quote with 25% markup + 14% VAT.
                   </p>
                 </div>
                 <Button onClick={handleCreateDraftQuote} className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6">
@@ -1215,7 +1215,7 @@ const CommercialPageComponent: React.FC = () => {
                   )}
                   {(amountMin || amountMax) && (
                     <Badge variant="outline" className="bg-amber-500/10 text-amber-200 border-amber-500/30 text-xs">
-                      Amount: {amountMin || '0'} - {amountMax || '∞'}
+                      Amount: {amountMin || '0'} - {amountMax || 'âˆž'}
                       <button
                         onClick={() => { setAmountMin(''); setAmountMax(''); }}
                         className="ml-2 hover:text-amber-400"
@@ -1399,7 +1399,7 @@ const CommercialPageComponent: React.FC = () => {
                           </Badge>
                           {quote.amount != null && quote.currency !== displayCurrency && (
                             <span className="text-[10px] text-amber-600/60">
-                              ≈ {formatCurrency(
+                              â‰ˆ {formatCurrency(
                                 convertToDisplayCurrency(quote.amount, quote.currency || 'EGP'),
                                 'en',
                                 displayCurrency,
@@ -1616,7 +1616,7 @@ const CommercialPageComponent: React.FC = () => {
                             </Badge>
                             {invoice.amount != null && invoice.currency !== displayCurrency && (
                               <span className="text-[10px] text-amber-600/60">
-                                ≈ {formatCurrency(
+                                â‰ˆ {formatCurrency(
                                   convertToDisplayCurrency(invoice.amount, invoice.currency || 'EGP'),
                                   'en',
                                   displayCurrency,
@@ -1758,7 +1758,7 @@ const CommercialPageComponent: React.FC = () => {
           <button
             onClick={() => {
               completeStep('commercial');
-              navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/production`);
+              void navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/production`);
             }}
             className="group relative px-8 py-4 bg-gradient-to-r from-green-500 via-green-600 to-green-500 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { generateSrcSet, optimizeImage, supportsWebP, supportsAVIF } from '@/lib/imageOptimization';
 import type { OptimizedImageOptions } from '@/lib/imageOptimization';
 
@@ -39,8 +39,8 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Detect browser support for modern formats
   React.useEffect(() => {
-    supportsWebP().then(setSupportsWebPFormat);
-    supportsAVIF().then(setSupportsAVIFFormat);
+    void supportsWebP().then(setSupportsWebPFormat);
+    void supportsAVIF().then(setSupportsAVIFFormat);
   }, []);
 
   const handleLoad = React.useCallback(() => {

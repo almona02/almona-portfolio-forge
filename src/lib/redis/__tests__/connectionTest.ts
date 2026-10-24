@@ -1,41 +1,41 @@
-import { CacheHelper } from '../cacheHelper';
+﻿import { CacheHelper } from '../cacheHelper';
 import redis from '../client';
 
 /**
  * Test Redis connection and basic operations
  */
 async function testRedisConnection() {
-  console.log('🔍 Testing Redis Connection...\n');
+  console.log('ðŸ” Testing Redis Connection...\n');
 
   try {
     // Test 1: Ping
     console.log('Test 1: Ping Redis');
     const pong = await redis.ping();
-    console.log(`✅ Ping response: ${pong}\n`);
+    console.log(`âœ… Ping response: ${pong}\n`);
 
     // Test 2: Set and Get
     console.log('Test 2: Set and Get');
     await redis.set('test:key', 'Hello Redis!');
     const value = await redis.get('test:key');
-    console.log(`✅ Retrieved value: ${value}\n`);
+    console.log(`âœ… Retrieved value: ${value}\n`);
 
     // Test 3: Set with expiry
     console.log('Test 3: Set with TTL (5 seconds)');
     await redis.setex('test:expiry', 5, 'This will expire');
     const ttl = await redis.ttl('test:expiry');
-    console.log(`✅ TTL: ${ttl} seconds\n`);
+    console.log(`âœ… TTL: ${ttl} seconds\n`);
 
     // Test 4: Delete
     console.log('Test 4: Delete key');
     await redis.del('test:key');
     const deleted = await redis.get('test:key');
-    console.log(`✅ After delete: ${deleted === null ? 'null (success)' : 'still exists (failed)'}\n`);
+    console.log(`âœ… After delete: ${deleted === null ? 'null (success)' : 'still exists (failed)'}\n`);
 
     // Test 5: CacheHelper operations
     console.log('Test 5: CacheHelper.set and get');
     await CacheHelper.set('test:helper', { foo: 'bar', timestamp: Date.now() }, { ttl: 60 });
     const cached = await CacheHelper.get('test:helper');
-    console.log(`✅ CacheHelper retrieved:`, cached, '\n');
+    console.log(`âœ… CacheHelper retrieved:`, cached, '\n');
 
     // Test 6: Pattern invalidation
     console.log('Test 6: Pattern invalidation');
@@ -43,21 +43,21 @@ async function testRedisConnection() {
     await CacheHelper.set('test:pattern:2', { id: 2 });
     await CacheHelper.set('test:other:1', { id: 3 });
     const deleted_count = await CacheHelper.invalidatePattern('test:pattern:*');
-    console.log(`✅ Deleted ${deleted_count} keys matching pattern\n`);
+    console.log(`âœ… Deleted ${deleted_count} keys matching pattern\n`);
 
     // Test 7: Increment (for rate limiting)
     console.log('Test 7: Increment counter');
     const count1 = await CacheHelper.increment('test:counter', 10);
     const count2 = await CacheHelper.increment('test:counter', 10);
     const count3 = await CacheHelper.increment('test:counter', 10);
-    console.log(`✅ Counter values: ${count1}, ${count2}, ${count3}\n`);
+    console.log(`âœ… Counter values: ${count1}, ${count2}, ${count3}\n`);
 
     // Test 8: GetOrSet pattern
     console.log('Test 8: GetOrSet pattern');
     let dbCallCount = 0;
     const fetchFn = async () => {
       dbCallCount++;
-      console.log(`  📊 Fetching from "database" (call #${dbCallCount})`);
+      console.log(`  ðŸ“Š Fetching from "database" (call #${dbCallCount})`);
       return { data: 'from database', timestamp: Date.now() };
     };
 
@@ -66,18 +66,18 @@ async function testRedisConnection() {
     
     const result2 = await CacheHelper.getOrSet('test:getOrSet', fetchFn, { ttl: 60 });
     console.log(`  Second call (should be cached):`, result2);
-    console.log(`✅ Database called ${dbCallCount} time(s) (should be 1)\n`);
+    console.log(`âœ… Database called ${dbCallCount} time(s) (should be 1)\n`);
 
     // Cleanup
-    console.log('🧹 Cleaning up test keys...');
+    console.log('ðŸ§¹ Cleaning up test keys...');
     await redis.del('test:expiry', 'test:helper', 'test:other:1', 'test:counter', 'test:getOrSet');
     
-    console.log('\n✅ All Redis tests passed!');
-    console.log('🎉 Redis is ready for production use!\n');
+    console.log('\nâœ… All Redis tests passed!');
+    console.log('ðŸŽ‰ Redis is ready for production use!\n');
 
     return true;
   } catch (error) {
-    console.error('❌ Redis test failed:', error);
+    console.error('âŒ Redis test failed:', error);
     return false;
   }
 }
@@ -86,7 +86,7 @@ async function testRedisConnection() {
  * Test Redis info and stats
  */
 async function testRedisInfo() {
-  console.log('📊 Redis Server Information:\n');
+  console.log('ðŸ“Š Redis Server Information:\n');
 
   try {
     // Get server info
@@ -119,7 +119,7 @@ async function testRedisInfo() {
 
     return true;
   } catch (error) {
-    console.error('❌ Failed to get Redis info:', error);
+    console.error('âŒ Failed to get Redis info:', error);
     return false;
   }
 }
@@ -128,9 +128,9 @@ async function testRedisInfo() {
  * Run all tests
  */
 async function runTests() {
-  console.log('═══════════════════════════════════════════════════════');
-  console.log('🧪 Redis Connection & Functionality Tests');
-  console.log('═══════════════════════════════════════════════════════\n');
+  console.log('â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•');
+  console.log('ðŸ§ª Redis Connection & Functionality Tests');
+  console.log('â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n');
 
   const connectionTest = await testRedisConnection();
   console.log('');
@@ -139,9 +139,9 @@ async function runTests() {
     await testRedisInfo();
   }
 
-  console.log('═══════════════════════════════════════════════════════');
-  console.log(connectionTest ? '✅ All tests completed successfully!' : '❌ Some tests failed');
-  console.log('═══════════════════════════════════════════════════════\n');
+  console.log('â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•');
+  console.log(connectionTest ? 'âœ… All tests completed successfully!' : 'âŒ Some tests failed');
+  console.log('â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n');
 
   // Close connection
   await redis.quit();
@@ -150,7 +150,7 @@ async function runTests() {
 
 // Run tests if executed directly
 if (require.main === module) {
-  runTests();
+  void runTests();
 }
 
 export { testRedisConnection, testRedisInfo };

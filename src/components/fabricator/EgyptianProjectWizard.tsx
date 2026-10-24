@@ -1,4 +1,4 @@
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+﻿import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
 import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
@@ -613,7 +613,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                             projectName,
                           });
                           // Navigate to no-DXF tuning studio
-                          navigate(`/fabricator/tuning-studio-no-dxf?systemPackId=${selectedSystemId}`);
+                          void navigate(`/fabricator/tuning-studio-no-dxf?systemPackId=${selectedSystemId}`);
                         }}
                       >
                         <Settings className="h-3.5 w-3.5 mr-2" />
@@ -663,7 +663,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                             <span className="ml-2 text-[10px] text-yellow-500">Needs Tuning</span>
                           )}
                           {packTuningStatus.isTuned && (
-                            <span className="ml-2 text-[10px] status-valid">✓ Tuned</span>
+                            <span className="ml-2 text-[10px] status-valid">âœ“ Tuned</span>
                           )}
                           {pack.meta.id.startsWith('custom') && (
                             <span className="ml-2 text-[10px] text-amber-500">Custom</span>

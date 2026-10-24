@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -311,13 +311,13 @@ export const SensorDataDashboard: React.FC<{
       }
     };
 
-    loadPredictions();
-    loadOEE();
+    void loadPredictions();
+    void loadOEE();
 
     // Refresh every 5 minutes
     const interval = setInterval(() => {
-      loadPredictions();
-      loadOEE();
+      void loadPredictions();
+      void loadOEE();
     }, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
@@ -343,7 +343,7 @@ export const SensorDataDashboard: React.FC<{
                   <div>
                     <div className="font-medium">Connected to IoT Platform</div>
                     <div className="text-sm text-gray-400">
-                      Real-time data streaming • {sensorData.length} readings received
+                      Real-time data streaming â€¢ {sensorData.length} readings received
                     </div>
                   </div>
                 </>
@@ -353,7 +353,7 @@ export const SensorDataDashboard: React.FC<{
                   <div>
                     <div className="font-medium">IoT Connection Lost</div>
                     <div className="text-sm text-gray-400">
-                      Showing cached data • Attempting reconnection...
+                      Showing cached data â€¢ Attempting reconnection...
                     </div>
                   </div>
                 </>

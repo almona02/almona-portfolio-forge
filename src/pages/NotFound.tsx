@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+﻿import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import SEO from "../components/SEO";
@@ -62,7 +62,7 @@ const NotFound = () => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          navigate('/');
+          void navigate('/');
           return 0;
         }
         return prev - 1;
@@ -73,11 +73,11 @@ const NotFound = () => {
   }, [navigate]);
 
   const handleGoHome = () => {
-    navigate('/');
+    void navigate('/');
   };
 
   const handleGoBack = () => {
-    navigate(-1);
+    void navigate(-1);
   };
 
   const suggestedPages = [
@@ -222,7 +222,7 @@ const NotFound = () => {
 
           {/* Easter egg for developers */}
           <div className="mt-6 text-xs text-gray-400">
-            <p>PS: Check the console for technical details 🛠️</p>
+            <p>PS: Check the console for technical details ðŸ› ï¸</p>
           </div>
         </div>
       </div>

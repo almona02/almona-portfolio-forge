@@ -1,4 +1,4 @@
-import { usePublicCopy } from '@/hooks/usePublicCopy';
+﻿import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { useState, useEffect } from "react";
 import { ReviewForm } from "@/components/shop/ReviewForm";
 import { ReviewList } from "@/components/shop/ReviewList";
@@ -45,7 +45,7 @@ const MachineDetail: React.FC = () => {
 
   useEffect(() => {
     if (machineId) {
-      getReviewsByProductId(machineId).then((apiReviews: ApiReview[]) => {
+      void getReviewsByProductId(machineId).then((apiReviews: ApiReview[]) => {
         const adaptedReviews: ViewReview[] = apiReviews.map(r => ({
           id: r.id,
           rating: r.rating,
@@ -146,7 +146,7 @@ const MachineDetail: React.FC = () => {
           <div className="space-y-2">
             <div><strong>{copy("Type:")}</strong> {copy(machine.type)}</div>
             <div><strong>{copy("Power:")}</strong> {machine.powerSpec.consumption} ({machine.powerSpec.voltage})</div>
-            <div><strong>{copy("Dimensions:")}</strong> {`${machine.dimensions.length} × ${machine.dimensions.width} × ${machine.dimensions.height}`}</div>
+            <div><strong>{copy("Dimensions:")}</strong> {`${machine.dimensions.length} Ã— ${machine.dimensions.width} Ã— ${machine.dimensions.height}`}</div>
           </div>
         </div>
 

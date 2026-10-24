@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -79,7 +79,7 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
   }, [timeRange]);
 
   useEffect(() => {
-    fetchAnalyticsData();
+    void fetchAnalyticsData();
   }, [fetchAnalyticsData]);
 
   const getConversionRate = () => {

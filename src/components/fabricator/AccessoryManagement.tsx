@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AccessoryManagement - Complete accessory management system with Supabase integration
  * 
  * Features:
@@ -268,7 +268,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
         },
         (payload) => {
           console.log('Accessory change detected:', payload);
-          loadAccessories();
+          void loadAccessories();
         }
       )
       .subscribe();
@@ -277,7 +277,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
     return () => {
       if (subscription) {
-        supabase.removeChannel(subscription);
+        void supabase.removeChannel(subscription);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -285,7 +285,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
   // Initial load
   useEffect(() => {
-    loadAccessories();
+    void loadAccessories();
   }, [loadAccessories]);
 
   // Filter accessories
@@ -925,7 +925,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                   base: formData.baseCost || 0,
                   markup: formData.markupPercentage || 30,
                   price: formData.unitPrice?.toFixed(2) || '0.00',
-                  defaultValue: `Calculated: $${formData.baseCost || 0} × (1 + ${formData.markupPercentage || 30}%) = $${formData.unitPrice?.toFixed(2) || '0.00'}`
+                  defaultValue: `Calculated: $${formData.baseCost || 0} Ã— (1 + ${formData.markupPercentage || 30}%) = $${formData.unitPrice?.toFixed(2) || '0.00'}`
                 })}
               </p>
             </div>

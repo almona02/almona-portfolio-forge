@@ -1,4 +1,4 @@
-import { SparePartsImportPanel } from '@/components/admin/SparePartsImportPanel'
+﻿import { SparePartsImportPanel } from '@/components/admin/SparePartsImportPanel'
 import { AdminTicketDashboard } from '@/components/support/AdminTicketDashboard'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -105,27 +105,27 @@ const AdminDashboard: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    fetchDashboardData()
-    fetchNotifications()
+    void fetchDashboardData()
+    void fetchNotifications()
 
     // realtime subscriptions
     const ordersSub = supabase
       .channel('orders-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
-        fetchDashboardData()
+        void fetchDashboardData()
       })
       .subscribe()
 
     const productsSub = supabase
       .channel('products-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
-        fetchDashboardData()
+        void fetchDashboardData()
       })
       .subscribe()
 
     return () => {
-      ordersSub.unsubscribe()
-      productsSub.unsubscribe()
+      void ordersSub.unsubscribe()
+      void productsSub.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -201,7 +201,7 @@ const AdminDashboard: React.FC = () => {
               </div>
               <GovernanceHealthMini />
               <div className="p-4 bg-muted/50 border border-border rounded-lg text-sm">
-                <div className="font-semibold mb-3 text-foreground">📊 Governance Metrics Explained</div>
+                <div className="font-semibold mb-3 text-foreground">ðŸ“Š Governance Metrics Explained</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <div className="font-medium text-foreground">Constitutional Health</div>
@@ -266,19 +266,19 @@ const AdminDashboard: React.FC = () => {
         return <AdminTicketDashboard currentUserId={user?.id || ''} userRole="admin" />
       case 'technicians':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading technicians…</div>}>
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading techniciansâ€¦</div>}>
             <TechnicianWorkloadPanel />
           </React.Suspense>
         )
       case 'users':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading users…</div>}>
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading usersâ€¦</div>}>
             <UserRolePanel currentUserId={user?.id || ''} />
           </React.Suspense>
         )
       case 'audit-log':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading audit log…</div>}>
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading audit logâ€¦</div>}>
             <AuditLogPanel />
           </React.Suspense>
         )
@@ -286,87 +286,87 @@ const AdminDashboard: React.FC = () => {
         return <SparePartsImportPanel />
       case 'used-machines':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading used machines…</div>}>
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading used machinesâ€¦</div>}>
             <UsedMachinesAdminPanel />
           </React.Suspense>
         )
       case 'machines':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading machine catalog…</div>}>
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading machine catalogâ€¦</div>}>
             <MachinesAdminPanel />
           </React.Suspense>
         )
       case 'service-contracts':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service contracts…</div>}>
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service contractsâ€¦</div>}>
             <ServiceContractsAdminPanel />
           </React.Suspense>
         )
       case 'service-packages':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service packages…</div>}>
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service packagesâ€¦</div>}>
             <ServicePackagesPanel />
           </React.Suspense>
         )
       case 'products':
         return (
-          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading products…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading productsâ€¦</div>}>
             <ProductsPanel />
           </React.Suspense>
         )
       case 'orders':
         return (
-          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading orders…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading ordersâ€¦</div>}>
             <OrdersPanel />
           </React.Suspense>
         )
       case 'customers':
         return (
-          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading customers…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading customersâ€¦</div>}>
             <CustomersPanel />
           </React.Suspense>
         )
       case 'inventory':
         return (
-          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading inventory…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading inventoryâ€¦</div>}>
             <InventoryPanel />
           </React.Suspense>
         )
       case 'finance':
         return (
-          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading finance…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading financeâ€¦</div>}>
             <FinancePanel />
           </React.Suspense>
         )
       case 'reports':
         return (
-          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading reports…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading reportsâ€¦</div>}>
             <ReportsPanel />
           </React.Suspense>
         )
       case 'configuration':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading configuration…</div>}>
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading configurationâ€¦</div>}>
             <AdminSettingsPanel />
           </React.Suspense>
         )
       case 'analytics':
         return (
           <div className="space-y-6">
-            <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading analytics dashboard…</div>}>
+            <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading analytics dashboardâ€¦</div>}>
               <AnalyticsDashboard />
             </React.Suspense>
-            <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading query builder…</div>}>
+            <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading query builderâ€¦</div>}>
               <AnalyticsQueryBuilder />
             </React.Suspense>
-            <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading business KPIs…</div>}>
+            <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading business KPIsâ€¦</div>}>
               <BusinessKPIDashboard />
             </React.Suspense>
           </div>
         )
       case 'settings':
         return (
-          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading settings…</div>}>
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading settingsâ€¦</div>}>
             <SettingsPanel />
           </React.Suspense>
         )
@@ -460,7 +460,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="flex min-h-16 items-center justify-between border-b px-4">
                       <Dialog.Title className="text-lg font-semibold">Admin navigation</Dialog.Title>
                       <Dialog.Close asChild>
-                        <Button variant="ghost" size="icon" aria-label="Close admin navigation">×</Button>
+                        <Button variant="ghost" size="icon" aria-label="Close admin navigation">Ã—</Button>
                       </Dialog.Close>
                     </div>
                     <Dialog.Description className="sr-only">Choose an administration section.</Dialog.Description>

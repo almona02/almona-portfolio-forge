@@ -342,7 +342,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   accept="image/*,.pdf"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) handleFileUpload(file);
+                    if (file) void handleFileUpload(file);
                   }}
                   className="hidden"
                 />
@@ -588,11 +588,11 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   <span className="text-gray-500">System:</span> {formData.systemName}
                 </p>
                 <p>
-                  <span className="text-gray-500">Dimensions:</span> {formData.width}mm × {formData.height}mm
+                  <span className="text-gray-500">Dimensions:</span> {formData.width}mm Ã— {formData.height}mm
                 </p>
                 {formData.defaultKFactor45 !== undefined && (
                   <p>
-                    <span className="text-gray-500">K-Factor (45°):</span>{' '}
+                    <span className="text-gray-500">K-Factor (45Â°):</span>{' '}
                     <span className="text-green-400 font-semibold">{formData.defaultKFactor45.toFixed(2)}mm</span>
                   </p>
                 )}

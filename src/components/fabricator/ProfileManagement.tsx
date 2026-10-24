@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ProfileManagement - Complete profile management system with Supabase integration
  * 
  * Features:
@@ -130,7 +130,7 @@ interface ProfileManagementProps {
   initialTuningProfileId?: string;
 }
 
-// âœ… TYPE SAFETY: Filter state interface
+// Ã¢Å“â€¦ TYPE SAFETY: Filter state interface
 interface ProfileFilterState {
   material: string;
   region: string;
@@ -158,7 +158,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [success, setSuccess] = useState(false);
   const { state: workspaceState, dispatch } = useFabricatorWorkspace();
   const searchTerm = workspaceState.globalSearchQuery || '';
-  // âœ… TYPE SAFETY: Filter state with explicit types
+  // Ã¢Å“â€¦ TYPE SAFETY: Filter state with explicit types
   const [materialFilter, setMaterialFilter] = useState<ProfileFilterState['material']>('all');
   const [regionFilter, setRegionFilter] = useState<ProfileFilterState['region']>('all');
   const [categoryFilter, setCategoryFilter] = useState<ProfileFilterState['category']>('all');
@@ -310,7 +310,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
   // Load profiles from Supabase
   const loadProfiles = useCallback(async () => {
-    // If we don't have a user yet, don't hit Supabase â€“ just clear state and stop loading
+    // If we don't have a user yet, don't hit Supabase Ã¢â‚¬â€œ just clear state and stop loading
     if (!userId) {
       setLoading(false);
       setProfiles([]);
@@ -524,7 +524,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             console.debug('[ProfileManagement] Profile change detected:', payload);
           }
           // Use ref to avoid dependency on loadProfiles
-          loadProfilesRef.current();
+          void loadProfilesRef.current();
         }
       )
       .subscribe();
@@ -547,7 +547,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       setHasLoadedOnce(true);
     } else if (userId && !hasLoadedOnce) {
       // Only load if we don't have initial profiles or skipInitialLoad is false
-      loadProfiles();
+      void loadProfiles();
     }
   }, [userId, skipInitialLoad, hasLoadedOnce, initialProfiles, loadProfiles]);
 
@@ -745,7 +745,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         systemPackIds: formData.systemPackIds || [],
       };
 
-      // Derive cost per meter for aluminum from kg, otherwise use entered perâ€‘meter price
+      // Derive cost per meter for aluminum from kg, otherwise use entered perÃ¢â‚¬â€˜meter price
       let effectiveCostPerMeter = formData.costPerMeter || 0;
       if (
         formData.material === 'aluminum' &&
@@ -1131,7 +1131,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         err instanceof Error ? err.message : 'Failed to import profiles';
       toast.error(message);
     } finally {
-      // Allow reâ€‘selecting the same file
+      // Allow reÃ¢â‚¬â€˜selecting the same file
       event.target.value = '';
     }
   };
@@ -1245,7 +1245,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </div>
               <div>
                 <p className="text-xs uppercase tracking-wide text-gray-400">
-                  Fabricator Pro Â· Profile Readiness
+                  Fabricator Pro Ã‚Â· Profile Readiness
                 </p>
                 <p className="text-sm text-gray-200">
                   {tuningStats.tuned}/{tuningStats.total} profiles tuned for production
@@ -1447,7 +1447,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       if (e.key === 'Enter') {
                         const value = parseFloat(e.currentTarget.value);
                         if (!isNaN(value)) {
-                          handleBulkUpdate('costPerMeter', value);
+                          void handleBulkUpdate('costPerMeter', value);
                           e.currentTarget.value = '';
                         }
                       }
@@ -1461,7 +1461,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       if (e.key === 'Enter') {
                         const value = parseFloat(e.currentTarget.value);
                         if (!isNaN(value)) {
-                          handleBulkUpdate('stockQuantity', value);
+                          void handleBulkUpdate('stockQuantity', value);
                           e.currentTarget.value = '';
                         }
                       }
@@ -1659,7 +1659,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       </div>
                     )}
                     <div>
-                      <Label>{t('profileManagement.weightPerMeter', 'Weight Per Meter')} (kg/m) â€“ Aluminum</Label>
+                      <Label>{t('profileManagement.weightPerMeter', 'Weight Per Meter')} (kg/m) Ã¢â‚¬â€œ Aluminum</Label>
                       <Input
                         type="number"
                         step="0.001"
@@ -1870,7 +1870,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="none">{t('profileManagement.none', 'â€”')}</SelectItem>
+                            <SelectItem value="none">{t('profileManagement.none', 'Ã¢â‚¬â€')}</SelectItem>
                             <SelectItem value="horizontal">Horizontal</SelectItem>
                             <SelectItem value="vertical">Vertical</SelectItem>
                           </SelectContent>
@@ -2146,7 +2146,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 </div>
               ) : (
                 <>
-                  {/* âœ… PERFORMANCE: Render detail view separately (outside virtualization) */}
+                  {/* Ã¢Å“â€¦ PERFORMANCE: Render detail view separately (outside virtualization) */}
                   {selectedProfileForDetail && (
                     <div className="mb-4">
                       <ProfileDetailCard
@@ -2168,7 +2168,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     </div>
                   )}
 
-                  {/* âœ… PERFORMANCE: Virtualized list for large profile lists */}
+                  {/* Ã¢Å“â€¦ PERFORMANCE: Virtualized list for large profile lists */}
                   <VirtualizedProfileList
                     profiles={filteredProfiles.filter(p => p.id !== selectedProfileForDetail?.id)}
                     containerHeight={600}
@@ -2230,26 +2230,26 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                               </div>
                               <div className="grid grid-cols-4 gap-4 text-sm text-gray-400">
                                 <div>
-                                  {t('profileManagement.dimensions', 'Dimensions')}: {profile.width}mm Ã— {profile.height || 'N/A'}mm
+                                  {t('profileManagement.dimensions', 'Dimensions')}: {profile.width}mm Ãƒâ€” {profile.height || 'N/A'}mm
                                 </div>
                                 <div>{t('profileManagement.cost', 'Cost')}: ${(profile.costPerMeter ?? 0).toFixed(2)}/m</div>
                                 <div>{t('profileManagement.stock', 'Stock')}: {profile.stockQuantity}m</div>
-                                <div>{t('profileManagement.supplier', 'Supplier')}: {profile.supplier || t('profileManagement.none', 'â€”')}</div>
+                                <div>{t('profileManagement.supplier', 'Supplier')}: {profile.supplier || t('profileManagement.none', 'Ã¢â‚¬â€')}</div>
                               </div>
                               <div className="grid grid-cols-4 gap-4 text-xs text-gray-400 mt-2">
                                 <div>
                                   {t('profileManagement.twinCode', 'Twin Code')}:
                                   <span className="ml-1 font-mono">
                                     {(specs.internalCode as string) || profile.id.slice(0, 8)}/
-                                    {(specs.supplierCode as string) || t('profileManagement.none', 'â€”')}
+                                    {(specs.supplierCode as string) || t('profileManagement.none', 'Ã¢â‚¬â€')}
                                   </span>
                                 </div>
-                                <div>{t('profileManagement.series', 'Series')}: {(specs.series as string) || t('profileManagement.none', 'â€”')}</div>
-                                <div>{t('profileManagement.year', 'Year')}: {(specs.year as string) || t('profileManagement.none', 'â€”')}</div>
+                                <div>{t('profileManagement.series', 'Series')}: {(specs.series as string) || t('profileManagement.none', 'Ã¢â‚¬â€')}</div>
+                                <div>{t('profileManagement.year', 'Year')}: {(specs.year as string) || t('profileManagement.none', 'Ã¢â‚¬â€')}</div>
                                 <div>
                                   {t('profileManagement.dxf', 'DXF')}:
                                   <span className="ml-1">
-                                    {specs.dxfImported ? t('profileManagement.imported', 'Imported') : t('profileManagement.none', 'â€”')}
+                                    {specs.dxfImported ? t('profileManagement.imported', 'Imported') : t('profileManagement.none', 'Ã¢â‚¬â€')}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -2425,7 +2425,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     <div className="flex items-center gap-2">
                       <Ruler className="h-3 w-3" />
                       <span>
-                        {profileToDelete.width}mm Ã— {profileToDelete.height || 'N/A'}mm
+                        {profileToDelete.width}mm Ãƒâ€” {profileToDelete.height || 'N/A'}mm
                       </span>
                     </div>
                     {profileToDelete.systemBrand && (
@@ -2453,10 +2453,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       {t('profileManagement.deleteWarning', 'What will be deleted:')}
                     </p>
                     <ul className="space-y-1 text-amber-300/80">
-                      <li>â€¢ {t('profileManagement.deleteWarningProfile', 'Profile configuration and specifications')}</li>
-                      <li>â€¢ {t('profileManagement.deleteWarningTuning', 'All tuning data and calibrations')}</li>
-                      <li>â€¢ {t('profileManagement.deleteWarningThumbnail', 'Profile thumbnail and preview images')}</li>
-                      <li>â€¢ {t('profileManagement.deleteWarningMachining', 'Machining zones and macros')}</li>
+                      <li>Ã¢â‚¬Â¢ {t('profileManagement.deleteWarningProfile', 'Profile configuration and specifications')}</li>
+                      <li>Ã¢â‚¬Â¢ {t('profileManagement.deleteWarningTuning', 'All tuning data and calibrations')}</li>
+                      <li>Ã¢â‚¬Â¢ {t('profileManagement.deleteWarningThumbnail', 'Profile thumbnail and preview images')}</li>
+                      <li>Ã¢â‚¬Â¢ {t('profileManagement.deleteWarningMachining', 'Machining zones and macros')}</li>
                     </ul>
                   </div>
                 </div>
@@ -2500,7 +2500,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           userId={userId}
           onProfileCreated={(profile) => {
             // Refresh profiles list
-            loadProfiles();
+            void loadProfiles();
             setShowProfileDefinitionWizard(false);
             toast.success(`Profile "${profile.name}" created successfully`);
           }}
@@ -2571,7 +2571,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       toast.success('Calibration saved and applied immediately');
                       setShowCalibrationDialog(false);
                       setCalibrationProfile(null);
-                      loadProfiles(); // Refresh to show updated data
+                      void loadProfiles(); // Refresh to show updated data
                     }
                   } catch (error) {
                     const err = error instanceof Error ? error : new Error(String(error));

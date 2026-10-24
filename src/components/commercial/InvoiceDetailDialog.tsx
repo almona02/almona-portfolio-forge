@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Invoice Detail Dialog
  * 
  * Gold-tier invoice detail dialog with payment history, state management,
@@ -209,7 +209,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
   // Handle copy payment link
   const handleCopyPaymentLink = useCallback(() => {
     if (paymentLink) {
-      navigator.clipboard.writeText(paymentLink);
+      void navigator.clipboard.writeText(paymentLink);
       toast.success('Payment link copied to clipboard');
     }
   }, [paymentLink]);
@@ -283,11 +283,11 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-xs text-amber-600/70">Customer</Label>
-                      <p className="text-sm text-amber-200 mt-1">{invoice.customerName || '—'}</p>
+                      <p className="text-sm text-amber-200 mt-1">{invoice.customerName || 'â€”'}</p>
                     </div>
                     <div>
                       <Label className="text-xs text-amber-600/70">Invoice Number</Label>
-                      <p className="text-sm text-amber-200 mt-1">{invoice.invoiceNumber || '—'}</p>
+                      <p className="text-sm text-amber-200 mt-1">{invoice.invoiceNumber || 'â€”'}</p>
                     </div>
                     <div>
                       <Label className="text-xs text-amber-600/70">Subtotal</Label>
@@ -310,13 +310,13 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
                     <div>
                       <Label className="text-xs text-amber-600/70">Due Date</Label>
                       <p className="text-sm text-amber-200 mt-1">
-                        {invoice.dueDate ? format(invoice.dueDate, 'MMM d, yyyy') : '—'}
+                        {invoice.dueDate ? format(invoice.dueDate, 'MMM d, yyyy') : 'â€”'}
                       </p>
                     </div>
                     <div>
                       <Label className="text-xs text-amber-600/70">Created</Label>
                       <p className="text-sm text-amber-200 mt-1">
-                        {invoice.createdAt ? format(invoice.createdAt, 'MMM d, yyyy') : '—'}
+                        {invoice.createdAt ? format(invoice.createdAt, 'MMM d, yyyy') : 'â€”'}
                       </p>
                     </div>
                     <div>

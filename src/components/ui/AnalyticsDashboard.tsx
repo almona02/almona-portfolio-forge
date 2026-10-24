@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AnalyticsDashboard Component
  * 
  * Phase 4 Implementation - Analytics Metrics Visualization
@@ -77,7 +77,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
      * Initial load
      */
     useEffect(() => {
-        loadMetrics();
+        void loadMetrics();
     }, [loadMetrics]);
 
     /**

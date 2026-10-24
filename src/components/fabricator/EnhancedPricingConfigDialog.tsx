@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Enhanced Pricing Configuration Dialog
  * 
  * Gold-tier pricing configuration with:
@@ -290,10 +290,10 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
 
   useEffect(() => {
     if (open) {
-      loadExchangeRates();
-      loadPriceHistory();
-      loadQuantityBreaks();
-      loadValidationAlerts();
+      void loadExchangeRates();
+      void loadPriceHistory();
+      void loadQuantityBreaks();
+      void loadValidationAlerts();
     }
   }, [open, loadExchangeRates, loadPriceHistory, loadQuantityBreaks, loadValidationAlerts]);
 
@@ -347,7 +347,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
     try {
       // This would update the price back to oldPrice
       toast.success(`Rolled back ${entry.entityName} to ${formatCurrency(entry.oldPrice, entry.currency)}`);
-      loadPriceHistory();
+      void loadPriceHistory();
     } catch (error) {
       toast.error('Failed to rollback price');
       console.error('Rollback error:', error);
@@ -396,7 +396,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
-        loadPriceHistory();
+        void loadPriceHistory();
       };
       
       reader.readAsText(bulkImportFile);
@@ -552,7 +552,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                               type="number"
                               value={qb.maxQuantity || ''}
                               onChange={(e) => handleUpdateQuantityBreak(qb.id, 'maxQuantity', e.target.value ? parseInt(e.target.value) : undefined)}
-                              placeholder="∞"
+                              placeholder="âˆž"
                               className="w-20 h-8 bg-slate-900/50 border-slate-700 text-amber-200 text-xs"
                             />
                           </TableCell>
@@ -643,7 +643,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                             </div>
                             <div className="flex items-center gap-4 text-xs text-slate-400">
                               <span>
-                                {formatCurrency(entry.oldPrice, entry.currency)} → {formatCurrency(entry.newPrice, entry.currency)}
+                                {formatCurrency(entry.oldPrice, entry.currency)} â†’ {formatCurrency(entry.newPrice, entry.currency)}
                               </span>
                               {entry.changePercent !== 0 && (
                                 <span className={`flex items-center gap-1 ${entry.changePercent > 0 ? 'text-red-400' : 'text-green-400'}`}>
@@ -717,7 +717,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                             <DollarSign className="h-4 w-4 text-amber-400" />
                             <div>
                               <div className="text-amber-200 font-semibold text-sm">
-                                {rate.from} → {rate.to}
+                                {rate.from} â†’ {rate.to}
                               </div>
                               <div className="text-xs text-slate-400">
                                 Last updated: {rate.lastUpdated.toLocaleString()}

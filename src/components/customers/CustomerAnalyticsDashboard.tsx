@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CustomerAnalyticsDashboard Component
  * 
  * Priority 4: Customers Page Upgrade - Customer Analytics Visualization
@@ -90,7 +90,7 @@ export const CustomerAnalyticsDashboard: React.FC<CustomerAnalyticsDashboardProp
      * Initial load
      */
     useEffect(() => {
-        loadAnalytics();
+        void loadAnalytics();
     }, [loadAnalytics]);
 
     /**

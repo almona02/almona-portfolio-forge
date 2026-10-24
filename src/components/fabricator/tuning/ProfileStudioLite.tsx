@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Profile Studio Lite - Turkish Pilot Self-Onboarding
  * 
  * Emergency deployment for Turkish pilot to define custom profiles
@@ -64,7 +64,7 @@ interface TurkishProfileConfig {
 // Turkish Industry Presets
 const TURKISH_PRESETS = {
   asas_aluminum: {
-    name: 'ASAŞ Aluminum (Standard)',
+    name: 'ASAÅž Aluminum (Standard)',
     barLength: 6500,
     sawKerf: 4.5,
     weldingAllowance: 0,
@@ -72,7 +72,7 @@ const TURKISH_PRESETS = {
     material: 'aluminum' as const,
   },
   firat_upvc: {
-    name: 'Fırat UPVC (Plastik)',
+    name: 'FÄ±rat UPVC (Plastik)',
     barLength: 6000,
     sawKerf: 4.2,
     weldingAllowance: 3,
@@ -80,7 +80,7 @@ const TURKISH_PRESETS = {
     material: 'upvc' as const,
   },
   yilmaz_heavy: {
-    name: 'Yılmaz Heavy Duty',
+    name: 'YÄ±lmaz Heavy Duty',
     barLength: 7000,
     sawKerf: 4.8,
     weldingAllowance: 0,
@@ -132,10 +132,10 @@ export const ProfileStudioLite: React.FC = () => {
   const [machiningSlots] = useState<MachiningSlot[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // UP-07: load persisted custom packs (local + server) into library list — not create-only.
+  // UP-07: load persisted custom packs (local + server) into library list â€” not create-only.
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       const packs = user?.id
         ? await loadCustomSystemsAsync(user.id)
         : loadCustomSystems();
@@ -200,7 +200,7 @@ export const ProfileStudioLite: React.FC = () => {
             const hasFrame = filenameUpper.includes('FRAME') || filenameUpper.includes('CERCEVE');
             const hasSash = filenameUpper.includes('SASH') || filenameUpper.includes('KANAT');
             
-            // UP-08: only emit roles evidenced by filename/metrics — never invent sash dims (*0.9).
+            // UP-08: only emit roles evidenced by filename/metrics â€” never invent sash dims (*0.9).
             if (hasFrame && hasSash) {
               detected.push({
                 type: 'frame',
@@ -236,7 +236,7 @@ export const ProfileStudioLite: React.FC = () => {
                 thickness: metrics.thickness,
                 unitWeight: metrics.weight_kg_per_m,
               });
-              // Thermal break is a material property — not proof of a second (sash) profile.
+              // Thermal break is a material property â€” not proof of a second (sash) profile.
             }
             
             setDetectedProfiles(detected);
@@ -287,14 +287,14 @@ export const ProfileStudioLite: React.FC = () => {
 
       // Try to extract manufacturer from filename
       const filenameUpper = file.name.toUpperCase();
-      if (filenameUpper.includes('ASAS') || filenameUpper.includes('ASAŞ')) {
-        setProfile(prev => ({ ...prev, manufacturer: 'ASAŞ' }));
-      } else if (filenameUpper.includes('FIRAT') || filenameUpper.includes('FİRAT')) {
-        setProfile(prev => ({ ...prev, manufacturer: 'Fırat' }));
+      if (filenameUpper.includes('ASAS') || filenameUpper.includes('ASAÅž')) {
+        setProfile(prev => ({ ...prev, manufacturer: 'ASAÅž' }));
+      } else if (filenameUpper.includes('FIRAT') || filenameUpper.includes('FÄ°RAT')) {
+        setProfile(prev => ({ ...prev, manufacturer: 'FÄ±rat' }));
       } else if (filenameUpper.includes('KALE')) {
         setProfile(prev => ({ ...prev, manufacturer: 'Kale' }));
       } else if (filenameUpper.includes('YILMAZ')) {
-        setProfile(prev => ({ ...prev, manufacturer: 'Yılmaz' }));
+        setProfile(prev => ({ ...prev, manufacturer: 'YÄ±lmaz' }));
       }
 
     } catch (error) {
@@ -328,7 +328,7 @@ export const ProfileStudioLite: React.FC = () => {
       return;
     }
 
-    // UP-08: require positive finite measured dims/weight — no silent defaults as authority.
+    // UP-08: require positive finite measured dims/weight â€” no silent defaults as authority.
     const width = profile.width;
     const height = profile.height ?? profile.width;
     const thickness = profile.thickness;
@@ -416,15 +416,15 @@ export const ProfileStudioLite: React.FC = () => {
           thickness?: number;
           micronConfig?: Record<string, unknown>;
         };
-        // UP-08: never coerce steel→aluminum. Workshop Profile supports aluminum|upvc|wood only.
+        // UP-08: never coerce steelâ†’aluminum. Workshop Profile supports aluminum|upvc|wood only.
         const material = data.material as string;
         if (material === 'steel') {
           throw new Error(
-            `Profile "${data.name}" is steel — choose aluminum or UPVC explicitly; steel is not silently remapped.`,
+            `Profile "${data.name}" is steel â€” choose aluminum or UPVC explicitly; steel is not silently remapped.`,
           );
         }
         if (material !== 'aluminum' && material !== 'upvc' && material !== 'wood') {
-          throw new Error(`Unsupported material "${material}" — no silent substitute.`);
+          throw new Error(`Unsupported material "${material}" â€” no silent substitute.`);
         }
         if (
           !Number.isFinite(data.width) || (data.width as number) <= 0 ||
@@ -514,7 +514,7 @@ export const ProfileStudioLite: React.FC = () => {
         );
       } else {
         setSaveStatus('local_only');
-        setSaveFeedback('Saved to this browser only — sign in to sync and materialize owned profile UUIDs.');
+        setSaveFeedback('Saved to this browser only â€” sign in to sync and materialize owned profile UUIDs.');
       }
       setIsSaving(false);
 
@@ -678,7 +678,7 @@ export const ProfileStudioLite: React.FC = () => {
                 <div className="text-sm text-slate-400 p-6 border-2 border-dashed border-slate-700 rounded-lg text-center bg-slate-900/30">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-slate-500" />
                   <p className="font-medium text-slate-300">Upload DXF/DWG file from your supplier</p>
-                  <p className="text-xs mt-2 text-slate-500">Supported: ASAŞ, Fırat, Kale, Yılmaz profiles</p>
+                  <p className="text-xs mt-2 text-slate-500">Supported: ASAÅž, FÄ±rat, Kale, YÄ±lmaz profiles</p>
                   <p className="text-xs text-slate-600 mt-1">(Optional - you can enter values manually)</p>
                 </div>
               )}
@@ -706,7 +706,7 @@ export const ProfileStudioLite: React.FC = () => {
                       </div>
                       {detected.width && detected.height && (
                         <p className="text-xs text-slate-400">
-                          {detected.width.toFixed(1)} × {detected.height.toFixed(1)} mm
+                          {detected.width.toFixed(1)} Ã— {detected.height.toFixed(1)} mm
                         </p>
                       )}
                       {detected.unitWeight && (
@@ -719,7 +719,7 @@ export const ProfileStudioLite: React.FC = () => {
                 </div>
                 {detectedProfiles.length >= 2 && (
                   <p className="text-xs text-blue-300 mt-3">
-                    ✓ Complete window system detected (Frame + Sash). Both profiles will be saved.
+                    âœ“ Complete window system detected (Frame + Sash). Both profiles will be saved.
                   </p>
                 )}
               </LazyMotionDiv>
@@ -749,7 +749,7 @@ export const ProfileStudioLite: React.FC = () => {
                   type="text"
                   value={profile.name}
                   onChange={(e) => setProfile({...profile, name: e.target.value})}
-                  placeholder="e.g., ASAŞ Sliding Frame 60"
+                  placeholder="e.g., ASAÅž Sliding Frame 60"
                   className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                 />
               </div>
@@ -778,10 +778,10 @@ export const ProfileStudioLite: React.FC = () => {
                     <SelectValue placeholder="Select Manufacturer" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-700 card-dark">
-                    <SelectItem value="ASAŞ" className="btn-secondary">ASAŞ Alüminyum</SelectItem>
-                    <SelectItem value="Fırat" className="btn-secondary">Fırat Alüminyum</SelectItem>
-                    <SelectItem value="Kale" className="btn-secondary">Kale Alüminyum</SelectItem>
-                    <SelectItem value="Yılmaz" className="btn-secondary">Yılmaz Makine</SelectItem>
+                    <SelectItem value="ASAÅž" className="btn-secondary">ASAÅž AlÃ¼minyum</SelectItem>
+                    <SelectItem value="FÄ±rat" className="btn-secondary">FÄ±rat AlÃ¼minyum</SelectItem>
+                    <SelectItem value="Kale" className="btn-secondary">Kale AlÃ¼minyum</SelectItem>
+                    <SelectItem value="YÄ±lmaz" className="btn-secondary">YÄ±lmaz Makine</SelectItem>
                     <SelectItem value="custom" className="btn-secondary">Custom/Other</SelectItem>
                   </SelectContent>
                 </Select>
@@ -825,7 +825,7 @@ export const ProfileStudioLite: React.FC = () => {
                   <SelectContent className="bg-slate-800 border-slate-700 card-dark">
                     <SelectItem value="aluminum" className="btn-secondary">Aluminum</SelectItem>
                     <SelectItem value="upvc" className="btn-secondary">UPVC (Plastik)</SelectItem>
-                    <SelectItem value="steel" className="btn-secondary">Steel (Çelik)</SelectItem>
+                    <SelectItem value="steel" className="btn-secondary">Steel (Ã‡elik)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -945,7 +945,7 @@ export const ProfileStudioLite: React.FC = () => {
               <div className="btn-primary">
                 <Zap className="h-4 w-4 text-amber-400" />
               </div>
-              <span>🇹🇷 Turkish Industry Presets</span>
+              <span>ðŸ‡¹ðŸ‡· Turkish Industry Presets</span>
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Button
@@ -953,7 +953,7 @@ export const ProfileStudioLite: React.FC = () => {
                 onClick={() => applyPreset('asas_aluminum')}
                 className="btn-secondary"
               >
-                <span className="font-semibold text-white group-hover:text-amber-300">ASAŞ Aluminum</span>
+                <span className="font-semibold text-white group-hover:text-amber-300">ASAÅž Aluminum</span>
                 <span className="text-xs text-slate-400 mt-1">6500mm bars, 4.5mm kerf</span>
               </Button>
               <Button
@@ -961,7 +961,7 @@ export const ProfileStudioLite: React.FC = () => {
                 onClick={() => applyPreset('firat_upvc')}
                 className="btn-secondary"
               >
-                <span className="font-semibold text-white group-hover:text-amber-300">Fırat UPVC</span>
+                <span className="font-semibold text-white group-hover:text-amber-300">FÄ±rat UPVC</span>
                 <span className="text-xs text-slate-400 mt-1">6000mm bars, 3mm welding</span>
               </Button>
               <Button
@@ -969,7 +969,7 @@ export const ProfileStudioLite: React.FC = () => {
                 onClick={() => applyPreset('yilmaz_heavy')}
                 className="btn-secondary"
               >
-                <span className="font-semibold text-white group-hover:text-amber-300">Yılmaz Heavy Duty</span>
+                <span className="font-semibold text-white group-hover:text-amber-300">YÄ±lmaz Heavy Duty</span>
                 <span className="text-xs text-slate-400 mt-1">7000mm bars, 4.8mm kerf</span>
               </Button>
             </div>
@@ -1011,7 +1011,7 @@ export const ProfileStudioLite: React.FC = () => {
                 <Alert className="bg-green-500/10 border-green-500/30">
                   <CheckCircle2 className="h-4 w-4 text-green-400" />
                   <AlertDescription className="text-green-300">
-                    ✓ Complete system ready! Click "Add Profile" to save, then you'll be redirected to Tuning Studio.
+                    âœ“ Complete system ready! Click "Add Profile" to save, then you'll be redirected to Tuning Studio.
                   </AlertDescription>
                 </Alert>
               ) : (
@@ -1116,28 +1116,28 @@ export const ProfileStudioLite: React.FC = () => {
             className="border rounded-xl p-6 bg-gradient-to-br from-amber-500/10 via-yellow-500/5 to-amber-500/10 -sm card-glass-dark"
           >
             <h4 className="typography-h4 mb-3 text-white flex items-center gap-2">
-              <span className="text-xl">🇹🇷</span>
+              <span className="text-xl">ðŸ‡¹ðŸ‡·</span>
               <span>Turkish Industry Tips</span>
             </h4>
             <ul className="text-sm space-y-2 text-slate-300">
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
+                <span className="text-amber-400 mt-0.5">â€¢</span>
                 <span>Turkish bars: <strong className="text-white">6500mm</strong> (not Egyptian 6000mm)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
+                <span className="text-amber-400 mt-0.5">â€¢</span>
                 <span>Turkish saws: Double-mitre with <strong className="text-white">4.5mm kerf</strong></span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
+                <span className="text-amber-400 mt-0.5">â€¢</span>
                 <span>UPVC welding: Use <strong className="text-white">3mm allowance</strong> per corner</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
-                <span>Bending: ASAŞ profiles can bend to <strong className="text-white">1000mm radius</strong></span>
+                <span className="text-amber-400 mt-0.5">â€¢</span>
+                <span>Bending: ASAÅž profiles can bend to <strong className="text-white">1000mm radius</strong></span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
+                <span className="text-amber-400 mt-0.5">â€¢</span>
                 <span>Hardware: Use <strong className="text-white">MACO (Austrian)</strong> or local Turkish brands</span>
               </li>
             </ul>

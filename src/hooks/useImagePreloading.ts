@@ -1,4 +1,4 @@
-import { getOptimizedImageUrl, preloadImage, preloadImages } from '@/lib/imageOptimization';
+﻿import { getOptimizedImageUrl, preloadImage, preloadImages } from '@/lib/imageOptimization';
 import { useCallback, useEffect, useState } from 'react';
 
 interface PreloadConfig {
@@ -60,7 +60,7 @@ export function useImagePreloading({
     if (!enabled) return;
 
     const timeoutId = setTimeout(() => {
-      preloadImagesList();
+      void preloadImagesList();
     }, delay);
 
     return () => clearTimeout(timeoutId);

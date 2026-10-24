@@ -1,4 +1,4 @@
-
+﻿
 import MachineTwinDisplay from '@/components/fabricator/MachineTwinDisplay';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button-gold-tier';
@@ -42,7 +42,7 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
 
   useEffect(() => {
     // Fetch enriched knowledge (manuals, parts) from YDT Brain
-    getMachineKnowledge(machineModel).then(setKnowledge);
+    void getMachineKnowledge(machineModel).then(setKnowledge);
   }, [machineModel, getMachineKnowledge]);
 
   return (
@@ -55,7 +55,7 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
               <h1 className="text-3xl font-bold text-white tracking-tight">{machineModel}</h1>
               <Badge variant="outline" className="border-amber-500 text-amber-500 bg-amber-500/10">Connected</Badge>
            </div>
-           <p className="text-slate-400 font-mono text-sm mt-1">SN: {serialNumber || 'N/A'} • {machineType.replace('_', ' ').toUpperCase()}</p>
+           <p className="text-slate-400 font-mono text-sm mt-1">SN: {serialNumber || 'N/A'} â€¢ {machineType.replace('_', ' ').toUpperCase()}</p>
         </div>
         
         <div className="flex gap-3">

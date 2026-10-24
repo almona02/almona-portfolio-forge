@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CustomerTagsManager Component
  * 
  * Priority 4: Customers Page Upgrade - Tag Management UI
@@ -114,7 +114,7 @@ export const CustomerTagsManager: React.FC<CustomerTagsManagerProps> = ({
      * Initial load
      */
     useEffect(() => {
-        loadTags();
+        void loadTags();
     }, [loadTags]);
 
     /**

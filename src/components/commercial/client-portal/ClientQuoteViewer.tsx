@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Client Quote Viewer
  * 
  * Gold-tier component for clients to view and manage their quotes.
@@ -115,7 +115,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
 
       if (error) throw error;
       toast.success('Quote accepted');
-      loadQuotes();
+      void loadQuotes();
       setSelectedQuote(null);
     } catch (error) {
       console.error('Failed to accept quote:', error);

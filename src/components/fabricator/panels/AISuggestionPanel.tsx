@@ -1,4 +1,4 @@
-/**
+﻿/**
  * automation Suggestion Panel
  * Displays ML-powered K-factor predictions with confidence and user feedback
  * The crown jewel feature that makes the system truly intelligent
@@ -41,7 +41,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
   } | null>(null);
 
   useEffect(() => {
-    loadPrediction();
+    void loadPrediction();
     checkModelStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.id, jointType, cutAngle]);

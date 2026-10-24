@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ProjectTemplates Component
  * 
  * Phase 3 Implementation - Enterprise Template Library
@@ -161,7 +161,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
       }
     };
 
-    fetchTemplates();
+    void fetchTemplates();
   }, [externalTemplates, showPublicTemplates, showUserTemplates]);
 
   /**
@@ -567,7 +567,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleClone(template);
+                              void handleClone(template);
                             }}
                             disabled={isCloning === template.id}
                             className="h-7 w-7 p-0"
@@ -679,7 +679,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleClone(template);
+                              void handleClone(template);
                             }}
                             disabled={isCloning === template.id}
                           >

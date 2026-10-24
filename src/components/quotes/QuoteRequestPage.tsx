@@ -1,4 +1,4 @@
-import Navbar from '@/components/layout/Navbar';
+﻿import Navbar from '@/components/layout/Navbar';
 import { useToast } from '@/hooks/useToast';
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -67,7 +67,7 @@ export const QuoteRequestPage: React.FC = () => {
         description: "Our team will contact you within 24 hours",
       });
       
-      navigate("/quotes/confirmation", { state: { quoteId: "QR-XXXXXX" } });
+      void navigate("/quotes/confirmation", { state: { quoteId: "QR-XXXXXX" } });
     } catch {
       toast({
         title: "Error",

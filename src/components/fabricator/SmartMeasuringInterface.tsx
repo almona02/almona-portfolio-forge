@@ -1,4 +1,4 @@
-import {
+﻿import {
   getDefaultGlazing,
   getDefaultProfileColor
 } from '@/data/egyptian-defaults';
@@ -193,13 +193,13 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         defaultGlazingType: egyptianDefaults.glazingType,
         defaultGlassColor: egyptianDefaults.glassColor,
       }),
-    // Seed once from initial pose / defaults — intentional mount-time snapshot
+    // Seed once from initial pose / defaults â€” intentional mount-time snapshot
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
   const [measurements, setMeasurements] = useState({
-    // Default professional stub dimensions – can be refined per system later.
+    // Default professional stub dimensions â€“ can be refined per system later.
     width: String(initialData?.width ?? DEFAULT_MEASUREMENTS.DEFAULT_WIDTH_MM),
     height: String(initialData?.height ?? DEFAULT_MEASUREMENTS.DEFAULT_HEIGHT_MM),
     measurementMode: initialData?.measurementMode ?? 'hole', // 'hole' (rough opening) or 'manufacturing'
@@ -241,7 +241,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     return !initialData?.presetId || preset === DEFAULT_MEASURING_PATTERN_ID;
   });
 
-  // Grid State for Phase 4 — empty `{}` from savePose must not count as authoritative
+  // Grid State for Phase 4 â€” empty `{}` from savePose must not count as authoritative
   const seededGrid = initialData?.grid;
   const hasAuthoritativeGrid = Boolean(
     seededGrid
@@ -273,7 +273,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   const [isGridMode, setIsGridMode] = useState(true);
 
-  // Apply suggested grid if available — keep grid mode on so Design receives the layout
+  // Apply suggested grid if available â€” keep grid mode on so Design receives the layout
   useEffect(() => {
     if (suggestedGrid && !isGridLocked) {
       setGrid(_prev => ({
@@ -285,9 +285,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
   }, [suggestedGrid, isGridLocked]);
 
-  /** Start collapsed — PS (or prop) is preselected so the wizard stays the phone scroll focus. */
+  /** Start collapsed â€” PS (or prop) is preselected so the wizard stays the phone scroll focus. */
   const [isSystemPackCollapsed, setIsSystemPackCollapsed] = useState(true);
-  /** When true, user opened the panel — stay open until they hide it (no auto-collapse). */
+  /** When true, user opened the panel â€” stay open until they hide it (no auto-collapse). */
   const [systemPackPinnedOpen, setSystemPackPinnedOpen] = useState(false);
   /**
    * Layout / preview start collapsed on all viewports. Large screens reveal panel
@@ -350,7 +350,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [tuningInitialSystem, setTuningInitialSystem] = useState<StoredSystemPack | null>(null);
   const [show3DPreview, setShow3DPreview] = useState(false);
 
-  // Workshop steps — short labels for daily measuring
+  // Workshop steps â€” short labels for daily measuring
   const STEPS = [
     { id: 'system', title: t('smart_measuring.steps.system', 'System'), short: 'System', icon: Factory },
     { id: 'dimensions', title: t('smart_measuring.steps.dimensions', 'Size'), short: 'Size', icon: Ruler },
@@ -416,7 +416,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     return `blueprint-${gridHash}-${isGridMode}`;
   }, [grid, isGridMode]);
 
-  // ✅ PERFORMANCE: Memoize expensive blueprint calculations
+  // âœ… PERFORMANCE: Memoize expensive blueprint calculations
   const blueprintCalculations = useMemo(() => {
     const width = Number(measurements.width) || 1200;
     const height = Number(measurements.height) || 1200;
@@ -541,7 +541,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     [availableSystemPacks, selectedSystemPackId],
   );
 
-  // Layout templates (certified ∪ similar-pack donors). Certified status checked via assessPatternPackFit.
+  // Layout templates (certified âˆª similar-pack donors). Certified status checked via assessPatternPackFit.
   const availablePatterns = useMemo(() => {
     return getLayoutTemplatesForSystem(selectedSystemPackId);
   }, [selectedSystemPackId]);
@@ -696,7 +696,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     // Log verification event if confirmed
     if (verificationConfirmed === true) {
       const cutLength = Number(measurements.width) - DEFAULT_MEASUREMENTS.DEFAULT_CUT_LENGTH_DEDUCTION_MM; // Simplified calculation for MVP
-      calibrationAnalytics.recordVerificationEvent({
+      void calibrationAnalytics.recordVerificationEvent({
         userId: 'current-user', // Ideally from auth context
         systemPackId: selectedSystemPackId,
         measurements: {
@@ -775,7 +775,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         />
       )}
 
-      {/* System pack — narrow drop when collapsed; focused scroll sheet when open on phone */}
+      {/* System pack â€” narrow drop when collapsed; focused scroll sheet when open on phone */}
       <div
         className={cn(
           'w-full rounded-md border border-amber-600/25 bg-slate-950/80 overflow-hidden flex flex-col shrink-0',
@@ -816,7 +816,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 space-y-3">
             <div>
               <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">
-                Packs — swipe on phone, scroll on desktop
+                Packs â€” swipe on phone, scroll on desktop
               </p>
               <PrestigeSystemPackSelector
                 selectedSystemId={selectedSystemPackId}
@@ -896,7 +896,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
             {!profilesComplete && systemPackRoleOptions.length > 0 && (
               <p className="text-xs text-amber-300/90">
-                Profiles {selectedProfileCount}/{systemPackRoleOptions.length} — finish before production.
+                Profiles {selectedProfileCount}/{systemPackRoleOptions.length} â€” finish before production.
               </p>
             )}
           </div>
@@ -958,7 +958,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           !isSystemPackCollapsed && 'hidden lg:grid',
         )}
       >
-      {/* Opening layout — narrow drop on phone; expands into capped scroll sheet */}
+      {/* Opening layout â€” narrow drop on phone; expands into capped scroll sheet */}
       {selectedSystemPackId && (() => {
         const layoutW = Math.max(1, Number(measurements.width) || 1000);
         const layoutH = Math.max(1, Number(measurements.height) || 1000);
@@ -993,14 +993,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 <h3 className="text-xs sm:text-sm font-semibold text-amber-200 truncate">
                   Layout
                   <span className="ml-1.5 font-mono font-normal text-[10px] text-slate-500">
-                    {layoutCols}×{layoutRows}
-                    {selectedPatternId ? ` · ${selectedPatternId}` : ''}
+                    {layoutCols}Ã—{layoutRows}
+                    {selectedPatternId ? ` Â· ${selectedPatternId}` : ''}
                   </span>
                 </h3>
                 <p className="hidden sm:block truncate font-mono text-[11px] text-slate-500">
-                  {Math.round(layoutW)} × {Math.round(layoutH)} mm · {layoutCols}×{layoutRows}
-                  {cellCount > 0 ? ` · ${cellCount} pane${cellCount === 1 ? '' : 's'}` : ''}
-                  {isGridLocked ? ' · locked' : ' · auto'}
+                  {Math.round(layoutW)} Ã— {Math.round(layoutH)} mm Â· {layoutCols}Ã—{layoutRows}
+                  {cellCount > 0 ? ` Â· ${cellCount} pane${cellCount === 1 ? '' : 's'}` : ''}
+                  {isGridLocked ? ' Â· locked' : ' Â· auto'}
                 </p>
               </div>
               <ChevronDown
@@ -1020,7 +1020,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               onClick={() => setIsGridLocked((locked) => !locked)}
               title={
                 isGridLocked
-                  ? 'Layout is locked — size changes will not rewrite panes'
+                  ? 'Layout is locked â€” size changes will not rewrite panes'
                   : 'Auto layout may update panes when width/height change'
               }
             >
@@ -1085,7 +1085,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         );
       })()}
 
-      {/* Focused wizard — sole primary scroll region on phone (below narrow drops) */}
+      {/* Focused wizard â€” sole primary scroll region on phone (below narrow drops) */}
       <div
         className={cn(
           'order-3 w-full flex flex-col card-glass-dark rounded-md overflow-hidden min-h-0 flex-1 bg-slate-950/80 lg:order-none lg:min-h-0 lg:col-start-1 lg:row-start-1 lg:row-span-2',
@@ -1101,7 +1101,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               ) : null}
             </h2>
             <span className="shrink-0 font-mono text-[10px] sm:text-[11px] text-amber-300/90 tabular-nums">
-              {Math.round(Number(measurements.width) || 0)} × {Math.round(Number(measurements.height) || 0)} mm
+              {Math.round(Number(measurements.width) || 0)} Ã— {Math.round(Number(measurements.height) || 0)} mm
             </span>
           </div>
           <nav aria-label="Measuring steps" className="flex gap-0.5 overflow-x-auto pb-0.5 scrollbar-thin touch-pan-x">
@@ -1135,7 +1135,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           </nav>
         </div>
 
-        {/* Form Content Container — phone scroll focus */}
+        {/* Form Content Container â€” phone scroll focus */}
         <div
           className="flex-1 overflow-y-auto overscroll-y-contain touch-pan-y p-2.5 sm:p-4 relative min-h-0"
           data-testid="measuring-wizard-scroll"
@@ -1185,7 +1185,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                             ) : (
                               <Box className="h-4 w-4 text-amber-400 shrink-0" />
                             )}
-                            <span className="truncate">{role.label}: {code || '—'}</span>
+                            <span className="truncate">{role.label}: {code || 'â€”'}</span>
                           </li>
                         );
                       })}
@@ -1212,10 +1212,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   <div className="rounded-lg border border-amber-600/30 bg-slate-950/50 px-3 py-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <span className="text-[10px] uppercase tracking-wider text-slate-500">Cut size</span>
                     <span className="font-mono text-lg font-semibold text-amber-200 tabular-nums">
-                      {Math.round(Number(measurements.width) || 0)} × {Math.round(Number(measurements.height) || 0)} mm
+                      {Math.round(Number(measurements.width) || 0)} Ã— {Math.round(Number(measurements.height) || 0)} mm
                     </span>
                     <span className="font-mono text-xs text-slate-500 tabular-nums">
-                      {((Number(measurements.width || 0) * Number(measurements.height || 0)) / 1_000_000).toFixed(2)} m²
+                      {((Number(measurements.width || 0) * Number(measurements.height || 0)) / 1_000_000).toFixed(2)} mÂ²
                     </span>
                   </div>
 
@@ -1268,7 +1268,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           data-testid="measuring-pattern-template-warning"
                         >
                           <p className="text-xs text-amber-100/95 leading-snug">
-                            Layout template from a similar pack — not certified for this system.
+                            Layout template from a similar pack â€” not certified for this system.
                             Geometry only; pack profiles, hardware and dimensional limits still apply.
                           </p>
                           <label
@@ -1463,24 +1463,24 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               </div>
                             </SelectItem>
                             <SelectItem value="sliding_window_4sash" className="btn-secondary">
-                              {t('smart_measuring.dimensions.sliding_4sash', 'Sliding Window – 4 Sash')}
+                              {t('smart_measuring.dimensions.sliding_4sash', 'Sliding Window â€“ 4 Sash')}
                             </SelectItem>
                             <SelectItem value="sliding_window_3sash_center_fixed" className="btn-secondary">
-                              {t('smart_measuring.dimensions.sliding_3sash_center', 'Sliding Window – 3 Sash (Center Fixed)')}
+                              {t('smart_measuring.dimensions.sliding_3sash_center', 'Sliding Window â€“ 3 Sash (Center Fixed)')}
                             </SelectItem>
                             <div className="px-2 pt-2 text-xs uppercase tracking-wide text-slate-400">{t('smart_measuring.dimensions.casement_tilt', 'Casement / Tilt & Turn')}</div>
                             <SelectItem value="casement" className="btn-secondary">
-                              {t('smart_measuring.dimensions.casement_single', 'Casement – Single')}
+                              {t('smart_measuring.dimensions.casement_single', 'Casement â€“ Single')}
                             </SelectItem>
                             <SelectItem value="casement_double" className="btn-secondary">
-                              {t('smart_measuring.dimensions.casement_double', 'Casement – Double (Left / Right)')}
+                              {t('smart_measuring.dimensions.casement_double', 'Casement â€“ Double (Left / Right)')}
                             </SelectItem>
                             <SelectItem value="tilt_turn" className="btn-secondary">
                               {t('smart_measuring.dimensions.tilt_turn', 'Tilt & Turn')}
                             </SelectItem>
                             <div className="px-2 pt-2 text-xs uppercase tracking-wide text-slate-400">{t('smart_measuring.dimensions.doors', 'Doors')}</div>
                             <SelectItem value="sliding_door_2panel" className="btn-secondary">
-                              {t('smart_measuring.dimensions.sliding_door_2panel', 'Sliding Door – 2 Panel')}
+                              {t('smart_measuring.dimensions.sliding_door_2panel', 'Sliding Door â€“ 2 Panel')}
                             </SelectItem>
                             <SelectItem value="casement_door" className="btn-secondary">
                               {t('smart_measuring.dimensions.casement_door', 'Casement Door (Single / Double)')}
@@ -1727,16 +1727,16 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           <>
                             <div className="flex justify-between gap-2">
                               <span className="text-slate-500">Entered</span>
-                              <span className="font-mono text-amber-100 tabular-nums">{rawWidth} × {rawHeight} mm</span>
+                              <span className="font-mono text-amber-100 tabular-nums">{rawWidth} Ã— {rawHeight} mm</span>
                             </div>
                             <div className="flex justify-between gap-2">
                               <span className="text-slate-500">Mode</span>
-                              <span className="text-slate-300">{isHoleMode ? `Hole (−${deduction} mm)` : 'Manufacturing'}</span>
+                              <span className="text-slate-300">{isHoleMode ? `Hole (âˆ’${deduction} mm)` : 'Manufacturing'}</span>
                             </div>
                             <div className="flex justify-between gap-2 border-t border-amber-600/20 pt-2 font-semibold">
                               <span className="text-amber-200">Cut size</span>
                               <span className="font-mono text-amber-100 tabular-nums text-base">
-                                {Math.max(0, manufacturingWidth).toFixed(0)} × {Math.max(0, manufacturingHeight).toFixed(0)} mm
+                                {Math.max(0, manufacturingWidth).toFixed(0)} Ã— {Math.max(0, manufacturingHeight).toFixed(0)} mm
                               </span>
                             </div>
                           </>
@@ -1781,7 +1781,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               <span className="text-xs text-amber-50/90 leading-snug">
                                 {suggestion.reason}
                                 <span className="block font-mono text-[10px] text-slate-400 mt-0.5">
-                                  {suggestion.raw} → {suggestion.suggested}
+                                  {suggestion.raw} â†’ {suggestion.suggested}
                                 </span>
                               </span>
                           </label>
@@ -1818,7 +1818,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           </AnimatePresence>
         </div>
 
-        {/* Footer — sticky to wizard card; wizard buttons + confirmations stay reachable */}
+        {/* Footer â€” sticky to wizard card; wizard buttons + confirmations stay reachable */}
         <div
           className="p-2 sm:p-3 border-t border-amber-600/25 flex flex-col sm:flex-row justify-between gap-1.5 sm:gap-2 flex-shrink-0 bg-slate-950/95 z-20"
           data-testid="measuring-wizard-footer"
@@ -1838,7 +1838,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
           {currentStep === STEPS.length - 1 ? (
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              {/* Print Label — compact on phone so Save stays primary */}
+              {/* Print Label â€” compact on phone so Save stays primary */}
               {verificationConfirmed && (
                 <Button
                   variant="outline"
@@ -1908,7 +1908,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         </div>
       </div>
 
-      {/* Cut preview — narrow drop on phone (above wizard) */}
+      {/* Cut preview â€” narrow drop on phone (above wizard) */}
       <div
         className={cn(
           'order-2 w-full shrink-0 rounded-md border border-amber-600/30 bg-slate-950 relative overflow-hidden min-w-0 flex flex-col lg:order-none lg:col-start-2 lg:row-start-2',
@@ -1938,7 +1938,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               <p className="text-xs font-semibold text-amber-200 truncate">
                 Preview
                 <span className="ml-1.5 font-mono font-normal text-[10px] text-slate-500">
-                  {Math.round(Number(measurements.width) || 0)}×{Math.round(Number(measurements.height) || 0)}
+                  {Math.round(Number(measurements.width) || 0)}Ã—{Math.round(Number(measurements.height) || 0)}
                 </span>
               </p>
             </div>
@@ -2130,7 +2130,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           <rect width="100%" height="100%" fill="url(#highlight-grid)" opacity="0.5" />
                         )}
 
-                        {/* ✅ PERFORMANCE: Use memoized blueprint calculations */}
+                        {/* âœ… PERFORMANCE: Use memoized blueprint calculations */}
                         {(() => {
                           const {
                             width,
@@ -2218,7 +2218,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                           className="pointer-events-none select-none"
                                         >
                                           {mullionType.toUpperCase()} {mullionWidth}mm
-                                          {isStructural && ' ⚙️'}
+                                          {isStructural && ' âš™ï¸'}
                                         </text>
                                         {/* Mullion Height Dimension - Show from height perspective */}
                                         <g>
@@ -2324,7 +2324,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         className="pointer-events-none select-none"
                                       >
                                         {transomType.toUpperCase()} {transomHeight}mm
-                                        {isStructural && ' ⚙️'}
+                                        {isStructural && ' âš™ï¸'}
                                       </text>
                                     )}
                                   </g>
@@ -2333,7 +2333,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
                               {/* Grid Cells - Dynamically updates from SmartDrawCanvas grid changes with Technical Details */}
                               {showGrid && currentGrid.cells && currentGrid.cells.length > 0 && currentGrid.cells.map((cell) => {
-                                // ✅ PERFORMANCE: Use memoized colWeights/rowWeights from blueprintCalculations
+                                // âœ… PERFORMANCE: Use memoized colWeights/rowWeights from blueprintCalculations
 
                                 // Calculate cell position
                                 let cellX = startX;
@@ -2372,10 +2372,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                 }[cell.type] || BLUEPRINT_THEME.stroke.secondary;
 
                                 // Opening direction indicator
-                                const openingArrow = cell.openingDirection === 'left' ? '←'
-                                  : cell.openingDirection === 'right' ? '→'
-                                    : cell.openingDirection === 'top' ? '↑'
-                                      : cell.openingDirection === 'bottom' ? '↓'
+                                const openingArrow = cell.openingDirection === 'left' ? 'â†'
+                                  : cell.openingDirection === 'right' ? 'â†’'
+                                    : cell.openingDirection === 'top' ? 'â†‘'
+                                      : cell.openingDirection === 'bottom' ? 'â†“'
                                         : '';
 
                                 return (
@@ -2424,7 +2424,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                             opacity="0.7"
                                             className="pointer-events-none select-none font-mono"
                                           >
-                                            {Math.round(cellWidthMm)}×{Math.round(cellHeightMm)}mm
+                                            {Math.round(cellWidthMm)}Ã—{Math.round(cellHeightMm)}mm
                                           </text>
                                         )}
 
@@ -2441,7 +2441,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                             opacity="0.6"
                                             className="pointer-events-none select-none"
                                           >
-                                            {cellAreaM2.toFixed(2)} m²
+                                            {cellAreaM2.toFixed(2)} mÂ²
                                           </text>
                                         )}
                                       </>
@@ -2608,7 +2608,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                   fontWeight="700"
                                   className="font-mono"
                                 >
-                                  {area.toFixed(2)} m²
+                                  {area.toFixed(2)} mÂ²
                                 </text>
                               </g>
 
@@ -2692,7 +2692,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       <rect width="100%" height="100%" fill="url(#highlight-grid-normal)" opacity="0.5" />
                     )}
 
-                    {/* ✅ PERFORMANCE: Use memoized blueprint calculations */}
+                    {/* âœ… PERFORMANCE: Use memoized blueprint calculations */}
                     {(() => {
                       const {
                         width,
@@ -2768,7 +2768,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                       className="pointer-events-none select-none"
                                     >
                                       {mullionType.toUpperCase()} {mullionWidth}mm
-                                      {isStructural && ' ⚙️'}
+                                      {isStructural && ' âš™ï¸'}
                                     </text>
                                     <g>
                                       <line
@@ -2865,7 +2865,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                     className="pointer-events-none select-none"
                                   >
                                     {transomType.toUpperCase()} {transomHeight}mm
-                                    {isStructural && ' ⚙️'}
+                                    {isStructural && ' âš™ï¸'}
                                   </text>
                                 )}
                               </g>
@@ -2917,10 +2917,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               'empty': '#ef4444',
                             }[cell.type] || '#d97706';
 
-                            const openingArrow = cell.openingDirection === 'left' ? '←'
-                              : cell.openingDirection === 'right' ? '→'
-                                : cell.openingDirection === 'top' ? '↑'
-                                  : cell.openingDirection === 'bottom' ? '↓'
+                            const openingArrow = cell.openingDirection === 'left' ? 'â†'
+                              : cell.openingDirection === 'right' ? 'â†’'
+                                : cell.openingDirection === 'top' ? 'â†‘'
+                                  : cell.openingDirection === 'bottom' ? 'â†“'
                                     : '';
 
                             return (
@@ -2966,7 +2966,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         opacity="0.7"
                                         className="pointer-events-none select-none font-mono"
                                       >
-                                        {Math.round(cellWidthMm)}×{Math.round(cellHeightMm)}mm
+                                        {Math.round(cellWidthMm)}Ã—{Math.round(cellHeightMm)}mm
                                       </text>
                                     )}
 
@@ -2982,7 +2982,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                         opacity="0.6"
                                         className="pointer-events-none select-none"
                                       >
-                                        {cellAreaM2.toFixed(2)} m²
+                                        {cellAreaM2.toFixed(2)} mÂ²
                                       </text>
                                     )}
                                   </>
@@ -3149,7 +3149,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               fontWeight="700"
                               className="font-mono"
                             >
-                              {area.toFixed(2)} m²
+                              {area.toFixed(2)} mÂ²
                             </text>
                           </g>
 

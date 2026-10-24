@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 import { getUserTickets, getTicketStats } from '@/lib/ticketApi'
@@ -44,7 +44,7 @@ const CustomerSupport: React.FC = () => {
 
   const handleTicketCreated = () => {
     setIsCreateDialogOpen(false)
-    refetchTickets()
+    void refetchTickets()
   }
 
   const handleViewTicket = (ticketId: string) => {
@@ -53,7 +53,7 @@ const CustomerSupport: React.FC = () => {
 
   const handleBackToList = () => {
     setSelectedTicketId(null)
-    refetchTickets()
+    void refetchTickets()
   }
 
   const handleSearch = (value: string) => {
@@ -233,16 +233,16 @@ const CustomerSupport: React.FC = () => {
           {(filters.status || filters.type || filters.priority || searchTerm) && (
             <div className="flex flex-wrap gap-2 pt-2">
               {filters.status?.map(s => (
-                <Badge key={s} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('status', s)}>{s} ✕</Badge>
+                <Badge key={s} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('status', s)}>{s} âœ•</Badge>
               ))}
               {filters.type?.map(t => (
-                <Badge key={t} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('type', t)}>{t.replace('_',' ')} ✕</Badge>
+                <Badge key={t} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('type', t)}>{t.replace('_',' ')} âœ•</Badge>
               ))}
               {filters.priority?.map(p => (
-                <Badge key={p} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('priority', p)}>{p} ✕</Badge>
+                <Badge key={p} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('priority', p)}>{p} âœ•</Badge>
               ))}
               {searchTerm && (
-                <Badge variant="outline" className="cursor-pointer" onClick={() => setSearchTerm('')}>Search: {searchTerm} ✕</Badge>
+                <Badge variant="outline" className="cursor-pointer" onClick={() => setSearchTerm('')}>Search: {searchTerm} âœ•</Badge>
               )}
             </div>
           )}

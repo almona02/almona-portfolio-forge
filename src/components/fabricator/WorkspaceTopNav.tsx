@@ -1,4 +1,4 @@
-import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+﻿import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { isRTL } from '@/lib/i18n';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -52,7 +52,7 @@ export const WorkspaceTopNav: React.FC = () => {
     const tab = workspaceTabs.find((t) => t.id === tabId);
     if (!tab) return;
     dispatch({ type: 'SET_ACTIVE_TAB', payload: tabId as any });
-    navigate(tab.path());
+    void navigate(tab.path());
   };
 
   return (
@@ -103,7 +103,7 @@ export const WorkspaceTopNav: React.FC = () => {
             </TabsList>
           </Tabs>
         </div>
-        {/* ─── Breadcrumbs ─────────────────────────────────────── */}
+        {/* â”€â”€â”€ Breadcrumbs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         {breadcrumbs.length > 0 && (
           <div className="flex items-center gap-1 px-1 pb-2 text-[11px] text-slate-400">
             {breadcrumbs.map((crumb, idx) => (

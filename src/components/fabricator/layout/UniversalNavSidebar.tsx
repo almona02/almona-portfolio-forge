@@ -340,7 +340,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       variant={narrow ? 'overlay' : 'docked'}
     >
       <div className="p-4">
-        {/* User Profile Mini — from auth session, not placeholders */}
+        {/* User Profile Mini â€” from auth session, not placeholders */}
         <div className="mb-6 p-3 rounded-lg bg-gray-800/30 border border-gray-700/50">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full bg-amber-900/30 flex items-center justify-center">
@@ -355,7 +355,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
               </p>
               <button type="button" className="mt-2 text-xs text-amber-300 underline" onClick={async () => {
                 if (draftDirty) { toast.error('Save the current position before changing user.'); return; }
-                try { await signOut(); publishActiveProject(null); useWorkflowStore.getState().clearWorkflow(); navigate('/login', { replace: true }); }
+                try { await signOut(); void publishActiveProject(null); useWorkflowStore.getState().clearWorkflow(); navigate('/login', { replace: true }); }
                 catch { toast.error('Unable to sign out. Please retry.'); }
               }}>Change user</button>
             </div>
@@ -416,7 +416,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
           </div>
         )}
 
-        {/* Manufacturing save chrome (UP-14) — same source as status bar */}
+        {/* Manufacturing save chrome (UP-14) â€” same source as status bar */}
         <div className="mt-8 pt-6 border-t border-gray-800/50">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-gray-400">Manufacturing save</span>
@@ -445,7 +445,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
             </div>
           </div>
           <div className="text-xs text-gray-500">
-            {savedLabel ?? 'Not recorded — open a saved position revision'}
+            {savedLabel ?? 'Not recorded â€” open a saved position revision'}
           </div>
         </div>
       </div>

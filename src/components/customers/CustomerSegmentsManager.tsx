@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CustomerSegmentsManager Component
  * 
  * Priority 4: Customers Page Upgrade - Segment Management UI
@@ -111,7 +111,7 @@ export const CustomerSegmentsManager: React.FC<CustomerSegmentsManagerProps> = (
      * Initial load
      */
     useEffect(() => {
-        loadSegments();
+        void loadSegments();
     }, [loadSegments]);
 
     /**

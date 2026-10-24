@@ -1,4 +1,4 @@
-import SEO from '@/components/SEO';
+﻿import SEO from '@/components/SEO';
 import { ProjectCreationManager } from '@/components/fabricator/project/ProjectCreationManager';
 import {
   useDeleteProject as useDeleteProjectV2,
@@ -339,8 +339,8 @@ const ProjectsPage: React.FC = () => {
                   <Input
                     value={projectSearch}
                     onChange={(e) => setProjectSearch(e.target.value)}
-                    placeholder={t('projects.projects_tab.search', 'Search projects, codes, customers…')}
-                    aria-label={t('projects.projects_tab.search', 'Search projects, codes, customers…')}
+                    placeholder={t('projects.projects_tab.search', 'Search projects, codes, customersâ€¦')}
+                    aria-label={t('projects.projects_tab.search', 'Search projects, codes, customersâ€¦')}
                     className="max-w-md bg-[#0a0a0a] border-amber-600/30 text-amber-100"
                   />
                 ) : null}
@@ -376,16 +376,16 @@ const ProjectsPage: React.FC = () => {
                     {filteredProjectsSummary.map((p) => {
                       const handleProjectClick = () => {
                         if (useV2 && p.projectId) {
-                          navigate(fabricatorRoutes.studioProject(p.projectId));
+                          void navigate(fabricatorRoutes.studioProject(p.projectId));
                           return;
                         }
                         if (useV2 && p.projectId && p.firstPoseId) {
-                          navigate(fabricatorRoutes.poseMeasuring(p.projectId, p.firstPoseId));
+                          void navigate(fabricatorRoutes.poseMeasuring(p.projectId, p.firstPoseId));
                           return;
                         }
                         const firstJob = jobs.find((job) => (job.projectCode || job.orderNumber) === p.key);
                         if (firstJob) {
-                          navigate(fabricatorRoutes.poseDesign(p.key, firstJob.id), {
+                          void navigate(fabricatorRoutes.poseDesign(p.key, firstJob.id), {
                             state: { jobId: firstJob.id, startTab: 'design' },
                           });
                         }

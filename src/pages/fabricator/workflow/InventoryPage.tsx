@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthContext';
+﻿import { useAuth } from '@/context/AuthContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { lazyRetry } from '@/utils/lazyImport';
@@ -29,7 +29,7 @@ export const InventoryPage: React.FC = () => {
     const { user } = useAuth();
     const { currentProject, completeStep } = useWorkflowStore();
 
-    // ✅ GOLD-TIER: Resolve inventory from system pack
+    // âœ… GOLD-TIER: Resolve inventory from system pack
     const inventory = useMemo(() => {
         if (!currentProject?.systemPackId) return [];
 
@@ -40,16 +40,16 @@ export const InventoryPage: React.FC = () => {
         return systemPack?.profiles || [];
     }, [currentProject?.systemPackId]);
 
-    // ✅ GOLD-TIER: Error handling
+    // âœ… GOLD-TIER: Error handling
     const hasRequiredData = currentProject !== null;
 
-    // ✅ GOLD-TIER: Navigation handler
+    // âœ… GOLD-TIER: Navigation handler
     const handleInventoryComplete = () => {
         completeStep('inventory');
 
         // Smooth transition
         setTimeout(() => {
-            navigate(
+            void navigate(
                 projectId
                     ? `/fabricator/workflow/production/${projectId}`
                     : '/fabricator/workflow/production'
@@ -57,7 +57,7 @@ export const InventoryPage: React.FC = () => {
         }, 100);
     };
 
-    // ✅ GOLD-TIER: Premium loading state
+    // âœ… GOLD-TIER: Premium loading state
     const LoadingFallback = (
         <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
             <div className="text-center space-y-4">
@@ -67,7 +67,7 @@ export const InventoryPage: React.FC = () => {
         </div>
     );
 
-    // ✅ GOLD-TIER: Error state
+    // âœ… GOLD-TIER: Error state
     if (!hasRequiredData) {
         return (
             <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
@@ -98,7 +98,7 @@ export const InventoryPage: React.FC = () => {
                     currency="EGP"
                 />
 
-                {/* ✅ GOLD-TIER: Continue button with premium styling */}
+                {/* âœ… GOLD-TIER: Continue button with premium styling */}
                 <div className="fixed bottom-8 right-8 z-50">
                     <button
                         onClick={handleInventoryComplete}

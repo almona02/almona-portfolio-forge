@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CONSTITUTIONAL PERFORMANCE MONITORING
  * Audit Trail Integrity Checker
  * 
@@ -62,7 +62,7 @@ export class AuditTrailIntegrityChecker {
     }
 
     // Store in IndexedDB for persistence
-    this.persistAuditEntry(fullEntry);
+    void this.persistAuditEntry(fullEntry);
 
     return fullEntry;
   }

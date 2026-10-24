@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { loadCustomSystemsFromSupabase } from '@/lib/fabricator/systemPackSupabase';
@@ -27,7 +27,7 @@ export function WorkshopBOMRulesEditor({ packId, ownerId }: {
   {!owned ? <Button disabled={saving} onClick={async () => { setSaving(true); try {
             const copy = { ...pack, meta: { ...pack.meta, id: 'custom-pack-' + crypto.randomUUID(), name: pack.meta.name + ' workshop' } };
             await addCustomSystemAsync(copy, ownerId);
-            navigate('/fabricator/studio/data/tuning?systemPackId=' + encodeURIComponent(copy.meta.id));
+            void navigate('/fabricator/studio/data/tuning?systemPackId=' + encodeURIComponent(copy.meta.id));
         }
         catch {
             toast.error('Unable to save workshop copy.');

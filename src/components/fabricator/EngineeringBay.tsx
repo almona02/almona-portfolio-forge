@@ -1,4 +1,4 @@
-import { ManufacturingApprovalPanel } from './workflow/ManufacturingApprovalPanel';
+﻿import { ManufacturingApprovalPanel } from './workflow/ManufacturingApprovalPanel';
 /**
  * Almona Fabricator Pro: EngineeringBay (v2.0)
  *
@@ -167,7 +167,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         setEngineeringMode(mode);
     }, [mode]);
 
-    // FP-028 / P5.4 — Design Studio preview/BOM are estimate-only
+    // FP-028 / P5.4 â€” Design Studio preview/BOM are estimate-only
     const previewSurface = useMemo(
         () => assessPreviewSurfaceAuthority({ hasApprovedManufacturingContract: false }),
         []
@@ -204,9 +204,9 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             return { structResult: null, uw: null, physics: null, authority };
         }
 
-        // 1. Structural estimate (Wind Load) — hardcoded defaults are not approved authority
+        // 1. Structural estimate (Wind Load) â€” hardcoded defaults are not approved authority
         const windParams = {
-            windPressure: 1200, // Pa (assumption — not project-approved)
+            windPressure: 1200, // Pa (assumption â€” not project-approved)
             mullionSpacing: project?.overallWidth ? project.overallWidth / 2 : 1000,
             mullionHeight: project?.overallHeight || 2000,
             maxDeflectionRatio: 200, // L/200 (assumption)
@@ -215,7 +215,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
         const structResult = StructuralValidator.validateProfile(physics.ix, windParams);
 
-        // 2. Thermal estimate (Uw) — areas/Ug/Psi are assumptions until approved inputs exist
+        // 2. Thermal estimate (Uw) â€” areas/Ug/Psi are assumptions until approved inputs exist
         const thermalParams = {
             Ag: 2.5,
             Af: 0.8,
@@ -267,10 +267,10 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         setDesignMode('smartdraw');
 
         // Log constitutional checkpoint
-        console.log('[Constitutional] Drafting → Execution transition', {
+        console.log('[Constitutional] Drafting â†’ Execution transition', {
             timestamp: new Date().toISOString(),
             validationId: draftingOutput.metadata.validationId,
-            tierTransition: 'Tier0 → Tier3'
+            tierTransition: 'Tier0 â†’ Tier3'
         });
     }, [actions]);
 
@@ -284,7 +284,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             return;
         }
 
-        // Apply preset intelligence — FP-028 / T2: fail closed; never invent 1×1
+        // Apply preset intelligence â€” FP-028 / T2: fail closed; never invent 1Ã—1
         const result = applyPresetIntelligence(
             preset,
             project?.overallWidth,
@@ -341,7 +341,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         const ok = actions.validate();
         if (!ok) return;
 
-        // If a dedicated add‑pose handler is provided (measuring tab workflow), use it.
+        // If a dedicated addâ€‘pose handler is provided (measuring tab workflow), use it.
         if (onAddNewPose) {
             void Promise.resolve(onAddNewPose());
             return;
@@ -360,7 +360,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     /** Stable callback for Drafting Workbench "Save & Move to Next" (context menu / quick entry). */
     const handleMoveToNextForDrafting = useCallback(() => {
         if (onAddNewPose) {
-            onAddNewPose();
+            void onAddNewPose();
             toast.success(t('engineering_bay.save_and_next', 'Save & Next Pose'));
             return;
         }
@@ -459,7 +459,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                 <React.Suspense
                   fallback={
                     <div className="flex h-full items-center justify-center bg-[#0a0a0a] text-amber-500 font-mono text-sm">
-                      Loading drafting workbench…
+                      Loading drafting workbenchâ€¦
                     </div>
                   }
                 >
@@ -494,7 +494,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                         <CardTitle className="flex items-center gap-3">
                             <Cpu className="h-6 w-6 text-orange-400" />
                             <span className="text-xl">{t('engineering_bay.title', 'Engineering Bay')}</span>
-                            {/* ─── Pose Switcher ─────────────────────────────── */}
+                            {/* â”€â”€â”€ Pose Switcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                             {relatedPositions && relatedPositions.length > 0 && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -508,7 +508,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                 const pack = systemPacks.find((p) => p.meta?.id === activeSystemPackId);
                                                 return pack?.meta?.name ? (
                                                     <span className="ml-2 text-amber-400 font-medium" title={pack.meta.name}>
-                                                        — {pack.meta.name}
+                                                        â€” {pack.meta.name}
                                                     </span>
                                                 ) : null;
                                             })()}
@@ -1015,7 +1015,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         data-testid="physics-authority-description"
                                     >
                                         {physicsResults?.authority.description ??
-                                            'Inputs incomplete — physics estimates unavailable until an approved system and profile physics are selected.'}
+                                            'Inputs incomplete â€” physics estimates unavailable until an approved system and profile physics are selected.'}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -1041,7 +1041,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                         {physicsResults.authority.structuralBadgeLabel}
                                                         {physicsResults.authority.canClaimStandardsVerification
                                                             ? ` (SF: ${physicsResults.structResult.safetyFactor})`
-                                                            : ' — not standards-verified'}
+                                                            : ' â€” not standards-verified'}
                                                     </Badge>
                                                 ) : (
                                                     <Badge
@@ -1073,11 +1073,11 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <div className="grid grid-cols-2 gap-4 text-[10px]">
                                                 <div className="flex flex-col">
                                                     <span className="text-gray-500">Required Inertia (estimate)</span>
-                                                    <span className="text-gray-200 font-mono">{physicsResults?.structResult?.requiredIx?.toFixed(2) || '---'} cm⁴</span>
+                                                    <span className="text-gray-200 font-mono">{physicsResults?.structResult?.requiredIx?.toFixed(2) || '---'} cmâ´</span>
                                                 </div>
                                                 <div className="flex flex-col text-right">
                                                     <span className="text-gray-500">System Inertia</span>
-                                                    <span className="text-sky-300 font-mono">{physicsResults?.structResult?.actualIx?.toFixed(2) || '---'} cm⁴</span>
+                                                    <span className="text-sky-300 font-mono">{physicsResults?.structResult?.actualIx?.toFixed(2) || '---'} cmâ´</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1089,14 +1089,14 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                     <Box className="h-4 w-4 text-blue-400" />
                                                     <span className="text-gray-300 font-medium tracking-tight">
                                                         Thermal Performance (Uw)
-                                                        {physicsResults?.authority.thermalLabelSuffix === 'estimate' ? ' — estimate' : ''}
+                                                        {physicsResults?.authority.thermalLabelSuffix === 'estimate' ? ' â€” estimate' : ''}
                                                     </span>
                                                 </div>
                                                 <span
                                                     className="font-mono text-blue-300 font-bold bg-blue-900/20 px-2 py-0.5 rounded border border-blue-800/30"
                                                     data-testid="physics-uw-value"
                                                 >
-                                                    {physicsResults?.uw != null ? physicsResults.uw.toFixed(2) : '---'} W/m²K
+                                                    {physicsResults?.uw != null ? physicsResults.uw.toFixed(2) : '---'} W/mÂ²K
                                                 </span>
                                             </div>
                                             <div className="grid grid-cols-3 gap-2">
@@ -1109,7 +1109,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                     <span className="text-[11px] text-gray-300 font-mono">1.10</span>
                                                 </div>
                                                 <div className="bg-gray-900/80 p-1.5 rounded border border-gray-800 text-center">
-                                                    <span className="text-[9px] text-gray-500 block">Ψ (Edge, assumed)</span>
+                                                    <span className="text-[9px] text-gray-500 block">Î¨ (Edge, assumed)</span>
                                                     <span className="text-[11px] text-gray-300 font-mono">0.04</span>
                                                 </div>
                                             </div>

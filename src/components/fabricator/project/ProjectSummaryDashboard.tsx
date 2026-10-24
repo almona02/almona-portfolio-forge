@@ -1,4 +1,4 @@
-import { estimateSource } from '@/lib/fabricator/production/estimateSource';
+﻿import { estimateSource } from '@/lib/fabricator/production/estimateSource';
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useDeletePose, useUpsertPose, useUpdateProject } from '@/hooks/useFabricatorQueries';
 import { PresetAwareBOMGenerator, type CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
@@ -89,7 +89,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
 
   const openPoseMeasuring = useCallback((id: string) => {
     if (!projectId) return;
-    navigate(fabricatorRoutes.poseMeasuring(projectId, id));
+    void navigate(fabricatorRoutes.poseMeasuring(projectId, id));
   }, [navigate, projectId]);
 
   const handleDuplicatePose = useCallback(async (id: string) => {
@@ -114,7 +114,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
         selectedPreset: source.presetId,
       });
       toast.success(`Pose ${posNumber} duplicated`);
-      navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
+      void navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
     } catch (err) {
       toast.error(`Duplicate failed: ${persistenceErrorMessage(err)}`);
     }
@@ -275,7 +275,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
 
       if (isPartialEstimate) {
         toast.warning(
-          `Partial project BOM: ${positionBOMs.size}/${positions.length} positions resolved. Failed positions are labeled — not a complete manufacturing total.`,
+          `Partial project BOM: ${positionBOMs.size}/${positions.length} positions resolved. Failed positions are labeled â€” not a complete manufacturing total.`,
         );
       }
     } finally {
@@ -289,11 +289,11 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <KPICard label="Positions" value={positions.length} icon={<Layers size={16} />} />
         <KPICard label="Total Units" value={totalUnits} icon={<Box size={16} />} />
-        <KPICard label="Total Area" value={`${totalArea.toFixed(2)} m²`} icon={<Ruler size={16} />} />
+        <KPICard label="Total Area" value={`${totalArea.toFixed(2)} mÂ²`} icon={<Ruler size={16} />} />
         <KPICard label="Systems" value={systemBreakdown.length} icon={<Package size={16} />} />
         <KPICard
           label="Estimated Cost"
-          value={aggregatedBOM?.positionBOMs.size ? `${aggregatedBOM.totalCost.toLocaleString('en-EG', { maximumFractionDigits: 0 })} EGP` : '—'}
+          value={aggregatedBOM?.positionBOMs.size ? `${aggregatedBOM.totalCost.toLocaleString('en-EG', { maximumFractionDigits: 0 })} EGP` : 'â€”'}
           icon={<DollarSign size={16} />}
           highlight
         />
@@ -303,7 +303,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
         <Alert className="border-amber-600/40 bg-amber-500/5">
           <AlertTriangle className="h-4 w-4 text-amber-400" />
           <AlertDescription className="text-amber-200 text-sm">
-            Partial estimate only — {aggregatedBOM.positionBOMs.size}/{positions.length} positions
+            Partial estimate only â€” {aggregatedBOM.positionBOMs.size}/{positions.length} positions
             resolved
             {aggregatedBOM.failedPositionIds.length
               ? ` (${aggregatedBOM.failedPositionIds.length} failed)`
@@ -315,7 +315,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
 
       {aggregatedBOM && !aggregatedBOM.isPartialEstimate && (
         <Alert className="border-amber-600/40 bg-amber-500/5">
-          <AlertDescription>Estimate only — manufacturing approval and validated cutting rules are required before production.</AlertDescription>
+          <AlertDescription>Estimate only â€” manufacturing approval and validated cutting rules are required before production.</AlertDescription>
         </Alert>
       )}
       {/* Positions Table */}
@@ -393,7 +393,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                         </td>
                         <td className="py-2 px-3">
                           <Badge variant="outline" className="text-[10px] border-slate-700 text-slate-400">
-                            {pos.systemPackId || '—'}
+                            {pos.systemPackId || 'â€”'}
                           </Badge>
                         </td>
                         <td className="py-2 px-3">
@@ -407,10 +407,10 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                         </td>
                         <td className="py-2 px-3 text-right text-amber-200 font-mono text-xs">
                           {failed
-                            ? '—'
+                            ? 'â€”'
                             : posBOM
                               ? `${(posBOM.cost.totalCost * (pos.quantity || 1)).toLocaleString('en-EG', { maximumFractionDigits: 0 })}`
-                              : '—'}
+                              : 'â€”'}
                         </td>
                         <td className="py-2 px-3 text-right">
                           {projectId && (

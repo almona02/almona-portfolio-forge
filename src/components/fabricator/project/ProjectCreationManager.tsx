@@ -1,4 +1,4 @@
-import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
+﻿import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
 import NewProjectWizard, { type ProjectHeaderMeta } from '@/components/fabricator/NewProjectWizard';
 import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
@@ -85,7 +85,7 @@ export const ProjectCreationManager: React.FC = () => {
                 posNumber: '1', // Default first position
                 type: 'window',
                 components: [],
-                overallWidth: 1200, // Reasonable default — operator sets exact size on Measuring
+                overallWidth: 1200, // Reasonable default â€” operator sets exact size on Measuring
                 overallHeight: 1400,
                 color: '#FFFFFF',
                 glazing: { type: 'clear', thickness: 24 },
@@ -121,7 +121,7 @@ export const ProjectCreationManager: React.FC = () => {
             let persistedProjectId = newProjectId;
             let persistedPoseId = poseId;
 
-            // UP-11: always persist via v2 when signed in — READ_V2 only gates read paths.
+            // UP-11: always persist via v2 when signed in â€” READ_V2 only gates read paths.
             if (user?.id) {
                 try {
                     const saved = await fabricatorClientV2.savePose(newProject, user.id);
@@ -132,7 +132,7 @@ export const ProjectCreationManager: React.FC = () => {
                 } catch (persistErr) {
                     console.warn('[ProjectCreationManager] Server persist failed; keeping local draft with customerId:', persistErr);
                     toast.error(
-                        t('fabricator:project.persist_deferred', 'Project saved locally; server sync failed — customer link retained.'),
+                        t('fabricator:project.persist_deferred', 'Project saved locally; server sync failed â€” customer link retained.'),
                     );
                 }
             }
@@ -152,8 +152,8 @@ export const ProjectCreationManager: React.FC = () => {
                 t('fabricator:project.created', 'Project created. Enter the first window size on Measuring.')
             );
 
-            // 6. Measuring first so each pose's W×H is captured before design
-            navigate(fabricatorRoutes.poseMeasuring(persistedProjectId, persistedPoseId));
+            // 6. Measuring first so each pose's WÃ—H is captured before design
+            void navigate(fabricatorRoutes.poseMeasuring(persistedProjectId, persistedPoseId));
 
         } catch (error) {
             console.error('Failed to create project:', error);

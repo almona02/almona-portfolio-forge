@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CustomerRemindersManager Component
  * 
  * Priority 4: Customers Page Upgrade - Reminder Management UI
@@ -110,7 +110,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
      * Initial load
      */
     useEffect(() => {
-        loadReminders();
+        void loadReminders();
     }, [loadReminders]);
 
     /**

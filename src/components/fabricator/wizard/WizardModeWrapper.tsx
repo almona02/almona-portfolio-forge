@@ -1,7 +1,7 @@
-/**
+﻿/**
  * WizardModeWrapper - Simplified 5-Step Workflow for Unskilled Fabricators
  * 
- * Linear progression: Type → System → Dimensions → Template → Review
+ * Linear progression: Type â†’ System â†’ Dimensions â†’ Template â†’ Review
  * Blocks progression if validation fails.
  * Auto-saves on each step completion.
  * 
@@ -32,12 +32,12 @@ import { ProductionQueue } from './ProductionQueue';
 
 // Simple window templates (predefined layouts)
 const SIMPLE_TEMPLATES = [
-  { id: '1-fixed', nameAr: 'شباك ثابت', nameEn: '1 Fixed Window', openings: 1, type: 'fixed' },
-  { id: '1-sliding', nameAr: 'شباك جرار', nameEn: '1 Sliding Window', openings: 1, type: 'sliding' },
-  { id: '2-sliding', nameAr: '2 شباك جرار', nameEn: '2 Sliding Windows', openings: 2, type: 'sliding' },
-  { id: '1-turn', nameAr: 'شباك مفصلي', nameEn: '1 Turn Window', openings: 1, type: 'turn' },
-  { id: '2-turn', nameAr: '2 شباك مفصلي', nameEn: '2 Turn Windows', openings: 2, type: 'turn' },
-  { id: 'door', nameAr: 'باب', nameEn: 'Door', openings: 1, type: 'door' },
+  { id: '1-fixed', nameAr: 'Ø´Ø¨Ø§Ùƒ Ø«Ø§Ø¨Øª', nameEn: '1 Fixed Window', openings: 1, type: 'fixed' },
+  { id: '1-sliding', nameAr: 'Ø´Ø¨Ø§Ùƒ Ø¬Ø±Ø§Ø±', nameEn: '1 Sliding Window', openings: 1, type: 'sliding' },
+  { id: '2-sliding', nameAr: '2 Ø´Ø¨Ø§Ùƒ Ø¬Ø±Ø§Ø±', nameEn: '2 Sliding Windows', openings: 2, type: 'sliding' },
+  { id: '1-turn', nameAr: 'Ø´Ø¨Ø§Ùƒ Ù…ÙØµÙ„ÙŠ', nameEn: '1 Turn Window', openings: 1, type: 'turn' },
+  { id: '2-turn', nameAr: '2 Ø´Ø¨Ø§Ùƒ Ù…ÙØµÙ„ÙŠ', nameEn: '2 Turn Windows', openings: 2, type: 'turn' },
+  { id: 'door', nameAr: 'Ø¨Ø§Ø¨', nameEn: 'Door', openings: 1, type: 'door' },
 ];
 
 export interface WizardState {
@@ -65,33 +65,33 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
   const RECOMMENDED_SYSTEMS = useMemo(() => [
     {
       id: 'panda-50',
-      nameAr: 'نظام PANDA-50',
+      nameAr: 'Ù†Ø¸Ø§Ù… PANDA-50',
       nameEn: 'PANDA-50 System',
       pricePerSqm: 450,
       maxWidth: 180,
       maxHeight: 220,
       recommended: true,
-      description: locale === 'ar' ? 'نظام قوي ومناسب لمعظم الاحتياجات' : 'Strong system suitable for most needs',
+      description: locale === 'ar' ? 'Ù†Ø¸Ø§Ù… Ù‚ÙˆÙŠ ÙˆÙ…Ù†Ø§Ø³Ø¨ Ù„Ù…Ø¹Ø¸Ù… Ø§Ù„Ø§Ø­ØªÙŠØ§Ø¬Ø§Øª' : 'Strong system suitable for most needs',
     },
     {
       id: 'eco-40',
-      nameAr: 'نظام ECO-40',
+      nameAr: 'Ù†Ø¸Ø§Ù… ECO-40',
       nameEn: 'ECO-40 System',
       pricePerSqm: 350,
       maxWidth: 150,
       maxHeight: 200,
       recommended: false,
-      description: locale === 'ar' ? 'نظام اقتصادي للشبابيك الصغيرة' : 'Budget system for small windows',
+      description: locale === 'ar' ? 'Ù†Ø¸Ø§Ù… Ø§Ù‚ØªØµØ§Ø¯ÙŠ Ù„Ù„Ø´Ø¨Ø§Ø¨ÙŠÙƒ Ø§Ù„ØµØºÙŠØ±Ø©' : 'Budget system for small windows',
     },
     {
       id: 'premium-60',
-      nameAr: 'نظام PREMIUM-60',
+      nameAr: 'Ù†Ø¸Ø§Ù… PREMIUM-60',
       nameEn: 'PREMIUM-60 System',
       pricePerSqm: 650,
       maxWidth: 250,
       maxHeight: 280,
       recommended: false,
-      description: locale === 'ar' ? 'نظام فاخر للشبابيك الكبيرة جداً' : 'Premium system for very large windows',
+      description: locale === 'ar' ? 'Ù†Ø¸Ø§Ù… ÙØ§Ø®Ø± Ù„Ù„Ø´Ø¨Ø§Ø¨ÙŠÙƒ Ø§Ù„ÙƒØ¨ÙŠØ±Ø© Ø¬Ø¯Ø§Ù‹' : 'Premium system for very large windows',
     }
   ], [locale]); // Was implicitly constant but changes on render due to locale
 
@@ -154,7 +154,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
       JSON.stringify({ ...wizardState, ...data, lastModified: Date.now() })
     );
     // TODO: Sync to server
-    toast.success(locale === 'ar' ? 'تم الحفظ تلقائياً ✓' : 'Auto-saved ✓', { duration: 2000 });
+    toast.success(locale === 'ar' ? 'ØªÙ… Ø§Ù„Ø­ÙØ¸ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ âœ“' : 'Auto-saved âœ“', { duration: 2000 });
   }, [wizardState, projectId, locale]);
 
   // Handle next step
@@ -163,10 +163,10 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
 
     const nextStep = (wizardState.currentStep + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7;
     setWizardState((prev) => ({ ...prev, currentStep: nextStep }));
-    autoSave(nextStep, { currentStep: nextStep });
+    void autoSave(nextStep, { currentStep: nextStep });
 
     setWizardState((prev) => ({ ...prev, currentStep: nextStep }));
-    autoSave(nextStep, { currentStep: nextStep });
+    void autoSave(nextStep, { currentStep: nextStep });
 
     scrollToTop();
   }, [wizardState.currentStep, canProceed, autoSave]);
@@ -183,13 +183,13 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
   // Handle window type selection
   const handleWindowTypeSelect = useCallback((type: WizardState['windowType']) => {
     setWizardState((prev) => ({ ...prev, windowType: type }));
-    autoSave(1, { windowType: type });
+    void autoSave(1, { windowType: type });
   }, [autoSave]);
 
   // Handle system pack selection
   const handleSystemSelect = useCallback((systemId: string) => {
     setWizardState((prev) => ({ ...prev, systemPackId: systemId }));
-    autoSave(2, { systemPackId: systemId });
+    void autoSave(2, { systemPackId: systemId });
   }, [autoSave]);
 
   // Handle dimensions input
@@ -236,13 +236,13 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
     }
 
     setWizardState((prev) => ({ ...prev, dimensions: newDimensions, quantity: newQuantity, violations }));
-    autoSave(3, { dimensions: newDimensions, quantity: newQuantity, violations });
+    void autoSave(3, { dimensions: newDimensions, quantity: newQuantity, violations });
   }, [wizardState.systemPackId, autoSave, RECOMMENDED_SYSTEMS]);
 
   // Handle template selection
   const handleTemplateSelect = useCallback((templateId: string) => {
     setWizardState((prev) => ({ ...prev, templateId }));
-    autoSave(4, { templateId });
+    void autoSave(4, { templateId });
   }, [autoSave]);
 
   // Handle fix application
@@ -253,18 +253,18 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
     if (fixType === 'SPLIT_WINDOW' && wizardState.dimensions) {
       const newWidth = Math.floor(wizardState.dimensions.width / 2);
       handleDimensionsChange(newWidth, wizardState.dimensions.height, wizardState.quantity);
-      toast.success(locale === 'ar' ? 'تم تقسيم الشباك ✓' : 'Window split applied ✓');
+      toast.success(locale === 'ar' ? 'ØªÙ… ØªÙ‚Ø³ÙŠÙ… Ø§Ù„Ø´Ø¨Ø§Ùƒ âœ“' : 'Window split applied âœ“');
     } else if (fixType === 'REDUCE_HEIGHT' && wizardState.dimensions) {
       const selectedSystem = RECOMMENDED_SYSTEMS.find(s => s.id === wizardState.systemPackId);
       if (selectedSystem) {
         handleDimensionsChange(wizardState.dimensions.width, selectedSystem.maxHeight, wizardState.quantity);
-        toast.success(locale === 'ar' ? 'تم تقليل الطول ✓' : 'Height reduced ✓');
+        toast.success(locale === 'ar' ? 'ØªÙ… ØªÙ‚Ù„ÙŠÙ„ Ø§Ù„Ø·ÙˆÙ„ âœ“' : 'Height reduced âœ“');
       }
     } else if (fixType === 'ROUND_TO_STANDARD' && wizardState.dimensions) {
       const roundedWidth = Math.round(wizardState.dimensions.width / 10) * 10;
       const roundedHeight = Math.round(wizardState.dimensions.height / 10) * 10;
       handleDimensionsChange(roundedWidth, roundedHeight, wizardState.quantity);
-      toast.success(locale === 'ar' ? 'تم التقريب للمقاس القياسي ✓' : 'Rounded to standard size ✓');
+      toast.success(locale === 'ar' ? 'ØªÙ… Ø§Ù„ØªÙ‚Ø±ÙŠØ¨ Ù„Ù„Ù…Ù‚Ø§Ø³ Ø§Ù„Ù‚ÙŠØ§Ø³ÙŠ âœ“' : 'Rounded to standard size âœ“');
     }
   }, [wizardState, handleDimensionsChange, locale, RECOMMENDED_SYSTEMS]);
 
@@ -272,7 +272,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
   const handleComplete = useCallback(() => {
     if (!canProceed()) return;
 
-    toast.success(locale === 'ar' ? 'تم الحفظ بنجاح! ✓' : 'Saved successfully! ✓');
+    toast.success(locale === 'ar' ? 'ØªÙ… Ø§Ù„Ø­ÙØ¸ Ø¨Ù†Ø¬Ø§Ø­! âœ“' : 'Saved successfully! âœ“');
     onComplete?.(wizardState);
   }, [wizardState, canProceed, onComplete, locale]);
 
@@ -290,16 +290,16 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-4xl font-bold">
-              {locale === 'ar' ? 'معالج التصميم' : 'Design Wizard'}
+              {locale === 'ar' ? 'Ù…Ø¹Ø§Ù„Ø¬ Ø§Ù„ØªØµÙ…ÙŠÙ…' : 'Design Wizard'}
             </h1>
             <p className="text-xl text-muted-foreground mt-2">
-              {locale === 'ar' ? `الخطوة ${wizardState.currentStep} من 7` : `Step ${wizardState.currentStep} of 7`}
+              {locale === 'ar' ? `Ø§Ù„Ø®Ø·ÙˆØ© ${wizardState.currentStep} Ù…Ù† 7` : `Step ${wizardState.currentStep} of 7`}
             </p>
           </div>
           <div className="text-right">
             <Badge variant="outline" className="text-lg px-4 py-2">
               <StepIcon className="mr-2 h-5 w-5" />
-              {progress.toFixed(0)}% {locale === 'ar' ? 'مكتمل' : 'Complete'}
+              {progress.toFixed(0)}% {locale === 'ar' ? 'Ù…ÙƒØªÙ…Ù„' : 'Complete'}
             </Badge>
           </div>
         </div>
@@ -343,13 +343,13 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl">
-              {wizardState.currentStep === 1 && (locale === 'ar' ? 'اختر نوع الشباك' : 'Select Window Type')}
-              {wizardState.currentStep === 2 && (locale === 'ar' ? 'اختر النظام' : 'Select System')}
-              {wizardState.currentStep === 3 && (locale === 'ar' ? 'حدد المقاسات' : 'Set Dimensions')}
-              {wizardState.currentStep === 4 && (locale === 'ar' ? 'اختر التصميم' : 'Select Template')}
-              {wizardState.currentStep === 5 && (locale === 'ar' ? 'مراجعة أولية' : 'Initial Review')}
-              {wizardState.currentStep === 6 && (locale === 'ar' ? 'تحليل التحسين' : 'Optimization Check')}
-              {wizardState.currentStep === 7 && (locale === 'ar' ? 'طابور الإنتاج' : 'Production Queue')}
+              {wizardState.currentStep === 1 && (locale === 'ar' ? 'Ø§Ø®ØªØ± Ù†ÙˆØ¹ Ø§Ù„Ø´Ø¨Ø§Ùƒ' : 'Select Window Type')}
+              {wizardState.currentStep === 2 && (locale === 'ar' ? 'Ø§Ø®ØªØ± Ø§Ù„Ù†Ø¸Ø§Ù…' : 'Select System')}
+              {wizardState.currentStep === 3 && (locale === 'ar' ? 'Ø­Ø¯Ø¯ Ø§Ù„Ù…Ù‚Ø§Ø³Ø§Øª' : 'Set Dimensions')}
+              {wizardState.currentStep === 4 && (locale === 'ar' ? 'Ø§Ø®ØªØ± Ø§Ù„ØªØµÙ…ÙŠÙ…' : 'Select Template')}
+              {wizardState.currentStep === 5 && (locale === 'ar' ? 'Ù…Ø±Ø§Ø¬Ø¹Ø© Ø£ÙˆÙ„ÙŠØ©' : 'Initial Review')}
+              {wizardState.currentStep === 6 && (locale === 'ar' ? 'ØªØ­Ù„ÙŠÙ„ Ø§Ù„ØªØ­Ø³ÙŠÙ†' : 'Optimization Check')}
+              {wizardState.currentStep === 7 && (locale === 'ar' ? 'Ø·Ø§Ø¨ÙˆØ± Ø§Ù„Ø¥Ù†ØªØ§Ø¬' : 'Production Queue')}
             </CardTitle>
           </CardHeader>
 
@@ -368,16 +368,16 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
                     }`}
                   >
                     <div className="text-6xl mb-4">
-                      {type === 'fixed' && '🪟'}
-                      {type === 'sliding' && '↔️'}
-                      {type === 'turn' && '🚪'}
-                      {type === 'door' && '🚪'}
+                      {type === 'fixed' && 'ðŸªŸ'}
+                      {type === 'sliding' && 'â†”ï¸'}
+                      {type === 'turn' && 'ðŸšª'}
+                      {type === 'door' && 'ðŸšª'}
                     </div>
                     <p className="text-2xl font-bold">
-                      {type === 'fixed' && (locale === 'ar' ? 'شباك ثابت' : 'Fixed Window')}
-                      {type === 'sliding' && (locale === 'ar' ? 'شباك جرار' : 'Sliding Window')}
-                      {type === 'turn' && (locale === 'ar' ? 'شباك مفصلي' : 'Turn Window')}
-                      {type === 'door' && (locale === 'ar' ? 'باب' : 'Door')}
+                      {type === 'fixed' && (locale === 'ar' ? 'Ø´Ø¨Ø§Ùƒ Ø«Ø§Ø¨Øª' : 'Fixed Window')}
+                      {type === 'sliding' && (locale === 'ar' ? 'Ø´Ø¨Ø§Ùƒ Ø¬Ø±Ø§Ø±' : 'Sliding Window')}
+                      {type === 'turn' && (locale === 'ar' ? 'Ø´Ø¨Ø§Ùƒ Ù…ÙØµÙ„ÙŠ' : 'Turn Window')}
+                      {type === 'door' && (locale === 'ar' ? 'Ø¨Ø§Ø¨' : 'Door')}
                     </p>
                   </button>
                 ))}
@@ -405,18 +405,18 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
                           </p>
                           {system.recommended && (
                             <Badge variant="default" className="text-sm">
-                              {locale === 'ar' ? '⭐ موصى به' : '⭐ Recommended'}
+                              {locale === 'ar' ? 'â­ Ù…ÙˆØµÙ‰ Ø¨Ù‡' : 'â­ Recommended'}
                             </Badge>
                           )}
                         </div>
                         <p className="text-muted-foreground mb-2">{system.description}</p>
                         <div className="flex gap-4 text-sm">
                           <span>
-                            {locale === 'ar' ? 'السعر' : 'Price'}: {system.pricePerSqm} {locale === 'ar' ? 'ج.م/م²' : 'EGP/m²'}
+                            {locale === 'ar' ? 'Ø§Ù„Ø³Ø¹Ø±' : 'Price'}: {system.pricePerSqm} {locale === 'ar' ? 'Ø¬.Ù…/Ù…Â²' : 'EGP/mÂ²'}
                           </span>
                           <span>|</span>
                           <span>
-                            {locale === 'ar' ? 'الحد الأقصى' : 'Max'}: {system.maxWidth}×{system.maxHeight}cm
+                            {locale === 'ar' ? 'Ø§Ù„Ø­Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰' : 'Max'}: {system.maxWidth}Ã—{system.maxHeight}cm
                           </span>
                         </div>
                       </div>
@@ -435,7 +435,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xl font-medium mb-3">
-                      {locale === 'ar' ? 'العرض (سم)' : 'Width (cm)'}
+                      {locale === 'ar' ? 'Ø§Ù„Ø¹Ø±Ø¶ (Ø³Ù…)' : 'Width (cm)'}
                     </label>
                     <input
                       type="number"
@@ -454,7 +454,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
                   </div>
                   <div>
                     <label className="block text-xl font-medium mb-3">
-                      {locale === 'ar' ? 'الارتفاع (سم)' : 'Height (cm)'}
+                      {locale === 'ar' ? 'Ø§Ù„Ø§Ø±ØªÙØ§Ø¹ (Ø³Ù…)' : 'Height (cm)'}
                     </label>
                     <input
                       type="number"
@@ -485,7 +485,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
                   <div className="p-6 bg-green-50 dark:bg-green-950 border-2 border-green-500 rounded-lg text-center">
                     <Check className="h-12 w-12 text-green-600 mx-auto mb-2" />
                     <p className="text-xl font-bold text-green-700 dark:text-green-300">
-                      {locale === 'ar' ? '✅ المقاسات صحيحة!' : '✅ Dimensions Valid!'}
+                      {locale === 'ar' ? 'âœ… Ø§Ù„Ù…Ù‚Ø§Ø³Ø§Øª ØµØ­ÙŠØ­Ø©!' : 'âœ… Dimensions Valid!'}
                     </p>
                   </div>
                 )}
@@ -507,12 +507,12 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
                         : 'border-muted hover:border-primary/50'
                     }`}
                   >
-                    <div className="text-5xl mb-3">{template.type === 'door' ? '🚪' : '🪟'}</div>
+                    <div className="text-5xl mb-3">{template.type === 'door' ? 'ðŸšª' : 'ðŸªŸ'}</div>
                     <p className="text-xl font-bold mb-1">
                       {locale === 'ar' ? template.nameAr : template.nameEn}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {template.openings} {locale === 'ar' ? 'فتحة' : 'opening(s)'}
+                      {template.openings} {locale === 'ar' ? 'ÙØªØ­Ø©' : 'opening(s)'}
                     </p>
                     {wizardState.templateId === template.id && (
                       <Check className="h-6 w-6 text-primary mx-auto mt-2" />
@@ -527,25 +527,25 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
               <div className="space-y-6">
                 <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg">
                   <h3 className="text-2xl font-bold mb-4">
-                    {locale === 'ar' ? 'ملخص التصميم' : 'Design Summary'}
+                    {locale === 'ar' ? 'Ù…Ù„Ø®Øµ Ø§Ù„ØªØµÙ…ÙŠÙ…' : 'Design Summary'}
                   </h3>
                   <div className="space-y-3 text-lg">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{locale === 'ar' ? 'النوع:' : 'Type:'}</span>
+                      <span className="text-muted-foreground">{locale === 'ar' ? 'Ø§Ù„Ù†ÙˆØ¹:' : 'Type:'}</span>
                       <span className="font-medium">{wizardState.windowType}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{locale === 'ar' ? 'النظام:' : 'System:'}</span>
+                      <span className="text-muted-foreground">{locale === 'ar' ? 'Ø§Ù„Ù†Ø¸Ø§Ù…:' : 'System:'}</span>
                       <span className="font-medium">{wizardState.systemPackId}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{locale === 'ar' ? 'المقاسات:' : 'Dimensions:'}</span>
+                      <span className="text-muted-foreground">{locale === 'ar' ? 'Ø§Ù„Ù…Ù‚Ø§Ø³Ø§Øª:' : 'Dimensions:'}</span>
                       <span className="font-medium">
-                        {wizardState.dimensions?.width}×{wizardState.dimensions?.height}cm
+                        {wizardState.dimensions?.width}Ã—{wizardState.dimensions?.height}cm
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{locale === 'ar' ? 'التصميم:' : 'Template:'}</span>
+                      <span className="text-muted-foreground">{locale === 'ar' ? 'Ø§Ù„ØªØµÙ…ÙŠÙ…:' : 'Template:'}</span>
                       <span className="font-medium">{wizardState.templateId}</span>
                     </div>
                   </div>
@@ -558,7 +558,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
 
                 {wizardState.violations.filter((v) => v.severity === 'critical').length === 0 && (
                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center text-blue-700 dark:text-blue-300">
-                      {locale === 'ar' ? 'اضغط التالي لعرض خيارات الإنتاج' : 'Click Next to see production options'}
+                      {locale === 'ar' ? 'Ø§Ø¶ØºØ· Ø§Ù„ØªØ§Ù„ÙŠ Ù„Ø¹Ø±Ø¶ Ø®ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø¥Ù†ØªØ§Ø¬' : 'Click Next to see production options'}
                    </div>
                 )}
               </div>
@@ -586,7 +586,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
             className="text-xl px-8 py-6"
           >
             <ChevronLeft className="mr-2 h-6 w-6" />
-            {locale === 'ar' ? 'رجوع' : 'Back'}
+            {locale === 'ar' ? 'Ø±Ø¬ÙˆØ¹' : 'Back'}
           </Button>
 
           {wizardState.currentStep < 7 && (
@@ -596,7 +596,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
               disabled={!canProceed()}
               className="text-xl px-8 py-6"
             >
-              {locale === 'ar' ? 'التالي' : 'Next'}
+              {locale === 'ar' ? 'Ø§Ù„ØªØ§Ù„ÙŠ' : 'Next'}
               <ChevronRight className="ml-2 h-6 w-6" />
             </Button>
           )}

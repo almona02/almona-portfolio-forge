@@ -1,4 +1,4 @@
-/**
+﻿/**
  * System Pack Management Page
  * 
  * Allows users to view all system packs, see tuning status,
@@ -94,7 +94,7 @@ export const SystemPackManagement: React.FC = () => {
       returnToSystemPacks: 'true',
     });
     // Navigate to tuning studio
-    navigate(`/fabricator/tuning-studio-no-dxf?systemPackId=${systemPackId}`);
+    void navigate(`/fabricator/tuning-studio-no-dxf?systemPackId=${systemPackId}`);
   };
 
   const handleTuneProfile = (systemPackId: string, profileId?: string) => {
@@ -106,7 +106,7 @@ export const SystemPackManagement: React.FC = () => {
     const url = profileId 
       ? `/fabricator/tuning-studio?systemPackId=${systemPackId}&profileId=${profileId}`
       : `/fabricator/tuning-studio?systemPackId=${systemPackId}`;
-    navigate(url);
+    void navigate(url);
   };
 
   return (
@@ -214,8 +214,8 @@ export const SystemPackManagement: React.FC = () => {
                       </CardTitle>
                       <CardDescription className="text-xs mt-1">
                         {system.meta.brands?.join(', ') || 'Custom System'}
-                        {isUPVC && <span className="ml-2 text-green-400">• UPVC</span>}
-                        {!isUPVC && <span className="ml-2 text-blue-400">• Aluminum</span>}
+                        {isUPVC && <span className="ml-2 text-green-400">â€¢ UPVC</span>}
+                        {!isUPVC && <span className="ml-2 text-blue-400">â€¢ Aluminum</span>}
                       </CardDescription>
                     </div>
                   </div>

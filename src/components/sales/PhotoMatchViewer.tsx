@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PhotoMatchViewer - Photo-Match Technology for Sales
  * 
  * Superimposes 3D window designs on building photos with:
@@ -554,7 +554,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
             track('photo_match_shared', { method: 'clipboard', windowId: windowUnit?.id });
           } catch {
             // If clipboard fails, fall back to download
-            exportPresentation();
+            void exportPresentation();
           }
         }
       }, 'image/png');
@@ -571,10 +571,10 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
   // Toggle fullscreen
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.();
+      void document.documentElement.requestFullscreen?.();
       setIsFullscreen(true);
     } else {
-      document.exitFullscreen?.();
+      void document.exitFullscreen?.();
       setIsFullscreen(false);
     }
   }, []);
@@ -741,7 +741,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
                   max={360}
                   step={1}
                 />
-                <div className="text-xs text-gray-400 mt-1">{lighting.direction}°</div>
+                <div className="text-xs text-gray-400 mt-1">{lighting.direction}Â°</div>
               </div>
 
               <div>

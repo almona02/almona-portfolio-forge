@@ -1,4 +1,4 @@
-// IoT Sensor Integration Framework for Industry 4.0
+﻿// IoT Sensor Integration Framework for Industry 4.0
 // Handles real-time sensor data collection, processing, and analytics
 
 import { supabase } from '@/lib/supabase';
@@ -110,7 +110,7 @@ class IoTSensorService {
     // In production, this would be your IoT platform WebSocket URL
     this.websocketUrl = import.meta.env.VITE_IOT_WEBSOCKET_URL || 'wss://api.almona.com/iot/ws';
     this.initializeConnection();
-    this.loadSensorConfigurations();
+    void this.loadSensorConfigurations();
   }
 
   // Initialize WebSocket connection to IoT platform
@@ -164,7 +164,7 @@ class IoTSensorService {
       this.subscribers.forEach(callback => callback(reading));
       
       // Store in database
-      this.storeSensorReading(reading);
+      void this.storeSensorReading(reading);
       
       // Check thresholds and generate alerts
       this.checkThresholds(reading);
@@ -176,7 +176,7 @@ class IoTSensorService {
       this.digitalTwinSubscribers.forEach(callback => callback(digitalTwin));
       
       // Update machine status in database
-      this.updateMachineStatus(digitalTwin);
+      void this.updateMachineStatus(digitalTwin);
     }
   }
 
@@ -229,7 +229,7 @@ class IoTSensorService {
     if (!config) return;
 
     if (reading.value >= config.critical_threshold) {
-      this.generateAlert({
+      void this.generateAlert({
         type: 'sensor_threshold',
         severity: 'critical',
         message: `${config.name} critical threshold exceeded: ${reading.value} ${reading.unit}`,
@@ -237,7 +237,7 @@ class IoTSensorService {
         related_data: { reading, threshold: config.critical_threshold }
       });
     } else if (reading.value >= config.warning_threshold) {
-      this.generateAlert({
+      void this.generateAlert({
         type: 'sensor_threshold',
         severity: 'warning',
         message: `${config.name} warning threshold exceeded: ${reading.value} ${reading.unit}`,

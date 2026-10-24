@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Dialog,
@@ -68,8 +68,8 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
       resolution_summary?: string
     }) => updateTicketStatusAndPriority(ticket!.id, updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
-      queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
+      void queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
       toast.success('Ticket updated successfully')
       onClose()
       resetForm()

@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthContext';
+﻿import { useAuth } from '@/context/AuthContext';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -86,7 +86,7 @@ export const SettingsPage: React.FC = () => {
     };
 
     const handleLanguageChange = (lang: string) => {
-        i18n.changeLanguage(lang);
+        void i18n.changeLanguage(lang);
         toast.success(`Language switched to ${lang === 'en' ? 'English' : 'Arabic'}`);
     };
 
@@ -217,9 +217,9 @@ export const SettingsPage: React.FC = () => {
 
                                 <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-lg border border-slate-700">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 font-bold">ع</div>
+                                        <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 font-bold">Ø¹</div>
                                         <div>
-                                            <div className="font-medium">العربية (Arabic)</div>
+                                            <div className="font-medium">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© (Arabic)</div>
                                             <div className="text-sm text-slate-400">RTL Layout & Formats</div>
                                         </div>
                                     </div>
@@ -325,7 +325,7 @@ export const SettingsPage: React.FC = () => {
                             </CardHeader>
                             <CardContent className="flex flex-wrap items-center justify-between gap-4">
                                 <div className="text-sm text-slate-400 max-w-xl">
-                                    Opens Data Studio → Accessories kits. Overrides stay on this workshop device and
+                                    Opens Data Studio â†’ Accessories kits. Overrides stay on this workshop device and
                                     apply as admin unit-price overrides when they differ from catalogue evidence.
                                 </div>
                                 <Button asChild className="bg-amber-600 hover:bg-amber-700 text-white">

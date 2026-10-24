@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Fabricator Collaboration Context
  * Real-time multi-user workspace with live synchronization
  */
@@ -193,7 +193,7 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
       });
 
     // Track own presence
-    channel.track({
+    void channel.track({
       userId,
       userName,
       projectId: currentProjectId,
@@ -234,7 +234,7 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
 
     // Update presence periodically
     const presenceInterval = setInterval(() => {
-      channel.track({
+      void channel.track({
         userId,
         userName,
         projectId: currentProjectId,
@@ -244,8 +244,8 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
 
     return () => {
       clearInterval(presenceInterval);
-      channel.untrack();
-      channel.unsubscribe();
+      void channel.untrack();
+      void channel.unsubscribe();
       if (cursorUpdateTimeoutRef.current) {
         clearTimeout(cursorUpdateTimeoutRef.current);
       }

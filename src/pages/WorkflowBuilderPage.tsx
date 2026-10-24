@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WorkflowBuilderPage Component
  * 
  * Priority 3: Workflow Builder - Main Page
@@ -47,7 +47,7 @@ const WorkflowBuilderPage: React.FC = () => {
     };
 
     const handleCancel = () => {
-        navigate('/workflows');
+        void navigate('/workflows');
     };
 
     const handleDelete = async () => {
@@ -57,7 +57,7 @@ const WorkflowBuilderPage: React.FC = () => {
         try {
             await deleteWorkflow(workflowId);
             toast.success('Workflow deleted successfully');
-            navigate('/workflows');
+            void navigate('/workflows');
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Failed to delete workflow');
         } finally {

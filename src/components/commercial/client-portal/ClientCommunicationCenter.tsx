@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Client Communication Center
  * 
  * Gold-tier component for client-company communication.
@@ -50,7 +50,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
   });
 
   useEffect(() => {
-    loadMessages();
+    void loadMessages();
   }, [customerId]);
 
   const loadMessages = async () => {

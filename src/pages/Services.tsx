@@ -191,7 +191,7 @@ const Services = () => {
         operationalHours: 2840,
         sensorReadings: [
           { type: 'vibration', value: 4.2, unit: 'mm/s', status: 'warning', trend: 'increasing' },
-          { type: 'temperature', value: 68, unit: '°C', status: 'normal', trend: 'stable' },
+          { type: 'temperature', value: 68, unit: 'Â°C', status: 'normal', trend: 'stable' },
           { type: 'current', value: 42, unit: 'A', status: 'warning', trend: 'increasing' }
         ]
       },
@@ -206,7 +206,7 @@ const Services = () => {
         operationalHours: 1560,
         sensorReadings: [
           { type: 'vibration', value: 1.8, unit: 'mm/s', status: 'normal', trend: 'stable' },
-          { type: 'temperature', value: 55, unit: '°C', status: 'normal', trend: 'stable' },
+          { type: 'temperature', value: 55, unit: 'Â°C', status: 'normal', trend: 'stable' },
           { type: 'acoustic', value: 72, unit: 'dB', status: 'normal', trend: 'stable' }
         ]
       }
@@ -251,7 +251,7 @@ const Services = () => {
 
 
   const launchMaintenanceTicket = useCallback((maintenanceType: 'preventive' | 'corrective' | 'emergency') => {
-    if (!user) { navigate('/login'); return; }
+    if (!user) { void navigate('/login'); return; }
     if (!canCreateServiceTicket(user.role)) {
       trackServiceTicketBlocked({ role: user.role, reason: 'role_not_whitelisted', maintenanceType });
       toast({
@@ -284,7 +284,7 @@ const Services = () => {
 
   const handlePackageSelection = useCallback((packageId: string, estimatedPrice?: number) => {
     if (!user) {
-      navigate(`/contact?subject=${encodeURIComponent(`Service plan enquiry: ${packageId}`)}`);
+      void navigate(`/contact?subject=${encodeURIComponent(`Service plan enquiry: ${packageId}`)}`);
       return;
     }
 
@@ -554,7 +554,7 @@ const Services = () => {
                                   onClick={() => launchMaintenanceTicket('preventive')}
                                   className="ml-4"
                                 >
-                                  {language === 'ar' ? 'جدولة' : 'Schedule'}
+                                  {language === 'ar' ? 'Ø¬Ø¯ÙˆÙ„Ø©' : 'Schedule'}
                                 </Button>
                               </div>
                             </div>
@@ -627,7 +627,7 @@ const Services = () => {
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <CircuitBoard className="h-5 w-5 text-amber-400" />
-                          {language === 'ar' ? 'صحة الماكينات في الوقت الفعلي' : 'Real-Time Machine Health'}
+                          {language === 'ar' ? 'ØµØ­Ø© Ø§Ù„Ù…Ø§ÙƒÙŠÙ†Ø§Øª ÙÙŠ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„ÙØ¹Ù„ÙŠ' : 'Real-Time Machine Health'}
                         </CardTitle>
                       </CardHeader>
                       <CardContent>

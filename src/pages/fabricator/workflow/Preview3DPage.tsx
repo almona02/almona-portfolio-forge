@@ -1,4 +1,4 @@
-import { Button } from '@/shared/ui/ui/button';
+﻿import { Button } from '@/shared/ui/ui/button';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import React from 'react';
@@ -12,7 +12,7 @@ export const Preview3DPage: React.FC = () => {
     const handleContinue = () => {
         const project = projectId ?? workflowIdentity?.projectId;
         const position = poseId ?? workflowIdentity?.positionId;
-        navigate(project && position ? fabricatorRoutes.poseBOM(project, position) : fabricatorRoutes.studioProjects());
+        void navigate(project && position ? fabricatorRoutes.poseBOM(project, position) : fabricatorRoutes.studioProjects());
     };
 
     return (
@@ -39,13 +39,13 @@ export const Preview3DPage: React.FC = () => {
                         variant="outline"
                         onClick={() => navigate(projectId ? `/fabricator/workflow/design/${projectId}` : '/fabricator/workflow/design')}
                     >
-                        ← Back to Design
+                        â† Back to Design
                     </Button>
                     <Button
                         onClick={handleContinue}
                         className="bg-amber-500 hover:bg-amber-600"
                     >
-                        Review BOM →
+                        Review BOM â†’
                     </Button>
                 </div>
             </div>

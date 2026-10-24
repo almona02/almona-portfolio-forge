@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file useOperationMode.ts
  * @description Hook to fetch and cache operation mode from Supabase.
  * Includes 5-minute cache, fallback logic, and proper error handling.
@@ -141,12 +141,12 @@ export const useOperationMode = (): AuthorityState & {
   }, []);
 
   useEffect(() => {
-    fetchMode();
+    void fetchMode();
 
     // Listen for auth state changes to invalidate cache
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
       localStorage.removeItem(CACHE_KEY);
-      fetchMode();
+      void fetchMode();
     });
 
     return () => {

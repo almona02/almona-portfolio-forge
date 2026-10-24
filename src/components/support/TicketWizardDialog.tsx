@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+﻿import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -369,7 +369,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         uploadingRef.current = false;
       }
     };
-    runQueue();
+    void runQueue();
   }, [attachments]);
 
   const handleTypeClick = useCallback((type: string) => {
@@ -395,7 +395,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
           >
             <div className={`font-medium text-sm ${active ? 'text-almona-orange' : 'group-hover:text-almona-orange'}`}>{meta.label}</div>
             <div className="text-[11px] mt-1 text-gray-400 leading-snug pr-5">{meta.desc}</div>
-            {active && <span className="absolute top-2 right-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-almona-orange text-[10px] font-bold text-black">✓</span>}
+            {active && <span className="absolute top-2 right-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-almona-orange text-[10px] font-bold text-black">âœ“</span>}
           </button>
         );
       })}
@@ -425,7 +425,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
           >
             <div className={`font-medium ${active ? 'text-almona-orange' : ''}`}>{p.label}</div>
             <div className="text-[10px] text-gray-400 pr-4">{p.desc}</div>
-            {active && <span className="absolute top-1.5 right-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-almona-orange text-[10px] font-bold text-black">✓</span>}
+            {active && <span className="absolute top-1.5 right-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-almona-orange text-[10px] font-bold text-black">âœ“</span>}
           </button>
         );
       })}
@@ -621,8 +621,8 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   <div><strong>Type:</strong> {watch('type')}</div>
                   <div><strong>Priority:</strong> {watch('priority')}</div>
                   <div><strong>{t('ticket.preview_description_label')}</strong><pre className="whitespace-pre-wrap mt-1 text-gray-300 text-xs">{watch('description')}</pre></div>
-                  <div><strong>Contact:</strong> {watch('contact_email') || watch('contact_phone') || '—'}</div>
-                  <div><strong>Machine Serial:</strong> {watch('machine_serial_number') || '—'}</div>
+                  <div><strong>Contact:</strong> {watch('contact_email') || watch('contact_phone') || 'â€”'}</div>
+                  <div><strong>Machine Serial:</strong> {watch('machine_serial_number') || 'â€”'}</div>
                   {['maintenance'].includes(watch('type') || '') && (
                     <div className="mt-2 p-2 rounded bg-almona-dark/60 border border-dashed border-almona-light/20 text-xs text-gray-400">
                       <strong className="text-gray-300">Digital Twin Code:</strong> Will be generated on submission.

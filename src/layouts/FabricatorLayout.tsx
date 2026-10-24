@@ -1,4 +1,4 @@
-import { BosphorusWorkflowRibbon } from '@/components/fabricator/BosphorusWorkflowRibbon';
+﻿import { BosphorusWorkflowRibbon } from '@/components/fabricator/BosphorusWorkflowRibbon';
 import { Box, Factory, Package, Ruler, Scissors, Settings, Zap } from 'lucide-react';
 import React from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -29,7 +29,7 @@ export const FabricatorLayout: React.FC = () => {
         const route = projectId
             ? `/fabricator/workflow/${stepId}/${projectId}`
             : `/fabricator/workflow/${stepId}`;
-        navigate(route);
+        void navigate(route);
     };
 
     return (

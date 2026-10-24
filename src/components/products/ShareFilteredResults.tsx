@@ -1,4 +1,4 @@
-import { usePublicCopy } from '@/hooks/usePublicCopy';
+﻿import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { useState } from 'react';
 import { Share2, Copy, Check, MessageCircle } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
@@ -109,12 +109,12 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
         });
       } else {
         // Fallback to copy
-        handleCopyLink();
+        void handleCopyLink();
       }
     } catch (error: any) {
       // User cancelled or error occurred
       if (error.name !== 'AbortError') {
-        handleCopyLink();
+        void handleCopyLink();
       }
     }
   };

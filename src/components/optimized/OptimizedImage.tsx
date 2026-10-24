@@ -1,4 +1,4 @@
-import { getBestImageFormat, getOptimizedImageUrl } from '@/lib/imageOptimization';
+﻿import { getBestImageFormat, getOptimizedImageUrl } from '@/lib/imageOptimization';
 import { memo, useEffect, useRef, useState } from 'react';
 
 interface OptimizedImageProps {
@@ -39,7 +39,7 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
 
   // Get best image format on mount
   useEffect(() => {
-    getBestImageFormat().then(format => {
+    void getBestImageFormat().then(format => {
       setBestFormat(format);
     });
   }, []);
@@ -133,7 +133,7 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
       {hasError && (
         <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
           <div className="text-gray-500 text-sm text-center">
-            <div className="mb-2">⚠️</div>
+            <div className="mb-2">âš ï¸</div>
             <div>Image unavailable</div>
           </div>
         </div>
@@ -182,7 +182,7 @@ export const ResponsiveImage = memo<ResponsiveImageProps>(({
   const [bestFormat, setBestFormat] = useState<'avif' | 'webp' | 'jpeg'>('jpeg');
 
   useEffect(() => {
-    getBestImageFormat().then(format => {
+    void getBestImageFormat().then(format => {
       setBestFormat(format);
     });
   }, []);

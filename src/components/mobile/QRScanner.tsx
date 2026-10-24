@@ -1,4 +1,4 @@
-import { Hardener } from '@/lib/error/Hardener';
+﻿import { Hardener } from '@/lib/error/Hardener';
 import { cn } from '@/lib/utils';
 import { AlertCircle, Camera, CheckCircle, Flashlight, RotateCcw, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -212,7 +212,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
     // Restart camera with new facing mode
     stopCamera();
     setTimeout(() => {
-      initializeCamera();
+      void initializeCamera();
     }, 100);
   }, [state.facingMode, stopCamera, initializeCamera]);
 
@@ -375,7 +375,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
   // Initialize on mount
   useEffect(() => {
-    initializeCamera();
+    void initializeCamera();
 
     return () => {
       stopCamera();

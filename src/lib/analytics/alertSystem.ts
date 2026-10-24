@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Alert System for Performance Degradation
  * 
  * This module provides real-time monitoring and alerting capabilities
@@ -202,17 +202,17 @@ class AlertSystem {
     
     // Monitor performance metrics every 30 seconds
     setInterval(() => {
-      this.checkPerformanceMetrics();
+      void this.checkPerformanceMetrics();
     }, 30000);
 
     // Monitor business metrics every 5 minutes
     setInterval(() => {
-      this.checkBusinessMetrics();
+      void this.checkBusinessMetrics();
     }, 300000);
 
     // Monitor system health every 10 seconds
     setInterval(() => {
-      this.checkSystemHealth();
+      void this.checkSystemHealth();
     }, 10000);
   }
 
@@ -578,11 +578,11 @@ export const getSeverityColor = (severity: Alert['severity']): string => {
 
 export const getSeverityIcon = (severity: Alert['severity']): string => {
   switch (severity) {
-    case 'low': return 'ℹ️';
-    case 'medium': return '⚠️';
-    case 'high': return '🚨';
-    case 'critical': return '🔥';
-    default: return '📋';
+    case 'low': return 'â„¹ï¸';
+    case 'medium': return 'âš ï¸';
+    case 'high': return 'ðŸš¨';
+    case 'critical': return 'ðŸ”¥';
+    default: return 'ðŸ“‹';
   }
 };
 

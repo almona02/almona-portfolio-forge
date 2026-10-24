@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Dialog,
@@ -58,11 +58,11 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
     mutationFn: ({ ticketId, assigneeId }: { ticketId: string; assigneeId: string }) =>
       assignTicket(ticketId, assigneeId, currentUserId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
-      queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
+      void queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
       if (whatsappHref) {
         window.open(whatsappHref, '_blank', 'noopener,noreferrer')
-        toast.success(`Ticket assigned — WhatsApp opened for ${selected?.full_name || 'technician'}`)
+        toast.success(`Ticket assigned â€” WhatsApp opened for ${selected?.full_name || 'technician'}`)
       } else {
         toast.success('Ticket assigned successfully')
       }

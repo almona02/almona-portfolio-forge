@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+﻿import { useCallback, useEffect } from 'react';
 
 interface PerformanceMetrics {
   lcp?: number;
@@ -50,7 +50,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
         const metrics = { lcp };
         
         onMetricsUpdate?.(metrics);
-        reportMetrics(metrics);
+        void reportMetrics(metrics);
         
         console.log('LCP:', lcp, 'ms');
       }
@@ -73,7 +73,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
         const metrics = { fid };
         
         onMetricsUpdate?.(metrics);
-        reportMetrics(metrics);
+        void reportMetrics(metrics);
         
         console.log('FID:', fid, 'ms');
       });
@@ -99,7 +99,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
       
       const metrics = { cls: clsValue };
       onMetricsUpdate?.(metrics);
-      reportMetrics(metrics);
+      void reportMetrics(metrics);
       
       console.log('CLS:', clsValue);
     });
@@ -121,7 +121,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
           const metrics = { fcp };
           
           onMetricsUpdate?.(metrics);
-          reportMetrics(metrics);
+          void reportMetrics(metrics);
           
           console.log('FCP:', fcp, 'ms');
         }
@@ -150,7 +150,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
           const metrics = { ttfb };
           
           onMetricsUpdate?.(metrics);
-          reportMetrics(metrics);
+          void reportMetrics(metrics);
           
           console.log('TTFB:', ttfb, 'ms');
         }
@@ -175,7 +175,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
     
     // Report custom metric
     if (enableReporting && reportUrl) {
-      reportMetrics({ [name]: duration } as PerformanceMetrics);
+      void reportMetrics({ [name]: duration } as PerformanceMetrics);
     }
   }, [enableReporting, reportUrl, reportMetrics]);
 

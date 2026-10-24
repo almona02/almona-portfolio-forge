@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Unified Studio Wizard Component
  * 
  * Consolidates Profile Studio, System Pack Studio, and Tuning Studio
@@ -129,11 +129,11 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
 
       // Navigate to appropriate studio page
       if (studioType === 'profile') {
-        navigate('/fabricator/profile-studio');
+        void navigate('/fabricator/profile-studio');
       } else if (studioType === 'system-pack') {
-        navigate('/fabricator/system-packs');
+        void navigate('/fabricator/system-packs');
       } else {
-        navigate('/fabricator/tuning-studio');
+        void navigate('/fabricator/tuning-studio');
       }
 
       onOpenChange(false);
@@ -148,7 +148,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
     if (currentStep < STUDIO_STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      handleComplete();
+      void handleComplete();
     }
   }, [currentStep, handleComplete]);
 
@@ -185,7 +185,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
       setUserId(session?.user?.id || null);
     };
     if (open) {
-      getUserId();
+      void getUserId();
     }
   }, [open]);
 
@@ -254,7 +254,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
                         ${active ? 'bg-amber-600 text-white' : complete ? 'bg-amber-700/70 text-white' : 'bg-slate-800 text-slate-400'}
                       `}
                     >
-                      {complete ? '✓' : <Icon className="h-3 w-3" />}
+                      {complete ? 'âœ“' : <Icon className="h-3 w-3" />}
                     </span>
                     <span className="whitespace-nowrap select-none">
                       {step.title}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import ConditionBadge from './ConditionBadge';
 import { MapPin, Calendar, Gauge, Phone, MessageCircle, Flag, ChevronLeft } from 'lucide-react';
@@ -17,7 +17,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
   const phone = machine.contactWhatsapp || machine.contactPhone;
 
   useEffect(() => {
-    UsedMachineService.incrementViews(machine.id);
+    void UsedMachineService.incrementViews(machine.id);
   }, [machine.id]);
 
   const handleReport = async () => {
@@ -61,10 +61,10 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
               <MapPin className="w-5 h-5 text-amber-500" /> {copy(machine.location)}
             </li>
             <li className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-amber-500" /> {copy('Year')}: {machine.year ?? '—'}
+              <Calendar className="w-5 h-5 text-amber-500" /> {copy('Year')}: {machine.year ?? 'â€”'}
             </li>
             <li className="flex items-center gap-2">
-              <Gauge className="w-5 h-5 text-amber-500" /> {copy('Hours')}: {machine.hours != null ? machine.hours.toLocaleString() : '—'}
+              <Gauge className="w-5 h-5 text-amber-500" /> {copy('Hours')}: {machine.hours != null ? machine.hours.toLocaleString() : 'â€”'}
             </li>
             <li className="flex items-center gap-2">
               <ConditionBadge condition={machine.condition} />

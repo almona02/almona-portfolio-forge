@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Profile } from "../../constants/productsData";
 import { ReviewForm } from "@/components/shop/ReviewForm";
@@ -17,7 +17,7 @@ const ProfileDetail: React.FC = () => {
 
   useEffect(() => {
     if (profileId) {
-      getReviewsByProductId(profileId).then(setReviews);
+      void getReviewsByProductId(profileId).then(setReviews);
       addRecentlyViewed(profileId);
     }
   }, [profileId, addRecentlyViewed]);

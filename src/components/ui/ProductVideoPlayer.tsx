@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { LazyAnimatePresence, LazyMotionDiv, LazyMotionButton } from '@/utils/lazyMotion';
 import { Play, Pause, Volume2, VolumeX, X, Maximize2, Minimize2 } from 'lucide-react';
 
@@ -72,7 +72,7 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (isFullscreen) {
-          exitFullscreen();
+          void exitFullscreen();
         } else if (isOpen) {
           onClose();
         }
@@ -117,9 +117,9 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
 
   const toggleFullscreen = () => {
     if (isFullscreen) {
-      exitFullscreen();
+      void exitFullscreen();
     } else {
-      enterFullscreen();
+      void enterFullscreen();
     }
   };
 

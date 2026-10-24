@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Design Templates Library Component
  * 
  * Browse, save, and manage design templates
@@ -77,7 +77,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
 
   // Load templates on mount
   useEffect(() => {
-    loadTemplates();
+    void loadTemplates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

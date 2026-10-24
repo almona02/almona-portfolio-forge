@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Profile Suggestions Panel Component
  * 
  * Displays Tier 2 advisory profile suggestions from supplier packs.
@@ -81,7 +81,7 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
 
   useEffect(() => {
     if (windowUnit && systemPack) {
-      loadSuggestions();
+      void loadSuggestions();
     }
   }, [windowUnit, systemPack, supplierPackId, loadSuggestions]);
 

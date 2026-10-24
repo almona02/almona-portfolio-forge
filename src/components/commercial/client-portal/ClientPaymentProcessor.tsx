@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Client Payment Processor
  * 
  * Gold-tier component for clients to process payments for invoices.
@@ -117,7 +117,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
 
   const handleCopyLink = () => {
     if (paymentLink) {
-      navigator.clipboard.writeText(paymentLink);
+      void navigator.clipboard.writeText(paymentLink);
       toast.success('Payment link copied to clipboard');
     }
   };
@@ -201,7 +201,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
                           {format(new Date(invoice.due_date), 'MMM d, yyyy')}
                         </span>
                       ) : (
-                        <span className="text-amber-600/50">—</span>
+                        <span className="text-amber-600/50">â€”</span>
                       )}
                     </TableCell>
                     <TableCell className="text-amber-200 font-medium">
@@ -251,16 +251,16 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
                 {payments.map((payment) => (
                   <TableRow key={payment.id} className="border-amber-600/10">
                     <TableCell className="text-amber-200">
-                      {payment.completed_at ? format(new Date(payment.completed_at), 'MMM d, yyyy') : '—'}
+                      {payment.completed_at ? format(new Date(payment.completed_at), 'MMM d, yyyy') : 'â€”'}
                     </TableCell>
                     <TableCell className="text-amber-200 font-mono text-sm">
-                      {payment.invoice_id?.slice(0, 8) || '—'}
+                      {payment.invoice_id?.slice(0, 8) || 'â€”'}
                     </TableCell>
                     <TableCell className="text-amber-200 font-medium">
                       {formatCurrency(parseFloat(payment.amount?.toString() || '0'), 'en', payment.currency || 'USD')}
                     </TableCell>
                     <TableCell className="text-amber-200">
-                      {payment.method || '—'}
+                      {payment.method || 'â€”'}
                     </TableCell>
                     <TableCell>
                       {getPaymentStatusBadge(payment)}

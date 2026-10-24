@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -104,7 +104,7 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
       track('service_roi_analytics_loaded', { timeRange })
     }
 
-    loadROIData()
+    void loadROIData()
   }, [timeRange])
 
   const formatCurrency = (amount: number) => {

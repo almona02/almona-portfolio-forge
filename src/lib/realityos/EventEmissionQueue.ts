@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RealityOS Event Emission Queue
  * 
  * Queues and batches event emissions for performance optimization.
@@ -31,7 +31,7 @@ export class EventEmissionQueue {
   async enqueue(event: RealityOSEvent): Promise<EventRecord> {
     return new Promise((resolve, reject) => {
       this.queue.push({ event, resolve, reject });
-      this.processQueue();
+      void this.processQueue();
     });
   }
 

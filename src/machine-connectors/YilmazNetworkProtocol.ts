@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Yilmaz Network Protocol
  * Ethernet/TCP-IP communication for Yilmaz machines
  * Supports real-time machine control and status monitoring
@@ -203,7 +203,7 @@ export class YilmazNetworkProtocol {
     this.statusCallbacks.add(callback);
 
     // Request initial status
-    this.requestStatus();
+    void this.requestStatus();
 
     // Return unsubscribe function
     return () => {

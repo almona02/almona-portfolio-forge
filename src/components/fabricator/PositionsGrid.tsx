@@ -1,4 +1,4 @@
-import ErrorBoundary from '@/components/ErrorBoundary';
+﻿import ErrorBoundary from '@/components/ErrorBoundary';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useDeletePose, usePositions, useUpsertPose } from '@/hooks/useFabricatorQueries';
@@ -66,7 +66,7 @@ interface PositionsGridProps {
  * - Supports quick filtering by current project and text search
  */
 const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }) => {
-  // V2 only — React Query as single source of truth (useJobsStore removed)
+  // V2 only â€” React Query as single source of truth (useJobsStore removed)
   const { data: positionsRaw = [] } = usePositions(null);
   const deletePoseMutation = useDeletePose();
   const upsertPose = useUpsertPose();
@@ -134,7 +134,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
     [filteredJobs],
   );
 
-  // ─── TanStack Virtual ──────────────────────────────────────────
+  // â”€â”€â”€ TanStack Virtual â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const ROW_HEIGHT = 36; // h-9 = 36px
 
@@ -151,7 +151,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
       if (currentProject) void upsertPose.mutateAsync({ windowUnit: currentProject });
       workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: job });
       const projectKey = (job as WindowUnit & { projectId?: string }).projectId ?? job.projectCode ?? job.orderNumber;
-      navigate(fabricatorRoutes.poseDesign(projectKey, job.id), { state: { jobId: job.id, startTab: 'design' } });
+      void navigate(fabricatorRoutes.poseDesign(projectKey, job.id), { state: { jobId: job.id, startTab: 'design' } });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       trackError('PositionsGrid', 'view_job', err.message);
@@ -283,7 +283,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
               <Layers className="h-4 w-4 text-amber-400" />
               Positions & Flats Overview
               <Badge variant="outline" className="ml-2 text-[10px]">
-                {totalPoses} poses · {totalRows} unit types
+                {totalPoses} poses Â· {totalRows} unit types
               </Badge>
             </CardTitle>
             <div className="flex flex-wrap items-center gap-3 mt-2 md:mt-0">
@@ -304,7 +304,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                 <Search className="h-3 w-3 text-amber-600/70 absolute left-2 top-1.5" />
                 <Input
                   className="pl-6 h-7 text-xs bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
-                  placeholder="Search order, flat, floor, remark…"
+                  placeholder="Search order, flat, floor, remarkâ€¦"
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -659,10 +659,10 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
   );
 };
 
-// ✅ HARDENING: Memoize component for performance
+// âœ… HARDENING: Memoize component for performance
 const PositionsGridMemo = memo(PositionsGridComponent);
 
-// ✅ HARDENING: Wrap with error boundary for production
+// âœ… HARDENING: Wrap with error boundary for production
 export const PositionsGrid: React.FC<PositionsGridProps> = (props) => (
   <ErrorBoundary level="component">
     <PositionsGridMemo {...props} />

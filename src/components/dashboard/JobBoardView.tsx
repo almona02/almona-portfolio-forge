@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { Ruler, Settings, Scissors, Factory, Zap, CheckCircle2 } from 'lucide-react';
 import { useJobsStore } from '@/store/jobsStore';
 import { JobColumn } from './JobColumn';
@@ -20,7 +20,7 @@ export const JobBoardView: React.FC = () => {
 
   useEffect(() => {
     if (!jobs.length) {
-      loadJobs();
+      void loadJobs();
     }
   }, [jobs.length, loadJobs]);
 

@@ -1,4 +1,4 @@
-import { LazyEnhancedGLBViewer } from '@/components/3d-model/LazyGLBViewer';
+﻿import { LazyEnhancedGLBViewer } from '@/components/3d-model/LazyGLBViewer';
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
 import '@/components/3d-model/SwiftXR.css';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
@@ -97,9 +97,9 @@ export function AdvancedModelViewer() {
     };
 
     if (navigator.share) {
-      navigator.share(shareData);
+      void navigator.share(shareData);
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      void navigator.clipboard.writeText(window.location.href);
       toast({
         title: "Link Copied",
         description: "Model link copied to clipboard",
@@ -461,7 +461,7 @@ export function AdvancedModelViewer() {
                     <div className="bg-gray-800 p-3 rounded-lg">
                       <div className="text-sm text-gray-400 mb-1">Dimensions</div>
                       <div className="text-white text-sm">
-                        {selectedModel.dimensions.length} × {selectedModel.dimensions.width} × {selectedModel.dimensions.height}
+                        {selectedModel.dimensions.length} Ã— {selectedModel.dimensions.width} Ã— {selectedModel.dimensions.height}
                       </div>
                     </div>
                   )}

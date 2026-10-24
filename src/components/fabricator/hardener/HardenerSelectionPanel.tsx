@@ -1,10 +1,10 @@
-/**
+﻿/**
  * HardenerSelectionPanel - Hardener Selection Panel Component
  * 
  * Full-featured panel for hardener code selection and display.
  * Selects reinforcement with manufacturing validation.
  * 
- * Constitutional Compliance: AICS-001 §4.3.5 (Certification Constraints)
+ * Constitutional Compliance: AICS-001 Â§4.3.5 (Certification Constraints)
  * 
  * @since Phase 1: Precision Upgrade Plan (January 2026)
  */
@@ -54,7 +54,7 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
   // Auto-select hardener when window unit or system pack changes
   useEffect(() => {
     if (windowUnit && systemPack) {
-      selectHardener();
+      void selectHardener();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windowUnit?.id, systemPack?.id, windowUnit?.overallWidth, windowUnit?.overallHeight, windowUnit?.type]);
@@ -108,13 +108,13 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
 
       // Check for system stop with AICS-001 reference
       if (result.systemStopRequired) {
-        const aicsRef = 'AICS-001 §4.3.5, §2.8';
+        const aicsRef = 'AICS-001 Â§4.3.5, Â§2.8';
         setError(
           `System stop required: Hardener selection failed validation (${aicsRef}). ` +
           `Manufacturing cannot proceed without valid hardener specification.`
         );
       } else if (!result.hardenerCode) {
-        setError(result.justification || 'No hardener rule matched — pick a code manually.');
+        setError(result.justification || 'No hardener rule matched â€” pick a code manually.');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to select hardener code';
@@ -143,11 +143,11 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
    * Handle manual refresh
    */
   const handleRefresh = () => {
-    selectHardener();
+    void selectHardener();
   };
 
   /**
-   * Manual catalog pick — sandbox only. Production/certified must not clear a
+   * Manual catalog pick â€” sandbox only. Production/certified must not clear a
    * system stop without a matching hardener rule (review hold on #55).
    */
   const handleManualPick = (code: string) => {
@@ -170,7 +170,7 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
         sashSizeMatch: true,
         openingTypeMatch: spec.openingTypes.includes(context.openingType),
         egyptianCodeCompliant: spec.egyptianCodeCompliant,
-        constraintViolations: ['Manual hardener selection — human validation required'],
+        constraintViolations: ['Manual hardener selection â€” human validation required'],
       },
       justification: `Sandbox manual selection of ${spec.code} (${spec.name}) after no automatic rule matched.`,
       constitutionalDisclaimer:
@@ -210,7 +210,7 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
                   <TooltipTrigger>
                     <div className="flex items-center gap-1 text-amber-500/70 hover:text-amber-400 text-[10px] font-semibold px-1.5 py-0.5 bg-amber-950/20 border border-amber-500/30 rounded cursor-help transition-all duration-200">
                       <FileText className="h-2.5 w-2.5" />
-                      <span>AICS-001 §4.3.5</span>
+                      <span>AICS-001 Â§4.3.5</span>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -273,8 +273,8 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
                       <TooltipContent>
                         <div className="bg-slate-900 border border-amber-500/30 text-xs max-w-sm p-2 rounded">
                           <p className="font-semibold text-amber-400 mb-2">AICS-001 Constitutional Framework</p>
-                          <p className="text-slate-300 mb-1">§4.3.5: Certification Constraints</p>
-                          <p className="text-slate-300 mb-1">§2.8: System Stop Requirements</p>
+                          <p className="text-slate-300 mb-1">Â§4.3.5: Certification Constraints</p>
+                          <p className="text-slate-300 mb-1">Â§2.8: System Stop Requirements</p>
                           <p className="text-amber-400/80 mt-2 text-[10px]">All outputs require human validation</p>
                         </div>
                       </TooltipContent>
@@ -313,7 +313,7 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
         {/* Manual picker: sandbox only when automatic rule fails */}
         {mode === 'sandbox' && !loading && (!selection?.hardenerCode || error) && manualOptions.length > 0 && (
           <div className="rounded-lg border border-amber-600/30 bg-slate-950/60 p-3 space-y-2" data-testid="hardener-manual-picker">
-            <p className="text-xs text-amber-200/80">Sandbox only — no matching rule; select a hardener from the catalog:</p>
+            <p className="text-xs text-amber-200/80">Sandbox only â€” no matching rule; select a hardener from the catalog:</p>
             <select
               className="w-full rounded border border-slate-600 bg-slate-900 p-2 text-sm text-slate-100"
               defaultValue=""
@@ -323,11 +323,11 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
               aria-label="Manual hardener catalog"
             >
               <option value="" disabled>
-                Choose hardener code…
+                Choose hardener codeâ€¦
               </option>
               {manualOptions.map((spec) => (
                 <option key={spec.code} value={spec.code}>
-                  {spec.code} — {spec.name}
+                  {spec.code} â€” {spec.name}
                 </option>
               ))}
             </select>

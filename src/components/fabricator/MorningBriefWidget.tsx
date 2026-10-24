@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Morning Brief Widget - "Maalem's Morning Brief"
  * 
  * Displays daily industry intelligence for workshop owners:
@@ -101,7 +101,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
   };
 
   useEffect(() => {
-    fetchBrief();
+    void fetchBrief();
     // Refresh every 5 minutes
     const interval = setInterval(fetchBrief, 5 * 60 * 1000);
     return () => clearInterval(interval);
@@ -165,7 +165,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
               Maalem's Morning Brief
             </CardTitle>
             <CardDescription>
-              {brief.summary || `صباح الخير يا ريس! ${brief.totalArticles || 0} خبر جديد اليوم`}
+              {brief.summary || `ØµØ¨Ø§Ø­ Ø§Ù„Ø®ÙŠØ± ÙŠØ§ Ø±ÙŠØ³! ${brief.totalArticles || 0} Ø®Ø¨Ø± Ø¬Ø¯ÙŠØ¯ Ø§Ù„ÙŠÙˆÙ…`}
             </CardDescription>
           </div>
           <Button
@@ -204,7 +204,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       onClick={async () => {
                         await handleFeedback(`alert_${idx}`, 'useful');
                       }}
-                      title="مفيد"
+                      title="Ù…ÙÙŠØ¯"
                       data-feedback-id={`alert_${idx}`}
                     >
                       <ThumbsUp className="h-3 w-3  status-valid" />
@@ -216,7 +216,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       onClick={async () => {
                         await handleFeedback(`alert_${idx}`, 'not_useful');
                       }}
-                      title="مش مفيد"
+                      title="Ù…Ø´ Ù…ÙÙŠØ¯"
                       data-feedback-id={`alert_${idx}`}
                     >
                       <ThumbsDown className="h-3 w-3 text-red-500" />
@@ -254,7 +254,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       onClick={async () => {
                         await handleFeedback(`high_alert_${idx}`, 'useful');
                       }}
-                      title="مفيد"
+                      title="Ù…ÙÙŠØ¯"
                       data-feedback-id={`high_alert_${idx}`}
                       disabled={feedbackSubmitting.has(`high_alert_${idx}`)}
                     >
@@ -267,7 +267,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       onClick={async () => {
                         await handleFeedback(`high_alert_${idx}`, 'not_useful');
                       }}
-                      title="مش مفيد"
+                      title="Ù…Ø´ Ù…ÙÙŠØ¯"
                       data-feedback-id={`high_alert_${idx}`}
                       disabled={feedbackSubmitting.has(`high_alert_${idx}`)}
                     >

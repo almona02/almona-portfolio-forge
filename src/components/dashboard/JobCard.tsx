@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { WindowUnit } from '@/types/fabricator';
 import { useJobsStore } from '@/store/jobsStore';
@@ -13,7 +13,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
 
   const handleClick = () => {
     setSelectedJob(job.id);
-    navigate('/fabricator-workflow', { state: { jobId: job.id } });
+    void navigate('/fabricator-workflow', { state: { jobId: job.id } });
   };
 
   return (
@@ -30,7 +30,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
       </div>
 
       <p className="text-xs text-gray-400 mb-1">
-        {job.overallWidth} × {job.overallHeight} mm
+        {job.overallWidth} Ã— {job.overallHeight} mm
       </p>
       {job.customer && (
         <p className="text-[11px] text-gray-300 mb-2 truncate">
