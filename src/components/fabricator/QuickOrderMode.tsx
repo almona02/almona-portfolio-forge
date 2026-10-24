@@ -1,4 +1,4 @@
-﻿/**
+/**
  * QuickOrderMode - Expert Workflow Interface
  * 
  * Streamlined interface for expert fabricators to create projects in 2-3 minutes:
@@ -159,14 +159,14 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
 
   // Setup keyboard shortcuts
   useEffect(() => {
-    shortcuts.on('new_project', handleCreateOrder);
+    shortcuts.on('new_project', () => void handleCreateOrder());
     shortcuts.on('load_template', () => {
       // Focus template selector
       const templateSelect = document.getElementById('template-select');
       templateSelect?.focus();
     });
-    shortcuts.on('save_template', handleSaveAsTemplate);
-    shortcuts.on('quick_save', handleCreateOrder);
+    shortcuts.on('save_template', () => void handleSaveAsTemplate());
+    shortcuts.on('quick_save', () => void handleCreateOrder());
 
     return () => {
       shortcuts.off('new_project');

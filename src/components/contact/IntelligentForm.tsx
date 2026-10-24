@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
@@ -114,7 +114,7 @@ const onSubmit = async (data: FormData) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6">
       {emergencyMode && (
         <div className="bg-red-900/20 p-4 rounded-lg border border-red-900/50 flex items-center">
           <AlertTriangle className="text-red-500 mr-3" />
