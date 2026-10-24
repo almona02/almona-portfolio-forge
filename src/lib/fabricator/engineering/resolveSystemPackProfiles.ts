@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Resolve Profile[] from a system pack catalog.
  * FP-028: uses only pack / template catalog fields — never invents codes or weights.
  */
 
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import type { Profile } from '@/types/fabricator';
 
 type CatalogRole = NonNullable<Profile['profileRole']>;
@@ -107,7 +107,7 @@ function resolveRock60CatalogProfiles(pack: SystemPack): Profile[] {
 /**
  * Prefer explicit pack.profiles; otherwise derive from known catalog templates (ROCK 60).
  */
-export function resolveSystemPackProfiles(pack: SystemPack | null | undefined): Profile[] {
+export function resolveSystemPackProfiles(pack: SystemPack | null): Profile[] {
   if (!pack) return [];
   if (pack.profiles && pack.profiles.length > 0) {
     return pack.profiles.map((p) => ({

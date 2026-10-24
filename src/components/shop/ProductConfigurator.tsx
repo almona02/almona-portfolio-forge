@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Database } from '@/types/database';
@@ -417,7 +417,7 @@ export const ProductConfigurator: React.FC<ProductConfiguratorProps> = ({
           {/* Add to Quote Button */}
           {showAddToQuote && (
             <Button
-              onClick={handleAddToQuote}
+              onClick={() => void handleAddToQuote()}
               disabled={!isConfigurationComplete}
               className="w-full"
               size="lg"

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Remnant Marketplace Preview Component
  * Quick preview and access to remnant marketplace
  */
@@ -38,7 +38,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
   const marketplace = new RemnantMarketplace();
 
   useEffect(() => {
-    loadRecentListings();
+    void loadRecentListings();
   }, [workshopId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadRecentListings = async () => {
@@ -139,7 +139,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
               Cancel
             </Button>
             <Button
-              onClick={handleOneClickListing}
+              onClick={() => void handleOneClickListing()}
               disabled={!listingPrice || isCreatingListing}
               className="btn-primary"
             >

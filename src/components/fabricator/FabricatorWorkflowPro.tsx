@@ -1,4 +1,4 @@
-import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
+﻿import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -150,7 +150,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3 p-4 bg-[#0f0f0f]/60 border border-amber-600/30 rounded-lg card-dark">
             <Button
               size="lg"
-              onClick={handleOptimize}
+              onClick={() => void handleOptimize()}
               disabled={optStatus === 'running'}
               className={`relative overflow-hidden transition-all ${
                 optStatus === 'complete'
@@ -170,7 +170,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
               <Button
                 size="lg"
                 className="btn-primary"
-                onClick={() => navigate('/fabricator/production')}
+                onClick={() => void navigate('/fabricator/production')}
               >
                 {t('workflow_pro.go_to_production', 'Go to Production Command')}
                 <ArrowRight className="ml-2 h-4 w-4" />

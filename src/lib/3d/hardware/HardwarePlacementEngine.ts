@@ -1,4 +1,4 @@
-/**
+﻿/**
  * HardwarePlacementEngine - Accurate Hardware Positioning
  * 
  * Positions hardware according to:

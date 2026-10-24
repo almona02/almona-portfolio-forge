@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   HeavyCutInput,
@@ -560,7 +560,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
             </div>
             
             <Button
-              onClick={runOptimization}
+              onClick={() => void runOptimization()}
               disabled={isOptimizing || cutPieces.length === 0}
               className="w-full btn-primary-gradient font-semibold"
             >

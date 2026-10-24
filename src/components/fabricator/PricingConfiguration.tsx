@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PricingConfiguration - Comprehensive pricing engine configuration UI
  * 
  * Features:
@@ -122,7 +122,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
       }
     };
 
-    initEngine();
+    void initEngine();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
@@ -167,7 +167,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
       setExchangeRates(rates);
     };
 
-    loadRates();
+    void loadRates();
   }, [config.currency]);
 
   // Load price history
@@ -225,8 +225,8 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
   }, [userId]);
 
   useEffect(() => {
-    loadPriceHistory();
-    loadAlerts();
+    void loadPriceHistory();
+    void loadAlerts();
   }, [loadPriceHistory, loadAlerts]);
 
   // Save configuration
@@ -354,7 +354,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
+          <Button onClick={() => void handleSave()} disabled={saving}>
             {saving ? (
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
             ) : (
@@ -697,7 +697,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                     <SelectItem value="90">Last 90 days</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" onClick={loadPriceHistory}>
+                <Button variant="outline" onClick={() => void loadPriceHistory()}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh
                 </Button>
@@ -758,7 +758,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                 {bulkImportFile && (
                   <div className="mt-4">
                     <div className="text-sm text-gray-400">{bulkImportFile.name}</div>
-                    <Button onClick={handleBulkImport} className="mt-2">
+                    <Button onClick={() => void handleBulkImport()} className="mt-2">
                       <Upload className="h-4 w-4 mr-2" />
                       Import Prices
                     </Button>

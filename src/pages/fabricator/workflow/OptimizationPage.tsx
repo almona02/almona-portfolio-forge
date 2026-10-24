@@ -154,7 +154,7 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, projectId, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, navigate, invalidateStep, projectIdentity, bom, workflowIdentity, systemPackForGate]);
+    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, workflowIdentity, systemPackForGate]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, completedProject).valid;
 
@@ -205,7 +205,7 @@ export const OptimizationPage: React.FC = () => {
                     <OptimizationEqualizer
                         userId={user?.id || 'guest'}
                         profiles={profiles}
-                        onComplete={handleOptimizationComplete}
+                        onComplete={(e) => void handleOptimizationComplete(e)}
                     />
                     {isOptimizing && (
                         <div className="flex items-center justify-center gap-2 py-4 text-amber-600">

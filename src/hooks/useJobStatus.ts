@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface JobStatusData {
@@ -106,7 +106,7 @@ export function useJobStatus(jobId: string | null) {
       }
     };
 
-    fetchInitialStatus();
+    void fetchInitialStatus();
 
     // Cleanup subscription on unmount
     return () => {

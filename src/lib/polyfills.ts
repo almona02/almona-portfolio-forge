@@ -60,12 +60,12 @@ const urlModule = {
   format: (urlObject: Record<string, unknown>) => {
     if (typeof urlObject === 'string') return urlObject;
     
-    const protocol = urlObject.protocol || 'http:';
-    const hostname = urlObject.hostname || urlObject.host || 'localhost';
-    const port = urlObject.port ? `:${urlObject.port}` : '';
-    const pathname = urlObject.pathname || '/';
-    const search = urlObject.search || '';
-    const hash = urlObject.hash || '';
+    const protocol = (urlObject.protocol as string) || 'http:';
+    const hostname = (urlObject.hostname as string) || (urlObject.host as string) || 'localhost';
+    const port = urlObject.port ? `:${urlObject.port as string}` : '';
+    const pathname = (urlObject.pathname as string) || '/';
+    const search = (urlObject.search as string) || '';
+    const hash = (urlObject.hash as string) || '';
     
     return `${protocol}//${hostname}${port}${pathname}${search}${hash}`;
   },
@@ -201,6 +201,6 @@ export function initializePolyfills() {
       // Long package might not be needed immediately, that's okay
     });
     // Only run in browser environment
-    console.log('🔧 Browser polyfills initialized for Node.js modules');
+    console.log('?? Browser polyfills initialized for Node.js modules');
   }
 }

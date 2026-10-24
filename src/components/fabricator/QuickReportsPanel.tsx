@@ -1,4 +1,4 @@
-import ErrorBoundary from '@/components/ErrorBoundary';
+﻿import ErrorBoundary from '@/components/ErrorBoundary';
 import { track } from '@/lib/analytics';
 import { ExportService } from '@/lib/exports';
 import { trackError } from '@/lib/performance-monitoring';
@@ -189,7 +189,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateCuttingList}
+          onClick={() => void handleGenerateCuttingList()}
           disabled={!optimization || generatingReport !== null}
         >
           {generatingReport === 'cutting' ? (
@@ -210,7 +210,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateMachineCsv}
+          onClick={() => void handleGenerateMachineCsv()}
           disabled={!optimization || generatingReport !== null}
         >
           {generatingReport === 'machine_csv' ? (
@@ -228,7 +228,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateMachineDxf}
+          onClick={() => void handleGenerateMachineDxf()}
           disabled={!optimization || generatingReport !== null}
         >
           {generatingReport === 'machine_dxf' ? (
@@ -246,7 +246,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateGlassReport}
+          onClick={() => void handleGenerateGlassReport()}
           disabled={!project || generatingReport !== null}
         >
           {generatingReport === 'glass' ? (
@@ -264,7 +264,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           variant="outline"
           size="sm"
           className="w-full justify-start text-xs"
-          onClick={handleGenerateAccessoriesList}
+          onClick={() => void handleGenerateAccessoriesList()}
           disabled={!project || generatingReport !== null}
         >
           {generatingReport === 'accessories' ? (

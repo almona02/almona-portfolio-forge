@@ -1,4 +1,4 @@
-import { usePublicCopy } from '@/hooks/usePublicCopy';
+﻿import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { useState } from 'react';
 import { Share2, Copy, Check, MessageCircle } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
@@ -109,12 +109,12 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
         });
       } else {
         // Fallback to copy
-        handleCopyLink();
+        void handleCopyLink();
       }
     } catch (error: any) {
       // User cancelled or error occurred
       if (error.name !== 'AbortError') {
-        handleCopyLink();
+        void handleCopyLink();
       }
     }
   };
@@ -145,7 +145,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-gray-700">
         <DropdownMenuItem
-          onClick={handleCopyLink}
+          onClick={() => void handleCopyLink()}
           className="cursor-pointer hover:bg-gray-800"
         >
           {copied ? (
@@ -169,7 +169,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
         </DropdownMenuItem>
         {navigator.share && (
           <DropdownMenuItem
-            onClick={handleNativeShare}
+            onClick={() => void handleNativeShare()}
             className="cursor-pointer hover:bg-gray-800"
           >
             <Share2 className="mr-2 h-4 w-4" />

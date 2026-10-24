@@ -117,7 +117,7 @@ export const TheFoundry: React.FC = () => {
       const access = await GuildSystem.canAccessFoundry(userId);
       setHasAccess(access);
     };
-    checkAccess();
+    void checkAccess();
   }, []);
 
   const handleDxfUpload = useCallback(async (file: File) => {
@@ -212,7 +212,7 @@ export const TheFoundry: React.FC = () => {
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file) handleDxfUpload(file);
+                      if (file) void handleDxfUpload(file);
                     }}
                   />
                   <p className="text-sm text-muted-foreground mt-2">

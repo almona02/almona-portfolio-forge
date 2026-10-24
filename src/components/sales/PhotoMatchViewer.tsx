@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PhotoMatchViewer - Photo-Match Technology for Sales
  * 
  * Superimposes 3D window designs on building photos with:
@@ -554,7 +554,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
             track('photo_match_shared', { method: 'clipboard', windowId: windowUnit?.id });
           } catch {
             // If clipboard fails, fall back to download
-            exportPresentation();
+            void exportPresentation();
           }
         }
       }, 'image/png');
@@ -571,10 +571,10 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
   // Toggle fullscreen
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.();
+      void document.documentElement.requestFullscreen?.();
       setIsFullscreen(true);
     } else {
-      document.exitFullscreen?.();
+      void document.exitFullscreen?.();
       setIsFullscreen(false);
     }
   }, []);
@@ -817,11 +817,11 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
 
             <TabsContent value="export" className="space-y-4">
               <div className="space-y-2">
-                <Button onClick={exportPresentation} className="w-full">
+                <Button onClick={() => void exportPresentation()} className="w-full">
                   <Download className="h-4 w-4 mr-2" />
                   Export Presentation
                 </Button>
-                <Button onClick={sharePresentation} variant="outline" className="w-full">
+                <Button onClick={() => void sharePresentation()} variant="outline" className="w-full">
                   <Share2 className="h-4 w-4 mr-2" />
                   Share Presentation
                 </Button>

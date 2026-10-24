@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -53,8 +53,8 @@ export function ProductionDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadDashboardData();
-    const interval = setInterval(loadDashboardData, 30000); // Refresh every 30 seconds
+    void loadDashboardData();
+    const interval = setInterval(() => void loadDashboardData(), 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
@@ -237,7 +237,7 @@ export function ProductionDashboard() {
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span>Live</span>
           </Badge>
-          <Button onClick={loadDashboardData} variant="outline" size="sm">
+          <Button onClick={() => void loadDashboardData()} variant="outline" size="sm">
             Refresh
           </Button>
         </div>

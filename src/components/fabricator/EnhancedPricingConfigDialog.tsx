@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Enhanced Pricing Configuration Dialog
  * 
  * Gold-tier pricing configuration with:
@@ -290,10 +290,10 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
 
   useEffect(() => {
     if (open) {
-      loadExchangeRates();
-      loadPriceHistory();
-      loadQuantityBreaks();
-      loadValidationAlerts();
+      void loadExchangeRates();
+      void loadPriceHistory();
+      void loadQuantityBreaks();
+      void loadValidationAlerts();
     }
   }, [open, loadExchangeRates, loadPriceHistory, loadQuantityBreaks, loadValidationAlerts]);
 
@@ -347,7 +347,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
     try {
       // This would update the price back to oldPrice
       toast.success(`Rolled back ${entry.entityName} to ${formatCurrency(entry.oldPrice, entry.currency)}`);
-      loadPriceHistory();
+      void loadPriceHistory();
     } catch (error) {
       toast.error('Failed to rollback price');
       console.error('Rollback error:', error);
@@ -396,7 +396,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
-        loadPriceHistory();
+        void loadPriceHistory();
       };
       
       reader.readAsText(bulkImportFile);
@@ -662,7 +662,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleRollbackPrice(entry)}
+                            onClick={() => void handleRollbackPrice(entry)}
                             className="ml-4 border-amber-500/30 text-amber-300 hover:bg-amber-500/10"
                           >
                             <ArrowLeft className="h-3 w-3 mr-1" />
@@ -690,7 +690,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={loadExchangeRates}
+                      onClick={() => void loadExchangeRates()}
                       disabled={loadingRates}
                       className="border-amber-500/30 text-amber-300"
                     >
@@ -806,7 +806,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                       <div className="mt-4">
                         <div className="text-sm text-slate-400">{bulkImportFile.name}</div>
                         <Button
-                          onClick={handleBulkImport}
+                          onClick={() => void handleBulkImport()}
                           className="mt-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30"
                         >
                           <Upload className="h-4 w-4 mr-2" />

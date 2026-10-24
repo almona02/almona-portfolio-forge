@@ -151,7 +151,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
       if (currentProject) void upsertPose.mutateAsync({ windowUnit: currentProject });
       workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: job });
       const projectKey = (job as WindowUnit & { projectId?: string }).projectId ?? job.projectCode ?? job.orderNumber;
-      navigate(fabricatorRoutes.poseDesign(projectKey, job.id), { state: { jobId: job.id, startTab: 'design' } });
+      void navigate(fabricatorRoutes.poseDesign(projectKey, job.id), { state: { jobId: job.id, startTab: 'design' } });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       trackError('PositionsGrid', 'view_job', err.message);
@@ -261,7 +261,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                 size="sm" 
                 variant="destructive"
                 className="h-7"
-                onClick={handleBulkDelete}
+                onClick={() => void handleBulkDelete()}
                 disabled={isBulkDeleting}
                >
                  <Trash2 className="h-3 w-3 mr-1.5" />
@@ -433,7 +433,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                         <TableCell className="w-24 px-2 py-1">
                           <div className="flex flex-col gap-0">
                             <span className="text-[9px] text-amber-200 leading-tight truncate">
-                              {String(job.glazing?.type || '--')}
+                              {((job.glazing?.type as string) || '--')}
                             </span>
                             <span className="text-[8px] text-amber-600/70 leading-tight truncate">
                               {job.flyScreenType || 'none'}
@@ -614,7 +614,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                <Button variant="outline" onClick={() => setBulkEditOpen(false)} className="border-amber-600/30 text-amber-200 hover:bg-amber-900/20">
                  Cancel
                </Button>
-               <Button onClick={handleBulkUpdate} className="bg-amber-500 hover:bg-amber-600 text-black">
+               <Button onClick={() => void handleBulkUpdate()} className="bg-amber-500 hover:bg-amber-600 text-black">
                  Apply to {selectedJobIds.size} Items
                </Button>
             </DialogFooter>
@@ -647,7 +647,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
               </AlertDialogCancel>
               <AlertDialogAction
                 className="bg-red-600 hover:bg-red-700 text-white"
-                onClick={handleConfirmDelete}
+                onClick={() => void handleConfirmDelete()}
               >
                 Delete
               </AlertDialogAction>

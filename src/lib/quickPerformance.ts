@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Quick Performance Utilities
  * ---------------------------------------------------------------------------
  * Immediate performance wins that can be implemented quickly
@@ -167,7 +167,7 @@ export const quickPerformanceWins = {
    * }
    * ```
    */
-  decompressWorkspaceData: (compressed: string): any | null => {
+  decompressWorkspaceData: (compressed: string): any => {
     if (!compressed) return null;
     
     if (typeof window === 'undefined') {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Client Payment Processor
  * 
  * Gold-tier component for clients to process payments for invoices.
@@ -50,7 +50,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
   const requestId = useRef(0);
   const [loadedFor, setLoadedFor] = useState(customerId);
   const [loadError, setLoadError] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [paymentLink, setPaymentLink] = useState<string | null>(null);
 
   const loadData = async () => {
@@ -117,7 +117,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
 
   const handleCopyLink = () => {
     if (paymentLink) {
-      navigator.clipboard.writeText(paymentLink);
+      void navigator.clipboard.writeText(paymentLink);
       toast.success('Payment link copied to clipboard');
     }
   };
@@ -210,7 +210,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
                     <TableCell>
                       <Button
                         size="sm"
-                        onClick={() => handleGeneratePaymentLink(invoice)}
+                        onClick={() => void handleGeneratePaymentLink(invoice)}
                         className="bg-amber-600 hover:bg-amber-700 text-white"
                       >
                         <CreditCard className="w-4 h-4 mr-2" />

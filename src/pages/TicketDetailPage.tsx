@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { Badge } from '@/components/ui/badge'
@@ -140,7 +140,7 @@ const TicketDetailPage = () => {
       <div className="container mx-auto py-16 text-center space-y-4">
         <AlertCircle className="h-10 w-10 mx-auto text-muted-foreground" />
         <p className="text-muted-foreground">{error ?? 'Ticket not found'}</p>
-        <Button variant="outline" onClick={() => navigate('/services')}><ArrowLeft className="mr-2 h-4 w-4" /> Back to services</Button>
+        <Button variant="outline" onClick={() => void navigate('/services')}><ArrowLeft className="mr-2 h-4 w-4" /> Back to services</Button>
       </div>
     )
   }
@@ -148,7 +148,7 @@ const TicketDetailPage = () => {
   return (
     <div className="container mx-auto py-6 px-4 space-y-6">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
+        <Button variant="ghost" size="sm" onClick={() => void navigate(-1)}><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
         {!isSharedView && (
           <Button variant="outline" size="sm" onClick={() => void share()} disabled={sharing}>
             <Share2 className="mr-2 h-4 w-4" /> {sharing ? 'Generating…' : 'Share with YILMAZ'}

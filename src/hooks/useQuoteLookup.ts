@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+﻿import { useState, useCallback, useEffect } from 'react';
 
 interface QuoteSummary {
   id: string;
@@ -59,7 +59,7 @@ export function useQuoteLookup(apiBase = ''): UseQuoteLookupReturn {
 
   useEffect(() => {
     const handle = setTimeout(() => {
-      fetchQuotes(query.trim());
+      void fetchQuotes(query.trim());
     }, DEBOUNCE_MS);
     return () => clearTimeout(handle);
   }, [query, fetchQuotes, forceReloadToken]);

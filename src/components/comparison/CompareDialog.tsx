@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Machine } from "@/types/index";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/shared/ui/ui/dialog";
 import { Button } from "@/shared/ui/ui/button";
@@ -49,7 +49,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
           logoDataUrl = await new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result as string);
-            reader.onerror = () => reject(reader.error);
+            reader.onerror = () => reject(new Error(String(reader.error)));
             reader.readAsDataURL(blob);
           });
         } catch {
@@ -59,7 +59,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
           logoDataUrl = await new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result as string);
-            reader.onerror = () => reject(reader.error);
+            reader.onerror = () => reject(new Error(String(reader.error)));
             reader.readAsDataURL(blob);
           });
         }
@@ -147,7 +147,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={handleExportPDF}
+                  onClick={() => void handleExportPDF()}
                   disabled={isGeneratingPDF}
                 >
                   {isGeneratingPDF ? (

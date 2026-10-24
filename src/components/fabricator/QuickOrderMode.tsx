@@ -154,19 +154,19 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
 
   // Load templates on mount
   useEffect(() => {
-    loadTemplates();
+    void loadTemplates();
   }, [loadTemplates]);
 
   // Setup keyboard shortcuts
   useEffect(() => {
-    shortcuts.on('new_project', handleCreateOrder);
+    shortcuts.on('new_project', () => void handleCreateOrder());
     shortcuts.on('load_template', () => {
       // Focus template selector
       const templateSelect = document.getElementById('template-select');
       templateSelect?.focus();
     });
-    shortcuts.on('save_template', handleSaveAsTemplate);
-    shortcuts.on('quick_save', handleCreateOrder);
+    shortcuts.on('save_template', () => void handleSaveAsTemplate());
+    shortcuts.on('quick_save', () => void handleCreateOrder());
 
     return () => {
       shortcuts.off('new_project');
@@ -263,7 +263,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                     value={selectedTemplate || ''}
                     onValueChange={(value) => {
                       if (value) {
-                        handleLoadTemplate(value);
+                        void handleLoadTemplate(value);
                       } else {
                         setSelectedTemplate(null);
                       }
@@ -366,7 +366,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                   <Alert className="bg-blue-900/20 border-blue-800">
                     <AlertDescription className="text-blue-300 text-sm">
                       Quick defaults applied: {Object.entries(quickDefaults).map(([key, value]) => 
-                        `${key}: ${value}`
+                        `${key as string}: ${value as string}`
                       ).join(', ')}
                     </AlertDescription>
                   </Alert>
@@ -390,7 +390,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
 
                 {/* Create Button */}
                 <Button
-                  onClick={handleCreateOrder}
+                  onClick={() => void handleCreateOrder()}
                   disabled={isCreating || !params.dimensions.width || !params.dimensions.height}
                   className="btn-primary"
                 >
@@ -431,7 +431,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                       <div
                         key={template.id}
                         className="flex items-center justify-between p-2 bg-gray-800/50 rounded hover:bg-gray-800 cursor-pointer"
-                        onClick={() => handleLoadTemplate(template.id)}
+                        onClick={() => void handleLoadTemplate(template.id)}
                       >
                         <div className="flex-1">
                           <p className="text-white text-sm font-medium">{template.name}</p>
@@ -444,7 +444,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleLoadTemplate(template.id);
+                            void handleLoadTemplate(template.id);
                           }}
                         >
                           <FolderOpen className="h-4 w-4" />
@@ -465,7 +465,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  onClick={handleSaveAsTemplate}
+                  onClick={() => void handleSaveAsTemplate()}
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save as Template (Ctrl+Shift+S)

@@ -1,4 +1,4 @@
-import { csvCell } from '@/lib/csv'
+﻿import { csvCell } from '@/lib/csv'
 import React, { useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ColumnDef } from '@tanstack/react-table'
@@ -95,8 +95,8 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       console.log('Real-time ticket update:', payload)
       
       // Invalidate queries to refetch data
-      queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
-      queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
+      void queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
       
       // Show toast notification for updates
       if (payload.eventType === 'INSERT') {
@@ -107,7 +107,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
     })
 
     return () => {
-      subscription.unsubscribe()
+      void subscription.unsubscribe()
     }
   }, [queryClient])
 
@@ -279,8 +279,8 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
   ]
 
   const handleRefresh = () => {
-    refetch()
-    queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
+    void refetch()
+    void queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
     toast.success('Data refreshed')
   }
 

@@ -1,4 +1,4 @@
-// pages/FabricatorWorkflow.tsx
+﻿// pages/FabricatorWorkflow.tsx
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { ConsequenceAlert } from '@/components/authority/ConsequenceAlert';
 import { OperationModeBadge } from '@/components/authority/OperationModeBadge';
@@ -292,7 +292,7 @@ export const FabricatorWorkflow: React.FC = () => {
         // Clear after 5 seconds
         setTimeout(() => setSystemTunedMessage(null), 5000);
         // Clear navigation state
-        navigate(location.pathname, { replace: true, state: {} });
+        void navigate(location.pathname, { replace: true, state: {} });
       }
     }
   }, [location.state, location.pathname, navigate]);
@@ -1484,7 +1484,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     size="sm"
                     variant="outline"
                     className="btn-primary"
-                    onClick={() => navigate('/fabricator-workflow/pro')}
+                    onClick={() => void navigate('/fabricator-workflow/pro')}
                   >
                     <Factory className="h-3 w-3 mr-1" />
                     {t('fabricator:workflow.mass_production_cta', 'Mass Production')}
@@ -2098,7 +2098,7 @@ export const FabricatorWorkflow: React.FC = () => {
                           size="sm"
                           variant="outline"
                           className="btn-primary"
-                          onClick={() => navigate('/fabricator-workflow/pro')}
+                          onClick={() => void navigate('/fabricator-workflow/pro')}
                         >
                           <Factory className="h-3 w-3 mr-1" />
                           {t('cutting_optimization.mass_production', 'Mass Production')}
@@ -2529,7 +2529,7 @@ export const FabricatorWorkflow: React.FC = () => {
                 setSelectedJob(newProject.id);
 
                 // Navigate directly to drafting center (gold tier DraftingWorkbench) after project creation
-                navigate('/fabricator/workflow/engineering-bay?mode=drafting');
+                void navigate('/fabricator/workflow/engineering-bay?mode=drafting');
 
                 // Show success message
                 toast.success(t('fabricator:project.created', 'Project created successfully. Opening drafting center...'));
@@ -2551,7 +2551,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   setProjectMeta(newProjectMeta);
                   setShowProjectWizard(false);
                   // Navigate directly to drafting center (gold tier DraftingWorkbench) after project creation
-                  navigate('/fabricator/workflow/engineering-bay?mode=drafting');
+                  void navigate('/fabricator/workflow/engineering-bay?mode=drafting');
                   // Reset any existing project in workspace context
                   workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: null });
                   // Show success message

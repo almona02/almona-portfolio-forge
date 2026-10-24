@@ -126,6 +126,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
       stockReservation,
       positionRelease,
       deliveryAcknowledgement,
+      systemPack,
     ],
   );
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Optimization Equalizer Component
  * Pre-optimization adjustment panel for fine-tuning optimization strategy
  * Gives users control over the "how" of production optimization
@@ -118,7 +118,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
 
   // Load saved preferences on mount
   useEffect(() => {
-    loadSavedPreferences();
+    void loadSavedPreferences();
   }, [loadSavedPreferences]);
 
   // ✅ HARDENING: Memoize handlers to prevent unnecessary re-renders
@@ -413,7 +413,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
         {/* Save Actions */}
         <div className="flex items-center gap-2 pt-2 border-t border-gray-700">
           <Button
-            onClick={handleSaveStrategy}
+            onClick={() => void handleSaveStrategy()}
             disabled={isSaving}
             variant="outline"
             className="flex-1 border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
@@ -422,7 +422,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
             {t('optimization_equalizer.save_strategy', 'Save Strategy')}
           </Button>
           <Button
-            onClick={handleSetAsDefault}
+            onClick={() => void handleSetAsDefault()}
             disabled={isSaving}
             variant="outline"
             className="flex-1 border-green-500/30 text-green-400 hover:bg-green-500/10"

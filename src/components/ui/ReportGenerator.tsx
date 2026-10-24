@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ReportGenerator Component
  * 
  * Phase 4 Implementation - Report Generation UI
@@ -93,7 +93,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
             }
         };
 
-        loadTemplates();
+        void loadTemplates();
     }, [initialTemplateId]);
 
     /**
@@ -301,7 +301,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
 
                     {/* Generate Button */}
                     <Button
-                        onClick={handleGenerate}
+                        onClick={() => void handleGenerate()}
                         disabled={isGenerating || !reportType.trim()}
                         className="w-full"
                     >
@@ -362,7 +362,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
 
                                 {activeJob.download_url && (
                                     <Button
-                                        onClick={handleDownload}
+                                        onClick={() => void handleDownload()}
                                         className="w-full"
                                     >
                                         <Download className="mr-2 h-4 w-4" />

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Almona Fabricator Pro: Window3DGenerator (v6.0 "Apex Engine")
  *
  * This component is the master real-time 3D visualization engine for Fabricator Pro.
@@ -1268,7 +1268,7 @@ const Window3DModelComponent = (props: {
             }
         };
 
-        loadHardwareModels();
+        void loadHardwareModels();
 
         // ✅ MEMORY: Cleanup on unmount - capture ref value at effect time
         const loadingRefAtEffectTime = hardwareModelsLoadingRef.current;
@@ -2207,10 +2207,10 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
     const toggleFullscreen = useCallback(() => {
         if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen?.();
+            void document.documentElement.requestFullscreen?.();
             setIsFullscreen(true);
         } else {
-            document.exitFullscreen?.();
+            void document.exitFullscreen?.();
             setIsFullscreen(false);
         }
     }, []);

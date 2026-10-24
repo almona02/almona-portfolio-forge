@@ -23,7 +23,7 @@ const QuotePage = () => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const items = quoteItems.map(item => `${item.quantity} x ${item.product_name_en} (${item.product_sku || item.product_id})`).join('\n');
-    const body = `Name: ${form.get('name')}\nEmail: ${form.get('email')}\nPhone: ${form.get('phone')}\nCompany: ${form.get('company') || '-'}\n\nRequested items:\n${items}\n\nPlease confirm pricing, availability, taxes and delivery.`;
+    const body = `Name: ${form.get('name') as string}\nEmail: ${form.get('email') as string}\nPhone: ${form.get('phone') as string}\nCompany: ${(form.get('company') as string) || '-'}\n\nRequested items:\n${items as string}\n\nPlease confirm pricing, availability, taxes and delivery.`;
     setEmailDraft(`mailto:almona02@yahoo.com?subject=${encodeURIComponent('ALMONA machine quote request')}&body=${encodeURIComponent(body)}`);
   };
 

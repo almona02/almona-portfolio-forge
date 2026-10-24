@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Invoice Detail Dialog
  * 
  * Gold-tier invoice detail dialog with payment history, state management,
@@ -209,7 +209,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
   // Handle copy payment link
   const handleCopyPaymentLink = useCallback(() => {
     if (paymentLink) {
-      navigator.clipboard.writeText(paymentLink);
+      void navigator.clipboard.writeText(paymentLink);
       toast.success('Payment link copied to clipboard');
     }
   }, [paymentLink]);
@@ -368,7 +368,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={handleDownloadPDF}
+                  onClick={() => void handleDownloadPDF()}
                   disabled={downloadingPDF}
                   className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
                 >
@@ -377,7 +377,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={handleGeneratePaymentLink}
+                  onClick={() => void handleGeneratePaymentLink()}
                   disabled={generatingLink}
                   className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
                 >

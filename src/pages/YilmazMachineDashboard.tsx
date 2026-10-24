@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @tier Tier 2 (Advisory Presentation)
  * @constitutional_compliance AICS-001 §7 (Presentation layer)
  * @region Egypt-specific YILMAZ machine dashboard
@@ -103,11 +103,11 @@ export const YilmazMachineDashboard: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Button variant="outline" onClick={() => navigate('/yilmaz-analytics')}>
+          <Button variant="outline" onClick={() => void navigate('/yilmaz-analytics')}>
             <LineChart className="w-4 h-4 mr-2" />
             Analytics
           </Button>
-          <Button onClick={() => navigate('/yilmaz-export')}>
+          <Button onClick={() => void navigate('/yilmaz-export')}>
             <Zap className="w-4 h-4 mr-2" />
             Export to CNC
           </Button>

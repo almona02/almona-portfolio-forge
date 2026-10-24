@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SmartWizard - Tier 1: 3-Click, 30-Second Workflow
  * 
  * Designed for beginners (90% of projects):
@@ -70,7 +70,7 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
       const analysis = await cognitionEngine.analyzeContext(windowUnit);
       setRecommendations(analysis.recommendations);
     };
-    loadDefaults();
+    void loadDefaults();
   }, [width, height, smartDefaults, cognitionEngine]);
 
   const handleNext = useCallback(async () => {
@@ -204,7 +204,7 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
                 {step === 1 ? 'Cancel' : 'Back'}
               </Button>
               <Button
-                onClick={handleNext}
+                onClick={() => void handleNext()}
                 disabled={loading || (step === 3 && (!width || !height))}
                 className="bg-blue-600 hover:bg-blue-700"
               >

@@ -1,4 +1,4 @@
-import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
+﻿import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
 import { validateOptimizationReconciliation, completeDesignLedger } from '@/lib/fabricator/validation/WorkflowValidator';
 import { groupProfileCuts } from '@/lib/fabricator/bom/profileCutDisplay';
 import { countRequiredProfilePieces } from '@/lib/fabricator/bom/bomQualification';
@@ -179,7 +179,7 @@ export const BOMReviewPanel: React.FC = () => {
     const base = projectId && poseId
       ? `/fabricator/studio/projects/${projectId}/positions/${poseId}`
       : '/fabricator/studio/projects';
-    navigate(`${base}/optimization`);
+    void navigate(`${base}/optimization`);
   };
 
   if (!projectId || !poseId || !currentProject) {
@@ -190,7 +190,7 @@ export const BOMReviewPanel: React.FC = () => {
           <h2 className="text-2xl font-bold text-amber-200">Design Required</h2>
           <p className="text-slate-400">Complete the design step before reviewing the BOM.</p>
           <button
-            onClick={() => navigate(fabricatorRoutes.studioProjects())}
+            onClick={() => void navigate(fabricatorRoutes.studioProjects())}
             className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all"
           >
             Go to Design
@@ -245,7 +245,7 @@ export const BOMReviewPanel: React.FC = () => {
               ? `Resolve system pack "${currentProject.systemPackId ?? 'unknown'}" (built-in or owned custom) before generating the BOM.`
               : 'The saved grid does not match a supported window pattern. Return to Design and choose a compatible layout.'}
           </p>
-          <Button onClick={() => navigate(designHref)} className="bg-amber-500 hover:bg-amber-600">
+          <Button onClick={() => void navigate(designHref)} className="bg-amber-500 hover:bg-amber-600">
             Back to Design
           </Button>
         </div>

@@ -1,4 +1,4 @@
-import { CacheHelper } from '../cacheHelper';
+﻿import { CacheHelper } from '../cacheHelper';
 import redis from '../client';
 
 /**
@@ -150,7 +150,7 @@ async function runTests() {
 
 // Run tests if executed directly
 if (require.main === module) {
-  runTests();
+  void runTests();
 }
 
 export { testRedisConnection, testRedisInfo };

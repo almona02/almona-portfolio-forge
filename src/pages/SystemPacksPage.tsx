@@ -51,7 +51,7 @@ export const SystemPacksPage: React.FC = () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUserId(session?.user?.id || null);
     };
-    getUserId();
+    void getUserId();
   }, []);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export const SystemPacksPage: React.FC = () => {
       const saved = loadCustomSystems(); // Use sync version for now
       setCustomSystems(saved);
     };
-    loadSystems();
+    void loadSystems();
     
     const handleSystemPackTuned = () => {
       setCustomSystems(loadCustomSystems());
@@ -112,7 +112,7 @@ export const SystemPacksPage: React.FC = () => {
     saveReturnUrl('/fabricator/studio/data/profiles', {
       returnToSystemPacks: 'true',
     });
-    navigate(`/fabricator/studio/data/tuning-no-dxf?systemPackId=${systemPackId}`);
+    void navigate(`/fabricator/studio/data/tuning-no-dxf?systemPackId=${systemPackId}`);
   };
 
   const handleTuneProfile = (systemPackId: string, profileId?: string) => {
@@ -122,7 +122,7 @@ export const SystemPacksPage: React.FC = () => {
     const url = profileId 
       ? `/fabricator/studio/data/tuning?systemPackId=${systemPackId}&profileId=${profileId}`
       : `/fabricator/studio/data/tuning?systemPackId=${systemPackId}`;
-    navigate(url);
+    void navigate(url);
   };
 
   const getCardGradient = (system: any, isHovered: boolean) => {
@@ -446,7 +446,7 @@ export const SystemPacksPage: React.FC = () => {
                           size="sm"
                           variant="ghost"
                           className="w-full text-amber-200/90 hover:text-amber-100 hover:bg-amber-500/10"
-                          onClick={() => navigate(fabricatorRoutes.studioDataAccessories(system.meta.id))}
+                          onClick={() => void navigate(fabricatorRoutes.studioDataAccessories(system.meta.id))}
                         >
                           <Package className="h-4 w-4 mr-2" />
                           Accessories kits
@@ -488,7 +488,7 @@ export const SystemPacksPage: React.FC = () => {
             setCustomSystems(updated);
             setShowSystemWizard(false);
           // Navigate to the new system pack
-          navigate(`/fabricator/studio/data/tuning?systemPackId=${customPack.meta.id}`);
+          void navigate(`/fabricator/studio/data/tuning?systemPackId=${customPack.meta.id}`);
           } catch (error) {
             toast.error(error instanceof Error ? error.message : 'System pack save failed.');
           }
@@ -503,7 +503,7 @@ export const SystemPacksPage: React.FC = () => {
         onComplete={async (_data) => {
           // Refresh system packs list
           if (userId) {
-            const updated = await loadCustomSystems();
+            const updated = loadCustomSystems();
             setCustomSystems(updated);
           }
           setShowUnifiedWizard(false);

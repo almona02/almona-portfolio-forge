@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AccessoriesReport - Comprehensive accessories and hardware report
  * Phase 2: Professional Report Generation System
  * 
@@ -233,7 +233,7 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
     };
 
     if (project.hardware && project.hardware.length > 0) {
-      calculatePrices();
+      void calculatePrices();
     }
   }, [project.hardware, accessories, pricing]);
 
@@ -360,7 +360,7 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
               <Button
                 variant="default"
                 size="sm"
-                onClick={() => handleExport('pdf')}
+                onClick={() => void handleExport('pdf')}
                 disabled={isExporting}
               >
                 {isExporting && exportProgress?.format === 'pdf' ? (
@@ -373,7 +373,7 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleExport('csv')}
+                onClick={() => void handleExport('csv')}
                 disabled={isExporting}
               >
                 {isExporting && exportProgress?.format === 'csv' ? (

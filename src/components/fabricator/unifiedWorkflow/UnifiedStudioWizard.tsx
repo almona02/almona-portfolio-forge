@@ -44,7 +44,7 @@ interface UnifiedStudioWizardProps {
   /** Callback when wizard closes */
   onOpenChange: (open: boolean) => void;
   /** Callback when wizard completes */
-  onComplete?: (data: StudioWizardData) => void;
+  onComplete?: (data: StudioWizardData) => Promise<void> | void;
   /** Initial data (for editing existing items) */
   initialData?: Partial<StudioWizardData>;
 }
@@ -129,11 +129,11 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
 
       // Navigate to appropriate studio page
       if (studioType === 'profile') {
-        navigate('/fabricator/profile-studio');
+        void navigate('/fabricator/profile-studio');
       } else if (studioType === 'system-pack') {
-        navigate('/fabricator/system-packs');
+        void navigate('/fabricator/system-packs');
       } else {
-        navigate('/fabricator/tuning-studio');
+        void navigate('/fabricator/tuning-studio');
       }
 
       onOpenChange(false);
@@ -148,7 +148,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
     if (currentStep < STUDIO_STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      handleComplete();
+      void handleComplete();
     }
   }, [currentStep, handleComplete]);
 
@@ -185,7 +185,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
       setUserId(session?.user?.id || null);
     };
     if (open) {
-      getUserId();
+      void getUserId();
     }
   }, [open]);
 

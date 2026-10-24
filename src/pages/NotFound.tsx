@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+﻿import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import SEO from "../components/SEO";
@@ -62,7 +62,7 @@ const NotFound = () => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          navigate('/');
+          void navigate('/');
           return 0;
         }
         return prev - 1;
@@ -73,11 +73,11 @@ const NotFound = () => {
   }, [navigate]);
 
   const handleGoHome = () => {
-    navigate('/');
+    void navigate('/');
   };
 
   const handleGoBack = () => {
-    navigate(-1);
+    void navigate(-1);
   };
 
   const suggestedPages = [
@@ -211,7 +211,7 @@ const NotFound = () => {
               {suggestedPages.map((page) => (
                 <button
                   key={page.path}
-                  onClick={() => navigate(page.path)}
+                  onClick={() => void navigate(page.path)}
                   className="text-sm bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 text-primary hover:text-primary/80 px-3 py-2 rounded-lg transition-all duration-200 border border-white shadow-sm hover:shadow-md"
                 >
                   {page.name}

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Profile Importer Component
  * Excel/CSV profile importer with column mapping and validation
  */
@@ -267,7 +267,7 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
         {/* Import Button */}
         {file && preview.length > 0 && (
           <Button
-            onClick={handleImport}
+            onClick={() => void handleImport()}
             disabled={loading}
             className="btn-primary"
           >

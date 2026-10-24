@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Remote Support Launcher
  * TeamViewer integration for Egyptian market support
  * Enables remote technical support and troubleshooting
@@ -294,7 +294,7 @@ Timestamp: ${new Date().toISOString()}
       if (session.status === 'active') {
         const minutesElapsed = (now.getTime() - session.startTime.getTime()) / (1000 * 60);
         if (minutesElapsed > this.config.sessionTimeout) {
-          this.endSession(sessionId, 'Session timeout');
+          void this.endSession(sessionId, 'Session timeout');
         }
       }
     });

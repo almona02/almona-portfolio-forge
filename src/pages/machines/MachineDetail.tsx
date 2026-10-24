@@ -45,7 +45,7 @@ const MachineDetail: React.FC = () => {
 
   useEffect(() => {
     if (machineId) {
-      getReviewsByProductId(machineId).then((apiReviews: ApiReview[]) => {
+      void getReviewsByProductId(machineId).then((apiReviews: ApiReview[]) => {
         const adaptedReviews: ViewReview[] = apiReviews.map(r => ({
           id: r.id,
           rating: r.rating,
@@ -209,7 +209,7 @@ const MachineDetail: React.FC = () => {
       <div className="mt-12">
         <h2 className="typography-h2 mb-6 text-gradient-orange">{t('reviews.section_title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <ReviewForm productId={machine.id} onSubmit={handleAddReview} />
+          <ReviewForm productId={machine.id} onSubmit={(a, b, c) => void handleAddReview(a, b, c)} />
           <ReviewList reviews={reviews} />
         </div>
       </div>

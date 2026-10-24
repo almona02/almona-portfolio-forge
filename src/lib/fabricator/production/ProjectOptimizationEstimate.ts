@@ -135,7 +135,7 @@ export function optimizeProjectEstimate(positions: readonly WindowUnit[], packs:
         if (!Number.isFinite(cut.length) || cut.length <= 0 || cut.length + kerfMm + trimMm > stockLengthMm) {
           throw new Error(`${label}: cut ${component.id}:${index} does not fit stock after kerf and trim.`);
         }
-        group!.requests.push({ id: `${position.id}:${component.id}:${index}`, length: cut.length, quantity, label: `${label} · ${component.type} · ${index + 1}` });
+        group.requests.push({ id: `${position.id}:${component.id}:${index}`, length: cut.length, quantity, label: `${label} · ${component.type} · ${index + 1}` });
         pieces += quantity;
       });
     }

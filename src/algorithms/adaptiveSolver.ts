@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Adaptive Solver
  * Orchestrates algorithm selection based on job complexity and time constraints.
  *
@@ -211,7 +211,7 @@ export class AdaptiveSolver {
   protected async executeOptimization(
     job: CuttingJob,
     profiles: Profile[],
-    algorithm: Tier3CuttingAlgorithm | string,
+    algorithm: string,
     _complexity: JobComplexity
   ): Promise<CuttingPlan[]> {
     // Fail closed: genetic / advisory must never execute as manufacturing truth

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Personal Analytics Dashboard
  * Provides immediate value by reflecting user's calibration data back to them
  * Makes the data collection visible and actionable
@@ -63,7 +63,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
   }, [userId, selectedPeriod]);
 
   useEffect(() => {
-    loadAnalytics();
+    void loadAnalytics();
   }, [loadAnalytics]);
 
   const getSeverityColor = (severity?: string) => {
@@ -120,7 +120,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
             <Button
               variant="outline"
               size="sm"
-              onClick={loadAnalytics}
+              onClick={() => void loadAnalytics()}
               className="text-gray-300 border-gray-600 hover:bg-gray-700"
             >
               <RefreshCw className="h-4 w-4 mr-2" />

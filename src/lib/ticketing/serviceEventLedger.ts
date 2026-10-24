@@ -40,7 +40,7 @@ export async function recordServiceEvent(input: ServiceEventInput): Promise<Even
   };
   const payload = {
     ...input.payload,
-    correlationId: input.correlationId ?? `${input.entityId}-${input.payload.kind ?? 'event'}-${timestamp}`,
+    correlationId: input.correlationId ?? `${input.entityId as string}-${(input.payload.kind as string) ?? 'event'}-${timestamp as string}`,
   };
 
   try {

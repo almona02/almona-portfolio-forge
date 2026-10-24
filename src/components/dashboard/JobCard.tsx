@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { WindowUnit } from '@/types/fabricator';
 import { useJobsStore } from '@/store/jobsStore';
@@ -13,7 +13,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
 
   const handleClick = () => {
     setSelectedJob(job.id);
-    navigate('/fabricator-workflow', { state: { jobId: job.id } });
+    void navigate('/fabricator-workflow', { state: { jobId: job.id } });
   };
 
   return (

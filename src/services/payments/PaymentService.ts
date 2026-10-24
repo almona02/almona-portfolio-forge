@@ -23,18 +23,18 @@ const payments = () => supabase.from('payments') as any;
 
 function mapPaymentRow(p: Record<string, unknown>): Payment {
   return {
-    id: String(p.id || ''),
+    id: (p.id as string) || '',
     invoiceId: (p.invoice_id as string) || null,
-    amount: parseFloat(String(p.amount || 0)),
-    currency: String(p.currency || 'USD'),
+    amount: parseFloat((p.amount ?? 0) as string),
+    currency: (p.currency as string) || 'USD',
     method: (p.method || 'cash') as Payment['method'],
     status: (p.status || 'pending') as Payment['status'],
     transactionId: (p.transaction_id as string) || null,
     processorResponse: p.processor_response || undefined,
-    createdAt: new Date(String(p.created_at || Date.now())),
-    updatedAt: new Date(String(p.updated_at || Date.now())),
-    completedAt: p.completed_at ? new Date(String(p.completed_at)) : null,
-    refundedAt: p.refunded_at ? new Date(String(p.refunded_at)) : null,
+    createdAt: new Date((p.created_at ?? Date.now()) as string),
+    updatedAt: new Date((p.updated_at ?? Date.now()) as string),
+    completedAt: p.completed_at ? new Date((p.completed_at as string)) : null,
+    refundedAt: p.refunded_at ? new Date((p.refunded_at as string)) : null,
     notes: (p.notes as string) || null,
   };
 }

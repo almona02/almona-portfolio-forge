@@ -1,4 +1,4 @@
-import { SmartDrawCanvas } from '@/components/fabricator/SmartDrawCanvas';
+﻿import { SmartDrawCanvas } from '@/components/fabricator/SmartDrawCanvas';
 import { ProductionRealityPanel } from '@/components/pilot/ProductionRealityPanel';
 import { SYSTEM_CATEGORIES, getPilotSystem, getSystemsByCategory, type PilotSystemId } from '@/data/pilot-systems';
 import { useMaalemEngines } from '@/hooks/useMaalemEngines';

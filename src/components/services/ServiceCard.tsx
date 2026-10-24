@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { CheckCircle2, Wrench, Bolt, GraduationCap, Ship, Brain } from "lucide-react";
@@ -46,7 +46,7 @@ const SparePartsWidget = ({ machineModel }: { machineModel: string }) => {
       return allParts.filter(part => part.compatibleMachines.includes(model));
     };
 
-    fetchSpareParts(machineModel).then(setParts);
+    void fetchSpareParts(machineModel).then(setParts);
   }, [machineModel]);
 
   return (

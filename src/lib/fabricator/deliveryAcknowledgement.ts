@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UP-20 — Delivery acknowledgement bound to release + QC.
  * AICS-001: evidence hashes only; no ML; server verifies QR against release.
  */
@@ -62,7 +62,7 @@ export async function acknowledgeFabricatorDelivery(
   }
 
   return {
-    acknowledgementId: String(row.acknowledgement_id),
+    acknowledgementId: (row.acknowledgement_id as string),
     projectId: String(row.project_id),
     positionId: String(row.position_id),
     revision: Number(row.revision),

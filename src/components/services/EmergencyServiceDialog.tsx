@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -284,7 +284,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                       <div className="space-y-2">
                         <Label htmlFor="priority" className="typography-label">Priority Level</Label>
                         <Select
-                          onValueChange={(value) => register("priority").onChange({ target: { value } })}
+                          onValueChange={(value) => void register("priority").onChange({ target: { value } })}
                           defaultValue="critical"
                         >
                           <SelectTrigger className="bg-almona-darker/50 border-almona-light/20">

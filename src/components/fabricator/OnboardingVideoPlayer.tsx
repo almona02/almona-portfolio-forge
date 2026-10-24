@@ -1,4 +1,4 @@
-/**
+﻿/**
  * OnboardingVideoPlayer Component
  * ---------------------------------------------------------------------------
  * Video player for onboarding tutorial steps
@@ -194,7 +194,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
     if (!video) return;
 
     if (video.requestFullscreen) {
-      video.requestFullscreen();
+      void video.requestFullscreen();
     } else if ((video as any).webkitRequestFullscreen) {
       (video as any).webkitRequestFullscreen();
     } else if ((video as any).mozRequestFullScreen) {

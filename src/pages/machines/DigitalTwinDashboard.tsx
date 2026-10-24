@@ -1,4 +1,4 @@
-import { ServiceTimeline, TimelineEvent } from '@/components/services/ServiceTimeline';
+﻿import { ServiceTimeline, TimelineEvent } from '@/components/services/ServiceTimeline';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -171,7 +171,7 @@ export const DigitalTwinDashboard = () => {
                 <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
                 <h2 className="text-xl font-bold">Asset Not Found</h2>
                 <p className="text-gray-400 mb-4">We couldn't locate the digital twin data for this ID.</p>
-                <Button onClick={() => navigate('/portal')}>Return to Portal</Button>
+                <Button onClick={() => void navigate('/portal')}>Return to Portal</Button>
             </div>
         );
     }
@@ -184,7 +184,7 @@ export const DigitalTwinDashboard = () => {
             <header className="bg-almona-darker border-b border-almona-light/10 sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+                        <Button variant="ghost" size="icon" onClick={() => void navigate(-1)}>
                             <ArrowLeft className="w-5 h-5" />
                         </Button>
                         <div>
@@ -208,7 +208,7 @@ export const DigitalTwinDashboard = () => {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button variant="secondary" size="sm" onClick={() => navigate(`/support/tickets/new?machine=${asset.id}`)}>
+                        <Button variant="secondary" size="sm" onClick={() => void navigate(`/support/tickets/new?machine=${asset.id}`)}>
                             Request Service
                         </Button>
                         <DropdownMenu>
@@ -391,7 +391,7 @@ export const DigitalTwinDashboard = () => {
                                                                         size="sm"
                                                                         variant="outline"
                                                                         className="mt-3 h-7 text-xs border-almona-light/20 hover:bg-almona-light/10"
-                                                                        onClick={() => navigate(`/support/tickets/new?machine=${asset.id}&issue=${encodeURIComponent(action.title)}&priority=${action.priority}`)}
+                                                                        onClick={() => void navigate(`/support/tickets/new?machine=${asset.id}&issue=${encodeURIComponent(action.title)}&priority=${action.priority}`)}
                                                                     >
                                                                         Schedule Service
                                                                     </Button>

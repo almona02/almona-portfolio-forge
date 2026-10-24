@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Phase 1 Metrics Tracker
  * Observability for tracking Phase 1 features in production
  */
@@ -302,7 +302,7 @@ export class Phase1MetricsTracker {
       const systemPacks = new Set<string>();
 
       for (const profile of data) {
-        const calibrations = (profile.specifications as any)?.calibrations || [];
+        const calibrations = (profile.specifications)?.calibrations || [];
         if (calibrations.length > 0) {
           profilesWithCalibration++;
           totalCalibrations += calibrations.length;

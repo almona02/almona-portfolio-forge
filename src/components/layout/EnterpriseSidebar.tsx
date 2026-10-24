@@ -499,7 +499,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 // Set timeout for single click detection
                 logoClickTimeoutRef.current = setTimeout(() => {
                   // Single click - navigate to projects
-                  navigate('/fabricator/studio/projects');
+                  void navigate('/fabricator/studio/projects');
                   logoClickTimeoutRef.current = null;
                 }, 300); // 300ms delay to detect double click
               }
@@ -745,7 +745,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       whileHover={{ x: 2 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => {
-                        action.action();
+                        void action.action();
                         if (isMobile) setIsMobileNavOpen(false);
                       }}
                       className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#0f0f0f]/40 transition-all group border border-transparent hover:border-amber-600/30 w-full text-left card-dark"
@@ -794,7 +794,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                     <button
                       key={stage.id}
                       onClick={() => {
-                        if (stage.path) navigate(stage.path);
+                        if (stage.path) void navigate(stage.path);
                         onWorkflowChange?.(stage.id);
                         setActiveMenu(null);
                       }}
@@ -833,7 +833,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                     if (hasChildren) {
                       setActiveMenu(isExpanded ? null : item.id);
                     } else if (item.path) {
-                      navigate(item.path);
+                      void navigate(item.path);
                       if (isMobile) setIsMobileNavOpen(false);
                     }
                   }}
@@ -877,7 +877,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             key={child.id}
                             onClick={() => {
                               if (child.path) {
-                                navigate(child.path);
+                                void navigate(child.path);
                                 setActiveMenu(null);
                                 if (isMobile) setIsMobileNavOpen(false);
                               }
@@ -922,7 +922,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                     if (hasChildren) {
                       setActiveMenu(isExpanded ? null : item.id);
                     } else if (item.path) {
-                      navigate(item.path);
+                      void navigate(item.path);
                       if (isMobile) setIsMobileNavOpen(false);
                     }
                   }}
@@ -985,7 +985,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             whileTap={{ scale: 0.98 }}
                             onClick={() => {
                               if (child.path) {
-                                navigate(child.path);
+                                void navigate(child.path);
                                 setActiveMenu(null);
                               if (isMobile) setIsMobileNavOpen(false);
                               }
@@ -1151,7 +1151,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 <div className="p-2 space-y-1">
                   <button
                     onClick={() => {
-                      navigate('/fabricator/settings/branding');
+                      void navigate('/fabricator/settings/branding');
                       setActiveMenu(null);
                     }}
                     className="btn-secondary"
@@ -1265,7 +1265,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                     onClick={() => {
                       setShowHomeConfirm(false);
                       setIsMobileNavOpen(false);
-                      navigate('/');
+                      void navigate('/');
                     }}
                     className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-900/30 hover:from-amber-500 hover:to-amber-600 transition-colors border border-amber-400/30"
                   >
@@ -1366,7 +1366,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       onClick={() => {
                         if (item.path) {
                           setSearchQuery('');
-                          navigate(item.path);
+                          void navigate(item.path);
                         }
                       }}
                       className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors flex items-center gap-3"
@@ -1395,7 +1395,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             onClick={() => {
                               if (child.path) {
                                 setSearchQuery('');
-                                navigate(child.path);
+                                void navigate(child.path);
                               }
                             }}
                             className="w-full text-left pl-12 pr-4 py-2 hover:bg-white/5 transition-colors flex items-center gap-3 text-xs"

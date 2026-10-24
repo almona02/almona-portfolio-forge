@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Workshop Performance Widget
  * Real-time analytics widget for dashboard
  */
@@ -48,7 +48,7 @@ export const WorkshopPerformanceWidget: React.FC<WorkshopPerformanceWidgetProps>
       }
     };
 
-    loadMetrics();
+    void loadMetrics();
   }, [workshopId, timeframe]);
 
   if (!metrics) {

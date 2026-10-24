@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BulkOperationToolbar Component
  * 
  * Phase 3 Implementation - Enterprise Bulk Actions Toolbar

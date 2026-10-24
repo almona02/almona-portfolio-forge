@@ -1,4 +1,4 @@
-import ErrorBoundary from "@/components/ErrorBoundary";
+﻿import ErrorBoundary from "@/components/ErrorBoundary";
 import { ScanResultData } from "@/services/smartScanApi";
 import { Alert, AlertDescription } from "@/shared/ui/ui/alert";
 import { Badge } from "@/shared/ui/ui/badge";
@@ -402,7 +402,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
         </Button>
         <Button
           type="button"
-          onClick={handleImport}
+          onClick={() => void handleImport()}
           disabled={isSubmitting}
           className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 font-medium"
         >

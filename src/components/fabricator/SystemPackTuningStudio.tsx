@@ -110,7 +110,7 @@ export const SystemPackTuningStudio: React.FC = () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUserId(session?.user?.id || null);
     };
-    getUserId();
+    void getUserId();
   }, []);
 
   // Open wizard when userId becomes available and we're pending
@@ -157,7 +157,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         }));
 
         return {
-          id: raw.id || packMeta.id || systemPackId!,
+          id: raw.id || packMeta.id || systemPackId,
           name: raw.name || packMeta.name || 'Unknown System',
           manufacturer: raw.manufacturer || packMeta.brands?.[0] || 'Unknown',
           region: raw.region || packMeta.regions?.[0] || 'global',
@@ -197,10 +197,10 @@ export const SystemPackTuningStudio: React.FC = () => {
       }
 
       // Pack not found, redirect back
-      navigate(fabricatorRoutes.studioData());
+      void navigate(fabricatorRoutes.studioData());
     } catch (error) {
       console.error('Error loading system pack:', error);
-      navigate(fabricatorRoutes.studioData());
+      void navigate(fabricatorRoutes.studioData());
     }
   }, [systemPackId, navigate]);
 
@@ -346,7 +346,7 @@ export const SystemPackTuningStudio: React.FC = () => {
     setTuningProfile(null);
 
     // Always navigate back to system packs gallery after closing
-    navigate(fabricatorRoutes.studioData());
+    void navigate(fabricatorRoutes.studioData());
   };
 
   const handleExit = () => {
@@ -364,12 +364,12 @@ export const SystemPackTuningStudio: React.FC = () => {
       try {
         const data = JSON.parse(returnUrl);
         sessionStorage.removeItem('tuning_return_url');
-        navigate(data.url, { state: data.params || {} });
+        void navigate(data.url, { state: data.params || {} });
       } catch {
-        navigate(fabricatorRoutes.studioData());
+        void navigate(fabricatorRoutes.studioData());
       }
     } else {
-      navigate(fabricatorRoutes.studioData());
+      void navigate(fabricatorRoutes.studioData());
     }
   };
 
@@ -564,7 +564,7 @@ export const SystemPackTuningStudio: React.FC = () => {
       try {
         const data = JSON.parse(returnUrl);
         sessionStorage.removeItem('tuning_return_url');
-        navigate(data.url, {
+        void navigate(data.url, {
           state: {
             systemPackId: systemPackId,
             systemTuned: true,
@@ -573,7 +573,7 @@ export const SystemPackTuningStudio: React.FC = () => {
           }
         });
       } catch {
-        navigate(fabricatorRoutes.studioData(), {
+        void navigate(fabricatorRoutes.studioData(), {
           state: {
             systemPackId: systemPackId,
             systemTuned: true,
@@ -582,7 +582,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         });
       }
     } else {
-      navigate(fabricatorRoutes.studioData(), {
+      void navigate(fabricatorRoutes.studioData(), {
         state: {
           systemPackId: systemPackId,
           systemTuned: true,
@@ -593,7 +593,7 @@ export const SystemPackTuningStudio: React.FC = () => {
   };
 
   const handleGoToDesign = () => {
-    navigate(fabricatorRoutes.studioProjects());
+    void navigate(fabricatorRoutes.studioProjects());
   };
 
   if (!systemPackId) {
@@ -614,7 +614,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         <Button
           variant="outline"
           className="mb-6 border-slate-600 text-slate-200"
-          onClick={() => navigate(fabricatorRoutes.studioData())}
+          onClick={() => void navigate(fabricatorRoutes.studioData())}
         >
           Open system library
         </Button>
@@ -624,9 +624,9 @@ export const SystemPackTuningStudio: React.FC = () => {
               <button
                 type="button"
                 className="w-full text-left px-4 py-3 rounded border border-slate-700 hover:border-amber-600/50 bg-slate-900/60 truncate"
-                onClick={() =>
-                  navigate(`${fabricatorRoutes.studioData('tuning')}?systemPackId=${encodeURIComponent(pack.id)}`)
-                }
+                onClick={() => {
+                  void navigate(`${fabricatorRoutes.studioData('tuning')}?systemPackId=${encodeURIComponent(pack.id)}`);
+                }}
               >
                 <span className="block text-sm text-amber-100 truncate">{pack.name}</span>
                 <span className="block text-[10px] text-slate-500 font-mono truncate" dir="ltr">
@@ -746,11 +746,12 @@ export const SystemPackTuningStudio: React.FC = () => {
                     {allProfilesTuned ? 'All Tuned' : `${tunedProfiles.size}/${systemPack.profiles.length} Tuned`}
                   </Badge>
                   <Button
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                    onClick={(e) => {
+                      void (async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-                      try {
+                        try {
                         // Clear editing profile first
                         setEditingProfile(null);
 
@@ -779,6 +780,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                         console.error('Error opening profile wizard:', error);
                         toast.error('Failed to open profile wizard');
                       }
+                    })(e);
                     }}
                     size="sm"
                     className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 relative z-10"
@@ -1082,7 +1084,7 @@ export const SystemPackTuningStudio: React.FC = () => {
               Mark All as Tuned
             </Button>
             <Button
-              onClick={handleSaveAndReturn}
+              onClick={() => void handleSaveAndReturn()}
               disabled={!allProfilesTuned}
               size="lg"
               className="h-12 px-8 text-base bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1110,7 +1112,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         <ProfileTuningStudio
           profile={tuningProfile}
           userId={userId}
-          onClose={handleTuningClose}
+          onClose={() => void handleTuningClose()}
           onProfileUpdated={async () => {
             // When profile is updated in tuning studio, fetch updated data from database
             if (systemPack && tuningProfile && userId) {

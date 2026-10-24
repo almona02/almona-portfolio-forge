@@ -1,4 +1,4 @@
-import { SparePartsImportPanel } from '@/components/admin/SparePartsImportPanel'
+﻿import { SparePartsImportPanel } from '@/components/admin/SparePartsImportPanel'
 import { AdminTicketDashboard } from '@/components/support/AdminTicketDashboard'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -105,27 +105,27 @@ const AdminDashboard: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    fetchDashboardData()
-    fetchNotifications()
+    void fetchDashboardData()
+    void fetchNotifications()
 
     // realtime subscriptions
     const ordersSub = supabase
       .channel('orders-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
-        fetchDashboardData()
+        void fetchDashboardData()
       })
       .subscribe()
 
     const productsSub = supabase
       .channel('products-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
-        fetchDashboardData()
+        void fetchDashboardData()
       })
       .subscribe()
 
     return () => {
-      ordersSub.unsubscribe()
-      productsSub.unsubscribe()
+      void ordersSub.unsubscribe()
+      void productsSub.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -427,7 +427,7 @@ const AdminDashboard: React.FC = () => {
             <p className="truncate text-sm font-medium">{user?.full_name || user?.email}</p>
             <p className="text-sm text-muted-foreground">Administrator</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sign out">
+          <Button variant="ghost" size="icon" onClick={() => void signOut()} aria-label="Sign out">
             <LogOut aria-hidden="true" className="h-4 w-4" />
           </Button>
         </div>
@@ -530,7 +530,7 @@ const AdminDashboard: React.FC = () => {
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut}>
+                  <DropdownMenuItem onClick={() => void signOut()}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>

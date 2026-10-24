@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DraftingWorkbench Event Handlers Hook
  *
  * Consolidates all event handler logic for the DraftingWorkbench component.

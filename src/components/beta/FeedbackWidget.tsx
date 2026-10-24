@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Feedback Widget - In-App Feedback Collection
  * 
  * Low-friction feedback widget for beta testers to report issues,
@@ -194,7 +194,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                   Cancel
                 </button>
                 <button
-                  onClick={handleSubmit}
+                  onClick={() => void handleSubmit()}
                   disabled={isSubmitting || !rating}
                   className={`px-4 py-2 text-sm font-medium text-white rounded-md ${
                     isSubmitting || !rating

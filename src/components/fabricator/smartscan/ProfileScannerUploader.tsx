@@ -1,4 +1,4 @@
-import { scanProfileImage } from "@/services/scanApi";
+﻿import { scanProfileImage } from "@/services/scanApi";
 import {
     Accordion,
     AccordionContent,
@@ -156,11 +156,11 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
                 <AccordionContent>
                   <DescGrid
                     items={[
-                      { label: t('profile_scanner_uploader.scale_modal.samples', 'Samples'), value: String(debug_info.samples || 0) },
-                      { label: t('profile_scanner_uploader.scale_modal.detected_dimensions', 'Detected Dimensions'), value: String(debug_info.dimensions || 0) },
-                      { label: t('profile_scanner_uploader.scale_modal.lines', 'Lines'), value: String(debug_info.lines || 0) },
-                      { label: t('profile_scanner_uploader.scale_modal.associations', 'Associations'), value: String(debug_info.associations || 0) },
-                      ...(debug_info.method ? [{ label: t('profile_scanner_uploader.scale_modal.method', 'Method'), value: String(debug_info.method) }] : []),
+                      { label: t('profile_scanner_uploader.scale_modal.samples', 'Samples'), value: String((debug_info.samples ?? 0) as string | number) },
+                      { label: t('profile_scanner_uploader.scale_modal.detected_dimensions', 'Detected Dimensions'), value: String((debug_info.dimensions ?? 0) as string | number) },
+                      { label: t('profile_scanner_uploader.scale_modal.lines', 'Lines'), value: String((debug_info.lines ?? 0) as string | number) },
+                      { label: t('profile_scanner_uploader.scale_modal.associations', 'Associations'), value: String((debug_info.associations ?? 0) as string | number) },
+                      ...(debug_info.method ? [{ label: t('profile_scanner_uploader.scale_modal.method', 'Method'), value: String(debug_info.method as string) }] : []),
                     ]}
                   />
                 </AccordionContent>
@@ -601,7 +601,7 @@ export function ProfileScannerUploader({
 
         {file && !uploading && !result && (
           <div className="flex justify-center">
-            <Button onClick={handleScan} disabled={uploading} size="lg" className="min-w-[200px]">
+            <Button onClick={() => void handleScan()} disabled={uploading} size="lg" className="min-w-[200px]">
               <ScanSearch className="w-4 h-4 mr-2" />
               {autoDetectScale ? t('profile_scanner_uploader.actions.scan_ai', 'Scan with automation Detection') : t('profile_scanner_uploader.actions.scan_manual', 'Scan with Manual Scale')}
             </Button>

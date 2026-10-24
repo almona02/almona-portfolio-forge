@@ -1,4 +1,4 @@
-/**
+﻿/**
  * KioskModeDashboard - Touch-First Production Interface for Operators
  * 
  * Designed for tablet-mounted interfaces near CNC machines.
@@ -161,7 +161,7 @@ export function KioskModeDashboard({
         if (prev >= 100) {
           clearInterval(interval);
           setWorkflowState('qc');
-          autoSave({ type: 'cutting_completed', data: { pieceId: currentPiece.id } });
+          void autoSave({ type: 'cutting_completed', data: { pieceId: currentPiece.id } });
           return 100;
         }
         return prev + 5;
@@ -323,7 +323,7 @@ export function KioskModeDashboard({
 
           <div className="grid grid-cols-2 gap-4">
             <Button
-              onClick={handleStart}
+              onClick={() => void handleStart()}
               variant="default"
               size="lg"
               style={{ minHeight: KIOSK_TOKENS.BUTTON_LARGE_HEIGHT, borderRadius: KIOSK_TOKENS.BORDER_RADIUS }}
@@ -333,7 +333,7 @@ export function KioskModeDashboard({
               {locale === 'ar' ? 'ابدأ' : 'START'}
             </Button>
             <Button
-              onClick={handleSkip}
+              onClick={() => void handleSkip()}
               variant="outline"
               size="lg"
               style={{ minHeight: KIOSK_TOKENS.BUTTON_LARGE_HEIGHT, borderRadius: KIOSK_TOKENS.BORDER_RADIUS }}
@@ -370,7 +370,7 @@ export function KioskModeDashboard({
 
           <div className="grid grid-cols-2 gap-4">
             <Button
-              onClick={handlePause}
+              onClick={() => void handlePause()}
               variant="secondary"
               size="lg"
               style={{ minHeight: KIOSK_TOKENS.BUTTON_LARGE_HEIGHT, borderRadius: KIOSK_TOKENS.BORDER_RADIUS }}
@@ -380,7 +380,7 @@ export function KioskModeDashboard({
               {locale === 'ar' ? 'إيقاف مؤقت' : 'PAUSE'}
             </Button>
             <Button
-              onClick={handleStop}
+              onClick={() => void handleStop()}
               variant="destructive"
               size="lg"
               style={{ minHeight: KIOSK_TOKENS.BUTTON_LARGE_HEIGHT, borderRadius: KIOSK_TOKENS.BORDER_RADIUS }}
@@ -429,7 +429,7 @@ export function KioskModeDashboard({
 
           <div className="grid grid-cols-1 gap-4 pt-6">
             <Button
-              onClick={handleQCConfirm}
+              onClick={() => void handleQCConfirm()}
               variant="default"
               size="lg"
               disabled={!qcChecks.every((c) => c.passed)}
@@ -440,7 +440,7 @@ export function KioskModeDashboard({
               {locale === 'ar' ? 'تأكيد - كل حاجة تمام' : 'Confirm - All OK'}
             </Button>
             <Button
-              onClick={handleQCReject}
+              onClick={() => void handleQCReject()}
               variant="destructive"
               size="lg"
               style={{ minHeight: KIOSK_TOKENS.BUTTON_MIN_HEIGHT, borderRadius: KIOSK_TOKENS.BORDER_RADIUS }}

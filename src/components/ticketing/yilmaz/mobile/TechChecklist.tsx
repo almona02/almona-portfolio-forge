@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @tier Tier 1 Presentation (Mobile-Optimized Technician Interface)
  * @constitutional_compliance AICS-001 §7 (Presentation layer, no execution)
  * @authority None - Data collection only, triggers Tier 2 advisory

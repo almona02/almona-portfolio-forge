@@ -1,4 +1,4 @@
-// Enhanced offline synchronization with push notifications
+﻿// Enhanced offline synchronization with push notifications
 // Handles offline ticket storage and synchronization when connection is restored
 
 import React from 'react';
@@ -82,7 +82,7 @@ class OfflineSyncService {
     // Background sync when app becomes visible
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && this.isOnline) {
-        this.syncOfflineTickets();
+        void this.syncOfflineTickets();
       }
     });
   }
@@ -208,7 +208,7 @@ class OfflineSyncService {
   // Handle connection restored
   private handleConnectionRestored() {
     toast.success('تم استعادة الاتصال بالإنترنت');
-    this.syncOfflineTickets();
+    void this.syncOfflineTickets();
   }
 
   // Show offline notification
@@ -237,7 +237,7 @@ class OfflineSyncService {
 
     this.syncInterval = window.setInterval(() => {
       if (this.isOnline && this.getStoredTickets().length > 0) {
-        this.syncOfflineTickets();
+        void this.syncOfflineTickets();
       }
     }, this.SYNC_INTERVAL);
   }

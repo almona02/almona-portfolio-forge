@@ -71,7 +71,7 @@ export const NoDXFTuningStudio: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const [systemPack, setSystemPack] = useState<any | null>(null);
+  const [systemPack, setSystemPack] = useState<any>(null);
   const [profiles, setProfiles] = useState<ProfileConfig[]>([]);
 
   // Load system pack
@@ -85,7 +85,7 @@ export const NoDXFTuningStudio: React.FC = () => {
     
     if (!pack) {
       if (systemPackId.startsWith('custom-pack-')) return;
-      navigate(fabricatorRoutes.studioData());
+      void navigate(fabricatorRoutes.studioData());
       return;
     }
 
@@ -312,7 +312,7 @@ export const NoDXFTuningStudio: React.FC = () => {
         const returnUrl = getReturnUrl();
         if (returnUrl) {
           // Pass tuned system info in state
-          navigate(returnUrl.url, { 
+          void navigate(returnUrl.url, { 
             state: { 
               systemPackId: tunedPack.meta.id,
               systemTuned: true,
@@ -321,7 +321,7 @@ export const NoDXFTuningStudio: React.FC = () => {
             } 
           });
         } else {
-          navigate(fabricatorRoutes.studioData(), {
+          void navigate(fabricatorRoutes.studioData(), {
             state: {
               systemPackId: tunedPack.meta.id,
               systemTuned: true,
@@ -353,7 +353,7 @@ export const NoDXFTuningStudio: React.FC = () => {
       >
         <h1 className="text-xl font-semibold text-amber-200 mb-2">Select a system pack to tune</h1>
         <p className="text-sm text-slate-400 mb-6">Choose a pack for No-DXF tuning, or open the system library.</p>
-        <Button variant="outline" className="mb-6 border-slate-600 text-slate-200" onClick={() => navigate(fabricatorRoutes.studioData())}>
+        <Button variant="outline" className="mb-6 border-slate-600 text-slate-200" onClick={() => void navigate(fabricatorRoutes.studioData())}>
           Open system library
         </Button>
         <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl">
@@ -362,9 +362,9 @@ export const NoDXFTuningStudio: React.FC = () => {
               <button
                 type="button"
                 className="w-full text-left px-4 py-3 rounded border border-slate-700 hover:border-amber-600/50 bg-slate-900/60 truncate"
-                onClick={() =>
-                  navigate(`${fabricatorRoutes.studioData('tuning-no-dxf')}?systemPackId=${encodeURIComponent(pack.id)}`)
-                }
+                onClick={() => {
+                  void navigate(`${fabricatorRoutes.studioData('tuning-no-dxf')}?systemPackId=${encodeURIComponent(pack.id)}`);
+                }}
               >
                 <span className="block text-sm text-amber-100 truncate">{pack.name || pack.id}</span>
               </button>
@@ -412,9 +412,9 @@ export const NoDXFTuningStudio: React.FC = () => {
             onClick={() => {
               const returnUrl = getReturnUrl();
               if (returnUrl) {
-                navigate(returnUrl.url, { state: returnUrl.params });
+                void navigate(returnUrl.url, { state: returnUrl.params });
               } else {
-                navigate(fabricatorRoutes.studioData());
+                void navigate(fabricatorRoutes.studioData());
               }
             }}
           >
@@ -741,7 +741,7 @@ export const NoDXFTuningStudio: React.FC = () => {
             )}
           </div>
           <Button
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={isSaving || !frameProfile || !sashProfile}
             className="bg-green-600 hover:bg-green-500"
           >

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { SystemGalleryItem } from '@/types/gallery';
 
@@ -12,13 +12,13 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
   const handleUseInPilot = () => {
     if (system.pilotAvailable && system.pilotSystemId) {
       // Navigate to Pilot with system pre-selected
-      navigate(`/pilot?system=${system.pilotSystemId}`);
+      void navigate(`/pilot?system=${system.pilotSystemId}`);
     }
   };
 
   const handleTuneSystem = () => {
     // Navigate to Tuning Workbench with system pre-loaded
-    navigate(`/tuning?systemId=${system.id}`);
+    void navigate(`/tuning?systemId=${system.id}`);
   };
 
   return (

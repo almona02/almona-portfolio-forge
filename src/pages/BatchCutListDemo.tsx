@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Batch Cut List Demo – test with single window
  *
  * Test: 1 × window 1000×1000 mm aluminium casement (frame + sash).
@@ -164,7 +164,7 @@ export default function BatchCutListDemo() {
           </div>
           <Button
             variant="default"
-            onClick={handleDownloadPDF}
+            onClick={() => void handleDownloadPDF()}
             disabled={pdfLoading}
           >
             <FileDown className="h-4 w-4 mr-2" />

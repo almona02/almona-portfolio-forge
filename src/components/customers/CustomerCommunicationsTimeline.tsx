@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CustomerCommunicationsTimeline Component
  * 
  * Priority 4: Customers Page Upgrade - Communication History Timeline
@@ -146,7 +146,7 @@ export const CustomerCommunicationsTimeline: React.FC<CustomerCommunicationsTime
      * Initial load
      */
     useEffect(() => {
-        loadCommunications();
+        void loadCommunications();
     }, [loadCommunications]);
 
     /**
@@ -332,7 +332,7 @@ export const CustomerCommunicationsTimeline: React.FC<CustomerCommunicationsTime
                             Cancel
                         </Button>
                         <Button
-                            onClick={handleCreate}
+                            onClick={() => void handleCreate()}
                             disabled={isSaving || (!subject.trim() && !message.trim())}
                         >
                             {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}

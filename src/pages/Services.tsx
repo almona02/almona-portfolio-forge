@@ -1,4 +1,4 @@
-import SEO from "@/components/SEO";
+﻿import SEO from "@/components/SEO";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { ServiceViewToggle } from "@/components/services/ServiceViewToggle";
@@ -251,7 +251,7 @@ const Services = () => {
 
 
   const launchMaintenanceTicket = useCallback((maintenanceType: 'preventive' | 'corrective' | 'emergency') => {
-    if (!user) { navigate('/login'); return; }
+    if (!user) { void navigate('/login'); return; }
     if (!canCreateServiceTicket(user.role)) {
       trackServiceTicketBlocked({ role: user.role, reason: 'role_not_whitelisted', maintenanceType });
       toast({
@@ -284,7 +284,7 @@ const Services = () => {
 
   const handlePackageSelection = useCallback((packageId: string, estimatedPrice?: number) => {
     if (!user) {
-      navigate(`/contact?subject=${encodeURIComponent(`Service plan enquiry: ${packageId}`)}`);
+      void navigate(`/contact?subject=${encodeURIComponent(`Service plan enquiry: ${packageId}`)}`);
       return;
     }
 
@@ -617,7 +617,7 @@ const Services = () => {
                           t('services.quality_control_automation')
                         ]}
                         actionText={t('services.launch_fabricator')}
-                        onActionClick={() => navigate('/fabricator-workflow')}
+                        onActionClick={() => void navigate('/fabricator-workflow')}
                         highlight={true}
                       />
                     </div>

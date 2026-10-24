@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Profile Definition Wizard
  * Multi-step wizard for creating profiles from technical data sheets
  * v1: Manual input with visual reference (de-risked approach)
@@ -342,7 +342,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   accept="image/*,.pdf"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) handleFileUpload(file);
+                    if (file) void handleFileUpload(file);
                   }}
                   className="hidden"
                 />
@@ -613,7 +613,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
           </Button>
           {step < totalSteps ? (
             <Button
-              onClick={handleNext}
+              onClick={() => void handleNext()}
               className="bg-blue-500 hover:bg-blue-600 text-white"
             >
               Next
@@ -621,7 +621,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
             </Button>
           ) : (
             <Button
-              onClick={handleCreateProfile}
+              onClick={() => void handleCreateProfile()}
               disabled={isCreating}
               className="bg-green-500 hover:bg-green-600 text-white"
             >

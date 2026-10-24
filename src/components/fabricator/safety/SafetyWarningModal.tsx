@@ -38,7 +38,7 @@ export interface SafetyWarningModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   warnings: SafetyWarning[];
-  onProceed: () => void;
+  onProceed: () => Promise<void> | void;
   jobId?: string;
   machineType?: string;
 }
@@ -317,7 +317,7 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
             Cancel
           </Button>
           <Button
-            onClick={handleProceed}
+            onClick={() => void handleProceed()}
             disabled={!canProceed || isProcessing}
             className="bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50 disabled:cursor-not-allowed min-w-[180px] font-semibold"
           >

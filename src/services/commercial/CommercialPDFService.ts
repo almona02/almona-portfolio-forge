@@ -83,7 +83,10 @@ function mapFontFamily(fontFamily: string, StandardFonts: any, bold: boolean = f
 }
 
 // Lazy import pdf-lib to reduce initial bundle size
-let PDFDocument: any, rgb: any, StandardFonts: any;
+type PdfLibModule = typeof import('pdf-lib');
+let PDFDocument: PdfLibModule['PDFDocument'];
+let rgb: PdfLibModule['rgb'];
+let StandardFonts: PdfLibModule['StandardFonts'];
 
 /**
  * Default company branding (Prestige theme)
@@ -511,7 +514,7 @@ export class CommercialPDFService {
       });
 
       const pdfBytes = await pdfDoc.save();
-      return new Blob([pdfBytes], { type: 'application/pdf' });
+      return new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
     } catch (error) {
       console.error('Failed to generate quote PDF:', error);
       throw new Error(`PDF generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -921,7 +924,7 @@ export class CommercialPDFService {
       });
 
       const pdfBytes = await pdfDoc.save();
-      return new Blob([pdfBytes], { type: 'application/pdf' });
+      return new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
     } catch (error) {
       console.error('Failed to generate invoice PDF:', error);
       throw new Error(`PDF generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);

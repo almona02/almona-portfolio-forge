@@ -1,4 +1,4 @@
-import { LiveAnnouncerProvider } from '@/components/a11y/LiveAnnouncer';
+﻿import { LiveAnnouncerProvider } from '@/components/a11y/LiveAnnouncer';
 import { AutoSaveIndicator } from '@/components/fabricator/AutoSaveIndicator';
 import { WorkspaceSnapshotManager } from '@/components/fabricator/WorkspaceSnapshotManager';
 import { WorkspaceTopNav } from '@/components/fabricator/WorkspaceTopNav';
@@ -99,7 +99,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
                     isSaving={isSaving}
                     lastSaved={lastSaved}
                     hasUnsavedChanges={hasUnsavedChanges}
-                    onManualSave={manualSave}
+                    onManualSave={() => void manualSave()}
                     className="text-xs"
                   />
                   <div className="mt-1">
