@@ -32,7 +32,7 @@ const pack: SystemPack = {
       specifications: { originalCatalogCode: 'YIL-FRAME-01' },
     },
   ],
-} as SystemPack;
+} as unknown as SystemPack;
 
 describe('materializeOwnedProfilesFromPack (UP-07)', () => {
   beforeEach(() => {

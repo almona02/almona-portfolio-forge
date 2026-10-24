@@ -97,7 +97,7 @@ describe('BOM Generation Performance Tests', () => {
       compatibleAccessories: [],
       description: dataSystemPack.meta.name,
       technicalData: dataSystemPack.windowSystemSpec || {},
-    } as SystemPack;
+    } as unknown as SystemPack;
   });
 
   afterEach(() => {

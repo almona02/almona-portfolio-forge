@@ -32,7 +32,7 @@ const qualifiedBom = {
   profiles: [{ profileCode: profile.id, cuttingLengths: [physicalCutForOccurrence(project.components[0], 0, profile, project.systemPackId).length],
     angles: [physicalCutForOccurrence(project.components[0], 0, profile, project.systemPackId).angle] }],
   qualification: { status: 'qualified', identity: { ownerUserId: 'user-1' }, catalogueVersion: 'fixture-catalogue', ruleVersion: 'fixture-rules', requiredPieceCount: 1, generatedPieceCount: 1, unplacedPieceCount: 0, reasons: [] },
-} as CompleteBOM;
+} as unknown as CompleteBOM;
 
 describe('OptimizationPage fail-closed execution', () => {
   beforeEach(() => {

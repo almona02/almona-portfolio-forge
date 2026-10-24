@@ -10,7 +10,7 @@ describe('solver to cut-list PDF', () => {
   it('exports every physical occurrence across pages and rejects tampering', async () => {
     vi.stubGlobal('Blob', NodeBlob);
     try {
-      const profile = { id: 'diagnostic-profile', name: 'Diagnostic frame', costPerMeter: 12, cuttingAllowance: 0, specifications: { stockLengthMm: 6000 } } as Profile;
+      const profile = { id: 'diagnostic-profile', name: 'Diagnostic frame', costPerMeter: 12, cuttingAllowance: 0, specifications: { stockLengthMm: 6000 } } as unknown as Profile;
       const project = { id: 'diagnostic-position', orderNumber: 'TEST ONLY - NOT FOR PRODUCTION', posNumber: 'PDF-001', type: 'fixed', color: 'Silver', status: 'design', overallWidth: 1200, overallHeight: 1400,
         components: [{ id: 'frame', profile, quantity: 1, cuttingLengths: Array(75).fill(50), angles: Array(75).fill(90) }] } as WindowUnit;
       const result = await new AdaptiveSolver({ maxSolvingTime: 30, complexityThresholds: { simple: 100, medium: 500 } }).solve({ components: project.components, profiles: [profile], defaultStockLength: 6000 }, [profile]);

@@ -12,7 +12,7 @@ import { optimizeProjectEstimate } from '@/lib/fabricator/production/ProjectOpti
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 
 const profile = { id: 'owned-sash', profileRole: 'sash', material: 'aluminum', costPerMeter: 0, cuttingAllowance: 3,
-  barLength: 6000, specifications: { sawKerf: 4.5, barEndTrim: 20 } } as Profile;
+  barLength: 6000, specifications: { sawKerf: 4.5, barEndTrim: 20 } } as unknown as Profile;
 const project = { systemPackId: 'test-pack', components: [{ id: 'sash', type: 'sash', quantity: 1,
   profile, cuttingLengths: [1980,1980,1980], angles: [45,45,45] }] } as WindowUnit;
 const solver = () => new AdaptiveSolver({ maxSolvingTime: 30, complexityThresholds: { simple: 50, medium: 500 } });
@@ -38,7 +38,7 @@ describe('live E2E cut ledger regression', () => {
     const oversize = { ...project.components[0], cuttingLengths: [5960] };
     await expect(solver().solve({ components: [oversize], profiles: [profile] }, [profile])).rejects.toThrow('usable stock');
   });
-});
+});
 /**
  * Regression: the sliding track pair is part of the required design ledger. The saved
  * ledger (and any pose saved before that completion existed) is short of it while the

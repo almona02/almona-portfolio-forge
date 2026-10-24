@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { WindowUnit } from '@/types/fabricator';
 import { useWorkflowStore, type WorkflowIdentity } from './workflowStore';
 
-const position = { id: 'position-1', projectId: 'project-1', overallWidth: 1210, overallHeight: 1550, type: 'sliding', components: [] } as WindowUnit;
+const position = { id: 'position-1', projectId: 'project-1', overallWidth: 1210, overallHeight: 1550, type: 'sliding', components: [] } as unknown as WindowUnit;
 const identity: WorkflowIdentity = { ownerUserId: 'user-1', projectId: 'project-1', positionId: 'position-1', source: 'v2', revision: 4 };
 
 describe('identity-scoped workflow hydration', () => {
