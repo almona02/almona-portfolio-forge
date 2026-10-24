@@ -391,7 +391,7 @@ describe('Hardener Integration Tests', () => {
 
   describe('Window Unit Integration', () => {
     it('should select hardener from WindowUnit and SystemPack', () => {
-      const windowUnit: WindowUnit = {
+      const windowUnit: any = {
         id: 'test-window-1',
         type: 'casement',
         overallWidth: 1200,
@@ -419,7 +419,7 @@ describe('Hardener Integration Tests', () => {
     });
 
     it('should handle missing system pack gracefully', () => {
-      const windowUnit: WindowUnit = {
+      const windowUnit: any = {
         id: 'test-window-2',
         type: 'tilt-turn',
         overallWidth: 1000,
