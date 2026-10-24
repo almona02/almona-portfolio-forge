@@ -262,7 +262,7 @@ export const useJobsStore = create<JobsState>((set, get) => ({
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.color) dbUpdates.color = updates.color;
       if (updates.systemPackId) dbUpdates.system_pack_id = updates.systemPackId;
-      if (updates.glazing) dbUpdates.glazing = updates.glazing;
+      if (updates.glazing) dbUpdates.glazing = updates.glazing as any;
 
       if (Object.keys(dbUpdates).length === 0) return;
 

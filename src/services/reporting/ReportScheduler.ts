@@ -391,28 +391,28 @@ export class ReportScheduler {
           reportData = await ReportingService.getRevenueByPeriod(
             revenuePeriod,
             dateRange
-          );
+          ) as any;
           reportTitle = `${template.name} - ${format(dateRange.start, 'MMM d')} to ${format(dateRange.end, 'MMM d, yyyy')}`;
           break;
         case 'conversion':
           const conversionMetrics = await ReportingService.getConversionMetrics(dateRange);
-          reportData = [conversionMetrics];
+          reportData = [conversionMetrics] as any;
           reportTitle = `${template.name} - ${format(dateRange.start, 'MMM d')} to ${format(dateRange.end, 'MMM d, yyyy')}`;
           break;
         case 'ltv':
-          reportData = await ReportingService.getCustomerLTV(dateRange);
+          reportData = await ReportingService.getCustomerLTV(dateRange) as any;
           reportTitle = `${template.name} - ${format(dateRange.start, 'MMM d')} to ${format(dateRange.end, 'MMM d, yyyy')}`;
           break;
         case 'aging':
-          reportData = await ReportingService.getAgingReceivables();
+          reportData = await ReportingService.getAgingReceivables() as any;
           reportTitle = `${template.name} - ${format(executedAt, 'MMM d, yyyy')}`;
           break;
         case 'profitability':
-          reportData = await ReportingService.getProjectProfitability(dateRange);
+          reportData = await ReportingService.getProjectProfitability(dateRange) as any;
           reportTitle = `${template.name} - ${format(dateRange.start, 'MMM d')} to ${format(dateRange.end, 'MMM d, yyyy')}`;
           break;
         case 'pipeline':
-          reportData = await ReportingService.getSalesPipeline();
+          reportData = await ReportingService.getSalesPipeline() as any;
           reportTitle = `${template.name} - ${format(executedAt, 'MMM d, yyyy')}`;
           break;
         default:

@@ -78,7 +78,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {youtubeUrl && showVideo && (autoplayUrl ?? embedUrl) ? (
             <>
               <iframe
-                src={autoplayUrl ?? embedUrl}
+                src={autoplayUrl ?? embedUrl ?? undefined}
                 title={title}
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
