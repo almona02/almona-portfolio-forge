@@ -181,7 +181,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
       setCanRedo(false); // Clear redo when new action is taken
     }
     onGridChange(newGrid);
-  }, [grid, onGridChange]);
+  }, [onGridChange]);
 
   // Phase 2: Undo handler
   const handleUndo = useCallback(() => {

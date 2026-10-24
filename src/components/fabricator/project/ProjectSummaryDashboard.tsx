@@ -1,4 +1,4 @@
-﻿import { estimateSource } from '@/lib/fabricator/production/estimateSource';
+import { estimateSource } from '@/lib/fabricator/production/estimateSource';
 import { PoseLayoutPreview } from '@/components/fabricator/project/PoseLayoutPreview';
 import { useDeletePose, useUpsertPose, useUpdateProject } from '@/hooks/useFabricatorQueries';
 import { PresetAwareBOMGenerator, type CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
@@ -281,7 +281,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
     } finally {
       if (generation === aggregationGeneration.current) setIsAggregating(false);
     }
-  }, [positions, engineeringPacks, projectId, projectMeta, updateProject, upsertPose]);
+  }, [positions, engineeringPacks, projectId, projectMeta, updateProject]);
 
   return (
     <div className="h-full overflow-auto p-6 space-y-6 bg-[#0a0a0a]">
