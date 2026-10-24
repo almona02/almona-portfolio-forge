@@ -83,7 +83,10 @@ function mapFontFamily(fontFamily: string, StandardFonts: any, bold: boolean = f
 }
 
 // Lazy import pdf-lib to reduce initial bundle size
-let PDFDocument: any, rgb: any, StandardFonts: any;
+type PdfLibModule = typeof import('pdf-lib');
+let PDFDocument: PdfLibModule['PDFDocument'];
+let rgb: PdfLibModule['rgb'];
+let StandardFonts: PdfLibModule['StandardFonts'];
 
 /**
  * Default company branding (Prestige theme)

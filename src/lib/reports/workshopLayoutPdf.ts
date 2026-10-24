@@ -1,5 +1,8 @@
 // Workshop layout PDF export — reuses the ALMONA logo/branding pattern from comparisonPdf.
-let PDFDocument: any, StandardFonts: any, rgb: any;
+type PdfLibModule = typeof import('pdf-lib');
+let PDFDocument: PdfLibModule['PDFDocument'];
+let StandardFonts: PdfLibModule['StandardFonts'];
+let rgb: PdfLibModule['rgb'];
 const fontCache = new Map<string, any>();
 const logoCache = new Map<string, any>();
 

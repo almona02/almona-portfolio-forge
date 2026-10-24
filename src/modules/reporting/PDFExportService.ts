@@ -4,7 +4,10 @@
  */
 
 // Lazy import pdf-lib to reduce initial bundle size
-let PDFDocument: any, rgb: any, StandardFonts: any;
+type PdfLibModule = typeof import('pdf-lib');
+let PDFDocument: PdfLibModule['PDFDocument'];
+let rgb: PdfLibModule['rgb'];
+let StandardFonts: PdfLibModule['StandardFonts'];
 import { generatePatternVisualization, generateWindowUnitsRow } from '@/lib/exports/windowSnapshotGenerator';
 import { supabase } from '@/lib/supabase';
 import { validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';

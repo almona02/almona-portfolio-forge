@@ -1,4 +1,7 @@
-let PDFDocument: any, rgb: any, StandardFonts: any;
+type PdfLibModule = typeof import('pdf-lib');
+let PDFDocument: PdfLibModule['PDFDocument'];
+let rgb: PdfLibModule['rgb'];
+let StandardFonts: PdfLibModule['StandardFonts'];
 import { FabricationCosts } from './costCalculator';
 import { MACHINE_SPECS } from './pricing';
 
