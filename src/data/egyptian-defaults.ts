@@ -255,11 +255,11 @@ export function getDefaultGlazing(region?: string, isExternal: boolean = true): 
   
   // External windows default to reflective glass
   if (region?.toLowerCase().includes('alexandria') || region?.toLowerCase().includes('north coast')) {
-    return EGYPTIAN_GLAZING_DEFAULTS.reflective.brown;
+    return EGYPTIAN_GLAZING_DEFAULTS.reflective.brown as any;
   }
   
   // Cairo and most regions default to blue reflective
-  return EGYPTIAN_GLAZING_DEFAULTS.reflective.blue;
+  return EGYPTIAN_GLAZING_DEFAULTS.reflective.blue as any;
 }
 
 /**
