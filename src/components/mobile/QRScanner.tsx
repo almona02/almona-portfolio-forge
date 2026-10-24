@@ -68,6 +68,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const scanIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startScanningRef = useRef<(() => void) | null>(null);
 
   const [state, setState] = useState<ScannerState>({
     isActive: false,
@@ -144,7 +145,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
         }));
 
         // Start scanning
-        startScanning();
+        startScanningRef.current?.();
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to access camera';
@@ -155,7 +156,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
       }));
       onError?.(error instanceof Error ? error : new Error(errorMessage));
     }
-  }, [defaultConfig, onError, startScanning]);
+  }, [defaultConfig, onError]);
 
   // Stop camera
   const stopCamera = useCallback(() => {
@@ -353,6 +354,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
     scanIntervalRef.current = setInterval(scanFrame, 200); // Scan every 200ms
     setState(prev => ({ ...prev, isScanning: true }));
   }, [scanFrame]);
+  startScanningRef.current = startScanning;
 
   // Handle close
   const handleClose = useCallback(() => {
