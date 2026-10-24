@@ -294,6 +294,18 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                   {zones.map((zone) => {
                     const isSelected = selectedZone?.id === zone.id;
                     const isActive = joystickState.activeZoneId === zone.id;
+                    const centerX = canvasSize.width / 2;
+                    const centerY = canvasSize.height / 2;
+                    let zx = zone.xOffset;
+                    let zy = zone.yOffset;
+                    if (zone.referenceCorner === 'top_right' || zone.referenceCorner === 'bottom_right') zx = profileWidth - zone.xOffset - zone.width;
+                    if (zone.referenceCorner === 'bottom_left' || zone.referenceCorner === 'bottom_right') zy = profileHeight - zone.yOffset - zone.height;
+                    const canvas = {
+                      x: centerX + (zx - profileWidth / 2) * scale,
+                      y: centerY + (zy - profileHeight / 2) * scale,
+                      width: zone.width * scale,
+                      height: zone.height * scale,
+                    };
 
                     return (
                       <LazyMotionDiv
