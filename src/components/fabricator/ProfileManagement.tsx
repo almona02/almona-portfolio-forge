@@ -2534,7 +2534,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 profile={calibrationProfile}
                 systemPackId={calibrationProfile.systemPackIds?.[0] || 'generic'}
                 userId={userId}
-                onCalibrationComplete={async (calibration) => {
+                onCalibrationComplete={(calibration) => {
+                  void (async (calibration) => {
                   // Update profile immediately with calibration data
                   try {
                     const updatedProfile = {
@@ -2578,6 +2579,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     trackError('ProfileManagement', 'save_calibration', err.message);
                     toast.error('Failed to save calibration');
                   }
+                })(calibration);
                 }}
               />
             </div>
