@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -254,7 +254,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
       <VisitTicketDialog
         ticket={visitDialog}
         onClose={() => setVisitDialog(null)}
-        onSaved={async () => { setVisitDialog(null); if (selected) await loadVisits(selected) }}
+        onSaved={() => { setVisitDialog(null); if (selected) void loadVisits(selected); }}
       />
 
       {/* Delete confirm */}

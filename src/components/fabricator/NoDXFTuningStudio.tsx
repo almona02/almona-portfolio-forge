@@ -1,4 +1,4 @@
-﻿/**
+/**
  * No-DXF Tuning Studio
  * 
  * Allows users to tune system packs without DXF import:
@@ -362,9 +362,9 @@ export const NoDXFTuningStudio: React.FC = () => {
               <button
                 type="button"
                 className="w-full text-left px-4 py-3 rounded border border-slate-700 hover:border-amber-600/50 bg-slate-900/60 truncate"
-                onClick={() =>
-                  navigate(`${fabricatorRoutes.studioData('tuning-no-dxf')}?systemPackId=${encodeURIComponent(pack.id)}`)
-                }
+                onClick={() => {
+                  void navigate(`${fabricatorRoutes.studioData('tuning-no-dxf')}?systemPackId=${encodeURIComponent(pack.id)}`);
+                }}
               >
                 <span className="block text-sm text-amber-100 truncate">{pack.name || pack.id}</span>
               </button>

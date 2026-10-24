@@ -2411,11 +2411,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           open={showPurchaseWizard}
           onOpenChange={setShowPurchaseWizard}
           userId={userId}
-          onPurchaseComplete={async () => {
+          onPurchaseComplete={() => {
             // UP-10: refresh dashboard + owned inventory queries after purchase.
-            await loadDashboardData();
-            await loadStockAlerts();
-            await invalidateOwnedInventory();
+            void loadDashboardData();
+            void loadStockAlerts();
+            void invalidateOwnedInventory();
             setShowPurchaseWizard(false);
           }}
         />

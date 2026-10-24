@@ -1,4 +1,4 @@
-﻿import { WorkshopBOMRulesEditor } from './WorkshopBOMRulesEditor';
+import { WorkshopBOMRulesEditor } from './WorkshopBOMRulesEditor';
 import { Input } from '@/shared/ui/ui/input';
 import { loadCustomSystemsFromSupabase } from '@/lib/fabricator/systemPackSupabase';
 /**
@@ -624,9 +624,9 @@ export const SystemPackTuningStudio: React.FC = () => {
               <button
                 type="button"
                 className="w-full text-left px-4 py-3 rounded border border-slate-700 hover:border-amber-600/50 bg-slate-900/60 truncate"
-                onClick={() =>
-                  navigate(`${fabricatorRoutes.studioData('tuning')}?systemPackId=${encodeURIComponent(pack.id)}`)
-                }
+                onClick={() => {
+                  void navigate(`${fabricatorRoutes.studioData('tuning')}?systemPackId=${encodeURIComponent(pack.id)}`);
+                }}
               >
                 <span className="block text-sm text-amber-100 truncate">{pack.name}</span>
                 <span className="block text-[10px] text-slate-500 font-mono truncate" dir="ltr">
