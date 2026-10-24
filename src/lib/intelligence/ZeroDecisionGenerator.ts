@@ -165,7 +165,7 @@ export class ZeroDecisionGenerator {
         reinforcement: []
       },
       materialStrategy: {
-        recommendedMaterial: workshopContext.preferredMaterials?.[0] || 'aluminum',
+        recommendedMaterial: (workshopContext.preferredMaterials?.[0] || 'aluminum') as "both" | "aluminum" | "upvc",
         profileSystem: 'panda-50',
         complexityLevel: 'simple',
         requiresSpecialTools: false,

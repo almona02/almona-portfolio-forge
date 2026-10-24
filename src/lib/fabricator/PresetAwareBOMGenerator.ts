@@ -243,7 +243,7 @@ export class PresetAwareBOMGenerator {
           metadata: {
             generationTimestamp: new Date().toISOString(),
             patternUsed: pat.id,
-            systemPackUsed: sp.id,
+            systemPackUsed: sp.id ?? '',
             checksum
           }
         };

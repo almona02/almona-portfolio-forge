@@ -108,7 +108,7 @@ class IoTSensorService {
 
   constructor() {
     // In production, this would be your IoT platform WebSocket URL
-    this.websocketUrl = import.meta.env.VITE_IOT_WEBSOCKET_URL || 'wss://api.almona.com/iot/ws';
+    this.websocketUrl = (import.meta.env.VITE_IOT_WEBSOCKET_URL as string) || 'wss://api.almona.com/iot/ws';
     this.initializeConnection();
     this.loadSensorConfigurations();
   }

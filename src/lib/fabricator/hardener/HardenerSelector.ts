@@ -117,7 +117,7 @@ export class HardenerSelector {
     return {
       profileSystem,
       material,
-      glassThickness,
+      glassThickness: glassThickness as number,
       sashWidth,
       sashHeight,
       openingType,

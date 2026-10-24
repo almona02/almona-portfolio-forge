@@ -114,7 +114,7 @@ export class ComplexShapeGenerator {
     return {
       shape,
       material: {
-        type: material.recommendedMaterial,
+        type: material.recommendedMaterial as "aluminum" | "upvc",
         systemPackId: material.profileSystem,
         profiles
       },

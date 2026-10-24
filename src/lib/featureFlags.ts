@@ -10,7 +10,7 @@
 // Helper to safely access environment variables (Vite uses import.meta.env)
 const getEnvVar = (key: string): string | undefined => {
   if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env[key];
+    return import.meta.env[key] as string | undefined;
   }
   // Fallback for Node.js environments (testing, SSR)
   if (typeof process !== 'undefined' && process.env) {

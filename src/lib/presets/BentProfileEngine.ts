@@ -95,7 +95,7 @@ export class BentProfileEngine {
     const validation = this.bendValidator.validateBend(radius, material, profileWidth, profileDepth);
     
     // Determine bending method
-    const bendingMethod = validation.isBendable ? 'continuous' : 'segmented';
+    const bendingMethod: 'continuous' | 'segmented' = validation.isBendable ? 'continuous' : 'segmented';
     const segments = bendingMethod === 'segmented' ? this.calculateSegments(radius, angle) : undefined;
 
     // Calculate springback compensation
