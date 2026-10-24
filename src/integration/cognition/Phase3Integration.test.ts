@@ -109,7 +109,7 @@ describe('Phase 3 Integration', () => {
 
       expect(completeWindowUnit.systemPackId).toBeDefined();
       expect(completeWindowUnit.color).toBeDefined();
-      expect(completeWindowUnit.glazingType).toBeDefined();
+      expect(completeWindowUnit.glazing).toBeDefined();
     });
   });
 });
