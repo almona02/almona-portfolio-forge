@@ -122,7 +122,7 @@ export class PerformanceOptimizer {
           };
           
           worker.onerror = (error) => {
-            reject(new Error(String(error)));
+            reject(new Error((error as string)));
             worker.terminate();
           };
           

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Persist server-stamped optimization evidence.
  * schemaVersion 2+: server derives design ledger; client must supply BOM (no placement fallback).
  * Kerf/trim/stock bound to approved authority manufacturingSettings.

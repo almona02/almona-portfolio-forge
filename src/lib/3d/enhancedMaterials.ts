@@ -226,7 +226,7 @@ export class EnhancedMaterialGenerator {
           undefined,
           (error) => {
             clearTimeout(timeout);
-            reject(new Error(String(error)));
+            reject(new Error((error as string)));
           }
         );
       });

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RealityOS Event Mappings
  * 
  * Maps ALMONA events to RealityOS events.

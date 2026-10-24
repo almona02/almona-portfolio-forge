@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RealityOS Event Emitter
  * 
  * Emits events to RealityOS Event Ledger with constitutional guarantees.

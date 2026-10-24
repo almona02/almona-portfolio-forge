@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Payment Service (browser-safe)
  *
  * Client may read payment history and record manual payments via Supabase.
@@ -33,8 +33,8 @@ function mapPaymentRow(p: Record<string, unknown>): Payment {
     processorResponse: p.processor_response || undefined,
     createdAt: new Date(String(p.created_at || Date.now())),
     updatedAt: new Date(String(p.updated_at || Date.now())),
-    completedAt: p.completed_at ? new Date(String(p.completed_at)) : null,
-    refundedAt: p.refunded_at ? new Date(String(p.refunded_at)) : null,
+    completedAt: p.completed_at ? new Date((p.completed_at as string)) : null,
+    refundedAt: p.refunded_at ? new Date((p.refunded_at as string)) : null,
     notes: (p.notes as string) || null,
   };
 }

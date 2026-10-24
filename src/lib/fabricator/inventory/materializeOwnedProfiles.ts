@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Batch 2 UP-07 — Materialize catalog-style pack profiles into owned fabricator_profiles UUIDs.
  *
  * Preserves original catalog codes in specifications.originalCatalogCode.

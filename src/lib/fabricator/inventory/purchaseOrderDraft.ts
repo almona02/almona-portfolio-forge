@@ -1,4 +1,4 @@
-import type { CompleteBOM } from '../PresetAwareBOMGenerator';
+﻿import type { CompleteBOM } from '../PresetAwareBOMGenerator';
 import type { WindowUnit } from '@/types/fabricator';
 import { optimizeLinearCuts } from '@/lib/algorithms/LinearOptimizer';
 export interface PurchaseOrderLine {

@@ -77,7 +77,7 @@ export class ProfileImporter {
             const obj: ParsedRow = {};
             headers.forEach((header, idx) => {
               const cell = row.getCell(idx + 2); // +2 because ExcelJS is 1-indexed and first column is empty
-              obj[header] = cell.value !== null && cell.value !== undefined ? String(cell.value) : '';
+              obj[header] = cell.value !== null && cell.value !== undefined ? (cell.value as string) : '';
             });
             rows.push(obj);
           });
