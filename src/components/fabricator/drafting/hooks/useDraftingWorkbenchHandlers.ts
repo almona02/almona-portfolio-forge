@@ -591,7 +591,7 @@ export function useDraftingWorkbenchHandlers({
           algorithm: 'drafting-integration',
           score: 0.95,
           improvements: ['Component generation', 'Grid optimization'],
-        },
+        } as unknown as OptimizationResult,
       };
 
       actions.setOptimizationWindowUnit(optimizedWindowUnit);
