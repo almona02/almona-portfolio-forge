@@ -4,6 +4,7 @@
  */
 
 // Lazy import pdf-lib to reduce initial bundle size
+import type { PDFDocument as PDFDocumentInstance, PDFPage, PDFFont } from 'pdf-lib';
 type PdfLibModule = typeof import('pdf-lib');
 let PDFDocument: PdfLibModule['PDFDocument'];
 let rgb: PdfLibModule['rgb'];
@@ -41,15 +42,15 @@ export interface PDFOptions {
 }
 
 export class PDFExportService {
-  private pdfDoc: PdfLibModule['PDFDocument'];
+  private pdfDoc: PDFDocumentInstance;
   private branding: CompanyBranding;
   private pageWidth: number;
   private pageHeight: number;
   private margin: number;
   private currentY: number;
-  private currentPage: PdfLibModule['PDFPage'];
-  private font: PdfLibModule['PDFFont'];
-  private boldFont: PdfLibModule['PDFFont'];
+  private currentPage: PDFPage;
+  private font: PDFFont;
+  private boldFont: PDFFont;
   private pageNumber: number = 1;
 
   constructor(branding: CompanyBranding) {
