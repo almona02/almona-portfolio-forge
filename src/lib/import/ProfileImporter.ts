@@ -60,7 +60,7 @@ export class ProfileImporter {
           }
 
           const headerRow = worksheet.getRow(1);
-          const headers = (headerRow?.values || [])
+          const headers = ((headerRow as any)?.values || [])
             .slice(1)
             .map((v: any) => String(v || '').trim())
             .filter((h: string) => h);
