@@ -67,7 +67,7 @@ export interface AuthoritativePositionIdentity {
  */
 export function mapPositionRowToWindowUnit(row: PositionV2Row): WindowUnit | null {
   if (!row?.id) return null;
-  const wu = (row.window_unit ?? {}) as Record<string, unknown>;
+  const wu = (row.window_unit ?? {});
   const components = (row.components ?? wu.components ?? []) as WindowUnit['components'];
   const hardwareRaw = wu.hardware ?? row.hardware;
   return {
@@ -453,7 +453,7 @@ export const fabricatorClientV2 = {
     // Legacy rows lack complete semantic evidence; require review instead of guessing parity.
     const existingDesignFingerprint = existing ? readCutLedgerDesignFingerprint(existing.position_meta) : null;
     const existingComponents = Array.isArray(existing?.components)
-      ? (existing!.components as WindowComponent[])
+      ? (existing.components as WindowComponent[])
       : [];
     const ledgerMerge = mergeComponentsForSave({
       incoming: windowUnit.components,

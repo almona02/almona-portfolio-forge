@@ -671,7 +671,7 @@ export class ProfileBOMCalculator {
     ) => {
       const synthetic: WindowComponent = {
         id: `enrich-${role}-${systemPackId}`,
-        type: role as WindowComponent['type'],
+        type: role,
         profile,
         cuttingLengths: designLengths,
         angles: designAngles,
