@@ -746,11 +746,12 @@ export const SystemPackTuningStudio: React.FC = () => {
                     {allProfilesTuned ? 'All Tuned' : `${tunedProfiles.size}/${systemPack.profiles.length} Tuned`}
                   </Badge>
                   <Button
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                    onClick={(e) => {
+                      void (async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-                      try {
+                        try {
                         // Clear editing profile first
                         setEditingProfile(null);
 
@@ -779,6 +780,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                         console.error('Error opening profile wizard:', error);
                         toast.error('Failed to open profile wizard');
                       }
+                    })(e);
                     }}
                     size="sm"
                     className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 relative z-10"
