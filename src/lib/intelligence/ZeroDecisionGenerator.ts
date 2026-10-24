@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ZeroDecisionGenerator - Magic Mode for Zero-Decision Generation
  * 
  * Generates optimal window designs without user choices, based on inferred intent.
@@ -185,7 +185,7 @@ export class ZeroDecisionGenerator {
    */
   private mapMachineCapabilities(
     capabilities?: string[]
-  ): MaterialStrategyCalculator['MachineCapabilities'] | undefined {
+  ): MaterialStrategyCalculator['MachineCapabilities'] {
     if (!capabilities) return undefined;
     
     return {

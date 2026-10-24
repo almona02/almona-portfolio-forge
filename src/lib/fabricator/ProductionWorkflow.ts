@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProductionWorkflow - Production Workflow with Checkpoint System
  * 
  * Provides a production-grade workflow system with automatic checkpointing,
@@ -17,7 +17,7 @@ export interface WorkflowStageConfig {
   checkpointable: boolean; // Whether to create checkpoint at this stage
   estimatedDuration?: number; // milliseconds
   onStart?: () => Promise<void> | void;
-  onComplete?: (data: any) => Promise<any> | any;
+  onComplete?: (data: any) => any;
   onError?: (error: Error) => Promise<void> | void;
 }
 

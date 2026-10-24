@@ -324,9 +324,9 @@ export class NotificationService {
   /**
    * Check if rule matches trigger event
    */
-  private static matchesTrigger(rule: NotificationRule | any, event: { type: string; data: NotificationData }): boolean {
+  private static matchesTrigger(rule: NotificationRule, event: { type: string; data: NotificationData }): boolean {
     // Simple matching - can be enhanced with condition evaluation
-    const triggerEvent = rule.trigger_event || rule.triggerEvent;
+    const triggerEvent = rule.triggerEvent;
     return triggerEvent === event.type || triggerEvent === '*';
   }
 
