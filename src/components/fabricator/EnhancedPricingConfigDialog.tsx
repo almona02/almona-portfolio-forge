@@ -355,7 +355,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
   };
 
   // Bulk import
-  const handleBulkImport = async () => {
+  const handleBulkImport = () => {
     if (!bulkImportFile || !userId) return;
     
     setBulkImportProgress(0);

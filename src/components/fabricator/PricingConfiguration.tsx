@@ -249,7 +249,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
   };
 
   // Handle bulk import
-  const handleBulkImport = async () => {
+  const handleBulkImport = () => {
     if (!bulkImportFile || !userId) return;
 
     setBulkImportProgress(0);

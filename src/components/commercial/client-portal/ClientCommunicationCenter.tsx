@@ -53,7 +53,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
     void loadMessages();
   }, [customerId]);
 
-  const loadMessages = async () => {
+  const loadMessages = () => {
     setLoading(true);
     try {
       // In a real implementation, this would fetch from a messages table
@@ -85,7 +85,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
     }
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!newMessage.subject || !newMessage.content) {
       toast.error('Please fill in all fields');
       return;

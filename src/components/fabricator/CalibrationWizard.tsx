@@ -203,7 +203,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
     }
   };
 
-  const saveCalibration = async () => {
+  const saveCalibration = () => {
     try {
       const fullCalibration: CuttingCalibration = {
         id: `cal_${Date.now()}`,

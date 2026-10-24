@@ -323,7 +323,7 @@ export const SensorDataDashboard: React.FC<{
     return () => clearInterval(interval);
   }, [machineId]);
 
-  const handleRefresh = async () => {
+  const handleRefresh = () => {
     setRefreshing(true);
     // Simulate refresh delay
     setTimeout(() => setRefreshing(false), 2000);

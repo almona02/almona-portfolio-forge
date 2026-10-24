@@ -66,7 +66,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
     (job) => job.optimization && job.optimization.cuttingPlan.length > 0,
   );
 
-  const handleOptimize = async () => {
+  const handleOptimize = () => {
     if (optStatus === 'running') return;
     setOptStatus('running');
     // TODO: wire to real optimization trigger; for now simulate async

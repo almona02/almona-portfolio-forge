@@ -55,7 +55,7 @@ export const SystemPacksPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const loadSystems = async () => {
+    const loadSystems = () => {
       const saved = loadCustomSystems(); // Use sync version for now
       setCustomSystems(saved);
     };

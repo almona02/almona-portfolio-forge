@@ -48,7 +48,7 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
     loadFacebookSDK();
   }, []);
 
-  const handleFacebookLogin = async () => {
+  const handleFacebookLogin = () => {
     try {
       // Check if Facebook SDK is loaded
       if (!(window as Window & { FB?: any }).FB || !sdkLoaded) {

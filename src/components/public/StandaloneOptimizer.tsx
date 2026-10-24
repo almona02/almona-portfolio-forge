@@ -28,7 +28,7 @@ export const StandaloneOptimizer: React.FC = () => {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [savings, setSavings] = useState<number>(0);
 
-  const handleOptimize = async () => {
+  const handleOptimize = () => {
     setOptimizing(true);
     try {
       // Simulate optimization (in production would use actual optimizer)

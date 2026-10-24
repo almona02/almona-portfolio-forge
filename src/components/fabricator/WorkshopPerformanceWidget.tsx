@@ -29,7 +29,7 @@ export const WorkshopPerformanceWidget: React.FC<WorkshopPerformanceWidgetProps>
 
   useEffect(() => {
     // Fetch workshop metrics
-    const loadMetrics = async () => {
+    const loadMetrics = () => {
       try {
         // TODO: Fetch actual metrics from database
         // For now, use mock data

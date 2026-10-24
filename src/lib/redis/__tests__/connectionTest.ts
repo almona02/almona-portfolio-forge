@@ -1,4 +1,4 @@
-﻿import { CacheHelper } from '../cacheHelper';
+import { CacheHelper } from '../cacheHelper';
 import redis from '../client';
 
 /**
@@ -55,10 +55,10 @@ async function testRedisConnection() {
     // Test 8: GetOrSet pattern
     console.log('Test 8: GetOrSet pattern');
     let dbCallCount = 0;
-    const fetchFn = async () => {
+    const fetchFn = () => {
       dbCallCount++;
       console.log(`  📊 Fetching from "database" (call #${dbCallCount})`);
-      return { data: 'from database', timestamp: Date.now() };
+      return Promise.resolve({ data: 'from database', timestamp: Date.now() });
     };
 
     const result1 = await CacheHelper.getOrSet('test:getOrSet', fetchFn, { ttl: 60 });

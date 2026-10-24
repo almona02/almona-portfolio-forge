@@ -207,7 +207,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
   };
 
   // Handle step navigation
-  const handleNext = async () => {
+  const handleNext = () => {
     if (step === 2) {
       const validation = validateStep2();
       if (!validation.isValid) {
