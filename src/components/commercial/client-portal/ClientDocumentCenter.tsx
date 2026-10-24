@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Client Document Center
  * 
  * Gold-tier component for clients to download documents (quotes, invoices, etc.).
@@ -113,6 +113,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
 
   useEffect(() => {
     void loadDocuments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- requestId is a request token, not a DOM node ref
     return () => { ++requestId.current; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId]);

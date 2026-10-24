@@ -84,6 +84,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
       });
     } else setAggregatedBOM(null);
     setIsAggregating(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- aggregationGeneration is a generation token, not a DOM node ref
     return () => { ++aggregationGeneration.current; };
   }, [projectId, positions, engineeringPacks, projectMeta?.meta]);
 

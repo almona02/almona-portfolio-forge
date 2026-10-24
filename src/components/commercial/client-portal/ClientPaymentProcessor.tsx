@@ -94,6 +94,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
 
   useEffect(() => {
     void loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- requestId is a request token, not a DOM node ref
     return () => { ++requestId.current; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId]);
