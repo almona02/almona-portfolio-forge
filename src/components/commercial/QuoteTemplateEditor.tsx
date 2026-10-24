@@ -175,7 +175,7 @@ export const QuoteTemplateEditor: React.FC<QuoteTemplateEditorProps> = ({
                 result = await updateQuoteTemplate(templateId, request);
                 toast.success('Template updated successfully');
             } else {
-                result = await createQuoteTemplate(request);
+                result = await createQuoteTemplate(request as QuoteTemplateCreateRequest);
                 toast.success('Template created successfully');
             }
 

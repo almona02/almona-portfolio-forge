@@ -130,7 +130,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
       compatibleAccessories: [],
       description: systemPack.meta.name,
       technicalData: systemPack.windowSystemSpec || {},
-    };
+    } as unknown as FabricatorSystemPack;
   }, [bomData?.systemPack, liveProject]);
 
   // Detect pricing source (system_pricing vs constants)
