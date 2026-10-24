@@ -79,7 +79,7 @@ export const DraftingWorkbenchLayout: React.FC<DraftingWorkbenchLayoutProps> = (
           onSave={handlers.handleSave}
           onExportDXF={handlers.handleExportDXF}
           onExportJSON={handlers.handleExportJSON}
-          onExportPDF={handlers.handleExportPDF}
+          onExportPDF={() => void handlers.handleExportPDF()}
           onImport={() => actions.setImportDialogOpen(true)}
           onUndo={draftingEngine.undo}
           onRedo={draftingEngine.redo}
