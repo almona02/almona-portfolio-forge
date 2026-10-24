@@ -11,7 +11,7 @@ import type { Profile } from '@/types/fabricator';
 import { TrendingUp, TrendingDown, Minus, AlertCircle } from 'lucide-react';
 
 interface MaterialEfficiencyDashboardProps {
-  profiles: Profile[];
+  profiles?: Profile[];
   userId?: string;
 }
 
@@ -24,6 +24,11 @@ export const MaterialEfficiencyDashboard: React.FC<MaterialEfficiencyDashboardPr
 
   useEffect(() => {
     const loadForecasts = async () => {
+      if (!profiles) {
+        setForecasts([]);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       const forecastPromises = profiles.slice(0, 10).map(profile =>
         consumptionForecaster.forecastConsumption(profile.id, 'monthly', userId)

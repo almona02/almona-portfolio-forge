@@ -21,7 +21,7 @@ import {
 } from 'recharts';
 
 interface WasteComparisonReportProps {
-  comparison: WasteComparison;
+  comparison?: WasteComparison;
   currency?: string;
   onExportPDF?: () => void;
 }
@@ -31,6 +31,8 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
   currency = 'EGP',
   onExportPDF,
 }) => {
+  if (!comparison) return null;
+
   const chartData = [
     {
       name: 'Manual',

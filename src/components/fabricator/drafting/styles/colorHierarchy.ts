@@ -155,13 +155,7 @@ export function getSemanticColor(type: keyof typeof SEMANTIC_COLORS): {
 /**
  * Get primary color classes
  */
-export function getPrimaryColor(_variant: 'main' | 'light' | 'dark' = 'main'): {
-  text: string;
-  bg: string;
-  bgLight: string;
-  border: string;
-  borderLight: string;
-} {
+export function getPrimaryColor(_variant: 'main' | 'light' | 'dark' = 'main'): typeof PRIMARY_COLORS.primary {
   return PRIMARY_COLORS.primary;
 }
 
