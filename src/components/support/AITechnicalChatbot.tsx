@@ -1,4 +1,4 @@
-﻿import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -475,7 +475,7 @@ export const AITechnicalChatbot: React.FC = () => {
                     onChange={(e) => setInputMessage(e.target.value)}
                     placeholder="اكتب مشكلتك التقنية..."
                     className="flex-1 bg-almona-dark/60 border-almona-light/30"
-                    onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                    onKeyPress={(e) => { if (e.key === 'Enter' && !e.shiftKey) void sendMessage(); }}
                     disabled={isLoading}
                   />
                   <Button

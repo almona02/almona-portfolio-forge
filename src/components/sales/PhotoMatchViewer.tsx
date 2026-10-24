@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PhotoMatchViewer - Photo-Match Technology for Sales
  * 
  * Superimposes 3D window designs on building photos with:
@@ -514,7 +514,8 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
       // Draw 3D render
       shareCtx.drawImage(threeCanvasRef.current, 0, 0, shareCanvas.width, shareCanvas.height);
 
-      shareCanvas.toBlob(async (blob) => {
+      shareCanvas.toBlob((blob) => {
+        void (async (blob) => {
         if (!blob) return;
 
         const file = new File([blob], 'almona-photo-match.png', { type: 'image/png' });
@@ -557,6 +558,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
             void exportPresentation();
           }
         }
+      })(blob);
       }, 'image/png');
     } catch (error) {
       console.error('Share error:', error);
