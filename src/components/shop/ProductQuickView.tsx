@@ -380,15 +380,15 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                               </div>
                             </>
                           )}
-                          {(product as any).weight && (
+                          {product.weight && (
                             <>
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Net")}</span>
-                                <span className="text-white font-mono">{(product as any).weight.net}</span>
+                                <span className="text-white font-mono">{product.weight.net}</span>
                               </div>
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Gross")}</span>
-                                <span className="text-white font-mono">{(product as any).weight.gross}</span>
+                                <span className="text-white font-mono">{product.weight.gross}</span>
                               </div>
                             </>
                           )}
@@ -396,44 +396,44 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       </div>
 
                       {/* Working Capacity (for copy routers etc.) */}
-                      {(product as any).workingCapacity && (
+                      {product.workingCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
                           <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">{copy("Working Capacity")}</h4>
                           <div className="grid grid-cols-3 gap-2 sm:gap-3 text-[10px] sm:text-xs lg:text-sm">
-                            {(product as any).workingCapacity.x1 && (
+                            {product.workingCapacity.x1 && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">X1</span>
-                                <span className="text-white font-mono">{(product as any).workingCapacity.x1}</span>
+                                <span className="text-white font-mono">{product.workingCapacity.x1}</span>
                               </div>
                             )}
-                            {(product as any).workingCapacity.x2 && (
+                            {product.workingCapacity.x2 && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">X2</span>
-                                <span className="text-white font-mono">{(product as any).workingCapacity.x2}</span>
+                                <span className="text-white font-mono">{product.workingCapacity.x2}</span>
                               </div>
                             )}
-                            {(product as any).workingCapacity.y1 && (
+                            {product.workingCapacity.y1 && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">Y1</span>
-                                <span className="text-white font-mono">{(product as any).workingCapacity.y1}</span>
+                                <span className="text-white font-mono">{product.workingCapacity.y1}</span>
                               </div>
                             )}
-                            {(product as any).workingCapacity.y2 && (
+                            {product.workingCapacity.y2 && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">Y2</span>
-                                <span className="text-white font-mono">{(product as any).workingCapacity.y2}</span>
+                                <span className="text-white font-mono">{product.workingCapacity.y2}</span>
                               </div>
                             )}
-                            {(product as any).workingCapacity.z1 && (
+                            {product.workingCapacity.z1 && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">Z1</span>
-                                <span className="text-white font-mono">{(product as any).workingCapacity.z1}</span>
+                                <span className="text-white font-mono">{product.workingCapacity.z1}</span>
                               </div>
                             )}
-                            {(product as any).workingCapacity.z2 && (
+                            {product.workingCapacity.z2 && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">Z2</span>
-                                <span className="text-white font-mono">{(product as any).workingCapacity.z2}</span>
+                                <span className="text-white font-mono">{product.workingCapacity.z2}</span>
                               </div>
                             )}
                           </div>
@@ -441,32 +441,32 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       )}
 
                       {/* Spindle & Tooling */}
-                      {((product as any).spindleSpeed || (product as any).cutterBits || (product as any).spindlePower || (product as any).toolCollet) && (
+                      {(product.spindleSpeed || product.cutterBits || product.spindlePower || product.toolCollet) && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
                           <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">{copy("Spindle & Tooling")}</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            {(product as any).spindleSpeed && (
+                            {product.spindleSpeed && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Speed")}</span>
-                                <span className="text-white font-mono">{(product as any).spindleSpeed}</span>
+                                <span className="text-white font-mono">{product.spindleSpeed}</span>
                               </div>
                             )}
-                            {(product as any).spindlePower && (
+                            {product.spindlePower && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Power")}</span>
-                                <span className="text-white font-mono">{(product as any).spindlePower}</span>
+                                <span className="text-white font-mono">{product.spindlePower}</span>
                               </div>
                             )}
-                            {(product as any).cutterBits && (
+                            {product.cutterBits && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Cutter")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).cutterBits}</span>
+                                <span className="text-white font-mono text-right">{product.cutterBits}</span>
                               </div>
                             )}
-                            {(product as any).toolCollet && (
+                            {product.toolCollet && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Collet")}</span>
-                                <span className="text-white font-mono">{(product as any).toolCollet}</span>
+                                <span className="text-white font-mono">{product.toolCollet}</span>
                               </div>
                             )}
                           </div>
@@ -474,44 +474,44 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       )}
 
                       {/* Clamping Capacity */}
-                      {(product as any).clampingCapacity && (
+                      {product.clampingCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
                           <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">{copy("Clamping Capacity")}</h4>
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            {(product as any).clampingCapacity.widthMax && (
+                            {product.clampingCapacity.widthMax && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Width Max")}</span>
-                                <span className="text-white font-mono">{(product as any).clampingCapacity.widthMax}</span>
+                                <span className="text-white font-mono">{product.clampingCapacity.widthMax}</span>
                               </div>
                             )}
-                            {(product as any).clampingCapacity.widthMin && (
+                            {product.clampingCapacity.widthMin && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Width Min")}</span>
-                                <span className="text-white font-mono">{(product as any).clampingCapacity.widthMin}</span>
+                                <span className="text-white font-mono">{product.clampingCapacity.widthMin}</span>
                               </div>
                             )}
-                            {(product as any).clampingCapacity.heightMax && (
+                            {product.clampingCapacity.heightMax && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Height Max")}</span>
-                                <span className="text-white font-mono">{(product as any).clampingCapacity.heightMax}</span>
+                                <span className="text-white font-mono">{product.clampingCapacity.heightMax}</span>
                               </div>
                             )}
-                            {(product as any).clampingCapacity.heightMin && (
+                            {product.clampingCapacity.heightMin && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Height Min")}</span>
-                                <span className="text-white font-mono">{(product as any).clampingCapacity.heightMin}</span>
+                                <span className="text-white font-mono">{product.clampingCapacity.heightMin}</span>
                               </div>
                             )}
-                            {(product as any).clampingCapacity.lengthMax && (
+                            {product.clampingCapacity.lengthMax && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Length Max")}</span>
-                                <span className="text-white font-mono">{(product as any).clampingCapacity.lengthMax}</span>
+                                <span className="text-white font-mono">{product.clampingCapacity.lengthMax}</span>
                               </div>
                             )}
-                            {(product as any).clampingCapacity.lengthMin && (
+                            {product.clampingCapacity.lengthMin && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Length Min")}</span>
-                                <span className="text-white font-mono">{(product as any).clampingCapacity.lengthMin}</span>
+                                <span className="text-white font-mono">{product.clampingCapacity.lengthMin}</span>
                               </div>
                             )}
                           </div>
@@ -519,32 +519,32 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       )}
 
                       {/* Saw Blade Specifications */}
-                      {(product as any).sawBlade && (
+                      {product.sawBlade && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
                           <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">{copy("Saw Blade")}</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            {(product as any).sawBlade.diameter && (
+                            {product.sawBlade.diameter && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Diameter")}</span>
-                                <span className="text-white font-mono">{(product as any).sawBlade.diameter}</span>
+                                <span className="text-white font-mono">{product.sawBlade.diameter}</span>
                               </div>
                             )}
-                            {(product as any).sawBlade.bore && (
+                            {product.sawBlade.bore && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Bore")}</span>
-                                <span className="text-white font-mono">{(product as any).sawBlade.bore}</span>
+                                <span className="text-white font-mono">{product.sawBlade.bore}</span>
                               </div>
                             )}
-                            {(product as any).sawBlade.speed && (
+                            {product.sawBlade.speed && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Speed")}</span>
-                                <span className="text-white font-mono">{(product as any).sawBlade.speed}</span>
+                                <span className="text-white font-mono">{product.sawBlade.speed}</span>
                               </div>
                             )}
-                            {(product as any).sawBlade.motorPower && (
+                            {product.sawBlade.motorPower && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Motor")}</span>
-                                <span className="text-white font-mono">{(product as any).sawBlade.motorPower}</span>
+                                <span className="text-white font-mono">{product.sawBlade.motorPower}</span>
                               </div>
                             )}
                           </div>
@@ -552,44 +552,44 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       )}
 
                       {/* Cutting Capacity */}
-                      {(product as any).cuttingCapacity && (
+                      {product.cuttingCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
                           <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">{copy("Cutting Capacity")}</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            {(product as any).cuttingCapacity.maxLength5m && (
+                            {product.cuttingCapacity.maxLength5m && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Max (5m)")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).cuttingCapacity.maxLength5m}</span>
+                                <span className="text-white font-mono text-right">{product.cuttingCapacity.maxLength5m}</span>
                               </div>
                             )}
-                            {(product as any).cuttingCapacity.maxLength7m && (
+                            {product.cuttingCapacity.maxLength7m && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Max (7m)")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).cuttingCapacity.maxLength7m}</span>
+                                <span className="text-white font-mono text-right">{product.cuttingCapacity.maxLength7m}</span>
                               </div>
                             )}
-                            {(product as any).cuttingCapacity.at90deg && (
+                            {product.cuttingCapacity.at90deg && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
-                                <span className="text-gray-400">{copy("At 90°")}</span>
-                                <span className="text-white font-mono">{(product as any).cuttingCapacity.at90deg}</span>
+                                <span className="text-gray-400">{copy("At 90Â°")}</span>
+                                <span className="text-white font-mono">{product.cuttingCapacity.at90deg}</span>
                               </div>
                             )}
-                            {(product as any).cuttingCapacity.at45degInward && (
+                            {product.cuttingCapacity.at45degInward && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
-                                <span className="text-gray-400">{copy("At 45° In")}</span>
-                                <span className="text-white font-mono">{(product as any).cuttingCapacity.at45degInward}</span>
+                                <span className="text-gray-400">{copy("At 45Â° In")}</span>
+                                <span className="text-white font-mono">{product.cuttingCapacity.at45degInward}</span>
                               </div>
                             )}
-                            {(product as any).cuttingCapacity.at45degOutward && (
+                            {product.cuttingCapacity.at45degOutward && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
-                                <span className="text-gray-400">{copy("At 45° Out")}</span>
-                                <span className="text-white font-mono">{(product as any).cuttingCapacity.at45degOutward}</span>
+                                <span className="text-gray-400">{copy("At 45Â° Out")}</span>
+                                <span className="text-white font-mono">{product.cuttingCapacity.at45degOutward}</span>
                               </div>
                             )}
-                            {(product as any).cuttingCapacity.minLength && (
+                            {product.cuttingCapacity.minLength && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Min Length")}</span>
-                                <span className="text-white font-mono">{(product as any).cuttingCapacity.minLength}</span>
+                                <span className="text-white font-mono">{product.cuttingCapacity.minLength}</span>
                               </div>
                             )}
                           </div>
@@ -597,38 +597,38 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       )}
 
                       {/* Angular Capacity */}
-                      {(product as any).angularCapacity && (
+                      {product.angularCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
                           <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">{copy("Angular Capacity")}</h4>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            {(product as any).angularCapacity.tilting && (
+                            {product.angularCapacity.tilting && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Tilting")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).angularCapacity.tilting}</span>
+                                <span className="text-white font-mono text-right">{product.angularCapacity.tilting}</span>
                               </div>
                             )}
-                            {(product as any).angularCapacity.pivotingInward && (
+                            {product.angularCapacity.pivotingInward && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Pivot In")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).angularCapacity.pivotingInward}</span>
+                                <span className="text-white font-mono text-right">{product.angularCapacity.pivotingInward}</span>
                               </div>
                             )}
-                            {(product as any).angularCapacity.pivotingOutward && (
+                            {product.angularCapacity.pivotingOutward && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Pivot Out")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).angularCapacity.pivotingOutward}</span>
+                                <span className="text-white font-mono text-right">{product.angularCapacity.pivotingOutward}</span>
                               </div>
                             )}
-                            {(product as any).angularCapacity.compound && (
+                            {product.angularCapacity.compound && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50 col-span-1 sm:col-span-2">
                                 <span className="text-gray-400">{copy("Compound")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).angularCapacity.compound}</span>
+                                <span className="text-white font-mono text-right">{product.angularCapacity.compound}</span>
                               </div>
                             )}
-                            {(product as any).angularCapacity.presetAngles && (
+                            {product.angularCapacity.presetAngles && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50 col-span-1 sm:col-span-2">
                                 <span className="text-gray-400">{copy("Presets")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).angularCapacity.presetAngles}</span>
+                                <span className="text-white font-mono text-right">{product.angularCapacity.presetAngles}</span>
                               </div>
                             )}
                           </div>
@@ -636,53 +636,53 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       )}
 
                       {/* Welding Capacity */}
-                      {(product as any).weldingCapacity && (
+                      {product.weldingCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
                           <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">{copy("Welding Capacity")}</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            {(product as any).weldingCapacity.heightMax && (
+                            {product.weldingCapacity.heightMax && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("H Max")}</span>
-                                <span className="text-white font-mono">{(product as any).weldingCapacity.heightMax}</span>
+                                <span className="text-white font-mono">{product.weldingCapacity.heightMax}</span>
                               </div>
                             )}
-                            {(product as any).weldingCapacity.heightMin && (
+                            {product.weldingCapacity.heightMin && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("H Min")}</span>
-                                <span className="text-white font-mono">{(product as any).weldingCapacity.heightMin}</span>
+                                <span className="text-white font-mono">{product.weldingCapacity.heightMin}</span>
                               </div>
                             )}
-                            {(product as any).weldingCapacity.widthMax && (
+                            {product.weldingCapacity.widthMax && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("W Max")}</span>
-                                <span className="text-white font-mono">{(product as any).weldingCapacity.widthMax}</span>
+                                <span className="text-white font-mono">{product.weldingCapacity.widthMax}</span>
                               </div>
                             )}
-                            {(product as any).weldingCapacity.widthMin && (
+                            {product.weldingCapacity.widthMin && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("W Min")}</span>
-                                <span className="text-white font-mono">{(product as any).weldingCapacity.widthMin}</span>
+                                <span className="text-white font-mono">{product.weldingCapacity.widthMin}</span>
                               </div>
                             )}
-                            {(product as any).weldingCapacity.angleRange && (
+                            {product.weldingCapacity.angleRange && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50 col-span-2">
                                 <span className="text-gray-400">{copy("Angle Range")}</span>
-                                <span className="text-white font-mono">{(product as any).weldingCapacity.angleRange}</span>
+                                <span className="text-white font-mono">{product.weldingCapacity.angleRange}</span>
                               </div>
                             )}
                           </div>
-                          {((product as any).temperatureRange || (product as any).weldingOptions) && (
+                          {(product.temperatureRange || product.weldingOptions) && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm mt-2">
-                              {(product as any).temperatureRange && (
+                              {product.temperatureRange && (
                                 <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                   <span className="text-gray-400">{copy("Temperature")}</span>
-                                  <span className="text-white font-mono">{(product as any).temperatureRange}</span>
+                                  <span className="text-white font-mono">{product.temperatureRange}</span>
                                 </div>
                               )}
-                              {(product as any).weldingOptions && (
+                              {product.weldingOptions && (
                                 <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                   <span className="text-gray-400">{copy("Options")}</span>
-                                  <span className="text-white font-mono text-right">{(product as any).weldingOptions}</span>
+                                  <span className="text-white font-mono text-right">{product.weldingOptions}</span>
                                 </div>
                               )}
                             </div>
@@ -691,65 +691,65 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       )}
 
                       {/* CNC / Machining Center Specs */}
-                      {((product as any).cncAxes || (product as any).processingCapacity || (product as any).profileCapacity) && (
+                      {(product.cncAxes || product.processingCapacity || product.profileCapacity) && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
                           <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">{copy("CNC Specifications")}</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            {(product as any).cncAxes && (
+                            {product.cncAxes && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("CNC Axes")}</span>
-                                <span className="text-white font-mono">{(product as any).cncAxes}{copy("-axis")}</span>
+                                <span className="text-white font-mono">{product.cncAxes}{copy("-axis")}</span>
                               </div>
                             )}
-                            {(product as any).millingMotors && (
+                            {product.millingMotors && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                 <span className="text-gray-400">{copy("Milling Motors")}</span>
-                                <span className="text-white font-mono">{(product as any).millingMotors}</span>
+                                <span className="text-white font-mono">{product.millingMotors}</span>
                               </div>
                             )}
-                            {(product as any).processingCapacity && (
+                            {product.processingCapacity && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50 col-span-2">
                                 <span className="text-gray-400">{copy("Capacity")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).processingCapacity}</span>
+                                <span className="text-white font-mono text-right">{product.processingCapacity}</span>
                               </div>
                             )}
-                            {(product as any).axisSpeed && (
+                            {product.axisSpeed && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50 col-span-2">
                                 <span className="text-gray-400">{copy("Axis Speed")}</span>
-                                <span className="text-white font-mono text-right">{(product as any).axisSpeed}</span>
+                                <span className="text-white font-mono text-right">{product.axisSpeed}</span>
                               </div>
                             )}
                           </div>
-                          {(product as any).profileCapacity && (
+                          {product.profileCapacity && (
                             <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm mt-2">
-                              {(product as any).profileCapacity.minLength && (
+                              {product.profileCapacity.minLength && (
                                 <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                   <span className="text-gray-400">{copy("Min Length")}</span>
-                                  <span className="text-white font-mono">{(product as any).profileCapacity.minLength}</span>
+                                  <span className="text-white font-mono">{product.profileCapacity.minLength}</span>
                                 </div>
                               )}
-                              {(product as any).profileCapacity.maxLength && (
+                              {product.profileCapacity.maxLength && (
                                 <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                   <span className="text-gray-400">{copy("Max Length")}</span>
-                                  <span className="text-white font-mono">{(product as any).profileCapacity.maxLength}</span>
+                                  <span className="text-white font-mono">{product.profileCapacity.maxLength}</span>
                                 </div>
                               )}
-                              {(product as any).profileCapacity.minProfile && (
+                              {product.profileCapacity.minProfile && (
                                 <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                   <span className="text-gray-400">{copy("Min Profile")}</span>
-                                  <span className="text-white font-mono">{(product as any).profileCapacity.minProfile}</span>
+                                  <span className="text-white font-mono">{product.profileCapacity.minProfile}</span>
                                 </div>
                               )}
-                              {(product as any).profileCapacity.maxProfile && (
+                              {product.profileCapacity.maxProfile && (
                                 <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                                   <span className="text-gray-400">{copy("Max Profile")}</span>
-                                  <span className="text-white font-mono">{(product as any).profileCapacity.maxProfile}</span>
+                                  <span className="text-white font-mono">{product.profileCapacity.maxProfile}</span>
                                 </div>
                               )}
-                              {(product as any).profileCapacity.loadingCapacity && (
+                              {product.profileCapacity.loadingCapacity && (
                                 <div className="flex justify-between items-center py-1 border-b border-gray-700/50 col-span-2">
                                   <span className="text-gray-400">{copy("Loading")}</span>
-                                  <span className="text-white font-mono">{(product as any).profileCapacity.loadingCapacity}</span>
+                                  <span className="text-white font-mono">{product.profileCapacity.loadingCapacity}</span>
                                 </div>
                               )}
                             </div>
@@ -873,7 +873,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   <span className="hidden xs:inline">{copy("Compare")}</span>
                   <span className="xs:hidden">+</span>
                 </Button>
-                {((product as any).has3DModel || (product as any).modelPath ||
+                {(product.has3DModel || product.modelPath ||
                   product.name?.toLowerCase().includes('fr 222') ||
                   product.name?.toLowerCase().includes('fr222') ||
                   product.id === 'ym-030') ? (
@@ -889,7 +889,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   </Button>
                 ) : null}
                 <Button
-                  onClick={handleAddToQuote}
+                  onClick={() => { void handleAddToQuote(); }}
                   size="sm"
                   className="btn-primary-gradient"
                 >
