@@ -8,6 +8,7 @@
  */
 
 import type { Geometry2D, Point, Rectangle, Viewport } from '../types/drafting';
+export type { Viewport };
 import { SAFETY_LIMITS, validatePoint } from './inputValidator';
 
 export interface ViewportBounds {

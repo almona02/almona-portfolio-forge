@@ -21,6 +21,7 @@ import {
   IRREGULAR_PATTERNS,
   MULTI_SEGMENT_PATTERNS
 } from './ShapePatterns';
+export type { ShapePattern };
 
 export interface UserInput {
   description?: string;
