@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Notification Service
  * 
  * Gold-tier notification service for multi-channel notifications (email, in-app, push, SMS).
@@ -30,7 +30,6 @@ import type {
     NotificationPriority,
     NotificationRule,
     NotificationTemplate,
-    NotificationType,
 } from './notificationTypes';
 import { getNotificationLabel } from './notificationTypes';
 

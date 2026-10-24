@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Activity Store (Zustand)
  * 
  * Global state management for activity events with caching and optimization.
@@ -14,7 +14,6 @@
 import React from 'react';
 import { create } from 'zustand';
 import { ActivityLogEntry, ActivityLogger } from './ActivityLogger';
-import type { ActivityEntityType } from './activityTypes';
 
 interface ActivityStore {
   /** Cached activities by entity key (entityType:entityId) */

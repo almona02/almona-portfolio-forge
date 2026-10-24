@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Activity Logger Service
  * 
  * Centralized service for logging all user activities across the application.
@@ -16,7 +16,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import type { ActivityEntityType, ActivityEventType } from './activityTypes';
+import type { ActivityEntityType } from './activityTypes';
 
 export interface ActivityEvent {
   entityType: ActivityEntityType;
