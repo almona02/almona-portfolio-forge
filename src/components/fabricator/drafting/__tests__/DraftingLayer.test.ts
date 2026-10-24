@@ -15,7 +15,11 @@ describe('Drafting Layer Constitutional Compliance', () => {
         { x: 1200, y: 1200, width: 1200, height: 1200, type: 'casement' }
       ],
       points: [],
-      lines: []
+      lines: [],
+      circles: [],
+      arcs: [],
+      polygons: [],
+      splines: []
     };
     
     const geometry2: Geometry2D = {
@@ -26,7 +30,11 @@ describe('Drafting Layer Constitutional Compliance', () => {
         { x: 1200, y: 1200, width: 1200, height: 1200, type: 'casement' }
       ],
       points: [],
-      lines: []
+      lines: [],
+      circles: [],
+      arcs: [],
+      polygons: [],
+      splines: []
     };
     
     const templates: EgyptianTemplate[] = [
@@ -64,7 +72,11 @@ describe('Drafting Layer Constitutional Compliance', () => {
         { x: 0, y: 0, width: 600, height: 600, type: 'fixed' }
       ],
       points: [],
-      lines: []
+      lines: [],
+      circles: [],
+      arcs: [],
+      polygons: [],
+      splines: []
     };
     
     const invalidGeometry: Geometry2D = {
@@ -72,7 +84,11 @@ describe('Drafting Layer Constitutional Compliance', () => {
         { x: 0, y: 0, width: 200, height: 200, type: 'fixed' } // Too small
       ],
       points: [],
-      lines: []
+      lines: [],
+      circles: [],
+      arcs: [],
+      polygons: [],
+      splines: []
     };
     
     const validResult = validateDimensions(validGeometry);

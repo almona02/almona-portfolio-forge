@@ -42,6 +42,13 @@ describe('Phase 2 Integration: BOM Pipeline', () => {
     const mockSystemPack: SystemPack = {
         id: 'sys-1',
         name: 'Test System',
+        meta: {
+            id: 'sys-1',
+            name: 'Test System',
+            brands: ['Test Brand'],
+            regions: ['global']
+        },
+        windowSystemSpec: {},
         profiles: [mockProfile, mockSashProfile],
 
         technicalData: {
