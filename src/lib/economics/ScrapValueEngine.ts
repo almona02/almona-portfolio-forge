@@ -116,7 +116,7 @@ export class ScrapValueEngine {
    * Update scrap prices
    */
   updateScrapPrices(prices: Partial<Record<string, number>>): void {
-    this.scrapPrices = { ...this.scrapPrices, ...prices };
+    this.scrapPrices = { ...this.scrapPrices, ...prices } as Record<string, number>;
   }
 
   /**
