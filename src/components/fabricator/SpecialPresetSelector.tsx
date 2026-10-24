@@ -25,10 +25,10 @@ import {
   ArrowRight
 } from 'lucide-react';
 import type { WindowUnit } from '@/types/fabricator';
-import { FlyScreenDesigner } from './special/FlyScreenDesigner';
-import { CustomMullionDesigner } from './special/CustomMullionDesigner';
-import { TallWindowDesigner } from './special/TallWindowDesigner';
-import { EgyptianSpecialsDesigner } from './special/EgyptianSpecialsDesigner';
+import { FlyScreenDesigner } from '@/future/special-designers/FlyScreenDesigner';
+import { CustomMullionDesigner } from '@/future/special-designers/CustomMullionDesigner';
+import { TallWindowDesigner } from '@/future/special-designers/TallWindowDesigner';
+import { EgyptianSpecialsDesigner } from '@/future/special-designers/EgyptianSpecialsDesigner';
 
 export type SpecialPresetType = 
   | 'fly_screen' 
