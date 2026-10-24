@@ -36,8 +36,8 @@ export const unregisterServiceWorker = () => {
         console.info('[SW] All caches cleared');
       } catch (err) {
         // Suppress CacheStorage errors (common in development)
-        if (err?.name === 'UnknownError' || err?.message?.includes('CacheStorage')) {
-          console.warn('[SW] CacheStorage error (ignored):', err.message);
+        if ((err as Error)?.name === 'UnknownError' || (err as Error)?.message?.includes('CacheStorage')) {
+          console.warn('[SW] CacheStorage error (ignored):', (err as Error).message);
         } else {
           console.info('[SW] Cache clear error:', err);
         }
@@ -67,8 +67,8 @@ export const clearAllCaches = async () => {
     return { success: true, cachesCleared: cacheKeys.length };
   } catch (error) {
     // Suppress CacheStorage errors
-    if (error?.name === 'UnknownError' || error?.message?.includes('CacheStorage')) {
-      console.warn('[SW] CacheStorage error (ignored):', error.message);
+    if ((error as Error)?.name === 'UnknownError' || (error as Error)?.message?.includes('CacheStorage')) {
+      console.warn('[SW] CacheStorage error (ignored):', (error as Error).message);
       return { success: false, error: 'CacheStorage error (ignored)' };
     }
     console.error('[SW] Error clearing caches:', error);
