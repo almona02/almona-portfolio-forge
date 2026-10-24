@@ -152,6 +152,14 @@ export interface WindowUnit {
     remarks?: string;
     posNumber?: string;
     customer?: string;
+    siteName?: string;
+    governorate?: string;
+    windZone?: string;
+    exposure?: string;
+    floorLevel?: string;
+    usageType?: string;
+    baseShape?: string;
+    openingType?: string;
   };
   /**
    * Optional metadata for mass‑production optimisation runs. This is

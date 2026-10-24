@@ -124,9 +124,9 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
                 const matches = await remnantManager.findRemnantMatches(
                   [
                     {
-                      id: component.id,
                       length: component.cuttingLengths.reduce((a, b) => a + b, 0),
-                      quantity: component.quantity || 1,
+                      angle: 0,
+                      componentId: component.id,
                     },
                   ],
                   profile,
