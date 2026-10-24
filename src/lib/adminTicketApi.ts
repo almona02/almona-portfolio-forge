@@ -123,7 +123,7 @@ export const assignTicket = async (
   assigneeId: string,
   assignedBy: string
 ): Promise<ServiceTicket> => {
-  const { data: current } = await supabase.from('service_tickets').select('status').eq('id', ticketId).single();
+  const { data: current } = await supabase.from('service_tickets').select('status').eq('id', ticketId).single() as any;
   const currentStatus = current?.status ?? 'open';
 
   const statusPatch =
@@ -166,7 +166,7 @@ export const updateTicketStatusAndPriority = async (
     .from('service_tickets')
     .select('*')
     .eq('id', ticketId)
-    .single();
+    .single() as any;
   if (fetchErr || !currentRow) throw new Error(fetchErr?.message ?? 'Ticket not found');
 
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
