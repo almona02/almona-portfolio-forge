@@ -1380,7 +1380,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                   <SelectContent>
                     <SelectItem value="all">All Systems</SelectItem>
                     {getSystemPacksForCategory(categoryFilter).map((pack) => (
-                      <SelectItem key={pack.id} value={pack.id}>
+                      <SelectItem key={pack.id} value={pack.id ?? ''}>
                         {pack.name}
                       </SelectItem>
                     ))}
@@ -2281,7 +2281,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                             </div>
                             <div className="flex flex-col items-end gap-2 ml-4">
                               {/* Show thumbnail from Supabase if available, otherwise fallback to previewImageUrl */}
-                              {(profile.thumbnailUrl || specs.previewImageUrl) && (
+                              {(profile.thumbnailUrl || (specs.previewImageUrl as string)) && (
                                 <img
                                   src={profile.thumbnailUrl || (specs.previewImageUrl as string)}
                                   alt={profile.name}

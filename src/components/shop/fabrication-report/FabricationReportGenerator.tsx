@@ -56,7 +56,7 @@ export default function FabricationReportGenerator() {
     const blob = new Blob([report.pdfBytes as BlobPart], { type: 'application/pdf' });
     if (!saveAsFn) {
       const mod = await import('file-saver');
-      saveAsFn = mod.saveAs;
+      saveAsFn = mod.saveAs as any;
     }
     saveAsFn!(blob, `fabrication-report-${new Date().toISOString().slice(0,10)}.pdf`);
 

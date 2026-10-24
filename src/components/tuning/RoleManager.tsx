@@ -67,7 +67,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
     const roleMap: Record<string, ProfileRole | undefined> = {};
     system.profiles.forEach(p => {
       if (p.profileRole) {
-        roleMap[p.id] = p.profileRole;
+        roleMap[p.id] = p.profileRole as any;
       }
     });
     return roleMap;

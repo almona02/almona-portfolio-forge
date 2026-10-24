@@ -119,10 +119,10 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     if (user && supabaseUser) {
       setUserInfo({
         id: user.id,
-        full_name: user.full_name,
-        email: supabaseUser.email,
-        company_name: user.company_name,
-        phone: user.phone,
+        full_name: user.full_name ?? undefined,
+        email: supabaseUser.email ?? undefined,
+        company_name: user.company_name ?? undefined,
+        phone: user.phone ?? undefined,
       });
     }
   }, [user, supabaseUser]);
@@ -419,11 +419,11 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
       };
 
       const newQuote = await createQuoteDomain({
-        user_id: quoteData.user_id,
+        user_id: quoteData.user_id ?? '',
         status: quoteData.status,
-        subtotal: quoteData.subtotal,
-        tax_amount: quoteData.tax_amount,
-        shipping_cost: quoteData.shipping_cost,
+        subtotal: quoteData.subtotal ?? 0,
+        tax_amount: quoteData.tax_amount ?? 0,
+        shipping_cost: quoteData.shipping_cost ?? 0,
         discount_amount: quoteData.discount_amount,
         total_amount: quoteData.total_amount,
         currency: quoteData.currency,
