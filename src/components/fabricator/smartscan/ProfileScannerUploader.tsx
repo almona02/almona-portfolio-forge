@@ -156,11 +156,11 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
                 <AccordionContent>
                   <DescGrid
                     items={[
-                      { label: t('profile_scanner_uploader.scale_modal.samples', 'Samples'), value: String(debug_info.samples || 0) },
-                      { label: t('profile_scanner_uploader.scale_modal.detected_dimensions', 'Detected Dimensions'), value: String(debug_info.dimensions || 0) },
-                      { label: t('profile_scanner_uploader.scale_modal.lines', 'Lines'), value: String(debug_info.lines || 0) },
-                      { label: t('profile_scanner_uploader.scale_modal.associations', 'Associations'), value: String(debug_info.associations || 0) },
-                      ...(debug_info.method ? [{ label: t('profile_scanner_uploader.scale_modal.method', 'Method'), value: String(debug_info.method) }] : []),
+                      { label: t('profile_scanner_uploader.scale_modal.samples', 'Samples'), value: String((debug_info.samples ?? 0) as string | number) },
+                      { label: t('profile_scanner_uploader.scale_modal.detected_dimensions', 'Detected Dimensions'), value: String((debug_info.dimensions ?? 0) as string | number) },
+                      { label: t('profile_scanner_uploader.scale_modal.lines', 'Lines'), value: String((debug_info.lines ?? 0) as string | number) },
+                      { label: t('profile_scanner_uploader.scale_modal.associations', 'Associations'), value: String((debug_info.associations ?? 0) as string | number) },
+                      ...(debug_info.method ? [{ label: t('profile_scanner_uploader.scale_modal.method', 'Method'), value: String(debug_info.method as string) }] : []),
                     ]}
                   />
                 </AccordionContent>

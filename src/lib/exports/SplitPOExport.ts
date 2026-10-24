@@ -126,8 +126,8 @@ export function generateSplitPOText(
       `${idx + 1}. ${comp.name || comp.id || `Component ${idx + 1}`}`,
       `   Dimensions: ${w.toFixed(0)} × ${h.toFixed(0)} mm`,
       `   Quantity: ${comp.quantity || 1}`,
-      `   Type: ${glazingType} (${glassThickness}mm)`,
-      `   Color: ${glassColor}`,
+      `   Type: ${String(glazingType)} (${String(glassThickness)}mm)`,
+      `   Color: ${String(glassColor)}`,
       `   Area: ${area.toFixed(2)} m²`,
       ''
     );
