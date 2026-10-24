@@ -228,7 +228,7 @@ export const EGYPTIAN_MARKET_SEGMENTATION = {
 /**
  * Get default profile color for region
  */
-export function getDefaultProfileColor(region?: string): typeof EGYPTIAN_PROFILE_COLORS.standard {
+export function getDefaultProfileColor(region?: string): typeof EGYPTIAN_PROFILE_COLORS[keyof typeof EGYPTIAN_PROFILE_COLORS] {
   if (!region) return EGYPTIAN_PROFILE_COLORS.modern; // Default to modern
   
   const regionLower = region.toLowerCase();
@@ -248,7 +248,7 @@ export function getDefaultProfileColor(region?: string): typeof EGYPTIAN_PROFILE
 /**
  * Get default glazing for external windows
  */
-export function getDefaultGlazing(region?: string, isExternal: boolean = true): typeof EGYPTIAN_GLAZING_DEFAULTS.standard {
+export function getDefaultGlazing(region?: string, isExternal: boolean = true): typeof EGYPTIAN_GLAZING_DEFAULTS[keyof typeof EGYPTIAN_GLAZING_DEFAULTS] {
   if (!isExternal) {
     return EGYPTIAN_GLAZING_DEFAULTS.lowCost as any; // Internal partitions
   }
@@ -265,7 +265,7 @@ export function getDefaultGlazing(region?: string, isExternal: boolean = true): 
 /**
  * Get default wind load for region
  */
-export function getDefaultWindLoad(region?: string): typeof EGYPTIAN_WIND_LOAD_DEFAULTS.cairo {
+export function getDefaultWindLoad(region?: string): typeof EGYPTIAN_WIND_LOAD_DEFAULTS[keyof typeof EGYPTIAN_WIND_LOAD_DEFAULTS] {
   if (!region) return EGYPTIAN_WIND_LOAD_DEFAULTS.cairo;
   
   const regionLower = region.toLowerCase();
@@ -285,7 +285,7 @@ export function getDefaultWindLoad(region?: string): typeof EGYPTIAN_WIND_LOAD_D
 /**
  * Get default market tier
  */
-export function getDefaultMarketTier(projectType?: string, budget?: 'low' | 'medium' | 'high'): typeof EGYPTIAN_MARKET_SEGMENTATION.medium {
+export function getDefaultMarketTier(projectType?: string, budget?: 'low' | 'medium' | 'high'): typeof EGYPTIAN_MARKET_SEGMENTATION[keyof typeof EGYPTIAN_MARKET_SEGMENTATION] {
   if (budget) {
     return EGYPTIAN_MARKET_SEGMENTATION[budget];
   }
