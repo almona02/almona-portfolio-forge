@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Alert System for Performance Degradation
  * 
  * This module provides real-time monitoring and alerting capabilities
@@ -202,17 +202,17 @@ class AlertSystem {
     
     // Monitor performance metrics every 30 seconds
     setInterval(() => {
-      this.checkPerformanceMetrics();
+      void this.checkPerformanceMetrics();
     }, 30000);
 
     // Monitor business metrics every 5 minutes
     setInterval(() => {
-      this.checkBusinessMetrics();
+      void this.checkBusinessMetrics();
     }, 300000);
 
     // Monitor system health every 10 seconds
     setInterval(() => {
-      this.checkSystemHealth();
+      void this.checkSystemHealth();
     }, 10000);
   }
 

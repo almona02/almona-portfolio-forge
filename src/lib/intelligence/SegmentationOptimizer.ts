@@ -10,7 +10,8 @@
  * @since Egyptian Fabrication Intelligence Enhancement
  */
 
-import type { SegmentationPlan, ShapePattern } from './ShapeInferenceEngine';
+import type { SegmentationPlan } from './ShapeInferenceEngine';
+import type { ShapePattern } from './ShapePatterns';
 
 export interface OptimizedSegmentation extends SegmentationPlan {
   materialOptimization: {
@@ -49,7 +50,7 @@ export class SegmentationOptimizer {
    */
   optimize(
     segmentation: SegmentationPlan,
-    pattern: ShapePattern | null,
+    pattern: ShapePattern,
     stockLengths: number[] = [5800, 6000, 6500] // Common Egyptian stock lengths
   ): OptimizedSegmentation {
     // Calculate material optimization

@@ -10,7 +10,8 @@
  */
 
 import type { WindowUnit } from '@/types/fabricator';
-import { HardwareModelLibrary, type HardwarePlacement } from './HardwareModelLibrary';
+import { HardwareModelLibrary } from './HardwareModelLibrary';
+type HardwarePlacement = ReturnType<InstanceType<typeof HardwareModelLibrary>['generateHardwareModels']>;
 
 export interface PlacementValidation {
   egyptianCode2020: boolean;

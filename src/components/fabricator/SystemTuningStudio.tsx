@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+﻿import React, { useMemo, useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
@@ -51,7 +51,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
       setUserId(session?.user?.id || null);
     };
     if (open) {
-      getUserId();
+      void getUserId();
     }
   }, [open]);
 

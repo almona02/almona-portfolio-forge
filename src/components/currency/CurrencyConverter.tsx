@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Currency Converter Component
  * Real-time currency conversion with exchange rate display
  */
@@ -73,7 +73,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
       }
     };
 
-    performConversion();
+    void performConversion();
   }, [amount, fromCurrency, toCurrency, convert]);
 
   // Get exchange rate
@@ -87,7 +87,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
       }
     };
 
-    fetchRate();
+    void fetchRate();
   }, [fromCurrency, toCurrency, getRate]);
 
   const handleSwapCurrencies = useCallback(() => {
@@ -288,7 +288,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
         {/* Action Buttons */}
         <div className="flex space-x-2">
           <Button
-            onClick={handleRefreshRates}
+            onClick={() => void handleRefreshRates()}
             disabled={loading}
             variant="outline"
             className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"

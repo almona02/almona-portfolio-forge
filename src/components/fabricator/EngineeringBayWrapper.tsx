@@ -1,4 +1,4 @@
-import { publishActiveProject } from '@/lib/fabricator/activeProjectBridge';
+﻿import { publishActiveProject } from '@/lib/fabricator/activeProjectBridge';
 /**
  * EngineeringBayWrapper - Connects EngineeringBay to FabricatorWorkspaceContext
  * 
@@ -127,19 +127,19 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
         savingDesign.current = false;
       }
     }
-    if (payload.closeAfterSave) { publishActiveProject(null); navigate(fabricatorRoutes.studioProjects()); return; }
+    if (payload.closeAfterSave) { void publishActiveProject(null); void navigate(fabricatorRoutes.studioProjects()); return; }
     completeStep('design');
 
     const projKey = resolvedProjectId ?? projectId ?? 'default';
     const poseKey = effectivePoseId ?? currentProject.id;
-    navigate(fabricatorRoutes.poseBOM(projKey, poseKey));
+    void navigate(fabricatorRoutes.poseBOM(projKey, poseKey));
   };
 
   const handleBackToMeasuring = () => {
     if (projectId && poseId) {
-      navigate(fabricatorRoutes.poseMeasuring(projectId, poseId));
+      void navigate(fabricatorRoutes.poseMeasuring(projectId, poseId));
     } else {
-      navigate(fabricatorRoutes.newProjectWizard());
+      void navigate(fabricatorRoutes.newProjectWizard());
     }
   };
 
@@ -147,14 +147,14 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     if (useV2) {
       // V2: navigate directly; usePoseV2 will load it from Supabase
       const projKey = resolvedProjectId ?? 'default';
-      navigate(fabricatorRoutes.poseDesign(projKey, id));
+      void navigate(fabricatorRoutes.poseDesign(projKey, id));
     } else {
       const foundJob = jobs.find((job) => job.id === id);
       if (foundJob) {
         dispatch({ type: 'SET_CURRENT_PROJECT', payload: foundJob });
         setSelectedJob(id);
         const projectKey = (foundJob as WindowUnit & { projectId?: string }).projectId ?? foundJob.projectCode ?? foundJob.orderNumber;
-        navigate(fabricatorRoutes.poseDesign(projectKey, id));
+        void navigate(fabricatorRoutes.poseDesign(projectKey, id));
       }
     }
   }, [useV2, resolvedProjectId, jobs, navigate, dispatch, setSelectedJob]);
@@ -218,7 +218,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
       >
         <EngineeringBay
           project={currentProject}
-          onDesignComplete={handleDesignComplete}
+          onDesignComplete={(e) => void handleDesignComplete(e)}
           profiles={profiles}
           relatedPositions={relatedPositions}
           onSelectPosition={handleSelectPosition}

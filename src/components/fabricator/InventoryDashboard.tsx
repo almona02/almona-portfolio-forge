@@ -451,7 +451,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   // Load data on mount / when user or location changes
   useEffect(() => {
     if (userId) {
-      loadDashboardData();
+      void loadDashboardData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, selectedLocation]);
@@ -468,8 +468,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     if (!matches.length) return null;
     const profile = matches[0];
     const defaultBarLengthM =
-      typeof (profile.specifications as any)?.stockLengthMm === 'number'
-        ? ((profile.specifications as any).stockLengthMm as number) / 1000
+      typeof (profile.specifications)?.stockLengthMm === 'number'
+        ? (profile.specifications).stockLengthMm / 1000
         : 6;
     return { id: profile.id, name: profile.name, defaultBarLengthM };
   }, [inventory]);
@@ -487,7 +487,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const text = String(e.target?.result || '');
+        const text = ((e.target?.result as string) || '');
         const preview = buildCsvIntakePreview(text, resolveCsvProfile);
         setCsvPreviewRows(preview.rows);
         setCsvPreviewValid(preview.validRows);
@@ -569,8 +569,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         invoiceUnit === 'bar'
           ? (Number(invoiceBarLengthM) > 0
               ? Number(invoiceBarLengthM)
-              : typeof (invoiceSelectedProfile.specifications as any)?.stockLengthMm === 'number'
-                ? ((invoiceSelectedProfile.specifications as any).stockLengthMm as number) / 1000
+              : typeof (invoiceSelectedProfile.specifications)?.stockLengthMm === 'number'
+                ? (invoiceSelectedProfile.specifications).stockLengthMm / 1000
                 : 6)
           : undefined;
 
@@ -791,10 +791,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         const supplier = profile.supplier?.toLowerCase() || '';
         const systemBrand = profile.systemBrand?.toLowerCase() || '';
         const material = profile.material?.toLowerCase() || '';
-        const code = (profile.specifications as any)?.supplierCode?.toLowerCase() || 
-                     (profile.specifications as any)?.internalCode?.toLowerCase() || '';
-        const role = (profile.specifications as any)?.profileRole?.toLowerCase() || '';
-        const profileNumber = ((profile.specifications as any)?.profileNumber || (profile.specifications as any)?.supplierCode || '').toLowerCase();
+        const code = (profile.specifications)?.supplierCode?.toLowerCase() || 
+                     (profile.specifications)?.internalCode?.toLowerCase() || '';
+        const role = (profile.specifications)?.profileRole?.toLowerCase() || '';
+        const profileNumber = ((profile.specifications)?.profileNumber || (profile.specifications)?.supplierCode || '').toLowerCase();
 
         if (!(
           name.includes(query) ||
@@ -876,22 +876,22 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
   const invoiceProfileSystemPack =
     (invoiceSelectedProfile?.systemBrand) ||
-    ((invoiceSelectedProfile?.specifications as any)?.window_system as string | undefined) ||
+    (invoiceSelectedProfile?.specifications)?.window_system ||
     'Standard';
 
   const invoiceProfileCode =
-    ((invoiceSelectedProfile?.specifications as any)?.supplierCode as string | undefined) ||
-    ((invoiceSelectedProfile?.specifications as any)?.internalCode as string | undefined) ||
+    (invoiceSelectedProfile?.specifications)?.supplierCode ||
+    (invoiceSelectedProfile?.specifications)?.internalCode ||
     invoiceSelectedProfile?.name ||
     '';
 
   const invoiceProfileRole =
-    ((invoiceSelectedProfile?.specifications as any)?.profileRole as string | undefined) ||
+    (invoiceSelectedProfile?.specifications)?.profileRole ||
     'frame';
 
   const invoiceDefaultBarLengthM =
-    typeof (invoiceSelectedProfile?.specifications as any)?.stockLengthMm === 'number'
-      ? ((invoiceSelectedProfile?.specifications as any).stockLengthMm as number) / 1000
+    typeof (invoiceSelectedProfile?.specifications)?.stockLengthMm === 'number'
+      ? ((invoiceSelectedProfile?.specifications)?.stockLengthMm as number) / 1000
       : 6;
 
   const packWeightPerMeter = getPackWeightPerMeter(invoiceSelectedProfile, invoiceProfileRole);
@@ -899,8 +899,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const invoiceWeightPerMeter =
     typeof invoiceSelectedProfile?.weightPerMeter === 'number'
       ? (invoiceSelectedProfile.weightPerMeter)
-      : typeof (invoiceSelectedProfile?.specifications as any)?.weightPerMeterKg === 'number'
-        ? ((invoiceSelectedProfile?.specifications as any).weightPerMeterKg as number)
+      : typeof (invoiceSelectedProfile?.specifications)?.weightPerMeterKg === 'number'
+        ? ((invoiceSelectedProfile?.specifications)?.weightPerMeterKg as number)
         : typeof packWeightPerMeter === 'number'
           ? packWeightPerMeter
           : undefined;
@@ -1025,7 +1025,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <Button
-            onClick={loadDashboardData}
+            onClick={() => void loadDashboardData()}
             disabled={isLoading}
             variant="outline"
             size="sm"
@@ -1394,8 +1394,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                                   <span>Supplier: {profile.supplier || 'N/A'}</span>
                                 </div>
                                 {((profile.systemBrand && SYSTEM_PACKS.some(p => p.meta.name === profile.systemBrand)) ||
-                                  (profile.specifications && (profile.specifications as any).window_system) ||
-                                  (profile.specifications && (profile.specifications as any).systemPackId)) && (
+                                  (profile.specifications && (profile.specifications).window_system) ||
+                                  (profile.specifications && (profile.specifications).systemPackId)) && (
                                   <div className="mt-2">
                                     <Button
                                       size="sm"
@@ -1610,7 +1610,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleGenerateBarcode(remnant.id)}
+                              onClick={() => void handleGenerateBarcode(remnant.id)}
                             >
                               <QrCode className="h-4 w-4" />
                             </Button>
@@ -1943,7 +1943,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       isSavingInvoice ||
                       !invoiceSelectedProfile
                     }
-                    onClick={handleInvoiceStockIntake}
+                    onClick={() => void handleInvoiceStockIntake()}
                   >
                     {isSavingInvoice ? 'Saving…' : 'Record Purchase & Update Stock'}
                   </Button>
@@ -2082,7 +2082,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleResolveAlert(alert.id)}
+                          onClick={() => void handleResolveAlert(alert.id)}
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -2174,7 +2174,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       {inventory.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
                           {p.name}
-                          {(p.specifications as any)?.testStock ? ' (TEST STOCK)' : ''}
+                          {(p.specifications)?.testStock ? ' (TEST STOCK)' : ''}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -2411,11 +2411,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           open={showPurchaseWizard}
           onOpenChange={setShowPurchaseWizard}
           userId={userId}
-          onPurchaseComplete={async () => {
+          onPurchaseComplete={() => {
             // UP-10: refresh dashboard + owned inventory queries after purchase.
-            await loadDashboardData();
-            await loadStockAlerts();
-            await invalidateOwnedInventory();
+            void loadDashboardData();
+            void loadStockAlerts();
+            void invalidateOwnedInventory();
             setShowPurchaseWizard(false);
           }}
         />

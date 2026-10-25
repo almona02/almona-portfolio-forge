@@ -54,7 +54,7 @@ export interface DraftingWorkbenchHandlers {
   handleLoadDraft: (draftId: string) => Promise<void>;
   handleExportDXF: () => void;
   handleExportJSON: () => void;
-  handleExportPDF: () => void;
+  handleExportPDF: () => Promise<void>;
   handleImport: (file: File, format: 'json' | 'dxf') => Promise<void>;
   handleDismissMessage: (messageId: string) => void;
 

@@ -7,7 +7,7 @@
  * This is the "Engineering Bay" approach - the system dictates the design.
  */
 
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { calculateWindLoad } from '@/lib/codex/FormulaRegistry';
 

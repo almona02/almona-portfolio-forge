@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Safety Verification Flow Orchestrator
  * 
  * Gold Tier Implementation:
@@ -288,7 +288,7 @@ export const SafetyVerificationFlow: React.FC<SafetyVerificationFlowProps> = ({
         open={open && currentStep === 'step1'}
         onOpenChange={handleClose}
         warnings={safetyWarnings}
-        onProceed={handleStep1Complete}
+        onProceed={() => void handleStep1Complete()}
         jobId={jobId}
         machineType={machineType}
       />
@@ -300,7 +300,7 @@ export const SafetyVerificationFlow: React.FC<SafetyVerificationFlowProps> = ({
         components={components}
         profiles={profiles}
         optimizationResult={optimizationResult}
-        onProceed={handleStep2Complete}
+        onProceed={(e) => void handleStep2Complete(e)}
         jobId={jobId}
         machineType={machineType}
       />

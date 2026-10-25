@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DesignWorkflowWrapper - Unified Design Route Wrapper
  * 
  * Wraps the design workflow with mode selection and state management
@@ -48,7 +48,7 @@ export const DesignWorkflowWrapper: React.FC = () => {
     // Update URL without page reload
     const newSearch = new URLSearchParams(search);
     newSearch.set('mode', newMode);
-    navigate({ search: newSearch.toString() }, { replace: true });
+    void navigate({ search: newSearch.toString() }, { replace: true });
 
     // Persist to localStorage
     localStorage.setItem('almona-design-mode', newMode);
@@ -78,7 +78,7 @@ export const DesignWorkflowWrapper: React.FC = () => {
     dispatch({ type: 'UPDATE_PROJECT_COMPONENTS', payload: components });
 
     // Navigate to next step
-    navigate('/fabricator/workflow/quality-control');
+    void navigate('/fabricator/workflow/quality-control');
   };
 
   // Get SmartDraw grid from project

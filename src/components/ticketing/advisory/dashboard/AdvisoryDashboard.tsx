@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @tier Tier 1 Presentation (Advisory Dashboard)
  * @gold_tier Market-leader inspired UI (Zendesk/ServiceNow/Jira)
  * @performance 60 FPS, Virtual scrolling, Real-time updates
@@ -226,7 +226,7 @@ export const AdvisoryDashboard: React.FC = () => {
                     </div>
                     <button
                         className="refresh-btn"
-                        onClick={loadAdvisories}
+                        onClick={() => void loadAdvisories()}
                         disabled={isRefreshing}
                         aria-label="Refresh advisories"
                     >
@@ -341,7 +341,7 @@ export const AdvisoryDashboard: React.FC = () => {
                                 <AdvisoryCard
                                     key={advisory.id}
                                     advisory={advisory}
-                                    onValidate={handleValidation}
+                                    onValidate={(a, b, c) => void handleValidation(a, b, c)}
                                     activeTab={activeTab}
                                 />
                             ))

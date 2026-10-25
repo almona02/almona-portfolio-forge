@@ -136,7 +136,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
           {!result && (
             <QuoteRequestStepper
               initialData={initialData}
-              onSubmit={handleSubmit}
+              onSubmit={(e) => void handleSubmit(e)}
               onCancel={() => onOpenChange(false)}
               submitting={submitting}
               relatedServiceTicketId={relatedServiceTicketId}
@@ -154,7 +154,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-7 w-7 p-0"
-                      onClick={() => quoteClipboard.copyToClipboard(result.quote_number, 'quote number')}
+                      onClick={() => void quoteClipboard.copyToClipboard(result.quote_number, 'quote number')}
                     >
                       {quoteClipboard.copiedText === result.quote_number ? (
                         <Check className="h-4 w-4 status-valid" />
@@ -173,7 +173,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                         variant="ghost"
                         size="sm"
                         className="h-7 w-7 p-0"
-                        onClick={() => twinClipboard.copyToClipboard(result.digital_twin_code!, 'digital twin code')}
+                        onClick={() => void twinClipboard.copyToClipboard(result.digital_twin_code!, 'digital twin code')}
                       >
                         {twinClipboard.copiedText === result.digital_twin_code ? (
                           <Check className="h-4 w-4 status-valid" />

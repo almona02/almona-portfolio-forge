@@ -1,4 +1,4 @@
-import { Alert, AlertDescription } from '@/components/ui/alert';
+﻿import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -552,7 +552,7 @@ export const PartnerOnboarding: React.FC = () => {
               Previous
             </Button>
             <Button 
-              onClick={submitApplication}
+              onClick={() => void submitApplication()}
               disabled={isSubmitting}
               className="flex items-center gap-2"
             >

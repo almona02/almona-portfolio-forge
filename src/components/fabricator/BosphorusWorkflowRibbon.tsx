@@ -1,4 +1,4 @@
-import { Badge } from '@/shared/ui/ui/badge';
+﻿import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/ui/collapsible';
 import { Progress } from '@/shared/ui/ui/progress';
@@ -136,7 +136,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate('/');
+                  void navigate('/');
                 }}
                 className="h-8 px-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
                 title="Go to Home"

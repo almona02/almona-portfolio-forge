@@ -1,4 +1,4 @@
-import { Alert, AlertDescription } from '@/components/ui/alert';
+﻿import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -407,7 +407,7 @@ export const SalesAcceleration: React.FC = () => {
                   </div>
 
                   <div className="flex gap-2 mt-4">
-                    <Button size="sm" onClick={() => generateAIProposal(lead.id)} disabled={generatingProposal}>
+                    <Button size="sm" onClick={() => void generateAIProposal(lead.id)} disabled={generatingProposal}>
                       {generatingProposal ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -531,7 +531,7 @@ export const SalesAcceleration: React.FC = () => {
             />
           </div>
 
-          <Button onClick={askAI} disabled={!aiQuery.trim()}>
+          <Button onClick={() => void askAI()} disabled={!aiQuery.trim()}>
             <Send className="h-4 w-4 mr-2" />
             Ask automation
           </Button>

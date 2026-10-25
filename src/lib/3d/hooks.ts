@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Almona Fabricator Pro: Physics & Shader Integration Hooks
  * 
  * React hooks for easily integrating physics simulation and advanced shaders
@@ -59,7 +59,7 @@ export function usePhysics(options: UsePhysicsOptions = {}): UsePhysicsReturn {
       dampingAngular: options.dampingAngular ?? 0.5,
     });
     
-    world.initialize().then((success) => {
+    void world.initialize().then((success) => {
       if (success) {
         worldRef.current = world;
         setIsInitialized(true);

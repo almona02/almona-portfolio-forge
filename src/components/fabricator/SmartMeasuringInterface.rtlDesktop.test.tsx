@@ -6,7 +6,7 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, fallback: unknown) => {
       if (typeof fallback === 'string') return fallback;
-      if (fallback && typeof fallback === 'object' && 'defaultValue' in (fallback as object)) {
+      if (fallback && typeof fallback === 'object' && 'defaultValue' in (fallback)) {
         const opts = fallback as { defaultValue: string; name?: string };
         return opts.defaultValue.replace('{{name}}', opts.name ?? '');
       }

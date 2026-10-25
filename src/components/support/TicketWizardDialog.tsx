@@ -369,7 +369,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         uploadingRef.current = false;
       }
     };
-    runQueue();
+    void runQueue();
   }, [attachments]);
 
   const handleTypeClick = useCallback((type: string) => {
@@ -469,7 +469,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
           </div>
         </DialogHeader>
 
-        <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="flex-1 px-6 py-6 space-y-8">
+        <form ref={formRef} onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="flex-1 px-6 py-6 space-y-8">
           {/* Hidden registered inputs to ensure react-hook-form tracks these programmatic selections */}
           <input type="hidden" {...register('type')} />
           <input type="hidden" {...register('priority')} />
@@ -602,7 +602,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   </ul>
                 )}
                 <div className="flex justify-end">
-                  <Button type="button" variant="ghost" onClick={next}>{t('ticket.continue')}</Button>
+                  <Button type="button" variant="ghost" onClick={() => void next()}>{t('ticket.continue')}</Button>
                 </div>
               </LazyMotionDiv>
             )}
@@ -709,7 +709,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             </div>
             <div className="flex gap-3">
               {activeStepIndex > 0 && <Button type="button" variant="outline" onClick={back} className="flex items-center gap-1"><ChevronLeft className="h-4 w-4" /> {t('ticket.back')}</Button>}
-              {!isLastFormStep && <Button type="button" onClick={next} className="flex items-center gap-1">{t('ticket.next')} <ChevronRight className="h-4 w-4" /></Button>}
+              {!isLastFormStep && <Button type="button" onClick={() => void next()} className="flex items-center gap-1">{t('ticket.next')} <ChevronRight className="h-4 w-4" /></Button>}
             </div>
           </div>
         )}

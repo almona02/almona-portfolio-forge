@@ -1,4 +1,4 @@
-/**
+﻿/**
  * HardenerSelectionPanel - Hardener Selection Panel Component
  * 
  * Full-featured panel for hardener code selection and display.
@@ -54,7 +54,7 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
   // Auto-select hardener when window unit or system pack changes
   useEffect(() => {
     if (windowUnit && systemPack) {
-      selectHardener();
+      void selectHardener();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windowUnit?.id, systemPack?.id, windowUnit?.overallWidth, windowUnit?.overallHeight, windowUnit?.type]);
@@ -143,7 +143,7 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
    * Handle manual refresh
    */
   const handleRefresh = () => {
-    selectHardener();
+    void selectHardener();
   };
 
   /**
@@ -302,7 +302,7 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={selectHardener}
+              onClick={() => void selectHardener()}
               className="mt-2 border-amber-600/40 text-amber-200/80 hover:bg-amber-950/40 hover:border-amber-500/60 hover:text-amber-200 transition-all duration-200"
             >
               Select Hardener Code

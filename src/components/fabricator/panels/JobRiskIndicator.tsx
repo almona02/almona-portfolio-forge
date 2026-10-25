@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Job Risk Indicator
  * Displays risk score and warnings for job complexity
  */
@@ -154,7 +154,7 @@ export const JobRiskIndicator: React.FC<JobRiskIndicatorProps> = ({ riskScore, p
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate('/fabricator/calibration')}
+            onClick={() => void navigate('/fabricator/calibration')}
             className="btn-primary"
           >
             Open Calibration Wizard

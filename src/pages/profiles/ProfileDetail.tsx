@@ -17,7 +17,7 @@ const ProfileDetail: React.FC = () => {
 
   useEffect(() => {
     if (profileId) {
-      getReviewsByProductId(profileId).then(setReviews);
+      void getReviewsByProductId(profileId).then(setReviews);
       addRecentlyViewed(profileId);
     }
   }, [profileId, addRecentlyViewed]);
@@ -85,7 +85,7 @@ const ProfileDetail: React.FC = () => {
           {t("reviews.section_title")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <ReviewForm productId={profile.id} onSubmit={handleAddReview} />
+          <ReviewForm productId={profile.id} onSubmit={(a, b, c) => void handleAddReview(a, b, c)} />
           <ReviewList reviews={reviews} />
         </div>
       </div>

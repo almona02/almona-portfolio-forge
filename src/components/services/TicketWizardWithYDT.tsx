@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Ticket Wizard with YDT Integration
  * 
  * Wraps the existing TicketWizardDialog and adds YDT-powered suggestions.
@@ -217,7 +217,7 @@ export function TicketWizardWithYDT({
    */
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchYdtSuggestions();
+      void fetchYdtSuggestions();
     }, 500);
 
     return () => clearTimeout(debounceTimer);

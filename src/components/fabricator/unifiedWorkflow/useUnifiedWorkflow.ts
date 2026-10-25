@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Unified Workflow Hook
  * 
  * Provides unified workflow state management and stage navigation.
@@ -96,7 +96,7 @@ export function useUnifiedWorkflow(
     // Update URL hash to first legacy tab of the stage for backward compatibility
     const stage = getUnifiedStage(stageId);
     if (stage && stage.legacyTabs.length > 0) {
-      navigate(`#${stage.legacyTabs[0]}`, { replace: true });
+      void navigate(`#${stage.legacyTabs[0]}`, { replace: true });
     }
   }, [navigate]);
 

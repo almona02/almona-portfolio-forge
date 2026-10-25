@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WorkflowBuilder Component
  * 
  * Priority 3: Workflow Builder - Main Builder Component
@@ -307,7 +307,7 @@ export const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
                         </Button>
                     )}
                     <Button
-                        onClick={handleSave}
+                        onClick={() => void handleSave()}
                         disabled={isSaving}
                         size="sm"
                     >

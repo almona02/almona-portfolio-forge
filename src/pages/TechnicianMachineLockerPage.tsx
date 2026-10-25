@@ -1,4 +1,4 @@
-
+﻿
 import ProductLocker from '@/components/services/ProductLocker';
 import { Button } from '@/components/ui/button-gold-tier';
 import { ChevronLeft } from 'lucide-react';
@@ -10,7 +10,7 @@ export default function TechnicianMachineLockerPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} leftIcon={<ChevronLeft className="w-4 h-4" />}>
+        <Button variant="ghost" size="sm" onClick={() => void navigate(-1)} leftIcon={<ChevronLeft className="w-4 h-4" />}>
            Back to Fleet
         </Button>
       </div>

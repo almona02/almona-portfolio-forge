@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Client Invoice Viewer
  * 
  * Gold-tier component for clients to view and manage their invoices.
@@ -49,7 +49,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
   const requestId = useRef(0);
   const [loadedFor, setLoadedFor] = useState(customerId);
   const [loadError, setLoadError] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadInvoices = async () => {
@@ -81,6 +81,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
 
   useEffect(() => {
     void loadInvoices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- requestId is a request token, not a DOM node ref
     return () => { ++requestId.current; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId]);
@@ -176,7 +177,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
               />
             </div>
             <Button
-              onClick={loadInvoices}
+              onClick={() => void loadInvoices()}
               variant="outline"
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >
@@ -251,7 +252,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleDownloadPDF(invoice)}
+                          onClick={() => void handleDownloadPDF(invoice)}
                           className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
                         >
                           <Download className="w-4 h-4" />
@@ -332,7 +333,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
               </div>
               <div className="flex gap-2 pt-4">
                 <Button
-                  onClick={() => handleDownloadPDF(selectedInvoice)}
+                  onClick={() => void handleDownloadPDF(selectedInvoice)}
                   className="bg-amber-600 hover:bg-amber-700 text-white"
                 >
                   <Download className="w-4 h-4 mr-2" />

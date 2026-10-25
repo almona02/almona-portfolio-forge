@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { Input } from '@/shared/ui/ui/input';
 import { Button } from '@/shared/ui/ui/button';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
@@ -451,7 +451,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
           type="file"
           accept=".dxf,.dwg"
           multiple
-          onChange={(e) => handleFiles(e.target.files)}
+          onChange={(e) => void handleFiles(e.target.files)}
           className="bg-gray-800 border-gray-700"
         />
         <Button

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Facebook } from "lucide-react";
 import { toast } from "sonner";
@@ -48,7 +48,7 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
     loadFacebookSDK();
   }, []);
 
-  const handleFacebookLogin = async () => {
+  const handleFacebookLogin = () => {
     try {
       // Check if Facebook SDK is loaded
       if (!(window as Window & { FB?: any }).FB || !sdkLoaded) {
@@ -105,7 +105,7 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
 
   return (
     <Button
-      onClick={handleFacebookLogin}
+      onClick={() => void handleFacebookLogin()}
       disabled={!sdkLoaded}
       className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white flex items-center justify-center"
     >

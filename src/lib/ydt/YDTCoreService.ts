@@ -1,4 +1,4 @@
-/**
+﻿/**
  * YDTCoreService - The Central Intelligence Engine
  * 
  * This is NOT a chatbot. This is the BRAIN that powers:
@@ -58,7 +58,7 @@ export class YDTCoreService {
     this.fabricatorExpert = new FabricatorExpert(this.knowledgeGraph);
     
     // Ensure knowledge base is loaded
-    this.ensureKnowledgeBaseLoaded();
+    void this.ensureKnowledgeBaseLoaded();
   }
 
   /**

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ClientPortalManager - Main component to manage shared projects
  * Provides interface for sharing projects with clients
  */
@@ -216,7 +216,7 @@ export const ClientPortalManager: React.FC<ClientPortalManagerProps> = ({
                     />
                     <Button
                       variant="outline"
-                      onClick={handleCopyLink}
+                      onClick={() => void handleCopyLink()}
                       className="flex-shrink-0"
                     >
                       {copied ? (
@@ -227,7 +227,7 @@ export const ClientPortalManager: React.FC<ClientPortalManagerProps> = ({
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={handleSendEmail}
+                      onClick={() => void handleSendEmail()}
                       className="flex-shrink-0"
                     >
                       <Mail className="h-4 w-4" />

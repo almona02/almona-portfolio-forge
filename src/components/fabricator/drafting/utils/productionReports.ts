@@ -335,10 +335,10 @@ export class ProductionReportsGenerator {
     return {
       id: data.id,
       projectId: data.production_project_id,
-      projectName: data.payload_json.projectName,
+      projectName: data.payload_json.projectName as string,
       reportType: data.report_type,
-      generatedAt: data.payload_json.generatedAt,
-      data: data.payload_json.data
+      generatedAt: data.payload_json.generatedAt as string,
+      data: data.payload_json.data as ExecutionPlanData | CuttingListData | PurchaseOrderData
     };
   }
 

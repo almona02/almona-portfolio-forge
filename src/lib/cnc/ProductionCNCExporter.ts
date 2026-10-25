@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ProductionCNCExporter - Production-Grade CNC Exporter
  * 
  * Provides machine-specific adapters, pre-export validation, G-code simulation,
@@ -85,7 +85,7 @@ export class ProductionCNCExporter {
       } else if (machineType === 'elumatec') {
         adapter = new ElumatecAdapter(config);
       } else {
-        throw new Error(`Unsupported machine type: ${machineType}`);
+        throw new Error(`Unsupported machine type: ${machineType as string}`);
       }
       this.adapters.set(machineType, adapter);
     } else if (config) {

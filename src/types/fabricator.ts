@@ -436,6 +436,35 @@ export interface Profile {
     markupPercentage?: number;
     cuttingType?: string;
     optimizedFor45Degree?: boolean;
+    costPerKg?: number;
+    stockLengthMm?: number;
+    weightPerMeterKg?: number;
+    supplierCode?: string;
+    internalCode?: string;
+    profileRole?: string;
+    profileCode?: string;
+    systemPackId?: string;
+    profileNumber?: string;
+    window_system?: string;
+    previewImageUrl?: string;
+    tuningStatus?: string;
+    role?: string;
+    series?: string;
+    year?: string;
+    glazingMinMm?: number;
+    glazingMaxMm?: number;
+    borderExtraAllowanceMm?: number;
+    technicalDrawings?: TechnicalDrawing[];
+    wallThicknessMm?: number;
+    thicknessMm?: number;
+    materialThicknessMm?: number;
+    constraints?: {
+      minWidthMm?: number;
+      maxWidthMm?: number;
+      minHeightMm?: number;
+      maxHeightMm?: number;
+      maxAreaM2?: number;
+    };
     [key: string]: unknown; // ... other specifications
   };
   /** Optional calibrations for this profile */

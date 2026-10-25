@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import ConditionBadge from './ConditionBadge';
 import { MapPin, Calendar, Gauge, Phone, MessageCircle, Flag, ChevronLeft } from 'lucide-react';
@@ -17,7 +17,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
   const phone = machine.contactWhatsapp || machine.contactPhone;
 
   useEffect(() => {
-    UsedMachineService.incrementViews(machine.id);
+    void UsedMachineService.incrementViews(machine.id);
   }, [machine.id]);
 
   const handleReport = async () => {
@@ -90,7 +90,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
             </div>
           </div>
 
-          <button onClick={handleReport} className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-400">
+          <button onClick={() => void handleReport()} className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-400">
             <Flag className="w-3 h-3" /> {copy('Report this listing')}
           </button>
         </div>

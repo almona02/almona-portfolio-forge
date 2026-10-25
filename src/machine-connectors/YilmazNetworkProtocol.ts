@@ -80,7 +80,7 @@ export class YilmazNetworkProtocol {
 
         ws.onerror = (error) => {
           this.isConnected = false;
-          reject(new Error(`Connection failed: ${error}`));
+          reject(new Error(`Connection failed: ${error.type}`));
         };
 
         ws.onclose = () => {
@@ -203,7 +203,7 @@ export class YilmazNetworkProtocol {
     this.statusCallbacks.add(callback);
 
     // Request initial status
-    this.requestStatus();
+    void this.requestStatus();
 
     // Return unsubscribe function
     return () => {

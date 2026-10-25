@@ -1,4 +1,4 @@
-import type { FabricatorWorkspaceState } from '@/context/FabricatorWorkspaceContext';
+﻿import type { FabricatorWorkspaceState } from '@/context/FabricatorWorkspaceContext';
 import { quickPerformanceWins } from '@/lib/quickPerformance';
 import { supabase } from '@/lib/supabase';
 

@@ -9,18 +9,18 @@ export function physicalCutForOccurrence(
   systemPackId?: string,
 ): Cut {
   const specs = profile.specifications || {};
-  const pack = systemPackId || (specs.systemPackId as string | undefined) || '';
+  const pack = systemPackId || specs.systemPackId || '';
   const calibration = pack ? calibrationManager.getActiveCalibration(profile, pack) : null;
   const border = (profile.type === 'frame' || specs.egyptFrameType === 'sliding' || specs.egyptFrameType === 'casement')
     && specs.egyptBorderIncluded === 'with';
-  const allowance = (profile.cuttingAllowance ?? 0) + (border ? (specs.borderExtraAllowanceMm as number | undefined) ?? 5 : 0);
+  const allowance = (profile.cuttingAllowance ?? 0) + (border ? specs.borderExtraAllowanceMm ?? 5 : 0);
   return {
     length: calibrationManager.applyCalibration(component.cuttingLengths[index] + allowance, calibration),
     angle: specs.cuttingType === 'miter_45' || specs.optimizedFor45Degree === true ? 45 : component.angles?.[index] || 90,
     componentId: component.id,
     cutId: `${component.id}:${index}`,
     occurrenceIndex: index,
-    componentType: (specs.profileRole as string | undefined) || component.type,
+    componentType: specs.profileRole || component.type,
     waste: allowance,
   };
 }

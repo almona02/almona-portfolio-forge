@@ -1,4 +1,4 @@
-// src/components/fabricator/drafting/utils/snapUtils.ts
+﻿// src/components/fabricator/drafting/utils/snapUtils.ts
 import type { Rectangle, Point } from '../types/drafting';
 import { normalizeCoordinate, roundToPrecision } from './precisionUtils';
 
@@ -17,7 +17,7 @@ export const SNAP_SPACING_OPTIONS = [
   10,  // 10mm - coarse precision
 ] as const;
 
-export type SnapSpacingOption = typeof SNAP_SPACING_OPTIONS[number] | number; // Allow custom spacing
+export type SnapSpacingOption = number; // Allow custom spacing
 
 /**
  * Snap a rectangle to the grid with configurable spacing

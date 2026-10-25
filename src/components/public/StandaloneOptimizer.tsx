@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Standalone Optimizer Tool
  * Public-facing optimizer for lead generation
  */
@@ -28,7 +28,7 @@ export const StandaloneOptimizer: React.FC = () => {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [savings, setSavings] = useState<number>(0);
 
-  const handleOptimize = async () => {
+  const handleOptimize = () => {
     setOptimizing(true);
     try {
       // Simulate optimization (in production would use actual optimizer)
@@ -172,7 +172,7 @@ export const StandaloneOptimizer: React.FC = () => {
             </div>
 
             <Button
-              onClick={handleOptimize}
+              onClick={() => void handleOptimize()}
               disabled={optimizing || cuts.some((c) => c.length <= 0)}
               className="btn-primary"
             >
@@ -219,7 +219,7 @@ export const StandaloneOptimizer: React.FC = () => {
                     />
                   </div>
                   <Button
-                    onClick={handleEmailSubmit}
+                    onClick={() => void handleEmailSubmit()}
                     disabled={!email || !email.includes('@')}
                     className="btn-primary"
                   >

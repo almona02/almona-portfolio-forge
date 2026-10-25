@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
@@ -311,7 +311,7 @@ const FabricationWorkflowDetail = () => {
       <div className="container mx-auto px-4 py-8">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <Button
-            onClick={() => navigate(-1)}
+            onClick={() => void navigate(-1)}
             className="flex items-center gap-2 bg-almona-light/10 hover:bg-almona-light/20 text-almona-light rounded-full mb-8"
           >
             <ArrowLeft className="h-4 w-4" />

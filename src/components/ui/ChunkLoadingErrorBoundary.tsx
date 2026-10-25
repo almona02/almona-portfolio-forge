@@ -80,9 +80,9 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
                 onClick={() => {
                   // Clear all caches and reload
                   if ('caches' in window) {
-                    caches.keys().then(names => {
+                    void caches.keys().then(names => {
                       names.forEach(name => {
-                        caches.delete(name);
+                        void caches.delete(name);
                       });
                     });
                   }

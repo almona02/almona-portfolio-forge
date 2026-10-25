@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+﻿import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { track } from '@/lib/analytics';
@@ -182,7 +182,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" />
           <YAxis dataKey="stage" type="category" width={80} />
-          <Tooltip formatter={(value, name) => [`${value}`, `${name}`]} />
+          <Tooltip formatter={(value, name) => [`${value as string}`, `${name as string}`]} />
           <Bar dataKey="count" fill="#4ECDC4" />
         </BarChart>
       </ResponsiveContainer>
@@ -203,7 +203,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="region" />
             <YAxis />
-            <Tooltip formatter={(value, name) => [`${value}`, `${name}`]} />
+            <Tooltip formatter={(value, name) => [`${value as string}`, `${name as string}`]} />
             <Bar dataKey="revenue" fill="#FF6B6B" name="Revenue ($)" />
             <Bar dataKey="customers" fill="#4ECDC4" name="Customers" />
           </BarChart>
@@ -335,7 +335,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+                    <Tooltip formatter={(value) => [`$${value as string}`, 'Revenue']} />
                     <Line type="monotone" dataKey="value" stroke="#4ECDC4" strokeWidth={3} name="Actual" />
                     <Line type="monotone" dataKey="target" stroke="#FF6B6B" strokeDasharray="5 5" name="Target" />
                   </LineChart>
@@ -411,7 +411,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  🇪🇬 Egypt Market
+                  ???? Egypt Market
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -437,7 +437,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  🇹🇷 Turkey Market
+                  ???? Turkey Market
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -463,7 +463,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  🇪🇺 EU Market
+                  ???? EU Market
                 </CardTitle>
               </CardHeader>
               <CardContent>

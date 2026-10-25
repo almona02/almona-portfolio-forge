@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Prestige Unsaved Changes Confirmation Dialog
  * 
  * A polished, reusable confirmation dialog for unsaved changes
@@ -124,7 +124,7 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
 
             {showSaveOption && onSave && (
               <Button
-                onClick={handleSave}
+                onClick={() => void handleSave()}
                 disabled={isSaving}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >

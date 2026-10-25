@@ -1,4 +1,4 @@
-import { Alert, AlertDescription } from '@/components/ui/alert';
+﻿import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -416,7 +416,7 @@ export const PredictiveInsights: React.FC = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="period" />
               <YAxis />
-              <Tooltip formatter={(value, name) => [`${value}`, `${name}`]} />
+              <Tooltip formatter={(value, name) => [`${value as string}`, `${name as string}`]} />
               <Area type="monotone" dataKey="revenue" stroke="#4ECDC4" fill="#4ECDC4" fillOpacity={0.3} name="Revenue (€)" />
               <Area type="monotone" dataKey="customers" stroke="#FF6B6B" fill="#FF6B6B" fillOpacity={0.3} name="Customers" />
             </AreaChart>

@@ -1,4 +1,4 @@
-import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
+﻿import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { FabricationData, SystemPack, WindowUnit } from '@/types/fabricator';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -88,7 +88,7 @@ export const useBOMCalculation = (): UseBOMCalculationReturn => {
         reject: (err) => {
           setIsCalculating(false);
           setError(err.message);
-          reject(err);
+          reject(new Error(String(err)));
         }
       });
 

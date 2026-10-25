@@ -14,7 +14,7 @@ export function cycleCellOpeningType(cell: GridCell): GridCell {
       : cell.type === 'sash'
         ? 'sash-left'
         : (cell.type as (typeof OPENING_CYCLE)[number]);
-  const currentIndex = OPENING_CYCLE.indexOf(currentKey as (typeof OPENING_CYCLE)[number]);
+  const currentIndex = OPENING_CYCLE.indexOf(currentKey);
   const nextKey = OPENING_CYCLE[(currentIndex === -1 ? 0 : currentIndex + 1) % OPENING_CYCLE.length];
 
   if (nextKey === 'sash-left') {

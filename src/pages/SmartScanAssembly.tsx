@@ -1,4 +1,4 @@
-import { AssemblyReview } from "@/components/assembly/AssemblyReview";
+﻿import { AssemblyReview } from "@/components/assembly/AssemblyReview";
 import { confirmAssembly, scanAssembly } from "@/services/smartScanApi";
 import { Alert, AlertDescription, AlertTitle } from "@/shared/ui/ui/alert";
 import { Button } from "@/shared/ui/ui/button";
@@ -106,7 +106,7 @@ const SmartScanAssembly: React.FC = () => {
                 className="bg-slate-800/50 border-amber-500/20 text-white file:bg-amber-500/10 file:text-amber-400 file:border-amber-500/30 file:rounded file:px-3 file:py-1 file:mr-3 file:cursor-pointer hover:border-amber-500/40"
               />
               <Button
-                onClick={handleScan}
+                onClick={() => void handleScan()}
                 disabled={!file || isLoading}
                 className="gap-2 bg-amber-600 hover:bg-amber-500 text-white font-medium shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -137,7 +137,7 @@ const SmartScanAssembly: React.FC = () => {
           <div className="bg-slate-900/60 backdrop-blur-sm rounded-xl border border-amber-500/20 shadow-lg shadow-amber-500/5 p-6">
             <AssemblyReview
               assemblyData={assemblyData}
-              onConfirm={handleConfirm}
+              onConfirm={(e) => void handleConfirm(e)}
               onCancel={() => setAssemblyData(null)}
               isLoading={isLoading}
             />

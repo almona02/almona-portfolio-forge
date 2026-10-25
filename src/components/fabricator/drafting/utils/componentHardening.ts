@@ -342,7 +342,7 @@ export function validateStringProp(
   }
   
   if (typeof value !== 'string') {
-    console.warn(`Invalid ${propName} for ${componentName}: ${value}, using default ${defaultValue}`);
+    console.warn(`Invalid ${propName} for ${componentName}: ${value as string}, using default ${defaultValue}`);
     return defaultValue;
   }
   

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * API Optimizer
  * 
  * Optimizes API requests for workshop environments with intermittent connectivity.
@@ -106,7 +106,7 @@ export class APIOptimizer {
 
       // Send batch if it reaches max size
       if (this.batchQueue.length >= this.config.maxBatchSize) {
-        this.sendBatch();
+        void this.sendBatch();
       }
     });
   }
@@ -120,13 +120,13 @@ export class APIOptimizer {
     }
 
     this.batchTimeout = setTimeout(() => {
-      this.sendBatch();
+      void this.sendBatch();
     }, this.config.batchDelayMs);
 
     // Also send if max wait time is exceeded
     setTimeout(() => {
       if (this.batchQueue.length > 0 && Date.now() - this.batchStartTime >= this.config.maxWaitTimeMs) {
-        this.sendBatch();
+        void this.sendBatch();
       }
     }, this.config.maxWaitTimeMs);
   }

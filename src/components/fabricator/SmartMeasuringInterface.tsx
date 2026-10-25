@@ -1,4 +1,4 @@
-import {
+﻿import {
   getDefaultGlazing,
   getDefaultProfileColor
 } from '@/data/egyptian-defaults';
@@ -696,7 +696,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     // Log verification event if confirmed
     if (verificationConfirmed === true) {
       const cutLength = Number(measurements.width) - DEFAULT_MEASUREMENTS.DEFAULT_CUT_LENGTH_DEDUCTION_MM; // Simplified calculation for MVP
-      calibrationAnalytics.recordVerificationEvent({
+      void calibrationAnalytics.recordVerificationEvent({
         userId: 'current-user', // Ideally from auth context
         systemPackId: selectedSystemPackId,
         measurements: {
@@ -721,7 +721,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       systemPackId: selectedSystemPackId,
       systemProfileSelections,
       // Rule 18: Include wall tolerance data for InterferenceEngine
-      measurementMode: measurements.measurementMode as 'hole' | 'manufacturing',
+      measurementMode: measurements.measurementMode,
       wallDeduction: measurements.wallDeduction,
       manufacturingWidth,
       manufacturingHeight,
@@ -1329,7 +1329,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     height={measurements.height}
                     windowType={measurements.windowType}
                     systemPackId={selectedSystemPackId}
-                    measurementMode={measurements.measurementMode as 'hole' | 'manufacturing'}
+                    measurementMode={measurements.measurementMode}
                     wallDeduction={measurements.wallDeduction}
                     onWidthChange={(value) => handleInputChange('width', value)}
                     onHeightChange={(value) => handleInputChange('height', value)}

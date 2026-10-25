@@ -44,7 +44,7 @@ export function validatePoint(point: unknown): Point {
     throw new ValidationError('Point must be an object', 'INVALID_POINT');
   }
 
-  const p = point as any;
+  const p = point as Point;
   
   if (typeof p.x !== 'number' || !isFinite(p.x)) {
     throw new ValidationError('Point.x must be a finite number', 'INVALID_POINT_X', 'x');
@@ -86,7 +86,7 @@ export function validateRectangle(rect: unknown): Rectangle {
     throw new ValidationError('Rectangle must be an object', 'INVALID_RECTANGLE');
   }
 
-  const r = rect as any;
+  const r = rect as Rectangle;
   
   const x = typeof r.x === 'number' && isFinite(r.x) ? r.x : 0;
   const y = typeof r.y === 'number' && isFinite(r.y) ? r.y : 0;
@@ -166,7 +166,7 @@ export function validateCircle(circle: unknown): Circle {
     throw new ValidationError('Circle must be an object', 'INVALID_CIRCLE');
   }
 
-  const c = circle as any;
+  const c = circle as Circle;
   
   const cx = typeof c.cx === 'number' && isFinite(c.cx) ? c.cx : 0;
   const cy = typeof c.cy === 'number' && isFinite(c.cy) ? c.cy : 0;
@@ -218,7 +218,7 @@ export function validateArc(arc: unknown): Arc {
     throw new ValidationError('Arc must be an object', 'INVALID_ARC');
   }
 
-  const a = arc as any;
+  const a = arc as Arc;
   
   const cx = typeof a.cx === 'number' && isFinite(a.cx) ? a.cx : 0;
   const cy = typeof a.cy === 'number' && isFinite(a.cy) ? a.cy : 0;
@@ -278,7 +278,7 @@ export function validateLine(line: unknown): Line {
     throw new ValidationError('Line must be an object', 'INVALID_LINE');
   }
 
-  const l = line as any;
+  const l = line as Line;
   
   const start = validatePoint(l.start);
   const end = validatePoint(l.end);
@@ -312,7 +312,7 @@ export function validatePolygon(polygon: unknown): Polygon {
     throw new ValidationError('Polygon must be an object', 'INVALID_POLYGON');
   }
 
-  const p = polygon as any;
+  const p = polygon as Polygon;
   
   if (!Array.isArray(p.points)) {
     throw new ValidationError('Polygon.points must be an array', 'INVALID_POLYGON_POINTS');
@@ -366,7 +366,7 @@ export function validateSpline(spline: unknown): Spline {
     throw new ValidationError('Spline must be an object', 'INVALID_SPLINE');
   }
 
-  const s = spline as any;
+  const s = spline as Spline;
 
   if (!Array.isArray(s.controlPoints)) {
     throw new ValidationError('Spline.controlPoints must be an array', 'INVALID_SPLINE_CONTROL_POINTS');
@@ -412,7 +412,7 @@ export function validateGeometry(geometry: unknown): Geometry2D {
     throw new ValidationError('Geometry must be an object', 'INVALID_GEOMETRY');
   }
 
-  const g = geometry as any;
+  const g = geometry as Geometry2D;
   
   const result: Geometry2D = {
     rectangles: [],
@@ -711,7 +711,7 @@ export function safeParseInt(value: unknown, defaultValue: number, min?: number,
 export function validateDraftingFile(file: unknown): {
   valid: boolean;
   errors: string[];
-  data?: any;
+  data?: unknown;
 } {
   const errors: string[] = [];
 
@@ -719,7 +719,7 @@ export function validateDraftingFile(file: unknown): {
     return { valid: false, errors: ['File must be a valid JSON object'] };
   }
 
-  const f = file as any;
+  const f = file as Record<string, unknown>;
 
   // Check required fields
   if (!f.geometry) {

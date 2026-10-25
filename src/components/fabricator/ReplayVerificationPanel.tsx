@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Replay Verification Panel Component
  * 
  * Gold-tier deterministic replay verification interface with status indicators,
@@ -37,7 +37,7 @@ const HashDisplay: React.FC<{
   const displayValue = truncated ? `${value.substring(0, 16)}...${value.substring(value.length - 8)}` : value;
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(value);
+    void navigator.clipboard.writeText(value);
     setCopied(true);
     toast.success('Hash copied to clipboard');
     setTimeout(() => setCopied(false), 2000);
@@ -211,7 +211,7 @@ export const ReplayVerificationPanel: React.FC<ReplayVerificationPanelProps> = (
             </div>
 
             <Button
-              onClick={handleVerify}
+              onClick={() => void handleVerify()}
               disabled={verifying || !inputHash}
               className="w-full bg-amber-600 hover:bg-amber-700 text-white"
             >

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useQuoteLookup } from '@/hooks/useQuoteLookup';
 import { Input } from '@/shared/ui/ui/input';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -46,7 +46,7 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
                     className="h-6 w-6 p-0"
                     onClick={(e) => {
                       e.stopPropagation();
-                      quoteClipboard.copyToClipboard(r.quote_number, 'quote number');
+                      void quoteClipboard.copyToClipboard(r.quote_number, 'quote number');
                     }}
                   >
                     {quoteClipboard.copiedText === r.quote_number ? (
@@ -67,7 +67,7 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
                       className="h-5 w-5 p-0"
                       onClick={(e) => {
                         e.stopPropagation();
-                        twinClipboard.copyToClipboard(r.digital_twin_code!, 'digital twin code');
+                        void twinClipboard.copyToClipboard(r.digital_twin_code!, 'digital twin code');
                       }}
                     >
                       {twinClipboard.copiedText === r.digital_twin_code ? (

@@ -1,4 +1,4 @@
-// src/components/fabricator/drafting/utils/accessibilityUtils.ts
+﻿// src/components/fabricator/drafting/utils/accessibilityUtils.ts
 
 /**
  * Accessibility Utilities for Drafting Workbench
@@ -25,7 +25,7 @@ export function getGeometryAriaLabel(
     case 'polygon':
       return `Polygon ${index + 1} with ${element.points.length} points`;
     default:
-      return `${type} ${index + 1}`;
+      return `${type as string} ${index + 1}`;
   }
 }
 

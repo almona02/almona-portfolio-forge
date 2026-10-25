@@ -40,19 +40,19 @@ export const StudioOperatorHelpPage: React.FC = () => {
 
   const principles = useMemo(
     () => (t('principles.items', { returnObjects: true }) as PrincipleItem[]) || [],
-    [t, i18n.language],
+    [t],
   );
   const steps = useMemo(
     () => (t('pipeline.steps', { returnObjects: true }) as PipelineStep[]) || [],
-    [t, i18n.language],
+    [t],
   );
   const troubleRows = useMemo(
     () => (t('troubleshoot.rows', { returnObjects: true }) as TroubleRow[]) || [],
-    [t, i18n.language],
+    [t],
   );
   const assessmentItems = useMemo(
     () => (t('assessment.items', { returnObjects: true }) as string[]) || [],
-    [t, i18n.language],
+    [t],
   );
 
   return (

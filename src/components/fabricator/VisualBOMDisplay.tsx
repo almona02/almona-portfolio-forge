@@ -1,4 +1,4 @@
-/**
+﻿/**
  * VisualBOMDisplay Component
  * 
  * Production-friendly BOM display with visual representation, cost breakdown,
@@ -64,7 +64,7 @@ export interface BOMDisplayData {
     weight: number;
   };
   aggregatedByCategory: Record<string, Record<string, any>>;
-  systemPack?: SystemPackType | null;
+  systemPack?: SystemPackType;
   verifyProfileSpecs?: any;
 }
 
@@ -163,7 +163,7 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
       setQrCodes(codes);
     };
 
-    generateQRCodes();
+    void generateQRCodes();
   }, [showQR, bomData, windowUnit]);
 
   // Cost breakdown data

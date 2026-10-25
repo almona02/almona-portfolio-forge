@@ -93,7 +93,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
             }
         };
 
-        loadTemplates();
+        void loadTemplates();
     }, [initialTemplateId]);
 
     /**
@@ -116,7 +116,8 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
             return;
         }
 
-        const interval = setInterval(async () => {
+        const interval = setInterval(() => {
+            void (async () => {
             try {
                 const job = await getReportJob(activeJob.id);
                 setActiveJob(job);
@@ -132,6 +133,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
             } catch (error) {
                 console.error('Failed to poll job status:', error);
             }
+        })();
         }, 2000);  // Poll every 2 seconds
 
         setPollingInterval(interval);
@@ -301,7 +303,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
 
                     {/* Generate Button */}
                     <Button
-                        onClick={handleGenerate}
+                        onClick={() => void handleGenerate()}
                         disabled={isGenerating || !reportType.trim()}
                         className="w-full"
                     >
@@ -362,7 +364,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
 
                                 {activeJob.download_url && (
                                     <Button
-                                        onClick={handleDownload}
+                                        onClick={() => void handleDownload()}
                                         className="w-full"
                                     >
                                         <Download className="mr-2 h-4 w-4" />

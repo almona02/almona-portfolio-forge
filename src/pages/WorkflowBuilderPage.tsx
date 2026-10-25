@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WorkflowBuilderPage Component
  * 
  * Priority 3: Workflow Builder - Main Page
@@ -47,7 +47,7 @@ const WorkflowBuilderPage: React.FC = () => {
     };
 
     const handleCancel = () => {
-        navigate('/workflows');
+        void navigate('/workflows');
     };
 
     const handleDelete = async () => {
@@ -57,7 +57,7 @@ const WorkflowBuilderPage: React.FC = () => {
         try {
             await deleteWorkflow(workflowId);
             toast.success('Workflow deleted successfully');
-            navigate('/workflows');
+            void navigate('/workflows');
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Failed to delete workflow');
         } finally {
@@ -75,7 +75,7 @@ const WorkflowBuilderPage: React.FC = () => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => navigate('/workflows')}
+                            onClick={() => void navigate('/workflows')}
                             className="text-slate-400 hover:text-slate-200"
                         >
                             <ArrowLeft className="h-5 w-5" />
@@ -122,7 +122,7 @@ const WorkflowBuilderPage: React.FC = () => {
                             </Button>
                             <Button
                                 variant="destructive"
-                                onClick={handleDelete}
+                                onClick={() => void handleDelete()}
                                 disabled={isDeleting}
                             >
                                 {isDeleting ? (

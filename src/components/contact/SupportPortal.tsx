@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { AlertTriangle, Check, HardHat, Loader2, Search, Wrench } from 'lucide-react';
@@ -135,7 +135,7 @@ export const SupportPortal = () => {
   const handleSerialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const serial = e.target.value;
     if (serial.length >= 8) {
-      validateSerial(serial);
+      void validateSerial(serial);
     } else {
       setSerialValid(null);
       setMachineInfo(null);

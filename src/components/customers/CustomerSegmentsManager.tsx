@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CustomerSegmentsManager Component
  * 
  * Priority 4: Customers Page Upgrade - Segment Management UI
@@ -111,7 +111,7 @@ export const CustomerSegmentsManager: React.FC<CustomerSegmentsManagerProps> = (
      * Initial load
      */
     useEffect(() => {
-        loadSegments();
+        void loadSegments();
     }, [loadSegments]);
 
     /**
@@ -405,7 +405,7 @@ export const CustomerSegmentsManager: React.FC<CustomerSegmentsManagerProps> = (
                         >
                             Cancel
                         </Button>
-                        <Button onClick={handleSave} disabled={isSaving || !segmentName.trim()}>
+                        <Button onClick={() => void handleSave()} disabled={isSaving || !segmentName.trim()}>
                             {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {editingSegment ? 'Update' : 'Create'}
                         </Button>
@@ -426,7 +426,7 @@ export const CustomerSegmentsManager: React.FC<CustomerSegmentsManagerProps> = (
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isSaving}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleDelete}
+                            onClick={() => void handleDelete()}
                             disabled={isSaving}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >

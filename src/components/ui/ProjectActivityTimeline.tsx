@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ProjectActivityTimeline Component
  * 
  * Phase 3 Implementation - Enterprise Activity Tracking
@@ -269,7 +269,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
       }
     };
 
-    fetchActivities();
+    void fetchActivities();
   }, [projectId, propActivities, filters.type, filters.userId, filters.dateFrom, filters.dateTo]);
 
   /**
@@ -574,7 +574,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      onClick={() => handleCommentSubmit(activity.id)}
+                      onClick={() => void handleCommentSubmit(activity.id)}
                       disabled={isSubmittingComment === activity.id}
                       className="bg-amber-600 text-white hover:bg-amber-700"
                     >

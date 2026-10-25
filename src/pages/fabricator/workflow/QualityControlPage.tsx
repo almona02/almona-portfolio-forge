@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthContext';
+﻿import { useAuth } from '@/context/AuthContext';
 import {
   approveQualityControl,
   getAuthoritativeQcRevision,
@@ -79,7 +79,7 @@ export const QualityControlPage: React.FC = () => {
       };
     }
 
-    (async () => {
+    void (async () => {
       try {
         const value = await getAuthoritativeQcRevision(currentProject.id);
         if (!active) return;

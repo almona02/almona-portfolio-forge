@@ -19,7 +19,7 @@
  * @since 2024
  */
 
-import type { SystemPack } from '@/data/systemPacks';
+import type { SystemPack } from '@/types/fabricator';
 import type { Profile, WindowUnit } from '@/types/fabricator';
 import { GEOMETRIC_CONSTANTS } from './bom/profileBOMConstants';
 import {

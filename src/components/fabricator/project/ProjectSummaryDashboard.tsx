@@ -84,12 +84,13 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
       });
     } else setAggregatedBOM(null);
     setIsAggregating(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- aggregationGeneration is a generation token, not a DOM node ref
     return () => { ++aggregationGeneration.current; };
   }, [projectId, positions, engineeringPacks, projectMeta?.meta]);
 
   const openPoseMeasuring = useCallback((id: string) => {
     if (!projectId) return;
-    navigate(fabricatorRoutes.poseMeasuring(projectId, id));
+    void navigate(fabricatorRoutes.poseMeasuring(projectId, id));
   }, [navigate, projectId]);
 
   const handleDuplicatePose = useCallback(async (id: string) => {
@@ -114,7 +115,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
         selectedPreset: source.presetId,
       });
       toast.success(`Pose ${posNumber} duplicated`);
-      navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
+      void navigate(fabricatorRoutes.poseMeasuring(created.projectId, created.poseId));
     } catch (err) {
       toast.error(`Duplicate failed: ${persistenceErrorMessage(err)}`);
     }
@@ -281,7 +282,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
     } finally {
       if (generation === aggregationGeneration.current) setIsAggregating(false);
     }
-  }, [positions, engineeringPacks, projectId, projectMeta, updateProject, upsertPose]);
+  }, [positions, engineeringPacks, projectId, projectMeta, updateProject]);
 
   return (
     <div className="h-full overflow-auto p-6 space-y-6 bg-[#0a0a0a]">
@@ -418,7 +419,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                               size="sm"
                               variant="ghost"
                               className="h-6 text-xs text-amber-400 hover:text-amber-300"
-                              onClick={() => navigate(fabricatorRoutes.poseDesign(projectId, pos.id))}
+                              onClick={() => void navigate(fabricatorRoutes.poseDesign(projectId, pos.id))}
                             >
                               <ArrowRight size={12} />
                             </Button>

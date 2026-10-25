@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Almona Fabricator Pro: ProductionCommand (v2.0)
  *
  * This component is the definitive command center for reviewing, visualizing,
@@ -613,8 +613,8 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                         profiles={profiles}
                         projectName={project?.orderNumber}
                         orderNumber={project?.orderNumber}
-                        onExportPDF={handleQuickExportPDF}
-                        onExportDXF={handleQuickExportDXF}
+                        onExportPDF={() => void handleQuickExportPDF()}
+                        onExportDXF={() => void handleQuickExportDXF()}
                     />
                 </CardContent>
             </Card>
@@ -850,7 +850,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                     {/* Quick Export Buttons */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <Button
-                            onClick={handleQuickExportPDF}
+                            onClick={() => void handleQuickExportPDF()}
                             className="bg-blue-600 hover:bg-blue-700 text-white h-16 flex flex-col items-center justify-center gap-1"
                             disabled={!project || !optimization}
                         >
@@ -859,7 +859,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                             <span className="text-xs opacity-90">Cutting List</span>
                         </Button>
                         <Button
-                            onClick={handleQuickExportDXF}
+                            onClick={() => void handleQuickExportDXF()}
                             className="bg-green-600 hover:bg-green-700 text-white h-16 flex flex-col items-center justify-center gap-1"
                             disabled={!project || !optimization}
                         >
@@ -996,7 +996,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                     components={project.components || []}
                     profiles={profiles}
                     optimizationResult={optimization}
-                    onConfirm={executePendingAction}
+                    onConfirm={() => void executePendingAction()}
                     onAdjustCalibration={() => { /* Your logic */ }}
                 />
             )}

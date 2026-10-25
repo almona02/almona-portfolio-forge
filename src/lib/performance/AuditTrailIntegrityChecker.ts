@@ -62,7 +62,7 @@ export class AuditTrailIntegrityChecker {
     }
 
     // Store in IndexedDB for persistence
-    this.persistAuditEntry(fullEntry);
+    void this.persistAuditEntry(fullEntry);
 
     return fullEntry;
   }
@@ -223,7 +223,11 @@ export class AuditTrailIntegrityChecker {
       const transaction = db.transaction(['auditLog'], 'readwrite');
       const store = transaction.objectStore('auditLog');
       
-      await store.add(entry);
+      await new Promise<void>((resolve, reject) => {
+        const req = store.add(entry);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error ?? new Error('IndexedDB request failed'));
+      });
     } catch (error) {
       console.warn('Failed to persist audit entry to IndexedDB', error);
     }
@@ -236,7 +240,7 @@ export class AuditTrailIntegrityChecker {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('ConstitutionalAuditLog', 1);
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(new Error(String(request.error)));
       request.onsuccess = () => resolve(request.result);
 
       request.onupgradeneeded = (event) => {
