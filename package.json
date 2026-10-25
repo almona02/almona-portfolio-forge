@@ -86,6 +86,8 @@
     "build:analyze": "cross-env ANALYZE=true vite build --mode production",
     "build:optimized": "node scripts/optimize-build.js && vite build --mode production",
     "lint": "eslint src",
+    "lint:report": "eslint src --format json --output-file .eslint-report.json",
+    "lint:inventory": "node scripts/lint-inventory.mjs",
     "preview": "vite preview --host",
     "preview:fast": "vite preview --host --port 4173",
     "i18n:audit": "node scripts/i18n-audit.js",
